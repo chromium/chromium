@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -41,10 +43,20 @@ class TestTextInputManagerObserver : public TextInputManager::Observer {
                                     bool did_update_state) override {
     last_did_update_state_ = did_update_state;
     ++update_call_count_;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  void WaitForUpdate() {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
   }
 
   bool last_did_update_state_ = false;
   int update_call_count_ = 0;
+  base::OnceClosure quit_closure_;
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -346,6 +358,166 @@ TEST_F(TextInputManagerTest, ActiveViewTransitionMarksStateUpdated) {
   EXPECT_TRUE(observer.last_did_update_state_);
 
   manager->RemoveObserver(&observer);
+}
+
+// Test that changing frame focus via WebContentsImpl::SetFocusedFrame or
+// FrameTree::SetFocusedFrame updates active_view_ and notifies observers using
+// the newly focused view's cached TextInputState without requiring a new
+// UpdateTextInputState IPC, while clearing transient virtual-keyboard flags.
+TEST_F(TextInputManagerTest, FocusChangeUpdatesActiveViewFromCachedState) {
+  GURL parent_url("https://a.test/");
+  NavigationSimulator::CreateRendererInitiated(parent_url, main_rfh())
+      ->Commit();
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://b.test/"),
+          content::RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("child")));
+
+  auto* main_rfh_impl = static_cast<RenderFrameHostImpl*>(main_rfh());
+  auto* main_view = static_cast<RenderWidgetHostViewBase*>(
+      main_rfh()->GetRenderWidgetHost()->GetView());
+  auto* child_view = static_cast<RenderWidgetHostViewBase*>(
+      child_rfh->GetRenderWidgetHost()->GetView());
+
+  // 1. Focus child_rfh and give it an active EMAIL TextInputState with
+  // transient virtual-keyboard visibility flags set from a user tap.
+  child_rfh->frame_tree_node()->SetFocusedFrame(nullptr);
+
+  TextInputManager* manager = main_view->GetTextInputManager();
+  ASSERT_TRUE(manager);
+
+  TestTextInputManagerObserver observer;
+  manager->AddObserver(&observer);
+
+  ui::mojom::TextInputState email_state;
+  email_state.type = ui::TEXT_INPUT_TYPE_EMAIL;
+  email_state.node_id = 1;
+  email_state.show_ime_if_needed = true;
+  email_state.last_vk_visibility_request =
+      ui::mojom::VirtualKeyboardVisibilityRequest::SHOW;
+  manager->UpdateTextInputState(child_view, email_state);
+  EXPECT_EQ(child_view, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 1);
+  EXPECT_TRUE(observer.last_did_update_state_);
+  ASSERT_TRUE(manager->GetTextInputState());
+  EXPECT_TRUE(manager->GetTextInputState()->show_ime_if_needed);
+  EXPECT_EQ(ui::mojom::VirtualKeyboardVisibilityRequest::SHOW,
+            manager->GetTextInputState()->last_vk_visibility_request);
+
+  // 2. Focus moves to main_rfh (which has TEXT_INPUT_TYPE_NONE) without
+  // child_view sending a new UpdateTextInputState IPC. active_view_ is cleared
+  // and observers are notified when the coalesced task runs.
+  main_rfh_impl->frame_tree_node()->SetFocusedFrame(nullptr);
+  observer.WaitForUpdate();
+  EXPECT_EQ(nullptr, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 2);
+  EXPECT_TRUE(observer.last_did_update_state_);
+
+  // 3. Focus moves back to child_rfh without a new UpdateTextInputState IPC
+  // (e.g., an already-focused <input> in a refocused subframe/guest).
+  // active_view_ is restored to child_view from its cached TextInputState, and
+  // transient virtual-keyboard flags are reset so the virtual keyboard is not
+  // re-shown automatically.
+  child_rfh->frame_tree_node()->SetFocusedFrame(nullptr);
+  observer.WaitForUpdate();
+  EXPECT_EQ(child_view, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 3);
+  EXPECT_TRUE(observer.last_did_update_state_);
+  ASSERT_TRUE(manager->GetTextInputState());
+  EXPECT_FALSE(manager->GetTextInputState()->show_ime_if_needed);
+  EXPECT_EQ(ui::mojom::VirtualKeyboardVisibilityRequest::NONE,
+            manager->GetTextInputState()->last_vk_visibility_request);
+
+  // 4. Focus moves to main_rfh (clearing active_view_), and then child_view
+  // blurs its <input> and sends TEXT_INPUT_TYPE_NONE while unfocused. Its
+  // cached state must be updated to NONE so refocusing child_rfh later does not
+  // reactivate IME from stale state.
+  main_rfh_impl->frame_tree_node()->SetFocusedFrame(nullptr);
+  observer.WaitForUpdate();
+  EXPECT_EQ(nullptr, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 4);
+
+  ui::mojom::TextInputState none_state;
+  none_state.type = ui::TEXT_INPUT_TYPE_NONE;
+  manager->UpdateTextInputState(child_view, none_state);
+  EXPECT_EQ(nullptr, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 5);
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(observer.last_did_update_state_);
+#endif
+
+  child_rfh->frame_tree_node()->SetFocusedFrame(nullptr);
+  base::RunLoop flush_focus_update_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, flush_focus_update_loop.QuitClosure());
+  flush_focus_update_loop.Run();
+  EXPECT_EQ(nullptr, manager->active_view_for_testing());
+  EXPECT_EQ(observer.update_call_count_, 5);
+
+  manager->RemoveObserver(&observer);
+}
+
+// Test that focus-change notifications are posted to top-of-loop and that
+// destroying WebContents inside OnUpdateTextInputStateCalled does not crash.
+TEST_F(TextInputManagerTest,
+       FocusChangeObserverDestroyingWebContentsDoesNotCrash) {
+  GURL parent_url("https://a.test/");
+  NavigationSimulator::CreateRendererInitiated(parent_url, main_rfh())
+      ->Commit();
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://b.test/"),
+          content::RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("child")));
+
+  auto* main_rfh_impl = static_cast<RenderFrameHostImpl*>(main_rfh());
+  auto* main_view = static_cast<RenderWidgetHostViewBase*>(
+      main_rfh()->GetRenderWidgetHost()->GetView());
+  auto* child_view = static_cast<RenderWidgetHostViewBase*>(
+      child_rfh->GetRenderWidgetHost()->GetView());
+
+  child_rfh->frame_tree_node()->SetFocusedFrame(nullptr);
+
+  TextInputManager* manager = main_view->GetTextInputManager();
+  ASSERT_TRUE(manager);
+
+  ui::mojom::TextInputState email_state;
+  email_state.type = ui::TEXT_INPUT_TYPE_EMAIL;
+  email_state.node_id = 1;
+  manager->UpdateTextInputState(child_view, email_state);
+  EXPECT_EQ(child_view, manager->active_view_for_testing());
+
+  class DestroyingObserver : public TextInputManager::Observer {
+   public:
+    explicit DestroyingObserver(base::OnceClosure destroy_callback)
+        : destroy_callback_(std::move(destroy_callback)) {}
+
+    void OnUpdateTextInputStateCalled(TextInputManager* text_input_manager,
+                                      RenderWidgetHostViewBase* updated_view,
+                                      bool did_update_state) override {
+      text_input_manager->RemoveObserver(this);
+      if (destroy_callback_) {
+        std::move(destroy_callback_).Run();
+      }
+    }
+
+   private:
+    base::OnceClosure destroy_callback_;
+  };
+
+  base::RunLoop run_loop;
+  DestroyingObserver observer(base::BindLambdaForTesting([&]() {
+                                DeleteContents();
+                              }).Then(run_loop.QuitClosure()));
+  manager->AddObserver(&observer);
+
+  main_rfh_impl->DidFocusFrame();
+  EXPECT_NE(nullptr, web_contents());
+  run_loop.Run();
+  EXPECT_EQ(nullptr, web_contents());
 }
 
 // Test that a popup widget's ability to become active depends on whether

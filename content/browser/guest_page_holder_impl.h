@@ -58,6 +58,7 @@ class GuestPageHolderImpl : public GuestPageHolder,
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   FrameTree* LoadingTree() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
+  void DidChangeFocusedFrame() override;
   FrameTree* GetOwnedDocumentPictureInPictureFrameTree() override;
   FrameTree* GetDocumentPictureInPictureOpenerFrameTree() override;
   bool OnRenderFrameProxyVisibilityChanged(

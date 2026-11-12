@@ -184,6 +184,10 @@ void GuestPageHolderImpl::SetFocusedFrame(FrameTreeNode* node,
   owner_web_contents_->SetFocusedFrame(node, source);
 }
 
+void GuestPageHolderImpl::DidChangeFocusedFrame() {
+  owner_web_contents_->DidChangeFocusedFrame();
+}
+
 FrameTree* GuestPageHolderImpl::GetOwnedDocumentPictureInPictureFrameTree() {
   return nullptr;
 }

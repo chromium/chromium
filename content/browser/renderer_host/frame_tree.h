@@ -195,6 +195,9 @@ class CONTENT_EXPORT FrameTree {
     virtual void SetFocusedFrame(FrameTreeNode* node,
                                  SiteInstanceGroup* source) = 0;
 
+    // Called when the focused frame in this FrameTree changes.
+    virtual void DidChangeFocusedFrame() {}
+
     // Returns this FrameTree's document picture-in-picture FrameTree if it has
     // one.
     virtual FrameTree* GetOwnedDocumentPictureInPictureFrameTree() = 0;

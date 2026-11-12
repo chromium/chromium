@@ -73,6 +73,8 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   // parent web contents is null.
   TextInputManager* GetTextInputManager();
 
+  WebContentsImpl* parent_web_contents() const;
+
   // SurfaceEmbedConnector:
   SurfaceEmbedConnector::Delegate* GetDelegate() override;
   void OnSynchronizeVisualProperties(
@@ -203,7 +205,6 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
   static WebContentsImpl* GetParentWebContents(WebContentsImpl* web_contents);
   static WebContentsImpl* GetRootWebContents(WebContentsImpl* web_contents);
 
-  WebContentsImpl* parent_web_contents() const;
   WebContentsImpl* child_web_contents() const {
     return child_web_contents_.get();
   }

@@ -290,6 +290,12 @@ class CONTENT_EXPORT TextInputManager {
   // remains registered, so its cached state can be reused on restore.
   void DidEnterBackForwardCache(RenderWidgetHostViewBase* view);
 
+  // Idempotently resyncs |active_view_| with the current focus state (called
+  // from a coalesced task after focus changes). Deactivates |active_view_| if
+  // it is no longer focused, and promotes |focused_view| to |active_view_| if
+  // it is focused and has a cached non-NONE TextInputState.
+  void SyncActiveViewWithFocus(RenderWidgetHostViewBase* focused_view);
+
   // Returns true if |view| is already registered.
   bool IsRegistered(RenderWidgetHostViewBase* view) const;
 

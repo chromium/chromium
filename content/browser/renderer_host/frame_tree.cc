@@ -779,6 +779,7 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node,
       ->current_frame_host()
       ->GetOutermostMainFrameOrEmbedder()
       ->UpdateAXTreeData();
+  delegate_->DidChangeFocusedFrame();
 }
 
 scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(

@@ -1344,6 +1344,7 @@ class CONTENT_EXPORT WebContentsImpl
   RenderFrameHostImpl* GetProspectiveOuterDocument() override;
   FrameTree* LoadingTree() override;
   void SetFocusedFrame(FrameTreeNode* node, SiteInstanceGroup* source) override;
+  void DidChangeFocusedFrame() override;
   FrameTree* GetOwnedDocumentPictureInPictureFrameTree() override;
   FrameTree* GetDocumentPictureInPictureOpenerFrameTree() override;
   std::optional<int64_t> GetPrivilegedContentsFeatureId() override;
@@ -2345,6 +2346,13 @@ class CONTENT_EXPORT WebContentsImpl
   // A scope that disallows custom cursors has expired.
   void DisallowCustomCursorScopeExpired();
 
+  // Schedules a coalesced task to resync `TextInputManager`'s active view with
+  // focus. Focus changes can happen during destructors, `CommitPending()`, or
+  // input filtering, where running IME observers (which may spin nested message
+  // loops or destroy `this`) synchronously is unsafe.
+  void UpdateFocusedViewForTextInputManager();
+  void HandleFocusedViewUpdateForTextInputManager();
+
   // WarmUp a spare render process for future navigations.
   void WarmUpAndroidSpareRenderer();
 
@@ -2980,6 +2988,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   // True while `SetColorProviderSource()` is updating the observed source.
   bool is_setting_color_provider_source_ = false;
+
+  bool focused_view_update_scheduled_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

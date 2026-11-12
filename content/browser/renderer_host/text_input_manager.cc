@@ -264,25 +264,31 @@ void TextInputManager::UpdateTextInputState(
     const ui::mojom::TextInputState& text_input_state) {
   CHECK(IsRegistered(view), base::NotFatalUntil::M153);
 
+  // Since |view| is registered, we already have a previous value for its
+  // TextInputState.
+  ViewState& view_state = view_map_.at(view);
+
   if (text_input_state.type == ui::TEXT_INPUT_TYPE_NONE &&
       active_view_ != view) {
     // We reached here because an IPC is received to reset the TextInputState
-    // for |view|. But |view| != |active_view_|, which suggests that at least
-    // one other view has become active and we have received the corresponding
-    // IPC from their RenderWidget sooner than this one. That also means we have
-    // already synthesized the loss of TextInputState for the |view| before (see
-    // below). So we can forget about this method ever being called (no observer
-    // calls necessary).
+    // for |view|. But |view| != |active_view_|, which means that either another
+    // view has become active or we have already cleared |active_view_| (e.g.,
+    // via SyncActiveViewWithFocus when focus moved away from |view|). Still
+    // clear |view|'s cached state if it was non-NONE so refocusing |view| does
+    // not restore stale state, and notify observers with |did_update_state| =
+    // false because the active TextInputState did not change.
     // NOTE: Android requires state to be returned even when the current state
     // is/becomes NONE. Otherwise IME may become irresponsive.
 #if !BUILDFLAG(IS_ANDROID)
+    if (view_state.text_input_state->type != ui::TEXT_INPUT_TYPE_NONE) {
+      view_state.text_input_state = text_input_state.Clone();
+      view_state.edit_context_selection_region.reset();
+      NotifyObserversAboutInputStateUpdate(view, false);
+    }
     return;
 #endif
   }
 
-  // Since |view| is registered, we already have a previous value for its
-  // TextInputState.
-  ViewState& view_state = view_map_.at(view);
   bool changed = ShouldUpdateTextInputState(*view_state.text_input_state,
                                             text_input_state);
   TRACE_EVENT2(
@@ -549,6 +555,56 @@ void TextInputManager::DidEnterBackForwardCache(
   // frozen.
   active_view_ = nullptr;
   NotifyObserversAboutInputStateUpdate(view, true);
+}
+
+void TextInputManager::SyncActiveViewWithFocus(
+    RenderWidgetHostViewBase* focused_view) {
+  if (active_view_ && IsViewFocused(active_view_)) {
+    return;
+  }
+
+  base::WeakPtr<TextInputManager> weak_this = weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<RenderWidgetHostViewBase> weak_focused_view =
+      focused_view ? focused_view->GetWeakPtr() : nullptr;
+
+  if (active_view_) {
+    // Clear |active_view_| and notify observers for |old_active_view| before
+    // potentially activating |focused_view|. Observers such as
+    // RenderWidgetHostViewMac::OnUpdateTextInputStateCalled() inspect
+    // |updated_view| to stop composition monitoring on the deactivated widget,
+    // and TextInputManager maintains the invariant that |active_view_|
+    // transitions through nullptr when switching between views (matching
+    // UpdateTextInputState()).
+    RenderWidgetHostViewBase* old_active_view = active_view_;
+    active_view_ = nullptr;
+    NotifyObserversAboutInputStateUpdate(old_active_view,
+                                         /*did_update_state=*/true);
+    if (!weak_this) {
+      return;
+    }
+  }
+
+  // Re-verify IsViewFocused(focused_view) in case the observer notification
+  // above ran a nested message loop that changed focus again, or focused_view
+  // is not connected to a focused root widget.
+  if (active_view_ || !weak_focused_view || !IsRegistered(focused_view) ||
+      !IsViewFocused(focused_view)) {
+    return;
+  }
+
+  ViewState& view_state = view_map_.at(focused_view);
+  if (view_state.text_input_state->type == ui::TEXT_INPUT_TYPE_NONE) {
+    return;
+  }
+
+  // Clear transient virtual-keyboard visibility flags from an earlier tap so
+  // promoting cached state when focus returns (e.g., via Tab or mouse click)
+  // does not re-show the virtual keyboard.
+  view_state.text_input_state->show_ime_if_needed = false;
+  view_state.text_input_state->last_vk_visibility_request =
+      ui::mojom::VirtualKeyboardVisibilityRequest::NONE;
+  active_view_ = focused_view;
+  NotifyObserversAboutInputStateUpdate(focused_view, /*did_update_state=*/true);
 }
 
 void TextInputManager::Unregister(RenderWidgetHostViewBase* view) {

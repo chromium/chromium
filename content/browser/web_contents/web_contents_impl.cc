@@ -11191,6 +11191,8 @@ void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {
       ->current_frame_host()
       ->GetRenderWidgetHost()
       ->SetPageFocus(true);
+
+  UpdateFocusedViewForTextInputManager();
 }
 
 void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
@@ -11283,6 +11285,64 @@ void WebContentsImpl::SetFocusedFrame(FrameTreeNode* node,
   }
 
   CloseListenerManager::DidChangeFocusedFrame(this);
+}
+
+void WebContentsImpl::DidChangeFocusedFrame() {
+  UpdateFocusedViewForTextInputManager();
+}
+
+void WebContentsImpl::UpdateFocusedViewForTextInputManager() {
+  if (GetOuterWebContents()) {
+    GetOuterWebContents()->UpdateFocusedViewForTextInputManager();
+    return;
+  }
+  if (surface_embed_connector_) {
+    if (WebContentsImpl* parent =
+            surface_embed_connector_->parent_web_contents()) {
+      parent->UpdateFocusedViewForTextInputManager();
+    }
+    return;
+  }
+  // Avoid lazily creating TextInputManager in GetTextInputManager() if none
+  // exists yet.
+  if (!text_input_manager_ || IsBeingDestroyed() ||
+      focused_view_update_scheduled_) {
+    return;
+  }
+  focused_view_update_scheduled_ = true;
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &WebContentsImpl::HandleFocusedViewUpdateForTextInputManager,
+          weak_factory_.GetWeakPtr()));
+}
+
+void WebContentsImpl::HandleFocusedViewUpdateForTextInputManager() {
+  focused_view_update_scheduled_ = false;
+  if (GetOuterWebContents() || surface_embed_connector_) {
+    UpdateFocusedViewForTextInputManager();
+    return;
+  }
+  if (!text_input_manager_ || IsBeingDestroyed()) {
+    return;
+  }
+  TextInputManager* manager = GetTextInputManager();
+  if (!manager) {
+    return;
+  }
+  FrameTree* focused_frame_tree = GetFocusedFrameTree();
+  RenderWidgetHostViewBase* focused_view = nullptr;
+  if (focused_frame_tree) {
+    FrameTreeNode* focused_node = focused_frame_tree->GetFocusedFrame();
+    RenderFrameHostImpl* focused_rfh =
+        focused_node ? focused_node->current_frame_host()
+                     : focused_frame_tree->root()->current_frame_host();
+    if (focused_rfh) {
+      focused_view =
+          static_cast<RenderWidgetHostViewBase*>(focused_rfh->GetView());
+    }
+  }
+  manager->SyncActiveViewWithFocus(focused_view);
 }
 
 FrameTree* WebContentsImpl::GetOwnedDocumentPictureInPictureFrameTree() {
