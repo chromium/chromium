@@ -13,3 +13,6 @@
 
 # TODO(https://crbug.com/547746068): Flaky on linux-arm64-wayland-rel-fyi.
 -All/TabStripCollectionControllerInteractiveUiTest.TabOpenedWhileUsingTabContextMenu/*
+
+# TODO(https://crbug.com/584764059): Flaky on linux-arm64-wayland-rel-fyi.
+-BrowserFocusTest.FocusTraversal
