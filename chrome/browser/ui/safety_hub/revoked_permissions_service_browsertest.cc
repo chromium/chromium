@@ -195,9 +195,15 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
             map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
 }
 
+// TODO(crbug.com/558259091): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RevokeAllContentSettingTypes DISABLED_RevokeAllContentSettingTypes
+#else
+#define MAYBE_RevokeAllContentSettingTypes RevokeAllContentSettingTypes
+#endif
 // Test that revocation happens correctly for all content setting types.
 IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
-                       RevokeAllContentSettingTypes) {
+                       MAYBE_RevokeAllContentSettingTypes) {
   auto* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
   auto* service =
