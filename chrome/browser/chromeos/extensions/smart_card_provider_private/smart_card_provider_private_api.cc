@@ -555,7 +555,10 @@ void SmartCardProviderPrivateAPI::SendReleaseContext(ContextId scard_context) {
       &*browser_context_);
 
   ASSIGN_OR_RETURN(const std::string provider_extension_id,
-                   GetListenerExtensionId(*event), [] {});
+                   GetListenerExtensionId(*event), [this, scard_context] {
+                     // No provider can release the context, so just forget it.
+                     context_data_map_.erase(scard_context);
+                   });
 
   auto pending = std::make_unique<PendingResult>();
   pending->scard_context = scard_context;
@@ -828,9 +831,9 @@ void SmartCardProviderPrivateAPI::ReportReleaseContextResult(
     LOG(WARNING) << "Failed to release context: " << result->get_error();
   }
 
-  auto it = context_data_map_.find(pending->scard_context);
-  CHECK(it != context_data_map_.end());
-  context_data_map_.erase(it);
+  // A context released because it came from an unknown EstablishContext
+  // request has no ContextData.
+  context_data_map_.erase(pending->scard_context);
 }
 
 void SmartCardProviderPrivateAPI::ProcessListReadersResult(

@@ -596,6 +596,29 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
+// A context whose pipe closes while no provider listens for its release is
+// forgotten, so the provider can hand out the same scard_context again.
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       ContextMojoDisconnectionNoProvider) {
+  LoadFakeProviderExtension(kEstablishContextJs);
+
+  DisconnectObserver disconnect_observer;
+  ProviderAPI().SetDisconnectObserverForTesting(
+      disconnect_observer.GetClosure());
+
+  {
+    auto context_result = CreateContext();
+    ASSERT_TRUE(context_result->is_context());
+    mojo::Remote<device::mojom::SmartCardContext> context(
+        std::move(context_result->get_context()));
+  }
+  disconnect_observer.Wait();
+
+  EXPECT_TRUE(CreateContext()->is_context());
+
+  ProviderAPI().SetDisconnectObserverForTesting(base::RepeatingClosure());
+}
+
 // If we receive an scard_context from an unknown request, we should release it
 // automatically to avoid "leaking" it in the provider side.
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
@@ -613,6 +636,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
               "INVALID_PARAMETER");
           return;
         }
+        chrome.smartCardProviderPrivate.reportReleaseContextResult(requestId,
+            "SUCCESS");
         chrome.test.notifyPass();
       }
 
