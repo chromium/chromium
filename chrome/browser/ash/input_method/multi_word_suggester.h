@@ -144,8 +144,6 @@ class MultiWordSuggester : public Suggester {
 
   void DisplaySuggestionIfAvailable();
   void DisplaySuggestion(const SuggestionState::Suggestion& suggestion);
-  void ResetSuggestionState();
-  void ResetTextState();
 
   // Visibly highlight the suggestion in the ui shown to the user.
   void SetSuggestionHighlight(bool highlighted);

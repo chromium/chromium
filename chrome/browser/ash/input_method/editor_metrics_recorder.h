@@ -33,7 +33,6 @@ class EditorMetricsRecorder {
   void SetTone(std::optional<std::string_view> preset_query_id,
                std::optional<std::string_view> freeform_text);
   void SetTone(EditorTone tone);
-  void LogEditorNativeUIShowOpportunityState(EditorOpportunityMode mode);
   void LogEditorState(EditorStates state);
   void LogNumberOfCharactersInserted(int number_of_characters);
   void LogNumberOfCharactersSelectedForInsert(int number_of_characters);

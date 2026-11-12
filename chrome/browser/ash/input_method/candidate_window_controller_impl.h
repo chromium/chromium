@@ -50,12 +50,6 @@ class CandidateWindowControllerImpl
   void RemoveObserver(CandidateWindowController::Observer* observer) override;
   void Hide() override;
 
- protected:
-  static void ConvertLookupTableToInfolistEntry(
-      const ui::CandidateWindow& candidate_window,
-      std::vector<ui::InfolistEntry>* infolist_entries,
-      bool* has_highlighted);
-
  private:
   // ui::ime::CandidateWindowView::Observer implementation.
   void OnCandidateCommitted(int index) override;

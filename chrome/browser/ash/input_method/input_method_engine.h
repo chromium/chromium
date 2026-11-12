@@ -207,8 +207,6 @@ class InputMethodEngine : virtual public TextInputMethod,
                          const std::vector<SegmentInfo>& segments,
                          std::string* error);
 
-  gfx::Rect GetTextFieldBounds(int context_id, std::string* error);
-
   bool SetAutocorrectRange(int context_id,
                            const gfx::Range& range,
                            std::string* error);

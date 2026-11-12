@@ -116,10 +116,6 @@ class AssistiveSuggester : public SuggestionsSource {
   bool IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
 
   // Only the first applicable reason in DisabledReason enum is returned.
-  DisabledReason GetDisabledReasonForEmoji(
-      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
-
-  // Only the first applicable reason in DisabledReason enum is returned.
   DisabledReason GetDisabledReasonForMultiWord(
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
