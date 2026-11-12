@@ -50,6 +50,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_navigation_ui_data.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -4007,6 +4008,131 @@ TEST_F(NavigationControllerTest, PruneAllButLastCommittedForPendingNotInList) {
   EXPECT_FALSE(controller.GetPendingEntry());
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_EQ(url3, controller.GetEntryAtIndex(1)->GetURL());
+}
+
+namespace {
+
+// Matches AwContentBrowserClient, which commits main frame error pages in the
+// destination SiteInstance instead of an isolated error page process.
+class NoErrorPageIsolationBrowserClient : public TestContentBrowserClient {
+ public:
+  bool ShouldIsolateErrorPage(bool in_main_frame) override { return false; }
+};
+
+}  // namespace
+
+class NavigationControllerFailedHistoryNavigationTest
+    : public NavigationControllerTest {
+ protected:
+  // Commits three cross-site entries, then starts a back navigation to the
+  // second entry and fails its request. Returns the failed back navigation,
+  // which is ready to commit its error page.
+  std::unique_ptr<NavigationSimulator> StartFailedBackNavigation() {
+    DisableBackForwardCacheForTesting(
+        RenderViewHostImplTestHarness::web_contents(),
+        BackForwardCache::TEST_REQUIRES_NO_CACHING);
+    NavigationControllerImpl& controller = controller_impl();
+
+    NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                      GURL("https://a.com/"));
+    NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                      GURL("https://b.com/"));
+    NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                      GURL("https://c.com/"));
+    EXPECT_EQ(3, controller.GetEntryCount());
+
+    target_entry_id_ = controller.GetEntryAtIndex(1)->GetUniqueID();
+    target_site_instance_ = controller.GetEntryAtIndex(1)->site_instance();
+    last_committed_site_instance_ =
+        controller.GetLastCommittedEntry()->site_instance();
+    EXPECT_NE(target_site_instance_, last_committed_site_instance_);
+
+    auto back_navigation = NavigationSimulator::CreateHistoryNavigation(
+        -1, contents(), false /* is_renderer_initiated */);
+    back_navigation->Start();
+    EXPECT_EQ(1, controller.GetPendingEntryIndex());
+    EXPECT_EQ(target_entry_id_,
+              NavigationRequest::From(back_navigation->GetNavigationHandle())
+                  ->nav_entry_id());
+
+    back_navigation->Fail(net::ERR_CONNECTION_REFUSED);
+
+    // The failed request discards the pending entry, so the history list can
+    // be pruned (e.g. by WebView.clearHistory()) before the error page commits.
+    EXPECT_FALSE(controller.GetPendingEntry());
+    EXPECT_EQ(-1, controller.GetPendingEntryIndex());
+    EXPECT_TRUE(controller.CanPruneAllButLastCommitted());
+
+    // Without error page isolation, the error page commits in the history
+    // entry's SiteInstance, not in the last committed entry's SiteInstance.
+    error_page_site_instance_ =
+        back_navigation->GetFinalRenderFrameHost()->GetSiteInstance();
+    EXPECT_EQ(target_site_instance_, error_page_site_instance_);
+    EXPECT_NE(last_committed_site_instance_, error_page_site_instance_);
+    return back_navigation;
+  }
+
+  void TearDown() override {
+    // SiteInstances must be released before the task environment goes away.
+    target_site_instance_.reset();
+    last_committed_site_instance_.reset();
+    error_page_site_instance_.reset();
+    NavigationControllerTest::TearDown();
+  }
+
+  NoErrorPageIsolationBrowserClient browser_client_;
+  ScopedContentBrowserClientSetting browser_client_setting_{&browser_client_};
+  int target_entry_id_ = 0;
+  scoped_refptr<SiteInstance> target_site_instance_;
+  scoped_refptr<SiteInstance> last_committed_site_instance_;
+  scoped_refptr<SiteInstance> error_page_site_instance_;
+};
+
+// A failed back navigation whose entry is still in the history
+// list commits its error page into that entry.
+TEST_F(NavigationControllerFailedHistoryNavigationTest,
+       ErrorPageCommitsIntoExistingHistoryEntry) {
+  NavigationControllerImpl& controller = controller_impl();
+  std::unique_ptr<NavigationSimulator> back_navigation =
+      StartFailedBackNavigation();
+
+  back_navigation->CommitErrorPage();
+
+  EXPECT_EQ(3, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(target_entry_id_,
+            controller.GetLastCommittedEntry()->GetUniqueID());
+  EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
+  EXPECT_EQ(error_page_site_instance_,
+            controller.GetLastCommittedEntry()->site_instance());
+}
+
+// The error page must commit as a new entry, leaving the last committed entry
+// consistent with the committed RenderFrameHost.
+TEST_F(NavigationControllerFailedHistoryNavigationTest,
+       ErrorPageCommitsAfterTargetHistoryEntryIsPruned) {
+  NavigationControllerImpl& controller = controller_impl();
+  std::unique_ptr<NavigationSimulator> back_navigation =
+      StartFailedBackNavigation();
+
+  controller.PruneAllButLastCommitted();
+  ASSERT_EQ(1, controller.GetEntryCount());
+  ASSERT_EQ(-1, controller.GetEntryIndexWithUniqueID(target_entry_id_));
+  ASSERT_EQ(last_committed_site_instance_,
+            controller.GetLastCommittedEntry()->site_instance());
+
+  back_navigation->CommitErrorPage();
+
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(GURL("https://c.com/"), controller.GetEntryAtIndex(0)->GetURL());
+  EXPECT_EQ(GURL("https://b.com/"),
+            controller.GetLastCommittedEntry()->GetURL());
+  EXPECT_NE(target_entry_id_,
+            controller.GetLastCommittedEntry()->GetUniqueID());
+  EXPECT_EQ(PAGE_TYPE_ERROR, controller.GetLastCommittedEntry()->GetPageType());
+  EXPECT_EQ(error_page_site_instance_,
+            controller.GetLastCommittedEntry()->site_instance());
 }
 
 // Test to ensure that when we do a history navigation back to the current

@@ -2327,16 +2327,6 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
   }
 
-  if (navigation_request->DidEncounterError() &&
-      failed_pending_entry_id_ != 0 &&
-      nav_entry_id == failed_pending_entry_id_) {
-    // If the renderer was going to a pending entry that got cleared because of
-    // an error, then the error page will replace the existing entry.
-    trace_return.set_return_reason(
-        "unreachable, matching pending, existing entry");
-    return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
-  }
-
   // Now we know that the notification is for an existing entry; find it.
   int existing_entry_index = GetEntryIndexWithUniqueID(nav_entry_id);
   trace_return.traced_value()->SetInteger("existing_entry_index",
@@ -2346,6 +2336,16 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // exists. Because the renderer is showing that page, resurrect that entry.
     trace_return.set_return_reason("existing entry -1, new entry");
     return NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
+  }
+
+  if (navigation_request->DidEncounterError() &&
+      failed_pending_entry_id_ != 0 &&
+      nav_entry_id == failed_pending_entry_id_) {
+    // If the renderer was going to a pending entry that got cleared because of
+    // an error, then the error page will replace the existing entry.
+    trace_return.set_return_reason(
+        "unreachable, matching pending, existing entry");
+    return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
   }
 
   // Since we weeded out "new" navigations above, we know this is an existing
