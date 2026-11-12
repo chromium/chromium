@@ -117,9 +117,13 @@ source_set("browser_tests") {
     "//components/payments/core:test_support",
     "//components/ukm:test_support",
     "//components/webdata_services",
+    "//content/public/browser",
+    "//content/test:test_support",
     "//crypto:test_support",
     "//device/fido:test_support",
+    "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",
+    "//url",
   ]
 
   if (is_android) {

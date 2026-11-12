@@ -75,6 +75,9 @@ BASE_FEATURE(kPaymentRequestRejectTooSmallWindows,
 BASE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoad,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaymentHandlerDialogUseFrameOriginAsInitiator,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPaymentHandlerHtmlHeadThemeColor,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -75,6 +75,7 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace payments {
 
@@ -408,6 +409,7 @@ class PaymentHandlerWebFlowViewUseInitiatorInUrlLoadEnabledTest
   PaymentHandlerWebFlowViewUseInitiatorInUrlLoadEnabledTest() {
     feature_list_.InitWithFeatures(
         {payments::features::kPaymentHandlerDialogUseInitiatorInUrlLoad,
+         payments::features::kPaymentHandlerDialogUseFrameOriginAsInitiator,
          payments::features::kPaymentRequestMandatoryPaymentAppUi},
         {});
   }
@@ -448,6 +450,54 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(test_client.initiator_origin_.has_value());
   EXPECT_EQ(url::Origin::Create(GetActiveWebContents()->GetLastCommittedURL()),
             test_client.initiator_origin_.value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerWebFlowViewUseInitiatorInUrlLoadEnabledTest,
+    CrossOriginIframeInitiatorOriginSet) {
+  const std::string kPaymentAppHost = "a.com";
+  const std::string kTopLevelHost = "b.com";
+
+  NavigateTo(kTopLevelHost, "/payment_request_main.html");
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      "document.getElementById('test').allow = 'payment';"));
+  GURL iframe_url =
+      https_server()->GetURL(kPaymentAppHost, "/payment_handler.html");
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(GetActiveWebContents(), "test", iframe_url));
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe);
+
+  std::string method_name;
+  InstallPaymentApp(kPaymentAppHost, "/payment_handler_sw.js", &method_name);
+
+  TestClient test_client;
+  test_client.url_to_intercept = kPaymentAppHost;
+  content::ScopedContentBrowserClientSetting scoped_setting(&test_client);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+
+  ASSERT_EQ("success",
+            content::EvalJs(
+                iframe, content::JsReplace("launchWithoutWaitForResponse($1)",
+                                           method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  EXPECT_TRUE(test_client.saw_navigation_);
+  ASSERT_TRUE(test_client.initiator_origin_.has_value());
+  EXPECT_EQ(iframe->GetLastCommittedOrigin(),
+            test_client.initiator_origin_.value());
+  EXPECT_NE(
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      test_client.initiator_origin_.value());
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest, UserInteractionRecorded) {

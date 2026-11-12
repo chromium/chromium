@@ -44,6 +44,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
+#include "components/payments/content/payment_request_state.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
@@ -312,7 +313,11 @@ void PaymentHandlerWebFlowViewController::FillContentView(
           payments::features::kPaymentHandlerDialogUseInitiatorInUrlLoad)) {
     content::NavigationController::LoadURLParams params(target_);
     params.initiator_origin =
-        url::Origin::Create(parent_tab_web_contents->GetLastCommittedURL());
+        base::FeatureList::IsEnabled(
+            payments::features::kPaymentHandlerDialogUseFrameOriginAsInitiator)
+            ? state()->GetFrameSecurityOrigin()
+            : url::Origin::Create(
+                  parent_tab_web_contents->GetLastCommittedURL());
     web_view->GetWebContents()->GetController().LoadURLWithParams(params);
   } else {
     web_view->LoadInitialURL(target_);

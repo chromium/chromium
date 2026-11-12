@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestOrigins;
 
 import java.lang.ref.WeakReference;
 
@@ -73,7 +74,10 @@ public class PaymentHandlerCoordinatorUnitTest {
 
         WebContents result =
                 mCoordinator.show(
-                        mPaymentRequestWebContents, new GURL("https://example.com"), mUiObserver);
+                        mPaymentRequestWebContents,
+                        new GURL("https://example.com"),
+                        JUnitTestOrigins.createTuple("https", "example.com", 443),
+                        mUiObserver);
 
         assertNull(result);
         assertNull(mCoordinator.getWebContentsForTest());

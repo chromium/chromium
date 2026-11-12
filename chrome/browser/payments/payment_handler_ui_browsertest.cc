@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/error_strings.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/journey_logger.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace payments {
 namespace {
@@ -55,6 +63,136 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerUiBrowserTest,
   EXPECT_TRUE(test_controller()->ClickPaymentHandlerCloseButton());
   EXPECT_EQ("User closed the Payment Request UI.",
             content::EvalJs(GetActiveWebContents(), "getResult()"));
+}
+
+class PaymentHandlerRedirectCookieBrowserTest
+    : public PaymentRequestPlatformBrowserTestBase {
+ public:
+  PaymentHandlerRedirectCookieBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kPaymentHandlerDialogUseInitiatorInUrlLoad,
+         features::kPaymentHandlerDialogUseFrameOriginAsInitiator},
+        {});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    net::test_server::RegisterDefaultHandlers(https_server());
+    PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for https://crbug.com/415848455: when a cross-origin iframe
+// invokes `PaymentRequest`, the Payment Handler window load must use the
+// invoking iframe's origin (not the top-level frame's origin) as
+// `initiator_origin` so a 301 redirect back to the top-level site does not
+// attach `SameSite=Strict` cookies.
+IN_PROC_BROWSER_TEST_F(
+    PaymentHandlerRedirectCookieBrowserTest,
+    CrossOriginIframeExcludesSameSiteStrictCookiesOnRedirect) {
+  NavigateTo("b.com",
+             "/set-cookie?strict_cookie=1;SameSite=Strict;Secure"
+             "&lax_cookie=1;SameSite=Lax;Secure");
+
+  NavigateTo("b.com", "/payment_request_main.html");
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      "document.getElementById('test').allow = 'payment';"));
+  GURL iframe_url = https_server()->GetURL("a.com", "/payment_handler.html");
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(GetActiveWebContents(), "test", iframe_url));
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe);
+  ASSERT_NE(
+      iframe->GetLastCommittedOrigin(),
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  GURL target_url = https_server()->GetURL("b.com", "/echoheader?Cookie");
+  GURL redirect_url = https_server()->GetURL(
+      "a.com", "/server-redirect-301?" + target_url.spec());
+
+  content::WebContentsAddedObserver new_contents_observer;
+  content::TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  ASSERT_EQ("success",
+            content::EvalJs(iframe, content::JsReplace(
+                                        "launchWithoutWaitForResponse($1, $2)",
+                                        method_name, redirect_url.spec())));
+
+  content::WebContents* payment_handler_contents =
+      new_contents_observer.GetWebContents();
+  ASSERT_TRUE(payment_handler_contents);
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(iframe->GetLastCommittedOrigin(),
+            nav_observer.last_initiator_origin());
+  EXPECT_EQ("lax_cookie=1", content::EvalJs(payment_handler_contents,
+                                            "document.body.innerText"));
+}
+
+class PaymentHandlerRedirectCookieKillswitchBrowserTest
+    : public PaymentRequestPlatformBrowserTestBase {
+ public:
+  PaymentHandlerRedirectCookieKillswitchBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::
+                                  kPaymentHandlerDialogUseInitiatorInUrlLoad},
+        /*disabled_features=*/{
+            features::kPaymentHandlerDialogUseFrameOriginAsInitiator});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    net::test_server::RegisterDefaultHandlers(https_server());
+    PaymentRequestPlatformBrowserTestBase::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that disabling `kPaymentHandlerDialogUseFrameOriginAsInitiator`
+// falls back to using the top-level `WebContents` URL as `initiator_origin`
+// while keeping `kPaymentHandlerDialogUseInitiatorInUrlLoad` enabled.
+IN_PROC_BROWSER_TEST_F(PaymentHandlerRedirectCookieKillswitchBrowserTest,
+                       DisabledKillswitchFallsBackToTopLevelOrigin) {
+  NavigateTo("b.com", "/payment_request_main.html");
+  ASSERT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      "document.getElementById('test').allow = 'payment';"));
+  GURL iframe_url = https_server()->GetURL("a.com", "/payment_handler.html");
+  ASSERT_TRUE(
+      content::NavigateIframeToURL(GetActiveWebContents(), "test", iframe_url));
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(iframe);
+
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  GURL app_url =
+      https_server()->GetURL("a.com", "/payment_handler_window.html");
+  content::TestNavigationObserver nav_observer(app_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  ASSERT_EQ("success",
+            content::EvalJs(iframe, content::JsReplace(
+                                        "launchWithoutWaitForResponse($1, $2)",
+                                        method_name, app_url.spec())));
+
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      nav_observer.last_initiator_origin());
 }
 
 // Test that PaymentRequest allows one call to show() without a user activation.

@@ -81,6 +81,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -901,16 +902,20 @@ public class PaymentUiService
      * Create and show the (BottomSheet) PaymentHandler UI.
      *
      * @param url The URL of the payment app.
+     * @param initiatorOrigin The security origin of the frame that invoked PaymentRequest.
      * @return The WebContents of the payment handler that's just opened when the opening is
      *     successful; null if failed.
      */
-    public @Nullable WebContents showPaymentHandlerUi(GURL url) {
+    public @Nullable WebContents showPaymentHandlerUi(GURL url, Origin initiatorOrigin) {
         if (mPaymentHandlerUi != null) return null;
         PaymentHandlerCoordinator paymentHandlerUi = new PaymentHandlerCoordinator();
         mPaymentHandlerUi = paymentHandlerUi;
         WebContents paymentHandlerWebContents =
                 paymentHandlerUi.show(
-                        /* paymentRequestWebContents= */ mWebContents, url, /* uiObserver= */ this);
+                        /* paymentRequestWebContents= */ mWebContents,
+                        url,
+                        initiatorOrigin,
+                        /* uiObserver= */ this);
         if (paymentHandlerWebContents == null) {
             paymentHandlerUi.hide();
             mPaymentHandlerUi = null;

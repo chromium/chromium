@@ -36,6 +36,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebPaymentsExperimentalFeatures,
     &features::kWebPaymentsSingleAppUiSkip,
     &features::kPaymentHandlerDialogUseInitiatorInUrlLoad,
+    &features::kPaymentHandlerDialogUseFrameOriginAsInitiator,
     &kAndroidPaymentIntentsOmitDeprecatedParameters,
     &kGooglePayViaAndroidIntents,
     &kOmitParametersInReadyToPay,

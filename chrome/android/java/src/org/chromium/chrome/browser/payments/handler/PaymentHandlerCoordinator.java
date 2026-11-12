@@ -78,12 +78,16 @@ public class PaymentHandlerCoordinator {
      * @param paymentRequestWebContents The WebContents of the merchant's frame.
      * @param url The url of the payment handler app, i.e., that of
      *     "PaymentRequestEvent.openWindow(url)".
+     * @param initiatorOrigin The security origin of the frame that invoked PaymentRequest.
      * @param uiObserver The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @return The WebContents of the payment handler that's just opened when the showing is
      *     successful; null if failed. When null is returned, caller should also call hide().
      */
     public @Nullable WebContents show(
-            WebContents paymentRequestWebContents, GURL url, PaymentHandlerUiObserver uiObserver) {
+            WebContents paymentRequestWebContents,
+            GURL url,
+            Origin initiatorOrigin,
+            PaymentHandlerUiObserver uiObserver) {
         assert mHider == null : "Already showing payment-handler UI";
         assert paymentRequestWebContents != null;
         WindowAndroid windowAndroid = paymentRequestWebContents.getTopLevelNativeWindow();
@@ -110,7 +114,8 @@ public class PaymentHandlerCoordinator {
         PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(mPaymentHandlerWebContents);
         ContentView webContentView =
                 ContentView.createContentView(activity, mPaymentHandlerWebContents);
-        initializeWebContents(windowAndroid, webContentView, paymentRequestWebContents, url);
+        initializeWebContents(
+                windowAndroid, webContentView, paymentRequestWebContents, initiatorOrigin, url);
 
         mToolbarCoordinator =
                 new PaymentHandlerToolbarCoordinator(
@@ -206,6 +211,7 @@ public class PaymentHandlerCoordinator {
             WindowAndroid windowAndroid,
             ContentView webContentView,
             WebContents paymentRequestWebContents,
+            Origin initiatorOrigin,
             GURL url) {
         mPaymentHandlerWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
@@ -225,7 +231,11 @@ public class PaymentHandlerCoordinator {
         if (PaymentFeatureList.isEnabled(
                 PaymentFeatureList.PAYMENT_HANDLER_DIALOG_USE_INITIATOR_IN_URL_LOAD)) {
             params.setInitiatorOrigin(
-                    Origin.create(paymentRequestWebContents.getLastCommittedUrl()));
+                    PaymentFeatureList.isEnabled(
+                                    PaymentFeatureList
+                                            .PAYMENT_HANDLER_DIALOG_USE_FRAME_ORIGIN_AS_INITIATOR)
+                            ? initiatorOrigin
+                            : Origin.create(paymentRequestWebContents.getLastCommittedUrl()));
         }
         mPaymentHandlerWebContents.getNavigationController().loadUrl(params);
     }
