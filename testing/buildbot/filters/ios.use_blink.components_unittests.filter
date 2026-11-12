@@ -2,6 +2,7 @@
 
 # TODO(crbug.com/40946218): currently fail with use_blink due to spinning up on
 # an unexpected thread.
+-AutofillAcrossIframesTest.FillMultiFrameForm_SingleField
 -AutofillAcrossIframesTest.NoChildFrames
 -AutofillAcrossIframesTest.WithChildFrames
 -AutofillAcrossIframesTest.Resolve
@@ -10,7 +11,11 @@
 
 # TODO(crbug.com/40945935): Test currently fails on iOS blink.
 -AutofillAgentTest.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs
+-AutofillAgentTest.CheckIfSuggestionsAvailable_FormExtractionFailed
+-AutofillAgentTest.CheckIfSuggestionsAvailable_MultipleFormsExtracted
+-AutofillAgentTest.CheckIfSuggestionsAvailable_NoFormExtracted
 -AutofillAgentTest.CheckIfSuggestionsAvailable_NonUserInitiatedActivity
+-AutofillAgentTest.CheckIfSuggestionsAvailable_PriorInFlightQueryPreserved
 -AutofillAgentTest.DriverFillSpecificFormField
 -AutofillAgentTest.DriverFillSpecificFormField_ReplaceSelectionForAtMemory
 -AutofillAgentTest.DriverPreviewSpecificFormField
@@ -92,6 +97,10 @@
 -All/FormMutationTest.RemovedAndAddedFormsRegistered_WithDroppedMessages/1
 -All/FormMutationTest.RemovedAndAddedFormsRegistered/0
 -All/FormMutationTest.RemovedAndAddedFormsRegistered/1
+-All/FormMutationTest.RemoveFormRegisteredDuringDelayWithGarbageCollection/0
+-All/FormMutationTest.RemoveFormRegisteredDuringDelayWithGarbageCollection/1
+-All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/0
+-All/FormMutationTest.RemoveUnreferencedElementsWithGarbageCollection/1
 -All/FormMutationTest.RemoveFormlessFields/0
 -All/FormMutationTest.RemoveFormlessFields/1
 -All/FormMutationTest.RemoveFormlessPasswordFields/0

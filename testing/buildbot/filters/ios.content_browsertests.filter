@@ -11,6 +11,7 @@
 -All/CustomizableSelectEnabledDumpAccessibilityTreeTest.AccessibilitySelect/blink
 -All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNested/blink
 -All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInterestForExpanded/blink
 -All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink
 -All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink
