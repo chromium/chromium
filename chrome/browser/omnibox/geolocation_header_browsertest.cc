@@ -605,6 +605,51 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
 }
 
 // Tests that when the DefaultGeolocationSetting enterprise policy is set to
+// 2 (BLOCK), Omnibox searches do not attach the X-Geo header, and ILLS is
+// also suppressed.
+IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
+                       NoIllsWhenDefaultGeolocationPolicyBlocked) {
+  base::HistogramTester histogram_tester;
+
+  Profile* profile = browser()->GetProfile();
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+
+  // Clear site-specific exception so the default setting applies.
+  settings_map->SetContentSettingDefaultScope(
+      test_server_.GetURL("/"), test_server_.GetURL("/"),
+      ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
+
+  // Set user default content setting to ALLOW to verify that policy takes
+  // precedence.
+  settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                         CONTENT_SETTING_ALLOW);
+
+  SetDefaultGeolocationPolicy(2 /* Block */);
+
+  GeolocationHeaderService* geo_service =
+      GeolocationHeaderServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(geo_service);
+
+  // Attempt to prime location. It should be blocked by policy and abort.
+  geo_service->PrimeLocation();
+
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.GeolocationHeaderService.PrimeLocationOutcome",
+      4 /* kNotTriedPermissionStatusMismatch */, 1);
+
+  // Attempt to get the location header for ILLS (for_automatic_sending =
+  // false). It should be explicitly suppressed by the policy check.
+  EXPECT_FALSE(
+      geo_service->GetLocationHeader(test_server_.GetURL("/search?q=test"),
+                                     /*for_automatic_sending=*/false));
+
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.GeolocationHeaderService.GetLocationOutcome.InlineSuggestion",
+      2 /* kPermissionStateMismatch */, 1);
+}
+
+// Tests that when the DefaultGeolocationSetting enterprise policy is set to
 // 1 (ALLOW), Omnibox searches attach the X-Geo header without requiring site
 // exceptions.
 IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,

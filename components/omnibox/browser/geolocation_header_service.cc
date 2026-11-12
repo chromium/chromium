@@ -171,7 +171,9 @@ void GeolocationHeaderService::PrimeLocation() {
     last_position_.reset();
     return;
   }
-  if (!IsAllowedByPermission(requesting_url) && !is_ills_enabled) {
+
+  if (IsBlockedByPolicy(requesting_url) ||
+      (!IsAllowedByPermission(requesting_url) && !is_ills_enabled)) {
     RecordPrimeLocationOutcome(GeolocationHeaderPrimeLocationOutcome::
                                    kNotTriedPermissionStatusMismatch);
     last_position_.reset();
@@ -264,6 +266,13 @@ std::optional<std::string> GeolocationHeaderService::GetLocationHeader(
   if (!IsUrlEligibleForLocationHeader(url)) {
     RecordGetLocationOutcome(
         GeolocationHeaderGetLocationOutcome::kIneligibleUrl,
+        for_automatic_sending);
+    return std::nullopt;
+  }
+
+  if (IsBlockedByPolicy(url)) {
+    RecordGetLocationOutcome(
+        GeolocationHeaderGetLocationOutcome::kPermissionStateMismatch,
         for_automatic_sending);
     return std::nullopt;
   }
@@ -434,6 +443,24 @@ bool GeolocationHeaderService::IsAllowedByPermission(const GURL& url) const {
       ->Get(content_settings::GeolocationContentSettingsType())
       ->delegate()
       .IsAnyPermissionAllowed(GetPermissionSetting(url));
+}
+
+bool GeolocationHeaderService::IsBlockedByPolicy(const GURL& url) const {
+  content_settings::SettingInfo info;
+  PermissionSetting setting = settings_map_->GetPermissionSetting(
+      url, url, content_settings::GeolocationContentSettingsType(), &info);
+
+  if (info.source != content_settings::SettingSource::kPolicy &&
+      info.source != content_settings::SettingSource::kSupervised) {
+    return false;
+  }
+
+  const auto& delegate =
+      content_settings::PermissionSettingsRegistry::GetInstance()
+          ->Get(content_settings::GeolocationContentSettingsType())
+          ->delegate();
+
+  return delegate.IsBlocked(setting);
 }
 
 bool GeolocationHeaderService::HasPrecisePermission(const GURL& url) const {

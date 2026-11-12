@@ -136,6 +136,12 @@ class GeolocationHeaderService : public KeyedService {
   // Returns true if both the site-level and OS-level geolocation permissions
   // are granted for the given URL.
   bool IsAllowedByPermission(const GURL& url) const;
+
+  // Returns true if geolocation for the given URL is strictly blocked by an
+  // enterprise policy (e.g. DefaultGeolocationSetting or
+  // GeolocationBlockedForUrls).
+  bool IsBlockedByPolicy(const GURL& url) const;
+
   bool HasPrecisePermission(const GURL& url) const;
   bool HasDeviceLocationPermission(GeolocationAccuracy accuracy) const;
 
