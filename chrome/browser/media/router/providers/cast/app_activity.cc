@@ -139,7 +139,6 @@ void AppActivity::BindMediaController(
       base::DictValue status_request;
       status_request.Set("type",
                          cast_util::EnumToString<
-                             cast_channel::V2MessageType,
                              cast_channel::V2MessageType::kMediaGetStatus>());
       message_handler_->SendMediaRequest(cast_channel_id(), status_request,
                                          media_controller_->sender_id(),

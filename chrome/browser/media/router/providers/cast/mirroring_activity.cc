@@ -135,8 +135,7 @@ constexpr std::array kHistograms = std::to_array<HistogramStatistic>({
 std::string_view GetMirroringNamespace(const base::DictValue& message) {
   const std::string* type = message.FindString("type");
   if (type &&
-      *type == cast_util::EnumToString<cast_channel::CastMessageType,
-                                       cast_channel::CastMessageType::kRpc>()) {
+      *type == cast_util::EnumToString<cast_channel::CastMessageType::kRpc>()) {
     return mirroring::mojom::kRemotingNamespace;
   } else {
     return mirroring::mojom::kWebRtcNamespace;

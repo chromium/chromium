@@ -67,7 +67,7 @@
 // function in EnumTable):
 //
 //     // Compiles to std::string_view("FOO").
-//     EnumToString<MyEnum, MyEnum::kFoo>();
+//     EnumToString<MyEnum::kFoo>();
 //
 // The syntax is a little awkward, but it saves you from having to duplicate
 // string literals or define each enum string as a named constant.
@@ -430,19 +430,9 @@ inline std::optional<std::string_view> EnumToString(E value) {
 
 // Converts a literal enum value to a string at compile time using the default
 // table (EnumTable<E>::GetInstance()) for the given enum type.
-//
-// TODO(crbug.com/1291730): Once C++17 features are allowed, change this
-// function to have only one template parameter:
-//
-//   template <auto Value>
-//   inline std::string_view EnumToString() {
-//     return EnumTable<decltype(Value)
-//         >::GetInstance().template GetString<Value>();
-//   }
-//
-template <typename E, E Value>
+template <auto Value>
 inline std::string_view EnumToString() {
-  return EnumTable<E>::GetInstance().template GetString<Value>();
+  return EnumTable<decltype(Value)>::GetInstance().template GetString<Value>();
 }
 
 // Converts a string to an enum value using the default table

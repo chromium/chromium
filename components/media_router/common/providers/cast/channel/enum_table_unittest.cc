@@ -84,10 +84,9 @@ TEST(EnumTableTest, TestStaticGetString) {
 }
 
 TEST(EnumTableTest, TestStaticEnumToStringGlobal) {
-  // Extra parens are needed below, otherwise Clang gets confused.
-  EXPECT_EQ("ZERO_DEFAULT", (EnumToString<MyEnum, MyEnum::kZero>()));
-  EXPECT_EQ("ONE_DEFAULT", (EnumToString<MyEnum, MyEnum::kOne>()));
-  EXPECT_EQ("TWO_DEFAULT", (EnumToString<MyEnum, MyEnum::kTwo>()));
+  EXPECT_EQ("ZERO_DEFAULT", EnumToString<MyEnum::kZero>());
+  EXPECT_EQ("ONE_DEFAULT", EnumToString<MyEnum::kOne>());
+  EXPECT_EQ("TWO_DEFAULT", EnumToString<MyEnum::kTwo>());
 }
 
 TEST(EnumTableTest, TestGetEnum) {
@@ -155,7 +154,7 @@ TEST(EnumTableDeathTest, EnumToString) {
 }
 
 TEST(EnumTableDeathTest, StaticEnumToString) {
-  EXPECT_NOTREACHED_DEATH((EnumToString<MyEnum, kInvalid>()));
+  EXPECT_NOTREACHED_DEATH(EnumToString<kInvalid>());
 }
 
 enum class HugeEnum {

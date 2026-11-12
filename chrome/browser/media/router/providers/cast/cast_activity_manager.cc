@@ -927,7 +927,6 @@ void CastActivityManager::HandleLaunchSessionResponse(
     // Request media status from the receiver.
     base::DictValue request;
     request.Set("type", cast_util::EnumToString<
-                            cast_channel::V2MessageType,
                             cast_channel::V2MessageType::kMediaGetStatus>());
     message_handler_->SendMediaRequest(channel_id, request, client_id,
                                        destination_id);

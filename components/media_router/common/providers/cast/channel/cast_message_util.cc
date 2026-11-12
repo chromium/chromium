@@ -351,13 +351,11 @@ bool IsPlatformSenderMessage(const CastMessage& message) {
 }
 
 CastMessage CreateKeepAlivePingMessage() {
-  return CreateKeepAliveMessage(
-      EnumToString<CastMessageType, CastMessageType::kPing>());
+  return CreateKeepAliveMessage(EnumToString<CastMessageType::kPing>());
 }
 
 CastMessage CreateKeepAlivePongMessage() {
-  return CreateKeepAliveMessage(
-      EnumToString<CastMessageType, CastMessageType::kPong>());
+  return CreateKeepAliveMessage(EnumToString<CastMessageType::kPong>());
 }
 
 CastMessage CreateVirtualConnectionRequest(
@@ -380,7 +378,7 @@ CastMessage CreateVirtualConnectionRequest(
   }
 
   base::DictValue dict;
-  dict.Set("type", EnumToString<CastMessageType, CastMessageType::kConnect>());
+  dict.Set("type", EnumToString<CastMessageType::kConnect>());
   dict.Set("userAgent", user_agent);
   dict.Set("connType", connection_type);
   dict.Set("origin", base::DictValue());
@@ -404,8 +402,7 @@ CastMessage CreateVirtualConnectionRequest(
 CastMessage CreateVirtualConnectionClose(const std::string& source_id,
                                          const std::string& destination_id) {
   base::DictValue dict;
-  dict.Set("type",
-           EnumToString<CastMessageType, CastMessageType::kCloseConnection>());
+  dict.Set("type", EnumToString<CastMessageType::kCloseConnection>());
   dict.Set("reasonCode", kVirtualConnectionClosedByPeer);
   return CreateCastMessage(kConnectionNamespace, base::Value(std::move(dict)),
                            source_id, destination_id);
@@ -415,9 +412,7 @@ CastMessage CreateGetAppAvailabilityRequest(const std::string& source_id,
                                             int request_id,
                                             const std::string& app_id) {
   base::DictValue dict;
-  dict.Set(
-      "type",
-      EnumToString<CastMessageType, CastMessageType::kGetAppAvailability>());
+  dict.Set("type", EnumToString<CastMessageType::kGetAppAvailability>());
   base::ListValue app_id_value;
   app_id_value.Append(app_id);
   dict.Set("appId", std::move(app_id_value));
@@ -430,8 +425,7 @@ CastMessage CreateGetAppAvailabilityRequest(const std::string& source_id,
 CastMessage CreateReceiverStatusRequest(const std::string& source_id,
                                         int request_id) {
   base::DictValue dict;
-  dict.Set("type",
-           EnumToString<CastMessageType, CastMessageType::kGetStatus>());
+  dict.Set("type", EnumToString<CastMessageType::kGetStatus>());
   dict.Set("requestId", request_id);
   return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
                            source_id, kPlatformReceiverId);
@@ -445,7 +439,7 @@ CastMessage CreateLaunchRequest(
     const std::vector<std::string>& supported_app_types,
     const std::optional<base::Value>& app_params) {
   base::DictValue dict;
-  dict.Set("type", EnumToString<CastMessageType, CastMessageType::kLaunch>());
+  dict.Set("type", EnumToString<CastMessageType::kLaunch>());
   dict.Set("requestId", request_id);
   dict.Set("appId", app_id);
   dict.Set("language", locale);
@@ -466,7 +460,7 @@ CastMessage CreateStopRequest(const std::string& source_id,
                               int request_id,
                               const std::string& session_id) {
   base::DictValue dict;
-  dict.Set("type", EnumToString<CastMessageType, CastMessageType::kStop>());
+  dict.Set("type", EnumToString<CastMessageType::kStop>());
   dict.Set("requestId", request_id);
   dict.Set("sessionId", session_id);
   return CreateCastMessage(kReceiverNamespace, base::Value(std::move(dict)),
@@ -515,8 +509,7 @@ CastMessage CreateSetVolumeRequest(const base::DictValue& body,
                                    int request_id,
                                    const std::string& source_id) {
   DCHECK(body.FindString("type") &&
-         *body.FindString("type") ==
-             (EnumToString<V2MessageType, V2MessageType::kSetVolume>()));
+         *body.FindString("type") == EnumToString<V2MessageType::kSetVolume>());
   base::DictValue dict = body.Clone();
   dict.Remove("sessionId");
   dict.Set("requestId", request_id);

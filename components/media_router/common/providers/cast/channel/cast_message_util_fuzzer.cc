@@ -130,8 +130,7 @@ DEFINE_PROTO_FUZZER(const fuzzable::cast_channel::fuzz::CastMessageUtilInputs&
     case CastMessageUtilInputs::kCreateSetVolumeRequestInput: {
       const auto& input = input_union.create_set_volume_request_input();
       base::DictValue body = MakeDict(input.body());
-      body.Set("type",
-               EnumToString<V2MessageType, V2MessageType::kSetVolume>());
+      body.Set("type", EnumToString<V2MessageType::kSetVolume>());
       CreateSetVolumeRequest(body, input.request_id(), input.source_id());
       break;
     }
