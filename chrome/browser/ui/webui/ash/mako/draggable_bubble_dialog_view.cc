@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/mako/draggable_bubble_dialog_view.h"
 
-#include "chrome/common/chrome_render_frame.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/aura/window.h"

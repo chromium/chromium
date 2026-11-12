@@ -72,7 +72,6 @@ static_library("mako") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/mako:resources",
     "//chrome/browser/ui/webui/ash/lobster",
-    "//chrome/common:mojo_bindings",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/services/orca/public/mojom",
     "//chromeos/constants",

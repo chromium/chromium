@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/mako/mako_rewrite_view.h"
 
 #include "ash/constants/ash_features.h"
-#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"

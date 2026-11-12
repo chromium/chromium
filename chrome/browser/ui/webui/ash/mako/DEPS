@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bubble",
   "+chrome/browser/ui/webui/top_chrome",
-  "+chrome/common",
   "+chrome/grit",
   "+chrome/test",
 ]

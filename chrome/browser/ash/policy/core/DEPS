@@ -49,8 +49,6 @@ include_rules = [
   "+chrome/browser/invalidation",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_constants.h",
-  "+chrome/common/chrome_content_client.h",
 ]
 
 specific_include_rules = {
@@ -97,5 +95,8 @@ specific_include_rules = {
   ".*unittest\\.cc": [
     "+chrome/browser/global_features.h",
     "+chrome/browser/media/webrtc/media_capture_devices_dispatcher.h",
+  ],
+  "user_cloud_policy_manager_ash_unittest\\.cc": [
+    "+chrome/common/chrome_constants.h",
   ],
 }
