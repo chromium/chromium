@@ -20,10 +20,13 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -58,6 +61,8 @@ class AmbientSigninControllerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
     NavigateAndCommit(GURL("https://example.com"));
 
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
@@ -73,6 +78,7 @@ class AmbientSigninControllerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     prompt_factory_ = nullptr;
+    ukm_recorder_.reset();
     DeleteContents();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -108,6 +114,7 @@ class AmbientSigninControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 
@@ -692,6 +699,153 @@ TEST_F(AmbientSigninControllerTest,
       "WebAuthentication.Ambient.BubbleResolution.InitiallyShown", 3);
   histograms.ExpectTotalCount(
       "WebAuthentication.Ambient.CredentialSelectionMethod", 2);
+}
+
+TEST_F(AmbientSigninControllerTest, UkmMetricsForOutcomesAndInteractions) {
+  using UkmEntry = ukm::builders::WebAuthn_AmbientSignIn;
+
+  // 1. Empty model -> DisplayOutcome::kNoCredentials.
+  auto empty_model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  empty_model->relying_party_id = "example.com";
+  controller()->Show(empty_model.get());
+  empty_model->OnRequestComplete();
+
+  EXPECT_THAT(
+      ukm_recorder_->GetMetricsEntryValues(UkmEntry::kEntryName,
+                                           UkmEntry::kDisplayOutcomeName),
+      testing::ElementsAre(static_cast<int64_t>(
+          webauthn::metrics::AmbientUkmDisplayOutcome::kNoCredentials)));
+
+  // 2. Bubble shown, another request while pending -> kNotShownOther, then
+  // default credential selected in unexpanded bubble ->
+  // kSelectedDefaultInUnexpandedBubble.
+  auto model1 = CreatePasskeyModel(main_rfh());
+  controller()->Show(model1.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+
+  // Attempt while pending records kNotShownOther.
+  controller()->Show(model1.get());
+
+  current_ambient_request()->SelectCredential(/*index=*/0,
+                                              /*from_expanded_list=*/false);
+  {
+    base::RunLoop loop;
+    permission_controller()->SetFinishedNotificationForTesting(
+        loop.QuitClosure());
+    permission_request_manager()->Accept(std::monostate());
+    loop.Run();
+  }
+  model1->OnRequestComplete();
+
+  EXPECT_THAT(
+      ukm_recorder_->GetMetricsEntryValues(UkmEntry::kEntryName,
+                                           UkmEntry::kDisplayOutcomeName),
+      testing::ElementsAre(
+          static_cast<int64_t>(
+              webauthn::metrics::AmbientUkmDisplayOutcome::kNoCredentials),
+          static_cast<int64_t>(
+              webauthn::metrics::AmbientUkmDisplayOutcome::kShown),
+          static_cast<int64_t>(
+              webauthn::metrics::AmbientUkmDisplayOutcome::kNotShownOther)));
+  EXPECT_THAT(ukm_recorder_->GetMetricsEntryValues(
+                  UkmEntry::kEntryName, UkmEntry::kInitialUiModeName),
+              testing::ElementsAre(static_cast<int64_t>(
+                  webauthn::metrics::AmbientInitialUiMode::kBubble)));
+  EXPECT_THAT(ukm_recorder_->GetMetricsEntryValues(
+                  UkmEntry::kEntryName, UkmEntry::kBubbleOutcomeName),
+              testing::ElementsAre(static_cast<int64_t>(
+                  webauthn::metrics::AmbientUkmBubbleOutcome::
+                      kSelectedDefaultInUnexpandedBubble)));
+
+  // 3. Chip-only mode (opted in by site): ignored without user interaction ->
+  // kIgnored.
+  auto model2 = CreatePasskeyModel(main_rfh());
+  model2->ambient_chip_only = true;
+  controller()->Show(model2.get());
+  prompt_factory_->WaitForPermissionBubble();
+  CompleteRequestAndWait(model2.get());
+
+  EXPECT_THAT(ukm_recorder_->GetMetricsEntryValues(
+                  UkmEntry::kEntryName, UkmEntry::kInitialUiModeName),
+              testing::ElementsAre(
+                  static_cast<int64_t>(
+                      webauthn::metrics::AmbientInitialUiMode::kBubble),
+                  static_cast<int64_t>(webauthn::metrics::AmbientInitialUiMode::
+                                           kChipOnlyRequestedBySite)));
+  EXPECT_THAT(ukm_recorder_->GetMetricsEntryValues(
+                  UkmEntry::kEntryName, UkmEntry::kChipOnlyOutcomeName),
+              testing::ElementsAre(static_cast<int64_t>(
+                  webauthn::metrics::AmbientChipOnlyOutcome::kIgnored)));
+
+  // 4. Chip-only mode: user clicks chip to open bubble, then expands and
+  // selects a credential -> kBubbleActivated and kSelectedInExpandedBubble.
+  auto model3 = CreatePasskeyModel(main_rfh());
+  model3->ambient_chip_only = true;
+  controller()->Show(model3.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+  current_ambient_request()->SelectCredential(/*index=*/0,
+                                              /*from_expanded_list=*/true);
+  {
+    base::RunLoop loop;
+    permission_controller()->SetFinishedNotificationForTesting(
+        loop.QuitClosure());
+    permission_request_manager()->Accept(std::monostate());
+    loop.Run();
+  }
+  model3->OnRequestComplete();
+
+  EXPECT_THAT(
+      ukm_recorder_->GetMetricsEntryValues(UkmEntry::kEntryName,
+                                           UkmEntry::kChipOnlyOutcomeName),
+      testing::ElementsAre(
+          static_cast<int64_t>(
+              webauthn::metrics::AmbientChipOnlyOutcome::kIgnored),
+          static_cast<int64_t>(
+              webauthn::metrics::AmbientChipOnlyOutcome::kBubbleActivated)));
+  EXPECT_THAT(
+      ukm_recorder_->GetMetricsEntryValues(UkmEntry::kEntryName,
+                                           UkmEntry::kBubbleOutcomeName),
+      testing::ElementsAre(
+          static_cast<int64_t>(webauthn::metrics::AmbientUkmBubbleOutcome::
+                                   kSelectedDefaultInUnexpandedBubble),
+          static_cast<int64_t>(webauthn::metrics::AmbientUkmBubbleOutcome::
+                                   kSelectedInExpandedBubble)));
+}
+
+TEST_F(AmbientSigninControllerTest, UkmTriggeredFromSubframeEmitsMainFrameUrl) {
+  using UkmEntry = ukm::builders::WebAuthn_AmbientSignIn;
+
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://subframe.example.org"), subframe);
+  AmbientSigninController::CreateForCurrentDocument(subframe);
+  AmbientSigninController* subframe_controller =
+      AmbientSigninController::GetForCurrentDocument(subframe);
+  ASSERT_NE(subframe_controller, nullptr);
+
+  auto model = CreatePasskeyModel(subframe);
+  subframe_controller->Show(model.get());
+  prompt_factory_->WaitForPermissionBubble();
+  ASSERT_NE(current_ambient_request(), nullptr);
+  current_ambient_request()->OnBubbleShown();
+  current_ambient_request()->OnBubbleDismissed();
+  CompleteRequestAndWait(model.get());
+
+  const auto entries = ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 3u);
+  for (const ukm::mojom::UkmEntry* entry : entries) {
+    ukm_recorder_->ExpectEntrySourceHasUrl(entry, GURL("https://example.com"));
+  }
+  EXPECT_THAT(ukm_recorder_->GetMetricsEntryValues(
+                  UkmEntry::kEntryName, UkmEntry::kBubbleOutcomeName),
+              testing::ElementsAre(static_cast<int64_t>(
+                  webauthn::metrics::AmbientUkmBubbleOutcome::kDismissed)));
 }
 
 }  // namespace ambient_signin

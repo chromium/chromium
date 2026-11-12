@@ -21,6 +21,7 @@ source_set("webauthn") {
     "//components/webauthn:features",
     "//content/public/browser",
     "//device/fido",
+    "//services/metrics/public/cpp:metrics_cpp",
   ]
 
   if (is_android) {
@@ -112,6 +113,7 @@ source_set("impl") {
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
     "//url",
   ]
 
@@ -568,6 +570,7 @@ if (!is_android) {
       "//components/sync:test_support",
       "//components/trusted_vault",
       "//components/trusted_vault:test_support",
+      "//components/ukm:test_support",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",
       "//components/webauthn/core/browser:signal_api_utils",
@@ -579,6 +582,7 @@ if (!is_android) {
       "//device/fido:test_support",
       "//google_apis",
       "//net:test_support",
+      "//services/metrics/public/cpp:ukm_builders",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",

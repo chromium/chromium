@@ -27298,6 +27298,40 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="WebAuthn.AmbientSignIn">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Information about a WebAuthn Ambient sign-in request and its UI outcomes.
+  </summary>
+  <metric name="BubbleOutcome" enum="AmbientUkmBubbleOutcome">
+    <summary>
+      Recorded when a user interacts with the Ambient UI bubble, or when the
+      bubble is destroyed without user interaction.
+    </summary>
+  </metric>
+  <metric name="ChipOnlyOutcome" enum="AmbientChipOnlyOutcome">
+    <summary>
+      Recorded when the Ambient UI chip has been shown without the bubble,
+      indicating whether the user clicked on the chip to display a bubble or
+      ignored it.
+    </summary>
+  </metric>
+  <metric name="DisplayOutcome" enum="AmbientUkmDisplayOutcome">
+    <summary>
+      Recorded upon invocation of an Ambient WebAuthn request for a passkey or
+      password sign-in, indicating whether Ambient UI was shown or why it was
+      not shown.
+    </summary>
+  </metric>
+  <metric name="InitialUiMode" enum="AmbientInitialUiMode">
+    <summary>
+      Recorded when Ambient UI is shown, indicating whether the bubble or only
+      the chip was initially shown and why.
+    </summary>
+  </metric>
+</event>
+
 <event name="WebAuthn.ConditionalUiGetCall">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>

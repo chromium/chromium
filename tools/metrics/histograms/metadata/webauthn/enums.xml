@@ -90,6 +90,30 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/webauth/authenticator_common_impl.cc:AmbientRequestedCredentialTypes) -->
 
+<!-- LINT.IfChange(AmbientUkmBubbleOutcome) -->
+
+<enum name="AmbientUkmBubbleOutcome">
+  <int value="0" label="User dismissed the bubble"/>
+  <int value="1"
+      label="User selected the default credential in the unexpanded bubble"/>
+  <int value="2"
+      label="User expanded the bubble and selected a credential from the list"/>
+  <int value="3" label="Bubble destroyed without user interaction"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:AmbientUkmBubbleOutcome) -->
+
+<!-- LINT.IfChange(AmbientUkmDisplayOutcome) -->
+
+<enum name="AmbientUkmDisplayOutcome">
+  <int value="0" label="Ambient UI was shown"/>
+  <int value="1"
+      label="Ambient UI was not shown: no passwords or passkeys for this site"/>
+  <int value="2" label="Ambient UI was not shown: other reason"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.h:AmbientUkmDisplayOutcome) -->
+
 <enum name="ChangePinEvent">
   <int value="0" label="A PIN change request is triggered in settings."/>
   <int value="1" label="A PIN change request is triggered in PIN dialog."/>

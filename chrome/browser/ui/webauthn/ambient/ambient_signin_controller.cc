@@ -94,6 +94,7 @@ AmbientSigninController::~AmbientSigninController() {
 
 void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   const bool record_metrics = !std::exchange(is_restarting_, false);
+  const ukm::SourceId ukm_source_id = render_frame_host().GetPageUkmSourceId();
 
   if (!model_) {
     model_ = model;
@@ -116,6 +117,7 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   if (credential_indices_.empty()) {
     if (record_metrics) {
       webauthn::metrics::RecordAmbientDisplayOutcome(
+          ukm_source_id,
           webauthn::metrics::AmbientDisplayOutcome::kNoCredentials);
     }
     return;
@@ -124,6 +126,7 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   if (!render_frame_host().GetPage().IsPrimary()) {
     if (record_metrics) {
       webauthn::metrics::RecordAmbientDisplayOutcome(
+          ukm_source_id,
           webauthn::metrics::AmbientDisplayOutcome::kNotPrimaryPage);
     }
     return;
@@ -135,8 +138,8 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
       !permissions::PermissionRequestManager::FromWebContents(web_contents)) {
     if (record_metrics) {
       webauthn::metrics::RecordAmbientDisplayOutcome(
-          webauthn::metrics::AmbientDisplayOutcome::
-              kNoPermissionRequestManager);
+          ukm_source_id, webauthn::metrics::AmbientDisplayOutcome::
+                             kNoPermissionRequestManager);
     }
     return;
   }
@@ -148,6 +151,7 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
       AmbientLoginPermissionController::State::kIdle) {
     if (record_metrics) {
       webauthn::metrics::RecordAmbientDisplayOutcome(
+          ukm_source_id,
           webauthn::metrics::AmbientDisplayOutcome::kAnotherRequestPending);
     }
     return;
@@ -155,7 +159,7 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
 
   if (record_metrics) {
     webauthn::metrics::RecordAmbientDisplayOutcome(
-        webauthn::metrics::AmbientDisplayOutcome::kShown);
+        ukm_source_id, webauthn::metrics::AmbientDisplayOutcome::kShown);
   }
 
   std::vector<ambient_signin::PasskeyOrPasswordCredential> credentials;
@@ -193,21 +197,25 @@ void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   if (record_metrics) {
     if (bubble_starts_open) {
       webauthn::metrics::RecordAmbientInitialUiMode(
-          webauthn::metrics::AmbientInitialUiMode::kBubble);
+          ukm_source_id, webauthn::metrics::AmbientInitialUiMode::kBubble);
     } else if (model_->ambient_chip_only) {
       webauthn::metrics::RecordAmbientInitialUiMode(
+          ukm_source_id,
           webauthn::metrics::AmbientInitialUiMode::kChipOnlyRequestedBySite);
     } else {
       webauthn::metrics::RecordAmbientInitialUiMode(
+          ukm_source_id,
           webauthn::metrics::AmbientInitialUiMode::kChipOnlyCooldownActive);
     }
   }
 
+  ukm_source_id_ = ukm_source_id;
   request_active_ = record_metrics;
   request_started_as_bubble_ = bubble_starts_open;
   bubble_shown_ = false;
   bubble_dismissed_ = false;
   credential_selected_ = false;
+  selected_from_expanded_list_ = false;
 
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
       render_frame_host().GetLastCommittedOrigin().GetURL(),
@@ -248,6 +256,7 @@ void AmbientSigninController::OnMechanismSelected(size_t index,
                   kSignInButtonClicked);
   }
   credential_selected_ = true;
+  selected_from_expanded_list_ = from_expanded_list;
   FinalizeRequestMetrics();
   // Reset any dismissal count and cooldown for the site.
   SetPromptData(GetTopLevelUrl(render_frame_host()),
@@ -298,6 +307,7 @@ void AmbientSigninController::FinalizeRequestMetrics() {
 
   if (!request_started_as_bubble_) {
     webauthn::metrics::RecordAmbientChipOnlyOutcome(
+        ukm_source_id_,
         bubble_shown_
             ? webauthn::metrics::AmbientChipOnlyOutcome::kBubbleActivated
             : webauthn::metrics::AmbientChipOnlyOutcome::kIgnored);
@@ -305,16 +315,28 @@ void AmbientSigninController::FinalizeRequestMetrics() {
 
   if (bubble_shown_) {
     webauthn::metrics::AmbientBubbleResolution resolution;
+    webauthn::metrics::AmbientUkmBubbleOutcome ukm_bubble_outcome;
     if (credential_selected_) {
       resolution =
           webauthn::metrics::AmbientBubbleResolution::kCredentialSelected;
+      ukm_bubble_outcome = selected_from_expanded_list_
+                               ? webauthn::metrics::AmbientUkmBubbleOutcome::
+                                     kSelectedInExpandedBubble
+                               : webauthn::metrics::AmbientUkmBubbleOutcome::
+                                     kSelectedDefaultInUnexpandedBubble;
     } else if (bubble_dismissed_) {
       resolution = webauthn::metrics::AmbientBubbleResolution::kDismissed;
+      ukm_bubble_outcome =
+          webauthn::metrics::AmbientUkmBubbleOutcome::kDismissed;
     } else {
       resolution = webauthn::metrics::AmbientBubbleResolution::kIgnored;
+      ukm_bubble_outcome = webauthn::metrics::AmbientUkmBubbleOutcome::
+          kDestroyedWithoutInteraction;
     }
     webauthn::metrics::RecordAmbientBubbleResolution(request_started_as_bubble_,
                                                      resolution);
+    webauthn::metrics::RecordAmbientUkmBubbleOutcome(ukm_source_id_,
+                                                     ukm_bubble_outcome);
   }
 }
 

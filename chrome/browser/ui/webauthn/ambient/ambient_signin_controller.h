@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/document_user_data.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -62,12 +63,14 @@ class AmbientSigninController
   std::vector<size_t> credential_indices_;
 
   // Information about request flow that is tracked for metrics collection.
+  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
   bool is_restarting_ = false;
   bool request_active_ = false;
   bool request_started_as_bubble_ = false;
   bool bubble_shown_ = false;
   bool bubble_dismissed_ = false;
   bool credential_selected_ = false;
+  bool selected_from_expanded_list_ = false;
 
   base::WeakPtrFactory<AmbientSigninController> weak_ptr_factory_{this};
 };

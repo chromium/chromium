@@ -7,6 +7,8 @@
 
 #include <cstddef>
 
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
 namespace webauthn::metrics {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -139,14 +141,44 @@ enum class AmbientChipOnlyOutcome {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientChipOnlyOutcome)
 };
 
-void RecordAmbientDisplayOutcome(AmbientDisplayOutcome outcome);
-void RecordAmbientInitialUiMode(AmbientInitialUiMode mode);
+// Enum for the WebAuthn.AmbientSignIn.DisplayOutcome UKM metric.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientUkmDisplayOutcome {
+  // LINT.IfChange(AmbientUkmDisplayOutcome)
+  kShown = 0,
+  kNoCredentials = 1,
+  kNotShownOther = 2,
+  kMaxValue = kNotShownOther,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientUkmDisplayOutcome)
+};
+
+// Enum for the WebAuthn.AmbientSignIn.BubbleOutcome UKM metric.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientUkmBubbleOutcome {
+  // LINT.IfChange(AmbientUkmBubbleOutcome)
+  kDismissed = 0,
+  kSelectedDefaultInUnexpandedBubble = 1,
+  kSelectedInExpandedBubble = 2,
+  kDestroyedWithoutInteraction = 3,
+  kMaxValue = kDestroyedWithoutInteraction,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:AmbientUkmBubbleOutcome)
+};
+
+void RecordAmbientDisplayOutcome(ukm::SourceId source_id,
+                                 AmbientDisplayOutcome outcome);
+void RecordAmbientInitialUiMode(ukm::SourceId source_id,
+                                AmbientInitialUiMode mode);
 void RecordAmbientBubbleCredentialCount(size_t credential_count);
 void RecordAmbientBubbleResolution(bool bubble_initially_shown,
                                    AmbientBubbleResolution resolution);
 void RecordAmbientCredentialSelectionMethod(
     AmbientCredentialSelectionMethod method);
-void RecordAmbientChipOnlyOutcome(AmbientChipOnlyOutcome outcome);
+void RecordAmbientChipOnlyOutcome(ukm::SourceId source_id,
+                                  AmbientChipOnlyOutcome outcome);
+void RecordAmbientUkmBubbleOutcome(ukm::SourceId source_id,
+                                   AmbientUkmBubbleOutcome outcome);
 
 }  // namespace webauthn::metrics
 
