@@ -127,6 +127,13 @@ TEST_F(FileManagerPathUtilTest, GetDownloadsFolderForProfile) {
   EXPECT_EQ("Downloads", mount_point_name);
 }
 
+// GetDefaultDownloadDirectoryForLinuxChromeOS() computes the path without
+// depending on DownloadPrefs. Make sure it is the same path.
+TEST_F(FileManagerPathUtilTest, GetDefaultDownloadDirectoryForLinuxChromeOS) {
+  EXPECT_EQ(DownloadPrefs::GetDefaultDownloadDirectory(),
+            GetDefaultDownloadDirectoryForLinuxChromeOS());
+}
+
 TEST_F(FileManagerPathUtilTest, GetMyFilesFolderForProfile) {
   FilePath profile_path = FilePath("/home/chronos/u-0123456789abcdef");
 

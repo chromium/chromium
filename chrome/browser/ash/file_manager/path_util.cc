@@ -11,10 +11,14 @@
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/base_paths.h"
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -47,7 +51,6 @@
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/smb_client/smbfs_share.h"
 #include "chrome/browser/download/download_dir_util.h"
-#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -327,7 +330,7 @@ std::optional<FilePath> GetOverriddenMyFilesFolder(
 
   // Return $HOME/Downloads as MyFiles folder.
   if (ShouldMountPrimaryUserDownloads(user)) {
-    return DownloadPrefs::GetDefaultDownloadDirectory();
+    return GetDefaultDownloadDirectoryForLinuxChromeOS();
   }
 
   return std::nullopt;
@@ -347,7 +350,7 @@ std::optional<FilePath> GetOverriddenDownloadsFolder(
 
   // Return $HOME/Downloads as Download folder.
   if (ShouldMountPrimaryUserDownloads(user)) {
-    return DownloadPrefs::GetDefaultDownloadDirectory();
+    return GetDefaultDownloadDirectoryForLinuxChromeOS();
   }
 
   return std::nullopt;
@@ -424,6 +427,27 @@ const url::Origin& GetFilesAppOrigin() {
   static const base::NoDestructor<url::Origin> origin(
       [] { return url::Origin::Create(GetFileManagerURL()); }());
   return *origin;
+}
+
+const FilePath& GetDefaultDownloadDirectoryForLinuxChromeOS() {
+  CHECK(!base::SysInfo::IsRunningOnChromeOS());
+  static const base::NoDestructor<FilePath> path([] {
+    // The same as chrome::DIR_DEFAULT_DOWNLOADS on Linux.
+    FilePath downloads =
+        base::nix::GetXDGUserDirectory("DOWNLOAD", kFolderNameDownloads);
+
+    // Avoid $HOME and the desktop directory, similar to
+    // DownloadPrefs::GetDefaultDownloadDirectory().
+    const FilePath home = base::PathService::CheckedGet(base::DIR_HOME);
+    const FilePath desktop =
+        base::PathService::CheckedGet(base::DIR_USER_DESKTOP);
+    if (downloads == home || downloads == desktop) {
+      // The same as chrome::DIR_DEFAULT_DOWNLOADS_SAFE on Linux.
+      downloads = home.AppendASCII(kFolderNameDownloads);
+    }
+    return downloads;
+  }());
+  return *path;
 }
 
 FilePath GetDownloadsFolder(const user_manager::User& user) {

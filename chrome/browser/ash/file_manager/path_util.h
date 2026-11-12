@@ -81,6 +81,14 @@ extern const char kShareCacheMountPointName[];
 // chrome:// URL or the legacy Chrome App chrome-extension:// URL.
 const url::Origin& GetFilesAppOrigin();
 
+// Returns the default downloads directory used on linux-chromeos, i.e. when
+// not running on a ChromeOS device. There, this is used as the MyFiles and
+// Downloads folder of the primary user, unless
+// --use-myfiles-in-user-data-dir-for-testing is specified.
+// This is computed from the XDG user directory and base::DIR_HOME, and should
+// be the same as DownloadPrefs::GetDefaultDownloadDirectory().
+const base::FilePath& GetDefaultDownloadDirectoryForLinuxChromeOS();
+
 // Gets the absolute path for the 'Downloads' folder for the `user`.
 // The `user`'s home directory must be mounted, i.e., `user.username_hash()`
 // must not be empty.
