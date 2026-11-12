@@ -84,6 +84,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -446,6 +448,20 @@ class ContextualTasksButtonInteractiveTestMixin : public T {
         .SetDescription(base::StrCat({"ExpectTotalCount(", name, ")"}));
   }
 
+  // Checks whether the button's accessible node data reflects the expected
+  // checked state.
+  auto CheckButtonCheckedState(ui::ElementIdentifier button_id,
+                               ax::mojom::CheckedState expected) {
+    return this->CheckView(
+        button_id,
+        [](views::View* view) {
+          ui::AXNodeData data;
+          view->GetViewAccessibility().GetAccessibleNodeData(&data);
+          return data.GetCheckedState();
+        },
+        expected);
+  }
+
  protected:
   base::HistogramTester histogram_tester_;
 
@@ -632,7 +648,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateOpeningContextualTaskSidePanel(),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonCheckedState(kContextualTasksEphemeralToolbarButtonElementId,
+                              ax::mojom::CheckedState::kFalse));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
@@ -705,7 +723,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       // next ephemeral button.
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonCheckedState(kContextualTasksEphemeralToolbarButtonElementId,
+                              ax::mojom::CheckedState::kFalse));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
@@ -720,7 +740,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateOpeningContextualTaskSidePanel(),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonCheckedState(kContextualTasksEphemeralToolbarButtonElementId,
+                              ax::mojom::CheckedState::kFalse));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
@@ -1351,6 +1373,12 @@ class ContextualTasksPinningV2ParamMixin
         },
         expected);
   }
+
+  // Checks whether the ephemeral button's accessible node data reflects the
+  // expected checked state.
+  auto CheckEphemeralButtonCheckedState(ax::mojom::CheckedState expected) {
+    return this->CheckButtonCheckedState(EphemeralButtonId(), expected);
+  }
 };
 
 std::string PinningV2ParamName(const testing::TestParamInfo<bool>& info) {
@@ -1576,7 +1604,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
             .has_value();
       }),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonCheckedState(kContextualTasksEphemeralToolbarButtonElementId,
+                              ax::mojom::CheckedState::kFalse));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
@@ -1829,7 +1859,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonCheckedState(kContextualTasksEphemeralToolbarButtonElementId,
+                              ax::mojom::CheckedState::kFalse));
 }
 
 IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2ParamInteractiveTest,
@@ -1872,6 +1904,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2ParamInteractiveTest,
             0);
       }),
       CheckEphemeralButtonHighlighted(true),
+      CheckEphemeralButtonCheckedState(ax::mojom::CheckedState::kTrue),
       If([this]() { return !IsRefactorEnabled(); },
          Then(CheckViewProperty(
              EphemeralButtonId(),
@@ -1889,6 +1922,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2ParamInteractiveTest,
             true, 1);
       }),
       CheckEphemeralButtonHighlighted(false),
+      CheckEphemeralButtonCheckedState(ax::mojom::CheckedState::kFalse),
       If([this]() { return !IsRefactorEnabled(); },
          Then(CheckViewProperty(
              EphemeralButtonId(),
@@ -1918,6 +1952,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2ParamInteractiveTest,
                          "OpenSidePanel"));
       }),
       EnsurePresent(EphemeralButtonId()), CheckEphemeralButtonHighlighted(true),
+      CheckEphemeralButtonCheckedState(ax::mojom::CheckedState::kTrue),
       CheckViewProperty(EphemeralButtonId(), &views::View::GetTooltipText,
                         expected_open_tooltip),
       PressButton(EphemeralButtonId()), Do([&]() {
@@ -1939,6 +1974,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinningV2ParamInteractiveTest,
       }),
       EnsurePresent(EphemeralButtonId()),
       CheckEphemeralButtonHighlighted(false),
+      CheckEphemeralButtonCheckedState(ax::mojom::CheckedState::kFalse),
       CheckViewProperty(EphemeralButtonId(), &views::View::GetTooltipText,
                         expected_closed_tooltip));
 }
@@ -2127,7 +2163,9 @@ IN_PROC_BROWSER_TEST_F(
       SimulateOpeningContextualTaskSidePanel(),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonCheckedState(kContextualTasksEphemeralToolbarButtonElementId,
+                              ax::mojom::CheckedState::kFalse));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2595,7 +2633,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateOpeningContextualTaskSidePanel(),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonCheckedState(kContextualTasksEphemeralToolbarButtonElementId,
+                              ax::mojom::CheckedState::kFalse));
 }
 
 IN_PROC_BROWSER_TEST_F(

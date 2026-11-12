@@ -42,6 +42,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -244,6 +245,8 @@ ContextualTasksButton::ContextualTasksButton(
       PinnedToolbarButtonStatusIndicator::Install(image_container_view());
   status_indicator_->SetColorId(kColorToolbarActionItemEngaged,
                                 kColorToolbarButtonIconInactive);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+  GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
   UpdateTooltipText();
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
@@ -678,12 +681,15 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
 }
 
 void ContextualTasksButton::UpdateHighlight() {
+  const bool is_open = GetVisible() && IsPanelOpen();
+  GetViewAccessibility().SetCheckedState(
+      is_open ? ax::mojom::CheckedState::kTrue
+              : ax::mojom::CheckedState::kFalse);
   if (!contextual_tasks::IsContextualTasksPinningV2Enabled()) {
     anchor_highlight_.reset();
     return;
   }
-  const bool should_highlight = GetVisible() && IsPanelOpen();
-  if (should_highlight) {
+  if (is_open) {
     if (!anchor_highlight_.has_value()) {
       anchor_highlight_ = AddAnchorHighlight();
     }
