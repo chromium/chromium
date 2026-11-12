@@ -14485,6 +14485,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.PrintHotKey.Floaty">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Logged when the user presses the print keyboard shortcut (Ctrl+P / Cmd+P)
+    while the Glic floating window (Floaty) has focus, regardless of whether
+    keyboard printing is enabled or print preview is shown. Only logged on
+    desktop platforms (Windows, Mac, Linux, and ChromeOS).
+  </description>
+</action>
+
+<action name="Glic.PrintHotKey.SidePanel">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Logged when the user presses the print keyboard shortcut (Ctrl+P / Cmd+P)
+    while the Glic side panel has focus, regardless of whether keyboard printing
+    is enabled or print preview is shown. Only logged on desktop platforms
+    (Windows, Mac, Linux, and ChromeOS).
+  </description>
+</action>
+
 <action name="Glic.ProviderChange.RelaunchClicked">
   <owner>alexwchen@google.com</owner>
   <owner>glic+metrics@google.com</owner>

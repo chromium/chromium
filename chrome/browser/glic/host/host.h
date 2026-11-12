@@ -270,6 +270,13 @@ class Host : public GlicSharingManagerProvider {
   // Signals the glic WebUI to adjust the zoom level of its hosted webview.
   void Zoom(mojom::ZoomAction zoom_action, ZoomSource source);
 
+  // Initiates printing for the active Glic web contents if printing is enabled.
+  // Returns true if the print shortcut was handled (even if no new print was
+  // started, e.g. when nothing printable is available or a modal dialog is
+  // already active); returns false if printing is disabled so the shortcut can
+  // fall through.
+  bool Print();
+
   // GlicSharingManagerProvider Implementation.
   GlicSharingManagerInternal& GetSharingManagerInternal() override;
 

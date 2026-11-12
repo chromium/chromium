@@ -191,6 +191,7 @@ BASE_DECLARE_FEATURE(kGeicSsr);
 BASE_DECLARE_FEATURE(kGeicProviderChangePrompt);
 
 BASE_DECLARE_FEATURE(kGlicHotkeyLocalScope);
+BASE_DECLARE_FEATURE(kGlicKeyboardPrint);
 
 BASE_DECLARE_FEATURE(kGlicPasteEligibilityCheck);
 BASE_DECLARE_FEATURE(kGlicWebPasteEligibilityCheck);

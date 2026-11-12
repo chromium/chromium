@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/widget/glic_loading_placeholder_view.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -129,6 +130,13 @@ class GlicView : public views::WebView,
   SkRegion webview_draggable_region_;
 
   ZoomCallback zoom_changed_callback_;
+#if BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_ANDROID)
+  // Mirrors `views::UnhandledKeyboardEventHandler::ignore_next_char_event_`:
+  // consuming `kRawKeyDown`/`kKeyDown` in `HandleKeyboardEvent()` bypasses
+  // `WebView::HandleKeyboardEvent()`, so the paired `kChar` event must also be
+  // swallowed to keep it from falling through to native/menu accelerators.
+  bool ignore_next_char_event_ = false;
+#endif  // BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_ANDROID)
   base::WeakPtrFactory<GlicView> weak_ptr_factory_{this};
 };
 

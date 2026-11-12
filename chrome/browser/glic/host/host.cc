@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/context/glic_pin_candidate_provider.h"
@@ -34,15 +35,31 @@
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "printing/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/print_view_manager_common.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -406,6 +423,40 @@ void Host::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
   if (GlicPageHandler* handler = page_handler()) {
     handler->Zoom(zoom_action, source);
   }
+}
+
+bool Host::Print() {
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (!profile_->GetPrefs()->GetBoolean(::prefs::kPrintingEnabled)) {
+    return false;
+  }
+  content::WebContents* web_contents = web_client_contents();
+  if (!web_contents) {
+    web_contents = webui_contents();
+  }
+  if (!web_contents || web_contents->IsCrashed()) {
+    return true;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  if (const auto* manager =
+          web_modal::WebContentsModalDialogManager::FromWebContents(
+              guest_view::GuestViewBase::GetTopLevelWebContents(
+                  web_contents->GetResponsibleWebContents()));
+      manager && manager->IsDialogActive()) {
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+  printing::StartPrint(
+      web_contents,
+#if BUILDFLAG(IS_CHROMEOS)
+      /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
+      profile_->GetPrefs()->GetBoolean(::prefs::kPrintPreviewDisabled),
+      /*has_selection=*/false);
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 GlicWebClientAccess* Host::GetPrimaryWebClient() const {

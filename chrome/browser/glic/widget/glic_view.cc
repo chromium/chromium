@@ -4,9 +4,12 @@
 
 #include "chrome/browser/glic/widget/glic_view.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -27,6 +30,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -42,6 +46,13 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_ANDROID)
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/content_accelerators/accelerator_util.h"
+#endif  // BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_ANDROID)
 
 namespace glic {
 
@@ -67,6 +78,37 @@ GlicView::~GlicView() {
 
 bool GlicView::HandleKeyboardEvent(content::WebContents* source,
                                    const input::NativeWebKeyboardEvent& event) {
+#if BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_ANDROID)
+  // When Print Preview (or another WebContents-modal dialog) is open on Glic,
+  // focus leaves `GlicView` so `PanelFocusDependentHotkeyManager` does not run.
+  // Modal dialogs forward unhandled shortcuts through `HandleKeyboardEvent`;
+  // consume only the print shortcut (and its paired kChar event) here so
+  // Ctrl+P / Cmd+P presses do not fall through to `BrowserView` or the platform
+  // menu and print the active tab, while still allowing keys like Esc to close
+  // the dialog.
+  if (event.GetType() == blink::WebInputEvent::Type::kChar &&
+      ignore_next_char_event_) {
+    ignore_next_char_event_ = false;
+    return true;
+  }
+  ignore_next_char_event_ = false;
+
+  if (source && (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
+                 event.GetType() == blink::WebInputEvent::Type::kKeyDown)) {
+    if (const auto* manager =
+            web_modal::WebContentsModalDialogManager::FromWebContents(
+                guest_view::GuestViewBase::GetTopLevelWebContents(
+                    source->GetResponsibleWebContents()));
+        manager && manager->IsDialogActive() &&
+        std::ranges::contains(
+            LocalHotkeyManager::GetStaticAccelerators(
+                LocalHotkeyManager::Command::kPrint),
+            ui::GetAcceleratorFromNativeWebKeyboardEvent(event))) {
+      ignore_next_char_event_ = true;
+      return true;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_ANDROID)
   return WebView::HandleKeyboardEvent(source, event);
 }
 

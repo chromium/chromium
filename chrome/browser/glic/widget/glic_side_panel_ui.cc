@@ -4,12 +4,16 @@
 
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -26,6 +30,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/base_window.h"
 #include "ui/views/view.h"
 
@@ -280,6 +285,16 @@ bool GlicSidePanelUi::ActivateBrowser() {
 
 void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
   delegate_->host().Zoom(zoom_action, source);
+}
+
+bool GlicSidePanelUi::Print() {
+  base::RecordAction(base::UserMetricsAction("Glic.PrintHotKey.SidePanel"));
+#if BUILDFLAG(ENABLE_PRINTING)
+  return base::FeatureList::IsEnabled(features::kGlicKeyboardPrint) &&
+         delegate_->host().Print();
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 bool GlicSidePanelUi::HasSelectionOverlay() {
