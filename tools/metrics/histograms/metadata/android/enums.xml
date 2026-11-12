@@ -2575,6 +2575,19 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="CONTROLS_POSITION"/>
 </enum>
 
+<!-- LINT.IfChange(TopScalpPageLoadState) -->
+
+<enum name="TopScalpPageLoadState">
+  <int value="0" label="Default fixed scalp"/>
+  <int value="1" label="Opted-in scrollable scalp"/>
+  <int value="2" label="Full top edge-to-edge (no scalp)"/>
+  <int value="3" label="Opted-in suppressed by status indicator"/>
+  <int value="4" label="Opted-in suppressed by unsupported config"/>
+  <int value="5" label="Disabled in fullscreen"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/edge_to_edge/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeUtils.java:TopScalpPageLoadState) -->
+
 <enum name="TopToolbarAllowCaptureReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="FORCE_CAPTURE"/>

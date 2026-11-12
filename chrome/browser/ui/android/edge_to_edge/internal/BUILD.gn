@@ -50,6 +50,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//ui/edge_to_edge:java",
+    "//url:url_java",
   ]
 }
 

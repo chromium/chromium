@@ -23442,6 +23442,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobilePageLoadedWithTopToEdge" not_user_triggered="true">
+  <owner>aixba@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>edge-to-edge@chromium.org</owner>
+  <description>
+    Reported when a page finishes loading in a non-Custom-Tab activity on a
+    supported phone configuration with the tab opted into top edge-to-edge (e.g.
+    viewport-fit=cover web page or customized-background NTP) while the top
+    edge-to-edge feature is enabled, mirroring MobilePageLoadedWithToEdge. Does
+    not account for transient UI suppressions such as fullscreen or status
+    indicator visibility. Android only.
+  </description>
+</action>
+
 <action name="MobilePasswordBreachOpenPasswordCheckup">
   <owner>noemies@google.com</owner>
   <description>

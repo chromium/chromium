@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBa
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.TopScalpPageLoadState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -99,6 +100,12 @@ public class EdgeToEdgeInstrumentationTest {
             HistogramWatcher.newBuilder()
                     .expectBooleanRecord("Android.EdgeToEdge.Eligible2.OnCreateController", true)
                     .expectNoRecords("Android.EdgeToEdge.IneligibilityReason2.OnCreateController")
+                    .build();
+
+    HistogramWatcher mTopEligibleHistograms =
+            HistogramWatcher.newBuilder()
+                    .expectBooleanRecord("Android.EdgeToEdge.Top.Eligible", true)
+                    .expectNoRecords("Android.EdgeToEdge.Top.IneligibilityReason")
                     .build();
 
     @Before
@@ -302,6 +309,28 @@ public class EdgeToEdgeInstrumentationTest {
                 "User action is not recorded",
                 userActionTester.getActions().contains("MobilePageLoadedWithToEdge"));
         mEligibleHistograms.assertExpected("Incorrect histogram recordings");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testTopEdgeToEdge_PageLoadMetrics() {
+        mTopEligibleHistograms.assertExpected("Incorrect top eligibility histogram recordings");
+        UserActionTester userActionTester = new UserActionTester();
+        try {
+            var watcher =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            "Android.EdgeToEdge.TopScalp.PageLoadState",
+                            TopScalpPageLoadState.OPTED_IN_SCROLLABLE_SCALP);
+            goToEdge();
+            watcher.assertExpected();
+            Assert.assertTrue(
+                    "MobilePageLoadedWithTopToEdge should be recorded on viewport-fit=cover"
+                            + " page load",
+                    userActionTester.getActions().contains("MobilePageLoadedWithTopToEdge"));
+        } finally {
+            userActionTester.tearDown();
+        }
     }
 
     @Test

@@ -399,6 +399,10 @@ static void JNI_UmaSessionStats_RecordPageLoadedWithToEdge() {
   base::RecordAction(UserMetricsAction("MobilePageLoadedWithToEdge"));
 }
 
+static void JNI_UmaSessionStats_RecordPageLoadedWithTopToEdge() {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithTopToEdge"));
+}
+
 static void JNI_UmaSessionStats_UmaResumeSession() {
   UmaSessionStats::GetInstance()->UmaResumeSession();
 }

@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Build.VERSION_CODES;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,8 +26,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 
 /** Unit tests for {@link UmaSessionStats}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -104,5 +113,80 @@ public class UmaSessionStatsUnitTest {
         mUmaSessionStats.recordPageLoadStats(mTab);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testRecordPageLoadStats_topToEdge_optedInWebPage() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+
+        mUmaSessionStats.recordPageLoadStats(mTab);
+
+        verify(mUmaSessionStatsJniMock).recordPageLoadedWithTopToEdge();
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testRecordPageLoadStats_topToEdge_notOptedInWebPage() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(false);
+        when(mTab.isNativePage()).thenReturn(false);
+
+        mUmaSessionStats.recordPageLoadStats(mTab);
+
+        verify(mUmaSessionStatsJniMock, never()).recordPageLoadedWithTopToEdge();
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/false")
+    public void testRecordPageLoadStats_topToEdge_refactorOnlyNtp_notRecorded() {
+        NativePage nativePage = mock(NativePage.class);
+        when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mTab.getNativePage()).thenReturn(nativePage);
+
+        mUmaSessionStats.recordPageLoadStats(mTab);
+
+        verify(mUmaSessionStatsJniMock, never()).recordPageLoadedWithTopToEdge();
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testRecordPageLoadStats_topToEdge_flagDisabled_notRecorded() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+
+        mUmaSessionStats.recordPageLoadStats(mTab);
+
+        verify(mUmaSessionStatsJniMock, never()).recordPageLoadedWithTopToEdge();
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.R, qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testRecordPageLoadStats_topToEdge_tablet_notRecorded() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+
+        mUmaSessionStats.recordPageLoadStats(mTab);
+
+        verify(mUmaSessionStatsJniMock, never()).recordPageLoadedWithTopToEdge();
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.R)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testRecordPageLoadStats_topToEdge_customTab_notRecorded() {
+        EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.isCustomTab()).thenReturn(true);
+
+        mUmaSessionStats.recordPageLoadStats(mTab);
+
+        verify(mUmaSessionStatsJniMock, never()).recordPageLoadedWithTopToEdge();
     }
 }

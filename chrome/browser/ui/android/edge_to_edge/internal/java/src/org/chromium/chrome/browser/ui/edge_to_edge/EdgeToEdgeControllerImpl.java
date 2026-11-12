@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSupplierObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.TopScalpPageLoadState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -57,6 +58,7 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 /**
  * Controls use of the Android Edge To Edge feature that allows an App to draw beneath the Status
@@ -223,6 +225,12 @@ public class EdgeToEdgeControllerImpl
                     public void onContentViewScrollingStateChanged(boolean scrolling) {
                         EdgeToEdgeControllerImpl.this.onContentViewScrollingStateChanged(scrolling);
                     }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        assert tab == mCurrentTab;
+                        recordTopScalpPageLoadState(tab);
+                    }
                 };
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
@@ -350,6 +358,10 @@ public class EdgeToEdgeControllerImpl
         if (!EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity) || mStatusIndicatorVisible) {
             return false;
         }
+        return isPageOptedIntoTopEdgeToEdge(tab);
+    }
+
+    private boolean isPageOptedIntoTopEdgeToEdge(@Nullable Tab tab) {
         if (mIsPageOptedIntoTopEdgeToEdge) {
             return true;
         }
@@ -362,6 +374,39 @@ public class EdgeToEdgeControllerImpl
                     != NtpBackgroundType.DEFAULT;
         }
         return false;
+    }
+
+    private void recordTopScalpPageLoadState(Tab tab) {
+        if (!EdgeToEdgeUtils.isTopEdgeToEdgeEnabled() || tab.isCustomTab()) {
+            return;
+        }
+
+        boolean supportedConfig = EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity);
+        boolean fullTopEdgeToEdge = EdgeToEdgeUtils.tabShouldDrawFullTopEdgeToEdge(tab);
+        boolean optedIn = fullTopEdgeToEdge || isPageOptedIntoTopEdgeToEdge(tab);
+        if (!supportedConfig) {
+            if (optedIn) {
+                EdgeToEdgeUtils.recordTopScalpPageLoadState(
+                        TopScalpPageLoadState.OPTED_IN_SUPPRESSED_BY_UNSUPPORTED_CONFIG);
+            }
+            return;
+        }
+
+        @TopScalpPageLoadState int state;
+        if (mFullscreenManager != null && mFullscreenManager.getPersistentFullscreenMode()) {
+            state = TopScalpPageLoadState.DISABLED_IN_FULLSCREEN;
+        } else if (optedIn) {
+            if (mStatusIndicatorVisible) {
+                state = TopScalpPageLoadState.OPTED_IN_SUPPRESSED_BY_STATUS_INDICATOR;
+            } else if (fullTopEdgeToEdge) {
+                state = TopScalpPageLoadState.FULL_TOP_EDGE_TO_EDGE_NO_SCALP;
+            } else {
+                state = TopScalpPageLoadState.OPTED_IN_SCROLLABLE_SCALP;
+            }
+        } else {
+            state = TopScalpPageLoadState.DEFAULT_FIXED_SCALP;
+        }
+        EdgeToEdgeUtils.recordTopScalpPageLoadState(state);
     }
 
     /**

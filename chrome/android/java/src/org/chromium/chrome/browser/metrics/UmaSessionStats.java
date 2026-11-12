@@ -90,8 +90,14 @@ public class UmaSessionStats {
         if (EdgeToEdgeUtils.isPageOptedIntoBottomEdgeToEdge(tab)) {
             UmaSessionStatsJni.get().recordPageLoadedWithToEdge();
         }
+        Activity activity = ContextUtils.activityFromContext(tab.getContext());
+        if (!tab.isCustomTab()
+                && EdgeToEdgeUtils.isEdgelessTopInsetSupported(activity)
+                && EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                && EdgeToEdgeUtils.tabSupportsTopEdgeToEdge(tab)) {
+            UmaSessionStatsJni.get().recordPageLoadedWithTopToEdge();
+        }
         if (DeviceInfo.isFoldable()) {
-            Activity activity = ContextUtils.activityFromContext(tab.getContext());
             // Not all tabs are associated with an Activity. If there is no
             // activity, skip it, since then it's not clear what is the display.
             if (activity != null) {
@@ -331,5 +337,7 @@ public class UmaSessionStats {
         void recordPageLoadedWithAccessory();
 
         void recordPageLoadedWithToEdge();
+
+        void recordPageLoadedWithTopToEdge();
     }
 }
