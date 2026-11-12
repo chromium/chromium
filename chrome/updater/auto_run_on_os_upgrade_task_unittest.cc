@@ -71,8 +71,9 @@ class AutoRunOnOsUpgradeTaskTest : public testing::Test {
     pref_service_->SetString(kLastOSVersion, encoded_os_version);
   }
 
-  scoped_refptr<PersistedData> persisted_data_;
+  // Must outlive `persisted_data_`, which points to it.
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  scoped_refptr<PersistedData> persisted_data_;
   base::CommandLine cmd_exe_command_line_{base::CommandLine::NO_PROGRAM};
   base::ScopedTempDir temp_programfiles_dir_;
   base::test::TaskEnvironment environment_;
