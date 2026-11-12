@@ -6757,6 +6757,12 @@
       name: "SvgNewZoom",
     },
     {
+      // Kill switch for clipping nested SVG viewports with `overflow: auto`.
+      // https://crbug.com/491070386
+      name: "SvgOverflowAutoClipsViewport",
+      status: "stable",
+    },
+    {
       // Structured access to SVG path segments via getPathData/setPathData.
       // https://issues.chromium.org/40441025
       name: "SVGPathDataAPI",

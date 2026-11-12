@@ -111,4 +111,35 @@ TEST_F(SVGLayoutSupport3DTransformTest,
             GetLayoutObjectByElementId("rect")->AbsoluteBoundingBoxRect());
 }
 
+TEST_F(SVGLayoutSupportTest, IsOverflowHiddenAuto) {
+  SetBodyInnerHTML(R"HTML(
+    <svg width="100" height="100">
+      <svg id="inner-auto" width="50" height="50" style="overflow: auto"></svg>
+      <svg id="inner-overlay" width="50" height="50"
+           style="overflow: overlay"></svg>
+      <svg id="inner-visible" width="50" height="50"
+           style="overflow: visible"></svg>
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  const LayoutObject& inner_auto = *GetLayoutObjectByElementId("inner-auto");
+  const LayoutObject& inner_overlay =
+      *GetLayoutObjectByElementId("inner-overlay");
+  const LayoutObject& inner_visible =
+      *GetLayoutObjectByElementId("inner-visible");
+  {
+    ScopedSvgOverflowAutoClipsViewportForTest enabled(true);
+    EXPECT_TRUE(SVGLayoutSupport::IsOverflowHidden(inner_auto));
+    EXPECT_TRUE(SVGLayoutSupport::IsOverflowHidden(inner_overlay));
+    EXPECT_FALSE(SVGLayoutSupport::IsOverflowHidden(inner_visible));
+  }
+  {
+    ScopedSvgOverflowAutoClipsViewportForTest disabled(false);
+    EXPECT_FALSE(SVGLayoutSupport::IsOverflowHidden(inner_auto));
+    EXPECT_FALSE(SVGLayoutSupport::IsOverflowHidden(inner_overlay));
+    EXPECT_FALSE(SVGLayoutSupport::IsOverflowHidden(inner_visible));
+  }
+}
+
 }  // namespace blink

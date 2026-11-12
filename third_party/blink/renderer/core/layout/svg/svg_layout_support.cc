@@ -219,9 +219,17 @@ bool SVGLayoutSupport::IsOverflowHidden(const LayoutObject& object) {
 }
 
 bool SVGLayoutSupport::IsOverflowHidden(const ComputedStyle& style) {
+  // There is nothing to scroll within an SVG viewport, so all non-'visible'
+  // overflow values ('auto', 'scroll', 'hidden', and 'clip') clip the content
+  // to the viewport, just like on the outermost <svg> and in Gecko. Only
+  // 'visible' disables the viewport clip. ('overlay' is canonicalized to
+  // 'auto' by StyleAdjuster, and for legacy reasons we only check overflow-x.)
+  // See https://github.com/w3c/svgwg/issues/1072.
   return style.OverflowX() == EOverflow::kHidden ||
          style.OverflowX() == EOverflow::kClip ||
-         style.OverflowX() == EOverflow::kScroll;
+         style.OverflowX() == EOverflow::kScroll ||
+         (style.OverflowX() == EOverflow::kAuto &&
+          RuntimeEnabledFeatures::SvgOverflowAutoClipsViewportEnabled());
 }
 
 void SVGLayoutSupport::AdjustWithClipPathAndMask(
