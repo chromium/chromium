@@ -46,8 +46,6 @@ class SyncService;
 @property(nonatomic, assign) BOOL TOSLinkWasTapped;
 // Whether the user tapped on the UMA link.
 @property(nonatomic, assign) BOOL UMALinkWasTapped;
-// Whether an account has been added. Must be set externally.
-@property(nonatomic, assign) BOOL addedAccount;
 // Whether dismiss gestures should be ignored (e.g. swipe away).
 @property(nonatomic, assign, readonly) BOOL ignoreDismissGesture;
 // Delegate of the mediator.
@@ -96,6 +94,9 @@ class SyncService;
 // User attempted to sign-in by either add an account or by tapping on sing-in
 // button.
 - (void)userAttemptedToSignin;
+
+// Records when an identity is added during the sign-in flow.
+- (void)systemIdentityAdded:(id<SystemIdentity>)identity;
 
 // Called when the coordinator is finished.
 - (void)finishPresentingWithSignIn:(BOOL)signIn;
