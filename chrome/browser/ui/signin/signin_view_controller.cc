@@ -245,7 +245,18 @@ void HandleSignoutConfirmationChoice(
   }
 }
 
-GURL GetSigninUrlForDiceSigninTab(
+// URL of the Gaia page loaded in the Dice signin tab, with the information
+// needed to record metrics if it is loaded.
+struct DiceSigninUrlInfo {
+  GURL url;
+  // Set if the cookie jar was checked to select the reauth URL.
+  std::optional<signin::ReauthProceedToChallengeResult>
+      reauth_proceed_to_challenge_result;
+};
+
+// Returns the URL of the Gaia page loaded in the Dice signin tab. Does not
+// record metrics: the caller records them if it loads the URL.
+DiceSigninUrlInfo GetSigninUrlForDiceSigninTab(
     const signin::IdentityManager& identity_manager,
     signin_metrics::AccessPoint access_point,
     signin_metrics::Reason signin_reason,
@@ -263,13 +274,20 @@ GURL GetSigninUrlForDiceSigninTab(
   // capability so Gaia skips the identifier page and directly shows the
   // challenge (e.g. password) page, unless the cookie jar shows that Gaia
   // would complete the flow without a new sign-in.
+  std::optional<signin::ReauthProceedToChallengeResult> reauth_result;
   if (is_reauth && !email_hint.empty() &&
-      base::FeatureList::IsEnabled(switches::kReauthSkipIdentifierPage) &&
-      signin::CanReauthProceedToChallenge(
-          email_hint, identity_manager.GetAccountsInCookieJar())) {
-    return signin::GetChromeReauthURL({.email = email_hint,
-                                       .continue_url = continue_url,
-                                       .proceed_to_challenge = true});
+      base::FeatureList::IsEnabled(switches::kReauthSkipIdentifierPage)) {
+    reauth_result = signin::GetReauthProceedToChallengeResult(
+        email_hint, identity_manager.GetAccountsInCookieJar());
+    if (reauth_result ==
+            signin::ReauthProceedToChallengeResult::kProceedToChallenge ||
+        reauth_result ==
+            signin::ReauthProceedToChallengeResult::kAccountNotInCookies) {
+      return {.url = signin::GetChromeReauthURL({.email = email_hint,
+                                                 .continue_url = continue_url,
+                                                 .proceed_to_challenge = true}),
+              .reauth_proceed_to_challenge_result = reauth_result};
+    }
   }
 
   bool use_add_account_url =
@@ -278,12 +296,13 @@ GURL GetSigninUrlForDiceSigninTab(
        identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   if (use_add_account_url) {
-    return signin::GetAddAccountURLForDice(email_hint, continue_url);
+    return {.url = signin::GetAddAccountURLForDice(email_hint, continue_url),
+            .reauth_proceed_to_challenge_result = reauth_result};
   }
 
   signin::ChromeSyncUrlArgs sync_url_args{
       .email = email_hint, .continue_url = continue_url, .flow = signin_flow};
-  return signin::GetChromeSyncURLForDice(sync_url_args);
+  return {.url = signin::GetChromeSyncURLForDice(sync_url_args)};
 }
 
 ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
@@ -741,9 +760,10 @@ void SigninViewController::ShowDiceSigninTab(
           ? GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
           : redirect_url;
 
-  const GURL signin_url = GetSigninUrlForDiceSigninTab(
+  const DiceSigninUrlInfo signin_url_info = GetSigninUrlForDiceSigninTab(
       *IdentityManagerFactory::GetForProfile(GetProfile()), access_point,
       signin_reason, email_hint, continue_url, signin_flow);
+  const GURL& signin_url = signin_url_info.url;
 
   // Check if there is already a signin-tab open.
   const int dice_tab_index = FindDiceSigninTab(GetTabStripModel(), signin_url);
@@ -763,6 +783,12 @@ void SigninViewController::ShowDiceSigninTab(
     }
     // Do not create a new signin tab, because there is already one.
     return;
+  }
+
+  // Record metrics only when opening a new signin tab, not when reusing one.
+  if (signin_url_info.reauth_proceed_to_challenge_result) {
+    signin::RecordReauthProceedToChallengeResult(
+        *signin_url_info.reauth_proceed_to_challenge_result);
   }
 
   ShowTabOverwritingNTP(&browser_.get(), GetTabStripModel(), signin_url);

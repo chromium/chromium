@@ -133,6 +133,11 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    // Loading the signin page checks whether hybrid transport is supported.
+    // Report no Bluetooth LE support so that no real adapter is created.
+    bluetooth_override_values_ =
+        device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
+    bluetooth_override_values_->SetLESupported(false);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
   }
@@ -189,6 +194,8 @@ class DiceTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   GURL signin_url_;
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
+      bluetooth_override_values_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 };
@@ -646,8 +653,6 @@ class DiceTabHelperBluetoothTest : public DiceTabHelperTest {
  public:
   void SetUp() override {
     DiceTabHelperTest::SetUp();
-    bluetooth_override_values_ =
-        device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
     bluetooth_override_values_->SetLESupported(true);
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
@@ -663,8 +668,6 @@ class DiceTabHelperBluetoothTest : public DiceTabHelperTest {
   }
 
  protected:
-  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
-      bluetooth_override_values_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 };
 
@@ -672,7 +675,9 @@ TEST_F(DiceTabHelperBluetoothTest, KeepsAdapterWhileOnSigninPage) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       switches::kMagiChromePasskeySignIn, {{"flow_type", "autofill"}});
-  EXPECT_CALL(*mock_adapter_, IsPowered());
+  // Read when the signin flow starts, and for the hybrid transport metric when
+  // the signin page loads.
+  EXPECT_CALL(*mock_adapter_, IsPowered()).Times(2);
 
   InitializeSigninTab();
   EXPECT_FALSE(mock_adapter_->HasOneRef());
@@ -698,10 +703,44 @@ TEST_F(DiceTabHelperBluetoothTest, NoPowerStateReadWithoutPermission) {
 TEST_F(DiceTabHelperBluetoothTest, NoAdapterWithoutMagiChromeAutofill) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(switches::kMagiChromePasskeySignIn);
-  EXPECT_CALL(*mock_adapter_, IsPowered()).Times(0);
+  // Only read for the hybrid transport metric when the signin page loads.
+  EXPECT_CALL(*mock_adapter_, IsPowered());
 
   InitializeSigninTab();
   EXPECT_TRUE(mock_adapter_->HasOneRef());
+}
+
+// Tests that whether hybrid transport is supported is recorded each time the
+// signin page loads for the `kSigninPrimaryAccount` reason.
+TEST_F(DiceTabHelperBluetoothTest, HybridTransportSupportedMetric) {
+  constexpr char kHistogram[] = "Signin.MagiChrome.HybridTransportSupported2";
+  ON_CALL(*mock_adapter_, IsPowered()).WillByDefault(testing::Return(true));
+  base::HistogramTester h_tester;
+  DiceTabHelper::CreateForWebContents(web_contents());
+  DiceTabHelper* dice_tab_helper =
+      DiceTabHelper::FromWebContents(web_contents());
+
+  // Not recorded for other reasons.
+  InitializeDiceTabHelper(dice_tab_helper,
+                          signin_metrics::AccessPoint::kSettings,
+                          signin_metrics::Reason::kAddSecondaryAccount);
+  h_tester.ExpectTotalCount(kHistogram, 0);
+
+  // Recorded each time the signin page loads.
+  InitializeDiceTabHelper(dice_tab_helper,
+                          signin_metrics::AccessPoint::kSettings,
+                          signin_metrics::Reason::kSigninPrimaryAccount);
+  h_tester.ExpectUniqueSample(kHistogram, true, 1);
+  content::NavigationSimulator::Reload(web_contents());
+  h_tester.ExpectUniqueSample(kHistogram, true, 2);
+
+  // Not recorded if a navigation to the signin page does not commit.
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateRendererInitiated(signin_url_,
+                                                            main_rfh());
+  simulator->Start();
+  simulator->AbortFromRenderer();
+  h_tester.ExpectUniqueSample(kHistogram, true, 2);
 }
 
 class DiceTabHelperPrerenderTest : public DiceTabHelperTest {

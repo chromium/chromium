@@ -23,6 +23,7 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -977,6 +978,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerReauthSkipIdentifierBrowserTest,
 
   // First click on the profile menu reauth button, with a stale cookie jar.
   // The NTP tab is overwritten.
+  base::HistogramTester histogram_tester;
   signin_ui_util::ShowReauthForAccount(
       GetProfile(), email,
       signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
@@ -1020,6 +1022,25 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerReauthSkipIdentifierBrowserTest,
   ASSERT_TRUE(tab->GetController().GetPendingEntry());
   EXPECT_EQ(second_signin_url,
             tab->GetController().GetPendingEntry()->GetURL());
+
+  // The cookie jar check is recorded once for each signin page load.
+  constexpr char kHistogram[] = "Signin.Reauth.ProceedToChallengeResult2";
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kHistogram),
+      base::BucketsAre(
+          base::Bucket(signin::ReauthProceedToChallengeResult::
+                           kAddSessionFallbackStaleCookies,
+                       1),
+          base::Bucket(
+              signin::ReauthProceedToChallengeResult::kProceedToChallenge, 1)));
+
+  // Third click, with the same signin URL: the signin tab is reused.
+  signin_ui_util::ShowReauthForAccount(
+      GetProfile(), email,
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
+  EXPECT_EQ(1, tab_strip->count());
+  EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
+  histogram_tester.ExpectTotalCount(kHistogram, 2);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

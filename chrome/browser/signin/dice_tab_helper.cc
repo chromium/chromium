@@ -420,10 +420,18 @@ void DiceTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (state_->signin_reason == signin_metrics::Reason::kSigninPrimaryAccount &&
-      !signin_page_load_recorded_) {
-    signin_page_load_recorded_ = true;
-    base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Shown"));
+  if (state_->signin_reason == signin_metrics::Reason::kSigninPrimaryAccount) {
+    if (!signin_page_load_recorded_) {
+      signin_page_load_recorded_ = true;
+      base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Shown"));
+    }
+    if (navigation_handle->HasCommitted()) {
+      signin::IsHybridTransportSupportedForQrCodeSignin(base::BindOnce(
+          [](bool can_start, scoped_refptr<device::BluetoothAdapter>) {
+            base::UmaHistogramBoolean(
+                "Signin.MagiChrome.HybridTransportSupported2", can_start);
+          }));
+    }
   }
 }
 

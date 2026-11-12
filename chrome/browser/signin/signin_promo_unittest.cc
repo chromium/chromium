@@ -124,8 +124,6 @@ namespace {
 
 constexpr char kReauthTestEmail[] = "example@domain.com";
 constexpr char kReauthTestOtherEmail[] = "other@domain.com";
-constexpr char kReauthProceedToChallengeResultHistogram[] =
-    "Signin.Reauth.ProceedToChallengeResult";
 
 gaia::ListedAccount MakeListedAccount(const std::string& email,
                                       bool valid,
@@ -142,111 +140,84 @@ gaia::ListedAccount MakeListedAccount(const std::string& email,
 
 // Test that reauth can proceed to challenge when the account is signed out of
 // the web.
-TEST(SigninPromoTest, TestCanReauthProceedToChallengeSignedOutAccount) {
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(CanReauthProceedToChallenge(
-      kReauthTestEmail, AccountsInCookieJarInfo(
-                            /*accounts_are_fresh=*/true,
-                            {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
-                                               /*signed_out=*/true)})));
-  histogram_tester.ExpectUniqueSample(
-      kReauthProceedToChallengeResultHistogram,
-      ReauthProceedToChallengeResult::kProceedToChallenge, 1);
+TEST(SigninPromoTest, TestReauthProceedToChallengeResultSignedOutAccount) {
+  EXPECT_EQ(ReauthProceedToChallengeResult::kProceedToChallenge,
+            GetReauthProceedToChallengeResult(
+                kReauthTestEmail,
+                AccountsInCookieJarInfo(
+                    /*accounts_are_fresh=*/true,
+                    {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
+                                       /*signed_out=*/true)})));
 }
 
 // Test that reauth can proceed to challenge when the account is not in the
 // cookie jar.
-TEST(SigninPromoTest, TestCanReauthProceedToChallengeAccountNotInCookies) {
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(CanReauthProceedToChallenge(
-      kReauthTestEmail,
-      AccountsInCookieJarInfo(
-          /*accounts_are_fresh=*/true,
-          {MakeListedAccount(kReauthTestOtherEmail, /*valid=*/true,
-                             /*signed_out=*/false)})));
-  EXPECT_TRUE(CanReauthProceedToChallenge(
-      kReauthTestEmail,
-      AccountsInCookieJarInfo(/*accounts_are_fresh=*/true, {})));
-  histogram_tester.ExpectUniqueSample(
-      kReauthProceedToChallengeResultHistogram,
-      ReauthProceedToChallengeResult::kAccountNotInCookies, 2);
+TEST(SigninPromoTest, TestReauthProceedToChallengeResultAccountNotInCookies) {
+  EXPECT_EQ(ReauthProceedToChallengeResult::kAccountNotInCookies,
+            GetReauthProceedToChallengeResult(
+                kReauthTestEmail,
+                AccountsInCookieJarInfo(
+                    /*accounts_are_fresh=*/true,
+                    {MakeListedAccount(kReauthTestOtherEmail, /*valid=*/true,
+                                       /*signed_out=*/false)})));
+  EXPECT_EQ(ReauthProceedToChallengeResult::kAccountNotInCookies,
+            GetReauthProceedToChallengeResult(
+                kReauthTestEmail,
+                AccountsInCookieJarInfo(/*accounts_are_fresh=*/true, {})));
 }
 
 // Test that reauth can proceed to challenge when the account session in the
 // cookie jar is invalid.
-TEST(SigninPromoTest, TestCanReauthProceedToChallengeInvalidSession) {
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(CanReauthProceedToChallenge(
-      kReauthTestEmail,
-      AccountsInCookieJarInfo(
-          /*accounts_are_fresh=*/true,
-          {MakeListedAccount(kReauthTestEmail, /*valid=*/false,
-                             /*signed_out=*/false)})));
-  histogram_tester.ExpectUniqueSample(
-      kReauthProceedToChallengeResultHistogram,
-      ReauthProceedToChallengeResult::kProceedToChallenge, 1);
+TEST(SigninPromoTest, TestReauthProceedToChallengeResultInvalidSession) {
+  EXPECT_EQ(ReauthProceedToChallengeResult::kProceedToChallenge,
+            GetReauthProceedToChallengeResult(
+                kReauthTestEmail,
+                AccountsInCookieJarInfo(
+                    /*accounts_are_fresh=*/true,
+                    {MakeListedAccount(kReauthTestEmail, /*valid=*/false,
+                                       /*signed_out=*/false)})));
 }
 
 // Test that reauth cannot proceed to challenge when Gaia still has a valid
 // session for the account, since `/AccountChooser` would complete without a
 // new sign-in.
-TEST(SigninPromoTest, TestCanReauthProceedToChallengeValidSession) {
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(CanReauthProceedToChallenge(
-      kReauthTestEmail, AccountsInCookieJarInfo(
-                            /*accounts_are_fresh=*/true,
-                            {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
-                                               /*signed_out=*/false)})));
+TEST(SigninPromoTest, TestReauthProceedToChallengeResultValidSession) {
+  EXPECT_EQ(ReauthProceedToChallengeResult::kAddSessionFallbackValidSession,
+            GetReauthProceedToChallengeResult(
+                kReauthTestEmail,
+                AccountsInCookieJarInfo(
+                    /*accounts_are_fresh=*/true,
+                    {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
+                                       /*signed_out=*/false)})));
   // Emails are compared after canonicalization.
-  EXPECT_FALSE(CanReauthProceedToChallenge(
-      "Example@Domain.com",
-      AccountsInCookieJarInfo(
-          /*accounts_are_fresh=*/true,
-          {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
-                             /*signed_out=*/false)})));
-  histogram_tester.ExpectUniqueSample(
-      kReauthProceedToChallengeResultHistogram,
-      ReauthProceedToChallengeResult::kAddSessionFallbackValidSession, 2);
+  EXPECT_EQ(ReauthProceedToChallengeResult::kAddSessionFallbackValidSession,
+            GetReauthProceedToChallengeResult(
+                "Example@Domain.com",
+                AccountsInCookieJarInfo(
+                    /*accounts_are_fresh=*/true,
+                    {MakeListedAccount(kReauthTestEmail, /*valid=*/true,
+                                       /*signed_out=*/false)})));
 }
 
 // Test that reauth cannot proceed to challenge when the cookie jar info is
 // stale.
-TEST(SigninPromoTest, TestCanReauthProceedToChallengeStaleCookies) {
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(CanReauthProceedToChallenge(
-      kReauthTestEmail,
-      AccountsInCookieJarInfo(/*accounts_are_fresh=*/false, {})));
-  histogram_tester.ExpectUniqueSample(
-      kReauthProceedToChallengeResultHistogram,
-      ReauthProceedToChallengeResult::kAddSessionFallbackStaleCookies, 1);
+TEST(SigninPromoTest, TestReauthProceedToChallengeResultStaleCookies) {
+  EXPECT_EQ(ReauthProceedToChallengeResult::kAddSessionFallbackStaleCookies,
+            GetReauthProceedToChallengeResult(
+                kReauthTestEmail,
+                AccountsInCookieJarInfo(/*accounts_are_fresh=*/false, {})));
 }
 
 // Test that reauth cannot proceed to challenge without an email.
-TEST(SigninPromoTest, TestCanReauthProceedToChallengeEmptyEmail) {
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(CanReauthProceedToChallenge(
-      std::string(), AccountsInCookieJarInfo(/*accounts_are_fresh=*/true, {})));
-  histogram_tester.ExpectTotalCount(kReauthProceedToChallengeResultHistogram,
-                                    0);
+TEST(SigninPromoTest, TestReauthProceedToChallengeResultEmptyEmail) {
+  EXPECT_EQ(std::nullopt,
+            GetReauthProceedToChallengeResult(
+                std::string(),
+                AccountsInCookieJarInfo(/*accounts_are_fresh=*/true, {})));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class SigninPromoUrlTest : public testing::Test {
- public:
-  void SetUp() override {
-    mock_adapter_ =
-        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
-  }
-
-  void TearDown() override { task_environment_.RunUntilIdle(); }
-
- protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
-};
-
-TEST_F(SigninPromoUrlTest, SigninURLForDiceWithHistorySyncOptin) {
+TEST(SigninPromoTest, SigninURLForDiceWithHistorySyncOptin) {
   EXPECT_EQ(
       "https://accounts.google.com/signin/chrome/sync?ssp=1&"
       "color_scheme=dark&flow=promo&theme=mn",
@@ -269,7 +240,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceWithHistorySyncOptin) {
                               GURL("https://continue_url/")));
 }
 
-TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsGaiaExpBranch) {
+TEST(SigninPromoTest, SigninURLForDiceForwardsGaiaExpBranch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
@@ -283,7 +254,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsGaiaExpBranch) {
       GetChromeSyncURLForDice({}));
 }
 
-TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsServerOnlyGaiaExpBranch) {
+TEST(SigninPromoTest, SigninURLForDiceForwardsServerOnlyGaiaExpBranch) {
   // A server-only arm sets no `flow_type`.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -297,7 +268,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceForwardsServerOnlyGaiaExpBranch) {
       GetChromeSyncURLForDice({}));
 }
 
-TEST_F(SigninPromoUrlTest, SigninURLForDiceUnsetGaiaExpBranchAddsNoParam) {
+TEST(SigninPromoTest, SigninURLForDiceUnsetGaiaExpBranchAddsNoParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
@@ -310,7 +281,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceUnsetGaiaExpBranchAddsNoParam) {
       GetChromeSyncURLForDice({}));
 }
 
-TEST_F(SigninPromoUrlTest, SigninURLForDiceNonNumericGaiaExpBranchAddsNoParam) {
+TEST(SigninPromoTest, SigninURLForDiceNonNumericGaiaExpBranchAddsNoParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{switches::kMagiChromePasskeySignIn,
@@ -323,7 +294,7 @@ TEST_F(SigninPromoUrlTest, SigninURLForDiceNonNumericGaiaExpBranchAddsNoParam) {
       GetChromeSyncURLForDice({}));
 }
 
-TEST_F(SigninPromoUrlTest, SigninURLForDicePasskeyFeatureDisabledAddsNoParam) {
+TEST(SigninPromoTest, SigninURLForDicePasskeyFeatureDisabledAddsNoParam) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},

@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -215,6 +216,15 @@ class ProcessDiceHeaderDelegateImplTest
                 base::BindRepeating(&CreateMockDiceWebSigninInterceptor)}});
   }
 
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    // Loading the signin page checks whether hybrid transport is supported.
+    // Report no Bluetooth LE support so that no real adapter is created.
+    bluetooth_override_values_ =
+        device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
+    bluetooth_override_values_->SetLESupported(false);
+  }
+
   void TearDown() override {
     identity_test_environment_profile_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -251,6 +261,8 @@ class ProcessDiceHeaderDelegateImplTest
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_profile_adaptor_;
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
+      bluetooth_override_values_;
 
   const GURL signin_url_ = GURL("https://accounts.google.com");
   bool signin_header_received_ = false;

@@ -49,9 +49,6 @@ namespace {
 // account is known (via `Email`).
 constexpr char kProceedToChallengeQueryKey[] = "ptc";
 
-constexpr char kReauthProceedToChallengeResultHistogram[] =
-    "Signin.Reauth.ProceedToChallengeResult";
-
 }  // namespace
 
 const char kSignInPromoQueryKeyAccessPoint[] = "access_point";
@@ -131,14 +128,6 @@ GURL GetChromeSyncURLForDice(ChromeSyncUrlArgs args) {
                                       base::NumberToString(exp_branch));
     }
   }
-  static const char kMagiChromeHybridTransportSupportedHistogram[] =
-      "Signin.MagiChrome.HybridTransportSupported";
-  // Record hybrid transport signal histogram.
-  IsHybridTransportSupportedForQrCodeSignin(base::BindOnce(
-      [](bool can_start, scoped_refptr<device::BluetoothAdapter>) {
-        base::UmaHistogramBoolean(kMagiChromeHybridTransportSupportedHistogram,
-                                  can_start);
-      }));
 
   return url;
 }
@@ -179,11 +168,11 @@ GURL GetChromeReauthURL(ChromeReauthUrlArgs args) {
   return url;
 }
 
-bool CanReauthProceedToChallenge(
+std::optional<ReauthProceedToChallengeResult> GetReauthProceedToChallengeResult(
     const std::string& email,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar) {
   if (email.empty()) {
-    return false;
+    return std::nullopt;
   }
 
   const auto has_matching_email = [&email](const gaia::ListedAccount& account) {
@@ -194,10 +183,7 @@ bool CanReauthProceedToChallenge(
   // session for `email`. Fall back to `/AddSession`, which always requires the
   // challenge.
   if (!accounts_in_cookie_jar.AreAccountsFresh()) {
-    base::UmaHistogramEnumeration(
-        kReauthProceedToChallengeResultHistogram,
-        ReauthProceedToChallengeResult::kAddSessionFallbackStaleCookies);
-    return false;
+    return ReauthProceedToChallengeResult::kAddSessionFallbackStaleCookies;
   }
 
   // If Gaia still has a valid session for `email`, `/AccountChooser` completes
@@ -206,20 +192,20 @@ bool CanReauthProceedToChallenge(
   // always requires the challenge.
   if (std::ranges::any_of(accounts_in_cookie_jar.GetValidSignedInAccounts(),
                           has_matching_email)) {
-    base::UmaHistogramEnumeration(
-        kReauthProceedToChallengeResultHistogram,
-        ReauthProceedToChallengeResult::kAddSessionFallbackValidSession);
-    return false;
+    return ReauthProceedToChallengeResult::kAddSessionFallbackValidSession;
   }
 
   const bool account_in_cookies = std::ranges::any_of(
       accounts_in_cookie_jar.GetAllAccounts(), has_matching_email);
-  base::UmaHistogramEnumeration(
-      kReauthProceedToChallengeResultHistogram,
-      account_in_cookies
-          ? ReauthProceedToChallengeResult::kProceedToChallenge
-          : ReauthProceedToChallengeResult::kAccountNotInCookies);
-  return true;
+  return account_in_cookies
+             ? ReauthProceedToChallengeResult::kProceedToChallenge
+             : ReauthProceedToChallengeResult::kAccountNotInCookies;
+}
+
+void RecordReauthProceedToChallengeResult(
+    ReauthProceedToChallengeResult result) {
+  base::UmaHistogramEnumeration("Signin.Reauth.ProceedToChallengeResult2",
+                                result);
 }
 
 GURL GetAddAccountURLForDice(const std::string& email,

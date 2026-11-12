@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInReauthSkipIdentifierPageTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(reauth_url, "ptc", &ptc_value));
   EXPECT_EQ("1", ptc_value);
   histogram_tester.ExpectUniqueSample(
-      "Signin.Reauth.ProceedToChallengeResult",
+      "Signin.Reauth.ProceedToChallengeResult2",
       ReauthProceedToChallengeResult::kProceedToChallenge, 1);
 
   // Verify that real Gaia skips the identifier page (auto-advancing through
@@ -960,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInReauthSkipIdentifierPageTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(reauth_url, "ptc", &ptc_value));
   EXPECT_EQ("1", ptc_value);
   histogram_tester.ExpectUniqueSample(
-      "Signin.Reauth.ProceedToChallengeResult",
+      "Signin.Reauth.ProceedToChallengeResult2",
       ReauthProceedToChallengeResult::kAccountNotInCookies, 1);
 
   // Without the account in cookies, Gaia falls back to `/v3/signin/identifier`
@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInReauthSkipIdentifierPageTest,
   std::string ptc_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(reauth_url, "ptc", &ptc_value));
   histogram_tester.ExpectUniqueSample(
-      "Signin.Reauth.ProceedToChallengeResult",
+      "Signin.Reauth.ProceedToChallengeResult2",
       ReauthProceedToChallengeResult::kAddSessionFallbackValidSession, 1);
 
   sign_in_functions.SignInFromCurrentPage(reauth_tab, *test_account,

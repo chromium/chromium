@@ -3506,13 +3506,16 @@ the browser and content area. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.MagiChrome.HybridTransportSupported" enum="Boolean"
-    expires_after="2027-04-01">
+<histogram name="Signin.MagiChrome.HybridTransportSupported2"
+    enum="BooleanSupported" expires_after="2027-04-01">
   <owner>msalama@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records whether the device supports Hybrid Transport (BLE) for MagiChrome.
-    Recorded when the Chrome sign-in URL is generated.
+    Recorded each time the Chrome sign-in page for signing in to Chrome (not for
+    reauthentication or adding a secondary account) loads in a tab or in the
+    profile picker. Not recorded when an existing sign-in tab is reused, or when
+    the page fails to load.
   </summary>
 </histogram>
 
@@ -3911,7 +3914,7 @@ Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough tim
   <token key="Event" variants="ReauthFlowEvent"/>
 </histogram>
 
-<histogram name="Signin.Reauth.ProceedToChallengeResult"
+<histogram name="Signin.Reauth.ProceedToChallengeResult2"
     enum="ReauthProceedToChallengeResult" expires_after="2027-03-28">
   <owner>ddac@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -3919,8 +3922,9 @@ Signin.OAuthMultiloginResponseStatus2{PartitionSuffix} one for a long enough tim
     Records the outcome of checking the cookie jar to determine whether a DICE
     re-authentication tab can use `/AccountChooser` with `ptc=1` to skip the
     identifier page, or must fall back to `/AddSession` due to stale cookies or
-    a valid Gaia session. Recorded when opening a DICE re-authentication tab for
-    a known email with `ReauthSkipIdentifierPage` enabled.
+    a valid Gaia session. Recorded when opening a new DICE re-authentication tab
+    for a known email with `ReauthSkipIdentifierPage` enabled, but not when an
+    existing re-authentication tab is reused.
   </summary>
 </histogram>
 
