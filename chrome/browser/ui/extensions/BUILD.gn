@@ -588,6 +588,7 @@ if (!is_android) {
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/views/extensions:settings_overridden_dialog_view_utils",
         "//chrome/common",
+        "//chrome/test/base:browser_test_waiters",
         "//components/image_fetcher/core",
         "//components/image_fetcher/core:test_support",
         "//components/regional_capabilities",

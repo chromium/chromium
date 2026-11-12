@@ -229,7 +229,9 @@ source_set("interactive_ui_tests") {
   ]
 
   deps = [
+    ":interactive_test_support",
     ":page_action",
+    ":page_action_test_support",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",
@@ -250,6 +252,7 @@ source_set("browser_tests") {
 
   deps = [
     ":page_action",
+    ":page_action_test_support",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",
     "//content/test:test_support",

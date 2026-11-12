@@ -444,6 +444,7 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
+      "//chrome/test/base:fake_gaia_mixin",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser",
       "//components/bookmarks/common",

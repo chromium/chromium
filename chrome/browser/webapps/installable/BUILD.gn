@@ -125,7 +125,7 @@ if (!is_android) {
       "ml_promotion_browsertest_base.cc",
       "ml_promotion_browsertest_base.h",
     ]
-
+    public_deps = [ "//chrome/test/base:platform_browser_test" ]
     deps = [
       "//base",
       "//base/test:test_support",

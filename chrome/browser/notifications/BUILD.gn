@@ -619,6 +619,7 @@ if (!is_android) {
           "win/fake_itoastnotifier.cc",
           "win/fake_itoastnotifier.h",
         ]
+        deps += [ "//chrome/browser/ui/web_applications:test_support" ]
       }
 
       if (is_mac) {

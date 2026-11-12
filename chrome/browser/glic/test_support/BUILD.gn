@@ -98,6 +98,7 @@ source_set("test_support") {
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/public:provider",
     "//chrome/test:test_support",
+    "//chrome/test/base:platform_browser_test",
   ]
   if (!is_android) {
     public_deps += [ "//chrome/test/user_education:impl" ]

@@ -3353,6 +3353,8 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop",
       "//chrome/browser/ui/views/infobars",
       "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:chrome_test_path_utils",
+      "//chrome/test/base:chrome_test_utils",
       "//components/feed:feature_list",
       "//components/infobars/content",
       "//components/infobars/core",

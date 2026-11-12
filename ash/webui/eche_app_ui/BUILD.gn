@@ -322,6 +322,7 @@ source_set("browser_tests") {
     "//ash/webui/web_applications/test:test_support",
     "//build/config/coverage:buildflags",
     "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:web_ui_mocha_browser_test",
     "//content/test:test_support",
   ]

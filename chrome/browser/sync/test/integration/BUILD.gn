@@ -17,6 +17,7 @@ testonly = true
 source_set("sync_integration_tests_impl") {
   configs += [ "//build/config:precompiled_headers" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  public_deps = []
   deps = [
     ":sync_integration_test_support",
     "//chrome/browser:browser_features",
@@ -257,6 +258,7 @@ source_set("sync_integration_tests_impl") {
       ]
     }
 
+    public_deps += [ "//chrome/browser/ui/views/web_apps:test_support" ]
     deps += [
       "//chrome:packed_resources",
       "//chrome:resources",
@@ -286,6 +288,7 @@ source_set("sync_integration_tests_impl") {
       "//chrome/browser/ui/views/send_tab_to_self",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webdata_services",
@@ -491,6 +494,7 @@ source_set("sync_integration_test_support") {
   public_deps = [
     "//chrome/browser/favicon",
     "//chrome/test:test_support",
+    "//chrome/test/base:platform_browser_test",
     "//components/autofill/content/browser",
   ]
 

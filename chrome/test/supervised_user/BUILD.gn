@@ -25,6 +25,10 @@ static_library("test_support") {
     "//components/supervised_user/test_support",
     "//ui/base:test_support",
   ]
+
+  if (!is_android) {
+    public_deps += [ "//chrome/test/base:fake_gaia_mixin" ]
+  }
 }
 
 static_library("child_accounts") {

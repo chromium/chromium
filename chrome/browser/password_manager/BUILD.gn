@@ -676,6 +676,7 @@ if (!is_android) {
         "//chrome/test:test_support",
         "//chrome/test/user_education:impl",
         "//components/autofill/content/browser",
+        "//components/autofill/content/browser:test_support",
         "//components/autofill/core/browser:test_support",
         "//components/autofill/core/common",
         "//components/autofill/core/common:features",
@@ -703,9 +704,13 @@ if (!is_android) {
       if (!is_chromeos) {
         sources += [ "web_app_profile_switcher_interactive_uitest.cc" ]
         deps += [
+          "//chrome/browser/ui/profiles",
           "//chrome/browser/ui/web_applications",
+          "//chrome/browser/ui/web_applications:test_support",
+          "//chrome/browser/ui/web_applications/test:test_support_ui",
           "//chrome/browser/web_applications",
           "//chrome/browser/web_applications:web_applications_test_support",
+          "//chrome/test/base:chrome_test_utils",
         ]
       }
     }

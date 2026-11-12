@@ -5288,6 +5288,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/login",
       "//chrome/browser/ui/search:test_support_ui",
+      "//chrome/test/base:chrome_test_scoped_utils",
       "//chrome/test/base:profile_lifecycle_test_utils",
       "//chrome/test/base:test_launcher_utils",
       "//chrome/test/base:testing_browser_process",
@@ -5351,6 +5352,7 @@ if (!is_android) {
         "//chrome/browser/prefs",
         "//chrome/browser/shortcuts",
         "//chrome/browser/ui/startup",
+        "//chrome/test/base:test_utils_mac",
         "//ui/events:test_support",
       ]
     }

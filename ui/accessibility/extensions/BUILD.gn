@@ -159,7 +159,10 @@ copy("colorenhancer_copy") {
 }
 
 if (is_chromeos) {
-  webui_test_deps = [ "//chrome/test/base:browser_tests_runner" ]
+  webui_test_deps = [
+    "//chrome/test/base:browser_tests_runner",
+    "//chrome/test/base:cros_web_ui_browser_test",
+  ]
 
   test("colorenhancer_tests") {
     deps = [ ":colorenhancer_js_webui_tests" ]

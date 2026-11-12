@@ -466,6 +466,7 @@ if (!is_android) {
       "//chrome/browser/net",
       "//chrome/browser/ssl:test_support",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_utils",
       "//components/certificate_transparency",
       "//components/certificate_transparency:proto_gen",
       "//components/metrics:content",

@@ -421,6 +421,7 @@ source_set("browser_tests") {
       "//chrome/browser/web_applications",
       "//chrome/common:chrome_features",
       "//chrome/services/mac_notifications/public/mojom",
+      "//chrome/test/permissions",
       "//components/content_settings/browser",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/common",

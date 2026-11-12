@@ -71,6 +71,7 @@ source_set("test_support") {
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/power:power_manager_proto",
     "//services/test/echo:lib",
+    "//ui/base/interaction:test_support",
     "//ui/events:test_support",
     "//ui/ozone/platform/drm:ui_controls",
   ]
@@ -79,7 +80,7 @@ source_set("test_support") {
     ":proto",
     "//base/test:test_support",
     "//chrome/app:test_support",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:mixin_based_in_process_browser_test",
     "//content/test:test_support",
   ]
 

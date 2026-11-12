@@ -426,7 +426,7 @@ source_set("browser_tests") {
     "image_loader_jstest.cc",
     "open_with_browser_browsertest.cc",
   ]
-
+  public_deps = [ "//chrome/test/base:devtools_coverage" ]
   deps = [
     ":file_manager",
     ":test_support",

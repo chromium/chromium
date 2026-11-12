@@ -360,7 +360,6 @@ group("test_support") {
     public_deps += [
       # Android uses //chrome:chrome_android_core instead of the //chrome/app
       # target.
-      ":test_support_ui",
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
       "//chrome/browser/themes:theme_service_changed_waiter",
@@ -3584,6 +3583,7 @@ static_library("test_support_unit") {
   deps = [
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autofill",
+    "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:chrome_unit_test_suite",
     "//chrome/test/base:testing_browser_process",
     "//chrome/test/base:testing_browser_process_impl",
@@ -3608,149 +3608,59 @@ static_library("test_support_unit") {
   }
 }
 
-if (!is_android) {
-  # This target no longer has any sources of its own; it is a pure aggregator
-  # of public_deps for consumers that have not yet been migrated to direct deps.
-  group("test_support_ui") {
-    testonly = true
+if (is_chromeos) {
+  assert(enable_extensions)
 
-    public_deps = [
-      "//chrome/browser:test_support_ui",
-      "//chrome/browser/notifications:test_support",
-      "//chrome/browser/profiles:profile_test_util",
-      "//chrome/browser/renderer_context_menu:test_support",
-      "//chrome/browser/ui/autofill/payments:test_support_ui",
-      "//chrome/browser/ui/browser_window:create_browser_window",
-      "//chrome/browser/ui/exclusive_access",
-      "//chrome/browser/ui/test:dialog",
-      "//chrome/browser/ui/views:create_application_shortcut_view_test_support",
-      "//chrome/browser/ui/views:intent_picker_bubble_view",
-      "//chrome/browser/ui/views/autofill/payments:offer_notification_bubble_views",
-      "//chrome/browser/ui/views/autofill/payments:test_support_ui",
-      "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
-      "//chrome/browser/ui/views/autofill/popup:popup_view_views",
-      "//chrome/browser/ui/views/autofill/popup:popup_view_views_test_api",
-      "//chrome/browser/ui/views/frame:toolbar_button_provider",
-      "//chrome/browser/ui/views/interaction",
-      "//chrome/browser/ui/views/location_bar:test_support",
-      "//chrome/browser/ui/views/page_action:interactive_test_support",
-      "//chrome/browser/ui/views/page_action:page_action_test_support",
-      "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/views/toolbar:test_support",
-      "//chrome/browser/ui/views/web_apps:test_support",
-      "//chrome/browser/ui/views/web_apps/sub_apps",
-      "//chrome/browser/ui/web_applications/test:test_support_ui",
-      "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/test/base:browser_test_waiters",
-      "//chrome/test/base:chrome_render_view_test",
-      "//chrome/test/base:chrome_test_scoped_utils",
-      "//chrome/test/base:chrome_test_utils",
-      "//chrome/test/base:devtools_coverage",
-      "//chrome/test/base:fake_gaia_mixin",
-      "//chrome/test/base:in_process_browser_test",
-      "//chrome/test/base:interactive_test_utils",
-      "//chrome/test/base:mixin_based_in_process_browser_test",
-      "//chrome/test/base:platform_browser_test",
-      "//chrome/test/base:save_desktop_snapshot",
-      "//chrome/test/base:test_launcher_utils",
-      "//chrome/test/base:test_switches",
-      "//chrome/test/base:ui_test_utils",
-      "//chrome/test/base:web_ui_mocha_browser_test",
-      "//chrome/test/base:web_ui_test_support",
-      "//chrome/test/interaction",
-      "//chrome/test/permissions",
-      "//components/autofill/content/browser:test_support",
-      "//components/supervised_user/core/browser",
-      "//components/webui/chrome_urls",
-      "//content/public/browser",
+  # These tests are only meant to run on an FYI bot because they
+  # test against live sites, as a way to catch potential regressions.
+  test("accessibility_live_site_tests") {
+    ldflags = []
+
+    deps = [
+      ":test_support",
+      "//chrome:packed_resources",
+      "//chrome:resources",
+      "//chrome:strings",
+      "//chrome/browser",
+      "//chrome/browser/ash/accessibility:live_site_tests",
+      "//chrome/browser/devtools",
+      "//chrome/renderer",
+      "//chrome/test/base:chrome_test_launcher",
+      "//chrome/test/base:chrome_test_suite",
+      "//chrome/test/base:interactive_ui_tests_runner",
+      "//components/resources",
+      "//components/sync",
+      "//components/sync:test_support",
       "//content/test:test_support",
+      "//crypto:test_support",
+      "//extensions/buildflags",
       "//google_apis:test_support",
-      "//mojo/public/cpp/bindings",
-      "//mojo/public/cpp/system",
-      "//ui/base/interaction:test_support",
-      "//ui/views/interaction:test_support",
-      "//ui/views/interaction/mouse:test_support",
+      "//net",
+      "//net:net_resources",
+      "//net:test_support",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/hunspell",
+      "//third_party/icu",
+      "//third_party/libpng:libpng_for_testonly",
+      "//ui/base:test_support",
+      "//ui/events:test_support",
+      "//ui/ozone",
+      "//ui/platform_window/common",
+      "//ui/resources:ui_test_pak",
+      "//ui/web_dialogs:test_support",
     ]
 
-    if (is_mac) {
-      public_deps += [ "//chrome/test/base:test_utils_mac" ]
+    if (is_linux) {
+      deps += [ "//ui/linux:display_server_utils" ]
     }
 
-    if (is_win) {
-      public_deps += [
-        "//chrome/test/base:always_on_top_window_killer_win",
-        "//chrome/test/base:process_helpers_win",
+    if (enable_extensions) {
+      deps += [
+        "//google_apis/common:test_support",
+        "//google_apis/drive",
       ]
-    }
-
-    if (is_chromeos) {
-      public_deps += [
-        "//chrome/test/base:cros_web_ui_browser_test",
-        "//chrome/test/base:javascript_browser_test",
-      ]
-    } else {
-      public_deps += [ "//chrome/browser/ui/webui/app_home" ]
-      public_deps += [ "//chrome/browser/first_run:test_support" ]
-    }
-    if (enable_dice_support) {
-      public_deps += [ "//chrome/browser/ui/profiles" ]
-    }
-  }
-
-  if (is_chromeos) {
-    assert(enable_extensions)
-
-    # These tests are only meant to run on an FYI bot because they
-    # test against live sites, as a way to catch potential regressions.
-    test("accessibility_live_site_tests") {
-      ldflags = []
-
-      deps = [
-        ":test_support",
-        "//chrome:packed_resources",
-        "//chrome:resources",
-        "//chrome:strings",
-        "//chrome/browser",
-        "//chrome/browser/ash/accessibility:live_site_tests",
-        "//chrome/browser/devtools",
-        "//chrome/renderer",
-        "//chrome/test/base:chrome_test_launcher",
-        "//chrome/test/base:chrome_test_suite",
-        "//chrome/test/base:interactive_ui_tests_runner",
-        "//components/resources",
-        "//components/sync",
-        "//components/sync:test_support",
-        "//content/test:test_support",
-        "//crypto:test_support",
-        "//extensions/buildflags",
-        "//google_apis:test_support",
-        "//net",
-        "//net:net_resources",
-        "//net:test_support",
-        "//skia",
-        "//testing/gmock",
-        "//testing/gtest",
-        "//third_party/hunspell",
-        "//third_party/icu",
-        "//third_party/libpng:libpng_for_testonly",
-        "//ui/base:test_support",
-        "//ui/events:test_support",
-        "//ui/ozone",
-        "//ui/platform_window/common",
-        "//ui/resources:ui_test_pak",
-        "//ui/web_dialogs:test_support",
-      ]
-
-      if (is_linux) {
-        deps += [ "//ui/linux:display_server_utils" ]
-      }
-
-      if (enable_extensions) {
-        deps += [
-          "//google_apis/common:test_support",
-          "//google_apis/drive",
-        ]
-      }
     }
   }
 }

@@ -892,6 +892,7 @@ source_set("unit_tests") {
   }
   if (!is_android && !is_chromeos) {
     sources += [ "channel_info_unittest.cc" ]
+    deps += [ "//chrome/test/base:chrome_test_scoped_utils" ]
   }
   if (enable_widevine_cdm_component && is_linux) {
     sources += [ "media/component_widevine_cdm_hint_file_linux_unittest.cc" ]

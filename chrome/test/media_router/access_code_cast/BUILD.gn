@@ -16,6 +16,7 @@ static_library("access_code_cast_integration_base") {
   public_deps = [
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/webui/access_code_cast",
+    "//chrome/test/base:chrome_test_utils",
   ]
 
   deps = [

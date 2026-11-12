@@ -345,6 +345,7 @@ if (!is_android) {
         deps += [
           "//chrome/browser/browsing_data:constants",
           "//chrome/browser/optimization_guide",
+          "//chrome/test/base:chrome_test_utils",
           "//components/keyed_service/content",
           "//components/live_caption:utils",
           "//components/soda",

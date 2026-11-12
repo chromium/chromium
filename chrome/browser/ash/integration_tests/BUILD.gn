@@ -33,6 +33,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_path_utils",
       "//chrome/test/base/ash/interactive:test_support",
       "//chrome/test/base/chromeos/crosier:ash_test_support",
       "//chrome/test/base/chromeos/crosier:proto",

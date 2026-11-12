@@ -121,6 +121,8 @@ if (!is_android) {
       deps += [
         ":test_utils",
         "//chrome/browser/ui:browser_tabstrip",
+        "//chrome/test/base:chrome_test_utils",
+        "//chrome/test/base:platform_browser_test",
       ]
     }
 

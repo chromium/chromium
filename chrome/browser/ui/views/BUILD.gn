@@ -1784,6 +1784,7 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:features",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_path_utils",
+    "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:in_process_browser_test",
     "//chrome/test/base:ui_test_utils",
     "//components/permissions:test_support",
@@ -1863,6 +1864,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/signin:test_support_ui",
       "//chrome/credential_provider/common:common_constants",
       "//chrome/test/base:testing_browser_process",
+      "//chrome/test/base:web_ui_test_support",
     ]
   }
 

@@ -496,6 +496,7 @@ if (!is_android) {
       "//chrome/browser:buildflags",
       "//chrome/browser:chrome_browser_main",
       "//chrome/browser/extensions",
+      "//chrome/browser/first_run:test_support",
       "//chrome/browser/infobars",
       "//chrome/browser/lifetime",
       "//chrome/browser/prefs:util",
@@ -635,6 +636,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/browser/infobars",
         "//chrome/browser/ui/views/infobars",
+        "//chrome/test/base:chrome_test_scoped_utils",
       ]
     }
 

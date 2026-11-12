@@ -330,6 +330,7 @@ if (enable_printing) {
         sources += [ "web_api/web_printing_browsertest.cc" ]
         deps += [
           "//chrome/browser/content_settings:content_settings_factory",
+          "//chrome/browser/ui/web_applications/test:test_support_ui",
           "//chrome/browser/web_applications",
           "//chrome/browser/web_applications:web_applications_test_support",
           "//chromeos/printing",

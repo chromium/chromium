@@ -12,5 +12,8 @@ source_set("test_support") {
     "interactive_uitest_elements.h",
   ]
 
-  deps = [ "//chrome/test:test_support_ui" ]
+  deps = [
+    "//base",
+    "//chrome/test/interaction",
+  ]
 }

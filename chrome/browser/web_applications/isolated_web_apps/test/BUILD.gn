@@ -18,7 +18,10 @@ if (!is_android) {
     # reached transitively through //chrome/test:test_support. Depending on
     # them directly would give browser_test binaries a second static path to
     # those source_sets and cause duplicate-symbol link errors.
-    public_deps = [ "//chrome/test:test_support" ]
+    public_deps = [
+      "//chrome/test:test_support",
+      "//components/webapps/isolated_web_apps/test_support",
+    ]
 
     deps = [
       "//base",

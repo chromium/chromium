@@ -73,7 +73,7 @@ source_set("test_support") {
     "controlled_frame_test_base.cc",
     "controlled_frame_test_base.h",
   ]
-
+  public_deps = [ "//chrome/browser/ui/web_applications/test:test_support_ui" ]
   deps = [
     "//base",
     "//base/version_info",

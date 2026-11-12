@@ -111,6 +111,7 @@ source_set("browser_tests") {
     ":create_shortcut_confirmation_view",
     ":launch_dialogs",
     ":progress_delay",
+    ":test_support",
     ":web_app_blocked_migration_infobar_delegate",
     ":web_app_install_dialog_delegate",
     ":web_app_install_flow_dialog_delegate",

@@ -158,7 +158,8 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/infobars",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/infobars",
-    "//chrome/test:test_support_ui",
+    "//chrome/test/base:ui_test_utils",
+    "//chrome/test/interaction",
     "//content/test:test_support",
     "//testing/gtest",
   ]

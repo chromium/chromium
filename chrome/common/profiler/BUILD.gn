@@ -110,6 +110,7 @@ source_set("platform_browser_tests") {
       "//chrome/common:channel_info",
       "//chrome/common:constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:platform_browser_test",
       "//components/metrics",
       "//components/version_info",
       "//content/test:test_support",
