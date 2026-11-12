@@ -221,15 +221,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
  private:
   void Shutdown();
 
-  // Init telemetry samplers that it is allowed to be used even before login.
-  void InitDeviceTelemetrySamplers();
-
   // Init samplers, collectors and event observers that need to start after an
   // affiliated user login with no delay, should only be called once on login.
   void InitOnAffiliatedLogin(Profile* profile);
-
-  // Init telemetry samplers that can only be used in affiliated users sessions.
-  void InitTelemetrySamplersOnAffiliatedLogin();
 
   // Init collectors and event observers that need to start after an affiliated
   // user login with a delay, should only be scheduled once on login.
@@ -377,9 +371,6 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void InitNetworkCollectors(Profile* profile);
 
   void InitNetworkPeriodicCollector(const std::string& collector_name,
-                                    std::unique_ptr<Sampler> sampler);
-
-  void InitNetworkConfiguredSampler(const std::string& sampler_name,
                                     std::unique_ptr<Sampler> sampler);
 
   // Initializes app telemetry samplers for the given profile.

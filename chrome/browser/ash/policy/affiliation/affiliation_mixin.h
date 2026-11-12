@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_POLICY_AFFILIATION_AFFILIATION_MIXIN_H_
 
 #include <memory>
-#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
@@ -43,12 +42,6 @@ class AffiliationMixin final : public InProcessBrowserTestMixin {
   // be called before SetUp to have an effect (e.g., directly after mixin
   // construction).
   void set_affiliated(bool affiliated) { affiliated_ = affiliated; }
-
-  // Returns the user policies of the user. Needs to be used to change the
-  // user's policies. Can only be used after setup is complete.
-  std::unique_ptr<UserPolicyBuilder> TakeUserPolicy() {
-    return std::move(user_policy_);
-  }
 
  private:
   AffiliationTestHelper GetAffiliationTestHelper() const;

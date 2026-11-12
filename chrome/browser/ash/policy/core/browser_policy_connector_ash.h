@@ -189,10 +189,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
     return tpm_auto_update_mode_policy_handler_.get();
   }
 
-  SystemProxyHandler* GetSystemProxyHandler() const {
-    return system_proxy_handler_.get();
-  }
-
   DeviceNamePolicyHandler* GetDeviceNamePolicyHandler() const {
     return device_name_policy_handler_.get();
   }

@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
-#include "chrome/browser/extensions/external_loader.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -59,8 +58,6 @@ class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
   // Then when the extensions are downloaded by the cache they will be sent to
   // the `loader`.
   void UpdateExtensionsList(base::DictValue extensions);
-
-  scoped_refptr<extensions::ExternalLoader> GetExtensionLoader();
 
   // Returns all cached extensions.
   base::DictValue GetCachedExtensionsForTesting() const;

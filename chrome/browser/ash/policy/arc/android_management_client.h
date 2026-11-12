@@ -75,10 +75,6 @@ class AndroidManagementClientImpl : public AndroidManagementClient {
   // AndroidManagementClient override:
   void StartCheckAndroidManagement(StatusCallback callback) override;
 
-  // |access_token| is owned by caller and must exist before
-  // StartCheckAndroidManagement is called for testing.
-  static void SetAccessTokenForTesting(const char* access_token);
-
  private:
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
                                   signin::AccessTokenInfo token_info);

@@ -51,10 +51,6 @@ class UserAddedRemovedReporter
 
   ~UserAddedRemovedReporter() override;
 
-  // Check the UserManager removed user cache for users removed before
-  // the reporter is created.
-  void ProcessRemoveUserCache();
-
   // Processes the removed user. `user_email` can be empty if the user's email
   // should not be reported (e.g. unaffiliated user). The removal event is
   // still reported in that case. Whether the reporting is enabled is checked
