@@ -1038,6 +1038,11 @@ void PasswordAutofillAgent::FillChangePasswordForm(
       continue;
     }
 
+    // Mark the field as a password field to trigger redaction in
+    // Annotated Page Content.
+    // This matters if the field is a plain text field, which would
+    // otherwise not be redacted.
+    input_element.MaybeSetHasBeenPasswordField();
     DoFillField(input_element, task.second,
                 FieldPropertiesFlags::kAutofilledChangePasswordFormOnPageLoad);
     last_element = input_element;

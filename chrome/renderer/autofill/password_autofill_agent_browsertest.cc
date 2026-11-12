@@ -5504,6 +5504,58 @@ TEST_F(PasswordAutofillAgentTest, FillChangePasswordForm) {
   }
 }
 
+// Tests that `FillChangePasswordForm` marks filled text fields as password
+// fields so that they are redacted for AI page content and screenshots.
+TEST_F(PasswordAutofillAgentTest, FillChangePasswordFormWithTextFields) {
+  static constexpr char kPasswordChangeFormWithTextFieldsHTML[] =
+      "<FORM name='ChangeWithUsernameForm' action='http://www.bidule.com'>"
+      "  <INPUT type='text' id='username'/>"
+      "  <INPUT type='text' id='password'/>"
+      "  <INPUT type='text' id='newpassword'/>"
+      "  <INPUT type='text' id='confirmpassword'/>"
+      "  <INPUT type='submit' value='Login'/>"
+      "</FORM>";
+
+  LoadHTML(kPasswordChangeFormWithTextFieldsHTML);
+  UpdateUrlForHTML(kPasswordChangeFormWithTextFieldsHTML);
+  base::RunLoop().RunUntilIdle();
+
+  WebInputElement password = GetInputElementByID("password"),
+                  new_password = GetInputElementByID("newpassword"),
+                  confirmation_password =
+                      GetInputElementByID("confirmpassword");
+  auto password_id = form_util::GetFieldRendererId(password),
+       new_password_id = form_util::GetFieldRendererId(new_password),
+       password_confirmation =
+           form_util::GetFieldRendererId(confirmation_password);
+
+  EXPECT_EQ(blink::mojom::FormControlType::kInputText,
+            password.FormControlTypeForAutofill());
+  EXPECT_EQ(blink::mojom::FormControlType::kInputText,
+            new_password.FormControlTypeForAutofill());
+  EXPECT_EQ(blink::mojom::FormControlType::kInputText,
+            confirmation_password.FormControlTypeForAutofill());
+
+  base::MockCallback<base::OnceCallback<void(const std::optional<FormData>&)>>
+      mock_reply;
+  EXPECT_CALL(mock_reply, Run(testing::_));
+
+  password_autofill_agent_->FillChangePasswordForm(
+      password_id, new_password_id, password_confirmation, u"qwerty",
+      u"Pa$sw0rD", mock_reply.Get());
+
+  EXPECT_EQ(u"qwerty", password.Value().Utf16());
+  EXPECT_EQ(u"Pa$sw0rD", new_password.Value().Utf16());
+  EXPECT_EQ(u"Pa$sw0rD", confirmation_password.Value().Utf16());
+
+  EXPECT_EQ(blink::mojom::FormControlType::kInputPassword,
+            password.FormControlTypeForAutofill());
+  EXPECT_EQ(blink::mojom::FormControlType::kInputPassword,
+            new_password.FormControlTypeForAutofill());
+  EXPECT_EQ(blink::mojom::FormControlType::kInputPassword,
+            confirmation_password.FormControlTypeForAutofill());
+}
+
 // Tests that `FillChangePasswordForm` invokes callback with std::nullopt when
 // form wasn't filled.
 TEST_F(PasswordAutofillAgentTest, FillChangePasswordFormFailed) {
