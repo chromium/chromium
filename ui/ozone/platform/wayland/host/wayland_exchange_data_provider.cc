@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/pickle.h"
@@ -185,9 +186,9 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   const auto lines =
       base::SplitString(data_as_string16, u"\r\n", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
-  if (lines.size() != 2U) {
+  if (lines.empty()) {
     LOG(WARNING) << "Invalid data passed as text/x-moz-url; it must contain "
-                 << "exactly 2 lines but has " << lines.size() << " instead.";
+                 << "at least 1 line.";
     return;
   }
   GURL url(lines[0]);
@@ -197,7 +198,8 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
     return;
   }
 
-  ClipboardUrlInfo url_info(url, lines[1]);
+  ClipboardUrlInfo url_info(url,
+                            lines.size() > 1U ? lines[1] : std::u16string());
   provider->SetURLs(base::span_from_ref(url_info));
 }
 
@@ -232,8 +234,9 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
   if (HasFile())
     mime_types.push_back(ui::kMimeTypeUriList);
 
-  if (HasURL(kFilenameToURLPolicy))
+  if (HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES)) {
     mime_types.push_back(ui::kMimeTypeMozillaUrl);
+  }
 
   if (HasHtml()) {
     mime_types.push_back(ui::kMimeTypeHtml);
@@ -307,25 +310,34 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   CHECK(out_content, base::NotFatalUntil::M163);
   CHECK(IsMimeTypeSupported(mime_type), base::NotFatalUntil::M163);
 
-  if (mime_type == ui::kMimeTypeMozillaUrl ||
-      mime_type == ui::kMimeTypeUriList) {
+  if (mime_type == ui::kMimeTypeMozillaUrl) {
+    const std::vector<ClipboardUrlInfo> url_infos =
+        GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    if (url_infos.empty()) {
+      return false;
+    }
+    // OSExchangeDataProviderNonBacked stores at most one non-filename URL, and
+    // text/x-moz-url holds a single UTF-16 "URL\nTitle" entry (the format
+    // Firefox, GTK applications, and the X11 implementation use).
+    DCHECK_EQ(url_infos.size(), 1u);
+    const ClipboardUrlInfo& url_info = url_infos.front();
+    const std::u16string moz_url = base::StrCat(
+        {base::UTF8ToUTF16(url_info.url.spec()), u"\n", url_info.title});
+    out_content->append(base::as_string_view(base::as_byte_span(moz_url)));
+    return true;
+  }
+  if (mime_type == ui::kMimeTypeUriList) {
     const std::vector<ClipboardUrlInfo> url_infos =
         GetURLs(kFilenameToURLPolicy);
     if (url_infos.empty()) {
       return false;
     }
-    // Mozilla format: URL\nTitle\n for each entry
+    // text/uri-list (RFC 2483) is a list of URIs separated by CRLF.
+    std::vector<std::string_view> uris;
     for (const auto& url_info : url_infos) {
-      if (!out_content->empty()) {
-        out_content->append("\n");
-      }
-      out_content->append(url_info.url.spec());
-      if (url_info.title.empty()) {
-        continue;
-      }
-      out_content->append("\n");
-      out_content->append(base::UTF16ToUTF8(url_info.title));
+      uris.push_back(url_info.url.spec());
     }
+    out_content->append(base::JoinString(uris, "\r\n"));
     return true;
   }
   if ((mime_type == ui::kMimeTypeHtml || mime_type == ui::kMimeTypeUtf8Html) &&

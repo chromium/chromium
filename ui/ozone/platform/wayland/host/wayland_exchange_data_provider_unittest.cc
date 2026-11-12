@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/pickle.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/task_environment.h"
@@ -16,7 +18,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -77,6 +82,74 @@ TEST_F(WaylandExchangeDataProviderTest, FileNameAsUriList) {
   provider.AddData(ToClipboardData("file:///dev/null"), kMimeTypeUriList);
   EXPECT_TRUE(provider.ExtractData(kMimeTypeUriList, &extracted));
   EXPECT_EQ("file:///dev/null", extracted);
+}
+
+// text/uri-list holds CRLF-separated URIs only, without titles. File-only
+// providers offer text/uri-list and not text/x-moz-url.
+TEST_F(WaylandExchangeDataProviderTest, ExtractUriList) {
+  WaylandExchangeDataProvider provider;
+  provider.SetFilenames({FileInfo(base::FilePath("/tmp/a"), base::FilePath()),
+                         FileInfo(base::FilePath("/tmp/b"), base::FilePath())});
+  EXPECT_THAT(provider.BuildMimeTypesList(),
+              ::testing::AllOf(
+                  ::testing::Contains(kMimeTypeUriList),
+                  ::testing::Not(::testing::Contains(kMimeTypeMozillaUrl))));
+  std::string extracted;
+  EXPECT_FALSE(provider.ExtractData(kMimeTypeMozillaUrl, &extracted));
+  EXPECT_TRUE(provider.ExtractData(kMimeTypeUriList, &extracted));
+  EXPECT_EQ("file:///tmp/a\r\nfile:///tmp/b", extracted);
+
+  WaylandExchangeDataProvider url_provider;
+  const ClipboardUrlInfo url_info(GURL("https://example.com/"), u"Title");
+  url_provider.SetURLs(base::span_from_ref(url_info));
+  extracted.clear();
+  EXPECT_TRUE(url_provider.ExtractData(kMimeTypeUriList, &extracted));
+  EXPECT_EQ("https://example.com/", extracted);
+}
+
+// text/x-moz-url is UTF-16 encoded "URL\nTitle", which is what other
+// applications (and AddData()) expect.  Regression test for
+// https://crbug.com/572987944.
+TEST_F(WaylandExchangeDataProviderTest, ExtractMozUrl) {
+  WaylandExchangeDataProvider provider;
+  std::string extracted;
+  EXPECT_FALSE(provider.ExtractData(kMimeTypeMozillaUrl, &extracted));
+
+  const ClipboardUrlInfo url_info(GURL("https://example.com/"),
+                                  u"Title \u00e9");
+  provider.SetURLs(base::span_from_ref(url_info));
+  EXPECT_THAT(provider.BuildMimeTypesList(),
+              ::testing::Contains(kMimeTypeMozillaUrl));
+  EXPECT_TRUE(provider.ExtractData(kMimeTypeMozillaUrl, &extracted));
+  const std::u16string kExpected = u"https://example.com/\nTitle \u00e9";
+  EXPECT_EQ(base::as_string_view(base::as_byte_span(kExpected)), extracted);
+
+  // Round trip through the drop side.
+  WaylandExchangeDataProvider dropped;
+  dropped.AddData(ToClipboardData(extracted), kMimeTypeMozillaUrl);
+  const std::vector<ClipboardUrlInfo> url_infos =
+      dropped.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  ASSERT_EQ(1U, url_infos.size());
+  EXPECT_EQ(GURL("https://example.com/"), url_infos[0].url);
+  EXPECT_EQ(u"Title \u00e9", url_infos[0].title);
+
+  // An empty title produces "URL\n", which also round-trips through AddData().
+  WaylandExchangeDataProvider untitled_provider;
+  const ClipboardUrlInfo untitled_url_info(GURL("https://example.com/"), u"");
+  untitled_provider.SetURLs(base::span_from_ref(untitled_url_info));
+  extracted.clear();
+  EXPECT_TRUE(untitled_provider.ExtractData(kMimeTypeMozillaUrl, &extracted));
+  const std::u16string kExpectedUntitled = u"https://example.com/\n";
+  EXPECT_EQ(base::as_string_view(base::as_byte_span(kExpectedUntitled)),
+            extracted);
+
+  WaylandExchangeDataProvider untitled_dropped;
+  untitled_dropped.AddData(ToClipboardData(extracted), kMimeTypeMozillaUrl);
+  const std::vector<ClipboardUrlInfo> untitled_url_infos =
+      untitled_dropped.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  ASSERT_EQ(1U, untitled_url_infos.size());
+  EXPECT_EQ(GURL("https://example.com/"), untitled_url_infos[0].url);
+  EXPECT_EQ(u"", untitled_url_infos[0].title);
 }
 
 TEST_F(WaylandExchangeDataProviderTest, FileContents) {

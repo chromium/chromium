@@ -744,7 +744,8 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
   } kCases[] = {
       {{}, {}, {}},
       {u"http://sample.com/\r\nSample", "http://sample.com/", u"Sample"},
-      {u"http://title.must.be.set/", {}, {}},
+      {u"http://sample.com/\n", "http://sample.com/", {}},
+      {u"http://sample.com/", "http://sample.com/", {}},
       {u"url.must.be.valid/and/have.scheme\r\nInvalid URL", {}, {}},
       {u"file:///files/are/ok\r\nThe policy allows that",
        "file:///files/are/ok", u"The policy allows that"}};
