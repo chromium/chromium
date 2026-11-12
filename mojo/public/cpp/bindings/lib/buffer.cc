@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 
 #include <cstring>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -44,7 +45,7 @@ Buffer::~Buffer() = default;
 Buffer& Buffer::operator=(Buffer&& other) {
   message_ = other.message_;
   message_payload_size_ = other.message_payload_size_;
-  data_ = other.data_;
+  data_ = std::move(other.data_);
   size_ = other.size_;
   cursor_ = other.cursor_;
   other.Reset();
@@ -65,13 +66,10 @@ size_t Buffer::Allocate(size_t num_bytes) {
     DCHECK_LE(message_payload_size_, new_cursor);
     size_t additional_bytes = new_cursor - message_payload_size_;
     DCHECK(base::IsValueInRangeForNumericType<uint32_t>(additional_bytes));
-    uint32_t new_size;
-    MojoResult rv = MojoAppendMessageData(
-        message_.value(), static_cast<uint32_t>(additional_bytes), nullptr, 0,
-        nullptr, &data_, &new_size);
+    MojoResult rv = AppendMessageData(static_cast<uint32_t>(additional_bytes),
+                                      nullptr, 0, nullptr);
     DCHECK_EQ(MOJO_RESULT_OK, rv);
     message_payload_size_ = new_cursor;
-    size_ = new_size;
   }
 
   DCHECK_LE(new_cursor, size_);
@@ -93,15 +91,13 @@ size_t Buffer::Allocate(size_t num_bytes) {
 bool Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
   DCHECK(message_.is_valid());
 
-  uint32_t new_size = 0;
-  MojoResult rv = MojoAppendMessageData(
-      message_.value(), 0, reinterpret_cast<MojoHandle*>(handles->data()),
-      static_cast<uint32_t>(handles->size()), nullptr, &data_, &new_size);
+  MojoResult rv =
+      AppendMessageData(0, reinterpret_cast<MojoHandle*>(handles->data()),
+                        static_cast<uint32_t>(handles->size()), nullptr);
   if (rv != MOJO_RESULT_OK) {
     return false;
   }
 
-  size_ = new_size;
   for (auto& handle : *handles) {
     std::ignore = handle.release();
   }
@@ -122,16 +118,11 @@ void Buffer::Seal() {
   MojoAppendMessageDataOptions options;
   options.struct_size = sizeof(options);
   options.flags = MOJO_APPEND_MESSAGE_DATA_FLAG_COMMIT_SIZE;
-  void* data;
-  uint32_t size;
-  MojoResult rv = MojoAppendMessageData(message_.value(),
-                                        static_cast<uint32_t>(additional_bytes),
-                                        nullptr, 0, &options, &data, &size);
+  MojoResult rv = AppendMessageData(static_cast<uint32_t>(additional_bytes),
+                                    nullptr, 0, &options);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
   message_ = MessageHandle();
   message_payload_size_ = cursor_;
-  data_ = data;
-  size_ = size;
 }
 
 void Buffer::Reset() {
@@ -139,6 +130,31 @@ void Buffer::Reset() {
   data_ = nullptr;
   size_ = 0;
   cursor_ = 0;
+}
+
+MojoResult Buffer::AppendMessageData(
+    uint32_t additional_payload_size,
+    const MojoHandle* handles,
+    uint32_t num_handles,
+    const MojoAppendMessageDataOptions* options) {
+  // Clear `data_` and `size_` before calling `MojoAppendMessageData()`.
+  // Extending the message may reallocate its backing storage and free the old
+  // buffer inside `MojoAppendMessageData()`, which would cause `data_` to
+  // dangle while the call is in progress if it still referenced the old buffer.
+  // This also leaves `data_` and `size_` in a clean empty state if the call
+  // fails.
+  data_ = nullptr;
+  size_ = 0;
+  void* data = nullptr;
+  uint32_t size = 0;
+  MojoResult rv =
+      MojoAppendMessageData(message_.value(), additional_payload_size, handles,
+                            num_handles, options, &data, &size);
+  if (rv == MOJO_RESULT_OK) {
+    data_ = data;
+    size_ = size;
+  }
+  return rv;
 }
 
 }  // namespace internal

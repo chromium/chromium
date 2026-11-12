@@ -376,7 +376,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   ScopedMessageHandle handle_;
 
   // A Buffer which may be used to allocate blocks of data within the message
-  // payload for reading or writing.
+  // payload for reading or writing. For serialized messages, this points to
+  // storage owned by `handle_`. For unserialized messages, this points to the
+  // dummy header inside the `UnserializedMessageContext` attached to `handle_`.
+  // In either case, `payload_buffer_` must be reset before `handle_` or its
+  // attached context is destroyed.
   internal::Buffer payload_buffer_;
 
   std::vector<ScopedHandle> handles_;

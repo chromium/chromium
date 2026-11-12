@@ -499,8 +499,8 @@ Message Message::CreateFromMessageHandle(ScopedMessageHandle* message_handle) {
 Message::~Message() = default;
 
 Message& Message::operator=(Message&& other) noexcept {
-  handle_ = std::move(other.handle_);
   payload_buffer_ = std::move(other.payload_buffer_);
+  handle_ = std::move(other.handle_);
   handles_ = std::move(other.handles_);
   associated_endpoint_handles_ = std::move(other.associated_endpoint_handles_);
   receiver_connection_group_ = other.receiver_connection_group_;
@@ -517,8 +517,8 @@ Message& Message::operator=(Message&& other) noexcept {
 }
 
 void Message::Reset() {
-  handle_.reset();
   payload_buffer_.Reset();
+  handle_.reset();
   handles_.clear();
   associated_endpoint_handles_.clear();
   receiver_connection_group_ = nullptr;
@@ -715,6 +715,13 @@ void Message::NotifyPeerClosureForSerializedHandles(
 }
 
 void Message::SerializeIfNecessary() {
+  // For unserialized messages, `payload_buffer_` points to the header stored
+  // inside the attached `UnserializedMessageContext`, which
+  // `MojoSerializeMessage()` destroys after serializing. Reset
+  // `payload_buffer_` first so its `raw_ptr` does not dangle.
+  if (!serialized_) {
+    payload_buffer_.Reset();
+  }
   MojoResult rv = MojoSerializeMessage(handle_->value(), nullptr);
   if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     return;
@@ -741,6 +748,11 @@ Message::TakeUnserializedContext(uintptr_t tag) {
   if (context->tag() != tag) {
     return nullptr;
   }
+
+  // `payload_buffer_` points to `context->header()`, so reset it before
+  // transferring ownership of `context` to the caller (which may destroy
+  // `context` before this `Message` is destroyed).
+  payload_buffer_.Reset();
 
   // Detach the context from the message.
   rv = MojoSetMessageContext(handle_->value(), 0, nullptr, nullptr, nullptr);

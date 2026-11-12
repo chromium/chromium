@@ -7,10 +7,15 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
+#include "base/test/bind.h"
+#include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +26,35 @@ namespace {
 constexpr int32_t kTestMessageName = 42;
 constexpr int32_t kTestMessageFlags = 7;
 constexpr uint32_t kTestPayloadSize = 32;
+
+class TestUnserializedMessageContext
+    : public internal::UnserializedMessageContext {
+ public:
+  static const internal::UnserializedMessageContext::Tag kMessageTag;
+
+  TestUnserializedMessageContext(
+      uint32_t name,
+      uint32_t flags,
+      base::OnceClosure destruction_callback = base::OnceClosure())
+      : UnserializedMessageContext(&kMessageTag, name, flags),
+        destruction_callback_(std::move(destruction_callback)) {}
+  ~TestUnserializedMessageContext() override {
+    if (destruction_callback_) {
+      std::move(destruction_callback_).Run();
+    }
+  }
+
+  // internal::UnserializedMessageContext:
+  void Serialize(Message& message) override {
+    message.payload_buffer()->Allocate(kTestPayloadSize);
+  }
+
+ private:
+  base::OnceClosure destruction_callback_;
+};
+
+const internal::UnserializedMessageContext::Tag
+    TestUnserializedMessageContext::kMessageTag = {};
 
 void CreateTestMessagePayload(std::vector<uint8_t>* bytes,
                               std::vector<ScopedHandle>* handles) {
@@ -81,6 +115,89 @@ TEST(BindingsMessageTest, ConstructFromPayload) {
 
   EXPECT_EQ(out_bytes1, out_bytes2);
   EXPECT_EQ(out_handles1.size(), out_handles2.size());
+}
+
+TEST(BindingsMessageTest, AllocateExceedingCapacityReallocatesPayloadBuffer) {
+  Message message(kTestMessageName, kTestMessageFlags, 0, 0, nullptr);
+  ASSERT_TRUE(message.payload_buffer()->is_valid());
+
+  // Allocating `initial_capacity` bytes on top of the already-written header
+  // (`cursor() > 0`) exceeds the initial capacity and forces `Buffer::Allocate`
+  // to reallocate the backing storage.
+  const size_t initial_capacity = message.payload_buffer()->size();
+  ASSERT_GT(message.payload_buffer()->cursor(), 0u);
+  message.payload_buffer()->Allocate(initial_capacity);
+  EXPECT_GT(message.payload_buffer()->size(), initial_capacity);
+
+  ScopedMessageHandle handle = message.TakeMojoMessage();
+  EXPECT_TRUE(handle.is_valid());
+  EXPECT_TRUE(message.IsNull());
+  EXPECT_EQ(nullptr, message.payload_buffer()->data());
+}
+
+TEST(BindingsMessageTest, MoveAssignAndResetReleasePayloadBuffer) {
+  Message message1(kTestMessageName, kTestMessageFlags, kTestPayloadSize, 0,
+                   nullptr);
+  Message message2(kTestMessageName + 1, kTestMessageFlags,
+                   kTestPayloadSize * 2, 0, nullptr);
+  EXPECT_FALSE(message1.IsNull());
+  EXPECT_FALSE(message2.IsNull());
+
+  // Move-assigning over a non-null Message should cleanly release the
+  // overwritten message's buffer and handle.
+  message1 = std::move(message2);
+  EXPECT_FALSE(message1.IsNull());
+  EXPECT_EQ(static_cast<uint32_t>(kTestMessageName + 1), message1.name());
+
+  // Explicitly resetting a non-null Message should cleanly release its buffer
+  // and handle.
+  message1.Reset();
+  EXPECT_TRUE(message1.IsNull());
+  EXPECT_EQ(nullptr, message1.payload_buffer()->data());
+}
+
+TEST(BindingsMessageTest, LazySerializationDestroysContext) {
+  bool context_destroyed = false;
+  Message message(
+      std::make_unique<TestUnserializedMessageContext>(
+          kTestMessageName, kTestMessageFlags,
+          base::BindLambdaForTesting([&] { context_destroyed = true; })),
+      MOJO_CREATE_MESSAGE_FLAG_NONE);
+  EXPECT_FALSE(message.is_serialized());
+  EXPECT_FALSE(context_destroyed);
+
+  message.SerializeIfNecessary();
+  EXPECT_TRUE(context_destroyed);
+  EXPECT_TRUE(message.is_serialized());
+  EXPECT_EQ(kTestPayloadSize, message.payload_num_bytes());
+
+  // Calling SerializeIfNecessary() again on an already-serialized message is a
+  // no-op and preserves the payload buffer.
+  message.SerializeIfNecessary();
+  EXPECT_TRUE(message.is_serialized());
+  EXPECT_EQ(kTestPayloadSize, message.payload_num_bytes());
+}
+
+TEST(BindingsMessageTest, DestroyTakenUnserializedContextBeforeMessage) {
+  bool context_destroyed = false;
+  Message message(
+      std::make_unique<TestUnserializedMessageContext>(
+          kTestMessageName, kTestMessageFlags,
+          base::BindLambdaForTesting([&] { context_destroyed = true; })),
+      MOJO_CREATE_MESSAGE_FLAG_NONE);
+  EXPECT_FALSE(message.is_serialized());
+
+  auto context =
+      message.TakeUnserializedContext<TestUnserializedMessageContext>();
+  ASSERT_TRUE(context);
+  EXPECT_EQ(static_cast<uint32_t>(kTestMessageName), context->message_name());
+  EXPECT_EQ(static_cast<uint32_t>(kTestMessageFlags), context->message_flags());
+  EXPECT_EQ(nullptr, message.payload_buffer()->data());
+
+  // Destroy the extracted context before `message` goes out of scope to ensure
+  // `message` no longer holds any dangling reference to it.
+  context.reset();
+  EXPECT_TRUE(context_destroyed);
 }
 
 }  // namespace
