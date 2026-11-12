@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -16,11 +17,7 @@
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event_handler.h"
-#include "ui/views/widget/widget_observer.h"
-
-namespace views {
-class Widget;
-}
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -30,7 +27,6 @@ namespace ash {
 // over inheritance).
 class ASH_EXPORT TouchObserverHud
     : public ui::EventHandler,
-      public views::WidgetObserver,
       public display::DisplayObserver,
       public display::DisplayConfigurator::Observer,
       public display::DisplayManagerObserver {
@@ -58,13 +54,10 @@ class ASH_EXPORT TouchObserverHud
   virtual void UnsetHudForRootWindowController(
       RootWindowController* controller) = 0;
 
-  views::Widget* widget() { return widget_; }
+  views::Widget* widget() { return widget_.get(); }
 
   // ui::EventHandler:
   void OnTouchEvent(ui::TouchEvent* event) override = 0;
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
 
   // display::DisplayObserver:
   void OnDisplaysRemoved(const display::Displays& removed_displays) override;
@@ -83,10 +76,15 @@ class ASH_EXPORT TouchObserverHud
  private:
   friend class TouchHudTestBase;
 
+  // Called when the widget is closed other than by deleting `this`, e.g. when
+  // its window is destroyed with its root window. Deletes `this`, and with it
+  // the widget.
+  void OnWidgetClosed(views::Widget::ClosedReason reason);
+
   const int64_t display_id_;
   raw_ptr<aura::Window> root_window_;
 
-  raw_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> widget_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

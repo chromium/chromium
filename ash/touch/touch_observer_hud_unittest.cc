@@ -19,6 +19,7 @@
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -190,7 +191,7 @@ class TouchHudTestBase : public AshTestBase {
   }
 
   views::Widget* GetWidgetForTouchHud(TouchObserverHud* hud) {
-    return hud->widget_;
+    return hud->widget_.get();
   }
 
   int64_t internal_display_id_;
@@ -493,6 +494,40 @@ TEST_F(TouchHudDebugTest, Headless) {
   // Check if the display's touch HUD is set correctly.
   EXPECT_EQ(internal_display_id(), GetPrimaryDisplay().id());
   CheckInternalDisplay();
+}
+
+// Checks if a debug touch HUD and its widget are deleted when the HUD's display
+// is removed.
+TEST_F(TouchHudDebugTest, RemoveDisplayDeletesHud) {
+  SetupDualDisplays();
+
+  // The widget, and with it its contents view, is deleted only by the HUD.
+  views::ViewTracker contents_tracker(
+      GetWidgetForTouchHud(GetExternalRootController()->touch_hud_debug())
+          ->GetContentsView());
+
+  RemoveExternalDisplay();
+
+  EXPECT_FALSE(contents_tracker.view());
+}
+
+// Checks if a debug touch HUD and its widget are deleted when the HUD's window
+// is destroyed first, as happens when its root window shuts down.
+TEST_F(TouchHudDebugTest, DestroyWindowDeletesHud) {
+  SetupDualDisplays();
+
+  TouchHudDebug* hud = GetExternalRootController()->touch_hud_debug();
+  views::Widget* widget = GetWidgetForTouchHud(hud);
+  views::ViewTracker contents_tracker(widget->GetContentsView());
+
+  // A root window that shuts down never uses its pointers to the HUD again,
+  // but this one stays, so detach the HUD from it first.
+  GetExternalRootWindow()->RemovePreTargetHandler(hud);
+  GetExternalRootController()->set_touch_hud_debug(nullptr);
+
+  delete widget->GetNativeWindow();
+
+  EXPECT_FALSE(contents_tracker.view());
 }
 
 // Checks projection touch HUD with a sequence of touch-pressed, touch-moved,

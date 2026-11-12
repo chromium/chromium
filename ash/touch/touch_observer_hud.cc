@@ -8,6 +8,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/shell.h"
+#include "base/functional/bind.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,7 +21,7 @@ TouchObserverHud::TouchObserverHud(aura::Window* initial_root,
                                    const std::string& widget_name)
     : display_id_(GetRootWindowSettings(initial_root)->display_id),
       root_window_(initial_root),
-      widget_(new views::Widget()) {
+      widget_(std::make_unique<views::Widget>()) {
   const display::Display& display =
       Shell::Get()->display_manager()->GetDisplayForId(display_id_);
 
@@ -30,7 +31,7 @@ TouchObserverHud::TouchObserverHud(aura::Window* initial_root,
   content->SetSize(display_size);
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
@@ -40,11 +41,11 @@ TouchObserverHud::TouchObserverHud(aura::Window* initial_root,
       Shell::GetContainer(root_window_, kShellWindowId_OverlayContainer);
   params.name = widget_name;
   widget_->Init(std::move(params));
+  widget_->MakeCloseSynchronous(base::BindOnce(
+      &TouchObserverHud::OnWidgetClosed, base::Unretained(this)));
   widget_->SetContentsView(std::move(content));
   widget_->StackAtTop();
   widget_->Show();
-
-  widget_->AddObserver(this);
 
   // Observe changes in display size and mode to update touch HUD.
   Shell::Get()->display_configurator()->AddObserver(this);
@@ -55,9 +56,6 @@ TouchObserverHud::TouchObserverHud(aura::Window* initial_root,
 TouchObserverHud::~TouchObserverHud() {
   Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
   Shell::Get()->display_configurator()->RemoveObserver(this);
-
-  widget_->RemoveObserver(this);
-  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 void TouchObserverHud::Remove() {
@@ -67,11 +65,6 @@ void TouchObserverHud::Remove() {
       RootWindowController::ForWindow(root_window_);
   UnsetHudForRootWindowController(controller);
 
-  widget_->CloseNow();
-}
-
-void TouchObserverHud::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(widget, widget_);
   delete this;
 }
 
@@ -79,10 +72,14 @@ void TouchObserverHud::OnDisplaysRemoved(
     const display::Displays& removed_displays) {
   for (const auto& display : removed_displays) {
     if (display.id() == display_id_) {
-      widget_->CloseNow();
+      delete this;
       break;
     }
   }
+}
+
+void TouchObserverHud::OnWidgetClosed(views::Widget::ClosedReason reason) {
+  delete this;
 }
 
 void TouchObserverHud::OnDisplayMetricsChanged(const display::Display& display,
