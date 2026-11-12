@@ -262,16 +262,23 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
   // The renderer learns about the fullscreen exit asynchronously (e.g. after
   // the Wayland compositor acks the window state change). Until then, it
   // resolves requestFullscreen() without asking the browser, so wait for the
-  // exit to reach the renderer.
+  // exit to reach the renderer. The initial enter `fullscreenchange` event may
+  // still be queued for the next animation frame here, so ignore events until
+  // `document.fullscreenElement` becomes null.
   EXPECT_EQ(true, content::EvalJs(initiator_, R"(
       new Promise(resolve => {
         if (!document.fullscreenElement) {
           resolve(true);
           return;
         }
-        document.addEventListener(
-            'fullscreenchange', () => resolve(!document.fullscreenElement),
-            {once: true});
+        const onFullscreenChange = () => {
+          if (!document.fullscreenElement) {
+            document.removeEventListener(
+                'fullscreenchange', onFullscreenChange);
+            resolve(true);
+          }
+        };
+        document.addEventListener('fullscreenchange', onFullscreenChange);
       }))"));
 
   // While the dialog is showing, tab fullscreen cannot be entered.
