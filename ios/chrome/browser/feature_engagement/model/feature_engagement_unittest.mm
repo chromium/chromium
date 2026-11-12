@@ -1656,3 +1656,67 @@ TEST_F(FeatureEngagementTest,
   tracker->Dismissed(
       feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
 }
+
+// Tests that `kIPHiOSGeminiLiveNewBadgeFeature` does not trigger on the same
+// day as the 1st-time Live IPH, triggers for the next 7 days, and stops
+// triggering on the 8th day.
+TEST_F(FeatureEngagementTest,
+       TestGeminiLiveNewBadge_TriggersForSevenDaysAfterIPH) {
+  constexpr int kNewBadgeDurationDays = 7;
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  tracker->NotifyEvent(feature_engagement::events::kIOSGeminiLiveIPHTriggered);
+
+  // Should not trigger on the same day the 1st-time IPH was shown.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature));
+
+  // Should trigger on each of the next 7 days.
+  for (int day = 0; day < kNewBadgeDurationDays; ++day) {
+    scoped_clock.Advance(base::Days(1));
+    EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+        feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature));
+    tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
+  }
+
+  // Should stop triggering after 7 days have elapsed.
+  scoped_clock.Advance(base::Days(1));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature));
+}
+
+// Tests that `kIPHiOSGeminiLiveNewBadgeFeature` stops triggering once Gemini
+// Live has been used.
+TEST_F(FeatureEngagementTest, TestGeminiLiveNewBadge_StopsAfterLiveUsed) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  tracker->NotifyEvent(feature_engagement::events::kIOSGeminiLiveIPHTriggered);
+  scoped_clock.Advance(base::Days(1));
+
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature));
+  tracker->Dismissed(feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature);
+
+  tracker->NotifyEvent(feature_engagement::events::kIOSGeminiLiveUsed);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature));
+}

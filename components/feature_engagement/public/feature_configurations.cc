@@ -3592,11 +3592,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig(events::kIOSGeminiLiveUsed, Comparator(EQUAL, 0),
                     /*window=*/kMaxWindowPeriod, /*storage=*/kMaxStoragePeriod);
 
-    // After the user has seen the Live 1st-time IPH (at least 1 time in last 14
-    // days).
+    // After the user has seen the Live 1st-time IPH (at least 1 time in last 8
+    // days, so the badge shows for 7 days starting the day after the IPH).
     config.event_configs.insert(
         EventConfig(events::kIOSGeminiLiveIPHTriggered,
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), /*window=*/14,
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), /*window=*/8,
                     /*storage=*/kMaxStoragePeriod));
     // Show the "new" badge the next day (0 times today).
     config.event_configs.insert(EventConfig(events::kIOSGeminiLiveIPHTriggered,
