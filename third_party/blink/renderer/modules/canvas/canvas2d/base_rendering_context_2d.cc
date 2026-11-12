@@ -45,6 +45,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_pool.h"
@@ -136,6 +137,7 @@
 #include "third_party/blink/renderer/platform/text/unicode_bidi.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -1174,11 +1176,31 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
 scoped_refptr<ExportedCanvasResource>
 BaseRenderingContext2D::CreateExportedResource(
     scoped_refptr<CanvasResourceSharedImage> resource) {
+  // Callbacks below never run on the different thread, but could be destroyed
+  // on different thread if current thread is gone (and so PostTask will fail) .
+  auto wait_sync_token =
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          [](scoped_refptr<CanvasResourceSharedImage> resource,
+             gpu::SyncToken sync_token) {
+            resource->WaitSyncToken(sync_token);
+          },
+          resource));
+
+  auto release_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
+      [](scoped_refptr<CanvasResourceSharedImage> resource,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        if (is_lost) {
+          resource->NotifyResourceLost();
+        }
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
+      },
+      resource));
+
   auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
-      resource, resource->GetSharedImage(), resource->sync_token(),
+      resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas,
       color_params_.GetGfxHdrMetadata(), context_provider_wrapper_,
-      is_accelerated_);
+      is_accelerated_, std::move(wait_sync_token), std::move(release_callback));
   exported_resource->SetOriginClean(OriginClean());
   return exported_resource;
 }

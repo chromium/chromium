@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -292,9 +293,9 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
   const gfx::Rect damage_rect(kDamageWidth, kDamageHeight);
   auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
-      resource, resource->GetSharedImage(), resource->sync_token(),
+      resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
-      nullptr, false);
+      nullptr, false, base::NullCallback(), base::NullCallback());
   dispatcher()->DispatchFrame(std::move(exported_resource), damage_rect,
                               !context_alpha /* is_opaque */);
   platform->RunUntilIdle();

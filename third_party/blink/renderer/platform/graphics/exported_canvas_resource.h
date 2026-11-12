@@ -13,20 +13,20 @@
 
 namespace blink {
 
-class CanvasResourceSharedImage;
 class StaticBitmapImage;
 
 class PLATFORM_EXPORT ExportedCanvasResource
     : public ThreadSafeRefCounted<ExportedCanvasResource> {
  public:
   explicit ExportedCanvasResource(
-      scoped_refptr<CanvasResourceSharedImage> resource,
       scoped_refptr<gpu::ClientSharedImage> client_si,
       const gpu::SyncToken& sync_token,
       viz::TransferableResource::ResourceSource resource_source,
       const gfx::HDRMetadata& hdr_metadata,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider,
-      bool accelerated_raster);
+      bool accelerated_raster,
+      base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token,
+      viz::ReleaseCallback release_callback);
 
   explicit ExportedCanvasResource(
       scoped_refptr<gpu::ClientSharedImage> client_si,
@@ -64,8 +64,6 @@ class PLATFORM_EXPORT ExportedCanvasResource
   bool is_lost_ = false;
   gpu::SyncToken last_access_sync_token_;
 
-  base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token_;
-
   const base::PlatformThreadRef owning_thread_ref_;
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
@@ -77,6 +75,7 @@ class PLATFORM_EXPORT ExportedCanvasResource
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
 
+  base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token_;
   viz::ReleaseCallback release_callback_;
 
   const bool use_legacy_external_canvas_resource_bitmap_path_;

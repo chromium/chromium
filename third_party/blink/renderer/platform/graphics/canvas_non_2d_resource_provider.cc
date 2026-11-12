@@ -514,10 +514,26 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
 scoped_refptr<ExportedCanvasResource>
 CanvasNon2DResourceProvider::CreateExportedResource(
     scoped_refptr<CanvasResourceSharedImage> resource) {
+  auto wait_sync_token = base::BindRepeating(
+      [](scoped_refptr<CanvasResourceSharedImage> resource,
+         gpu::SyncToken sync_token) { resource->WaitSyncToken(sync_token); },
+      resource);
+
+  auto release_callback = base::BindOnce(
+      [](scoped_refptr<CanvasResourceSharedImage> resource,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        if (is_lost) {
+          resource->NotifyResourceLost();
+        }
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
+      },
+      resource);
+
   return base::MakeRefCounted<ExportedCanvasResource>(
-      resource, resource->GetSharedImage(), resource->sync_token(),
+      resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas, hdr_metadata_,
-      context_provider_wrapper_, !IsSoftware());
+      context_provider_wrapper_, !IsSoftware(), std::move(wait_sync_token),
+      std::move(release_callback));
 }
 
 scoped_refptr<ExportedCanvasResource>
