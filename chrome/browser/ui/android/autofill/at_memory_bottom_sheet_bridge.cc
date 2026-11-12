@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/ui/autofill_resource_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -90,7 +91,7 @@ AtMemoryBottomSheetBridge::AtMemoryBottomSheetBridge(
   CHECK(profile);
 
   java_object_ = Java_AtMemoryBottomSheetBridge_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      base::android::AttachCurrentThread(), jni_zero::MakeRaw(this),
       window_android->GetJavaObject(), profile);
 }
 
@@ -131,43 +132,37 @@ void AtMemoryBottomSheetBridge::Hide() {
   }
 }
 
-void AtMemoryBottomSheetBridge::OnDismissed(JNIEnv* env) {
+void AtMemoryBottomSheetBridge::OnDismissed() {
   controller_->OnDismissed();
 }
 
-void AtMemoryBottomSheetBridge::OnQuerySubmitted(JNIEnv* env,
-                                                 const std::u16string& query) {
+void AtMemoryBottomSheetBridge::OnQuerySubmitted(const std::u16string& query) {
   controller_->OnQuerySubmitted(query);
 }
 
 void AtMemoryBottomSheetBridge::OnQueryTextChanged(
-    JNIEnv* env,
     const std::u16string& query) {
   controller_->OnQueryTextChanged(query);
 }
 
-void AtMemoryBottomSheetBridge::OnSuggestionDismissed(JNIEnv* env,
-                                                      int position) {
+void AtMemoryBottomSheetBridge::OnSuggestionDismissed(int position) {
   controller_->OnSuggestionDismissed(position);
 }
 
-void AtMemoryBottomSheetBridge::OnSuggestionAccepted(JNIEnv* env,
-                                                     int position) {
+void AtMemoryBottomSheetBridge::OnSuggestionAccepted(int position) {
   controller_->OnSuggestionAccepted(position);
 }
 
-void AtMemoryBottomSheetBridge::OnChildSuggestionsShown(JNIEnv* env,
-                                                        int parent_position) {
+void AtMemoryBottomSheetBridge::OnChildSuggestionsShown(int parent_position) {
   controller_->OnChildSuggestionsShown(parent_position);
 }
 
-void AtMemoryBottomSheetBridge::OnChildSuggestionAccepted(JNIEnv* env,
-                                                          int parent_position,
+void AtMemoryBottomSheetBridge::OnChildSuggestionAccepted(int parent_position,
                                                           int child_position) {
   controller_->OnChildSuggestionAccepted(parent_position, child_position);
 }
 
-bool AtMemoryBottomSheetBridge::IsSearching(JNIEnv* env) {
+bool AtMemoryBottomSheetBridge::IsSearching() const {
   return controller_->IsSearching();
 }
 

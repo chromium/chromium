@@ -5,7 +5,10 @@ package org.chromium.chrome.browser.ui.autofill;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +17,8 @@ import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +43,8 @@ import java.util.Collections;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class AtMemoryBottomSheetBridgeTest {
-    private static final long NATIVE_BRIDGE = 100L;
+    private final JniRawPtr<AtMemoryBottomSheetBridge.NativeAtMemoryBottomSheetBridge>
+            mNativeBridge = JniRawPtr.createForTesting(100L);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -60,8 +66,33 @@ public class AtMemoryBottomSheetBridgeTest {
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(context));
         BottomSheetControllerProvider.setInstanceForTesting(mBottomSheetController);
 
-        mBridge = AtMemoryBottomSheetBridge.create(NATIVE_BRIDGE, mWindowAndroid, mProfile);
+        mBridge = AtMemoryBottomSheetBridge.create(mNativeBridge, mWindowAndroid, mProfile);
         assertNotNull(mBridge);
+    }
+
+    @After
+    public void tearDown() {
+        mNativeBridge.release();
+    }
+
+    @Test
+    public void testCreateReturnsNullWhenContextIsNull() {
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+        JniRawPtr<AtMemoryBottomSheetBridge.NativeAtMemoryBottomSheetBridge> nativeBridge =
+                spy(JniRawPtr.createForTesting(200L));
+
+        assertNull(AtMemoryBottomSheetBridge.create(nativeBridge, mWindowAndroid, mProfile));
+        verify(nativeBridge).release();
+    }
+
+    @Test
+    public void testCreateReturnsNullWhenBottomSheetControllerIsNull() {
+        BottomSheetControllerProvider.setInstanceForTesting(null);
+        JniRawPtr<AtMemoryBottomSheetBridge.NativeAtMemoryBottomSheetBridge> nativeBridge =
+                spy(JniRawPtr.createForTesting(200L));
+
+        assertNull(AtMemoryBottomSheetBridge.create(nativeBridge, mWindowAndroid, mProfile));
+        verify(nativeBridge).release();
     }
 
     @Test
@@ -70,7 +101,7 @@ public class AtMemoryBottomSheetBridgeTest {
 
         mBridge.onDismissed();
 
-        verify(mNativeMock, never()).onDismissed(NATIVE_BRIDGE);
+        verify(mNativeMock, never()).onDismissed(any());
     }
 
     @Test

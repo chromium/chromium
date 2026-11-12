@@ -50,7 +50,7 @@ class AtMemoryBottomSheetBridgeTest : public testing::Test {
 
 TEST_F(AtMemoryBottomSheetBridgeTest, OnDismissedCallsDelegate) {
   EXPECT_CALL(*controller_, OnDismissed());
-  bridge_->OnDismissed(nullptr);
+  bridge_->OnDismissed();
 }
 
 TEST_F(AtMemoryBottomSheetBridgeTest, HideDoesNotCrash) {
