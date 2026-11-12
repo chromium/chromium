@@ -1569,6 +1569,10 @@ public final class ProductionSupportedFlagList {
                 "Allows configuring initial preconnect priority for Profile#preconnect and"
                         + " promotes active QUIC job priority when a higher-priority request"
                         + " attaches."),
+        Flag.baseFeature(
+                NetFeatures.CLEAR_BROKEN_ALTERNATIVE_SERVICES_ON_DEFAULT_NETWORK_CHANGE,
+                "When enabled, clears all broken and recently-broken alternative services when"
+                        + " the default network changes."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
