@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.TextView;
 
 import androidx.annotation.Px;
@@ -38,6 +39,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -192,6 +194,16 @@ public class AccountSelectionCoordinator
                         ? R.layout.account_selection_active_mode_sheet
                         : R.layout.account_selection_sheet;
         View contentView = LayoutInflater.from(context).inflate(accountSelectionSheetLayout, null);
+        if (rpMode == RpMode.ACTIVE) {
+            ViewStub consentStub = contentView.findViewById(R.id.user_data_sharing_consent_stub);
+            // With `FedCmPermissionUiWithContainer` enabled, the data sharing consent text is
+            // shown next to an icon in a container.
+            consentStub.setLayoutResource(
+                    ChromeFeatureList.sFedCmPermissionUiWithContainer.isEnabled()
+                            ? R.layout.account_selection_active_mode_data_sharing_consent_container
+                            : R.layout.account_selection_active_mode_data_sharing_consent_item);
+            consentStub.inflate();
+        }
 
         PropertyModelChangeProcessor.create(
                 model, contentView, AccountSelectionViewBinder::bindContentView);

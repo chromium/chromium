@@ -746,7 +746,12 @@ class AccountSelectionViewBinder {
             itemView = view.findViewById(R.id.account_selection_continue_btn);
             itemBinder = AccountSelectionViewBinder::bindContinueButtonView;
         } else if (key == ItemProperties.DATA_SHARING_CONSENT) {
-            itemView = view.findViewById(R.id.user_data_sharing_consent);
+            // The active mode sheet may wrap the consent text in a container; see
+            // `AccountSelectionCoordinator#setupContentView()`.
+            itemView = view.findViewById(R.id.user_data_sharing_consent_container);
+            if (itemView == null) {
+                itemView = view.findViewById(R.id.user_data_sharing_consent);
+            }
             itemBinder = AccountSelectionViewBinder::bindDataSharingConsentView;
         } else if (key == ItemProperties.IDP_SIGNIN) {
             itemView = view.findViewById(R.id.idp_signin);

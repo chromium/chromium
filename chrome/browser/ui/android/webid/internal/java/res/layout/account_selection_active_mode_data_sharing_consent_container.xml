@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The data sharing consent text next to an icon, on a rounded background. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/user_data_sharing_consent_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/account_selection_active_mode_consent_container_background"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/account_selection_active_mode_sheet_consent_container_padding_bottom"
+    android:paddingEnd="@dimen/account_selection_active_mode_sheet_consent_container_padding_horizontal"
+    android:paddingStart="@dimen/account_selection_active_mode_sheet_consent_container_padding_horizontal"
+    android:paddingTop="@dimen/account_selection_active_mode_sheet_consent_container_padding_top"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/user_data_sharing_consent_icon"
+        android:layout_width="@dimen/account_selection_active_mode_sheet_consent_icon_size"
+        android:layout_height="@dimen/account_selection_active_mode_sheet_consent_icon_size"
+        android:layout_marginEnd="@dimen/account_selection_active_mode_sheet_consent_icon_margin_end"
+        android:layout_marginTop="@dimen/account_selection_active_mode_sheet_consent_icon_margin_top"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_person_outline_24dp"
+        app:tint="@macro/default_icon_color_accent1"/>
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/user_data_sharing_consent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        app:leading="@dimen/account_selection_active_mode_sheet_consent_text_leading"/>
+</LinearLayout>

@@ -208,6 +208,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kElasticOverscroll,
     &features::kEmailVerificationProtocol,
     &features::kEnableFullscreenToAnyScreenAndroid,
+    &features::kFedCmPermissionUiWithContainer,
     &features::kGenericSensorExtraClasses,
     &features::kGlic,
     &features::kGlicAndroidTablet,

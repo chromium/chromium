@@ -77,6 +77,7 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
+    "java/res/drawable/account_selection_active_mode_consent_container_background.xml",
     "java/res/drawable/arrow_range.xml",
     "java/res/layout/account_selection_account_item.xml",
     "java/res/layout/account_selection_active_mode_account_chip.xml",
@@ -84,6 +85,7 @@ android_resources("java_resources") {
     "java/res/layout/account_selection_active_mode_add_account_button.xml",
     "java/res/layout/account_selection_active_mode_add_account_row_item.xml",
     "java/res/layout/account_selection_active_mode_continue_button.xml",
+    "java/res/layout/account_selection_active_mode_data_sharing_consent_container.xml",
     "java/res/layout/account_selection_active_mode_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_active_mode_header_item.xml",
     "java/res/layout/account_selection_active_mode_sheet.xml",

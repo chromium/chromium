@@ -34,12 +34,14 @@ import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -76,7 +78,7 @@ import java.util.List;
 /**
  * Integration tests for the Account Selection component check that the calls to the Account
  * Selection API end up rendering a View. This class is parameterized to run all tests for each RP
- * mode.
+ * mode, and for active mode with {@code FedCmPermissionUiWithContainer} enabled.
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -86,19 +88,31 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
             Arrays.asList(
-                    new ParameterSet().value(RpMode.PASSIVE).name("passive"),
-                    new ParameterSet().value(RpMode.ACTIVE).name("active"));
+                    new ParameterSet().value(RpMode.PASSIVE, false).name("passive"),
+                    new ParameterSet().value(RpMode.ACTIVE, false).name("active"),
+                    new ParameterSet().value(RpMode.ACTIVE, true).name("activeWithContainer"));
 
     private final @BottomSheetController.SheetState int mExpectedSheetState;
+    private final boolean mPermissionUiWithContainer;
 
     @Mock AccountSelectionComponent.Delegate mCustomTabMockBridge;
 
-    public AccountSelectionIntegrationTest(@RpMode.EnumType int rpMode) {
+    public AccountSelectionIntegrationTest(
+            @RpMode.EnumType int rpMode, boolean permissionUiWithContainer) {
         mRpMode = rpMode;
+        mPermissionUiWithContainer = permissionUiWithContainer;
         mExpectedSheetState =
                 rpMode == RpMode.ACTIVE
                         ? BottomSheetController.SheetState.HALF
                         : BottomSheetController.SheetState.FULL;
+    }
+
+    @Before
+    @Override
+    public void setUp() throws InterruptedException {
+        FeatureOverrides.overrideFlag(
+                ChromeFeatureList.FED_CM_PERMISSION_UI_WITH_CONTAINER, mPermissionUiWithContainer);
+        super.setUp();
     }
 
     @Test
@@ -182,6 +196,9 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     .withRootView(contentView)
                     .build();
         }
+        assertEquals(
+                mPermissionUiWithContainer,
+                contentView.findViewById(R.id.user_data_sharing_consent_container) != null);
         assertTrue(consent.getText() instanceof Spanned);
         Spanned spannedString = (Spanned) consent.getText();
         ClickableSpan[] spans =

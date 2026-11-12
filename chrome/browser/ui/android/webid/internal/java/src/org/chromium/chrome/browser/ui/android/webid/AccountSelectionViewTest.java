@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import static java.util.Arrays.asList;
 
@@ -21,20 +23,24 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.ParameterizedRobolectricTestRunner;
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
@@ -59,14 +65,25 @@ import java.util.Map;
 
 /**
  * View tests for the Account Selection component ensure that model changes are reflected in the
- * sheet. This class is parameterized to run all tests for each RP mode.
+ * sheet. This class is parameterized to run all tests for each RP mode, with {@code
+ * FedCmPermissionUiWithContainer} disabled and enabled.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     @Parameters
-    public static Collection<Object> data() {
-        return Arrays.asList(new Object[] {RpMode.PASSIVE, RpMode.ACTIVE});
+    public static Collection<Object[]> data() {
+        return Arrays.asList(
+                new Object[][] {
+                    {RpMode.PASSIVE, false},
+                    {RpMode.PASSIVE, true},
+                    {RpMode.ACTIVE, false},
+                    {RpMode.ACTIVE, true}
+                });
     }
+
+    /** Whether {@code FedCmPermissionUiWithContainer} is enabled. */
+    @Parameter(1)
+    public boolean mPermissionUiWithContainer;
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
@@ -184,6 +201,14 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
                                     TEST_IDP_ETLD_PLUS_ONE)
                             .replaceAll(LINK_TAG_REGEX, "");
         }
+    }
+
+    @Before
+    @Override
+    public void setUp() {
+        FeatureOverrides.overrideFlag(
+                ChromeFeatureList.FED_CM_PERMISSION_UI_WITH_CONTAINER, mPermissionUiWithContainer);
+        super.setUp();
     }
 
     @Test
@@ -370,6 +395,26 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         ClickableSpan[] spans =
                 spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
         assertEquals("Expected two clickable links", 2, spans.length);
+
+        // Only the active mode sheet shows the text next to an icon in a container, and only with
+        // `FedCmPermissionUiWithContainer` enabled.
+        View container = mContentView.findViewById(R.id.user_data_sharing_consent_container);
+        if (mRpMode == RpMode.ACTIVE && mPermissionUiWithContainer) {
+            assertEquals(container, consent.getParent());
+            assertEquals(
+                    R.drawable.account_selection_active_mode_consent_container_background,
+                    shadowOf(container.getBackground()).getCreatedFromResId());
+            assertTrue(container.findViewById(R.id.user_data_sharing_consent_icon).isShown());
+        } else {
+            assertNull(container);
+        }
+
+        // The container, if any, is hidden along with the text.
+        mModel.set(ItemProperties.DATA_SHARING_CONSENT, null);
+        assertFalse(consent.isShown());
+        if (container != null) {
+            assertFalse(container.isShown());
+        }
     }
 
     /** Tests that the brand foreground and the brand icon are used in the "Continue" button. */

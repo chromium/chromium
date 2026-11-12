@@ -65,7 +65,8 @@ BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFedCmIdpLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the request permission UI with a container for the disclosure text
-// in the FedCM active mode modal dialog on desktop.
+// in the FedCM modal permission dialog on desktop and the active mode bottom
+// sheet on Android.
 BASE_FEATURE(kFedCmPermissionUiWithContainer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

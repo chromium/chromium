@@ -8,11 +8,10 @@ found in the LICENSE file.
 <org.chromium.ui.widget.TextViewWithClickableSpans
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/user_data_sharing_consent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
-    android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
     android:gravity="center_horizontal"
     android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-    android:minHeight="@dimen/account_selection_sheet_title_height"/>
+    android:minHeight="@dimen/account_selection_sheet_title_height"
+    android:visibility="gone"/>

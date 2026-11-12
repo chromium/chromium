@@ -60,9 +60,14 @@ found in the LICENSE file.
             android:id="@+id/account_chip"
             android:visibility="gone"/>
 
-        <include layout="@layout/account_selection_active_mode_data_sharing_consent_item"
-            android:id="@+id/user_data_sharing_consent"
-            android:visibility="gone"/>
+        <!-- Inflated by AccountSelectionCoordinator#setupContentView, with the
+             container layout if FedCmPermissionUiWithContainer is enabled. -->
+        <ViewStub
+            android:id="@+id/user_data_sharing_consent_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+            android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"/>
 
         <include layout="@layout/idp_signin_text_item"
             android:id="@+id/idp_signin"

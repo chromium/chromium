@@ -651,6 +651,8 @@ public abstract class ChromeFeatureList {
     public static final String ENFORCE_INCOGNITO_ISOLATION = "EnforceIncognitoIsolation";
     public static final String EXCLUDE_CHROME_IN_INCOGNITO_SHARE_SHEET =
             "ExcludeChromeInIncognitoShareSheet";
+    public static final String FED_CM_PERMISSION_UI_WITH_CONTAINER =
+            "FedCmPermissionUiWithContainer";
     public static final String FEED_AUDIO_OVERVIEWS = "FeedAudioOverviews";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_CONTAINMENT_CLIP_FIRST_CARD = "FeedContainmentClipFirstCard";
@@ -1846,6 +1848,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE, true);
     public static final MutableFlagWithSafeDefault sFREStringChanges =
             newMutableFlagWithSafeDefault(FRE_STRING_CHANGES, false);
+    public static final MutableFlagWithSafeDefault sFedCmPermissionUiWithContainer =
+            newMutableFlagWithSafeDefault(FED_CM_PERMISSION_UI_WITH_CONTAINER, false);
     public static final MutableFlagWithSafeDefault sFlyoutInBookmarksBar =
             newMutableFlagWithSafeDefault(FLYOUT_IN_BOOKMARKS_BAR, false);
     public static final MutableFlagWithSafeDefault sGlicNoWebview =
