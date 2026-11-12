@@ -96,6 +96,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   bool OnRequestAccessButtonClicked(content::WebContents* web_contents);
   void MovePinnedAction(const ToolbarActionsModel::ActionId& action_id,
                         int target_index);
+  void MovePinnedActionBy(const ToolbarActionsModel::ActionId& action_id,
+                          int move_by);
 
  private:
   void RegisterIconObserverForAction(

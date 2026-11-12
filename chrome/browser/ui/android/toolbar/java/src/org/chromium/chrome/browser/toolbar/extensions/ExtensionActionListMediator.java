@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -421,6 +423,9 @@ class ExtensionActionListMediator implements Destroyable {
                                     return onHover(actionId, event, webContents);
                                 })
                         .with(
+                                ExtensionActionButtonProperties.ON_KEY_LISTENER,
+                                (view, keyCode, event) -> onKeyEvent(actionId, event))
+                        .with(
                                 ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER,
                                 (view) -> {
                                     requestShowContextMenu(actionId);
@@ -636,6 +641,31 @@ class ExtensionActionListMediator implements Destroyable {
             return;
         }
         executeUserAction(actionId, InvocationSource.TOOLBAR_BUTTON);
+    }
+
+    private boolean onKeyEvent(String actionId, KeyEvent event) {
+        if (event.getAction() != KeyEvent.ACTION_DOWN) {
+            return false;
+        }
+
+        // Reorder pinned extension action on Ctrl + Left/Right.
+        int keyCode = event.getKeyCode();
+        if (event.hasModifiers(KeyEvent.META_CTRL_ON)
+                && (keyCode == KeyEvent.KEYCODE_DPAD_LEFT
+                        || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
+            if (!mExtensionsToolbarBridge.isActionDraggable(actionId)
+                    || actionId.equals(mPoppedOutActionId)) {
+                return false;
+            }
+            boolean isRight = keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
+            boolean isRtl = LocalizationUtils.isLayoutRtl();
+            int moveBy = (isRight != isRtl) ? 1 : -1;
+            closeHoverCard();
+            mExtensionsToolbarBridge.movePinnedActionBy(actionId, moveBy);
+            return true;
+        }
+
+        return false;
     }
 
     /**

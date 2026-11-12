@@ -942,6 +942,89 @@ public class ExtensionsToolbarTest {
 
     @Test
     @LargeTest
+    public void testKeyReorderExtensions() throws IOException {
+        String alphaId = loadBasicExtension("alpha", "Alpha Extension", "Alpha Action");
+        String betaId = loadBasicExtension("beta", "Beta Extension", "Beta Action");
+        String gammaId = loadBasicExtension("gamma", "Gamma Extension", "Gamma Action");
+
+        // Pin all extensions.
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, gammaId, true);
+        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
+                .check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withContentDescription("Gamma Action"))
+                .check(matches(isDisplayed()));
+
+        View root =
+                mActivityTestRule
+                        .getActivity()
+                        .getWindow()
+                        .getDecorView()
+                        .findViewById(android.R.id.content);
+        ExtensionActionListRecyclerView actionListView =
+                root.findViewById(R.id.extension_action_list);
+
+        View alphaIcon =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> findViewWithContentDescription(root, "Alpha Action"));
+
+        // The order should be [A] [B] [G].
+        onView(withContentDescription("Alpha Action"))
+                .check(isLeftOf(withContentDescription("Beta Action")));
+        onView(withContentDescription("Beta Action"))
+                .check(isLeftOf(withContentDescription("Gamma Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {alphaId, betaId, gammaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
+
+        // Focus [A]. Explicitly set focusableInTouchMode to true because the test runner starts in
+        // touch mode and setInTouchMode(false) is asynchronous and flaky.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    alphaIcon.setFocusableInTouchMode(true);
+                    alphaIcon.requestFocus();
+                });
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(alphaIcon::hasFocus));
+
+        // Move [A] right using Ctrl+DPAD_RIGHT.
+        sendKeyEvent(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.META_CTRL_ON);
+        CriteriaHelper.pollUiThread(
+                () -> !actionListView.isLayoutRequested() && !actionListView.isAnimating());
+
+        // The order now should be [B] [A] [G].
+        onView(withContentDescription("Beta Action"))
+                .check(isLeftOf(withContentDescription("Alpha Action")));
+        onView(withContentDescription("Alpha Action"))
+                .check(isLeftOf(withContentDescription("Gamma Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {betaId, alphaId, gammaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(alphaIcon::hasFocus));
+
+        // Move [A] left using Ctrl+DPAD_LEFT.
+        sendKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_CTRL_ON);
+        CriteriaHelper.pollUiThread(
+                () -> !actionListView.isLayoutRequested() && !actionListView.isAnimating());
+
+        // The order should return to [A] [B] [G].
+        onView(withContentDescription("Alpha Action"))
+                .check(isLeftOf(withContentDescription("Beta Action")));
+        onView(withContentDescription("Beta Action"))
+                .check(isLeftOf(withContentDescription("Gamma Action")));
+        assertArrayEquals(
+                "The data order should match Views.",
+                new String[] {alphaId, betaId, gammaId},
+                ExtensionTestUtils.getPinnedActionIds(mProfile));
+        assertTrue(ThreadUtils.runOnUiThreadBlocking(alphaIcon::hasFocus));
+    }
+
+    @Test
+    @LargeTest
     public void testInstantDragWithTouchDoesNotReorder() throws IOException {
         String alphaId = loadBasicExtension("alpha", "Alpha Extension", "Alpha Action");
         String betaId = loadBasicExtension("beta", "Beta Extension", "Beta Action");

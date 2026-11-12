@@ -32,6 +32,8 @@ public class ExtensionActionButtonViewBinder {
             button.setOnClickListener(model.get(ExtensionActionButtonProperties.ON_CLICK_LISTENER));
         } else if (key == ExtensionActionButtonProperties.ON_HOVER_LISTENER) {
             button.setOnHoverListener(model.get(ExtensionActionButtonProperties.ON_HOVER_LISTENER));
+        } else if (key == ExtensionActionButtonProperties.ON_KEY_LISTENER) {
+            button.setOnKeyListener(model.get(ExtensionActionButtonProperties.ON_KEY_LISTENER));
         } else if (key == ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER) {
             button.setOnLongClickListener(
                     model.get(ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER));

@@ -57,6 +57,10 @@ public class ExtensionActionButtonProperties {
     public static final WritableObjectPropertyKey<View.OnHoverListener> ON_HOVER_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The key listener. */
+    public static final WritableObjectPropertyKey<View.OnKeyListener> ON_KEY_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** The context-click listener. */
     public static final WritableObjectPropertyKey<View.OnLongClickListener> ON_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -75,6 +79,7 @@ public class ExtensionActionButtonProperties {
                 IS_DRAGGABLE,
                 ON_CLICK_LISTENER,
                 ON_HOVER_LISTENER,
+                ON_KEY_LISTENER,
                 ON_LONG_CLICK_LISTENER,
                 TOUCH_LISTENER
             };

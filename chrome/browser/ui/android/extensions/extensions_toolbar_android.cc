@@ -434,6 +434,12 @@ void ExtensionsToolbarAndroid::MovePinnedAction(
   toolbar_view_model_->MovePinnedAction(action_id, target_index);
 }
 
+void ExtensionsToolbarAndroid::MovePinnedActionBy(
+    const ToolbarActionsModel::ActionId& action_id,
+    int move_by) {
+  toolbar_view_model_->MovePinnedActionBy(action_id, move_by);
+}
+
 static jni_zero::JniUniquePtr<ExtensionsToolbarAndroid>
 JNI_ExtensionsToolbarBridge_Init(const jni_zero::JavaRef<jobject>& java_object,
                                  BrowserWindowInterface* browser) {
