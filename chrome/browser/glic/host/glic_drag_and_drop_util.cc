@@ -306,10 +306,15 @@ void GlicWebDragObserver::DidStartDrag(content::RenderFrameHost* source_rfh,
     return;
   }
 
-  content::BrowserContext* browser_context = source_rfh->GetBrowserContext();
-  Profile* profile = Profile::FromBrowserContext(browser_context);
+  content::BrowserContext* source_browser_context =
+      source_rfh->GetBrowserContext();
+  Profile* source_profile = Profile::FromBrowserContext(source_browser_context);
   bool is_eligible = false;
-  if (GlicEnabling::IsProfileEligible(profile)) {
+  // With cross-profile transfer enabled, the source profile doesn't need to be
+  // Glic-eligible (e.g. Incognito); only the page's context eligibility
+  // matters.
+  if (base::FeatureList::IsEnabled(features::kGlicCrossProfileTransfer) ||
+      GlicEnabling::IsProfileEligible(source_profile)) {
     auto* helper = tabs::PageContextEligibilityHelper::From(&tab());
     if (!helper) {
       return;
@@ -323,7 +328,7 @@ void GlicWebDragObserver::DidStartDrag(content::RenderFrameHost* source_rfh,
   GlicDragEligibilityMonitor::GetInstance()->RecordDragStart(DragSourceInfo{
       .drag_id = *drop_data.drag_id,
       .is_eligible = is_eligible,
-      .source_browser_context = browser_context->GetWeakPtr(),
+      .source_browser_context = source_browser_context->GetWeakPtr(),
       .source_rfh_token = source_rfh->GetGlobalFrameToken(),
       .source_tab_handle = tab().GetHandle(),
   });
@@ -388,8 +393,9 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
     return;
   }
 
-  if (info->source_browser_context.get() !=
-      target_web_contents->GetBrowserContext()) {
+  if (!base::FeatureList::IsEnabled(features::kGlicCrossProfileTransfer) &&
+      info->source_browser_context.get() !=
+          target_web_contents->GetBrowserContext()) {
     reporter.RecordEnumeration(
         "DragAndDrop.ValidationResult2",
         GlicDragAndDropValidationResult::kCrossProfileDragBlocked);

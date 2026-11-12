@@ -48,6 +48,9 @@
 #include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #endif
 
@@ -536,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest,
 // Mobile Android does not support programmatically creating separate browser
 // window tasks with an OTR profile via `CreateBrowserWindow`.
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, AllowDragFromIncognito) {
   base::HistogramTester histogram_tester;
   const GURL url = embedded_test_server()->GetURL(
       "a.com", "/drag_and_drop/image_source.html");
@@ -560,23 +563,89 @@ IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, BlockDragCrossProfile) {
 
   content::DropData drop_data;
   drop_data.file_contents = {1, 2, 3, 4};
+  drop_data.url_infos.emplace_back(
+      embedded_test_server()->GetURL("a.com",
+                                     "/drag_and_drop/cors-allowed.jpg"),
+      u"cors-allowed.jpg");
 
-  // The drag starts in an eligible page inside the Incognito BrowserContext
-  // and is dropped onto the regular profile's Glic panel.
+  // With kGlicCrossProfileTransfer enabled (the default), a drag that starts in
+  // an eligible Incognito page is accepted by the regular profile's Glic panel.
   content::SimulateDragStartForTesting(
       incognito_contents->GetPrimaryMainFrame(), &drop_data);
   content::WebContents* glic_webui = glic_instance->host().webui_contents();
   ASSERT_TRUE(glic_webui);
   glic::StartDragAndDropInvoke(glic_webui, drop_data);
 
-  histogram_tester.ExpectUniqueSample(
-      "Glic.DragAndDrop.ValidationResult2",
-      GlicDragAndDropValidationResult::kCrossProfileDragBlocked, 1);
-  histogram_tester.ExpectTotalCount("Glic.InvokeResult2.WebDragDrop", 0);
-  ExpectSingleBlockedDropNotice(
-      glic_guest, mojom::DataTransferActionsBlockedReason::kCrossProfile);
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult2",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.InvokeResult2.WebDragDrop",
+               static_cast<int>(GlicInvokeResult::kSuccess)) == 1;
+  }));
+  EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+
+// Android browser tests do not support `PlatformBrowserTest::CreateBrowser` or
+// `GenerateNextProfileDirectoryPath()` without `kAndroidMultiprofile`.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicDragEligibilityBrowserTest, AllowDragCrossProfile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS profiles are tied to OS users; CreateProfileSync() CHECK-fails in
+  // CreateUserCloudPolicyManagerAsh() in browser tests.
+  GTEST_SKIP() << "Can't create a second regular profile on ChromeOS";
+#else
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL(
+      "a.com", "/drag_and_drop/image_source.html");
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  content::WebContents* glic_guest =
+      InstallBlockedNoticesRecorder(glic_instance);
+  ASSERT_TRUE(glic_guest);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile& other_profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  BrowserWindowInterface* other_browser =
+      PlatformBrowserTest::CreateBrowser(&other_profile);
+  tabs::TabInterface* other_tab =
+      TabListInterface::From(other_browser)->GetActiveTab();
+  ASSERT_TRUE(other_tab);
+  content::WebContents* other_contents = other_tab->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(other_contents, url));
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+  drop_data.url_infos.emplace_back(
+      embedded_test_server()->GetURL("a.com",
+                                     "/drag_and_drop/cors-allowed.jpg"),
+      u"cors-allowed.jpg");
+
+  // With kGlicCrossProfileTransfer enabled (the default), a drag that starts in
+  // an eligible page in another profile is accepted by this profile's Glic
+  // panel.
+  content::SimulateDragStartForTesting(other_contents->GetPrimaryMainFrame(),
+                                       &drop_data);
+  content::WebContents* glic_webui = glic_instance->host().webui_contents();
+  ASSERT_TRUE(glic_webui);
+  glic::StartDragAndDropInvoke(glic_webui, drop_data);
+
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ValidationResult2",
+                                      GlicDragAndDropValidationResult::kSuccess,
+                                      1);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.InvokeResult2.WebDragDrop",
+               static_cast<int>(GlicInvokeResult::kSuccess)) == 1;
+  }));
+  EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
+#endif
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(GlicDragEligibilityDisabledBrowserTest,
                        BlockDragWhenFeatureDisabled) {

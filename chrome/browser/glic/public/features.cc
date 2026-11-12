@@ -313,6 +313,10 @@ BASE_FEATURE(kGlicPasteEligibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 // Glic guest).
 BASE_FEATURE(kGlicWebPasteEligibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Default-enabled platforms: all (cross-profile paste and drag killswitch
+// applies across platforms).
+BASE_FEATURE(kGlicCrossProfileTransfer, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicTabGroups, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSparkSettingsAccessibleLabels,
              base::FEATURE_ENABLED_BY_DEFAULT);

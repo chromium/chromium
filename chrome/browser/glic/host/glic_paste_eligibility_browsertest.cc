@@ -10,10 +10,12 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/scoped_page_context_eligibility.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -28,10 +30,6 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif
 
 namespace glic {
 namespace {
@@ -295,29 +293,22 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
                                       2 /* kBitmap */, 1);
 }
 
+// Mobile Android can't open an off-the-record browser window in tests, and the
+// copy source has to be a real tab to have page context eligibility.
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
-                       BlockPasteCrossProfile) {
+                       AllowPasteCrossProfile) {
   ASSERT_OK(OpenGlicForActiveTab());
   content::WebContents* glic_guest = GetReadyGuest();
   ASSERT_TRUE(glic_guest);
 
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, InProcessBrowserTest::CreateIncognitoBrowser() is unavailable.
-  // Create an off-the-record WebContents directly to provide an incognito
-  // BrowserContext source for cross-profile paste verification.
-  std::unique_ptr<content::WebContents> incognito_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(
-          GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-  content::WebContents* source_contents = incognito_contents.get();
-#else
-  BrowserWindowInterface* incognito_browser =
-      InProcessBrowserTest::CreateIncognitoBrowser();
-  tabs::TabInterface* incognito_tab =
-      incognito_browser->tab_strip_model()->GetActiveTab();
-  content::WebContents* source_contents = incognito_tab->GetContents();
-#endif
+  BrowserWindowInterface* incognito_window = glic::CreateBrowserWindow(
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   const GURL url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_TRUE(content::NavigateToURL(source_contents, url));
+  tabs::TabInterface* incognito_tab =
+      CreateAndActivateTab(incognito_window, url);
+  ASSERT_TRUE(incognito_tab);
+  content::WebContents* source_contents = incognito_tab->GetContents();
   content::ClipboardEndpoint captured_source =
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(url), base::BindLambdaForTesting([&]() {
@@ -329,13 +320,16 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   base::HistogramTester histogram_tester;
 
   auto allowed_data = SyncCheckPasteEligibility(captured_source, glic_guest);
-  EXPECT_FALSE(allowed_data.has_value());  // Blocked!
+
+  ASSERT_TRUE(allowed_data.has_value());
+  EXPECT_EQ(allowed_data->png, std::vector<uint8_t>({1, 2, 3, 4}));
 
   histogram_tester.ExpectUniqueSample("Glic.Paste.AttemptedFormat.Web",
                                       2 /* kBitmap */, 1);
-  histogram_tester.ExpectUniqueSample("Glic.Paste.FailedEligibilityReason.Web",
-                                      2 /* kCrossProfile */, 1);
+  histogram_tester.ExpectTotalCount("Glic.Paste.FailedEligibilityReason.Web",
+                                    0);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(
     GlicPasteEligibilityBrowserTest,
@@ -606,19 +600,15 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
       SyncCheckPasteEligibility(non_tab_source, glic_guest).has_value());
   ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 2u));
 
-  // 5. Cross-profile paste emits {action: PASTE, reason: CROSS_PROFILE}.
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<content::WebContents> incognito_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(
-          GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-  content::WebContents* cross_profile_contents = incognito_contents.get();
-#else
-  BrowserWindowInterface* incognito_browser =
-      InProcessBrowserTest::CreateIncognitoBrowser();
-  content::WebContents* cross_profile_contents =
-      incognito_browser->tab_strip_model()->GetActiveTab()->GetContents();
-#endif
-  ASSERT_TRUE(content::NavigateToURL(cross_profile_contents, eligible_url));
+  // 5. Cross-profile paste from an eligible tab is allowed and does not emit a
+  // blocked notice.
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  BrowserWindowInterface* incognito_window = glic::CreateBrowserWindow(
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  tabs::TabInterface* incognito_tab =
+      CreateAndActivateTab(incognito_window, eligible_url);
+  ASSERT_TRUE(incognito_tab);
+  content::WebContents* cross_profile_contents = incognito_tab->GetContents();
   content::ClipboardEndpoint cross_profile_source =
       content::ClipboardEndpoint::ForFrame(
           ui::DataTransferEndpoint(eligible_url),
@@ -627,12 +617,12 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
           }),
           *cross_profile_contents->GetPrimaryMainFrame());
   glic::OnBeforeClipboardCopy(cross_profile_source);
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       SyncCheckPasteEligibility(cross_profile_source, glic_guest).has_value());
-  ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 3u));
+#endif
 
   base::ListValue notices = GetCapturedBlockedNotices(glic_guest);
-  ASSERT_EQ(notices.size(), 3u);
+  ASSERT_EQ(notices.size(), 2u);
   EXPECT_EQ(notices[0].GetDict().FindInt("action"),
             static_cast<int>(mojom::DataTransferAction::kPaste));
   EXPECT_EQ(
@@ -644,11 +634,6 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   EXPECT_EQ(notices[1].GetDict().FindInt("reason"),
             static_cast<int>(mojom::DataTransferActionsBlockedReason::
                                  kUnsupportedOrExpiredSource));
-  EXPECT_EQ(notices[2].GetDict().FindInt("action"),
-            static_cast<int>(mojom::DataTransferAction::kPaste));
-  EXPECT_EQ(
-      notices[2].GetDict().FindInt("reason"),
-      static_cast<int>(mojom::DataTransferActionsBlockedReason::kCrossProfile));
 }
 
 IN_PROC_BROWSER_TEST_F(

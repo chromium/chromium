@@ -1506,7 +1506,8 @@ bool IsClipboardPasteAllowed(const content::ClipboardEndpoint& source,
         return false;
       };
 
-  if (source.browser_context() != destination.browser_context()) {
+  if (!base::FeatureList::IsEnabled(features::kGlicCrossProfileTransfer) &&
+      source.browser_context() != destination.browser_context()) {
     return notify_and_fail(
         GlicPasteFailedEligibilityReason::kCrossProfile,
         mojom::DataTransferActionsBlockedReason::kCrossProfile);

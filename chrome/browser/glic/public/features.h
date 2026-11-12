@@ -195,6 +195,7 @@ BASE_DECLARE_FEATURE(kGlicKeyboardPrint);
 
 BASE_DECLARE_FEATURE(kGlicPasteEligibilityCheck);
 BASE_DECLARE_FEATURE(kGlicWebPasteEligibilityCheck);
+BASE_DECLARE_FEATURE(kGlicCrossProfileTransfer);
 
 BASE_DECLARE_FEATURE(kGlicTabGroups);
 BASE_DECLARE_FEATURE(kGlicSparkSettingsAccessibleLabels);

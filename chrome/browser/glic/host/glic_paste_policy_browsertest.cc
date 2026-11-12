@@ -1058,11 +1058,24 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-IN_PROC_BROWSER_TEST_F(
-    GlicPastePolicyBrowserTest,
-    IncognitoPasteShortCircuitsBeforeDataControlsWarnAndCloudScan) {
+IN_PROC_BROWSER_TEST_F(GlicPastePolicyBrowserTest,
+                       IncognitoPasteAppliesDataControlsWarn) {
   policy::MockCloudPolicyClient* cloud_policy_client = SetupRealtimeReporting();
-  EXPECT_CALL(*cloud_policy_client, UploadSecurityEvent).Times(0);
+  std::vector<chrome::cros::reporting::proto::EventResult> reported_results;
+  EXPECT_CALL(*cloud_policy_client, UploadSecurityEvent)
+      .WillRepeatedly(
+          [&](bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            for (const auto& event : request.events()) {
+              if (event.has_sensitive_data_event()) {
+                reported_results.push_back(
+                    event.sensitive_data_event().event_result());
+              }
+            }
+            std::move(callback).Run(
+                policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
+          });
 
   enterprise_connectors::test::SetAnalysisConnector(
       GetProfile()->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
@@ -1133,13 +1146,22 @@ IN_PROC_BROWSER_TEST_F(
                                         std::move(paste_data),
                                         future.GetCallback());
 
+  // The cross-profile paste is no longer blocked by Glic, so the Incognito
+  // Data Controls WARN rule applies. Cancelling the warning blocks the paste
+  // before any cloud scan runs.
+  dialog_helper.WaitForDialogToInitialize();
+  dialog_helper.CloseDialogWithoutBypass();
+  dialog_helper.WaitForDialogToClose();
   EXPECT_EQ(future.Get(), std::nullopt);
-  EXPECT_EQ(dialog_helper.dialog(), nullptr);
-  histogram_tester.ExpectUniqueSample("Glic.Paste.FailedEligibilityReason.Web",
-                                      2 /* kCrossProfile */, 1);
+  histogram_tester.ExpectTotalCount("Glic.Paste.FailedEligibilityReason.Web",
+                                    0);
   EXPECT_EQ(enterprise_connectors::test::FakeContentAnalysisDelegate::
                 GetTotalAnalysisRequestsCount(),
             0);
+  EXPECT_EQ(reported_results,
+            (std::vector<chrome::cros::reporting::proto::EventResult>{
+                chrome::cros::reporting::proto::EVENT_RESULT_WARNED,
+            }));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPastePolicyBrowserTest,
@@ -1578,9 +1600,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
-IN_PROC_BROWSER_TEST_F(
-    GlicPastePolicyBrowserTest,
-    EnterpriseModalSuppressesBlockedNoticeWhileCrossProfileEmitsNotice) {
+IN_PROC_BROWSER_TEST_F(GlicPastePolicyBrowserTest,
+                       EnterpriseModalSuppressesBlockedNotice) {
   const GURL eligible_url =
       embedded_test_server()->GetURL("eligible.example.com", "/title1.html");
   tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
@@ -1670,10 +1691,10 @@ IN_PROC_BROWSER_TEST_F(
   }
   EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
 
-  // 2. On an Incognito tab, even when DataControlsRules WARN targets
-  // sources.incognito -> destinations.gemini_in_chrome, Glic's cross-profile
-  // check short-circuits immediately without showing a dead-end Warn dialog and
-  // emits {action: kPaste, reason: kCrossProfile}.
+  // 2. On an Incognito tab, with kGlicCrossProfileTransfer enabled by default,
+  // DataControlsRules WARN targeting sources.incognito ->
+  // destinations.gemini_in_chrome shows DesktopDataControlsDialog and does NOT
+  // emit a duplicate Glic DataTransferActionsBlockedNotice when cancelled.
   data_controls::SetDataControls(GetProfile()->GetPrefs(), {R"({
     "name": "Warn incognito paste into Glic",
     "sources": { "incognito": true },
@@ -1714,16 +1735,11 @@ IN_PROC_BROWSER_TEST_F(
           incognito_source, destination, incognito_metadata,
           std::move(paste_data), future.GetCallback());
 
+  warn_dialog.WaitForDialogToInitialize();
+  warn_dialog.CloseDialogWithoutBypass();
+  warn_dialog.WaitForDialogToClose();
   EXPECT_EQ(future.Get(), std::nullopt);
-  EXPECT_EQ(warn_dialog.dialog(), nullptr);
-  ASSERT_TRUE(WaitForBlockedNoticeCount(glic_guest, 1u));
-  base::ListValue notices = GetCapturedBlockedNotices(glic_guest);
-  ASSERT_EQ(notices.size(), 1u);
-  EXPECT_EQ(notices[0].GetDict().FindInt("action"),
-            static_cast<int>(mojom::DataTransferAction::kPaste));
-  EXPECT_EQ(
-      notices[0].GetDict().FindInt("reason"),
-      static_cast<int>(mojom::DataTransferActionsBlockedReason::kCrossProfile));
+  EXPECT_TRUE(GetCapturedBlockedNotices(glic_guest).empty());
 }
 
 }  // namespace
