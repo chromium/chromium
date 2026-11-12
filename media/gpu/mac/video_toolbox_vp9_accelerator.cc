@@ -224,7 +224,7 @@ bool VideoToolboxVP9Accelerator::SubmitFrames(
   // If there is only one frame, it can be submitted directly. Otherwise append
   // a superframe trailer. See Annex B of the VP9 specification.
   if (frame_sizes.size() > 1) {
-    if (frame_sizes_.size() > 8) {
+    if (frame_sizes.size() > 8) {
       MEDIA_LOG(ERROR, media_log_.get()) << "Too many frames in superframe";
       return false;
     }
