@@ -16,7 +16,7 @@ declare_args() {
   enable_plugins = !is_android && !is_ios && !is_castos && !is_fuchsia
 
   # Enables separate renderer binary.
-  enable_separate_renderer_binary = false
+  enable_separate_renderer_binary = is_win
 }
 
 # Screen capture is enabled on most platforms. Currently, screen capture
