@@ -738,8 +738,8 @@ void OffsetComponent(int offset, url::Component* part) {
   }
 }
 
-bool IsEquivalentScheme(const std::string& scheme1,
-                        const std::string& scheme2) {
+bool IsEquivalentScheme(std::string_view scheme1,
+                        std::string_view scheme2) {
   return scheme1 == scheme2 ||
          (scheme1 == url::kAboutScheme && scheme2 == kChromeUIScheme) ||
          (scheme1 == kChromeUIScheme && scheme2 == url::kAboutScheme);

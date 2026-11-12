@@ -81,7 +81,7 @@ void OffsetComponent(int offset, url::Component* part);
 // Returns true if |scheme1| is equivalent to |scheme2|.
 // Generally this is true if the two schemes are actually identical, but it's
 // also true when one scheme is "about" and the other "chrome".
-bool IsEquivalentScheme(const std::string& scheme1, const std::string& scheme2);
+bool IsEquivalentScheme(std::string_view scheme1, std::string_view scheme2);
 
 // For paths like ~, we use $HOME for the current user's home directory.
 // For tests, we allow our idea of $HOME to be overriden by this variable.
