@@ -77,8 +77,7 @@ void ActorUiTabControllerAndroid::OnUiTabStateChange(
 
 void ActorUiTabControllerAndroid::SetActorTaskPaused() {
   if (auto* task = actor_keyed_service_->GetTaskFromTab(*tab_)) {
-    // This call originates from the Android UI, so it represents an
-    // intentional user pause task. Therefore, `from_actor` is false.
+    // Callers pause on behalf of the user, so `from_actor` is false.
     task->Pause(/*from_actor=*/false);
   }
 }
@@ -129,30 +128,6 @@ ActorUiTabControllerAndroid::GetWeakPtr() {
 
 UiTabState ActorUiTabControllerAndroid::GetCurrentUiTabState() const {
   return current_ui_tab_state_;
-}
-
-static void JNI_ActorUiTabController_SetActorTaskPaused(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& jtab) {
-  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, jtab);
-  if (tab_android && tab_android->web_contents()) {
-    auto* controller = ActorUiTabControllerAndroid::From(tab_android);
-    if (controller) {
-      controller->SetActorTaskPaused();
-    }
-  }
-}
-
-static void JNI_ActorUiTabController_SetActorTaskResume(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& jtab) {
-  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, jtab);
-  if (tab_android && tab_android->web_contents()) {
-    auto* controller = ActorUiTabControllerAndroid::From(tab_android);
-    if (controller) {
-      controller->SetActorTaskResume();
-    }
-  }
 }
 
 }  // namespace actor::ui

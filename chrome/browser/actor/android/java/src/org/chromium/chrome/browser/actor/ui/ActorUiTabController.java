@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.JniOnceCallback;
@@ -146,16 +145,6 @@ public class ActorUiTabController implements UserData {
         mTab.getUserDataHost().setUserData(USER_DATA_KEY, this);
     }
 
-    /** Pauses the ActorTask associated with this tab. */
-    public void setActorTaskPaused() {
-        ActorUiTabControllerJni.get().setActorTaskPaused(mTab);
-    }
-
-    /** Resumes the ActorTask associated with this tab. */
-    public void setActorTaskResume() {
-        ActorUiTabControllerJni.get().setActorTaskResume(mTab);
-    }
-
     /** Allows Java UI components to listen for tab state changes. */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
@@ -287,12 +276,5 @@ public class ActorUiTabController implements UserData {
                 service.stopTask(taskId, StoppedReason.USER_NAVIGATED_AWAY);
             }
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void setActorTaskPaused(Tab tab);
-
-        void setActorTaskResume(Tab tab);
     }
 }

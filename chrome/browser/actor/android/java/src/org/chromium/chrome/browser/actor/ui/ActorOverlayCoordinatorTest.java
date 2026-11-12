@@ -87,7 +87,6 @@ public class ActorOverlayCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private BackPressHandlerRegistry mBackPressHandlerRegistry;
-    @Mock private ActorUiTabController.Natives mTabControllerNatives;
     @Mock private LayoutManager mLayoutManager;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
@@ -133,7 +132,6 @@ public class ActorOverlayCoordinatorTest {
         Mockito.when(mTab.getProfile()).thenReturn(mProfile);
         GlicEnabling.setEnabledForTesting(true);
         mTabController = ActorUiTabController.from(mTab);
-        ActorUiTabControllerJni.setInstanceForTesting(mTabControllerNatives);
 
         mCurrentTabSupplier = ObservableSuppliers.createNullable();
         Mockito.when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
