@@ -13,12 +13,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
+#include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -47,6 +49,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
@@ -1144,33 +1147,42 @@ IN_PROC_BROWSER_TEST_P(
     histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 2);
   }
 
-  // Then test a redirect from an HTTP site to an HTTP site. With HTTPS-Upgrades
-  // also enabled, this will result in an extra two redirects. (HTTPS-Upgrades
-  // will intercept the navigation to the HTTP page when the server does the
-  // redirect and inject an artificial redirect back to HTTPS, then the server
-  // will redirect back to HTTP once more. HTTPS-Upgrades will detect the
-  // redirect loop and fallback to HTTP at this point.)
+  // Then test a redirect from an HTTPS site to an HTTP site. HTTPS-Upgrades
+  // intercepts the redirect to the HTTP page and injects an artificial
+  // redirect to its HTTPS version, which loads successfully. This adds one
+  // redirect to the count.
+  //
+  // interactive_ui_tests set the HTTPS-Upgrades fallback timeout to zero on
+  // Linux and ChromeOS (see interactive_ui_tests_main.cc). That timer races
+  // with the upgraded HTTPS load: whichever finishes first decides between
+  // committing the HTTPS URL and falling back to HTTP. Use a long timeout
+  // here so that the upgraded load always wins.
+  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::Hours(12));
+  absl::Cleanup restore_https_upgrades_timeout = [] {
+    HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::TimeDelta());
+  };
   {
     const GURL target_url =
         embedded_test_server()->GetURL(kSiteWithGoodHttps, "/title1.html");
     const GURL url = embedded_test_server()->GetURL(
         kSiteWithGoodHttpsRedirect, "/server-redirect?" + target_url.spec());
+    const GURL upgraded_target_url =
+        https_server()->GetURL(kSiteWithGoodHttps, "/title1.html");
 
     base::HistogramTester histograms;
     TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
-                                       target_url);
+                                       upgraded_target_url);
 
-    histograms.ExpectTotalCount(kEventHistogram, 5);
+    histograms.ExpectTotalCount(kEventHistogram, 4);
     histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
     histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded,
                                  1);
-    histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 3);
+    histograms.ExpectBucketCount(kEventHistogram, Event::kRedirected, 2);
 
     // Try again. The navigation will be upgraded again and metrics will be
-    // recorded. HTTPS-Upgrades *won't* trigger this time as the hostname was
-    // added to the allowlist on the previous failure.
+    // recorded.
     TypeUrlAndCheckRedirectToGoodHttps(GetURLWithoutScheme(url), histograms,
-                                       target_url);
+                                       upgraded_target_url);
 
     histograms.ExpectTotalCount(kEventHistogram, 8);
     histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 2);
