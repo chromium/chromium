@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -36,6 +38,15 @@ class FakeSecurityDomainsServer {
     virtual void OnRequestHandled() = 0;
   };
 
+  enum class DomainStatus {
+    // No members have joined and no keys have been set.
+    kEmpty,
+    // Only the constant pre-enrollment key is present in the security domain.
+    kPreEnrolled,
+    // At least one non-constant key is present in the security domain.
+    kEnrolled,
+  };
+
   // Represents a member registered in the security domain.
   struct Member {
     std::vector<uint8_t> public_key;
@@ -43,6 +54,12 @@ class FakeSecurityDomainsServer {
 
     friend bool operator==(const Member&, const Member&) = default;
   };
+
+  // Returns whether recoverability of the security domain is degraded given
+  // its current `status` and registered `members`.
+  using IsRecoverabilityDegradedCallback =
+      base::RepeatingCallback<bool(DomainStatus status,
+                                   base::span<const Member> members)>;
 
   static GURL GetServerURL(GURL base_url);
 
@@ -74,10 +91,12 @@ class FakeSecurityDomainsServer {
   void ResetDataToState(const std::vector<std::vector<uint8_t>>& keys,
                         int last_key_version);
 
-  // Causes the security domain to enter the degraded recoverability state
-  // unless the provided |public_key| matches a member's public key.
-  void RequirePublicKeyToAvoidRecoverabilityDegraded(
-      const std::vector<uint8_t>& public_key);
+  // Sets a callback evaluated by `IsRecoverabilityDegraded()` against the
+  // security domain's current status and members. If unset (or null),
+  // recoverability is not degraded. `callback` is invoked while `lock_` is
+  // held.
+  void SetIsRecoverabilityDegradedCallback(
+      IsRecoverabilityDegradedCallback callback);
 
   // Sets (or clears if null) the Gaia password encryption key pair returned by
   // `GetCurrentGaiaPasswordEncryptionKeyData` and used to unwrap keys during
@@ -104,13 +123,16 @@ class FakeSecurityDomainsServer {
   int GetCurrentEpoch() const;
 
   // Returns whether recoverability of the security domain is currently
-  // degraded.
+  // degraded according to the callback set via
+  // `SetIsRecoverabilityDegradedCallback()`.
   bool IsRecoverabilityDegraded() const;
 
   // Returns true if there was a request that violates supported protocol.
   bool ReceivedInvalidRequest() const;
 
  private:
+  std::vector<Member> GetMembersLocked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   std::unique_ptr<net::test_server::HttpResponse>
   HandleJoinSecurityDomainsRequest(
       const net::test_server::HttpRequest& http_request);
@@ -157,15 +179,15 @@ class FakeSecurityDomainsServer {
 
     // Zero epoch is used when there are no members in the security domain, once
     // first member is joined it is initialized to non-zero value. Members still
-    // can join with constant key without populating epoch while
-    // |constant_key_allowed_| set to true.
+    // can join with constant key without populating epoch while |status| is not
+    // `DomainStatus::kEnrolled`.
     int current_epoch = 0;
-    bool constant_key_allowed = true;
+    DomainStatus status = DomainStatus::kEmpty;
 
     // All trusted vault keys ordered by increasing epoch.
     std::vector<std::vector<uint8_t>> trusted_vault_keys;
 
-    std::string required_public_key_to_avoid_recoverability_degraded;
+    IsRecoverabilityDegradedCallback is_recoverability_degraded_callback;
 
     std::unique_ptr<SecureBoxKeyPair> gaia_password_key_pair;
   };

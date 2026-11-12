@@ -301,7 +301,7 @@ std::vector<uint8_t> FakeSecurityDomainsServer::RotateTrustedVaultKey(
 
   state_.current_epoch++;
   state_.trusted_vault_keys.push_back(new_trusted_vault_key);
-  state_.constant_key_allowed = false;
+  state_.status = DomainStatus::kEnrolled;
   for (auto& [member, shared_key] : state_.public_key_to_shared_keys) {
     std::unique_ptr<SecureBoxPublicKey> member_public_key =
         SecureBoxPublicKey::CreateByImport(ProtoStringToBytes(member));
@@ -344,16 +344,14 @@ void FakeSecurityDomainsServer::ResetDataToState(
   base::AutoLock autolock(lock_);
   state_ = State();
   state_.trusted_vault_keys = keys;
-  state_.constant_key_allowed = false;
+  state_.status = DomainStatus::kEnrolled;
   state_.current_epoch = last_key_version;
 }
 
-void FakeSecurityDomainsServer::RequirePublicKeyToAvoidRecoverabilityDegraded(
-    const std::vector<uint8_t>& public_key) {
-  DCHECK(!public_key.empty());
+void FakeSecurityDomainsServer::SetIsRecoverabilityDegradedCallback(
+    IsRecoverabilityDegradedCallback callback) {
   base::AutoLock autolock(lock_);
-  AssignBytesToProtoString(
-      public_key, &state_.required_public_key_to_avoid_recoverability_degraded);
+  state_.is_recoverability_degraded_callback = std::move(callback);
 }
 
 void FakeSecurityDomainsServer::SetGaiaPasswordKeyPair(
@@ -370,18 +368,7 @@ int FakeSecurityDomainsServer::GetMemberCount() const {
 std::vector<FakeSecurityDomainsServer::Member>
 FakeSecurityDomainsServer::GetMembers() const {
   base::AutoLock autolock(lock_);
-  std::vector<Member> members;
-  members.reserve(state_.public_key_to_shared_keys.size());
-  for (const auto& [public_key, unused_shared_keys] :
-       state_.public_key_to_shared_keys) {
-    auto type_it = state_.public_key_to_member_type.find(public_key);
-    const trusted_vault_pb::SecurityDomainMember::MemberType member_type =
-        type_it != state_.public_key_to_member_type.end()
-            ? type_it->second
-            : trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED;
-    members.push_back(Member{ProtoStringToBytes(public_key), member_type});
-  }
-  return members;
+  return GetMembersLocked();
 }
 
 std::vector<std::vector<uint8_t>>
@@ -424,17 +411,33 @@ int FakeSecurityDomainsServer::GetCurrentEpoch() const {
 
 bool FakeSecurityDomainsServer::IsRecoverabilityDegraded() const {
   base::AutoLock autolock(lock_);
-  if (state_.required_public_key_to_avoid_recoverability_degraded.empty()) {
+  if (!state_.is_recoverability_degraded_callback) {
     return false;
   }
 
-  return state_.public_key_to_shared_keys.count(
-             state_.required_public_key_to_avoid_recoverability_degraded) == 0;
+  return state_.is_recoverability_degraded_callback.Run(state_.status,
+                                                        GetMembersLocked());
 }
 
 bool FakeSecurityDomainsServer::ReceivedInvalidRequest() const {
   base::AutoLock autolock(lock_);
   return state_.received_invalid_request;
+}
+
+std::vector<FakeSecurityDomainsServer::Member>
+FakeSecurityDomainsServer::GetMembersLocked() const {
+  std::vector<Member> members;
+  members.reserve(state_.public_key_to_shared_keys.size());
+  for (const auto& [public_key, unused_shared_keys] :
+       state_.public_key_to_shared_keys) {
+    auto type_it = state_.public_key_to_member_type.find(public_key);
+    const trusted_vault_pb::SecurityDomainMember::MemberType member_type =
+        type_it != state_.public_key_to_member_type.end()
+            ? type_it->second
+            : trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED;
+    members.push_back(Member{ProtoStringToBytes(public_key), member_type});
+  }
+  return members;
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -471,7 +474,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
 
   int last_shared_key_epoch =
       deserialized_content.shared_member_key().rbegin()->epoch();
-  if (last_shared_key_epoch == 0 && !state_.constant_key_allowed) {
+  if (last_shared_key_epoch == 0 && state_.status == DomainStatus::kEnrolled) {
     // Request without epoch/epoch set to zero is allowed iff constant key is
     // the only key.
     return CreateErrorResponse(net::HTTP_BAD_REQUEST);
@@ -495,6 +498,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     // Simulate generation of random epoch when security domain just created.
     DCHECK(state_.public_key_to_shared_keys.empty());
     state_.current_epoch = 100;
+    state_.status = DomainStatus::kPreEnrolled;
   }
 
   // Make sure that the shared key epoch is correct, even if a client sent an
@@ -726,7 +730,7 @@ FakeSecurityDomainsServer::HandleRotateSharedKeyRequest(
   }
 
   ++state_.current_epoch;
-  state_.constant_key_allowed = false;
+  state_.status = DomainStatus::kEnrolled;
   for (const auto& [public_key, rotated_key] : rotated_keys_by_public_key) {
     trusted_vault_pb::SharedMemberKey new_shared_key;
     new_shared_key.set_epoch(state_.current_epoch);

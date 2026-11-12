@@ -475,8 +475,12 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   // Recoverability degraded notifications from the backend should be routed to
   // the respective domain client only.
-  fake_security_domains_server_->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      /*public_key=*/{9, 9, 9, 9});
+  fake_security_domains_server_->SetIsRecoverabilityDegradedCallback(
+      base::BindRepeating(
+          [](FakeSecurityDomainsServer::DomainStatus,
+             base::span<const FakeSecurityDomainsServer::Member>) {
+            return true;
+          }));
   base::RunLoop recoverability_run_loop;
   EXPECT_CALL(sync_observer, OnTrustedVaultRecoverabilityChanged)
       .WillOnce(

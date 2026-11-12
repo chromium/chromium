@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1244,6 +1247,25 @@ class SingleClientNigoriWithWebApiTest : public SingleClientNigoriSyncTest {
     return security_domains_server_.get();
   }
 
+  void RequirePublicKeyToAvoidRecoverabilityDegraded(
+      const std::vector<uint8_t>& public_key) {
+    GetSecurityDomainsServer()->SetIsRecoverabilityDegradedCallback(
+        base::BindRepeating(
+            [](const std::vector<uint8_t>& required_key,
+               trusted_vault::FakeSecurityDomainsServer::DomainStatus status,
+               base::span<
+                   const trusted_vault::FakeSecurityDomainsServer::Member>
+                   members) {
+              return status == trusted_vault::FakeSecurityDomainsServer::
+                                   DomainStatus::kEnrolled &&
+                     !std::ranges::contains(
+                         members, required_key,
+                         &trusted_vault::FakeSecurityDomainsServer::Member::
+                             public_key);
+            },
+            public_key));
+  }
+
   trusted_vault::TrustedVaultClient* GetSyncTrustedVaultClient() {
     return TrustedVaultServiceFactory::GetForProfile(GetProfile(0))
         ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
@@ -1373,8 +1395,7 @@ IN_PROC_BROWSER_TEST_P(
                    ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
 
   // Now mimic entering degraded recoverability state.
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 
   // Note: this test doesn't expect degraded recoverability state to be shown
@@ -1481,8 +1502,7 @@ IN_PROC_BROWSER_TEST_P(
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/trusted_vault::
               GetConstantTrustedVaultKey());
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
@@ -1872,8 +1892,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/trusted_vault::
               GetConstantTrustedVaultKey());
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(
       BuildTrustedVaultNigoriSpecifics(
           /*trusted_vault_keys=*/{trusted_vault_key}, migration_time),
@@ -1970,8 +1989,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupClients());
 
   // Mimic the key being available upon startup but recoverability degraded.
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
@@ -2014,8 +2032,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupClients());
 
   // Mimic the key being available upon startup but recoverability degraded.
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
   GetSyncTrustedVaultClient()->StoreKeys(
       kDefaultGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
@@ -2091,8 +2108,7 @@ IN_PROC_BROWSER_TEST_P(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
 
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
 
   // Mimic resolving the auth error (e.g. user reauth).
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -2207,8 +2223,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
   const int kTestMethodTypeHint = 8;
 
   // Enter degraded recoverability state.
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
   ASSERT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
                                                              /*degraded=*/true)
@@ -2420,8 +2435,7 @@ IN_PROC_BROWSER_TEST_P(
       GetSecurityDomainsServer()->RotateTrustedVaultKey(
           /*last_trusted_vault_key=*/trusted_vault::
               GetConstantTrustedVaultKey());
-  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
-      kTestRecoveryMethodPublicKey);
+  RequirePublicKeyToAvoidRecoverabilityDegraded(kTestRecoveryMethodPublicKey);
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
                             /*trusted_vault_keys=*/{trusted_vault_key}),
                         GetFakeServer());
