@@ -62,7 +62,13 @@ class PdfInfoBarControllerTest : public testing::Test {
   }
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kPdfInfoBar);
+    // Exercises the legacy path.
+    // TODO(crbug.com/567121669): Remove once the legacy delegate is deleted.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPdfInfoBar, {}},
+         {infobars::kCentralizedInfoBarFramework,
+          {{infobars::kMigratedPdf.name, "false"}}}},
+        {});
     PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(false);
     AddTab();
     infobars::ContentInfoBarManager::CreateForWebContents(
@@ -192,7 +198,8 @@ TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfDefaultBrowserPromptShown) {
 TEST_F(PdfInfoBarControllerTest, MaybeShowInfoBarCallbackMigrated) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      infobars::kCentralizedInfoBarFramework, {{"kMigratedPdf", "true"}});
+      infobars::kCentralizedInfoBarFramework,
+      {{infobars::kMigratedPdf.name, "true"}});
 
   auto* browser_infobar_manager =
       infobars::BrowserInfoBarManager::From(TestingBrowserProcess::GetGlobal());

@@ -102,7 +102,7 @@ BASE_FEATURE_PARAM(bool,
                    &kCentralizedInfoBarFramework,
                    true);
 
-BASE_FEATURE_PARAM(bool, kMigratedPdf, &kCentralizedInfoBarFramework, false);
+BASE_FEATURE_PARAM(bool, kMigratedPdf, &kCentralizedInfoBarFramework, true);
 BASE_FEATURE_PARAM(bool,
                    kMigratedObsoleteSystem,
                    &kCentralizedInfoBarFramework,
