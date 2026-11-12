@@ -18,8 +18,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Internal Mediator for the page zoom feature. Created by the |PageZoomCoordinator|, and should not
- * be accessed outside the component.
+ * Internal Mediator for the page zoom feature. Created by the {@code PageZoomBarCoordinator}, and
+ * should not be accessed outside the component.
  */
 @NullMarked
 class PageZoomBarMediator {

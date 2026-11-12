@@ -15,8 +15,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Internal Mediator for the page zoom feature. Created by the |PageZoomMenuItemCoordinator|, and
- * should not be accessed outside the component.
+ * Internal Mediator for the page zoom feature. Created by the {@code PageZoomMenuItemCoordinator},
+ * and should not be accessed outside the component.
  */
 @NullMarked
 class PageZoomMenuItemMediator {

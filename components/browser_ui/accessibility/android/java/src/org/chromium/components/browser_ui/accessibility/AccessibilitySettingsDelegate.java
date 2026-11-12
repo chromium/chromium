@@ -20,92 +20,76 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 public interface AccessibilitySettingsDelegate {
     /** An interface to control a single integer preference. */
     interface IntegerPreferenceDelegate {
-        /**
-         * @return int - Current value of the preference of this instance.
-         */
+        /** Returns the current value of the preference of this instance. */
         int getValue();
 
         /** Sets a new value for the preference of this instance. */
         void setValue(int value);
     }
 
-    /** An interface to control a single integer preference. */
+    /** An interface to control a single boolean preference. */
     interface BooleanPreferenceDelegate {
-        /**
-         * @return boolean - Current value of the preference of this instance.
-         */
+        /** Returns the current value of the preference of this instance. */
         boolean getValue();
 
         /** Sets a new value for the preference of this instance. */
         void setValue(boolean value);
     }
 
-    /**
-     * @return The BrowserContextHandle that should be used to read and update settings.
-     */
+    /** Returns the BrowserContextHandle that should be used to read and update settings. */
     BrowserContextHandle getBrowserContextHandle();
 
-    /**
-     * @return boolean value specifying if the Image Descriptions user setting should be shown.
-     */
+    /** Returns whether the Image Descriptions user setting should be shown. */
     boolean shouldShowImageDescriptionsSetting();
 
-    /**
-     * @return SettingsNavigation for navigating between Settings pages.
-     */
+    /** Returns the SettingsNavigation for navigating between Settings pages. */
     SettingsNavigation getSiteSettingsNavigation();
 
     /**
+     * Returns the SettingsNavigation for navigating between Settings pages.
+     *
      * @param context Android context used for scoping settings navigation in tab mode.
-     * @return SettingsNavigation for navigating between Settings pages.
      */
     default SettingsNavigation getSiteSettingsNavigation(Context context) {
         return getSiteSettingsNavigation();
     }
 
     /**
-     * @return the InterPreferenceDelegate instance that should be used for reading and setting the
-     *     text size contrast value for accessibility settings. Return null to omit the preference.
+     * Returns the IntegerPreferenceDelegate instance that should be used for reading and setting
+     * the text size contrast value for accessibility settings. Return null to omit the preference.
      */
     IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate();
 
     /**
-     * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
-     *     the force enable zoom value for accessibility settings. Return null to omit the
-     *     preference.
+     * Returns the BooleanPreferenceDelegate instance that should be used for reading and setting
+     * the force enable zoom value for accessibility settings. Return null to omit the preference.
      */
     BooleanPreferenceDelegate getForceEnableZoomAccessibilityDelegate();
 
     /**
-     * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
-     *     the touchpad overscroll history navigation value for accessibility settings. Return null
-     *     to omit the preference.
+     * Returns the BooleanPreferenceDelegate instance that should be used for reading and setting
+     * the touchpad overscroll history navigation value for accessibility settings. Return null to
+     * omit the preference.
      */
     BooleanPreferenceDelegate getTouchpadOverscrollHistoryNavigationAccessibilityDelegate();
 
     /**
-     * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
-     *     the reader (simplified view) value for accessibility settings. Return null to omit the
-     *     preference.
+     * Returns the BooleanPreferenceDelegate instance that should be used for reading and setting
+     * the reader (simplified view) value for accessibility settings. Return null to omit the
+     * preference.
      */
     BooleanPreferenceDelegate getReaderAccessibilityDelegate();
 
     /** Returns an instance of DistilledPagePrefs. */
     DistilledPagePrefs getDistilledPagePrefs();
 
-    /**
-     * Returns whether caret browsing is enabled.
-     *
-     * @return boolean - Whether caret browsing is enabled.
-     */
+    /** Returns whether caret browsing is enabled. */
     boolean isCaretBrowsingEnabled();
 
     /** Sets whether caret browsing is enabled. */
     void setCaretBrowsingEnabled(boolean enabled);
 
-    /**
-     * @return String preference key for caret browsing.
-     */
+    /** Returns the String preference key for caret browsing. */
     default @Nullable String getCaretBrowsingPreferenceKey() {
         return null;
     }

@@ -118,6 +118,7 @@ public class PreferenceParser {
      * @param extras The bundle arguments needed for this pref.
      * @param providerMap Map of all registered providers, keyed by Fragment Class Name. Used to
      *     look up default extras for child fragments.
+     * @param isSearchable Whether the parsed entries should be searchable.
      */
     public static void parseAndPopulate(
             Context context,

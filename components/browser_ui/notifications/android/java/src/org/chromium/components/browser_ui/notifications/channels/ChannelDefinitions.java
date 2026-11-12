@@ -29,22 +29,18 @@ import java.util.Set;
 @NullMarked
 public abstract class ChannelDefinitions {
     /**
-     * @return A set of all known channel group ids that can be used for {@link #getChannelGroup}.
+     * Returns a set of all known channel group ids that can be used for {@link #getChannelGroup}.
      */
     public abstract Set<String> getAllChannelGroupIds();
 
-    /**
-     * @return A set of all known channel ids that can be used for {@link #getChannelFromId}.
-     */
+    /** Returns a set of all known channel ids that can be used for {@link #getChannelFromId}. */
     public abstract Set<String> getAllChannelIds();
 
-    /**
-     * @return A set of channel ids of channels that should be initialized on startup.
-     */
+    /** Returns a set of channel ids of channels that should be initialized on startup. */
     public abstract Set<String> getStartupChannelIds();
 
     /**
-     * @return A set of channel group ids of channel groups that should be initialized on startup.
+     * Returns a set of channel group ids of channel groups that should be initialized on startup.
      */
     public Set<String> getStartupChannelGroupIds() {
         Set<String> groupIds = new HashSet<>();
@@ -55,8 +51,8 @@ public abstract class ChannelDefinitions {
     }
 
     /**
-     * @return An array of old ChannelIds that may have been returned by
-     *         {@link #getStartupChannelIds} in the past, but are no longer in use.
+     * Returns an array of old ChannelIds that may have been returned by {@link
+     * #getStartupChannelIds} in the past, but are no longer in use.
      */
     public abstract List<String> getLegacyChannelIds();
 
@@ -70,8 +66,8 @@ public abstract class ChannelDefinitions {
 
     /**
      * @param channelId a channel ID which may or may not correlate to a PredefinedChannel.
-     * @return true if the input is a valid channel ID other than one returned in
-     *     {@link getAllChannelIds}.
+     * @return true if the input is a valid channel ID other than one returned in {@link
+     *     #getAllChannelIds}.
      */
     public boolean isValidNonPredefinedChannelId(String channelId) {
         return false;

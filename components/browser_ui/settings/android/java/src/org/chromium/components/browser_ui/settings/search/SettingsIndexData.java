@@ -12,8 +12,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -582,7 +580,6 @@ public class SettingsIndexData {
      * @param title Title text.
      * @param summary Summary text.
      * @param extras Extra bundle to pass to the Fragment.
-     * @param targetFragment Full class name of the child Fragment this entry opens.
      */
     public void addEntryForKey(
             String prefFragment,
@@ -761,7 +758,7 @@ public class SettingsIndexData {
         mShouldRefreshResult = refresh;
     }
 
-    /** Returns whether whether the search results fragment needs refreshing. */
+    /** Returns whether the search results fragment needs refreshing. */
     public boolean shouldRefreshResult() {
         return mShouldRefreshResult;
     }
@@ -886,6 +883,8 @@ public class SettingsIndexData {
      * @param arguments The runtime arguments (Bundle) of the target fragment. Used to identify the
      *     correct parent when a fragment class is reused across multiple preferences. Can be {@code
      *     null}.
+     * @param rootFragmentName The class name of the root fragment (e.g., MainSettings) that the
+     *     path should lead to.
      * @return A list of {@link Entry} objects representing the path, ordered from the top-level
      *     entry down to the immediate parent of the target. Returns {@code null} if no valid path
      *     to the root exists (i.e., the fragment is an orphan or its parent is disabled). Returns
@@ -1130,12 +1129,10 @@ public class SettingsIndexData {
         return results;
     }
 
-    @VisibleForTesting
     public Map<String, Entry> getEntriesForTesting() {
         return mEntries;
     }
 
-    @VisibleForTesting
     public Map<String, List<String>> getChildFragmentToParentKeysForTesting() {
         return mChildFragmentToParentKeys;
     }

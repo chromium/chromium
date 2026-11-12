@@ -9,18 +9,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
-/** Delegate interface for |PageZoomManager|. */
+/** Delegate interface for {@code PageZoomManager}. */
 @NullMarked
 public interface PageZoomManagerDelegate {
 
-    /**
-     * @return the WebContents that should be used for the zoom manager.
-     */
+    /** Returns the WebContents that should be used for the zoom manager. */
     @Nullable WebContents getWebContents();
 
-    /**
-     * @return the BrowserContextHandle that should be used for the zoom manager.
-     */
+    /** Returns the BrowserContextHandle that should be used for the zoom manager. */
     BrowserContextHandle getBrowserContextHandle();
 
     /**

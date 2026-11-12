@@ -20,8 +20,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * Internal Mediator for the page zoom feature. Created by the |PageZoomIndicatorCoordinator|, and
- * should not be accessed outside the component.
+ * Internal Mediator for the page zoom feature. Created by the {@code PageZoomIndicatorCoordinator},
+ * and should not be accessed outside the component.
  */
 @NullMarked
 class PageZoomIndicatorMediator {

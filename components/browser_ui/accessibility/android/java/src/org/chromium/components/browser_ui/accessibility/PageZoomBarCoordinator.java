@@ -27,9 +27,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * Coordinator for the page zoom feature. Created by the |RootUiCoordinator| and acts as the public
- * API for the component. Classes outside the component wishing to interact with page zoom should be
- * calling methods in this class only.
+ * Coordinator for the page zoom feature. Created by the {@code RootUiCoordinator} and acts as the
+ * public API for the component. Classes outside the component wishing to interact with page zoom
+ * should be calling methods in this class only.
  */
 @NullMarked
 public class PageZoomBarCoordinator {
