@@ -84,12 +84,13 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
 
     /**
      * Starts the capture of the screenshot.
+     *
      * @param inMemory Capture the contents of the tab in memory rather than using temporary files.
      */
     @Initializer
     public void captureTab(boolean inMemory) {
         if (mTabService == null) {
-            mTabService = LongScreenshotsTabServiceFactory.getServiceInstance();
+            mTabService = LongScreenshotsTabServiceFactory.getServiceInstance(mTab.getProfile());
         }
         mTabService.setCaptureProcessor(this);
         mTabService.captureTab(

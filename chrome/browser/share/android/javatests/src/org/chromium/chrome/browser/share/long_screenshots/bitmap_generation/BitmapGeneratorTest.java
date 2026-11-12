@@ -128,4 +128,73 @@ public class BitmapGeneratorTest {
                     Criteria.checkThat(mBitmapCreated, Matchers.equalTo(true));
                 });
     }
+
+    /** Verifies that an Incognito Tab's contents are captured in-memory and rastered cleanly. */
+    @Test
+    @LargeTest
+    @Feature({"LongScreenshots"})
+    public void testCapturedNewOne_Incognito() throws Exception {
+        String url =
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+        Tab incognitoTab =
+                mInitialPage
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(url)
+                        .loadedTabElement
+                        .value();
+        Assert.assertTrue(incognitoTab.isOffTheRecord());
+
+        Runnable onErrorCallback =
+                () -> {
+                    Assert.fail("Error should not be thrown");
+                };
+
+        Callback<Bitmap> onBitmapGenerated =
+                (result) -> {
+                    Assert.assertNotNull(result);
+                    mBitmapCreated = true;
+                };
+
+        class Listener implements BitmapGenerator.GeneratorCallBack {
+            @Override
+            public void onCompositorResult(@CompositorStatus int status) {
+                Assert.assertEquals(CompositorStatus.OK, status);
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            mGenerator.compositeBitmap(
+                                    new Rect(0, 0, 100, 100), onErrorCallback, onBitmapGenerated);
+                        });
+            }
+
+            @Override
+            public void onCaptureResult(@Status int status) {
+                Assert.assertEquals(Status.OK, status);
+            }
+        }
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mGenerator =
+                            new BitmapGenerator(
+                                    incognitoTab,
+                                    new ScreenshotBoundsManager(
+                                            mActivityTestRule.getActivity(), incognitoTab),
+                                    new Listener());
+                    PaintPreviewCompositorUtils.warmupCompositor();
+                    mGenerator.captureTab(/* inMemory= */ false);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mGenerator.getContentSize(), Matchers.notNullValue());
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mGenerator.getScrollOffset(), Matchers.notNullValue());
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(mBitmapCreated, Matchers.equalTo(true));
+                });
+    }
 }

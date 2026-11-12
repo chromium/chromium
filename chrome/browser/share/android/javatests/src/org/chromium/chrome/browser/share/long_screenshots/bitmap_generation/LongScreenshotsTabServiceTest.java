@@ -79,7 +79,7 @@ public class LongScreenshotsTabServiceTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService =
-                            LongScreenshotsTabServiceFactory.getServiceInstance();
+                            LongScreenshotsTabServiceFactory.getServiceInstance(mTab.getProfile());
                     mLongScreenshotsTabService.setCaptureProcessor(mProcessor);
                 });
     }
@@ -142,5 +142,46 @@ public class LongScreenshotsTabServiceTest {
         mLongScreenshotsTabService.releaseNativeCaptureResultPtr(
                 mProcessor.getNativeCaptureResultPtr());
         mLongScreenshotsTabService.longScreenshotsClosed();
+    }
+
+    /**
+     * Verifies that an off-the-record Profile gets its own LongScreenshotsTabService instance that
+     * forces in-memory capture even when inMemory=false is passed.
+     */
+    @Test
+    @MediumTest
+    @Feature({"LongScreenshots"})
+    public void testCapturedOffTheRecordForcesInMemory() throws Exception {
+        LongScreenshotsTabService otrService =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            LongScreenshotsTabService service =
+                                    LongScreenshotsTabServiceFactory.getServiceInstance(
+                                            mTab.getProfile()
+                                                    .getPrimaryOtrProfile(
+                                                            /* createIfNeeded= */ true));
+                            Assert.assertNotEquals(mLongScreenshotsTabService, service);
+                            service.setCaptureProcessor(mProcessor);
+                            service.captureTab(
+                                    mTab,
+                                    new Rect(0, 0, 100, 100),
+                                    /* inMemory= */ false,
+                                    ClipCoordOverride.NONE,
+                                    ClipCoordOverride.NONE);
+                            return service;
+                        });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Callback was not called",
+                            mProcessor.getProcessCapturedTabCalled(),
+                            Matchers.is(true));
+                });
+
+        Assert.assertEquals(Status.OK, mProcessor.getStatus());
+        Assert.assertNotEquals(0, mProcessor.getNativeCaptureResultPtr());
+        otrService.releaseNativeCaptureResultPtr(mProcessor.getNativeCaptureResultPtr());
+        otrService.longScreenshotsClosed();
     }
 }

@@ -43,9 +43,18 @@ class LaxMockPaintPreviewRecorder
   LaxMockPaintPreviewRecorder() = default;
   ~LaxMockPaintPreviewRecorder() override = default;
 
+  std::optional<paint_preview::RecordingPersistence> last_persistence() const {
+    return last_persistence_;
+  }
+
  protected:
   void CheckParams(const paint_preview::mojom::PaintPreviewCaptureParamsPtr&
-                       params) override {}
+                       params) override {
+    last_persistence_ = params->persistence;
+  }
+
+ private:
+  std::optional<paint_preview::RecordingPersistence> last_persistence_;
 };
 
 std::vector<base::FilePath> ListDir(const base::FilePath& path) {
@@ -184,6 +193,32 @@ TEST_F(LongScreenshotsTabServiceTest, CaptureTabInMemory) {
                      key),
       base::BindOnce([](bool exists) { EXPECT_FALSE(exists); }));
   task_environment()->RunUntilIdle();
+}
+
+// Test that an off-the-record service (constructed without a FileMixin) forces
+// in-memory capture even when in_memory=false is passed.
+TEST_F(LongScreenshotsTabServiceTest, CaptureTabOffTheRecordForcesInMemory) {
+  const int kTabId = 1U;
+
+  LaxMockPaintPreviewRecorder recorder;
+  paint_preview::mojom::PaintPreviewCaptureResponsePtr response =
+      paint_preview::mojom::PaintPreviewCaptureResponse::New();
+  response->geometry_metadata =
+      paint_preview::mojom::GeometryMetadataResponse::New();
+  response->skp.emplace(mojo_base::BigBuffer());
+  recorder.SetResponse(std::move(response));
+  OverrideInterface(&recorder);
+
+  auto otr_service = std::make_unique<LongScreenshotsTabService>(
+      /*file_mixin=*/nullptr, /*policy=*/nullptr, /*is_off_the_record=*/true);
+  otr_service->CaptureTab(kTabId, GURL::EmptyGURL(), web_contents(), 0, 0, 1000,
+                          1000, /*in_memory=*/false,
+                          paint_preview::mojom::ClipCoordOverride::kNone,
+                          paint_preview::mojom::ClipCoordOverride::kNone);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(recorder.last_persistence(),
+            paint_preview::RecordingPersistence::kMemoryBuffer);
+  otr_service->DeleteAllLongScreenshotFiles();
 }
 
 // Test a successful capturing a tab multiple times.

@@ -138,11 +138,13 @@ void LongScreenshotsTabService::CaptureTab(
       /*stay_awake=*/true, /*is_activity=*/true);
   content::RenderFrameHost* rfh =
       GetRootRenderFrameHost(contents->GetPrimaryMainFrame(), url);
-  if (in_memory) {
+  // Off-the-record services are constructed without a PaintPreviewFileMixin and
+  // always capture in memory.
+  if (in_memory || IsOffTheRecord()) {
     CaptureTabInternal(tab_id, rfh->GetFrameTreeNodeId(), rfh->GetGlobalId(),
-                       clip_x, clip_y, clip_width, clip_height, in_memory,
-                       clip_x_coord_override, clip_y_coord_override,
-                       std::nullopt);
+                       clip_x, clip_y, clip_width, clip_height,
+                       /*in_memory=*/true, clip_x_coord_override,
+                       clip_y_coord_override, std::nullopt);
     return;
   }
 
@@ -286,6 +288,9 @@ bool LongScreenshotsTabService::IsAmpUrl(const GURL& url) {
 }
 
 void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
+  if (!GetFileMixin()) {
+    return;
+  }
   GetFileMixin()->GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&FileManager::DeleteAll,
                                 GetFileMixin()->GetFileManager()));

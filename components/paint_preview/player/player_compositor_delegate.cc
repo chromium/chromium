@@ -100,7 +100,8 @@ PlayerCompositorDelegate::PlayerCompositorDelegate()
                                        base::OnTaskRunnerDeleter(nullptr)) {}
 
 PlayerCompositorDelegate::~PlayerCompositorDelegate() {
-  if (compress_on_close_ && paint_preview_service_) {
+  if (compress_on_close_ && paint_preview_service_ &&
+      paint_preview_service_->GetFileMixin()) {
     paint_preview_service_->GetFileMixin()->GetTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&FileManager::CompressDirectory),

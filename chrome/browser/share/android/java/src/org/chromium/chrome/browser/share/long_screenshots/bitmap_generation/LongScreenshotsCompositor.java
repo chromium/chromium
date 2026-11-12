@@ -61,6 +61,7 @@ public class LongScreenshotsCompositor {
                                 true,
                                 this::onCompositorReady,
                                 this::onCompositorError);
+        mDelegate.setCompressOnClose(false);
     }
 
     /** Called when the compositor cannot be successfully initialized. */

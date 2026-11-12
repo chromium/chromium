@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.player.CompositorStatus;
@@ -49,6 +50,7 @@ public class EntryManagerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTabMock;
+    @Mock private Profile mProfileMock;
     @Mock private WebContents mWebContentsMock;
     @Mock private LongScreenshotsTabService mTabServiceMock;
     @Mock private ScreenshotBoundsManager mBoundsManagerMock;
@@ -70,11 +72,12 @@ public class EntryManagerTest {
     @Before
     public void setUp() {
         when(mTabMock.getWebContents()).thenReturn(mWebContentsMock);
+        when(mTabMock.getProfile()).thenReturn(mProfileMock);
 
         LongScreenshotsTabServiceFactoryJni.setInstanceForTesting(
                 mLongScreenshotsTabServiceFactoryJniMock);
         mInOrder = inOrder(mTabServiceMock, mObserverMock);
-        when(mLongScreenshotsTabServiceFactoryJniMock.getServiceInstanceForCurrentProfile())
+        when(mLongScreenshotsTabServiceFactoryJniMock.getServiceInstanceForProfile(mProfileMock))
                 .thenReturn(mTabServiceMock);
         mEntryManager = new EntryManager(mBoundsManagerMock, mTabMock, false);
         mEntryManager.addBitmapGeneratorObserver(mObserverMock);

@@ -635,6 +635,31 @@ TEST_F(PlayerCompositorDelegateTest, CompressOnClose) {
   EXPECT_TRUE(base::PathExists(dir.AddExtensionASCII(".zip")));
 }
 
+TEST_F(PlayerCompositorDelegateTest, CompressOnCloseWithoutFileMixin) {
+  PaintPreviewBaseService in_memory_service(
+      /*file_mixin=*/nullptr, /*policy=*/nullptr, /*is_off_the_record=*/true);
+  GURL url("https://www.chromium.org/");
+  auto proto = CreateValidProto(url);
+  auto key = GetBaseService()->GetFileMixin()->GetFileManager()->CreateKey(1U);
+  SerializeProtoAndCreateRootSkp(&proto, key, true);
+  {
+    PlayerCompositorDelegateImpl player_compositor_delegate;
+    auto capture_result =
+        std::make_unique<CaptureResult>(RecordingPersistence::kFileSystem);
+    capture_result->proto = std::move(proto);
+    player_compositor_delegate.SetCaptureResult(std::move(capture_result));
+    player_compositor_delegate.SetExpected(CompositorStatus::OK,
+                                           kDefaultScaleFactor);
+    player_compositor_delegate.InitializeWithFakeServiceForTest(
+        &in_memory_service, url, DirectoryKey(), /*main_frame_mode=*/false,
+        base::DoNothing(), base::TimeDelta::Max(), kMaxParallelRequests,
+        CreateCompositorService());
+    env.RunUntilIdle();
+    EXPECT_TRUE(player_compositor_delegate.WasStatusChecked());
+  }
+  env.RunUntilIdle();
+}
+
 TEST_F(PlayerCompositorDelegateTest, RequestBitmapWithCancel) {
   auto* service = GetBaseService();
   auto file_manager = service->GetFileMixin()->GetFileManager();
