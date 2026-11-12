@@ -6241,6 +6241,11 @@ inline constexpr char kEnableAccessibilityLabeledByDescription[] =
     "relationships in "
     "the accessibility tree for android.";
 
+inline constexpr char kEnableAndroidSandboxedGpuProcessName[] =
+    "Enable Android Sandboxed GPU Process";
+inline constexpr char kEnableAndroidSandboxedGpuProcessDescription[] =
+    "Runs the GPU process in a sandboxed process on Android.";
+
 inline constexpr char kEnableAndroidSidePanelName[] =
     "Enable Android Side Panel";
 inline constexpr char kEnableAndroidSidePanelDescription[] =

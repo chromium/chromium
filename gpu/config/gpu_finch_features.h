@@ -32,6 +32,7 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kAggressiveShaderCacheLimits);
 
 #if BUILDFLAG(IS_ANDROID)
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kAndroidSurfaceControl);
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableAndroidSandboxedGpuProcess);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControl);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebViewSurfaceControlForTV);
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kLimitAImageReaderMaxSizeToOne);
@@ -255,6 +256,7 @@ GPU_CONFIG_EXPORT bool IsLegacyIpcDisabled();
 
 #if BUILDFLAG(IS_ANDROID)
 GPU_CONFIG_EXPORT bool IsAndroidSurfaceControlEnabled();
+GPU_CONFIG_EXPORT bool IsAndroidSandboxedGpuProcessEnabled();
 GPU_CONFIG_EXPORT bool LimitAImageReaderMaxSizeToOne();
 GPU_CONFIG_EXPORT bool IncreaseBufferCountForHighFrameRate();
 GPU_CONFIG_EXPORT bool IncreaseBufferCountForWebViewOverlays();

@@ -14259,6 +14259,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidBookmarkBarUiControllerName,
      flag_descriptions::kAndroidBookmarkBarUiControllerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBarUiController)},
+    {"enable-android-sandboxed-gpu-process",
+     flag_descriptions::kEnableAndroidSandboxedGpuProcessName,
+     flag_descriptions::kEnableAndroidSandboxedGpuProcessDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kEnableAndroidSandboxedGpuProcess)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"history-page-refresh", flag_descriptions::kHistoryPageRefreshName,

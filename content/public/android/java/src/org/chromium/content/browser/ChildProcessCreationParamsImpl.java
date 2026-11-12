@@ -23,6 +23,8 @@ public class ChildProcessCreationParamsImpl {
             "org.chromium.content.common.child_service_params.library_process_type";
     private static final String PRIVILEGED_SERVICES_NAME =
             "org.chromium.content.app.PrivilegedProcessService";
+    private static final String SANDBOXED_GPU_SERVICES_NAME =
+            "org.chromium.content.app.SandboxedGpuProcessService";
     private static final String SANDBOXED_SERVICES_NAME =
             "org.chromium.content.app.SandboxedProcessService";
     private static final String NATIVE_SANDBOXED_SERVICES_NAME =
@@ -104,6 +106,10 @@ public class ChildProcessCreationParamsImpl {
 
     public static String getPrivilegedServicesName() {
         return PRIVILEGED_SERVICES_NAME;
+    }
+
+    public static String getSandboxedGpuServicesName() {
+        return SANDBOXED_GPU_SERVICES_NAME;
     }
 
     private static boolean isPrimaryAbi64Bit() {

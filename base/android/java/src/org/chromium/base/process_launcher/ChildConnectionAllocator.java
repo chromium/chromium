@@ -198,7 +198,7 @@ public abstract class ChildConnectionAllocator {
     public static ChildConnectionAllocator createVariableSize(
             Context context,
             Handler launcherHandler,
-            Runnable freeSlotCallback,
+            @Nullable Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
             boolean bindToCaller,

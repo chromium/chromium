@@ -105,6 +105,9 @@ public final class ChildProcessLauncherHelperImpl {
     // Allocator used for non-sandboxed services.
     private static @Nullable ChildConnectionAllocator sPrivilegedChildConnectionAllocator;
 
+    // Allocator used for SandboxedGpuProcessService when sandboxed GPU process is enabled.
+    private static @Nullable ChildConnectionAllocator sSandboxedGpuChildConnectionAllocator;
+
     // Used by tests to override the default sandboxed service allocator settings.
     private static ChildConnectionAllocator.@Nullable ConnectionFactory
             sSandboxedServiceFactoryForTesting;
@@ -394,7 +397,7 @@ public final class ChildProcessLauncherHelperImpl {
     }
 
     @CalledByNative
-    private static ChildProcessLauncherHelperImpl createAndStart(
+    static ChildProcessLauncherHelperImpl createAndStart(
             long nativePointer,
             String[] commandLine,
             IFileDescriptorInfo[] filesToBeMapped,
@@ -411,10 +414,13 @@ public final class ChildProcessLauncherHelperImpl {
             commandLine[commandLine.length - 1] = TRACE_EARLY_JAVA_IN_CHILD_SWITCH;
         }
         boolean sandboxed = true;
+        boolean useSandboxedGpuService = false;
         boolean reducePriorityOnBackground = false;
         if (!ContentSwitches.SWITCH_RENDERER_PROCESS.equals(processType)) {
             if (ContentSwitches.SWITCH_GPU_PROCESS.equals(processType)) {
                 sandboxed = false;
+                useSandboxedGpuService =
+                        ChildProcessLauncherHelperImplJni.get().isSandboxedGpuProcessEnabled();
                 reducePriorityOnBackground =
                         ContentFeatureMap.isEnabled(
                                 ContentFeatures.REDUCE_GPU_PRIORITY_ON_BACKGROUND);
@@ -441,6 +447,7 @@ public final class ChildProcessLauncherHelperImpl {
                         commandLine,
                         filesToBeMapped,
                         sandboxed,
+                        useSandboxedGpuService,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
                         binderCallback,
@@ -613,6 +620,30 @@ public final class ChildProcessLauncherHelperImpl {
         sIgnoreMainFrameVisibilityForImportance = true;
     }
 
+    private static ChildConnectionAllocator getSandboxedGpuConnectionAllocator(Context context) {
+        assert LauncherThread.runningOnLauncherThread();
+        if (sSandboxedGpuChildConnectionAllocator == null) {
+            final String packageName =
+                    ChildProcessCreationParamsImpl.getPackageNameForPrivilegedService();
+            Log.d(
+                    TAG,
+                    "Create a new sandboxed GPU ChildConnectionAllocator with package name = %s",
+                    packageName);
+            sSandboxedGpuChildConnectionAllocator =
+                    ChildConnectionAllocator.createVariableSize(
+                            context,
+                            LauncherThread.getHandler(),
+                            /* freeSlotCallback= */ null,
+                            packageName,
+                            ChildProcessCreationParamsImpl.getSandboxedGpuServicesName(),
+                            ChildProcessCreationParamsImpl.getBindToCallerCheck(),
+                            ChildProcessCreationParamsImpl.getIsSandboxedServiceExternal(),
+                            /* isSandboxedForHistograms= */ true,
+                            ChildConnectionAllocator.MAX_VARIABLE_ALLOCATED);
+        }
+        return sSandboxedGpuChildConnectionAllocator;
+    }
+
     @VisibleForTesting
     static ChildConnectionAllocator getConnectionAllocator(Context context, boolean sandboxed) {
         assert LauncherThread.runningOnLauncherThread();
@@ -711,19 +742,24 @@ public final class ChildProcessLauncherHelperImpl {
             String[] commandLine,
             IFileDescriptorInfo[] filesToBeMapped,
             boolean sandboxed,
+            boolean useSandboxedGpuService,
             boolean reducePriorityOnBackground,
             boolean canUseWarmUpConnection,
             @Nullable IBinder binderCallback,
             boolean isSpareRenderer,
             boolean isForOutermostMainFrame) {
         assert LauncherThread.runningOnLauncherThread();
+        assert !sandboxed || !useSandboxedGpuService;
 
         mNativeChildProcessLauncherHelper = nativePointer;
         mSandboxed = sandboxed;
         mReducePriorityOnBackground = reducePriorityOnBackground;
         mCanUseWarmUpConnection = canUseWarmUpConnection;
+        Context appContext = ContextUtils.getApplicationContext();
         ChildConnectionAllocator connectionAllocator =
-                getConnectionAllocator(ContextUtils.getApplicationContext(), sandboxed);
+                useSandboxedGpuService
+                        ? getSandboxedGpuConnectionAllocator(appContext)
+                        : getConnectionAllocator(appContext, sandboxed);
 
         mLauncher =
                 new ChildProcessLauncher(
@@ -1127,6 +1163,7 @@ public final class ChildProcessLauncherHelperImpl {
                         commandLine,
                         filesToBeMapped,
                         sandboxed,
+                        /* useSandboxedGpuService= */ false,
                         reducePriorityOnBackground,
                         canUseWarmUpConnection,
                         binderCallback,
@@ -1147,6 +1184,11 @@ public final class ChildProcessLauncherHelperImpl {
                 sPrivilegedChildConnectionAllocator == null
                         ? 0
                         : sPrivilegedChildConnectionAllocator.allocatedConnectionsCountForTesting();
+        count +=
+                sSandboxedGpuChildConnectionAllocator == null
+                        ? 0
+                        : sSandboxedGpuChildConnectionAllocator
+                                .allocatedConnectionsCountForTesting();
         return count + getConnectedSandboxedServicesCountForTesting();
     }
 
@@ -1183,5 +1225,7 @@ public final class ChildProcessLauncherHelperImpl {
                 boolean isSpareRenderer);
 
         boolean serviceGroupImportanceEnabled();
+
+        boolean isSandboxedGpuProcessEnabled();
     }
 }

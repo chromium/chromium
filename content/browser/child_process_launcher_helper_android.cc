@@ -35,6 +35,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 
@@ -253,6 +254,11 @@ static bool JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(
          (base::android::android_info::sdk_int() <
               base::android::android_info::SDK_VERSION_U ||
           base::FeatureList::IsEnabled(kServiceGroupImportance));
+}
+
+static bool JNI_ChildProcessLauncherHelperImpl_IsSandboxedGpuProcessEnabled(
+    JNIEnv* env) {
+  return features::IsAndroidSandboxedGpuProcessEnabled();
 }
 
 // static

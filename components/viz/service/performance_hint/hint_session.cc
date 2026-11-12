@@ -31,6 +31,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/service/performance_hint/boost_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 
 static_assert(sizeof(base::PlatformThreadId) == sizeof(int32_t),
               "thread id types incompatible");
@@ -417,6 +418,9 @@ HintSessionFactoryImpl::GetSessionThreadIds(
 bool IsAdpfEnabled() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableAdpf)) {
+    return false;
+  }
+  if (features::IsAndroidSandboxedGpuProcessEnabled()) {
     return false;
   }
   if (base::android::android_info::sdk_int() <

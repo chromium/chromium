@@ -20810,6 +20810,7 @@ from previous Chrome versions.
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:enabled"/>
   <int value="1701972870" label="NTPSnippetsIncreasedVisibility:enabled"/>
   <int value="1702090999" label="ClearOldBrowsingData:disabled"/>
+  <int value="1702176034" label="EnableAndroidSandboxedGpuProcess:disabled"/>
   <int value="1702313424" label="ContextualTasksTabBasedSuggestions:disabled"/>
   <int value="1702653578" label="LocalNetworkAccessChecksWebTransport:enabled"/>
   <int value="1702985369"
@@ -21461,6 +21462,7 @@ from previous Chrome versions.
   <int value="1891312456" label="AndroidMessagesProdEndpoint:disabled"/>
   <int value="1891990252" label="IncognitoAsWindowFullScreen:enabled"/>
   <int value="1892005713" label="TabStripDensityChangeAndroid:enabled"/>
+  <int value="1892096976" label="EnableAndroidSandboxedGpuProcess:enabled"/>
   <int value="1892124105" label="HistoryClustersVisitDeduping:disabled"/>
   <int value="1892201400" label="enable-password-separated-signin-flow"/>
   <int value="1892311584" label="NewStyleNotifications:disabled"/>

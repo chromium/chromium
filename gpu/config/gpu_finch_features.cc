@@ -148,6 +148,10 @@ BASE_FEATURE(kAggressiveShaderCacheLimits, base::FEATURE_DISABLED_BY_DEFAULT);
 // SurfaceControl.
 BASE_FEATURE(kAndroidSurfaceControl, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Launches the GPU process using SandboxedGpuProcessService.
+BASE_FEATURE(kEnableAndroidSandboxedGpuProcess,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Hardware Overlays for WebView.
 BASE_FEATURE(kWebViewSurfaceControl, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -750,6 +754,10 @@ bool IsAndroidSurfaceControlEnabled() {
   }
 
   return base::FeatureList::IsEnabled(kAndroidSurfaceControl);
+}
+
+bool IsAndroidSandboxedGpuProcessEnabled() {
+  return base::FeatureList::IsEnabled(kEnableAndroidSandboxedGpuProcess);
 }
 
 // Many devices do not support more than 1 image to be acquired from the
