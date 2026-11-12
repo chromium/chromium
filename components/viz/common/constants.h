@@ -13,6 +13,12 @@
 namespace viz {
 
 // Keep list in alphabetical order.
+
+// The client_id that the browser process uses for the FrameSinkIds it
+// allocates, e.g. for unbounded surfaces. Renderers use their own client_id,
+// which is never 0.
+VIZ_COMMON_EXPORT extern const uint32_t kBrowserClientId;
+
 VIZ_COMMON_EXPORT extern const uint32_t kDefaultActivationDeadlineInFrames;
 
 // When throttling is enabled we estimate if vsync and sink frame rate are at

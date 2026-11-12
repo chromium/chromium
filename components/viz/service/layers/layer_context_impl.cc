@@ -50,6 +50,7 @@
 #include "cc/trees/task_runner_provider.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -2590,9 +2591,8 @@ void LayerContextImpl::SetUnboundedFrameSinkId(
     const FrameSinkId& frame_sink_id,
     const LocalSurfaceId& local_surface_id) {
   // Unbounded surface FrameSinkIds are allocated by the browser process, so
-  // they must not use the renderer's own client_id namespace.
-  if (frame_sink_id.client_id() ==
-      compositor_sink_->frame_sink_id().client_id()) {
+  // they must use the browser's client_id.
+  if (frame_sink_id.client_id() != kBrowserClientId) {
     HandleBadMojoMessage("SetUnboundedFrameSinkId",
                          "Invalid client_id for Unbounded Element");
     return;

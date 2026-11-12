@@ -602,6 +602,69 @@ TEST_F(FrameSinkManagerTest, FrameSinkParentChildRelationship) {
   manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2, {});
 }
 
+// Verifies that a FrameSinkId can only be used for an unbounded surface if the
+// browser process allocated it and it's in the caller's frame sink hierarchy.
+TEST_F(FrameSinkManagerTest, IsValidUnboundedFrameSinkId) {
+  // The renderer frame sink that requests the unbounded surface.
+  constexpr FrameSinkId kRenderer(3, 1);
+  // Other renderer frame sinks in the same window: one in the requesting
+  // renderer's own namespace, one for a cross-origin iframe that it embeds, and
+  // one for a sibling renderer under the same display root.
+  constexpr FrameSinkId kRendererChild(3, 2);
+  constexpr FrameSinkId kEmbeddedIframe(4, 1);
+  constexpr FrameSinkId kSiblingRenderer(5, 1);
+  // Browser-allocated frame sinks. Depending on the platform, the browser
+  // registers an unbounded surface under the requesting renderer or under its
+  // display root.
+  const FrameSinkId kUnboundedUnderRenderer(kBrowserClientId, 2);
+  const FrameSinkId kUnboundedUnderRoot(kBrowserClientId, 3);
+  const FrameSinkId kUnboundedInOtherWindow(kBrowserClientId, 4);
+
+  RootCompositorFrameSinkData root_data;
+  manager_->CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  // root  -> renderer -> renderer child
+  //                   -> embedded iframe
+  //                   -> unbounded under renderer
+  //       -> sibling renderer
+  //       -> unbounded under root
+  // root2 -> unbounded in other window
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kRenderer);
+  manager_->RegisterFrameSinkHierarchy(kRenderer, kRendererChild);
+  manager_->RegisterFrameSinkHierarchy(kRenderer, kEmbeddedIframe);
+  manager_->RegisterFrameSinkHierarchy(kRenderer, kUnboundedUnderRenderer);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kSiblingRenderer);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kUnboundedUnderRoot);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot2,
+                                       kUnboundedInOtherWindow);
+
+  EXPECT_TRUE(manager_->IsValidUnboundedFrameSinkId(kRenderer,
+                                                    kUnboundedUnderRenderer));
+  EXPECT_TRUE(
+      manager_->IsValidUnboundedFrameSinkId(kRenderer, kUnboundedUnderRoot));
+  EXPECT_FALSE(manager_->IsValidUnboundedFrameSinkId(kRenderer,
+                                                     kUnboundedInOtherWindow));
+
+  // Renderer frame sinks are never valid, even when they're in the hierarchy.
+  EXPECT_FALSE(
+      manager_->IsValidUnboundedFrameSinkId(kRenderer, kRendererChild));
+  EXPECT_FALSE(
+      manager_->IsValidUnboundedFrameSinkId(kRenderer, kEmbeddedIframe));
+  EXPECT_FALSE(
+      manager_->IsValidUnboundedFrameSinkId(kRenderer, kSiblingRenderer));
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot2,
+                                         kUnboundedInOtherWindow);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kUnboundedUnderRoot);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kSiblingRenderer);
+  manager_->UnregisterFrameSinkHierarchy(kRenderer, kUnboundedUnderRenderer);
+  manager_->UnregisterFrameSinkHierarchy(kRenderer, kEmbeddedIframe);
+  manager_->UnregisterFrameSinkHierarchy(kRenderer, kRendererChild);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kRenderer);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+}
+
 // This test verifies that a BeginFrameSource path to the root from a
 // FrameSinkId is preserved even if that FrameSinkId has no children
 // and does not have a corresponding CompositorFrameSinkSupport.

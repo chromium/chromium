@@ -183,9 +183,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       const FrameSinkId& parent_frame_sink_id,
       const FrameSinkId& child_frame_sink_id) override;
   // Returns true if `unbounded_frame_sink_id` is a valid target for an
-  // unbounded surface under `parent_frame_sink_id`. This checks that the ID is
-  // registered in Viz by the Browser process or is a registered descendant
-  // in the frame sink hierarchy of `parent_frame_sink_id`.
+  // unbounded surface under `parent_frame_sink_id`. The ID must be one the
+  // browser process allocated, and be a registered descendant of
+  // `parent_frame_sink_id` or of its display root in the frame sink hierarchy.
   bool IsValidUnboundedFrameSinkId(
       const FrameSinkId& parent_frame_sink_id,
       const FrameSinkId& unbounded_frame_sink_id) const;

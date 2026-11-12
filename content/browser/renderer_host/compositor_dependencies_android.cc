@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/client/frame_eviction_manager.h"
+#include "components/viz/common/constants.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -26,10 +27,6 @@
 namespace content {
 
 namespace {
-
-// The client_id used here should not conflict with the client_id generated
-// from RenderWidgetHostImpl.
-constexpr uint32_t kDefaultClientId = 0u;
 
 void BrowserGpuChannelHostFactorySetApplicationVisible(bool is_visible) {
   // This code relies on the browser's GpuChannelEstablishFactory being the
@@ -73,7 +70,7 @@ CompositorDependenciesAndroid& CompositorDependenciesAndroid::Get() {
 }
 
 CompositorDependenciesAndroid::CompositorDependenciesAndroid()
-    : frame_sink_id_allocator_(kDefaultClientId) {
+    : frame_sink_id_allocator_(viz::kBrowserClientId) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M152);
 
   // Set up a callback to automatically re-connect if we lose our connection.

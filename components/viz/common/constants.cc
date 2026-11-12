@@ -6,6 +6,7 @@
 
 namespace viz {
 
+const uint32_t kBrowserClientId = 0u;
 const uint32_t kDefaultActivationDeadlineInFrames = 4u;
 const base::TimeDelta kMaxTimeUntilNextGlitch = base::Seconds(3);
 

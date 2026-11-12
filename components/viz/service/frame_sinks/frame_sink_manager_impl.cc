@@ -978,8 +978,9 @@ bool FrameSinkManagerImpl::IsValidUnboundedFrameSinkId(
     const FrameSinkId& parent_frame_sink_id,
     const FrameSinkId& unbounded_frame_sink_id) const {
   // Unbounded surface FrameSinkIds are allocated by the browser process, so
-  // they must not use the renderer's own client_id namespace.
-  if (unbounded_frame_sink_id.client_id() == parent_frame_sink_id.client_id()) {
+  // they must use the browser's client_id. Otherwise a renderer could name
+  // another client's frame sink in its hierarchy, e.g. an embedded iframe's.
+  if (unbounded_frame_sink_id.client_id() != kBrowserClientId) {
     return false;
   }
   // Check the hierarchy tree to verify unbounded_frame_sink_id belongs to the

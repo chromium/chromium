@@ -27,12 +27,15 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/property_tree.h"
+#include "components/viz/common/constants.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/layers/layer_context_impl_base_unittest.h"
 #include "components/viz/service/layers/viz_layer_tree_host_impl.h"
 #include "components/viz/test/fake_compositor_frame_sink_client.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4970,6 +4973,33 @@ TEST_F(LayerContextImplTest, ReproCrashDanglingTransformIndex) {
   auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
   // The update should be rejected because of dangling property tree indices.
   EXPECT_FALSE(result2.has_value());
+}
+
+// Verifies that a client is disconnected if it asks to use a FrameSinkId that
+// the browser process didn't allocate, e.g. that of an iframe it embeds, for
+// its unbounded surface.
+TEST_F(LayerContextImplTest, SetUnboundedFrameSinkIdRequiresBrowserClientId) {
+  auto context = mojom::PendingLayerContext::New();
+  mojo::AssociatedRemote<mojom::LayerContext> layer_context;
+  context->receiver = layer_context.BindNewEndpointAndPassDedicatedReceiver();
+  mojo::PendingAssociatedReceiver<mojom::LayerContextClient> client_receiver =
+      context->client.InitWithNewEndpointAndPassReceiver();
+  LayerContextImpl layer_context_impl(compositor_frame_sink_support_.get(),
+                                      *context,
+                                      mojom::LayerContextSettings::New());
+
+  // A browser-allocated FrameSinkId that isn't in this client's frame sink
+  // hierarchy isn't bound, but the client stays connected.
+  layer_context->SetUnboundedFrameSinkId(FrameSinkId(kBrowserClientId, 2),
+                                         kDefaultLocalSurfaceId);
+  layer_context.FlushForTesting();
+  EXPECT_TRUE(layer_context.is_connected());
+
+  // A FrameSinkId in another client's namespace is a bad message.
+  layer_context->SetUnboundedFrameSinkId(FrameSinkId(2, 1),
+                                         kDefaultLocalSurfaceId);
+  layer_context.FlushForTesting();
+  EXPECT_FALSE(layer_context.is_connected());
 }
 
 }  // namespace
