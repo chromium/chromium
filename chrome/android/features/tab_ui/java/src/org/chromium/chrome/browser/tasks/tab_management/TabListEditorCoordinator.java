@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.tasks.tab_management.data_provider.FlatTabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.GroupedTabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -349,7 +351,7 @@ public class TabListEditorCoordinator {
 
     private @Nullable MultiThumbnailCardProvider mMultiThumbnailCardProvider;
     private @Nullable TabListCoordinator mTabListCoordinator;
-    private @Nullable FlatTabListDataProvider mDataProvider;
+    private @Nullable TabListDataProvider mDataProvider;
     private @Nullable Token mTabGroupId;
     private @Nullable PropertyModelChangeProcessor mTabListEditorLayoutChangeProcessor;
     private @Nullable TabListEditorIphController mIphController;
@@ -666,18 +668,7 @@ public class TabListEditorCoordinator {
                         : R.drawable.phone_tab_switcher_empty_state_illustration_static;
         ViewGroup emptyViewParent = mTabListEditorLayout.findViewById(R.id.list_content);
         if (emptyViewParent == null) emptyViewParent = mTabListEditorLayout;
-        // Like FlatLayoutDelegate, the provider shows the tabs the editor was reset with, plus
-        // tabs later added to the first tab's group (e.g. by sync).
-        if (TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(mLayoutType)
-                && mLayoutType == TabListLayoutType.FLAT) {
-            mDataProvider =
-                    new FlatTabListDataProvider(
-                            mCurrentTabModelSupplier,
-                            tab ->
-                                    mVisibleTabIds.contains(tab.getId())
-                                            || (mTabGroupId != null
-                                                    && mTabGroupId.equals(tab.getTabGroupId())));
-        }
+        mDataProvider = createDataProvider();
         mTabListCoordinator =
                 new TabListCoordinator(
                         TabListMode.GRID,
@@ -765,6 +756,31 @@ public class TabListEditorCoordinator {
         if (mTabListCoordinator != null) {
             mTabListCoordinator.removeTabListItemSizeChangedObserver(observer);
         }
+    }
+
+    /** Creates the {@link TabListDataProvider} for the current layout, or null. */
+    private @Nullable TabListDataProvider createDataProvider() {
+        if (!TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(mLayoutType)) {
+            return null;
+        }
+        if (mLayoutType == TabListLayoutType.FLAT) {
+            // Shows the tabs the editor was reset with, plus tabs later added to the first
+            // tab's group (e.g. by sync).
+            return new FlatTabListDataProvider(
+                    mCurrentTabModelSupplier,
+                    tab ->
+                            mVisibleTabIds.contains(tab.getId())
+                                    || (mTabGroupId != null
+                                            && mTabGroupId.equals(tab.getTabGroupId())));
+        }
+        if (mLayoutType == TabListLayoutType.GROUPED
+                && mComponentId != TabComponentId.ARCHIVED_TABS_DIALOG) {
+            // The GTS selection editor lists the same tabs as GTS. The archived tabs dialog
+            // stays on the legacy path because it shows saved tab groups.
+            return new GroupedTabListDataProvider(
+                    mCurrentTabModelSupplier, /* supportsGroupExpansion= */ false);
+        }
+        return null;
     }
 
     private ThumbnailProvider initMultiThumbnailCardProvider(
