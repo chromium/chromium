@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +36,7 @@ TEST(ConnectionChangeObserverClientMojomTraitsTest,
   deserialized.ping_interval = base::Seconds(15);
   deserialized.enable_connection_keep_alive = true;
   deserialized.initial_rtt = base::Milliseconds(25);
+  deserialized.preconnect_priority = net::RequestPriority::MEDIUM;
   deserialized.quic_connection_options = "DIRTY";
 
   ASSERT_TRUE(
@@ -50,9 +52,24 @@ TEST(ConnectionChangeObserverClientMojomTraitsTest,
   original.ping_interval = base::Seconds(15);
   original.enable_connection_keep_alive = true;
   original.initial_rtt = base::Milliseconds(25);
+  original.preconnect_priority = net::RequestPriority::MEDIUM;
   original.quic_connection_options = "ABCD,EFGH";
 
   net::ConnectionKeepAliveConfig deserialized;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::ConnectionKeepAliveConfig>(
+          original, deserialized));
+  EXPECT_EQ(deserialized, original);
+}
+
+TEST(ConnectionChangeObserverClientMojomTraitsTest,
+     HighestPriorityConnectionKeepAliveConfigRoundTrip) {
+  net::ConnectionKeepAliveConfig original;
+  original.preconnect_priority = net::RequestPriority::MAXIMUM_PRIORITY;
+  EXPECT_TRUE(original.IsValid());
+
+  net::ConnectionKeepAliveConfig deserialized;
+  deserialized.preconnect_priority = net::RequestPriority::IDLE;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::ConnectionKeepAliveConfig>(
           original, deserialized));
@@ -235,6 +252,16 @@ TEST(ConnectionChangeObserverClientMojomTraitsTest,
   EXPECT_FALSE(
       mojo::test::SerializeAndDeserialize<mojom::ConnectionKeepAliveConfig>(
           non_null_zero_initial_rtt_wire, out_config));
+
+  // `preconnect_priority` must be in `[IDLE, MAXIMUM_PRIORITY]`.
+  net::ConnectionKeepAliveConfig throttled_priority;
+  throttled_priority.preconnect_priority = net::RequestPriority::THROTTLED;
+  EXPECT_FALSE(CanRoundTrip(throttled_priority));
+
+  net::ConnectionKeepAliveConfig out_of_range_priority;
+  out_of_range_priority.preconnect_priority =
+      static_cast<net::RequestPriority>(net::MAXIMUM_PRIORITY + 1);
+  EXPECT_FALSE(out_of_range_priority.IsValid());
 }
 
 }  // namespace

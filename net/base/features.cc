@@ -302,6 +302,37 @@ std::optional<base::TimeDelta> GetQuicPreconnectInitialRtt() {
   return initial_rtt;
 }
 
+BASE_FEATURE(kPreconnectPriorityBoost, base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<RequestPriority>::Option
+    kPreconnectInitialPriorityOptions[] = {
+        {RequestPriority::IDLE, "idle"},
+        {RequestPriority::LOW, "low"},
+        {RequestPriority::MEDIUM, "medium"},
+};
+
+BASE_FEATURE_ENUM_PARAM(RequestPriority,
+                        kPreconnectInitialPriority,
+                        &kPreconnectPriorityBoost,
+                        RequestPriority::IDLE,
+                        &kPreconnectInitialPriorityOptions);
+
+BASE_FEATURE_PARAM(bool,
+                   kPromoteActiveQuicJobPriorityOnAttach,
+                   &kPreconnectPriorityBoost,
+                   true);
+
+std::optional<RequestPriority> GetPreconnectInitialPriority() {
+  if (!base::FeatureList::IsEnabled(kPreconnectPriorityBoost)) {
+    return std::nullopt;
+  }
+  const RequestPriority priority = kPreconnectInitialPriority.Get();
+  if (priority <= RequestPriority::IDLE) {
+    return std::nullopt;
+  }
+  return priority;
+}
+
 BASE_FEATURE(kShortLaxAllowUnsafeThreshold, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,

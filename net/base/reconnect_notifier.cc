@@ -104,6 +104,11 @@ bool ConnectionKeepAliveConfig::IsValid() const {
     return false;
   }
 
+  if (preconnect_priority < RequestPriority::IDLE ||
+      preconnect_priority > RequestPriority::MAXIMUM_PRIORITY) {
+    return false;
+  }
+
   // `QuicPingManager` schedules keep-alive PINGs at >= 1s granularity.
   if (!ping_interval.is_zero() && ping_interval < base::Seconds(1)) {
     return false;

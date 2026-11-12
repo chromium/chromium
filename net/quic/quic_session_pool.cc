@@ -429,6 +429,11 @@ std::optional<int> GetQuicSocketSendBufferSize() {
   return quic::kMaxOutgoingPacketSize * 20;
 }
 
+bool ShouldPromoteActiveQuicJobPriorityOnAttach() {
+  return base::FeatureList::IsEnabled(features::kPreconnectPriorityBoost) &&
+         features::kPromoteActiveQuicJobPriorityOnAttach.Get();
+}
+
 }  // namespace
 
 QuicSessionRequest::QuicSessionRequest(QuicSessionPool* pool) : pool_(pool) {}
@@ -1001,6 +1006,12 @@ int QuicSessionPool::RequestSession(
   if (active_job != active_jobs_.end()) {
     active_job->second->AssociateWithNetLogSource(net_log);
     active_job->second->AddRequest(request);
+    if (ShouldPromoteActiveQuicJobPriorityOnAttach() &&
+        priority > active_job->second->priority()) {
+      // TODO(crbug.com/582702053): Also override `ProxyJob::UpdatePriority()`
+      // so priority promotion forwards to `proxy_session_request_`.
+      active_job->second->SetPriority(priority);
+    }
     return ERR_IO_PENDING;
   }
 
@@ -1167,6 +1178,13 @@ void QuicSessionPool::SetRequestPriority(QuicSessionRequest* request,
                                          RequestPriority priority) {
   auto job_iter = active_jobs_.find(request->session_key());
   if (job_iter == active_jobs_.end()) {
+    return;
+  }
+  // Avoid downgrading a shared job when another attached request may require
+  // its current priority.
+  if (job_iter->second->requests().size() > 1 &&
+      priority < job_iter->second->priority() &&
+      ShouldPromoteActiveQuicJobPriorityOnAttach()) {
     return;
   }
   job_iter->second->SetPriority(priority);

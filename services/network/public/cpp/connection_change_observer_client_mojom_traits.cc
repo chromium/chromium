@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/reconnect_notifier.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
+#include "services/network/public/cpp/url_request_param_mojom_traits.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom-shared.h"
 
 namespace mojo {
@@ -76,6 +77,7 @@ bool StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
   std::optional<base::TimeDelta> initial_rtt;
   if (!data.ReadKeepAliveTimeouts(&keep_alive_timeouts) ||
       !data.ReadInitialRtt(&initial_rtt) ||
+      !data.ReadPreconnectPriority(&out->preconnect_priority) ||
       !data.ReadQuicConnectionOptions(&out->quic_connection_options)) {
     return false;
   }

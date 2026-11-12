@@ -12,6 +12,7 @@
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
+#include "net/base/request_priority.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/mojom/host_resolver.mojom-forward.h"
@@ -41,7 +42,8 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
       const net::NetworkAnonymizationKey& network_anonymization_key,
       base::optional_ref<const base::UnguessableToken> network_restrictions_id,
       ResolveHostCallback callback,
-      network::mojom::NetworkContext* network_context);
+      network::mojom::NetworkContext* network_context,
+      net::RequestPriority initial_priority);
 
   ResolveHostClientImpl(const ResolveHostClientImpl&) = delete;
   ResolveHostClientImpl& operator=(const ResolveHostClientImpl&) = delete;

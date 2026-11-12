@@ -16,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/request_priority.h"
 #include "net/socket/next_proto.h"
 
 namespace net {
@@ -129,8 +130,8 @@ class NET_EXPORT ConnectionChangeNotifier {
   base::WeakPtrFactory<ConnectionChangeNotifier> weak_factory_{this};
 };
 
-// Per-session QUIC keep-alive, handshake initial-RTT, and connection-option
-// tuning passed to `NetworkContext::PreconnectSockets()`.
+// Per-session QUIC keep-alive, handshake initial-RTT, preconnect priority, and
+// connection-option tuning passed to `NetworkContext::PreconnectSockets()`.
 struct NET_EXPORT ConnectionKeepAliveConfig {
   ConnectionKeepAliveConfig() = default;
   ~ConnectionKeepAliveConfig() = default;
@@ -145,7 +146,9 @@ struct NET_EXPORT ConnectionKeepAliveConfig {
   bool operator==(const ConnectionKeepAliveConfig& other) const = default;
 
   // Returns true iff all timeout and RTT fields are non-negative, finite, and
-  // mutually consistent with QUIC's idle-timeout and keep-alive contracts.
+  // mutually consistent with QUIC's idle-timeout and keep-alive contracts, and
+  // `preconnect_priority` is in
+  // `[RequestPriority::IDLE, RequestPriority::MAXIMUM_PRIORITY]`.
   bool IsValid() const;
 
   // Timeout for the session to be closed, counted from the last successful
@@ -167,6 +170,14 @@ struct NET_EXPORT ConnectionKeepAliveConfig {
   // Enables the connection keep alive mechanism to periodically send PING
   // to the server when there are no active requests.
   bool enable_connection_keep_alive = false;
+
+  // Initial request priority used for DNS preresolution, proxy resolution, and
+  // QUIC preconnect jobs (`HttpStreamFactory`). TCP socket pool
+  // `RequestSockets()` and `HttpStreamPool::Preconnect()` currently remain at
+  // `IDLE`. Must be in `[IDLE, MAXIMUM_PRIORITY]`. Defaults to `IDLE` so
+  // speculative preconnects yield to normal traffic unless explicitly
+  // overridden.
+  RequestPriority preconnect_priority = RequestPriority::IDLE;
 
   // Client-side initial RTT to configure locally on the QUIC connection before
   // any RTT samples are received, used only when no cached SRTT, 2G/3G

@@ -242,6 +242,10 @@ void HttpStreamFactory::JobController::Preconnect(int num_streams,
   stream_type_ = HttpStreamRequest::HTTP_STREAM;
   num_streams_ = num_streams;
   preconnect_callback_ = std::move(callback);
+  if (management_config_.has_value() &&
+      management_config_->keep_alive_config.has_value()) {
+    priority_ = management_config_->keep_alive_config->preconnect_priority;
+  }
 
   RunLoop(OK);
   // `this` may be deleted at this point.
@@ -975,10 +979,13 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
           request_info_.network_anonymization_key);
 
   if (is_preconnect_) {
-    // Due to how the socket pools handle priorities and idle sockets, only IDLE
-    // priority currently makes sense for preconnects. The priority for
-    // preconnects is currently ignored (see RequestSocketsForPool()), but could
-    // be used at some point for proxy resolution or something.
+    // `priority_` defaults to `IDLE` for preconnects so they yield to normal
+    // traffic unless overridden via
+    // `ConnectionKeepAliveConfig::preconnect_priority`. `priority_` applies to
+    // proxy resolution and QUIC preconnect jobs (`PRECONNECT_DNS_ALPN_H3` and
+    // Alt-Svc `PRECONNECT`), whereas TCP socket pool `RequestSockets()` and
+    // `HttpStreamPool::Preconnect()` (`kHappyEyeballsV3`) still use `IDLE` due
+    // to how socket pools account for idle preconnect sockets.
     // Note: When `dns_alpn_h3_job_enabled` is true, we create a
     // PRECONNECT_DNS_ALPN_H3 job. If no matching HTTPS DNS ALPN records are
     // received, the PRECONNECT_DNS_ALPN_H3 job will fail with
@@ -986,7 +993,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     // be started in OnPreconnectsComplete().
     std::unique_ptr<Job> preconnect_job = job_factory_->CreateJob(
         this, dns_alpn_h3_job_enabled ? PRECONNECT_DNS_ALPN_H3 : PRECONNECT,
-        session_, request_info_, IDLE, proxy_info_, allowed_bad_certs_,
+        session_, request_info_, priority_, proxy_info_, allowed_bad_certs_,
         destination, is_websocket_, enable_ip_based_pooling_for_h2_,
         net_log_.net_log(), NextProto::kProtoUnknown,
         quic::ParsedQuicVersion::Unsupported(), management_config_);
@@ -1002,7 +1009,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       ConvertWsToHttp(alternative_destination);
 
       main_job_ = job_factory_->CreateJob(
-          this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
+          this, PRECONNECT, session_, request_info_, priority_, proxy_info_,
           allowed_bad_certs_, std::move(alternative_destination), is_websocket_,
           enable_ip_based_pooling_for_h2_, session_->net_log(),
           advertised_alt_svc_.info.protocol(), quic_version,
@@ -1012,7 +1019,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
       if (dns_alpn_h3_job_enabled) {
         preconnect_backup_job_ = job_factory_->CreateJob(
-            this, PRECONNECT, session_, request_info_, IDLE, proxy_info_,
+            this, PRECONNECT, session_, request_info_, priority_, proxy_info_,
             allowed_bad_certs_, std::move(destination), is_websocket_,
             enable_ip_based_pooling_for_h2_, net_log_.net_log(),
             NextProto::kProtoUnknown, quic::ParsedQuicVersion::Unsupported(),

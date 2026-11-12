@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -14,6 +15,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
@@ -40,12 +42,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/test/test_network_context.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -699,7 +704,9 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
         {net::features::kSearchEnginePreconnect2,
          {{"FallbackInLowPowerMode", "true"}}},
         {net::features::kQuicPreconnectInitialRtt,
-         {{"QuicPreconnectInitialRttParam", "30ms"}}}};
+         {{"QuicPreconnectInitialRttParam", "30ms"}}},
+        {net::features::kPreconnectPriorityBoost,
+         {{"PreconnectInitialPriority", "medium"}}}};
     battery::OverrideIsBatterySaverEnabledForTesting(false);
 
     std::vector<base::test::FeatureRef> disabled_features{
@@ -1310,6 +1317,7 @@ IN_PROC_BROWSER_TEST_P(
   auto config = GetSearchEnginePreconnector()->GetConnectionKeepAliveConfig();
   EXPECT_TRUE(config.enable_connection_keep_alive);
   EXPECT_EQ(config.initial_rtt, base::Milliseconds(30));
+  EXPECT_EQ(config.preconnect_priority, net::RequestPriority::MEDIUM);
 
   battery::OverrideIsBatterySaverEnabledForTesting(true);
 
@@ -1317,6 +1325,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(config.enable_connection_keep_alive);
   EXPECT_EQ(config.idle_timeout, base::Seconds(60));
   EXPECT_EQ(config.initial_rtt, base::TimeDelta());
+  EXPECT_EQ(config.preconnect_priority, net::RequestPriority::MEDIUM);
 }
 
 class SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest
@@ -1659,6 +1668,55 @@ IN_PROC_BROWSER_TEST_P(
   expected.initial_rtt = base::Milliseconds(30);
   expected.quic_connection_options =
       net::features::kQuicConnectionOptions.default_value;
+  EXPECT_EQ(capturing_network_context_.last_keepalive_config(), expected);
+}
+
+class SearchEnginePreconnectorPriorityBoostBrowserTest
+    : public SearchEnginePreconnectorKeepAliveConfigBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SearchEnginePreconnectorPriorityBoostBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {features::kPreconnectToSearch,
+         {{"skip_in_background", "false"}, {"startup_delay_ms", "3600000"}}},
+        {::features::kPreconnectManagerDirectFastPath, {}},
+        {net::features::kPreconnectPriorityBoost,
+         {{"PreconnectInitialPriority", "medium"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back({net::features::kSearchEnginePreconnect2, {}});
+    } else {
+      disabled_features.emplace_back(net::features::kSearchEnginePreconnect2);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SearchEnginePreconnectorPriorityBoostBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorPriorityBoostBrowserTest,
+                       SetsPreconnectPriorityInKeepAliveConfig) {
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+  network_context_remote_.FlushForTesting();
+
+  ASSERT_TRUE(capturing_network_context_.preconnect_called());
+  EXPECT_EQ(capturing_network_context_.last_url(), GURL(kFakeSearch));
+
+  net::ConnectionKeepAliveConfig expected;
+  expected.preconnect_priority = net::RequestPriority::MEDIUM;
+  if (GetParam()) {
+    expected.idle_timeout =
+        base::Seconds(net::features::kIdleTimeoutInSeconds.default_value);
+    expected.ping_interval =
+        base::Seconds(net::features::kPingIntervalInSeconds.default_value);
+    expected.enable_connection_keep_alive = true;
+    expected.quic_connection_options =
+        net::features::kQuicConnectionOptions.default_value;
+  }
   EXPECT_EQ(capturing_network_context_.last_keepalive_config(), expected);
 }
 

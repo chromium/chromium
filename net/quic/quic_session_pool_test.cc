@@ -51,6 +51,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
@@ -17431,6 +17432,158 @@ TEST_P(QuicSessionPoolTest, HostResolverRequestReprioritizedOnSetPriority) {
   builder.request.SetPriority(LOWEST);
   EXPECT_EQ(LOWEST, host_resolver_->request_priority(1));
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->request_priority(2));
+}
+
+TEST_P(QuicSessionPoolTest, PromoteActiveJobPriorityOnHigherPriorityAttach) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectPriorityBoost);
+
+  Initialize();
+  host_resolver_->rules()->AddSimulatedFailure("*");
+  host_resolver_->set_ondemand_mode(true);
+
+  // Start an initial preconnect-like request at IDLE priority.
+  RequestBuilder preconnect_builder(this);
+  preconnect_builder.priority = IDLE;
+  EXPECT_EQ(ERR_IO_PENDING, preconnect_builder.CallRequest());
+  EXPECT_EQ(IDLE, host_resolver_->request_priority(1));
+
+  // Attaching a MEDIUM request promotes the active job's priority to MEDIUM.
+  TestCompletionCallback medium_callback;
+  RequestBuilder medium_builder(this);
+  medium_builder.priority = MEDIUM;
+  medium_builder.callback = medium_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, medium_builder.CallRequest());
+  EXPECT_EQ(MEDIUM, host_resolver_->request_priority(1));
+
+  // Attaching a lower-priority (LOWEST) request never downgrades the active
+  // job's priority.
+  TestCompletionCallback lowest_callback;
+  RequestBuilder lowest_builder(this);
+  lowest_builder.priority = LOWEST;
+  lowest_builder.callback = lowest_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, lowest_builder.CallRequest());
+  EXPECT_EQ(MEDIUM, host_resolver_->request_priority(1));
+
+  // Reprioritizing an attached request to a lower priority also does not
+  // downgrade a shared active job.
+  lowest_builder.request.SetPriority(IDLE);
+  EXPECT_EQ(MEDIUM, host_resolver_->request_priority(1));
+
+  // Attaching a HIGHEST request promotes the active job's priority to HIGHEST.
+  TestCompletionCallback highest_callback;
+  RequestBuilder highest_builder(this);
+  highest_builder.priority = HIGHEST;
+  highest_builder.callback = highest_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, highest_builder.CallRequest());
+  EXPECT_EQ(HIGHEST, host_resolver_->request_priority(1));
+
+  // Resolve pending DNS so the active job finishes before `feature_list` goes
+  // out of scope.
+  host_resolver_->ResolveAllPending();
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(medium_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(lowest_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(highest_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+TEST_P(QuicSessionPoolTest,
+       PromoteActiveAsyncDnsJobPriorityOnHigherPriorityAttach) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kPreconnectPriorityBoost, features::kAsyncDnsQuicJob}, {});
+
+  Initialize();
+  host_resolver_->rules()->AddSimulatedFailure("*");
+  host_resolver_->set_ondemand_mode(true);
+
+  RequestBuilder preconnect_builder(this);
+  preconnect_builder.priority = IDLE;
+  EXPECT_EQ(ERR_IO_PENDING, preconnect_builder.CallRequest());
+  EXPECT_EQ(IDLE, host_resolver_->request_priority(1));
+
+  TestCompletionCallback medium_callback;
+  RequestBuilder medium_builder(this);
+  medium_builder.priority = MEDIUM;
+  medium_builder.callback = medium_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, medium_builder.CallRequest());
+  EXPECT_EQ(MEDIUM, host_resolver_->request_priority(1));
+
+  TestCompletionCallback lowest_callback;
+  RequestBuilder lowest_builder(this);
+  lowest_builder.priority = LOWEST;
+  lowest_builder.callback = lowest_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, lowest_builder.CallRequest());
+  EXPECT_EQ(MEDIUM, host_resolver_->request_priority(1));
+
+  lowest_builder.request.SetPriority(IDLE);
+  EXPECT_EQ(MEDIUM, host_resolver_->request_priority(1));
+
+  TestCompletionCallback highest_callback;
+  RequestBuilder highest_builder(this);
+  highest_builder.priority = HIGHEST;
+  highest_builder.callback = highest_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, highest_builder.CallRequest());
+  EXPECT_EQ(HIGHEST, host_resolver_->request_priority(1));
+
+  host_resolver_->ResolveAllPending();
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(medium_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(lowest_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(highest_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+TEST_P(QuicSessionPoolTest, ActiveJobPriorityNotPromotedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPreconnectPriorityBoost);
+
+  Initialize();
+  host_resolver_->rules()->AddSimulatedFailure("*");
+  host_resolver_->set_ondemand_mode(true);
+
+  RequestBuilder preconnect_builder(this);
+  preconnect_builder.priority = IDLE;
+  EXPECT_EQ(ERR_IO_PENDING, preconnect_builder.CallRequest());
+  EXPECT_EQ(IDLE, host_resolver_->request_priority(1));
+
+  TestCompletionCallback highest_callback;
+  RequestBuilder highest_builder(this);
+  highest_builder.priority = HIGHEST;
+  highest_builder.callback = highest_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, highest_builder.CallRequest());
+  EXPECT_EQ(IDLE, host_resolver_->request_priority(1));
+
+  host_resolver_->ResolveAllPending();
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(highest_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+}
+
+TEST_P(QuicSessionPoolTest,
+       ActiveJobPriorityNotPromotedWhenPromoteOnAttachDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kPreconnectPriorityBoost,
+      {{"PromoteActiveQuicJobPriorityOnAttach", "false"}});
+
+  Initialize();
+  host_resolver_->rules()->AddSimulatedFailure("*");
+  host_resolver_->set_ondemand_mode(true);
+
+  RequestBuilder preconnect_builder(this);
+  preconnect_builder.priority = IDLE;
+  EXPECT_EQ(ERR_IO_PENDING, preconnect_builder.CallRequest());
+  EXPECT_EQ(IDLE, host_resolver_->request_priority(1));
+
+  TestCompletionCallback highest_callback;
+  RequestBuilder highest_builder(this);
+  highest_builder.priority = HIGHEST;
+  highest_builder.callback = highest_callback.callback();
+  EXPECT_EQ(ERR_IO_PENDING, highest_builder.CallRequest());
+  EXPECT_EQ(IDLE, host_resolver_->request_priority(1));
+
+  host_resolver_->ResolveAllPending();
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(highest_callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
 }
 
 // Verifies that the host resolver uses the disable secure DNS setting and

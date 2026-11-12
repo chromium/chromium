@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/format_macros.h"
@@ -26,6 +27,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/constants.h"
@@ -103,6 +106,11 @@ class MockNetworkContext : public network::TestNetworkContext {
                      mojo::Remote<network::mojom::ResolveHostClient>(
                          std::move(response_client)))
             .second);
+    if (optional_parameters) {
+      last_resolve_host_priority_ = optional_parameters->initial_priority;
+    } else {
+      last_resolve_host_priority_.reset();
+    }
     ResolveHostProxy(hostname);
   }
 
@@ -168,6 +176,10 @@ class MockNetworkContext : public network::TestNetworkContext {
 
   void EnableProxyTesting() { enabled_proxy_testing_ = true; }
 
+  std::optional<net::RequestPriority> last_resolve_host_priority() const {
+    return last_resolve_host_priority_;
+  }
+
   MOCK_METHOD1(ResolveHostProxy, void(const std::string& host));
   MOCK_METHOD8(
       PreconnectSockets,
@@ -195,6 +207,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   std::map<GURL, mojo::Remote<network::mojom::ProxyLookupClient>>
       proxy_lookup_clients_;
   bool enabled_proxy_testing_ = false;
+  std::optional<net::RequestPriority> last_resolve_host_priority_;
   std::vector<std::string> hanging_hosts_;
 };
 
@@ -1389,6 +1402,125 @@ TEST_F(PreconnectManagerImplTest,
                                         network_anonymization_key, _));
   mock_network_context_->CompleteHostLookup(origin.GetHost(),
                                             network_anonymization_key, net::OK);
+}
+
+TEST_F(PreconnectManagerImplTest,
+       StartPreconnectUrlForwardsPreconnectPriority_LegacyPipeline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPreconnectManagerDirectFastPath);
+
+  GURL url("https://www.google.com/search?q=test");
+  GURL origin("https://www.google.com");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+
+  net::ConnectionKeepAliveConfig keepalive_config;
+  keepalive_config.preconnect_priority = net::RequestPriority::MEDIUM;
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.GetHost()));
+  preconnect_manager_->StartPreconnectUrl(
+      url, /*allow_credentials=*/true, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(), keepalive_config,
+      mojo::NullRemote());
+
+  EXPECT_EQ(mock_network_context_->last_resolve_host_priority(),
+            net::RequestPriority::MEDIUM);
+
+  std::optional<net::ConnectionKeepAliveConfig> forwarded_config;
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, origin, network::mojom::CredentialsMode::kInclude,
+          network_anonymization_key, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _))
+      .WillOnce([&](uint32_t, const GURL&, network::mojom::CredentialsMode,
+                    const net::NetworkAnonymizationKey&,
+                    const base::UnguessableToken&,
+                    const net::MutableNetworkTrafficAnnotationTag&,
+                    const std::optional<net::ConnectionKeepAliveConfig>& config,
+                    mojo::PendingRemote<
+                        network::mojom::ConnectionChangeObserverClient>) {
+        forwarded_config = config;
+      });
+  mock_network_context_->CompleteHostLookup(origin.GetHost(),
+                                            network_anonymization_key, net::OK);
+  ASSERT_TRUE(forwarded_config.has_value());
+  EXPECT_EQ(forwarded_config->preconnect_priority,
+            net::RequestPriority::MEDIUM);
+
+  // Without `keepalive_config`, preresolve defaults to `IDLE`.
+  GURL default_url("https://default.example.com/page");
+  GURL default_origin("https://default.example.com");
+  net::NetworkAnonymizationKey default_nak =
+      CreateNetworkAnonymizationKey(default_url);
+  EXPECT_CALL(*mock_network_context_,
+              ResolveHostProxy(default_origin.GetHost()));
+  preconnect_manager_->StartPreconnectUrl(
+      default_url, /*allow_credentials=*/true, default_nak,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+  EXPECT_EQ(mock_network_context_->last_resolve_host_priority(),
+            net::RequestPriority::IDLE);
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, default_origin, network::mojom::CredentialsMode::kInclude,
+          default_nak, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _));
+  mock_network_context_->CompleteHostLookup(default_origin.GetHost(),
+                                            default_nak, net::OK);
+}
+
+TEST_F(PreconnectManagerImplTest,
+       StartPreconnectUrlForwardsPreconnectPriority_DirectFastPath) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectManagerDirectFastPath);
+
+  GURL url("https://www.google.com/search?q=test");
+  GURL origin("https://www.google.com");
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+
+  net::ConnectionKeepAliveConfig keepalive_config;
+  keepalive_config.preconnect_priority = net::RequestPriority::HIGHEST;
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
+  std::optional<net::ConnectionKeepAliveConfig> forwarded_config;
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, origin, network::mojom::CredentialsMode::kInclude,
+          network_anonymization_key, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _))
+      .WillOnce([&](uint32_t, const GURL&, network::mojom::CredentialsMode,
+                    const net::NetworkAnonymizationKey&,
+                    const base::UnguessableToken&,
+                    const net::MutableNetworkTrafficAnnotationTag&,
+                    const std::optional<net::ConnectionKeepAliveConfig>& config,
+                    mojo::PendingRemote<
+                        network::mojom::ConnectionChangeObserverClient>) {
+        forwarded_config = config;
+      });
+  preconnect_manager_->StartPreconnectUrl(
+      url, /*allow_credentials=*/true, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(), keepalive_config,
+      mojo::NullRemote());
+  ASSERT_TRUE(forwarded_config.has_value());
+  EXPECT_EQ(forwarded_config->preconnect_priority,
+            net::RequestPriority::HIGHEST);
 }
 
 TEST_F(PreconnectManagerImplTest, TestDetachedRequestHasHigherPriority) {

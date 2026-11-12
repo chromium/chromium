@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -30,6 +31,7 @@
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
@@ -194,20 +196,27 @@ class AwPreconnectorTestBase : public testing::Test {
 
   void TearDown() override {
     network_context_receiver_.reset();
+    test_network_context_.reset();
     browser_context_.reset();
-    // Flush the network service thread so all pending NetworkContext tasks
-    // finish before `~AwPreconnectorTestBase()` destroys `feature_list_` and
-    // `test_content_client_initializer_`.
-    if (content::GetNetworkTaskRunner()) {
-      base::RunLoop network_run_loop;
-      content::GetNetworkTaskRunner()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), network_run_loop.QuitClosure());
-      network_run_loop.Run();
+    // Drain multi-hop Mojo setup/disconnect tasks across the persistent
+    // NetworkService thread and UI thread (`CreateNetworkService` ->
+    // `CreateNetworkContext` -> `~NetworkContext()` -> UI
+    // `SimpleWatcher::Notify`) before `~BrowserTaskEnvironment()` checks
+    // `MainThreadIsIdle()` and `~AwPreconnectorTestBase()` destroys
+    // `feature_list_` and `test_content_client_initializer_`.
+    constexpr int kMaxDrainRounds = 4;
+    for (int i = 0; i < kMaxDrainRounds; ++i) {
+      if (content::GetNetworkTaskRunner()) {
+        base::RunLoop network_run_loop;
+        content::GetNetworkTaskRunner()->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(), network_run_loop.QuitClosure());
+        network_run_loop.Run();
+      }
+      base::RunLoop ui_run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, ui_run_loop.QuitClosure());
+      ui_run_loop.Run();
     }
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -696,6 +705,46 @@ TEST_F(AwPreconnectorInitialRttTest, NegativeParamIgnored) {
   const GURL url("https://initial-rtt-negative.example.com/");
   ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
   EXPECT_EQ(test_network_context_->keepalive_config(url), std::nullopt);
+}
+
+class AwPreconnectorPriorityBoostTest : public AwPreconnectorInitialRttTest {};
+
+TEST_F(AwPreconnectorPriorityBoostTest, DefaultIdle) {
+  feature_list_.InitAndEnableFeature(net::features::kPreconnectPriorityBoost);
+
+  const GURL url("https://priority-default.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+  EXPECT_EQ(test_network_context_->keepalive_config(url), std::nullopt);
+}
+
+TEST_F(AwPreconnectorPriorityBoostTest, ExplicitMedium) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kPreconnectPriorityBoost,
+      {{"PreconnectInitialPriority", "medium"}});
+
+  const GURL url("https://priority-medium.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+
+  net::ConnectionKeepAliveConfig expected;
+  expected.preconnect_priority = net::RequestPriority::MEDIUM;
+  EXPECT_EQ(test_network_context_->keepalive_config(url), expected);
+}
+
+TEST_F(AwPreconnectorPriorityBoostTest, ComposesWithInitialRttConfig) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{net::features::kPreconnectPriorityBoost,
+        {{"PreconnectInitialPriority", "low"}}},
+       {net::features::kQuicPreconnectInitialRtt,
+        {{"QuicPreconnectInitialRttParam", "40ms"}}}},
+      {});
+
+  const GURL url("https://priority-composed.example.com/");
+  ASSERT_NO_FATAL_FAILURE(PreconnectAndWait(url));
+
+  net::ConnectionKeepAliveConfig expected;
+  expected.preconnect_priority = net::RequestPriority::LOW;
+  expected.initial_rtt = base::Milliseconds(40);
+  EXPECT_EQ(test_network_context_->keepalive_config(url), expected);
 }
 
 }  // namespace

@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "net/socket/next_proto.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/constants.h"
@@ -424,10 +425,19 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
           &SearchEnginePreconnector::OnReconnectObserverPipeDisconnected,
           base::Unretained(this)));
     }
-  } else if (std::optional<base::TimeDelta> initial_rtt =
-                 net::features::GetQuicPreconnectInitialRtt()) {
-    keepalive_config.emplace();
-    keepalive_config->initial_rtt = *initial_rtt;
+  } else {
+    if (std::optional<base::TimeDelta> initial_rtt =
+            net::features::GetQuicPreconnectInitialRtt()) {
+      keepalive_config.emplace();
+      keepalive_config->initial_rtt = *initial_rtt;
+    }
+    if (std::optional<net::RequestPriority> preconnect_priority =
+            net::features::GetPreconnectInitialPriority()) {
+      if (!keepalive_config.has_value()) {
+        keepalive_config.emplace();
+      }
+      keepalive_config->preconnect_priority = *preconnect_priority;
+    }
   }
 
   if (!base::GetFieldTrialParamByFeatureAsBool(features::kPreconnectToSearch,
@@ -714,6 +724,13 @@ SearchEnginePreconnector::GetConnectionKeepAliveConfig() {
   CHECK(SearchEnginePreconnect2Enabled());
   net::ConnectionKeepAliveConfig config;
   config.quic_connection_options = net::features::kQuicConnectionOptions.Get();
+  // Keep `preconnect_priority` boosted even in `ShouldSavePower()`: unlike
+  // periodic keepalive PINGs or shortened QUIC PTOs, priority ordering only
+  // affects local DNS/job queue scheduling and transmits no extra packets.
+  if (std::optional<net::RequestPriority> preconnect_priority =
+          net::features::GetPreconnectInitialPriority()) {
+    config.preconnect_priority = *preconnect_priority;
+  }
 
   // If the device is in low power mode, fallback to the old preconnect
   // interval, disable connection keepalive, and leave `initial_rtt` unset so

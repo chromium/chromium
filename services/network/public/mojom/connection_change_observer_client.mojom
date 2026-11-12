@@ -6,6 +6,7 @@ module network.mojom;
 
 import "services/network/public/mojom/load_timing_internal_info.mojom";
 import "services/network/public/mojom/network_types.mojom";
+import "services/network/public/mojom/request_priority.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // LINT.IfChange(ConnectionEstablishmentInitiator)
@@ -82,8 +83,8 @@ struct QuicKeepAliveTimeouts {
   mojo_base.mojom.TimeDelta? ping_interval;
 };
 
-// Per-session QUIC keep-alive, handshake initial-RTT, and connection-option
-// tuning passed to `NetworkContext::PreconnectSockets()`.
+// Per-session QUIC keep-alive, handshake initial-RTT, preconnect priority, and
+// connection-option tuning passed to `NetworkContext::PreconnectSockets()`.
 // Typemapped to `net::ConnectionKeepAliveConfig`.
 struct ConnectionKeepAliveConfig {
   // Optional keep-alive and idle timeouts. When null, QUIC's default idle
@@ -98,6 +99,11 @@ struct ConnectionKeepAliveConfig {
   // or explicit handshake RTT exists (never sent in the `IRTT` transport
   // parameter).
   mojo_base.mojom.TimeDelta? initial_rtt;
+
+  // Initial request priority used for DNS preresolution, proxy resolution, and
+  // QUIC preconnect jobs. TCP socket pool `RequestSockets()` and
+  // `HttpStreamPool` preconnects remain at `kIdle`.
+  RequestPriority preconnect_priority = RequestPriority.kIdle;
 
   // Comma-separated ASCII `QuicTag` connection options sent to the server
   // (e.g. "ABCD,EFGH"), parsed inside the network layer.

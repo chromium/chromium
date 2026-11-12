@@ -29,13 +29,14 @@ ResolveHostClientImpl::ResolveHostClientImpl(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     base::optional_ref<const base::UnguessableToken> network_restrictions_id,
     ResolveHostCallback callback,
-    network::mojom::NetworkContext* network_context)
+    network::mojom::NetworkContext* network_context,
+    net::RequestPriority initial_priority)
     : callback_(std::move(callback)) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
-  parameters->initial_priority = net::RequestPriority::IDLE;
+  parameters->initial_priority = initial_priority;
   parameters->is_speculative = true;
   parameters->purpose =
       network::mojom::ResolveHostParameters::Purpose::kPreconnect;

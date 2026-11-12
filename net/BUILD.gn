@@ -125,8 +125,19 @@ proto_library("device_bound_sessions_storage_proto") {
   sources = [ "device_bound_sessions/proto/storage.proto" ]
 }
 
+# Pure header target for `RequestPriority` so `:net_features` can declare
+# `RequestPriority` feature parameters without circular dependencies on
+# `component("net")`, while restricting visibility to `//net` because
+# `RequestPriorityToString()` is defined in `component("net")`.
+source_set("request_priority_header") {
+  visibility = [ ":*" ]
+  sources = [ "base/request_priority.h" ]
+  public_deps = [ "//net/base:net_export_header" ]
+}
+
 source_set("net_features") {
   sources = [ "base/features.h" ]
+  public_deps = [ ":request_priority_header" ]
   deps = [
     ":buildflags",
     ":disk_cache_buildflags",
@@ -322,7 +333,6 @@ component("net") {
     "base/reconnect_notifier.cc",
     "base/reconnect_notifier.h",
     "base/request_priority.cc",
-    "base/request_priority.h",
     "base/scheduler/net_task_priority.cc",
     "base/scheduler/net_task_priority.h",
     "base/scheduler/net_task_queues.cc",
@@ -1288,6 +1298,7 @@ component("net") {
     ":disk_cache_buildflags",
     ":net_features",
     ":net_public_deps",
+    ":request_priority_header",
     "//base",
     "//net/base:net_export_header",
     "//net/dns",
@@ -2048,6 +2059,7 @@ source_set("net_deps") {
     ":isolation_info_proto",
     ":net_features",
     ":preload_decoder",
+    ":request_priority_header",
     "//base",
     "//net/base:constants",
     "//net/base:net_export_header",

@@ -21,6 +21,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -311,6 +312,7 @@ std::unique_ptr<ResolveHostClientImpl> PreconnectManagerImpl::PreresolveUrl(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const content::StoragePartitionConfig* storage_partition_config,
     const base::UnguessableToken& network_restrictions_id,
+    net::RequestPriority initial_priority,
     ResolveHostCallback callback) const {
   CHECK(url.DeprecatedGetOriginAsURL() == url, base::NotFatalUntil::M159);
   // TODO(crbug.com/573950459): CHECK-exclusion: Convert to a CHECK once we are
@@ -321,7 +323,7 @@ std::unique_ptr<ResolveHostClientImpl> PreconnectManagerImpl::PreresolveUrl(
 
   return std::make_unique<ResolveHostClientImpl>(
       url, network_anonymization_key, network_restrictions_id,
-      std::move(callback), network_context);
+      std::move(callback), network_context, initial_priority);
 }
 
 void PreconnectManagerImpl::LookupProxyForUrl(
@@ -419,10 +421,14 @@ void PreconnectManagerImpl::OnProxyLookupFinished(PreresolveJobId job_id,
   if (success) {
     FinishPreresolveJob(job_id, success);
   } else {
+    net::RequestPriority initial_priority =
+        job->keepalive_config.has_value()
+            ? job->keepalive_config->preconnect_priority
+            : net::RequestPriority::IDLE;
     job->resolve_host_client = PreresolveUrl(
         job->url, job->network_anonymization_key,
         base::OptionalToPtr(job->storage_partition_config),
-        job->network_restrictions_id,
+        job->network_restrictions_id, initial_priority,
         base::BindOnce(&PreconnectManagerImpl::OnPreresolveFinished,
                        weak_factory_.GetWeakPtr(), job_id));
   }

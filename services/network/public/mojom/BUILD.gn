@@ -2173,7 +2173,10 @@ mojom("mojom") {
       ]
       traits_headers = [ "//services/network/public/cpp/connection_change_observer_client_mojom_traits.h" ]
       traits_sources = [ "//services/network/public/cpp/connection_change_observer_client_mojom_traits.cc" ]
-      traits_public_deps = [ "//net" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:cpp_base",
+      ]
     },
     {
       types = [

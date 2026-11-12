@@ -38,6 +38,8 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/session_usage.h"
 #include "net/base/test_proxy_delegate.h"
@@ -8856,10 +8858,40 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest, PreconnectDnsAlpnH3) {
   EXPECT_FALSE(job_controller_->alternative_job());
   EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
             job_controller_->main_job()->job_type());
+  EXPECT_EQ(IDLE, job_controller_->main_job()->priority());
 
   MakeQuicJobSucceed(0, /*expect_stream_ready=*/false);
 
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       PreconnectUsesKeepAliveConfigPriority) {
+  SetPreconnect();
+  PrepareForFirstQuicJob();
+
+  HttpRequestInfo request_info = CreateTestHttpRequestInfo();
+  ConnectionManagementConfig management_config;
+  ConnectionKeepAliveConfig keep_alive_config;
+  keep_alive_config.preconnect_priority = MEDIUM;
+  management_config.keep_alive_config = std::move(keep_alive_config);
+  request_info.connection_management_config = std::move(management_config);
+
+  RegisterMockHttpsRecord();
+
+  Initialize(HttpRequestInfo());
+  CreateJobController(request_info);
+  base::RunLoop run_loop;
+  job_controller_->Preconnect(/*num_streams=*/1, run_loop.QuitClosure());
+  ASSERT_TRUE(job_controller_->main_job());
+  EXPECT_EQ(HttpStreamFactory::PRECONNECT_DNS_ALPN_H3,
+            job_controller_->main_job()->job_type());
+  EXPECT_EQ(MEDIUM, job_controller_->main_job()->priority());
+
+  MakeQuicJobSucceed(0, /*expect_stream_ready=*/false);
+
+  run_loop.Run();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 

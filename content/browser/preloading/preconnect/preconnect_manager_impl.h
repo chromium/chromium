@@ -23,6 +23,7 @@
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/gurl.h"
 
@@ -171,6 +172,7 @@ class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const content::StoragePartitionConfig* storage_partition_config,
       const base::UnguessableToken& network_restrictions_id,
+      net::RequestPriority initial_priority,
       ResolveHostCallback callback) const;
   void LookupProxyForUrl(
       const GURL& url,

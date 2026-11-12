@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/reconnect_notifier.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/cpp/load_timing_internal_info_mojom_traits.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom-shared.h"
 #include "services/network/public/mojom/network_types.mojom.h"
@@ -85,6 +86,11 @@ struct StructTraits<network::mojom::ConnectionKeepAliveConfigDataView,
     return keep_alive_config.initial_rtt.is_zero()
                ? std::nullopt
                : std::optional<base::TimeDelta>(keep_alive_config.initial_rtt);
+  }
+
+  static net::RequestPriority preconnect_priority(
+      const net::ConnectionKeepAliveConfig& keep_alive_config) {
+    return keep_alive_config.preconnect_priority;
   }
 
   static const std::string& quic_connection_options(
