@@ -269,7 +269,7 @@ class WebAppCommandScheduler {
   // Note: This may cause a web app to become user-uninstallable. In that case,
   // it will deploy uninstall OS hooks to ensure that it can be uninstallable
   // via the OS (windows control panel -> apps -> uninstall).
-  virtual void RemoveInstallManagementMaybeUninstall(
+  void RemoveInstallManagementMaybeUninstall(
       const webapps::AppId& app_id,
       WebAppManagement::Type install_management,
       webapps::WebappUninstallSource uninstall_source,

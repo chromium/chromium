@@ -23,6 +23,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -51,7 +52,6 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -245,7 +245,6 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
         .SkipManagedAllowlistChecksForTesting(true);
 
     IsolatedWebAppTest::SetUp();
-    SetCommandScheduler();
 
     if (ShouldStartWebAppProvider()) {
       test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -269,7 +268,6 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
     IsolatedWebAppTest::TearDown();
   }
 
-  virtual void SetCommandScheduler() {}
   virtual bool ShouldStartWebAppProvider() const { return true; }
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
@@ -741,84 +739,15 @@ TEST_F(IsolatedWebAppPolicyManagerPolicyRaceTest,
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }
 
-// This scheduler is intercepting scheduling of the uninstall command,
-// verifying if the App ID is expected for removal.
-// TODO(crbug.com/529731980): Remove UninstallWebAppCommandScheduler in favor of
-// WebAppTestUninstallObserver.
-class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
- public:
-  using WebAppCommandScheduler::WebAppCommandScheduler;
-
-  void RemoveInstallManagementMaybeUninstall(
-      const webapps::AppId& app_id,
-      WebAppManagement::Type management_type,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallCallback callback,
-      const base::Location& location) override {
-    tried_to_uninstall_ = true;
-    EXPECT_TRUE(expected_apps_to_remove_.contains(app_id));
-    EXPECT_EQ(management_type, expected_management_type_to_remove_.value_or(
-                                   WebAppManagement::Type::kIwaPolicy));
-    EXPECT_EQ(uninstall_source,
-              webapps::WebappUninstallSource::kIwaEnterprisePolicy);
-    auto app = expected_apps_to_remove_.find(app_id);
-    expected_apps_to_remove_.erase(app);
-
-    WebAppCommandScheduler::RemoveInstallManagementMaybeUninstall(
-        app_id, management_type, uninstall_source, std::move(callback),
-        location);
-  }
-
-  void AddExpectedToUninstallApp(const webapps::AppId& app_id) {
-    expected_apps_to_remove_.insert(app_id);
-  }
-
-  size_t GetNumberOfAppsRemainingToUninstall() const {
-    return expected_apps_to_remove_.size();
-  }
-
-  bool TriedToUninstall() { return tried_to_uninstall_; }
-
-  void SetMaybeExpectedManagementTypeToUninstall(
-      std::optional<WebAppManagement::Type> management_type) {
-    expected_management_type_to_remove_ = management_type;
-  }
-
- private:
-  base::flat_set<webapps::AppId> expected_apps_to_remove_;
-  std::optional<WebAppManagement::Type> expected_management_type_to_remove_;
-  bool tried_to_uninstall_ = false;
-};
-
 class IsolatedWebAppPolicyManagerUninstallTest
     : public IsolatedWebAppPolicyManagerTestBase {
  public:
   IsolatedWebAppPolicyManagerUninstallTest()
       : IsolatedWebAppPolicyManagerTestBase(/*is_user_session=*/true) {}
-
-  UninstallWebAppCommandScheduler* get_command_scheduler() {
-    return scheduler_;
-  }
-
-  // `IsolatedWebAppPolicyManagerTestBase`:
-  void SetCommandScheduler() override {
-    auto scheduler =
-        std::make_unique<UninstallWebAppCommandScheduler>(*profile());
-    scheduler_ = scheduler.get();
-    provider().SetScheduler(std::move(scheduler));
-  }
-
-  void TearDown() override {
-    scheduler_ = nullptr;
-    IsolatedWebAppPolicyManagerTestBase::TearDown();
-  }
-
- private:
-  raw_ptr<UninstallWebAppCommandScheduler> scheduler_ = nullptr;
 };
 
-// Remove the app from policy and check if there will be attempt to uninstall
-// that app.
+// Remove an app from policy and verify that it is uninstalled while the
+// remaining policy-installed app stays installed.
 TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
   // Force install 2 apps.
   {
@@ -836,15 +765,14 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
     AssertAppInstalled(web_bundle_id_2());
   }
 
-  // Now generate a policy with 1 app and expect an attempt to
-  // remove the other app.
+  // Now generate a policy with 1 app and expect the other app to be
+  // uninstalled.
   {
     const webapps::AppId app2_id =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_2())
             .app_id();
-    get_command_scheduler()->AddExpectedToUninstallApp(app2_id);
-    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
-              1U);
+    WebAppTestUninstallObserver uninstall_observer(profile());
+    uninstall_observer.BeginListening({app2_id});
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
@@ -852,10 +780,11 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
             IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1())));
 
-    task_environment().RunUntilIdle();
+    EXPECT_EQ(uninstall_observer.Wait(), app2_id);
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
-    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
-              0U);
+    AssertAppInstalled(web_bundle_id_1());
+    EXPECT_THAT(provider().registrar_unsafe().GetAppById(app2_id), IsNull());
   }
 }
 
@@ -876,8 +805,8 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
     AssertAppInstalled(web_bundle_id_2());
   }
 
-  // Set the policy without any app and expect an attempt to uninstall
-  // both previously installed apps.
+  // Set the policy without any app and expect both previously installed apps
+  // to be uninstalled.
   {
     const webapps::AppId app1_id =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1())
@@ -889,11 +818,6 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
     WebAppTestUninstallObserver uninstall_observer(profile());
     uninstall_observer.BeginListening({app1_id, app2_id});
 
-    get_command_scheduler()->AddExpectedToUninstallApp(app1_id);
-    get_command_scheduler()->AddExpectedToUninstallApp(app2_id);
-    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
-              2U);
-
     profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
                                    base::ListValue());
 
@@ -904,9 +828,10 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
     // (see https://crbug.com/41484323#comment7). Wait until the app is actually
     // uninstalled here.
     task_environment().RunUntilIdle();
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
-    EXPECT_EQ(get_command_scheduler()->GetNumberOfAppsRemainingToUninstall(),
-              0U);
+    EXPECT_THAT(provider().registrar_unsafe().GetAppById(app1_id), IsNull());
+    EXPECT_THAT(provider().registrar_unsafe().GetAppById(app2_id), IsNull());
   }
 }
 
@@ -949,16 +874,37 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
                                   WebAppManagement::Type::kIwaUserInstalled})));
   }
 
+  // Removing the app from policy should drop only the policy source and keep
+  // the user-installed app installed.
   {
+    profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
+                                   base::ListValue());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      const WebApp* app =
+          provider().registrar_unsafe().GetAppById(url_info.app_id());
+      return app && !app->GetSources().Has(WebAppManagement::Type::kIwaPolicy);
+    }));
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(url_info.app_id());
+    ASSERT_THAT(web_app, NotNull());
     EXPECT_TRUE(web_app->WasInstalledByUser());
+    EXPECT_THAT(
+        web_app->GetSources(),
+        Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaUserInstalled})));
   }
 }
 
-// There should not be any attempt to uninstall an app if no apps have been
-// removed from the apps.
+// No apps should be uninstalled if no apps have been removed from policy.
 TEST_F(IsolatedWebAppPolicyManagerUninstallTest, NoAppsUninstalled) {
+  const webapps::AppId app1_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_1())
+          .app_id();
+  const webapps::AppId app2_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_2())
+          .app_id();
+
   test::AddForceInstalledIwaToPolicy(
       profile()->GetPrefs(),
       IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -974,10 +920,12 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, NoAppsUninstalled) {
           web_bundle_id_2()));
 
   task_environment().RunUntilIdle();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   AssertAppInstalled(web_bundle_id_1());
   AssertAppInstalled(web_bundle_id_2());
-  EXPECT_FALSE(get_command_scheduler()->TriedToUninstall());
+  EXPECT_THAT(provider().registrar_unsafe().GetAppIds(),
+              UnorderedElementsAre(app1_id, app2_id));
 }
 
 class IsolatedWebAppRetryTest : public IsolatedWebAppPolicyManagerTestBase {
