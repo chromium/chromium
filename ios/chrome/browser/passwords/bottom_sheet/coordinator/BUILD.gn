@@ -107,6 +107,7 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/browser/remote_actor",
     "//components/password_manager/ios",
     "//components/password_manager/ios:password_manager_feature_header",

@@ -28,6 +28,10 @@
 // primary button is disabled and shows a spinner.
 - (void)setLoading:(BOOL)loading;
 
+// Shows that the selected credential was shared successfully: the primary
+// button is disabled and shows a checkmark.
+- (void)showConfirmationState;
+
 // Shows that there are no saved passwords for the domain, leaving a single
 // button to go back to the remote actor.
 - (void)showNoSavedPasswords;

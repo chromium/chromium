@@ -234,7 +234,7 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
   EXPECT_FALSE(view_controller_.modalInPresentation);
 
   [view_controller_ setLoading:YES];
-  EXPECT_TRUE(view_controller_.configuration.isLoading);
+  EXPECT_TRUE(view_controller_.configuration.loading);
   EXPECT_FALSE(view_controller_.modalInPresentation);
 
   [view_controller_ setLoading:NO];
@@ -280,6 +280,38 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
   EXPECT_EQ(ChromeButtonStyleTertiary, secondary_button.style);
   EXPECT_FALSE([primary_button.accessibilityLabel
       isEqualToString:loading_accessibility_label]);
+}
+
+// Tests that the confirmation state replaces the loading state's spinner with a
+// checkmark in the primary style with an accessibility label, and disables
+// both buttons.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TestConfirmedShowsCheckmark) {
+  LoadViewWithSuggestions(@[ PasswordSuggestion(@"user") ]);
+  ChromeButton* primary_button = chrome_test_util::FindViewById<ChromeButton>(
+      view_controller_.view, kButtonStackPrimaryActionAccessibilityIdentifier);
+  ChromeButton* secondary_button = chrome_test_util::FindViewById<ChromeButton>(
+      view_controller_.view,
+      kButtonStackSecondaryActionAccessibilityIdentifier);
+  ASSERT_TRUE(primary_button);
+  ASSERT_TRUE(secondary_button);
+
+  [view_controller_ setLoading:YES];
+  EXPECT_TRUE(view_controller_.configuration.loading);
+  EXPECT_EQ(PrimaryButtonImageSpinner, primary_button.primaryButtonImage);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_STATUS_PROGRESS_TITLE),
+      primary_button.accessibilityLabel);
+
+  [view_controller_ showConfirmationState];
+  EXPECT_FALSE(view_controller_.configuration.loading);
+  EXPECT_TRUE(view_controller_.configuration.confirmed);
+  EXPECT_EQ(PrimaryButtonImageCheckmark, primary_button.primaryButtonImage);
+  EXPECT_FALSE(primary_button.enabled);
+  EXPECT_FALSE(secondary_button.enabled);
+  EXPECT_EQ(ChromeButtonStylePrimary, primary_button.style);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE),
+              primary_button.accessibilityLabel);
 }
 
 // Tests that the view controller configures the subtitle without link tags and

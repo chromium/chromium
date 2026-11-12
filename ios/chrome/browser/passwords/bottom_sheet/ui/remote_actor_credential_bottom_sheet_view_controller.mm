@@ -258,6 +258,20 @@ std::u16string GetActorName() {
   }
 }
 
+- (void)showConfirmationState {
+  CHECK(!_noPasswordsFound);
+  self.configuration.primaryButtonStyle = ChromeButtonStylePrimary;
+  [self setConfirmed:YES];
+  [self reloadConfiguration];
+
+  // The checkmark replaces the button title, so VoiceOver needs a label.
+  NSString* sharedLabel =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE);
+  self.primaryActionButton.accessibilityLabel = sharedLabel;
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  sharedLabel);
+}
+
 - (void)showNoSavedPasswords {
   _noPasswordsFound = YES;
   [self updateTitle];
@@ -302,7 +316,8 @@ std::u16string GetActorName() {
 - (void)reloadConfiguration {
   [super reloadConfiguration];
   // Keep the cancel button enabled while the selected credential is shared.
-  self.secondaryActionButton.enabled = YES;
+  // Once shared, there is nothing left to cancel.
+  self.secondaryActionButton.enabled = !self.configuration.confirmed;
 }
 
 #pragma mark - UITableViewDataSource
