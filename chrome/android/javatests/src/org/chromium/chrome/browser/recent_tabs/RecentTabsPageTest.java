@@ -58,6 +58,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -819,6 +820,7 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/584460330
     public void testListItem_HoverState() throws Exception {
         mPage = loadRecentTabsPage();
         final RecentlyClosedTab tab =
