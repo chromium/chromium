@@ -18,7 +18,7 @@ import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 class TestableScriptListTest(unittest.TestCase):
   def testAllTestableScriptsCanBeRun(self):
     script_issues = script_checker.check_scripts(
-      tests_helpers._TESTABLE_SCRIPTS, cwd=path_util.CHROMIUM_SRC_PATH
+      tests_helpers._TESTABLE_SCRIPTS, cwd=str(path_util.CHROMIUM_SRC_PATH)
     )
     for issue in script_issues:
       print(issue.error_message())
@@ -216,7 +216,9 @@ class AffectedFileDetectionTest(unittest.TestCase):
 
     mock_is_affected.side_effect = _is_test_a
 
-    affected = tests_helpers.get_affected_tests({pathlib.Path('mod.py')}, {})
+    affected = list(
+      tests_helpers.get_affected_tests({pathlib.Path('mod.py')}, {})
+    )
 
     self.assertEqual(len(affected), 1)
     self.assertIn('test_a.py', str(affected[0].file_path))

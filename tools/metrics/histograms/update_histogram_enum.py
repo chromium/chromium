@@ -99,7 +99,7 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
       break
 
   enum_value = 0
-  result = {}
+  result: dict[int, str] = {}
   for line in iterator:
     line = line.strip()
     # Exit condition: we reached last enum value
@@ -114,7 +114,10 @@ def ReadHistogramValues(filename, start_marker, end_marker, strip_k_prefix):
       else:
         # Enum name is so long that the value wrapped to the next line
         next_line = next(iterator).strip()
-        enum_value = int(WRAPPED_INIT.match(next_line).group(1))
+        wrapped_init = WRAPPED_INIT.match(next_line)
+        if not wrapped_init:
+          raise UserError(f'No value for {label} on the line after it')
+        enum_value = int(wrapped_init.group(1))
     else:
       m = ITEM_REGEX.match(line)
       if m:

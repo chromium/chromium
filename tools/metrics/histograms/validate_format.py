@@ -188,12 +188,17 @@ def main():
   merged = merge_xml.MergeTrees(
     list(trees.values()), should_expand_owners=False
   )
-  histograms, errors = extract_histograms.ExtractHistogramsFromXmlET(merged)
+  histograms, extraction_errors = extract_histograms.ExtractHistogramsFromXmlET(
+    merged
+  )
 
-  errors = errors or CheckNamespaces(trees)
-  errors = errors or _CheckVariantsRegistered(trees)
-  errors = errors or _CheckNoUnusedEnums(trees, histograms)
-  sys.exit(bool(errors))
+  has_errors = (
+    extraction_errors
+    or CheckNamespaces(trees)
+    or _CheckVariantsRegistered(trees)
+    or _CheckNoUnusedEnums(trees, histograms)
+  )
+  sys.exit(bool(has_errors))
 
 
 if __name__ == '__main__':

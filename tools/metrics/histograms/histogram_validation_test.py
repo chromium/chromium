@@ -108,7 +108,7 @@ class HistogramValidationTest(unittest.TestCase):
     )
 
   def testGetFilesToCheck_NoChanges(self):
-    affected_files = []
+    affected_files: list[histogram_validation.HistogramFileState] = []
 
     def read_file_fn(_path):
       return '<histogram-configuration></histogram-configuration>'
@@ -334,7 +334,7 @@ class HistogramValidationTest(unittest.TestCase):
 
   def testGetOldAndNewVariants_NotModified(self):
     target_path = str(pathlib.Path('/', 'src', 'variants1.xml'))
-    affected = []
+    affected: list[histogram_validation.HistogramFileState] = []
 
     def read_file_fn(path):
       if pathlib.Path(path) == pathlib.Path(target_path).resolve():

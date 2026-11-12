@@ -68,10 +68,10 @@ def DoPresubmit(
   # Save the original file content.
   logging.info('Loading %s...', os.path.relpath(xml_path))
   with open(xml_path, 'rb') as f:
-    original_xml = f.read()
+    original_bytes = f.read()
 
   # Check there are no CR ('\r') characters in the file.
-  if b'\r' in original_xml:
+  if b'\r' in original_bytes:
     logging.error(
       'DOS-style line endings (CR characters) detected - these are '
       'not allowed. Please run dos2unix %s',
@@ -79,7 +79,7 @@ def DoPresubmit(
     )
     return 1
 
-  original_xml = original_xml.decode('utf-8')
+  original_xml = original_bytes.decode('utf-8')
 
   try:
     pretty = prettyFn(original_xml)

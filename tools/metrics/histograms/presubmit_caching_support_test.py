@@ -5,7 +5,6 @@
 import os
 import tempfile
 import unittest
-from typing import Optional
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -36,7 +35,7 @@ def _prepend_text_to_file(file_path: str, new_text: str):
 class PresubmitCachingSupportTest(unittest.TestCase):
   checked_dir: str = ''
   storage_path: str = ''
-  cache: Optional[presubmit_util.PresubmitCache] = None
+  cache: presubmit_util.PresubmitCache
 
   def setUp(self):
     self.checked_dir = tempfile.mkdtemp()
@@ -48,6 +47,7 @@ class PresubmitCachingSupportTest(unittest.TestCase):
 
   def testCanCacheAndRetrieveResult(self):
     retrieved_result = self.cache.RetrieveResultFromCache(1)
+    assert retrieved_result is not None
     self.assertEqual(retrieved_result.msg, 'dummy result')
 
   def testCanReloadCacheFromDisk(self):
@@ -55,7 +55,7 @@ class PresubmitCachingSupportTest(unittest.TestCase):
       self.storage_path, self.checked_dir
     )
     retrieved_result = restored_cache.RetrieveResultFromCache(1)
-    self.assertIsNotNone(retrieved_result)
+    assert retrieved_result is not None
     self.assertEqual(retrieved_result.msg, 'dummy result')
 
   def testDoesntReturnFromDifferentCheck(self):
@@ -67,6 +67,7 @@ class PresubmitCachingSupportTest(unittest.TestCase):
 
   def testChangingDirectoryContentInvalidatesCache(self):
     retrieved_result = self.cache.RetrieveResultFromCache(1)
+    assert retrieved_result is not None
     self.assertEqual(retrieved_result.msg, 'dummy result')
 
     with open(os.path.join(self.checked_dir, 'dummy_file'), 'w') as f:

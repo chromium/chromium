@@ -83,6 +83,8 @@ def _extract_enum_nodes_by_names(enum_names):
   """Returns the <enum> nodes corresponding to the specified names."""
   root = ET.parse(ENUMS_PATH).getroot()
   enums_node = root.find('enums')
+  if enums_node is None:
+    raise ValueError(f'No <enums> element in {ENUMS_PATH}')
 
   enum_nodes = []
   for enum_node in list(enums_node):

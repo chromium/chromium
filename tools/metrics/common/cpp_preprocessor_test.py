@@ -4,6 +4,7 @@
 """Tests for cpp_preprocessor."""
 
 import textwrap
+import typing
 import unittest
 
 import setup_modules  # pylint: disable=unused-import
@@ -20,7 +21,24 @@ _ALL_TEST_SYMBOLS = frozenset(
   }
 )
 
-_PREPROCESSOR_TEST_CASES = [
+
+class _PreprocessorTestCase(typing.TypedDict):
+  testcase_name: str
+  code: str
+  defines: list[str]
+  known_symbols: typing.NotRequired[list[str]]
+  expected_in: typing.NotRequired[list[str]]
+  expected_not_in: typing.NotRequired[list[str]]
+
+
+class _ErrorTestCase(typing.TypedDict):
+  testcase_name: str
+  code: str
+  defines: list[str]
+  expected_error: str
+
+
+_PREPROCESSOR_TEST_CASES: list[_PreprocessorTestCase] = [
   {
     'testcase_name': 'simple_if_defined',
     'code': textwrap.dedent("""\
@@ -709,7 +727,7 @@ _PREPROCESSOR_TEST_CASES = [
   },
 ]
 
-_ERROR_TEST_CASES = [
+_ERROR_TEST_CASES: list[_ErrorTestCase] = [
   {
     'testcase_name': 'unexpected_elif',
     'code': textwrap.dedent("""\

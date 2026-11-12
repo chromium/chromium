@@ -5,6 +5,7 @@
 import logging
 import unittest
 import xml.dom.minidom
+import xml.etree.ElementTree as ET
 
 from parameterized import parameterized  # type: ignore
 
@@ -294,7 +295,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertNotIn('expires_after', histogram_content)
 
   def testMultiParagraphSummary(self):
-    multiple_paragraph_pattern = xml.dom.minidom.parseString("""
+    multiple_paragraph_pattern = ET.fromstring("""
 <histogram-configuration>
 <histograms>
   <histogram name="MultiParagraphTest.Test1" units="units"
@@ -356,7 +357,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     )
 
   def testNewHistogramWithoutSummary(self):
-    histogram_without_summary = xml.dom.minidom.parseString("""
+    histogram_without_summary = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
@@ -371,7 +372,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testNewHistogramWithEmptySummary(self):
-    histogram_with_empty_summary = xml.dom.minidom.parseString("""
+    histogram_with_empty_summary = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
@@ -387,7 +388,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testNewHistogramWithoutEnumOrUnit(self):
-    histogram_without_enum_or_unit = xml.dom.minidom.parseString("""
+    histogram_without_enum_or_unit = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" expires_after="2019-01-01">
@@ -403,7 +404,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testNewHistogramWithEnumAndUnit(self):
-    histogram_with_enum_and_unit = xml.dom.minidom.parseString("""
+    histogram_with_enum_and_unit = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" enum="MyEnumType" units="things"
@@ -420,7 +421,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testEmptyEnum(self):
-    empty_enum = xml.dom.minidom.parseString("""
+    empty_enum = ET.fromstring("""
 <histogram-configuration>
 <enums>
   <enum name="MyEnumType">
@@ -456,7 +457,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertFalse(errors)
 
   def testEnumWithDuplicateValues(self):
-    bad_enum = xml.dom.minidom.parseString("""
+    bad_enum = ET.fromstring("""
 <histogram-configuration>
 <enums>
   <enum name="MyEnumType">
@@ -470,7 +471,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testEnumWithDuplicateLabels(self):
-    bad_enum = xml.dom.minidom.parseString("""
+    bad_enum = ET.fromstring("""
 <histogram-configuration>
 <enums>
   <enum name="MyEnumType">
@@ -484,7 +485,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testNewHistogramWithUnits(self):
-    histogram_with_units = xml.dom.minidom.parseString("""
+    histogram_with_units = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="units" expires_after="2019-01-01">
@@ -500,7 +501,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertFalse(errors)
 
   def testNewHistogramWithEmptyOwnerTag(self):
-    histogram_with_empty_owner_tag = xml.dom.minidom.parseString("""
+    histogram_with_empty_owner_tag = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
@@ -516,7 +517,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testNewHistogramWithoutOwnerTag(self):
-    histogram_without_owner_tag = xml.dom.minidom.parseString("""
+    histogram_without_owner_tag = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
@@ -531,7 +532,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testNewHistogramWithCommaSeparatedOwners(self):
-    histogram_with_comma_separated_owners = xml.dom.minidom.parseString("""
+    histogram_with_comma_separated_owners = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
@@ -547,7 +548,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testNewHistogramWithInvalidOwner(self):
-    histogram_with_invalid_owner = xml.dom.minidom.parseString("""
+    histogram_with_invalid_owner = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
@@ -563,7 +564,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testHistogramWithEscapeCharacters(self):
-    histogram_with_owner_placeholder = xml.dom.minidom.parseString("""
+    histogram_with_owner_placeholder = ET.fromstring("""
 <histogram-configuration>
 <histograms>
  <histogram name="Test.Histogram" units="things" expires_after="2019-01-01">
@@ -593,7 +594,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     ]
   )
   def testUpdateNameWithTokens(self, _, input_xml):
-    histogram_with_token = xml.dom.minidom.parseString(input_xml)
+    histogram_with_token = ET.fromstring(input_xml)
     histograms_dict, tokens_dict, _ = (
       extract_histograms.ExtractHistogramsFromXmlTree(histogram_with_token, {})
     )
@@ -617,7 +618,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     ]
   )
   def testUpdateSummaryWithTokens(self, _, input_xml):
-    histogram_with_token = xml.dom.minidom.parseString(input_xml)
+    histogram_with_token = ET.fromstring(input_xml)
     histograms_dict, tokens_dict, _ = (
       extract_histograms.ExtractHistogramsFromXmlTree(histogram_with_token, {})
     )
@@ -648,7 +649,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     ]
   )
   def testUpdateWithTokenOwner(self, _, input_xml):
-    histogram_with_token = xml.dom.minidom.parseString(input_xml)
+    histogram_with_token = ET.fromstring(input_xml)
     histograms_dict, tokens_dict, _ = (
       extract_histograms.ExtractHistogramsFromXmlTree(histogram_with_token, {})
     )
@@ -677,7 +678,7 @@ class ExtractHistogramsTest(unittest.TestCase):
   def testUpdateNameDuplicateVariant(self, _, input_xml):
     """Tests that if duplicate names are generated due to multiple tokens
     having the same variant and empty string variant, an error is reported."""
-    histogram_with_duplicate_variant = xml.dom.minidom.parseString(input_xml)
+    histogram_with_duplicate_variant = ET.fromstring(input_xml)
     histograms_dict, tokens_dict, _ = (
       extract_histograms.ExtractHistogramsFromXmlTree(
         histogram_with_duplicate_variant, {}
@@ -689,7 +690,7 @@ class ExtractHistogramsTest(unittest.TestCase):
     self.assertTrue(errors)
 
   def testVariantsNotExists(self):
-    histogram_without_corresponding_variants = xml.dom.minidom.parseString("""
+    histogram_without_corresponding_variants = ET.fromstring("""
 <histogram-configuration>
 <histograms>
 <histogram name="Histogram{Color}{SizeNone}" units="things"

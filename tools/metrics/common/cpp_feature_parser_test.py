@@ -547,6 +547,7 @@ class CppFeatureParserTest(unittest.TestCase):
           'MyFeature',
           cpp_feature_parser.GetPlatformDefines(platform),
         )
+        assert detail is not None
         self.assertEqual(detail.state, state)
 
 

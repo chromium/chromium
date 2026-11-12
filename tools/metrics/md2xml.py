@@ -89,7 +89,7 @@ def IsTagValid(tag, value):
 class Trace:
   def __init__(self, msg):
     self.msg_ = msg
-    self.start_ = None
+    self.start_ = 0.0
 
   def __enter__(self):
     self.start_ = time.time()
@@ -168,13 +168,13 @@ def main():
 
   with Trace('Parsing xml') as t:
     tree = xml.dom.minidom.parseString(raw_xml)
-    histograms = tree.getElementsByTagName('histograms')
-    if histograms.length != 1:
+    histograms_nodes = tree.getElementsByTagName('histograms')
+    if histograms_nodes.length != 1:
       sys.stderr.write(
         'histograms.xml should have exactly one "histograms" section.\n'
       )
       sys.exit(1)
-    histograms = histograms[0]
+    histograms = histograms_nodes[0]
 
   with Trace('Parsing md file %s' % (sys.argv[1])) as t:
     metrics = GetMetricsFromMdFile(sys.argv[1])

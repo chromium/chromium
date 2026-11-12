@@ -7,7 +7,7 @@ import os
 import tempfile
 import unittest
 from unittest import mock
-from typing import Tuple
+from typing import IO, Any, Tuple
 import xml.etree.ElementTree as ET
 
 import setup_modules  # pylint: disable=unused-import
@@ -226,7 +226,7 @@ class MetricsPresubmitTest(unittest.TestCase):
       _BASE_DIR + '/test_data/example_valid_enums.xml',
       _TOP_LEVEL_ENUMS_PATH,
     ]
-    opened_files = []
+    opened_files: list[IO[Any]] = []
     real_open = open
 
     def open_one_at_a_time(*args, **kwargs):

@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import argparse
+import collections.abc
 import pathlib
 import sys
 import xml.etree.ElementTree as ET
@@ -78,24 +79,30 @@ def _GenerateStaticFile(file_path, namespace, values, allow_list_name):
 
 def _GenerateValueList(histograms, tag, allow_list_name):
   if tag == 'variant':
-    values, had_errors = extract_histograms.ExtractVariantsFromXmlTree(
+    variants, had_errors = extract_histograms.ExtractVariantsFromXmlTree(
       histograms
     )
-  elif tag == 'enum':
-    values, had_errors = extract_histograms.ExtractEnumsFromXmlTree(histograms)
-  else:
-    raise Error("'tag' must be either 'variant' or 'enum'")
+    _CheckExtractedValues(variants, had_errors, allow_list_name)
+    return [variant.get('name') for variant in variants[allow_list_name]]
 
+  if tag == 'enum':
+    enums, had_errors = extract_histograms.ExtractEnumsFromXmlTree(histograms)
+    _CheckExtractedValues(enums, had_errors, allow_list_name)
+    return [b.get('key') for b in enums[allow_list_name]['buckets']]
+
+  raise Error("'tag' must be either 'variant' or 'enum'")
+
+
+def _CheckExtractedValues(
+  values: collections.abc.Container[str],
+  had_errors: extract_histograms.ExtractionErrors,
+  allow_list_name: str,
+) -> None:
   if had_errors:
     raise Error('Error parsing inputs.')
 
   if allow_list_name not in values:
     raise Error('AllowListName is missing in variants list')
-
-  if tag == 'variant':
-    return [value.get('name') for value in values[allow_list_name]]
-
-  return [b.get('key') for b in values[allow_list_name].get('buckets', [{}])]
 
 
 def _GenerateFile(arguments):

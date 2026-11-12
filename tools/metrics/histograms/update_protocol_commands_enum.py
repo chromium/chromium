@@ -51,7 +51,7 @@ def ParseProtocolCommandsFromPDL(file_path):
   protocol = pdl.loads(pdl_string, file_name, False)
   input_file.close()
 
-  result = {}
+  result: dict[int, str] = {}
   for domain in protocol['domains']:
     if 'commands' in domain:
       for command in domain['commands']:
@@ -86,7 +86,7 @@ def ParseProtocolCommandsFromXML():
     raise Exception('CDPCommands enum node not found in enums.xml')
 
   for child in enum_node.childNodes:
-    if child.nodeName == 'int':
+    if isinstance(child, minidom.Element) and child.tagName == 'int':
       enum_value = int(child.attributes['value'].value)
       enum_label = str(child.attributes['label'].value)
       result[enum_value] = enum_label

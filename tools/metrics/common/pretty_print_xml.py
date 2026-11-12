@@ -231,7 +231,7 @@ def SplitParagraphs(text):
   text = textwrap.dedent(text.strip('\n'))
   lines = text.split('\n')
   # Split the text into paragraphs at blank line boundaries.
-  paragraphs = [[]]
+  paragraphs: list[list[str]] = [[]]
   for l in lines:
     if paragraphs[-1] and not l.strip():
       paragraphs.append([])

@@ -245,7 +245,7 @@ def ExecuteCheckHistogramFormatting(
   represents a production check rather then a test one. This is why we
   set allow_test_paths to False by default.
   """
-  results = []
+  results: list[Any] = []
   cwd = input_api.PresubmitLocalPath()
   xml_changed = False
 

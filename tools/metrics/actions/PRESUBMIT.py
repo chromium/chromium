@@ -191,7 +191,7 @@ def CheckChange(input_api, output_api):
   if not actions_xml_path:
     return []
 
-  problems = []
+  problems: list[Any] = []
   problems.extend(_CheckPrettyPrint(actions_xml_path, input_api, output_api))
   problems.extend(
     _CheckForHashConflicts(actions_xml_path, input_api, output_api)

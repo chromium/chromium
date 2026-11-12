@@ -78,6 +78,10 @@ _PREDEFINED_NAMES_MAPPING = {
   'WebUITabStrip': 'WebUI',
 }
 
+# Maps a name part of nodes to either these nodes or a nested dict that splits
+# them by their next name part.
+_DocumentDict = dict[str, 'list[ET.Element] | _DocumentDict']
+
 
 def _ParseMergedXML():
   """Parses merged xml into different types of nodes"""
@@ -239,7 +243,9 @@ def _AggregateMinorNodes(node_dict):
     node_dict['others'] = others
 
 
-def _BuildDocumentDict(nodes, depth):
+def _BuildDocumentDict(
+  nodes: list[ET.Element], depth: int
+) -> list[ET.Element] | _DocumentDict:
   """Recursively builds a document dict which will be written later.
 
   This function recursively builds a document dict which the key of the dict is
@@ -257,7 +263,7 @@ def _BuildDocumentDict(nodes, depth):
   if depth == TARGET_DEPTH:
     return nodes
 
-  temp_dict = document_dict = {}
+  temp_dict: dict[str, list[ET.Element]] = {}
   for node in nodes:
     name_part = _GetCamelCaseName(node, depth)
     if name_part not in temp_dict:
@@ -267,6 +273,7 @@ def _BuildDocumentDict(nodes, depth):
   # Aggregate keys with less than |AGGREGATE_THRESHOLD| values to 'others'.
   _AggregateMinorNodes(temp_dict)
 
+  document_dict: _DocumentDict = {}
   for key, nodes in temp_dict.items():
     if key == 'others':
       document_dict[key] = nodes

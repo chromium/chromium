@@ -42,6 +42,11 @@ _CACHE_DIR_PATH = os.path.join(tempfile.gettempdir(), 'metrics_presubmit_cache')
 UKM_XML = 'ukm.xml'
 ENUMS_XML = 'enums.xml'
 
+# Files whose changes can affect the results of the isolated checks: Python
+# files, BUILD.gn (for its list of tests), the mypy configuration, mypy.ini, and
+# vpython.toml with its uv.lock, which pin the mypy version.
+_ISOLATED_CHECKS_INPUT_EXTENSIONS = ('.py', '.gn', '.ini', '.toml', '.lock')
+
 
 def _PresubmitChecksAsTestableScripts(
   affected_files: Iterable[str],
@@ -74,7 +79,9 @@ def _ReportIsolatedChecksIssues(
   input_api: Type, output_api: Type
 ) -> Iterable[Any]:
   """Detects and reports issue with python scripts within tools/metrics."""
-  if not input_api.HasAffectedFiles(extensions=('.py', '.gn')):
+  if not input_api.HasAffectedFiles(
+    extensions=_ISOLATED_CHECKS_INPUT_EXTENSIONS
+  ):
     return
   affected_files = [f.LocalPath() for f in input_api.AffectedFiles()]
   for res in script_checker.check_scripts(
@@ -229,7 +236,7 @@ def CheckChange(input_api: Type, output_api: Type):
   problems.extend(
     input_api.canned_checks.CheckPatchFormatted(input_api, output_api)
   )
-  if input_api.HasAffectedFiles(extensions=('.py', '.gn')):
+  if input_api.HasAffectedFiles(extensions=_ISOLATED_CHECKS_INPUT_EXTENSIONS):
     problems.extend(
       presubmit_util.RunCheckWithCache(
         _ReportIsolatedChecksIssuesList,
