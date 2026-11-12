@@ -1693,6 +1693,16 @@ public class MultiWindowUtils implements ActivityStateListener {
             ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
             if (info != null) results.put(info.taskId, info);
         }
+        // ActivityManager#getAppTasks() can omit the task of a tabbed activity that was launched
+        // into split-screen mode or just created. Treat the tasks of running, non-finishing tabbed
+        // activities as live so their persisted instance-task mappings are not dropped as invalid.
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (!(activity instanceof ChromeTabbedActivity) || activity.isFinishing()) continue;
+            int taskId = activity.getTaskId();
+            if (taskId != INVALID_TASK_ID && !results.containsKey(taskId)) {
+                results.put(taskId, null);
+            }
+        }
         return results;
     }
 

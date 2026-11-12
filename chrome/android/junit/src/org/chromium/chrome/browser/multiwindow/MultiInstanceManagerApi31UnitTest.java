@@ -939,6 +939,36 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    public void testGetRecentlyClosedInstances_appTasksOmitsRunningActivity_keepsTaskMapping() {
+        // Simulate a running second tabbed activity whose task is omitted by #getAppTasks().
+        var manager = setupInstanceOmittedFromAppTasks(INSTANCE_ID_2, mTabbedActivityTask62);
+
+        // Query recently closed instances, which triggers invalid instance data cleanup.
+        List<InstanceInfo> closed = manager.getRecentlyClosedInstances();
+
+        // Verify that the running activity's task mapping is preserved and reported as active.
+        assertEquals(TASK_ID_62, ChromeMultiInstancePersistentStore.readTaskId(INSTANCE_ID_2));
+        assertTrue(closed.stream().noneMatch(info -> info.instanceId == INSTANCE_ID_2));
+        assertTrue(
+                manager.getInstanceInfo(PersistedInstanceType.ACTIVE).stream()
+                        .anyMatch(info -> info.instanceId == INSTANCE_ID_2));
+    }
+
+    @Test
+    public void testGetRecentlyClosedInstances_appTasksOmitsFinishingActivity_removesTaskMapping() {
+        // Simulate a finishing second tabbed activity whose task is omitted by #getAppTasks().
+        var manager = setupInstanceOmittedFromAppTasks(INSTANCE_ID_2, mTabbedActivityTask63);
+        mTabbedActivityTask63.finish();
+
+        // Query recently closed instances, which triggers invalid instance data cleanup.
+        List<InstanceInfo> closed = manager.getRecentlyClosedInstances();
+
+        // Verify that the finishing activity's task mapping is cleared and reported as closed.
+        assertEquals(INVALID_TASK_ID, ChromeMultiInstancePersistentStore.readTaskId(INSTANCE_ID_2));
+        assertTrue(closed.stream().anyMatch(info -> info.instanceId == INSTANCE_ID_2));
+    }
+
+    @Test
     public void testCloseWindows_OnInstancesClosedInvoked() {
         // Setup 3 instances.
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
@@ -2966,5 +2996,25 @@ public class MultiInstanceManagerApi31UnitTest {
         ShadowContextImpl shadowContext = Shadow.extract(activity.getBaseContext());
         shadowContext.setSystemService(Context.ACTIVITY_SERVICE, mActivityManager);
         return activity;
+    }
+
+    private TestMultiInstanceManagerApi31 setupInstanceOmittedFromAppTasks(
+            int instanceId, Activity activity) {
+        var manager = createTestMultiInstanceManager(mCurrentActivity);
+        MultiWindowUtils.setAppTaskIdsForTesting(null);
+        ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
+        ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
+        setupActivityManagerAppTasks(mCurrentActivity);
+
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
+        ChromeMultiInstancePersistentStore.writeTaskId(instanceId, activity.getTaskId());
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, URL1.getSpec());
+        ChromeMultiInstancePersistentStore.writeActiveTabTitle(instanceId, TITLE1);
+        ChromeMultiInstancePersistentStore.writeProfileType(
+                instanceId, SupportedProfileType.REGULAR);
+        ChromeMultiInstancePersistentStore.writeTabCount(
+                instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
+        MultiWindowUtils.setActivityByWindowIdForTesting(instanceId, activity);
+        return manager;
     }
 }
