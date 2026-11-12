@@ -400,6 +400,8 @@ BASE_FEATURE_PARAM(std::string,
                    &kGlicBrowserCommandFallback,
                    "https://support.google.com/chrome/answer/17140089");
 
+BASE_FEATURE(kGlicWhatsNewQuizzes, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicForceFcmExperimentalTriggerFailure,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

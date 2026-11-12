@@ -137,6 +137,8 @@ chromium-metrics-reviews@google.com.
       summary="the module for Generative Theming"/>
   <variant name="GlicWhatsNewLuminous"
       summary="the module for Gemini in Chrome: Luminous"/>
+  <variant name="GlicWhatsNewQuizzes"
+      summary="the module for Gemini in Chrome: Quizzes"/>
   <variant name="GlitterAIFeaturesVideo"
       summary="the module for Glitter AI Features Video"/>
   <variant name="GlitterAIMode" summary="the module for Glitter AI Mode"/>

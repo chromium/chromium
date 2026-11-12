@@ -1134,6 +1134,7 @@ should be able to be added at any place in this file.
   <variant name=".GenerativeThemes" summary="Generative Themes"/>
   <variant name=".GenerativeTheming" summary="Generative Theming"/>
   <variant name=".GlicWhatsNewLuminous" summary="Gemini in Chrome: Luminous"/>
+  <variant name=".GlicWhatsNewQuizzes" summary="Gemini in Chrome: Quizzes"/>
   <variant name=".GoogleLens" summary="Google Lens"/>
   <variant name=".Googlepayreauth" summary="Google Pay Re-auth"/>
   <variant name=".HeadlessLiveCaption" summary="Headless Live Caption"/>
