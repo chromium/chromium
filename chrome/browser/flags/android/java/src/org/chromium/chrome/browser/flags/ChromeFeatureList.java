@@ -1062,10 +1062,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sAndroidTabUiRefactor =
-            newCachedFlag(
-                    ANDROID_TAB_UI_REFACTOR,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(ANDROID_TAB_UI_REFACTOR, true);
     public static final CachedFlag sAndroidTabstripStartupCaptureBugFix =
             newCachedFlag(ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX, true, true);
     public static final CachedFlag sAndroidToolbarCaptureOnDesktop =
