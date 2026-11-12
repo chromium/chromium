@@ -529,16 +529,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Download.Incognito.Message" enum="IncognitoMessageEvent"
-    expires_after="2023-06-30">
-  <owner>tommasin@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the clicks on Incognito download message in Android, when users
-    click download or dismiss the message.
-  </summary>
-</histogram>
-
 <histogram name="Download.InputStreamReadError"
     enum="DownloadInputStreamReadErrorType" expires_after="2024-01-14">
   <owner>qinmin@chromium.org</owner>

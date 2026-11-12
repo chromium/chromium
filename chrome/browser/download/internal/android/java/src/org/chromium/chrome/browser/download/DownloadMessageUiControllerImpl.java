@@ -166,28 +166,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int ANIMATED_VECTOR_DRAWABLE = 2;
     }
 
-    /** Represents the values for the histogram Download.Incognito.Message. */
-    @IntDef({
-        IncognitoMessageEvent.SHOWN,
-        IncognitoMessageEvent.ACCEPTED,
-        IncognitoMessageEvent.DISMISSED_WITH_GESTURE,
-        IncognitoMessageEvent.DISMISSED_WITH_TIMER,
-        IncognitoMessageEvent.NUM_ENTRIES,
-        IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON,
-        IncognitoMessageEvent.NOT_SHOWN_NULL_MESSAGE_DISPATCHER
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface IncognitoMessageEvent {
-        int SHOWN = 0;
-        int ACCEPTED = 1;
-        int DISMISSED_WITH_GESTURE = 2;
-        int DISMISSED_WITH_TIMER = 3;
-        int DISMISSED_WITH_DIFFERENT_REASON = 4;
-        int NOT_SHOWN_NULL_MESSAGE_DISPATCHER = 5;
-
-        int NUM_ENTRIES = 6;
-    }
-
     /** Represents the data required to show UI elements of the message. */
     static class DownloadProgressMessageUiData {
         public @Nullable ContentId id;
@@ -402,7 +380,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             // When the message dispatcher is null we don't want to block the download, hence
             // we mimic the accepted workflow.
             callback.onResult(/* result= */ true);
-            recordIncognitoDownloadMessage(IncognitoMessageEvent.NOT_SHOWN_NULL_MESSAGE_DISPATCHER);
             return;
         }
 
@@ -429,31 +406,20 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 MessageBannerProperties.ON_PRIMARY_ACTION,
                 () -> {
                     callback.onResult(/* result= */ true);
-                    recordIncognitoDownloadMessage(IncognitoMessageEvent.ACCEPTED);
                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                 });
         propertyModel.set(
                 MessageBannerProperties.ON_DISMISSED,
                 (dismissReason) -> {
-                    if (dismissReason == DismissReason.TIMER) {
-                        recordIncognitoDownloadMessage(IncognitoMessageEvent.DISMISSED_WITH_TIMER);
-                    } else if (dismissReason == DismissReason.GESTURE) {
-                        recordIncognitoDownloadMessage(
-                                IncognitoMessageEvent.DISMISSED_WITH_GESTURE);
-                    } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
+                    if (dismissReason == DismissReason.PRIMARY_ACTION) {
                         // Dismissal triggered by ON_PRIMARY_ACTION handler, which is already
-                        // running the download callback. Here we need to not record this action
-                        // into the dismiss reasons buckets.
+                        // running the download callback.
                         return;
-                    } else {
-                        recordIncognitoDownloadMessage(
-                                IncognitoMessageEvent.DISMISSED_WITH_DIFFERENT_REASON);
                     }
                     callback.onResult(/* result= */ false);
                 });
 
         dispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ true);
-        recordIncognitoDownloadMessage(IncognitoMessageEvent.SHOWN);
     }
 
     /** Associates a notification ID with the tracked download for future usage. */
@@ -1301,15 +1267,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         } else {
             RecordUserAction.record("Android.Download.InfoBar.LinkClicked.OpenDownloadHome");
         }
-    }
-
-    /**
-     * Collects incognito download message event metrics.
-     * @param event The UI event to collect.
-     */
-    private static void recordIncognitoDownloadMessage(@IncognitoMessageEvent int event) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Download.Incognito.Message", event, IncognitoMessageEvent.NUM_ENTRIES);
     }
 
     /**

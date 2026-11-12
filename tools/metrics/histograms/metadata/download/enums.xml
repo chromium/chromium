@@ -611,16 +611,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="DOWNLOAD_NOTIFICATION"/>
 </enum>
 
-<enum name="IncognitoMessageEvent">
-  <int value="0" label="Download message shown"/>
-  <int value="1" label="Download message accepted"/>
-  <int value="2" label="Download message dismissed with gesture"/>
-  <int value="3" label="Download message dismissed with timer"/>
-  <int value="4" label="Download message dismissed with different reason"/>
-  <int value="5"
-      label="Download message not shown due to null message dispatcher"/>
-</enum>
-
 <enum name="MediaMetadataEvent">
   <int value="0" label="Metadata request started"/>
   <int value="1" label="Metadata request failed"/>
