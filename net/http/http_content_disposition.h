@@ -23,7 +23,7 @@ class NET_EXPORT HttpContentDisposition {
 
   // Properties of the Content-Disposition header. These flags are used to
   // report download metrics in UMA. This enum isn't directly used in UMA but
-  // mapped to another one for binary compatiblity; ie. changes are OK.
+  // mapped to another one for binary compatibility; ie. changes are OK.
   enum ParseResultFlags {
     INVALID = 0,
 
