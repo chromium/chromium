@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -3432,6 +3433,65 @@ TEST_F(PermissionRequestManagerTest,
     testing::Mock::VerifyAndClearExpectations(&issue_callback);
   }
 }
+
+#if defined(ADDRESS_SANITIZER)
+namespace {
+
+class SyncDestroyUiSelector : public PermissionUiSelector {
+ public:
+  explicit SyncDestroyUiSelector(content::RenderViewHostTestHarness* harness)
+      : harness_(harness) {}
+
+  void SelectUiToUse(content::WebContents* web_contents,
+                     PermissionRequest* request,
+                     DecisionMadeCallback callback) override {
+    harness_->DeleteContents();
+    std::move(callback).Run(
+        PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning());
+  }
+
+  bool IsPermissionRequestSupported(RequestType request_type) override {
+    return true;
+  }
+  void Cancel() override {}
+
+ private:
+  raw_ptr<content::RenderViewHostTestHarness> harness_;
+};
+
+}  // namespace
+
+// This test reproduces a Use-After-Free (UAF) scenario where a permission UI
+// selector synchronously destroys the WebContents during SelectUiToUse().
+// Destroying the WebContents triggers the destruction of
+// PermissionRequestManager. We register two selectors: the first triggers
+// destruction, and the second forces the permission_ui_selectors_ loop to
+// evaluate the next index. Without the weak_this guard, evaluating
+// permission_ui_selectors_.size() on the destroyed manager constitutes a UAF,
+// which is caught deterministically by AddressSanitizer (ASan).
+TEST_F(PermissionRequestManagerTest, UAFOnWebContentsDestroyedInFullscreen) {
+  manager_->add_permission_ui_selector_for_testing(
+      std::make_unique<SyncDestroyUiSelector>(this));
+  MockNotificationGeolocationPermissionUiSelector::CreateForManager(
+      manager_, PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning(),
+      /*async_delay=*/std::nullopt);
+
+  MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE,
+      request_state.GetWeakPtr());
+  auto* manager = manager_.get();
+  // Reset the test's raw_ptr<PermissionRequestManager> to avoid a dangling
+  // pointer warning when the WebContents and its attached manager are
+  // synchronously destroyed during the test.
+  manager_ = nullptr;
+  manager->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                      std::move(request));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return web_contents() == nullptr; }));
+}
+#endif  // defined(ADDRESS_SANITIZER)
 
 class PermissionRequestManagerEnforceGestureTest
     : public PermissionRequestManagerTest,
