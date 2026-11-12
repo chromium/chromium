@@ -25,6 +25,7 @@
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
+#include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -245,6 +246,15 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     int player_id;
     GetMediaSession()->AddPlayer(
         player_observer_.get(), player_id = player_observer_->StartNewPlayer());
+    return player_id;
+  }
+
+  int StartPlayerWithTitle(const std::u16string& title) {
+    int player_id = StartNewPlayer();
+    media_session::MediaMetadata metadata;
+    metadata.title = title;
+    player_observer()->SetMetadata(player_id, metadata);
+    GetMediaSession()->RebuildAndNotifyMetadataChanged();
     return player_id;
   }
 
@@ -1667,6 +1677,83 @@ TEST_F(MediaSessionImplTest, EnterAutoPictureInPictureWithReason) {
 
   GetMediaSession()->EnterAutoPictureInPicture();
   mock_media_session_service().FlushForTesting();
+}
+
+TEST_F(MediaSessionImplTest, PlayerProvidesMetadata) {
+  int player_id = StartNewPlayer();
+  media_session::MediaMetadata custom_metadata;
+  custom_metadata.title = u"Custom Title";
+  custom_metadata.artist = u"Custom Artist";
+  custom_metadata.source_title = u"Custom Publisher";
+  player_observer()->SetMetadata(player_id, custom_metadata);
+  GetMediaSession()->RebuildAndNotifyMetadataChanged();
+
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().title,
+            u"Custom Title");
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().artist,
+            u"Custom Artist");
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().source_title,
+            u"Custom Publisher");
+
+  // When the player is removed, metadata reverts to page defaults.
+  GetMediaSession()->RemovePlayer(player_observer(), player_id);
+  EXPECT_NE(GetMediaSession()->GetMediaSessionMetadata().title,
+            u"Custom Title");
+}
+
+TEST_F(MediaSessionImplTest,
+       PlayerProvidesWhitespaceMetadataFallsBackToPageDefaults) {
+  NavigateAndCommit(GURL("https://example.com/"));
+  web_contents()->UpdateTitleForEntry(
+      web_contents()->GetController().GetLastCommittedEntry(), u"Page Title");
+
+  int player_id = StartNewPlayer();
+  media_session::MediaMetadata whitespace_metadata;
+  whitespace_metadata.title = u"   ";
+  whitespace_metadata.source_title = u"   ";
+  player_observer()->SetMetadata(player_id, whitespace_metadata);
+  GetMediaSession()->RebuildAndNotifyMetadataChanged();
+
+  // Whitespace-only metadata must not suppress the fallback to page
+  // title/origin.
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().title, u"Page Title");
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().source_title,
+            u"example.com");
+}
+
+TEST_F(MediaSessionImplTest, OneShotPlayerSuppressesPlayerMetadata) {
+  StartPlayerWithTitle(u"Custom Title");
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().title,
+            u"Custom Title");
+
+  // Adding a one-shot player must trigger a metadata rebuild and revert
+  // to the page default title since one-shot players disable custom player
+  // metadata.
+  MockMediaSessionPlayerObserver one_shot_observer(
+      main_rfh(), media::MediaContentType::kOneShot);
+  int one_shot_player_id = one_shot_observer.StartNewPlayer();
+  GetMediaSession()->AddPlayer(&one_shot_observer, one_shot_player_id);
+
+  EXPECT_NE(GetMediaSession()->GetMediaSessionMetadata().title,
+            u"Custom Title");
+
+  // When the one-shot player is removed, custom player metadata is restored.
+  GetMediaSession()->RemovePlayer(&one_shot_observer, one_shot_player_id);
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().title,
+            u"Custom Title");
+}
+
+TEST_F(MediaSessionImplTest, StopRevertsPlayerMetadata) {
+  StartPlayerWithTitle(u"Custom Title");
+  EXPECT_EQ(GetMediaSession()->GetMediaSessionMetadata().title,
+            u"Custom Title");
+
+  // Stopping the session clears players and must revert metadata to page
+  // defaults.
+  GetMediaSession()->Stop(MediaSession::SuspendType::kUI);
+
+  EXPECT_NE(GetMediaSession()->GetMediaSessionMetadata().title,
+            u"Custom Title");
 }
 
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {

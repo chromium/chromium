@@ -116,6 +116,9 @@ class MediaSession : public media_session::mojom::MediaSession {
   // picture has changed.
   virtual void ReportAutoPictureInPictureInfoChanged() = 0;
 
+  // Rebuilds and notifies observers if the media session metadata has changed.
+  virtual void RebuildAndNotifyMetadataChanged() = 0;
+
   // media_session.mojom.MediaSession overrides -------------------------------
 
   // Suspend the media session.

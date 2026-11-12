@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "media/base/media_content_type.h"
+#include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/media_position.h"
 
 namespace content {
@@ -19,6 +20,11 @@ void MediaSessionPlayerObserver::OnRequestVisibility(
 
 std::optional<media_session::MediaPosition>
 MediaSessionPlayerObserver::GetPosition(int player_id) const {
+  return std::nullopt;
+}
+
+std::optional<media_session::MediaMetadata>
+MediaSessionPlayerObserver::GetMetadata(int player_id) const {
   return std::nullopt;
 }
 

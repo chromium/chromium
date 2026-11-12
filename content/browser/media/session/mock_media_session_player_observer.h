@@ -15,6 +15,7 @@
 #include "content/public/browser/media_session_player_observer.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/picture_in_picture_events_info.h"
+#include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -48,6 +49,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
       int player_id,
       RequestVisibilityCallback request_visibility_callback) override;
   std::optional<media_session::MediaPosition> GetPosition(
+      int player_id) const override;
+  std::optional<media_session::MediaMetadata> GetMetadata(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
   bool HasSufficientlyVisibleVideo(int player_id) const override;
@@ -85,6 +88,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   // Set the position for |player_id|.
   void SetPosition(size_t player_id, media_session::MediaPosition& position);
+
+  // Set the metadata for |player_id|.
+  void SetMetadata(size_t player_id,
+                   const media_session::MediaMetadata& metadata);
 
   // Set |has_sufficiently_visible_video| for |player_id|.
   void SetHasSufficientlyVisibleVideo(size_t player_id,
@@ -125,6 +132,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     bool is_playing_;
     double volume_multiplier_;
     std::optional<media_session::MediaPosition> position_;
+    std::optional<media_session::MediaMetadata> metadata_;
     bool is_in_picture_in_picture_;
     std::string audio_sink_id_ =
         media::AudioDeviceDescription::kDefaultDeviceId;

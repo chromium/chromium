@@ -493,11 +493,15 @@ void ReadAloudService::OnOverviewContentSet(bool success,
   }
 
   // Set the generated overview title.
-  const std::string sanitized_title = SanitizeMetadata(title);
+  std::string effective_title = SanitizeMetadata(title);
+  if (effective_title.empty()) {
+    effective_title = SanitizeMetadata(article_title_);
+  }
   if (delegate_) {
-    delegate_->OnMetadataAvailable(
-        sanitized_title.empty() ? article_title_ : sanitized_title,
-        current_publisher_);
+    delegate_->OnMetadataAvailable(effective_title, current_publisher_);
+  }
+  if (media_session_) {
+    media_session_->SetCustomMetadata(effective_title, current_publisher_);
   }
 
   // overview_generation_start_time_ is set in RequestOverviewGeneration(). It

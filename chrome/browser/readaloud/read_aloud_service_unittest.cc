@@ -2387,6 +2387,28 @@ TEST_F(ReadAloudServiceTest, OverviewModeGeneratedTitleUpdatesMetadata) {
   DeliverDistilledArticle(view_delegate);
 }
 
+TEST_F(ReadAloudServiceTest, OverviewModeCustomTitlePopulatesMediaSession) {
+  optimization_guide::proto::ReadAloudGenerateTextResponse response =
+      OneTurnOverviewResponse();
+  response.set_title("Generated Overview Title");
+
+  web_distiller::ViewRequestDelegate* view_delegate =
+      StartOverviewSession(response);
+  ASSERT_NE(view_delegate, nullptr);
+
+  service()->Play(web_contents());
+  DeliverDistilledArticle(view_delegate);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->FlushForTesting();
+
+  auto* media_session = content::MediaSession::Get(web_contents());
+  EXPECT_EQ(media_session->GetMediaSessionMetadata().title,
+            u"Generated Overview Title");
+  EXPECT_EQ(media_session->GetMediaSessionMetadata().source_title,
+            u"example.com");
+}
+
 TEST_F(ReadAloudServiceTest,
        OverviewModeReinitializeToClassicRestoresTabTitle) {
   MockDelegate* delegate_ptr = SetUpMockDelegate();

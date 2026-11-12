@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/media_session_player_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/media_position.h"
 
 namespace content {
@@ -56,6 +57,11 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
                                  base::TimeDelta duration);
   void OnPlaybackRateChanged(float rate);
 
+  // Sets custom metadata for system media controls. `publisher` is mapped to
+  // `source_title` to represent the publishing site rather than an artist.
+  void SetCustomMetadata(const std::string& title,
+                         const std::string& publisher);
+
   // content::MediaSessionPlayerObserver overrides:
   void OnSuspend(int player_id, bool triggered_by_user) override;
   void OnResume(int player_id, bool triggered_by_user) override;
@@ -64,7 +70,8 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   void OnSeekTo(int player_id, base::TimeDelta seek_time) override;
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
-
+  std::optional<media_session::MediaMetadata> GetMetadata(
+      int player_id) const override;
   content::RenderFrameHost* render_frame_host() const override;
   bool HasAudio(int player_id) const override;
   bool IsPaused(int player_id) const override;
@@ -132,6 +139,8 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
 
   bool is_paused_ = true;
   bool is_registered_ = false;
+
+  std::optional<media_session::MediaMetadata> custom_metadata_;
   SessionCommand pending_session_command_ = SessionCommand::kNone;
 
   double playback_rate_ = 1.0;

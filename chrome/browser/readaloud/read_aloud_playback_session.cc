@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/readaloud/read_aloud_service.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
 #include "content/public/browser/media_session.h"
@@ -232,6 +233,29 @@ bool ReadAloudPlaybackSession::HasAudio(int player_id) const {
 
 bool ReadAloudPlaybackSession::IsPaused(int player_id) const {
   return is_paused_;
+}
+
+std::optional<media_session::MediaMetadata>
+ReadAloudPlaybackSession::GetMetadata(int player_id) const {
+  if (player_id != kPlayerId) {
+    return std::nullopt;
+  }
+  return custom_metadata_;
+}
+
+void ReadAloudPlaybackSession::SetCustomMetadata(const std::string& title,
+                                                 const std::string& publisher) {
+  media_session::MediaMetadata metadata;
+  metadata.title = base::UTF8ToUTF16(title);
+  if (!publisher.empty()) {
+    // `source_title` represents the publishing site/origin in MediaSession.
+    metadata.source_title = base::UTF8ToUTF16(publisher);
+  }
+  custom_metadata_ = std::move(metadata);
+
+  if (auto* session = GetMediaSessionIfExists()) {
+    session->RebuildAndNotifyMetadataChanged();
+  }
 }
 
 }  // namespace readaloud

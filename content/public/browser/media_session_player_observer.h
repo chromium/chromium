@@ -19,6 +19,7 @@ enum class MediaContentType;
 }
 
 namespace media_session {
+struct MediaMetadata;
 struct MediaPosition;
 }  // namespace media_session
 
@@ -87,6 +88,10 @@ class CONTENT_EXPORT MediaSessionPlayerObserver {
 
   // Returns the position for |player_id|.
   virtual std::optional<media_session::MediaPosition> GetPosition(
+      int player_id) const;
+
+  // Returns the metadata for |player_id|.
+  virtual std::optional<media_session::MediaMetadata> GetMetadata(
       int player_id) const;
 
   // Returns if picture-in-picture is available for |player_id|.

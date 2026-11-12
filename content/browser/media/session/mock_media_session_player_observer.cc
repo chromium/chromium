@@ -122,6 +122,13 @@ MockMediaSessionPlayerObserver::GetPosition(int player_id) const {
   return players_[player_id].position_;
 }
 
+std::optional<media_session::MediaMetadata>
+MockMediaSessionPlayerObserver::GetMetadata(int player_id) const {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  return players_[player_id].metadata_;
+}
+
 bool MockMediaSessionPlayerObserver::IsPictureInPictureAvailable(
     int player_id) const {
   EXPECT_GE(player_id, 0);
@@ -182,6 +189,13 @@ void MockMediaSessionPlayerObserver::SetPosition(
     media_session::MediaPosition& position) {
   EXPECT_GT(players_.size(), player_id);
   players_[player_id].position_ = position;
+}
+
+void MockMediaSessionPlayerObserver::SetMetadata(
+    size_t player_id,
+    const media_session::MediaMetadata& metadata) {
+  EXPECT_GT(players_.size(), player_id);
+  players_[player_id].metadata_ = metadata;
 }
 
 void MockMediaSessionPlayerObserver::SetHasSufficientlyVisibleVideo(

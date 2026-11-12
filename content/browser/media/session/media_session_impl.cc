@@ -39,6 +39,7 @@
 #include "media/base/picture_in_picture_events_info.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
+#include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -516,6 +517,7 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
       RebuildAndNotifyMediaSessionInfoChanged();
       RebuildAndNotifyActionsChanged();
       RebuildAndNotifyMediaPositionChanged();
+      RebuildAndNotifyMetadataChanged();
       return true;
     }
   }
@@ -559,6 +561,7 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyActionsChanged();
   RebuildAndNotifyMediaPositionChanged();
+  RebuildAndNotifyMetadataChanged();
 
   return true;
 }
@@ -580,6 +583,7 @@ void MediaSessionImpl::RemovePlayer(MediaSessionPlayerObserver* observer,
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyActionsChanged();
   RebuildAndNotifyMediaPositionChanged();
+  RebuildAndNotifyMetadataChanged();
 }
 
 void MediaSessionImpl::RemovePlayers(MediaSessionPlayerObserver* observer) {
@@ -604,6 +608,7 @@ void MediaSessionImpl::RemovePlayers(MediaSessionPlayerObserver* observer) {
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyActionsChanged();
   RebuildAndNotifyMediaPositionChanged();
+  RebuildAndNotifyMetadataChanged();
 }
 
 void MediaSessionImpl::OnPlayerPaused(MediaSessionPlayerObserver* observer,
@@ -802,6 +807,7 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
 
   AbandonSystemAudioFocusIfNeeded();
   RebuildAndNotifyMediaPositionChanged();
+  RebuildAndNotifyMetadataChanged();
 }
 
 void MediaSessionImpl::Seek(base::TimeDelta seek_time) {
@@ -1636,6 +1642,7 @@ bool MediaSessionImpl::AddOneShotPlayer(MediaSessionPlayerObserver* observer,
   UpdateRoutedService();
   RebuildAndNotifyMediaSessionInfoChanged();
   RebuildAndNotifyMediaPositionChanged();
+  RebuildAndNotifyMetadataChanged();
 
   return true;
 }
@@ -2077,6 +2084,43 @@ void MediaSessionImpl::BuildPlaceholderMetadata(
 }
 #endif
 
+void MediaSessionImpl::MaybeApplyPlayerMetadata(
+    media_session::MediaMetadata& metadata) {
+  // If a single player provides metadata, use it as fallback before page title.
+  if (normal_players_.size() != 1 || !one_shot_players_.empty()) {
+    return;
+  }
+
+  auto& first = normal_players_.begin()->first;
+  auto player_metadata = first.observer->GetMetadata(first.player_id);
+  if (!player_metadata) {
+    return;
+  }
+
+  if (metadata.title.empty() && !player_metadata->title.empty()) {
+    std::u16string sanitized_title = SanitizeMediaTitle(player_metadata->title);
+    if (!sanitized_title.empty()) {
+      metadata.title = std::move(sanitized_title);
+    }
+  }
+  if (metadata.source_title.empty() && !player_metadata->source_title.empty()) {
+    std::u16string sanitized_source_title =
+        SanitizeMediaTitle(player_metadata->source_title);
+    if (!sanitized_source_title.empty()) {
+      metadata.source_title = std::move(sanitized_source_title);
+    }
+  }
+  if (metadata.artist.empty() && !player_metadata->artist.empty()) {
+    metadata.artist = player_metadata->artist;
+  }
+  if (metadata.album.empty() && !player_metadata->album.empty()) {
+    metadata.album = player_metadata->album;
+  }
+  if (metadata.chapters.empty() && !player_metadata->chapters.empty()) {
+    metadata.chapters = player_metadata->chapters;
+  }
+}
+
 void MediaSessionImpl::BuildMetadata(
     media_session::MediaMetadata& metadata,
     std::vector<media_session::MediaImage>& artwork) {
@@ -2097,10 +2141,18 @@ void MediaSessionImpl::BuildMetadata(
     metadata.album = routed_service_->metadata()->album;
     metadata.chapters = routed_service_->metadata()->chapterInfo;
     artwork = routed_service_->metadata()->artwork;
+  } else {
+    MaybeApplyPlayerMetadata(metadata);
   }
 
   if (metadata.title.empty()) {
     metadata.title = SanitizeMediaTitle(web_contents()->GetTitle());
+  }
+
+  // If `source_title` was already provided (e.g. by a player observer), we do
+  // not need to derive it from the delegate or page origin URL.
+  if (!metadata.source_title.empty()) {
+    return;
   }
 
   ContentClient* content_client = GetContentClient();
