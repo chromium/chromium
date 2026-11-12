@@ -68,3 +68,15 @@ void OmniboxEverywherePageHandler::OnScreenshotCaptureCancelled() {
     page_->OnScreenshotCaptureCancelled();
   }
 }
+
+void OmniboxEverywherePageHandler::FocusInput() {
+  if (page_) {
+    page_->FocusInput();
+  }
+}
+
+void OmniboxEverywherePageHandler::OnDemoted() {
+  if (page_) {
+    page_->OnDemoted();
+  }
+}

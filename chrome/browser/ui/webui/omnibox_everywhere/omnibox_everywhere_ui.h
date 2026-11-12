@@ -254,6 +254,8 @@ class OmniboxEverywhereUI
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
   void ClearContextualSessionHandle();
+  void FocusInput();
+  void OnDemoted();
 
  private:
   void OnComposeboxHandlerDisconnected();

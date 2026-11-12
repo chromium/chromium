@@ -82,4 +82,13 @@ interface Page {
   // Notifies the WebUI that a pending screenshot capture (e.g. region or
   // window selection) was cancelled by the user or failed.
   OnScreenshotCaptureCancelled();
+
+  // Notifies the WebUI to focus the active text input whenever the browser
+  // programmatically activates the widget (e.g. hotkey, tray, shortcut, or
+  // restoring focus after a picker closes).
+  FocusInput();
+
+  // Notifies the WebUI that the widget was demoted (sent to the background in
+  // persistent mode) or minimized.
+  OnDemoted();
 };

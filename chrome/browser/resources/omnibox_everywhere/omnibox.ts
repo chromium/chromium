@@ -450,8 +450,14 @@ export class OmniboxEverywhereOmniboxElement extends
   // Event handlers
   //========================================================================
 
-  protected onInputFocusin_() {
+  protected onInputFocusin_(e: FocusEvent) {
     this.pageHandler_.onFocusChanged(true);
+    // Report text input focus (not the slotted compose button) to the app.
+    // A `focusin` moving between two controls inside this shadow tree is not
+    // dispatched past it, so the app cannot observe it directly.
+    if (e.composedPath().includes(this.$.input.inputElement)) {
+      this.fire('text-input-focused');
+    }
   }
 
   override stepCyclesSelection(

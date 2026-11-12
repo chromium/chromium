@@ -1163,6 +1163,18 @@ void OmniboxEverywhereUI::CancelTransientUi() {
   omnibox_everywhere::OmniboxEverywhereHotkeyBubbleView::CloseIfOpen();
 }
 
+void OmniboxEverywhereUI::FocusInput() {
+  if (page_handler_) {
+    page_handler_->FocusInput();
+  }
+}
+
+void OmniboxEverywhereUI::OnDemoted() {
+  if (page_handler_) {
+    page_handler_->OnDemoted();
+  }
+}
+
 void OmniboxEverywhereUI::OnFileChooserOpened() {
   if (auto* service =
           OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
