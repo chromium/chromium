@@ -58,8 +58,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
     ` : ''}
   </div>
   <div class="card">
-    <div class="cr-row continuation">
-      <h2 class="flex">$i18n{addresses}</h2>
+    <div class="cr-row continuation section-header-row">
+      <h2 class="flex section-header">$i18n{addresses}</h2>
       <cr-button id="addAddress" class="header-aligned-button"
           @click="${this.onAddAddressClick_}"
           aria-label="$i18n{addAddressTitle}"
@@ -151,8 +151,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
     ` : ''}
   </div>
   <div class="card">
-    <div class="cr-row continuation">
-      <h2 class="flex">$i18n{emailVerificationSectionTitle}</h2>
+    <div class="cr-row continuation section-header-row">
+      <h2 class="flex section-header">$i18n{emailVerificationSectionTitle}</h2>
     </div>
     ${this.isEmailVerificationProtocolEnabled_ ? html`
       <settings-toggle-button id="autofillEmailVerificationToggle"
@@ -209,7 +209,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
           </div>
         </div>
       </cr-collapse>
-      <div id="emailList" class="vertical-list">
+      <div id="emailList" class="vertical-list"
+          ?hidden="${this.emailVerificationAddresses_.length === 0}">
         ${this.emailVerificationAddresses_.map((item, index) => html`
           <div class="list-item">
             <site-favicon url="${this.getIssuerSite_(item)}"></site-favicon>

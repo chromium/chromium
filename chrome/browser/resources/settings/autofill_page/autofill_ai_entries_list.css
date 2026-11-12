@@ -47,3 +47,20 @@
   vertical-align: middle;
   width: var(--cr-icon-size);
 }
+
+:host-context([settings-refresh-2026]) {
+  #entries {
+    border-radius: var(--cr-card-border-radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+    row-gap: 1px;
+  }
+
+  .list-item {
+    background-color: var(--color-settings-section-background);
+    border-radius: 4px;
+    padding: 8px var(--cr-section-padding);
+  }
+}

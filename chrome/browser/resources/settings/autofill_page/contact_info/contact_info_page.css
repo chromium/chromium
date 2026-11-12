@@ -81,3 +81,39 @@ site-favicon {
 #otpFillingLoadingSubLabel a {
   color: var(--cr-link-color);
 }
+
+:host-context([settings-refresh-2026]) {
+  .list-frame {
+    padding: 0;
+  }
+
+  .vertical-list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1px;
+  }
+
+  #addressList .list-item,
+  #emailList .list-item,
+  #noAddressesLabel,
+  #noEmailsLabel {
+    background-color: var(--color-settings-section-background);
+    border-radius: 4px;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #addressList .list-item:first-child,
+  #noAddressesLabel,
+  #autofillEmailVerificationToggle {
+    border-top-left-radius: var(--cr-card-border-radius);
+    border-top-right-radius: var(--cr-card-border-radius);
+  }
+
+  #emailList {
+    padding-inline-end: 0;
+  }
+
+  #emailList site-favicon {
+    margin-inline-start: 0;
+  }
+}

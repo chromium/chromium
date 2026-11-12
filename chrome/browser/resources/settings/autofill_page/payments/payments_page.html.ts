@@ -107,8 +107,8 @@ export function getHtml(this: SettingsPaymentsPageElement) {
   </div>
   <div class="card">
 
-    <div class="cr-row continuation">
-      <h2 class="flex">$i18n{creditCards}</h2>
+    <div class="cr-row continuation section-header-row">
+      <h2 class="flex section-header">$i18n{creditCards}</h2>
       ${!this.shouldShowIbanSettings_() ? html`
         <cr-button id="addCreditCard" class="header-aligned-button"
             @click="${this.onAddCreditCardClick_}"

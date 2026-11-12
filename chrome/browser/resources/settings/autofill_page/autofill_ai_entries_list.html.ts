@@ -8,8 +8,8 @@ import type {SettingsAutofillAiEntriesListElement} from './autofill_ai_entries_l
 
 export function getHtml(this: SettingsAutofillAiEntriesListElement) {
   return html`<!--_html_template_start_-->
-<div id="entriesHeader" class="cr-row">
-  <h2 class="flex">
+<div id="entriesHeader" class="cr-row section-header-row">
+  <h2 class="flex section-header">
     ${this.listTitle}
   </h2>
   <!-- Disabled: If the user is not eligible for Autofill with Ai or if the

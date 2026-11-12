@@ -24,3 +24,22 @@
   border-top: var(--cr-separator-line);
   width: 100%;
 }
+
+:host-context([settings-refresh-2026]) {
+  .vertical-list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1px;
+  }
+
+  .vertical-list:has(.payment-method) ~ .vertical-list:has(.payment-method) {
+    margin-top: 1px;
+  }
+
+  .payment-method,
+  #noPaymentMethodsLabel {
+    background-color: var(--color-settings-section-background);
+    border-radius: 4px;
+    padding: 0 var(--cr-section-padding);
+  }
+}

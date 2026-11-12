@@ -29,8 +29,16 @@
   padding-inline-start: 20px;
 }
 
+:host-context([settings-refresh-2026]) {
+  #paymentsList {
+    border-radius: var(--cr-card-border-radius);
+    overflow: hidden;
+    padding: 0;
+  }
+}
+
 .settings-card > * + * {
-  border-top: 1px solid var(--cr-separator-color);
+  border-top: var(--cr-separator-line);
 }
 
 /* TODO(crbug.com/579395055): Move "overflow: hidden" into
