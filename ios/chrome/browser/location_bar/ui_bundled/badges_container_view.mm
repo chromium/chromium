@@ -317,11 +317,14 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
     _placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
     SetViewHiddenIfNecessary(_placeholderView, YES);
     [_placeholderViewWrapper addSubview:_placeholderView];
+    // Avoid conflicting with `_placeholderView`'s minimum width when hidden.
+    NSLayoutConstraint* trailingConstraint = [_placeholderView.trailingAnchor
+        constraintEqualToAnchor:_placeholderViewWrapper.trailingAnchor];
+    trailingConstraint.priority = UILayoutPriorityDefaultHigh;
     [NSLayoutConstraint activateConstraints:@[
       [_placeholderView.leadingAnchor
           constraintEqualToAnchor:_placeholderViewWrapper.leadingAnchor],
-      [_placeholderView.trailingAnchor
-          constraintEqualToAnchor:_placeholderViewWrapper.trailingAnchor],
+      trailingConstraint,
       [_placeholderView.centerYAnchor
           constraintEqualToAnchor:_placeholderViewWrapper.centerYAnchor],
     ]];
