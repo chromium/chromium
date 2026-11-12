@@ -7,16 +7,47 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/readaloud/read_aloud_service.h"
+#include "chrome/browser/reader_mode/reader_mode_service_factory.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace readaloud {
+
+namespace {
+
+// On Android the service is the native Read Aloud implementation, gated on
+// kReadAloudNative. On desktop it is created for Reading Mode's experimental
+// AI Playback UI, which submits feedback through it; playback itself stays
+// Android-only until the utility-side controller is registered on desktop
+// (b/584339399). kReadAloudNative is kept in the desktop condition so shared
+// test fixtures that enable it keep working.
+bool IsReadAloudServiceEnabled() {
+  if (features::IsReadAloudNativeEnabled()) {
+    return true;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return features::IsReadAnythingReadAloudExperimentalPlaybackUiEnabled();
+#endif
+}
+
+}  // namespace
 
 // static
 ReadAloudService* ReadAloudServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<ReadAloudService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+// static
+ReadAloudService* ReadAloudServiceFactory::GetForProfileIfExists(
+    Profile* profile) {
+  return static_cast<ReadAloudService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
 }
 
 // static
@@ -33,14 +64,17 @@ ReadAloudServiceFactory::ReadAloudServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(reader_mode::ReaderModeServiceFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+}
 
 ReadAloudServiceFactory::~ReadAloudServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 ReadAloudServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!features::IsReadAloudNativeEnabled()) {
+  if (!IsReadAloudServiceEnabled()) {
     return nullptr;
   }
 

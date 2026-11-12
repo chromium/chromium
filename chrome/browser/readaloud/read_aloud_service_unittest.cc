@@ -19,6 +19,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -1597,12 +1598,16 @@ class ReadAloudServiceMediaSessionTest : public ReadAloudServiceTest {
       : ReadAloudServiceTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+#if BUILDFLAG(IS_ANDROID)
   void SetUp() override {
     ReadAloudServiceTest::SetUp();
-    // Grants audio focus without calling into the Android AudioManager.
+    // Grants audio focus without calling into the Android AudioManager. The
+    // feature only exists on Android; desktop grants focus through the
+    // in-process media session service without any override.
     audio_focus_feature_list_.InitAndDisableFeature(
         media::kRequestSystemAudioFocus);
   }
+#endif
 
   content::MediaSession* media_session() {
     return content::MediaSession::Get(web_contents());
@@ -1643,8 +1648,10 @@ class ReadAloudServiceMediaSessionTest : public ReadAloudServiceTest {
     fake_controller()->FlushForTesting();
   }
 
+#if BUILDFLAG(IS_ANDROID)
  private:
   base::test::ScopedFeatureList audio_focus_feature_list_;
+#endif
 };
 
 class ReadAloudServiceMediaSessionSuspendTest

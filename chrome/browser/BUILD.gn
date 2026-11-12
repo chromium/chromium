@@ -2499,6 +2499,8 @@ source_set("browser") {
     "//chrome/browser/profiles:renderer_updater",
     "//chrome/browser/push_messaging",
     "//chrome/browser/push_messaging:impl",
+    "//chrome/browser/readaloud",
+    "//chrome/browser/readaloud:impl",
     "//chrome/browser/reader_mode",
     "//chrome/browser/reader_mode:impl",
     "//chrome/browser/reading_list",

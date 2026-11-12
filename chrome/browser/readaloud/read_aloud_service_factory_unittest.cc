@@ -5,6 +5,7 @@
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/readaloud/read_aloud_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,9 +19,16 @@ class ReadAloudServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(ReadAloudServiceFactoryTest, FeatureDisabled) {
+TEST_F(ReadAloudServiceFactoryTest, AllGatingFeaturesDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kReadAloudNative);
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          features::kReadAloudNative,
+#if !BUILDFLAG(IS_ANDROID)
+          features::kReadAnythingReadAloudExperimentalPlaybackUi,
+#endif
+      });
 
   TestingProfile profile;
   EXPECT_EQ(ReadAloudServiceFactory::GetForProfile(&profile), nullptr);
@@ -33,6 +41,30 @@ TEST_F(ReadAloudServiceFactoryTest, FeatureEnabled) {
   TestingProfile profile;
   EXPECT_NE(ReadAloudServiceFactory::GetForProfile(&profile), nullptr);
 }
+
+TEST_F(ReadAloudServiceFactoryTest, GetForProfileIfExistsDoesNotCreate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kReadAloudNative);
+
+  TestingProfile profile;
+  EXPECT_EQ(ReadAloudServiceFactory::GetForProfileIfExists(&profile), nullptr);
+  ReadAloudService* service = ReadAloudServiceFactory::GetForProfile(&profile);
+  ASSERT_NE(service, nullptr);
+  EXPECT_EQ(ReadAloudServiceFactory::GetForProfileIfExists(&profile), service);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ReadAloudServiceFactoryTest, ExperimentalPlaybackUiFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::
+                                kReadAnythingReadAloudExperimentalPlaybackUi},
+      /*disabled_features=*/{features::kReadAloudNative});
+
+  TestingProfile profile;
+  EXPECT_NE(ReadAloudServiceFactory::GetForProfile(&profile), nullptr);
+}
+#endif
 
 TEST_F(ReadAloudServiceFactoryTest, OffTheRecordProfile) {
   base::test::ScopedFeatureList scoped_feature_list;

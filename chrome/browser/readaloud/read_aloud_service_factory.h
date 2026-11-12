@@ -19,10 +19,14 @@ namespace readaloud {
 class ReadAloudService;
 
 // Factory responsible for instantiating ReadAloudService instances per
-// BrowserContext (Profile). Gated behind IsReadAloudNativeEnabled() flag.
+// BrowserContext (Profile). Gated behind kReadAloudNative on Android and
+// behind kReadAnythingReadAloudExperimentalPlaybackUi on desktop, where the
+// service currently only handles AI Playback feedback (b/584339399).
 class ReadAloudServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ReadAloudService* GetForProfile(Profile* profile);
+  // Like GetForProfile() but never creates the service; for teardown paths.
+  static ReadAloudService* GetForProfileIfExists(Profile* profile);
   static ReadAloudServiceFactory* GetInstance();
 
   ReadAloudServiceFactory(const ReadAloudServiceFactory&) = delete;
