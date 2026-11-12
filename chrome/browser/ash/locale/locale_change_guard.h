@@ -52,9 +52,9 @@ class LocaleChangeGuard final : public session_manager::SessionManagerObserver,
   // Called after login.
   void OnLogin();
 
-  // Marks that the UI locale changed during login so Ash is notified to reload
-  // UI strings when the session starts.
-  void MarkLocaleChangedDuringLogin() { locale_changed_during_login_ = true; }
+  void set_locale_changed_during_login(bool changed) {
+    locale_changed_during_login_ = changed;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(LocaleChangeGuardTest,
@@ -94,7 +94,7 @@ class LocaleChangeGuard final : public session_manager::SessionManagerObserver,
   // the `LocaleChangeGuard` will notify `LocaleUpdateController` that the
   // locale has changed, even if the user does not have to be shown locale
   // change notification, or if the user preferred locale has not changed.
-  // Set by ProfileImpl using MarkLocaleChangedDuringLogin().
+  // Set by ProfileImple using set_locale_changed_during_login().
   bool locale_changed_during_login_ = false;
 
   std::string from_locale_;
