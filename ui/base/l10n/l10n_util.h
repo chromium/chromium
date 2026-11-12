@@ -65,12 +65,6 @@ COMPONENT_EXPORT(UI_BASE)
 std::string GetApplicationLocale(std::string_view pref_locale,
                                  bool set_icu_locale = true);
 
-// Returns true if a display name for |locale| is available in the locale
-// |display_locale|.
-COMPONENT_EXPORT(UI_BASE)
-bool IsLocaleNameTranslated(std::string_view locale,
-                            std::string_view display_locale);
-
 // This method returns the display name of the locale code in |display_locale|.
 // For example, for |locale| = "en-US" and |display_locale| = "en",
 // it returns "English (United States)". To get the display name of
@@ -265,19 +259,14 @@ bool IsPossibleAcceptLanguage(std::string_view locale);
 // Returns true if `locale` is in a predefined `kAcceptLanguageList` and
 // a display name for the `locale` is available in the locale `display_locale`.
 COMPONENT_EXPORT(UI_BASE)
-bool IsAcceptLanguageDisplayable(std::string_view display_locale,
-                                 std::string_view locale);
+bool IsAcceptLanguageDisplayable(const base::i18n::LanguageTag& display_locale,
+                                 const base::i18n::LanguageTag& locale);
 
 // Filters the input vector of languages. Returns only those in the
 // `kAcceptLanguageList`.
 COMPONENT_EXPORT(UI_BASE)
 std::vector<base::i18n::LanguageTag> KeepAcceptedLanguages(
     base::span<const base::i18n::LanguageTag> languages);
-
-// Returns the preferred size of the contents view of a window based on
-// designer given constraints which might dependent on the language used.
-COMPONENT_EXPORT(UI_BASE)
-int GetLocalizedContentsWidthInPixels(int pixel_resource_id);
 
 COMPONENT_EXPORT(UI_BASE)
 std::vector<std::string_view> GetAcceptLanguageListForTesting();

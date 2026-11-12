@@ -53,8 +53,7 @@ bool AcceptLanguagesService::CanBeAcceptLanguage(std::string_view language) {
 
   const LanguageTag ui_locale = base::i18n::GetDefaultIcuLocale();
 
-  return l10n_util::IsAcceptLanguageDisplayable(ui_locale.tag_string(),
-                                                parsed_tag->tag_string());
+  return l10n_util::IsAcceptLanguageDisplayable(ui_locale, *parsed_tag);
 }
 
 bool AcceptLanguagesService::IsAcceptLanguage(std::string_view language) const {

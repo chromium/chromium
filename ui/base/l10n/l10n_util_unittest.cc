@@ -782,13 +782,20 @@ TEST_F(L10nUtilTest, IsPossibleAcceptLanguage) {
 }
 
 TEST_F(L10nUtilTest, IsAcceptLanguageDisplayable) {
-  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("en", "es-419"));
-  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("en", "en-GB"));
-  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("es", "fil"));
-  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("de", "zu"));
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable(
+      GetKnownLanguageTag("en"), GetKnownLanguageTag("es-419")));
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable(
+      GetKnownLanguageTag("en"), GetKnownLanguageTag("en-GB")));
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable(
+      GetKnownLanguageTag("es"), GetKnownLanguageTag("fil")));
+  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable(
+      GetKnownLanguageTag("de"), GetKnownLanguageTag("zu")));
 
-  // "iw" now matches "he".
-  EXPECT_TRUE(l10n_util::IsAcceptLanguageDisplayable("es", "iw"));
+  // "iw" is parsed as "he".
+  std::optional<LanguageTag> iw = GetLanguageTagFromString("iw");
+  ASSERT_TRUE(iw);
+  EXPECT_TRUE(
+      l10n_util::IsAcceptLanguageDisplayable(GetKnownLanguageTag("es"), *iw));
 }
 
 TEST_F(L10nUtilTest, KeepAcceptedLanguages) {

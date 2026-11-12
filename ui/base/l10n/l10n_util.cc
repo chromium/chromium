@@ -34,7 +34,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -129,6 +128,22 @@ std::u16string GetDisplayNameForLocaleInternal(
       display_name_unicode);
   return base::i18n::UnicodeStringToString16(display_name_unicode);
 #endif  // BUILDFLAG(IS_IOS)
+}
+
+// Returns true if a display name for `locale` is available in the locale
+// `display_locale`.
+bool IsLocaleNameTranslated(const LanguageTag& locale,
+                            const LanguageTag& display_locale) {
+  std::u16string display_name =
+      GetDisplayNameForLocale(locale, display_locale, /*is_for_ui=*/false);
+  // Because ICU sets the error code to U_USING_DEFAULT_WARNING whether or not
+  // uloc_getDisplayName returns the actual translation or the default
+  // value (locale code), it is necessary to rely on this hack to tell whether
+  // the translation is available or not.  If ICU doesn't have a translated
+  // name for this locale, GetDisplayNameForLocale will just return the
+  // locale code.
+  return !base::IsStringASCII(display_name) ||
+         base::UTF16ToASCII(display_name) != locale.tag_string();
 }
 
 // Use --lang and the app pref on Windows.  On Linux, only look at the LC_*/LANG
@@ -251,20 +266,6 @@ std::string GetApplicationLocale(std::string_view pref_locale,
     }
   }
   return locale;
-}
-
-bool IsLocaleNameTranslated(std::string_view locale,
-                            std::string_view display_locale) {
-  std::u16string display_name =
-      l10n_util::GetDisplayNameForLocale(locale, display_locale, false);
-  // Because ICU sets the error code to U_USING_DEFAULT_WARNING whether or not
-  // uloc_getDisplayName returns the actual translation or the default
-  // value (locale code), it is necessary to rely on this hack to tell whether
-  // the translation is available or not.  If ICU doesn't have a translated
-  // name for this locale, GetDisplayNameForLocale will just return the
-  // locale code.
-  return !base::IsStringASCII(display_name) ||
-      base::UTF16ToASCII(display_name) != locale;
 }
 
 std::u16string GetDisplayNameForLocale(const LanguageTag& locale,
@@ -544,9 +545,14 @@ const std::vector<std::string>& GetUserFacingUILocaleList() {
 
 std::vector<std::string> GetAcceptLanguagesForLocale(
     std::string_view display_locale) {
+  // If `display_locale` is not a valid language tag, no language is filtered
+  // out.
+  std::optional<LanguageTag> display_locale_tag =
+      GetLanguageTagFromString(display_locale);
   std::vector<std::string> result;
   for (const LanguageTag& tag : GetAcceptLanguageTags()) {
-    if (!l10n_util::IsLocaleNameTranslated(tag.tag_string(), display_locale)) {
+    if (display_locale_tag &&
+        !IsLocaleNameTranslated(tag, *display_locale_tag)) {
       // TODO(jungshik) : Put them at the end of the list with language codes
       // enclosed by brackets instead of skipping.
       continue;
@@ -560,8 +566,7 @@ std::vector<LanguageTag> GetAcceptLanguageTagsForLocale(
     const LanguageTag& display_locale) {
   std::vector<LanguageTag> result;
   for (const LanguageTag& tag : GetAcceptLanguageTags()) {
-    if (!l10n_util::IsLocaleNameTranslated(tag.tag_string(),
-                                           display_locale.tag_string())) {
+    if (!IsLocaleNameTranslated(tag, display_locale)) {
       continue;
     }
     result.push_back(tag);
@@ -584,10 +589,10 @@ bool IsPossibleAcceptLanguage(std::string_view locale) {
   return GetAcceptLanguageMatcher().Match(*tag).has_value();
 }
 
-bool IsAcceptLanguageDisplayable(std::string_view display_locale,
-                                 std::string_view locale) {
-  return IsPossibleAcceptLanguage(locale) &&
-         l10n_util::IsLocaleNameTranslated(locale, display_locale);
+bool IsAcceptLanguageDisplayable(const LanguageTag& display_locale,
+                                 const LanguageTag& locale) {
+  return GetAcceptLanguageMatcher().Match(locale).has_value() &&
+         IsLocaleNameTranslated(locale, display_locale);
 }
 
 std::vector<LanguageTag> KeepAcceptedLanguages(
@@ -599,13 +604,6 @@ std::vector<LanguageTag> KeepAcceptedLanguages(
         return GetAcceptLanguageMatcher().Match(language).has_value();
       });
   return filtered_languages;
-}
-
-int GetLocalizedContentsWidthInPixels(int pixel_resource_id) {
-  int width = 0;
-  base::StringToInt(l10n_util::GetStringUTF8(pixel_resource_id), &width);
-  CHECK_GT(width, 0, base::NotFatalUntil::M163);
-  return width;
 }
 
 std::vector<std::string_view> GetAcceptLanguageListForTesting() {
