@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -213,6 +214,72 @@ TEST_F(ClipboardAndroidTest, ReentrantReadInsideGetSourceCallback) {
             EXPECT_EQ(read_text, u"hello");
           }));
   EXPECT_TRUE(second_callback_ran);
+}
+
+TEST_F(ClipboardAndroidTest, GetSourcePreservesOffTheRecord) {
+  auto get_source = [&]() {
+    std::optional<DataTransferEndpoint> result;
+    clipboard_->GetSource(ClipboardBuffer::kCopyPaste,
+                          base::BindLambdaForTesting(
+                              [&](std::optional<DataTransferEndpoint> src) {
+                                result = std::move(src);
+                              }));
+    return result;
+  };
+
+  clipboard_->Clear(ClipboardBuffer::kCopyPaste);
+  EXPECT_FALSE(get_source().has_value());
+
+  {
+    ScopedClipboardWriter writer(
+        ClipboardBuffer::kCopyPaste,
+        std::make_unique<DataTransferEndpoint>(
+            GURL("https://incognito.example.com"),
+            DataTransferEndpointOptions{.off_the_record = true}));
+    writer.WriteText(u"secret");
+  }
+  std::optional<DataTransferEndpoint> otr_source = get_source();
+  ASSERT_TRUE(otr_source.has_value());
+  ASSERT_TRUE(otr_source->IsUrlType());
+  ASSERT_TRUE(otr_source->GetURL());
+  EXPECT_EQ(*otr_source->GetURL(), GURL("https://incognito.example.com"));
+  EXPECT_TRUE(otr_source->off_the_record());
+
+  // Subsequent regular write must reset `off_the_record` to false.
+  {
+    ScopedClipboardWriter writer(
+        ClipboardBuffer::kCopyPaste,
+        std::make_unique<DataTransferEndpoint>(
+            GURL("https://regular.example.com"),
+            DataTransferEndpointOptions{.off_the_record = false}));
+    writer.WriteText(u"public");
+  }
+  std::optional<DataTransferEndpoint> regular_source = get_source();
+  ASSERT_TRUE(regular_source.has_value());
+  ASSERT_TRUE(regular_source->IsUrlType());
+  ASSERT_TRUE(regular_source->GetURL());
+  EXPECT_EQ(*regular_source->GetURL(), GURL("https://regular.example.com"));
+  EXPECT_FALSE(regular_source->off_the_record());
+
+  // Write without a data source must clear the stored source metadata.
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"no source");
+  }
+  EXPECT_FALSE(get_source().has_value());
+
+  // Clear() after an off-the-record write must also clear source metadata.
+  {
+    ScopedClipboardWriter writer(
+        ClipboardBuffer::kCopyPaste,
+        std::make_unique<DataTransferEndpoint>(
+            GURL("https://incognito2.example.com"),
+            DataTransferEndpointOptions{.off_the_record = true}));
+    writer.WriteText(u"secret 2");
+  }
+  EXPECT_TRUE(get_source().has_value());
+  clipboard_->Clear(ClipboardBuffer::kCopyPaste);
+  EXPECT_FALSE(get_source().has_value());
 }
 
 }  // namespace ui
