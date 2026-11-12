@@ -3242,10 +3242,6 @@ crbug.com/431036875 [ Win11-arm64 ] external/wpt/content-security-policy/report-
 crbug.com/431039944 [ Mac14 ] external/wpt/cookies/samesite/window-open-reload.https.html [ Timeout ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/css-cascade/all-prop-revert-layer.html [ Timeout ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/selectors/focus-in-focus-event-001.html [ Timeout ]
-crbug.com/431033199 [ Mac14 ] external/wpt/editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=normal&right-white-space=pre-wrap [ Skip Timeout ]
-crbug.com/431033199 [ Mac14 ] external/wpt/editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre&right-white-space=nowrap [ Skip Timeout ]
-crbug.com/431033199 [ Mac14 ] external/wpt/editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre&right-white-space=nowrap [ Skip Timeout ]
-crbug.com/431033199 [ Mac14 ] external/wpt/editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-line&right-white-space=pre [ Skip Timeout ]
 crbug.com/431033199 [ Mac14 ] external/wpt/editing/run/multitest.html?5001-6000 [ Skip Timeout ]
 crbug.com/431034518 [ Mac14 ] external/wpt/encoding/legacy-mb-tchinese/big5/big5-encode-form-big5-hkscs.html?8001-9000 [ Crash ]
 crbug.com/431036876 [ Mac14 ] external/wpt/encrypted-media/clearkey-mp4-playback-temporary-events.https.html [ Timeout ]
@@ -5330,7 +5326,6 @@ crbug.com/1048761 [ Linux ] external/wpt/websockets/interfaces/WebSocket/send/00
 crbug.com/1048761 [ Win ] external/wpt/websockets/interfaces/WebSocket/send/006.html?wpt_flags=h2 [ Failure ]
 
 # These tests are very flaky and driving up shard retry rates: crbug.com/426959932
-external/wpt/editing/other/join-different-white-space-style-paragraphs.html?* [ Failure Pass ]
 crbug.com/417924844 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/417816138 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynn.html [ Skip Timeout ]
 crbug.com/417870384 virtual/threaded/external/wpt/long-animation-frame/loaf-promise-scheduled-render.html [ Failure Pass ]
