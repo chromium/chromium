@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -590,24 +591,20 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot() {
         [](scoped_refptr<CanvasResourceSharedImage>&& resource,
            const gpu::SyncToken& sync_token, bool lost_resource) {
           CHECK(resource);
+          CHECK(!lost_resource);
 
           resource->WaitSyncToken(sync_token);
-          if (lost_resource) {
-            resource->NotifyResourceLost();
-          }
-
           CanvasResource::DropRefOnOwningThread(std::move(resource));
         },
         resource_);
 
-    const auto& client_shared_image = resource_->GetSharedImage();
-
     cached_snapshot_ =
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-            client_shared_image, resource_->sync_token(),
-            client_shared_image->alpha_type(), resource_->hdr_metadata_,
-            resource_->context_provider_wrapper_, resource_->owning_thread_ref_,
-            resource_->owning_thread_task_runner_, std::move(release_callback));
+            resource_->GetSharedImage(), resource_->sync_token(), alpha_type_,
+            hdr_metadata_, context_provider_wrapper_,
+            base::PlatformThread::CurrentRef(),
+            ThreadScheduler::Current()->CleanupTaskRunner(),
+            std::move(release_callback));
 
     // We'll record its content_id to be used by the FlushForImageListener.
     // This will be needed in EnsureResourceReadyForDraw(), but we are doing it
