@@ -460,6 +460,8 @@ class TabFeatures {
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
+  std::unique_ptr<TabUIHelper> tab_ui_helper_;
+
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
 
@@ -664,8 +666,6 @@ class TabFeatures {
 
   std::unique_ptr<contextual_cueing::ContextualCueingWebContentsObserver>
       contextual_cueing_web_contents_observer_;
-
-  std::unique_ptr<TabUIHelper> tab_ui_helper_;
 
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
 

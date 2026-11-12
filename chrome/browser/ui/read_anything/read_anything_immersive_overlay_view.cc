@@ -17,7 +17,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/scoped_tab_print_target_override.h"
@@ -208,13 +210,17 @@ ReadAnythingContentsWrapper ReadAnythingImmersiveOverlayView::CloseUI() {
 #endif
 
   CHECK(immersive_web_view_);
+  const bool had_focus =
+      GetFocusManager() && Contains(GetFocusManager()->GetFocusedView());
   std::unique_ptr<ReadAnythingImmersiveWebView> web_view =
       RemoveChildViewT(immersive_web_view_);
   immersive_web_view_ = nullptr;
 
-  // Focus on the underlying web view so that the focus is not lost entirely
-  // when the immersive view is closed.
-  if (contents_web_view_) {
+  // Focus on the underlying web view if the immersive view had focus and the
+  // widget is active, so that focus is not lost when the immersive view is
+  // closed without activating an inactive window or stealing focus.
+  if (contents_web_view_ && had_focus && GetWidget() &&
+      GetWidget()->IsActive()) {
     contents_web_view_->RequestFocus();
   }
 

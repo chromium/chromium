@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,8 +20,11 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -113,6 +117,7 @@ class ReadAnythingSidePanelControllerInteractiveTest
  public:
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(true);
     InteractiveBrowserTest::SetUp();
   }
   void SetUpOnMainThread() override {
@@ -121,6 +126,7 @@ class ReadAnythingSidePanelControllerInteractiveTest
   }
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    ReadAnythingController::SetFreezeEmptyStateOnCreationForTesting(false);
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 };
@@ -251,4 +257,61 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelInteractiveTest, ToggleImages) {
                        old_setting;
               },
               "Wait for setting to change.")));
+}
+
+// Regression test for https://crbug.com/584659589.
+// Closing a tab in an inactive browser window while Immersive Reading Mode is
+// open should not crash when tearing down TabFeatures.
+IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelControllerInteractiveTest,
+                       CloseTabWithImmersiveUIOpenInInactiveBrowser) {
+  ui::Accelerator reading_mode_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_SHOW_READING_MODE_KEYBOARD, &reading_mode_accelerator));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      // Use a page with content. On an empty page, Reading Mode switches from
+      // the immersive overlay to the side panel on its own.
+      NavigateWebContents(
+          kActiveTab, embedded_test_server()->GetURL("/long_text_page.html")),
+
+      // Open the immersive overlay and wait for it to show.
+      SendAccelerator(kBrowserViewElementId, reading_mode_accelerator),
+      InAnyContext(WaitForShow(kReadAnythingSettingsButtonElementId)),
+      CheckResult(
+          [this]() {
+            return ReadAnythingController::From(
+                       browser()->GetTabStripModel()->GetActiveTab())
+                ->GetPresentationState();
+          },
+          ReadAnythingController::PresentationState::kInImmersiveOverlay));
+
+  // Wait for ReadAnythingImmersiveOverlayView::OnShowUI() to finish showing and
+  // focusing the immersive overlay before creating and activating the second
+  // browser window; otherwise OnShowUI()'s asynchronous RequestFocus() can
+  // re-activate the first browser window after the second browser is created.
+  views::View* overlay_view =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetContentsContainerViewFor(
+              browser()->GetTabStripModel()->GetActiveWebContents())
+          ->GetViewByID(VIEW_ID_READ_ANYTHING_OVERLAY);
+  ASSERT_TRUE(overlay_view);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return overlay_view->GetVisible(); }));
+
+  // Open and activate a second browser window so that the first browser window
+  // becomes inactive (and on macOS, AppController's TabMenuBridge points to the
+  // second browser's TabStripModel).
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(second_browser));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return second_browser->GetWindow()->IsActive() &&
+           !browser()->GetWindow()->IsActive();
+  }));
+
+  // Close all tabs in the first (now inactive) browser window while Immersive
+  // Reading Mode is still showing.
+  browser()->GetTabStripModel()->CloseAllTabs();
 }

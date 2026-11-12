@@ -167,11 +167,11 @@ ReadAnythingController::ReadAnythingController(
 }
 
 ReadAnythingController::~ReadAnythingController() {
-  observers_.Notify(&Observer::OnDestroyed);
-
   if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
     CloseImmersiveUI(ReadAnythingCloseReason::kControllerDestroyed);
   }
+
+  observers_.Notify(&Observer::OnDestroyed);
 
   // Notify the renderer that we don't need the main webpage treated as
   // visible anymore for IRM. Although we already do this in OnVisibilityChanged
