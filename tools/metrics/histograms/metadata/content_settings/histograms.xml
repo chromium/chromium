@@ -93,18 +93,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSettings.GetCookieSettingInternal.Duration"
-    units="microseconds" expires_after="2025-07-13">
-  <owner>dullweber@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    Measures how long a call to CookieSettingBase::GetCookieSettingInternal
-    takes. Logged each time a call is made. Starting M135 sub-sampled with
-    probability 0.1. Note that histogram samples for clients without
-    high-resolution clocks are dropped.
-  </summary>
-</histogram>
-
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
     expires_after="never">
 <!-- expires-never: tracked as an important permission metric. -->
