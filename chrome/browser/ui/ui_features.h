@@ -19,9 +19,6 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-BASE_DECLARE_FEATURE(kUseActionsForBrowserCommands);
-bool ShouldUseActionsForBrowserCommands();
-
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
 BASE_DECLARE_FEATURE(kBrowserWindowListenerObservation);

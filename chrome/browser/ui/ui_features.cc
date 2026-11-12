@@ -19,9 +19,6 @@
 
 namespace features {
 
-// Enables the migration of browser commands to Action API.
-BASE_FEATURE(kUseActionsForBrowserCommands, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the use of WGC for the Eye Dropper screen capture.
 BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #if BUILDFLAG(IS_WIN)
@@ -219,11 +216,6 @@ bool IsHistoryPageRefreshEnabled() {
   return (base::FeatureList::IsEnabled(kDesktopGlowUp) ||
           base::FeatureList::IsEnabled(kWebuiRefresh2026)) &&
          base::FeatureList::IsEnabled(kHistoryPageRefresh);
-}
-
-bool ShouldUseActionsForBrowserCommands() {
-  return base::FeatureList::IsEnabled(kUseActionsForBrowserCommands) ||
-         base::FeatureList::IsEnabled(kAppMenuGlowUp);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

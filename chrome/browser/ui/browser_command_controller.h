@@ -8,14 +8,11 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/command_updater.h"
-#include "chrome/browser/command_updater_delegate.h"
-#include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_attributes_storage_observer.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -44,11 +41,12 @@ class GlicInstance;
 
 namespace chrome {
 
+class CommandActionUpdater;
+
 // This class needs to expose the internal command_updater_ in some way, hence
 // it implements CommandUpdater as the public API for it (so it's not directly
 // exposed).
 class BrowserCommandController : public CommandUpdater,
-                                 public CommandUpdaterDelegate,
                                  public TabStripModelObserver,
                                  public sessions::TabRestoreServiceObserver,
                                  public ProfileAttributesStorageObserver {
@@ -133,21 +131,11 @@ class BrowserCommandController : public CommandUpdater,
       Profile* profile);
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  friend class BrowserCommandControllerBrowserTestLockedFullscreen;
-#endif
-
   // CommandUpdater:
   bool ExecuteCommandWithDispositionAndContext(
       int id,
       ui::mojom::WindowOpenDisposition disposition,
       std::optional<actions::ActionInvocationContext> context,
-      base::TimeTicks time_stamp) override;
-
-  // CommandUpdaterDelegate:
-  void HandleCommandWithDisposition(
-      int id,
-      ui::mojom::WindowOpenDisposition disposition,
       base::TimeTicks time_stamp) override;
 
   // Overridden from TabStripModelObserver:
@@ -290,26 +278,20 @@ class BrowserCommandController : public CommandUpdater,
   // Updates the QR code generator action enabled state.
   void UpdateQRCodeGeneratorActionEnabledState();
 
-  void UpdateCommandAndActionEnabled(int command_id,
-                                     actions::ActionId action_id,
-                                     bool enabled);
-
   // Returns true if the browser is in locked fullscreen mode. If `allow_ontask`
   // is true, returns false when the browser is locked for `OnTask`.
   //
   // Always returns false on non ChromeOS platforms.
   bool IsInLockedFullscreenMode(bool allow_ontask) const;
 
-  std::unique_ptr<CommandUpdater> CreateCommandUpdater();
-
   BrowserWindow* window();
   Profile* profile();
 
   const raw_ptr<BrowserWindowInterface> browser_;
 
-  // The CommandUpdater that manages the browser window commands
-  // and optionally syncs state to ActionItems.
-  std::unique_ptr<CommandUpdater> command_updater_;
+  // The CommandActionUpdater that manages the browser window commands and
+  // syncs state to ActionItems.
+  std::unique_ptr<CommandActionUpdater> command_updater_;
 
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;

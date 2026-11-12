@@ -88,8 +88,6 @@ source_set("unit_tests") {
   deps = [
     ":actions",
     ":actions_headers",
-    "//base/test:test_support",
-    "//chrome/browser/ui:ui_features",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -106,11 +104,9 @@ if (!is_android) {
     deps = [
       ":actions",
       "//base",
-      "//base/test:test_support",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/test:test_support",

@@ -803,7 +803,7 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
     command_controller->ExtensionStateChanged();
     command_controller->FindBarVisibilityChanged();
     command_controller->ZoomStateChanged();
-    command_controller->UpdateReloadStopState(
+    command_controller->LoadingStateChanged(
         /*is_loading=*/true,
         /*force=*/false);
   }
@@ -842,11 +842,6 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
     }
   }
 
-  CommandUpdater* GetCommandUpdater() {
-    return chrome::BrowserCommandController::From(browser())
-        ->command_updater_.get();
-  }
-
  private:
   void OpenUrlWithDisposition(GURL url,
                               ui::mojom::WindowOpenDisposition disposition) {
@@ -861,7 +856,6 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenNotLockedForOnTask) {
   SetLockedForOnTask(false);
-  CommandUpdater* const command_updater = GetCommandUpdater();
   auto* const command_controller =
       chrome::BrowserCommandController::From(browser());
 
@@ -876,7 +870,7 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
-  for (int id : command_updater->GetAllIds()) {
+  for (int id : command_controller->GetAllIds()) {
     bool is_command_allowlisted = std::ranges::contains(kAllowlistedIds, id);
     EXPECT_EQ(command_controller->IsCommandEnabled(id), is_command_allowlisted)
         << "Command " << id << " failed to meet enabled state expectation";
@@ -892,7 +886,6 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
                        CommandsRemainDisabledWhenNotLockedForOnTask) {
   SetLockedForOnTask(false);
-  CommandUpdater* const command_updater = GetCommandUpdater();
   chrome::BrowserCommandController* const controller =
       chrome::BrowserCommandController::From(browser());
 
@@ -915,7 +908,7 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
   // Commands must be disabled initially upon entering locked fullscreen.
   for (int id : kRestrictedCommands) {
-    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+    EXPECT_FALSE(controller->IsCommandEnabled(id))
         << "Command " << id
         << " should be disabled initially in locked fullscreen";
   }
@@ -932,7 +925,7 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
   // Commands must remain disabled in locked fullscreen mode.
   for (int id : kRestrictedCommands) {
-    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+    EXPECT_FALSE(controller->IsCommandEnabled(id))
         << "Command " << id << " should remain disabled in locked fullscreen";
   }
 }
@@ -943,7 +936,6 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
                        CommandsRemainRestrictedWhenLockedForOnTask) {
   SetLockedForOnTask(true);
-  CommandUpdater* const command_updater = GetCommandUpdater();
   chrome::BrowserCommandController* const controller =
       chrome::BrowserCommandController::From(browser());
 
@@ -958,7 +950,7 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
       IDC_CLOSE_FIND_OR_STOP,
   };
   for (int id : kFindCommands) {
-    EXPECT_TRUE(command_updater->IsCommandEnabled(id))
+    EXPECT_TRUE(controller->IsCommandEnabled(id))
         << "Command " << id
         << " should be enabled initially when locked for OnTask";
   }
@@ -970,7 +962,7 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
       IDC_MUTE_TARGET_SITE, IDC_OPEN_GLIC,
   };
   for (int id : kRestrictedCommands) {
-    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+    EXPECT_FALSE(controller->IsCommandEnabled(id))
         << "Command " << id
         << " should be disabled initially when locked for OnTask";
   }
@@ -988,11 +980,11 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
   // Find commands must remain enabled when locked for OnTask, while restricted
   // commands remain disabled.
   for (int id : kFindCommands) {
-    EXPECT_TRUE(command_updater->IsCommandEnabled(id))
+    EXPECT_TRUE(controller->IsCommandEnabled(id))
         << "Command " << id << " should remain enabled when locked for OnTask";
   }
   for (int id : kRestrictedCommands) {
-    EXPECT_FALSE(command_updater->IsCommandEnabled(id))
+    EXPECT_FALSE(controller->IsCommandEnabled(id))
         << "Command " << id << " should remain disabled when locked for OnTask";
   }
 }
@@ -1000,7 +992,6 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenLockedForOnTask) {
   SetLockedForOnTask(true);
-  CommandUpdater* const command_updater = GetCommandUpdater();
   auto* const command_controller =
       chrome::BrowserCommandController::From(browser());
 
@@ -1030,7 +1021,7 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
-  for (int id : command_updater->GetAllIds()) {
+  for (int id : command_controller->GetAllIds()) {
     bool is_command_allowlisted = std::ranges::contains(kAllowlistedIds, id);
     EXPECT_EQ(command_controller->IsCommandEnabled(id), is_command_allowlisted)
         << "Command " << id << " failed to meet enabled state expectation";
@@ -1043,7 +1034,6 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
 IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenLockedForOnTaskPaused) {
-  CommandUpdater* const command_updater = GetCommandUpdater();
   auto* const command_controller =
       chrome::BrowserCommandController::From(browser());
 
@@ -1067,7 +1057,7 @@ IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestLockedFullscreen,
 
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
-  for (int id : command_updater->GetAllIds()) {
+  for (int id : command_controller->GetAllIds()) {
     bool is_command_allowlisted = std::ranges::contains(kAllowlistedIds, id);
     EXPECT_EQ(command_controller->IsCommandEnabled(id), is_command_allowlisted)
         << "Command " << id << " failed to meet enabled state expectation";

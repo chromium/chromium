@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -37,9 +35,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(int, kTestPropertyKey, -1)
 
 class CommandActionUpdaterBrowserTest : public InProcessBrowserTest {
  public:
-  CommandActionUpdaterBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kUseActionsForBrowserCommands);
-  }
+  CommandActionUpdaterBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -77,7 +73,6 @@ class CommandActionUpdaterBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<actions::ActionItem> action_item_ = nullptr;
   bool action_invoked_ = false;
   actions::ActionInvocationContext last_context_;
@@ -356,48 +351,4 @@ IN_PROC_BROWSER_TEST_F(CommandActionUpdaterBrowserTest,
   EXPECT_TRUE(dialog_controller->IsShowingMediaRouterDialog());
 
   dialog_controller->HideMediaRouterDialog();
-}
-
-class CommandActionUpdaterAppMenuGlowUpBrowserTest
-    : public InProcessBrowserTest {
- public:
-  CommandActionUpdaterAppMenuGlowUpBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kAppMenuGlowUp);
-  }
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-
-    actions::ActionItem* root =
-        BrowserActions::From(browser())->root_action_item();
-    ASSERT_TRUE(root);
-    action_item_ = actions::ActionManager::Get().FindAction(kActionBack, root);
-    ASSERT_TRUE(action_item_);
-  }
-
-  void TearDownOnMainThread() override {
-    action_item_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<actions::ActionItem> action_item_ = nullptr;
-};
-
-IN_PROC_BROWSER_TEST_F(CommandActionUpdaterAppMenuGlowUpBrowserTest,
-                       CommandEnablementSyncsToActionWithAppMenuGlowUp) {
-  // When kAppMenuGlowUp is enabled, CommandActionUpdater is instantiated and
-  // command updates sync to the corresponding action item.
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
-  EXPECT_TRUE(action_item_->GetEnabled());
-
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, false);
-  EXPECT_FALSE(action_item_->GetEnabled());
-
-  chrome::BrowserCommandController::From(browser())->UpdateCommandEnabled(
-      IDC_BACK, true);
-  EXPECT_TRUE(action_item_->GetEnabled());
 }
