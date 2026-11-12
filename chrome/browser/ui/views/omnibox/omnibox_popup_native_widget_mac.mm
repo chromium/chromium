@@ -52,6 +52,14 @@ class OmniboxPopupNativeWidgetMac : public views::NativeWidgetMac {
 
 @implementation OmniboxPopupNSWindow
 
+// AppKit keeps a window's top edge below the menu bar, except for a child
+// window. The popup is shown before it's attached when its parent is off the
+// active Space, e.g. in a new fullscreen window. It's always placed over its
+// parent's location bar, so a constrained frame would leave it misaligned.
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen {
+  return frameRect;
+}
+
 // The popup stays open with an unfocused draft, which shouldn't keep the
 // toolbar revealed in immersive fullscreen. While it isn't key, it moves
 // offscreen along with its parent, the overlay window, when the toolbar hides.
