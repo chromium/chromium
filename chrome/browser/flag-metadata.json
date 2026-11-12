@@ -9349,17 +9349,17 @@
   {
     "name": "submenu-type-override",
     "owners": [ "massan@google.com", "lokeric@google.com" ],
-    "expiry_milestone": 160
+    "expiry_milestone": 175
   },
   {
     "name": "submenus-in-app-menu",
     "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
-    "expiry_milestone": 159
+    "expiry_milestone": 175
   },
   {
     "name": "submenus-in-app-menu-lff",
     "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
-    "expiry_milestone": 159
+    "expiry_milestone": 175
   },
   {
     "name": "summarizer-api",
