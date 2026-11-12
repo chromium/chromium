@@ -5897,7 +5897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NumberOfContextsToOpen" enum="ContextsToOpen"
-    expires_after="2026-12-20">
+    expires_after="2027-05-09">
   <owner>fedegermi@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
