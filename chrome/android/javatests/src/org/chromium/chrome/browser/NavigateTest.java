@@ -797,7 +797,6 @@ public class NavigateTest {
 
     @Test
     @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/40439157")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(crbug.com/574520523): Re-enable.
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"ip-address-space-overrides=[::1]:0=public"})
@@ -856,19 +855,21 @@ public class NavigateTest {
             // Wait for the proper URL to be served.
             Assert.assertTrue(urlServedSemaphore.tryAcquire(5, TimeUnit.SECONDS));
 
-            // Wait for the url to change.
+            // Wait for the url and body text to update once navigation commits and the new
+            // document body is parsed.
             final Tab tab =
                     ThreadUtils.runOnUiThreadBlocking(() -> TabModelUtils.getCurrentTab(model));
             waitForPageScaleFactor(0.75f);
             CriteriaHelper.pollInstrumentationThread(
                     () -> {
                         Criteria.checkThat(getTabUrlOnUiThread(tab), Matchers.is(mockedUrl));
+                        Criteria.checkThat(
+                                "Still showing spoofed data",
+                                getTabBodyText(tab),
+                                Matchers.is("\"Real\""));
                     },
                     5000,
                     50);
-
-            // Make sure that we're showing new content now.
-            Assert.assertEquals("Still showing spoofed data", "\"Real\"", getTabBodyText(tab));
         } finally {
             webServer.shutdown();
         }
