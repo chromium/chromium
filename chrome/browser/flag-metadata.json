@@ -8426,16 +8426,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "prompt-api",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "prompt-api-multimodal-input",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "prompt-api-sampling-mode",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 170
@@ -9224,11 +9214,6 @@
     "name": "submenus-in-app-menu-lff",
     "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
     "expiry_milestone": 175
-  },
-  {
-    "name": "summarizer-api",
-    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 159
   },
   {
     "name": "summarizer-api-performance-preference",

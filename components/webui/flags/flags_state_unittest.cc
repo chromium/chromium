@@ -55,8 +55,8 @@ const char kFlags13[] = "flag13";
 const char kFlags14[] = "flag14";
 
 // Matches an entry of kRenamedFlags to test rename migration.
-const char kOldFlagName[] = "prompt-api-for-gemini-nano";
-const char kNewFlagName[] = "prompt-api";
+const char kOldFlagName[] = "writer-api-for-gemini-nano";
+const char kNewFlagName[] = "writer-api";
 
 const char kSwitch1[] = "switch";
 const char kSwitch2[] = "switch2";

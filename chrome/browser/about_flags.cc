@@ -10346,19 +10346,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kConchSystemAudioFromMic)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    {"prompt-api", flag_descriptions::kPromptAPIName,
-     flag_descriptions::kPromptAPIDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAIPromptAPI,
-                                    kAILangsVariation,
-                                    "kAIPromptAPI"),
-     flag_descriptions::kAIAPIsLinks},
-
-    {"prompt-api-multimodal-input",
-     flag_descriptions::kPromptAPIMultimodalInputName,
-     flag_descriptions::kPromptAPIMultimodalInputDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIMultimodalInput),
-     flag_descriptions::kAIAPIsLinks},
-
     {"prompt-api-tool-use", flag_descriptions::kPromptAPIToolUseName,
      flag_descriptions::kPromptAPIToolUseDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kPromptAPIToolUseChoices),
@@ -10405,13 +10392,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSummarizerAPIWithPerformancePreferenceDescription,
      kOsDesktop, MULTI_VALUE_TYPE(kAISummarizationPerformancePreferenceChoices),
      flag_descriptions::kSummarizerAPIWithPerformancePreferenceLinks},
-
-    {"summarizer-api", flag_descriptions::kSummarizerAPIName,
-     flag_descriptions::kSummarizerAPIDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kAISummarizationAPI,
-                                    kAILangsVariation,
-                                    "kAISummarizationAPI"),
-     flag_descriptions::kAIAPIsLinks},
 
     {"on-device-category-classifier",
      flag_descriptions::kOnDeviceCategoryClassifierName,

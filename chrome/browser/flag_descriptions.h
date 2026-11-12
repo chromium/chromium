@@ -5232,14 +5232,6 @@ inline constexpr char kRunVideoCaptureServiceInBrowserProcessName[] =
 inline constexpr char kRunVideoCaptureServiceInBrowserProcessDescription[] =
     "Run the video capture service in the browser process.";
 
-inline constexpr char kPromptAPIName[] = "Prompt API";
-inline constexpr char kPromptAPIDescription[] =
-    "Enables the Prompt API, allowing you to send natural language "
-    "instructions to a built-in large language model. This API is primarily "
-    "intended for natural language processing tasks such as summarizing, "
-    "classifying, or rephrasing text. It is NOT suitable for use cases that "
-    "require factual accuracy (e.g. answering knowledge questions)."
-    "Please refer to the built-in AI documentation [1] for details.";
 inline constexpr const char* kAIAPIsLinks[1] = {
     "https://developer.chrome.com/docs/ai/built-in"};
 
@@ -5269,18 +5261,6 @@ inline constexpr char kOnDeviceModelSpeculativeDecodingDescription[] =
     "default. Prompt API sessions use MTP when greedy sampling options are "
     "specified (such as samplingMode: \"most-predictable\"); default and "
     "non-greedy sessions run with standard decoding.";
-
-inline constexpr char kPromptAPIMultimodalInputName[] =
-    "Prompt API Multimodal Input";
-inline constexpr char kPromptAPIMultimodalInputDescription[] =
-    "Extends the Prompt API with image and audio input types. Allows you to "
-    "supplement natural language instructions for a built-in large language "
-    "model with image and audio inputs. This API enhancement is primarily "
-    "intended for natural language processing tasks associated with visual and "
-    "auditory data, such as generating rough descriptions of pictures and "
-    "sounds. It is NOT suitable for use cases that require factual accuracy "
-    "(e.g. answering knowledge questions). "
-    "Please refer to the built-in AI documentation [1] for details.";
 
 inline constexpr char kPromptAPIToolUseName[] = "Prompt API Tool Use";
 inline constexpr char kPromptAPIToolUseDescription[] =
@@ -5331,12 +5311,6 @@ inline constexpr char kSummarizerAPIWithPerformancePreferenceDescription[] =
 inline constexpr const char* kSummarizerAPIWithPerformancePreferenceLinks[2] = {
     "https://chromestatus.com/feature/6309243756085248",
     "https://issues.chromium.org/issues/new?component=1617227"};
-
-inline constexpr char kSummarizerAPIName[] = "Summarizer API";
-inline constexpr char kSummarizerAPIDescription[] =
-    "Enables the Summarizer API, allowing you to summarize a piece of text "
-    "with a built-in large language model. "
-    "Please refer to the built-in AI documentation [1] for details.";
 
 inline constexpr char kOnDeviceWebSpeechSmallExpertModelName[] =
     "Web Speech API On-Device Small Expert Model";
