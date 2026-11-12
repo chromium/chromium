@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ContextualTasksInternalsAppElement} from './app.js';
 
 export function getHtml(this: ContextualTasksInternalsAppElement) {
-  // clang-format off
   return html`
 <h1>Contextual Tasks Internals</h1>
 <cr-tab-box>
@@ -24,14 +23,19 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
             <option value="kEmbeddingsMatch">Embeddings Match</option>
             <option value="kMultiSignalScoring">Multi Signal Scoring</option>
             <option value="kStaticSignalsOnly">Static Signals Scoring</option>
-            <option value="kStaticSignalsMlModel">Static Signals ML Model</option>
+            <option value="kStaticSignalsMlModel">
+              Static Signals ML Model
+            </option>
           </select>
         </div>
         <div class="container">
-          <span class="slider-percentage">Min model score: ${this.minModelScore_}</span>
+          <span class="slider-percentage">
+            Min model score: ${this.minModelScore_}
+          </span>
           <cr-slider id="minModelScoreSlider" aria-label="Min model score"
               min="0" max="1.0" .value="${this.minModelScore_}"
-              @cr-slider-value-changed="${this.onMinModelScoreCrSliderValueChanged_}">
+              @cr-slider-value-changed="${
+                  this.onMinModelScoreCrSliderValueChanged_}">
           </cr-slider>
         </div>
       </div>
@@ -52,11 +56,11 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
     <div class="card">
       <h2>Relevant Tabs</h2>
       <ul>
-      ${this.relevantTabs_.map(item => html`
-        <li>
-          <a href="${item.url}" target="_blank">${item.title}</a>
-        </li>
-      `)}
+        ${this.relevantTabs_.map(item => html`
+          <li>
+            <a href="${item.url}" target="_blank">${item.title}</a>
+          </li>
+        `)}
       </ul>
     </div>
 
@@ -78,7 +82,8 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
                 <a href="${item.sourceLinkURL}">${item.sourceLinkText}</a>
               </td>
               <td class="message">${item.message}</td>
-            </tr>`)}
+            </tr>
+          `)}
         </tbody>
       </table>
     </div>
@@ -92,54 +97,95 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
         <span>Forced Embedded Page Host: </span>
         <cr-input id="forcedHostInput" label=""
             placeholder="e.g. https://example.c.googlers.com"
-          .value="${this.forcedHost_}"
+            .value="${this.forcedHost_}"
             @value-changed="${this.onForcedHostValueChanged_}">
         </cr-input>
-        <cr-button class="action-button" style="margin-top: 0;" @click="${this.onSetForcedHostClick_}">
+        <cr-button class="action-button" style="margin-top: 0;"
+            @click="${this.onSetForcedHostClick_}">
           Set Host
         </cr-button>
-        <cr-button class="action-button" style="margin-top: 0;" @click="${this.onResetForcedHostClick_}">
+        <cr-button class="action-button" style="margin-top: 0;"
+            @click="${this.onResetForcedHostClick_}">
           Reset
         </cr-button>
       </div>
       <div class="debug-row" style="margin-top: 8px;">
         <span>
-        Currently set host: </span>
-        <span class="current-host-display">${this.currentHost_ || 'None'}
-      </span>
+          Currently set host: </span>
+        <span class="current-host-display">
+          ${this.currentHost_ || 'None'}
+        </span>
       </div>
     </div>
   </div>
   <div slot="tab">Eligibility</div>
   <div slot="panel">
     <div class="card eligibility-section">
-      <div class="eligibility-status ${this.eligibilityState_?.isEligible ? 'eligible' : 'ineligible'}">
-         ${this.eligibilityState_?.isEligible ? 'Eligible' : 'Not Eligible'}
+      <div
+          class="eligibility-status ${
+              this.eligibilityState_?.isEligible ? 'eligible' : 'ineligible'}">
+        ${this.eligibilityState_?.isEligible ? 'Eligible' : 'Not Eligible'}
       </div>
       ${!this.eligibilityState_?.isEligible ? html`
         <div class="eligibility-reasons">
           <h3>Reasons for Ineligibility:</h3>
           <ul>
-            ${!this.eligibilityState_?.isContextualTasksEnabled ? html`<li>Feature flag (kContextualTasks) is not enabled. <strong>Tip:</strong> Enable it in chrome://flags.</li>` : ''}
-            ${!this.eligibilityState_?.isSignedIn ? html`<li>User is not signed in with valid credentials. <strong>Tip:</strong> Sign in to the browser.</li>` : ''}
-            ${!this.eligibilityState_?.primaryAccountInCookieJar ? html`<li>Primary account is not in the cookie jar. <strong>Tip:</strong> Are you signed in to google.com? Are you using multiple accounts?</li>` : ''}
-            ${!this.eligibilityState_?.isDefaultSearchEngineGoogle ? html`<li>Google is not the default search engine. <strong>Tip:</strong> Set Google as your default search engine in settings.</li>` : html`
-              ${!this.eligibilityState_?.isAimEligible ? html`<li>User is not eligible for AI mode. <strong>Tip:</strong> Are you in a region when AIM is not allowed?</li>` : ''}
+            ${!this.eligibilityState_?.isContextualTasksEnabled ? html`
+              <li>
+                Feature flag (kContextualTasks) is not enabled.
+                <strong>Tip:</strong> Enable it in chrome://flags.
+              </li>
+            ` : ''}
+            ${!this.eligibilityState_?.isSignedIn ? html`
+              <li>
+                User is not signed in with valid credentials.
+                <strong>Tip:</strong> Sign in to the browser.
+              </li>
+            ` : ''}
+            ${!this.eligibilityState_?.primaryAccountInCookieJar ? html`
+              <li>
+                Primary account is not in the cookie jar.
+                <strong>Tip:</strong> Are you signed in to google.com? Are you using multiple accounts?
+              </li>
+            ` : ''}
+            ${!this.eligibilityState_?.isDefaultSearchEngineGoogle ? html`
+              <li>
+                Google is not the default search engine.
+                <strong>Tip:</strong> Set Google as your default search engine in settings.
+              </li>
+            ` : html`
+              ${!this.eligibilityState_?.isAimEligible ? html`
+                <li>
+                  User is not eligible for AI mode.
+                  <strong>Tip:</strong> Are you in a region when AIM is not allowed?
+                </li>
+              ` : ''}
             `}
-            ${!this.eligibilityState_?.isCobrowseEligible ? html`<li>User is not eligible for Co-Browse. <strong>Tip:</strong> The AimEligibilityService is disabling Cobrowsing. Debug at <a href="chrome://omnibox-internals/aim-eligibility" target="_blank">chrome://omnibox-internals/aim-eligibility</a></li>` : ''}
-            ${!this.eligibilityState_?.isAimAllowedByPolicy ? html`<li>AIM is not allowed by enterprise policy.</li>` : ''}
-            ${!this.eligibilityState_?.isContextSharingEnabled ? html`<li>Page context sharing enterprise policy is disabled.</li>` : ''}
+            ${!this.eligibilityState_?.isCobrowseEligible ? html`
+              <li>
+                User is not eligible for Co-Browse.
+                <strong>Tip:</strong> The AimEligibilityService is disabling Cobrowsing. Debug at
+                <a href="chrome://omnibox-internals/aim-eligibility"
+                    target="_blank">
+                  chrome://omnibox-internals/aim-eligibility
+                </a>
+              </li>
+            ` : ''}
+            ${!this.eligibilityState_?.isAimAllowedByPolicy ? html`
+              <li>AIM is not allowed by enterprise policy.</li>
+            ` : ''}
+            ${!this.eligibilityState_?.isContextSharingEnabled ? html`
+              <li>Page context sharing enterprise policy is disabled.</li>
+            ` : ''}
           </ul>
         </div>
       ` : ''}
     </div>
   </div>
-  <div slot="tab">Session &amp; User Data</div>
+  <div slot="tab">Session & User Data</div>
   <div slot="panel">
     <contextual-tasks-session-state-tab id="sessionStateTab">
     </contextual-tasks-session-state-tab>
   </div>
-</cr-tab-box>
-`;
-  // clang-format on
+</cr-tab-box>`;
 }

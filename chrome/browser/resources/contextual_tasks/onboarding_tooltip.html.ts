@@ -8,26 +8,23 @@ import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip
 
 export function getHtml(this: ContextualTasksOnboardingTooltipElement) {
   return html`<!--_html_template_start_-->
-    <cr-tooltip id="tooltip" role="dialog"
-      position="top"
-      offset="0"
-      manual-mode>
-      <div id="tooltipContent">
-        <div class="tooltip-header">
-          <div class="tooltip-title">$i18n{onboardingTitle}</div>
-        </div>
-        <div>$i18n{onboardingBody}
-          <a href="$i18n{onboardingLinkUrl}"
-            @click="${this.onHelpLinkClick_}">
-            $i18n{onboardingLink}
-          </a>
-        </div>
-      </div>
-      <div id="buttons">
-        <cr-button class="action-button" @click="${this.onTooltipCloseClick_}">
-          $i18n{onboardingAcceptButton}
-        </cr-button>
-      </div>
-    </cr-tooltip>
-  <!--_html_template_end_-->`;
+<cr-tooltip id="tooltip" role="dialog" position="top" offset="0" manual-mode>
+  <div id="tooltipContent">
+    <div class="tooltip-header">
+      <div class="tooltip-title">$i18n{onboardingTitle}</div>
+    </div>
+    <div>
+      $i18n{onboardingBody}
+      <a href="$i18n{onboardingLinkUrl}" @click="${this.onHelpLinkClick_}">
+        $i18n{onboardingLink}
+      </a>
+    </div>
+  </div>
+  <div id="buttons">
+    <cr-button class="action-button" @click="${this.onTooltipCloseClick_}">
+      $i18n{onboardingAcceptButton}
+    </cr-button>
+  </div>
+</cr-tooltip>
+<!--_html_template_end_-->`;
 }

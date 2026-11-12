@@ -8,20 +8,18 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ContextualTasksErrorPageElement} from './error_page.js';
 
-// clang-format off
 export function getHtml(this: ContextualTasksErrorPageElement) {
   return html`<!--_html_template_start_-->
-  <div id="errorPage">
-    <div id="errorIcon">
-      <span id="protectedIcon"></span>
-    </div>
-    <div id="errorTopLine">
-      $i18n{protectedErrorPageTopLine}
-    </div>
-    <div id="errorBottomLine">
-      $i18n{protectedErrorPageBottomLine}
-    </div>
+<div id="errorPage">
+  <div id="errorIcon">
+    <span id="protectedIcon"></span>
   </div>
-  <!--_html_template_end_-->`;
+  <div id="errorTopLine">
+    $i18n{protectedErrorPageTopLine}
+  </div>
+  <div id="errorBottomLine">
+    $i18n{protectedErrorPageBottomLine}
+  </div>
+</div>
+<!--_html_template_end_-->`;
 }
-// clang-format on
