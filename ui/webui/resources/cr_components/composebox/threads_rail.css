@@ -27,6 +27,11 @@
   padding: 30px 12px 20px 12px;
 }
 
+:host([suppress-pointer-hover_]) #rail,
+:host([suppress-pointer-hover_]) cr-icon-button {
+  pointer-events: none;
+}
+
 :host-context([dir='rtl']) #rail {
   cursor: w-resize;
 }

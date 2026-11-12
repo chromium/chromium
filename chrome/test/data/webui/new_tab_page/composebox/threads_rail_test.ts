@@ -4,6 +4,7 @@
 
 import type {LhsRailConfig, ThreadsRailElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxWindowProxy, LhsClientAction} from 'chrome://new-tab-page/lazy_load.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -306,4 +307,116 @@ suite('NewTabPageThreadsRailTest', () => {
     rail.click();
     assertEquals(1, hostClickCount);
   });
+
+  test(
+      'resets tooltips across inert toggle and suppresses stale hover',
+      async () => {
+        await createThreadsRail({
+          items: [
+            {
+              iconSvg: '<svg></svg>',
+              name: 'Open sidebar',
+              clientAction: LhsClientAction.EXPAND_RAIL,
+            },
+          ],
+        });
+
+        const rail =
+            threadsRailElement.shadowRoot.querySelector<HTMLElement>('#rail');
+        assertTrue(!!rail);
+        const expandButton =
+            threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+                '#railItem-0');
+        assertTrue(!!expandButton);
+        const initialTooltip =
+            threadsRailElement.shadowRoot.querySelector<CrTooltipElement>(
+                'cr-tooltip[for="railItem-0"]');
+        assertTrue(!!initialTooltip);
+
+        // Initial render does not suppress pointer hover.
+        assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+        assertEquals('auto', getComputedStyle(expandButton).pointerEvents);
+
+        // Hover until fade-in finishes so showing_ is true and
+        // animationPlaying_ is false.
+        expandButton.dispatchEvent(new PointerEvent('pointerenter'));
+        await eventToPromise('animationend', initialTooltip.$.tooltip);
+        assertFalse(initialTooltip.$.tooltip.hidden);
+
+        // Marking the rail inert unmounts all tooltips and reflects [inert].
+        threadsRailElement.inert = true;
+        await microtasksFinished();
+        assertTrue(threadsRailElement.hasAttribute('inert'));
+        assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+        assertEquals(
+            0,
+            threadsRailElement.shadowRoot.querySelectorAll('cr-tooltip')
+                .length);
+
+        // Clearing inert mounts fresh hidden tooltips while reflecting
+        // [suppress-pointer-hover_] so Blink's synthetic post-layout hover
+        // recomputation at a stale pre-OOPIF mouse position cannot re-trigger
+        // :hover or pointerenter.
+        threadsRailElement.inert = false;
+        await microtasksFinished();
+        assertFalse(threadsRailElement.hasAttribute('inert'));
+        assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+        assertEquals('none', getComputedStyle(rail).pointerEvents);
+        assertEquals('none', getComputedStyle(expandButton).pointerEvents);
+        const remountedTooltip =
+            threadsRailElement.shadowRoot.querySelector<CrTooltipElement>(
+                'cr-tooltip[for="railItem-0"]');
+        assertTrue(!!remountedTooltip);
+        assertTrue(remountedTooltip.$.tooltip.hidden);
+        assertFalse(
+            remountedTooltip.$.tooltip.classList.contains('fade-in-animation'));
+        assertFalse(remountedTooltip.$.tooltip.classList.contains(
+            'fade-out-animation'));
+
+        // A real pointermove unsuppresses hover without showing tooltips until
+        // a button is hovered again.
+        window.dispatchEvent(new PointerEvent('pointermove'));
+        await microtasksFinished();
+        assertFalse(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+        assertEquals('auto', getComputedStyle(expandButton).pointerEvents);
+        assertTrue(remountedTooltip.$.tooltip.hidden);
+
+        expandButton.dispatchEvent(new PointerEvent('pointerenter'));
+        await eventToPromise('animationend', remountedTooltip.$.tooltip);
+        assertFalse(remountedTooltip.$.tooltip.hidden);
+      });
+
+  test(
+      'shows tooltip on keyboard focus immediately after leaving inert',
+      async () => {
+        await createThreadsRail({
+          items: [
+            {
+              iconSvg: '<svg></svg>',
+              name: 'Open sidebar',
+              clientAction: LhsClientAction.EXPAND_RAIL,
+            },
+          ],
+        });
+
+        const expandButton =
+            threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+                '#railItem-0')!;
+
+        threadsRailElement.inert = true;
+        await microtasksFinished();
+        threadsRailElement.inert = false;
+        await microtasksFinished();
+        assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+        const focusedTooltip =
+            threadsRailElement.shadowRoot.querySelector<CrTooltipElement>(
+                'cr-tooltip[for="railItem-0"]');
+        assertTrue(!!focusedTooltip);
+        assertTrue(focusedTooltip.$.tooltip.hidden);
+
+        expandButton.focus();
+        await microtasksFinished();
+        assertFalse(focusedTooltip.$.tooltip.hidden);
+        assertTrue(threadsRailElement.hasAttribute('suppress-pointer-hover_'));
+      });
 });

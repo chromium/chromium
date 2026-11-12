@@ -10,6 +10,7 @@ import type {IframeElement, ThreadsRailElement} from 'chrome://new-tab-page/lazy
 import {LhsClientAction} from 'chrome://new-tab-page/lazy_load.js';
 import type {LeftHandSideElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater, NtpLhsMessageType, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -620,6 +621,73 @@ suite('NewTabPageLeftHandSideTest', () => {
         assertFalse(folded.hidden);
         assertTrue(folded.inert);
         assertEquals('320px', getHostWidthProperty());
+      });
+
+  test(
+      'does not replay tooltip on NTP_LHS_CLOSE after expanding via rail item',
+      async () => {
+        loadTimeData.overrideValues({
+          enableThreadsRailHybrid: true,
+          lhsRailConfig: {
+            items: [
+              {
+                iconSvg: '<svg></svg>',
+                name: 'Open sidebar',
+                clientAction: LhsClientAction.EXPAND_RAIL,
+              },
+            ],
+          },
+        });
+        await createLeftHandSide();
+
+        const folded =
+            leftHandSide.shadowRoot.querySelector<ThreadsRailElement>(
+                '#folded')!;
+        folded.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
+        await microtasksFinished();
+
+        const expandButton =
+            folded.shadowRoot.querySelector<HTMLElement>('#railItem-0')!;
+        const initialTooltip =
+            folded.shadowRoot.querySelector<CrTooltipElement>(
+                'cr-tooltip[for="railItem-0"]')!;
+        expandButton.dispatchEvent(new PointerEvent('pointerenter'));
+        await eventToPromise('animationend', initialTooltip.$.tooltip);
+        assertFalse(initialTooltip.$.tooltip.hidden);
+
+        // Clicking expand starts cr-tooltip's fade-out animation and makes
+        // #folded inert in the same turn, unmounting its tooltips.
+        expandButton.click();
+        await microtasksFinished();
+        assertTrue(folded.inert);
+        assertEquals(
+            0, folded.shadowRoot.querySelectorAll('cr-tooltip').length);
+
+        // Closing the expanded LHS restores #folded with fresh hidden tooltips
+        // while suppressing stale post-layout pointer hit-testing until the
+        // next real pointer move.
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
+        await microtasksFinished();
+        assertFalse(folded.inert);
+        assertTrue(folded.hasAttribute('suppress-pointer-hover_'));
+        assertEquals('none', getComputedStyle(expandButton).pointerEvents);
+        const restoredTooltip =
+            folded.shadowRoot.querySelector<CrTooltipElement>(
+                'cr-tooltip[for="railItem-0"]')!;
+        assertTrue(restoredTooltip.$.tooltip.hidden);
+        assertFalse(
+            restoredTooltip.$.tooltip.classList.contains('fade-in-animation'));
+        assertFalse(
+            restoredTooltip.$.tooltip.classList.contains('fade-out-animation'));
+
+        // Once a real pointermove occurs, pointer hit-testing is restored.
+        window.dispatchEvent(new PointerEvent('pointermove'));
+        await microtasksFinished();
+        assertFalse(folded.hasAttribute('suppress-pointer-hover_'));
+        assertEquals('auto', getComputedStyle(expandButton).pointerEvents);
+        assertTrue(restoredTooltip.$.tooltip.hidden);
       });
 
   test(
