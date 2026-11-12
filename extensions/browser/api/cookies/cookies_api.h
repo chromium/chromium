@@ -125,8 +125,9 @@ class CookiesGetFunction : public ExtensionFunction {
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
-  // Notify the extension telemetry service when API is called.
-  void NotifyExtensionTelemetry();
+  // Notify the extension telemetry service when API is called on the cookie
+  // store in `store_browser_context`.
+  void NotifyExtensionTelemetry(content::BrowserContext* store_browser_context);
 
   GURL url_;
   mojo::Remote<network::mojom::CookieManager> store_browser_cookie_manager_;
@@ -154,8 +155,9 @@ class CookiesGetAllFunction : public ExtensionFunction {
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
-  // Notify the extension telemetry service when API is called.
-  void NotifyExtensionTelemetry();
+  // Notify the extension telemetry service when API is called on the cookie
+  // store in `store_browser_context`.
+  void NotifyExtensionTelemetry(content::BrowserContext* store_browser_context);
 
   GURL url_;
   mojo::Remote<network::mojom::CookieManager> store_browser_cookie_manager_;

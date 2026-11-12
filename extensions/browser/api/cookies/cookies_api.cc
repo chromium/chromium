@@ -102,26 +102,39 @@ bool ParseUrl(const Extension* extension,
   return true;
 }
 
+content::BrowserContext* ParseStoreContext(
+    content::BrowserContext* function_context,
+    bool include_incognito,
+    std::string* store_id,
+    std::string* error) {
+  if (store_id->empty()) {
+    *store_id = cookies_helpers::GetStoreIdFromBrowserContext(function_context);
+    return function_context;
+  }
+  content::BrowserContext* store_browser_context =
+      cookies_helpers::ChooseBrowserContextFromStoreId(
+          *store_id, function_context, include_incognito);
+  if (!store_browser_context) {
+    *error = ErrorUtils::FormatErrorMessage(kInvalidStoreIdError, *store_id);
+  }
+  return store_browser_context;
+}
+
+network::mojom::CookieManager* GetCookieManager(
+    content::BrowserContext* store_browser_context) {
+  return store_browser_context->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess();
+}
+
 network::mojom::CookieManager* ParseStoreCookieManager(
     content::BrowserContext* function_context,
     bool include_incognito,
     std::string* store_id,
     std::string* error) {
-  content::BrowserContext* store_context = nullptr;
-  if (!store_id->empty()) {
-    store_context = cookies_helpers::ChooseBrowserContextFromStoreId(
-        *store_id, function_context, include_incognito);
-    if (!store_context) {
-      *error = ErrorUtils::FormatErrorMessage(kInvalidStoreIdError, *store_id);
-      return nullptr;
-    }
-  } else {
-    store_context = function_context;
-    *store_id = cookies_helpers::GetStoreIdFromBrowserContext(store_context);
-  }
-
-  return store_context->GetDefaultStoragePartition()
-      ->GetCookieManagerForBrowserProcess();
+  content::BrowserContext* store_browser_context =
+      ParseStoreContext(function_context, include_incognito, store_id, error);
+  return store_browser_context ? GetCookieManager(store_browser_context)
+                               : nullptr;
 }
 
 }  // namespace
@@ -313,11 +326,13 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
   }
 
   std::string store_id = parsed_args_->details.store_id.value_or(std::string());
-  network::mojom::CookieManager* cookie_manager = ParseStoreCookieManager(
+  content::BrowserContext* store_browser_context = ParseStoreContext(
       browser_context(), include_incognito_information(), &store_id, &error);
-  if (!cookie_manager) {
+  if (!store_browser_context) {
     return RespondNow(Error(std::move(error)));
   }
+  network::mojom::CookieManager* cookie_manager =
+      GetCookieManager(store_browser_context);
 
   if (parsed_args_->details.partition_key.has_value() &&
       !parsed_args_->details.partition_key->has_cross_site_ancestor
@@ -351,7 +366,7 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
       base::BindOnce(&CookiesGetFunction::GetCookieListCallback, this));
 
   // Extension telemetry signal intercept
-  NotifyExtensionTelemetry();
+  NotifyExtensionTelemetry(store_browser_context);
 
   // Will finish asynchronously.
   return RespondLater();
@@ -385,12 +400,14 @@ void CookiesGetFunction::GetCookieListCallback(
   Respond(WithArguments(base::Value()));
 }
 
-void CookiesGetFunction::NotifyExtensionTelemetry() {
+void CookiesGetFunction::NotifyExtensionTelemetry(
+    content::BrowserContext* store_browser_context) {
   // TODO(crbug.com/371423073): Support telemetry on Android.
   ExtensionsBrowserClient::Get()
       ->GetSafeBrowsingDelegate()
       ->NotifyExtensionApiCookiesGet(
-          browser_context(), extension_id(), parsed_args_->details.name,
+          browser_context(), store_browser_context, extension_id(),
+          parsed_args_->details.name,
           parsed_args_->details.store_id.value_or(std::string()),
           parsed_args_->details.url, js_callstack().value_or(StackTrace()));
 }
@@ -411,11 +428,13 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
   }
 
   std::string store_id = parsed_args_->details.store_id.value_or(std::string());
-  network::mojom::CookieManager* cookie_manager = ParseStoreCookieManager(
+  content::BrowserContext* store_browser_context = ParseStoreContext(
       browser_context(), include_incognito_information(), &store_id, &error);
-  if (!cookie_manager) {
+  if (!store_browser_context) {
     return RespondNow(Error(std::move(error)));
   }
+  network::mojom::CookieManager* cookie_manager =
+      GetCookieManager(store_browser_context);
 
   // make sure user input is valid
   base::expected<std::optional<net::CookiePartitionKey>, std::string>
@@ -445,7 +464,7 @@ ExtensionFunction::ResponseAction CookiesGetAllFunction::Run() {
   }
 
   // Extension telemetry signal intercept
-  NotifyExtensionTelemetry();
+  NotifyExtensionTelemetry(store_browser_context);
 
   return RespondLater();
 }
@@ -485,11 +504,12 @@ void CookiesGetAllFunction::GetCookieListCallback(
   }
 }
 
-void CookiesGetAllFunction::NotifyExtensionTelemetry() {
+void CookiesGetAllFunction::NotifyExtensionTelemetry(
+    content::BrowserContext* store_browser_context) {
   ExtensionsBrowserClient::Get()
       ->GetSafeBrowsingDelegate()
       ->NotifyExtensionApiCookiesGetAll(
-          browser_context(), extension_id(),
+          browser_context(), store_browser_context, extension_id(),
           parsed_args_->details.domain.value_or(std::string()),
           parsed_args_->details.name.value_or(std::string()),
           parsed_args_->details.path.value_or(std::string()),

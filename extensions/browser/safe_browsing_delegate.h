@@ -63,26 +63,32 @@ class SafeBrowsingDelegate {
       content::WebContents* web_contents) const {}
 
   // Notifies the extension telemetry service when the cookies.get API is
-  // invoked.
-  virtual void NotifyExtensionApiCookiesGet(content::BrowserContext* context,
-                                            const ExtensionId& extension_id,
-                                            const std::string& name,
-                                            const std::string& store_id,
-                                            const std::string& url,
-                                            StackTrace js_callstack) const {}
+  // invoked. `context` is the context of the calling extension, and
+  // `store_browser_context` the context of the cookie store it accessed.
+  virtual void NotifyExtensionApiCookiesGet(
+      content::BrowserContext* context,
+      content::BrowserContext* store_browser_context,
+      const ExtensionId& extension_id,
+      const std::string& name,
+      const std::string& store_id,
+      const std::string& url,
+      StackTrace js_callstack) const {}
 
   // Notifies the extension telemetry service when the cookies.getAll API is
-  // invoked.
-  virtual void NotifyExtensionApiCookiesGetAll(content::BrowserContext* context,
-                                               const ExtensionId& extension_id,
-                                               const std::string& domain,
-                                               const std::string& name,
-                                               const std::string& path,
-                                               std::optional<bool> secure,
-                                               const std::string& store_id,
-                                               const std::string& url,
-                                               std::optional<bool> is_session,
-                                               StackTrace js_callstack) const {}
+  // invoked. `context` is the context of the calling extension, and
+  // `store_browser_context` the context of the cookie store it accessed.
+  virtual void NotifyExtensionApiCookiesGetAll(
+      content::BrowserContext* context,
+      content::BrowserContext* store_browser_context,
+      const ExtensionId& extension_id,
+      const std::string& domain,
+      const std::string& name,
+      const std::string& path,
+      std::optional<bool> secure,
+      const std::string& store_id,
+      const std::string& url,
+      std::optional<bool> is_session,
+      StackTrace js_callstack) const {}
 };
 
 }  // namespace extensions

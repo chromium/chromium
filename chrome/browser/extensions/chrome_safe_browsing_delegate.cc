@@ -6,13 +6,11 @@
 
 #include <utility>
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal.h"
 #include "chrome/browser/safe_browsing/password_protection/chrome_password_reuse_detection_manager_client.h"
@@ -24,13 +22,16 @@ static_assert(BUILDFLAG(FULL_SAFE_BROWSING));
 namespace extensions {
 
 namespace {
-// Returns the ExtensionTelemetryService for `context`, or nullptr if there
-// isn't one or it's disabled.
+// Returns the ExtensionTelemetryService that should receive a signal from an
+// extension in `context` that acted on `target_context`, or nullptr if there
+// isn't one or it's disabled. `target_context` may be null if the signal
+// didn't act on a specific context.
 safe_browsing::ExtensionTelemetryService* GetExtensionTelemetryServiceIfEnabled(
-    content::BrowserContext* context) {
+    content::BrowserContext* context,
+    content::BrowserContext* target_context = nullptr) {
   auto* telemetry_service =
-      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context));
+      safe_browsing::ExtensionTelemetryService::GetForSignal(context,
+                                                             target_context);
   if (!telemetry_service || !telemetry_service->enabled()) {
     return nullptr;
   }
@@ -104,12 +105,14 @@ void ChromeSafeBrowsingDelegate::CreatePasswordReuseDetectionManager(
 
 void ChromeSafeBrowsingDelegate::NotifyExtensionApiCookiesGet(
     content::BrowserContext* context,
+    content::BrowserContext* store_browser_context,
     const ExtensionId& extension_id,
     const std::string& name,
     const std::string& store_id,
     const std::string& url,
     StackTrace js_callstack) const {
-  auto* telemetry_service = GetExtensionTelemetryServiceIfEnabled(context);
+  auto* telemetry_service =
+      GetExtensionTelemetryServiceIfEnabled(context, store_browser_context);
   if (!telemetry_service) {
     return;
   }
@@ -121,6 +124,7 @@ void ChromeSafeBrowsingDelegate::NotifyExtensionApiCookiesGet(
 
 void ChromeSafeBrowsingDelegate::NotifyExtensionApiCookiesGetAll(
     content::BrowserContext* context,
+    content::BrowserContext* store_browser_context,
     const ExtensionId& extension_id,
     const std::string& domain,
     const std::string& name,
@@ -130,7 +134,8 @@ void ChromeSafeBrowsingDelegate::NotifyExtensionApiCookiesGetAll(
     const std::string& url,
     std::optional<bool> is_session,
     StackTrace js_callstack) const {
-  auto* telemetry_service = GetExtensionTelemetryServiceIfEnabled(context);
+  auto* telemetry_service =
+      GetExtensionTelemetryServiceIfEnabled(context, store_browser_context);
   if (!telemetry_service) {
     return;
   }
