@@ -1541,6 +1541,18 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+// Without a live session, a request that fails early still cleans up the
+// handler that it created.
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       TriggerActuationNotOptedInWithoutSession_CleansUpHandler) {
+  OptOut();
+
+  ExpectFailedTaskUpdate(SendRequest(CreateRequest(
+                             TriggerActuationRequest{.initial_prompt = "hi"})),
+                         "User is not opted in to experimental triggering.");
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+}
+
 // Handlers are shared per context id, so a request that fails early with a
 // non-terminal reply must not tear down a live session on the same context
 // (b/574916669). The tests below cover one such failure per request type, first
@@ -1554,11 +1566,23 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   features.InitAndDisableFeature(
       features::kGlicExperimentalTriggeringOptInTabFocus);
   StartActuationSession();
+  base::HistogramTester histogram_tester;
   // Without a tab there is no WebContents to show the opt-in dialog in.
   coordinator_->set_active_tab(nullptr);
 
-  EXPECT_TRUE(SendRequestToLiveSession(CreateRequest(DeviceOptInRequest{}))
-                  .has_value());
+  auto response = SendRequestToLiveSession(CreateRequest(DeviceOptInRequest{}));
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->device_opt_in_result.has_value());
+  EXPECT_EQ(*response->device_opt_in_result, DeviceOptInResult::kFailed);
+  // The live session keeps its handler, so no outcome is recorded for it.
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kDestroyedBeforeCompletion,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kDestroyedBeforeCompletion,
+      0);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -1571,6 +1595,34 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   ASSERT_TRUE(response->confirmation_result.has_value());
   EXPECT_EQ(response->confirmation_result->status,
             ConfirmationResult::Status::kErrorUnavailable);
+}
+
+// Once actuation starts, the invocation succeeds and is no longer pending, but
+// the task keeps running. A request during the task must not tear down its
+// handler: only the Glic instance shows that the task still runs.
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       RequestAfterInvocationSucceeded_KeepsHandler) {
+  base::OnceClosure on_success;
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        on_success = std::move(options.on_success);
+        return mock_glic_instance_.GetWeakPtr();
+      });
+  StartActuationSession();
+  // GlicInvokeHandler posts `on_success` when actuation starts.
+  ASSERT_TRUE(on_success);
+  std::move(on_success).Run();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(SendRequestToLiveSession(CreateRequest(TaskMetadataUpdated{}))
+                   .has_value());
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kDestroyedBeforeCompletion,
+      0);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -3249,7 +3301,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
        StaleCleanupDoesNotDeleteNewHandler) {
   // The invocation succeeds without a Glic instance, so the handler has no
-  // live work left, but has not sent a terminal update.
+  // live work left, but has not sent a terminal update. So the Trigger deletes
+  // it right away: its destructor sends FAILED and posts a cleanup for the same
+  // context id.
   EXPECT_CALL(*mock_glic_service(),
               InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
       .WillOnce([](InvokeWithAutoSubmitPasskey passkey,
@@ -3259,13 +3313,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTerminalUpdateTest,
         return base::WeakPtr<GlicInstance>();
       })
       .WillRepeatedly(testing::DoDefault());
-  StartSession();
-
-  // The next request deletes that handler. Its destructor sends FAILED and
-  // posts a cleanup for the same context id.
-  EXPECT_FALSE(SendRequestWithCallback(CreateRequest(TaskMetadataUpdated{}),
-                                       updates_.GetRepeatingCallback())
-                   .has_value());
+  auto first = SendTrigger();
+  ASSERT_TRUE(first.has_value());
+  ASSERT_TRUE(first->task_update.has_value());
+  EXPECT_EQ(first->task_update->state, TaskUpdate::State::kStarting);
   ExpectNextUpdate(TaskUpdate::State::kFailed);
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 
