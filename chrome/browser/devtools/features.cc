@@ -228,7 +228,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
         /*default_value=*/DevToolsFreestylerUserTier::kPublic,
         &devtools_freestyler_user_tier_options};
 
-BASE_FEATURE(kDevToolsComments, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsComments, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the Protocol Monitor panel is enabled.
 BASE_FEATURE(kDevToolsProtocolMonitor, base::FEATURE_DISABLED_BY_DEFAULT);
