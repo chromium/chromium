@@ -104,7 +104,6 @@ source_set("unit_tests") {
   deps = [
     ":account_settings_presenter",
     ":continuation",
-    ":continuation_test",
     ":signin_presenter",
     ":ui_bundled",
     "//base",
@@ -191,24 +190,11 @@ source_set("continuation") {
     "change_profile_continuation_provider.h",
     "continuation.h",
     "continuation.mm",
+    "not_reached_continuation.h",
+    "not_reached_continuation.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/app:change_profile_continuation",
-  ]
-}
-
-source_set("continuation_test") {
-  testonly = true
-  sources = [
-    "authentication_test_util.h",
-    "authentication_test_util.mm",
-  ]
-  deps = [
-    ":continuation",
-    ":ui_bundled",
-    "//base",
-    "//ios/chrome/app:change_profile_continuation",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
   ]
 }

@@ -212,7 +212,6 @@ static_library("test_support") {
     "//ios/chrome/app:change_profile_continuation",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
-    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
     "//ios/chrome/browser/signin/model:constants",
   ]
 }

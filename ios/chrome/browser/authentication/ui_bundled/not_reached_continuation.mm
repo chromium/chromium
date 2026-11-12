@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/not_reached_continuation.h"
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/notreached.h"
 #import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 
 namespace {
 void NotReachedContinuationImpl(SceneState* scene_state,

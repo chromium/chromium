@@ -65,7 +65,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/test/ios",
     "//ios/chrome/app/profile",
-    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account",

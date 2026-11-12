@@ -38,7 +38,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator",
     "//ios/chrome/browser/authentication/history_sync/coordinator",
-    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",

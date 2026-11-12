@@ -8,7 +8,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "ios/chrome/app/change_profile_continuation.h"
-#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 
