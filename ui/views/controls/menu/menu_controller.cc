@@ -267,25 +267,6 @@ bool TitleMatchesMnemonic(MenuItemView* menu, char16_t key) {
   return !lower_title.empty() && lower_title[0] == key;
 }
 
-// Returns the first descendant of |view| that is hot tracked.
-Button* GetFirstHotTrackedView(View* view) {
-  if (!view) {
-    return nullptr;
-  }
-  Button* button = Button::AsButton(view);
-  if (button && button->IsHotTracked()) {
-    return button;
-  }
-
-  for (View* child : view->children()) {
-    Button* hot_view = GetFirstHotTrackedView(child);
-    if (hot_view) {
-      return hot_view;
-    }
-  }
-  return nullptr;
-}
-
 // Returns the enclosing MenuItemView that contains `item`'s anchor view, if
 // any.
 MenuItemView* GetAnchorViewContainerMenuItem(MenuItemView* item) {
@@ -2527,7 +2508,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 void MenuController::ShowContextMenu() {
-  Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
+  Button* hot_view = GetHotTrackedButtonIn(pending_state_.item);
   if (hot_view) {
     hot_view->ShowContextMenu(hot_view->GetKeyboardContextMenuLocation(),
                               ui::mojom::MenuSourceType::kKeyboard);
@@ -2648,7 +2629,7 @@ MenuController::~MenuController() {
 
 bool MenuController::SendAcceleratorToHotTrackedView(int event_flags) {
   ScopedDeletionGuard guard(AsWeakPtr());
-  Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
+  Button* hot_view = GetHotTrackedButtonIn(pending_state_.item);
   if (!hot_view) {
     return false;
   }
@@ -3769,8 +3750,7 @@ void MenuController::IncrementSelection(
 
   if (!item->children().empty()) {
     View* current_hot_view = nullptr;
-    if (Button* button = GetFirstHotTrackedView(item)) {
-      CHECK_EQ(hot_button_, button, base::NotFatalUntil::M163);
+    if (Button* button = GetHotTrackedButtonIn(item)) {
       current_hot_view = button;
     } else if (Textfield* focused_textfield = GetFocusedTextfield();
                focused_textfield && item->Contains(focused_textfield)) {
@@ -3890,7 +3870,7 @@ MenuItemView* MenuController::FindInitialSelectableMenuItem(
 void MenuController::OpenSubmenuChangeSelectionIfCan() {
   ScopedDeletionGuard guard(AsWeakPtr());
   MenuItemView* item = pending_state_.item;
-  if (Button* hot_view = GetFirstHotTrackedView(item)) {
+  if (Button* hot_view = GetHotTrackedButtonIn(item)) {
     if (MenuItemView* button_submenu = hot_view->GetProperty(kSubmenuItemKey)) {
       item = button_submenu;
     }
@@ -4580,6 +4560,16 @@ void MenuController::SetHotTrackedButton(Button* new_hot_button) {
       }
     }
   }
+}
+
+Button* MenuController::GetHotTrackedButtonIn(const MenuItemView* item) const {
+  // `hot_button_` is not cleared when the button is disabled or hidden, which
+  // resets its state out of STATE_HOVERED (`IsHotTracked()`).
+  if (!item || !hot_button_ || !hot_button_->IsHotTracked() ||
+      !item->Contains(hot_button_)) {
+    return nullptr;
+  }
+  return hot_button_.get();
 }
 
 bool MenuController::ShouldContinuePrefixSelection() const {

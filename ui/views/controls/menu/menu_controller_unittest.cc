@@ -5327,6 +5327,13 @@ TEST_F(MenuControllerTest, MenuHostedTextfieldMouseAndVisibility) {
       inline_button, submenu, inline_button->GetLocalBounds().CenterPoint()));
   EXPECT_TRUE(textfield->HasFocus());
   EXPECT_EQ(nullptr, hot_button());
+  // The hovered inline button is not the menu's hot button, so arrow keys
+  // still start from the textfield.
+  ASSERT_EQ(Button::STATE_HOVERED, inline_button->GetState());
+  DispatchKey(ui::VKEY_DOWN);
+  EXPECT_EQ(sibling_button, hot_button());
+  DispatchKey(ui::VKEY_UP);
+  ASSERT_TRUE(textfield->HasFocus());
   ProcessMouseWheel(
       submenu,
       ui::MouseWheelEvent(gfx::Vector2d(0, -ui::MouseWheelEvent::kWheelDelta),
@@ -5356,7 +5363,7 @@ TEST_F(MenuControllerTest, MenuHostedTextfieldMouseAndVisibility) {
   DispatchKey(ui::VKEY_RETURN);
   EXPECT_NE(MenuController::ExitType::kAll, menu_exit_type());
   EXPECT_TRUE(textfield->HasFocus());
-  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kFocus, textfield));
+  EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kFocus, textfield));
 
   // Down moves from the textfield to the sibling button and Up returns, also
   // after the pointer leaves the menu.
@@ -5384,7 +5391,7 @@ TEST_F(MenuControllerTest, MenuHostedTextfieldMouseAndVisibility) {
   textfield->RequestFocus();
   ASSERT_TRUE(textfield->HasFocus());
   EXPECT_EQ(first_item, pending_state_item());
-  EXPECT_EQ(4, ax_counter.GetCount(ax::mojom::Event::kFocus, textfield));
+  EXPECT_EQ(5, ax_counter.GetCount(ax::mojom::Event::kFocus, textfield));
 #if !BUILDFLAG(IS_MAC)
   EXPECT_TRUE(has_popup_focus(textfield));
 #endif

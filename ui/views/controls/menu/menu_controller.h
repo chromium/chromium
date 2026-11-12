@@ -760,6 +760,10 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Updates the current |hot_button_| and its hot tracked state.
   void SetHotTrackedButton(Button* new_hot_button);
 
+  // Returns `hot_button_` if it is still hot-tracked and is inside `item`,
+  // otherwise null.
+  Button* GetHotTrackedButtonIn(const MenuItemView* item) const;
+
   // Returns whether typing a new character will continue the existing prefix
   // selection. If this returns false, typing a new character will start a new
   // prefix selection, and some characters (such as Space) will be treated as
