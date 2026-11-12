@@ -438,7 +438,12 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
     ++login_to_idp_count_;
   }
   void OnMoreDetails() override {}
-  void OnAccountsDisplayed() override { ++accounts_displayed_count_; }
+  void OnAccountsDisplayed() override {
+    ++accounts_displayed_count_;
+    if (on_accounts_displayed_) {
+      std::move(on_accounts_displayed_).Run();
+    }
+  }
   void OnNativeAppResult(const std::string& token) override {}
   void OnNativeAppError(
       const content::IdentityCredentialTokenError& error) override {}
@@ -462,6 +467,10 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
     on_dismiss_ = std::move(on_dismiss);
   }
 
+  void SetOnAccountsDisplayedClosure(base::OnceClosure on_accounts_displayed) {
+    on_accounts_displayed_ = std::move(on_accounts_displayed);
+  }
+
  private:
   raw_ptr<content::WebContents> web_contents_;
   std::optional<DismissReason> dismiss_reason_;
@@ -469,6 +478,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   int accounts_displayed_count_ = 0;
   int login_to_idp_count_ = 0;
   base::OnceClosure on_dismiss_;
+  base::OnceClosure on_accounts_displayed_;
 };
 
 content::RelyingPartyData GetRpData() {
@@ -2584,6 +2594,56 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_FALSE(controller);
 }
 
+// Tests that `Show()` does not use the view, and does not report the dialog as
+// shown, if notifying the delegate that the accounts were displayed destroys
+// the view.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       AccountsDisplayedDestroysViewDuringShow) {
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), tab_interface_.get(), this);
+  delegate_->SetOnAccountsDisplayedClosure(
+      base::BindOnce(&std::unique_ptr<TestFedCmAccountSelectionView>::reset,
+                     base::Unretained(&controller), nullptr));
+
+  // This should not crash.
+  EXPECT_FALSE(controller->Show(GetRpData(), {idp_data_}, accounts_,
+                                blink::mojom::RpMode::kPassive,
+                                /*new_accounts=*/{}));
+  EXPECT_FALSE(controller);
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+}
+
+// Tests that `CloseModalDialog()` does not use the view if showing the dialog
+// again after the pop-up is closed notifies the delegate that the accounts
+// were displayed, and that destroys the view.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       AccountsDisplayedDestroysViewDuringCloseModalDialog) {
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), tab_interface_.get(), this);
+  // The bubble does not fit, so it is not shown yet.
+  controller->can_fit_in_web_contents_ = false;
+  controller->ShowVerifyingDialog(GetRpData(), idp_data_, accounts_[0],
+                                  Account::SignInMode::kAuto,
+                                  blink::mojom::RpMode::kPassive);
+  ASSERT_FALSE(controller->IsDialogWidgetVisible());
+  controller->can_fit_in_web_contents_ = true;
+
+  // The bubble stays hidden while the pop-up is open.
+  CreateAndShowPopupWindow(*controller);
+  ASSERT_FALSE(controller->IsDialogWidgetVisible());
+  ASSERT_EQ(delegate_->GetAccountsDisplayedCount(), 0);
+
+  EXPECT_CALL(*controller->GetPopupWindow(), ClosePopupWindow);
+  delegate_->SetOnAccountsDisplayedClosure(
+      base::BindOnce(&std::unique_ptr<TestFedCmAccountSelectionView>::reset,
+                     base::Unretained(&controller), nullptr));
+
+  // Closing the pop-up shows the bubble. This should not crash.
+  controller->CloseModalDialog();
+  EXPECT_FALSE(controller);
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+}
+
 // Tests that opening a popup after a verifying sheet, then closing the popup,
 // notifies the observer.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
@@ -3604,6 +3664,46 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
 
   controller.reset();
   EXPECT_FALSE(GetShownAmbientRequest());
+  EXPECT_FALSE(HasAmbientRequest());
+  EXPECT_FALSE(delegate_->GetDismissReason());
+}
+
+// Tests that `Show()` does not report the ambient bubble as shown if notifying
+// the delegate that the accounts were displayed destroys the view.
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       AccountsDisplayedDestroysViewWhenShowingAmbientBubble) {
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), tab_interface_.get(), this);
+  delegate_->SetOnAccountsDisplayedClosure(
+      base::BindOnce(&std::unique_ptr<TestFedCmAccountSelectionView>::reset,
+                     base::Unretained(&controller), nullptr));
+
+  // This should not crash.
+  EXPECT_FALSE(controller->Show(GetRpData(), {idp_data_}, accounts_,
+                                blink::mojom::RpMode::kPassive,
+                                /*new_accounts=*/{}));
+  EXPECT_FALSE(controller);
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+  // Destroying the view cancelled the ambient bubble request.
+  EXPECT_FALSE(HasAmbientRequest());
+}
+
+// Tests that replacing the ambient bubble with the regular UI does not use the
+// view if cancelling the ambient bubble request destroys it.
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       CannotShowUiDestroysViewWhileCancellingAmbientBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  ASSERT_TRUE(HasAmbientRequest());
+  ambient_signin::AmbientLoginPermissionController::GetForPage(
+      test_web_contents()->GetPrimaryPage())
+      ->SetFinishedNotificationForTesting(
+          base::BindOnce(&std::unique_ptr<TestFedCmAccountSelectionView>::reset,
+                         base::Unretained(&controller), nullptr));
+
+  // This should not crash.
+  controller->SetCanShowUi(false);
+  EXPECT_FALSE(controller);
   EXPECT_FALSE(HasAmbientRequest());
   EXPECT_FALSE(delegate_->GetDismissReason());
 }

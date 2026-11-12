@@ -88,7 +88,7 @@ class AccountSelectionView {
   // and its IDP. `new_accounts` is a vector where each member is a newly logged
   // in account that ought to be prioritized in the UI. Returns true if it was
   // possible to show UI. If this method could not show UI and called Dismiss,
-  // returns false.
+  // or if this call destroyed `this`, returns false.
   virtual bool Show(
       const content::RelyingPartyData& rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
@@ -100,7 +100,7 @@ class AccountSelectionView {
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
   // Returns true if it was possible to show UI. If this method could not show
-  // UI and called Dismiss, returns false.
+  // UI and called Dismiss, or if this call destroyed `this`, returns false.
   virtual bool ShowFailureDialog(
       const content::RelyingPartyData& rp_data,
       const std::string& idp_for_display,
@@ -110,7 +110,7 @@ class AccountSelectionView {
 
   // Shows an error dialog to the user, possibly with a custom error message.
   // Returns true if it was possible to show UI. If this method could not show
-  // UI and called Dismiss, returns false.
+  // UI and called Dismiss, or if this call destroyed `this`, returns false.
   virtual bool ShowErrorDialog(
       const content::RelyingPartyData& rp_data,
       const std::string& idp_for_display,
@@ -121,7 +121,8 @@ class AccountSelectionView {
 
   // Shows a loading dialog to the user. Used in the button mode, to acknowledge
   // the user interaction. Returns true if it was possible to show UI. If this
-  // method could not show UI and called Dismiss, returns false.
+  // method could not show UI and called Dismiss, or if this call destroyed
+  // `this`, returns false.
   virtual bool ShowLoadingDialog(const content::RelyingPartyData& rp_data,
                                  const std::string& idp_for_display,
                                  blink::mojom::RpContext rp_context,
@@ -129,8 +130,8 @@ class AccountSelectionView {
 
   // Shows a verifying dialog to the user. This is called after an account is
   // selected, either by the user in the explicit authentication flow or by the
-  // browser in the auto re-authentication flow. Returns true if it was possible
-  // to show UI.
+  // browser in the auto re-authentication flow. Returns false if UI could not
+  // be shown, or if this call destroyed `this`; returns true otherwise.
   virtual bool ShowVerifyingDialog(const content::RelyingPartyData& rp_data,
                                    const IdentityProviderDataPtr& idp_data,
                                    const IdentityRequestAccountPtr& account,

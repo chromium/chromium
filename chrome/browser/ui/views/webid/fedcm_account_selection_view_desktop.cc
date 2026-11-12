@@ -235,9 +235,16 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
           inactive_event_controller->AcceptMouseEventsWhileWindowInactive();
     }
   }
-  ShowDialog(GetDialogWidget(), std::move(params));
+  // Showing the dialog is not known to destroy `this`, but check as a
+  // preventative measure.
+  if (!RunAndCheckAlive(
+          [&]() { ShowDialog(GetDialogWidget(), std::move(params)); })) {
+    return;
+  }
 
   if (accounts_widget_shown_callback_) {
+    // `OnAccountsDisplayed()` is not known to destroy `this`, but as a
+    // preventative measure, do not access members afterwards.
     std::move(accounts_widget_shown_callback_).Run();
   }
 }
@@ -269,7 +276,10 @@ bool FedCmAccountSelectionView::Show(
     return true;
   }
 
-  ResetDialogWidgetStateOnAnyShow();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { ResetDialogWidgetStateOnAnyShow(); })) {
+    return false;
+  }
   accounts_widget_shown_callback_ =
       base::BindOnce(&FedCmAccountSelectionView::OnAccountsDisplayed,
                      weak_ptr_factory_.GetWeakPtr());
@@ -300,10 +310,18 @@ bool FedCmAccountSelectionView::Show(
 
   // The ambient bubble takes precedence over the page action (omnibox chip)
   // ambient UI, which is controlled by a separate flag.
-  if (IsAmbientBubbleEnabled() && rp_mode == blink::mojom::RpMode::kPassive &&
-      ShowAmbientBubble(idp_list, accounts, new_accounts)) {
-    // `this` may have been deleted.
-    return true;
+  if (IsAmbientBubbleEnabled() && rp_mode == blink::mojom::RpMode::kPassive) {
+    bool ambient_bubble_shown = false;
+    // Preventative check; not known to destroy `this`.
+    if (!RunAndCheckAlive([&]() {
+          ambient_bubble_shown =
+              ShowAmbientBubble(idp_list, accounts, new_accounts);
+        })) {
+      return false;
+    }
+    if (ambient_bubble_shown) {
+      return true;
+    }
   }
 
   if (IsAmbientEnabled()) {
@@ -447,7 +465,10 @@ bool FedCmAccountSelectionView::Show(
     ShowMultiAccountPicker(accounts_, idp_list_, rp_data_->rp_icon,
                            /*show_back_button=*/false);
   }
-  UpdateDialogVisibilityAndPosition();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { UpdateDialogVisibilityAndPosition(); })) {
+    return false;
+  }
 
   if (!idp_close_popup_time_.is_null()) {
     popup_window_state_ =
@@ -490,7 +511,10 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
   }
 
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
-  ResetDialogWidgetStateOnAnyShow();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { ResetDialogWidgetStateOnAnyShow(); })) {
+    return false;
+  }
 
   // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
@@ -513,7 +537,10 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
 
   account_selection_view_->ShowFailureDialog(
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
-  UpdateDialogVisibilityAndPosition();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { UpdateDialogVisibilityAndPosition(); })) {
+    return false;
+  }
   return true;
 }
 
@@ -530,7 +557,10 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
   }
 
   state_ = State::SIGN_IN_ERROR;
-  ResetDialogWidgetStateOnAnyShow();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { ResetDialogWidgetStateOnAnyShow(); })) {
+    return false;
+  }
 
   bool has_modal_support = true;
 
@@ -548,7 +578,10 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 
   account_selection_view_->ShowErrorDialog(base::UTF8ToUTF16(idp_etld_plus_one),
                                            idp_metadata, error);
-  UpdateDialogVisibilityAndPosition();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { UpdateDialogVisibilityAndPosition(); })) {
+    return false;
+  }
   return true;
 }
 
@@ -565,7 +598,10 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   CHECK(rp_mode == blink::mojom::RpMode::kActive);
 
   state_ = State::LOADING;
-  ResetDialogWidgetStateOnAnyShow();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { ResetDialogWidgetStateOnAnyShow(); })) {
+    return false;
+  }
 
   std::optional<std::u16string> idp_title =
       idp_etld_plus_one.empty()
@@ -575,7 +611,10 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   CreateOrUpdateViewAndWidget(rp_data, idp_title, rp_context, rp_mode,
                               /*has_modal_support=*/true);
 
-  UpdateDialogVisibilityAndPosition();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { UpdateDialogVisibilityAndPosition(); })) {
+    return false;
+  }
   modal_loading_dialog_state_ = webid::LoadingDialogResult::kDestroy;
   return true;
 }
@@ -587,12 +626,17 @@ void FedCmAccountSelectionView::SetCanShowUi(bool can_show_ui) {
   can_show_ui_ = can_show_ui;
   if (!can_show_ui_ && ambient_bubble_request_pending_) {
     // The ambient bubble cannot be hidden temporarily. Replace it with the
-    // regular UI, which stays hidden until FedCM UI can be shown again; Show()
-    // does not use the ambient bubble while FedCM UI can't be shown. The
-    // delegate was already notified when the bubble was shown, so do not notify
-    // it again when the regular UI is shown.
-    Show(*rp_data_, idp_list_, accounts_, blink::mojom::RpMode::kPassive,
-         new_accounts_);
+    // regular UI, which stays hidden until FedCM UI can be shown again;
+    // `Show()` does not use the ambient bubble while FedCM UI can't be shown.
+    // The delegate was already notified when the bubble was shown, so do not
+    // notify it again when the regular UI is shown.
+    // Preventative check; not known to destroy `this`.
+    if (!RunAndCheckAlive([&]() {
+          Show(*rp_data_, idp_list_, accounts_, blink::mojom::RpMode::kPassive,
+               new_accounts_);
+        })) {
+      return;
+    }
     accounts_widget_shown_callback_.Reset();
     return;
   }
@@ -626,7 +670,10 @@ bool FedCmAccountSelectionView::ShowVerifyingDialog(
     return true;
   }
 
-  ResetDialogWidgetStateOnAnyShow();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { ResetDialogWidgetStateOnAnyShow(); })) {
+    return false;
+  }
   accounts_widget_shown_callback_ =
       base::BindOnce(&FedCmAccountSelectionView::OnAccountsDisplayed,
                      weak_ptr_factory_.GetWeakPtr());
@@ -650,7 +697,10 @@ bool FedCmAccountSelectionView::ShowVerifyingDialog(
   }
 
   ShowVerifyingSheet(account);
-  UpdateDialogVisibilityAndPosition();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { UpdateDialogVisibilityAndPosition(); })) {
+    return false;
+  }
 
   return true;
 }
@@ -1033,7 +1083,10 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
 
   // The modal should not be hidden when the pop-up window is displayed for
   // better UX.
-  UpdateDialogVisibilityAndPosition();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { UpdateDialogVisibilityAndPosition(); })) {
+    return nullptr;
+  }
 
   if (tabs::TabInterface* initiating_task_tab = InitiatingTaskTab(tab_)) {
     content::WebContents* initiating_contents =
@@ -1092,7 +1145,10 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     }
     popup_window_.reset();
 
-    UpdateDialogVisibilityAndPosition();
+    // Preventative check; not known to destroy `this`.
+    if (!RunAndCheckAlive([&]() { UpdateDialogVisibilityAndPosition(); })) {
+      return;
+    }
   }
 
   if (state_ == State::LOADING) {
@@ -1248,7 +1304,10 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
 
 void FedCmAccountSelectionView::Close(bool notify_delegate, bool hide_widget) {
   scoped_user_data_.reset();
-  CancelAmbientBubble();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { CancelAmbientBubble(); })) {
+    return;
+  }
   if (IsAmbientEnabled() && tab_) {
     if (auto* controller = page_actions::PageActionController::From(tab_)) {
       controller->Hide(kActionFederation);
@@ -1598,7 +1657,10 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
     UpdateDialogPosition();
     if (!dialog_widget_->IsVisible() &&
         !IsDialogManaged(dialog_widget_.get())) {
-      ShowDialogWidget();
+      // Preventative check; not known to destroy `this`.
+      if (!RunAndCheckAlive([&]() { ShowDialogWidget(); })) {
+        return;
+      }
     }
     UpdateDialogVisibility(true);
     return;
@@ -1608,13 +1670,14 @@ void FedCmAccountSelectionView::UpdateDialogVisibilityAndPosition() {
 }
 
 void FedCmAccountSelectionView::ResetDialogWidgetStateOnAnyShow() {
-  // Any new UI replaces the ambient bubble.
-  CancelAmbientBubble();
   accounts_widget_shown_callback_.Reset();
   hide_dialog_widget_after_idp_login_popup_ = false;
   chip_impression_recorded_ = false;
   icon_impression_recorded_ = false;
   chip_requested_for_flow_ = false;
+  // Any new UI replaces the ambient bubble. `CancelAmbientBubble()` is not
+  // known to destroy `this`, but as a preventative measure, call it last.
+  CancelAmbientBubble();
 }
 
 gfx::Rect FedCmAccountSelectionView::GetDialogBounds() {
@@ -1854,7 +1917,13 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
   // synchronously if the request is rejected right away.
   ambient_bubble_request_pending_ = true;
   ambient_login_permission_controller_ = controller->GetWeakPtr();
-  controller->RequestPermission(main_frame, std::move(request));
+  // `RequestPermission()` is not known to destroy `this`, but check as a
+  // preventative measure.
+  if (!RunAndCheckAlive([&]() {
+        controller->RequestPermission(main_frame, std::move(request));
+      })) {
+    return false;
+  }
   if (!ambient_bubble_request_pending_) {
     // The request was rejected right away, e.g. because permission prompts are
     // disabled. Drop the decision posted for it and fall back to the regular
@@ -1869,7 +1938,8 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
   // TODO(crbug.com/567563304): Notify the delegate when the bubble is actually
   // shown, since PermissionRequestManager may defer showing it.
   if (accounts_widget_shown_callback_) {
-    // This may delete `this`.
+    // `OnAccountsDisplayed()` is not known to destroy `this`, but as a
+    // preventative measure, do not access members afterwards.
     std::move(accounts_widget_shown_callback_).Run();
   }
   return true;
@@ -1974,10 +2044,13 @@ void FedCmAccountSelectionView::ShowAmbientRequestPermissionModal(
     return;
   }
 
-  // Reset the state like other methods that show UI. Unlike Show(), the
+  // Reset the state like other methods that show UI. Unlike `Show()`, the
   // delegate is not notified that the accounts were displayed, since it was
   // notified when the ambient bubble was shown.
-  ResetDialogWidgetStateOnAnyShow();
+  // Preventative check; not known to destroy `this`.
+  if (!RunAndCheckAlive([&]() { ResetDialogWidgetStateOnAnyShow(); })) {
+    return;
+  }
 
   // Pass kActive so that the modal dialog is used even though the request is
   // in passive mode.
@@ -2007,12 +2080,15 @@ void FedCmAccountSelectionView::CancelAmbientBubble() {
     return;
   }
   ambient_bubble_request_pending_ = false;
-  if (ambient_login_permission_controller_) {
-    // This cancels the request whether PermissionRequestManager is showing it
-    // or has queued it.
-    ambient_login_permission_controller_->Reset();
-  }
+  base::WeakPtr<ambient_signin::AmbientLoginPermissionController> controller =
+      ambient_login_permission_controller_;
   ambient_login_permission_controller_.reset();
+  if (controller) {
+    // This cancels the request whether `PermissionRequestManager` is showing it
+    // or has queued it. `Reset()` is not known to destroy `this`, but as a
+    // preventative measure, do not access members afterwards.
+    controller->Reset();
+  }
 }
 
 void FedCmAccountSelectionView::RecordPageActionImpression(

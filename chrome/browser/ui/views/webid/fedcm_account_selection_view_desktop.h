@@ -464,8 +464,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Attempts to show the accounts in the ambient bubble. Returns false if the
   // ambient bubble cannot be used for this request, in which case the caller
-  // should fall back to the regular UI. If this returns true, `this` may have
-  // been deleted.
+  // should fall back to the regular UI. This isn't known to destroy `this`,
+  // but callers must check either way, e.g. with `RunAndCheckAlive()`.
   bool ShowAmbientBubble(
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
@@ -550,7 +550,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // This ensures the complex logic to determine visibility is centralized.
   void UpdateDialogVisibilityAndPosition();
 
-  // Called when any of the Show*() methods is called.
+  // Called when any of the `Show*()` methods is called.
   void ResetDialogWidgetStateOnAnyShow();
 
   // Returns the intended bounds and position of the dialog. Rather than
