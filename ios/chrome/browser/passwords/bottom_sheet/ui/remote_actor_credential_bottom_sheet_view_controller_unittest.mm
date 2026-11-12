@@ -18,9 +18,11 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "net/base/apple/url_conversions.h"
@@ -177,6 +179,62 @@ TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
        TestDismissalCancels) {
   OCMExpect([mutator_ didCancel]);
   [view_controller_.actionHandler confirmationAlertDismissed];
+}
+
+// Tests that the bottom sheet can still be dismissed interactively during the
+// loading state.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TestLoadingAllowsInteractiveDismissal) {
+  LoadViewWithSuggestions(@[ PasswordSuggestion(@"user") ]);
+  EXPECT_FALSE(view_controller_.modalInPresentation);
+
+  [view_controller_ setLoading:YES];
+  EXPECT_TRUE(view_controller_.configuration.isLoading);
+  EXPECT_FALSE(view_controller_.modalInPresentation);
+
+  [view_controller_ setLoading:NO];
+  EXPECT_FALSE(view_controller_.modalInPresentation);
+}
+
+// Tests that the loading state disables the primary button and switches it to
+// the primary style with an accessibility label while keeping the cancel button
+// enabled in its tertiary style, and that leaving it restores the initial
+// state.
+TEST_F(RemoteActorCredentialBottomSheetViewControllerTest,
+       TestLoadingUpdatesButtons) {
+  LoadViewWithSuggestions(@[ PasswordSuggestion(@"user") ]);
+  ChromeButton* primary_button = chrome_test_util::FindViewById<ChromeButton>(
+      view_controller_.view, kButtonStackPrimaryActionAccessibilityIdentifier);
+  ChromeButton* secondary_button = chrome_test_util::FindViewById<ChromeButton>(
+      view_controller_.view,
+      kButtonStackSecondaryActionAccessibilityIdentifier);
+  ASSERT_TRUE(primary_button);
+  ASSERT_TRUE(secondary_button);
+  EXPECT_TRUE(primary_button.enabled);
+  EXPECT_TRUE(secondary_button.enabled);
+  EXPECT_EQ(ChromeButtonStyleTertiary, primary_button.style);
+  EXPECT_EQ(ChromeButtonStyleTertiary, secondary_button.style);
+
+  NSString* loading_accessibility_label =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_STATUS_PROGRESS_TITLE);
+
+  [view_controller_ setLoading:YES];
+  [secondary_button updateConfiguration];
+  EXPECT_FALSE(primary_button.enabled);
+  EXPECT_TRUE(secondary_button.enabled);
+  EXPECT_EQ(ChromeButtonStylePrimary, primary_button.style);
+  EXPECT_EQ(ChromeButtonStyleTertiary, secondary_button.style);
+  EXPECT_EQ(1.0, secondary_button.alpha);
+  EXPECT_EQ(PrimaryButtonImageSpinner, primary_button.primaryButtonImage);
+  EXPECT_NSEQ(loading_accessibility_label, primary_button.accessibilityLabel);
+
+  [view_controller_ setLoading:NO];
+  EXPECT_TRUE(primary_button.enabled);
+  EXPECT_TRUE(secondary_button.enabled);
+  EXPECT_EQ(ChromeButtonStyleTertiary, primary_button.style);
+  EXPECT_EQ(ChromeButtonStyleTertiary, secondary_button.style);
+  EXPECT_FALSE([primary_button.accessibilityLabel
+      isEqualToString:loading_accessibility_label]);
 }
 
 // Tests that the view controller configures the subtitle without link tags and

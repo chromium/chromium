@@ -12,7 +12,6 @@
 
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
-#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
@@ -133,17 +132,39 @@ class RemoteActorCredentialBottomSheetMediatorTest : public PlatformTest {
 // the delegate that the flow finished with `kOtherError`.
 TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
        TestStartWithoutPasswordManagerClientFails) {
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  base::test::TestFuture<void> finished_future;
+  base::RepeatingClosure finished_callback =
+      finished_future.GetRepeatingCallback();
   OCMExpect(
       [delegate_ mediator:mediator_
           didFinishWithResult:RemoteActorCredentialSharingResult::kOtherError])
       .andDo(^(NSInvocation*) {
-        quit_closure.Run();
+        finished_callback.Run();
       });
 
   [mediator_ start];
-  run_loop.Run();
+  EXPECT_TRUE(finished_future.Wait());
+}
+
+// Tests that receiving the final sharing result stops the loading state.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestSharingResultStopsLoading) {
+  OCMExpect([consumer_ setDomain:base::SysUTF8ToNSString(kTestDomain)]);
+  mediator_.consumer = consumer_;
+
+  base::test::TestFuture<void> finished_future;
+  base::RepeatingClosure finished_callback =
+      finished_future.GetRepeatingCallback();
+  OCMExpect([consumer_ setLoading:NO]);
+  OCMExpect(
+      [delegate_ mediator:mediator_
+          didFinishWithResult:RemoteActorCredentialSharingResult::kOtherError])
+      .andDo(^(NSInvocation*) {
+        finished_callback.Run();
+      });
+
+  [mediator_ start];
+  EXPECT_TRUE(finished_future.Wait());
 }
 
 // Tests that the mediator sends the domain to the consumer as soon as it is
@@ -267,6 +288,24 @@ TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(kUsername2, result->username_value);
   EXPECT_EQ(kPassword2, result->password_value);
+}
+
+// Tests that selecting a credential puts the consumer in the loading state.
+TEST_F(RemoteActorCredentialBottomSheetMediatorTest,
+       TestDidSelectCredentialShowsLoading) {
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> credentials;
+  credentials.push_back(CreateTestForm(kUsername1, kPassword1));
+  ShowCredentialSelection(std::move(credentials));
+
+  OCMExpect([consumer_ setDomain:[OCMArg any]]);
+  OCMExpect([consumer_ setSuggestions:[OCMArg any]]);
+  OCMExpect([consumer_ setFaviconAttributes:[OCMArg isNotNil]]);
+  mediator_.consumer = consumer_;
+
+  OCMExpect([consumer_ setLoading:YES]);
+  [mediator_ didSelectCredentialAtIndex:0];
+
+  EXPECT_TRUE(selection_future_.Wait());
 }
 
 // Tests that canceling returns `kUserCancelledDialog` to the controller.

@@ -187,6 +187,7 @@ using password_manager::RemoteActorCredentialSharingResult;
   }
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), _credentials.size());
+  [_consumer setLoading:YES];
   std::move(_credentialSelectedCallback).Run(*_credentials[index]);
 }
 
@@ -244,6 +245,7 @@ using password_manager::RemoteActorCredentialSharingResult;
 
 // Handles the final sharing `result` from the controller.
 - (void)handleSharingResult:(RemoteActorCredentialSharingResult)result {
+  [_consumer setLoading:NO];
   [self.delegate mediator:self didFinishWithResult:result];
 }
 

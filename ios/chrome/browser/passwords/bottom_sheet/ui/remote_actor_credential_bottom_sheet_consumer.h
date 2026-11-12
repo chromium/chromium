@@ -24,6 +24,10 @@
 // sheet.
 - (void)setFaviconAttributes:(FaviconAttributes*)faviconAttributes;
 
+// Sets whether the selected credential is being shared, during which the
+// primary button is disabled and shows a spinner.
+- (void)setLoading:(BOOL)loading;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_UI_REMOTE_ACTOR_CREDENTIAL_BOTTOM_SHEET_CONSUMER_H_
