@@ -43,8 +43,7 @@ public interface BookmarkManagerOpener {
     /**
      * Starts an {@link BookmarkEditActivity} for the given {@link BookmarkId}.
      *
-     * @param activity A context to start the manager with, if null then the application context
-     *     will be used instead.
+     * @param context A context to start the edit activity with.
      * @param profile The profile associated with the bookmarks.
      * @param bookmarkId The bookmark to open.
      */

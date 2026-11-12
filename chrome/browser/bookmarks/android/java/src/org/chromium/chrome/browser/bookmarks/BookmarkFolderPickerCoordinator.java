@@ -46,6 +46,15 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     private final SimpleRecyclerViewAdapter mAdapter = new SimpleRecyclerViewAdapter(mModelList);
 
     /**
+     * @param context The context for resources and inflating the picker view.
+     * @param bookmarkModel The bookmark model to read folders from and move bookmarks with.
+     * @param bookmarkIds The bookmarks being moved.
+     * @param finishRunnable Called to close the picker.
+     * @param addNewFolderCoordinator Shows the add-new-folder dialog.
+     * @param bookmarkUiPrefs Row display preferences, observed for changes.
+     * @param improvedBookmarkRowCoordinator Builds the folder rows.
+     * @param shoppingService Supports the query handler's shopping data queries.
+     * @param isFromBookmarkDialog Whether the picker was launched from another bookmark dialog.
      * @param isDesktopDialog Whether the hosting activity uses the desktop dialog rather than the
      *     full-screen presentation.
      * @param restoredFolderId The folder to show instead of the default one, e.g. after the

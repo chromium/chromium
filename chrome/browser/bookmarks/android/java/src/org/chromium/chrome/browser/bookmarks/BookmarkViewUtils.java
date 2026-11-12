@@ -30,6 +30,8 @@ public class BookmarkViewUtils {
      * @param context {@link Context} used to retrieve the drawable.
      * @param bookmarkId The bookmark id of the folder.
      * @param bookmarkModel The bookmark model.
+     * @param displayPref The row display preference, which selects an outline or filled folder
+     *     icon.
      * @return A {@link Drawable} to use for displaying bookmark folders.
      */
     public static Drawable getFolderIcon(

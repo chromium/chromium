@@ -1105,9 +1105,7 @@ class BookmarkManagerMediator
         mBackPressStateSupplier.set(isEnabled);
     }
 
-    /**
-     * @return The position of the given bookmark in adapter. Will return -1 if not found.
-     */
+    /** Returns the position of the given bookmark in adapter. Will return -1 if not found. */
     @VisibleForTesting
     int getPositionForBookmark(BookmarkId bookmark) {
         assert bookmark != null;

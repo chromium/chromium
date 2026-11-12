@@ -41,14 +41,10 @@ public interface BookmarkDelegate {
      */
     void replaceFolder(BookmarkId folder);
 
-    /**
-     * @return The {@link SelectionDelegate} responsible for tracking selected bookmarks.
-     */
+    /** Returns the {@link SelectionDelegate} responsible for tracking selected bookmarks. */
     SelectionDelegate<BookmarkId> getSelectionDelegate();
 
-    /**
-     * @return The {@link SelectableListLayout} displaying the list of bookmarks.
-     */
+    /** Returns the {@link SelectableListLayout} displaying the list of bookmarks. */
     SelectableListLayout<BookmarkId> getSelectableListLayout();
 
     /**
@@ -81,9 +77,7 @@ public interface BookmarkDelegate {
     /** Remove an observer of bookmark UI changes. */
     void removeUiObserver(BookmarkUiObserver observer);
 
-    /**
-     * @return Bookmark data model associated with this UI.
-     */
+    /** Returns the bookmark data model associated with this UI. */
     BookmarkModel getModel();
 
     /**
@@ -93,14 +87,10 @@ public interface BookmarkDelegate {
     @BookmarkUiMode
     int getCurrentUiMode();
 
-    /**
-     * @return The BookmarkId of the currently open folder, or null if not in folder mode.
-     */
+    /** Returns the BookmarkId of the currently open folder, or null if not in folder mode. */
     @Nullable BookmarkId getCurrentFolderId();
 
-    /**
-     * @return The drag state delegate that is associated with this list of bookmarks.
-     */
+    /** Returns the drag state delegate that is associated with this list of bookmarks. */
     DragStateDelegate getDragStateDelegate();
 
     /**

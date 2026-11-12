@@ -194,6 +194,7 @@ public class BookmarkUiPrefs {
      * Returns the text resource which is read aloud when a view option is selected (for talkback).
      *
      * @param context The android context to get strings.
+     * @param displayPref The row display preference that was selected.
      * @return The string to be read aloud when the view option is selected.
      */
     public String getViewOptionsAccessibilityAnnouncementText(

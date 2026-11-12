@@ -176,9 +176,7 @@ public class BookmarkModel extends BookmarkBridge {
         return bookmarkItem.getTitle();
     }
 
-    /**
-     * @return The id of the default folder to view bookmarks.
-     */
+    /** Returns the id of the default folder to view bookmarks. */
     public @Nullable BookmarkId getDefaultFolderViewLocation() {
         if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
             BookmarkId desktopFolder =

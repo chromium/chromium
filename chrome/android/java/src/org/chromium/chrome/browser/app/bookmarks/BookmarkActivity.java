@@ -187,9 +187,7 @@ public class BookmarkActivity extends SnackbarActivity {
         return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
     }
 
-    /**
-     * @return The {@link BookmarkManagerCoordinator} for testing purposes.
-     */
+    /** Returns the {@link BookmarkManagerCoordinator} for testing purposes. */
     public @Nullable BookmarkManagerCoordinator getManagerForTesting() {
         return mBookmarkManagerCoordinator;
     }

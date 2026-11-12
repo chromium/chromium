@@ -89,6 +89,7 @@ public class BookmarkUtils {
      *     the shopping "track price" button).
      * @param bookmarkManagerOpener Manages opening bookmarks.
      * @param priceDropNotificationManager Manages price drop notifications.
+     * @param isBookmarkBarVisible True when the user is currently showing the bookmark bar.
      */
     public static void addOrEditBookmark(
             @Nullable List<@Nullable BookmarkItem> existingBookmarkItems,
@@ -531,6 +532,7 @@ public class BookmarkUtils {
      * @param bookmarkModel The bookmark model.
      * @param tabList The list of all currently selected tabs from the TabListEditor menu.
      * @param snackbarManager The SnackbarManager used to show the snackbar.
+     * @param bookmarkManagerOpener Manages opening bookmarks.
      * @return The number of bookmarks successfully created.
      */
     public static int addTabsToBookmarks(
@@ -655,17 +657,17 @@ public class BookmarkUtils {
     }
 
     /**
-     * Adds a bookmark with the given {@link Tab}. This will reset last used parent if it fails to
-     * add a bookmark.
+     * Adds a bookmark with the given title and URL. This will reset the last used parent if it
+     * fails to add a bookmark.
      *
      * @param context The current Android {@link Context}.
      * @param profile The profile being used when adding the bookmark.
      * @param bookmarkModel The current {@link BookmarkModel} which talks to native.
      * @param title The title of the new bookmark.
      * @param url The {@link GURL} of the new bookmark.
-     * @param bookmarkType The {@link BookmarkType} of the bookmark.
      * @param parent The {@link BookmarkId} which is the parent of the bookmark. If this is null,
-     *     then the default parent is used.
+     *     then the last used parent is used, falling back to a default folder.
+     * @param bookmarkType The {@link BookmarkType} of the bookmark.
      * @param isBookmarkBarVisible True when the user is currently showing the bookmark bar.
      */
     static @Nullable BookmarkId addBookmarkInternal(
@@ -819,8 +821,8 @@ public class BookmarkUtils {
     }
 
     /**
-     * @return The parent {@link BookmarkId} that the user used the last time or null if the user
-     *     has never selected a parent folder to use.
+     * Returns the parent {@link BookmarkId} that the user used the last time or null if the user
+     * has never selected a parent folder to use.
      */
     public static @Nullable BookmarkId getLastUsedParent() {
         SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
@@ -942,9 +944,7 @@ public class BookmarkUtils {
         return bookmarkIds;
     }
 
-    /**
-     * @return Whether the desktop bookmarks dialog is enabled.
-     */
+    /** Returns whether the desktop bookmarks dialog is enabled. */
     public static boolean isDesktopBookmarksDialogEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG);
     }
@@ -969,9 +969,7 @@ public class BookmarkUtils {
                 >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
     }
 
-    /**
-     * @return Whether the desktop bookmarks layout is enabled.
-     */
+    /** Returns whether the desktop bookmarks layout is enabled. */
     public static boolean isDesktopBookmarksLayoutEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT);
     }

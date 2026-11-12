@@ -75,6 +75,8 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
      *
      * @param activeTabSupplier Supplier for the current active tab.
      * @param context Android context, used to retrieve resources.
+     * @param activityLifecycleDispatcher Dispatcher this controller registers with to observe
+     *     activity lifecycle events, and unregisters from on destroy.
      * @param tabBookmarkerSupplier Supplier of a {@code TabBookmarker} instance.
      * @param trackerSupplier Supplier for the current profile tracker. Used for IPH.
      * @param bookmarkModelSupplier Supplier for bookmark model, used to observe for bookmark

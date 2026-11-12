@@ -151,9 +151,7 @@ class BookmarkBridge {
         mObservers.removeObserver(observer);
     }
 
-    /**
-     * @return Whether or not the underlying bookmark model is loaded.
-     */
+    /** Returns whether the underlying bookmark model is loaded. */
     public boolean isBookmarkModelLoaded() {
         return mIsNativeBookmarkModelLoaded;
     }
@@ -162,6 +160,7 @@ class BookmarkBridge {
      * Schedules a runnable to run after the bookmark model is loaded. If the model is already
      * loaded, executes the runnable immediately. If not, also kick off partner bookmark reading.
      *
+     * @param runAfterModelLoaded The runnable to run once the bookmark model is loaded.
      * @return Whether the given runnable is executed synchronously.
      */
     public boolean finishLoadingBookmarkModel(final Runnable runAfterModelLoaded) {
@@ -223,8 +222,8 @@ class BookmarkBridge {
     }
 
     /**
-     * @return The top level folders, including special folders (managed bookmarks, reading list,
-     *     partner bookmarks). Will show empty folder according to the logic in BookmarkClient.
+     * Returns the top level folders, including special folders (managed bookmarks, reading list,
+     * partner bookmarks). Will show empty folder according to the logic in BookmarkClient.
      */
     public List<BookmarkId> getTopLevelFolderIds() {
         return getTopLevelFolderIds(/* forceVisibleMask= */ BookmarkNodeMaskBit.NONE);
@@ -420,7 +419,8 @@ class BookmarkBridge {
     }
 
     /**
-     * @return BookmarkId representing special account "desktop" folder, namely "bookmark bar".
+     * Returns the BookmarkId representing the special account "desktop" folder, namely "bookmark
+     * bar".
      */
     public @Nullable BookmarkId getAccountDesktopFolderId() {
         ThreadUtils.assertOnUiThread();
@@ -435,6 +435,7 @@ class BookmarkBridge {
      * the exception of nodes added to the Managed Bookmarks folder, whose GUIDs are re-assigned at
      * start-up every time.
      *
+     * @param id The {@link BookmarkId} of the node to look up.
      * @return Bookmark GUID of the given node.
      */
     public @Nullable String getBookmarkGuidByIdForTesting(BookmarkId id) {
@@ -445,9 +446,7 @@ class BookmarkBridge {
                 .getBookmarkGuidByIdForTesting(mNativeBookmarkBridge, id.getId(), id.getType());
     }
 
-    /**
-     * @return The number of children that the given node has.
-     */
+    /** Returns the number of children that the given node has. */
     public int getChildCount(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return 0;
@@ -457,9 +456,10 @@ class BookmarkBridge {
     }
 
     /**
-     * Reads sub-folder IDs, sub-bookmark IDs, or both of the given folder.
+     * Reads the available and reachable child IDs of the given folder.
      *
-     * @return Child IDs of the given folder, with the specified type.
+     * @param id The {@link BookmarkId} of the folder whose children are read.
+     * @return Available and reachable child IDs of the given folder.
      */
     public List<BookmarkId> getChildIds(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
@@ -637,7 +637,7 @@ class BookmarkBridge {
     }
 
     /**
-     * @return Whether the given bookmark exist in the current bookmark model, e.g., not deleted.
+     * Returns whether the given bookmark exists in the current bookmark model, e.g., not deleted.
      */
     public boolean doesBookmarkExist(@Nullable BookmarkId id) {
         ThreadUtils.assertOnUiThread();
@@ -653,6 +653,7 @@ class BookmarkBridge {
      * Check whether the given folder should be visible. This is for top permanent folders that we
      * want to hide when there is no child.
      *
+     * @param id The {@link BookmarkId} of the folder to check.
      * @return Whether the given folder should be visible.
      */
     public boolean isFolderVisible(BookmarkId id) {

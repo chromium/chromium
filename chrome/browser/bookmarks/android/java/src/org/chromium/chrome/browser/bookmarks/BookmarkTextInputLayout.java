@@ -53,16 +53,12 @@ public class BookmarkTextInputLayout extends TextInputLayout {
                         });
     }
 
-    /**
-     * @return Trimmed text for validation.
-     */
+    /** Returns the trimmed text for validation. */
     public String getTrimmedText() {
         return assertNonNull(getEditText()).getText().toString().trim();
     }
 
-    /**
-     * @return Whether the content is empty.
-     */
+    /** Returns whether the content is empty. */
     public boolean isEmpty() {
         return TextUtils.isEmpty(getTrimmedText());
     }

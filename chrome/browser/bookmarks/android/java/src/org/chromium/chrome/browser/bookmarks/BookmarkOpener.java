@@ -19,6 +19,7 @@ public interface BookmarkOpener {
     /**
      * Open the given id in the current tab.
      *
+     * @param id The bookmark id to open.
      * @param incognito Whether the bookmark should be opened in incognito mode.
      * @return Whether the bookmark id was successfully opened.
      */
@@ -79,9 +80,7 @@ public interface BookmarkOpener {
     boolean openBookmarksInNewWindow(
             List<BookmarkId> bookmarkIds, boolean incognito, @Nullable Bundle extras);
 
-    /**
-     * @return Whether opening bookmarks in a new window is supported.
-     */
+    /** Returns whether opening bookmarks in a new window is supported. */
     boolean isOpenInNewWindowSupported();
 
     /**

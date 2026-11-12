@@ -150,7 +150,7 @@ public final class BookmarkListEntry {
     }
 
     /**
-     * @return The {@link SectionHeaderData}. Could be null if this entry is not a section header.
+     * Returns the {@link SectionHeaderData}. Could be null if this entry is not a section header.
      */
     @Nullable SectionHeaderData getSectionHeaderData() {
         return mSectionHeaderData;
