@@ -69,7 +69,6 @@ struct AIDecisionModelCreateOptions {
   // side by side; not slated for the final API shape.
   // TODO(crbug.com/565849508): Remove after DevTrial backend evaluation.
   AIDecisionModelBackend? backend;
-  string? context;
   array<AILanguageCode>? expected_input_languages;
   array<AIDecisionModelQuestion> questions;
   PerformancePreference preference = PerformancePreference.kAuto;

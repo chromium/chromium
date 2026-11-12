@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AI_DECISION_MODEL_SCHEMA_COMPILER_H_
 #define CHROME_BROWSER_AI_DECISION_MODEL_SCHEMA_COMPILER_H_
 
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -74,8 +73,6 @@ class DecisionModelSchemaCompiler {
     CompiledSchema& operator=(CompiledSchema&&);
     ~CompiledSchema();
 
-    // Optional background instructions or task context shared across questions.
-    std::string shared_context;
     // Ordered list of compiled questions to evaluate in each `Decide()` call.
     std::vector<CompiledQuestion> questions;
   };
@@ -83,7 +80,6 @@ class DecisionModelSchemaCompiler {
   // Validates and compiles the schema. Returns a human-readable error if the
   // schema is empty, too large, or malformed.
   static base::expected<CompiledSchema, std::string> Compile(
-      const std::optional<std::string>& shared_context,
       base::span<const blink::mojom::AIDecisionModelQuestionPtr> questions);
 
   // Returns the EmbeddingGemma document passage for a question's option.

@@ -155,7 +155,6 @@ blink::mojom::AIDecisionModelQuestionPtr MakeQuestion(
 
 DecisionModelSchemaCompiler::CompiledSchema MakeSchema() {
   auto schema = DecisionModelSchemaCompiler::Compile(
-      "Support tickets",
       {MakeQuestion("urgent",
                     blink::mojom::AIDecisionModelQuestionType::kBoolean),
        MakeQuestion("category",

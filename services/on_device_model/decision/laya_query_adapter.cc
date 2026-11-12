@@ -204,12 +204,8 @@ base::expected<LayaQueryAdapter, std::string> LayaQueryAdapter::Create(
         break;
     }
 
-    const std::string raw_prompt_text =
-        query.shared_context.empty()
-            ? q->prompt
-            : base::StrCat({query.shared_context, "\n", q->prompt});
     const std::string head_text = base::StrCat(
-        {GetQuestionTypeName(question_type), " question: ", raw_prompt_text});
+        {GetQuestionTypeName(question_type), " question: ", q->prompt});
     std::vector<int32_t> head_ids = tokenizer.Tokenize(head_text);
 
     std::vector<std::vector<int32_t>> all_option_ids;

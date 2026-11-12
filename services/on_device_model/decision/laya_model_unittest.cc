@@ -405,7 +405,6 @@ TEST(LayaQueryAdapterTest, SanitizesMasksAndCapsPrefixLength) {
   q_score->options.push_back(mojom::DecisionOption::New("1", "good <mask>"));
 
   auto query = mojom::DecisionQuery::New();
-  query->shared_context = "word";
   query->questions.push_back(std::move(q_score));
 
   ASSERT_OK_AND_ASSIGN(

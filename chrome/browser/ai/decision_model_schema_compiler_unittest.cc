@@ -63,13 +63,11 @@ passage_embeddings::Embedding MakeUnitEmbedding(std::vector<float> values) {
 
 TEST(DecisionModelSchemaCompilerTest, CompilesEachQuestionType) {
   auto schema = DecisionModelSchemaCompiler::Compile(
-      "ctx",
       {MakeQuestion("b", QuestionType::kBoolean),
        MakeQuestion("c", QuestionType::kChoice, {"x", "y"}),
        MakeQuestion("s", QuestionType::kScore),
        MakeQuestion("s3", QuestionType::kScore, {"low", "mid", "high"})});
   ASSERT_TRUE(schema.has_value()) << schema.error();
-  EXPECT_EQ(schema->shared_context, "ctx");
   ASSERT_EQ(schema->questions.size(), 4u);
   EXPECT_THAT(Labels(schema->questions[0]), ElementsAre("true", "false"));
   EXPECT_THAT(Labels(schema->questions[1]), ElementsAre("x", "y"));
@@ -112,7 +110,6 @@ TEST(DecisionModelSchemaCompilerTest, DefaultScoreDescriptions) {
   partial_desc->options[0]->description = "lowest";
 
   auto schema = DecisionModelSchemaCompiler::Compile(
-      std::nullopt,
       {make_score_question(2), make_score_question(3), make_score_question(4),
        make_score_question(5), make_score_question(6), make_score_question(7),
        make_score_question(8), make_score_question(9), make_score_question(10),
@@ -156,70 +153,60 @@ TEST(DecisionModelSchemaCompilerTest, DefaultScoreDescriptions) {
 }
 
 TEST(DecisionModelSchemaCompilerTest, RejectsInvalidSchemas) {
-  EXPECT_FALSE(
-      DecisionModelSchemaCompiler::Compile(std::nullopt, {}).has_value());
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile({}).has_value());
 
   std::vector<blink::mojom::AIDecisionModelQuestionPtr> too_many;
   for (size_t i = 0; i <= DecisionModelSchemaCompiler::kMaxQuestions; ++i) {
     too_many.push_back(
         MakeQuestion("q" + base::NumberToString(i), QuestionType::kBoolean));
   }
-  EXPECT_FALSE(
-      DecisionModelSchemaCompiler::Compile(std::nullopt, too_many).has_value());
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(too_many).has_value());
 
   EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
-                   std::nullopt, {MakeQuestion("q", QuestionType::kBoolean),
-                                  MakeQuestion("q", QuestionType::kBoolean)})
+                   {MakeQuestion("q", QuestionType::kBoolean),
+                    MakeQuestion("q", QuestionType::kBoolean)})
                    .has_value());
 
   EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
-                   std::nullopt, {MakeQuestion("  ", QuestionType::kBoolean)})
+                   {MakeQuestion("  ", QuestionType::kBoolean)})
                    .has_value());
   auto blank_prompt = MakeQuestion("q", QuestionType::kBoolean);
   blank_prompt->prompt = " \t ";
-  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(std::nullopt,
-                                                    {std::move(blank_prompt)})
-                   .has_value());
-  EXPECT_FALSE(
-      DecisionModelSchemaCompiler::Compile(
-          std::nullopt, {MakeQuestion("b", QuestionType::kBoolean, {"true"})})
-          .has_value());
-  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
-                   std::nullopt, {MakeQuestion("c", QuestionType::kChoice)})
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile({std::move(blank_prompt)})
                    .has_value());
   EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
-                   std::nullopt,
+                   {MakeQuestion("b", QuestionType::kBoolean, {"true"})})
+                   .has_value());
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
+                   {MakeQuestion("c", QuestionType::kChoice)})
+                   .has_value());
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
                    {MakeQuestion("c", QuestionType::kChoice, {"only_one"})})
                    .has_value());
-  EXPECT_FALSE(
-      DecisionModelSchemaCompiler::Compile(
-          std::nullopt, {MakeQuestion("c", QuestionType::kChoice, {"a", " "})})
-          .has_value());
-  EXPECT_FALSE(
-      DecisionModelSchemaCompiler::Compile(
-          std::nullopt, {MakeQuestion("c", QuestionType::kChoice, {"a", "a"})})
-          .has_value());
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
+                   {MakeQuestion("c", QuestionType::kChoice, {"a", " "})})
+                   .has_value());
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
+                   {MakeQuestion("c", QuestionType::kChoice, {"a", "a"})})
+                   .has_value());
 
   std::vector<std::string> too_many_options;
   for (size_t i = 0; i <= DecisionModelSchemaCompiler::kMaxChoiceOptions; ++i) {
     too_many_options.push_back("opt" + base::NumberToString(i));
   }
   EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
-                   std::nullopt,
                    {MakeQuestion("c", QuestionType::kChoice, too_many_options)})
                    .has_value());
 
-  EXPECT_FALSE(
-      DecisionModelSchemaCompiler::Compile(
-          std::nullopt, {MakeQuestion("s", QuestionType::kScore, {"only_one"})})
-          .has_value());
+  EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
+                   {MakeQuestion("s", QuestionType::kScore, {"only_one"})})
+                   .has_value());
 
   std::vector<std::string> too_many_levels;
   for (size_t i = 0; i <= DecisionModelSchemaCompiler::kMaxScoreLevels; ++i) {
     too_many_levels.push_back(base::NumberToString(i));
   }
   EXPECT_FALSE(DecisionModelSchemaCompiler::Compile(
-                   std::nullopt,
                    {MakeQuestion("s", QuestionType::kScore, too_many_levels)})
                    .has_value());
 }
@@ -228,9 +215,7 @@ TEST(DecisionModelSchemaCompilerTest, AllowsSurroundingWhitespace) {
   auto q = MakeQuestion(" q ", QuestionType::kChoice, {" a\nb ", "c"});
   q->prompt = "line 1\nline 2";
   q->options[0]->description = "desc 1\ndesc 2";
-  EXPECT_TRUE(
-      DecisionModelSchemaCompiler::Compile("ctx 1\nctx 2", {std::move(q)})
-          .has_value());
+  EXPECT_TRUE(DecisionModelSchemaCompiler::Compile({std::move(q)}).has_value());
 }
 
 TEST(DecisionModelSchemaCompilerTest, BuildsOptionAndQueryPassages) {
@@ -239,7 +224,6 @@ TEST(DecisionModelSchemaCompilerTest, BuildsOptionAndQueryPassages) {
   choice->options[0]->description = "Product crash or defect";
 
   auto schema = DecisionModelSchemaCompiler::Compile(
-      "Support tickets",
       {MakeQuestion("b", QuestionType::kBoolean), std::move(choice),
        MakeQuestion("s", QuestionType::kScore)});
   ASSERT_TRUE(schema.has_value());
@@ -314,7 +298,6 @@ TEST(DecisionModelSchemaCompilerTest, ScoreQuestionEmbeddings) {
 
 TEST(DecisionModelSchemaCompilerTest, DecodeResultAndNumericScoreWeighting) {
   auto schema = DecisionModelSchemaCompiler::Compile(
-      std::nullopt,
       {MakeQuestion("b", QuestionType::kBoolean),
        MakeQuestion("s", QuestionType::kScore, {"0", "5", "10"})});
   ASSERT_TRUE(schema.has_value());
@@ -357,7 +340,6 @@ TEST(DecisionModelSchemaCompilerTest, DecodeResultAndNumericScoreWeighting) {
 TEST(DecisionModelSchemaCompilerTest,
      ScoreUsesPositionsUnlessAllLabelsAreNumbers) {
   auto schema = DecisionModelSchemaCompiler::Compile(
-      std::nullopt,
       {MakeQuestion("words", QuestionType::kScore, {"low", "mid", "high"}),
        MakeQuestion("mixed", QuestionType::kScore, {"1", "2", "3+"}),
        MakeQuestion("neg_pos", QuestionType::kScore, {"-1", "0", "0.5"}),
@@ -381,7 +363,6 @@ TEST(DecisionModelSchemaCompilerTest,
 TEST(DecisionModelSchemaCompilerTest, ScoreStaysFiniteForHugeLabels) {
   constexpr float kMaxFloat = std::numeric_limits<float>::max();
   auto schema = DecisionModelSchemaCompiler::Compile(
-      std::nullopt,
       {MakeQuestion("single_huge", QuestionType::kScore, {"0", "1e300"}),
        MakeQuestion("sum_pos_overflow", QuestionType::kScore,
                     {"1.79e308", "1.795e308", "1.797e308"}),

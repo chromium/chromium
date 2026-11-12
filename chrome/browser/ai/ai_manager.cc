@@ -2109,8 +2109,7 @@ AIManager::CheckDecisionModelOptions(
   if (!require_questions && options->questions.empty()) {
     return DecisionModelSchemaCompiler::CompiledSchema();
   }
-  auto schema = DecisionModelSchemaCompiler::Compile(options->context,
-                                                     options->questions);
+  auto schema = DecisionModelSchemaCompiler::Compile(options->questions);
   if (!schema.has_value()) {
     // The renderer enforces the same rules before calling into the browser.
     receivers_.ReportBadMessage(schema.error());

@@ -193,8 +193,7 @@ DecisionModelSchemaCompiler::CompiledSchema MakeSchema() {
   questions.push_back(MakeQuestion(
       "category", blink::mojom::AIDecisionModelQuestionType::kChoice,
       {"bug", "billing", "feature"}));
-  auto schema =
-      DecisionModelSchemaCompiler::Compile("Support tickets", questions);
+  auto schema = DecisionModelSchemaCompiler::Compile(questions);
   CHECK(schema.has_value());
   return *std::move(schema);
 }
@@ -209,7 +208,7 @@ uint32_t LargestPromptSize(
         largest_question,
         DecisionModelPromptBuilder::BuildQuestionPrompt(schema, q).size());
   }
-  return DecisionModelPromptBuilder::BuildSystemPrompt(schema).size() +
+  return DecisionModelPromptBuilder::BuildSystemPrompt().size() +
          largest_question + 4;
 }
 
@@ -331,7 +330,7 @@ TEST_F(AILanguageModelDecisionModelTest, ScoringContextHasOneTurnEach) {
   ASSERT_FALSE(fake_model_.scored_contexts.empty());
   EXPECT_EQ(fake_model_.scored_contexts[0],
             TokenString(ml::Token::kSystem) +
-                DecisionModelPromptBuilder::BuildSystemPrompt(schema) +
+                DecisionModelPromptBuilder::BuildSystemPrompt() +
                 TokenString(ml::Token::kEnd) + TokenString(ml::Token::kUser) +
                 DecisionModelPromptBuilder::BuildInputPrompt("Some input") +
                 DecisionModelPromptBuilder::BuildQuestionPrompt(schema, 0) +

@@ -45,7 +45,6 @@ dictionary DecisionModelCreateCoreOptions {
   // side by side; not slated for the final API shape.
   // TODO(crbug.com/565849508): Remove after DevTrial backend evaluation.
   DecisionModelBackend devTrialBackend;
-  DOMString context;
   sequence<LanguageModelExpected> expectedInputs;
   sequence<DecisionModelQuestion> questions;
   PerformancePreference preference = "auto";

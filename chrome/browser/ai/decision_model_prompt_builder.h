@@ -28,9 +28,8 @@ class DecisionModelPromptBuilder {
   // Returns the single-letter key ("A".."Z") for the option at `index`.
   static std::string GetOptionKey(size_t index);
 
-  // Returns the system prompt containing the task instructions and optional
-  // shared context.
-  static std::string BuildSystemPrompt(const CompiledSchema& schema);
+  // Returns the system prompt containing the task instructions.
+  static std::string BuildSystemPrompt();
 
   // Returns the first part of the user turn containing the input to classify.
   static std::string BuildInputPrompt(std::string_view input);

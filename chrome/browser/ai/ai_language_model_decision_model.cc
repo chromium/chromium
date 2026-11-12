@@ -327,7 +327,7 @@ AILanguageModelDecisionModel::AILanguageModelDecisionModel(
     base::RepeatingClosure on_decide_succeeded)
     : AIContextBoundObject(context_bound_object_set),
       schema_(std::move(schema)),
-      system_prompt_(DecisionModelPromptBuilder::BuildSystemPrompt(schema_)),
+      system_prompt_(DecisionModelPromptBuilder::BuildSystemPrompt()),
       token_limit_(max_tokens > kReservedTokens ? max_tokens - kReservedTokens
                                                 : 0),
       on_ready_(std::move(on_ready)),

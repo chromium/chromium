@@ -228,9 +228,6 @@ mojom::blink::AIDecisionModelCreateOptionsPtr CreateOptionsToMojo(
         ToMojoDecisionModelBackend(options->devTrialBackend());
   }
   mojo_options->preference = ToMojoPerformancePreference(options->preference());
-  if (options->hasContext()) {
-    mojo_options->context = options->context();
-  }
   if (options->hasExpectedInputs()) {
     Vector<mojom::blink::AILanguageCodePtr> languages;
     for (const auto& expected : options->expectedInputs()) {

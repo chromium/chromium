@@ -177,7 +177,6 @@ bool SetScoreValues(
 // static
 base::expected<DecisionModelSchemaCompiler::CompiledSchema, std::string>
 DecisionModelSchemaCompiler::Compile(
-    const std::optional<std::string>& shared_context,
     base::span<const blink::mojom::AIDecisionModelQuestionPtr> questions) {
   if (questions.empty()) {
     return base::unexpected("At least one question is required.");
@@ -189,7 +188,6 @@ DecisionModelSchemaCompiler::Compile(
   }
 
   CompiledSchema schema;
-  schema.shared_context = shared_context.value_or(std::string());
 
   base::flat_set<std::string> ids;
   for (const auto& q : questions) {
@@ -289,9 +287,8 @@ std::string DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(
   const std::string_view detail = IsBlank(option.description)
                                       ? std::string_view(label)
                                       : option.description;
-  // TODO(crbug.com/565849508): Move passage templates to a model config,
-  // incorporate `shared_context`, and avoid truncating option details when long
-  // prompts exceed the token window.
+  // TODO(crbug.com/565849508): Move passage templates to a model config and
+  // avoid truncating option details when long prompts exceed the token window.
   switch (question.type) {
     case QuestionType::kScore:
       return base::StrCat({"title: Level ", label, " | text: Question: ",
@@ -306,9 +303,8 @@ std::string DecisionModelSchemaCompiler::BuildOptionEmbeddingPassage(
 // static
 std::string DecisionModelSchemaCompiler::BuildInputEmbeddingPassage(
     std::string_view input) {
-  // Omit `shared_context` and `question.prompt` for EmbeddingGemma; bi-encoder
-  // queries degrade when schema text outweighs the input (Gemma 4 includes
-  // `shared_context` via `DecisionModelPromptBuilder::BuildSystemPrompt()`).
+  // Omit `question.prompt` for EmbeddingGemma; bi-encoder queries degrade when
+  // schema text outweighs the input.
   // TODO(crbug.com/565849508): Move per-model template differences to model
   // configs.
   return base::StrCat({"task: classification | query: ", input});
