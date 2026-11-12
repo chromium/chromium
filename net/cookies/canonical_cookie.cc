@@ -339,13 +339,6 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   bool collect_metrics =
       base::ShouldRecordSubsampledMetric(kHistogramSampleProbability);
 
-  if (collect_metrics) {
-    // We record this metric before checking validity because the presence of an
-    // HTAB will invalidate the ParsedCookie.
-    base::UmaHistogramBoolean("Cookie.NameOrValueHtab.Subsampled",
-                              parsed_cookie.HasInternalHtab());
-  }
-
   if (!parsed_cookie.IsValid()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "WARNING: Couldn't parse cookie";

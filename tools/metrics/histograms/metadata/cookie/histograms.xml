@@ -514,22 +514,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.NameOrValueHtab.Subsampled" enum="Boolean"
-    expires_after="2025-07-27">
-  <owner>awillia@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    Records whether or not a cookie has internal HTABs in either its name or
-    value. Leading and trailing HTABs are ignored.
-
-    This metric is recorded when CanonicalCookie::Create is called, regardless
-    whether the cookie is successfully created or not.
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.OnCookiesAccessed.BatchSize" units="accesses"
     expires_after="2026-05-03">
   <owner>olivierli@chromium.org</owner>

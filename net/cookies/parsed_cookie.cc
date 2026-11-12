@@ -628,14 +628,6 @@ void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
     // OK, we're finished with a Token/Value.
     pair.second = std::string(value_start, value_end);
 
-    // For metrics, check if either the name or value contain an internal HTAB
-    // (0x9). That is, not leading or trailing.
-    if (pair_num == 0 &&
-        (pair.first.find_first_of("\t") != std::string::npos ||
-         pair.second.find_first_of("\t") != std::string::npos)) {
-      internal_htab_ = true;
-    }
-
     bool ignore_pair = false;
     if (pair_num == 0) {
       if (!IsValidCookieNameValuePair(pair.first, pair.second, &status_out)) {
