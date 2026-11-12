@@ -8,7 +8,9 @@ Ezabatzen baduzu, berehala galduko dute denek "<ph name="TITLE_OF_GROUP" />" fit
 <translation id="1419023007528516122">Taldea betiko ezabatuko da gailutik</translation>
 <translation id="1499635324672558517">Ezkutuko moduko fitxa guztiak itxi nahi dituzu?</translation>
 <translation id="1501480321619201731">Ezabatu taldea</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> fitxa taldekatu dira</translation>
 <translation id="1713541401465507417">Itxi fitxa eta talde guztiak</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fitxa taldekatu da</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
 <translation id="2628148780487543078">Itxi fitxa ainguratuak ere</translation>
 <translation id="2677748264148917807">Irten</translation>

@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) غير نشطة}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />) غير نشطتَين}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب غير نشطة}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب غير نشطة}}</translation>
 <translation id="1568067597247500137">تجاهل الموقع</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{نقل علامة التبويب إلى الأسفل}zero{نقل علامات التبويب إلى الأسفل}two{نقل علامتَي التبويب إلى الأسفل}few{نقل علامات التبويب إلى الأسفل}many{نقل علامات التبويب إلى الأسفل}other{نقل علامات التبويب إلى الأسفل}}</translation>
-<translation id="1645759014353344461">عدد علامات التبويب المجمَّعة: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
 <translation id="1670942869417022142">تم كتم الصوت</translation>
 <translation id="1697284962337958118">إضافة إلى</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{لم تعُد مجموعة واحدة (<ph name="TAB_GROUPS_COUNT_ONE" />) لعلامات التبويب متوفّرة}zero{لم تعُد <ph name="TAB_GROUPS_COUNT_MANY" /> مجموعة لعلامات التبويب متوفّرة}two{لم تعُد مجموعتان (<ph name="TAB_GROUPS_COUNT_MANY" />) لعلامات التبويب متوفّرة}few{لم تعُد <ph name="TAB_GROUPS_COUNT_MANY" /> مجموعات لعلامات التبويب متوفّرة}many{لم تعُد <ph name="TAB_GROUPS_COUNT_MANY" /> مجموعة لعلامات التبويب متوفّرة}other{لم تعُد <ph name="TAB_GROUPS_COUNT_MANY" /> مجموعة لعلامات التبويب متوفّرة}}</translation>
 <translation id="1759122978835002237">نقل مجموعة علامات التبويب إلى الأعلى</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />مزيد من المعلومات<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073">تم تجميع علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)</translation>
 <translation id="1844381456014878100">بعد 7 أيام من عدم النشاط</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{إضافة علامة التبويب إلى قائمة القراءة}zero{إضافة علامات التبويب إلى قائمة القراءة}two{إضافة علامتَي التبويب إلى قائمة القراءة}few{إضافة علامات التبويب إلى قائمة القراءة}many{إضافة علامات التبويب إلى قائمة القراءة}other{إضافة علامات التبويب إلى قائمة القراءة}}</translation>

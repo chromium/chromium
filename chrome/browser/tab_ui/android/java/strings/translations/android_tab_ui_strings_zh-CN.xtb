@@ -8,7 +8,9 @@
 <translation id="1419023007528516122">此操作会将该分组从您的设备中永久删除</translation>
 <translation id="1499635324672558517">要关闭所有无痕式标签页吗？</translation>
 <translation id="1501480321619201731">删除标签页组</translation>
+<translation id="1645759014353344461">已将 <ph name="TABS_COUNT_MANY" /> 个标签页合为一组</translation>
 <translation id="1713541401465507417">关闭所有标签页和分组</translation>
+<translation id="1828808367831369073">已将 <ph name="TABS_COUNT_ONE" /> 个标签页合为一组</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开已关闭的无痕式标签页。}other{您可以从“最近打开的标签页”部分和“标签页分组”部分重新打开已关闭的标签页和分组。不过，无法打开您已关闭的 # 个无痕式标签页。}}</translation>
 <translation id="2628148780487543078">同时关闭固定标签页</translation>
 <translation id="2677748264148917807">离开</translation>

@@ -8,7 +8,9 @@ If you delete it, everyone will immediately lose access to the '<ph name="TITLE_
 <translation id="1419023007528516122">This will permanently delete the group from your device</translation>
 <translation id="1499635324672558517">Close all Incognito tabs?</translation>
 <translation id="1501480321619201731">Delete group</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tabs grouped</translation>
 <translation id="1713541401465507417">Close all tabs and groups</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab grouped</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your Incognito tab won't be available.}other{Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section. Your # Incognito tabs won't be available.}}</translation>
 <translation id="2628148780487543078">Also close pinned tabs</translation>
 <translation id="2677748264148917807">Leave</translation>

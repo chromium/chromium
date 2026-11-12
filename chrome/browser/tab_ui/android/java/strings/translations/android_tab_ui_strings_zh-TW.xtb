@@ -8,7 +8,9 @@
 <translation id="1419023007528516122">這麼做會將群組從裝置中永久刪除</translation>
 <translation id="1499635324672558517">要關閉所有無痕分頁嗎？</translation>
 <translation id="1501480321619201731">刪除群組</translation>
+<translation id="1645759014353344461">已將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組</translation>
 <translation id="1713541401465507417">關閉所有分頁和群組</translation>
+<translation id="1828808367831369073">已將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組，但無痕分頁無法重新開啟。}other{你可以在「最近開啟的分頁」和「分頁群組」部分重新開啟已關閉的分頁和群組，但這 # 個無痕分頁無法重新開啟。}}</translation>
 <translation id="2628148780487543078">一併關閉固定分頁</translation>
 <translation id="2677748264148917807">離開</translation>

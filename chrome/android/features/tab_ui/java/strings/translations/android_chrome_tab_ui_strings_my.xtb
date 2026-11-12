@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{အသုံးမပြုသောတဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{အသုံးမပြုသောတဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="1568067597247500137">ဝဘ်ဆိုက် ဖျောက်ထားရန်</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{တဘ်ကို အောက်သို့ရွှေ့ရန်}other{တဘ်များကို အောက်သို့ရွှေ့ရန်}}</translation>
-<translation id="1645759014353344461">တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1657719826150349398">တဘ်ကို အောက်သို့ ရွှေ့ရန်</translation>
 <translation id="1670942869417022142">အသံပိတ်ထားသည်</translation>
 <translation id="1697284962337958118">အောက်ပါသို့ ထည့်ပါ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{တဘ်အုပ်စု <ph name="TAB_GROUPS_COUNT_ONE" /> ကို မရတော့ပါ}other{တဘ်အုပ်စု <ph name="TAB_GROUPS_COUNT_MANY" /> ကို မရတော့ပါ}}</translation>
 <translation id="1759122978835002237">တဘ်အုပ်စုကို အပေါ်သို့ရွှေ့ရန်</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ပိုမိုလေ့လာရန်<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073">တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1844381456014878100">၇ ရက်ကြာ အသုံးမပြုသည့်နောက်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{တဘ်ကို ဖတ်ရန်စာရင်းသို့ ထည့်ရန်}other{တဘ်များကို ဖတ်ရန်စာရင်းသို့ ထည့်ရန်}}</translation>

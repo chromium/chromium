@@ -8,7 +8,9 @@ Grubu silerseniz herkes "<ph name="TITLE_OF_GROUP" />" sekme grubuna erişimini 
 <translation id="1419023007528516122">Bu işlem, grubu cihazınızdan kalıcı olarak siler</translation>
 <translation id="1499635324672558517">Tüm Gizli sekmeler kapatılsın mı?</translation>
 <translation id="1501480321619201731">Grubu sil</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> sekme gruplandı</translation>
 <translation id="1713541401465507417">Tüm sekmeleri ve grupları kapat</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> sekme gruplandı</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. Gizli sekmeniz kullanılamaz.}other{Kapattığınız sekmeleri ve grupları, "Son sekmeler" bölümünden ve "Sekme grupları" bölümünden yeniden açabilirsiniz. # gizli sekmeniz kullanılamaz.}}</translation>
 <translation id="2628148780487543078">Sabit sekmeleri de kapat</translation>
 <translation id="2677748264148917807">Çık</translation>

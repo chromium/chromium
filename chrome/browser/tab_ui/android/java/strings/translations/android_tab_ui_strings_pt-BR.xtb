@@ -8,7 +8,9 @@ Se você excluir o grupo, todos vão perder imediatamente o acesso ao grupo de g
 <translation id="1419023007528516122">Essa ação vai excluir permanentemente o grupo do seu dispositivo</translation>
 <translation id="1499635324672558517">Fechar todas as guias anônimas?</translation>
 <translation id="1501480321619201731">Excluir grupo</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> guias agrupadas</translation>
 <translation id="1713541401465507417">Fechar todos os grupos e guias</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> guia agrupada</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". A guia anônima não estará disponível.}one{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". # guia anônima não estará disponível.}other{Você pode reabrir as guias e os grupos fechados nas seções "Guias recentes" e "Grupos de guias". # guias anônimas não estarão disponíveis.}}</translation>
 <translation id="2628148780487543078">Fechar também as guias fixadas</translation>
 <translation id="2677748264148917807">Sair</translation>

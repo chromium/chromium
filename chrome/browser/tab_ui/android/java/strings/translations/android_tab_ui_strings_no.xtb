@@ -8,7 +8,9 @@ Hvis du sletter den, mister alle umiddelbart tilgangen til fanegruppen «<ph nam
 <translation id="1419023007528516122">Dette fører til at gruppen slettes fra enheten permanent</translation>
 <translation id="1499635324672558517">Vil du lukke alle inkognitofaner?</translation>
 <translation id="1501480321619201731">Slett gruppen</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> faner er gruppert</translation>
 <translation id="1713541401465507417">Lukk alle faner og grupper</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fane er gruppert</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen. Inkognitofanen din kommer ikke til å være tilgjengelig.}other{Du kan gjenåpne de lukkede fanene og gruppene dine via Nylige faner-delen og Fanegrupper-delen. De # inkognitofanene dine kommer ikke til å være tilgjengelige.}}</translation>
 <translation id="2628148780487543078">Lukk også festede faner</translation>
 <translation id="2677748264148917807">Gå ut</translation>

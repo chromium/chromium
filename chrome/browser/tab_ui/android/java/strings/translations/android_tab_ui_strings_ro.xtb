@@ -8,7 +8,9 @@ Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de fi
 <translation id="1419023007528516122">Astfel, grupul va fi șters definitiv de pe dispozitiv</translation>
 <translation id="1499635324672558517">Închizi toate filele incognito?</translation>
 <translation id="1501480321619201731">Șterge grupul</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> file grupate</translation>
 <translation id="1713541401465507417">Închide toate filele și grupurile</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> filă grupată</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Fila incognito nu va fi disponibilă.}few{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # file incognito nu vor fi disponibile.}other{Filele și grupurile închise pot fi redeschise din secțiunile File recente și Grupuri de file. Cele # de file incognito nu vor fi disponibile.}}</translation>
 <translation id="2628148780487543078">Închide și filele fixate</translation>
 <translation id="2677748264148917807">Ieși</translation>

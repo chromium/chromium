@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивен елемент}other{<ph name="TABS_COUNT_MANY" /> неактивни елемента}}</translation>
 <translation id="1568067597247500137">Заглушаване на сайта</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Преместване на раздела надолу}other{Преместване на разделите надолу}}</translation>
-<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> раздела са групирани</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1670942869417022142">Спрян звук</translation>
 <translation id="1697284962337958118">Добавяне към</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> група раздели вече не е налице}other{<ph name="TAB_GROUPS_COUNT_MANY" /> групи раздели вече не са налице}}</translation>
 <translation id="1759122978835002237">Преместване на групата раздели нагоре</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> раздел е групиран</translation>
 <translation id="1844381456014878100">След 7 дни неактивност</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>

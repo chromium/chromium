@@ -8,7 +8,9 @@ Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na 
 <translation id="1419023007528516122">Permanente nitong ide-delete ang grupo sa iyong device</translation>
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
 <translation id="1501480321619201731">I-delete ang pangkat</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> (na) tab ang naigrupo</translation>
 <translation id="1713541401465507417">Isara ang lahat ng tab at grupo</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab ang naigrupo</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong tab na Incognito.}one{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # tab na Incognito.}other{Mabubuksan ulit ang mga isinara mong tab at grupo mula sa seksyong Mga kamakailang tab at seksyong Mga grupo ng tab. Hindi magiging available ang iyong # na tab na Incognito.}}</translation>
 <translation id="2628148780487543078">Isara din ang mga naka-pin na tab</translation>
 <translation id="2677748264148917807">Umalis</translation>

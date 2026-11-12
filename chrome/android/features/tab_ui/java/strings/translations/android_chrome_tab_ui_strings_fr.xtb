@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> élément inactif}one{<ph name="TABS_COUNT_MANY" /> élément inactif}other{<ph name="TABS_COUNT_MANY" /> éléments inactifs}}</translation>
 <translation id="1568067597247500137">Couper le son du site</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Déplacer l'onglet vers le bas}one{Déplacer l'onglet vers le bas}other{Déplacer les onglets vers le bas}}</translation>
-<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> onglets regroupés</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1670942869417022142">Audio désactivé</translation>
 <translation id="1697284962337958118">Ajouter à</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> groupe d'onglets n'est plus disponible}one{<ph name="TAB_GROUPS_COUNT_MANY" /> groupe d'onglet n'est plus disponible}other{<ph name="TAB_GROUPS_COUNT_MANY" /> groupes d'onglets ne sont plus dispos}}</translation>
 <translation id="1759122978835002237">Déplacer le groupe d'onglets vers le haut</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet regroupé</translation>
 <translation id="1844381456014878100">Après 7 jours d'inactivité</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>

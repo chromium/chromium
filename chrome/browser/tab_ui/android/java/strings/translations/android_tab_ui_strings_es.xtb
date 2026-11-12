@@ -8,7 +8,9 @@ Si lo eliminas, todos los usuarios perderán inmediatamente el acceso al grupo d
 <translation id="1419023007528516122">Se eliminará permanentemente el grupo de tu dispositivo</translation>
 <translation id="1499635324672558517">¿Cerrar todas las pestañas de Incógnito?</translation>
 <translation id="1501480321619201731">Eliminar grupo</translation>
+<translation id="1645759014353344461">Se han agrupado <ph name="TABS_COUNT_MANY" /> pestañas</translation>
 <translation id="1713541401465507417">Cerrar todas las pestañas y grupos</translation>
+<translation id="1828808367831369073">Se ha agrupado <ph name="TABS_COUNT_ONE" /> pestaña</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tu pestaña de Incógnito no estará disponible.}other{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupo de pestañas. Tus # pestañas de Incógnito no estarán disponibles.}}</translation>
 <translation id="2628148780487543078">Cerrar también las pestañas fijas</translation>
 <translation id="2677748264148917807">Salir</translation>

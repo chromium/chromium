@@ -8,7 +8,9 @@
 <translation id="1419023007528516122">S tem boste skupino trajno izbrisali iz naprave</translation>
 <translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
 <translation id="1501480321619201731">Izbriši skupino</translation>
+<translation id="1645759014353344461">Št. združenih zavihkov: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1713541401465507417">Zapri vse zavihke in skupine</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> zavihek je združen</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. Anonimni zavihek ne bo na voljo.}one{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihek ne bo na voljo.}two{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimna zavihka ne bosta na voljo.}few{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihki ne bodo na voljo.}other{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimnih zavihkov ne bo na voljo.}}</translation>
 <translation id="2628148780487543078">Zapri tudi pripete zavihke</translation>
 <translation id="2677748264148917807">Zapusti</translation>

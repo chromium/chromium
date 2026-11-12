@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არააქტიური ერთეული}other{<ph name="TABS_COUNT_MANY" /> არააქტიური ერთეული}}</translation>
 <translation id="1568067597247500137">საიტის დადუმება</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{ჩანართის ქვემოთ გადატანა}other{ჩანართების ქვემოთ გადატანა}}</translation>
-<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1670942869417022142">აუდიო დადუმებულია</translation>
 <translation id="1697284962337958118">დამატება აქ:</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{ჩანართების <ph name="TAB_GROUPS_COUNT_ONE" /> ჯგუფი აღარ არის ხელმისაწვდომი}other{ჩანართების <ph name="TAB_GROUPS_COUNT_MANY" /> ჯგუფი აღარ არის ხელმისაწვდომი}}</translation>
 <translation id="1759122978835002237">ჩანართების ჯგუფის ზემოთ გადატანა</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />შეიტყვეთ მეტი<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1844381456014878100">7-დღიანი უმოქმედობის შემდეგ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{ჩანართის დამატება საკითხავ სიაში}other{ჩანართების დამატება საკითხავ სიაში}}</translation>

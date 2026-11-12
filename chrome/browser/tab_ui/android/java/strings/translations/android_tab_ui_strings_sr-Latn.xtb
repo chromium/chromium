@@ -8,7 +8,9 @@ Ako je izbrišete, svi će odmah izgubiti pristup grupi kartica <ph name="TITLE
 <translation id="1419023007528516122">Ovim ćete trajno izbrisati grupu sa uređaja</translation>
 <translation id="1499635324672558517">Želite da zatvorite sve kartice bez arhiviranja?</translation>
 <translation id="1501480321619201731">Izbriši grupu</translation>
+<translation id="1645759014353344461">Kartice su grupisane (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1713541401465507417">Zatvori sve kartice i grupe</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> kartica je grupisana</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. Kartica bez arhiviranja neće biti dostupna.}one{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. # kartica bez arhiviranja neće biti dostupna.}few{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. # kartice bez arhiviranja neće biti dostupne.}other{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. # kartica bez arhiviranja neće biti dostupno.}}</translation>
 <translation id="2628148780487543078">Zatvori i zakačene kartice</translation>
 <translation id="2677748264148917807">Zatvori</translation>

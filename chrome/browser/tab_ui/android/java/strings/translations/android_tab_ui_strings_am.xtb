@@ -8,7 +8,9 @@
 <translation id="1419023007528516122">ይህ ቡድኑን ከመሣሪያዎ እስከመጨረሻው ይሰርዘዋል</translation>
 <translation id="1499635324672558517">ሁሉም ማንነት የማያሳውቁ ትሮች ይዘጉ?</translation>
 <translation id="1501480321619201731">ቡድን ሰርዝ</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ትሮች ተሰብስበዋል</translation>
 <translation id="1713541401465507417">ሁሉንም ትሮች እና ቡድኖች ዝጋ</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ትር ተሰብስቧል</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ ማንነት የማያሳውቅ ትር አይገኝም።}one{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ # ማንነት የማያሳውቅ ትር አይገኝም።}other{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ # ማንነት የማያሳውቁ ትሮች አይገኙም።}}</translation>
 <translation id="2628148780487543078">እንዲሁም የተሰኩ ትሮችን ዝጋ</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>

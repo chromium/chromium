@@ -8,7 +8,9 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="1419023007528516122">Il gruppo verrà eliminato definitivamente dal tuo dispositivo</translation>
 <translation id="1499635324672558517">Chiudere tutte le schede Incognito?</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> schede raggruppate</translation>
 <translation id="1713541401465507417">Chiudi tutte le schede e tutti i gruppi</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> scheda raggruppata</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. La scheda Incognito non sarà disponibile.}other{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. # schede Incognito non saranno disponibili.}}</translation>
 <translation id="2628148780487543078">Chiudi anche le schede fissate</translation>
 <translation id="2677748264148917807">Esci</translation>

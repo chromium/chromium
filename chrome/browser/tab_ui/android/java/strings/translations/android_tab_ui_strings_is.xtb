@@ -8,7 +8,9 @@ Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahó
 <translation id="1419023007528516122">Þetta mun eyða hópnum úr tækinu þínu varanlega</translation>
 <translation id="1499635324672558517">Loka öllum huliðsflipum?</translation>
 <translation id="1501480321619201731">Eyða hópi</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> flipar flokkaðir</translation>
 <translation id="1713541401465507417">Loka öllum flipum og hópum</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> flipi flokkaður</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. Huliðsflipinn verður ekki sýnilegur.}one{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. # huliðsflipi verður ekki sýnilegur.}other{Þú getur opnað lokuðu flipana og hópana þína aftur með því að fara í hlutann „Nýlegir flipar“ eða „Flipahópar“. # huliðsflipar verða ekki sýnilegir.}}</translation>
 <translation id="2628148780487543078">Loka einnig festum flipum</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>

@@ -8,7 +8,9 @@ Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'o
 <translation id="1419023007528516122">Cette action supprimera définitivement le groupe de votre appareil</translation>
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée?</translation>
 <translation id="1501480321619201731">Supprimer le groupe</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> onglets groupés</translation>
 <translation id="1713541401465507417">Fermer tous les onglets et tous les groupes</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet groupé</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. Votre onglet de navigation privée ne sera pas accessible.}one{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. # onglet de navigation privée ne sera pas accessible.}other{Vos onglets et vos groupes fermés peuvent être rouverts à partir des sections Onglets récents et Groupes d'onglets. Vos # onglets de navigation privée ne seront pas accessibles.}}</translation>
 <translation id="2628148780487543078">Fermer également les onglets épinglés</translation>
 <translation id="2677748264148917807">Quitter</translation>

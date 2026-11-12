@@ -8,7 +8,9 @@ Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<
 <translation id="1419023007528516122">Amb aquesta acció, el grup se suprimirà permanentment del dispositiu</translation>
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1501480321619201731">Suprimeix el grup</translation>
+<translation id="1645759014353344461">S'han agrupat <ph name="TABS_COUNT_MANY" /> pestanyes</translation>
 <translation id="1713541401465507417">Tanca totes les pestanyes i tots els grups</translation>
+<translation id="1828808367831369073">S'ha agrupat <ph name="TABS_COUNT_ONE" /> pestanya</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Pots tornar a obrir la pestanya i el grup tancats des de les seccions Pestanyes recents i Grups de pestanyes. La pestanya d'incògnit no estarà disponible.}other{Pots tornar a obrir les pestanyes i els grups tancats des de les seccions Pestanyes recents i Grups de pestanyes. # pestanyes d'incògnit no estaran disponibles.}}</translation>
 <translation id="2628148780487543078">Tanca també les pestanyes fixades</translation>
 <translation id="2677748264148917807">Surt</translation>

@@ -8,7 +8,9 @@ Jos poistat sen, kaikki menettävät heti pääsyn välilehtiryhmään "<ph name
 <translation id="1419023007528516122">Ryhmä poistetaan laitteelta pysyvästi</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
 <translation id="1501480321619201731">Poista ryhmä</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> välilehteä lisätty ryhmään</translation>
 <translation id="1713541401465507417">Kaikkien välilehtien ja ryhmien sulkeminen</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> välilehti lisätty ryhmään</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. Incognito-välilehti ei ole käytettävissä.}other{Suljetut välilehdet ja ryhmät voi avata uudelleen Viimeaikaiset välilehdet‑ ja Välilehtiryhmät-osioista. # incognito-välilehteä ei ole käytettävissä.}}</translation>
 <translation id="2628148780487543078">Sulje myös kiinnitetyt välilehdet</translation>
 <translation id="2677748264148917807">Poistu</translation>

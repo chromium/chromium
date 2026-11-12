@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Etkin olmayan <ph name="TABS_COUNT_ONE" /> öğe}other{Etkin olmayan <ph name="TABS_COUNT_MANY" /> öğe}}</translation>
 <translation id="1568067597247500137">Sitenin sesini kapat</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Sekmeyi aşağı taşı}other{Sekmeleri aşağı taşı}}</translation>
-<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> sekme gruplandı</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1670942869417022142">Ses kapatıldı</translation>
 <translation id="1697284962337958118">Ekle</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> sekme grubu artık kullanılamıyor}other{<ph name="TAB_GROUPS_COUNT_MANY" /> sekme grubu artık kullanılamıyor}}</translation>
 <translation id="1759122978835002237">Sekme grubunu yukarı taşı</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Daha fazla bilgi<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> sekme gruplandı</translation>
 <translation id="1844381456014878100">7 gün boyunca işlem yapılmadığında</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{Okuma listesine sekme ekle}other{Okuma listesine sekme ekle}}</translation>

@@ -8,7 +8,9 @@ Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i sk
 <translation id="1419023007528516122">Kjo do të fshijë përgjithmonë grupin nga pajisja jote</translation>
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> skeda të grupuara</translation>
 <translation id="1713541401465507417">Mbyll të gjitha skedat dhe grupet</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> skedë e grupuar</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". Skeda "e fshehtë" nuk do të ofrohet.}other{Skedat dhe grupet e tua të mbyllura mund të hapen përsëri nga seksioni "Skedat e fundit" dhe seksioni "Grupet e skedave". # skedat "e fshehta" nuk do të ofrohen.}}</translation>
 <translation id="2628148780487543078">Mbyll gjithashtu skedat e gozhduara</translation>
 <translation id="2677748264148917807">Largohu</translation>

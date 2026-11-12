@@ -8,7 +8,9 @@ Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph na
 <translation id="1419023007528516122">Spowoduje to trwałe usunięcie grupy z urządzenia</translation>
 <translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
 <translation id="1501480321619201731">Usuń grupę</translation>
+<translation id="1645759014353344461">Utworzono grupę kart. Ich liczba to <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1713541401465507417">Zamknij wszystkie karty i grupy</translation>
+<translation id="1828808367831369073">Utworzono grupę, w której znajduje się <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. Karta incognito nie będzie dostępna.}few{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będą dostępne.}many{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # kart incognito nie będzie dostępnych.}other{Zamknięte karty i grupy możesz ponownie otworzyć w sekcjach Ostatnie karty i Grupy kart. # karty incognito nie będzie dostępne.}}</translation>
 <translation id="2628148780487543078">Zamknij też przypięte karty</translation>
 <translation id="2677748264148917807">Wyjdź</translation>

@@ -8,7 +8,9 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="1419023007528516122">Thao tác này sẽ xoá vĩnh viễn nhóm khỏi thiết bị của bạn</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
 <translation id="1501480321619201731">Xoá nhóm</translation>
+<translation id="1645759014353344461">Đã nhóm <ph name="TABS_COUNT_MANY" /> thẻ</translation>
 <translation id="1713541401465507417">Đóng mọi thẻ và nhóm</translation>
+<translation id="1828808367831369073">Đã nhóm <ph name="TABS_COUNT_ONE" /> thẻ</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. Thẻ ẩn danh sẽ bị mất.}other{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. # thẻ ẩn danh sẽ bị mất.}}</translation>
 <translation id="2628148780487543078">Đóng cả các thẻ được ghim</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>

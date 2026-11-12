@@ -50,6 +50,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoBarExplicitTrigger.java",
     "java/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoBarThrottle.java",
     "java/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoClosureRestorer.java",
+    "java/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoGroupSnackbarController.java",
   ]
   deps = [
     ":java_resources",
@@ -158,6 +159,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/TabUndoBarControllerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoBarContentFactoryTest.java",
     "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoClosureRestorerUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_ui/undo_tab_close_snackbar/UndoGroupSnackbarControllerUnitTest.java",
   ]
 
   deps = [

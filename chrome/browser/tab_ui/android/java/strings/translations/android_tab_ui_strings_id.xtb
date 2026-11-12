@@ -8,7 +8,9 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="1419023007528516122">Tindakan ini akan menghapus permanen grup dari perangkat Anda</translation>
 <translation id="1499635324672558517">Tutup semua tab Samaran?</translation>
 <translation id="1501480321619201731">Hapus grup</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab dikelompokkan</translation>
 <translation id="1713541401465507417">Tutup semua tab dan grup</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab dikelompokkan</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. Tab Samaran Anda tidak akan tersedia.}other{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="2628148780487543078">Tutup juga tab tersemat</translation>
 <translation id="2677748264148917807">Keluar</translation>

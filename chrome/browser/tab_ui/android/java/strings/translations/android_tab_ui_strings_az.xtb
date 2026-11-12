@@ -8,7 +8,9 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="1419023007528516122">Bununla qrup cihazdan həmişəlik silinəcək</translation>
 <translation id="1499635324672558517">Bütün Incognito tabları qapadılsın?</translation>
 <translation id="1501480321619201731">Qrupu silin</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab qruplaşdırıldı</translation>
 <translation id="1713541401465507417">Bütün tab və qrupları bağlayın</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab qruplaşdırıldı</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. Anonim tab əlçatan olmayacaq.}other{Bağlanmış tab və qrupları Son tablar və ya Tab qrupları bölməsində yenidən aça bilərsiniz. # anonim tab əlçatan olmayacaq.}}</translation>
 <translation id="2628148780487543078">Sancılmış tabları da bağlayın</translation>
 <translation id="2677748264148917807">Tərk edin</translation>

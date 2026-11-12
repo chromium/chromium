@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> eitem anweithredol}zero{<ph name="TABS_COUNT_MANY" /> eitemau anweithredol}two{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}few{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}many{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}other{<ph name="TABS_COUNT_MANY" /> eitem anweithredol}}</translation>
 <translation id="1568067597247500137">Distewi'r wefan</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Symud tab i lawr}zero{Symud tabiau i lawr}two{Symud tabiau i lawr}few{Symud tabiau i lawr}many{Symud tabiau i lawr}other{Symud tabiau i lawr}}</translation>
-<translation id="1645759014353344461">Mae <ph name="TABS_COUNT_MANY" /> o dabiau wedi'u grwpio</translation>
 <translation id="1657719826150349398">Symud tab i lawr</translation>
 <translation id="1670942869417022142">Sain wedi'i distewi</translation>
 <translation id="1697284962337958118">Ychwanegu at</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{Nid yw <ph name="TAB_GROUPS_COUNT_ONE" /> grŵp tabiau ar gael mwyach}zero{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}two{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}few{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}many{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}other{Nid yw <ph name="TAB_GROUPS_COUNT_MANY" /> grŵp tabiau ar gael mwyach}}</translation>
 <translation id="1759122978835002237">Symud grŵp tabiau i fyny</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Dysgu rhagor<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073">Mae <ph name="TABS_COUNT_ONE" /> tab wedi'i grwpio</translation>
 <translation id="1844381456014878100">Ar ôl 7 diwrnod yn anweithredol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> thab}many{<ph name="TABS_COUNT_MANY" /> thab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{Ychwanegu tab at y rhestr ddarllen}zero{Ychwanegu tabiau at y rhestr ddarllen}two{Ychwanegu tabiau at y rhestr ddarllen}few{Ychwanegu tabiau at y rhestr ddarllen}many{Ychwanegu tabiau at y rhestr ddarllen}other{Ychwanegu tabiau at y rhestr ddarllen}}</translation>

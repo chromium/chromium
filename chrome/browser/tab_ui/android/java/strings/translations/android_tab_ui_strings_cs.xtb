@@ -8,7 +8,9 @@ Když skupinu karet <ph name="TITLE_OF_GROUP" /> smažete, všichni k ní okam�
 <translation id="1419023007528516122">Tímto skupinu trvale smažete ze svého zařízení</translation>
 <translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
 <translation id="1501480321619201731">Smazat skupinu</translation>
+<translation id="1645759014353344461">Byl seskupen tento počet karet: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1713541401465507417">Zavřít všechny karty a skupiny</translation>
+<translation id="1828808367831369073">Byla seskupena <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. Vaše anonymní karta nebude k dispozici.}few{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaše anonymní karty nebudou k dispozici.}many{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vaší anonymní karty nebude k dispozici.}other{Zavřené karty a skupiny můžete znovu otevřít ze sekcí Nedávno použité karty a Skupiny karet. # vašich anonymních karet nebude k dispozici.}}</translation>
 <translation id="2628148780487543078">Zavřít také připnuté karty</translation>
 <translation id="2677748264148917807">Odejít</translation>

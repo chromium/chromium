@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{Into e-<ph name="TABS_COUNT_ONE" /> engasebenzi}one{Izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezingasebenzi}other{Izinto ezingu-<ph name="TABS_COUNT_MANY" /> ezingasebenzi}}</translation>
 <translation id="1568067597247500137">Thulisa isayithi</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Yisa ithebhu phansi}one{Yisa amathebhu phansi}other{Yisa amathebhu phansi}}</translation>
-<translation id="1645759014353344461">Amathebhu angu-<ph name="TABS_COUNT_MANY" /> aqoqiwe</translation>
 <translation id="1657719826150349398">Yisa ithebhu phansi</translation>
 <translation id="1670942869417022142">Okulalelwayo okuthulisiwe</translation>
 <translation id="1697284962337958118">Engeza ku-</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{Iqembu lethebu elingu-<ph name="TAB_GROUPS_COUNT_ONE" /> alisatholakali}one{Amaqembu ethebhu angu-<ph name="TAB_GROUPS_COUNT_MANY" /> akasatholakali}other{Amaqembu ethebhu angu-<ph name="TAB_GROUPS_COUNT_MANY" /> akasatholakali}}</translation>
 <translation id="1759122978835002237">Yisa iqembu lethebhu phezulu</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Funda kabanzi<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073">Iqembu lethebhu elingu-<ph name="TABS_COUNT_ONE" /></translation>
 <translation id="1844381456014878100">Ngemva kwezinsuku eziyisi-7 ingasebenzi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ithebhu}one{<ph name="TABS_COUNT_MANY" /> amathebhu}other{<ph name="TABS_COUNT_MANY" /> amathebhu}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{Engeza ithebhu kuhlu lokufunda}one{Engeza amathebhu kuhlu lokufunda}other{Engeza amathebhu kuhlu lokufunda}}</translation>

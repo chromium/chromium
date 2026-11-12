@@ -8,7 +8,9 @@ Jei ją ištrinsite, visi iš karto neteks prieigos prie skirtukų grupės „<p
 <translation id="1419023007528516122">Atlikus šį veiksmą grupė bus visam laikui ištrinta iš įrenginio</translation>
 <translation id="1499635324672558517">Uždaryti visus inkognito skirtukus?</translation>
 <translation id="1501480321619201731">Ištrinti grupę</translation>
+<translation id="1645759014353344461">Sugrupuota tiek skirtukų: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1713541401465507417">Uždaryti visus skirtukus ir grupes</translation>
+<translation id="1828808367831369073">Sugrupuota skirtukų: <ph name="TABS_COUNT_ONE" /></translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. Inkognito skirtukas nebus pasiekiamas.}one{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtukas nebus pasiekiamas.}few{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtukai nebus pasiekiami.}many{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtuko nebus pasiekiama.}other{Uždarytus skirtukus ir grupes galima iš naujo atidaryti skiltyse „Naujausi skirtukai“ ir „Skirtukų grupės“. # inkognito skirtukų nebus pasiekiama.}}</translation>
 <translation id="2628148780487543078">Taip pat uždaryti prisegtus skirtukus</translation>
 <translation id="2677748264148917807">Išeiti</translation>

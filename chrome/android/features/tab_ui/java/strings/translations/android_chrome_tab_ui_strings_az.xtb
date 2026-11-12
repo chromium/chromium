@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> qeyri-aktiv element}other{<ph name="TABS_COUNT_MANY" /> qeyri-aktiv element}}</translation>
 <translation id="1568067597247500137">Saytı səssiz edin</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Tabı aşağı köçürün}other{Tabları aşağı köçürün}}</translation>
-<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> tab qruplaşdırıldı</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1670942869417022142">Səssiz edilmiş audio</translation>
 <translation id="1697284962337958118">Buraya əlavə edin:</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> tab qrupu artıq əlçatan deyil}other{<ph name="TAB_GROUPS_COUNT_MANY" /> tab qrupu artıq əlçatan deyil}}</translation>
 <translation id="1759122978835002237">Tab qrupunu yuxarı köçürün</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab qruplaşdırıldı</translation>
 <translation id="1844381456014878100">7 gün qeyri-aktiv olduqdan sonra</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{Tabı oxu siyahısına əlavə edin}other{Tabları oxu siyahısına əlavə edin}}</translation>

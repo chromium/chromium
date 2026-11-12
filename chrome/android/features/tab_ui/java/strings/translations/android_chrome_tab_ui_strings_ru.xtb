@@ -22,14 +22,12 @@
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактивный объект}one{<ph name="TABS_COUNT_MANY" /> неактивный объект}few{<ph name="TABS_COUNT_MANY" /> неактивных объекта}many{<ph name="TABS_COUNT_MANY" /> неактивных объектов}other{<ph name="TABS_COUNT_MANY" /> неактивных объекта}}</translation>
 <translation id="1568067597247500137">Отключить звук на сайте</translation>
 <translation id="1639330215535800445">{TAB_COUNT,plural, =1{Переместить вкладку вниз}one{Переместить вкладки вниз}few{Переместить вкладки вниз}many{Переместить вкладки вниз}other{Переместить вкладки вниз}}</translation>
-<translation id="1645759014353344461">Вкладки (<ph name="TABS_COUNT_MANY" />) сгруппированы.</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1670942869417022142">Звук отключен</translation>
 <translation id="1697284962337958118">Куда добавить</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> группа вкладок больше не доступна.}one{<ph name="TAB_GROUPS_COUNT_MANY" /> группа вкладок больше не доступна.}few{<ph name="TAB_GROUPS_COUNT_MANY" /> группы вкладок больше не доступны.}many{<ph name="TAB_GROUPS_COUNT_MANY" /> групп вкладок больше не доступны.}other{<ph name="TAB_GROUPS_COUNT_MANY" /> группы вкладок больше не доступны.}}</translation>
 <translation id="1759122978835002237">Переместить группу вкладок вверх</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073">Создана группа с <ph name="TABS_COUNT_ONE" /> вкладкой.</translation>
 <translation id="1844381456014878100">Через 7 дней</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="1894429470045525403">{TAB_COUNT,plural, =1{Добавить вкладку в список для чтения}one{Добавить вкладки в список для чтения}few{Добавить вкладки в список для чтения}many{Добавить вкладки в список для чтения}other{Добавить вкладки в список для чтения}}</translation>

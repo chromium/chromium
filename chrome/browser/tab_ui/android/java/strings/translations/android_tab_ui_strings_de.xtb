@@ -8,7 +8,9 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
 <translation id="1499635324672558517">Alle Inkognitotabs schließen?</translation>
 <translation id="1501480321619201731">Gruppe löschen</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> Tabs zu Gruppe hinzugefügt</translation>
 <translation id="1713541401465507417">Alle Tabs und Gruppen schließen</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzugefügt</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deinen Inkognitotab findest du dort jedoch nicht.}other{Deine geschlossenen Tabs und Gruppen können über die Bereiche „Zuletzt geöffnete Tabs“ oder „Tabgruppen“ wieder geöffnet werden. Deine # Inkognitotabs findest du dort jedoch nicht.}}</translation>
 <translation id="2628148780487543078">Auch angepinnte Tabs schließen</translation>
 <translation id="2677748264148917807">Verlassen</translation>

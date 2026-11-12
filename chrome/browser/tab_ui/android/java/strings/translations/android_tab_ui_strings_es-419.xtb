@@ -8,7 +8,9 @@ Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pe
 <translation id="1419023007528516122">Esta acción borrará el grupo de tu dispositivo de forma permanente</translation>
 <translation id="1499635324672558517">¿Quieres cerrar todas las pestañas de incógnito?</translation>
 <translation id="1501480321619201731">Borrar grupo</translation>
+<translation id="1645759014353344461">Se agruparon <ph name="TABS_COUNT_MANY" /> pestañas</translation>
 <translation id="1713541401465507417">Cerrar todos los grupos y las pestañas</translation>
+<translation id="1828808367831369073">Se agrupó <ph name="TABS_COUNT_ONE" /> pestaña</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas. Tu pestaña de incógnito no estará disponible.}other{Puedes volver a abrir las pestañas y los grupos cerrados desde las secciones Pestañas recientes y Grupos de pestañas. Tus # pestañas de incógnito no estarán disponibles.}}</translation>
 <translation id="2628148780487543078">Cerrar también las pestañas fijas</translation>
 <translation id="2677748264148917807">Abandonar</translation>

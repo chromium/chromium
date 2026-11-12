@@ -8,7 +8,9 @@ Törlés esetén mindenki azonnal elveszíti a hozzáférését a(z) „<ph name
 <translation id="1419023007528516122">Ezzel véglegesen törli a csoportot az eszközről.</translation>
 <translation id="1499635324672558517">Bezárja az összes inkognitó lapot?</translation>
 <translation id="1501480321619201731">Csoport törlése</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> lap csoportosítva</translation>
 <translation id="1713541401465507417">Az összes lap és csoport bezárása</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> lap csoportosítva</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. Az inkognitó lap nem lesz hozzáférhető.}other{A bezárt lapok és csoportok újra megnyithatók a Nemrég megnyitott lapok és a Lapcsoportok szakaszban. # inkognitó lap nem lesz hozzáférhető.}}</translation>
 <translation id="2628148780487543078">A rögzített lapok is záródjanak be</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>

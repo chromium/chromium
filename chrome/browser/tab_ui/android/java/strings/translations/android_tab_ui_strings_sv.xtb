@@ -8,7 +8,9 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="1419023007528516122">Detta raderar gruppen permanent från enheten</translation>
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>
+<translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> flikar har grupperats</translation>
 <translation id="1713541401465507417">Stäng alla flikar och grupper</translation>
+<translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> flik har grupperats</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Inkognitofliken är inte tillgänglig.}other{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Dina # inkognitoflikar är inte tillgängliga.}}</translation>
 <translation id="2628148780487543078">Stäng även fästa flikar</translation>
 <translation id="2677748264148917807">Lämna</translation>
