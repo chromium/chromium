@@ -8448,13 +8448,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.DelayUntilFirstFrame" units="ms"
-    expires_after="2026-10-11">
-  <owner>armax@chromium.org</owner>
-  <owner>video-cmi-mpp@google.com</owner>
+    expires_after="2027-10-11">
+  <owner>handellm@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Time it takes from the moment that a VideoCaptureController is requested to
     start to the moment the first video frame arrives at
     VideoCaptureController::OnFrameReadyInBuffer().
+
+    Warning: this histogram was expired from 2026-10-11 to M159; data may be
+    missing.
   </summary>
 </histogram>
 
