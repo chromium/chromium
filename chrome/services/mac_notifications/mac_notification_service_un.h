@@ -118,11 +118,18 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
 
   void DoDisplayNotification(mojom::NotificationPtr notification,
                              DisplayNotificationCallback callback);
+  // If OS notification permission is currently undecided (`kPromptPending` or
+  // `kNotDetermined`), removes any delivered notification with
+  // `notification_id`, cleans up tracking state, runs `callback` with the
+  // corresponding failure result, and returns true.
+  bool MaybeFailDisplayForUndecidedPermission(
+      const std::string& notification_id,
+      DisplayNotificationCallback& callback);
   void DeliverNotificationContent(PendingDelivery delivery);
   void OnNotificationDelivered(PendingDelivery delivery, NSError* error);
-  void OnNotificationDeliveryFailedWithStatus(
-      DisplayNotificationCallback callback,
-      UNAuthorizationStatus status);
+  void OnNotificationDeliveredWithStatus(PendingDelivery delivery,
+                                         bool has_error,
+                                         UNAuthorizationStatus status);
   // Queries `UNUserNotificationCenter` for notifications currently delivered in
   // the OS notification center, without merging in-flight deliveries. Used by
   // `SynchronizeNotifications()` to detect when delivered notifications have
@@ -151,6 +158,7 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   void DoInitializeDeliveredNotifications(
       NSArray<UNNotification*>* notifications,
       NSSet<UNNotificationCategory*>* categories);
+  void MaybeFinishInitialization();
 
   // Called regularly while we think that notifications are on screen to detect
   // when they get closed.
@@ -188,8 +196,13 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   // Observer token for NSApplicationDidBecomeActiveNotification.
   id<NSObject> __strong did_become_active_observer_;
 
-  // Set to true when initialization has finished, and this service is ready
-  // to receive mojo calls. `binding_` will not be bound until this happens.
+  // Set to true when `DoInitializeDeliveredNotifications()` has finished.
+  bool delivered_notifications_initialized_
+      GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // Set to true when both `DoInitializeDeliveredNotifications()` and the
+  // initial `SynchronizePermissionStatus()` have finished, and this service is
+  // ready to receive mojo calls. `binding_` will not be bound until this
+  // happens.
   bool finished_initialization_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   // If set, this callback is called when initialization completes.
   base::OnceClosure after_initialization_callback_
