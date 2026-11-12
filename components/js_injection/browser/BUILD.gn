@@ -34,17 +34,24 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "navigation_listener_browsertest.cc" ]
+  sources = [
+    "js_to_browser_messaging_browsertest.cc",
+    "navigation_listener_browsertest.cc",
+  ]
 
   deps = [
     ":browser",
     "//base/test:test_support",
     "//components/back_forward_cache",
+    "//components/js_injection/common:common_mojom",
+    "//components/origin_matcher",
     "//content/shell:content_shell_lib",
     "//content/test:browsertest_support",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public/common",
   ]
 }

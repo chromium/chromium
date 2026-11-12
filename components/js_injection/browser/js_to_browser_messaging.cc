@@ -9,7 +9,6 @@
 #include <variant>
 
 #include "base/containers/flat_map.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -216,6 +215,11 @@ void JsToBrowserMessaging::OnRenderFrameHostActivated() {
     return;
   }
 
+  // Listener removed while prerendering; the queue dies with the document.
+  if (!connection_factory_) {
+    return;
+  }
+
   std::vector<std::unique_ptr<WebMessage>> queued_messages =
       data->TakeQueuedMessages(name_, world_id_);
   for (auto& message : queued_messages) {
@@ -269,18 +273,14 @@ void JsToBrowserMessaging::PostMessage(
   DCHECK(reply_proxy_);
   reply_proxy_->EnsureBrowserToJsMessaging();
 
-  if (!host_) {
-    if (!connection_factory_) {
-      // Keeping track of crash spike from https://crbug.com/583595753.
-      // We should not end up here when BFCache gets evicted on
-      // WebMessageListener removal, but I don't want to trigger a browser crash
-      // if there are other paths that could lead to this point, or if the
-      // `kWebMessageListenerRemoveEvictsBfCache` gets disabled via Finch.
-      // Long-term this can be replaced with NOTREACHED().
-      base::debug::DumpWithoutCrashing();
-      return;
-    }
+  if (!connection_factory_) {
+    // The listener was removed, but this frame outlived the removal, e.g. a
+    // navigation that was in flight at the time. Dropping the message is safe:
+    // the app removed the listener and does not expect further messages.
+    return;
+  }
 
+  if (!host_) {
     const std::string top_level_origin_string =
         GetOriginString(top_level_origin);
     const std::string origin_string = GetOriginString(source_origin);

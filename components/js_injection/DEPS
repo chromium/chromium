@@ -8,6 +8,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  'js_to_browser_messaging_browsertest.cc': [
+    "+content/shell/browser/shell.h",
+  ],
   'navigation_listener_browsertest.cc': [
     "+content/shell/browser/shell.h",
   ],
