@@ -308,6 +308,10 @@ TEST_F(ResourcePoolTest, BusyResourcesNotFreed) {
   EXPECT_EQ(40000u, resource_pool_->GetTotalMemoryUsageForTesting());
   EXPECT_EQ(0u, resource_pool_->memory_usage_bytes());
   EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
+
+  // Wait for our resource pool to evict the now-unused resource.
+  test_task_runner_->FastForwardBy(ResourcePool::kDefaultExpirationDelay * 10);
+  EXPECT_EQ(0u, resource_pool_->GetTotalMemoryUsageForTesting());
 }
 
 TEST_F(ResourcePoolTest, UnusedResourcesEventuallyFreed) {

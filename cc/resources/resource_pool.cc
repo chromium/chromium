@@ -471,6 +471,9 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
   DidFinishUsingResource(std::move(*busy_it));
   busy_resources_.erase(busy_it);
 
+  // Now that we have evictable resources, schedule an eviction call for this
+  // resource if necessary.
+  ScheduleEvictExpiredResourcesIn(resource_expiration_delay_);
   UpdateTracingCounters();
 }
 
