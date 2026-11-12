@@ -762,7 +762,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     if (newAnnotationMode === AnnotationMode.TEXT &&
         !Ink2Manager.getInstance().isTextInitializationComplete()) {
-      await Ink2Manager.getInstance().initializeTextAnnotations();
+      await Ink2Manager.getInstance().initializeTextAnnotations(
+          this.docLength_);
     }
     this.annotationMode_ = newAnnotationMode;
     this.showSignatureDialog_ = newAnnotationMode === AnnotationMode.SIGNATURE;

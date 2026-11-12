@@ -24,7 +24,7 @@ chrome.test.runTests([
     const mockMetricsPrivate = setupMockMetricsPrivate();
 
     viewer.$.toolbar.setAnnotationMode(AnnotationMode.TEXT);
-    await Ink2Manager.getInstance().initializeTextAnnotations();
+    await Ink2Manager.getInstance().initializeTextAnnotations(1);
     await microtasksFinished();
 
     chrome.test.assertEq(AnnotationMode.TEXT, viewer.$.toolbar.annotationMode);

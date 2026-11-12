@@ -50,7 +50,7 @@ export async function setupTextBoxTest(
   const privateProxy = new TestPdfViewerPrivateProxy();
   PdfViewerPrivateProxyImpl.setInstance(privateProxy);
   const manager = Ink2Manager.getInstance();
-  await manager.initializeTextAnnotations();
+  await manager.initializeTextAnnotations(1);
   const textbox = document.createElement('ink-text-box');
   textbox.viewport = viewport;
   viewport.setViewportChangedCallback(() => textbox.viewportChanged());

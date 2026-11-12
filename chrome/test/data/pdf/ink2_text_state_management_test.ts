@@ -133,7 +133,7 @@ chrome.test.runTests([
   // edited, committed, and subsequently re-activated for editing.
   async function testFontSizeStateManagement() {
     viewer.$.toolbar.setAnnotationMode(AnnotationMode.TEXT);
-    await Ink2Manager.getInstance().initializeTextAnnotations();
+    await Ink2Manager.getInstance().initializeTextAnnotations(1);
     await microtasksFinished();
 
     const panel = getTextPanel();
@@ -222,7 +222,7 @@ chrome.test.runTests([
   // (Green, Right-aligned).
   async function testColorAndAlignmentStateManagementOnAnnotationSwitch() {
     viewer.$.toolbar.setAnnotationMode(AnnotationMode.TEXT);
-    await Ink2Manager.getInstance().initializeTextAnnotations();
+    await Ink2Manager.getInstance().initializeTextAnnotations(1);
     await microtasksFinished();
 
     const textbox = getTextBox();

@@ -314,7 +314,7 @@ chrome.test.runTests([
   // Regression test for crbug.com/519251246
   async function testClickOldPositionAfterMove() {
     const {manager, viewport, mockPlugin} = setUpTest();
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(1);
 
     const annotationsElement = createAnnotationsElement(viewport);
     await microtasksFinished();
@@ -451,7 +451,7 @@ chrome.test.runTests([
   // Regression test for crbug.com/519251247
   async function testCommitStyleUpdates() {
     const {manager, viewport, mockPlugin} = setUpTest();
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(1);
 
     const annotationsElement = createAnnotationsElement(viewport);
     await microtasksFinished();
@@ -691,7 +691,7 @@ chrome.test.runTests([
     mockPlugin.setMessageReply('getAllTextAnnotations', {
       annotations: [testAnnotation1, testAnnotation2],
     });
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(1);
 
     const annotationsElement = createAnnotationsElement(viewport);
     await microtasksFinished();
@@ -862,7 +862,7 @@ chrome.test.runTests([
     Ink2Manager.setInstance(null);
     const manager = Ink2Manager.getInstance();
     manager.setViewport(viewport);
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(1);
 
     const annotationsElement = document.createElement('ink-text-annotations');
     annotationsElement.viewport = viewport;
@@ -903,14 +903,14 @@ chrome.test.runTests([
   async function testCopyAndPasteAnnotation() {
     const {manager, viewport, mockPlugin} = setUpTest();
     const annotation = {
-      ...getTestAnnotation(1),
+      ...getTestAnnotation(0),
       text: 'Copy Me',
       textBoxRect: {height: 20, locationX: 50, locationY: 50, width: 100},
     };
     mockPlugin.setMessageReply('getAllTextAnnotations', {
       annotations: [annotation],
     });
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(1);
 
     const annotationsElement = createAnnotationsElement(viewport);
     await microtasksFinished();
@@ -949,7 +949,7 @@ chrome.test.runTests([
     // Copied annotation should have a new ID and be offset by +10px.
     const activeAnnotation = textbox.annotation;
     chrome.test.assertTrue(activeAnnotation !== null);
-    chrome.test.assertFalse(activeAnnotation.id === 1);
+    chrome.test.assertFalse(activeAnnotation.id === 0);
     chrome.test.assertEq(115, activeAnnotation.textBoxRect.locationX);
     chrome.test.assertEq(63, activeAnnotation.textBoxRect.locationY);
 
@@ -989,14 +989,14 @@ chrome.test.runTests([
   async function testCutAndPasteAnnotation() {
     const {manager, viewport, mockPlugin} = setUpTest();
     const annotation = {
-      ...getTestAnnotation(1),
+      ...getTestAnnotation(0),
       text: 'Cut Me',
       textBoxRect: {height: 20, locationX: 50, locationY: 50, width: 100},
     };
     mockPlugin.setMessageReply('getAllTextAnnotations', {
       annotations: [annotation],
     });
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(1);
 
     const annotationsElement = createAnnotationsElement(viewport);
     await microtasksFinished();
@@ -1031,7 +1031,7 @@ chrome.test.runTests([
     // original position.
     const activeAnnotation = textbox.annotation;
     chrome.test.assertTrue(activeAnnotation !== null);
-    chrome.test.assertEq(1, activeAnnotation.id);
+    chrome.test.assertEq(0, activeAnnotation.id);
     chrome.test.assertEq(105, activeAnnotation.textBoxRect.locationX);
     chrome.test.assertEq(53, activeAnnotation.textBoxRect.locationY);
 
@@ -1059,7 +1059,7 @@ chrome.test.runTests([
     const pageMap = manager.annotations.get(0);
     chrome.test.assertTrue(pageMap !== undefined);
     chrome.test.assertEq(1, pageMap.size);
-    chrome.test.assertTrue(pageMap.has(1));
+    chrome.test.assertTrue(pageMap.has(0));
 
     chrome.test.succeed();
   },
@@ -1157,7 +1157,7 @@ chrome.test.runTests([
   // an annotation to the clipboard.
   async function testCopyAndCutEmptyAnnotation() {
     const {manager, viewport} = setUpTest();
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(1);
     const annotationsElement = createAnnotationsElement(viewport);
     await microtasksFinished();
 

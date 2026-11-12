@@ -36,7 +36,7 @@ async function setUpTextMode(): Promise<Ink2Manager> {
   manager.setTextAlignment(textAttributes.alignment);
   manager.setTextColor(textAttributes.color);
   manager.setTextStyles(textAttributes.styles);
-  await manager.initializeTextAnnotations();
+  await manager.initializeTextAnnotations(/*pageCount=*/ 1);
   return manager;
 }
 
@@ -200,7 +200,7 @@ chrome.test.runTests([
 
     // Initialize text annotation mode.
     const whenUpdated = eventToPromise('annotations-updated', manager);
-    const textPromise = manager.initializeTextAnnotations();
+    const textPromise = manager.initializeTextAnnotations(/*pageCount=*/ 1);
     await textPromise;
     chrome.test.assertTrue(manager.isTextInitializationComplete());
     await whenUpdated;
@@ -237,7 +237,7 @@ chrome.test.runTests([
 
     chrome.test.assertFalse(manager.isTextInitializationComplete());
     const whenUpdated = eventToPromise('annotations-updated', manager);
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(/*pageCount=*/ 1);
     chrome.test.assertTrue(manager.isTextInitializationComplete());
     await whenUpdated;
 
@@ -299,7 +299,7 @@ chrome.test.runTests([
       annotations: [testAnnotation],
     });
 
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(/*pageCount=*/ 1);
 
     // Activate the loaded annotation.
     mockPlugin.clearMessages();
@@ -353,7 +353,7 @@ chrome.test.runTests([
     });
 
     chrome.test.assertFalse(manager.isTextInitializationComplete());
-    await manager.initializeTextAnnotations();
+    await manager.initializeTextAnnotations(/*pageCount=*/ 1);
     chrome.test.assertTrue(manager.isTextInitializationComplete());
 
     // Check that initializing a new annotation gets ID 1 (not 0, to avoid
@@ -365,6 +365,47 @@ chrome.test.runTests([
     chrome.test.assertTrue(created);
     const initEvent = await whenInitEvent;
     chrome.test.assertEq(1, initEvent.detail.annotation.id);
+    verifyEditTextAnnotationMessage(false);
+
+    mockPlugin.clearMessages();
+    chrome.test.succeed();
+  },
+
+  async function testInitializeTextOutOfBoundsPageIndex() {
+    const manager = setUpInk2Manager();
+
+    const negativePageAnnotation = getTestAnnotation(0);
+    negativePageAnnotation.pageIndex = -1;
+
+    const validAnnotation = getTestAnnotation(1);
+    validAnnotation.pageIndex = 0;
+
+    const outOfBoundsPageAnnotation = getTestAnnotation(2);
+    outOfBoundsPageAnnotation.pageIndex = 1;
+
+    mockPlugin.clearMessages();
+    mockPlugin.setMessageReply('getAllTextAnnotations', {
+      annotations: [
+        negativePageAnnotation,
+        validAnnotation,
+        outOfBoundsPageAnnotation,
+      ],
+    });
+
+    await manager.initializeTextAnnotations(/*pageCount=*/ 1);
+    chrome.test.assertTrue(manager.isTextInitializationComplete());
+
+    // Only the annotation on page 0 should be stored, with ID 1.
+    chrome.test.assertEq(1, manager.annotations.size);
+    const pageMap = manager.annotations.get(0);
+    assert(pageMap);
+    chrome.test.assertEq(1, pageMap.size);
+    chrome.test.assertTrue(pageMap.has(1));
+
+    // Initializing a new annotation should get ID 3.
+    mockPlugin.clearMessages();
+    const initEvent = await changeActiveAnnotation(manager, {x: 200, y: 200});
+    chrome.test.assertEq(3, initEvent.detail.annotation.id);
     verifyEditTextAnnotationMessage(false);
 
     mockPlugin.clearMessages();

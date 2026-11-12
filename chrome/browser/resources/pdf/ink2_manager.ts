@@ -439,22 +439,25 @@ export class Ink2Manager extends EventTarget {
     return this.brushResolver_.promise;
   }
 
-  initializeTextAnnotations(): Promise<void> {
+  initializeTextAnnotations(pageCount: number): Promise<void> {
     if (this.textResolver_) {
       return this.textResolver_.promise;
     }
 
     this.textResolver_ = new PromiseResolver();
     this.pluginController_.getAllTextAnnotations().then(message => {
+      assert(this.nextAnnotationId_ === 0);
       message.annotations.forEach(annotation => {
+        annotation.id = this.nextAnnotationId_++;
+        if (annotation.pageIndex < 0 || annotation.pageIndex >= pageCount) {
+          return;
+        }
         let pageMap = this.annotations_.get(annotation.pageIndex);
         if (!pageMap) {
           pageMap = new Map();
           this.annotations_.set(annotation.pageIndex, pageMap);
         }
         pageMap.set(annotation.id, annotation);
-        this.nextAnnotationId_ =
-            Math.max(this.nextAnnotationId_, annotation.id + 1);
       });
       this.textResolver_!.resolve();
       this.dispatchEvent(new CustomEvent('annotations-updated'));

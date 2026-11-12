@@ -1437,7 +1437,8 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
   }
   auto annotations = base::ListValue::with_capacity(total_text_boxes);
 
-  // The backend sets the frontend ID for loaded text annotations.
+  // The backend and frontend both assign sequential IDs starting from 0 for
+  // loaded text annotations.
   int frontend_id = 0;
 
   for (const auto& [page_index, text_boxes] : document_text_boxes) {
@@ -1467,7 +1468,6 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
 
       annotations.Append(
           base::DictValue()
-              .Set("id", frontend_id)
               .Set("pageIndex", page_index)
               // The backend always operates at 100% zoom. The frontend ignores
               // this value.
