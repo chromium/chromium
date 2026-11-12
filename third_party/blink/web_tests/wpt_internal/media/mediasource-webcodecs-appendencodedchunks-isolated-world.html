@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<title>Test SourceBuffer.appendEncodedChunks() does not leak DOMException wrappers across isolated worlds</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/media-source/mse-for-webcodecs/tentative/media-source-webcodecs-util.js"></script>
+<body>
+<script>
+setup(() => {
+  assert_implements(
+      SourceBuffer.prototype.hasOwnProperty('appendEncodedChunks'),
+      'SourceBuffer prototype hasOwnProperty "appendEncodedChunks", used ' +
+          'here to feature detect MSE-for-WebCodecs implementation.');
+});
+
+promise_test(async t => {
+  assert_true(!!window.testRunner, 'This test requires testRunner');
+
+  const [videoElement, mediaSource] = await getOpenMediaSource(t);
+  t.add_cleanup(() => {
+    videoElement.removeAttribute('src');
+    videoElement.load();
+    videoElement.remove();
+  });
+
+  const sourceBuffer = mediaSource.addSourceBuffer({
+    audioConfig: {codec: 'pcm-u8', sampleRate: 8000, numberOfChannels: 1},
+  });
+  const chunk = new EncodedAudioChunk({
+    type: 'key',
+    timestamp: 0,
+    data: new Uint8Array([1, 2, 3, 4]),
+  });
+
+  const pendingAppend = sourceBuffer.appendEncodedChunks(chunk);
+  assert_true(sourceBuffer.updating,
+              'sourceBuffer.updating is true while append is pending');
+
+  // Reset the <video> element from an isolated world (e.g. content script).
+  testRunner.evaluateScriptInIsolatedWorld(1, `
+    DOMException.prototype.__isolatedWorldMarker = true;
+    Object.prototype.__isolatedWorldObjectMarker = true;
+    document.querySelector('video').load();
+  `);
+
+  assert_false(sourceBuffer.updating,
+               'sourceBuffer.updating is false after isolated world load()');
+  assert_equals(mediaSource.readyState, 'closed');
+
+  let err = null;
+  try {
+    await pendingAppend;
+  } catch (e) {
+    err = e;
+  }
+
+  assert_not_equals(err, null, 'pending appendEncodedChunks should reject');
+  assert_true(err instanceof DOMException,
+              'rejection value must be a main-world DOMException');
+  assert_equals(Object.getPrototypeOf(err), DOMException.prototype,
+                'prototype must be main-world DOMException.prototype');
+  assert_equals(err.constructor, DOMException,
+                'constructor must be main-world DOMException');
+  assert_equals(err.constructor.constructor, Function,
+                'Function constructor must be main-world Function');
+  assert_false('__isolatedWorldMarker' in err,
+               'isolated world DOMException.prototype must not be reachable');
+  assert_false('__isolatedWorldObjectMarker' in err,
+               'isolated world Object.prototype must not be reachable');
+  assert_equals(err.name, 'AbortError');
+}, 'Resetting media element from an isolated world rejects pending appendEncodedChunks with a main-world DOMException');
+</script>
+</html>

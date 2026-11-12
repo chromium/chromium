@@ -44,7 +44,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
@@ -1119,8 +1118,7 @@ void SourceBuffer::AbortIfUpdating() {
     // TODO(crbug.com/1144908): Consider moving this verbosity to eventual
     // specification.
     DCHECK(append_encoded_chunks_resolver_);
-    append_encoded_chunks_resolver_->Reject(V8ThrowDOMException::CreateOrDie(
-        append_encoded_chunks_resolver_->GetScriptState()->GetIsolate(),
+    append_encoded_chunks_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "Aborted by explicit abort()"));
     append_encoded_chunks_resolver_ = nullptr;
     TRACE_EVENT_END("media", /*SourceBuffer::appendEncodedChunks*/
