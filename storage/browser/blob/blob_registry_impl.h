@@ -51,7 +51,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
             std::unique_ptr<Delegate> delegate);
 
   void Register(mojo::PendingReceiver<blink::mojom::Blob> blob,
-                const std::string& uuid,
                 const std::string& content_type,
                 const std::string& content_disposition,
                 std::vector<blink::mojom::DataElementPtr> elements,

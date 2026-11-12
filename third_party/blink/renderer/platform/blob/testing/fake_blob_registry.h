@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BLOB_TESTING_FAKE_BLOB_REGISTRY_H_
 
+#include "base/threading/sequence_bound.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 
@@ -15,7 +18,9 @@ namespace blink {
 // FakeBlob instance with the correct uuid.
 class FakeBlobRegistry : public mojom::blink::BlobRegistry {
  public:
-  explicit FakeBlobRegistry(bool support_binary_blob_bodies = false);
+  explicit FakeBlobRegistry(
+      bool support_binary_blob_bodies = false,
+      mojo::PendingReceiver<mojom::blink::BlobRegistry> receiver = {});
   ~FakeBlobRegistry() override;
 
   struct Registration {
@@ -28,7 +33,6 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
 
  private:
   void Register(mojo::PendingReceiver<mojom::blink::Blob>,
-                const String& uuid,
                 const String& content_type,
                 const String& content_disposition,
                 Vector<mojom::blink::DataElementPtr> elements,
@@ -50,6 +54,22 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
   // `Register()` to create fake blobs with binary bodies.  Not implemented for
   // `RegisterFromStream()` or any other type of body content.
   bool support_binary_blob_bodies_ = false;
+  mojo::Receiver<mojom::blink::BlobRegistry> receiver_{this};
+};
+
+class ScopedFakeBlobRegistry {
+ public:
+  explicit ScopedFakeBlobRegistry(bool support_binary_blob_bodies = false);
+  ~ScopedFakeBlobRegistry();
+
+  ScopedFakeBlobRegistry(const ScopedFakeBlobRegistry&) = delete;
+  ScopedFakeBlobRegistry& operator=(const ScopedFakeBlobRegistry&) = delete;
+
+ private:
+  mojo::Remote<mojom::blink::BlobRegistry> remote_;
+  // The blob registry is normally in another process, so operating it on a
+  // different sequenced/thread is a closer simulation of production.
+  base::SequenceBound<FakeBlobRegistry> registry_;
 };
 
 }  // namespace blink
