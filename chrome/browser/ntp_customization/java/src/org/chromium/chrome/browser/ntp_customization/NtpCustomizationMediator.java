@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.ViewFlipper;
 
@@ -65,7 +66,9 @@ import java.util.function.Supplier;
 @NullMarked
 public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
     // Defines the back navigation hierarchy for theme-related bottom sheets. <Child, Parent>
-    private final Map<Integer, Integer> mThemeBackNavigationMap = new HashMap<>();
+    // SparseIntArray cannot be used because 0 (BottomSheetType.MAIN) is a valid value.
+    @SuppressWarnings("UseSparseArrays")
+    private final SparseArray<Integer> mThemeBackNavigationMap = new SparseArray<>();
 
     /**
      * A map of <{@link NtpCustomizationCoordinator.BottomSheetType}, view's position index in the
