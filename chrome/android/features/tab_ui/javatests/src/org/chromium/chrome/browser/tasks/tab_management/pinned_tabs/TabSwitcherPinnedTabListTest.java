@@ -44,6 +44,8 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.List;
+
 /**
  * End-to-end integration tests for the Grid Tab Switcher (GTS) Pinned Tab List.
  *
@@ -78,12 +80,7 @@ public class TabSwitcherPinnedTabListTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         for (TabModel model : cta.getTabModelSelector().getModels()) {
-                            for (int i = 0; i < model.getCount(); i++) {
-                                Tab tab = model.getTabAt(i);
-                                if (tab.getIsPinned()) {
-                                    tab.setIsPinned(false);
-                                }
-                            }
+                            unpinAllTabs(model);
                         }
                     });
         }
@@ -176,15 +173,13 @@ public class TabSwitcherPinnedTabListTest {
         waitForPinnedStripItemCount(1);
 
         // Dynamically pin a second tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> cta.getCurrentTabModel().getTabAt(1).setIsPinned(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> pinTabAt(cta.getCurrentTabModel(), 1));
 
         // Strip should dynamically grow to 2 items.
         waitForPinnedStripItemCount(2);
 
         // Dynamically pin a third tab.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> cta.getCurrentTabModel().getTabAt(2).setIsPinned(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> pinTabAt(cta.getCurrentTabModel(), 2));
 
         // Strip should dynamically grow to 3 items.
         waitForPinnedStripItemCount(3);
@@ -207,24 +202,15 @@ public class TabSwitcherPinnedTabListTest {
         // Dynamically unpin the second pinned tab.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Tab tabToUnpin = cta.getCurrentTabModel().getTabAt(1);
-                    tabToUnpin.setIsPinned(false);
+                    TabModel model = cta.getCurrentTabModel();
+                    model.unpinTab(model.getTabAt(1).getId());
                 });
 
         // Strip should now reflect 2 items.
         waitForPinnedStripItemCount(2);
 
         // Unpin all remaining tabs.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel model = cta.getCurrentTabModel();
-                    for (int i = 0; i < model.getCount(); i++) {
-                        Tab tab = model.getTabAt(i);
-                        if (tab.getIsPinned()) {
-                            tab.setIsPinned(false);
-                        }
-                    }
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> unpinAllTabs(cta.getCurrentTabModel()));
 
         // Strip should now hide completely.
         CriteriaHelper.pollUiThread(
@@ -270,9 +256,15 @@ public class TabSwitcherPinnedTabListTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabModel model = cta.getCurrentTabModel();
-                    model.getTabAt(1).setIsPinned(true);
-                    model.getTabAt(2).setIsPinned(true);
-                    model.getTabAt(3).setIsPinned(true);
+                    // Capture ids first: pinning moves tabs within the model.
+                    List<Integer> tabIds =
+                            List.of(
+                                    model.getTabAt(1).getId(),
+                                    model.getTabAt(2).getId(),
+                                    model.getTabAt(3).getId());
+                    for (int tabId : tabIds) {
+                        model.pinTab(tabId, /* showUngroupDialog= */ false);
+                    }
                 });
 
         waitForPinnedStripItemCount(4);
@@ -373,11 +365,30 @@ public class TabSwitcherPinnedTabListTest {
                 () -> {
                     TabModel model = cta.getCurrentTabModel();
                     for (int i = 0; i < pinnedTabsCount; i++) {
-                        model.getTabAt(i).setIsPinned(true);
+                        pinTabAt(model, i);
                     }
                     TabModelUtils.setIndex(model, 0);
                 });
         TabUiTestHelper.enterTabSwitcher(cta);
+    }
+
+    /**
+     * Pins the tab at {@code index} through the {@link TabModel}, so the model and its observers
+     * see the change like a real pin.
+     */
+    private static void pinTabAt(TabModel model, int index) {
+        model.pinTab(model.getTabAt(index).getId(), /* showUngroupDialog= */ false);
+    }
+
+    /** Unpins every pinned tab in {@code model} through the {@link TabModel}. */
+    private static void unpinAllTabs(TabModel model) {
+        // Iterate backwards: unpinning moves a tab out of the pinned section at the front.
+        for (int i = model.getCount() - 1; i >= 0; i--) {
+            Tab tab = model.getTabAt(i);
+            if (tab.getIsPinned()) {
+                model.unpinTab(tab.getId());
+            }
+        }
     }
 
     /** Scrolls the main tab list recycler view down so that pinned cards scroll off-screen. */
