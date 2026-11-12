@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -32,8 +31,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif
 
 namespace extensions {
@@ -98,10 +101,7 @@ ExtensionHost* CreateHost(Profile* profile, const Extension* app) {
 
 class UpdateInstallGateTest : public testing::Test {
  public:
-  UpdateInstallGateTest() {
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-  }
+  UpdateInstallGateTest() = default;
 
   UpdateInstallGateTest(const UpdateInstallGateTest&) = delete;
   UpdateInstallGateTest& operator=(const UpdateInstallGateTest&) = delete;
@@ -109,21 +109,33 @@ class UpdateInstallGateTest : public testing::Test {
   // testing::Test
   void SetUp() override {
     // Must be called from ::testing::Test::SetUp.
-    ASSERT_TRUE(profile_manager_->SetUp());
-
-    const char kUserProfile[] = "profile1@example.com";
 #if BUILDFLAG(IS_CHROMEOS)
-    const AccountId account_id(AccountId::FromUserEmail(kUserProfile));
     // Needed to allow ChromeProcessManagerDelegate to allow background pages.
-    fake_user_manager_ = new ash::FakeChromeUserManager();
-    // Takes ownership of fake_user_manager_.
-    scoped_user_manager_enabler_ =
-        std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(fake_user_manager_.get()));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(
+        "profile1@example.com", GaiaId("1234567890"));
+
+    // The session environment owns the ProfileManager and creates the signed
+    // in user's profile, so that the production code under test sees a real
+    // UserManager and SessionManager.
+    TestingBrowserProcess* const browser_process =
+        TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    ASSERT_TRUE(profile_);
+#else
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("profile1@example.com");
 #endif
-    profile_ = profile_manager_->CreateTestingProfile(kUserProfile);
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(profile_);
     base::RunLoop().RunUntilIdle();
@@ -149,7 +161,17 @@ class UpdateInstallGateTest : public testing::Test {
 
   void TearDown() override {
     render_process_host_.reset();
+    delayer_.reset();
+    event_router_ = nullptr;
+    registry_ = nullptr;
+    service_ = nullptr;
+    system_ = nullptr;
+    profile_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+    user_session_test_environment_.reset();
+#else
     profile_manager_->DeleteAllTestingProfiles();
+#endif
   }
 
   void AddExistingExtensions() {
@@ -216,21 +238,20 @@ class UpdateInstallGateTest : public testing::Test {
   // and RenderProcessHosts.
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+#else
   std::unique_ptr<TestingProfileManager> profile_manager_;
+#endif
+
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
 
-  raw_ptr<TestExtensionSystem, DanglingUntriaged> system_ = nullptr;
-  raw_ptr<ExtensionService, DanglingUntriaged> service_ = nullptr;
-  raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
-  raw_ptr<EventRouter, DanglingUntriaged> event_router_ = nullptr;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Needed for creating ExtensionService.
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
-      nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
-#endif
+  raw_ptr<TestExtensionSystem> system_ = nullptr;
+  raw_ptr<ExtensionService> service_ = nullptr;
+  raw_ptr<ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<EventRouter> event_router_ = nullptr;
 
   std::unique_ptr<UpdateInstallGate> delayer_;
 
