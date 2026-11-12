@@ -75,9 +75,9 @@ void InitialWebUIWindowMetricsManager::RecordUnpaintedTermination(
   RecordSurfaceSyncResult(
       browser_window_first_paint_time_.has_value()
           ? (closed ? InitialWebUISurfaceSyncResult::
-                          kDeadlineExceededClosedBeforePaint
+                          kClosedAfterBrowserPresentation
                     : InitialWebUISurfaceSyncResult::
-                          kDeadlineExceededRenderProcessGone)
+                          kRenderProcessGoneAfterBrowserPresentation)
           : (closed ? InitialWebUISurfaceSyncResult::
                           kClosedBeforeBrowserPresentation
                     : InitialWebUISurfaceSyncResult::
@@ -112,10 +112,11 @@ void InitialWebUIWindowMetricsManager::RecordSurfaceSyncResult(
 }
 
 void InitialWebUIWindowMetricsManager::
-    RecordSurfaceSyncTimeToPaintAfterDeadline(base::TimeDelta delta) {
+    RecordSurfaceSyncTimeToPaintAfterBrowserPresentation(
+        base::TimeDelta delta) {
   if (!surface_sync_result_recorded_ &&
       base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync)) {
-    waap_service_->OnSurfaceSyncTimeToPaintAfterDeadline(delta);
+    waap_service_->OnSurfaceSyncTimeToPaintAfterBrowserPresentation(delta);
   }
 }
 
@@ -194,7 +195,7 @@ void InitialWebUIWindowMetricsManager::OnBrowserWindowFirstPresentation(
         RecordPaintedAtBrowserFirstPaint(/*painted=*/true);
         RecordPaintedWithin10Seconds(/*painted=*/true);
         RecordSurfaceSyncResult(
-            waap::InitialWebUISurfaceSyncResult::kReadyWithinDeadline);
+            waap::InitialWebUISurfaceSyncResult::kPaintedByBrowserPresentation);
       }
     } else if (!unpainted_termination_recorded_) {
       unpainted_10s_timer_.Start(
@@ -249,12 +250,12 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstPaint(
         const base::TimeDelta delta =
             timestamp - *browser_window_first_paint_time_;
         if (delta <= base::TimeDelta()) {
-          RecordSurfaceSyncResult(
-              waap::InitialWebUISurfaceSyncResult::kReadyWithinDeadline);
-        } else {
-          RecordSurfaceSyncTimeToPaintAfterDeadline(delta);
           RecordSurfaceSyncResult(waap::InitialWebUISurfaceSyncResult::
-                                      kDeadlineExceededPaintedLater);
+                                      kPaintedByBrowserPresentation);
+        } else {
+          RecordSurfaceSyncTimeToPaintAfterBrowserPresentation(delta);
+          RecordSurfaceSyncResult(waap::InitialWebUISurfaceSyncResult::
+                                      kPaintedAfterBrowserPresentation);
         }
       }
     }

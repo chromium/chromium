@@ -26,8 +26,8 @@ constexpr base::TimeDelta kTestLatency = base::Milliseconds(100);
 
 constexpr char kSurfaceSyncResultHistogram[] =
     "InitialWebUI.ReloadButton.SurfaceSync.Result";
-constexpr char kSurfaceSyncTimeToPaintAfterDeadlineHistogram[] =
-    "InitialWebUI.ReloadButton.SurfaceSync.TimeToPaintAfterDeadline";
+constexpr char kSurfaceSyncTimeToPaintAfterBrowserPresentationHistogram[] =
+    "InitialWebUI.ReloadButton.SurfaceSync.TimeToPaintAfterBrowserPresentation";
 constexpr char kPaintedAtBrowserFirstPaintHistogram[] =
     "InitialWebUI.ReloadButton.PaintedAtBrowserFirstPaint";
 constexpr char kPaintedWithin10SecondsHistogram[] =
@@ -58,17 +58,19 @@ class InitialWebUIWindowMetricsManagerTest : public testing::Test {
     tester.ExpectUniqueSample(kSurfaceSyncResultHistogram, expected_result, 1);
     if (expected_time_to_paint.has_value()) {
       tester.ExpectUniqueTimeSample(
-          kSurfaceSyncTimeToPaintAfterDeadlineHistogram,
+          kSurfaceSyncTimeToPaintAfterBrowserPresentationHistogram,
           *expected_time_to_paint, 1);
     } else {
-      tester.ExpectTotalCount(kSurfaceSyncTimeToPaintAfterDeadlineHistogram, 0);
+      tester.ExpectTotalCount(
+          kSurfaceSyncTimeToPaintAfterBrowserPresentationHistogram, 0);
     }
   }
 
   // Verifies that zero surface sync metrics were emitted.
   void ExpectNoSurfaceSyncMetrics(const base::HistogramTester& tester) {
     tester.ExpectTotalCount(kSurfaceSyncResultHistogram, 0);
-    tester.ExpectTotalCount(kSurfaceSyncTimeToPaintAfterDeadlineHistogram, 0);
+    tester.ExpectTotalCount(
+        kSurfaceSyncTimeToPaintAfterBrowserPresentationHistogram, 0);
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -421,7 +423,8 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
 
   if (IsSurfaceSyncEnabled()) {
     VerifySurfaceSyncMetrics(
-        tester, waap::InitialWebUISurfaceSyncResult::kReadyWithinDeadline);
+        tester,
+        waap::InitialWebUISurfaceSyncResult::kPaintedByBrowserPresentation);
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
   }
@@ -456,7 +459,7 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
   if (IsSurfaceSyncEnabled()) {
     VerifySurfaceSyncMetrics(
         tester,
-        waap::InitialWebUISurfaceSyncResult::kDeadlineExceededPaintedLater,
+        waap::InitialWebUISurfaceSyncResult::kPaintedAfterBrowserPresentation,
         base::Milliseconds(50));
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
@@ -508,8 +511,9 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
       base::StrCat({kBrowserPaintToReloadButtonPaintHistogram, Suffix()}), 0);
 
   if (IsSurfaceSyncEnabled()) {
-    VerifySurfaceSyncMetrics(tester, waap::InitialWebUISurfaceSyncResult::
-                                         kDeadlineExceededClosedBeforePaint);
+    VerifySurfaceSyncMetrics(
+        tester,
+        waap::InitialWebUISurfaceSyncResult::kClosedAfterBrowserPresentation);
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
   }
@@ -517,8 +521,8 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
 
 // Verifies that when the reload button renderer process terminates after
 // browser window presentation but before reload button paint, surface sync
-// records `kDeadlineExceededRenderProcessGone` and the 10-second readiness
-// metric records false.
+// records `kRenderProcessGoneAfterBrowserPresentation` and the 10-second
+// readiness metric records false.
 TEST_F(InitialWebUIWindowMetricsManagerTest,
        RecordsRenderProcessGoneWhenRendererCrashes) {
   base::test::ScopedFeatureList feature_list(
@@ -534,10 +538,10 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   tester.ExpectUniqueSample(
       base::StrCat({kPaintedWithin10SecondsHistogram, ".SurfaceSyncEnabled"}),
       false, 1);
-  tester.ExpectUniqueSample(
-      kSurfaceSyncResultHistogram,
-      waap::InitialWebUISurfaceSyncResult::kDeadlineExceededRenderProcessGone,
-      1);
+  tester.ExpectUniqueSample(kSurfaceSyncResultHistogram,
+                            waap::InitialWebUISurfaceSyncResult::
+                                kRenderProcessGoneAfterBrowserPresentation,
+                            1);
 }
 
 // Verifies that closing a browser window before its first presentation
@@ -688,8 +692,8 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
 }
 
 // Verifies that a renderer process termination occurring after a successful
-// reload button paint does not overwrite `kReadyWithinDeadline` or emit
-// failure metrics.
+// reload button paint does not overwrite `kPaintedByBrowserPresentation` or
+// emit failure metrics.
 TEST_F(InitialWebUIWindowMetricsManagerTest,
        IgnoresRenderProcessGoneAfterReloadButtonFirstPaint) {
   base::test::ScopedFeatureList feature_list(
@@ -708,11 +712,11 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
 
   tester.ExpectUniqueSample(
       kSurfaceSyncResultHistogram,
-      waap::InitialWebUISurfaceSyncResult::kReadyWithinDeadline, 1);
-  tester.ExpectBucketCount(
-      kSurfaceSyncResultHistogram,
-      waap::InitialWebUISurfaceSyncResult::kDeadlineExceededRenderProcessGone,
-      0);
+      waap::InitialWebUISurfaceSyncResult::kPaintedByBrowserPresentation, 1);
+  tester.ExpectBucketCount(kSurfaceSyncResultHistogram,
+                           waap::InitialWebUISurfaceSyncResult::
+                               kRenderProcessGoneAfterBrowserPresentation,
+                           0);
 }
 
 // Verifies that newly created non-startup browser windows record visual
@@ -745,7 +749,7 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
   if (IsSurfaceSyncEnabled()) {
     VerifySurfaceSyncMetrics(
         tester,
-        waap::InitialWebUISurfaceSyncResult::kDeadlineExceededPaintedLater,
+        waap::InitialWebUISurfaceSyncResult::kPaintedAfterBrowserPresentation,
         base::Milliseconds(50));
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
@@ -780,7 +784,7 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
 }
 
 TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
-       SkipsSurfaceSyncTimeToPaintAfterDeadlineWhenRenderProcessGoneFirst) {
+       SkipsSurfaceSyncTimeToPaintWhenRenderProcessGoneFirst) {
   InitialWebUIWindowMetricsManager::ResetForTesting();
   const base::TimeTicks start_time = base::TimeTicks::Now();
   InitialWebUIWindowMetricsManager manager(&browser_window_);
@@ -798,15 +802,16 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
       browser_window_time + base::Milliseconds(200), /*is_startup=*/true);
 
   if (IsSurfaceSyncEnabled()) {
-    VerifySurfaceSyncMetrics(tester, waap::InitialWebUISurfaceSyncResult::
-                                         kDeadlineExceededRenderProcessGone);
+    VerifySurfaceSyncMetrics(tester,
+                             waap::InitialWebUISurfaceSyncResult::
+                                 kRenderProcessGoneAfterBrowserPresentation);
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
   }
 }
 
 TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
-       RecordsReadyWithinDeadlineWhenPaintPrecedesOrMatchesPresentation) {
+       RecordsPaintedByBrowserPresentationWhenPaintIsNotLater) {
   InitialWebUIWindowMetricsManager::ResetForTesting();
   const base::TimeTicks start_time = base::TimeTicks::Now();
   InitialWebUIWindowMetricsManager manager(&browser_window_);
@@ -834,7 +839,8 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
 
   if (IsSurfaceSyncEnabled()) {
     VerifySurfaceSyncMetrics(
-        tester, waap::InitialWebUISurfaceSyncResult::kReadyWithinDeadline);
+        tester,
+        waap::InitialWebUISurfaceSyncResult::kPaintedByBrowserPresentation);
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
   }
@@ -842,8 +848,8 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
 
 // Verifies that when `blink::features::kInitialWebUISurfaceSync` is disabled,
 // neither `InitialWebUI.ReloadButton.SurfaceSync.Result` nor
-// `InitialWebUI.ReloadButton.SurfaceSync.TimeToPaintAfterDeadline` is
-// emitted, while baseline
+// `InitialWebUI.ReloadButton.SurfaceSync.TimeToPaintAfterBrowserPresentation`
+// is emitted, while baseline
 // `BrowserPaintToReloadButtonPaint.SurfaceSyncDisabled` is recorded.
 TEST_F(InitialWebUIWindowMetricsManagerTest,
        DoesNotRecordSurfaceSyncMetricsWhenFeatureDisabled) {
@@ -896,7 +902,7 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
   if (IsSurfaceSyncEnabled()) {
     VerifySurfaceSyncMetrics(
         tester,
-        waap::InitialWebUISurfaceSyncResult::kDeadlineExceededPaintedLater,
+        waap::InitialWebUISurfaceSyncResult::kPaintedAfterBrowserPresentation,
         base::Milliseconds(30));
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
@@ -931,8 +937,9 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
       base::StrCat({kBrowserWindowClosedBeforePaintHistogram, Suffix()}), 0);
 
   if (IsSurfaceSyncEnabled()) {
-    VerifySurfaceSyncMetrics(tester, waap::InitialWebUISurfaceSyncResult::
-                                         kDeadlineExceededRenderProcessGone);
+    VerifySurfaceSyncMetrics(tester,
+                             waap::InitialWebUISurfaceSyncResult::
+                                 kRenderProcessGoneAfterBrowserPresentation);
   } else {
     ExpectNoSurfaceSyncMetrics(tester);
   }

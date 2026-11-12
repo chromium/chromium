@@ -227,10 +227,10 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(InitialWebUISurfaceSyncResult) -->
 
 <enum name="InitialWebUISurfaceSyncResult">
-  <int value="0" label="Ready Within Deadline"/>
-  <int value="1" label="Deadline Exceeded - Painted Later"/>
-  <int value="2" label="Deadline Exceeded - Closed Before Paint"/>
-  <int value="3" label="Deadline Exceeded - Render Process Gone"/>
+  <int value="0" label="Painted By Browser Presentation"/>
+  <int value="1" label="Painted After Browser Presentation"/>
+  <int value="2" label="Closed After Browser Presentation"/>
+  <int value="3" label="Render Process Gone After Browser Presentation"/>
   <int value="4" label="Closed Before Browser Presentation"/>
   <int value="5" label="Render Process Gone Before Browser Presentation"/>
 </enum>

@@ -80,13 +80,20 @@ enum class NewWindowCreationSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:CreationSource)
 
-// Result of initial surface synchronization for the WebUI toolbar.
+// Result of initial surface synchronization for the WebUI toolbar. Orders the
+// reload button's first paint against the browser window's first presentation.
+// If the reload button never paints, records whether the window closed or its
+// renderer went away, and whether that happened before or after the browser
+// window's presentation. A paint after the browser window's presentation does
+// not mean the surface sync deadline expired: Viz presents the browser frame as
+// soon as the toolbar surface has any frame, even one that does not show the
+// reload button yet.
 // LINT.IfChange(InitialWebUISurfaceSyncResult)
 enum class InitialWebUISurfaceSyncResult {
-  kReadyWithinDeadline = 0,
-  kDeadlineExceededPaintedLater = 1,
-  kDeadlineExceededClosedBeforePaint = 2,
-  kDeadlineExceededRenderProcessGone = 3,
+  kPaintedByBrowserPresentation = 0,
+  kPaintedAfterBrowserPresentation = 1,
+  kClosedAfterBrowserPresentation = 2,
+  kRenderProcessGoneAfterBrowserPresentation = 3,
   kClosedBeforeBrowserPresentation = 4,
   kRenderProcessGoneBeforeBrowserPresentation = 5,
   kMaxValue = kRenderProcessGoneBeforeBrowserPresentation,

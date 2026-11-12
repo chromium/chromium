@@ -415,10 +415,10 @@ void WaapUIMetricsService::OnInitialWebUISurfaceSyncResult(
       BuildReloadButtonHistogramName("SurfaceSync.Result"), result);
 }
 
-void WaapUIMetricsService::OnSurfaceSyncTimeToPaintAfterDeadline(
+void WaapUIMetricsService::OnSurfaceSyncTimeToPaintAfterBrowserPresentation(
     base::TimeDelta delta) {
-  RecordReloadButtonPaintDuration("SurfaceSync.TimeToPaintAfterDeadline",
-                                  delta);
+  RecordReloadButtonPaintDuration(
+      "SurfaceSync.TimeToPaintAfterBrowserPresentation", delta);
 }
 
 void WaapUIMetricsService::OnBrowserPaintToReloadButtonPaint(

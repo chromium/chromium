@@ -887,23 +887,30 @@ chromium-metrics-reviews@google.com.
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
-    Recorded per browser window when InitialWebUISurfaceSync is enabled upon
-    first presentation, post-deadline paint, or pre-paint session termination.
-    Measures whether the reload button WebUI painted within the Finch-configured
-    deadline, exceeded the deadline and painted later, or terminated before
-    paint (window closed or renderer crashed).
+    Recorded once per browser window when InitialWebUISurfaceSync is enabled.
+    Records whether the reload button WebUI had painted by the browser window's
+    first presentation, painted after it, or never painted because the window
+    closed or the reload button renderer went away, before or after that
+    presentation.
+
+    A paint after the browser window's presentation does not mean the surface
+    sync deadline (deadline_in_frames) expired. Viz presents the browser frame
+    as soon as the toolbar surface has any frame, even one that does not show
+    the reload button yet.
   </summary>
 </histogram>
 
 <histogram
-    name="InitialWebUI.ReloadButton.SurfaceSync.TimeToPaintAfterDeadline"
+    name="InitialWebUI.ReloadButton.SurfaceSync.TimeToPaintAfterBrowserPresentation"
     units="ms" expires_after="2027-04-01">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
-    Records the elapsed time between the surface sync deadline expiration and
-    the first visually non-empty paint of the reload button WebUI. Only recorded
-    when the reload button paints after the deadline has passed.
+    Records the time from the browser window's first presentation to the first
+    paint of the reload button WebUI, when InitialWebUISurfaceSync is enabled
+    and the reload button paints after the browser window is presented. Recorded
+    once per window, together with the &quot;Painted After Browser
+    Presentation&quot; bucket of InitialWebUI.ReloadButton.SurfaceSync.Result.
   </summary>
 </histogram>
 

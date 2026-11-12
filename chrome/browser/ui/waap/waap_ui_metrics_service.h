@@ -115,9 +115,9 @@ class WaapUIMetricsService : public KeyedService {
   void OnInitialWebUISurfaceSyncResult(
       waap::InitialWebUISurfaceSyncResult result);
 
-  // Records the latency from surface sync deadline expiration to reload button
-  // paint.
-  void OnSurfaceSyncTimeToPaintAfterDeadline(base::TimeDelta delta);
+  // Records the time from the browser window's first presentation to a later
+  // reload button first paint.
+  void OnSurfaceSyncTimeToPaintAfterBrowserPresentation(base::TimeDelta delta);
 
   // Records the duration from the browser window's first presentation until
   // the reload button's first paint.
