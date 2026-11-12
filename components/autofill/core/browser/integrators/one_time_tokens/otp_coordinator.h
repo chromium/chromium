@@ -59,6 +59,14 @@ class OtpCoordinator : public OtpSource::Observer {
     virtual void TriggerSuggestions(FieldGlobalId field_id) = 0;
   };
 
+  // Maximum delay between dispatching a proactive trigger to the renderer and
+  // the resulting OTP popup being shown for the popup to be attributed to the
+  // trigger. This is a heuristic: attributing via the suggestion trigger source
+  // would be precise, but requires plumbing it through
+  // `AutofillManager::Observer::OnSuggestionsShown()`.
+  static constexpr base::TimeDelta kProactiveTriggerAttributionWindow =
+      base::Seconds(5);
+
   // `client` must be non-null and outlive this coordinator.
   explicit OtpCoordinator(AutofillClient* client);
   OtpCoordinator(const OtpCoordinator&) = delete;
@@ -136,6 +144,11 @@ class OtpCoordinator : public OtpSource::Observer {
     base::TimeTicks recorded_at;
   };
 
+  struct DispatchedProactiveTrigger {
+    OtpTokenIdentity identity;
+    base::TimeTicks dispatched_at;
+  };
+
   static SiteFrame GetSiteFrame(const OtpTarget& target);
   static bool IsUsedTokenExpired(const UsedToken& used, base::TimeTicks now);
 
@@ -145,6 +158,18 @@ class OtpCoordinator : public OtpSource::Observer {
                            OtpDeliveryPolicy::Decision decision);
   void TryProactiveTrigger(const OtpTarget& target,
                            const OtpCandidate& candidate);
+  // Records the proactive trigger outcome for `identity` on `field`: shown if
+  // `suppression_reason` is `std::nullopt`, suppressed otherwise. Records
+  // nothing if an outcome was already recorded for `identity` on `field`.
+  void MaybeLogProactiveTriggerOutcome(
+      FieldGlobalId field,
+      const OtpTokenIdentity& identity,
+      std::optional<OtpProactiveTriggerSuppressionReason> suppression_reason);
+  // Returns the identity proactively triggered on `field` if the trigger was
+  // dispatched recently enough for an OTP popup on `field` to be attributed to
+  // it, or nullptr otherwise.
+  const OtpTokenIdentity* FindAttributableProactiveTrigger(
+      FieldGlobalId field) const;
   void RetryDeferredProactiveTriggers();
   void RecordFormSuggestionsShown(FormGlobalId form_id,
                                   const OtpTokenIdentity& identity);
@@ -168,6 +193,18 @@ class OtpCoordinator : public OtpSource::Observer {
   std::vector<std::unique_ptr<OtpSource>> sources_;
   OtpSecurityGateway security_gateway_;
   OtpSuggestionDropdownDispatcher suggestion_dropdown_dispatcher_;
+  // Proactive triggers dispatched to the renderer per field, until an OTP popup
+  // is shown on the field or the field's delivery is dropped.
+  base::flat_map<FieldGlobalId, DispatchedProactiveTrigger>
+      proactively_triggered_by_field_;
+  // Candidate identities for which a proactive trigger outcome (either shown or
+  // suppressed) was logged to UMA, per field. Several identities per field are
+  // needed because candidates are not always logged in arrival order, e.g. for
+  // the SMS and Gmail copies of one code. Entries survive `DropDeliveries()`
+  // (e.g. form re-parses) so an outcome is not logged twice, and are erased
+  // when the frame hosting the field becomes inactive.
+  base::flat_map<FieldGlobalId, std::vector<OtpTokenIdentity>>
+      logged_proactive_outcomes_by_field_;
   base::ObserverList<Observer> observers_;
 
   bool is_tab_visible_ = true;

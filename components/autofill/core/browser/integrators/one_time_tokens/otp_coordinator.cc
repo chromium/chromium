@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -45,6 +46,41 @@ namespace {
 std::string GetCommandLineMockOtpValue() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
       one_time_tokens::switches::kMockOtpValue);
+}
+
+std::optional<OtpProactiveTriggerSuppressionReason>
+MapSkipReasonToSuppressionReason(OtpDeliveryPolicy::SkipReason reason) {
+  switch (reason) {
+    // `kNone` only accompanies allowed decisions. `kOriginMismatch`,
+    // `kPhishingVerdict` and `kPhishGuardTimedOut` are verification-stage
+    // reasons that cannot occur at the proactive stage: only verified
+    // candidates are offered, and only to targets in the `SiteFrame` they were
+    // verified for.
+    case OtpDeliveryPolicy::SkipReason::kNone:
+    case OtpDeliveryPolicy::SkipReason::kOriginMismatch:
+    case OtpDeliveryPolicy::SkipReason::kPhishingVerdict:
+    case OtpDeliveryPolicy::SkipReason::kPhishGuardTimedOut:
+      return std::nullopt;
+    // Edge case: Gmail OTP filling was turned off after the candidate was
+    // verified, e.g. while its proactive trigger was deferred.
+    case OtpDeliveryPolicy::SkipReason::kUserNotOptedIn:
+      return OtpProactiveTriggerSuppressionReason::kUserNotOptedIn;
+    case OtpDeliveryPolicy::SkipReason::kNonOtpFieldFocused:
+      return OtpProactiveTriggerSuppressionReason::kNonOtpFieldFocused;
+    case OtpDeliveryPolicy::SkipReason::kTypedInputPresent:
+      return OtpProactiveTriggerSuppressionReason::kTypedInputPresent;
+    case OtpDeliveryPolicy::SkipReason::kProactiveUnfocusedOnAndroid:
+      return OtpProactiveTriggerSuppressionReason::kProactiveUnfocusedOnAndroid;
+    case OtpDeliveryPolicy::SkipReason::kKeyboardNotVisibleOnAndroid:
+      return OtpProactiveTriggerSuppressionReason::kKeyboardNotVisibleOnAndroid;
+    case OtpDeliveryPolicy::SkipReason::kTargetFieldMissing:
+      return OtpProactiveTriggerSuppressionReason::kTargetFieldMissing;
+    case OtpDeliveryPolicy::SkipReason::kFrameInactive:
+      return OtpProactiveTriggerSuppressionReason::kFrameInactive;
+    case OtpDeliveryPolicy::SkipReason::kWebOtpBlocked:
+      return OtpProactiveTriggerSuppressionReason::kWebOtpBlocked;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -222,6 +258,11 @@ void OtpCoordinator::UnregisterObserver(Observer* observer) {
 void OtpCoordinator::OnFrameBecameInactive(LocalFrameToken frame) {
   base::EraseIf(phishing_blocked_site_frames_,
                 [&](const SiteFrame& sf) { return sf.second == frame; });
+  // Logged outcomes intentionally survive `DropDeliveries()` (e.g. form
+  // re-parses), but not the document hosting the field.
+  base::EraseIf(logged_proactive_outcomes_by_field_, [&](const auto& entry) {
+    return entry.first.frame_token == frame;
+  });
   target_field_identifier_.OnFrameBecameInactive(frame);
   DropDeliveries([&](const OtpDelivery& delivery) {
     return delivery.target().frame == frame ||
@@ -255,6 +296,14 @@ void OtpCoordinator::OnOtpSuggestionsShown(FieldGlobalId field,
   if (std::optional<OtpCandidate> candidate = GetAvailableCandidate(field);
       delivery && candidate.has_value() &&
       candidate->identity.value == shown_value) {
+    if (const OtpTokenIdentity* triggered =
+            FindAttributableProactiveTrigger(field);
+        triggered && triggered->value == shown_value) {
+      MaybeLogProactiveTriggerOutcome(field, *triggered,
+                                      /*suppression_reason=*/std::nullopt);
+    }
+    // Any OTP popup on `field` ends its pending proactive attempt.
+    proactively_triggered_by_field_.erase(field);
     RecordFormSuggestionsShown(delivery->target().form, candidate->identity);
   }
 }
@@ -476,30 +525,30 @@ void OtpCoordinator::OnDeliveryValidated(uint64_t generation,
 void OtpCoordinator::TryProactiveTrigger(const OtpTarget& target,
                                          const OtpCandidate& candidate) {
   const bool can_show_on_screen_now = is_tab_visible_ && is_window_focused_;
+  std::optional<OtpProactiveTriggerSuppressionReason> suppression_reason;
   if (suggestion_dropdown_dispatcher_.TriggerProactive(
           target, candidate, can_show_on_screen_now,
-          [this, &candidate](const OtpTarget& t) {
-            if (!security_gateway_
-                     .EvaluateProactiveTrigger(
-                         t, candidate,
-                         OtpSecurityGateway::ProactiveTriggerContext{
-                             .target_field_exists =
-                                 IsTargetActiveAndEligible(t),
-                             // Frame activity is already verified by
-                             // `IsTargetActiveAndEligible(t)` via
-                             // `GetEligibleTargets()`.
-                             .frame_active = true,
-                             .is_otp_field_focused =
-                                 target_field_identifier_.IsFieldFocused(
-                                     t.field),
-                             .has_non_otp_focus_anywhere =
-                                 target_field_identifier_
-                                     .HasNonOtpFocusAnywhere(),
-                             .any_otp_field_has_typed_input =
-                                 target_field_identifier_
-                                     .AnyOtpFieldContainsTypedInput(),
-                         })
-                     .allowed) {
+          [this, &candidate, &suppression_reason](const OtpTarget& t) {
+            const OtpDeliveryPolicy::Decision decision =
+                security_gateway_.EvaluateProactiveTrigger(
+                    t, candidate,
+                    OtpSecurityGateway::ProactiveTriggerContext{
+                        .target_field_exists = IsTargetActiveAndEligible(t),
+                        // Frame activity is already verified by
+                        // `IsTargetActiveAndEligible(t)` via
+                        // `GetEligibleTargets()`.
+                        .frame_active = true,
+                        .is_otp_field_focused =
+                            target_field_identifier_.IsFieldFocused(t.field),
+                        .has_non_otp_focus_anywhere =
+                            target_field_identifier_.HasNonOtpFocusAnywhere(),
+                        .any_otp_field_has_typed_input =
+                            target_field_identifier_
+                                .AnyOtpFieldContainsTypedInput(),
+                    });
+            if (!decision.allowed) {
+              suppression_reason =
+                  MapSkipReasonToSuppressionReason(decision.reason);
               return false;
             }
             const std::optional<OtpTarget> designated_target =
@@ -508,18 +557,80 @@ void OtpCoordinator::TryProactiveTrigger(const OtpTarget& target,
                 target_field_identifier_.IsFieldFocused(
                     designated_target->field) &&
                 designated_target->field != t.field) {
+              suppression_reason = OtpProactiveTriggerSuppressionReason::
+                  kDifferentOtpFieldFocused;
               return false;
             }
             LOG_AF(client_->GetCurrentLogManager())
                 << LoggingScope::kOneTimeTokens
                 << "Proactively triggering suggestions via renderer for OTP "
                    "field.";
+            // Recorded before dispatching so that attributing the resulting
+            // popup in `OnOtpSuggestionsShown()` does not rely on the renderer
+            // round trip being asynchronous.
+            proactively_triggered_by_field_.insert_or_assign(
+                t.field, DispatchedProactiveTrigger{
+                             .identity = candidate.identity,
+                             .dispatched_at = base::TimeTicks::Now()});
             CHECK_DEREF(FindObserverForFrame(t.form_owner))
                 .TriggerSuggestions(t.field);
             return true;
           })) {
     RecordFormSuggestionsShown(target.form, candidate.identity);
+    return;
   }
+
+  // A retry of a candidate whose own proactive trigger on `target.field` is
+  // still pending is deduplicated against that trigger. It is not recorded as
+  // suppressed, even after the attribution window: the candidate's outcome on
+  // `target.field` is either that trigger's popup being shown, or nothing.
+  if (!suppression_reason.has_value() &&
+      suggestion_dropdown_dispatcher_.IsSuppressedByDeduplication(
+          target.field, candidate.identity)) {
+    const DispatchedProactiveTrigger* pending =
+        base::FindOrNull(proactively_triggered_by_field_, target.field);
+    if (!pending || pending->identity != candidate.identity) {
+      suppression_reason =
+          OtpProactiveTriggerSuppressionReason::kAlreadyOfferedOrOlderToken;
+    }
+  }
+  if (suppression_reason.has_value()) {
+    MaybeLogProactiveTriggerOutcome(target.field, candidate.identity,
+                                    suppression_reason);
+  }
+}
+
+void OtpCoordinator::MaybeLogProactiveTriggerOutcome(
+    FieldGlobalId field,
+    const OtpTokenIdentity& identity,
+    std::optional<OtpProactiveTriggerSuppressionReason> suppression_reason) {
+  std::vector<OtpTokenIdentity>& logged_identities =
+      logged_proactive_outcomes_by_field_[field];
+  if (std::ranges::contains(logged_identities, identity)) {
+    return;
+  }
+  logged_identities.push_back(identity);
+  base::UmaHistogramEnumeration(
+      "OneTimeTokens.ProactiveTrigger.Outcome",
+      suppression_reason.has_value()
+          ? OtpProactiveTriggerOutcome::kSuppressed
+          : OtpProactiveTriggerOutcome::kTriggeredAndSuggestionsShown);
+  if (suppression_reason.has_value()) {
+    base::UmaHistogramEnumeration(
+        "OneTimeTokens.ProactiveTrigger.SuppressionReason",
+        *suppression_reason);
+  }
+}
+
+const OtpTokenIdentity* OtpCoordinator::FindAttributableProactiveTrigger(
+    FieldGlobalId field) const {
+  const DispatchedProactiveTrigger* triggered =
+      base::FindOrNull(proactively_triggered_by_field_, field);
+  if (!triggered || base::TimeTicks::Now() - triggered->dispatched_at >
+                        kProactiveTriggerAttributionWindow) {
+    return nullptr;
+  }
+  return &triggered->identity;
 }
 
 void OtpCoordinator::RetryDeferredProactiveTriggers() {
@@ -563,6 +674,7 @@ void OtpCoordinator::DropDeliveries(
     }
     affected_origins.insert(entry.second.target().origin);
     suggestion_dropdown_dispatcher_.ClearField(entry.first);
+    proactively_triggered_by_field_.erase(entry.first);
     return true;
   });
   for (const url::Origin& origin : affected_origins) {

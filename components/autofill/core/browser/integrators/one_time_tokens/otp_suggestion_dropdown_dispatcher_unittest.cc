@@ -323,5 +323,46 @@ TEST_F(OtpSuggestionDropdownDispatcherTest, ClearFieldAndClearAll) {
   EXPECT_FALSE(dispatcher.HasPendingTrigger(target2.field));
 }
 
+// Tests that `IsSuppressedByDeduplication()` reports, per field, whether a
+// candidate is not strictly newer than the last offered OTP, and that querying
+// it does not change any state.
+TEST_F(OtpSuggestionDropdownDispatcherTest, IsSuppressedByDeduplication) {
+  OtpSuggestionDropdownDispatcher dispatcher;
+  const OtpTarget target = MakeTarget();
+  const OtpTarget other_target = MakeTarget();
+  const base::TimeTicks t0 = base::TimeTicks::Now();
+  const OtpCandidate c1 = MakeSmsCandidate(target, "123456", t0);
+  const OtpCandidate c_same_time = MakeSmsCandidate(target, "654321", t0);
+  const OtpCandidate c_older =
+      MakeSmsCandidate(target, "654321", t0 - base::Seconds(5));
+  const OtpCandidate c1_resent =
+      MakeSmsCandidate(target, "123456", t0 + base::Seconds(5));
+
+  EXPECT_FALSE(
+      dispatcher.IsSuppressedByDeduplication(target.field, c1.identity));
+
+  dispatcher.RecordShown(target.field, c1.identity);
+  EXPECT_TRUE(
+      dispatcher.IsSuppressedByDeduplication(target.field, c1.identity));
+  EXPECT_TRUE(dispatcher.IsSuppressedByDeduplication(target.field,
+                                                     c_same_time.identity));
+  EXPECT_TRUE(
+      dispatcher.IsSuppressedByDeduplication(target.field, c_older.identity));
+  // A resend of the same code is a newer message and is not suppressed.
+  EXPECT_FALSE(
+      dispatcher.IsSuppressedByDeduplication(target.field, c1_resent.identity));
+  EXPECT_FALSE(
+      dispatcher.IsSuppressedByDeduplication(other_target.field, c1.identity));
+
+  // Querying does not record anything: `c1_resent` can still be triggered.
+  StrictMock<MockFunction<bool(const OtpTarget&)>> trigger_cb;
+  EXPECT_CALL(trigger_cb, Call(target)).WillOnce(Return(true));
+  EXPECT_TRUE(dispatcher.TriggerProactive(target, c1_resent,
+                                          /*can_show_on_screen_now=*/true,
+                                          trigger_cb.AsStdFunction()));
+  EXPECT_TRUE(
+      dispatcher.IsSuppressedByDeduplication(target.field, c1_resent.identity));
+}
+
 }  // namespace
 }  // namespace autofill

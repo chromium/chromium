@@ -590,6 +590,60 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="OneTimeTokens.ProactiveTrigger.Outcome"
+    enum="OtpProactiveTriggerOutcome" expires_after="2027-08-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the outcome of a proactive OTP suggestion trigger, i.e. Chrome
+    opening the OTP suggestion popup on an OTP field without user interaction. A
+    trigger is attempted when a verified OTP arrives, when an OTP field is
+    detected while a verified OTP is available, or when a deferred trigger is
+    retried. Recorded at most once per (OTP field, OTP candidate) pair per page
+    visit, where a candidate is one received OTP message, so a re-sent code and
+    the SMS and Gmail copies of one code are separate candidates. A pair may be
+    recorded again after the page is restored from the back/forward cache.
+    &quot;Suppressed&quot; is recorded when the trigger is blocked at the
+    proactive trigger stage (see
+    OneTimeTokens.ProactiveTrigger.SuppressionReason). &quot;Triggered and
+    suggestions shown&quot; is recorded when an OTP suggestion popup with the
+    triggered value is shown on the field within 5 seconds of the trigger being
+    dispatched to the renderer; on Android, this is when the keyboard accessory
+    receives the suggestions, which does not guarantee that they are visible.
+    Attribution is time-based, so an OTP popup with that value that the user
+    opens on the field within this window is also counted. Nothing is recorded
+    for triggers deferred while the tab is hidden or the window is unfocused
+    (only the outcome of the retry is recorded), or for dispatched triggers
+    whose popup is not shown within 5 seconds. Only recorded on desktop and
+    Android while the AutofillOtpCoordinator feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="OneTimeTokens.ProactiveTrigger.SuppressionReason"
+    enum="OtpProactiveTriggerSuppressionReason" expires_after="2027-08-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records why a proactive OTP suggestion trigger was suppressed for an OTP
+    candidate that had already passed delivery verification. Recorded together
+    with the &quot;Suppressed&quot; bucket of
+    OneTimeTokens.ProactiveTrigger.Outcome, at most once per (OTP field, OTP
+    candidate) pair per page visit. If several checks fail, only the first
+    failing check is recorded, in the order applied by
+    OtpCoordinator::TryProactiveTrigger(): deduplication, then
+    OtpDeliveryPolicy::Evaluate(), then the different OTP field check.
+    &quot;WebOTP blocked&quot; and &quot;User not opted in to Gmail OTP
+    filling&quot; are edge cases where a delivery precondition stopped holding
+    after verification, e.g. while the trigger was deferred. &quot;Target OTP
+    field not focused on Android&quot; and &quot;Keyboard not visible on
+    Android&quot; are only recorded on Android; &quot;Different OTP field
+    focused&quot; is only recorded on other platforms. &quot;Frame
+    inactive&quot; and &quot;Keyboard not visible on Android&quot;
+    (crbug.com/451991285) are currently never recorded. Only recorded on desktop
+    and Android while the AutofillOtpCoordinator feature is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="OneTimeTokens.{Type}.SenderDomainMatchAcceptedMatchType.{Source}"
     enum="GmailOtpSenderDomainMatchType" expires_after="2027-06-30">
