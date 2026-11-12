@@ -112,6 +112,7 @@ ActorSurface* ActorSurfaceRegistry::CreateForHeadless(
     content::WebContents* contents,
     base::PassKey<ActorKeyedService>) {
   CHECK(contents);
+  CHECK(headless_manager_->Contains(contents));
   CHECK_EQ(contents->GetBrowserContext(), headless_manager_->browser_context());
   if (ActorSurface* existing = GetForHeadless(contents)) {
     return existing;

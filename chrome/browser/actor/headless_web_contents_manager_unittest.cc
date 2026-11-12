@@ -119,6 +119,59 @@ TEST_F(HeadlessWebContentsManagerTest,
   EXPECT_TRUE(watcher.IsDestroyed());
 }
 
+// AdoptContents() makes the manager own and delegate for a page it didn't
+// create, without notifying observers; the page is then destroyed like any
+// other headless page.
+TEST_F(HeadlessWebContentsManagerTest, AdoptContentsTakesOwnership) {
+  std::unique_ptr<content::WebContents> owned = content::WebContents::Create(
+      content::WebContents::CreateParams(&profile_));
+  content::WebContents* contents = owned.get();
+  content::WebContentsDestroyedWatcher watcher(contents);
+  EXPECT_CALL(observer_, OnHeadlessContentsWillBeDestroyed).Times(0);
+
+  manager_->AdoptContents(std::move(owned));
+
+  EXPECT_EQ(contents->GetDelegate(), manager_.get());
+  EXPECT_FALSE(watcher.IsDestroyed());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  ExpectNotifiedWhileValid(contents);
+  manager_->Destroy(contents);
+  EXPECT_TRUE(watcher.IsDestroyed());
+}
+
+// TakeContents() and AdoptContents() round-trip the same page intact.
+TEST_F(HeadlessWebContentsManagerTest, TakeThenAdoptKeepsPage) {
+  content::WebContents* contents = manager_->Create();
+  content::WebContentsDestroyedWatcher watcher(contents);
+
+  manager_->AdoptContents(manager_->TakeContents(contents));
+
+  EXPECT_FALSE(watcher.IsDestroyed());
+  EXPECT_EQ(contents->GetDelegate(), manager_.get());
+  // Still owned: destroying the manager destroys the page.
+  ExpectNotifiedWhileValid(contents);
+  manager_.reset();
+  EXPECT_TRUE(watcher.IsDestroyed());
+}
+
+// Contains() follows the page through Create(), TakeContents(),
+// AdoptContents() and Destroy().
+TEST_F(HeadlessWebContentsManagerTest, ContainsTracksOwnership) {
+  content::WebContents* contents = manager_->Create();
+  EXPECT_TRUE(manager_->Contains(contents));
+
+  std::unique_ptr<content::WebContents> owned =
+      manager_->TakeContents(contents);
+  EXPECT_FALSE(manager_->Contains(contents));
+
+  manager_->AdoptContents(std::move(owned));
+  EXPECT_TRUE(manager_->Contains(contents));
+
+  manager_->Destroy(contents);
+  EXPECT_FALSE(manager_->Contains(contents));
+}
+
 TEST_F(HeadlessWebContentsManagerTest, ManagerDestructionNotifiesForEach) {
   content::WebContents* first = manager_->Create();
   content::WebContents* second = manager_->Create();

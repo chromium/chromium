@@ -7,6 +7,7 @@
 
 #include <compare>
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -197,23 +198,35 @@ class ActorKeyedService : public KeyedService,
   // not refer to a tab-backed surface.
   void DestroyHeadlessActorSurface(ActorSurfaceHandle actor_surface_handle);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Moves the page of the headless surface owned by `owner` into a new tab at
   // the end of `window`'s tab strip and selects it (`window` isn't activated).
   // The surface keeps its handle. On success, the tab strip owns the page,
   // `owner` is empty, and the new tab is returned. Returns nullptr and leaves
   // `owner` unchanged if `owner` is empty or no longer headless, or if `window`
-  // is closing, isn't a normal window, or belongs to another profile. Desktop
-  // only: on Android, a failed insert would destroy the page.
+  // is closing, isn't a normal window, or belongs to another profile.
+  // TODO(b/573589111): Make this work on Android, where a failed insert
+  // destroys the page.
   tabs::TabInterface* PromoteHeadlessActorSurface(
       ScopedHeadlessActorSurface& owner,
       BrowserWindowInterface& window);
-#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Moves the page of the tab-backed surface `actor_surface_handle` out of its
+  // tab and keeps it as a headless page; the tab is closed (and its window too,
+  // if it was the last tab). The surface keeps its handle and ActorTabData. On
+  // success, the caller owns the page through the returned object, as with
+  // CreateHeadlessActorSurface().
+  // TODO(b/573589111): Verify and test this on Android.
+  [[nodiscard]] std::optional<ScopedHeadlessActorSurface>
+  DemoteTabToHeadlessActorSurface(ActorSurfaceHandle actor_surface_handle);
 
   // Lets tests call the ActorSurfaceRegistry methods reserved for this class.
   static base::PassKey<ActorKeyedService> GetPassKeyForTesting() {
     return base::PassKey<ActorKeyedService>();
   }
+
+  // Lets tests check which pages the headless manager owns.
+  HeadlessWebContentsManager& GetHeadlessWebContentsManagerForTesting()
+      LIFETIME_BOUND;
 
   // The shared browser tool registry for the associated profile.
   const ToolRegistry& tool_registry() const LIFETIME_BOUND {

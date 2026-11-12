@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -57,6 +58,20 @@ std::unique_ptr<content::WebContents> HeadlessWebContentsManager::TakeContents(
   contents_.erase(it);
   owned->SetDelegate(nullptr);
   return owned;
+}
+
+void HeadlessWebContentsManager::AdoptContents(
+    std::unique_ptr<content::WebContents> contents) {
+  CHECK(contents);
+  CHECK_EQ(contents->GetBrowserContext(), browser_context_.get());
+  contents->SetDelegate(this);
+  contents_.push_back(std::move(contents));
+}
+
+bool HeadlessWebContentsManager::Contains(
+    const content::WebContents* contents) const {
+  return std::ranges::contains(contents_, contents,
+                               &std::unique_ptr<content::WebContents>::get);
 }
 
 void HeadlessWebContentsManager::AddObserver(Observer* observer) {

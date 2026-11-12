@@ -80,6 +80,16 @@ destroyed by `ActorKeyedService::Shutdown()`.
 itself: `window.close()` is ignored, and the surface and its `WebContents`
 stay alive until their owner destroys them.
 
+**Moving between a tab and headless.** A surface keeps its handle and its
+`ActorTabData` when its page moves, and ownership of the page moves with it:
+* `ActorKeyedService::PromoteHeadlessActorSurface()` takes the page from its
+  `ScopedHeadlessActorSurface` and puts it into a new tab; the tab strip owns it
+  from then on.
+* `ActorKeyedService::DemoteTabToHeadlessActorSurface()` takes a tab's page
+  out of the tab strip, closing the tab, and returns a
+  `ScopedHeadlessActorSurface` that the caller owns, as if it had created the
+  headless page.
+
 **Going away while in use.** If a headless surface is destroyed while a task
 still uses it, `ActorKeyedService::DestroyHeadlessActorSurface()` first calls
 `ActorTask::OnActorSurfaceWillDetach()` on each task using it, while the page

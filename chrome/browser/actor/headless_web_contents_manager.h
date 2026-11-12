@@ -62,6 +62,13 @@ class HeadlessWebContentsManager : public content::WebContentsDelegate {
   [[nodiscard]] std::unique_ptr<content::WebContents> TakeContents(
       content::WebContents* contents);
 
+  // Called during demotion. Takes ownership of `contents` and becomes its
+  // delegate. Observers are not notified.
+  void AdoptContents(std::unique_ptr<content::WebContents> contents);
+
+  // Returns whether this manager owns `contents`.
+  bool Contains(const content::WebContents* contents) const;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
