@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_METRICS_HELPER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_METRICS_HELPER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SUB_APPS_METRICS_HELPER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_SUB_APPS_METRICS_HELPER_H_
 
-#include <utility>
 #include <vector>
 
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
-#include "url/origin.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace web_app {
 
@@ -60,4 +62,4 @@ class IsolatedWebAppMetricsHelper {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_METRICS_HELPER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SUB_APPS_METRICS_HELPER_H_

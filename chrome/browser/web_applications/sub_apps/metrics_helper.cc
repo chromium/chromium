@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
+#include "chrome/browser/web_applications/sub_apps/metrics_helper.h"
 
+#include "base/check.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/ukm/iwa_source_url_recorder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/origin.h"
 
 namespace web_app {
 

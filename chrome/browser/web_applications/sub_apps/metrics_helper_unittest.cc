@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_metrics_helper.h"
+#include "chrome/browser/web_applications/sub_apps/metrics_helper.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
