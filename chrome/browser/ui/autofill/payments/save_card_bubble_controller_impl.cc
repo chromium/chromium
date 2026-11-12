@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/cardholder_name_update_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_desktop.h"
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
@@ -171,7 +172,18 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   }
 
   // Don't show the bubble if it's already visible or cannot be shown.
-  if (bubble_view() || !MaySetUpBubble() || !GetAutofillBubbleHandler()) {
+  if (!GetAutofillBubbleHandler()) {
+    return;
+  }
+  if (bubble_view() || !MaySetUpBubble()) {
+    if (options.card_save_type == payments::PaymentsAutofillClient::
+                                      CardSaveType::kCardholderNameUpdateOnly) {
+      autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
+          bubble_view() ? autofill_metrics::SaveCardPromptOffer::
+                              kNotShownAnotherPromptShowing
+                        : autofill_metrics::SaveCardPromptOffer::
+                              kNotShownAnotherPromptQueued);
+    }
     return;
   }
 
@@ -537,8 +549,15 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       base::TrimWhitespace(
           user_provided_card_details.cardholder_name, base::TRIM_ALL,
           &user_provided_card_details_with_trimmed_name.cardholder_name);
-      // TODO(crbug.com/564568880): Log prompt result and loading view metrics
-      // for the cardholder name fix flow.
+      // Log the prompt result now because the bubble isn't closed right after
+      // `OnSaveButton()` for upload saves.
+      if (!is_reshow_) {
+        autofill_metrics::LogCardholderNameUpdateFlowPromptResult(
+            PaymentsUiClosedReason::kAccepted);
+      }
+      autofill_metrics::LogCardholderNameUpdateFlowCardholderNameWasEdited(
+          user_provided_card_details_with_trimmed_name.cardholder_name !=
+          card_.GetRawInfo(CREDIT_CARD_NAME_FULL));
       current_bubble_type_ = PaymentsBubbleType::kUploadInProgress;
       std::move(upload_save_card_prompt_callback_)
           .Run(payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
@@ -603,6 +622,12 @@ void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
 }
 
 void SaveCardBubbleControllerImpl::OnBubbleDiscarded() {
+  if (current_bubble_type_ == PaymentsBubbleType::kUploadCardholderNameUpdate &&
+      !was_bubble_shown_) {
+    autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
+        autofill_metrics::SaveCardPromptOffer::kNotShownQueuedButNeverShown);
+    return;
+  }
   LogBubbleCloseMetrics(was_bubble_shown_
                             ? PaymentsUiClosedReason::kNotInteracted
                             : PaymentsUiClosedReason::kUnknown);
@@ -637,6 +662,13 @@ void SaveCardBubbleControllerImpl::LogBubbleCloseMetrics(
           !payments_data_manager_->GetCreditCards().empty());
       break;
     case PaymentsBubbleType::kUploadInProgress:
+      if (options_.card_save_type ==
+          payments::PaymentsAutofillClient::CardSaveType::
+              kCardholderNameUpdateOnly) {
+        // TODO(crbug.com/564568880): Log loading view metrics for the
+        // cardholder name update flow.
+        break;
+      }
       autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
           legacy_metric);
       break;
@@ -652,8 +684,10 @@ void SaveCardBubbleControllerImpl::LogBubbleCloseMetrics(
           legacy_metric, confirmation_ui_params_->is_success);
       break;
     case PaymentsBubbleType::kUploadCardholderNameUpdate:
-      // TODO(crbug.com/564568880): Log prompt result metrics for the cardholder
-      // name fix flow.
+      if (!is_reshow_) {
+        autofill_metrics::LogCardholderNameUpdateFlowPromptResult(
+            closed_reason);
+      }
       break;
     case PaymentsBubbleType::kInactive:
     case PaymentsBubbleType::kManageCards:
@@ -897,8 +931,10 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
           /*is_shown=*/true, confirmation_ui_params_->is_success);
       break;
     case PaymentsBubbleType::kUploadCardholderNameUpdate:
-      // TODO(crbug.com/564568880): Log prompt offer metrics for the cardholder
-      // name fix flow.
+      if (!is_reshow_) {
+        autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
+            autofill_metrics::SaveCardPromptOffer::kShown);
+      }
       break;
     case PaymentsBubbleType::kUploadInProgress:
       break;
@@ -989,8 +1025,8 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
           is_upload_save_, is_reshow_);
       break;
     case PaymentsBubbleType::kUploadCardholderNameUpdate:
-      // TODO(crbug.com/564568880): Log prompt offer metrics for the cardholder
-      // name fix flow.
+      // The cardholder name update prompt is always shown, so it's never
+      // offered as an icon only.
       break;
     case PaymentsBubbleType::kUploadInProgress:
     case PaymentsBubbleType::kUploadComplete:

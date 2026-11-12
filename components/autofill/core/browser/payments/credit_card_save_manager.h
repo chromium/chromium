@@ -242,12 +242,14 @@ class CreditCardSaveManager {
       std::unique_ptr<base::DictValue> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
 
-  // Called when the GetDetailsForUpdateCard preflight request for `card`
-  // completes. On success, stores `card` and `context_token` for the UpdateCard
-  // request and shows the cardholder name update offer prompt for `card`. On
-  // failure, ends the flow without showing any UI.
+  // Called when the GetDetailsForUpdateCard preflight request for `card`, sent
+  // at `request_timestamp`, completes. On success, stores `card` and
+  // `context_token` for the UpdateCard request and shows the cardholder name
+  // update offer prompt for `card`. On failure, ends the flow without showing
+  // any UI.
   void OnDidGetDetailsForUpdateCard(
       const CreditCard& card,
+      base::TimeTicks request_timestamp,
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::string& context_token);
 

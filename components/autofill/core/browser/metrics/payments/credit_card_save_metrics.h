@@ -125,7 +125,15 @@ enum class SaveCardPromptOffer {
   // The prompt was for a UnionPay card which requires CVC for upload, but CVC
   // was missing.
   kCvcMissingForUnionPayUpload = 4,
-  kMaxValue = kCvcMissingForUnionPayUpload,
+  // The prompt was offered but not shown because another prompt was already
+  // showing.
+  kNotShownAnotherPromptShowing = 5,
+  // The prompt was offered but not shown because another prompt was already
+  // queued, or the prompt couldn't be shown in the tab.
+  kNotShownAnotherPromptQueued = 6,
+  // The prompt was queued, but discarded before it was shown.
+  kNotShownQueuedButNeverShown = 7,
+  kMaxValue = kNotShownQueuedButNeverShown,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

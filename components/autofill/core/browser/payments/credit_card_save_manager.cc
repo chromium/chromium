@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/cardholder_name_update_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -223,6 +224,9 @@ void LogPromptOfferMetricForCreditCardSave(
 #endif
       break;
     case SaveCardPromptOffer::kShown:
+    case SaveCardPromptOffer::kNotShownAnotherPromptShowing:
+    case SaveCardPromptOffer::kNotShownAnotherPromptQueued:
+    case SaveCardPromptOffer::kNotShownQueuedButNeverShown:
       break;
   }
 }
@@ -725,10 +729,21 @@ bool CreditCardSaveManager::AttemptToOfferCardholderNameUpdate(
 
   auto* cardholder_name_fix_flow_strike_db =
       GetCardholderNameFixFlowStrikeDatabase();
-  if (!cardholder_name_fix_flow_strike_db ||
-      cardholder_name_fix_flow_strike_db->ShouldBlockFeature(
-          base::NumberToString(card.instrument_id()))) {
+  if (!cardholder_name_fix_flow_strike_db) {
     return false;
+  }
+  switch (cardholder_name_fix_flow_strike_db->GetStrikeDatabaseDecision(
+      base::NumberToString(card.instrument_id()))) {
+    case CardholderNameFixFlowStrikeDatabase::kDoNotBlock:
+      break;
+    case CardholderNameFixFlowStrikeDatabase::kMaxStrikeLimitReached:
+      autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
+          SaveCardPromptOffer::kNotShownMaxStrikesReached);
+      return false;
+    case CardholderNameFixFlowStrikeDatabase::kRequiredDelayNotPassed:
+      autofill_metrics::LogCardholderNameUpdateFlowPromptOffer(
+          SaveCardPromptOffer::kNotShownRequiredDelay);
+      return false;
   }
 
   payments::GetDetailsForUpdateCardRequestDetails request_details;
@@ -742,7 +757,8 @@ bool CreditCardSaveManager::AttemptToOfferCardholderNameUpdate(
   multiple_request_payments_network_interface->GetDetailsForUpdateCard(
       request_details,
       base::BindOnce(&CreditCardSaveManager::OnDidGetDetailsForUpdateCard,
-                     weak_ptr_factory_.GetWeakPtr(), card));
+                     weak_ptr_factory_.GetWeakPtr(), card,
+                     base::TimeTicks::Now()));
   return true;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
@@ -999,8 +1015,11 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
 
 void CreditCardSaveManager::OnDidGetDetailsForUpdateCard(
     const CreditCard& card,
+    base::TimeTicks request_timestamp,
     PaymentsRpcResult result,
     const std::string& context_token) {
+  autofill_metrics::LogGetDetailsForUpdateCardRequestResultAndLatency(
+      result, base::TimeTicks::Now() - request_timestamp);
   if (result != PaymentsRpcResult::kSuccess) {
     return;
   }

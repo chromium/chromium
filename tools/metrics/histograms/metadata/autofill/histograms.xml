@@ -3997,6 +3997,73 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.CardholderNameUpdateFlow.CardholderNameWasEdited"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the user edited the prefilled cardholder name in the
+    cardholder name update prompt. The prompt offers to save the cardholder name
+    entered in a checkout form to a server card that has no cardholder name.
+    Logged when the user accepts the prompt.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.CardholderNameUpdateFlow.GetDetailsForUpdateCardRequest.Latency.{Result}"
+    units="ms" expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the latency of the GetDetailsForUpdateCard request, which is sent
+    before offering to save a cardholder name to a server card that has no
+    cardholder name. The timer starts when the request is sent and stops when
+    the response is received. Broken down by the result of the request.
+  </summary>
+  <token key="Result" variants="Autofill.PaymentsRpcResult"/>
+</histogram>
+
+<histogram
+    name="Autofill.CardholderNameUpdateFlow.GetDetailsForUpdateCardRequest.Result"
+    enum="AutofillPaymentsRpcResultMetric" expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the GetDetailsForUpdateCard request succeeded, failed or
+    timed out. The request is sent before offering to save a cardholder name to
+    a server card that has no cardholder name. Logged when the request
+    completes.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CardholderNameUpdateFlow.PromptOffer"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the cardholder name update prompt was shown. The prompt
+    offers to save the cardholder name entered in a checkout form to a server
+    card that has no cardholder name. Logged when the prompt is shown, when it
+    is not offered because it is blocked by the strike database, or when it is
+    offered but not shown (another prompt was already showing or queued, or the
+    queued prompt was discarded before showing). Only logged for the first show;
+    not logged when the prompt is reshown from the omnibox icon.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CardholderNameUpdateFlow.PromptResult"
+    enum="PaymentsUiClosedReason" expires_after="2027-04-30">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records how the cardholder name update prompt was closed. The prompt offers
+    to save the cardholder name entered in a checkout form to a server card that
+    has no cardholder name. Logged when the user accepts the prompt or when the
+    prompt is closed. Only logged for the first show; not logged when the prompt
+    is reshown from the omnibox icon.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardInfoRetrievalEnrolled.Result"
     enum="CardInfoRetrievalEnrolledUnmaskResult" expires_after="2027-04-30">
   <owner>jialihuang@google.com</owner>
