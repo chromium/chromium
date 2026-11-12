@@ -43,6 +43,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -52,6 +53,7 @@
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
@@ -2157,6 +2159,8 @@ TEST_F(ContentSettingBubbleModelTest,
             l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
   EXPECT_EQ(content.done_button_text,
             l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+  EXPECT_EQ(content.cancel_button_text,
+            l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
   // Even if the system permission status updates in AppShimRegistry while the
   // bubble is open, clicking the "Allow" button should still follow the
   // "Allow" action rather than opening System Settings.
@@ -2229,5 +2233,22 @@ TEST_F(ContentSettingBubbleModelTest,
   system_permission_settings::SetInstanceForTesting(nullptr);
   AppShimRegistry::Get()->SetPrefServiceAndUserDataDirForTesting(
       nullptr, base::FilePath());
+}
+
+TEST_F(ContentSettingBubbleModelTest,
+       NotificationsBubbleModel_ManagedByPolicy) {
+  const GURL url("https://www.example.com/");
+  WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kManagedDefaultNotificationsSetting,
+      base::Value(CONTENT_SETTING_ALLOW));
+
+  ContentSettingNotificationsBubbleModel bubble_model(nullptr, page());
+  const auto& content = bubble_model.bubble_content();
+  EXPECT_TRUE(content.is_user_modifiable);
+  EXPECT_EQ(content.done_button_text,
+            l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
+  EXPECT_TRUE(content.cancel_button_text.empty());
 }
 #endif  // BUILDFLAG(IS_MAC)

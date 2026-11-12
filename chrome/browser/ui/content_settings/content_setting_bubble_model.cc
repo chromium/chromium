@@ -1522,7 +1522,16 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
   set_done_button_text(l10n_util::GetStringUTF16(
       should_request_system_permission_ ? IDS_PERMISSION_ALLOW
                                         : IDS_OPEN_SETTINGS_LINK));
-  set_cancel_button_text(l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
+  // Omit the "Don't allow" button when the Chrome NOTIFICATIONS setting cannot
+  // be modified by the user (e.g. force-allowed by policy). Keep
+  // `is_user_modifiable` true so `ContentSettingBubbleContents` does not
+  // relabel the primary "Allow" / "System settings" button to "Got it".
+  if (GetSettingManagedByUser(GetPage().GetMainDocument().GetLastCommittedURL(),
+                              ContentSettingsType::NOTIFICATIONS, GetProfile(),
+                              nullptr)) {
+    set_cancel_button_text(
+        l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
+  }
 }
 
 ContentSettingNotificationsBubbleModel::
