@@ -1895,9 +1895,95 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdCountDistributionMoments) {
       entries.front(),
       ukm::builders::AdPageLoadCustomSampling4::kAverageViewportAdCountX100Name,
       2);
+  ukm_recorder.ExpectEntryMetric(entries.front(),
+                                 ukm::builders::AdPageLoadCustomSampling4::
+                                     kAverageViewportAdCountX100_V2Name,
+                                 0);
 
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("AverageViewportAdCountX100"), 2, 1);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest,
+       AdCountDistributionMoments_LinearBucketed) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  OverrideWithMockClock();
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.main_frame_rect = gfx::Rect(0, 0, 100, 1000);
+  metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 100, 1000);
+  tester_->SimulateMetadataUpdate(metadata, main_frame);
+
+  // Simulate 1 ad in the viewport for 95ms and 0 ads for 5ms (average ad count
+  // = 0.95, x100 = 95).
+  page_load_metrics::mojom::FrameMetadata metadata2;
+  metadata2.main_frame_ad_rects = {{1, gfx::Rect(0, 0, 100, 100)}};
+  tester_->SimulateMetadataUpdate(metadata2, main_frame);
+  AdvancePageDuration(base::Milliseconds(95));
+
+  page_load_metrics::mojom::FrameMetadata metadata3;
+  metadata3.main_frame_ad_rects = {{1, gfx::Rect()}};
+  tester_->SimulateMetadataUpdate(metadata3, main_frame);
+  AdvancePageDuration(base::Milliseconds(5));
+
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  // `AverageViewportAdCountX100` is exponentially bucketed (1.15 spacing,
+  // where 95 maps to 88), whereas `AverageViewportAdCountX100_V2` is linearly
+  // bucketed with bucket size 10 (where 95 maps to 90).
+  ukm_recorder.ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::AdPageLoadCustomSampling4::kAverageViewportAdCountX100Name,
+      88);
+  ukm_recorder.ExpectEntryMetric(entries.front(),
+                                 ukm::builders::AdPageLoadCustomSampling4::
+                                     kAverageViewportAdCountX100_V2Name,
+                                 90);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("AverageViewportAdCountX100"), 95, 1);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest, AdCountDistributionMoments_CappedAt500) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  OverrideWithMockClock();
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.main_frame_rect = gfx::Rect(0, 0, 100, 1000);
+  metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 100, 1000);
+  tester_->SimulateMetadataUpdate(metadata, main_frame);
+
+  // Simulate 6 ads in the viewport for 100ms (average ad count = 6.00,
+  // x100 = 600, which should be capped at 500 for
+  // `AverageViewportAdCountX100_V2`).
+  page_load_metrics::mojom::FrameMetadata metadata2;
+  metadata2.main_frame_ad_rects = {
+      {1, gfx::Rect(0, 0, 100, 100)},   {2, gfx::Rect(0, 100, 100, 100)},
+      {3, gfx::Rect(0, 200, 100, 100)}, {4, gfx::Rect(0, 300, 100, 100)},
+      {5, gfx::Rect(0, 400, 100, 100)}, {6, gfx::Rect(0, 500, 100, 100)}};
+  tester_->SimulateMetadataUpdate(metadata2, main_frame);
+  AdvancePageDuration(base::Milliseconds(100));
+
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  ukm_recorder.ExpectEntryMetric(entries.front(),
+                                 ukm::builders::AdPageLoadCustomSampling4::
+                                     kAverageViewportAdCountX100_V2Name,
+                                 500);
 }
 
 TEST_P(AdsPageLoadMetricsObserverTest,

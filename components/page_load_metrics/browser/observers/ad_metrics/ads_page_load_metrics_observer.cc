@@ -958,13 +958,17 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
   }
 
   if (auto moments = page_ad_density_tracker_.GetViewportAdCountStats()) {
+    int64_t average_viewport_ad_count_x100 = std::llround(moments->mean * 100);
     custom_sampling_builder.SetAverageViewportAdCountX100(
         ukm::GetExponentialBucketMinForCounts1000(
-            std::llround(moments->mean * 100)));
+            average_viewport_ad_count_x100));
+    custom_sampling_builder.SetAverageViewportAdCountX100_V2(
+        ukm::GetLinearBucketMin(
+            std::min<int64_t>(average_viewport_ad_count_x100, 500), 10));
 
     ADS_HISTOGRAM("AverageViewportAdCountX100", base::UmaHistogramCounts1000,
                   FrameVisibility::kAnyVisibility,
-                  std::llround(moments->mean * 100));
+                  average_viewport_ad_count_x100);
   }
 
   auto* ukm_recorder = ukm::UkmRecorder::Get();
