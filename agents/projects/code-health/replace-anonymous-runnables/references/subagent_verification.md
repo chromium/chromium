@@ -15,23 +15,29 @@ ______________________________________________________________________
 You are a specialized Code Health Verifier. Your task is to audit a list of potential anonymous-class-to-lambda candidates and filter out false positives.
 
 ### Input Candidates:
-[INSERT LIST OF CANDIDATES HERE, e.g.:
-- org.chromium.chrome.browser.init.ProcessInitializationHandler: L123 (ChildProcessCrashObserver.ChildCrashedCallback)
-- org.chromium.chrome.browser.init.LaunchFailedActivity: L45 (DialogInterface.OnClickListener)
+The discovery plugin returns candidate file paths, not individual line
+numbers or interface types. You must locate each anonymous inner class inside
+each file yourself.
+
+[INSERT LIST OF CANDIDATE FILES HERE, e.g.:
+- chrome/browser/init/ProcessInitializationHandler.java
+- chrome/browser/init/LaunchFailedActivity.java
 ]
 
 ### Verification Instructions:
-For each candidate:
-1.  **Locate the Interface Definition:**
-    *   If it is a custom Chromium interface (e.g., starts with `org.chromium.`), use `code_search` or `find_by_name` to find its definition file (`.java`). Read the file.
+For each candidate file:
+1.  **Locate Anonymous Classes:** Use `rg` (e.g., `rg -n "new [A-Z][A-Za-z0-9_.<>]*\(.*\) \{" <file>`) and read the file to find every anonymous inner class. Treat each anonymous class as its own candidate.
+2.  **Locate the Interface Definition:**
+    *   If it is a custom Chromium interface (e.g., starts with `org.chromium.`), use `rg` or file search tools to find its definition file (`.java`). Read the file.
     *   If it is a standard Java/Android SDK interface (e.g., `android.content.DialogInterface.OnClickListener`), use your pre-trained knowledge.
-2.  **Verify SAM (Single Abstract Method) Status:**
+3.  **Verify SAM (Single Abstract Method) Status:**
     *   Confirm the target is an `interface` (not an `abstract class` like `AsyncTask` or `TransitionListener`).
     *   Confirm it declares exactly **one** abstract method (functional interface).
-3.  **Check for Lambda Compatibility:**
-    *   View the candidate file at the specified line number.
-    *   Check the anonymous class implementation. If the overridden method has annotations like `@JavascriptInterface` or test annotations, it **cannot** be converted to a lambda. Skip it.
-    *   Check if the body uses `this` to refer to the anonymous class instance itself. If so, it **cannot** be converted to a lambda. Skip it.
+4.  **Check for Lambda Compatibility (reject if any applies):**
+    *   **Annotations:** If the overridden method has annotations like `@JavascriptInterface`, `@SuppressLint`, or test annotations, it **cannot** be converted to a lambda. Reject it. Do not suggest moving `@SuppressLint` to the field or enclosing method.
+    *   **`this` usage:** If the body uses `this` to refer to the anonymous class instance itself, it **cannot** be converted to a lambda. Reject it.
+    *   **Blank final fields:** If the anonymous class is in a field initializer and references blank final fields initialized in the constructor, converting it causes a compile error. Reject it.
+    *   **`View.OnTouchListener`:** Reject it even though it is a SAM interface; it often triggers `ClickableViewAccessibility` lint warnings and can break lint baselines.
 
 ### Output Format:
 Provide a final summary in markdown table format:

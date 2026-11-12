@@ -18,22 +18,6 @@ clean up these resources while ensuring no test regressions occur.
 **Goal:** Remove expired Chromium histograms (dead metrics) from XML files and
 all code recording sites.
 
-## Relevant Resources & Style Guides
-
-- [Chromium Metrics - Histograms Guide](https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/histograms/README.md)
-- **Allowed Metadata Files (Allowlist):**
-  [safe_dirs.md](references/safe_dirs.md) — the ONLY `histograms.xml` files this
-  skill may scan, analyze, or edit.
-- **Implementation Patterns:** [patterns.md](references/patterns.md) (C++, Java,
-  XML examples)
-- **Analysis Guidelines:**
-  [analysis_guidelines.md](references/analysis_guidelines.md) (Safety checks and
-  effort estimation)
-- **Discovery Script:** [find_candidates.py](scripts/find_candidates.py)
-  (Identify expired histograms in the allowlisted files only)
-- **Automated Review Protocol:**
-  [automated_review.md](references/automated_review.md)
-
 ## Scope & Proactivity
 
 - **Allowlist (Hard Constraint):** Only histograms defined in one of the
@@ -69,15 +53,22 @@ all code recording sites.
 
 ## Workflow
 
-> [!IMPORTANT] **Execution Protocol:** Execute all steps sequentially one by
-> one. Do not skip any step. Do not use `edit-code` or `grep`. Use `rg`
-> (ripgrep) for searches.
+> [!IMPORTANT] **Execution Protocol:** Execute Steps 1–7 continuously in one
+> autonomous run, without skipping steps or pausing between files or steps. Stop
+> only at explicit `ask_question` gates (confidence `1–8` or missing `out` dir)
+> or documented interactive stops. Use `rg` (ripgrep) for searches.
 
 ### Step 1: Workspace Preparation
 
-Follow the workspace preparation steps in
-[workspace_preparation.md](../hub/references/workspace_preparation.md) to ensure
-a clean and updated environment.
+Run the workspace preparation script:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_workspace.py --stash
+```
+
+- If the script outputs `(stashed local changes)`, inform the user.
+- If the script exits non-zero, stop and report the error instead of continuing
+  on a dirty or diverged tree.
 
 ### Step 2: Discovery & Batch Selection
 
@@ -110,7 +101,7 @@ non-allowlisted files with exit code 2).
      this message, then proceed directly to the **Refactoring & Implementation**
      phase. Do NOT ask for permission.
    - **If Confidence is between 1 and 8:** Present the findings and prompt the
-     user using `ask_user` (`type='choice'`):
+     user using `ask_question` (single choice):
      - `header`: "Confidence Check"
      - `question`: "This histogram is safe to remove from [Files] and [Tests].
        My confidence for this cleanup is [X]/10 because [Justification]. Shall I
@@ -134,6 +125,10 @@ non-allowlisted files with exit code 2).
 Process the changes **file by file**, and apply modifications inside each file
 **one recording call at a time** (rather than refactoring all files or recording
 calls at once). This ensures stability and allows for precise verification.
+Process all files and recording calls sequentially within the same run, without
+pausing for user confirmation between edits, then proceed directly to Step 5.
+Refer to [patterns.md](references/patterns.md) for C++, Java, and XML removal
+patterns.
 
 1. **Apply Changes:** Make the changes directly. Apply the code modifications
    for the candidate histogram. Only edit `histograms.xml` files listed in

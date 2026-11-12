@@ -6,52 +6,50 @@ description: Replace anonymous classes with lambdas where applicable (SAM interf
 # Code Health: Replace Anonymous Runnables
 
 Replace Java anonymous classes implementing Single Abstract Method (SAM)
-interfaces with lambdas to leverage Lambda Grouping and reduce binary size.
+interfaces with lambdas to leverage Lambda Grouping and reduce binary size (see
+[optimization_advice.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/speed/binary_size/optimization_advice.md;l=230)).
 
 **Goal:** Clean up all occurrences of this pattern in the codebase.
 
-## Relevant Resources & Style Guides
-
-- **Optimization Advice:**
-  [optimization_advice.md](https://source.chromium.org/chromium/chromium/src/+/main:docs/speed/binary_size/optimization_advice.md;l=230)
-- **Implementation Patterns:** [patterns.md](references/patterns.md)
-- **Discovery Script:** [find_candidates.py](scripts/find_candidates.py)
-- **Automated Review Protocol:**
-  [automated_review.md](references/automated_review.md)
-
 ## Workflow
 
-> [!IMPORTANT] **Execution Protocol:** Execute all steps sequentially one by
-> one. Do not skip any step. Use `rg` (ripgrep) for searches.
+> [!IMPORTANT] **Execution Protocol:** Execute all steps continuously in one
+> autonomous run, without skipping steps or pausing between files or steps. Stop
+> only at explicit `ask_question` gates or documented interactive stops. Use
+> `rg` (ripgrep) for searches.
 
 ### Step 1: Workspace Preparation
 
-Follow the workspace preparation steps in
-[workspace_preparation.md](../hub/references/workspace_preparation.md) to ensure
-a clean and updated environment.
+Run the workspace preparation script:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_workspace.py --stash
+```
+
+- If the script outputs `(stashed local changes)`, inform the user.
+- If the script exits non-zero, stop and report the error instead of continuing
+  on a dirty or diverged tree.
 
 ### Step 2: Discovery & Batch Selection
 
-1. Follow the
-   [Discovery & Batch Selection](../hub/references/discovery_and_batch_selection.md)
-   workflow to run the scanner.
-2. **Verify SAM Candidates (Subagent Verification):** If auditing a specific
-   subsystem or directory, the raw scanner might return false positives (e.g.
-   abstract classes or interfaces with multiple methods). To filter these out
-   dynamically:
-   - Spawn a `self` subagent.
-   - Pass it the verification prompt template from
-     [subagent_verification.md](references/subagent_verification.md) along with
-     the list of raw candidates.
-   - Use the subagent's verified list as the final batch.
-3. Present the verified candidates to the user and ask for explicit approval
-   before proceeding.
+Follow the
+[Discovery & Batch Selection](../hub/references/discovery_and_batch_selection.md)
+workflow. Before reporting the batch and proceeding to the next step, verify raw
+directory/subsystem candidates against false positives (e.g., abstract classes
+or multi-method interfaces) using a **`self`** subagent (`invoke_subagent`,
+`TypeName="self"`, `Role="SAM Candidate Verifier"`) with
+[subagent_verification.md](references/subagent_verification.md) (or, if
+subagents are unavailable, follow those instructions inline). Use the subagent's
+verified list as the final batch; if none remain valid, re-run discovery with
+`--exclude`.
 
 ### Step 3: Refactoring & Implementation
 
 Process the candidates by handling them **one file at a time**, and applying
 modifications inside each file **one instance at a time**. This ensures
-stability and allows for precise verification.
+stability and allows for precise verification. Process all files and instances
+sequentially within the same run, without pausing for user confirmation between
+edits, then proceed directly to Step 4.
 
 **Refactoring Guidelines:**
 

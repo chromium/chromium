@@ -20,30 +20,24 @@ patterns and proactively fix them in the code.
 **Goal:** Identify common violations of the Android accessibility API and fix
 them in Clank Java files.
 
-## Relevant Resources & Style Guides
-
-- [Chromium Accessibility Developer Guide](https://www.chromium.org/developers/design-documents/accessibility)
-- [Android Accessibility Guide](https://developer.android.com/guide/topics/ui/accessibility)
-- **Implementation Patterns:** [patterns.md](references/patterns.md) (Java and
-  XML examples)
-- **Code issue identifier:** [find_candidates.py](scripts/find_candidates.py)
-  (Search the current code base and look for bugs)
-- **Discovery Workflow:**
-  [discovery_and_batch_selection.md](references/discovery_and_batch_selection.md)
-- **Automated Review Protocol:**
-  [automated_review.md](references/automated_review.md)
-
 ## Workflow
 
-> [!IMPORTANT] **Execution Protocol:** Execute all steps sequentially one by
-> one. Do not skip any step. Do not use `edit-code` or `grep`. Use `rg`
-> (ripgrep) for searches.
+> [!IMPORTANT] **Execution Protocol:** Execute all steps continuously in one
+> autonomous run, without skipping steps or pausing between files or steps. Stop
+> only at explicit `ask_question` gates or documented interactive stops. Use
+> `rg` (ripgrep) for searches.
 
 ### Step 1: Workspace Preparation
 
-Follow the workspace preparation steps in
-[workspace_preparation.md](../hub/references/workspace_preparation.md) to ensure
-a clean and updated environment.
+Run the workspace preparation script:
+
+```bash
+python3 agents/projects/code-health/hub/scripts/prepare_workspace.py --stash
+```
+
+- If the script outputs `(stashed local changes)`, inform the user.
+- If the script exits non-zero, stop and report the error instead of continuing
+  on a dirty or diverged tree.
 
 ### Step 2: Discovery & Batch Selection
 
@@ -56,7 +50,9 @@ workflow.
 Process the candidates by handling them **one file at a time**, and applying
 modifications inside each file **one instance at a time** (rather than
 refactoring all files or instances at once). This ensures stability and allows
-for precise verification.
+for precise verification. Process all files and instances sequentially within
+the same run, without pausing for user confirmation between edits, then proceed
+directly to Step 4.
 
 1. **Apply Changes:** Make the changes directly.
    - Read the candidate Java file to understand the class structure.
@@ -65,7 +61,6 @@ for precise verification.
    - Check if any associated string resources (e.g.
      `R.string.accessibility_expanded_group`) are now unused. If they are,
      remove them from the corresponding `.grd` / `.grsp` resource files.
-   - Ensure the code formats correctly: Run `git cl format`.
 
 ### Step 4: Validation
 
@@ -85,9 +80,9 @@ Follow the [Verification](../hub/references/verification.md) workflow.
 1. **Bug Discovery & Creation:** Execute the bug tracking workflow in
    [bug_discovery.md](references/bug_discovery.md) using the `<SourceFileName>`
    and `<SourceFilePath>` from the candidate.
-   - **Interactive Pause:** Do NOT proceed until bug handling resolves a
-     `<Bug ID>`, or set `<Bug ID>` to `"none"` if the user chooses to skip
-     filing a bug.
+   - **Interactive Pause:** Use `ask_question` to confirm whether to file a bug
+     or set `<Bug ID>` to `"none"` to skip. Do NOT proceed to Step 7 until
+     `<Bug ID>` is resolved.
 
 ### Step 7: Submission
 

@@ -4,8 +4,9 @@ Follow this workflow to identify candidates to process.
 
 ## Steps
 
-1. **Discovery:** Delegate to the **`generalist`** sub-agent with this exact
-   prompt:
+1. **Discovery:** Delegate to a **`self`** subagent (`invoke_subagent`,
+   `TypeName="self"`, `Role="Accessibility Candidate Triage"`) with this exact
+   prompt (or, if subagents are unavailable, follow these instructions inline):
 
    > "Run the discovery script `find_candidates.py` located in the skill's
    > `scripts/` directory:
@@ -19,8 +20,7 @@ Follow this workflow to identify candidates to process.
    > accessibility issue as described in `references/patterns.md`, or compare
    > against general known common accessibility issues/mistakes. Skip any
    > candidates that are false positives (e.g., correct API contracts or already
-   > using proper delegates). Exclude any previously rejected files (if provided
-   > by the user).
+   > using proper delegates).
    >
    > If a candidate represents a genuine anti-pattern, return its details.
    >
@@ -35,20 +35,13 @@ Follow this workflow to identify candidates to process.
    > Return details for the first valid candidate found (File Path, matching
    > lines, and a short explanation of why it is an issue)."
 
-2. **Present Candidate & Triaging Loop:** Output the candidate details to the
-   user. Announce the candidate with exactly this message format (replace the
-   bracketed details with the findings): "I've identified a candidate for
-   accessibility cleanup:
+2. **Report Candidate & Proceed:** Report the identified candidate to the user
+   with exactly this message format (replace the bracketed details with the
+   findings): "I've identified a candidate for accessibility cleanup:
 
    - **File:** [File Path]
    - **Issue Lines:** [Issue Lines]
    - **Reason:** [Brief Explanation]"
 
-   Ask the user for confirmation: "Shall I proceed with the cleanup of this
-   file?"
-
-   - **If the user agrees:** Proceed to **Refactoring & Implementation**.
-   - **If the user rejects the candidate:** Loop back to Step 1 (AI-Led
-     Discovery & Analysis), instructing the sub-agent to find the next candidate
-     while explicitly excluding the rejected file path. Repeat this loop until a
-     candidate is confirmed by the user.
+   Then proceed directly to **Refactoring & Implementation** without asking the
+   user for approval.

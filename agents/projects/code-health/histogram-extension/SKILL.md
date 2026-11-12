@@ -13,15 +13,15 @@ nearing expiration.
 
 ## Workflow
 
-### 1. Discovery & Locate (Delegated)
+### 1. Discovery & Locate
 
-- **AI-Led Discovery:** Delegate to the **`generalist`** sub-agent to find
-  histograms that are nearing expiration if none are provided. Run:
+- **Discovery:** If no histogram is provided, run directly:
   ```bash
-  python3 scripts/find_candidates.py --count 1
+  python3 agents/projects/code-health/histogram-extension/scripts/find_candidates.py --count 1
   ```
-- **Bug Checking:** Check `references/bug_discovery.md` and Buganizer to ensure
-  the metric isn't already being extended in another ticket.
+- **Bug Checking:** Check
+  [references/bug_discovery.md](references/bug_discovery.md) and Buganizer to
+  ensure the metric isn't already being extended in another ticket.
 - **Locate:** Look inside `tools/metrics/histograms/metadata/*/histograms.xml`
   to find the target metric.
 - Look for the `<histogram name="TARGET_NAME" expires_after="YYYY-MM-DD">`
@@ -29,9 +29,9 @@ nearing expiration.
 
 ### 2. Update the Expiration Date
 
-- Ask the user (or read from the brief) what the new expiration date should be.
-  If none is specified, recommend extending by +6 months or +1 year (in
-  `YYYY-MM-DD` format).
+- Use `ask_question` (unless already specified in the prompt/brief) to ask what
+  the new expiration date should be. If none is specified, recommend extending
+  by +6 months or +1 year (in `YYYY-MM-DD` format).
 - Carefully replace the `expires_after="YYYY-MM-DD"` string constraint inline,
   being sure not to modify other attributes.
 
