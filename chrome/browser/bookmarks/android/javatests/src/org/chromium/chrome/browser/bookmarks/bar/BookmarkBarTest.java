@@ -135,6 +135,7 @@ public class BookmarkBarTest {
     public void testOnAllBookmarksButtonClick() {
         onViewDisplayed(bookmarkBarItemWithText("All bookmarks")).perform(click());
         onViewDisplayed(withClassName(endsWith("BookmarkToolbar")));
+        pressBack(); // Dismiss for batched test.
     }
 
     @Test
