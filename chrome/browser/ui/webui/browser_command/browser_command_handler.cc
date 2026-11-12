@@ -367,7 +367,7 @@ void BrowserCommandHandler::StartSavedTabGroupTutorial() {
 void BrowserCommandHandler::OpenGlic() {
   glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile_);
 
-  if (!glic_service) {
+  if (!glic_service || !glic::GlicEnabling::ShouldShowGlicButton(profile_)) {
     if (base::FeatureList::IsEnabled(features::kGlicBrowserCommandFallback)) {
       NavigateToURL(GURL(features::kGlicBrowserCommandFallbackUrl.Get()),
                     ui::mojom::WindowOpenDisposition::kNewForegroundTab);
