@@ -169,6 +169,8 @@ TEST_F(HistoryUITest, WebUIConfigEnabledOnlyWhenFeatureEnabled) {
 
     base::android::device_info::set_is_desktop_for_testing(true);
     EXPECT_TRUE(config.IsWebUIEnabled(profile()));
+    EXPECT_FALSE(config.IsWebUIEnabled(
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
   }
   {
     base::test::ScopedFeatureList feature_list;

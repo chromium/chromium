@@ -948,6 +948,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/history/HistoryDeletionBridgeTest.java",
       "src/org/chromium/chrome/browser/history/HistoryDesktopNavigationMediatorUnitTest.java",
       "src/org/chromium/chrome/browser/history/HistoryFilterChipUnitTest.java",
+      "src/org/chromium/chrome/browser/history/HistoryManagerUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/history/HistoryPaneUnitTest.java",
       "src/org/chromium/chrome/browser/history/HistoryUiTest.java",
     ]

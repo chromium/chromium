@@ -118,6 +118,7 @@ specific_include_rules = {
     "+chrome/browser/contextual_tasks/android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java",
   ],
   'TabImpl\\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryManagerUtils.java",
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",

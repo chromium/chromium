@@ -133,7 +133,9 @@ import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.glic.settings.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.ui.GlicPromoCoordinator;
 import org.chromium.chrome.browser.glic.ui.GlicUiCoordinator;
+import org.chromium.chrome.browser.history.HistoryFeatures;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
+import org.chromium.chrome.browser.history.IncognitoHistoryDisclaimerCoordinator;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
@@ -450,6 +452,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable ActivityResultWithNativeObserver mInAppUpdateActivityResultObserver;
     private @Nullable PauseResumeWithNativeObserver mInAppUpdateResumeObserver;
     private boolean mInAppUpdateStartupCheckScheduled;
+    private @Nullable IncognitoHistoryDisclaimerCoordinator mIncognitoHistoryDisclaimerCoordinator;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -1129,6 +1132,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // The hairline observes SideUiCoordinator, so it must be destroyed first.
         destroyWebContentHairline();
         destroySideUi();
+        if (mIncognitoHistoryDisclaimerCoordinator != null) {
+            mIncognitoHistoryDisclaimerCoordinator.destroy();
+            mIncognitoHistoryDisclaimerCoordinator = null;
+        }
 
         super.onDestroy();
     }
@@ -1688,6 +1695,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mWindowAndroid),
                             AiOverlayDialogBridge::new);
         }
+        maybeInitIncognitoHistoryDisclaimerCoordinator();
     }
 
     /** Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity. */
@@ -2053,6 +2061,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         }),
                 mTabModelSelectorSupplier,
                 mProfileSupplier);
+    }
+
+    @VisibleForTesting
+    void maybeInitIncognitoHistoryDisclaimerCoordinator() {
+        if (!HistoryFeatures.isAndroidDesktopWebUiHistoryEnabled()) return;
+        mIncognitoHistoryDisclaimerCoordinator =
+                new IncognitoHistoryDisclaimerCoordinator(
+                        mActivity,
+                        mWindowAndroid,
+                        new int[] {R.id.incognito_indicator, R.id.menu_button_wrapper});
     }
 
     private void initInAppUpdateObservers() {

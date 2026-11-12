@@ -63,8 +63,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -76,6 +78,8 @@ import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.TabLoadStatus;
 import org.chromium.chrome.browser.tabmodel.SettableLookAheadObservableSupplier;
 import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -139,6 +143,7 @@ public class TabUnitTest {
     @Mock private SelectionPopupControllerImpl mSelectionPopupController;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
+    @Mock private BeforeUnloadCallback mBeforeUnloadCallback;
 
     private final SettableLookAheadObservableSupplier<Tab> mTabSupplier =
             new SettableLookAheadObservableSupplier<>();
@@ -1741,6 +1746,29 @@ public class TabUnitTest {
 
         verify(mNavigationController).loadUrl(any());
         verify(mObserver).onLoadUrl(eq(mTab), eq(params), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_HISTORY)
+    public void testLoadUrl_MaybeInterceptLoadUrl_BlocksBeforeBeforeUnloadAndNavigation() {
+        mTab.setNativePtrForTesting(1);
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mProfile.isIncognitoBranded()).thenReturn(true);
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        when(mDelegateFactory.isTabInBrowser()).thenReturn(true);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        mTab.setWebContentsForTesting(mWebContents);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        mTab.getUserDataHost().setUserData(BeforeUnloadCallback.class, mBeforeUnloadCallback);
+
+        LoadUrlResult result = mTab.loadUrl(new LoadUrlParams("chrome://history/"));
+
+        assertEquals(TabLoadStatus.PAGE_LOAD_FAILED, result.tabLoadStatus);
+        assertNull(result.navigationHandle);
+        verify(mBeforeUnloadCallback, never()).handleBeforeUnload(any(), any());
+        verify(mNavigationController, never()).loadUrl(any());
+        verify(mObserver, never()).onLoadUrl(any(), any(), any());
     }
 
     @Test
