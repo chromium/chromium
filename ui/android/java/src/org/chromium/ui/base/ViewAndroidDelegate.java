@@ -36,6 +36,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -65,7 +66,9 @@ public class ViewAndroidDelegate {
     /** The current container view. This view can be updated with {@link #setContainerView()}. */
     protected @Nullable ViewGroup mContainerView;
 
-    // Temporary storage for use as a parameter of getLocationOnScreen().
+    // Reusable UI-thread-confined scratch storage for getLocationInWindow()/getLocationOnScreen().
+    // Returned directly to private @CalledByNative callers, which must copy elements immediately
+    // without retaining a reference.
     private final int[] mTemporaryContainerLocation = new int[2];
 
     /** Notifies the observer when container view is updated. */
@@ -523,44 +526,38 @@ public class ViewAndroidDelegate {
         return mContainerView;
     }
 
-    /** Return the X location of our container view. */
+    /**
+     * Returns the [x, y] location of our container view in window. The returned array aliases
+     * {@link #mTemporaryContainerLocation} on the UI thread and is overwritten by subsequent calls;
+     * callers must copy its elements immediately and never retain a reference.
+     */
     @CalledByNative
-    private int getXLocationOfContainerViewInWindow() {
+    private int[] getLocationOfContainerViewInWindow() {
+        ThreadUtils.assertOnUiThread();
+        mTemporaryContainerLocation[0] = 0;
+        mTemporaryContainerLocation[1] = 0;
         View container = getContainerView();
-        if (container == null) return 0;
-
-        container.getLocationInWindow(mTemporaryContainerLocation);
-        return mTemporaryContainerLocation[0];
+        if (container != null) {
+            container.getLocationInWindow(mTemporaryContainerLocation);
+        }
+        return mTemporaryContainerLocation;
     }
 
-    /** Return the Y location of our container view. */
+    /**
+     * Returns the [x, y] location of our container view on screen. The returned array aliases
+     * {@link #mTemporaryContainerLocation} on the UI thread and is overwritten by subsequent calls;
+     * callers must copy its elements immediately and never retain a reference.
+     */
     @CalledByNative
-    private int getYLocationOfContainerViewInWindow() {
+    private int[] getLocationOnScreen() {
+        ThreadUtils.assertOnUiThread();
+        mTemporaryContainerLocation[0] = 0;
+        mTemporaryContainerLocation[1] = 0;
         View container = getContainerView();
-        if (container == null) return 0;
-
-        container.getLocationInWindow(mTemporaryContainerLocation);
-        return mTemporaryContainerLocation[1];
-    }
-
-    /** Return the X location of our container view on screen. */
-    @CalledByNative
-    private int getXLocationOnScreen() {
-        View container = getContainerView();
-        if (container == null) return 0;
-
-        container.getLocationOnScreen(mTemporaryContainerLocation);
-        return mTemporaryContainerLocation[0];
-    }
-
-    /** Return the Y location of our container view on screen. */
-    @CalledByNative
-    private int getYLocationOnScreen() {
-        View container = getContainerView();
-        if (container == null) return 0;
-
-        container.getLocationOnScreen(mTemporaryContainerLocation);
-        return mTemporaryContainerLocation[1];
+        if (container != null) {
+            container.getLocationOnScreen(mTemporaryContainerLocation);
+        }
+        return mTemporaryContainerLocation;
     }
 
     @CalledByNative

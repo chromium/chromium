@@ -5,11 +5,13 @@
 #include "ui/android/view_android.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/slim/layer.h"
@@ -29,6 +31,7 @@
 #include "ui/events/android/motion_event_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -319,6 +322,21 @@ ScopedJavaLocalRef<jobject> ViewAndroid::GetContainerView() {
   return Java_ViewAndroidDelegate_getContainerView(env, delegate);
 }
 
+namespace {
+
+gfx::Point JavaIntPairToPoint(JNIEnv* env,
+                              const JavaRef<jintArray>& j_location) {
+  CHECK(j_location);
+  std::array<jint, 2> location = {0, 0};
+  const auto expected_len = static_cast<jsize>(location.size());
+  CHECK_EQ(env->GetArrayLength(j_location.obj()), expected_len);
+  env->GetIntArrayRegion(j_location.obj(), 0, expected_len, location.data());
+  jni_zero::CheckException(env);
+  return gfx::Point(location[0], location[1]);
+}
+
+}  // namespace
+
 gfx::Point ViewAndroid::GetLocationOfContainerViewInWindow() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate(env));
@@ -326,25 +344,21 @@ gfx::Point ViewAndroid::GetLocationOfContainerViewInWindow() {
     return gfx::Point();
   }
 
-  gfx::Point result(
-      Java_ViewAndroidDelegate_getXLocationOfContainerViewInWindow(env,
-                                                                   delegate),
-      Java_ViewAndroidDelegate_getYLocationOfContainerViewInWindow(env,
-                                                                   delegate));
-
-  return result;
+  return JavaIntPairToPoint(
+      env, Java_ViewAndroidDelegate_getLocationOfContainerViewInWindow(
+               env, delegate));
 }
 
 gfx::PointF ViewAndroid::GetLocationOnScreen(float x, float y) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> delegate(GetViewAndroidDelegate(env));
   if (delegate.is_null()) {
-    return gfx::PointF();
+    return gfx::PointF(x, y);
   }
 
-  float loc_x = Java_ViewAndroidDelegate_getXLocationOnScreen(env, delegate);
-  float loc_y = Java_ViewAndroidDelegate_getYLocationOnScreen(env, delegate);
-  return gfx::PointF(x + loc_x, y + loc_y);
+  const gfx::Point location = JavaIntPairToPoint(
+      env, Java_ViewAndroidDelegate_getLocationOnScreen(env, delegate));
+  return gfx::PointF(x + location.x(), y + location.y());
 }
 
 void ViewAndroid::RemoveAllChildren(bool attached_to_window) {

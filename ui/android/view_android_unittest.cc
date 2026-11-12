@@ -816,4 +816,28 @@ TEST(ViewAndroidTest, OnCursorChangedScalesCustomCursorToDip) {
             delegate.GetLastCursorType());
 }
 
+TEST(ViewAndroidTest, GetLocationQueriesContainerCoordinates) {
+  ViewAndroid view;
+  EXPECT_EQ(gfx::Point(0, 0), view.GetLocationOfContainerViewInWindow());
+  EXPECT_EQ(gfx::PointF(1.5f, 2.5f), view.GetLocationOnScreen(1.5f, 2.5f));
+
+  TestViewAndroidDelegate delegate;
+  delegate.SetupTestDelegate(&view);
+
+  // Set distinct window vs. screen coordinates to verify that each method
+  // queries its corresponding coordinate system.
+  delegate.SetContainerLocation(gfx::Point(120, 340), gfx::Point(220, 540));
+  EXPECT_EQ(gfx::Point(120, 340), view.GetLocationOfContainerViewInWindow());
+  EXPECT_EQ(gfx::PointF(221.5f, 542.5f), view.GetLocationOnScreen(1.5f, 2.5f));
+
+  delegate.SetContainerLocation(gfx::Point(-80, -45), gfx::Point(-60, -20));
+  EXPECT_EQ(gfx::Point(-80, -45), view.GetLocationOfContainerViewInWindow());
+  EXPECT_EQ(gfx::PointF(-50.f, 0.f), view.GetLocationOnScreen(10.f, 20.f));
+
+  // Clearing the container view must reset coordinates to (0, 0).
+  delegate.ClearContainerView();
+  EXPECT_EQ(gfx::Point(0, 0), view.GetLocationOfContainerViewInWindow());
+  EXPECT_EQ(gfx::PointF(1.5f, 2.5f), view.GetLocationOnScreen(1.5f, 2.5f));
+}
+
 }  // namespace ui

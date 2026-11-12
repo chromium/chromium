@@ -210,10 +210,12 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // This may return null.
   base::android::ScopedJavaLocalRef<jobject> GetContainerView();
 
-  // Return the location of the container view in physical pixels.
+  // Returns the location of the container view in physical pixels. Must be
+  // called on the UI thread.
   gfx::Point GetLocationOfContainerViewInWindow();
 
-  // Return the location of the point relative to screen coordinate in pixels.
+  // Returns the location of the point relative to screen coordinates in pixels.
+  // Must be called on the UI thread.
   gfx::PointF GetLocationOnScreen(float x, float y);
 
   // ViewAndroid does not own |observer|s.
