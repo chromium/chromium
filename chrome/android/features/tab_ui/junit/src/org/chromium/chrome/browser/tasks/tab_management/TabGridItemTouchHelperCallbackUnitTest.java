@@ -470,8 +470,12 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mGridLayoutManager).removeView(mItemView1);
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
         assertThat(
-                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                mModel.get(1).model.get(CardProperties.CARD_ANIMATION_STATUS),
                 equalTo(AnimationStatus.HOVERED_CARD_ZOOM_OUT));
+        assertThat(
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_OUT));
+        assertThat(mModel.get(0).model.get(CARD_ALPHA), equalTo(1f));
     }
 
     @Test
@@ -501,8 +505,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mGridLayoutManager, never()).removeView(mItemView1);
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
         assertThat(
-                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                mModel.get(1).model.get(CardProperties.CARD_ANIMATION_STATUS),
                 equalTo(AnimationStatus.HOVERED_CARD_ZOOM_OUT));
+        assertThat(
+                mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_OUT));
     }
 
     @Test
@@ -1320,6 +1327,44 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         verify(mTabGroupCreationDialogManager, never()).showDialog(any(), any());
         assertEquals(0, mActionTester.getActionCount("TabGroup.Created.DropToMergeV2"));
         assertEquals(1, mActionTester.getActionCount("TabGrid.Drag.DropToMergeV2"));
+    }
+
+    @Test
+    public void onReleaseTab_MergeGroupOntoTab_ListShifts_ResetsCardStates() {
+        Token groupId = Token.createRandom();
+        mModel.get(POSITION1).model.set(CARD_TYPE, ModelType.TAB_GROUP);
+        mModel.get(POSITION1).model.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
+        when(mTab1.getTabGroupId()).thenReturn(groupId);
+        when(mTab3.getTabGroupId()).thenReturn(groupId);
+        doReturn(List.of(mTab1, mTab3)).when(mTabModel).getTabsInGroup(groupId);
+
+        PropertyModel draggedModel = mModel.get(POSITION1).model;
+        PropertyModel hoveredModel = mModel.get(POSITION2).model;
+        PropertyModel neighborModel = mModel.get(POSITION3).model;
+        draggedModel.set(CARD_ANIMATION_STATUS, AnimationStatus.SELECTED_CARD_ZOOM_IN);
+        draggedModel.set(CARD_ALPHA, 0.8f);
+        hoveredModel.set(CARD_ANIMATION_STATUS, AnimationStatus.HOVERED_CARD_ZOOM_IN);
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+        mItemTouchHelperCallback.setSelectedModelForTesting(draggedModel);
+        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
+
+        // Like a data provider: the hovered tab card is removed and the dragged group survives.
+        doAnswer(
+                        invocation -> {
+                            mModel.removeAt(POSITION2);
+                            return null;
+                        })
+                .when(mTabModel)
+                .mergeListOfTabsToGroup(any(), eq(mTab2), anyInt());
+
+        mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        assertEquals(
+                AnimationStatus.HOVERED_CARD_ZOOM_OUT, hoveredModel.get(CARD_ANIMATION_STATUS));
+        assertEquals(
+                AnimationStatus.SELECTED_CARD_ZOOM_OUT, draggedModel.get(CARD_ANIMATION_STATUS));
+        assertEquals(1f, draggedModel.get(CARD_ALPHA), 0f);
+        assertEquals(AnimationStatus.CARD_RESTORE, neighborModel.get(CARD_ANIMATION_STATUS));
     }
 
     @Test
