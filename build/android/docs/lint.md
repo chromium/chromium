@@ -140,7 +140,10 @@ expands `$SRC` to match either form.
 
 To avoid race conditions and IO-related flakes when running Lint in parallel,
 Chromium uses a per-target cache directory located in the target's generated
-directory (e.g., `gen/.../android_lint_cache`).
+directory (e.g., `gen/.../android_lint_cache`). Because Lint unpacks AARs
+non-atomically and skips re-extracting any AAR whose cache subdirectory already
+exists, this directory is cleared before each run and removed afterward (unless
+`LINT_DEBUG=1` is set).
 
 ## What are `lint-baseline.xml` files for?
 

@@ -227,11 +227,15 @@ def _RunLint(
     aar_dirs=None,
 ):
     logging.info('Lint starting')
-    if not cache_dir:
+    is_per_target_cache = not cache_dir
+    if is_per_target_cache:
         # Use per-target cache directory when --cache-dir is not used.
         cache_dir = os.path.join(lint_gen_dir, 'android_lint_cache')
+        # Clear any stale or partially extracted AARs from interrupted runs;
+        # Lint skips unpacking an AAR if its cache subdirectory already exists.
+        shutil.rmtree(cache_dir, ignore_errors=True)
         # Lint complains if the directory does not exist.
-        os.makedirs(cache_dir, exist_ok=True)
+        os.makedirs(cache_dir)
 
     if baseline and not os.path.exists(baseline):
         # Generating new baselines is only done locally, and requires more memory to
@@ -401,6 +405,8 @@ def _RunLint(
             if os.path.exists(project_xml_path):
                 os.unlink(project_xml_path)
             shutil.rmtree(partials_dir, ignore_errors=True)
+            if is_per_target_cache:
+                shutil.rmtree(cache_dir, ignore_errors=True)
 
         if failed:
             print('- For more help with lint in Chrome:', _LINT_MD_URL)
