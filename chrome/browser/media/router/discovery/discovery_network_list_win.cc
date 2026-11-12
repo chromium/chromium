@@ -131,7 +131,9 @@ class WlanApi {
     CHECK(wlan_open_handle, base::NotFatalUntil::M161);
     CHECK(wlan_close_handle, base::NotFatalUntil::M161);
     CHECK(wlan_enum_interfaces, base::NotFatalUntil::M161);
-    CHECK(wlan_query_interface, base::NotFatalUntil::M161);
+    // TODO(crbug.com/584503286): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(wlan_query_interface);
     CHECK(wlan_free_memory, base::NotFatalUntil::M161);
   }
 
