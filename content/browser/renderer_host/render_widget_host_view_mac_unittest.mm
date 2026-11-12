@@ -2270,6 +2270,34 @@ TEST_F(InputMethodMacTest, InsertText) {
   EXPECT_EQ("CommitText", GetMessageNames(events));
 }
 
+// Inserting an empty string after a composition is cancelled must not crash
+// and must leave the selection collapsed where the composition started.
+TEST_F(InputMethodMacTest, InsertEmptyTextAfterCancelledComposition) {
+  SetTextInputType(tab_view(), ui::TEXT_INPUT_TYPE_TEXT);
+  EXPECT_EQ(tab_widget(), text_input_manager()->GetActiveWidget());
+
+  // Start a composition, then cancel it with an empty marked text.
+  [tab_GetInProcessNSView() setMarkedText:@"x"
+                            selectedRange:NSMakeRange(1, 0)
+                         replacementRange:NSMakeRange(2, 0)];
+  [tab_GetInProcessNSView() setMarkedText:@""
+                            selectedRange:NSMakeRange(0, 0)
+                         replacementRange:NSMakeRange(NSNotFound, 0)];
+  EXPECT_EQ((signed)[tab_GetInProcessNSView() markedRange].location,
+            (signed)NSNotFound);
+  EXPECT_NSEQ(NSMakeRange(2, 0), [tab_GetInProcessNSView() selectedRange]);
+
+  // With no marked range, inserted text replaces the selection, so the caret
+  // is predicted to land right after the inserted text.
+  [tab_GetInProcessNSView() insertText:@""
+                      replacementRange:NSMakeRange(NSNotFound, 0)];
+  EXPECT_NSEQ(NSMakeRange(2, 0), [tab_GetInProcessNSView() selectedRange]);
+
+  [tab_GetInProcessNSView() insertText:@"ab"
+                      replacementRange:NSMakeRange(NSNotFound, 0)];
+  EXPECT_NSEQ(NSMakeRange(4, 0), [tab_GetInProcessNSView() selectedRange]);
+}
+
 // This test makes sure that calling finishComposingText on the cocoa view will
 // lead to a finish composing text IPC for a the corresponding active widget.
 TEST_F(InputMethodMacTest, FinishComposingText) {
