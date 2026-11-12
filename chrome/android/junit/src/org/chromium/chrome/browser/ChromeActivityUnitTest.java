@@ -14,6 +14,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -23,7 +24,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.Nullable;
@@ -48,6 +51,9 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.InputHintChecker;
+import org.chromium.base.InputHintCheckerJni;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -67,6 +73,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.ProfileManagerJni;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.reader_mode.ReaderModeManager;
@@ -116,6 +124,8 @@ public class ChromeActivityUnitTest {
     @Mock EnterpriseInfo mEnterpriseInfo;
     @Mock UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock WebDistillerUrlUtilsJni mWebDistillerUrlUtilsJni;
+    @Mock InputHintChecker.Natives mInputHintCheckerJni;
+    @Mock ProfileManager.Natives mProfileManagerJni;
     @Mock private TabStateThemeResourceProvider mThemeResourceProvider;
     @Mock LayoutManagerImpl mLayoutManagerMock;
     @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -241,6 +251,22 @@ public class ChromeActivityUnitTest {
             // Override the method in test so it can be accessible in test body.
             super.onPreCreate();
         }
+
+        @Override
+        public Window getWindow() {
+            return mActivity.getWindow();
+        }
+
+        @Override
+        public Profile getOriginalProfile() {
+            return mProfile;
+        }
+
+        @Override
+        protected void startUmaSession() {}
+
+        @Override
+        protected void endUmaSession() {}
     }
 
     @Before
@@ -677,5 +703,23 @@ public class ChromeActivityUnitTest {
 
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_USER);
         assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)
+    public void testInputHintCheckerViewRetainedAcrossPause() {
+        InputHintChecker.setAllowSetViewForTesting(true);
+        ResettersForTesting.register(() -> InputHintChecker.setAllowSetViewForTesting(false));
+        InputHintCheckerJni.setInstanceForTesting(mInputHintCheckerJni);
+        ProfileManagerJni.setInstanceForTesting(mProfileManagerJni);
+
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        View decorView = chromeActivity.getWindow().getDecorView();
+
+        chromeActivity.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+        verify(mInputHintCheckerJni).setView(decorView);
+
+        chromeActivity.onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);
+        verifyNoMoreInteractions(mInputHintCheckerJni);
     }
 }

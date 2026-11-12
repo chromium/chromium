@@ -1451,10 +1451,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         super.onTopResumedActivityChangedWithNative(isTopResumedActivity);
 
-        View view = isTopResumedActivity ? getWindow().getDecorView() : null;
-        InputHintChecker.setView(view);
-
         if (isTopResumedActivity) {
+            // Intentionally retain the DecorView across top-resumed focus loss so
+            // pending input can still yield the UI thread while this window remains
+            // visible (e.g. behind a translucent dialog or in multi-window mode).
+            // InputHintChecker holds the View via a weak reference and overwrites it
+            // when another ChromeActivity becomes top-resumed.
+            InputHintChecker.setView(getWindow().getDecorView());
             ProfileManager.onProfileActivated(getOriginalProfile());
         }
     }
