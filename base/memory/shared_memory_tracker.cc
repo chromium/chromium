@@ -118,7 +118,7 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
   global_dump->AddScalar(trace_event::MemoryAllocatorDump::kNameSize,
                          trace_event::MemoryAllocatorDump::kUnitsBytes, size);
 
-  // The edges will be overriden by the clients with correct importance.
+  // The edges will be overridden by the clients with correct importance.
   pmd->AddOverridableOwnershipEdge(local_dump->guid(), global_dump->guid(),
                                    0 /* importance */);
   return local_dump;
