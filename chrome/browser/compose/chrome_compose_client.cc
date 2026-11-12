@@ -710,7 +710,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       form_field_data.global_id(), form_field_data.renderer_form_id());
 
   if (ActiveFieldHasUnexpiredSession()) {
-    if (compose_enabling_->ShouldTriggerSavedStatePopup(trigger_source)) {
+    if (compose_enabling_->ShouldTriggerSavedStatePopup()) {
       last_popup_trigger_source_ = trigger_source;
       return true;
     }

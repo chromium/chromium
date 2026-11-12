@@ -243,7 +243,7 @@ void ComposeManagerImpl::GoToSettings() {
 }
 
 bool ComposeManagerImpl::ShouldAnchorNudgeOnCaret() {
-  return GetComposeConfig().is_nudge_shown_at_cursor;
+  return true;
 }
 
 }  // namespace compose

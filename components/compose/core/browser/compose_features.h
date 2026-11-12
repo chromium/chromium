@@ -33,12 +33,6 @@ BASE_DECLARE_FEATURE(kEnableComposeSavedStateNudge);
 // Controls whether or not the proactive nudge is enabled.
 BASE_DECLARE_FEATURE(kEnableComposeProactiveNudge);
 
-// Controls whether or not the saved state notification is shown.
-BASE_DECLARE_FEATURE(kEnableComposeSavedStateNotification);
-
-// Controls whether or not the nudge displays at the cursor.
-BASE_DECLARE_FEATURE(kEnableComposeNudgeAtCursor);
-
 // Controls whether the language check is bypassed for the context menu option.
 BASE_DECLARE_FEATURE(kEnableComposeLanguageBypassForContextMenu);
 
@@ -51,9 +45,6 @@ BASE_DECLARE_FEATURE(kEnableComposeOnDeviceDogfoodFooter);
 
 // Controls parameters around UI rendering.
 BASE_DECLARE_FEATURE(kComposeUiParams);
-
-// Enables animation of text output. Applies only to on-device evaluation.
-BASE_DECLARE_FEATURE(kComposeTextOutputAnimation);
 
 // Enables client-side timeout of a Compose request.
 BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
@@ -72,9 +63,6 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeClose);
 
 // Enables or disables the Happiness Tracking System for nudge dismissal.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
-
-// Enables on-device execution, if available.
-BASE_DECLARE_FEATURE(kComposeAllowOnDeviceExecution);
 
 // Enables upfront input modes in the dialog.
 BASE_DECLARE_FEATURE(kComposeUpfrontInputModes);

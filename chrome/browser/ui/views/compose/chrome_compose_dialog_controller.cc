@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/compose/core/browser/compose_client.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -81,11 +80,8 @@ void ChromeComposeDialogController::ShowComposeDialog(
     // |adjust_if_offscreen| field to the platform-dependent default.
     bubble_->set_adjust_if_offscreen(true);
 
-    if (base::FeatureList::IsEnabled(
-            compose::features::kEnableComposeSavedStateNotification)) {
-      if (bubble_->GetWidget()) {
-        widget_observation_.Observe(bubble_->GetWidget());
-      }
+    if (bubble_->GetWidget()) {
+      widget_observation_.Observe(bubble_->GetWidget());
     }
   } else {
     compose::LogOpenComposeDialogResult(

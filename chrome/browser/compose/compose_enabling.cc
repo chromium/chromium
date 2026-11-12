@@ -371,23 +371,10 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   return base::ok();
 }
 
-bool ComposeEnabling::ShouldTriggerSavedStatePopup(
-    autofill::AutofillSuggestionTriggerSource trigger_source) {
-  // No need to preform field and page level checks since there is already saved
-  // state. Only check config and features.
-
-  if (!compose::GetComposeConfig().saved_state_nudge_enabled) {
-    return false;
-  }
-
-  if (trigger_source ==
-          autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
-      !base::FeatureList::IsEnabled(
-          compose::features::kEnableComposeSavedStateNotification)) {
-    return false;
-  }
-
-  return true;
+bool ComposeEnabling::ShouldTriggerSavedStatePopup() {
+  // No need to perform field and page level checks since there is already saved
+  // state. Only check config.
+  return compose::GetComposeConfig().saved_state_nudge_enabled;
 }
 
 bool ComposeEnabling::ShouldTriggerContextMenu(

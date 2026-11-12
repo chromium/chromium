@@ -92,9 +92,6 @@ Config::Config() {
   auto_submit_with_selection =
       base::FeatureList::IsEnabled(features::kComposeAutoSubmit);
 
-  is_nudge_shown_at_cursor =
-      base::FeatureList::IsEnabled(features::kEnableComposeNudgeAtCursor);
-
   saved_state_nudge_enabled =
       base::FeatureList::IsEnabled(features::kEnableComposeSavedStateNudge);
 
@@ -153,16 +150,6 @@ Config::Config() {
           features::kEnableComposeProactiveNudge,
           "proactive_nudge_field_per_navigation",
           proactive_nudge_field_per_navigation);
-
-  saved_state_timeout =
-      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          features::kEnableComposeSavedStateNotification,
-          "saved_state_timeout_milliseconds",
-          saved_state_timeout.InMilliseconds()));
-
-  focus_lost_delay = base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-      features::kEnableComposeSavedStateNotification,
-      "focus_lost_delay_milliseconds", focus_lost_delay.InMilliseconds()));
 
   stay_in_window_bounds = base::GetFieldTrialParamByFeatureAsBool(
       features::kComposeUiParams, "stay_in_window_bounds",
