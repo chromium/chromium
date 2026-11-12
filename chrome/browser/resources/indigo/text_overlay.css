@@ -11,13 +11,13 @@
   --indigo-disclaimer-font-size:
       max(9px, calc(var(--indigo-steps-font-size) * 0.6));
   --indigo-entry-icon-base-size: clamp(22px, 6vw, 48px);
+  --indigo-entry-icon-scale: 0.88;
   --indigo-disclaimer-margin-top: max(10px, 10vh);
   --indigo-steps-margin-top: calc(var(--indigo-entry-icon-base-size) * 0.4);
 
   --indigo-entry-icon-pulse-size:
       calc(var(--indigo-entry-icon-base-size) * 1.8);
   --indigo-icon-transition-duration: 300ms;
-  --indigo-icon-rotation-loop-duration: 2s;
   --indigo-text-transition-duration: 300ms;
   --indigo-text-transition-delay: 100ms;
   --indigo-wipe-in-start: inset(0 100% 0 0);
@@ -87,36 +87,43 @@
   }
 }
 
-@keyframes icon-rotate-loop {
-  /* The first 50% of the animation is spent in 0deg to create a gap before the
-   * next rotation. */
-  0% {
-    transform: rotate(0deg);
-  }
+#iconStack {
+  align-items: start;
+  display: grid;
+  justify-items: center;
+}
 
-  50% {
-    transform: rotate(0deg);
-    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+#iconStack > * {
+  grid-area: 1 / 1;
 }
 
 #icon {
   background-image: url(text_layer_entry_icon.svg);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 83%;
+  background-size: calc(var(--indigo-entry-icon-scale) * 100%);
   height: var(--indigo-entry-icon-base-size);
   width: var(--indigo-entry-icon-base-size);
   opacity: 0;
   transition: height var(--indigo-icon-transition-duration) ease-out,
       width var(--indigo-icon-transition-duration) ease-out;
-  animation: icon-entry var(--indigo-text-entry-delay) ease-out forwards,
-      icon-rotate-loop var(--indigo-icon-rotation-loop-duration) linear
-          var(--indigo-text-entry-delay) infinite;
+  animation: icon-entry var(--indigo-text-entry-delay) ease-out forwards;
+}
+
+/* Uses visibility since the entry animation's fill already sets opacity. */
+#icon.hidden {
+  visibility: hidden;
+}
+
+#lottie {
+  height: var(--indigo-entry-icon-base-size);
+  opacity: 0;
+  transform: scale(var(--indigo-entry-icon-scale));
+  width: var(--indigo-entry-icon-base-size);
+}
+
+#lottie.visible {
+  opacity: 1;
 }
 
 #steps {

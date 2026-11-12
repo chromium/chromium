@@ -531,6 +531,67 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   )js"));
 }
 
+// Checks that the text overlay swaps the spark for the loading indicator
+// Lottie, e.g. that the Lottie is packaged and its worker can run under the
+// extension's CSP.
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       SwapsToLoadingIndicatorLottie) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_EQ(true, content::EvalJs(subframe.get(), R"js(
+    (async () => {
+      await import('./text_overlay.js');
+      const overlay = document.createElement('indigo-text-overlay');
+      document.body.appendChild(overlay);
+      overlay.startSequence();
+      await overlay.updateComplete;
+      const waitForSwap = async () => {
+        const lottie = overlay.shadowRoot.querySelector('#lottie');
+        await new Promise(resolve => {
+          lottie.addEventListener('cr-lottie-playing', resolve, {once: true});
+        });
+        await overlay.updateComplete;
+        const swapped = lottie.classList.contains('visible') &&
+            overlay.shadowRoot.querySelector('#icon').classList.contains(
+                'hidden');
+        return swapped ? lottie : null;
+      };
+      const lottie = await waitForSwap();
+
+      // Restarting while the Lottie is showing swaps in a fresh one.
+      overlay.startSequence();
+      await overlay.updateComplete;
+      const restartedLottie = await waitForSwap();
+      const swapped =
+          !!lottie && !!restartedLottie && lottie !== restartedLottie;
+
+      overlay.stopSequence();
+      await overlay.updateComplete;
+      return swapped && !overlay.shadowRoot.querySelector('#iconStack');
+    })();
+  )js"));
+}
+
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
                        SendsGenerateRequest) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
