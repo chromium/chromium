@@ -42,10 +42,13 @@ bool MojoAudioEncoder::IsSupported(AudioCodec codec) {
 }
 
 MojoAudioEncoder::MojoAudioEncoder(
-    mojo::PendingRemote<mojom::AudioEncoder> remote_encoder)
+    mojo::PendingRemote<mojom::AudioEncoder> remote_encoder,
+    scoped_refptr<base::SequencedTaskRunner> runner)
     : pending_remote_encoder_(std::move(remote_encoder)),
       buffer_pool_(base::MakeRefCounted<AudioBufferMemoryPool>()),
-      runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+      runner_(std::move(runner)) {
+  DCHECK(runner_);
+  DCHECK(runner_->RunsTasksInCurrentSequence());
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -73,9 +76,9 @@ void MojoAudioEncoder::Initialize(const Options& options,
 
   output_cb_ = std::move(output_cb);
   options_ = options;
-  remote_encoder_->Initialize(client_receiver_.BindNewEndpointAndPassRemote(),
-                              options,
-                              WrapCallbackAsPending(std::move(done_cb)));
+  remote_encoder_->Initialize(
+      client_receiver_.BindNewEndpointAndPassRemote(runner_), options,
+      WrapCallbackAsPending(std::move(done_cb)));
 }
 
 void MojoAudioEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
@@ -147,7 +150,7 @@ void MojoAudioEncoder::CallAndReleaseAllPendingCallbacks(EncoderStatus status) {
 
 void MojoAudioEncoder::BindRemote() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  remote_encoder_.Bind(std::move(pending_remote_encoder_));
+  remote_encoder_.Bind(std::move(pending_remote_encoder_), runner_);
   remote_encoder_.set_disconnect_handler(
       base::BindOnce(&MojoAudioEncoder::OnConnectionError, weak_this_));
 }

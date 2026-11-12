@@ -6,9 +6,11 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared_readablestream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
@@ -189,6 +191,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   decode_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  main_task_runner_ =
+      GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia);
 
   if (init->data()->IsReadableStream()) {
     if (init->data()->GetAsReadableStream()->IsLocked() ||
@@ -495,12 +499,26 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     request->bytes_read_index = bytes_read_;
 
     ++num_submitted_decodes_;
-    decoder_->AsyncCall(&ImageDecoderCore::Decode)
-        .WithArgs(request->frame_index, request->complete_frames_only,
-                  CrossThreadUnretained(request->abort_flag.get()))
-        .Then(CrossThreadBindOnce(&ImageDecoderExternal::OnDecodeReady,
-                                  MakeUnwrappingCrossThreadHandle(
-                                      decode_weak_factory_.GetWeakCell())));
+    // We'd like to use `AsyncCall()` here, but `AsyncCall().Then()` replies via
+    // `SequencedTaskRunner::GetCurrentDefault()`, which is not paused or frozen
+    // with the ExecutionContext (and wrapping `Then()` with `BindPostTask()`
+    // would add an extra task hop).
+    decoder_->PostTaskWithThisObject(CrossThreadBindOnce(
+        [](uint32_t frame_index, bool complete_frames_only,
+           const base::AtomicFlag* abort_flag,
+           base::OnceCallback<void(
+               std::unique_ptr<ImageDecoderCore::ImageDecodeResult>)> done_cb,
+           ImageDecoderCore* core) {
+          std::move(done_cb).Run(
+              core->Decode(frame_index, complete_frames_only, abort_flag));
+        },
+        request->frame_index, request->complete_frames_only,
+        CrossThreadUnretained(request->abort_flag.get()),
+        base::BindPostTask(main_task_runner_,
+                           ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                               &ImageDecoderExternal::OnDecodeReady,
+                               MakeUnwrappingCrossThreadHandle(
+                                   decode_weak_factory_.GetWeakCell()))))));
   }
 
   auto new_end = std::stable_partition(
@@ -598,10 +616,18 @@ void ImageDecoderExternal::DecodeMetadata() {
   ++pending_metadata_requests_;
   DCHECK_GE(pending_metadata_requests_, 1);
 
-  decoder_->AsyncCall(&ImageDecoderCore::DecodeMetadata)
-      .Then(CrossThreadBindOnce(
-          &ImageDecoderExternal::OnMetadata,
-          MakeUnwrappingCrossThreadHandle(weak_factory_.GetWeakCell())));
+  // See comment in `MaybeSatisfyPendingDecodes()` for why we avoid
+  // `AsyncCall().Then()` here.
+  decoder_->PostTaskWithThisObject(CrossThreadBindOnce(
+      [](base::OnceCallback<void(ImageDecoderCore::ImageMetadata)> done_cb,
+         ImageDecoderCore* core) {
+        std::move(done_cb).Run(core->DecodeMetadata());
+      },
+      base::BindPostTask(
+          main_task_runner_,
+          ConvertToBaseOnceCallback(CrossThreadBindOnce(
+              &ImageDecoderExternal::OnMetadata,
+              MakeUnwrappingCrossThreadHandle(weak_factory_.GetWeakCell()))))));
 }
 
 void ImageDecoderExternal::OnMetadata(

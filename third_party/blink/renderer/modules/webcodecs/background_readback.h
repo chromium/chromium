@@ -47,6 +47,10 @@ class MODULES_EXPORT BackgroundReadback
   static bool CopyMappablePlanes(const media::VideoFrame& src_frame,
                                  media::VideoFrame& dest_frame);
 
+  // Note: `result_cb` and `done_cb` may run on a background worker thread or on
+  // the calling thread's default (unpausable) task runner. Callers that touch
+  // ExecutionContext/V8 state must pre-bind callbacks to an ExecutionContext
+  // task runner via `base::BindPostTask()`.
   void ReadbackTextureBackedFrameToMemoryFrame(
       scoped_refptr<media::VideoFrame> txt_frame,
       ReadbackToFrameDoneCallback result_cb);

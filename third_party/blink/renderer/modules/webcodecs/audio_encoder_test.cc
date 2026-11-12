@@ -8,6 +8,7 @@
 #include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
@@ -15,10 +16,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webcodecs_error_callback.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -193,6 +196,93 @@ TEST_F(AudioEncoderTest, FlushPromiseCreatedInCallerContext) {
   // The promise must belong to the caller's context, not the creator's.
   EXPECT_EQ(promise.V8Promise()->GetCreationContextChecked(),
             caller_scope.GetContext());
+}
+
+namespace {
+
+class AudioChunkCollector : public ScriptFunction {
+ public:
+  AudioChunkCollector() = default;
+
+  ScriptValue Call(ScriptState*, ScriptValue) override {
+    ++count_;
+    return ScriptValue();
+  }
+
+  int count() const { return count_; }
+
+ private:
+  int count_ = 0;
+};
+
+}  // namespace
+
+TEST_F(AudioEncoderTest, SoftwareEncoderCallbacksDeferredWhileFrozenOrPaused) {
+  constexpr int kSampleRate = 48000;
+  constexpr int kChannels = 2;
+
+  for (bool freeze : {true, false}) {
+    SCOPED_TRACE(freeze ? "Frozen" : "Paused");
+    V8TestingScope v8_scope;
+    auto& es = v8_scope.GetExceptionState();
+    auto* script_state = v8_scope.GetScriptState();
+
+    MockFunctionScope mock_function(script_state);
+    auto* collector = MakeGarbageCollected<AudioChunkCollector>();
+    auto* init = AudioEncoderInit::Create();
+    init->setOutput(V8EncodedAudioChunkOutputCallback::Create(
+        collector->ToV8Function(script_state)));
+    init->setError(V8WebCodecsErrorCallback::Create(
+        mock_function.ExpectNoCall()->ToV8Function(script_state)));
+    auto* encoder = AudioEncoder::Create(script_state, init, es);
+    ASSERT_FALSE(es.HadException());
+
+    auto* config = AudioEncoderConfig::Create();
+    config->setCodec("opus");
+    config->setSampleRate(kSampleRate);
+    config->setNumberOfChannels(kChannels);
+    encoder->configure(config, es);
+    ASSERT_FALSE(es.HadException());
+
+    {
+      auto promise = encoder->flush(script_state, es);
+      ScriptPromiseTester tester(script_state, promise);
+      tester.WaitUntilSettled();
+      ASSERT_TRUE(tester.IsFulfilled());
+    }
+
+    if (freeze) {
+      v8_scope.GetPage().GetPageScheduler()->SetPageVisible(false);
+      v8_scope.GetPage().GetPageScheduler()->SetPageFrozen(true);
+    } else {
+      v8_scope.GetPage().SetPaused(true);
+    }
+
+    auto* audio_data =
+        CreateAudioData(script_state, kChannels, 960, kSampleRate, 0);
+    encoder->encode(audio_data, es);
+    ASSERT_FALSE(es.HadException());
+    auto flush_promise = encoder->flush(script_state, es);
+    ASSERT_FALSE(es.HadException());
+
+    task_environment_.RunUntilIdle();
+    v8_scope.PerformMicrotaskCheckpoint();
+
+    EXPECT_EQ(0, collector->count());
+    EXPECT_EQ(v8::Promise::kPending, flush_promise.V8Promise()->State());
+
+    if (freeze) {
+      v8_scope.GetPage().GetPageScheduler()->SetPageFrozen(false);
+      v8_scope.GetPage().GetPageScheduler()->SetPageVisible(true);
+    } else {
+      v8_scope.GetPage().SetPaused(false);
+    }
+
+    ScriptPromiseTester tester(script_state, flush_promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    EXPECT_GT(collector->count(), 0);
+  }
 }
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/format_macros.h"
@@ -15,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/numerics/clamped_math.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -799,9 +801,9 @@ base::expected<std::unique_ptr<media::VideoEncoder>, media::EncoderStatus>
 VideoEncoder::CreateSoftwareVideoEncoder(VideoEncoder* self,
                                          bool fallback,
                                          media::VideoCodec codec) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
   if (!self)
     return base::unexpected(media::EncoderStatus::Codes::kEncoderIllegalState);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
   std::unique_ptr<media::VideoEncoder> result;
   switch (codec) {
     case media::VideoCodec::kAV1:
@@ -830,7 +832,8 @@ VideoEncoder::CreateSoftwareVideoEncoder(VideoEncoder* self,
             media::SVCScalabilityMode::kL1T1));
   }
   return std::unique_ptr<media::VideoEncoder>(
-      std::make_unique<media::OffloadingVideoEncoder>(std::move(result)));
+      std::make_unique<media::OffloadingVideoEncoder>(std::move(result),
+                                                      self->callback_runner_));
 }
 
 base::expected<std::unique_ptr<media::VideoEncoder>, media::EncoderStatus>
@@ -869,18 +872,28 @@ void VideoEncoder::ContinueConfigureAfterFlush(Request* request) {
     return;
   }
 
-  RetrieveGpuFactoriesWithKnownEncoderSupport(
-      CrossThreadBindOnce(&VideoEncoder::ContinueConfigureWithGpuFactories,
-                          MakeUnwrappingCrossThreadWeakHandle(this),
-                          MakeUnwrappingCrossThreadHandle(request)));
+  // `RetrieveGpuFactoriesWithKnownEncoderSupport()` may reply via
+  // `SequencedTaskRunner::GetCurrentDefault()` or on the media thread, which
+  // are not paused or frozen with the ExecutionContext. Bind explicitly to
+  // `callback_runner_`.
+  RetrieveGpuFactoriesWithKnownEncoderSupport(blink::OutputCB(
+      base::BindPostTask(callback_runner_,
+                         ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                             &VideoEncoder::ContinueConfigureWithGpuFactories,
+                             MakeUnwrappingCrossThreadWeakHandle(this),
+                             MakeUnwrappingCrossThreadHandle(request))))));
 }
 
 void VideoEncoder::ContinueConfigureWithGpuFactories(
     Request* request,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (reset_count_ != request->reset_count) {
+    request->EndTracing(/*aborted=*/true);
+    return;
+  }
   DCHECK(active_config_);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_platform_encoder = false;
   media_encoder_.reset();
   auto encoder_or_error = CreateMediaVideoEncoder(
@@ -1097,6 +1110,10 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
     }
   }
 
+  // Frame pool and `BackgroundReadback` callbacks may run on background threads
+  // or via `SequencedTaskRunner::GetCurrentDefault()`; bind explicitly to
+  // `callback_runner_` so completion is deferred while paused or frozen.
+  result_cb = base::BindPostTask(callback_runner_, std::move(result_cb));
   auto [pool_result_cb, background_result_cb] =
       base::SplitOnceCallback(std::move(result_cb));
   if (can_use_gmb && accelerated_frame_pool_) {
@@ -1253,16 +1270,13 @@ void VideoEncoder::ProcessEncode(Request* request) {
     // Stall request processing while we wait for the copy to complete. It'd
     // be nice to not have to do this, but currently the request processing
     // loop must execute synchronously or flush() will miss frames.
-    //
-    // Note: Set this before calling StartReadback() since callbacks could
-    // resolve synchronously.
     blocking_request_in_progress_ = request;
 
-    auto readback_done_callback = blink::BindOnce(
+    auto readback_done_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
         &VideoEncoder::OnReadbackDone,
         MakeUnwrappingCrossThreadWeakHandle(this),
         MakeUnwrappingCrossThreadHandle(request), frame,
-        std::move(encode_options), std::move(encode_done_callback));
+        std::move(encode_options), std::move(encode_done_callback)));
 
     if (StartReadback(std::move(frame), std::move(readback_done_callback))) {
       request->input->close();
@@ -1494,9 +1508,9 @@ void VideoEncoder::ProcessConfigure(Request* request) {
     self->ContinueConfigureAfterFlush(req);
   };
 
-  media_encoder_->Flush(BindOnce(flush_done_callback,
-                                 MakeUnwrappingCrossThreadWeakHandle(this),
-                                 MakeUnwrappingCrossThreadHandle(request)));
+  media_encoder_->Flush(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+      flush_done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+      MakeUnwrappingCrossThreadHandle(request))));
 }
 
 void VideoEncoder::ProcessReconfigure(Request* request) {
@@ -1584,10 +1598,10 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   };
 
   blocking_request_in_progress_ = request;
-  media_encoder_->Flush(
-      BindOnce(flush_done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
-               MakeUnwrappingCrossThreadHandle(request),
-               std::move(reconf_done_callback), is_platform_encoder_));
+  media_encoder_->Flush(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+      flush_done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+      MakeUnwrappingCrossThreadHandle(request), std::move(reconf_done_callback),
+      is_platform_encoder_)));
 }
 
 void VideoEncoder::OnMediaEncoderInfoChanged(
@@ -1818,7 +1832,6 @@ void FindAnySupported(
 }
 
 static void isConfigSupportedWithSoftwareOnly(
-    ScriptState* script_state,
     base::OnceCallback<void(VideoEncoderSupport*)> callback,
     VideoEncoderSupport* support,
     VideoEncoderTraits::ParsedConfig* config) {
@@ -1843,26 +1856,19 @@ static void isConfigSupportedWithSoftwareOnly(
     return;
   }
 
-  auto done_callback =
-      [](std::unique_ptr<media::VideoEncoder> encoder,
-         CrossThreadOnceFunction<void(blink::VideoEncoderSupport*)> callback,
-         scoped_refptr<base::SingleThreadTaskRunner> runner,
-         VideoEncoderSupport* support, media::EncoderStatus status) {
-        support->setSupported(status.is_ok());
-        std::move(callback).Run(support);
-        runner->DeleteSoon(FROM_HERE, std::move(encoder));
-      };
-
-  auto* context = ExecutionContext::From(script_state);
-  auto runner = context->GetTaskRunner(TaskType::kInternalDefault);
-  auto* software_encoder_raw = software_encoder.get();
-  software_encoder_raw->Initialize(
+  std::optional<media::EncoderStatus> status;
+  software_encoder->DisablePostedCallbacks();
+  software_encoder->Initialize(
       config->profile, config->options, /*info_cb=*/base::DoNothing(),
       /*output_cb=*/base::DoNothing(),
-      ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          done_callback, std::move(software_encoder),
-          CrossThreadBindOnce(std::move(callback)), std::move(runner),
-          MakeUnwrappingCrossThreadHandle(support))));
+      blink::BindOnce([](std::optional<media::EncoderStatus>* out,
+                         media::EncoderStatus s) { *out = std::move(s); },
+                      blink::Unretained(&status)));
+  CHECK(status.has_value());
+  software_encoder.reset();
+
+  support->setSupported(status->is_ok());
+  std::move(callback).Run(support);
 }
 
 static void isConfigSupportedWithHardwareOnly(
@@ -1917,18 +1923,26 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
   auto promise = resolver->Promise();
   auto find_any_callback = HeapBarrierCallback<VideoEncoderSupport>(
       num_callbacks,
-      BindOnce(&FindAnySupported, MakeUnwrappingCrossThreadHandle(resolver)));
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          &FindAnySupported, MakeUnwrappingCrossThreadHandle(resolver))));
 
   if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
       media::MayHaveAndAllowSelectOSSoftwareEncoder(parsed_config->codec)) {
     // Hardware support not denied, detect support by hardware encoders.
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
-    auto gpu_retrieved_callback =
-        CrossThreadBindOnce(isConfigSupportedWithHardwareOnly,
-                            CrossThreadBindOnce(find_any_callback),
-                            MakeUnwrappingCrossThreadHandle(support),
-                            MakeUnwrappingCrossThreadHandle(parsed_config));
+    // `RetrieveGpuFactoriesWithKnownEncoderSupport()` may reply via
+    // `SequencedTaskRunner::GetCurrentDefault()` or on the media thread, which
+    // are not paused or frozen with the ExecutionContext. Bind explicitly to an
+    // ExecutionContext task runner.
+    auto gpu_retrieved_callback = blink::OutputCB(base::BindPostTask(
+        ExecutionContext::From(script_state)
+            ->GetTaskRunner(TaskType::kInternalDefault),
+        ConvertToBaseOnceCallback(CrossThreadBindOnce(
+            isConfigSupportedWithHardwareOnly,
+            CrossThreadBindOnce(find_any_callback),
+            MakeUnwrappingCrossThreadHandle(support),
+            MakeUnwrappingCrossThreadHandle(parsed_config)))));
     RetrieveGpuFactoriesWithKnownEncoderSupport(
         std::move(gpu_retrieved_callback));
   }
@@ -1937,7 +1951,7 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
     // Hardware support not required, detect support by software encoders.
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
-    isConfigSupportedWithSoftwareOnly(script_state, find_any_callback, support,
+    isConfigSupportedWithSoftwareOnly(find_any_callback, support,
                                       parsed_config);
   }
 

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_track.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/test_underlying_source.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/image_track_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -1208,6 +1210,57 @@ TEST_F(ImageDecoderTest, DecodeRotatedJpeg) {
   EXPECT_EQ(status, kNormalSourceImageStatus);
   EXPECT_EQ(image->Size(), gfx::Size(82, 1281));
   EXPECT_EQ(image->SizeAsFloat(kRespectImageOrientation), gfx::SizeF(1281, 82));
+}
+
+TEST_F(ImageDecoderTest, CallbacksDeferredWhileFrozenOrPaused) {
+  for (bool freeze : {true, false}) {
+    SCOPED_TRACE(freeze ? "Frozen" : "Paused");
+    V8TestingScope v8_scope;
+    auto* script_state = v8_scope.GetScriptState();
+
+    auto set_suspended = [&](bool suspended) {
+      if (freeze) {
+        if (suspended) {
+          v8_scope.GetPage().GetPageScheduler()->SetPageVisible(false);
+          v8_scope.GetPage().GetPageScheduler()->SetPageFrozen(true);
+        } else {
+          v8_scope.GetPage().GetPageScheduler()->SetPageFrozen(false);
+          v8_scope.GetPage().GetPageScheduler()->SetPageVisible(true);
+        }
+      } else {
+        v8_scope.GetPage().SetPaused(suspended);
+      }
+    };
+
+    // 1. Verify DecodeMetadata() -> OnMetadata() is deferred while suspended.
+    set_suspended(true);
+    auto* decoder = CreateDecoder(&v8_scope, "images/resources/png-simple.png",
+                                  "image/png");
+    ASSERT_TRUE(decoder);
+    ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+    auto ready_promise = decoder->tracks().ready(script_state);
+    task_environment_.RunUntilIdle();
+    v8_scope.PerformMicrotaskCheckpoint();
+    EXPECT_EQ(v8::Promise::kPending, ready_promise.V8Promise()->State());
+
+    set_suspended(false);
+    ScriptPromiseTester ready_tester(script_state, ready_promise);
+    ready_tester.WaitUntilSettled();
+    ASSERT_TRUE(ready_tester.IsFulfilled());
+
+    // 2. Verify Decode() -> OnDecodeReady() is deferred while suspended.
+    set_suspended(true);
+    auto decode_promise = decoder->decode(MakeOptions(0, true));
+    task_environment_.RunUntilIdle();
+    v8_scope.PerformMicrotaskCheckpoint();
+    EXPECT_EQ(v8::Promise::kPending, decode_promise.V8Promise()->State());
+
+    set_suspended(false);
+    ScriptPromiseTester decode_tester(script_state, decode_promise);
+    decode_tester.WaitUntilSettled();
+    EXPECT_TRUE(decode_tester.IsFulfilled());
+  }
 }
 
 }  // namespace

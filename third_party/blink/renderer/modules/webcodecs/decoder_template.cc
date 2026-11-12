@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
@@ -331,10 +332,17 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   if (gpu_factories_.has_value()) {
     ContinueConfigureWithGpuFactories(request, gpu_factories_.value());
   } else if (Traits::kNeedsGpuFactories) {
-    RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
-        &DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories,
-        MakeUnwrappingCrossThreadHandle(this),
-        MakeUnwrappingCrossThreadHandle(request)));
+    // `RetrieveGpuFactoriesWithKnownDecoderSupport()` may reply via
+    // `SequencedTaskRunner::GetCurrentDefault()` or on the media thread, which
+    // are not paused or frozen with the ExecutionContext. Bind explicitly to
+    // `main_thread_task_runner_`.
+    RetrieveGpuFactoriesWithKnownDecoderSupport(
+        blink::OutputCB(base::BindPostTask(
+            main_thread_task_runner_,
+            ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                &DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories,
+                MakeUnwrappingCrossThreadHandle(this),
+                MakeUnwrappingCrossThreadHandle(request))))));
   } else {
     ContinueConfigureWithGpuFactories(request, nullptr);
   }

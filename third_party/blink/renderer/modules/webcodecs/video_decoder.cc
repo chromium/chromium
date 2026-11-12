@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
@@ -23,6 +24,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -325,10 +327,18 @@ ScriptPromise<VideoDecoderSupport> VideoDecoder::isConfigSupported(
         MakeGarbageCollected<ScriptPromiseResolver<VideoDecoderSupport>>(
             script_state, exception_state.GetContext());
     auto promise = resolver->Promise();
-    RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
-        &DecoderSupport_OnKnown, MakeUnwrappingCrossThreadHandle(support),
-        std::make_unique<MediaConfigType>(*media_config),
-        MakeUnwrappingCrossThreadHandle(resolver)));
+    // `RetrieveGpuFactoriesWithKnownDecoderSupport()` may reply via
+    // `SequencedTaskRunner::GetCurrentDefault()` or on the media thread, which
+    // are not paused or frozen with the ExecutionContext. Bind explicitly to an
+    // ExecutionContext task runner.
+    RetrieveGpuFactoriesWithKnownDecoderSupport(blink::OutputCB(
+        base::BindPostTask(ExecutionContext::From(script_state)
+                               ->GetTaskRunner(TaskType::kInternalDefault),
+                           ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                               &DecoderSupport_OnKnown,
+                               MakeUnwrappingCrossThreadHandle(support),
+                               std::make_unique<MediaConfigType>(*media_config),
+                               MakeUnwrappingCrossThreadHandle(resolver))))));
     return promise;
   }
 
