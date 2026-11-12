@@ -383,8 +383,12 @@ void QuicHttpStream::OnReadTrailingHeadersComplete(int rv) {
     headers_bytes_received_ += rv;
   }
 
-  // QuicHttpStream ignores trailers.
-  if (stream_->IsDoneReading()) {
+  // QuicHttpStream ignores trailers. If a body read is in progress
+  // (`user_buffer_` is non-null), defer `OnFinRead()` to
+  // `OnReadBodyComplete()` -> `HandleReadComplete()` so closing the stream
+  // does not abort the pending `Handle::read_body_callback_` with
+  // `ERR_CONNECTION_CLOSED`.
+  if (stream_->IsDoneReading() && !user_buffer_) {
     // Close the read side. If the write side has been closed, this will
     // invoke QuicHttpStream::OnClose to reset the stream.
     stream_->OnFinRead();

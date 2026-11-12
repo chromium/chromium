@@ -181,11 +181,16 @@ void QuicChromiumClientStream::Handle::InvokeCallbacksOnClose(int error) {
   read_body_buffer_ = nullptr;
   read_body_buffer_len_ = 0;
 
+  const bool clean_eof = is_done_reading_ &&
+                         stream_error_ == quic::QUIC_STREAM_NO_ERROR &&
+                         connection_error_ == quic::QUIC_NO_ERROR;
   auto guard(weak_factory_.GetWeakPtr());
   for (auto* callback :
        {&read_headers_callback_, &read_body_callback_, &write_callback_}) {
-    if (*callback)
-      ResetAndRun(std::move(*callback), error);
+    if (*callback) {
+      ResetAndRun(std::move(*callback),
+                  (callback == &read_body_callback_ && clean_eof) ? OK : error);
+    }
     if (!guard.get())
       return;
   }
@@ -833,8 +838,6 @@ void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable() {
   if (!headers_delivered_)
     return;
 
-  // Post an async task to notify handle of the FIN flag.
-  NotifyHandleOfDataAvailableLater();
   handle_->OnTrailingHeadersAvailable();
 }
 
@@ -903,6 +906,11 @@ bool QuicChromiumClientStream::DeliverTrailingHeaders(
   *frame_len = trailing_headers_frame_len_;
 
   MarkTrailersConsumed();
+
+  // Post an async task to notify handle of the FIN flag.
+  if (handle_) {
+    NotifyHandleOfDataAvailableLater();
+  }
   return true;
 }
 

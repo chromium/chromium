@@ -1141,5 +1141,200 @@ TEST_P(QuicChromiumClientStreamTest, TrailersAfterEarlyHintsWithoutRead) {
   }
 }
 
+// Regression test for https://crbug.com/581692068. If trailers arrive before
+// the handle reads initial headers (`!headers_delivered_`),
+// `NotifyHandleOfTrailingHeadersAvailable()` returns early. When the handle
+// subsequently reads the initial headers, reads the body, waits for EOF on a
+// second `ReadBody()`, and then synchronously reads the trailing headers via
+// `ReadTrailingHeaders()`, `DeliverTrailingHeaders()` must still post
+// `NotifyHandleOfDataAvailableLater()` so the pending `ReadBody()` completes
+// with 0 (EOF).
+TEST_P(QuicChromiumClientStreamTest,
+       ReadBodyCompletedWhenTrailersDeliveredAfterArrivingBeforeHeadersRead) {
+  InitializeHeaders();
+  quic::QuicHeaderList header_list = ProcessHeaders(headers_);
+
+  static constexpr std::string_view kData = "hello world!";
+  size_t offset = 0;
+  std::string header = ConstructDataHeader(kData.size());
+  stream_->OnStreamFrame(quic::QuicStreamFrame(
+      quic::test::GetNthClientInitiatedBidirectionalStreamId(
+          version_.transport_version, 0),
+      /*fin=*/false,
+      /*offset=*/offset, header));
+  offset += header.length();
+  stream_->OnStreamFrame(quic::QuicStreamFrame(
+      quic::test::GetNthClientInitiatedBidirectionalStreamId(
+          version_.transport_version, 0),
+      /*fin=*/false,
+      /*offset=*/offset, kData));
+
+  quiche::HttpHeaderBlock trailers;
+  trailers["bar"] = "foo";
+  quic::QuicHeaderList trailer_header_list = ProcessTrailers(trailers);
+
+  // Let all tasks posted during packet arrival run while `headers_delivered_`
+  // is still false.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Read initial headers.
+  {
+    quiche::HttpHeaderBlock headers;
+    TestCompletionCallback callback;
+    EXPECT_EQ(static_cast<int>(header_list.uncompressed_header_bytes()),
+              handle_->ReadInitialHeaders(&headers, callback.callback()));
+    EXPECT_EQ(headers, headers_);
+  }
+
+  // Read body data.
+  TestCompletionCallback body_callback;
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * kData.size());
+  EXPECT_EQ(kData.size(), handle_->ReadBody(buffer.get(), 2 * kData.size(),
+                                            body_callback.callback()));
+  EXPECT_EQ(kData, std::string_view(buffer->data(), kData.size()));
+
+  // Subsequent body read is pending because trailers are not yet consumed.
+  EXPECT_THAT(handle_->ReadBody(buffer.get(), 2 * kData.size(),
+                                body_callback.callback()),
+              IsError(ERR_IO_PENDING));
+  EXPECT_FALSE(stream_->IsDoneReading());
+
+  // Synchronously read trailers; this consumes trailers and must schedule
+  // `NotifyHandleOfDataAvailableLater()` to complete `body_callback` with EOF.
+  TestCompletionCallback trailers_callback;
+  EXPECT_EQ(
+      static_cast<int>(trailer_header_list.uncompressed_header_bytes()),
+      handle_->ReadTrailingHeaders(&trailers_, trailers_callback.callback()));
+  EXPECT_EQ(trailers, trailers_);
+  EXPECT_TRUE(stream_->IsDoneReading());
+
+  EXPECT_EQ(0, body_callback.WaitForResult());
+}
+
+// Verify that if the stream closes in the single-task window after
+// `DeliverTrailingHeaders()` marks `IsDoneReading()` true (before the posted
+// `NotifyHandleOfDataAvailable()` task runs), `InvokeCallbacksOnClose()`
+// completes the pending `ReadBody()` with `OK` (0, EOF) rather than
+// `ERR_CONNECTION_CLOSED`.
+TEST_P(QuicChromiumClientStreamTest,
+       StreamCloseAfterTrailersConsumedCompletesPendingReadBodyWithEof) {
+  InitializeHeaders();
+  ProcessHeadersFull(headers_);
+
+  static constexpr std::string_view kData = "hello world!";
+  size_t offset = 0;
+  std::string header = ConstructDataHeader(kData.size());
+  stream_->OnStreamFrame(quic::QuicStreamFrame(
+      quic::test::GetNthClientInitiatedBidirectionalStreamId(
+          version_.transport_version, 0),
+      /*fin=*/false,
+      /*offset=*/offset, header));
+  offset += header.length();
+  stream_->OnStreamFrame(quic::QuicStreamFrame(
+      quic::test::GetNthClientInitiatedBidirectionalStreamId(
+          version_.transport_version, 0),
+      /*fin=*/false,
+      /*offset=*/offset, kData));
+
+  TestCompletionCallback body_callback;
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * kData.size());
+  EXPECT_EQ(kData.size(), handle_->ReadBody(buffer.get(), 2 * kData.size(),
+                                            body_callback.callback()));
+
+  // Second `ReadBody()` is pending waiting for trailers to be consumed.
+  EXPECT_THAT(handle_->ReadBody(buffer.get(), 2 * kData.size(),
+                                body_callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  quiche::HttpHeaderBlock trailers;
+  trailers["bar"] = "foo";
+  quic::QuicHeaderList trailer_header_list = ProcessTrailers(trailers);
+
+  TestCompletionCallback trailers_callback;
+  EXPECT_EQ(
+      static_cast<int>(trailer_header_list.uncompressed_header_bytes()),
+      handle_->ReadTrailingHeaders(&trailers_, trailers_callback.callback()));
+  EXPECT_TRUE(stream_->IsDoneReading());
+
+  // Close the stream before the posted `NotifyHandleOfDataAvailable()` task
+  // runs. Since `IsDoneReading()` is already true, `body_callback` must still
+  // complete with 0 (EOF).
+  quic::test::QuicConnectionPeer::TearDownLocalConnectionState(
+      session_.connection());
+  quic::QuicConnectionCloseFrame frame;
+  frame.quic_error_code = quic::QUIC_NO_ERROR;
+  stream_->OnConnectionClosed(frame, quic::ConnectionCloseSource::FROM_PEER);
+  EXPECT_EQ(0, body_callback.WaitForResult());
+}
+
+// Verify that if invalid trailers with FIN arrive while `ReadBody()` is
+// pending (which closes the sequencer while leaving `trailers_decompressed_`
+// false, making `IsDoneReading()` true when the connection closes with an
+// error), the pending `ReadBody()` completes with `ERR_QUIC_PROTOCOL_ERROR`
+// rather than `OK`.
+TEST_P(QuicChromiumClientStreamTest,
+       InvalidTrailersWhileReadBodyPendingFailsWithProtocolError) {
+  InitializeHeaders();
+  ProcessHeadersFull(headers_);
+
+  static constexpr std::string_view kData = "hello world!";
+  size_t offset = 0;
+  std::string header = ConstructDataHeader(kData.size());
+  stream_->OnStreamFrame(quic::QuicStreamFrame(
+      quic::test::GetNthClientInitiatedBidirectionalStreamId(
+          version_.transport_version, 0),
+      /*fin=*/false,
+      /*offset=*/offset, header));
+  offset += header.length();
+  stream_->OnStreamFrame(quic::QuicStreamFrame(
+      quic::test::GetNthClientInitiatedBidirectionalStreamId(
+          version_.transport_version, 0),
+      /*fin=*/false,
+      /*offset=*/offset, kData));
+
+  TestCompletionCallback body_callback;
+  auto buffer = base::MakeRefCounted<IOBufferWithSize>(2 * kData.size());
+  EXPECT_EQ(kData.size(), handle_->ReadBody(buffer.get(), 2 * kData.size(),
+                                            body_callback.callback()));
+
+  EXPECT_THAT(handle_->ReadBody(buffer.get(), 2 * kData.size(),
+                                body_callback.callback()),
+              IsError(ERR_IO_PENDING));
+
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      CloseConnection(
+          quic::QUIC_INVALID_HEADERS_STREAM_DATA, _,
+          quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET))
+      .WillOnce([&](quic::QuicErrorCode error, const std::string& details,
+                    quic::ConnectionCloseBehavior /*behavior*/) {
+        quic::test::QuicConnectionPeer::TearDownLocalConnectionState(
+            session_.connection());
+        quic::QuicConnectionCloseFrame frame;
+        frame.quic_error_code = error;
+        frame.error_details = details;
+        stream_->OnConnectionClosed(frame,
+                                    quic::ConnectionCloseSource::FROM_SELF);
+      });
+
+  offset += kData.size();
+  quiche::HttpHeaderBlock invalid_trailers;
+  invalid_trailers[":status"] = "200";
+  std::string encoded_trailers = session_.qpack_encoder()->EncodeHeaderList(
+      stream_->id(), invalid_trailers,
+      /*encoder_stream_sent_byte_count=*/nullptr);
+  std::string trailers_frame =
+      quic::HttpEncoder::SerializeHeadersFrameHeader(encoded_trailers.size()) +
+      encoded_trailers;
+  stream_->OnStreamFrame(quic::QuicStreamFrame(stream_->id(), /*fin=*/true,
+                                               offset, trailers_frame));
+  EXPECT_TRUE(handle_->IsDoneReading());
+
+  EXPECT_THAT(body_callback.WaitForResult(), IsError(ERR_QUIC_PROTOCOL_ERROR));
+}
+
 }  // namespace
 }  // namespace net::test

@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -1027,6 +1028,247 @@ TEST_P(QuicHttpStreamTest, GetRequestWithTrailers) {
       entries, /*min_offset=*/pos,
       NetLogEventType::QUIC_CHROMIUM_CLIENT_STREAM_SEND_REQUEST_HEADERS,
       NetLogEventPhase::NONE);
+}
+
+// Regression test for https://crbug.com/581692068. When the caller reads the
+// response body and starts waiting on the final read (EOF) before the posted
+// trailer read task completes, consuming the trailers must not close the stream
+// out from under the pending body read with `ERR_CONNECTION_CLOSED`.
+TEST_P(QuicHttpStreamTest,
+       GetRequestWithTrailersReadBodyBeforeTrailersConsumed) {
+  SetRequest("GET", "/", DEFAULT_PRIORITY);
+  size_t spdy_request_header_frame_length;
+  int packet_number = 1;
+  AddWrite(ConstructInitialSettingsPacket(packet_number++));
+  AddWrite(InnerConstructRequestHeadersPacket(
+      packet_number++, GetNthClientInitiatedBidirectionalStreamId(0), kFin,
+      DEFAULT_PRIORITY, &spdy_request_header_frame_length));
+  AddWrite(
+      ConstructClientAckPacket(packet_number++, 3, 1));  // Ack the data packet.
+
+  Initialize();
+
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/");
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+
+  EXPECT_EQ(OK,
+            stream_->SendRequest(headers_, &response_, callback_.callback()));
+  // Ack the request.
+  ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
+
+  EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()),
+              IsError(ERR_IO_PENDING));
+
+  SetResponse("200", string());
+
+  // Send the response headers.
+  size_t spdy_response_header_frame_length;
+  ProcessPacket(ConstructResponseHeadersPacket(
+      2, !kFin, &spdy_response_header_frame_length));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(response_.headers.get());
+  EXPECT_EQ(200, response_.headers->response_code());
+
+  // Send the response body and trailers without running the message loop first.
+  static constexpr std::string_view kResponseBody = "Hello world!";
+  std::string header = ConstructDataHeader(kResponseBody.size());
+  ProcessPacket(ConstructServerDataPacket(
+      3, !kFin, base::StrCat({header, kResponseBody})));
+  quiche::HttpHeaderBlock trailers;
+  size_t spdy_trailers_frame_length;
+  trailers["foo"] = "bar";
+  ProcessPacket(ConstructResponseTrailersPacket(4, kFin, std::move(trailers),
+                                                &spdy_trailers_frame_length));
+
+  // Read the buffered body synchronously before trailers are consumed.
+  EXPECT_EQ(static_cast<int>(kResponseBody.size()),
+            stream_->ReadResponseBody(read_buffer_.get(), read_buffer_->size(),
+                                      callback_.callback()));
+  EXPECT_FALSE(stream_->IsResponseBodyComplete());
+
+  // The next body read must wait on trailers to be consumed, and then complete
+  // with `OK` (0, EOF) rather than `ERR_CONNECTION_CLOSED`.
+  EXPECT_THAT(
+      stream_->ReadResponseBody(read_buffer_.get(), read_buffer_->size(),
+                                callback_.callback()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  EXPECT_TRUE(stream_->IsResponseBodyComplete());
+  EXPECT_FALSE(
+      QuicHttpStreamPeer::GetQuicChromiumClientStream(stream_.get())->IsOpen());
+  EXPECT_TRUE(AtEof());
+  EXPECT_EQ(spdy_request_header_frame_length,
+            stream_->GetTotalSentBytes().InBytes());
+  EXPECT_EQ(spdy_response_header_frame_length + kResponseBody.size() +
+                header.length() + spdy_trailers_frame_length,
+            stream_->GetTotalReceivedBytes().InBytes());
+}
+
+// Regression test for https://crbug.com/581692068. Exercises the asynchronous
+// `OnTrailingHeadersAvailable()` -> `OnReadTrailingHeadersComplete()` callback
+// path when `ReadTrailingHeaders()` is already waiting on `ERR_IO_PENDING` and
+// trailers arrive while the final `ReadResponseBody()` (for EOF) is pending.
+TEST_P(QuicHttpStreamTest, GetRequestWithAsyncTrailersWhileReadBodyPending) {
+  SetRequest("GET", "/", DEFAULT_PRIORITY);
+  size_t spdy_request_header_frame_length;
+  int packet_number = 1;
+  AddWrite(ConstructInitialSettingsPacket(packet_number++));
+  AddWrite(InnerConstructRequestHeadersPacket(
+      packet_number++, GetNthClientInitiatedBidirectionalStreamId(0), kFin,
+      DEFAULT_PRIORITY, &spdy_request_header_frame_length));
+  AddWrite(
+      ConstructClientAckPacket(packet_number++, 3, 1));  // Ack the data packet.
+
+  Initialize();
+
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/");
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+
+  EXPECT_EQ(OK,
+            stream_->SendRequest(headers_, &response_, callback_.callback()));
+  // Ack the request.
+  ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
+
+  EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()),
+              IsError(ERR_IO_PENDING));
+
+  SetResponse("200", string());
+
+  // Send the response headers.
+  size_t spdy_response_header_frame_length;
+  ProcessPacket(ConstructResponseHeadersPacket(
+      2, !kFin, &spdy_response_header_frame_length));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(response_.headers.get());
+  EXPECT_EQ(200, response_.headers->response_code());
+
+  // Start an async body read before the body packet arrives. Waiting for the
+  // body packet also runs the posted `QuicHttpStream::ReadTrailingHeaders()`
+  // task, which sees no trailers yet and registers
+  // `OnReadTrailingHeadersComplete` as the async trailer callback on `Handle`.
+  EXPECT_THAT(
+      stream_->ReadResponseBody(read_buffer_.get(), read_buffer_->size(),
+                                callback_.callback()),
+      IsError(ERR_IO_PENDING));
+
+  static constexpr std::string_view kResponseBody = "Hello world!";
+  std::string header = ConstructDataHeader(kResponseBody.size());
+  ProcessPacket(ConstructServerDataPacket(
+      3, !kFin, base::StrCat({header, kResponseBody})));
+  EXPECT_EQ(static_cast<int>(kResponseBody.size()), callback_.WaitForResult());
+  EXPECT_FALSE(stream_->IsResponseBodyComplete());
+
+  // Now start the second body read (for EOF) and deliver the trailers packet so
+  // `Handle::OnTrailingHeadersAvailable()` invokes
+  // `QuicHttpStream::OnReadTrailingHeadersComplete()` asynchronously while
+  // `user_buffer_` is non-null.
+  EXPECT_THAT(
+      stream_->ReadResponseBody(read_buffer_.get(), read_buffer_->size(),
+                                callback_.callback()),
+      IsError(ERR_IO_PENDING));
+
+  quiche::HttpHeaderBlock trailers;
+  size_t spdy_trailers_frame_length;
+  trailers["foo"] = "bar";
+  ProcessPacket(ConstructResponseTrailersPacket(4, kFin, std::move(trailers),
+                                                &spdy_trailers_frame_length));
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_TRUE(stream_->IsResponseBodyComplete());
+  EXPECT_FALSE(
+      QuicHttpStreamPeer::GetQuicChromiumClientStream(stream_.get())->IsOpen());
+  EXPECT_TRUE(AtEof());
+  EXPECT_EQ(spdy_request_header_frame_length,
+            stream_->GetTotalSentBytes().InBytes());
+  EXPECT_EQ(spdy_response_header_frame_length + kResponseBody.size() +
+                header.length() + spdy_trailers_frame_length,
+            stream_->GetTotalReceivedBytes().InBytes());
+}
+
+// Verify that when trailers are consumed after the body chunk is read and while
+// no body read is pending (`stream_->IsDoneReading() && !user_buffer_`),
+// `OnReadTrailingHeadersComplete()` immediately calls `OnFinRead()` to close
+// the underlying stream.
+TEST_P(QuicHttpStreamTest,
+       GetRequestWithTrailersCompletedAfterBodyReadBeforeEofRead) {
+  SetRequest("GET", "/", DEFAULT_PRIORITY);
+  size_t spdy_request_header_frame_length;
+  int packet_number = 1;
+  AddWrite(ConstructInitialSettingsPacket(packet_number++));
+  AddWrite(InnerConstructRequestHeadersPacket(
+      packet_number++, GetNthClientInitiatedBidirectionalStreamId(0), kFin,
+      DEFAULT_PRIORITY, &spdy_request_header_frame_length));
+  AddWrite(
+      ConstructClientAckPacket(packet_number++, 3, 1));  // Ack the data packet.
+
+  Initialize();
+
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/");
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+
+  EXPECT_EQ(OK,
+            stream_->SendRequest(headers_, &response_, callback_.callback()));
+  ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
+
+  EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()),
+              IsError(ERR_IO_PENDING));
+
+  SetResponse("200", string());
+
+  size_t spdy_response_header_frame_length;
+  ProcessPacket(ConstructResponseHeadersPacket(
+      2, !kFin, &spdy_response_header_frame_length));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  ASSERT_TRUE(response_.headers.get());
+  EXPECT_EQ(200, response_.headers->response_code());
+
+  static constexpr std::string_view kResponseBody = "Hello world!";
+  std::string header = ConstructDataHeader(kResponseBody.size());
+  ProcessPacket(ConstructServerDataPacket(
+      3, !kFin, base::StrCat({header, kResponseBody})));
+  quiche::HttpHeaderBlock trailers;
+  size_t spdy_trailers_frame_length;
+  trailers["foo"] = "bar";
+  ProcessPacket(ConstructResponseTrailersPacket(4, kFin, std::move(trailers),
+                                                &spdy_trailers_frame_length));
+
+  // Read the body chunk synchronously so `sequencer()` is closed while
+  // `user_buffer_` is null.
+  EXPECT_EQ(static_cast<int>(kResponseBody.size()),
+            stream_->ReadResponseBody(read_buffer_.get(), read_buffer_->size(),
+                                      callback_.callback()));
+  EXPECT_FALSE(stream_->IsResponseBodyComplete());
+
+  // Wait for the posted `ReadTrailingHeaders()` ->
+  // `OnReadTrailingHeadersComplete()` task to consume trailers and close the
+  // stream while no body read is pending.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return stream_->IsResponseBodyComplete(); }));
+  EXPECT_FALSE(
+      QuicHttpStreamPeer::GetQuicChromiumClientStream(stream_.get())->IsOpen());
+
+  EXPECT_EQ(OK,
+            stream_->ReadResponseBody(read_buffer_.get(), read_buffer_->size(),
+                                      callback_.callback()));
+  EXPECT_TRUE(AtEof());
+  EXPECT_EQ(spdy_request_header_frame_length,
+            stream_->GetTotalSentBytes().InBytes());
+  EXPECT_EQ(spdy_response_header_frame_length + kResponseBody.size() +
+                header.length() + spdy_trailers_frame_length,
+            stream_->GetTotalReceivedBytes().InBytes());
 }
 
 TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
