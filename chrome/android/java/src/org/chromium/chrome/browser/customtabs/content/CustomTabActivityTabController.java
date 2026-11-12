@@ -262,7 +262,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 // EXTRA_SKIP_LOAD_ON_REPARENTING to make sure the initial URL still loads.
                 IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING);
                 mTabProvider.setInitialTab(hiddenTab, TabCreationMode.HIDDEN);
-                initializeTab(hiddenTab, true);
+                initializeTab(hiddenTab, /* isHiddenTab= */ true, /* isBackgroundTab= */ false);
             }
         }
     }
@@ -409,8 +409,18 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false, null);
         tabModelOrchestrator.restoreTabs(true);
         Tab tab = tabModelOrchestrator.getCurrentTab();
+        TabModelSelectorBase tabModelSelector = tabModelOrchestrator.getTabModelSelector();
+        if (tabModelSelector != null) {
+            TabModel tabModel = tabModelSelector.getModel(mIntentDataProvider.isOffTheRecord());
+            for (Tab restoredTab : tabModel) {
+                if (restoredTab != tab) {
+                    initializeTab(
+                            restoredTab, /* isHiddenTab= */ false, /* isBackgroundTab= */ true);
+                }
+            }
+        }
         if (tab != null) {
-            initializeTab(tab, false);
+            initializeTab(tab, /* isHiddenTab= */ false, /* isBackgroundTab= */ false);
         }
         return tab;
     }
@@ -498,7 +508,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         }
 
         assert tab != null;
-        initializeTab(tab, false);
+        initializeTab(tab, /* isHiddenTab= */ false, /* isBackgroundTab= */ false);
 
         if (needsShow) {
             tab.show(TabSelectionType.FROM_NEW);
@@ -549,12 +559,24 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         return asyncParams.getWebContents();
     }
 
-    private void initializeTab(Tab tab, boolean isHiddenTab) {
+    private boolean hasParentInTabModel(Tab tab) {
+        if (tab.getParentId() == Tab.INVALID_TAB_ID) return false;
+
+        TabModel tabModel =
+                mTabFactory.getTabModelSelector().getModel(mIntentDataProvider.isOffTheRecord());
+        return tabModel.getTabById(tab.getParentId()) != null;
+    }
+
+    private void initializeTab(Tab tab, boolean isHiddenTab, boolean isBackgroundTab) {
         registerTabIfResumptionEnabled(tab);
         // TODO(pkotwicz): Determine whether these should be done for webapps.
         if (!mIntentDataProvider.isWebappOrWebApkActivity()) {
-            updateIntentInTab(tab, /* isCustomTab= */ true);
-            requestFocus(tab);
+            if (!hasParentInTabModel(tab)) {
+                updateIntentInTab(tab, /* isCustomTab= */ true);
+            }
+            if (!isBackgroundTab) {
+                requestFocus(tab);
+            }
         }
 
         if (mIntentDataProvider.isTrustedWebActivity()

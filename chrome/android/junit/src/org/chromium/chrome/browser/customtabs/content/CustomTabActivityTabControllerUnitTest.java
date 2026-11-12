@@ -534,4 +534,27 @@ public class CustomTabActivityTabControllerUnitTest {
 
         verify(mTabController, never()).updateIntentInTab(any(), anyBoolean());
     }
+
+    @Test
+    public void restoresAllTabsInOrder_WhenMultipleTabsSaved() {
+        Tab openerTab = env.prepareTab();
+        when(openerTab.getId()).thenReturn(101);
+        when(openerTab.getParentId()).thenReturn(Tab.INVALID_TAB_ID);
+        Tab childTab = env.prepareTab();
+        when(childTab.getId()).thenReturn(102);
+        when(childTab.getParentId()).thenReturn(101);
+
+        env.saveTab(childTab);
+        when(env.tabModel.iterator()).thenAnswer(inv -> List.of(openerTab, childTab).iterator());
+        when(env.tabModel.getTabById(101)).thenReturn(openerTab);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        verify(env.tabModelOrchestrator).loadState(false, false, null);
+        verify(env.tabModelOrchestrator).restoreTabs(true);
+        assertEquals(childTab, env.tabProvider.getTab());
+        verify(mTabController).updateIntentInTab(eq(openerTab), eq(true));
+        verify(mTabController, never()).updateIntentInTab(eq(childTab), anyBoolean());
+    }
 }

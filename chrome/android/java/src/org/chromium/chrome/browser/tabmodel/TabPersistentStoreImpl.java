@@ -437,12 +437,24 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 Log.w(TAG, "Error while saving tabs state; will attempt to continue...", e);
             }
 
-            // Add current tabs to save because they did not get a save signal yet.
-            Tab currentStandardTab = TabModelUtils.getCurrentTab(mTabModelSelector.getModel(false));
-            addTabToSaveQueueIfApplicable(currentStandardTab);
+            if (mOrchestratorType == TabOrchestratorType.CUSTOM) {
+                // In Custom Tabs, ensure all dirty/untidy tabs in the activity (e.g., background
+                // opener tabs or newly created child tabs) are queued for saving.
+                for (TabModel model : mTabModelSelector.getModels()) {
+                    for (Tab tab : model) {
+                        addTabToSaveQueueIfApplicable(tab);
+                    }
+                }
+            } else {
+                // Add current tabs to save because they did not get a save signal yet.
+                Tab currentStandardTab =
+                        TabModelUtils.getCurrentTab(mTabModelSelector.getModel(false));
+                addTabToSaveQueueIfApplicable(currentStandardTab);
 
-            Tab currentIncognitoTab = TabModelUtils.getCurrentTab(mTabModelSelector.getModel(true));
-            addTabToSaveQueueIfApplicable(currentIncognitoTab);
+                Tab currentIncognitoTab =
+                        TabModelUtils.getCurrentTab(mTabModelSelector.getModel(true));
+                addTabToSaveQueueIfApplicable(currentIncognitoTab);
+            }
 
             // Wait for the current tab to save.
             if (mSaveTabTask != null) {
@@ -463,13 +475,16 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 int id = tab.getId();
                 boolean incognito = tab.isIncognito();
                 try {
+                    TabState state = TabStateExtractor.from(tab);
                     TabStateAttributes attributes =
                             TabStateAttributesRegistry.getAttributesFor(
                                     tab, TabPersistentStoreImpl.class);
                     if (attributes != null) {
                         attributes.clearTabStateDirtiness();
+                        if (state == null || state.contentsState == null) {
+                            attributes.updateIsDirty(DirtinessState.UNTIDY);
+                        }
                     }
-                    TabState state = TabStateExtractor.from(tab);
                     if (state != null) {
                         TabStateFileManager.saveState(
                                 getStateDirectory(), state, id, incognito, mCipherFactory);
@@ -685,6 +700,12 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     TabRestoreDetails tabToRestore = mTabsToRestore.removeFirst();
                     restoreTab(tabToRestore, true);
                 }
+            }
+        }
+        if (mOrchestratorType == TabOrchestratorType.CUSTOM) {
+            while (!mTabsToRestore.isEmpty()) {
+                TabRestoreDetails tabToRestore = mTabsToRestore.removeFirst();
+                restoreTab(tabToRestore, false);
             }
         }
         loadNextTabs();
@@ -1455,12 +1476,15 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         @Override
         protected void onPreExecute() {
             if (mDestroyed || mTab.isDestroyed() || isCancelled()) return;
+            mState = TabStateExtractor.from(mTab);
             TabStateAttributes attributes =
                     TabStateAttributesRegistry.getAttributesFor(mTab, TabPersistentStoreImpl.class);
             if (attributes != null) {
                 attributes.clearTabStateDirtiness();
+                if (mState == null || mState.contentsState == null) {
+                    attributes.updateIsDirty(DirtinessState.UNTIDY);
+                }
             }
-            mState = TabStateExtractor.from(mTab);
         }
 
         @Override
@@ -1599,7 +1623,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      * @param state TabState for the Tab.
      */
     private boolean saveTabState(int tabId, boolean encrypted, @Nullable TabState state) {
-        if (state == null) return false;
+        if (state == null || state.contentsState == null) return false;
 
         try {
             TabStateFileManager.saveState(

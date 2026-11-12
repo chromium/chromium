@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="CustomTabsOpenType">
   <int value="0" label="New"/>
-  <int value="1" label="Omnibox"/>
+  <int value="1" label="(Obsolete) Omnibox. Removed 2026/11."/>
   <int value="2" label="RestoreOk"/>
   <int value="3" label="RestoreFail"/>
 </enum>

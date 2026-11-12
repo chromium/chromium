@@ -1770,6 +1770,9 @@ class TabImpl implements Tab {
         mUrl = new GURL(state.contentsState.getVirtualUrlFromState());
         setTitle(assumeNonNull(state.contentsState.getDisplayTitleFromState()));
         mTabLaunchTypeAtCreation = state.tabLaunchTypeAtCreation;
+        if (mParentId == INVALID_TAB_ID) {
+            mParentId = state.parentId;
+        }
         setRootId(state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
         setTabGroupId(state.tabGroupId);
         setUserAgent(state.userAgent);

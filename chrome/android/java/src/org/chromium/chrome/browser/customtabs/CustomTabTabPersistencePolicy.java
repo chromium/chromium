@@ -46,6 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 /** Handles the Custom Tab specific behaviors of tab persistence. */
@@ -53,24 +54,34 @@ import java.util.concurrent.ExecutionException;
 public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private static final String TAG = "tabmodel";
 
+    private static final String KEY_CUSTOM_TAB_ACTIVITY_ID =
+            "org.chromium.chrome.browser.customtabs.ACTIVITY_ID";
+
     /**
      * Prevents two clean up tasks from getting created simultaneously. Also protects against
      * incorrectly interleaving create/run/cancel on the task.
      */
     private static final Object CLEAN_UP_TASK_LOCK = new Object();
 
+    /**
+     * Tracks activity IDs of Custom Tab activities whose instance state has been saved via {@link
+     * #saveToBundle(Bundle)}. This protects their metadata files from being deleted by cleanup
+     * tasks if Android destroys the backgrounded activity under memory pressure before it is
+     * recreated.
+     */
+    private static final Set<String> sSavedActivityIds = new HashSet<>();
+
     private static @Nullable AsyncTask<@Nullable Void> sCleanupTask;
 
     // LINT.IfChange(CustomTabsOpenType)
     @IntDef({
         CustomTabsOpenType.NEW,
-        CustomTabsOpenType.OMNIBOX,
         CustomTabsOpenType.RESTORE_OK,
         CustomTabsOpenType.RESTORE_FAIL,
     })
     @interface CustomTabsOpenType {
         int NEW = 0;
-        int OMNIBOX = 1;
+        // int OMNIBOX = 1; // Obsolete.
         int RESTORE_OK = 2;
         int RESTORE_FAIL = 3;
         int COUNT = 4;
@@ -79,7 +90,9 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     // LINT.ThenChange(/tools/metrics/histograms/metadata/custom_tabs/enums.xml:CustomTabsOpenType)
 
     private final int mTaskId;
+    private final String mActivityId;
     private final boolean mShouldRestore;
+    private final boolean mIsLegacyRestore;
 
     private @Nullable AsyncTask<@Nullable Void> mInitializationTask;
     private @Nullable SequencedTaskRunner mTaskRunner;
@@ -87,7 +100,19 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
     public CustomTabTabPersistencePolicy(Activity activity, @Nullable Bundle savedInstanceState) {
         mTaskId = activity.getTaskId();
+        String savedActivityId =
+                savedInstanceState != null
+                        ? savedInstanceState.getString(KEY_CUSTOM_TAB_ACTIVITY_ID)
+                        : null;
+        if (savedActivityId != null) {
+            sSavedActivityIds.remove(savedActivityId);
+        }
+        mActivityId =
+                savedActivityId != null
+                        ? savedActivityId
+                        : mTaskId + "_" + UUID.randomUUID().toString();
         mShouldRestore = savedInstanceState != null;
+        mIsLegacyRestore = mShouldRestore && savedActivityId == null;
     }
 
     /**
@@ -100,7 +125,32 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     @VisibleForTesting
     CustomTabTabPersistencePolicy(int taskId, boolean shouldRestore) {
         mTaskId = taskId;
+        mActivityId = Integer.toString(taskId);
         mShouldRestore = shouldRestore;
+        mIsLegacyRestore = false;
+    }
+
+    /** Returns the unique identifier for this Custom Tab activity's tab persistence state. */
+    public String getActivityId() {
+        return mActivityId;
+    }
+
+    /** Saves the activity ID to the outState bundle so it can be restored on recreation. */
+    public void saveToBundle(Bundle outState) {
+        outState.putString(KEY_CUSTOM_TAB_ACTIVITY_ID, mActivityId);
+        sSavedActivityIds.add(mActivityId);
+    }
+
+    /**
+     * Removes this activity's ID from {@link #sSavedActivityIds} when the activity is resumed or
+     * finished.
+     */
+    public void removeSavedActivityId() {
+        sSavedActivityIds.remove(mActivityId);
+    }
+
+    static void resetSavedActivityIdsForTesting() {
+        sSavedActivityIds.clear();
     }
 
     @Override
@@ -110,7 +160,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
     @Override
     public String getMetadataFileName() {
-        return TabMetadataFileManager.getMetadataFileName(Integer.toString(mTaskId));
+        return TabMetadataFileManager.getMetadataFileName(mActivityId);
     }
 
     @Override
@@ -132,22 +182,35 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                     protected @Nullable Void doInBackground() {
                         File stateDir = getOrCreateStateDirectory();
                         File metadataFile = new File(stateDir, getMetadataFileName());
-                        if (!metadataFile.exists() && !mShouldRestore) {
+                        if (mIsLegacyRestore && !metadataFile.exists()) {
+                            File legacyMetadataFile =
+                                    new File(
+                                            stateDir,
+                                            TabMetadataFileManager.getMetadataFileName(
+                                                    Integer.toString(mTaskId)));
+                            if (legacyMetadataFile.exists()) {
+                                // Migrate legacy taskId-named metadata file saved by an older
+                                // version of Chrome to the new activity UUID metadata file name.
+                                if (!legacyMetadataFile.renameTo(metadataFile)) {
+                                    Log.e(
+                                            TAG,
+                                            "Failed to rename legacy file: %s to %s",
+                                            legacyMetadataFile,
+                                            metadataFile);
+                                }
+                            }
+                        }
+                        if (!mShouldRestore) {
                             RecordHistogram.recordEnumeratedHistogram(
                                     "CustomTabs.OpenType",
                                     CustomTabsOpenType.NEW,
                                     CustomTabsOpenType.COUNT);
-                        } else if (metadataFile.exists() && !mShouldRestore) {
-                            RecordHistogram.recordEnumeratedHistogram(
-                                    "CustomTabs.OpenType",
-                                    CustomTabsOpenType.OMNIBOX,
-                                    CustomTabsOpenType.COUNT);
-                        } else if (metadataFile.exists() && mShouldRestore) {
+                        } else if (metadataFile.exists()) {
                             RecordHistogram.recordEnumeratedHistogram(
                                     "CustomTabs.OpenType",
                                     CustomTabsOpenType.RESTORE_OK,
                                     CustomTabsOpenType.COUNT);
-                        } else if (!metadataFile.exists() && mShouldRestore) {
+                        } else {
                             RecordHistogram.recordEnumeratedHistogram(
                                     "CustomTabs.OpenType",
                                     CustomTabsOpenType.RESTORE_FAIL,
@@ -228,6 +291,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
     /** Triggers an async deletion of the tab state metadata file. */
     public void deleteMetadataStateFileAsync() {
+        sSavedActivityIds.remove(mActivityId);
         assert mTaskRunner != null;
         mTaskRunner.execute(
                 () -> {
@@ -265,6 +329,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
      * @param liveTabIds Where tab IDs will be added.
      * @param liveTaskIds Where task IDs will be added.
      */
+    @VisibleForTesting
     protected static void getAllLiveTabAndTaskIds(
             Set<Integer> liveTabIds, Set<Integer> liveTaskIds) {
         ThreadUtils.assertOnUiThread();
@@ -273,6 +338,27 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             if (activity instanceof BaseCustomTabActivity customActivity) {
                 getAllTabIdsForActivity(customActivity, liveTabIds);
                 liveTaskIds.add(customActivity.getTaskId());
+            }
+        }
+    }
+
+    /**
+     * Gathers all of the tab IDs and activity/task IDs for all currently live Custom Tabs.
+     *
+     * @param liveTabIds Where tab IDs will be added.
+     * @param liveActivityIds Where activity IDs (and stringified task IDs) will be added.
+     */
+    protected static void getAllLiveTabAndActivityIds(
+            Set<Integer> liveTabIds, Set<String> liveActivityIds) {
+        ThreadUtils.assertOnUiThread();
+
+        liveActivityIds.addAll(sSavedActivityIds);
+        for (Activity activity : ApplicationStatus.getRunningActivities()) {
+            if (activity instanceof BaseCustomTabActivity customActivity) {
+                getAllTabIdsForActivity(customActivity, liveTabIds);
+                liveActivityIds.add(
+                        customActivity.getCustomTabTabPersistencePolicy().getActivityId());
+                liveActivityIds.add(Integer.toString(customActivity.getTaskId()));
             }
         }
     }
@@ -361,8 +447,8 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             }
 
             Set<Integer> liveTabIds = new HashSet<>();
-            Set<Integer> liveTaskIds = new HashSet<>();
-            getAllLiveTabAndTaskIds(liveTabIds, liveTaskIds);
+            Set<String> liveActivityIds = new HashSet<>();
+            getAllLiveTabAndActivityIds(liveTabIds, liveActivityIds);
 
             for (Integer unreferencedTabId : mUnreferencedTabIds) {
                 // Ignore tabs that are referenced by live activities as they might not have been
@@ -377,22 +463,21 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             for (int i = 0; i < mDeletableMetadataFiles.size(); i++) {
                 File metadataFile = mDeletableMetadataFiles.get(i);
                 String id = TabMetadataFileManager.getMetadataFileUniqueTag(metadataFile.getName());
-                try {
-                    int taskId = Integer.parseInt(id);
-
-                    // Ignore the metadata file if it belongs to a currently live
-                    // BaseCustomTabActivity.
-                    if (liveTaskIds.contains(taskId)) continue;
-
-                    tabDataToDelete.addMetadataFile(metadataFile.getName());
-
-                    SparseBooleanArray unusedTabIds = mTabIdsByMetadataFile.get(metadataFile);
-                    if (unusedTabIds == null) continue;
-                    for (int j = 0; j < unusedTabIds.size(); j++) {
-                        tabDataToDelete.addTabStateFileInfo(unusedTabIds.keyAt(j), false);
-                    }
-                } catch (NumberFormatException ex) {
+                if (id.isEmpty()) {
                     assert false : "Unexpected tab metadata file found: " + metadataFile.getName();
+                    continue;
+                }
+
+                // Ignore the metadata file if it belongs to a currently live
+                // BaseCustomTabActivity or an activity saved for recreation.
+                if (liveActivityIds.contains(id)) continue;
+
+                tabDataToDelete.addMetadataFile(metadataFile.getName());
+
+                SparseBooleanArray unusedTabIds = mTabIdsByMetadataFile.get(metadataFile);
+                if (unusedTabIds == null) continue;
+                for (int j = 0; j < unusedTabIds.size(); j++) {
+                    tabDataToDelete.addTabStateFileInfo(unusedTabIds.keyAt(j), false);
                 }
             }
 

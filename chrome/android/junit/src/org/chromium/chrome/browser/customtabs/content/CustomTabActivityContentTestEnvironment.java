@@ -78,6 +78,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
  * to the content layer of Custom Tabs code.
@@ -175,6 +178,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tabModelOrchestrator.getTabModelSelector()).thenReturn(tabModelSelector);
         when(tabModelSelector.getModel(anyBoolean())).thenReturn(tabModel);
         when(tabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(tabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(browserInitializer.isFullBrowserInitialized()).thenReturn(true);
         // Default setup is toolbarManager doesn't consume back press event.
         when(toolbarManager.back()).thenReturn(false);
@@ -265,6 +269,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         mSavedInstanceState = new Bundle();
         when(tabModelSelector.getCurrentTab()).thenReturn(tab);
         when(tabModelOrchestrator.getCurrentTab()).thenReturn(tab);
+        when(tabModel.iterator()).thenAnswer(inv -> List.of(tab).iterator());
     }
 
     public WebContents prepareTransferredWebcontents() {

@@ -1059,6 +1059,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             mCustomTabAllTabObserver = null;
         }
 
+        if (isFinishing() && mCustomTabTabPersistencePolicy != null) {
+            mCustomTabTabPersistencePolicy.removeSavedActivityId();
+        }
+
         super.onDestroyInternal();
     }
 
@@ -1602,9 +1606,18 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (mCustomTabTabPersistencePolicy != null) {
+            mCustomTabTabPersistencePolicy.removeSavedActivityId();
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mCipherFactory.saveToBundle(outState);
+        getCustomTabTabPersistencePolicy().saveToBundle(outState);
         if (mOtrProfileId != null) {
             outState.putString(KEY_OTR_PROFILE_ID, OtrProfileId.serialize(mOtrProfileId));
         }

@@ -1007,6 +1007,9 @@ public class TabPersistentStoreUnitTest {
 
         UserDataHost userDataHost = new UserDataHost();
         when(mTab.getUserDataHost()).thenReturn(userDataHost);
+        TabState tabState = new TabState();
+        tabState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(4), 1);
+        TabStateExtractor.setTabStateForTesting(0, tabState);
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabPersistentStoreImpl.class, TabCreationState.LIVE_IN_FOREGROUND);
         TabStateAttributesRegistry.getAttributesFor(mTab, TabPersistentStoreImpl.class)
@@ -1020,6 +1023,41 @@ public class TabPersistentStoreUnitTest {
 
         assertEquals(
                 DirtinessState.CLEAN,
+                TabStateAttributesRegistry.getAttributesFor(mTab, TabPersistentStoreImpl.class)
+                        .getDirtinessState());
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testSaveState_currentTabWithNullContentsState_remainsUntidy() {
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
+        when(mNormalTabModel.getTabAtChecked(anyInt())).thenReturn(mTab);
+        when(mNormalTabModel.getTabAt(anyInt())).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
+
+        UserDataHost userDataHost = new UserDataHost();
+        when(mTab.getUserDataHost()).thenReturn(userDataHost);
+        TabStateAttributesRegistry.createAttributesForTab(
+                mTab, TabPersistentStoreImpl.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributesRegistry.getAttributesFor(mTab, TabPersistentStoreImpl.class)
+                .updateIsDirty(DirtinessState.DIRTY);
+
+        mPersistentStore.saveState();
+
+        assertEquals(
+                DirtinessState.UNTIDY,
                 TabStateAttributesRegistry.getAttributesFor(mTab, TabPersistentStoreImpl.class)
                         .getDirtinessState());
     }
@@ -2073,6 +2111,8 @@ public class TabPersistentStoreUnitTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_PERSISTENT_STORE_ACTIVE_TAB_PREFS)
     public void testSaveState_authoritativeCustomStoreDoesNotWriteActiveTabPrefs() {
         setupSaveStateActiveTabPrefsTest(/* activeTabId= */ 42, REGULAR_TAB_STRING_1);
+        when(mTabModelSelector.getModels())
+                .thenReturn(List.of(mNormalTabModel, mIncognitoTabModel));
         mPersistentStore =
                 new TabPersistentStoreImpl(
                         TabOrchestratorType.CUSTOM,
@@ -2371,5 +2411,185 @@ public class TabPersistentStoreUnitTest {
                 .writeInt(
                         ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                         ActiveTabState.NTP);
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testSaveState_customStoreQueuesNonCurrentDirtyAndUntidyTabsInBothModels() {
+        Tab normalBgTab = mock(Tab.class);
+        UserDataHost normalBgHost = new UserDataHost();
+        when(normalBgTab.getUserDataHost()).thenReturn(normalBgHost);
+        when(normalBgTab.getId()).thenReturn(101);
+        when(normalBgTab.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
+        TabStateAttributesRegistry.createAttributesForTab(
+                normalBgTab, TabPersistentStoreImpl.class, TabCreationState.LIVE_IN_BACKGROUND);
+
+        Tab normalActiveTab = mock(Tab.class);
+        UserDataHost normalActiveHost = new UserDataHost();
+        when(normalActiveTab.getUserDataHost()).thenReturn(normalActiveHost);
+        when(normalActiveTab.getId()).thenReturn(102);
+        when(normalActiveTab.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_1));
+        TabStateAttributesRegistry.createAttributesForTab(
+                normalActiveTab, TabPersistentStoreImpl.class, TabCreationState.LIVE_IN_FOREGROUND);
+
+        Tab incognitoBgTab = mock(Tab.class);
+        UserDataHost incognitoBgHost = new UserDataHost();
+        when(incognitoBgTab.getUserDataHost()).thenReturn(incognitoBgHost);
+        when(incognitoBgTab.getId()).thenReturn(201);
+        when(incognitoBgTab.isIncognito()).thenReturn(true);
+        when(incognitoBgTab.getUrl()).thenReturn(new GURL(INCOGNITO_TAB_STRING_1));
+        TabStateAttributesRegistry.createAttributesForTab(
+                incognitoBgTab, TabPersistentStoreImpl.class, TabCreationState.LIVE_IN_BACKGROUND);
+        TabStateAttributesRegistry.getAttributesFor(incognitoBgTab, TabPersistentStoreImpl.class)
+                .updateIsDirty(DirtinessState.DIRTY);
+
+        TabState validState = new TabState();
+        validState.contentsState = new WebContentsState(ByteBuffer.allocateDirect(4), 1);
+        TabStateExtractor.setTabStateForTesting(101, validState);
+        TabStateExtractor.setTabStateForTesting(102, validState);
+        TabStateExtractor.setTabStateForTesting(201, validState);
+
+        when(mNormalTabModel.getCount()).thenReturn(2);
+        when(mNormalTabModel.index()).thenReturn(1);
+        when(mNormalTabModel.iterator())
+                .thenAnswer(inv -> List.of(normalBgTab, normalActiveTab).iterator());
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        when(mIncognitoTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);
+        when(mIncognitoTabModel.iterator()).thenAnswer(inv -> List.of(incognitoBgTab).iterator());
+        when(mTabModelSelector.getModels())
+                .thenReturn(List.of(mNormalTabModel, mIncognitoTabModel));
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.CUSTOM,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
+
+        mPersistentStore.saveState();
+
+        assertEquals(
+                DirtinessState.CLEAN,
+                TabStateAttributesRegistry.getAttributesFor(
+                                normalBgTab, TabPersistentStoreImpl.class)
+                        .getDirtinessState());
+        assertEquals(
+                DirtinessState.CLEAN,
+                TabStateAttributesRegistry.getAttributesFor(
+                                normalActiveTab, TabPersistentStoreImpl.class)
+                        .getDirtinessState());
+        assertEquals(
+                DirtinessState.CLEAN,
+                TabStateAttributesRegistry.getAttributesFor(
+                                incognitoBgTab, TabPersistentStoreImpl.class)
+                        .getDirtinessState());
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testRestoreTabs_customStoreRestoresAllTabsSynchronouslyInOrder() {
+        TabState openerState = new TabState();
+        openerState.contentsState =
+                new WebContentsState(
+                        ByteBuffer.allocateDirect(4),
+                        WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        openerState.url = new GURL(REGULAR_TAB_STRING_1);
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        mTemporaryFolder.getRoot(),
+                        /* tabId= */ 101,
+                        /* encrypted= */ false,
+                        /* isFlatbuffer= */ true),
+                openerState,
+                /* encrypted= */ false,
+                mCipherFactory);
+
+        TabState childState = new TabState();
+        childState.contentsState =
+                new WebContentsState(
+                        ByteBuffer.allocateDirect(4),
+                        WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        childState.url = new GURL(RESTORE_TAB_STRING_1);
+        TabStateFileManager.saveStateInternal(
+                TabStateFileManager.getTabStateFile(
+                        mTemporaryFolder.getRoot(),
+                        /* tabId= */ 102,
+                        /* encrypted= */ false,
+                        /* isFlatbuffer= */ true),
+                childState,
+                /* encrypted= */ false,
+                mCipherFactory);
+
+        TabModelSelectorMetadata metadata =
+                new TabModelSelectorMetadata(
+                        new TabMetadataFileManager.TabModelMetadata(1),
+                        new TabMetadataFileManager.TabModelMetadata(0));
+        metadata.normalModelMetadata.ids.add(101);
+        metadata.normalModelMetadata.urls.add(REGULAR_TAB_STRING_1);
+        metadata.normalModelMetadata.ids.add(102);
+        metadata.normalModelMetadata.urls.add(RESTORE_TAB_STRING_1);
+        File stateFile =
+                new File(
+                        mTemporaryFolder.getRoot(),
+                        TabMetadataFileManager.SAVED_METADATA_FILE_PREFIX + "state_files_yay");
+        TabMetadataFileManager.saveListToFile(stateFile, metadata);
+
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.CUSTOM,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Tab openerTab = mock(Tab.class);
+        when(openerTab.getId()).thenReturn(101);
+        when(openerTab.getUrl()).thenReturn(new GURL(REGULAR_TAB_STRING_1));
+        Tab childTab = mock(Tab.class);
+        when(childTab.getId()).thenReturn(102);
+        when(childTab.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_1));
+
+        List<Tab> modelTabs = new ArrayList<>();
+        when(mNormalTabCreator.createFrozenTab(any(TabState.class), eq(102), eq(0)))
+                .thenAnswer(
+                        inv -> {
+                            modelTabs.add(0, childTab);
+                            return childTab;
+                        });
+        when(mNormalTabCreator.createFrozenTab(any(TabState.class), eq(101), eq(0)))
+                .thenAnswer(
+                        inv -> {
+                            modelTabs.add(0, openerTab);
+                            return openerTab;
+                        });
+        when(mNormalTabModel.getCount()).thenAnswer(inv -> modelTabs.size());
+        when(mNormalTabModel.getTabAt(anyInt()))
+                .thenAnswer(inv -> modelTabs.get(inv.getArgument(0)));
+        when(mNormalTabModel.getTabAtChecked(anyInt()))
+                .thenAnswer(inv -> modelTabs.get(inv.getArgument(0)));
+        when(mNormalTabModel.getTabById(101)).thenReturn(openerTab);
+        when(mNormalTabModel.getTabById(102)).thenReturn(childTab);
+        when(mNormalTabModel.indexOf(any()))
+                .thenAnswer(inv -> modelTabs.indexOf(inv.getArgument(0)));
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mNormalTabModel);
+
+        mPersistentStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+        mPersistentStore.restoreTabs(/* setActiveTab= */ true);
+
+        // Both tabs should be restored synchronously without needing
+        // RobolectricUtil.runAllBackgroundAndUi().
+        assertEquals(0, mPersistentStore.getRestoredTabCount());
+        assertThat(modelTabs).containsExactly(openerTab, childTab).inOrder();
+        verify(mNormalTabModel).setIndex(eq(0), anyInt());
     }
 }

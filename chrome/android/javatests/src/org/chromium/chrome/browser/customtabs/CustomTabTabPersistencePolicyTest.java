@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.customtabs;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.util.SparseBooleanArray;
 
 import androidx.annotation.NonNull;
@@ -121,6 +124,7 @@ public class CustomTabTabPersistencePolicyTest {
                             ApplicationStatus.onStateChangeForTesting(
                                     activity, ActivityState.DESTROYED));
         }
+        CustomTabTabPersistencePolicy.resetSavedActivityIdsForTesting();
     }
 
     /** Test to ensure that an existing metadata files are deleted if no restore is requested. */
@@ -187,6 +191,45 @@ public class CustomTabTabPersistencePolicyTest {
         CustomTabTabPersistencePolicy.getAllLiveTabAndTaskIds(tabIds, taskIds);
         assertThat(tabIds, Matchers.containsInAnyOrder(4, 8, 9, 458, 9878));
         assertThat(taskIds, Matchers.containsInAnyOrder(1, 5));
+
+        tabIds.clear();
+        Set<String> activityIds = new HashSet<>();
+        CustomTabTabPersistencePolicy.getAllLiveTabAndActivityIds(tabIds, activityIds);
+        assertThat(tabIds, Matchers.containsInAnyOrder(4, 8, 9, 458, 9878));
+        assertThat(
+                activityIds,
+                Matchers.containsInAnyOrder(
+                        "1",
+                        "5",
+                        cct1.getCustomTabTabPersistencePolicy().getActivityId(),
+                        cct2.getCustomTabTabPersistencePolicy().getActivityId()));
+
+        // Simulate cct1 being saved and destroyed in the background under memory pressure;
+        // its saved activity ID should still be reported as live until recreated.
+        Bundle savedState = new Bundle();
+        cct1.getCustomTabTabPersistencePolicy().saveToBundle(savedState);
+        String savedCct1ActivityId = cct1.getCustomTabTabPersistencePolicy().getActivityId();
+        ApplicationStatus.onStateChangeForTesting(cct1, ActivityState.DESTROYED);
+
+        tabIds.clear();
+        activityIds.clear();
+        CustomTabTabPersistencePolicy.getAllLiveTabAndActivityIds(tabIds, activityIds);
+        assertThat(
+                activityIds,
+                Matchers.containsInAnyOrder(
+                        "5",
+                        savedCct1ActivityId,
+                        cct2.getCustomTabTabPersistencePolicy().getActivityId()));
+
+        // Recreating cct1 from savedState clears it from sSavedActivityIds.
+        new CustomTabTabPersistencePolicy(cct1, savedState);
+        tabIds.clear();
+        activityIds.clear();
+        CustomTabTabPersistencePolicy.getAllLiveTabAndActivityIds(tabIds, activityIds);
+        assertThat(
+                activityIds,
+                Matchers.containsInAnyOrder(
+                        "5", cct2.getCustomTabTabPersistencePolicy().getActivityId()));
     }
 
     /** Test the full cleanup task path that determines what files are eligible for deletion. */
@@ -310,6 +353,61 @@ public class CustomTabTabPersistencePolicyTest {
         policy.waitForInitializationToFinish();
 
         assertTrue(metadataFile.lastModified() > previousTimestamp);
+    }
+
+    /** Ensure per-activity UUID metadata filename is preserved across Bundle save/restore. */
+    @Test
+    @Feature("TabPersistentStore")
+    @SmallTest
+    @UiThreadTest
+    public void testActivityUuidSavedAndRestoredFromBundle() {
+        CustomTabActivity cct1 = buildTestCustomTabActivity(7, new int[] {10}, null);
+        CustomTabTabPersistencePolicy policy1 = new CustomTabTabPersistencePolicy(cct1, null);
+
+        CustomTabActivity cct2 = buildTestCustomTabActivity(7, new int[] {20}, null);
+        CustomTabTabPersistencePolicy policy2 = new CustomTabTabPersistencePolicy(cct2, null);
+
+        // Two CustomTabActivities sharing the same taskId (7) must get distinct metadata files.
+        assertNotEquals(policy1.getMetadataFileName(), policy2.getMetadataFileName());
+
+        Bundle savedInstanceState = new Bundle();
+        policy1.saveToBundle(savedInstanceState);
+
+        CustomTabTabPersistencePolicy restoredPolicy1 =
+                new CustomTabTabPersistencePolicy(cct1, savedInstanceState);
+        assertEquals(policy1.getMetadataFileName(), restoredPolicy1.getMetadataFileName());
+    }
+
+    /**
+     * Ensure that if an activity is recreated after an app update with a Bundle from the old
+     * version (missing KEY_CUSTOM_TAB_ACTIVITY_ID) and a legacy taskId-based metadata file on disk,
+     * performInitialization migrates the legacy file to the new UUID metadata filename.
+     */
+    @Test
+    @Feature("TabPersistentStore")
+    @MediumTest
+    public void testLegacyTaskIdMetadataFileMigratedOnUpgradeRestore() throws Exception {
+        CustomTabActivity cct =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> buildTestCustomTabActivity(42, new int[] {10}, null));
+        Bundle legacySavedInstanceState = new Bundle();
+        CustomTabTabPersistencePolicy policy =
+                new CustomTabTabPersistencePolicy(cct, legacySavedInstanceState);
+
+        File stateDirectory = policy.getOrCreateStateDirectory();
+        File legacyMetadataFile =
+                new File(stateDirectory, TabMetadataFileManager.getMetadataFileName("42"));
+        assertTrue(legacyMetadataFile.createNewFile());
+
+        File newMetadataFile = new File(stateDirectory, policy.getMetadataFileName());
+        assertFalse(newMetadataFile.exists());
+
+        policy.performInitialization(mSequencedTaskRunner);
+        policy.waitForInitializationToFinish();
+
+        assertFalse(legacyMetadataFile.exists());
+        assertTrue(newMetadataFile.exists());
+        newMetadataFile.delete();
     }
 
     private CustomTabActivity buildTestCustomTabActivity(
