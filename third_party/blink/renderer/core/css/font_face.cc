@@ -274,10 +274,8 @@ FontFace::FontFace(ExecutionContext* context,
                         AtRuleDescriptorID::FontVariant);
   SetPropertyFromString(context, descriptors->featureSettings(),
                         AtRuleDescriptorID::FontFeatureSettings);
-  if (RuntimeEnabledFeatures::FontVariationSettingsDescriptorEnabled()) {
-    SetPropertyFromString(context, descriptors->variationSettings(),
-                          AtRuleDescriptorID::FontVariationSettings);
-  }
+  SetPropertyFromString(context, descriptors->variationSettings(),
+                        AtRuleDescriptorID::FontVariationSettings);
   SetPropertyFromString(context, descriptors->display(),
                         AtRuleDescriptorID::FontDisplay);
   SetPropertyFromString(context, descriptors->ascentOverride(),
@@ -1129,7 +1127,6 @@ scoped_refptr<FontFeatureSettings> FontFace::GetFontFeatureSettings() const {
 
 scoped_refptr<FontVariationSettings> FontFace::GetFontVariationSettings()
     const {
-  DCHECK(RuntimeEnabledFeatures::FontVariationSettingsDescriptorEnabled());
   scoped_refptr<FontVariationSettings> settings =
       FontVariationSettings::Create();
   if (!variation_settings_) {

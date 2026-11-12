@@ -405,10 +405,8 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
           stream, context, local_context);
       break;
     case AtRuleDescriptorID::FontVariationSettings:
-      if (RuntimeEnabledFeatures::FontVariationSettingsDescriptorEnabled()) {
-        parsed_value = css_parsing_utils::ConsumeFontVariationSettings(
-            stream, context, local_context);
-      }
+      parsed_value = css_parsing_utils::ConsumeFontVariationSettings(
+          stream, context, local_context);
       break;
     case AtRuleDescriptorID::AscentOverride:
     case AtRuleDescriptorID::DescentOverride:

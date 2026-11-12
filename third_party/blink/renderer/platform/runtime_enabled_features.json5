@@ -3482,11 +3482,6 @@
       status: "stable",
     },
     {
-      // crbug.com/40398871
-      name: "FontVariationSettingsDescriptor",
-      status: "stable",
-    },
-    {
       name: "ForceDarkRespectsColorSchemeOnly",
       status: "stable",
     },
