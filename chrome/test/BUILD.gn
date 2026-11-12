@@ -3636,6 +3636,8 @@ if (is_chromeos) {
       "//crypto:test_support",
       "//extensions/buildflags",
       "//google_apis:test_support",
+      "//google_apis/common:test_support",
+      "//google_apis/drive",
       "//net",
       "//net:net_resources",
       "//net:test_support",
@@ -3652,17 +3654,6 @@ if (is_chromeos) {
       "//ui/resources:ui_test_pak",
       "//ui/web_dialogs:test_support",
     ]
-
-    if (is_linux) {
-      deps += [ "//ui/linux:display_server_utils" ]
-    }
-
-    if (enable_extensions) {
-      deps += [
-        "//google_apis/common:test_support",
-        "//google_apis/drive",
-      ]
-    }
   }
 }
 
