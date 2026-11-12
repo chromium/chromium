@@ -17,6 +17,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -26,6 +27,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -53,6 +55,24 @@ class TestClipboardObserver : public ClipboardObserver {
 
  private:
   int data_changed_count_ = 0;
+};
+
+// Uses a random UUID pasteboard name instead of `UniquePasteboard` because
+// `+[NSPasteboard pasteboardWithUniqueName]` can return the same name to
+// parallel test processes started in the same microsecond.
+class ScopedTestPasteboard {
+ public:
+  ScopedTestPasteboard()
+      : pasteboard_(
+            [NSPasteboard pasteboardWithName:[NSUUID UUID].UUIDString]) {}
+  ScopedTestPasteboard(const ScopedTestPasteboard&) = delete;
+  ScopedTestPasteboard& operator=(const ScopedTestPasteboard&) = delete;
+  ~ScopedTestPasteboard() { [pasteboard_ releaseGlobally]; }
+
+  NSPasteboard* get() const { return pasteboard_; }
+
+ private:
+  NSPasteboard* __strong pasteboard_;
 };
 
 }  // namespace
@@ -93,6 +113,12 @@ class ClipboardMacTest : public PlatformTest {
         ClipboardBuffer::kCopyPaste, pasteboard,
         future.GetCallback<const std::vector<uint8_t>&>());
     return future.Get();
+  }
+
+  void WriteURLs(ClipboardMac* clipboard_mac,
+                 base::span<const ClipboardUrlInfo> url_infos,
+                 NSPasteboard* pasteboard) {
+    clipboard_mac->WriteURLsInternal(url_infos, pasteboard);
   }
 
   void WriteBitmap(ClipboardMac* clipboard_mac,
@@ -360,6 +386,57 @@ TEST_F(ClipboardMacTest, SequenceNumberStableAcrossChangeNotification) {
   ClipboardChanged(clipboard_mac, pasteboard->get());
   EXPECT_EQ(observer.data_changed_count(), count_before + 2);
   EXPECT_NE(token_before, GetSequenceNumber(clipboard_mac, pasteboard->get()));
+}
+
+TEST_F(ClipboardMacTest, WriteURLsWritesMultiplePasteboardItems) {
+  ScopedTestPasteboard pasteboard;
+  [pasteboard.get() clearContents];
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  const std::vector<ClipboardUrlInfo> url_infos = {
+      {.url = GURL("https://a.example/1"), .title = u"First"},
+      {.url = GURL("https://b.example/2"), .title = u"Second"},
+  };
+  WriteURLs(clipboard_mac, url_infos, pasteboard.get());
+
+  ASSERT_EQ(2u, pasteboard.get().pasteboardItems.count);
+
+  NSArray<URLAndTitle*>* urls_and_titles =
+      clipboard_util::URLsAndTitlesFromPasteboard(pasteboard.get(),
+                                                  /*include_files=*/false);
+  ASSERT_EQ(2u, urls_and_titles.count);
+  EXPECT_NSEQ(@"https://a.example/1", urls_and_titles[0].URL);
+  EXPECT_NSEQ(@"First", urls_and_titles[0].title);
+  EXPECT_NSEQ(@"https://b.example/2", urls_and_titles[1].URL);
+  EXPECT_NSEQ(@"Second", urls_and_titles[1].title);
+
+  // NSPasteboard joins plain-text items with a newline on demand.
+  EXPECT_NSEQ(@"https://a.example/1\nhttps://b.example/2",
+              [pasteboard.get() stringForType:NSPasteboardTypeString]);
+  EXPECT_NSEQ(@"https://a.example/1",
+              [pasteboard.get() stringForType:NSPasteboardTypeURL]);
+}
+
+TEST_F(ClipboardMacTest, WriteURLsSingleItemSharesFirstPasteboardItem) {
+  ScopedTestPasteboard pasteboard;
+  [pasteboard.get() clearContents];
+  [pasteboard.get() setString:@"Custom text" forType:NSPasteboardTypeString];
+
+  Clipboard* clipboard = Clipboard::GetForCurrentThread();
+  ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
+
+  const std::vector<ClipboardUrlInfo> url_infos = {
+      {.url = GURL("https://a.example/"), .title = u"Example"},
+  };
+  WriteURLs(clipboard_mac, url_infos, pasteboard.get());
+
+  EXPECT_EQ(1u, pasteboard.get().pasteboardItems.count);
+  EXPECT_NSEQ(@"Custom text",
+              [pasteboard.get() stringForType:NSPasteboardTypeString]);
+  EXPECT_NSEQ(@"https://a.example/",
+              [pasteboard.get() stringForType:NSPasteboardTypeURL]);
 }
 
 }  // namespace ui
