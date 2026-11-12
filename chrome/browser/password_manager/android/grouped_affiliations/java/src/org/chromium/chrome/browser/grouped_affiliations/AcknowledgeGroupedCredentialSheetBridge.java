@@ -58,12 +58,10 @@ public class AcknowledgeGroupedCredentialSheetBridge {
     @CalledByNative
     public void dismiss() {
         if (mNativeAcknowledgeGroupedCredentialSheetBridge == null) return;
-        assumeNonNull(mController);
-        mController.dismiss();
-        if (mNativeAcknowledgeGroupedCredentialSheetBridge != null) {
-            mNativeAcknowledgeGroupedCredentialSheetBridge.release();
-            mNativeAcknowledgeGroupedCredentialSheetBridge = null;
-        }
+        // The controller is missing if `show` returned early.
+        if (mController != null) mController.dismiss();
+        mNativeAcknowledgeGroupedCredentialSheetBridge.release();
+        mNativeAcknowledgeGroupedCredentialSheetBridge = null;
     }
 
     public void onDismissed(@DismissReason int dismissReason) {

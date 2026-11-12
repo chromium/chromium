@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.grouped_affiliations;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -129,6 +131,47 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
                 .getContentView()
                 .findViewById(R.id.cancel_button)
                 .callOnClick();
+        verify(mBridgeJniMock).onDismissed(mTestNativePointer, DismissReason.BACK);
+        verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
+    }
+
+    /**
+     * Regression test for crbug.com/584280944: once native dismissed the bridge, the bridge must
+     * stop observing the bottom sheet and must never call back into native, even if its sheet
+     * closes later (e.g. because it was still queued or animating).
+     */
+    @Test
+    public void testDismissStopsObservingAndNeverCallsNative() {
+        mBridge.show(CURRENT_DOMAIN, CREDENTIAL_DOMAIN);
+
+        mBridge.dismiss();
+        verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
+        verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
+
+        when(mBottomSheetController.getCurrentSheetContent())
+                .thenReturn(mBottomSheetContentCaptor.getValue());
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetClosed(BottomSheetController.StateChangeReason.NONE);
+        verify(mBridgeJniMock, never()).onDismissed(any(), anyInt());
+    }
+
+    /**
+     * Native dismisses the bridge without knowing whether the sheet was resolved already. Such a
+     * late dismissal must not do anything.
+     */
+    @Test
+    public void testDismissAfterSheetWasResolvedIsNoOp() {
+        mBridge.show(CURRENT_DOMAIN, CREDENTIAL_DOMAIN);
+        mBottomSheetContentCaptor
+                .getValue()
+                .getContentView()
+                .findViewById(R.id.cancel_button)
+                .callOnClick();
+
+        mBridge.dismiss();
+        mBridge.dismiss();
+
         verify(mBridgeJniMock).onDismissed(mTestNativePointer, DismissReason.BACK);
         verify(mBottomSheetController).hideContent(mBottomSheetContentCaptor.getValue(), true);
     }

@@ -28,6 +28,9 @@ class AcknowledgeGroupedCredentialSheetBridge {
                         AcknowledgeGroupedCredentialSheetBridge* bridge) = 0;
     virtual void Show(const std::string& current_hostname,
                       const std::string& credential_hostname) = 0;
+    // Dismisses the Java bridge, which makes it forget its pointer to the
+    // native bridge. Does nothing if there is no Java bridge or if its sheet
+    // was resolved already.
     virtual void Dismiss() = 0;
   };
   // Represents all possible ways to resolve the sheet: acceptance, clicking
