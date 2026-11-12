@@ -33,6 +33,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.PRODUCT_ICON_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.SECURITY_CHECK_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
@@ -107,6 +108,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
@@ -138,6 +140,7 @@ import java.util.stream.StreamSupport;
  * FacilitatedPaymentsPaymentMethodsMediator}
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
 public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     private static final BankAccount BANK_ACCOUNT_1 =
             new BankAccount.Builder()
@@ -519,6 +522,30 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         PropertyModel header = itemList.get(0).model;
 
         assertThat(header.get(TITLE), is("Pay instantly without QR upload"));
+    }
+
+    @Test
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testShowSheetForPaymentLinkWithGPayLogo() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
+
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        PropertyModel header = itemList.get(0).model;
+
+        assertThat(header.get(PRODUCT_ICON_DRAWABLE_ID), is(R.drawable.google_pay));
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testShowSheetForPaymentLinkWithGradientGPayLogo() {
+        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
+
+        ModelList itemList =
+                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
+        PropertyModel header = itemList.get(0).model;
+
+        assertThat(header.get(PRODUCT_ICON_DRAWABLE_ID), is(R.drawable.googlepay_with_gradient));
     }
 
     @Test
