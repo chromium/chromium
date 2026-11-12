@@ -2053,9 +2053,11 @@ bool RenderProcessHostImpl::Init() {
   FieldTrialSynchronizer::UpdateRendererVariationsHeader(this);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Initialize the java audio manager so that media session tests will pass.
-  // See internal b/29872494.
-  static_cast<media::AudioManagerAndroid*>(media::AudioManager::Get())
+  // Eagerly initialize AudioManagerAndroid (originally added for media session
+  // tests in https://crbug.com/620479, and now relied on in production). Obtain
+  // it from BrowserMainLoop since AudioManager::Get() may return a test
+  // instance created after the real AudioManager.
+  static_cast<media::AudioManagerAndroid*>(BrowserMainLoop::GetAudioManager())
       ->InitializeIfNeeded();
 #endif  // BUILDFLAG(IS_ANDROID)
 
