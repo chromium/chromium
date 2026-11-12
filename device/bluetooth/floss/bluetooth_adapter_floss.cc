@@ -4,6 +4,9 @@
 
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -60,6 +63,22 @@ bool DeviceNeedsToReadProperties(device::BluetoothDevice* device) {
   }
 
   return true;
+}
+
+std::optional<device::BluetoothDevice::BatteryType> VariantToBatteryType(
+    std::string_view variant) {
+  static constexpr auto kBatteryTypeLookup = base::MakeFixedFlatMap<
+      std::string_view, device::BluetoothDevice::BatteryType>({
+      {"", device::BluetoothDevice::BatteryType::kDefault},
+      {"left", device::BluetoothDevice::BatteryType::kLeftBudTrueWireless},
+      {"right", device::BluetoothDevice::BatteryType::kRightBudTrueWireless},
+      {"case", device::BluetoothDevice::BatteryType::kCaseTrueWireless},
+  });
+  auto it = kBatteryTypeLookup.find(variant);
+  if (it == kBatteryTypeLookup.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace
@@ -1155,22 +1174,6 @@ void BluetoothAdapterFloss::AdapterDeviceConnectionFailed(
       static_cast<FlossDBusClient::BtifStatus>(status));
 }
 
-std::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
-    const std::string& variant) {
-  std::unordered_map<std::string, device::BluetoothDevice::BatteryType>
-      battery_type_lookup = {
-          {"", device::BluetoothDevice::BatteryType::kDefault},
-          {"left", device::BluetoothDevice::BatteryType::kLeftBudTrueWireless},
-          {"right",
-           device::BluetoothDevice::BatteryType::kRightBudTrueWireless},
-          {"case", device::BluetoothDevice::BatteryType::kCaseTrueWireless},
-      };
-  if (!battery_type_lookup.contains(variant)) {
-    return std::nullopt;
-  }
-  return battery_type_lookup[variant];
-}
-
 void BluetoothAdapterFloss::BatteryInfoUpdated(std::string remote_address,
                                                BatterySet battery_set) {
   BluetoothDeviceFloss* device =
@@ -1182,7 +1185,7 @@ void BluetoothAdapterFloss::BatteryInfoUpdated(std::string remote_address,
 
   for (const auto& battery : battery_set.batteries) {
     std::optional<device::BluetoothDevice::BatteryType> battery_type =
-        variant_to_battery_type(battery.variant);
+        VariantToBatteryType(battery.variant);
     if (!battery_type) {
       LOG(WARNING) << "Unable to convert to battery_type from "
                    << battery.variant;
