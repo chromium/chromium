@@ -57,7 +57,6 @@ import java.util.List;
 public class AuxiliarySearchProviderUnitTest {
     private static final String TAB_TITLE = "tab";
     private static final String TAB_URL = "https://tab.google.com/";
-    private static final long FAKE_NATIVE_PROVIDER = 1;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -75,7 +74,6 @@ public class AuxiliarySearchProviderUnitTest {
     @Before
     public void setUp() {
         AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
-        doReturn(FAKE_NATIVE_PROVIDER).when(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
         when(mMockFaviconHelperJni.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mMockFaviconHelperJni);
 
@@ -300,7 +298,7 @@ public class AuxiliarySearchProviderUnitTest {
         mAuxiliarySearchProvider.getCustomTabsAsync(url, beginTime, callback);
 
         verify(mMockAuxiliarySearchBridgeJni)
-                .getCustomTabs(eq(FAKE_NATIVE_PROVIDER), eq(url), eq(beginTime), eq(callback));
+                .getCustomTabs(eq(mProfile), eq(url), eq(beginTime), eq(callback));
     }
 
     private <T> void testSaveAndReadDonationMetadataAsyncImpl(

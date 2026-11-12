@@ -11,6 +11,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/barrier_callback.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
@@ -228,13 +230,34 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
   }
 }
 
-// static
-static int64_t JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env,
-                                                       Profile* profile) {
-  CHECK(profile, base::NotFatalUntil::M161);
+static void JNI_AuxiliarySearchBridge_GetNonSensitiveTabs(
+    JNIEnv* env,
+    Profile* profile,
+    std::vector<TabAndroid*> tabs,
+    const base::android::JavaRef<jobject>& j_callback_obj) {
+  CHECK(profile);
+  CHECK_DEREF(AuxiliarySearchProviderFactory::GetForProfile(profile))
+      .GetNonSensitiveTabs(env, std::move(tabs), j_callback_obj);
+}
 
-  return reinterpret_cast<intptr_t>(
-      AuxiliarySearchProviderFactory::GetForProfile(profile));
+static void JNI_AuxiliarySearchBridge_GetNonSensitiveHistoryData(
+    JNIEnv* env,
+    Profile* profile,
+    const base::android::JavaRef<jobject>& j_callback_obj) {
+  CHECK(profile);
+  CHECK_DEREF(AuxiliarySearchProviderFactory::GetForProfile(profile))
+      .GetNonSensitiveHistoryData(env, j_callback_obj);
+}
+
+static void JNI_AuxiliarySearchBridge_GetCustomTabs(
+    JNIEnv* env,
+    Profile* profile,
+    const base::android::JavaRef<jobject>& j_url,
+    int64_t j_begin_time,
+    const base::android::JavaRef<jobject>& j_callback_obj) {
+  CHECK(profile);
+  CHECK_DEREF(AuxiliarySearchProviderFactory::GetForProfile(profile))
+      .GetCustomTabs(env, j_url, j_begin_time, j_callback_obj);
 }
 
 // static

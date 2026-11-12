@@ -25,7 +25,7 @@ import java.util.List;
 /** Java bridge to provide information for the auxiliary search. */
 @NullMarked
 public class AuxiliarySearchBridge {
-    private final long mNativeBridge;
+    private final Profile mProfile;
 
     /**
      * Constructs a bridge for the auxiliary search provider.
@@ -33,11 +33,7 @@ public class AuxiliarySearchBridge {
      * @param profile The Profile to retrieve the corresponding information.
      */
     public AuxiliarySearchBridge(Profile profile) {
-        if (profile.isOffTheRecord()) {
-            mNativeBridge = 0;
-        } else {
-            mNativeBridge = AuxiliarySearchBridgeJni.get().getForProfile(profile);
-        }
+        mProfile = profile;
     }
 
     /**
@@ -47,14 +43,14 @@ public class AuxiliarySearchBridge {
      * @param callback {@link Callback} to pass back the list of non-sensitive {@link Tab}s.
      */
     public void getNonSensitiveTabs(List<Tab> tabs, Callback<@Nullable List<Tab>> callback) {
-        if (mNativeBridge == 0) {
+        if (mProfile.isOffTheRecord()) {
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, callback.bind(null));
             return;
         }
 
         AuxiliarySearchBridgeJni.get()
                 .getNonSensitiveTabs(
-                        mNativeBridge,
+                        mProfile,
                         tabs,
                         (Callback<Object[]>)
                                 (Object[] tabs1) -> {
@@ -78,12 +74,12 @@ public class AuxiliarySearchBridge {
      */
     public void getNonSensitiveHistoryData(
             Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
-        if (mNativeBridge == 0) {
+        if (mProfile.isOffTheRecord()) {
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, callback.bind(null));
             return;
         }
 
-        AuxiliarySearchBridgeJni.get().getNonSensitiveHistoryData(mNativeBridge, callback);
+        AuxiliarySearchBridgeJni.get().getNonSensitiveHistoryData(mProfile, callback);
     }
 
     /**
@@ -96,12 +92,12 @@ public class AuxiliarySearchBridge {
      */
     public void getCustomTabs(
             GURL url, long timestamp, Callback<@Nullable List<AuxiliarySearchDataEntry>> callback) {
-        if (mNativeBridge == 0) {
+        if (mProfile.isOffTheRecord()) {
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, callback.bind(null));
             return;
         }
 
-        AuxiliarySearchBridgeJni.get().getCustomTabs(mNativeBridge, url, timestamp, callback);
+        AuxiliarySearchBridgeJni.get().getCustomTabs(mProfile, url, timestamp, callback);
     }
 
     /**
@@ -121,19 +117,17 @@ public class AuxiliarySearchBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long getForProfile(@JniType("Profile*") Profile profile);
-
         void getNonSensitiveTabs(
-                long nativeAuxiliarySearchProvider,
+                @JniType("Profile*") Profile profile,
                 @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
                 Callback<Object[]> callback);
 
         void getNonSensitiveHistoryData(
-                long nativeAuxiliarySearchProvider,
+                @JniType("Profile*") Profile profile,
                 Callback<@Nullable List<AuxiliarySearchDataEntry>> callback);
 
         void getCustomTabs(
-                long nativeAuxiliarySearchProvider,
+                @JniType("Profile*") Profile profile,
                 GURL url,
                 long timestamp,
                 Callback<@Nullable List<AuxiliarySearchDataEntry>> callback);

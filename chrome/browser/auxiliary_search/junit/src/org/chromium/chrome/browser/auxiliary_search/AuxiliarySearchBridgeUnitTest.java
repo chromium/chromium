@@ -41,8 +41,6 @@ public final class AuxiliarySearchBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final int TAB_ID_1 = 1;
-    // Arbitrary non-0 value.
-    private static final long NATIVE_BRIDGE = 10L;
 
     @Mock private AuxiliarySearchBridge.Natives mMockAuxiliarySearchBridgeJni;
     @Mock private Profile mProfile;
@@ -53,16 +51,10 @@ public final class AuxiliarySearchBridgeUnitTest {
     @Before
     public void setUp() {
         AuxiliarySearchBridgeJni.setInstanceForTesting(mMockAuxiliarySearchBridgeJni);
-        when(mMockAuxiliarySearchBridgeJni.getForProfile(mProfile)).thenReturn(NATIVE_BRIDGE);
 
         doReturn(false).when(mProfile).isOffTheRecord();
         mBridge = new AuxiliarySearchBridge(mProfile);
         assertNotNull(mBridge);
-    }
-
-    @Test
-    public void getForProfileTest() {
-        verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
     }
 
     @Test
@@ -81,7 +73,7 @@ public final class AuxiliarySearchBridgeUnitTest {
         // method wraps our Callback<List<Tab>> before calling it, so eq(callback)
         // would never match. Since this is a verify(..., never()), any() is fine.
         verify(mMockAuxiliarySearchBridgeJni, never())
-                .getNonSensitiveTabs(eq(NATIVE_BRIDGE), any(), any());
+                .getNonSensitiveTabs(eq(mProfile), any(), any());
     }
 
     @Test
@@ -110,7 +102,7 @@ public final class AuxiliarySearchBridgeUnitTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mBridge.getNonSensitiveHistoryData(callback));
 
         verify(mMockAuxiliarySearchBridgeJni)
-                .getNonSensitiveHistoryData(eq(NATIVE_BRIDGE), eq(callback));
+                .getNonSensitiveHistoryData(eq(mProfile), eq(callback));
     }
 
     @Test
@@ -123,7 +115,7 @@ public final class AuxiliarySearchBridgeUnitTest {
 
         verify(callback).onResult(eq(null));
         verify(mMockAuxiliarySearchBridgeJni, never())
-                .getNonSensitiveHistoryData(eq(NATIVE_BRIDGE), eq(callback));
+                .getNonSensitiveHistoryData(eq(mProfile), eq(callback));
     }
 
     List<AuxiliarySearchDataEntry> createEntryList() {
