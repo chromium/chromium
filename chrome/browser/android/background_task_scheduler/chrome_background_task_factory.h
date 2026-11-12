@@ -26,7 +26,7 @@ class ChromeBackgroundTaskFactory {
   // necessary for associating task ids with corresponding BackgroundTask
   // classes for BackgroundTaskScheduler. This method can be used to set the
   // default factory class to ChromeBackgroundTaskFactory.
-  static void SetAsDefault();
+  static void SetAsDefaultForTesting();
 
   // Creates and returns a BackgroundTask for the given |task_id|.
   static std::unique_ptr<background_task::BackgroundTask>

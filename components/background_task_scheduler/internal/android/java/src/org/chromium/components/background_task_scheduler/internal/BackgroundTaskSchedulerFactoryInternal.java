@@ -12,7 +12,9 @@ import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 
-/** A factory for {@link BackgroundTaskScheduler} that ensures there is only ever a single instance. */
+/**
+ * A factory for {@link BackgroundTaskScheduler} that ensures there is only ever a single instance.
+ */
 @NullMarked
 public final class BackgroundTaskSchedulerFactoryInternal {
     private static @Nullable BackgroundTaskScheduler sBackgroundTaskScheduler;
@@ -20,7 +22,7 @@ public final class BackgroundTaskSchedulerFactoryInternal {
 
     /**
      * @return the current instance of the {@link BackgroundTaskScheduler}. Creates one if none
-     * exist.
+     *     exist.
      */
     public static BackgroundTaskScheduler getScheduler() {
         ThreadUtils.assertOnUiThread();
@@ -31,7 +33,8 @@ public final class BackgroundTaskSchedulerFactoryInternal {
         return sBackgroundTaskScheduler;
     }
 
-    public static void setSchedulerForTesting(BackgroundTaskScheduler backgroundTaskScheduler) {
+    public static void setSchedulerForTesting(
+            @Nullable BackgroundTaskScheduler backgroundTaskScheduler) {
         var oldValue = sBackgroundTaskScheduler;
         sBackgroundTaskScheduler = backgroundTaskScheduler;
         ResettersForTesting.register(() -> sBackgroundTaskScheduler = oldValue);

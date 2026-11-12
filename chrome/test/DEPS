@@ -14,6 +14,7 @@ include_rules = [
   "+components/apps/link_capturing",
   "+components/autofill/content",
   "+components/autofill/core",
+  "+components/background_task_scheduler",
   "+components/bookmarks/browser",
   "+components/bookmarks/common",
   "+components/browser_ui/desktop_windowing/android",

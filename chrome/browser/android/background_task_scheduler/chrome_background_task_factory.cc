@@ -14,9 +14,9 @@
 #include "components/feed/core/v2/public/types.h"
 
 // static
-void ChromeBackgroundTaskFactory::SetAsDefault() {
+void ChromeBackgroundTaskFactory::SetAsDefaultForTesting() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_ChromeBackgroundTaskFactory_setAsDefault(env);
+  Java_ChromeBackgroundTaskFactory_setAsDefaultForTesting(env);
 }
 
 std::unique_ptr<background_task::BackgroundTask>

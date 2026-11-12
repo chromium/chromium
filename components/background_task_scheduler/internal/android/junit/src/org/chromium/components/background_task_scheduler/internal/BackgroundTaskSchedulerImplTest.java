@@ -4,9 +4,12 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -82,5 +85,21 @@ public class BackgroundTaskSchedulerImplTest {
                 .cancel(RuntimeEnvironment.getApplication(), TaskIds.TEST);
         verify(mDelegate, times(1))
                 .cancel(eq(RuntimeEnvironment.getApplication()), eq(TaskIds.TEST));
+    }
+
+    // Verifies that passing null to `setSchedulerForTesting` clears the test override
+    // so `getScheduler` recreates the default `BackgroundTaskSchedulerImpl`.
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testSetSchedulerForTestingNullRestoresDefaultScheduler() {
+        BackgroundTaskScheduler customScheduler = mock(BackgroundTaskScheduler.class);
+        BackgroundTaskSchedulerFactoryInternal.setSchedulerForTesting(customScheduler);
+
+        BackgroundTaskSchedulerFactoryInternal.setSchedulerForTesting(null);
+        BackgroundTaskScheduler restoredScheduler =
+                BackgroundTaskSchedulerFactoryInternal.getScheduler();
+
+        assertNotSame(customScheduler, restoredScheduler);
+        assertTrue(restoredScheduler instanceof BackgroundTaskSchedulerImpl);
     }
 }

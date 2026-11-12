@@ -75,7 +75,7 @@ class BackgroundUploadTaskBrowserTest
   void SetUpOnMainThread() override {
     // Need to manually call this in tests to initialize BackgroundTaskScheduler
     // on the Java side.
-    ChromeBackgroundTaskFactory::SetAsDefault();
+    ChromeBackgroundTaskFactory::SetAsDefaultForTesting();
 
     UnsentLogStore::UnsentLogStoreLimits storage_limits =
         UnsentLogStore::UnsentLogStoreLimits{

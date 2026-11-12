@@ -17,25 +17,28 @@ public final class BackgroundTaskSchedulerFactory {
 
     /**
      * @return the current instance of the {@link BackgroundTaskScheduler}. Creates one if none
-     * exist.
+     *     exist.
      */
     public static BackgroundTaskScheduler getScheduler() {
         return BackgroundTaskSchedulerFactoryInternal.getScheduler();
     }
 
-    public static void setSchedulerForTesting(BackgroundTaskScheduler backgroundTaskScheduler) {
+    public static void setSchedulerForTesting(
+            @Nullable BackgroundTaskScheduler backgroundTaskScheduler) {
         BackgroundTaskSchedulerFactoryInternal.setSchedulerForTesting(backgroundTaskScheduler);
     }
 
     /**
-     * @param backgroundTaskFactory specific implementation of {@link BackgroundTaskFactory} of
-     * the caller.
+     * @param backgroundTaskFactory specific implementation of {@link BackgroundTaskFactory} of the
+     *     caller.
      */
     public static void setBackgroundTaskFactory(BackgroundTaskFactory backgroundTaskFactory) {
         BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(backgroundTaskFactory);
     }
 
-    /** @return The helper class to report UMA. */
+    /**
+     * @return The helper class to report UMA.
+     */
     public static BackgroundTaskSchedulerExternalUma getUmaReporter() {
         return sExternalUmaForTesting == null
                 ? BackgroundTaskSchedulerUma.getInstance()

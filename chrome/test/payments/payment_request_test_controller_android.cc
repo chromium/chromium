@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
-#include "chrome/browser/android/background_task_scheduler/chrome_background_task_factory.h"
 #include "chrome/test/payments/android/payment_request_test_bridge.h"
 
 namespace payments {
@@ -42,8 +41,6 @@ bool PaymentRequestTestController::ClickOptOut() {
 }
 
 void PaymentRequestTestController::SetUpOnMainThread() {
-  ChromeBackgroundTaskFactory::SetAsDefault();
-
   // Register |this| as the observer for future PaymentRequests created in
   // Java.
   SetUseNativeObserverOnPaymentRequestForTesting(

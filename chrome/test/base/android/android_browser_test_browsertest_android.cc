@@ -6,6 +6,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -15,6 +16,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "components/background_task_scheduler/background_task_scheduler.h"
+#include "components/background_task_scheduler/background_task_scheduler_factory.h"
+#include "components/background_task_scheduler/task_ids.h"
+#include "components/background_task_scheduler/task_info.h"
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
@@ -108,4 +113,29 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserTest, DefaultStartupFeatures) {
   EXPECT_FALSE(base::FeatureList::IsEnabled(
       performance_manager::features::kTransientKeepAlivePolicy));
   EXPECT_FALSE(base::FeatureList::IsEnabled(features::kPrewarm));
+}
+
+// Verifies that `ChromeBrowserTestsApplication` installs a no-op
+// `BackgroundTaskScheduler` by default so background tasks scheduled during
+// browser tests succeed without queuing jobs in Android's `JobScheduler`.
+IN_PROC_BROWSER_TEST_F(AndroidBrowserTest, DefaultNoOpBackgroundTaskScheduler) {
+  base::HistogramTester histogram_tester;
+  background_task::OneOffInfo one_off_info;
+  one_off_info.window_start_time_ms = 0;
+  one_off_info.window_end_time_ms = 0;
+  background_task::TaskInfo task_info(
+      background_task::TaskIds::SAFETY_HUB_JOB_ID, one_off_info);
+
+  background_task::BackgroundTaskScheduler* scheduler =
+      background_task::BackgroundTaskSchedulerFactory::GetScheduler();
+  EXPECT_TRUE(scheduler->Schedule(task_info));
+  scheduler->Cancel(background_task::TaskIds::SAFETY_HUB_JOB_ID);
+
+  // `BackgroundTaskSchedulerImpl` records these histograms before delegating to
+  // `JobScheduler`; zero samples confirms the default no-op scheduler is
+  // active.
+  histogram_tester.ExpectTotalCount(
+      "Android.BackgroundTaskScheduler.TaskScheduled.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Android.BackgroundTaskScheduler.TaskCanceled", 0);
 }

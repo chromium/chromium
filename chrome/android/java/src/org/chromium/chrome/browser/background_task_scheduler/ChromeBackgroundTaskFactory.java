@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.background_task_scheduler;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -43,9 +43,14 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
         static final ChromeBackgroundTaskFactory INSTANCE = new ChromeBackgroundTaskFactory();
     }
 
-    @CalledByNative
     public static void setAsDefault() {
         BackgroundTaskSchedulerFactory.setBackgroundTaskFactory(LazyHolder.INSTANCE);
+    }
+
+    @CalledByNativeForTesting
+    private static void setAsDefaultForTesting() {
+        setAsDefault();
+        BackgroundTaskSchedulerFactory.setSchedulerForTesting(null);
     }
 
     @Override

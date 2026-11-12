@@ -13,6 +13,9 @@ import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermi
 import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
+import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.native_test.NativeBrowserTestApplication;
 
 /** A basic chrome.browser.tests {@link android.app.Application}. */
@@ -34,6 +37,22 @@ public class ChromeBrowserTestsApplication extends NativeBrowserTestApplication 
         if (isBrowserProcess) {
             // Test-only stuff, see also NativeUnitTest.java.
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
+            // Install a no-op scheduler by default so browser tests do not schedule
+            // jobs in system_server's JobScheduler that could leak across batched
+            // tests or wake the test process between shards.
+            BackgroundTaskSchedulerFactory.setSchedulerForTesting(
+                    new BackgroundTaskScheduler() {
+                        @Override
+                        public boolean schedule(Context context, TaskInfo taskInfo) {
+                            return true;
+                        }
+
+                        @Override
+                        public void cancel(Context context, int taskId) {}
+
+                        @Override
+                        public void doMaintenance() {}
+                    });
             // Some browser tests access process singletons that are normally initialized as part
             // of Chrome startup.
             // TODO(crbug.com/454692653): This class should share more code with the production
