@@ -117,6 +117,9 @@ void TwaLaunchQueueTabHelper::OnLaunchVerified(int64_t launch_token,
 
 void TwaLaunchQueueTabHelper::EnqueueNonNavigating(LaunchParams launch_params) {
   launch_params.set_started_new_navigation(false);
+  // TODO(crbug.com/584856840): The JNI layer carries no signal about whether
+  // the intent came from a user action, so `user_initiated` stays false and no
+  // transient user activation is granted on delivery.
   if (EnsureLaunchQueue().IsInScope(launch_params,
                                     GetWebContents().GetLastCommittedURL())) {
     EnsureLaunchQueue().Enqueue(std::move(launch_params));

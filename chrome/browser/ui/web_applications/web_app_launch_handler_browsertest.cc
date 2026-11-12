@@ -5,6 +5,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -26,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -81,6 +84,36 @@ class WebAppLaunchHandlerBrowserTest : public WebAppBrowserTestBase {
     return app_id;
   }
 
+  BrowserWindowInterface* LaunchWebAppBrowserAndWaitWithUserAction(
+      const webapps::AppId& app_id,
+      bool await_navigation = true) {
+    std::unique_ptr<content::TestNavigationObserver> observer;
+    if (await_navigation) {
+      observer = std::make_unique<content::TestNavigationObserver>(
+          WebAppProvider::GetForLocalAppsUnchecked(profile())
+              ->registrar_unsafe()
+              .GetAppLaunchUrl(app_id));
+      observer->StartWatchingNewWebContents();
+    }
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile());
+    base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        future;
+    provider->scheduler().LaunchAppWithCustomParams(
+        apps::AppLaunchParams(app_id,
+                              apps::LaunchContainer::kLaunchContainerWindow,
+                              ui::mojom::WindowOpenDisposition::kCurrentTab,
+                              apps::LaunchSource::kFromAppListGrid),
+        future.GetCallback());
+    BrowserWindowInterface* browser = future.Get<0>().get();
+    if (observer) {
+      observer->Wait();
+    }
+    return browser;
+  }
+
   const WebApp* GetWebApp(const webapps::AppId& app_id) {
     return WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppById(
         app_id);
@@ -108,7 +141,8 @@ class WebAppLaunchHandlerBrowserTest : public WebAppBrowserTestBase {
         window.launchQueue.setConsumer(resolve);
       }).then(params => params.targetURL);
     )";
-    return EvalJs(browser->GetTabStripModel()->GetActiveWebContents(), script)
+    return EvalJs(browser->GetTabStripModel()->GetActiveWebContents(), script,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE)
         .ExtractString();
   }
 
@@ -119,14 +153,16 @@ class WebAppLaunchHandlerBrowserTest : public WebAppBrowserTestBase {
         }).then(params => params.targetURL);
         true;
       )";
-    return EvalJs(browser->GetTabStripModel()->GetActiveWebContents(), script)
+    return EvalJs(browser->GetTabStripModel()->GetActiveWebContents(), script,
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE)
         .ExtractBool();
   }
 
   std::string AwaitNextLaunchParamsTargetUrlPromise(
       BrowserWindowInterface* browser) {
     return EvalJs(browser->GetTabStripModel()->GetActiveWebContents(),
-                  "window.nextLaunchParamsTargetURLPromise")
+                  "window.nextLaunchParamsTargetURLPromise",
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE)
         .ExtractString();
   }
 };
@@ -356,6 +392,96 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kLaunchHandlerHistogram,
                                       ClientMode::kFocusExisting, 3);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       FocusExistingGrantsUserActivation) {
+  webapps::AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_focus_existing.json");
+
+  BrowserWindowInterface* browser_1 =
+      LaunchWebAppBrowserAndWaitWithUserAction(app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1),
+            GetWebApp(app_id)->start_url().spec());
+  content::WebContents* web_contents =
+      browser_1->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_FALSE(EvalJs(web_contents, "navigator.userActivation.isActive",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractBool());
+  const char* setup_script = R"(
+    window.activationPromise = new Promise(resolve => {
+      window.launchQueue.setConsumer(params => {
+        const active = navigator.userActivation.isActive;
+        setTimeout(() => {
+          const w = window.open('about:blank');
+          if (w) w.close();
+          resolve(active && !!w);
+        }, 0);
+      });
+    });
+    true;
+  )";
+  ASSERT_TRUE(content::ExecJs(web_contents, setup_script,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  BrowserWindowInterface* browser_2 = LaunchWebAppBrowserAndWaitWithUserAction(
+      app_id, /*await_navigation=*/false);
+  EXPECT_EQ(browser_1, browser_2);
+  EXPECT_TRUE(EvalJs(web_contents, "window.activationPromise",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .ExtractBool());
+}
+
+class WebAppLaunchHandlerBrowserTest_FeatureDisabled
+    : public WebAppLaunchHandlerBrowserTest {
+ public:
+  WebAppLaunchHandlerBrowserTest_FeatureDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        webapps::features::kWebAppLaunchHandlerUserActivation);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest_FeatureDisabled,
+                       FocusExistingGrantsUserActivation_FeatureDisabled) {
+  webapps::AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_focus_existing.json");
+
+  // Launch through a user-initiated LaunchSource so that only the kill switch
+  // (and not the `user_initiated` gate) prevents the activation grant.
+  BrowserWindowInterface* browser_1 =
+      LaunchWebAppBrowserAndWaitWithUserAction(app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1),
+            GetWebApp(app_id)->start_url().spec());
+  content::WebContents* web_contents =
+      browser_1->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_FALSE(EvalJs(web_contents, "navigator.userActivation.isActive",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractBool());
+  const char* setup_script = R"(
+    window.activationPromise = new Promise(resolve => {
+      window.launchQueue.setConsumer(params => {
+        const active = navigator.userActivation.isActive;
+        setTimeout(() => {
+          const w = window.open('about:blank');
+          if (w) w.close();
+          resolve(active || !!w);
+        }, 0);
+      });
+    });
+    true;
+  )";
+  ASSERT_TRUE(content::ExecJs(web_contents, setup_script,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  BrowserWindowInterface* browser_2 = LaunchWebAppBrowserAndWaitWithUserAction(
+      app_id, /*await_navigation=*/false);
+  EXPECT_EQ(browser_1, browser_2);
+  EXPECT_FALSE(EvalJs(web_contents, "window.activationPromise",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                   .ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,

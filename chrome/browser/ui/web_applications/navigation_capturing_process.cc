@@ -443,7 +443,8 @@ NavigationCapturingProcess::NavigationCapturingProcess(
       navigation_params_url_(params.url),
       disposition_(params.disposition),
       navigation_params_browser_(params.browser ? params.browser->GetWeakPtr()
-                                                : nullptr) {
+                                                : nullptr),
+      is_user_initiated_(params.original_user_gesture) {
   CHECK(AreWebAppsUserInstallable(&*profile_));
   CHECK(params.url.is_valid());
 
@@ -1482,6 +1483,7 @@ NavigationCapturingProcess::HandleRedirectImpl() {
       launch_params.set_target_url(final_url);
       launch_params.set_time_navigation_started_for_enqueue(
           time_navigation_started_);
+      launch_params.set_user_initiated(is_user_initiated_);
       WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
           pre_existing_contents, std::move(launch_params),
           apps::LaunchContainer::kLaunchContainerWindow,
@@ -2044,6 +2046,7 @@ NavigationCapturingProcess::CapturedFocusExisting(
   launch_params.set_target_url(url);
   launch_params.set_time_navigation_started_for_enqueue(
       time_navigation_started_);
+  launch_params.set_user_initiated(is_user_initiated_);
   WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
       contents, std::move(launch_params),
       apps::LaunchContainer::kLaunchContainerWindow,

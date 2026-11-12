@@ -285,6 +285,10 @@ class NavigationCapturingProcess
   const GURL navigation_params_url_;
   const ui::mojom::WindowOpenDisposition disposition_;
   const base::WeakPtr<BrowserWindowInterface> navigation_params_browser_;
+  // Whether the original navigation was caused by a user action
+  // (NavigateParams::original_user_gesture). Only user-initiated launches may
+  // grant transient user activation to an existing document.
+  const bool is_user_initiated_;
   std::optional<webapps::AppId> first_navigation_app_id_;
   std::optional<blink::mojom::DisplayMode> first_navigation_app_display_mode_;
 

@@ -523,6 +523,7 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   FocusAppContainer(existing_app_host->browser, existing_app_host->tab_index);
 
   webapps::LaunchParams launch_params;
+  launch_params.set_user_initiated(true);
   launch_params.set_app_id(app_id);
   launch_params.set_target_url(launch_url);
   if (!time_reparent_started.is_null()) {

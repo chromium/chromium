@@ -65,5 +65,9 @@ extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage(
 // installation check on Clank async.
 BASE_FEATURE(kCheckWebAppExistenceAsync, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Kill switch for granting transient user activation on focus-existing launch.
+BASE_FEATURE(kWebAppLaunchHandlerUserActivation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace webapps

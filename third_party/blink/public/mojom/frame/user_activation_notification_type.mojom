@@ -72,4 +72,8 @@ enum UserActivationNotificationType {
 
   // WebMCP tool invocations triggered by the actor stack in chrome.
   kActorWebMCP,
+
+  // An installed web app launch (e.g. focus-existing LaunchQueue enqueue)
+  // caused the notification call.
+  kWebAppLaunch,
 };

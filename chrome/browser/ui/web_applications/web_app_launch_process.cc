@@ -53,6 +53,62 @@ namespace web_app {
 
 namespace {
 
+bool IsUserInitiatedLaunchSource(apps::LaunchSource source) {
+  switch (source) {
+    // User-initiated sources.
+    case apps::LaunchSource::kFromAppListGrid:
+    case apps::LaunchSource::kFromAppListGridContextMenu:
+    case apps::LaunchSource::kFromAppListQuery:
+    case apps::LaunchSource::kFromAppListQueryContextMenu:
+    case apps::LaunchSource::kFromAppListRecommendation:
+    case apps::LaunchSource::kFromParentalControls:
+    case apps::LaunchSource::kFromShelf:
+    case apps::LaunchSource::kFromFileManager:
+    case apps::LaunchSource::kFromLink:
+    case apps::LaunchSource::kFromOmnibox:
+    case apps::LaunchSource::kFromKeyboard:
+    case apps::LaunchSource::kFromMenu:
+    case apps::LaunchSource::kFromInstalledNotification:
+    case apps::LaunchSource::kFromSharesheet:
+    case apps::LaunchSource::kFromReleaseNotesNotification:
+    case apps::LaunchSource::kFromSmartTextContextMenu:
+    case apps::LaunchSource::kFromDiscoverTabNotification:
+    case apps::LaunchSource::kFromNewTabPage:
+    case apps::LaunchSource::kFromIntentUrl:
+    case apps::LaunchSource::kFromProtocolHandler:
+    case apps::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromLockScreen:
+    case apps::LaunchSource::kFromAppHomePage:
+    case apps::LaunchSource::kFromProfileMenu:
+    case apps::LaunchSource::kFromSysTrayCalendar:
+    case apps::LaunchSource::kFromInstaller:
+    case apps::LaunchSource::kFromWebInstallApi:
+      return true;
+
+    // Programmatic / system sources.
+    case apps::LaunchSource::kFromOsLogin:
+    case apps::LaunchSource::kFromCommandLine:
+    case apps::LaunchSource::kFromSparky:
+    case apps::LaunchSource::kFromFirstRun:
+    case apps::LaunchSource::kFromWelcomeTour:
+    case apps::LaunchSource::kFromFocusMode:
+    case apps::LaunchSource::kUnknown:
+    case apps::LaunchSource::kFromChromeInternal:
+    case apps::LaunchSource::kFromOtherApp:
+    case apps::LaunchSource::kFromTest:
+    case apps::LaunchSource::kFromArc:
+    case apps::LaunchSource::kFromFullRestore:
+    case apps::LaunchSource::kFromManagementApi:
+    case apps::LaunchSource::kFromKiosk:
+    case apps::LaunchSource::kFromBackgroundMode:
+    case apps::LaunchSource::kFromReparenting:
+    case apps::LaunchSource::kFromNavigationCapturing:
+    case apps::LaunchSource::kFromMigration:
+      return false;
+  }
+  NOTREACHED();
+}
+
 // Returns the most recently activated tabbed (TYPE_NORMAL) browser for
 // `profile`, filtered by `display_id` when it is not kInvalidDisplayId.
 // Browsers scheduled for deletion are excluded.
@@ -314,6 +370,8 @@ content::WebContents* WebAppLaunchProcess::Run() {
       // current page is now being used for this app launch.
       existing_tab->Stop();
       launch_params.set_started_new_navigation(false);
+      launch_params.set_user_initiated(
+          IsUserInitiatedLaunchSource(params_->launch_source));
       WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
           existing_tab, std::move(launch_params), params_->container,
           params_->launch_source);

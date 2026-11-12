@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
 #include "url/origin.h"
 
@@ -149,6 +150,18 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
       web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   if (committed_origin.opaque()) {
     return;
+  }
+
+  // The producer of LaunchParams verified that a user action caused the launch
+  // and the UA just focused this window, mirroring notificationclick window
+  // interaction. Grant transient user activation for deliveries into an
+  // existing document.
+  if (launch_params.user_initiated() &&
+      !launch_params.started_new_navigation() &&
+      base::FeatureList::IsEnabled(
+          features::kWebAppLaunchHandlerUserActivation)) {
+    web_contents_->GetPrimaryMainFrame()->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kWebAppLaunch);
   }
 
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;

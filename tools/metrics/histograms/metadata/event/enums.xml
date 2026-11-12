@@ -371,6 +371,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="kExtensionMessagingReceiverPrivileged"/>
   <int value="15" label="kExtensionMessagingNeitherPrivileged"/>
   <int value="16" label="kActorWebMCP"/>
+  <int value="17" label="kWebAppLaunch"/>
 </enum>
 
 </enums>
