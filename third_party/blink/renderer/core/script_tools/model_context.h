@@ -278,7 +278,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
  private:
   class ToolFunctionFinishedCallback;
   class ToolUnregisterAbortAlgorithm;
-  class PendingWaitForTools;
   class WaitForToolsSettled;
 
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
@@ -321,7 +320,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
   void MaybeRecordToolCount();
 
   // Called when a promise passed to `waitForToolsUntil()` settles.
-  void OnWaitForToolsPromiseSettled(PendingWaitForTools* pending);
+  void OnWaitForToolsPromiseSettled();
   void OnWaitForToolsWarningTimerFired(TimerBase*);
 
   HeapHashMap<ScriptToolToken, Member<ToolData>> tool_map_;
@@ -386,8 +385,9 @@ class CORE_EXPORT ModelContext : public EventTarget,
   // of registered tools.
   bool will_record_tool_count_ = false;
 
-  // This document's tools are ready while this is empty.
-  HeapHashSet<Member<PendingWaitForTools>> unsettled_wait_for_tools_promises_;
+  // Number of `waitForToolsUntil()` promises that have not settled yet. This
+  // document's tools are ready while this is 0.
+  size_t unsettled_wait_for_tools_promises_ = 0;
 
   // Fires a warning if a promise is keeping tools in not ready state for too
   // long.

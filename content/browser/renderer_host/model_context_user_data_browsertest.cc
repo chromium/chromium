@@ -165,25 +165,23 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
                            Notification(main_rfh(), ReadyState::kReady)));
 }
 
-// Ensures that a promise created in another document counts as settled once
-// that document is destroyed.
+// Ensures that a promise created in another document still settles when
+// resolved after that document's frame is removed.
 IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
-                       PromiseFromRemovedDocumentCountsAsSettled) {
+                       PromiseFromRemovedDocumentResolvedAfterRemoval) {
   RenderFrameHost* child =
       CreateSubframe(static_cast<WebContentsImpl*>(web_contents()), "child",
                      embedded_test_server()->GetURL("/title1.html"),
                      /*wait_for_navigation=*/true);
   ASSERT_TRUE(child);
 
-  // Test a cross-document promise that resolves normally (`a`), one that
-  // resolves after the child frame is removed (`b`), and one that never
-  // settles on its own.
+  // Test a cross-document promise that resolves normally (`a`) and one that
+  // resolves after the child frame is removed (`b`).
   ASSERT_TRUE(ExecJs(child, R"(
       window.a = Promise.withResolvers();
       window.b = Promise.withResolvers();
       parent.document.modelContext.waitForToolsUntil(window.a.promise);
       parent.document.modelContext.waitForToolsUntil(window.b.promise);
-      parent.document.modelContext.waitForToolsUntil(new Promise(() => {}));
       window.a.resolve();
   )"));
   ASSERT_TRUE(WaitForScriptToolsReadyState(ReadyState::kWaiting));
@@ -195,6 +193,33 @@ IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
       resolveB();
   )"));
   ASSERT_TRUE(WaitForScriptToolsReadyState(ReadyState::kReady));
+}
+
+// Ensures that a promise waiting on a timer in a removed document never
+// settles, leaving the parent document's tools in the waiting state.
+IN_PROC_BROWSER_TEST_F(ModelContextUserDataBrowserTest,
+                       TimerPromiseFromRemovedDocumentNeverSettles) {
+  RenderFrameHost* child =
+      CreateSubframe(static_cast<WebContentsImpl*>(web_contents()), "child",
+                     embedded_test_server()->GetURL("/title1.html"),
+                     /*wait_for_navigation=*/true);
+  ASSERT_TRUE(child);
+
+  // Schedule a 0ms timer in the child frame and immediately remove the child
+  // frame in the same turn, then wait for a 0ms timer in the parent frame so
+  // any non-cancelled timer task would have already run.
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+      const iframe = document.getElementById('child');
+      const w = iframe.contentWindow;
+      document.modelContext.waitForToolsUntil(
+          new w.Promise(resolve => w.setTimeout(resolve, 0)));
+      iframe.remove();
+  )"));
+  ASSERT_TRUE(WaitForScriptToolsReadyState(ReadyState::kWaiting));
+
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "new Promise(resolve => window.setTimeout(resolve, 0))"));
+  EXPECT_EQ(main_rfh()->GetScriptToolsReadyState(), ReadyState::kWaiting);
 }
 
 // Ensures that a crashed renderer reports the correct state.
