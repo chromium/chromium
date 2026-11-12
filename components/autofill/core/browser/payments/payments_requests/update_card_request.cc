@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/update_card_request.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -13,10 +14,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
 
 namespace autofill::payments {
 
@@ -94,6 +97,14 @@ bool UpdateCardRequest::IsResponseComplete() {
 void UpdateCardRequest::RespondToDelegate(
     PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result);
+}
+
+std::string UpdateCardRequest::GetHistogramName() const {
+  return "UpdateCardRequest";
+}
+
+std::optional<base::TimeDelta> UpdateCardRequest::GetTimeout() const {
+  return kUploadCardRequestTimeout;
 }
 
 }  // namespace autofill::payments

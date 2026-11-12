@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
@@ -161,6 +162,13 @@ TEST_F(UpdateCardRequestTest, RespondToDelegate) {
 
   request->RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
+}
+
+TEST_F(UpdateCardRequestTest, HasTimeout) {
+  std::unique_ptr<UpdateCardRequest> request = CreateRequest();
+
+  EXPECT_EQ(request->GetHistogramName(), "UpdateCardRequest");
+  EXPECT_EQ(request->GetTimeout(), kUploadCardRequestTimeout);
 }
 
 }  // namespace

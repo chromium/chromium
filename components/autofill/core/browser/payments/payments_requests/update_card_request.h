@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_UPDATE_CARD_REQUEST_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_UPDATE_CARD_REQUEST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
@@ -33,6 +35,8 @@ class UpdateCardRequest : public PaymentsRequest {
   bool IsResponseComplete() override;
   void RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult result) override;
+  std::string GetHistogramName() const override;
+  std::optional<base::TimeDelta> GetTimeout() const override;
 
  private:
   UpdateCardRequestDetails request_details_;

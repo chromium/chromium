@@ -9,7 +9,7 @@
 
 namespace autofill::payments {
 
-// The client-side timeout allowed for a card upload (or create) request.
+// The client-side timeout allowed for a card upload, create, or update request.
 inline constexpr base::TimeDelta kUploadCardRequestTimeout =
     base::Milliseconds(6500);
 
