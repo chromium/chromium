@@ -32,8 +32,6 @@ std::optional<ParsedParams> ParseWebPluginParams(
       result.src_url = params.attribute_values[i].Utf8();
     } else if (params.attribute_names[i] == "original-url") {
       result.original_url = params.attribute_values[i].Utf8();
-    } else if (params.attribute_names[i] == "top-level-url") {
-      result.top_level_url = params.attribute_values[i].Utf8();
     } else if (params.attribute_names[i] == "full-frame") {
       result.full_frame = true;
     } else if (params.attribute_names[i] == "background-color") {

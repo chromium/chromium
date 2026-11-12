@@ -31,9 +31,6 @@ struct ParsedParams {
   // The document original URL. Must not be empty.
   std::string original_url;
 
-  // The top-level URL.
-  std::string top_level_url;
-
   // Whether the plugin should occupy the entire frame.
   bool full_frame = false;
 

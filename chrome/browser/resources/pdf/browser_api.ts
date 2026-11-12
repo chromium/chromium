@@ -7,8 +7,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 export type StreamInfoWithExtras = chrome.mimeHandlerPrivate.StreamInfo&{
   // Appended in main.js
   javascript?: 'allow' | 'block',
-  // Appended in browser_api.js
-  tabUrl?: string,
 };
 
 /**
@@ -186,34 +184,25 @@ export function createBrowserApi(): Promise<BrowserApi> {
            }
          })
       .then(function(streamInfo) {
-        const promises = [];
         let zoomBehavior = ZoomBehavior.NONE;
         if (streamInfo.tabId !== -1) {
           zoomBehavior = streamInfo.embedded ? ZoomBehavior.PROPAGATE_PARENT :
                                                ZoomBehavior.MANAGE;
-          promises.push(
-              new Promise<chrome.tabs.Tab|undefined>(function(resolve) {
-                chrome.tabs.get(streamInfo.tabId, resolve);
-              }).then(function(tab) {
-                if (tab) {
-                  (streamInfo as StreamInfoWithExtras).tabUrl = tab.url;
-                }
-              }));
         }
-        if (zoomBehavior === ZoomBehavior.MANAGE) {
-          promises.push(new Promise<void>(function(resolve) {
-            chrome.tabs.setZoomSettings(
-                streamInfo.tabId, {
-                  mode: chrome.tabs.ZoomSettingsMode.MANUAL,
-                  scope: chrome.tabs.ZoomSettingsScope.PER_TAB,
-                },
-                resolve);
-          }));
+        if (zoomBehavior !== ZoomBehavior.MANAGE) {
+          return BrowserApi.create(streamInfo, zoomBehavior);
         }
-        return Promise.all(promises).then(function() {
-          return BrowserApi.create(
-              streamInfo as StreamInfoWithExtras, zoomBehavior);
-        });
+        return new Promise<void>(function(resolve) {
+                 chrome.tabs.setZoomSettings(
+                     streamInfo.tabId, {
+                       mode: chrome.tabs.ZoomSettingsMode.MANUAL,
+                       scope: chrome.tabs.ZoomSettingsScope.PER_TAB,
+                     },
+                     resolve);
+               })
+            .then(function() {
+              return BrowserApi.create(streamInfo, zoomBehavior);
+            });
       });
 }
 
@@ -238,7 +227,6 @@ export function createBrowserApiForPrintPreview(): Promise<BrowserApi> {
            }
            chrome.tabs.getCurrent(function(tab) {
              streamInfo.tabId = tab!.id!;
-             streamInfo.tabUrl = tab!.url;
              resolve();
            });
          })

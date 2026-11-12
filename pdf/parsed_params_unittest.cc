@@ -41,7 +41,6 @@ TEST(ParsedParamsTest, ParseWebPluginParamsMinimal) {
 
   EXPECT_EQ(kFakeSrcUrl, result->src_url);
   EXPECT_EQ(kFakeSrcUrl, result->original_url);
-  EXPECT_EQ("", result->top_level_url);
   EXPECT_FALSE(result->full_frame);
   EXPECT_EQ(SK_ColorTRANSPARENT, result->background_color);
   EXPECT_EQ(PDFiumFormFiller::ScriptOption::kJavaScript, result->script_option);
@@ -65,17 +64,6 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithOriginalUrl) {
 
   EXPECT_EQ(kFakeSrcUrl, result->src_url);
   EXPECT_EQ("https://example.com/original.pdf", result->original_url);
-}
-
-TEST(ParsedParamsTest, ParseWebPluginParamsWithTopLevelUrl) {
-  blink::WebPluginParams params = CreateMinimalWebPluginParams();
-  params.attribute_names.push_back("top-level-url");
-  params.attribute_values.push_back("https://example.net/top.html");
-
-  std::optional<ParsedParams> result = ParseWebPluginParams(params);
-  ASSERT_TRUE(result.has_value());
-
-  EXPECT_EQ("https://example.net/top.html", result->top_level_url);
 }
 
 TEST(ParsedParamsTest, ParseWebPluginParamsWithFullFrame) {

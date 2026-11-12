@@ -130,10 +130,7 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
     const javascript = this.browserApi!.getStreamInfo().javascript || 'block';
     plugin.setAttribute('javascript', javascript);
 
-    if (this.browserApi!.getStreamInfo().embedded) {
-      plugin.setAttribute(
-          'top-level-url', this.browserApi!.getStreamInfo().tabUrl!);
-    } else {
+    if (!this.browserApi!.getStreamInfo().embedded) {
       plugin.toggleAttribute('full-frame', true);
     }
 
