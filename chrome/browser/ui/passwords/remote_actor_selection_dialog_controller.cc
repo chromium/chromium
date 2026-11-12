@@ -179,9 +179,6 @@ bool RemoteActorSelectionDialogController::IsShowingAccountChooser() const {
 void RemoteActorSelectionDialogController::OnChooseCredentials(
     const password_manager::PasswordForm& password_form,
     password_manager::CredentialType credential_type) {
-  // TODO(crbug.com/532483845): Upload selected credential to Passbox and grant
-  // permission in APS.
-  // TODO(crbug.com/532482931): Notify Private JS API of success.
   DestroyDialog();
   if (callback_) {
     std::move(callback_).Run(password_form);
@@ -189,7 +186,6 @@ void RemoteActorSelectionDialogController::OnChooseCredentials(
 }
 
 void RemoteActorSelectionDialogController::OnCloseDialog() {
-  // TODO(crbug.com/532482931): Notify Private JS API of cancellation.
   DestroyDialog();
   if (callback_) {
     std::move(callback_).Run(std::nullopt);
