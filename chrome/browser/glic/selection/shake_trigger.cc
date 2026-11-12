@@ -5,9 +5,12 @@
 #include "chrome/browser/glic/selection/shake_trigger.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/selection/selection_overlay_invocation_helper.h"
+#include "chrome/browser/glic/selection/wiggle_detector.h"
+#include "chrome/browser/glic/selection/wiggle_detector_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/selection/metrics_logger.h"
 #include "components/prefs/pref_service.h"
@@ -18,22 +21,13 @@
 
 namespace glic {
 
-namespace {
-
-// Minimum distance in pixels required for a mouse move step to establish or
-// change movement direction.
-constexpr float kMinShakeDistance = 10.0f;
-// Required number of direction changes to trigger region capture.
-constexpr int kRequiredDirectionChanges = 4;
-// Maximum time allowed between direction changes before the shake detector
-// resets.
-constexpr base::TimeDelta kShakeTimeout = base::Milliseconds(1000);
-
-}  // namespace
-
 ShakeTrigger::ShakeTrigger(content::WebContents* web_contents,
                            ShakeTriggerClient& client)
-    : web_contents_(web_contents->GetWeakPtr()), client_(client) {}
+    : web_contents_(web_contents->GetWeakPtr()),
+      client_(client),
+      detector_(CreateWiggleDetector(WiggleDetectorType::kLegacyShake)) {
+  CHECK(detector_);
+}
 
 ShakeTrigger::~ShakeTrigger() = default;
 
@@ -56,7 +50,7 @@ void ShakeTrigger::OnInputEvent(const blink::WebInputEvent& event) {
     case blink::WebInputEvent::Type::kKeyDown:
     case blink::WebInputEvent::Type::kGestureScrollBegin:
     case blink::WebInputEvent::Type::kMouseWheel:
-      Reset();
+      detector_->Reset();
       break;
     default:
       break;
@@ -102,55 +96,10 @@ void ShakeTrigger::ProcessMouseMove(const blink::WebMouseEvent& mouse_event) {
   if (!IsEnabled()) {
     return;
   }
-  if (direction_change_count_ > 0 &&
-      (base::TimeTicks::Now() - last_direction_change_time_) > kShakeTimeout) {
-    Reset();
+  if (detector_->AddSample(mouse_event.PositionInWidget(),
+                           base::TimeTicks::Now())) {
+    TriggerRegionCapture();
   }
-
-  gfx::PointF current_pos = mouse_event.PositionInWidget();
-
-  if (!last_shake_point_.has_value()) {
-    last_shake_point_ = current_pos;
-    return;
-  }
-
-  gfx::Vector2dF delta = current_pos - *last_shake_point_;
-  float dist = delta.Length();
-  if (dist < kMinShakeDistance) {
-    return;
-  }
-
-  gfx::Vector2dF current_dir(delta.x() / dist, delta.y() / dist);
-
-  if (!last_shake_dir_.has_value()) {
-    last_shake_dir_ = current_dir;
-    last_shake_point_ = current_pos;
-    last_direction_change_time_ = base::TimeTicks::Now();
-    return;
-  }
-
-  float dot = last_shake_dir_->x() * current_dir.x() +
-              last_shake_dir_->y() * current_dir.y();
-  if (dot < -0.5f) {
-    direction_change_count_++;
-    last_shake_dir_ = current_dir;
-    last_shake_point_ = current_pos;
-    last_direction_change_time_ = base::TimeTicks::Now();
-
-    if (direction_change_count_ >= kRequiredDirectionChanges) {
-      Reset();
-      TriggerRegionCapture();
-    }
-  } else {
-    last_shake_point_ = current_pos;
-  }
-}
-
-void ShakeTrigger::Reset() {
-  last_shake_point_.reset();
-  last_shake_dir_.reset();
-  direction_change_count_ = 0;
-  last_direction_change_time_ = base::TimeTicks();
 }
 
 }  // namespace glic

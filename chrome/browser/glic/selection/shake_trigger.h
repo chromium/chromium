@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_SELECTION_SHAKE_TRIGGER_H_
 #define CHROME_BROWSER_GLIC_SELECTION_SHAKE_TRIGGER_H_
 
-#include <optional>
+#include <memory>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 class WebInputEvent;
@@ -23,6 +20,8 @@ class WebContents;
 }  // namespace content
 
 namespace glic {
+
+class WiggleDetector;
 
 class ShakeTriggerClient {
  public:
@@ -52,15 +51,11 @@ class ShakeTrigger {
 
  private:
   void ProcessMouseMove(const blink::WebMouseEvent& mouse_event);
-  void Reset();
 
   base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<ShakeTriggerClient> client_;
 
-  std::optional<gfx::PointF> last_shake_point_;
-  std::optional<gfx::Vector2dF> last_shake_dir_;
-  int direction_change_count_ = 0;
-  base::TimeTicks last_direction_change_time_;
+  const std::unique_ptr<WiggleDetector> detector_;
 };
 
 }  // namespace glic

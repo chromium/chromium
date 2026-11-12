@@ -41,6 +41,8 @@ source_set("selection") {
   ]
 
   deps = [
+    ":wiggle_detector",
+    ":wiggle_detector_factory",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/actor",
@@ -84,10 +86,27 @@ source_set("selection") {
 
 source_set("shake_trigger") {
   sources = [ "shake_trigger.h" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("wiggle_detector") {
+  sources = [
+    "legacy_shake_detector.cc",
+    "legacy_shake_detector.h",
+    "wiggle_detector.h",
+    "wiggle_detector_factory.h",
+  ]
   public_deps = [
     "//base",
     "//ui/gfx/geometry",
   ]
+}
+
+# Kept apart from `wiggle_detector` so that other builds can provide their own
+# detectors.
+source_set("wiggle_detector_factory") {
+  sources = [ "wiggle_detector_factory_default.cc" ]
+  deps = [ ":wiggle_detector" ]
 }
 
 mojom("mojo_bindings") {
@@ -182,6 +201,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "inline_cue_blocklist_utils_unittest.cc",
+    "legacy_shake_detector_unittest.cc",
     "quick_answers_tool_unittest.cc",
     "selection_overlay_prewarmer_unittest.cc",
     "selection_suggestion_tool_unittest.cc",
@@ -189,6 +209,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":selection",
+    ":wiggle_detector",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/content_settings:content_settings_factory",

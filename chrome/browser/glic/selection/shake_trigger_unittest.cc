@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -70,6 +71,14 @@ class ShakeTriggerTest : public ChromeRenderViewHostTestHarness,
     trigger_->OnInputEvent(event);
   }
 
+  void SimulateMouseDown() {
+    blink::WebMouseEvent event(
+        blink::WebInputEvent::Type::kMouseDown,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    trigger_->OnInputEvent(event);
+  }
+
   void SimulateMouseShake() {
     SimulateMouseMove(0.0f, 0.0f);
     SimulateMouseMove(20.0f, 0.0f);
@@ -114,24 +123,6 @@ TEST_F(ShakeTriggerTest, ShakeTriggerDisabledByPref) {
 
   EXPECT_FALSE(trigger_->trigger_region_capture_called());
   SimulateMouseShake();
-  EXPECT_FALSE(trigger_->trigger_region_capture_called());
-}
-
-TEST_F(ShakeTriggerTest, ContinuousMoveDoesNotTriggerShake) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlicShakeTrigger},
-      /*disabled_features=*/{});
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
-
-  // Move continuously in the positive X direction.
-  SimulateMouseMove(0.0f, 0.0f);
-  SimulateMouseMove(20.0f, 0.0f);
-  SimulateMouseMove(40.0f, 0.0f);
-  SimulateMouseMove(60.0f, 0.0f);
-  SimulateMouseMove(80.0f, 0.0f);
-  SimulateMouseMove(100.0f, 0.0f);
-
   EXPECT_FALSE(trigger_->trigger_region_capture_called());
 }
 
@@ -180,6 +171,36 @@ TEST_F(ShakeTriggerTest, ShakeTriggerSucceedsWhenSidePanelOpen) {
   EXPECT_FALSE(trigger_->trigger_region_capture_called());
   SimulateMouseShake();
   EXPECT_TRUE(trigger_->trigger_region_capture_called());
+}
+
+TEST_F(ShakeTriggerTest, MouseDownResetsShake) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicShakeTrigger);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+
+  SimulateMouseMove(0.0f, 0.0f);
+  SimulateMouseMove(20.0f, 0.0f);
+  SimulateMouseMove(0.0f, 0.0f);
+  SimulateMouseMove(20.0f, 0.0f);
+  SimulateMouseMove(0.0f, 0.0f);
+  SimulateMouseDown();
+  SimulateMouseMove(20.0f, 0.0f);
+
+  EXPECT_FALSE(trigger_->trigger_region_capture_called());
+}
+
+TEST_F(ShakeTriggerTest, UsesCurrentTime) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicShakeTrigger);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+
+  // The events all carry the same timestamp, but seconds pass between them.
+  for (float x : {0.0f, 20.0f, 0.0f, 20.0f, 0.0f, 20.0f}) {
+    task_environment()->FastForwardBy(base::Seconds(2));
+    SimulateMouseMove(x, 0.0f);
+  }
+
+  EXPECT_FALSE(trigger_->trigger_region_capture_called());
 }
 
 }  // namespace glic
