@@ -2470,12 +2470,14 @@ export const ComposeboxEmbedderMixin =
          */
         closeComposebox(afterSubmit: boolean = false) {
           this.resetDelayedTabContextRequests_();
-          this.resetModes();
-          this.getSearchboxHandler().clearFiles(
-              /*shouldBlockAutoSuggestedTabs=*/ false);
-          // With dynamic AIM fulfillment, clearing the model (after the files)
-          // leaves AI Mode.
-          this.resetToolsAndModels();
+          if (!afterSubmit) {
+            this.resetModes();
+            this.getSearchboxHandler().clearFiles(
+                /*shouldBlockAutoSuggestedTabs=*/ false);
+            // With dynamic AIM fulfillment, clearing the model (after the
+            // files) leaves AI Mode.
+            this.resetToolsAndModels();
+          }
           this.suggestInventory = null;
           // <if expr="not is_android">
           if (this.smartTabSharingVisible && !afterSubmit && !this.submitting) {

@@ -1124,13 +1124,7 @@ export class AppElement extends AppElementBase {
       const composebox =
           this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assert(composebox);
-      const closeComposebox = new CustomEvent('closeComposebox', {
-        detail: {composeboxText: composebox.input},
-        bubbles: true,
-        cancelable: true,
-      });
-
-      this.onCloseComposebox_(closeComposebox);
+      composebox.closeComposebox();
     }
   }
 
@@ -1159,7 +1153,6 @@ export class AppElement extends AppElementBase {
         this.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
     assert(composebox);
     composebox.input = '';
-    composebox.resetModes();
     if (this.ntpRealboxNextEnabled_) {
       composebox.closeDropdown();
     }

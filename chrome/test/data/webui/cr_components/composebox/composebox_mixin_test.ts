@@ -3631,4 +3631,64 @@ suite('ComposeboxMixinTest', () => {
         element.getValidationError(
             InputType.kLensImage, 'image/heic', 25 * miB, 0, 0));
   });
+
+  test(
+      'closeComposebox skips backend resets when afterSubmit is true',
+      async () => {
+        element.onInputStateChanged(new MockInputState({
+          activeTool: ToolMode.kDeepSearch,
+          activeModel: ModelMode.kGeminiPro,
+        }));
+        await element.updateComplete;
+
+        const closeDetails:
+            Array<{composeboxText: string, afterSubmit: boolean}> = [];
+        element.addEventListener('close-composebox', e => {
+          closeDetails.push(
+              (e as CustomEvent<{composeboxText: string, afterSubmit: boolean}>)
+                  .detail);
+        });
+
+        searchboxHandler.resetResolver('clearFiles');
+        searchboxHandler.resetResolver('setActiveToolMode');
+        searchboxHandler.resetResolver('setActiveModelMode');
+
+        element.input = 'draft';
+        element.closeComposebox(/*afterSubmit=*/ true);
+
+        assertEquals(0, searchboxHandler.getCallCount('clearFiles'));
+        assertEquals(0, searchboxHandler.getCallCount('setActiveToolMode'));
+        assertEquals(0, searchboxHandler.getCallCount('setActiveModelMode'));
+        assertDeepEquals(
+            [{composeboxText: 'draft', afterSubmit: true}], closeDetails);
+
+        const callOrder: string[] = [];
+        searchboxHandler.setResultMapperFor('clearFiles', () => {
+          callOrder.push('clearFiles');
+        });
+        searchboxHandler.setResultMapperFor('setActiveToolMode', () => {
+          callOrder.push('setActiveToolMode');
+        });
+        searchboxHandler.setResultMapperFor('setActiveModelMode', () => {
+          callOrder.push('setActiveModelMode');
+        });
+
+        element.closeComposebox(/*afterSubmit=*/ false);
+
+        assertEquals(1, searchboxHandler.getCallCount('clearFiles'));
+        assertEquals(false, searchboxHandler.getArgs('clearFiles')[0]);
+        assertDeepEquals(
+            [
+              'setActiveToolMode',
+              'clearFiles',
+              'setActiveToolMode',
+              'setActiveModelMode',
+            ],
+            callOrder);
+        assertDeepEquals(
+            [ModelMode.kUnspecified, false],
+            searchboxHandler.getArgs('setActiveModelMode')[0]);
+        assertEquals(2, closeDetails.length);
+        assertFalse(closeDetails[1]!.afterSubmit);
+      });
 });
