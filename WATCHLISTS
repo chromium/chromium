@@ -1616,6 +1616,9 @@
     'ios_intelligence_actor_tools': {
       'filepath': 'ios/chrome/browser/intelligence/actor/tools'
     },
+    'ios_location_bar_badge': {
+      'filepath': '^ios/chrome/browser/location_bar/badge/',
+    },
     'ios_ntp': {
       'filepath': 'ios/chrome/browser/ntp/',
     },
@@ -3287,6 +3290,7 @@
     'ios_intelligence': ['adamta+watch@google.com'],
     'ios_intelligence_actor': ['ios-actor-watchlist@google.com'],
     'ios_intelligence_actor_tools': ['bling-ai-foundations-reviews-external@google.com'],
+    'ios_location_bar_badge': ['joemerramos+watch@google.com'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
     'ios_payments_autofill': ['slobodan+watch@chromium.org'],
     'ios_transactions': ['tmartino+transactions-watch@chromium.org'],
