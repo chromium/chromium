@@ -1300,4 +1300,28 @@ TEST_F(SVGImageSimTest, ElementSizeAndDefaultDestinationSizeWithViewSpec) {
                                           kRespectImageOrientation));
 }
 
+TEST_F(SVGImageTest, DeferredShutdownDetachesChromeClientImmediately) {
+  const bool kShouldPause = true;
+  Load(base::span_from_cstring(kAnimatedDocument), kShouldPause);
+  Persistent<SVGImageChromeClient> chrome_client =
+      &GetImage().ChromeClientForTesting();
+
+  PumpFrame();
+  EXPECT_EQ(&GetImage(), chrome_client->GetImage());
+
+  // Destroying SVGImage should synchronously detach SVGImageChromeClient
+  // before the deferred IsolatedSVGDocumentHost::Shutdown() task runs.
+  ResetImage();
+  EXPECT_EQ(nullptr, chrome_client->GetImage());
+
+  // Invoking SVGImageChromeClient entry points while Shutdown() is still
+  // pending on CleanupTaskRunner must safely no-op.
+  chrome_client->SuspendAnimation();
+  chrome_client->ResumeAnimation();
+  chrome_client->RestoreAnimationIfNeeded();
+  chrome_client->SetDidEncounterXSL();
+
+  test::RunPendingTasks();
+}
+
 }  // namespace blink

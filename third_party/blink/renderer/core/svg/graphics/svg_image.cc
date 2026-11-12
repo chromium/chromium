@@ -63,8 +63,10 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -109,14 +111,25 @@ SVGImage::SVGImage(ImageObserver* observer,
       has_pending_timeline_rewind_(false) {}
 
 SVGImage::~SVGImage() {
+  if (chrome_client_) {
+    chrome_client_->DetachImage();
+  }
   if (document_host_) {
-    // Store `document_host_` in a local variable and clear it so that
-    // SVGImageChromeClient knows we're destructed.
+    // Clear `document_host_` before shutdown so re-entrant queries observe
+    // that teardown has started.
     auto* document_host = document_host_.Release();
-    document_host->Shutdown();
+    // Avoid synchronous page/frame teardown in ~SVGImage(), as cancelling
+    // inner loads or detaching frames can re-enter image/resource code or
+    // allocate on the Oilpan heap mid-sweep.
+    if (!RuntimeEnabledFeatures::SvgImageDeferShutdownEnabled() ||
+        !ThreadScheduler::Current()->CleanupTaskRunner()->PostTask(
+            FROM_HERE, BindOnce(&IsolatedSVGDocumentHost::Shutdown,
+                                WrapPersistent(document_host)))) {
+      document_host->Shutdown();
+    }
   }
 
-  // Verify that page teardown destroyed the Chrome
+  // Verify that `chrome_client_` does not retain a dangling pointer to `this`.
   DCHECK(!chrome_client_ || !chrome_client_->GetImage());
 }
 

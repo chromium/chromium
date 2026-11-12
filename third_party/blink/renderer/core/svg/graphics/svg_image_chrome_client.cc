@@ -55,8 +55,15 @@ void SVGImageChromeClient::InitAnimationTimer(
       &SVGImageChromeClient::AnimationTimerFired);
 }
 
-void SVGImageChromeClient::ChromeDestroyed() {
+void SVGImageChromeClient::DetachImage() {
   image_ = nullptr;
+  if (animation_timer_) {
+    animation_timer_->Value().Stop();
+  }
+}
+
+void SVGImageChromeClient::ChromeDestroyed() {
+  DetachImage();
 }
 
 void SVGImageChromeClient::InvalidateContainer() {
@@ -68,6 +75,9 @@ void SVGImageChromeClient::InvalidateContainer() {
 }
 
 void SVGImageChromeClient::SuspendAnimation() {
+  if (!image_) {
+    return;
+  }
   if (image_->MaybeAnimated()) {
     timeline_state_ = kSuspendedWithAnimationPending;
   } else {
@@ -77,6 +87,9 @@ void SVGImageChromeClient::SuspendAnimation() {
 }
 
 void SVGImageChromeClient::ResumeAnimation() {
+  if (!image_) {
+    return;
+  }
   bool have_pending_animation =
       timeline_state_ == kSuspendedWithAnimationPending;
   timeline_state_ = kRunning;
@@ -90,19 +103,25 @@ void SVGImageChromeClient::ResumeAnimation() {
 
 void SVGImageChromeClient::RestoreAnimationIfNeeded() {
   // If the timeline is not suspended we needn't attempt to restore.
-  if (!IsSuspended())
+  if (!image_ || !IsSuspended()) {
     return;
+  }
   image_->RestoreAnimation();
 }
 
 void SVGImageChromeClient::SetDidEncounterXSL() {
-  image_->SetDidEncounterXSL();
+  if (image_) {
+    image_->SetDidEncounterXSL();
+  }
 }
 
 void SVGImageChromeClient::ScheduleAnimation(const LocalFrameView*,
                                              cc::BeginMainFrameReason,
                                              base::TimeDelta fire_time,
                                              bool urgent) {
+  if (!image_) {
+    return;
+  }
   DCHECK(animation_timer_);
   // Because a single SVGImage can be shared by multiple pages, we can't key
   // our svg image layout on the page's real animation frame. Therefore, we
