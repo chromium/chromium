@@ -16,6 +16,7 @@ source_set("groups") {
     "tab_group_accessibility.h",
     "tab_group_editor_bubble_tracker.h",
     "tab_group_editor_bubble_view.h",
+    "tab_group_editor_title_field.h",
   ]
 
   public_deps = [
@@ -50,6 +51,7 @@ source_set("impl") {
     "tab_group_accessibility.cc",
     "tab_group_editor_bubble_tracker.cc",
     "tab_group_editor_bubble_view.cc",
+    "tab_group_editor_title_field.cc",
   ]
 
   deps = [

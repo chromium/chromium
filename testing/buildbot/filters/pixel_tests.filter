@@ -177,6 +177,7 @@ SplitTabButtonInteractiveTest.ButtonUpdatesOnSplit
 SyncPassphraseDialogBrowserTest.*
 TabDialogManagerPixelTest.*
 TabGroupEditorBubbleViewDialogBrowserTest.*
+TabGroupEditorBubbleViewPixelBrowserTest.*
 TabGroupShortcutsInteractiveTest.Screenshot*
 TabHoverCardBubbleViewDialogBrowserTest.*
 TabSearchBubbleUIBrowserTest.*

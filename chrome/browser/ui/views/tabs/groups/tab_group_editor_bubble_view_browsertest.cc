@@ -119,7 +119,15 @@ class TabGroupEditorBubbleViewPixelBrowserTest
     : public TabGroupEditorBubbleViewDialogBrowserTest {
  protected:
   void ShowUi(const std::string& name) override {
-    TabGroupEditorBubbleViewDialogBrowserTest::ShowUi(name);
+    if (name == "ephemeral_group") {
+      // An ephemeral (non-group focus) group gets the promotion prompt rather
+      // than the full editor. Open it through the same public entry point as
+      // the default case so this test keeps exercising whatever UI backs it.
+      group_ = browser()->GetTabStripModel()->EnterFocusMode({0});
+      browser()->GetTabStripModel()->OpenTabGroupEditor(group_.value());
+    } else {
+      TabGroupEditorBubbleViewDialogBrowserTest::ShowUi(name);
+    }
     views::Widget* widget = WaitForAndGetEditorBubbleWidget();
     if (widget) {
       auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
@@ -134,6 +142,13 @@ class TabGroupEditorBubbleViewPixelBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewPixelBrowserTest,
                        InvokeUi_default) {
+  ShowAndVerifyUi();
+}
+
+// Pixel baseline for the ephemeral group promotion prompt (title, color picker
+// and Create / Cancel buttons).
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewPixelBrowserTest,
+                       InvokeUi_ephemeral_group) {
   ShowAndVerifyUi();
 }
 

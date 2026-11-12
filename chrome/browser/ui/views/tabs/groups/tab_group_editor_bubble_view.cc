@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/views/tabs/groups/color_picker_view.h"
 #include "chrome/browser/ui/views/tabs/groups/manage_sharing_row.h"
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/tabs/groups/tab_group_editor_title_field.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/url_constants.h"
@@ -78,7 +79,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/vector_icons/vector_icons.h"
-#include "tab_group_editor_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -120,12 +120,6 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/ash_element_identifiers.h"
-#include "ui/base/interaction/element_tracker.h"
-#include "ui/strings/grit/ui_strings.h"
-#endif
 
 namespace {
 // The amount of vertical padding in dips the separator should have to
@@ -571,7 +565,7 @@ void TabGroupEditorBubbleView::CancelEphemeralGroup() {
 
 void TabGroupEditorBubbleView::RebuildMenuContents() {
   simple_menu_items_.clear();
-  std::unique_ptr<TitleField> title_field;
+  std::unique_ptr<TabGroupEditorTitleField> title_field;
   if (title_field_) {
     // Reuse title_field_ if one exists, but update with the latest title. This
     // is different from what we do for other child views, as creating a new
@@ -720,7 +714,7 @@ std::unique_ptr<ColorPickerView> TabGroupEditorBubbleView::BuildColorPicker() {
 
   std::unique_ptr<ColorPickerView> color_selector =
       std::make_unique<ColorPickerView>(
-          this, colors_, initial_color_id,
+          colors_, initial_color_id,
           base::BindRepeating(&TabGroupEditorBubbleView::UpdateGroup,
                               base::Unretained(this)));
 
@@ -1255,53 +1249,8 @@ void TabGroupEditorBubbleView::OnBrowserDidClose(
   browser_ = nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void TabGroupEditorBubbleView::PreventCloseOnDeactivateForEmoji() {
-  if (!close_on_deactivate_pin_) {
-    close_on_deactivate_pin_ = PreventCloseOnDeactivate();
-  }
-
-  if (!emoji_picker_hidden_subscription_) {
-    emoji_picker_hidden_subscription_ =
-        ui::ElementTracker::GetElementTracker()
-            ->AddElementHiddenInAnyContextCallback(
-                ash::kEmojiPickerElementId,
-                base::BindRepeating(
-                    &TabGroupEditorBubbleView::OnEmojiPickerClosed,
-                    base::Unretained(this)));
-  }
-}
-
-void TabGroupEditorBubbleView::ClearCloseOnDeactivatePin() {
-  close_on_deactivate_pin_.reset();
-}
-
-void TabGroupEditorBubbleView::OnEmojiPickerClosed(
-    ui::TrackedElement* element) {
-  emoji_picker_hidden_subscription_ = {};
-
-  ClearCloseOnDeactivatePin();
-
-  // Close the editor bubble if it is no longer active, i.e. when the user
-  // clicks elsewhere, off of both the bubble and emoji picker.
-  if (GetWidget() && !(GetWidget()->IsActive())) {
-    GetWidget()->Close();
-  }
-}
-#endif
-
 tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
-  colors_.clear();
-  tab_groups::ColorLabelMap color_map = tab_groups::GetTabGroupColorLabelMap();
-
-  const std::vector<tab_groups::TabGroupColorId> color_ordering =
-      TabGroupModel::GetColorOrdering();
-
-  // TODO(tluk) remove the reliance on the ordering of the color pairs in the
-  // vector and use the ColorLabelMap structure instead.
-  for (const tab_groups::TabGroupColorId color_id : color_ordering) {
-    colors_.emplace_back(color_id, color_map.at(color_id));
-  }
+  colors_ = ColorPickerView::GetTabGroupColors();
 
   // Keep track of the current group's color, to be returned as the initial
   // selected value.
@@ -1363,53 +1312,10 @@ bool TabGroupEditorBubbleView::TitleFieldController::HandleKeyEvent(
   return false;
 }
 
-void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
-    const gfx::Point& p,
-    ui::mojom::MenuSourceType source_type) {
-  // There is no easy way to stop the propagation of a ShowContextMenu event,
-  // which is sometimes used to open the bubble itself. So when the bubble is
-  // opened this way, we manually hide the textfield's context menu the first
-  // time. Otherwise, the textfield, which is automatically focused, would show
-  // an extra context menu when the bubble first opens.
-  if (stop_context_menu_propagation_) {
-    stop_context_menu_propagation_ = false;
-    return;
-  }
-  views::Textfield::ShowContextMenu(p, source_type);
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-void TabGroupEditorBubbleView::TitleField::ExecuteCommand(int command_id,
-                                                          int event_flags) {
-  if (command_id == IDS_CONTENT_CONTEXT_EMOJI) {
-    parent_->PreventCloseOnDeactivateForEmoji();
-  }
-  views::Textfield::ExecuteCommand(command_id, event_flags);
-}
-#endif
-
-std::unique_ptr<TabGroupEditorBubbleView::TitleField>
+std::unique_ptr<TabGroupEditorTitleField>
 TabGroupEditorBubbleView::BuildTitleField(const std::u16string& title) {
-  std::unique_ptr<TitleField> title_field =
-      std::make_unique<TitleField>(*this, stop_context_menu_propagation_);
-  title_field->SetText(title);
-  title_field->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME));
-  title_field->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
-  title_field->set_controller(&title_field_controller_);
-  title_field->SetProperty(views::kElementIdentifierKey,
-                           kTabGroupEditorBubbleId);
-
-  const gfx::Insets control_insets = GetControlInsets();
-  const int vertical_spacing = control_insets.top();
-  const int horizontal_spacing = control_insets.left();
-
-  title_field->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(vertical_spacing, horizontal_spacing));
-
-  return title_field;
+  return TabGroupEditorTitleField::Create(&title_field_controller_, title,
+                                          stop_context_menu_propagation_);
 }
 
 std::u16string TabGroupEditorBubbleView::GetGroupTitle() {
@@ -1421,9 +1327,6 @@ std::u16string TabGroupEditorBubbleView::GetGroupTitle() {
                    ->title()
              : std::u16string();
 }
-
-BEGIN_METADATA(TabGroupEditorBubbleView, TitleField)
-END_METADATA
 
 TabGroupEditorBubbleView::Footer::Footer(BrowserWindowInterface* browser) {
   views::FlexLayout* flex_layout =

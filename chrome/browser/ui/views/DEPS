@@ -40,10 +40,10 @@ specific_include_rules = {
     "+ash/shell.h",
     "+ash/wm/window_state.h",
   ],
-  "tab_group_editor_bubble_view\\.cc": [
+  "tab_group_editor_bubble_view_browsertest\\.cc": [
     "+ash/ash_element_identifiers.h",
   ],
-  "tab_group_editor_bubble_view_browsertest\\.cc": [
+  "tab_group_editor_title_field\\.cc": [
     "+ash/ash_element_identifiers.h",
   ],
   ".*test.*": [
