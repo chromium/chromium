@@ -2129,11 +2129,12 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
                                      OpenURLParamsHasUrl(navigated_url), _))
-      .WillOnce([&](content::OpenURLParams url_params,
-                    ContextualTasksUIInterface* web_ui_interface) {
-        intercepted_params = std::move(url_params);
-        run_loop.Quit();
-      });
+      .WillOnce(
+          [&](content::OpenURLParams url_params,
+              base::WeakPtr<ContextualTasksUIInterface> web_ui_interface) {
+            intercepted_params = std::move(url_params);
+            run_loop.Quit();
+          });
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
@@ -3392,7 +3393,7 @@ TEST_F(
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
       .WillOnce([&](const content::OpenURLParams& params,
                     const blink::mojom::WindowFeatures& features,
-                    BrowserWindowInterface* browser) {
+                    base::WeakPtr<BrowserWindowInterface> browser) {
         EXPECT_EQ(external_url, params.url);
         // `kCurrentTab` should be converted to `kNewForegroundTab`.
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
@@ -3440,7 +3441,7 @@ TEST_F(
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
       .WillOnce([&](const content::OpenURLParams& params,
                     const blink::mojom::WindowFeatures& features,
-                    BrowserWindowInterface* browser) {
+                    base::WeakPtr<BrowserWindowInterface> browser) {
         EXPECT_EQ(external_url, params.url);
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
                   params.disposition);
@@ -3745,7 +3746,7 @@ TEST_F(
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
       .WillOnce([&](const content::OpenURLParams& params,
                     const blink::mojom::WindowFeatures& features,
-                    BrowserWindowInterface* target_browser) {
+                    base::WeakPtr<BrowserWindowInterface> target_browser) {
         EXPECT_EQ(citation_url, params.url);
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                   params.disposition);
@@ -3822,7 +3823,7 @@ TEST_F(
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
       .WillOnce([&](const content::OpenURLParams& params,
                     const blink::mojom::WindowFeatures& features,
-                    BrowserWindowInterface* target_browser) {
+                    base::WeakPtr<BrowserWindowInterface> target_browser) {
         EXPECT_EQ(organic_url, params.url);
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                   params.disposition);
@@ -4086,7 +4087,7 @@ TEST_F(
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
       .WillOnce([&](const content::OpenURLParams& params,
                     const blink::mojom::WindowFeatures& features,
-                    BrowserWindowInterface* target_browser) {
+                    base::WeakPtr<BrowserWindowInterface> target_browser) {
         EXPECT_EQ(citation_url, params.url);
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
                   params.disposition);
@@ -4260,7 +4261,7 @@ TEST_F(
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
       .WillOnce([&](const content::OpenURLParams& params,
                     const blink::mojom::WindowFeatures& features,
-                    BrowserWindowInterface* browser) {
+                    base::WeakPtr<BrowserWindowInterface> browser) {
         EXPECT_EQ(shopping_url, params.url);
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                   params.disposition);
@@ -4301,7 +4302,7 @@ TEST_F(
   EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
       .WillOnce([&](const content::OpenURLParams& params,
                     const blink::mojom::WindowFeatures& features,
-                    BrowserWindowInterface* browser) {
+                    base::WeakPtr<BrowserWindowInterface> browser) {
         EXPECT_EQ(organic_url, params.url);
         EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                   params.disposition);
@@ -5673,8 +5674,9 @@ TEST_F(ContextualTasksUiServiceTest,
   params.frame_tree_node_id =
       source_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
+  base::WeakPtrFactory<BrowserWindowInterface> weak_browser_factory(&browser);
   real_service_->OpenUrlForTesting(params, blink::mojom::WindowFeatures(),
-                                   &browser);
+                                   weak_browser_factory.GetWeakPtr());
 
   EXPECT_EQ(web_contents->GetVisibleURL(), target_url);
 }
@@ -5952,6 +5954,128 @@ TEST_F(ContextualTasksUiServiceTest,
   std::string cs_value;
   ASSERT_TRUE(net::GetValueForKeyInQuery(url, "cs", &cs_value));
   EXPECT_EQ(cs_value, "1");
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleSidePanelExternalNavigation_BrowserDestroyedBeforeTaskRuns) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kContextualTasksClobberActiveTab);
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto active_tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  GURL initial_url("https://initial.example.com/");
+  content::WebContentsTester::For(active_tab_contents.get())
+      ->SetLastCommittedURL(initial_url);
+
+  tabs::MockTabInterface active_tab;
+  ON_CALL(active_tab, GetContents)
+      .WillByDefault(Return(active_tab_contents.get()));
+
+  auto browser_window =
+      std::make_unique<NiceMock<MockBrowserWindowInterface>>();
+  base::WeakPtrFactory<BrowserWindowInterface> weak_browser_factory(
+      browser_window.get());
+  ON_CALL(*browser_window, GetWeakPtr())
+      .WillByDefault(Return(weak_browser_factory.GetWeakPtr()));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&active_tab));
+  auto tab_list_registration =
+      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+          browser_window->GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), browser_window.get());
+
+  content::OpenURLParams params(
+      GURL("https://example.com/article"), content::Referrer(),
+      ui::mojom::WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
+  params.initiator_origin = url::Origin::Create(GURL("https://www.google.com"));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& url_params,
+                    const blink::mojom::WindowFeatures& window_features,
+                    base::WeakPtr<BrowserWindowInterface> browser) {
+        EXPECT_FALSE(browser);
+        EXPECT_TRUE(browser.WasInvalidated());
+        real_service_->OpenUrlForTesting(url_params, window_features,
+                                         std::move(browser));
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleSidePanelExternalNavigation(
+      params, panel_contents.get(), /*tab=*/nullptr,
+      blink::mojom::WindowFeatures()));
+
+  // Destroy the BrowserWindowInterface before the posted OpenUrl task executes.
+  webui::SetBrowserWindowInterface(panel_contents.get(), nullptr);
+  tab_list_registration.reset();
+  weak_browser_factory.InvalidateWeakPtrs();
+  browser_window.reset();
+
+  run_loop.Run();
+
+  // The active tab must not have been navigated after the browser window was
+  // destroyed.
+  EXPECT_EQ(active_tab_contents->GetLastCommittedURL(), initial_url);
+  EXPECT_TRUE(active_tab_contents->GetVisibleURL().is_empty());
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleCitationClick_BrowserDestroyedBeforeTaskRuns) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kContextualTasksClobberActiveTab);
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  auto browser_window =
+      std::make_unique<NiceMock<MockBrowserWindowInterface>>();
+  base::WeakPtrFactory<BrowserWindowInterface> weak_browser_factory(
+      browser_window.get());
+  ON_CALL(*browser_window, GetWeakPtr())
+      .WillByDefault(Return(weak_browser_factory.GetWeakPtr()));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+  auto tab_list_registration =
+      std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+          browser_window->GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), browser_window.get());
+
+  content::OpenURLParams params(
+      GURL("https://example.com/article#:~:text=sample+text"),
+      content::Referrer(), ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
+  params.initiator_origin = url::Origin::Create(GURL("https://www.google.com"));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& url_params,
+                    const blink::mojom::WindowFeatures& window_features,
+                    base::WeakPtr<BrowserWindowInterface> browser) {
+        EXPECT_FALSE(browser);
+        EXPECT_TRUE(browser.WasInvalidated());
+        real_service_->OpenUrlForTesting(url_params, window_features,
+                                         std::move(browser));
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleCitationClick(
+      params, panel_contents.get(), /*tab=*/nullptr,
+      blink::mojom::WindowFeatures()));
+
+  // Destroy the BrowserWindowInterface before the posted OpenUrl task executes.
+  webui::SetBrowserWindowInterface(panel_contents.get(), nullptr);
+  tab_list_registration.reset();
+  weak_browser_factory.InvalidateWeakPtrs();
+  browser_window.reset();
+
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks

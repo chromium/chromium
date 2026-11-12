@@ -127,7 +127,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   MOCK_METHOD(void,
               OnSearchResultsNavigationInSidePanel,
               (content::OpenURLParams url_params,
-               ContextualTasksUIInterface* web_ui_interface),
+               base::WeakPtr<ContextualTasksUIInterface> web_ui_interface),
               (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
   MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
@@ -144,7 +144,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
               OpenUrl,
               (const content::OpenURLParams& url_params,
                const blink::mojom::WindowFeatures& window_features,
-               BrowserWindowInterface* browser),
+               base::WeakPtr<BrowserWindowInterface> browser),
               (override));
 
   bool IsWebContentsInSidePanel(

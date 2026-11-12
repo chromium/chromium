@@ -969,6 +969,11 @@ void ContextualTasksUI::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+base::WeakPtr<contextual_tasks::ContextualTasksUIInterface>
+ContextualTasksUI::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool ContextualTasksUI::IsShownInTab() {
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());

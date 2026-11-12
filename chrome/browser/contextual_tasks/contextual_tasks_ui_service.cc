@@ -1356,11 +1356,18 @@ void ContextualTasksUiService::OnNonThreadNavigationInTab(
 // will be cleaned up (see comment there).
 void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
     content::OpenURLParams url_params,
-    ContextualTasksUIInterface* web_ui_interface) {
+    base::WeakPtr<ContextualTasksUIInterface> web_ui_interface) {
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: "
          "OnSearchResultsNavigationInSidePanel called for URL: "
       << url_params.url;
+  if (!web_ui_interface) {
+    OMNIBOX_LOG("nav_trace")
+        << "ContextualTasks navigation trace: "
+           "OnSearchResultsNavigationInSidePanel returning early, no "
+           "web_ui_interface";
+    return;
+  }
   url_params.is_renderer_initiated = false;
   web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
@@ -1908,7 +1915,8 @@ bool ContextualTasksUiService::HandleCitationClick(
       FROM_HERE,
       base::BindOnce(&ContextualTasksUiService::OpenUrl,
                      weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
-                     window_features, browser_window));
+                     window_features,
+                     browser_window ? browser_window->GetWeakPtr() : nullptr));
   return true;
 }
 
@@ -2058,7 +2066,8 @@ bool ContextualTasksUiService::HandleSidePanelExternalNavigation(
       FROM_HERE,
       base::BindOnce(&ContextualTasksUiService::OpenUrl,
                      weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
-                     window_features, browser_window));
+                     window_features,
+                     browser_window ? browser_window->GetWeakPtr() : nullptr));
   return true;
 }
 
@@ -2184,12 +2193,18 @@ ContextualTasksUiService::CreateMessageProxyWebContents(
 void ContextualTasksUiService::OpenUrl(
     const content::OpenURLParams& url_params,
     const blink::mojom::WindowFeatures& window_features,
-    BrowserWindowInterface* browser) {
+    base::WeakPtr<BrowserWindowInterface> browser) {
   const GURL& url = url_params.url;
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: OpenUrl called "
          "for URL: "
       << url << ", disposition: " << static_cast<int>(url_params.disposition);
+  if (browser.WasInvalidated()) {
+    OMNIBOX_LOG("nav_trace")
+        << "ContextualTasks navigation trace: OpenUrl returning early, "
+           "browser was destroyed";
+    return;
+  }
 
   NavigateParams nav_params(profile_, url, url_params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(url_params);
@@ -2204,13 +2219,14 @@ void ContextualTasksUiService::OpenUrl(
        url_params.disposition ==
            ui::mojom::WindowOpenDisposition::kCurrentTab)) {
     TabListInterface* tab_list =
-        browser ? TabListInterface::From(browser) : nullptr;
+        browser ? TabListInterface::From(browser.get()) : nullptr;
     tabs::TabInterface* active_tab =
         tab_list ? tab_list->GetActiveTab() : nullptr;
     if (active_tab && active_tab->GetContents() &&
         !IsContextualTasksUrl(
             active_tab->GetContents()->GetLastCommittedURL())) {
-      if (auto* controller = ContextualTasksPanelController::From(browser)) {
+      if (auto* controller =
+              ContextualTasksPanelController::From(browser.get())) {
         if (auto current_task = controller->GetCurrentTask()) {
           AssociateWebContentsToTask(active_tab->GetContents(),
                                      current_task->GetTaskId());
@@ -2232,8 +2248,8 @@ void ContextualTasksUiService::OpenUrl(
   // Browser and tab index have no equivalent in OpenURLParams, so add them to
   // ensure the tab opens in the right tab strip position.
   if (browser) {
-    nav_params.browser = browser;
-    TabListInterface* tab_list = TabListInterface::From(browser);
+    nav_params.browser = browser.get();
+    TabListInterface* tab_list = TabListInterface::From(browser.get());
     if (tab_list) {
       nav_params.tabstrip_index = tab_list->GetActiveIndex() + 1;
     }
@@ -2268,12 +2284,13 @@ void ContextualTasksUiService::OpenUrl(
   // foreground navigation activates the new tab and changes the active tab's
   // task lookup in `ContextualTasksPanelController::GetCurrentTask()`.
   TabListInterface* opener_tab_list =
-      browser ? TabListInterface::From(browser) : nullptr;
+      browser ? TabListInterface::From(browser.get()) : nullptr;
   tabs::TabInterface* opener_tab =
       opener_tab_list ? opener_tab_list->GetActiveTab() : nullptr;
   std::optional<ContextualTask> current_task;
   if (browser) {
-    if (auto* controller = ContextualTasksPanelController::From(browser)) {
+    if (auto* controller =
+            ContextualTasksPanelController::From(browser.get())) {
       current_task = controller->GetCurrentTask();
     }
   }
@@ -2680,7 +2697,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
                                     weak_ptr_factory_.GetWeakPtr(),
                                     std::move(new_url_params),
-                                    blink::mojom::WindowFeatures(), browser));
+                                    blink::mojom::WindowFeatures(),
+                                    browser ? browser->GetWeakPtr() : nullptr));
       return true;
     }
 
@@ -2748,10 +2766,11 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
-              base::BindOnce(&ContextualTasksUiService::
-                                 OnSearchResultsNavigationInSidePanel,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(url_params), webui_controller));
+              base::BindOnce(
+                  &ContextualTasksUiService::
+                      OnSearchResultsNavigationInSidePanel,
+                  weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
+                  webui_controller ? webui_controller->GetWeakPtr() : nullptr));
           return true;
         }
 
@@ -2913,13 +2932,13 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           url_params.disposition =
               ui::mojom::WindowOpenDisposition::kNewForegroundTab;
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, base::BindOnce(&ContextualTasksUiService::OpenUrl,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        std::move(url_params),
-                                        pending_tracker
-                                            ? pending_tracker->window_features()
-                                            : blink::mojom::WindowFeatures(),
-                                        browser));
+              FROM_HERE,
+              base::BindOnce(
+                  &ContextualTasksUiService::OpenUrl,
+                  weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
+                  pending_tracker ? pending_tracker->window_features()
+                                  : blink::mojom::WindowFeatures(),
+                  browser ? browser->GetWeakPtr() : nullptr));
         }
         return true;
       } else {
@@ -2932,7 +2951,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
                            std::move(url_params),
                            pending_tracker ? pending_tracker->window_features()
                                            : blink::mojom::WindowFeatures(),
-                           browser));
+                           browser ? browser->GetWeakPtr() : nullptr));
         return true;
       }
     } else {
