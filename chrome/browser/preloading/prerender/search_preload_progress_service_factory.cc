@@ -6,6 +6,7 @@
 
 #include "chrome/browser/preloading/prerender/search_preload_progress_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_selections.h"
 
 // static
 SearchPreloadProgressService*
@@ -25,7 +26,7 @@ SearchPreloadProgressServiceFactory::SearchPreloadProgressServiceFactory()
     : ProfileKeyedServiceFactory(
           "SearchPreloadProgressService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {}
 

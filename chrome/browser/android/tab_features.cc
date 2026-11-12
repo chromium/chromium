@@ -303,8 +303,6 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       GetUserDataFactory().CreateInstance<NewTabPagePreloadPipelineManager>(
           *tab, *tab, web_contents);
 
-  // TODO(https://crbug.com/406378765): Support Off-The-Record (Incognito) tabs
-  // (e.g., IncognitoNewTabPage and SearchPreloadProgressServiceFactory).
   prewarm_tab_helper_ = PrewarmTabHelper::MaybeCreate(*tab, web_contents);
 
   if (base::FeatureList::IsEnabled(

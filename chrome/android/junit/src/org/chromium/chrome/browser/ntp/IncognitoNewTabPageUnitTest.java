@@ -8,7 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.os.SystemClock;
@@ -40,12 +44,20 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManagerJni;
+import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -279,6 +291,74 @@ public class IncognitoNewTabPageUnitTest {
         assertFalse(otherView.isFocused());
         downEvent.recycle();
         upEvent.recycle();
+    }
+
+    @Test
+    @EnableFeatures({
+        PreloadingFeatureMap.PREWARM,
+        PreloadingFeatureMap.PREWARM_PAGE_LOAD_AND_TAB_SWITCH_AFTER_PAINT_TRIGGER
+    })
+    @DisableFeatures(PreloadingFeatureMap.PREWARM_ZERO_SUGGEST_TRIGGER)
+    public void testPrewarmTriggeredOnFirstDrawAndTabSwitch() {
+        AndroidPrerenderManager.Natives prerenderManagerJniMock =
+                mock(AndroidPrerenderManager.Natives.class);
+        AndroidPrerenderManagerJni.setInstanceForTesting(prerenderManagerJniMock);
+        WebContents webContents = mock(WebContents.class);
+        doReturn(webContents).when(mTab).getWebContents();
+
+        IncognitoNewTabPage.setIncognitoNtpManagerForTesting(null);
+        IncognitoNewTabPage incognitoNtp =
+                new IncognitoNewTabPage(
+                        mActivity, mHost, mProfile, mTabModelSelector, mTab, mEdgeToEdgeSupplier);
+
+        ArgumentCaptor<TabObserver> tabObserverCaptor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab, atLeastOnce()).addObserver(tabObserverCaptor.capture());
+        TabObserver tabObserver = tabObserverCaptor.getValue();
+
+        verify(prerenderManagerJniMock, never()).startPrewarm(any());
+
+        // Attaching the view triggers onLoadingComplete(); dispatching draw triggers first draw.
+        mActivity.setContentView(incognitoNtp.getView());
+        incognitoNtp.getView().getViewTreeObserver().dispatchOnDraw();
+        assertTrue(incognitoNtp.isLoadedForTests());
+        verify(prerenderManagerJniMock, times(1)).startPrewarm(webContents);
+
+        // Switching to the tab triggers prewarm again.
+        tabObserver.onShown(mTab, TabSelectionType.FROM_USER);
+        verify(prerenderManagerJniMock, times(2)).startPrewarm(webContents);
+
+        // Null WebContents skips prewarm gracefully.
+        doReturn(null).when(mTab).getWebContents();
+        tabObserver.onShown(mTab, TabSelectionType.FROM_USER);
+        verify(prerenderManagerJniMock, times(2)).startPrewarm(any());
+
+        // Destroying the page removes the tab observer.
+        mActivity.setContentView(new View(mActivity));
+        incognitoNtp.destroy();
+        verify(mTab).removeObserver(tabObserver);
+    }
+
+    @Test
+    @EnableFeatures(PreloadingFeatureMap.PREWARM)
+    @DisableFeatures({
+        PreloadingFeatureMap.PREWARM_ZERO_SUGGEST_TRIGGER,
+        PreloadingFeatureMap.PREWARM_PAGE_LOAD_AND_TAB_SWITCH_AFTER_PAINT_TRIGGER
+    })
+    public void testPrewarmNotTriggeredWhenDisabled() {
+        AndroidPrerenderManager.Natives prerenderManagerJniMock =
+                mock(AndroidPrerenderManager.Natives.class);
+        AndroidPrerenderManagerJni.setInstanceForTesting(prerenderManagerJniMock);
+        doReturn(mock(WebContents.class)).when(mTab).getWebContents();
+
+        IncognitoNewTabPage.setIncognitoNtpManagerForTesting(null);
+        IncognitoNewTabPage incognitoNtp =
+                new IncognitoNewTabPage(
+                        mActivity, mHost, mProfile, mTabModelSelector, mTab, mEdgeToEdgeSupplier);
+
+        mActivity.setContentView(incognitoNtp.getView());
+        incognitoNtp.getView().getViewTreeObserver().dispatchOnDraw();
+        assertTrue(incognitoNtp.isLoadedForTests());
+        verify(prerenderManagerJniMock, never()).startPrewarm(any());
     }
 
     private static MotionEvent createSecondaryMouseClickEvent(float x, float y) {
