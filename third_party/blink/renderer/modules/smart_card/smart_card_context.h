@@ -14,9 +14,10 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
@@ -30,8 +31,8 @@ class SmartCardConnection;
 class SmartCardConnectOptions;
 class SmartCardConnectResult;
 
-class SmartCardContext final : public ScriptWrappable,
-                               public ExecutionContextClient {
+class MODULES_EXPORT SmartCardContext final : public ScriptWrappable,
+                                              public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -121,8 +122,9 @@ class SmartCardContext final : public ScriptWrappable,
   // Whether request_ comes from a blink::SmartCardConnection.
   bool is_connection_request_ = false;
 
-  // The connections created by this context.
-  HeapHashSet<WeakMember<SmartCardConnection>> connections_;
+  // SmartCardContext.[[connections]] (an ordered set):
+  // https://wicg.github.io/web-smart-card/#smartcardcontext-connections
+  HeapLinkedHashSet<WeakMember<SmartCardConnection>> connections_;
 
   // The connection that currently has an active transaction on a given reader.
   // It uses WeakMember to avoid preventing garbage collection of connections

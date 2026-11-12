@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -24,8 +25,8 @@ class SmartCardTransmitOptions;
 class V8SmartCardDisposition;
 class V8SmartCardTransactionCallback;
 
-class SmartCardConnection final : public ScriptWrappable,
-                                  public ExecutionContextClient {
+class MODULES_EXPORT SmartCardConnection final : public ScriptWrappable,
+                                                 public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

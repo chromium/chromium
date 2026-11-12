@@ -470,6 +470,7 @@ ScriptPromise<IDLUndefined> SmartCardConnection::startTransaction(
   return resolver->Promise();
 }
 
+// https://wicg.github.io/web-smart-card/#smartcardconnection-end-any-settled-transaction
 void SmartCardConnection::OnOperationInProgressCleared() {
   if (!transaction_state_ || !transaction_state_->HasPendingEnd()) {
     return;
@@ -686,6 +687,9 @@ void SmartCardConnection::OnBeginTransactionDone(
   }
 
   auto promise = transaction_result.FromJust();
+  // `promise` is controlled by script and may be garbage-collected without
+  // settling, leaving `resolver` unsettled as well.
+  resolver->SuppressDetachCheck();
   promise.Then(script_state,
                MakeGarbageCollected<TransactionFulfilledFunction>(this),
                MakeGarbageCollected<TransactionRejectedFunction>(this));

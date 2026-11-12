@@ -110,11 +110,13 @@ SmartCardContext::SmartCardContext(
       &SmartCardContext::CloseMojoConnection, WrapWeakPersistent(this)));
 }
 
+// https://wicg.github.io/web-smart-card/#smartcardcontext-listreaders
 ScriptPromise<IDLSequence<IDLString>> SmartCardContext::listReaders(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!EnsureMojoConnection(exception_state) ||
-      !EnsureNoOperationInProgress(exception_state)) {
+  // Steps 1-2.
+  if (!EnsureNoOperationInProgress(exception_state) ||
+      !EnsureMojoConnection(exception_state)) {
     return ScriptPromise<IDLSequence<IDLString>>();
   }
 
@@ -130,14 +132,16 @@ ScriptPromise<IDLSequence<IDLString>> SmartCardContext::listReaders(
   return resolver->Promise();
 }
 
+// https://wicg.github.io/web-smart-card/#smartcardcontext-getstatuschange
 ScriptPromise<IDLSequence<SmartCardReaderStateOut>>
 SmartCardContext::getStatusChange(
     ScriptState* script_state,
     const HeapVector<Member<SmartCardReaderStateIn>>& reader_states,
     SmartCardGetStatusChangeOptions* options,
     ExceptionState& exception_state) {
-  if (!EnsureMojoConnection(exception_state) ||
-      !EnsureNoOperationInProgress(exception_state)) {
+  // Steps 1-2.
+  if (!EnsureNoOperationInProgress(exception_state) ||
+      !EnsureMojoConnection(exception_state)) {
     return ScriptPromise<IDLSequence<SmartCardReaderStateOut>>();
   }
 
@@ -172,14 +176,16 @@ SmartCardContext::getStatusChange(
   return resolver->Promise();
 }
 
+// https://wicg.github.io/web-smart-card/#smartcardcontext-connect
 ScriptPromise<SmartCardConnectResult> SmartCardContext::connect(
     ScriptState* script_state,
     const String& reader_name,
     V8SmartCardAccessMode access_mode,
     SmartCardConnectOptions* options,
     ExceptionState& exception_state) {
-  if (!EnsureMojoConnection(exception_state) ||
-      !EnsureNoOperationInProgress(exception_state) ||
+  // Steps 1-3.
+  if (!EnsureNoOperationInProgress(exception_state) ||
+      !EnsureMojoConnection(exception_state) ||
       !EnsureNoConnectionHasActiveTransactionOnReader(reader_name,
                                                       exception_state)) {
     return EmptyPromise();
@@ -318,6 +324,7 @@ void SmartCardContext::ClearConnectionOperationInProgress(
   ClearOperationInProgress(resolver);
 }
 
+// https://wicg.github.io/web-smart-card/#clear-the-operationinprogress
 void SmartCardContext::ClearOperationInProgress(
     ScriptPromiseResolverBase* resolver) {
   CHECK_EQ(request_, resolver);
