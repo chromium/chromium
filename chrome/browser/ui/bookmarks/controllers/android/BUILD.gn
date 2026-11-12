@@ -13,6 +13,8 @@ source_set("android") {
     "android_bookmark_bar_injector.h",
     "android_bookmark_bar_model_adapter.cc",
     "android_bookmark_bar_model_adapter.h",
+    "android_bookmark_utils.cc",
+    "android_bookmark_utils.h",
   ]
 
   public_deps = [
@@ -31,6 +33,7 @@ source_set("android") {
     "//chrome/browser/renderer_host",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/navigator",
     "//components/bookmarks/browser",
     "//components/bookmarks/common/android",
     "//components/bookmarks/managed",
@@ -62,6 +65,32 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:types",
+    "//ui/base/mojom:ui_base_types",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "android_bookmark_bar_action_adapter_browsertest.cc" ]
+
+  deps = [
+    ":android",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window/test:android_browser_test_support",
+    "//chrome/test:test_support_ui_android",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
     "//ui/base/mojom:ui_base_types",
     "//url",
   ]

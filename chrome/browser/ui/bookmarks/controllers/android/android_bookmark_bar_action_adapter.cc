@@ -18,13 +18,12 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/bookmarks/controllers/android/android_bookmark_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/android/bookmark_type.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -36,17 +35,6 @@
 namespace {
 
 using ui::mojom::WindowOpenDisposition;
-
-void OpenUrlInBrowser(
-    BrowserWindowInterface* browser,
-    const GURL& url,
-    WindowOpenDisposition disposition,
-    base::OnceCallback<void(content::NavigationHandle&)> callback = {}) {
-  content::OpenURLParams params =
-      content::OpenURLParams::CreateBrowserInitiated(
-          url, disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  browser->OpenURL(params, std::move(callback));
-}
 
 std::vector<GURL> CollectUrlsToOpen(
     const std::vector<const bookmarks::BookmarkNode*>& nodes,
@@ -165,8 +153,8 @@ void AndroidBookmarkBarActionAdapter::OpenBookmark(
   }
   RecordBookmarkOpened(*node,
                        disposition == WindowOpenDisposition::kCurrentTab);
-  OpenUrlInBrowser(browser_, node->url(), disposition,
-                   base::BindOnce(&SetBookmarkId, node->id()));
+  bookmarks::OpenBookmarkUrl(browser_, node->url(), disposition,
+                             base::BindOnce(&SetBookmarkId, node->id()));
 }
 
 void AndroidBookmarkBarActionAdapter::RecordFolderOpened() {
@@ -177,45 +165,8 @@ void AndroidBookmarkBarActionAdapter::RecordFolderOpened() {
 void AndroidBookmarkBarActionAdapter::OpenFolderNodes(
     const std::vector<const bookmarks::BookmarkNode*>& nodes,
     ui::mojom::WindowOpenDisposition disposition) {
-  std::vector<GURL> urls = CollectUrlsToOpen(nodes, disposition);
-  if (urls.empty()) {
-    return;
-  }
-
-  const bool opens_in_new_window =
-      disposition == WindowOpenDisposition::kNewWindow ||
-      disposition == WindowOpenDisposition::kOffTheRecord;
-  if (opens_in_new_window && urls.size() > 1) {
-    GURL first_url = urls.front();
-    std::vector<GURL> remaining_urls(urls.begin() + 1, urls.end());
-    OpenUrlInBrowser(
-        browser_, first_url, disposition,
-        base::BindOnce(
-            [](std::vector<GURL> urls_to_open,
-               content::NavigationHandle& handle) {
-              content::WebContents* contents = handle.GetWebContents();
-              if (!contents) {
-                return;
-              }
-              tabs::TabInterface* tab =
-                  tabs::TabInterface::GetFromContents(contents);
-              if (!tab || !tab->GetBrowserWindowInterface()) {
-                return;
-              }
-              BrowserWindowInterface* new_browser =
-                  tab->GetBrowserWindowInterface();
-              for (const GURL& url : urls_to_open) {
-                OpenUrlInBrowser(new_browser, url,
-                                 WindowOpenDisposition::kNewBackgroundTab);
-              }
-            },
-            std::move(remaining_urls)));
-    return;
-  }
-
-  for (const GURL& url : urls) {
-    OpenUrlInBrowser(browser_, url, disposition);
-  }
+  bookmarks::OpenBookmarkUrls(browser_, CollectUrlsToOpen(nodes, disposition),
+                              disposition);
 }
 
 void AndroidBookmarkBarActionAdapter::CanPasteFromClipboard(
