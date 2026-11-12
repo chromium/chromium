@@ -233,6 +233,15 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
     temp_properties.set_arguments(L"--source-shortcut-location=start-menu");
     ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
         temp_dir_.GetPath(), &temp_properties));
+
+    // The Omnibox Everywhere window's AUMI does not depend on the launching
+    // executable, so chrome.exe-targeted Omnibox Everywhere shortcuts get it
+    // too.
+    temp_properties.set_target(chrome_exe_);
+    temp_properties.set_app_id(L"Dumbo");
+    temp_properties.set_arguments(L"--omnibox-everywhere");
+    ASSERT_NO_FATAL_FAILURE(AddTestShortcutAndResetProperties(
+        temp_dir_.GetPath(), &temp_properties));
   }
 
   base::win::ScopedCOMInitializer com_initializer_;
@@ -284,12 +293,12 @@ class ShellIntegrationWinMigrateShortcutTest : public testing::Test {
 
 TEST_F(ShellIntegrationWinMigrateShortcutTest, AdjustAppIds) {
   CreateShortcuts();
-  // 12 shortcuts should have their app id or arguments updated below.
-  EXPECT_EQ(12,
+  // 13 shortcuts should have their app id or arguments updated below.
+  EXPECT_EQ(13,
             MigrateShortcutsInPathInternal(chrome_exe_, temp_dir_.GetPath()));
 
-  // Shortcut 1, 3, 4, 5, 6, 7, 8, 9, 10, and 11 should have had their app_id
-  // fixed, and shortcuts 1 and 3..13 should have
+  // Shortcut 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, and 14 should have had their
+  // app_id fixed, and shortcuts 1 and 3..14 should have
   // --source-shortcut-location=taskbar.
   shortcuts_[1].properties.set_app_id(chrome_app_id_);
   shortcuts_[1].properties.set_arguments(L"--source-shortcut-location=taskbar");
@@ -327,6 +336,11 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, AdjustAppIds) {
       L"--source-shortcut-location=taskbar");
   shortcuts_[13].properties.set_arguments(
       L"--source-shortcut-location=taskbar");
+  shortcuts_[14].properties.set_app_id(GetAppUserModelIdForApp(
+      chrome::kOmniboxEverywhereAppName, base::FilePath()));
+  shortcuts_[14].properties.set_arguments(
+      base::StrCat({shortcuts_[14].properties.arguments,
+                    L" --source-shortcut-location=taskbar"}));
 
   for (size_t i = 0; i < shortcuts_.size(); ++i) {
     SCOPED_TRACE(i);
@@ -382,10 +396,19 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateChromeProxyTest) {
   ASSERT_NO_FATAL_FAILURE(
       AddTestShortcutAndResetProperties(temp_dir_.GetPath(), &temp_properties));
 
+  // Check that an Omnibox Everywhere chrome_proxy.exe shortcut has its AUMI
+  // migrated to the Omnibox Everywhere AppUserModelId rather than the main
+  // browser's app_id.
+  temp_properties.set_target(shortcuts::GetChromeProxyPath());
+  temp_properties.set_app_id(L"Dumbo5.Default");
+  temp_properties.set_arguments(L"--omnibox-everywhere");
+  ASSERT_NO_FATAL_FAILURE(
+      AddTestShortcutAndResetProperties(temp_dir_.GetPath(), &temp_properties));
+
   base::HistogramTester histogram_tester;
   MigrateTaskbarPinsCallback(temp_dir_.GetPath(), temp_dir_.GetPath());
   histogram_tester.ExpectUniqueSample("Windows.TaskbarShortcutMigrationCount",
-                                      4, 1);
+                                      5, 1);
 
   // Verify that the migrated shortcut in temp_dir_ does not contain the default
   // profile name.
@@ -409,6 +432,12 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateChromeProxyTest) {
   shortcuts_[3].properties.set_arguments(
       L"--app=http://www.example.com/ --source-shortcut-location=taskbar");
   base::win::ValidateShortcut(shortcuts_[3].path, shortcuts_[3].properties);
+
+  shortcuts_[4].properties.set_app_id(GetAppUserModelIdForApp(
+      chrome::kOmniboxEverywhereAppName, base::FilePath()));
+  shortcuts_[4].properties.set_arguments(
+      L"--omnibox-everywhere --source-shortcut-location=taskbar");
+  base::win::ValidateShortcut(shortcuts_[4].path, shortcuts_[4].properties);
 
   // A subsequent scan when all shortcuts are already migrated should record 0.
   MigrateTaskbarPinsCallback(temp_dir_.GetPath(), temp_dir_.GetPath());
