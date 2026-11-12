@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/execute_js_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -769,6 +770,12 @@ TEST_F(ActorProtoConversionTest, GetClientToolForRequest) {
       /*confirm_button=*/std::nullopt);
   EXPECT_EQ(GetClientToolForRequest(change_password_req),
             ClientTool(RuleMetadata::CAPABILITY_CHANGE_PASSWORD));
+
+  ExecuteJsToolRequest execute_js_req(ActorSurfaceHandle::CreateForTesting(),
+                                      base::UnguessableToken::Create(),
+                                      /*script_code=*/"1 + 1");
+  EXPECT_EQ(GetClientToolForRequest(execute_js_req),
+            ClientTool(RuleMetadata::CAPABILITY_EXECUTE_JS));
 }
 
 TEST_F(ActorProtoConversionTest, GetClientToolForRequest_NoCapability) {

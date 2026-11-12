@@ -36,6 +36,7 @@
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
+#include "chrome/browser/actor/tools/execute_js_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -1088,6 +1089,8 @@ constexpr absl::Overload kGetCapabilityFn{
                  apc::RuleMetadata::CAPABILITY_CREATE_TAB>,
     ToCapability<DragAndReleaseToolRequest,
                  apc::RuleMetadata::CAPABILITY_DRAG_AND_RELEASE>,
+    ToCapability<ExecuteJsToolRequest,
+                 apc::RuleMetadata::CAPABILITY_EXECUTE_JS>,
     ToCapability<FileUploadToolRequest,
                  apc::RuleMetadata::CAPABILITY_CLICK_TO_UPLOAD>,
     ToCapability<HistoryBackToolRequest, apc::RuleMetadata::CAPABILITY_BACK>,

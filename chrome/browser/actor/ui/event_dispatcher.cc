@@ -141,6 +141,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<AttemptFormFillingToolRequest>,
     NoUiEvents<AttemptOtpFillingToolRequest>,
     NoUiEvents<ChangePasswordToolRequest>,
+    NoUiEvents<ExecuteJsToolRequest>,
     NoUiEvents<ScriptToolRequest>,
     NoUiEvents<ScrollToToolRequest>};
 
@@ -159,6 +160,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<ExitFullscreenToolRequest>,
     NoUiEvents<FileUploadToolRequest>,
     NoUiEvents<FindAndHighlightToolRequest>,
+    NoUiEvents<ExecuteJsToolRequest>,
     NoUiEvents<HistoryBackToolRequest>,
     NoUiEvents<HistoryForwardToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
