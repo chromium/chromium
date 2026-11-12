@@ -397,7 +397,11 @@ if (!is_android) {
       "//components/skills:features",
       "//components/spellcheck/browser",
       "//components/undo",
+      "//extensions/buildflags",
     ]
+    if (enable_extensions) {
+      deps += [ "//chrome/browser/ui/extensions" ]
+    }
     if (is_mac) {
       deps += [
         ":browser_commands_mac",
@@ -408,6 +412,7 @@ if (!is_android) {
       deps += [
         ":browser_commands_chromeos",
         "//chrome/browser/ui/ash/multi_user",
+        "//chromeos/strings",
       ]
     }
     if (is_win || is_mac || is_linux) {

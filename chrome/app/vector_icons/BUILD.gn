@@ -336,6 +336,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "tab_group_old.icon",
     "tab_group_sharing_old.icon",
     "tab_groups_sync_old.icon",
+    "tab_move.icon",
     "tab_old.icon",
     "tab_search_tab_strip_old.icon",
     "tab_usb_connected_old.icon",

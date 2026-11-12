@@ -128,6 +128,9 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#endif
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -238,10 +241,12 @@
 #include "components/sync/base/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #endif
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -4688,6 +4693,58 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                                                 : kTrashCanRefreshOldIcon,
               ui::kColorIcon))
           .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* controller = web_app::AppBrowserController::From(bwi);
+                if (controller) {
+                  controller->TriggerAppUpdateOrMigrationDialog(
+                      base::TimeTicks::Now());
+                }
+              },
+              bwi))
+          .SetActionId(kActionWebAppUpgradeDialog)
+          .SetText(GetCleanTitleText(
+              l10n_util::GetStringUTF16(IDS_REVIEW_APP_UPDATE)))
+          .SetTooltipText(GetCleanTooltipText(
+              l10n_util::GetStringUTF16(IDS_REVIEW_APP_UPDATE)))
+          .Build());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                if (auto* container = ExtensionsContainer::From(*bwi)) {
+                  container->ToggleExtensionsMenu();
+                }
+              },
+              bwi))
+          .SetActionId(kActionWebAppShowExtensions)
+          .SetText(
+              GetCleanTitleText(l10n_util::GetStringUTF16(IDS_SHOW_EXTENSIONS)))
+          .SetTooltipText(GetCleanTooltipText(
+              l10n_util::GetStringUTF16(IDS_SHOW_EXTENSIONS)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kChromeExtensionIcon
+                  : vector_icons::kExtensionChromeRefreshOldIcon))
+          .Build());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder()
+          .SetActionId(kActionMoveToDesksSubmenu)
+          .SetText(l10n_util::GetStringUTF16(IDS_MOVE_TO_DESKS_MENU))
+          .SetTooltipText(l10n_util::GetStringUTF16(IDS_MOVE_TO_DESKS_MENU))
+          .SetImage(ui::ImageModel::FromVectorIcon(kTabMoveIcon))
+          .Build());
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
   root_action_item_->AddChild(

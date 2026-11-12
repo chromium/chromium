@@ -226,6 +226,11 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionOpenInChrome, u"Open in Chrome");
   add_action(kActionWebAppMenuAppInfo, u"App Info");
   add_action(kActionUninstallWebApp, u"Uninstall");
+  add_action(kActionWebAppUpgradeDialog, u"Review update");
+  add_action(kActionWebAppShowExtensions, u"Extensions");
+#if BUILDFLAG(IS_CHROMEOS)
+  add_action(kActionMoveToDesksSubmenu, u"Move window to desk");
+#endif
 
   actions::ActionManager::Get().AddAction(std::move(root));
 

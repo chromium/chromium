@@ -375,6 +375,13 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionUninstallWebApp:
       LogMenuActionHistogram(MENU_ACTION_UNINSTALL_APP);
       break;
+    case kActionWebAppUpgradeDialog:
+      RecordAction(MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG,
+                   "WebAppMenuReloadOrMigrate");
+      break;
+    case kActionWebAppShowExtensions:
+      RecordTimeToAction();
+      break;
     case kActionViewPasswords:
       RecordAction(MENU_ACTION_PASSWORD_MANAGER, "PasswordManager");
       break;
