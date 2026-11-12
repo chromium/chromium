@@ -12643,6 +12643,8 @@ from previous Chrome versions.
   <int value="-729269661" label="PPAPISharedImagesSwapChain:enabled"/>
   <int value="-728878937" label="NtpFooter:disabled"/>
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
+  <int value="-728421256"
+      label="EnableFileAttachedEnterpriseScanOnClank:enabled"/>
   <int value="-728187009" label="NtpRealboxSuggestionAnswers:enabled"/>
   <int value="-727860269" label="WebAuthenticationBle:disabled"/>
   <int value="-727769333" label="DevToolsMobileSafeAreaEmulation:disabled"/>
@@ -19334,6 +19336,8 @@ from previous Chrome versions.
   <int value="1268470658" label="disable-android-password-link"/>
   <int value="1268678442" label="KerberosSettingsSection:disabled"/>
   <int value="1269216922" label="MediaAppPhotosIntegrationVideo:enabled"/>
+  <int value="1269569117"
+      label="EnableFileAttachedEnterpriseScanOnClank:disabled"/>
   <int value="1269627590" label="AutofillLocalSaveCardBottomSheet:enabled"/>
   <int value="1269940659" label="EnumerateAudioDevices:enabled"/>
   <int value="1269952439" label="AndroidAIAFetching:disabled"/>

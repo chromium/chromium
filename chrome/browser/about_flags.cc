@@ -13995,6 +13995,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kDeviceTrustConnectorDesktopFormFactors)},
+    {"enable-file-attached-enterprise-scan-on-clank",
+     flag_descriptions::kEnableFileAttachedEnterpriseScanOnClankName,
+     flag_descriptions::kEnableFileAttachedEnterpriseScanOnClankDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         enterprise_connectors::kEnableFileAttachedEnterpriseScanOnClank)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-oauth2-token-fix",

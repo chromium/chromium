@@ -6229,6 +6229,13 @@ inline constexpr char kEnableCommandLineOnNonRootedName[] =
 inline constexpr char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
+inline constexpr char kEnableFileAttachedEnterpriseScanOnClankName[] =
+    "Enterprise content analysis for file uploads";
+inline constexpr char kEnableFileAttachedEnterpriseScanOnClankDescription[] =
+    "Scans files attached to web pages through the file picker or "
+    "drag-and-drop with enterprise content analysis, when the "
+    "OnFileAttachedEnterpriseConnector policy is set.";
+
 inline constexpr char kEnableSwipeToSwitchPaneName[] =
     "Enable Swipe To Switch Pane";
 inline constexpr char kEnableSwipeToSwitchPaneDescription[] =

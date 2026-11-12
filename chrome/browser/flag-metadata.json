@@ -4059,6 +4059,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-file-attached-enterprise-scan-on-clank",
+    "owners": [ "nancylanxiao@google.com", "cbe-cep-eng@google.com" ],
+    "expiry_milestone": 166
+  },
+  {
     "name": "enable-force-dark",
     "owners": [ "beverloo@chromium.org", "pdr@chromium.org" ],
     // This flag enables an automatic dark mode for sites that do not support
