@@ -35,11 +35,13 @@ TEST_F(InfoBarFeaturesDefaultsTest, LaunchedInfoBarsAreMigratedByDefault) {
   constexpr InfoBarDelegate::InfoBarIdentifier kLaunched[] = {
       InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE,
       InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE,
+      InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE,
   };
   for (InfoBarDelegate::InfoBarIdentifier id : kLaunched) {
     EXPECT_TRUE(IsInfoBarMigrated(id)) << "InfoBarIdentifier " << id;
   }
 }
+
 // Unlaunched infobars stay on the legacy path, controlled only by Finch.
 TEST_F(InfoBarFeaturesDefaultsTest, UnlaunchedInfoBarsAreNotMigratedByDefault) {
   constexpr InfoBarDelegate::InfoBarIdentifier kUnlaunched[] = {
@@ -57,7 +59,6 @@ TEST_F(InfoBarFeaturesDefaultsTest, UnlaunchedInfoBarsAreNotMigratedByDefault) {
       InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC,
       InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE,
       InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE,
-      InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE,
       InfoBarDelegate::PDF_INFOBAR_DELEGATE,
       InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE,
       InfoBarDelegate::OBSOLETE_SYSTEM_INFOBAR_DELEGATE,

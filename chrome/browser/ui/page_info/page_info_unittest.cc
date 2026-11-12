@@ -49,6 +49,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/permissions/features.h"
@@ -93,6 +94,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #else
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #endif
 
@@ -188,6 +190,16 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     CreateWebContentsUserData(web_contents());
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (auto* browser_infobar_manager = infobars::BrowserInfoBarManager::From(
+            TestingBrowserProcess::GetGlobal());
+        browser_infobar_manager &&
+        !browser_infobar_manager->IsRegistered(
+            infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
+      ChromePageInfoDelegate::RegisterPageInfoInfoBar(browser_infobar_manager);
+    }
+#endif
 
     // Setup mock ui.
     ResetMockUI();
