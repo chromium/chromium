@@ -16442,6 +16442,26 @@
             ]
         }
     ],
+    "PrivateAiUseTlsSession": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261111",
+                    "enable_features": [
+                        "PrivateAiUseTlsSession"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivateInsights": [
         {
             "platforms": [
