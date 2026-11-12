@@ -233,6 +233,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Activates the surface using XDG activation given an activation token.
   void ActivateWithToken(std::string token);
 
+  // Whether this toplevel restores a toplevel of a session.
+  bool IsRestoredFromSession() const;
+
   WaylandOutput* GetWaylandOutputForDisplayId(int64_t display_id);
 
   // Creates and initializes the underlying xdg_toplevel surface, which

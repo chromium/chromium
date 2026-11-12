@@ -111,7 +111,7 @@ bool WaylandToplevelWindow::CreateXdgToplevel() {
   // must be done now, before the first wl_surface commit. The remaining
   // handling steps are done when the first xdg_surface.configure comes in
   // (see HandleToplevelConfigure and UpdateSessionStateIfNeeded).
-  if (session_ && session_data_->restore_id) {
+  if (IsRestoredFromSession()) {
     toplevel_session_ = session_->TrackToplevel(
         this, session_data_->restore_id.value(), XdgSession::Action::kRestore);
   }
@@ -402,7 +402,14 @@ void WaylandToplevelWindow::Activate() {
       }
     } else if (auto token = base::nix::TakeXdgActivationToken()) {
       ActivateWithToken(token.value());
-    } else {
+    } else if (!IsRestoredFromSession() ||
+               connection()->xdg_activation()->HasUserPressSerial()) {
+      // A toplevel restored from a session is placed by the compositor, e.g.
+      // on another workspace. A token requested without a user press serial
+      // (including one with only a wl_pointer.enter serial from mapping under
+      // the cursor) cannot activate it on compositors such as Mutter, which
+      // mark the window as demanding attention instead, so do not request one
+      // until there is a press event.
       connection()->xdg_activation()->RequestNewToken(
           base::BindOnce(&WaylandToplevelWindow::ActivateWithToken,
                          weak_ptr_factory_.GetWeakPtr()));
@@ -852,6 +859,10 @@ bool WaylandToplevelWindow::IsSuspended() const {
 
 bool WaylandToplevelWindow::IsSurfaceConfigured() {
   return xdg_toplevel() ? xdg_toplevel()->IsConfigured() : false;
+}
+
+bool WaylandToplevelWindow::IsRestoredFromSession() const {
+  return session_ && session_data_ && session_data_->restore_id.has_value();
 }
 
 void WaylandToplevelWindow::SetWindowGeometry(

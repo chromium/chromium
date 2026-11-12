@@ -4,18 +4,33 @@
 
 #include "ui/ozone/platform/wayland/host/xdg_activation.h"
 
+#include <linux/input.h>
+
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/nix/xdg_util.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/xdg_session_manager.h"
+#include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/mock_wayland_platform_window_delegate.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
+#include "ui/ozone/platform/wayland/test/test_seat.h"
+#include "ui/ozone/platform/wayland/test/test_xx_session_manager.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
+#include "ui/ozone/public/platform_session_manager.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 using ::testing::_;
 using ::testing::StrEq;
@@ -268,6 +283,118 @@ TEST_F(XdgActivationTest, ActivateWithInitPropertiesToken) {
   });
 
   // Trigger configure.
+  ActivateSurface(surface_id);
+  SyncDisplay();
+}
+
+class XdgActivationSessionTest : public WaylandTestSimple {
+ public:
+  XdgActivationSessionTest()
+      : WaylandTestSimple({.supports_session_management = true}) {}
+
+ protected:
+  std::unique_ptr<WaylandWindow> CreateSessionWindow(
+      MockWaylandPlatformWindowDelegate& delegate,
+      std::optional<int32_t> restore_id) {
+    auto* const session_manager = connection_->session_manager();
+    CHECK(session_manager);
+    auto session_id = session_manager->RestoreSession(
+        wl::TestXxSessionManager::kTestSessionId,
+        PlatformSessionManager::RestoreReason::kLaunch);
+    CHECK(session_id.has_value());
+
+    PlatformWindowInitProperties properties;
+    properties.bounds = kDefaultBounds;
+    properties.type = PlatformWindowType::kWindow;
+    properties.session_id = session_id.value();
+    properties.session_window_new_id = 2;
+    properties.session_window_restore_id = restore_id;
+    return delegate.CreateWaylandWindow(connection_.get(),
+                                        std::move(properties));
+  }
+
+  bool HasTokenRequest() {
+    bool has_token_request = false;
+    PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+      has_token_request = !!server->xdg_activation_v1()->get_token();
+    });
+    return has_token_request;
+  }
+};
+
+// Tests that a toplevel restored from a session does not request an
+// activation token until there is a user press event.
+TEST_F(XdgActivationSessionTest, NoTokenRequestForRestoredWindow) {
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateSessionWindow(delegate, /*restore_id=*/1);
+  window->Show(/*inactive=*/false);
+  EXPECT_FALSE(HasTokenRequest());
+
+  // SessionRestore activates the last active window after the windows are
+  // mapped, which must not request one either, even if a restored window
+  // mapped under the cursor and received wl_pointer.enter.
+  auto surface_id = window->root_surface()->get_surface_id();
+  ActivateSurface(surface_id);
+  window->Activate();
+  EXPECT_FALSE(HasTokenRequest());
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(server->seat()->resource(),
+                              WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->pointer());
+  PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    auto* const pointer = server->seat()->pointer()->resource();
+    wl_pointer_send_enter(pointer, server->GetNextSerial(), surface, 0, 0);
+    wl_pointer_send_frame(pointer);
+  });
+  window->Activate();
+  EXPECT_FALSE(HasTokenRequest());
+
+  // Once there is a user press event, activation requests a token again.
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* const pointer = server->seat()->pointer()->resource();
+    wl_pointer_send_button(pointer, server->GetNextSerial(),
+                           server->GetNextTime(), BTN_LEFT,
+                           WL_POINTER_BUTTON_STATE_PRESSED);
+    wl_pointer_send_frame(pointer);
+  });
+  window->Activate();
+  EXPECT_TRUE(HasTokenRequest());
+}
+
+// Tests that a new toplevel added to a session still requests a token.
+TEST_F(XdgActivationSessionTest, TokenRequestForNewSessionWindow) {
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateSessionWindow(delegate, /*restore_id=*/std::nullopt);
+  ASSERT_FALSE(HasTokenRequest());
+  window->Show(/*inactive=*/false);
+  EXPECT_TRUE(HasTokenRequest());
+}
+
+// Tests that a restored toplevel still uses the launch token.
+TEST_F(XdgActivationSessionTest, RestoredWindowUsesLaunchToken) {
+  const std::string kLaunchToken = "LAUNCH_TOKEN";
+  base::nix::SetActivationToken(kLaunchToken);
+
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
+  auto window = CreateSessionWindow(delegate, /*restore_id=*/1);
+  window->Show(/*inactive=*/false);
+  EXPECT_FALSE(base::nix::TakeXdgActivationToken().has_value());
+  EXPECT_FALSE(HasTokenRequest());
+
+  auto surface_id = window->root_surface()->get_surface_id();
+  PostToServerAndWait([surface_id,
+                       kLaunchToken](wl::TestWaylandServerThread* server) {
+    auto* const xdg_activation = server->xdg_activation_v1();
+    auto* const surface =
+        server->GetObject<wl::MockSurface>(surface_id)->resource();
+    EXPECT_CALL(*xdg_activation, Activate(_, _, StrEq(kLaunchToken), surface))
+        .Times(1);
+  });
+
   ActivateSurface(surface_id);
   SyncDisplay();
 }

@@ -483,6 +483,8 @@ source_set("test_support") {
     "test/test_wp_pointer_gestures.h",
     "test/test_xdg_popup.cc",
     "test/test_xdg_popup.h",
+    "test/test_xx_session_manager.cc",
+    "test/test_xx_session_manager.h",
     "test/test_zwp_linux_buffer_params.cc",
     "test/test_zwp_linux_buffer_params.h",
     "test/test_zwp_primary_selection.cc",
@@ -530,6 +532,7 @@ source_set("test_support") {
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//third_party/wayland-protocols:xdg_toplevel_drag_protocol",
     "//third_party/wayland-protocols:xdg_toplevel_icon_protocol",
+    "//third_party/wayland-protocols:xx_session_management_protocol",
     "//ui/display:test_support",
     "//ui/gfx/geometry",
   ]

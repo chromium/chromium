@@ -104,6 +104,13 @@ void XdgActivation::Activate(wl_surface* surface,
   xdg_activation_v1_activate(xdg_activation_v1_.get(), token.c_str(), surface);
 }
 
+bool XdgActivation::HasUserPressSerial() const {
+  return connection_->serial_tracker()
+      .GetSerial({wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
+                  wl::SerialType::kKeyPress})
+      .has_value();
+}
+
 void XdgActivation::RequestNewToken(
     base::nix::XdgActivationTokenCallback callback) const {
   constexpr size_t kMaxQueueSize = 100;

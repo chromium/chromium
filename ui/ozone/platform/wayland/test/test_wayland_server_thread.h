@@ -38,6 +38,7 @@
 #include "ui/ozone/platform/wayland/test/test_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/test/test_wp_linux_drm_syncobj.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
+#include "ui/ozone/platform/wayland/test/test_xx_session_manager.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output_manager.h"
 
@@ -73,6 +74,8 @@ struct ServerConfig {
   bool supports_kde_appmenu = false;
   // Whether to advertise the xdg_toplevel_drag_manager_v1 global.
   bool supports_xdg_toplevel_drag = false;
+  // Whether to advertise the xx_session_manager_v1 global.
+  bool supports_session_management = false;
 };
 
 class TestWaylandServerThread;
@@ -241,6 +244,7 @@ class TestWaylandServerThread : public base::Thread,
   MockXdgToplevelIconManagerV1 xdg_toplevel_icon_manager_v1_;
   TestWpColorManager wp_color_manager_;
   TestOrgKdeKwinAppmenuManager org_kde_kwin_appmenu_manager_;
+  TestXxSessionManager xx_session_manager_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;

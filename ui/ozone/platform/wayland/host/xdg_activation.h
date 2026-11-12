@@ -47,6 +47,9 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
   // This should always be called from the UI thread.
   void RequestNewToken(base::nix::XdgActivationTokenCallback callback) const;
 
+  // Whether a new token request can carry a user press serial.
+  bool HasUserPressSerial() const;
+
  private:
   class TokenRequest;
 
