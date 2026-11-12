@@ -3458,10 +3458,6 @@
       status: "stable",
     },
     {
-      name: "FontMatchAliasesAsLastResort",
-      status: "stable",
-    },
-    {
       // https://crbug.com/40083285
       name: "FontNonNullPrimaryFont",
       status: "stable",

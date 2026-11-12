@@ -35,7 +35,6 @@
 #include "base/feature_list.h"
 #include "third_party/blink/renderer/platform/fonts/alternate_font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -73,8 +72,7 @@ const FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
 
   const bool match_alternate_font_name =
       alternate_font_name == AlternateFontName::kAllowAlternate ||
-      (RuntimeEnabledFeatures::FontMatchAliasesAsLastResortEnabled() &&
-       alternate_font_name == AlternateFontName::kLastResort);
+      alternate_font_name == AlternateFontName::kLastResort;
 
   if (!match_alternate_font_name ||
       creation_params.CreationType() != FontFaceCreationType::kFamily) {
