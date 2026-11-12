@@ -171,6 +171,10 @@ void SelectLastTab(
     BrowserWindowInterface* browser,
     TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
         TabStripUserGestureDetails::GestureType::kOther));
+void SelectLastActiveTab(
+    BrowserWindowInterface* browser,
+    TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
+        TabStripUserGestureDetails::GestureType::kOther));
 void DuplicateTab(BrowserWindowInterface* browser);
 bool CanDuplicateTab(const BrowserWindowInterface* browser);
 bool CanDuplicateKeyboardFocusedTab(const BrowserWindowInterface* browser);

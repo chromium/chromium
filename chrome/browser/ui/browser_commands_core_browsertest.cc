@@ -166,6 +166,29 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, CycleToMruTab) {
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, SelectLastActiveTab) {
+  TabStripModel* model = browser()->GetTabStripModel();
+  base::ScopedClosureRunner scoped_focus =
+      resource_coordinator::GetTabLifecycleUnitSource()
+          ->SetFocusedTabStripModelForTesting(model);
+
+  GURL about_blank(url::kAboutBlankURL);
+  AddTab(browser(), about_blank);
+  AddTab(browser(), about_blank);
+  AddTab(browser(), about_blank);
+
+  model->ActivateTabAt(1);
+  model->ActivateTabAt(0);
+  model->ActivateTabAt(2);
+
+  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
+  updater->ExecuteCommand(IDC_SELECT_LAST_ACTIVE_TAB);
+  EXPECT_EQ(0, model->active_index());
+
+  updater->ExecuteCommand(IDC_SELECT_LAST_ACTIVE_TAB);
+  EXPECT_EQ(2, model->active_index());
+}
+
 // Tests that Ctrl+Tab MRU cycling stays within the currently focused browser
 // window even when another window has a more recently focused tab.
 IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,

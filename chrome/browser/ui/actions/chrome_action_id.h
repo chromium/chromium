@@ -46,6 +46,7 @@
   E(kActionSelectTab6, IDC_SELECT_TAB_6) \
   E(kActionSelectTab7, IDC_SELECT_TAB_7) \
   E(kActionSelectLastTab, IDC_SELECT_LAST_TAB) \
+  E(kActionSelectLastActiveTab, IDC_SELECT_LAST_ACTIVE_TAB) \
   E(kActionDuplicateTab, IDC_DUPLICATE_TAB) \
   E(kActionRestoreTab, IDC_RESTORE_TAB) \
   E(kActionShowAsTab, IDC_SHOW_AS_TAB) \

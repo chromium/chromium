@@ -75,6 +75,8 @@ constexpr AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_S, ui::EF_PLATFORM_ACCELERATOR, IDC_SAVE_PAGE},
     {ui::VKEY_9, ui::EF_PLATFORM_ACCELERATOR, IDC_SELECT_LAST_TAB},
     {ui::VKEY_NUMPAD9, ui::EF_PLATFORM_ACCELERATOR, IDC_SELECT_LAST_TAB},
+    {ui::VKEY_E, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
+     IDC_SELECT_LAST_ACTIVE_TAB},
     // Control modifier is rarely used on Mac, so we allow it only in several
     // specific cases.
     {ui::VKEY_TAB, ui::EF_CONTROL_DOWN, IDC_CYCLE_TO_NEXT_TAB},
@@ -137,6 +139,7 @@ constexpr AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_LEFT, ui::EF_ALT_DOWN, IDC_BACK},
     {ui::VKEY_LEFT, ui::EF_ALTGR_DOWN, IDC_BACK},
     {ui::VKEY_B, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FOCUS_BOOKMARKS},
+    {ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_DUPLICATE_TAB},
     {ui::VKEY_D, ui::EF_ALT_DOWN, IDC_FOCUS_LOCATION},
     {ui::VKEY_E, ui::EF_CONTROL_DOWN, IDC_FOCUS_SEARCH},
     {ui::VKEY_K, ui::EF_CONTROL_DOWN, IDC_FOCUS_SEARCH},

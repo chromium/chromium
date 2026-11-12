@@ -52,6 +52,7 @@
 #define IDC_SELECT_TAB_6                34024
 #define IDC_SELECT_TAB_7                34025
 #define IDC_SELECT_LAST_TAB             34026
+#define IDC_SELECT_LAST_ACTIVE_TAB      34068
 #define IDC_DUPLICATE_TAB               34027
 #define IDC_RESTORE_TAB                 34028
 #define IDC_SHOW_AS_TAB                 34029

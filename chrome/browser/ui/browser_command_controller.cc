@@ -867,6 +867,12 @@ void BrowserCommandController::HandleCommandWithDisposition(
           TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kKeyboard, time_stamp));
       break;
+    case IDC_SELECT_LAST_ACTIVE_TAB:
+      SelectLastActiveTab(
+          browser_,
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kKeyboard, time_stamp));
+      break;
     case IDC_DUPLICATE_TAB:
       DuplicateTab(browser_);
       break;
@@ -2052,6 +2058,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SELECT_TAB_6, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_SELECT_TAB_7, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_SELECT_LAST_TAB, supports_tabs);
+  command_updater_->UpdateCommandEnabled(IDC_SELECT_LAST_ACTIVE_TAB,
+                                         supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_NEW_TAB_TO_RIGHT, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN,
                                          supports_tabs);

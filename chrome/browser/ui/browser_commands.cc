@@ -546,11 +546,17 @@ BrowserWindowInterface* CreateNewBrowser(BrowserWindowInterface* browser,
 }
 
 tabs::TabInterface* GetMruTab(BrowserWindowInterface* browser) {
+  TabStripModel* model = browser->GetTabStripModel();
+  std::optional<tab_groups::TabGroupId> focused_group =
+      model->GetFocusedGroup();
   tabs::TabInterface* mru_tab = nullptr;
   base::Time max_time = base::Time::Min();
 
-  for (tabs::TabInterface* tab : *browser->GetTabStripModel()) {
-    if (tab->IsActivated()) {
+  for (tabs::TabInterface* tab : *model) {
+    if (tab->IsActivated() ||
+        (focused_group.has_value() &&
+         !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
+             tab, focused_group))) {
       continue;
     }
     auto* lifecycle_unit =
@@ -1618,6 +1624,13 @@ void SelectLastTab(BrowserWindowInterface* browser,
     base::RecordAction(UserMetricsAction("SelectLastTab"));
     model->ActivateTab(tab, gesture_detail);
     break;
+  }
+}
+
+void SelectLastActiveTab(BrowserWindowInterface* browser,
+                         TabStripUserGestureDetails gesture_detail) {
+  if (tabs::TabInterface* mru_tab = GetMruTab(browser)) {
+    ActivateTab(mru_tab, gesture_detail);
   }
 }
 
