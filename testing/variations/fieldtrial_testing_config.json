@@ -3215,6 +3215,25 @@
             ]
         }
     ],
+    "AvoidCloneMutableExtensionFunctionArgs": [
+        {
+            "platforms": [
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AvoidCloneMutableExtensionFunctionArgs"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidEntryCreationForNoStore": [
         {
             "platforms": [
