@@ -76,8 +76,7 @@ class AutofillSettingsTableViewControllerTest
 
   LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsTableViewController* controller =
-        [[AutofillSettingsTableViewController alloc]
-            initWithStyle:UITableViewStyleInsetGrouped];
+        [[AutofillSettingsTableViewController alloc] init];
     controller.delegate = fake_delegate_;
     controller.mutator = fake_mutator_;
     fake_mutator_.consumer = controller;

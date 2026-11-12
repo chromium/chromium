@@ -74,6 +74,7 @@ enum class ItemType {
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
+    self.title = l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE);
     _identityDocsToggleEnabled = YES;
     _identityDocsToggleManaged = NO;
   }
@@ -83,7 +84,6 @@ enum class ItemType {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
-  self.title = l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE);
   [self updateUIForEditState];
   [self loadModel];
 }

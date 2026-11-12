@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace {
@@ -50,8 +49,7 @@ const char kWalletManagePassesDataURL[] =
 }
 
 - (void)start {
-  _viewController = [[AutofillSettingsTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+  _viewController = [[AutofillSettingsTableViewController alloc] init];
   _viewController.delegate = self;
 
   ProfileIOS* originalProfile =
