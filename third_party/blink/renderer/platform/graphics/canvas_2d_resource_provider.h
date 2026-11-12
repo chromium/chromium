@@ -67,13 +67,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void SetResourceRecyclingEnabled(bool value);
 
-  CanvasResourceSharedImage* resource() {
-    return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
-  const CanvasResourceSharedImage* resource() const {
-    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
-  }
-
  private:
   friend class BaseRenderingContext2D;
 
@@ -95,8 +88,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
-
-  scoped_refptr<CanvasResourceSharedImage> resource_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>

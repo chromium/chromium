@@ -170,8 +170,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       is_accelerated ? "CanvasResourceRaster" : "CanvasResourceRasterGmb",
       is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
 
-  resource_ = NewOrRecycledResource(is_accelerated);
-
   // Single buffered mode supported only for accelerated canvas.
   CHECK(!IsSingleBuffered() || is_accelerated);
 }
