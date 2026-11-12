@@ -1733,6 +1733,44 @@ suite('SearchboxMixinTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 
+  test('pressing Shift+Enter on input too quickly', async () => {
+    const mockInput = element.getInputElement();
+    await simulateUserTextInput(mockInput, 'hello');
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello',
+      matches: [createSearchMatchForTesting({allowedToBeDefaultMatch: true})],
+    }));
+    await microtasksFinished();
+    assertTrue(element.dropdownIsVisible);
+
+    // Like a real Shift+Enter, press Shift by itself before pressing Enter.
+    await simulateUserTextInput(mockInput, 'hello world');
+    mockInput.inputElement.dispatchEvent(
+        createKeyboardEvent('Shift', {shiftKey: true}));
+    const shiftEnter = createKeyboardEvent('Enter', {shiftKey: true});
+    mockInput.inputElement.dispatchEvent(shiftEnter);
+    assertTrue(shiftEnter.defaultPrevented);
+
+    // Waits for the 'hello world' matches instead of opening the stale 'hello'
+    // match.
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+
+    const matches = [createUrlMatch({allowedToBeDefaultMatch: true})];
+    element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+      queryId: element.activeQueryId,
+      input: 'hello world',
+      matches,
+    }));
+    await microtasksFinished();
+
+    const args = await testProxy.handler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, args.line);
+    assertEquals(matches[0]!.destinationUrl, args.url);
+    assertTrue(args.modifiers.shiftKey);
+    assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
   // TODO(crbug.com/453570027): Test is flaky.
   test.skip(
       'pressing Escape selects the first match / hides matches', async () => {
