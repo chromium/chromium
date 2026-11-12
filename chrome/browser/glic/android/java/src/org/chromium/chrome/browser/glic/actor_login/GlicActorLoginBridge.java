@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.glic.actor_login;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.JniTypeToken;
@@ -15,7 +14,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Bridge between Java and native C++ for Actor Login Permissions. */
@@ -41,17 +39,6 @@ public class GlicActorLoginBridge {
     public void revokePermission(String signonRealm, String username, Callback<Boolean> callback) {
         GlicActorLoginBridgeJni.get()
                 .revokePermission(mNativeBridge, signonRealm, username, callback);
-    }
-
-    @CalledByNative
-    private static List<ActorLoginPermission> createPermissionList() {
-        return new ArrayList<>();
-    }
-
-    @CalledByNative
-    private static void addPermissionToList(
-            List<ActorLoginPermission> list, ActorLoginPermission permission) {
-        list.add(permission);
     }
 
     @NativeMethods

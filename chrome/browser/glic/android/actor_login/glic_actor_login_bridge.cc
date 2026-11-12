@@ -10,6 +10,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
@@ -28,7 +29,6 @@
 
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace glic {
 
@@ -58,21 +58,15 @@ void GlicActorLoginBridge::OnGetAllPermissionsComplete(
     ScopedJavaGlobalRef<jobject> jcallback,
     base::flat_set<password_manager::ActorLoginPermission> permissions) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-
-  ScopedJavaLocalRef<jobject> j_list =
-      Java_GlicActorLoginBridge_createPermissionList(env);
-
-  for (const auto& permission : permissions) {
-    ScopedJavaLocalRef<jobject> j_permission =
-        Java_ActorLoginPermission_Constructor(
+  auto j_permissions =
+      base::ToVector(permissions, [env](const auto& permission) {
+        return Java_ActorLoginPermission_Constructor(
             env, permission.domain_info.name, permission.domain_info.url,
             permission.domain_info.signon_realm, permission.username,
             permission.favicon_url);
-
-    Java_GlicActorLoginBridge_addPermissionToList(env, j_list, j_permission);
-  }
-
-  base::android::RunObjectCallbackAndroid(jcallback, j_list);
+      });
+  base::android::RunObjectCallbackAndroid(
+      jcallback, jni_zero::ToJniList(env, j_permissions));
 }
 
 void GlicActorLoginBridge::RevokePermission(const std::string& signon_realm,
