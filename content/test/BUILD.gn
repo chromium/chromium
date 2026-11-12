@@ -2082,6 +2082,7 @@ test("content_browsertests") {
   data = [
     "data/",
     "//media/test/data/",
+    "//media/webrtc/voice_isolation/test_model_stateful_1_2_160_2.tflite",
     "//third_party/aria-practices/src/content/patterns/",
     "//mojo/public/interfaces/bindings/tests/data/validation/",
     "$root_gen_dir/content/shell/common/rust_test.test-mojom-lite.js",
