@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -161,14 +162,26 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
       /*update_propagator=*/*this);
 
   if (using_full_popup_) {
-    omnibox_popup_view_ = std::make_unique<OmniboxPopupViewFullWebUI>(
+    auto presenter = std::make_unique<OmniboxPopupFullPresenter>(
+        /*location_bar=*/this, /*presenter_delegate=*/*this,
+        omnibox_controller_.get());
+    omnibox_popup_presenter_ = presenter.get();
+    auto popup_view = std::make_unique<OmniboxPopupViewFullWebUI>(
         /*omnibox_view=*/omnibox_view_.get(),
         /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
-        /*presenter_delegate=*/*this);
+        std::move(presenter));
+    popup_view->set_presenter(omnibox_popup_presenter_);
+    omnibox_popup_view_ = std::move(popup_view);
   } else {
-    omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
+    auto presenter = std::make_unique<OmniboxPopupPresenter>(
+        /*location_bar=*/this, /*presenter_delegate=*/*this,
+        omnibox_controller_.get());
+    omnibox_popup_presenter_ = presenter.get();
+    auto popup_view = std::make_unique<OmniboxPopupViewWebUI>(
         /*omnibox_view=*/omnibox_view_.get(), omnibox_controller_.get(),
-        /*location_bar=*/this, /*presenter_delegate=*/*this);
+        /*location_bar=*/this, std::move(presenter));
+    popup_view->set_presenter(omnibox_popup_presenter_);
+    omnibox_popup_view_ = std::move(popup_view);
   }
 
   // This location bar implementation isn't used with web apps or devtools
@@ -470,7 +483,7 @@ bool WebUILocationBar::ShouldCloseOmniboxPopup(ui::MouseEvent* event) {
 
   // The outer view may be null while the popup is hidden and its widget has
   // been released, in which case the event can't have targeted the popup.
-  auto* const outer_view = omnibox_popup_view_->presenter()->GetOuterView();
+  auto* const outer_view = omnibox_popup_presenter_->GetOuterView();
   if (outer_view && outer_view->Contains(view)) {
     return false;
   }

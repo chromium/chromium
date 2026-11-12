@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -84,6 +85,7 @@
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu_mixin.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
@@ -351,10 +353,10 @@ class FullWebUIOmniboxInteractiveTestBase
       }
       auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
           browser_view->GetLocationBar()->GetOmniboxPopupView());
-      if (!popup_view || !popup_view->presenter()) {
+      if (!popup_view || !popup_view->popup_host()) {
         return nullptr;
       }
-      return popup_view->presenter()->GetWebUIContent();
+      return popup_view->popup_host()->GetWebUIContent();
     });
   }
 
@@ -1024,10 +1026,12 @@ class FullWebUIOmniboxInteractiveTestBase
   static views::Widget* GetPopupWidget(BrowserWindowInterface* target_browser) {
     auto* view = BrowserView::GetBrowserViewForBrowser(target_browser);
     auto* location_bar = view ? view->GetLocationBar() : nullptr;
-    auto* popup_view =
+    OmniboxPopupView* popup_view =
         location_bar ? location_bar->GetOmniboxPopupView() : nullptr;
-    auto* presenter = popup_view ? popup_view->presenter() : nullptr;
-    return presenter ? presenter->GetWidget() : nullptr;
+    OmniboxPopupHost* host = popup_view ? popup_view->popup_host() : nullptr;
+    OmniboxPopupWebUIBaseContent* content =
+        host ? host->GetWebUIContent() : nullptr;
+    return content ? content->GetWidget() : nullptr;
   }
 
   // Waits until the popup widget is hidden and the edit model has released
@@ -1552,8 +1556,8 @@ class FullWebUIOmniboxInteractiveTest
     auto* popup_view = BrowserWindow::FromBrowser(browser())
                            ->GetLocationBar()
                            ->GetOmniboxPopupView();
-    auto* presenter = popup_view ? popup_view->presenter() : nullptr;
-    return presenter ? presenter->GetWebUIContent() : nullptr;
+    auto* host = popup_view ? popup_view->popup_host() : nullptr;
+    return host ? host->GetWebUIContent() : nullptr;
   }
 
   // Selects `[start, end)` in the WebUI input and waits for the WebUI to
@@ -2010,7 +2014,7 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         const gfx::Rect location_bar_bounds = location_bar->BoundsInScreen();
         auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
             location_bar->GetOmniboxPopupView());
-        auto* webui = popup_view->presenter()->GetWebUIContent();
+        auto* webui = popup_view->popup_host()->GetWebUIContent();
         content::EvalJsResult result =
             content::EvalJs(webui->GetWebContents(), R"(
               const r = document.querySelector('omnibox-full-app')
@@ -3123,8 +3127,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, TabSwitchKeepsPopup) {
             auto* popup_view = BrowserWindow::FromBrowser(browser())
                                    ->GetLocationBar()
                                    ->GetOmniboxPopupView();
-            return popup_view->presenter() &&
-                   popup_view->presenter()->IsShown();
+            return popup_view->popup_host() &&
+                   popup_view->popup_host()->IsShown();
           },
           true, "PopupIsShown"));
 }
@@ -3171,8 +3175,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, NewTabKeepsPopup) {
             auto* popup_view = BrowserWindow::FromBrowser(browser())
                                    ->GetLocationBar()
                                    ->GetOmniboxPopupView();
-            return popup_view->presenter() &&
-                   popup_view->presenter()->IsShown();
+            return popup_view->popup_host() &&
+                   popup_view->popup_host()->IsShown();
           },
           true, "PopupIsShown"));
 }
@@ -5548,8 +5552,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
             BrowserWindow::FromBrowser(browser())
                 ->GetLocationBar()
                 ->GetOmniboxPopupView());
-        CHECK(popup_view && popup_view->presenter());
-        auto* base_content = popup_view->presenter()->GetWebUIContent();
+        CHECK(popup_view && popup_view->popup_host());
+        auto* base_content = popup_view->popup_host()->GetWebUIContent();
         CHECK(base_content);
         base_content->AdvanceFocus(/*reverse=*/false);
       }),
@@ -5642,8 +5646,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
         auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
             browser_view->GetLocationBar()->GetOmniboxPopupView());
-        CHECK(popup_view && popup_view->presenter());
-        auto* base_content = popup_view->presenter()->GetWebUIContent();
+        CHECK(popup_view && popup_view->popup_host());
+        auto* base_content = popup_view->popup_host()->GetWebUIContent();
         CHECK(base_content);
         base_content->AdvanceFocus(/*reverse=*/true);
       }),

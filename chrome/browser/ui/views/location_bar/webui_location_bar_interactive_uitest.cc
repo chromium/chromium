@@ -450,7 +450,7 @@ class WebUILocationBarInteractiveUiTest
               ->toolbar()
               ->location_bar());
       return location_bar->GetOmniboxPopupView()
-          ->presenter()
+          ->popup_host()
           ->GetWebUIContent();
     });
   }

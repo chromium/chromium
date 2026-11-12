@@ -6,6 +6,10 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_HOST_H_
 
 #include <memory>
+#include <optional>
+#include <string>
+
+#include "ui/gfx/range/range.h"
 
 class OmniboxPopupDeactivationBlocker;
 class OmniboxPopupWebUIBaseContent;
@@ -54,6 +58,41 @@ class OmniboxPopupHost {
   // paint. LocationBarView drops its native focus ring under the Full popup
   // once this is true.
   virtual bool CompletedFirstVisuallyNonEmptyPaint() = 0;
+
+  // Called on a tab switch that is about to show the WebUI, before `Show()`.
+  // Lets a host that sizes itself to the WebUI's content drop the previous
+  // tab's content height while the WebUI updates for the new tab.
+  // TODO(crbug.com/585199097): Move to the content's OmniboxPopupContentSizer.
+  virtual void ResetContentHeightForTabSwitch() = 0;
+
+  // Blurs the omnibox and closes the WebUI unless it holds a draft, leaving
+  // nothing focused. Called by `OmniboxPopupView::Blur()`.
+  virtual void DeactivateAndKillFocus() = 0;
+
+  // Called when a native file dialog opened from the popup's "+" menu is shown
+  // and closed, respectively. `file_selected` is whether the user selected
+  // files, which opens AI Mode with them.
+  virtual void OnFileDialogOpened() {}
+  virtual void OnFileDialogClosed(bool file_selected) {}
+
+  // The text and selection the omnibox had when a modal dialog blurred it, and
+  // whether it showed the full URL rather than the elided one.
+  struct FocusStateToRestore {
+    std::u16string text;
+    gfx::Range selection;
+    bool show_full_url = false;
+  };
+
+  // Called when the omnibox is refocused. Returns the focus state the omnibox
+  // had when a modal dialog blurred it, so that the caller restores it. Only
+  // the first call after the dialog closes returns it. Returns nullopt if there
+  // is none, or if the omnibox text has changed since.
+  virtual std::optional<FocusStateToRestore>
+  TakeFocusStateToRestoreAfterModalDialog() = 0;
+
+  // Called when the active tab changes. Forgets any state recorded for a modal
+  // dialog, which belongs to the previous tab's omnibox.
+  virtual void OnTabChanged() {}
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_HOST_H_

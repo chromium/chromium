@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -609,9 +608,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* location_bar_view = BrowserView::GetBrowserViewForBrowser(browser())
                                 ->toolbar()
                                 ->location_bar_view();
-  auto* popup_view = location_bar_view->GetOmniboxPopupView();
-  ASSERT_TRUE(popup_view);
-  auto* presenter = popup_view->presenter();
+  auto* presenter = location_bar_view->GetOmniboxPopupPresenterForTesting();
   ASSERT_TRUE(presenter);
 
   auto* omnibox_controller = location_bar_view->GetOmniboxController();

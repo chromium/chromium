@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
@@ -98,9 +98,10 @@ class OmniboxPopupUIMoveBrowserTest : public InProcessBrowserTest {
   // loaded WebContents.
   content::WebContents* CreateLoadedPopupContents() {
     StartAutocomplete(browser(), u"foo");
-    OmniboxPopupPresenterBase* presenter =
-        GetLocationBar(browser())->GetOmniboxPopupView()->presenter();
-    OmniboxPopupWebUIBaseContent* content = presenter->GetWebUIContent();
+    OmniboxPopupWebUIBaseContent* content = GetLocationBar(browser())
+                                                ->GetOmniboxPopupView()
+                                                ->popup_host()
+                                                ->GetWebUIContent();
     CHECK(content);
     content::WebContents* contents = content->GetWrappedWebContents();
     CHECK(content::WaitForLoadStop(contents));

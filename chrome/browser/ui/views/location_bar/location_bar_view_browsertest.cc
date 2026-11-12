@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewFullWebUIPopupAppearanceTest,
 
   auto* state_manager =
       location_bar->GetOmniboxController()->popup_state_manager();
-  auto* presenter = location_bar->GetOmniboxPopupView()->presenter();
+  auto* presenter = location_bar->GetOmniboxPopupPresenterForTesting();
   ASSERT_TRUE(presenter);
 
   // The initial tab focuses the omnibox, which can open the full popup and

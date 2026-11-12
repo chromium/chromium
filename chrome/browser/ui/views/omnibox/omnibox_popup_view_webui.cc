@@ -7,16 +7,15 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -32,43 +31,12 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
     OmniboxView* omnibox_view,
     OmniboxController* controller,
     LocationBar* location_bar,
-    OmniboxPopupPresenterDelegate& presenter_delegate)
-    : OmniboxPopupViewWebUI(
-          omnibox_view,
-          controller,
-          location_bar,
-          presenter_delegate,
-          std::make_unique<OmniboxPopupPresenter>(location_bar,
-                                                  presenter_delegate,
-                                                  controller)) {}
-
-OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
-    OmniboxView* omnibox_view,
-    OmniboxController* controller,
-    LocationBar* location_bar,
-    OmniboxPopupPresenterDelegate& presenter_delegate,
-    std::unique_ptr<OmniboxPopupPresenter> presenter)
-    // Braced initialization evaluates `presenter.get()` before
-    // `std::move(presenter)`.
-    : OmniboxPopupViewWebUI{omnibox_view,    controller,
-                            location_bar,    presenter_delegate,
-                            presenter.get(), std::move(presenter)} {}
-
-OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
-    OmniboxView* omnibox_view,
-    OmniboxController* controller,
-    LocationBar* location_bar,
-    OmniboxPopupPresenterDelegate& presenter_delegate,
-    OmniboxPopupPresenterBase* presenter,
     std::unique_ptr<OmniboxPopupHost> popup_host)
     : OmniboxPopupView(controller),
       omnibox_view_(omnibox_view),
       location_bar_(location_bar),
-      presenter_delegate_(presenter_delegate),
-      popup_host_(std::move(popup_host)),
-      presenter_(presenter) {
+      popup_host_(std::move(popup_host)) {
   CHECK(popup_host_);
-  CHECK(!presenter || presenter == popup_host_.get());
   controller->edit_model()->set_popup_view(this);
   edit_model_observation_.Observe(controller->edit_model());
 }
@@ -83,6 +51,14 @@ bool OmniboxPopupViewWebUI::IsOpen() const {
 
 OmniboxPopupPresenterBase* OmniboxPopupViewWebUI::presenter() {
   return presenter_;
+}
+
+void OmniboxPopupViewWebUI::set_presenter(
+    OmniboxPopupPresenterBase* presenter) {
+  // TODO(crbug.com/584371333): Remove once the remaining callers use
+  // popup_host().
+  CHECK_EQ(static_cast<OmniboxPopupHost*>(presenter), popup_host_.get());
+  presenter_ = presenter;
 }
 
 OmniboxPopupHost* OmniboxPopupViewWebUI::popup_host() const {
@@ -110,9 +86,7 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   const bool should_be_visible =
       controller()->popup_state_manager()->popup_state() !=
           OmniboxPopupState::kAim &&
-      (has_results_or_chips || (presenter_delegate_->is_full_webui_omnibox() &&
-                                controller()->edit_model()->has_focus())) &&
-      !omnibox_view_->IsImeShowingPopup();
+      has_results_or_chips && !omnibox_view_->IsImeShowingPopup();
 
   if (!should_be_visible) {
     popup_host_->Hide();
@@ -149,9 +123,7 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
             base::TimeTicks::Now() - construction_time();
         logged_first_shown_metric_ = true;
         base::UmaHistogramTimes(
-            base::StrCat({presenter()->GetPopupMetricPrefix(),
-                          ".ConstructionToFirstShownDuration"}),
-            delta);
+            "Omnibox.Popup.WebUI.ConstructionToFirstShownDuration", delta);
       }
     }
 

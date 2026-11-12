@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -70,9 +70,8 @@ class OmniboxWebUIPopupCreationBrowserTest : public InProcessBrowserTest {
         ->location_bar_view();
   }
 
-  OmniboxPopupPresenterBase* presenter() {
-    OmniboxPopupView* popup_view = location_bar()->GetOmniboxPopupView();
-    return popup_view ? popup_view->presenter() : nullptr;
+  OmniboxPopupHost* popup_host() {
+    return location_bar()->GetOmniboxPopupView()->popup_host();
   }
 
   // Runs an omnibox query whose synchronous matches open the suggestion
@@ -85,14 +84,14 @@ class OmniboxWebUIPopupCreationBrowserTest : public InProcessBrowserTest {
         ChromeAutocompleteSchemeClassifier(browser()->GetProfile()));
     input.set_omit_asynchronous_matches(true);
     controller->StartAutocomplete(input);
-    ASSERT_TRUE(presenter()->IsShown());
+    ASSERT_TRUE(popup_host()->IsShown());
   }
 
   // Closes the suggestion popup by clearing the suggestions.
   void ClosePopup() {
     location_bar()->GetOmniboxController()->StopAutocomplete(
         /*clear_result=*/true);
-    ASSERT_FALSE(presenter()->IsShown());
+    ASSERT_FALSE(popup_host()->IsShown());
   }
 
  private:
@@ -121,13 +120,13 @@ class OmniboxWebUIPopupDeferCreationBrowserTest
 // has presented, and keeps it hidden until it opens.
 IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupDeferCreationBrowserTest,
                        CreatesHiddenContentAfterFirstPresentation) {
-  ASSERT_TRUE(presenter());
+  ASSERT_TRUE(popup_host());
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return presenter()->GetWebUIContent() != nullptr; }));
-  EXPECT_FALSE(presenter()->IsShown());
+      [&]() { return popup_host()->GetWebUIContent() != nullptr; }));
+  EXPECT_FALSE(popup_host()->IsShown());
 
   TypeAndWaitForPopup();
-  EXPECT_TRUE(presenter()->GetWebUIContent());
+  EXPECT_TRUE(popup_host()->GetWebUIContent());
 }
 
 // Browser tests create the popup's content only when something needs it (see
@@ -152,14 +151,13 @@ class OmniboxWebUIPopupOnDemandCreationBrowserTest
 // and its widget.
 IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupOnDemandCreationBrowserTest,
                        CreatesContentWhenPopupOpens) {
-  ASSERT_TRUE(presenter());
-  EXPECT_FALSE(presenter()->GetWebUIContent());
-  EXPECT_FALSE(presenter()->GetWidget());
+  ASSERT_TRUE(popup_host());
+  EXPECT_FALSE(popup_host()->GetWebUIContent());
 
   TypeAndWaitForPopup();
-  EXPECT_TRUE(presenter()->GetWidget());
-  OmniboxPopupWebUIBaseContent* content = presenter()->GetWebUIContent();
+  OmniboxPopupWebUIBaseContent* content = popup_host()->GetWebUIContent();
   ASSERT_TRUE(content);
+  EXPECT_TRUE(content->GetWidget());
   EXPECT_TRUE(content::WaitForLoadStop(content->GetWrappedWebContents()));
 }
 
@@ -192,19 +190,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupCreateOnFocusBrowserTest,
       BrowserView::GetBrowserViewForBrowser(new_browser);
   LocationBarView* new_location_bar =
       browser_view->toolbar()->location_bar_view();
-  OmniboxPopupPresenterBase* new_presenter =
-      new_location_bar->GetOmniboxPopupView()->presenter();
-  ASSERT_TRUE(new_presenter);
+  OmniboxPopupHost* new_host =
+      new_location_bar->GetOmniboxPopupView()->popup_host();
+  ASSERT_TRUE(new_host);
   ASSERT_TRUE(PaintAndWaitForPresentation(browser_view->GetWidget()));
   // A creation task posted by the first presentation would run while waiting
   // for the second one.
   ASSERT_TRUE(PaintAndWaitForPresentation(browser_view->GetWidget()));
-  EXPECT_FALSE(new_presenter->GetWebUIContent());
+  EXPECT_FALSE(new_host->GetWebUIContent());
 
   new_location_bar->OnOmniboxFocused();
-  OmniboxPopupWebUIBaseContent* content = new_presenter->GetWebUIContent();
+  OmniboxPopupWebUIBaseContent* content = new_host->GetWebUIContent();
   ASSERT_TRUE(content);
-  EXPECT_FALSE(new_presenter->IsShown());
+  EXPECT_FALSE(new_host->IsShown());
   EXPECT_TRUE(content::WaitForLoadStop(content->GetWrappedWebContents()));
   CloseBrowserSynchronously(new_browser);
 }
@@ -224,19 +222,19 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUIPopupCreateOnFocusBrowserTest,
       BrowserView::GetBrowserViewForBrowser(new_browser);
   LocationBarView* new_location_bar =
       browser_view->toolbar()->location_bar_view();
-  OmniboxPopupPresenterBase* new_presenter =
-      new_location_bar->GetOmniboxPopupView()->presenter();
-  ASSERT_TRUE(new_presenter);
+  OmniboxPopupHost* new_host =
+      new_location_bar->GetOmniboxPopupView()->popup_host();
+  ASSERT_TRUE(new_host);
 
   new_location_bar->OnOmniboxFocused();
-  EXPECT_FALSE(new_presenter->GetWebUIContent());
+  EXPECT_FALSE(new_host->GetWebUIContent());
 
   ASSERT_TRUE(PaintAndWaitForPresentation(browser_view->GetWidget()));
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return new_presenter->GetWebUIContent() != nullptr; }));
-  EXPECT_FALSE(new_presenter->IsShown());
+      [&]() { return new_host->GetWebUIContent() != nullptr; }));
+  EXPECT_FALSE(new_host->IsShown());
   EXPECT_TRUE(content::WaitForLoadStop(
-      new_presenter->GetWebUIContent()->GetWrappedWebContents()));
+      new_host->GetWebUIContent()->GetWrappedWebContents()));
   CloseBrowserSynchronously(new_browser);
 }
 
@@ -271,19 +269,19 @@ IN_PROC_BROWSER_TEST_F(
   auto* new_location_bar =
       static_cast<WebUILocationBar*>(browser_view->GetLocationBar());
   ASSERT_TRUE(new_location_bar);
-  OmniboxPopupPresenterBase* new_presenter =
-      new_location_bar->GetOmniboxPopupView()->presenter();
-  ASSERT_TRUE(new_presenter);
+  OmniboxPopupHost* new_host =
+      new_location_bar->GetOmniboxPopupView()->popup_host();
+  ASSERT_TRUE(new_host);
   ASSERT_TRUE(PaintAndWaitForPresentation(browser_view->GetWidget()));
   // A creation task posted by the first presentation would run while waiting
   // for the second one.
   ASSERT_TRUE(PaintAndWaitForPresentation(browser_view->GetWidget()));
-  EXPECT_FALSE(new_presenter->GetWebUIContent());
+  EXPECT_FALSE(new_host->GetWebUIContent());
 
   new_location_bar->SetFocusWithin(true);
-  OmniboxPopupWebUIBaseContent* content = new_presenter->GetWebUIContent();
+  OmniboxPopupWebUIBaseContent* content = new_host->GetWebUIContent();
   ASSERT_TRUE(content);
-  EXPECT_FALSE(new_presenter->IsShown());
+  EXPECT_FALSE(new_host->IsShown());
   EXPECT_TRUE(content::WaitForLoadStop(content->GetWrappedWebContents()));
   CloseBrowserSynchronously(new_browser);
 }

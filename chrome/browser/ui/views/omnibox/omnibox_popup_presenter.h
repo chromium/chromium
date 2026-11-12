@@ -30,6 +30,7 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
 
   void Hide() override;
   std::string_view GetPopupMetricPrefix() const override;
+  void DeactivateAndKillFocus() override {}
   OmniboxPopupState GetSharedPopupKind() const override;
   bool ShouldReceiveFocus() const override;
 

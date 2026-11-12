@@ -23,11 +23,15 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_client.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_factory.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -68,9 +72,19 @@ class OmniboxPopupShareAcrossWindowsBrowserTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser)->GetLocationBar();
   }
 
+  static OmniboxPopupHost* GetPopupHost(BrowserWindowInterface* browser) {
+    return GetLocationBar(browser)->GetOmniboxPopupView()->popup_host();
+  }
+
+  // For presenter-only state.
   static OmniboxPopupPresenterBase* GetPresenter(
       BrowserWindowInterface* browser) {
-    return GetLocationBar(browser)->GetOmniboxPopupView()->presenter();
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (LocationBarView* view = browser_view->toolbar()->location_bar_view()) {
+      return view->GetOmniboxPopupPresenterForTesting();
+    }
+    return static_cast<WebUILocationBar*>(browser_view->GetLocationBar())
+        ->GetOmniboxPopupPresenterForTesting();
   }
 
   // Runs an omnibox query in `browser` whose synchronous matches open the
@@ -101,7 +115,7 @@ class OmniboxPopupShareAcrossWindowsBrowserTest : public InProcessBrowserTest {
   static content::WebContents* GetPopupContents(
       BrowserWindowInterface* browser) {
     OmniboxPopupWebUIBaseContent* content =
-        GetPresenter(browser)->GetWebUIContent();
+        GetPopupHost(browser)->GetWebUIContent();
     return content ? content->GetWrappedWebContents() : nullptr;
   }
 
@@ -162,9 +176,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
 
   StartAutocomplete(other_browser, u"bar");
 
-  EXPECT_TRUE(GetPresenter(other_browser)->IsShown());
+  EXPECT_TRUE(GetPopupHost(other_browser)->IsShown());
   EXPECT_EQ(GetPopupContents(other_browser), contents);
-  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(browser())->GetWebUIContent());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return GetPageResultInput(contents) == "bar"; }));
 }
@@ -176,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   BrowserWindowInterface* other_browser =
       CreateBrowser(browser()->GetProfile());
   content::WebContents* contents = OpenLoadedPopup(browser());
-  ASSERT_TRUE(GetPresenter(browser())->IsShown());
+  ASSERT_TRUE(GetPopupHost(browser())->IsShown());
 
   StartAutocomplete(other_browser, u"bar");
 
@@ -193,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
   std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
-      GetPresenter(browser())->CreateDeactivationBlocker();
+      GetPopupHost(browser())->CreateDeactivationBlocker();
   ASSERT_TRUE(blocker);
   EXPECT_FALSE(GetPresenter(browser())->CanReleaseWebUIContents());
   BrowserWindowInterface* other_browser =
@@ -234,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   StartAutocomplete(browser(), u"baz");
 
   EXPECT_EQ(GetPopupContents(browser()), contents);
-  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(other_browser)->GetWebUIContent());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return GetPageResultInput(contents) == "baz"; }));
 }
@@ -280,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   // Now the other window's copy is idle and goes away.
   ClosePopup(browser());
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return !GetPresenter(other_browser)->GetWebUIContent(); }));
+      [&]() { return !GetPopupHost(other_browser)->GetWebUIContent(); }));
   EXPECT_EQ(GetPopupContents(browser()), contents);
 }
 
@@ -296,12 +310,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   ActivateBrowser(other_browser);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return GetPopupContents(other_browser) == contents; }));
-  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(browser())->GetWebUIContent());
 
   ActivateBrowser(browser());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return GetPopupContents(browser()) == contents; }));
-  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(other_browser)->GetWebUIContent());
 }
 
 // A window that becomes active leaves a popup that is not idle where it is.
@@ -310,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   content::WebContents* contents = OpenLoadedPopup(browser());
   ClosePopup(browser());
   std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
-      GetPresenter(browser())->CreateDeactivationBlocker();
+      GetPopupHost(browser())->CreateDeactivationBlocker();
   ASSERT_TRUE(blocker);
   BrowserWindowInterface* other_browser =
       CreateBrowser(browser()->GetProfile());
@@ -323,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   run_loop.Run();
 
   EXPECT_EQ(GetPopupContents(browser()), contents);
-  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(other_browser)->GetWebUIContent());
 }
 
 // A popup whose page is still loading stays in its window.
@@ -403,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(
   StartAutocomplete(other_browser, u"bar");
 
   EXPECT_EQ(GetPopupContents(other_browser), contents);
-  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(browser())->GetWebUIContent());
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return GetPageResultInput(contents) == "bar"; }));
 }
@@ -471,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsEagerBrowserTest,
   StartAutocomplete(other_browser, u"bar");
 
   EXPECT_EQ(GetPopupContents(other_browser), contents);
-  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(browser())->GetWebUIContent());
 }
 
 // Restoring several windows prewarms one popup, not one per window.
@@ -574,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
   OmniboxPopupWebUIPoolFactory::GetForProfile(browser()->GetProfile())
       ->DropIdleWebUIContents();
 
-  EXPECT_FALSE(GetPresenter(other_browser)->GetWebUIContent());
+  EXPECT_FALSE(GetPopupHost(other_browser)->GetWebUIContent());
   EXPECT_EQ(GetPopupContents(browser()), contents);
 }
 
