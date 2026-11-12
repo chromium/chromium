@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -53,6 +55,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.NavigationHandleTestBuilder;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -628,6 +631,15 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         }
     }
 
+    private void updateSecurityLevel(@ConnectionSecurityLevel int securityLevel) {
+        doReturn(securityLevel)
+                .when(mSecurityStateModelNatives)
+                .getSecurityLevelForWebContents(mWebContents);
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onSSLStateUpdated(mTab);
+        }
+    }
+
     private NavigationHandle startNavigation(GURL targetUrl) {
         return startNavigation(targetUrl, /* navigationId= */ 0L);
     }
@@ -741,6 +753,27 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     private void verifyControlsNeverLockedShown() {
         verify(mConstraintsHelperJniMock, never())
                 .updateState(any(), eq(BrowserControlsState.SHOWN), anyInt(), anyBoolean(), any());
+    }
+
+    private void assertVisibilityConstraints(
+            TabStateBrowserControlsVisibilityDelegate delegate,
+            @BrowserControlsState int expected) {
+        assertEquals(expected, delegate.calculateVisibilityConstraints());
+        assertEquals(expected, TabBrowserControlsConstraintsHelper.getConstraints(mTab));
+    }
+
+    private void assertPostLoadLockExpiresAfterDelay(
+            TabStateBrowserControlsVisibilityDelegate delegate) {
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
+
+        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
+        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
+
+        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertVisibilityConstraints(delegate, BrowserControlsState.BOTH);
     }
 
     @Test
@@ -1011,16 +1044,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
 
         finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
-        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        assertPostLoadLockExpiresAfterDelay(delegate);
     }
 
     @Test
@@ -1060,16 +1084,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
 
         finishNavigation(secondNav, secondDestinationUrl, /* isSameOrigin= */ true);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
-        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        assertPostLoadLockExpiresAfterDelay(delegate);
     }
 
     @Test
@@ -1123,15 +1138,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
 
         finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        assertPostLoadLockExpiresAfterDelay(delegate);
     }
 
     @Test
@@ -1146,22 +1153,88 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         // Focus an editable node before navigation starts, then blur it before commit so only the
         // navigation load lock keeps the controls SHOWN.
         delegate.onNodeAttributeUpdated(/* editable= */ true, /* password= */ false);
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
 
         NavigationHandle navigation = startNavigation(destinationUrl);
         delegate.onNodeAttributeUpdated(/* editable= */ false, /* password= */ false);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
 
         finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertPostLoadLockExpiresAfterDelay(delegate);
+    }
+
+    @Test
+    @DisabledTest(message = "crbug.com/579544435")
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_DangerousContentAtNavigationStartLocksControls() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        updateSecurityLevel(ConnectionSecurityLevel.DANGEROUS);
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        updateSecurityLevel(ConnectionSecurityLevel.NONE);
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
+
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertPostLoadLockExpiresAfterDelay(delegate);
+    }
+
+    @Test
+    @DisabledTest(message = "crbug.com/579544435")
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_ErrorPageAtNavigationStartLocksControls() {
+        GURL initialUrl = JUnitTestGURLs.RED_1;
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(initialUrl);
+
+        // Commit an error page on sourceUrl and let its load lock expire so only TAB_ERROR holds
+        // the controls SHOWN when the next navigation starts.
+        NavigationHandle errorNavigation = startNavigation(sourceUrl, /* navigationId= */ 1L);
+        finishNavigation(
+                errorNavigation,
+                sourceUrl,
+                /* hasCommitted= */ true,
+                /* isSameOrigin= */ false,
+                /* isErrorPage= */ true);
+        ShadowSystemClock.advanceBy(
+                TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs(), TimeUnit.MILLISECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(mTab.isShowingErrorPage());
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
+
+        NavigationHandle navigation = startNavigation(destinationUrl, /* navigationId= */ 2L);
+
+        // Committing destinationUrl clears mTab.isShowingErrorPage() via TabWebContentsObserver,
+        // leaving only the navigation load lock to hold SHOWN for getLoadDelayMs().
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertFalse(mTab.isShowingErrorPage());
+        assertPostLoadLockExpiresAfterDelay(delegate);
+    }
+
+    @Test
+    @DisabledTest(message = "crbug.com/579544435")
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_AccessibilityEnabledAtNavigationStartLocksControls() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(true);
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
 
-        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
-        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        AccessibilityStateTestHelper.setAccessibilityEnabledForTesting(false);
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
 
-        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertPostLoadLockExpiresAfterDelay(delegate);
     }
 
     @Test
@@ -1308,6 +1381,15 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_XrNeverTriggers() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        DeviceInfo.setIsXrForTesting(true);
+        assertSameOriginNavigationLocksControls(delegate);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_SubdomainChangeTreatedAsCrossOrigin() {
         GURL httpsRootUrl = new GURL("https://example.com/page1");
         GURL httpsSubdomainUrl = new GURL("https://sub.example.com/page2");
@@ -1445,16 +1527,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         // Navigation 2 keeps the lock acquired by navigation 1 until the post-load delay, which
         // starts at navigation 2's finish, expires.
         finishNavigation(navigation2, destinationUrl, /* isSameOrigin= */ true);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        long loadDelayMs = TabStateBrowserControlsVisibilityDelegate.getLoadDelayMs();
-        ShadowSystemClock.advanceBy(loadDelayMs - 1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-
-        ShadowSystemClock.advanceBy(1, TimeUnit.MILLISECONDS);
-        ShadowLooper.runUiThreadTasks();
-        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        assertPostLoadLockExpiresAfterDelay(delegate);
     }
 
     @Test
