@@ -17,7 +17,7 @@
 namespace named_mojo_ipc_server {
 struct ConnectionInfo;
 struct EndpointOptions;
-}
+}  // namespace named_mojo_ipc_server
 
 namespace updater {
 
@@ -30,12 +30,13 @@ bool IsConnectionTrusted(
 // must also derive `server_name` from, so that a pipe's name and its
 // protection cannot disagree.
 //
-// In production these never diverge: the only caller is `UpdateServiceStub`,
-// whose scope is `App::updater_scope()`, which is initialized from
-// `GetUpdaterScope()` - the same value the parameterless `IsSystemInstall()`
-// reads. Passing it explicitly keeps the decision an input rather than ambient
-// process state, matches `CreateProtectedServerEndpointOptions()` below, and
-// lets tests cover both scopes without mutating the process command line.
+// In production these never diverge: the only callers are `UpdateServiceStub`
+// and `UpdateServiceInternalStub`, whose scope is `App::updater_scope()`,
+// initialized from `GetUpdaterScope()` - the same value the parameterless
+// `IsSystemInstall()` reads. Passing it explicitly keeps the decision an input
+// rather than ambient process state, matches
+// `CreateProtectedServerEndpointOptions()` below, and lets tests cover both
+// scopes without mutating the process command line.
 named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
     UpdaterScope scope,
     const mojo::NamedPlatformChannel::ServerName& server_name);

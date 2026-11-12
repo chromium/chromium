@@ -5,7 +5,10 @@
 #ifndef CHROME_UPDATER_APP_SERVER_UPDATE_SERVICE_INTERNAL_STUB_H_
 #define CHROME_UPDATER_APP_SERVER_UPDATE_SERVICE_INTERNAL_STUB_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/updater/mojom/updater_service_internal.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
@@ -18,9 +21,9 @@ namespace updater {
 // to listen for and broker new Mojo connections with clients.
 class UpdateServiceInternalStub : public mojom::UpdateServiceInternal {
  public:
-  // Create an UpdateServiceInternalStub which forwards calls to `impl`. Opens
-  // a NamedMojoIpcServer which listens on a socket whose name is decided by
-  // `scope`.
+  // Creates an `UpdateServiceInternalStub` which forwards calls to `impl`.
+  // Opens a `NamedMojoIpcServer` listening on the endpoint for `scope` (using
+  // the admin-protected pipe on Windows 10 RS3+ system installs).
   UpdateServiceInternalStub(scoped_refptr<updater::UpdateServiceInternal> impl,
                             UpdaterScope scope,
                             base::RepeatingClosure task_start_listener,
@@ -35,13 +38,15 @@ class UpdateServiceInternalStub : public mojom::UpdateServiceInternal {
   void Hello(HelloCallback callback) override;
 
  private:
-  void OnClientDisconnected();
-
+  // `filter_` must outlive `server_`.
+  std::unique_ptr<mojom::UpdateServiceInternal> filter_;
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateServiceInternal>
       server_;
   scoped_refptr<updater::UpdateServiceInternal> impl_;
   base::RepeatingClosure task_start_listener_;
   base::RepeatingClosure task_end_listener_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace updater

@@ -38,6 +38,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "chrome/updater/ipc/ipc_names.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_WIN)
 #include <wrl/module.h>
 #endif  // BUILDFLAG(IS_WIN)
@@ -603,6 +609,14 @@ TEST_F(UpdaterIPCInternalTestCase, AllIpcsComplete) {
       kClientProcessName, base::GetMultiProcessTestChildBaseCommandLine(),
       /*options=*/{});
   EXPECT_EQ(WaitForProcessExit(child_process), 0);
+
+#if BUILDFLAG(IS_LINUX)
+  int mode = 0;
+  ASSERT_TRUE(base::GetPosixFilePermissions(
+      base::FilePath(GetUpdateServiceInternalServerName(UpdaterScope::kUser)),
+      &mode));
+  EXPECT_EQ(mode, 0666);
+#endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
   EXPECT_HRESULT_SUCCEEDED(

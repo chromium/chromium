@@ -23,6 +23,7 @@
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
+#include "base/win/windows_version.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/constants.h"
@@ -214,7 +215,16 @@ void ConnectMojoImpl(
         is_internal_service ? GetUpdateServiceInternalServerName(scope)
                             : GetUpdateServiceServerName(scope);
 
-    if (IsSystemInstall(scope) && !is_internal_service) {
+    if (IsSystemInstall(scope)) {
+      if (is_internal_service) {
+        // The internal server name includes the updater version, so only the
+        // same-version server answers and no legacy pipe fallback is needed.
+        return ConnectToUpdateService(
+            scope, server_name,
+            base::win::GetVersion() >= base::win::Version::WIN10_RS3
+                ? mojo::NamedPlatformChannel::PipeNameType::kAdminProtected
+                : mojo::NamedPlatformChannel::PipeNameType::kDefault);
+      }
       return SelectUpdateServiceEndpoint(
           [&](mojo::NamedPlatformChannel::PipeNameType pipe_name_type) {
             return ConnectToUpdateService(scope, server_name, pipe_name_type);
