@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -107,12 +106,6 @@ PasswordChangeDelegateImpl::CoarseFinalPasswordChangeState GetCoarseState(
           kOtpDetected;
     case PasswordChangeUIDelegate::State::kNoState:
       NOTREACHED();
-  }
-}
-
-void OnLeakDialogHidden(base::WeakPtr<PasswordsModelDelegate> model_delegate) {
-  if (model_delegate) {
-    model_delegate->GetPasswordsLeakDialogDelegate()->OnLeakDialogHidden();
   }
 }
 
@@ -512,15 +505,8 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
         BrowserSavePasswordProgressLogger::
             STRING_AUTOMATED_PASSWORD_CHANGE_PASSWORD_CHANGE_DECLINED);
   }
-  // Post task as otherwise ManagePasswordsUIController won't show a bubble
-  // until password change has finished.
-  if (originator_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&OnLeakDialogHidden,
-                       ManagePasswordsUIController::FromWebContents(originator_)
-                           ->GetModelDelegateProxy()));
-  }
+  observers_.Notify(&PasswordChangeDelegate::Observer::OnPasswordChangeDeclined,
+                    this);
   Stop();
 }
 

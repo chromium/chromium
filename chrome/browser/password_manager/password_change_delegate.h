@@ -27,6 +27,9 @@ class PasswordChangeDelegate {
     virtual void OnPasswordChangeFinishedSuccessfully(
         PasswordChangeDelegate* delegate) {}
 
+    // Invoked when the user declines the password change offer.
+    virtual void OnPasswordChangeDeclined(PasswordChangeDelegate* delegate) {}
+
     // Invoked when login check fails with a server error.
     virtual void OnLoginCheckFailedWithServerError(
         PasswordChangeDelegate* delegate) {}

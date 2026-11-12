@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
@@ -98,6 +99,12 @@ ManagePasswordsUIController* GetPasswordsUIController(
   return web_contents
              ? ManagePasswordsUIController::FromWebContents(web_contents.get())
              : nullptr;
+}
+
+void NotifyLeakDialogHidden(base::WeakPtr<content::WebContents> originator) {
+  if (auto* controller = GetPasswordsUIController(originator)) {
+    controller->OnLeakDialogHidden();
+  }
 }
 #endif
 
@@ -314,6 +321,23 @@ void ChromePasswordChangeService::OnPasswordChangeFinishedSuccessfully(
   if (auto* controller = GetPasswordsUIController(iter->originator)) {
     controller->OnPasswordChangeFinishedSuccessfully();
   }
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void ChromePasswordChangeService::OnPasswordChangeDeclined(
+    PasswordChangeDelegate* delegate) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto iter = FindPasswordChangeData(delegate);
+  if (iter == password_change_data_.end()) {
+    return;
+  }
+
+  // Post a task since ManagePasswordsUIController doesn't show any bubble while
+  // password change is still ongoing.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyLeakDialogHidden, iter->originator));
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)

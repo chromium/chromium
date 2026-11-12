@@ -148,6 +148,7 @@ class ChromePasswordChangeService
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
   void OnPasswordChangeFinishedSuccessfully(
       PasswordChangeDelegate* delegate) override;
+  void OnPasswordChangeDeclined(PasswordChangeDelegate* delegate) override;
   void OnLoginCheckFailedWithServerError(
       PasswordChangeDelegate* delegate) override;
 

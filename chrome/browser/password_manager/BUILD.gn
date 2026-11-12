@@ -523,7 +523,6 @@ source_set("unit_tests") {
       "//chrome/browser/signin:test_support",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
-      "//chrome/browser/ui/passwords:test_support_ui",
       "//components/optimization_guide/core",
       "//components/optimization_guide/core:model_execution_test_support",
       "//components/password_manager/core/browser/actor_login:actor_login_service_impl",

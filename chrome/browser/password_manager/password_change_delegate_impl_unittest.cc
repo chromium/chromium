@@ -18,8 +18,6 @@
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
-#include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate_mock.h"
-#include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -85,10 +83,6 @@ class MockManagePasswordsUIController : public ManagePasswordsUIController {
       : ManagePasswordsUIController(tab, web_contents) {}
   ~MockManagePasswordsUIController() override = default;
 
-  MOCK_METHOD(base::WeakPtr<PasswordsModelDelegate>,
-              GetModelDelegateProxy,
-              (),
-              (override));
   void PrimaryPageChanged(content::Page& page) override {}
 };
 
@@ -101,6 +95,10 @@ class MockPasswordChangeDelegateObserver
               (override));
   MOCK_METHOD(void,
               OnPasswordChangeFinishedSuccessfully,
+              (PasswordChangeDelegate*),
+              (override));
+  MOCK_METHOD(void,
+              OnPasswordChangeDeclined,
               (PasswordChangeDelegate*),
               (override));
   MOCK_METHOD(void,
@@ -590,19 +588,11 @@ TEST_F(PasswordChangeDelegateImplTest, OnPasswordChangeDeclined) {
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForAgreement);
 
-  PasswordsModelDelegateMock mock_model_delegate;
-  EXPECT_CALL(*manage_passwords_ui_controller(), GetModelDelegateProxy)
-      .WillOnce(Return(mock_model_delegate.AsWeakPtr()));
+  testing::InSequence s;
+  EXPECT_CALL(observer, OnPasswordChangeDeclined(delegate()));
   EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
   delegate()->OnPasswordChangeDeclined();
   delegate()->RemoveObserver(&observer);
-
-  PasswordsLeakDialogDelegateMock mock_leak_delegate;
-  EXPECT_CALL(mock_model_delegate, GetPasswordsLeakDialogDelegate)
-      .WillOnce(Return(&mock_leak_delegate));
-  EXPECT_CALL(mock_leak_delegate, OnLeakDialogHidden);
-
-  task_environment()->RunUntilIdle();
 }
 
 TEST_F(PasswordChangeDelegateImplTest,
