@@ -16,9 +16,13 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.mockito.Mockito;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
 import org.chromium.components.embedder_support.util.Origin;
+
+import java.util.Objects;
 
 /**
  * Helper class for {@link DigitalGoodsUnitTest} - it pretends to be a TrustedWebActivityClient
@@ -92,9 +96,9 @@ public class MockTrustedWebActivityClient {
         return mClient;
     }
 
-    /** Runs the pending callback. */
+    /** Runs the pending callback on a background thread, simulating a binder callback. */
     public void runCallback() {
-        mCallback.run();
+        PostTask.postTask(TaskTraits.BEST_EFFORT, Objects.requireNonNull(mCallback));
         mCallback = null;
     }
 

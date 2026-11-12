@@ -37,42 +37,44 @@ class ListPurchasesConverter {
     private ListPurchasesConverter() {}
 
     /**
-     * Produces a {@link TrustedWebActivityCallback} that calls the given
-     * {@link ListPurchasesResponse}.
+     * Produces a {@link TrustedWebActivityCallback} that calls the given {@link
+     * ListPurchasesResponse}.
      */
     static TrustedWebActivityCallback convertCallback(ListPurchases_Response callback) {
-        return new TrustedWebActivityCallback() {
-            @Override
-            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
-                if (!RESPONSE_COMMAND.equals(callbackName)) {
-                    Log.w(TAG, "Wrong callback name given: %s.", callbackName);
-                    returnClientAppError(callback);
-                    return;
-                }
+        return DigitalGoodsConverter.createUiThreadCallback(
+                new TrustedWebActivityCallback() {
+                    @Override
+                    public void onExtraCallback(String callbackName, @Nullable Bundle args) {
+                        if (!RESPONSE_COMMAND.equals(callbackName)) {
+                            Log.w(TAG, "Wrong callback name given: %s.", callbackName);
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                if (args == null) {
-                    Log.w(TAG, "No args provided.");
-                    returnClientAppError(callback);
-                    return;
-                }
+                        if (args == null) {
+                            Log.w(TAG, "No args provided.");
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                if (!checkField(args, KEY_RESPONSE_CODE, Integer.class)
-                        || !checkField(args, KEY_PURCHASES_LIST, Parcelable[].class)) {
-                    returnClientAppError(callback);
-                    return;
-                }
+                        if (!checkField(args, KEY_RESPONSE_CODE, Integer.class)
+                                || !checkField(args, KEY_PURCHASES_LIST, Parcelable[].class)) {
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                int code = args.getInt(KEY_RESPONSE_CODE);
-                Parcelable[] array = args.getParcelableArray(KEY_PURCHASES_LIST);
-                assert array != null;
+                        int code = args.getInt(KEY_RESPONSE_CODE);
+                        Parcelable[] array = args.getParcelableArray(KEY_PURCHASES_LIST);
+                        assert array != null;
 
-                PurchaseReference[] reference =
-                        convertParcelableArray(
-                                        array, ListPurchasesConverter::convertPurchaseReference)
-                                .toArray(new PurchaseReference[0]);
-                callback.call(convertResponseCode(code, args), reference);
-            }
-        };
+                        PurchaseReference[] reference =
+                                convertParcelableArray(
+                                                array,
+                                                ListPurchasesConverter::convertPurchaseReference)
+                                        .toArray(new PurchaseReference[0]);
+                        callback.call(convertResponseCode(code, args), reference);
+                    }
+                });
     }
 
     /** Convert a Bundle into a PurchaseReference object. */

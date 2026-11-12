@@ -65,41 +65,43 @@ public class GetDetailsConverter {
     }
 
     /**
-     * Produces a {@link TrustedWebActivityCallback} that calls the given
-     * {@link GetDetailsResponse}.
+     * Produces a {@link TrustedWebActivityCallback} that calls the given {@link
+     * GetDetailsResponse}.
      */
     static TrustedWebActivityCallback convertCallback(GetDetails_Response callback) {
-        return new TrustedWebActivityCallback() {
-            @Override
-            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
-                if (!RESPONSE_COMMAND.equals(callbackName)) {
-                    Log.w(TAG, "Wrong callback name given: %s.", callbackName);
-                    returnClientAppError(callback);
-                    return;
-                }
+        return DigitalGoodsConverter.createUiThreadCallback(
+                new TrustedWebActivityCallback() {
+                    @Override
+                    public void onExtraCallback(String callbackName, @Nullable Bundle args) {
+                        if (!RESPONSE_COMMAND.equals(callbackName)) {
+                            Log.w(TAG, "Wrong callback name given: %s.", callbackName);
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                if (args == null) {
-                    Log.w(TAG, "No args provided.");
-                    returnClientAppError(callback);
-                    return;
-                }
+                        if (args == null) {
+                            Log.w(TAG, "No args provided.");
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                if (!checkField(args, KEY_RESPONSE_CODE, Integer.class)
-                        || !checkField(args, KEY_DETAILS_LIST, Parcelable[].class)) {
-                    returnClientAppError(callback);
-                    return;
-                }
+                        if (!checkField(args, KEY_RESPONSE_CODE, Integer.class)
+                                || !checkField(args, KEY_DETAILS_LIST, Parcelable[].class)) {
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                int code = args.getInt(KEY_RESPONSE_CODE);
-                Parcelable[] array = args.getParcelableArray(KEY_DETAILS_LIST);
-                assert array != null;
+                        int code = args.getInt(KEY_RESPONSE_CODE);
+                        Parcelable[] array = args.getParcelableArray(KEY_DETAILS_LIST);
+                        assert array != null;
 
-                ItemDetails[] details =
-                        convertParcelableArray(array, GetDetailsConverter::convertItemDetails)
-                                .toArray(new ItemDetails[0]);
-                callback.call(convertResponseCode(code, args), details);
-            }
-        };
+                        ItemDetails[] details =
+                                convertParcelableArray(
+                                                array, GetDetailsConverter::convertItemDetails)
+                                        .toArray(new ItemDetails[0]);
+                        callback.call(convertResponseCode(code, args), details);
+                    }
+                });
     }
 
     /** Extracts an {@link ItemDetails} from a {@link Parcelable}. */

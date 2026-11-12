@@ -35,31 +35,32 @@ class ConsumeConverter {
     }
 
     static TrustedWebActivityCallback convertCallback(Consume_Response callback) {
-        return new TrustedWebActivityCallback() {
-            @Override
-            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
-                if (!RESPONSE_CONSUME.equals(callbackName)) {
-                    Log.w(TAG, "Wrong callback name given: %s.", callbackName);
-                    returnClientAppError(callback);
-                    return;
-                }
+        return DigitalGoodsConverter.createUiThreadCallback(
+                new TrustedWebActivityCallback() {
+                    @Override
+                    public void onExtraCallback(String callbackName, @Nullable Bundle args) {
+                        if (!RESPONSE_CONSUME.equals(callbackName)) {
+                            Log.w(TAG, "Wrong callback name given: %s.", callbackName);
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                if (args == null) {
-                    Log.w(TAG, "No args provided.");
-                    returnClientAppError(callback);
-                    return;
-                }
+                        if (args == null) {
+                            Log.w(TAG, "No args provided.");
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                if (!(args.get(RESPONSE_CONSUME_RESPONSE_CODE) instanceof Integer)) {
-                    Log.w(TAG, "Poorly formed args provided.");
-                    returnClientAppError(callback);
-                    return;
-                }
+                        if (!(args.get(RESPONSE_CONSUME_RESPONSE_CODE) instanceof Integer)) {
+                            Log.w(TAG, "Poorly formed args provided.");
+                            returnClientAppError(callback);
+                            return;
+                        }
 
-                int code = args.getInt(RESPONSE_CONSUME_RESPONSE_CODE);
-                callback.call(convertResponseCode(code, args));
-            }
-        };
+                        int code = args.getInt(RESPONSE_CONSUME_RESPONSE_CODE);
+                        callback.call(convertResponseCode(code, args));
+                    }
+                });
     }
 
     public static void returnClientAppUnavailable(Consume_Response callback) {

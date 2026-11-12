@@ -7,7 +7,11 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import androidx.browser.trusted.TrustedWebActivityCallback;
+
 import org.chromium.base.Log;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.BillingResponseCode;
@@ -109,5 +113,24 @@ public class DigitalGoodsConverter {
         }
 
         return list;
+    }
+
+    /**
+     * Creates a {@link TrustedWebActivityCallback} that posts {@link
+     * TrustedWebActivityCallback#onExtraCallback} to the UI thread.
+     *
+     * <p>{@link TrustedWebActivityCallback#onExtraCallback} is invoked directly on an Android
+     * Binder thread by {@code ITrustedWebActivityCallback.Stub}, whereas Mojo callbacks captured by
+     * the converters are bound to the UI thread and are not thread-safe.
+     */
+    static TrustedWebActivityCallback createUiThreadCallback(TrustedWebActivityCallback callback) {
+        return new TrustedWebActivityCallback() {
+            @Override
+            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
+                PostTask.postTask(
+                        TaskTraits.UI_USER_VISIBLE,
+                        () -> callback.onExtraCallback(callbackName, args));
+            }
+        };
     }
 }

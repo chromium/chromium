@@ -42,31 +42,32 @@ class AcknowledgeConverter {
     }
 
     static TrustedWebActivityCallback convertCallback(Consume_Response callback) {
-        return new TrustedWebActivityCallback() {
-            @Override
-            public void onExtraCallback(String callbackName, @Nullable Bundle args) {
-                if (!RESPONSE_ACKNOWLEDGE.equals(callbackName)) {
-                    Log.w(TAG, "Wrong callback name given: %s.", callbackName);
-                    ConsumeConverter.returnClientAppError(callback);
-                    return;
-                }
+        return DigitalGoodsConverter.createUiThreadCallback(
+                new TrustedWebActivityCallback() {
+                    @Override
+                    public void onExtraCallback(String callbackName, @Nullable Bundle args) {
+                        if (!RESPONSE_ACKNOWLEDGE.equals(callbackName)) {
+                            Log.w(TAG, "Wrong callback name given: %s.", callbackName);
+                            ConsumeConverter.returnClientAppError(callback);
+                            return;
+                        }
 
-                if (args == null) {
-                    Log.w(TAG, "No args provided.");
-                    ConsumeConverter.returnClientAppError(callback);
-                    return;
-                }
+                        if (args == null) {
+                            Log.w(TAG, "No args provided.");
+                            ConsumeConverter.returnClientAppError(callback);
+                            return;
+                        }
 
-                if (!(args.get(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE) instanceof Integer)) {
-                    Log.w(TAG, "Poorly formed args provided.");
-                    ConsumeConverter.returnClientAppError(callback);
-                    return;
-                }
+                        if (!(args.get(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE) instanceof Integer)) {
+                            Log.w(TAG, "Poorly formed args provided.");
+                            ConsumeConverter.returnClientAppError(callback);
+                            return;
+                        }
 
-                int code = args.getInt(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE);
-                callback.call(convertResponseCode(code, args));
-            }
-        };
+                        int code = args.getInt(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE);
+                        callback.call(convertResponseCode(code, args));
+                    }
+                });
     }
 
     /**

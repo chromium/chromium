@@ -8,8 +8,11 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE;
+import static org.chromium.chrome.browser.browserservices.digitalgoods.AcknowledgeConverter.RESPONSE_ACKNOWLEDGE_RESPONSE_CODE;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.ConsumeConverter.PARAM_CONSUME_PURCHASE_TOKEN;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.ConsumeConverter.RESPONSE_CONSUME;
 import static org.chromium.chrome.browser.browserservices.digitalgoods.ConsumeConverter.RESPONSE_CONSUME_RESPONSE_CODE;
@@ -27,7 +30,9 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.payments.mojom.BillingResponseCode;
 import org.chromium.payments.mojom.DigitalGoods.Consume_Response;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
@@ -37,7 +42,12 @@ import org.chromium.payments.mojom.ItemDetails;
 import org.chromium.payments.mojom.ItemType;
 import org.chromium.payments.mojom.PurchaseReference;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link DigitalGoodsConverterTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -138,6 +148,8 @@ public class DigitalGoodsConverterTest {
                                 "ipc2", "ipv2", "ipp2", 4));
 
         convertedCallback.onExtraCallback(GetDetailsConverter.RESPONSE_COMMAND, args);
+        assertNull(state.results);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(
                 DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
@@ -253,6 +265,8 @@ public class DigitalGoodsConverterTest {
                         ListPurchasesConverter.createPurchaseReferenceBundle("2", "t2"));
 
         convertedCallback.onExtraCallback(ListPurchasesConverter.RESPONSE_COMMAND, args);
+        assertNull(state.results);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(
                 DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
@@ -281,6 +295,8 @@ public class DigitalGoodsConverterTest {
                         ListPurchasesConverter.createPurchaseReferenceBundle("2", "t2"));
 
         convertedCallback.onExtraCallback(ListPurchaseHistoryConverter.RESPONSE_COMMAND, args);
+        assertNull(state.results);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(
                 DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
@@ -304,7 +320,7 @@ public class DigitalGoodsConverterTest {
     public void convertConsumeCallback() {
         // Since there's only one value we want to get out of the callback, we can use Atomic*
         // instead of creating a new class.
-        AtomicInteger state = new AtomicInteger();
+        AtomicInteger state = new AtomicInteger(-1);
 
         Consume_Response callback = (responseCode) -> state.set(responseCode);
 
@@ -315,8 +331,131 @@ public class DigitalGoodsConverterTest {
         args.putInt(RESPONSE_CONSUME_RESPONSE_CODE, responseCode);
 
         convertedCallback.onExtraCallback(RESPONSE_CONSUME, args);
+        assertEquals(-1, state.get());
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(responseCode, state.get());
+    }
+
+    @Test
+    public void convertAcknowledgeCallback() {
+        AtomicInteger state = new AtomicInteger(-1);
+
+        Consume_Response callback = (responseCode) -> state.set(responseCode);
+
+        TrustedWebActivityCallback convertedCallback =
+                AcknowledgeConverter.convertCallback(callback);
+
+        Bundle args = new Bundle();
+        int responseCode = 0;
+        args.putInt(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE, responseCode);
+
+        convertedCallback.onExtraCallback(RESPONSE_ACKNOWLEDGE, args);
+        assertEquals(-1, state.get());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(responseCode, state.get());
+    }
+
+    @Test
+    public void callbacksRunOnUiThread() throws InterruptedException {
+        AtomicInteger callbackCount = new AtomicInteger(0);
+        List<Integer> receivedCodes = new ArrayList<>();
+
+        TrustedWebActivityCallback getDetailsCallback =
+                GetDetailsConverter.convertCallback(
+                        (code, details) -> {
+                            assertTrue(ThreadUtils.runningOnUiThread());
+                            receivedCodes.add(code);
+                            callbackCount.incrementAndGet();
+                        });
+        TrustedWebActivityCallback listPurchasesCallback =
+                ListPurchasesConverter.convertCallback(
+                        (code, purchases) -> {
+                            assertTrue(ThreadUtils.runningOnUiThread());
+                            receivedCodes.add(code);
+                            callbackCount.incrementAndGet();
+                        });
+        TrustedWebActivityCallback listPurchaseHistoryCallback =
+                ListPurchaseHistoryConverter.convertCallback(
+                        (code, purchases) -> {
+                            assertTrue(ThreadUtils.runningOnUiThread());
+                            receivedCodes.add(code);
+                            callbackCount.incrementAndGet();
+                        });
+        TrustedWebActivityCallback consumeCallback =
+                ConsumeConverter.convertCallback(
+                        (code) -> {
+                            assertTrue(ThreadUtils.runningOnUiThread());
+                            receivedCodes.add(code);
+                            callbackCount.incrementAndGet();
+                        });
+        TrustedWebActivityCallback acknowledgeCallback =
+                AcknowledgeConverter.convertCallback(
+                        (code) -> {
+                            assertTrue(ThreadUtils.runningOnUiThread());
+                            receivedCodes.add(code);
+                            callbackCount.incrementAndGet();
+                        });
+
+        AtomicBoolean ranOffUiThread = new AtomicBoolean(false);
+        AtomicReference<Throwable> backgroundError = new AtomicReference<>();
+        Thread backgroundThread =
+                new Thread(
+                        () -> {
+                            try {
+                                ranOffUiThread.set(!ThreadUtils.runningOnUiThread());
+                                getDetailsCallback.onExtraCallback(
+                                        GetDetailsConverter.RESPONSE_COMMAND,
+                                        GetDetailsConverter.createResponseBundle(PLAY_BILLING_OK));
+                                getDetailsCallback.onExtraCallback("wrong.command", null);
+
+                                listPurchasesCallback.onExtraCallback(
+                                        ListPurchasesConverter.RESPONSE_COMMAND,
+                                        ListPurchasesConverter.createResponseBundle(
+                                                PLAY_BILLING_OK));
+                                listPurchasesCallback.onExtraCallback("wrong.command", null);
+
+                                listPurchaseHistoryCallback.onExtraCallback(
+                                        ListPurchaseHistoryConverter.RESPONSE_COMMAND,
+                                        ListPurchaseHistoryConverter.createResponseBundle(
+                                                PLAY_BILLING_OK));
+                                listPurchaseHistoryCallback.onExtraCallback("wrong.command", null);
+
+                                consumeCallback.onExtraCallback(
+                                        RESPONSE_CONSUME,
+                                        ConsumeConverter.createResponseBundle(PLAY_BILLING_OK));
+                                consumeCallback.onExtraCallback("wrong.command", null);
+
+                                acknowledgeCallback.onExtraCallback(
+                                        RESPONSE_ACKNOWLEDGE,
+                                        AcknowledgeConverter.createResponseBundle(PLAY_BILLING_OK));
+                                acknowledgeCallback.onExtraCallback("wrong.command", null);
+                            } catch (Throwable t) {
+                                backgroundError.set(t);
+                            }
+                        });
+        backgroundThread.start();
+        backgroundThread.join();
+
+        assertNull(backgroundError.get());
+        assertTrue(ranOffUiThread.get());
+        assertEquals(0, callbackCount.get());
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(10, callbackCount.get());
+        assertEquals(
+                Arrays.asList(
+                        BillingResponseCode.OK,
+                        BillingResponseCode.CLIENT_APP_ERROR,
+                        BillingResponseCode.OK,
+                        BillingResponseCode.CLIENT_APP_ERROR,
+                        BillingResponseCode.OK,
+                        BillingResponseCode.CLIENT_APP_ERROR,
+                        BillingResponseCode.OK,
+                        BillingResponseCode.CLIENT_APP_ERROR,
+                        BillingResponseCode.OK,
+                        BillingResponseCode.CLIENT_APP_ERROR),
+                receivedCodes);
     }
 
     @Test

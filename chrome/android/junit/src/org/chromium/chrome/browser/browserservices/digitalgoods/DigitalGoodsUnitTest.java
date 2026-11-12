@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -12,7 +13,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.payments.mojom.BillingResponseCode;
@@ -57,7 +60,26 @@ public class DigitalGoodsUnitTest {
                     callbackHelper.notifyCalled();
                 });
         mClient.runCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
 
+        callbackHelper.waitForCallback(0);
+    }
+
+    @Test
+    public void getDetails_responseRunsOnUiThread() throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        mDigitalGoods.getDetails(
+                new String[] {"token 1", "token 2"},
+                (code, details) -> {
+                    assertTrue(ThreadUtils.runningOnUiThread());
+                    callbackHelper.notifyCalled();
+                });
+
+        mClient.runCallback();
+        RobolectricUtil.runOneBackgroundTask();
+        assertEquals(0, callbackHelper.getCallCount());
+
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.waitForCallback(0);
     }
 
@@ -72,6 +94,7 @@ public class DigitalGoodsUnitTest {
                     assertEquals("id4", purchases[1].itemId);
                 });
         mClient.runCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         callbackHelper.waitForCallback(0);
     }
@@ -87,6 +110,7 @@ public class DigitalGoodsUnitTest {
                     callbackHelper.notifyCalled();
                 });
         mClient.runCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         callbackHelper.waitForCallback(0);
     }
@@ -103,6 +127,7 @@ public class DigitalGoodsUnitTest {
                 });
 
         mClient.runCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         callbackHelper.waitForCallback(0);
     }
@@ -121,6 +146,7 @@ public class DigitalGoodsUnitTest {
                 });
 
         mClient.runCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         callbackHelper.waitForCallback(0);
     }
