@@ -23,7 +23,6 @@ static_library("recorder_app") {
   deps = [
     "//ash/constants",
     "//base:i18n",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/feedback",

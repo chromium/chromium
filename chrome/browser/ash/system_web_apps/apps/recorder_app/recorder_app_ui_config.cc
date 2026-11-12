@@ -13,7 +13,6 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/chrome_recorder_app_ui_delegate.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
@@ -28,10 +27,15 @@ namespace ash {
 
 RecorderAppUIConfig::RecorderAppUIConfig(
     PrefService* local_state,
-    const ApplicationLocaleStorage* application_locale_storage)
+    const ApplicationLocaleStorage* application_locale_storage,
+    variations::VariationsService* variations_service)
     : WebUIConfig(content::kChromeUIScheme, kChromeUIRecorderAppHost),
       local_state_(CHECK_DEREF(local_state)),
-      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      variations_service_(variations_service) {
+  CHECK(variations_service_);
+  variations_service_observation_.Observe(variations_service_);
+}
 
 RecorderAppUIConfig::~RecorderAppUIConfig() = default;
 
@@ -61,14 +65,21 @@ RecorderAppUIConfig::CreateWebUIController(content::WebUI* web_ui,
   media_device_salt::MediaDeviceSaltService* media_device_salt_service =
       MediaDeviceSaltServiceProvider::Get().Find(account_id);
 
-  // TODO(crbug.com/404133902): Avoid using g_browser_process.
+  CHECK(variations_service_);
   auto delegate = std::make_unique<ChromeRecorderAppUIDelegate>(
-      &application_locale_storage_.get(),
-      g_browser_process->variations_service(), user_manager::UserManager::Get(),
-      account_id, identity_manager, consent_auditor);
+      &application_locale_storage_.get(), variations_service_.get(),
+      user_manager::UserManager::Get(), account_id, identity_manager,
+      consent_auditor);
   return std::make_unique<RecorderAppUI>(&local_state_.get(), web_ui,
                                          std::move(delegate),
                                          media_device_salt_service);
+}
+
+void RecorderAppUIConfig::OnVariationsServiceDestroyed() {
+  // `VariationsService` is destroyed in `BrowserProcessImpl::StartTearDown()`,
+  // before `AshWebUIConfigManager` unregisters this config.
+  variations_service_observation_.Reset();
+  variations_service_ = nullptr;
 }
 
 }  // namespace ash

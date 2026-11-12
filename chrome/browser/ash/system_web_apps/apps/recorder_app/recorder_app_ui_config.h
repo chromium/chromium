@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/webui_config.h"
 
 class ApplicationLocaleStorage;
@@ -16,13 +19,15 @@ class PrefService;
 namespace ash {
 
 // WebUIConfig for chrome://recorder-app
-class RecorderAppUIConfig : public content::WebUIConfig {
+class RecorderAppUIConfig : public content::WebUIConfig,
+                            public variations::VariationsService::Observer {
  public:
   // `local_state` and `application_locale_storage` must not be null and must
-  // outlive `this`.
+  // outlive `this`. `variations_service` must not be null.
   RecorderAppUIConfig(
       PrefService* local_state,
-      const ApplicationLocaleStorage* application_locale_storage);
+      const ApplicationLocaleStorage* application_locale_storage,
+      variations::VariationsService* variations_service);
   RecorderAppUIConfig(const RecorderAppUIConfig&) = delete;
   RecorderAppUIConfig& operator=(const RecorderAppUIConfig&) = delete;
   ~RecorderAppUIConfig() override;
@@ -33,9 +38,16 @@ class RecorderAppUIConfig : public content::WebUIConfig {
       content::WebUI* web_ui,
       const GURL& url) override;
 
+  // variations::VariationsService::Observer:
+  void OnVariationsServiceDestroyed() override;
+
  private:
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  raw_ptr<variations::VariationsService> variations_service_ = nullptr;
+  base::ScopedObservation<variations::VariationsService,
+                          variations::VariationsService::Observer>
+      variations_service_observation_{this};
 };
 
 }  // namespace ash

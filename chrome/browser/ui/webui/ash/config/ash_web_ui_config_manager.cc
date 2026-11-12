@@ -79,7 +79,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/recorder_app_ui_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/terminal_ui.h"
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -368,12 +367,19 @@ AshWebUIConfigManager* AshWebUIConfigManager::GetInstance() {
 AshWebUIConfigManager::AshWebUIConfigManager(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    variations::VariationsService* variations_service,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       browser_policy_connector_ash_(browser_policy_connector_ash),
-      shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      variations_service_(variations_service) {
+  if (variations_service_) {
+    variations_service_observation_.Observe(variations_service_);
+  } else {
+    CHECK_IS_TEST();
+  }
   if (!browser_policy_connector_ash_) {
     CHECK_IS_TEST();
   }
@@ -393,6 +399,7 @@ AshWebUIConfigManager::~AshWebUIConfigManager() {
 
 void AshWebUIConfigManager::RegisterWebUIConfigs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(variations_service_);
   CHECK(browser_policy_connector_ash_);
   CHECK(shared_url_loader_factory_);
   // Add trusted `WebUIConfig`s (chrome://) for Ash ChromeOS to the list here.
@@ -403,7 +410,10 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   //
   // Pass `is_stateful=true` for configs that capture dependencies injected via
   // `AshWebUIConfigManager` so they are unregistered before those dependencies
-  // are torn down.
+  // are torn down. `VariationsService` is the exception: it is destroyed in
+  // `BrowserProcessImpl::StartTearDown()`, before the unregistration, so
+  // configs that capture it must observe it and reset their pointer in
+  // `OnVariationsServiceDestroyed()`.
   AddWebUIConfig(MakeCameraAppUIConfig(), /*is_stateful=*/false);
   AddWebUIConfig(std::make_unique<cellular_setup::MobileSetupUIConfig>(
                      &application_locale_storage_.get()),
@@ -554,7 +564,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>(),
                  /*is_stateful=*/false);
   AddWebUIConfig(std::make_unique<RecorderAppUIConfig>(
-                     &local_state_.get(), &application_locale_storage_.get()),
+                     &local_state_.get(), &application_locale_storage_.get(),
+                     variations_service_.get()),
                  /*is_stateful=*/true);
   AddWebUIConfig(
       std::make_unique<RemoteMaintenanceCurtainUIConfig>(&local_state_.get()),
@@ -622,6 +633,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
 
 void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(variations_service_);
   // Add untrusted `WebUIConfig`s for Ash ChromeOS to the list here.
   //
   // All `WebUIConfig`s should be registered here, irrespective of whether their
@@ -630,7 +642,10 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   //
   // Pass `is_stateful=true` for configs that capture dependencies injected via
   // `AshWebUIConfigManager` so they are unregistered before those dependencies
-  // are torn down.
+  // are torn down. `VariationsService` is the exception: it is destroyed in
+  // `BrowserProcessImpl::StartTearDown()`, before the unregistration, so
+  // configs that capture it must observe it and reset their pointer in
+  // `OnVariationsServiceDestroyed()`.
   AddUntrustedWebUIConfig(
       std::make_unique<BocaUIConfig>(&application_locale_storage_.get()),
       /*is_stateful=*/true);
@@ -646,11 +661,10 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>(
                               &application_locale_storage_.get()),
                           /*is_stateful=*/true);
-  // TODO(crbug.com/404133902): Avoid using g_browser_process.
-  AddUntrustedWebUIConfig(std::make_unique<HelpAppUntrustedUIConfig>(
-                              &application_locale_storage_.get(),
-                              g_browser_process->variations_service()),
-                          /*is_stateful=*/true);
+  AddUntrustedWebUIConfig(
+      std::make_unique<HelpAppUntrustedUIConfig>(
+          &application_locale_storage_.get(), variations_service_.get()),
+      /*is_stateful=*/true);
   AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>(),
                           /*is_stateful=*/false);
   AddUntrustedWebUIConfig(
@@ -680,6 +694,15 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
       std::make_unique<SampleSystemWebAppUntrustedUIConfig>(),
       /*is_stateful=*/false);
 #endif  // !defined(OFFICIAL_BUILD)
+}
+
+void AshWebUIConfigManager::OnVariationsServiceDestroyed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `VariationsService` is destroyed in `BrowserProcessImpl::StartTearDown()`,
+  // before `this` is destroyed in
+  // `ChromeBrowserMainPartsAsh::PostMainMessageLoopRun()`.
+  variations_service_observation_.Reset();
+  variations_service_ = nullptr;
 }
 
 void AshWebUIConfigManager::AddWebUIConfig(

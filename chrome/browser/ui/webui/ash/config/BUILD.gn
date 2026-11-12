@@ -35,7 +35,6 @@ static_library("config") {
     "//ash/webui/shortcut_customization_ui",
     "//ash/webui/status_area_internals",
     "//ash/webui/vc_background_ui",
-    "//chrome/browser:browser_process",
     "//chrome/browser/app_mode",
     "//chrome/browser/ash/annotator",
     "//chrome/browser/ash/app_mode",
@@ -113,6 +112,7 @@ static_library("config") {
     "//components/application_locale_storage",
     "//components/cross_device/logging",
     "//components/user_manager",
+    "//components/variations/service",
     "//ui/webui",
   ]
 
