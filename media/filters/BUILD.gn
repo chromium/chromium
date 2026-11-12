@@ -194,8 +194,12 @@ source_set("filters") {
     sources += [
       "symphonia_data_source_bridge.cc",
       "symphonia_data_source_bridge.h",
+      "symphonia_demuxer.cc",
+      "symphonia_demuxer.h",
       "symphonia_demuxer_stream.cc",
       "symphonia_demuxer_stream.h",
+      "symphonia_demuxer_util.cc",
+      "symphonia_demuxer_util.h",
     ]
     deps += [ ":symphonia_demuxer_bridge" ]
   }
@@ -487,8 +491,13 @@ source_set("unit_tests") {
     sources += [
       "symphonia_data_source_bridge_unittest.cc",
       "symphonia_demuxer_stream_unittest.cc",
+      "symphonia_demuxer_unittest.cc",
+      "symphonia_demuxer_util_unittest.cc",
     ]
-    deps += [ ":symphonia_demuxer_bridge_unittests" ]
+    deps += [
+      ":symphonia_demuxer_bridge",
+      ":symphonia_demuxer_bridge_unittests",
+    ]
   }
 
   if (media_use_ffmpeg) {

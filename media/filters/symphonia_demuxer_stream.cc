@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/decoder_buffer.h"
 
@@ -33,6 +34,9 @@ SymphoniaDemuxerStream::SymphoniaDemuxerStream(
     base::TimeDelta duration,
     base::RepeatingClosure request_data_cb)
     : track_id_(track_id),
+      // TODO(crbug.com/583935468): Use `MediaTrack::IntegralID()` once
+      // crrev.com/c/8788006 lands.
+      media_track_id_(base::NumberToString(track_id)),
       audio_config_(std::move(audio_config)),
       duration_(duration),
       request_data_cb_(std::move(request_data_cb)) {

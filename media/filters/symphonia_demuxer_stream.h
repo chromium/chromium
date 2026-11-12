@@ -15,6 +15,7 @@
 #include "media/base/decoder_buffer_queue.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
+#include "media/base/media_track.h"
 
 namespace media {
 
@@ -57,6 +58,8 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
 
   // The Symphonia track ID this stream carries packets for.
   uint32_t track_id() const { return track_id_; }
+  // The ID of the `MediaTrack` for this stream, derived from `track_id()`.
+  const MediaTrack::Id& media_track_id() const { return media_track_id_; }
   base::TimeDelta duration() const { return duration_; }
 
   bool is_enabled() const { return is_enabled_; }
@@ -103,6 +106,7 @@ class MEDIA_EXPORT SymphoniaDemuxerStream : public DemuxerStream {
   void SatisfyPendingReadWithEndOfStream();
 
   const uint32_t track_id_;
+  const MediaTrack::Id media_track_id_;
   const AudioDecoderConfig audio_config_;
   const base::TimeDelta duration_;
   const base::RepeatingClosure request_data_cb_;

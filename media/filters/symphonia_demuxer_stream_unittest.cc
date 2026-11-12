@@ -10,12 +10,14 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
+#include "media/base/media_track.h"
 #include "media/base/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,6 +59,8 @@ TEST_F(SymphoniaDemuxerStreamTest, Properties) {
   EXPECT_EQ(stream_.type(), DemuxerStream::AUDIO);
   EXPECT_EQ(stream_.liveness(), StreamLiveness::kRecorded);
   EXPECT_EQ(stream_.track_id(), kTrackId);
+  EXPECT_EQ(stream_.media_track_id(),
+            MediaTrack::Id(base::NumberToString(kTrackId)));
   EXPECT_EQ(stream_.duration(), kDuration);
   EXPECT_TRUE(
       stream_.audio_decoder_config().Matches(TestAudioConfig::Normal()));
