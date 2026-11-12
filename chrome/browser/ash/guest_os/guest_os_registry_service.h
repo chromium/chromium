@@ -247,12 +247,6 @@ class GuestOsRegistryService : public KeyedService {
                             const std::string& vm_name,
                             const std::string& container_name);
 
-  // Remove all apps from the named container. Used when deleting a container
-  // without deleting the whole VM.
-  void ClearApplicationListForContainer(VmType vm_type,
-                                        const std::string& vm_name,
-                                        const std::string& container_name);
-
   // The existing list of apps is replaced by |application_list|.
   void UpdateApplicationList(const vm_tools::apps::ApplicationList& app_list);
 

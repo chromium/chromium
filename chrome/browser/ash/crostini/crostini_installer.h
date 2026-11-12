@@ -141,9 +141,6 @@ class CrostiniInstaller : public KeyedService,
   void OnCrostiniRestartFinished(crostini::CrostiniResult result);
   void OnAvailableDiskSpace(std::optional<int64_t> bytes);
 
-  void OnCrostiniRemovedAfterConfigurationFailed(
-      crostini::CrostiniResult result);
-
   raw_ptr<Profile> profile_;
 
   State state_ = State::IDLE;

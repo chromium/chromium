@@ -75,10 +75,6 @@ class CachedCallback {
     return std::move(real);
   }
 
-  void CacheForTesting(std::unique_ptr<T> real) {
-    OnRealResultFound(RealResult(std::move(real)));
-  }
-
  protected:
   using RealResult = base::expected<std::unique_ptr<T>, E>;
 

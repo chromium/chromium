@@ -105,10 +105,6 @@ std::string DefaultContainerUserNameForProfile(Profile* profile);
 // OS host such as within Downloads are shared with the container.
 base::FilePath ContainerChromeOSBaseDirectory();
 
-// Returns a list of ports currently being forwarded in Crostini as a JSON
-// object.
-std::string GetActivePortListAsJSON(Profile* profile);
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class CrostiniUISurface { kSettings = 0, kAppList = 1, kCount };

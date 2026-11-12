@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/termina_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "chrome/browser/ash/guest_os/guest_os_launcher.h"
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
@@ -516,8 +515,6 @@ class CrostiniManager : public KeyedService,
   void AddRunningVmForTesting(std::string vm_name, uint32_t cid = 0);
   void AddStoppingVmForTesting(std::string vm_name);
 
-  void SetContainerOsRelease(const guest_os::GuestId& container_id,
-                             const vm_tools::cicerone::OsRelease& os_release);
   const vm_tools::cicerone::OsRelease* GetContainerOsRelease(
       const guest_os::GuestId& container_id) const;
   void AddRunningContainerForTesting(std::string vm_name,
@@ -691,12 +688,6 @@ class CrostiniManager : public KeyedService,
       std::optional<vm_tools::cicerone::CancelImportLxdContainerResponse>
           response);
 
-  // Callback for CrostiniManager::LaunchContainerApplication.
-  void OnLaunchContainerApplication(
-      guest_os::launcher::SuccessCallback callback,
-      std::optional<vm_tools::cicerone::LaunchContainerApplicationResponse>
-          response);
-
   // Callback for CrostiniManager::GetContainerAppIcons. Called after the
   // Concierge service finishes.
   void OnGetContainerAppIcons(
@@ -716,10 +707,6 @@ class CrostiniManager : public KeyedService,
   void CheckVmLaunchAllowed(bool service_is_available);
   void OnCheckVmLaunchAllowed(
       std::optional<vm_tools::concierge::GetVmLaunchAllowedResponse> response);
-
-  // Helper for CrostiniManager::MaybeUpdateCrostini. Separated because the
-  // checking component registration code may block.
-  void MaybeUpdateCrostiniAfterChecks();
 
   // Called by CrostiniRestarter once it's done with a specific restart request.
   void RemoveRestartId(RestartId restart_id);
@@ -764,8 +751,6 @@ class CrostiniManager : public KeyedService,
 
   // Best-effort attempt to premount the user's files.
   void MountCrostiniFilesBackground(guest_os::GuestInfo info);
-
-  bool ShouldWarnAboutExpiredVersion(const guest_os::GuestId& container_id);
 
   const raw_ptr<const component_updater::ComponentUpdateService>
       component_update_service_;
