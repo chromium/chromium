@@ -34,7 +34,6 @@ class RequestPinView final : public views::DialogDelegateView,
  public:
   using PinEnteredCallback =
       base::RepeatingCallback<void(const std::string& user_input)>;
-  using ViewDestructionCallback = base::OnceClosure;
 
   // Creates the view to be embedded in the dialog that requests the PIN/PUK.
   // |extension_name| - the name of the extension making the request. Displayed
@@ -45,12 +44,10 @@ class RequestPinView final : public views::DialogDelegateView,
   //     -1 the user is allowed to provide the input and no information about
   //     the attepts left is displayed in the view.
   // |pin_entered_callback| - called every time the user submits the input.
-  // |view_destruction_callback| - called by the destructor.
   RequestPinView(const std::string& extension_name,
                  chromeos::security_token_pin::CodeType code_type,
                  int attempts_left,
-                 const PinEnteredCallback& pin_entered_callback,
-                 ViewDestructionCallback view_destruction_callback);
+                 const PinEnteredCallback& pin_entered_callback);
   RequestPinView(const RequestPinView&) = delete;
   RequestPinView& operator=(const RequestPinView&) = delete;
   ~RequestPinView() override;
@@ -98,7 +95,6 @@ class RequestPinView final : public views::DialogDelegateView,
   void UpdateHeaderText();
 
   const PinEnteredCallback pin_entered_callback_;
-  ViewDestructionCallback view_destruction_callback_;
 
   // Whether the UI is locked, disallowing the user to input any data, while the
   // caller processes the previously entered PIN/PUK.

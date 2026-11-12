@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <utility>
-
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_util.h"
@@ -38,14 +36,11 @@ constexpr int kDefaultTextWidthChars = 36;
 
 }  // namespace
 
-RequestPinView::RequestPinView(
-    const std::string& extension_name,
-    chromeos::security_token_pin::CodeType code_type,
-    int attempts_left,
-    const PinEnteredCallback& pin_entered_callback,
-    ViewDestructionCallback view_destruction_callback)
-    : pin_entered_callback_(pin_entered_callback),
-      view_destruction_callback_(std::move(view_destruction_callback)) {
+RequestPinView::RequestPinView(const std::string& extension_name,
+                               chromeos::security_token_pin::CodeType code_type,
+                               int attempts_left,
+                               const PinEnteredCallback& pin_entered_callback)
+    : pin_entered_callback_(pin_entered_callback) {
   Init();
   SetExtensionName(extension_name);
   const bool accept_input = (attempts_left != 0);
@@ -58,9 +53,7 @@ RequestPinView::RequestPinView(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
 
-RequestPinView::~RequestPinView() {
-  std::move(view_destruction_callback_).Run();
-}
+RequestPinView::~RequestPinView() = default;
 
 void RequestPinView::ContentsChanged(views::Textfield* sender,
                                      const std::u16string& new_contents) {
@@ -83,9 +76,9 @@ bool RequestPinView::Accept() {
   // The |textfield_| and OK button become disabled, but the user still can
   // close the dialog.
   SetAcceptInput(false);
-  pin_entered_callback_.Run(base::UTF16ToUTF8(textfield_->GetText()));
   locked_ = true;
   DialogModelChanged();
+  pin_entered_callback_.Run(base::UTF16ToUTF8(textfield_->GetText()));
 
   return false;
 }

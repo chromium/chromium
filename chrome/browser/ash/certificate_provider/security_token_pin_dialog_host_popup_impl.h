@@ -5,16 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_
 #define CHROME_BROWSER_ASH_CERTIFICATE_PROVIDER_SECURITY_TOKEN_PIN_DIALOG_HOST_POPUP_IMPL_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
-
-namespace views {
-class Widget;
-}  // namespace views
+#include "ui/views/widget/widget.h"
 
 class RequestPinView;
 
@@ -45,21 +43,20 @@ class SecurityTokenPinDialogHostPopupImpl final
   void CloseSecurityTokenPinDialog() override;
 
   RequestPinView* active_view_for_testing() { return active_pin_dialog_; }
-  views::Widget* active_window_for_testing() { return active_window_; }
+  views::Widget* active_window_for_testing() { return active_window_.get(); }
 
  private:
   // Called every time the user submits some input.
   void OnPinEntered(const std::string& user_input);
-  // Called when the |active_pin_dialog_| view is being destroyed.
-  void OnViewDestroyed();
+  // Called when |active_window_| is closed by the user or its window goes away.
+  void OnWidgetClosed(views::Widget::ClosedReason reason);
 
   SecurityTokenPinEnteredCallback pin_entered_callback_;
   SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback_;
 
+  std::unique_ptr<views::Widget> active_window_;
   // Owned by |active_window_|.
   raw_ptr<RequestPinView> active_pin_dialog_ = nullptr;
-  // Owned by the UI code (NativeWidget).
-  raw_ptr<views::Widget> active_window_ = nullptr;
 
   base::WeakPtrFactory<SecurityTokenPinDialogHostPopupImpl> weak_ptr_factory_{
       this};

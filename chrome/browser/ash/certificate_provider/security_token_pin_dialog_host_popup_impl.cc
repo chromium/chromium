@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/views/notifications/request_pin_view_chromeos.h"
@@ -94,12 +95,15 @@ void SecurityTokenPinDialogHostPopupImpl::ShowSecurityTokenPinDialog(
     active_pin_dialog_ = new RequestPinView(
         caller_extension_name, code_type, attempts_left,
         base::BindRepeating(&SecurityTokenPinDialogHostPopupImpl::OnPinEntered,
-                            weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&SecurityTokenPinDialogHostPopupImpl::OnViewDestroyed,
-                       weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr()));
+    active_pin_dialog_->SetOwnershipOfNewWidget(
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     // If there is no parent, falls back to the root window for new windows.
-    active_window_ = views::DialogDelegate::CreateDialogWidget(
-        active_pin_dialog_, /*context=*/nullptr, GetBrowserParentWindow());
+    active_window_ = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
+        active_pin_dialog_, /*context=*/nullptr, GetBrowserParentWindow()));
+    active_window_->MakeCloseSynchronous(
+        base::BindOnce(&SecurityTokenPinDialogHostPopupImpl::OnWidgetClosed,
+                       weak_ptr_factory_.GetWeakPtr()));
     active_window_->Show();
   }
 }
@@ -107,12 +111,8 @@ void SecurityTokenPinDialogHostPopupImpl::ShowSecurityTokenPinDialog(
 void SecurityTokenPinDialogHostPopupImpl::CloseSecurityTokenPinDialog() {
   if (!active_pin_dialog_)
     return;
-  active_window_->Close();
-  // The view destruction may happen asynchronously, so clear our state and
-  // execute the callback immediately in order to follow our own API contract.
   active_pin_dialog_ = nullptr;
-  active_window_ = nullptr;
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  active_window_.reset();
   if (pin_dialog_closed_callback_)
     std::move(pin_dialog_closed_callback_).Run();
 }
@@ -124,14 +124,9 @@ void SecurityTokenPinDialogHostPopupImpl::OnPinEntered(
   std::move(pin_entered_callback_).Run(user_input);
 }
 
-void SecurityTokenPinDialogHostPopupImpl::OnViewDestroyed() {
-  CHECK(active_pin_dialog_, base::NotFatalUntil::M160);
-  CHECK(active_window_, base::NotFatalUntil::M160);
-
-  active_pin_dialog_ = nullptr;
-  active_window_ = nullptr;
-  if (pin_dialog_closed_callback_)
-    std::move(pin_dialog_closed_callback_).Run();
+void SecurityTokenPinDialogHostPopupImpl::OnWidgetClosed(
+    views::Widget::ClosedReason reason) {
+  CloseSecurityTokenPinDialog();
 }
 
 }  // namespace chromeos
