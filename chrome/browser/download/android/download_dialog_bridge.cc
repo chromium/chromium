@@ -52,8 +52,6 @@ void DownloadDialogBridge::ShowDialog(
   if (!native_window)
     return;
 
-  UMA_HISTOGRAM_ENUMERATION("MobileDownload.Location.Dialog.Type", dialog_type);
-
   dialog_callback_ = std::move(dialog_callback);
 
   // This shouldn't happen.

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.download;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.content.Context;
 
@@ -17,7 +15,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
 import org.chromium.chrome.browser.download.dialogs.DownloadDialogUtils;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogController;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
@@ -42,9 +39,7 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     private @Nullable Context mContext;
     private @Nullable ModalDialogManager mModalDialogManager;
     private @Nullable WindowAndroid mWindowAndroid;
-    private @DownloadLocationDialogType int mLocationDialogType;
     private @Nullable String mSuggestedPath;
-    private @Nullable Profile mProfile;
     // Whether the user actively confirmed the result of the dialog. This is false when the dialog
     // is not shown and the result is selected without user input, e.g. because there is only one
     // option to choose from.
@@ -82,7 +77,6 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
             @JniType("std::string") String suggestedPath,
             Profile profile) {
         mWindowAndroid = windowAndroid;
-        mProfile = profile;
         Activity activity = windowAndroid.getActivity().get();
         if (!(activity instanceof ModalDialogManagerHolder)) {
             onCancel();
@@ -105,8 +99,6 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
                                             totalBytes)) {
                                 suggestedDialogType =
                                         DownloadLocationDialogType.LOCATION_SUGGESTION;
-                                DownloadLocationDialogMetrics.recordDownloadLocationSuggestionEvent(
-                                        DownloadLocationSuggestionEvent.LOCATION_SUGGESTION_SHOWN);
                             }
 
                             showDialog(
@@ -132,7 +124,6 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
         mContext = context;
         mModalDialogManager = modalDialogManager;
 
-        mLocationDialogType = dialogType;
         mSuggestedPath = suggestedPath;
 
         mLocationDialog.showDialog(
@@ -168,7 +159,6 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
         mContext = null;
         mModalDialogManager = null;
         mWindowAndroid = null;
-        mProfile = null;
         mSuggestedPath = null;
     }
 
@@ -177,12 +167,6 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
     public void onDownloadLocationDialogComplete(String returnedPath, boolean didUserConfirm) {
         mSuggestedPath = returnedPath;
         mDidUserConfirm = didUserConfirm;
-
-        if (mLocationDialogType == DownloadLocationDialogType.LOCATION_SUGGESTION) {
-            assumeNonNull(mProfile);
-            boolean isSelected = !mSuggestedPath.equals(getDownloadDefaultDirectory(mProfile));
-            DownloadLocationDialogMetrics.recordDownloadLocationSuggestionChoice(isSelected);
-        }
 
         onComplete();
     }

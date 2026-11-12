@@ -8,8 +8,6 @@
 // The type of download location dialog that should by shown by Android.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.download
-// Recorded in histogram, so do not delete or reuse entries. The values must
-// match DownloadLocationDialogType in enums.xml.
 enum class DownloadLocationDialogType {
   NO_DIALOG = 0,           // No dialog.
   DEFAULT = 1,             // Dialog without any error states.

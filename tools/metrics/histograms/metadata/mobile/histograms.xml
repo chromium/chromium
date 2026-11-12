@@ -1055,30 +1055,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileDownload.Location.Dialog.Suggestion.Events"
-    enum="DownloadLocationSuggestionEvent" expires_after="2023-02-16">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>Records the download location suggestion event.</summary>
-</histogram>
-
-<histogram name="MobileDownload.Location.Dialog.SuggestionSelected"
-    enum="BooleanSelected" expires_after="2023-02-16">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>Records the download location suggestion choice.</summary>
-</histogram>
-
-<histogram name="MobileDownload.Location.Dialog.Type"
-    enum="DownloadLocationDialogType" expires_after="2023-02-16">
-  <owner>qinmin@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records the download location dialog type when the dialog is shown to the
-    user.
-  </summary>
-</histogram>
-
 <histogram name="MobileDownload.Location.DirectoryType"
     enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
   <owner>dtrainor@chromium.org</owner>

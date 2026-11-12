@@ -26,8 +26,6 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DirectoryOption;
-import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics;
-import org.chromium.chrome.browser.download.DownloadLocationDialogMetrics.DownloadLocationSuggestionEvent;
 import org.chromium.chrome.browser.download.DownloadLocationDialogType;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.StringUtils;
@@ -182,9 +180,6 @@ public class DownloadLocationCustomView extends ScrollView implements OnCheckedC
                             ContextCompat.getColor(
                                     getContext(), R.color.input_underline_error_color));
             barColor = ContextCompat.getColor(getContext(), R.color.input_underline_error_color);
-
-            DownloadLocationDialogMetrics.recordDownloadLocationSuggestionEvent(
-                    DownloadLocationSuggestionEvent.NOT_ENOUGH_SPACE_SHOWN);
         }
 
         mLocationAvailableSpace.setText(locationAvailableSpaceText);
