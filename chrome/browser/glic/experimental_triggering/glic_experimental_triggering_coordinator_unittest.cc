@@ -27,11 +27,13 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/test_support/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#include "chrome/browser/glic/experimental_triggering/actor_log.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
@@ -57,6 +59,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/aggregated_journal.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -223,15 +227,19 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
     profile_ = profile_manager_.CreateTestingProfile(
         "test_profile", std::move(testing_factories));
 
+    auto* actor_service =
+        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_);
+    ASSERT_TRUE(actor_service);
+    journal_recorder_ = std::make_unique<actor::ActorJournalRecorder>(
+        actor_service->GetJournal());
+
     coordinator_ =
         std::make_unique<TestGlicExperimentalTriggeringCoordinator>(profile_);
     OptIn();
 
     actor_policy_checker_ = std::make_unique<GlicActorPolicyChecker>(*profile_);
     actor_task_manager_ = std::make_unique<GlicActorTaskManager>(
-        profile_,
-        actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_),
-        *actor_policy_checker_,
+        profile_, actor_service, *actor_policy_checker_,
         /*instance_metrics=*/nullptr,
         /*sharing_manager=*/nullptr,
         /*delegate=*/nullptr);
@@ -246,6 +254,7 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
     coordinator_.reset();
     actor_task_manager_.reset();
     actor_policy_checker_.reset();
+    journal_recorder_.reset();
     profile_ = nullptr;
   }
 
@@ -319,11 +328,30 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
   void ExpectHandlerDestroyed(
       const base::HistogramTester& tester,
       GlicExperimentalTriggeringHandlerDestroyReason reason,
-      base::HistogramBase::Count32 count = 1) {
+      base::HistogramBase::Count32 count = 1,
+      std::string_view context_id = kTestContextId) {
     for (const char* name :
          {"Glic.ExperimentalTriggering.UpdatesHandlerDestroyed",
           "Glic.Consumer.ExperimentalTriggering.UpdatesHandlerDestroyed"}) {
       tester.ExpectUniqueSample(name, reason, count);
+    }
+    if (!journal_recorder_) {
+      return;
+    }
+    auto entries = journal_recorder_->GetEntries("UpdatesHandlerDestroyed");
+    ASSERT_EQ(entries.size(), static_cast<size_t>(count));
+    for (const auto& entry : entries) {
+      EXPECT_EQ(entry.track_uuid,
+                actor::MakeGlicExperimentalTriggeringTrackUUID(context_id));
+      EXPECT_THAT(
+          entry.details,
+          testing::IsSupersetOf(
+              {testing::Pair("context_id", std::string(context_id)),
+               testing::Pair(
+                   "reason",
+                   std::string(
+                       ExperimentalTriggeringHandlerDestroyReasonToString(
+                           reason)))}));
     }
   }
 
@@ -338,6 +366,7 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> profile_;
   GlicProfileManager glic_profile_manager_;
+  std::unique_ptr<actor::ActorJournalRecorder> journal_recorder_;
   std::unique_ptr<TestGlicExperimentalTriggeringCoordinator> coordinator_;
   testing::NiceMock<TestExperimentalTriggeringManager> test_triggering_manager_;
   testing::NiceMock<MockGlicInstance> mock_glic_instance_;
@@ -6149,6 +6178,18 @@ TEST_F(GlicExperimentalTriggeringCoordinatorOptInTest,
   ExpectHandlerDestroyed(histogram_tester,
                          GlicExperimentalTriggeringHandlerDestroyReason::kIdle,
                          /*count=*/2);
+  for (const auto& entry :
+       journal_recorder_->GetEntries("UpdatesHandlerDestroyed")) {
+    EXPECT_THAT(
+        entry.details,
+        UnorderedElementsAre(
+            Pair("context_id", std::string(kTestContextId)),
+            Pair("reason", "Idle"), Pair("has_instance", "false"),
+            Pair("has_actions_runner", "false"),
+            Pair("awaiting_opt_in", "false"), Pair("pending_invoke_count", "0"),
+            Pair("is_actuation_started", "false"),
+            Pair("terminal_update_sent", "false")));
+  }
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -6281,6 +6322,15 @@ TEST_F(
   ExpectHandlerDestroyed(tester,
                          GlicExperimentalTriggeringHandlerDestroyReason::
                              kUnexpectedLiveDestruction);
+  EXPECT_THAT(
+      journal_recorder_->GetEntries("UpdatesHandlerDestroyed")[0].details,
+      UnorderedElementsAre(
+          Pair("context_id", std::string(kTestContextId)),
+          Pair("reason", "UnexpectedLiveDestruction"),
+          Pair("has_instance", "false"), Pair("has_actions_runner", "false"),
+          Pair("awaiting_opt_in", "false"), Pair("pending_invoke_count", "0"),
+          Pair("is_actuation_started", "true"),
+          Pair("terminal_update_sent", "false")));
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -6297,6 +6347,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   coordinator_.reset();
   ExpectHandlerDestroyed(
       tester, GlicExperimentalTriggeringHandlerDestroyReason::kSessionComplete);
+  EXPECT_THAT(
+      journal_recorder_->GetEntries("UpdatesHandlerDestroyed")[0].details,
+      IsSupersetOf({Pair("terminal_update_sent", "true")}));
 }
 
 // Owns a coordinator as `Profile` `SupportsUserData::Data` so it is torn down
@@ -6358,6 +6411,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   ExpectHandlerDestroyed(tester,
                          GlicExperimentalTriggeringHandlerDestroyReason::
                              kUnexpectedLiveDestruction);
+  EXPECT_THAT(
+      journal_recorder_->GetEntries("UpdatesHandlerDestroyed")[0].details,
+      IsSupersetOf({Pair("has_actions_runner", "true"),
+                    Pair("terminal_update_sent", "true")}));
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
@@ -6392,6 +6449,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   profile_ = nullptr;
   actor_task_manager_.reset();
   actor_policy_checker_.reset();
+  journal_recorder_.reset();
 
   static const int kCoordinatorHolderKey = 0;
   profile_to_delete->SetUserData(

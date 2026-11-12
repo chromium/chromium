@@ -9,9 +9,11 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
+#include "components/actor/core/task_id.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 #include "url/gurl.h"
 
@@ -92,7 +94,55 @@ std::string_view ExperimentalTriggeringRequestPayloadCaseToString(
   return "PAYLOAD_NOT_SET";
 }
 
+void LogExperimentalTriggeringJournalEvent(
+    actor::AggregatedJournal* journal,
+    std::string_view context_id,
+    std::string_view event_name,
+    actor::JournalDetailsBuilder details) {
+  if (!journal) {
+    return;
+  }
+  details.Add("context_id", context_id);
+  journal->Log(GURL(), actor::TaskId(),
+               actor::MakeGlicExperimentalTriggeringTrackUUID(context_id),
+               event_name, std::move(details).Build());
+}
+
 }  // namespace
+
+std::string_view ExperimentalTriggeringHandlerDestroyReasonToString(
+    GlicExperimentalTriggeringHandlerDestroyReason reason) {
+  switch (reason) {
+    case GlicExperimentalTriggeringHandlerDestroyReason::kIdle:
+      return "Idle";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kSessionComplete:
+      return "SessionComplete";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kSessionStopped:
+      return "SessionStopped";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kSessionFailed:
+      return "SessionFailed";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kRejectedSynchronously:
+      return "RejectedSynchronously";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kInvokeError:
+      return "InvokeError";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kSuperseded:
+      return "Superseded";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kTabClosed:
+      return "TabClosed";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kInstanceDestroyed:
+      return "InstanceDestroyed";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kClientDisconnected:
+      return "ClientDisconnected";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kRegistrationFailed:
+      return "RegistrationFailed";
+    case GlicExperimentalTriggeringHandlerDestroyReason::kCoordinatorShutdown:
+      return "CoordinatorShutdown";
+    case GlicExperimentalTriggeringHandlerDestroyReason::
+        kUnexpectedLiveDestruction:
+      return "UnexpectedLiveDestruction";
+  }
+  NOTREACHED();
+}
 
 void LogGlicExperimentalTriggeringProto(
     actor::ActorKeyedService* actor_service,
@@ -158,6 +208,24 @@ void LogGlicExperimentalTriggeringProto(
       GURL(), actor::TaskId(),
       actor::MakeGlicExperimentalTriggeringTrackUUID(context_id), event_name,
       std::move(builder).Build(), proto);
+}
+
+void LogGlicExperimentalTriggeringHandlerDestroyed(
+    actor::AggregatedJournal* journal,
+    std::string_view context_id,
+    GlicExperimentalTriggeringHandlerDestroyReason reason,
+    const UpdatesHandlerDestroyedJournalSnapshot& snapshot) {
+  actor::JournalDetailsBuilder builder;
+  builder.Add("reason",
+              ExperimentalTriggeringHandlerDestroyReasonToString(reason));
+  builder.Add("has_instance", snapshot.has_instance);
+  builder.Add("has_actions_runner", snapshot.has_actions_runner);
+  builder.Add("awaiting_opt_in", snapshot.awaiting_opt_in);
+  builder.Add("pending_invoke_count", snapshot.pending_invoke_count);
+  builder.Add("is_actuation_started", snapshot.is_actuation_started);
+  builder.Add("terminal_update_sent", snapshot.terminal_update_sent);
+  LogExperimentalTriggeringJournalEvent(
+      journal, context_id, "UpdatesHandlerDestroyed", std::move(builder));
 }
 
 }  // namespace glic

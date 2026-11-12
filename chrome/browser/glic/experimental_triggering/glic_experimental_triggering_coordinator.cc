@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
@@ -428,7 +429,6 @@ base::WeakPtr<actor::ActorKeyedService> GetActorServiceWeakPtr(
   }
   return nullptr;
 }
-
 }  // namespace
 
 // Handles every request for one context id, and owns the session that those
@@ -471,12 +471,22 @@ class ExperimentalTriggeringUpdatesHandler
         coordinator_(std::move(coordinator)),
         actor_service_(coordinator_ ? coordinator_->actor_service_
                                     : GetActorServiceWeakPtr(profile)),
+        journal_(actor_service_ ? actor_service_->GetJournal().GetWeakPtr()
+                                : nullptr),
         receiver_(this),
         metric_reporter_(profile) {}
 
   ~ExperimentalTriggeringUpdatesHandler() override {
     const GlicExperimentalTriggeringHandlerDestroyReason destroy_reason =
         ComputeDestroyReason();
+    const UpdatesHandlerDestroyedJournalSnapshot snapshot{
+        .has_instance = static_cast<bool>(instance_),
+        .has_actions_runner = static_cast<bool>(actions_runner_),
+        .awaiting_opt_in = awaiting_opt_in_ || IsWaitingForBackgroundOptIn(),
+        .pending_invoke_count = pending_invoke_ids_.size(),
+        .is_actuation_started = is_actuation_started_,
+        .terminal_update_sent = terminal_update_sent_,
+    };
     StopWaitingForBackgroundOptIn();
     // Covers destruction without a terminal update.
     RemovePendingTask();
@@ -496,6 +506,8 @@ class ExperimentalTriggeringUpdatesHandler
     }
     metric_reporter_.RecordEnumeration(
         "ExperimentalTriggering.UpdatesHandlerDestroyed", destroy_reason);
+    LogGlicExperimentalTriggeringHandlerDestroyed(journal_.get(), context_id_,
+                                                  destroy_reason, snapshot);
   }
 
   enum class DeletionPath { kUnapproved, kCleanup, kCoordinatorShutdown };
@@ -2299,6 +2311,7 @@ class ExperimentalTriggeringUpdatesHandler
   InvokeErrorDiagnosticsPasskey error_diagnostics_passkey_;
   base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator_;
   base::WeakPtr<actor::ActorKeyedService> actor_service_;
+  base::WeakPtr<actor::AggregatedJournal> journal_;
   base::WeakPtr<GlicInstance> instance_;
   base::CallbackListSubscription actuating_subscription_;
   std::unique_ptr<actor::ActorActionsRunner> actions_runner_;
