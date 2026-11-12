@@ -29,6 +29,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_SCOPED_STYLE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_SCOPED_STYLE_RESOLVER_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -124,6 +126,8 @@ class CORE_EXPORT ScopedStyleResolver final
   }
   bool NeedsAppendAllSheets() const { return needs_append_all_sheets_; }
   void SetNeedsAppendAllSheets() { needs_append_all_sheets_ = true; }
+  void SetPendingOldUserStyleSheets(ActiveStyleSheetVector&);
+  std::optional<ActiveStyleSheetVector> TakePendingOldUserStyleSheets();
   static void KeyframesRulesAdded(const TreeScope&);
   static Element& InvalidationRootForTreeScope(const TreeScope&);
 
@@ -158,6 +162,8 @@ class CORE_EXPORT ScopedStyleResolver final
   Member<TreeScope> scope_;
 
   ActiveStyleSheetVector active_style_sheets_;
+  // Null means no pending rebuild; an empty snapshot is still meaningful.
+  Member<GCedHeapVector<ActiveStyleSheet>> pending_old_user_style_sheets_;
   HeapVector<RuleSetGroup> rule_set_groups_;
 
   using KeyframesRuleMap =

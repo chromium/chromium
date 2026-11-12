@@ -48,6 +48,7 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
 
   void Add(const StyleRuleFontFace*, FontFace*);
   void Remove(const StyleRuleFontFace*);
+  FontFace* Get(const StyleRuleFontFace*) const;
   // Returns true if at least one font was removed.
   bool ClearCSSConnected();
   void ClearAll();

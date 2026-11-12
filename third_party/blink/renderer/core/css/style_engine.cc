@@ -1147,26 +1147,71 @@ void StyleEngine::DidDetach() {
   inspector_style_sheet_list_.clear();
 }
 
-bool StyleEngine::ClearFontFaceCacheAndAddUserFonts(
-    const ActiveStyleSheetVector& user_sheets) {
-  bool fonts_changed = false;
+bool StyleEngine::RebuildCSSConnectedFontFaces(
+    const ActiveStyleSheetVector& old_user_sheets,
+    const ActiveStyleSheetVector& new_user_sheets,
+    const ActiveStyleSheetVector& old_author_sheets,
+    const ActiveStyleSheetVector& new_author_sheets) {
+  if (!font_selector_) {
+    return false;
+  }
 
-  if (font_selector_ &&
-      font_selector_->GetFontFaceCache()->ClearCSSConnected()) {
+  FontFaceCache* cache = font_selector_->GetFontFaceCache();
+  HeapVector<Member<FontFace>> font_faces;
+  auto collect_font_faces = [&](const ActiveStyleSheetVector& old_sheets,
+                                const ActiveStyleSheetVector& new_sheets,
+                                bool is_user_style) {
+    const bool origin_is_unchanged = &old_sheets == &new_sheets;
+    HeapHashMap<Member<CSSStyleSheet>, HeapHashSet<Member<RuleSet>>>
+        old_rule_sets;
+    if (!origin_is_unchanged) {
+      for (const auto& sheet : old_sheets) {
+        if (sheet.second && !sheet.second->FontFaceRules().empty()) {
+          old_rule_sets.insert(sheet.first, HeapHashSet<Member<RuleSet>>())
+              .stored_value->value.insert(sheet.second);
+        }
+      }
+    }
+    for (const auto& sheet : new_sheets) {
+      if (!sheet.second || sheet.second->FontFaceRules().empty()) {
+        continue;
+      }
+      bool ruleset_is_unchanged = origin_is_unchanged;
+      if (!origin_is_unchanged) {
+        // If this new sheet already pointed at this RuleSet, then we know the
+        // `ruleset_is_unchanged`.
+        const auto old_sheet = old_rule_sets.find(sheet.first);
+        ruleset_is_unchanged = old_sheet != old_rule_sets.end() &&
+                               old_sheet->value.Contains(sheet.second);
+      }
+      for (const auto& rule : sheet.second->FontFaceRules()) {
+        // If the `ruleset_is_unchanged` then we try to use the `FontFace` from
+        // the cache to preserve loading and font-display state. This ensures
+        // previously skipped `font-display: optional` `FontFace`s do not
+        // unexpectedly take effect due to unrelated stylesheet changes.
+        FontFace* face =
+            ruleset_is_unchanged ? cache->Get(rule.value) : nullptr;
+        if (!face) {
+          face = FontFace::Create(document_, rule, is_user_style);
+        }
+        if (face) {
+          font_faces.push_back(face);
+        }
+      }
+    }
+  };
+  collect_font_faces(old_user_sheets, new_user_sheets, /*is_user_style=*/true);
+  collect_font_faces(old_author_sheets, new_author_sheets,
+                     /*is_user_style=*/false);
+
+  bool fonts_changed = cache->ClearCSSConnected();
+  for (FontFace* face : font_faces) {
+    cache->Add(face->GetStyleRule(), face);
     fonts_changed = true;
-    if (resolver_) {
-      resolver_->InvalidateMatchedPropertiesCache();
-    }
   }
-
-  // Rebuild the font cache with @font-face rules from user style sheets.
-  for (unsigned i = 0; i < user_sheets.size(); ++i) {
-    DCHECK(user_sheets[i].second);
-    if (AddUserFontFaceRules(*user_sheets[i].second)) {
-      fonts_changed = true;
-    }
+  if (fonts_changed && resolver_) {
+    resolver_->InvalidateMatchedPropertiesCache();
   }
-
   return fonts_changed;
 }
 
@@ -3025,12 +3070,13 @@ class StyleEngine::AtRuleCascadeMap {
 };
 
 void StyleEngine::ApplyUserRuleSetChanges(
-    const ActiveStyleSheetVector& old_style_sheets,
+    ActiveStyleSheetVector& old_style_sheets,
     const ActiveStyleSheetVector& new_style_sheets) {
   DCHECK(global_rule_set_);
   HeapHashSet<Member<RuleSet>> changed_rule_sets;
 
   bool invalidated_fonts = false;
+  ScopedStyleResolver* font_rebuild_resolver = nullptr;
 
   ActiveSheetsChange change = CompareActiveStyleSheets(
       old_style_sheets, new_style_sheets, /*diffs=*/{}, changed_rule_sets);
@@ -3065,20 +3111,18 @@ void StyleEngine::ApplyUserRuleSetChanges(
   }
 
   if (changed_rule_flags & kFontFaceRules) {
-    if (ScopedStyleResolver* scoped_resolver =
-            GetDocument().GetScopedStyleResolver()) {
+    font_rebuild_resolver = GetDocument().GetScopedStyleResolver();
+    if (font_rebuild_resolver) {
       // User style and document scope author style shares the font cache. If
       // @font-face rules are added/removed from user stylesheets, we need to
       // reconstruct the font cache because @font-face rules from author style
       // need to be added to the cache after user rules.
-      scoped_resolver->SetNeedsAppendAllSheets();
       MarkDocumentDirty();
     } else {
-      bool has_rebuilt_font_face_cache =
-          ClearFontFaceCacheAndAddUserFonts(new_style_sheets);
-      if (has_rebuilt_font_face_cache) {
-        invalidated_fonts = true;
-      }
+      const ActiveStyleSheetVector& author_sheets =
+          document_style_sheet_collection_->ActiveStyleSheets();
+      invalidated_fonts = RebuildCSSConnectedFontFaces(
+          old_style_sheets, new_style_sheets, author_sheets, author_sheets);
     }
   }
 
@@ -3162,6 +3206,11 @@ void StyleEngine::ApplyUserRuleSetChanges(
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
 
+  // Swap out the old sheets only after processing all user rules.
+  if (font_rebuild_resolver) {
+    font_rebuild_resolver->SetPendingOldUserStyleSheets(old_style_sheets);
+  }
+
   // We're deferring the font face invalidation because when it reaches the
   // inspector, it may cause another style update which re-enters this method.
   if (invalidated_fonts) {
@@ -3185,6 +3234,7 @@ void StyleEngine::ApplyRuleSetChanges(
 
   ActiveSheetsChange change = CompareActiveStyleSheets(
       old_style_sheets, new_style_sheets, diffs, changed_rule_sets);
+  const bool author_sheets_changed = change != kNoActiveSheetsChanged;
 
   unsigned changed_rule_flags = GetRuleSetFlags(changed_rule_sets);
   if (changed_rule_flags & kLayerRules && change == kActiveSheetsChanged) {
@@ -3238,7 +3288,10 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   bool rebuild_cascade_layer_map = changed_rule_flags & kLayerRules;
+  std::optional<ActiveStyleSheetVector> old_user_style_sheets;
   if (scoped_resolver) {
+    // Take ownership before potentially resetting the author rules.
+    old_user_style_sheets = scoped_resolver->TakePendingOldUserStyleSheets();
     // - If all sheets were removed, we remove the ScopedStyleResolver
     // - If new sheets were appended to existing ones, start appending after the
     //   common prefix, and rebuild CascadeLayerMap only if layers are changed.
@@ -3290,8 +3343,12 @@ void StyleEngine::ApplyRuleSetChanges(
   if (tree_scope.RootNode().IsDocumentNode()) {
     bool has_rebuilt_font_face_cache = false;
     if (rebuild_font_face_cache) {
-      has_rebuilt_font_face_cache =
-          ClearFontFaceCacheAndAddUserFonts(active_user_style_sheets_);
+      has_rebuilt_font_face_cache = RebuildCSSConnectedFontFaces(
+          old_user_style_sheets ? *old_user_style_sheets
+                                : active_user_style_sheets_,
+          active_user_style_sheets_,
+          author_sheets_changed ? old_style_sheets : new_style_sheets,
+          new_style_sheets);
     }
     if ((changed_rule_flags & kFontFaceRules) ||
         (changed_rule_flags & kFontPaletteValuesRules) ||
@@ -3637,25 +3694,6 @@ void StyleEngine::AddFontPaletteValuesRulesFromSheets(
       AddFontPaletteValuesRules(*rule_set);
     }
   }
-}
-
-bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
-  if (!font_selector_) {
-    return false;
-  }
-
-  const HeapVector<CascadeLayered<StyleRuleFontFace>> font_face_rules =
-      rule_set.FontFaceRules();
-  for (auto& font_face_rule : font_face_rules) {
-    if (FontFace* font_face = FontFace::Create(document_, font_face_rule,
-                                               true /* is_user_style */)) {
-      font_selector_->GetFontFaceCache()->Add(font_face_rule.value, font_face);
-    }
-  }
-  if (resolver_ && font_face_rules.size()) {
-    resolver_->InvalidateMatchedPropertiesCache();
-  }
-  return font_face_rules.size();
 }
 
 void StyleEngine::AddUserKeyframeRules(const RuleSet& rule_set) {

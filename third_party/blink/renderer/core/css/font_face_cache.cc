@@ -52,6 +52,11 @@ void FontFaceCache::Add(const StyleRuleFontFace* font_face_rule,
   AddFontFace(font_face, true);
 }
 
+FontFace* FontFaceCache::Get(const StyleRuleFontFace* rule) const {
+  const auto it = style_rule_to_font_face_.find(rule);
+  return it == style_rule_to_font_face_.end() ? nullptr : it->value.Get();
+}
+
 void FontFaceCache::SegmentedFacesByFamily::AddFontFace(FontFace* font_face,
                                                         bool css_connected) {
   const auto result = map_.insert(font_face->familyNameUnquoted(), nullptr);

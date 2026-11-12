@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 
 #include <ranges>
+#include <utility>
 
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
@@ -166,6 +167,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
 void ScopedStyleResolver::ResetStyle() {
   RemoveImplicitScopeTriggers();
   active_style_sheets_.clear();
+  pending_old_user_style_sheets_.Clear();
   rule_set_groups_.clear();
   keyframes_rule_map_.clear();
   position_try_rule_map_.clear();
@@ -177,6 +179,28 @@ void ScopedStyleResolver::ResetStyle() {
   }
   cascade_layer_map_ = nullptr;
   needs_append_all_sheets_ = false;
+}
+
+void ScopedStyleResolver::SetPendingOldUserStyleSheets(
+    ActiveStyleSheetVector& sheets) {
+  DCHECK(GetTreeScope().RootNode().IsDocumentNode());
+  if (!pending_old_user_style_sheets_) {
+    pending_old_user_style_sheets_ =
+        MakeGarbageCollected<GCedHeapVector<ActiveStyleSheet>>(
+            std::move(sheets));
+  }
+  SetNeedsAppendAllSheets();
+}
+
+std::optional<ActiveStyleSheetVector>
+ScopedStyleResolver::TakePendingOldUserStyleSheets() {
+  if (!pending_old_user_style_sheets_) {
+    return std::nullopt;
+  }
+  std::optional<ActiveStyleSheetVector> sheets(
+      std::in_place, std::move(*pending_old_user_style_sheets_));
+  pending_old_user_style_sheets_.Clear();
+  return sheets;
 }
 
 StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
@@ -546,6 +570,7 @@ void ScopedStyleResolver::AddImplicitScopeTriggers(
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(active_style_sheets_);
+  visitor->Trace(pending_old_user_style_sheets_);
   visitor->Trace(rule_set_groups_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(position_try_rule_map_);

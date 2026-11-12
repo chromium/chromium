@@ -608,7 +608,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                            const ActiveStyleSheetVector& old_style_sheets,
                            const ActiveStyleSheetVector& new_style_sheets,
                            const HeapVector<Member<RuleSetDiff>>& diffs);
-  void ApplyUserRuleSetChanges(const ActiveStyleSheetVector& old_style_sheets,
+  void ApplyUserRuleSetChanges(ActiveStyleSheetVector& old_style_sheets,
                                const ActiveStyleSheetVector& new_style_sheets);
 
   void VisionDeficiencyChanged();
@@ -926,8 +926,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateStyleSheetList(TreeScope&);
 
   // Returns true if any @font-face rules are added or removed.
-  bool ClearFontFaceCacheAndAddUserFonts(
-      const ActiveStyleSheetVector& user_sheets);
+  // Passing the same vector for an origin's old and new sheets means that
+  // origin is known to be unchanged.
+  bool RebuildCSSConnectedFontFaces(
+      const ActiveStyleSheetVector& old_user_sheets,
+      const ActiveStyleSheetVector& new_user_sheets,
+      const ActiveStyleSheetVector& old_author_sheets,
+      const ActiveStyleSheetVector& new_author_sheets);
 
   void ClearKeyframeRules();
   void UpdatePropertyRules(const ActiveStyleSheetVector& user_style_sheets,
@@ -941,8 +946,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void AddFontPaletteValuesRulesFromSheets(
       const ActiveStyleSheetVector& sheets);
 
-  // Returns true if any @font-face rules are added.
-  bool AddUserFontFaceRules(const RuleSet&);
   void AddUserKeyframeRules(const RuleSet&);
   void AddUserKeyframeStyle(const CascadeLayered<StyleRuleKeyframes>&);
   void AddFontPaletteValuesRules(const RuleSet& rule_set);
