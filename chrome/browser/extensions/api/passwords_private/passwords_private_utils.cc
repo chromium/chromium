@@ -69,8 +69,9 @@ int IdGenerator::GenerateId(CredentialUIEntry credential) {
   for (int candidate_id : iterator->second) {
     auto credential_iterator = id_to_credential_.find(candidate_id);
     CHECK(credential_iterator != id_to_credential_.end());
-    if (credential_iterator->second == credential) {
-      // Refresh metadata which does not participate in credential equality.
+    if (password_manager::AreCredentialsEquivalent(credential_iterator->second,
+                                                   credential)) {
+      // Refresh metadata which does not participate in credential equivalence.
       credential_iterator->second = std::move(credential);
       return candidate_id;
     }

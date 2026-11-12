@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/containers/flat_set.h"
+#import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -98,17 +99,17 @@ bool CanDisplayCredentialAsCompromised(DetailsContext details_context) {
 bool ShouldDisplayCredentialAsCompromised(
     DetailsContext details_context,
     const CredentialUIEntry& credential,
-    std::vector<password_manager::CredentialUIEntry> insecure_credentials) {
+    base::span<const CredentialUIEntry> insecure_credentials) {
   if (!CanDisplayCredentialAsCompromised(details_context)) {
     return false;
   }
 
-  for (const auto& insecure_credential : insecure_credentials) {
-    if (credential == insecure_credential) {
-      return IsCredentialUnmutedCompromised(insecure_credential);
-    }
-  }
-  return false;
+  auto it = std::ranges::find_if(
+      insecure_credentials, [&credential](const CredentialUIEntry& entry) {
+        return password_manager::AreCredentialsEquivalent(credential, entry);
+      });
+  return it != insecure_credentials.end() &&
+         IsCredentialUnmutedCompromised(*it);
 }
 
 // Whether displaying a credential as muted is supported in the current context.
@@ -132,17 +133,16 @@ bool CanDisplayCredentialAsMuted(DetailsContext details_context) {
 bool ShouldDisplayCredentialAsMuted(
     DetailsContext details_context,
     const CredentialUIEntry& credential,
-    std::vector<password_manager::CredentialUIEntry> insecure_credentials) {
+    base::span<const CredentialUIEntry> insecure_credentials) {
   if (!CanDisplayCredentialAsMuted(details_context)) {
     return false;
   }
 
-  for (const auto& insecure_credential : insecure_credentials) {
-    if (credential == insecure_credential) {
-      return insecure_credential.IsMuted();
-    }
-  }
-  return false;
+  auto it = std::ranges::find_if(
+      insecure_credentials, [&credential](const CredentialUIEntry& entry) {
+        return password_manager::AreCredentialsEquivalent(credential, entry);
+      });
+  return it != insecure_credentials.end() && it->IsMuted();
 }
 
 // Returns true if `credential` is a passkey matching the other arguments.

@@ -91,11 +91,6 @@ CredentialFacet& CredentialFacet::operator=(CredentialFacet&& other) = default;
 
 // CredentialUIEntry
 
-bool CredentialUIEntry::Less::operator()(const CredentialUIEntry& lhs,
-                                         const CredentialUIEntry& rhs) const {
-  return CreateCredentialSortKey(lhs) < CreateCredentialSortKey(rhs);
-}
-
 CredentialUIEntry::CredentialUIEntry() = default;
 
 CredentialUIEntry::CredentialUIEntry(const StoredCredential& credential)
@@ -356,9 +351,16 @@ CredentialSortKey CreateCredentialSortKey(const StoredCredential& credential) {
       credential.username_value, credential.federation_origin);
 }
 
-bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
+bool AreCredentialsEquivalent(const CredentialUIEntry& lhs,
+                              const CredentialUIEntry& rhs) {
+  // Checking `lhs.blocked_by_user` alone is symmetric because `blocked_by_user`
+  // is part of `CredentialSortKey`, so `lhs` and `rhs` already match on it.
   return CreateCredentialSortKey(lhs) == CreateCredentialSortKey(rhs) &&
          (lhs.blocked_by_user || lhs.password == rhs.password);
+}
+
+bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
+  return AreCredentialsEquivalent(lhs, rhs);
 }
 
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {

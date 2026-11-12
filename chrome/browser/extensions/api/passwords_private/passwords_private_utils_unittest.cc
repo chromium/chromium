@@ -85,7 +85,9 @@ TEST(CreateUrlCollectionFromGURLTest, UrlsFromGURL) {
   EXPECT_EQ(urls.link, "https://example.com/login");
 }
 
+using ::testing::AllOf;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Pointee;
 
 class IdGeneratorTest : public ::testing::Test {
@@ -158,7 +160,8 @@ TEST_F(IdGeneratorTest, DifferentIdsForDifferentPasswordsInSameBucket) {
   refreshed_credential2.note = u"new note";
   EXPECT_EQ(id2, id_generator().GenerateId(refreshed_credential2));
   EXPECT_THAT(id_generator().TryGetKey(id2),
-              Pointee(Eq(refreshed_credential2)));
+              Pointee(AllOf(Eq(refreshed_credential2),
+                            Field(&CredentialUIEntry::note, u"new note"))));
 }
 
 TEST_F(IdGeneratorTest, UpdatedCacheWithNewGenerateId) {
@@ -177,7 +180,9 @@ TEST_F(IdGeneratorTest, UpdatedCacheWithNewGenerateId) {
   int same_id = id_generator().GenerateId(updated_credential);
 
   EXPECT_EQ(id, same_id);
-  EXPECT_THAT(id_generator().TryGetKey(id), Pointee(Eq(updated_credential)));
+  EXPECT_THAT(id_generator().TryGetKey(id),
+              Pointee(AllOf(Eq(updated_credential),
+                            Field(&CredentialUIEntry::note, u"new note"))));
 }
 
 }  // namespace extensions

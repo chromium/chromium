@@ -137,11 +137,6 @@ struct CredentialUIEntry {
     std::string rp_id;
   };
 
-  struct Less {
-    bool operator()(const CredentialUIEntry& lhs,
-                    const CredentialUIEntry& rhs) const;
-  };
-
   CredentialUIEntry();
   explicit CredentialUIEntry(const StoredCredential& credential);
   explicit CredentialUIEntry(const std::vector<StoredCredential>& credentials);
@@ -250,6 +245,12 @@ struct CredentialUIEntry {
 // CredentialUIEntry; both overloads must produce identical keys.
 CredentialSortKey CreateCredentialSortKey(const CredentialUIEntry& credential);
 CredentialSortKey CreateCredentialSortKey(const StoredCredential& credential);
+
+// Returns true if `lhs` and `rhs` represent the same logical credential
+// (equal `CredentialSortKey`s and, unless `blocked_by_user` is true, equal
+// passwords), ignoring metadata such as notes, stores, or insecurity issues.
+bool AreCredentialsEquivalent(const CredentialUIEntry& lhs,
+                              const CredentialUIEntry& rhs);
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);

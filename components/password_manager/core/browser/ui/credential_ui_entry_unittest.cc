@@ -458,4 +458,65 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromStoredCredentialsVector) {
   EXPECT_TRUE(entry.stored_in.contains(PasswordForm::Store::kAccountStore));
 }
 
+TEST(CredentialUIEntryTest, AreCredentialsEquivalent) {
+  PasswordForm form;
+  form.signon_realm = "https://g.com/";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"user";
+  form.password_value = PasswordString(u"password");
+  form.in_store = PasswordForm::Store::kProfileStore;
+
+  CredentialUIEntry credential1(form);
+  CredentialUIEntry credential2(form);
+  credential2.note = u"updated note";
+  credential2.stored_in = {PasswordForm::Store::kAccountStore};
+  credential2.password_issues[InsecureType::kWeak] = InsecurityMetadata();
+  EXPECT_TRUE(AreCredentialsEquivalent(credential1, credential2));
+
+  {
+    CredentialUIEntry different_username = credential1;
+    different_username.username = u"other_user";
+    EXPECT_FALSE(AreCredentialsEquivalent(credential1, different_username));
+  }
+  {
+    CredentialUIEntry different_url = credential1;
+    different_url.facets[0].signon_realm = "https://other.com/";
+    different_url.facets[0].url = GURL("https://other.com/");
+    EXPECT_FALSE(AreCredentialsEquivalent(credential1, different_url));
+  }
+
+  credential2.password = PasswordString(u"other_password");
+  EXPECT_FALSE(AreCredentialsEquivalent(credential1, credential2));
+
+  credential1.blocked_by_user = true;
+  EXPECT_FALSE(AreCredentialsEquivalent(credential1, CredentialUIEntry(form)));
+
+  credential2.blocked_by_user = true;
+  EXPECT_TRUE(AreCredentialsEquivalent(credential1, credential2));
+
+  PasskeyCredential passkey(PasskeyCredential::Source::kAndroidPhone,
+                            PasskeyCredential::RpId("g.com"),
+                            PasskeyCredential::CredentialId({1, 2, 3, 4}),
+                            PasskeyCredential::UserId(),
+                            PasskeyCredential::Username("user"),
+                            PasskeyCredential::DisplayName("Display Name"));
+  CredentialUIEntry passkey1(passkey);
+  CredentialUIEntry passkey2(passkey);
+  passkey2.passkey_info->hidden = true;
+  passkey2.passkey_info->rp_id = "other.com";
+  passkey2.creation_time = base::Time::FromTimeT(42);
+  EXPECT_TRUE(AreCredentialsEquivalent(passkey1, passkey2));
+
+  {
+    CredentialUIEntry different_cred_id = passkey1;
+    different_cred_id.passkey_info->credential_id = {5, 6, 7, 8};
+    EXPECT_FALSE(AreCredentialsEquivalent(passkey1, different_cred_id));
+  }
+  {
+    CredentialUIEntry different_display_name = passkey1;
+    different_display_name.passkey_info->user_display_name = u"Other Name";
+    EXPECT_FALSE(AreCredentialsEquivalent(passkey1, different_display_name));
+  }
+}
+
 }  // namespace password_manager

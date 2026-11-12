@@ -664,3 +664,29 @@ TEST_F(PasswordDetailsMediatorTest, RestoreWarningForCurrentPassword) {
   CheckConsumerPasswords(/*expected_passwords=*/@[]);
   CheckConsumerTitle();
 }
+
+// Tests that a muted compromised credential is marked as muted in the
+// `kDismissedWarnings` context even when `GetInsecureCredentials()` has
+// insecurity metadata not present on `mediator().credentials`.
+TEST_F(PasswordDetailsMediatorTest,
+       NotifiesConsumerOnMutedPasswordInDismissedWarnings) {
+  mediator().context = DetailsContext::kDismissedWarnings;
+
+  AddInsecurePasswordForm(/*url=*/kExampleURL1,
+                          /*password=*/kExamplePassword1,
+                          /*insecure_type=*/InsecureType::kLeaked,
+                          /*is_muted=*/true);
+
+  ASSERT_EQ(mediator().credentials.size(), 1u);
+  EXPECT_FALSE(mediator().credentials[0].IsLeaked());
+  ASSERT_EQ(password_check_manager()->GetInsecureCredentials().size(), 1u);
+  EXPECT_TRUE(password_check_manager()->GetInsecureCredentials()[0].IsMuted());
+
+  CredentialDetails* expected_password_details = [[CredentialDetails alloc]
+      initWithCredential:GetAffiliatedGroupCredentials()[0]];
+  expected_password_details.context = DetailsContext::kDismissedWarnings;
+  expected_password_details.muted = YES;
+
+  CheckConsumerPasswords(/*expected_passwords=*/@[ expected_password_details ]);
+  CheckConsumerTitle();
+}
