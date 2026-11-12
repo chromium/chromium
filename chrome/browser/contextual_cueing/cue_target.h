@@ -194,6 +194,16 @@ class CueTarget {
   // Called when the user clicks the "edit prompt" menu item.
   virtual void OnEditPrompt(CueActionData data) = 0;
 
+  // Called when the user clicks the "dismiss" menu item, after the cue has been
+  // hidden. For targets that `DowngradesToQuietOnDismiss()`, only the anchored
+  // message is hidden, so the user can reopen it from the chip and dismiss it
+  // again; this may then be called more than once per cue.
+  virtual void OnDismissed();
+
+  // Called when the user clicks the menu item that opens the suggestions
+  // settings, after the cue has been hidden and before the settings page opens.
+  virtual void OnSuggestionsSettingsOpened();
+
   // Icon to be shown in the anchored message.
   virtual ui::ImageModel GetAnchoredMessageIcon() const = 0;
 

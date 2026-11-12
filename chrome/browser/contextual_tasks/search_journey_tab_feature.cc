@@ -169,6 +169,20 @@ void SearchJourneyTabFeature::OnCueChipClicked() {
   }
 }
 
+void SearchJourneyTabFeature::OnCueDismissed() {
+  if (tracker_ && web_contents()) {
+    tracker_->OnJourneyCueDismissed(
+        sessions::SessionTabHelper::IdForTab(web_contents()));
+  }
+}
+
+void SearchJourneyTabFeature::OnCueSuggestionsSettingsOpened() {
+  if (tracker_ && web_contents()) {
+    tracker_->OnJourneyCueSuggestionsSettingsOpened(
+        sessions::SessionTabHelper::IdForTab(web_contents()));
+  }
+}
+
 void SearchJourneyTabFeature::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {

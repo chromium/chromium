@@ -25,6 +25,8 @@ class TestCueTarget : public CueTarget {
   CueActionData edit_prompt_data = std::monostate();
   bool chip_shown = false;
   bool chip_clicked = false;
+  bool dismissed = false;
+  bool suggestions_settings_opened = false;
   std::optional<page_actions::PageActionPriorityCategory>
       anchored_message_shown_priority;
 
@@ -52,6 +54,8 @@ class TestCueTarget : public CueTarget {
       page_actions::PageActionPriorityCategory priority) override;
   void OnAnchoredMessageClicked(CueActionData data) override;
   void OnEditPrompt(CueActionData data) override;
+  void OnDismissed() override;
+  void OnSuggestionsSettingsOpened() override;
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;
   CueActionData CueActionDataFromResponse(

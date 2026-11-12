@@ -121,6 +121,20 @@ void AbaSearchJourneyCueTarget::OnEditPrompt(
   NOTREACHED();
 }
 
+void AbaSearchJourneyCueTarget::OnDismissed() {
+  if (SearchJourneyTabFeature* feature =
+          SearchJourneyTabFeature::From(&tab_.get())) {
+    feature->OnCueDismissed();
+  }
+}
+
+void AbaSearchJourneyCueTarget::OnSuggestionsSettingsOpened() {
+  if (SearchJourneyTabFeature* feature =
+          SearchJourneyTabFeature::From(&tab_.get())) {
+    feature->OnCueSuggestionsSettingsOpened();
+  }
+}
+
 ui::ImageModel AbaSearchJourneyCueTarget::GetAnchoredMessageIcon() const {
   return GetSearchSparkIcon();
 }

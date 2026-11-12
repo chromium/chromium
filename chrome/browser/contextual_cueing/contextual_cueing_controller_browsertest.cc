@@ -2624,9 +2624,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
 
   // Directly call OnCueInteraction to simulate the Menu Delegate
   auto* cue = &response.contextual_cues(0);
+  ASSERT_FALSE(cue_target()->dismissed);
   contextual_cueing_controller()->OnCueInteraction(
       ContextualCueingInteraction::kCueDismissed, CueTargetType::kGlic, *cue,
       {}, {}, "test_cuj_string", {}, "fake_id");
+  EXPECT_TRUE(cue_target()->dismissed);
 
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.CueInteraction.Dismissed",
@@ -2640,6 +2642,27 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       ukm::builders::ContextualCueing_CueInteraction::
           kProactiveCueInteractionName,
       static_cast<int64_t>(ContextualCueingInteraction::kCueDismissed));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       NotifiesTargetOfSuggestionsSettingsOpened) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  // Opening the settings page activates another tab, so keep this tab's target.
+  TestCueTarget* target = cue_target();
+  ASSERT_TRUE(target);
+  ASSERT_FALSE(target->suggestions_settings_opened);
+
+  auto response = MakeCompleteResponse();
+  contextual_cueing_controller()->OnCueInteraction(
+      ContextualCueingInteraction::kCueSuggestionsSettings,
+      CueTargetType::kGlic, response.contextual_cues(0), {}, {},
+      "test_cuj_string", {}, "fake_id");
+
+  EXPECT_TRUE(target->suggestions_settings_opened);
+  EXPECT_FALSE(target->dismissed);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,

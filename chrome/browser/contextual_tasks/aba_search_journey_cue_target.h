@@ -56,6 +56,8 @@ class AbaSearchJourneyCueTarget : public contextual_cueing::CueTarget {
       page_actions::PageActionPriorityCategory priority) override;
   void OnAnchoredMessageClicked(contextual_cueing::CueActionData data) override;
   void OnEditPrompt(contextual_cueing::CueActionData data) override;
+  void OnDismissed() override;
+  void OnSuggestionsSettingsOpened() override;
   ui::ImageModel GetAnchoredMessageIcon() const override;
   ui::ImageModel GetOmniboxChipIcon() const override;
   contextual_cueing::CueActionData CueActionDataFromResponse(
