@@ -56,21 +56,27 @@ bool ScrollStateQuerySnapshot::UpdateSnapshot() {
       ScrollOffset max_offset = scrollable_area->MaximumScrollOffset();
       ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
       ScrollOffset offset = scrollable_area->GetScrollOffset();
-      if (offset.x() > min_offset.x()) {
-        scrollable_horizontal |=
-            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);
+      if (!RuntimeEnabledFeatures::CSSCQHiddenScrollableFixEnabled() ||
+          scrollable_area->UserInputScrollable(kHorizontalScrollbar)) {
+        if (offset.x() > min_offset.x()) {
+          scrollable_horizontal |= static_cast<ContainerScrollableFlags>(
+              ContainerScrollable::kStart);
+        }
+        if (offset.x() < max_offset.x()) {
+          scrollable_horizontal |=
+              static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
+        }
       }
-      if (offset.x() < max_offset.x()) {
-        scrollable_horizontal |=
-            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
-      }
-      if (offset.y() > min_offset.y()) {
-        scrollable_vertical |=
-            static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);
-      }
-      if (offset.y() < max_offset.y()) {
-        scrollable_vertical |=
-            static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
+      if (!RuntimeEnabledFeatures::CSSCQHiddenScrollableFixEnabled() ||
+          scrollable_area->UserInputScrollable(kVerticalScrollbar)) {
+        if (offset.y() > min_offset.y()) {
+          scrollable_vertical |= static_cast<ContainerScrollableFlags>(
+              ContainerScrollable::kStart);
+        }
+        if (offset.y() < max_offset.y()) {
+          scrollable_vertical |=
+              static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
+        }
       }
       if (RuntimeEnabledFeatures::CSSScrolledContainerQueriesEnabled()) {
         scrolled_vertical = scrollable_area->LastScrolledVertical();
