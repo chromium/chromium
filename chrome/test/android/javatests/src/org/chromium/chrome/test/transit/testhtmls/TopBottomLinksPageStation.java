@@ -97,7 +97,12 @@ public class TopBottomLinksPageStation extends WebPageStation {
 
         @Override
         public void declareExtraElements() {
-            topElement = declareElement(new HtmlElement(TOP_LINK, mHostStation.webContentsElement));
+            topElement =
+                    declareElement(
+                            new HtmlElement(
+                                    TOP_LINK,
+                                    mHostStation.webContentsElement,
+                                    HtmlElement.inViewportOption()));
         }
 
         /** Open context menu on the top link. */
@@ -122,7 +127,11 @@ public class TopBottomLinksPageStation extends WebPageStation {
         @Override
         public void declareExtraElements() {
             bottomElement =
-                    declareElement(new HtmlElement(BOTTOM_LINK, mHostStation.webContentsElement));
+                    declareElement(
+                            new HtmlElement(
+                                    BOTTOM_LINK,
+                                    mHostStation.webContentsElement,
+                                    HtmlElement.inViewportOption()));
             declareEnterCondition(new ScrollToBottomCondition(mHostStation.webContentsElement));
         }
 

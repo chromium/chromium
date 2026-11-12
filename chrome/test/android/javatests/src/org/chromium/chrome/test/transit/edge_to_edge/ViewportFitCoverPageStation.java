@@ -41,9 +41,18 @@ public class ViewportFitCoverPageStation extends WebPageStation {
         super(config);
 
         // Ensure the web page elements are drawn and visible.
-        avoidBottomElement = declareElement(new HtmlElement(AVOID_BOTTOM_DIV, webContentsElement));
+        avoidBottomElement =
+                declareElement(
+                        new HtmlElement(
+                                AVOID_BOTTOM_DIV,
+                                webContentsElement,
+                                HtmlElement.inViewportOption()));
         fullScreenButtonElement =
-                declareElement(new HtmlElement(FULLSCREEN_MAIN_BUTTON, webContentsElement));
+                declareElement(
+                        new HtmlElement(
+                                FULLSCREEN_MAIN_BUTTON,
+                                webContentsElement,
+                                HtmlElement.inViewportOption()));
 
         // Declare requiring EdgeToEdgeController, meaning #setDecorFitsSystemWindows(false)
         declareEnterCondition(new EdgeToEdgeControllerCondition(mActivityElement));
