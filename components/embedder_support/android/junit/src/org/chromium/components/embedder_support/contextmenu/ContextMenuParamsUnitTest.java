@@ -90,4 +90,125 @@ public class ContextMenuParamsUnitTest {
         assertTrue("isEncrypted should be true", encryptedParams.isEncrypted());
         assertTrue("hasReadableVideoFrame should be true", encryptedParams.hasReadableVideoFrame());
     }
+
+    private ContextMenuParams createContextMenuParamsWithMediaType(
+            @ContextMenuDataMediaType int mediaType) {
+        return new ContextMenuParams(
+                /* nativePtr= */ null,
+                /* menuModelBridge= */ null,
+                mediaType,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                /* pageUrl= */ GURL.emptyGURL(),
+                /* linkUrl= */ GURL.emptyGURL(),
+                /* linkText= */ "",
+                /* unfilteredLinkUrl= */ GURL.emptyGURL(),
+                /* srcUrl= */ GURL.emptyGURL(),
+                /* titleText= */ "",
+                /* referrer= */ null,
+                /* canSaveMedia= */ false,
+                /* triggeringTouchXDp= */ 0,
+                /* triggeringTouchYDp= */ 0,
+                MenuSourceType.MOUSE,
+                /* openedFromHighlight= */ false,
+                /* openedFromInterestFor= */ false,
+                /* additionalNavigationParams= */ null);
+    }
+
+    @Test
+    public void testIsCanvas() {
+        ContextMenuParams canvasParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.CANVAS);
+        assertTrue("isCanvas should be true for CANVAS", canvasParams.isCanvas());
+        assertFalse("isPage should be false for CANVAS", canvasParams.isPage());
+        assertFalse("isImage should be false for CANVAS", canvasParams.isImage());
+        assertFalse("isVideo should be false for CANVAS", canvasParams.isVideo());
+
+        ContextMenuParams noneParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.NONE);
+        assertFalse("isCanvas should be false for NONE", noneParams.isCanvas());
+        assertTrue("isPage should be true for NONE", noneParams.isPage());
+
+        ContextMenuParams imageParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.IMAGE);
+        assertFalse("isCanvas should be false for IMAGE", imageParams.isCanvas());
+        assertTrue("isImage should be true for IMAGE", imageParams.isImage());
+
+        ContextMenuParams videoParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.VIDEO);
+        assertFalse("isCanvas should be false for VIDEO", videoParams.isCanvas());
+        assertTrue("isVideo should be true for VIDEO", videoParams.isVideo());
+    }
+
+    @Test
+    public void testHasImageContents() {
+        ContextMenuParams defaultCanvasParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.CANVAS);
+        assertTrue(
+                "hasImageContents should default to true for CANVAS in test ctor",
+                defaultCanvasParams.hasImageContents());
+
+        ContextMenuParams defaultImageParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.IMAGE);
+        assertTrue(
+                "hasImageContents should default to true for IMAGE in test ctor",
+                defaultImageParams.hasImageContents());
+
+        ContextMenuParams defaultNoneParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.NONE);
+        assertFalse(
+                "hasImageContents should default to false for NONE in test ctor",
+                defaultNoneParams.hasImageContents());
+
+        ContextMenuParams defaultVideoParams =
+                createContextMenuParamsWithMediaType(ContextMenuDataMediaType.VIDEO);
+        assertFalse(
+                "hasImageContents should default to false for VIDEO in test ctor",
+                defaultVideoParams.hasImageContents());
+
+        ContextMenuParams cleanCanvasParams =
+                new ContextMenuParams(
+                        /* nativePtr= */ null,
+                        /* menuModelBridge= */ null,
+                        ContextMenuDataMediaType.CANVAS,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        /* pageUrl= */ GURL.emptyGURL(),
+                        /* linkUrl= */ GURL.emptyGURL(),
+                        /* linkText= */ "",
+                        /* unfilteredLinkUrl= */ GURL.emptyGURL(),
+                        /* srcUrl= */ GURL.emptyGURL(),
+                        /* titleText= */ "",
+                        /* referrer= */ null,
+                        /* canSaveMedia= */ false,
+                        /* triggeringTouchXDp= */ 0,
+                        /* triggeringTouchYDp= */ 0,
+                        MenuSourceType.MOUSE,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false,
+                        /* additionalNavigationParams= */ null,
+                        /* hasImageContents= */ true);
+        assertTrue("hasImageContents should be true", cleanCanvasParams.hasImageContents());
+
+        ContextMenuParams taintedCanvasParams =
+                new ContextMenuParams(
+                        /* nativePtr= */ null,
+                        /* menuModelBridge= */ null,
+                        ContextMenuDataMediaType.CANVAS,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        /* pageUrl= */ GURL.emptyGURL(),
+                        /* linkUrl= */ GURL.emptyGURL(),
+                        /* linkText= */ "",
+                        /* unfilteredLinkUrl= */ GURL.emptyGURL(),
+                        /* srcUrl= */ GURL.emptyGURL(),
+                        /* titleText= */ "",
+                        /* referrer= */ null,
+                        /* canSaveMedia= */ false,
+                        /* triggeringTouchXDp= */ 0,
+                        /* triggeringTouchYDp= */ 0,
+                        MenuSourceType.MOUSE,
+                        /* openedFromHighlight= */ false,
+                        /* openedFromInterestFor= */ false,
+                        /* additionalNavigationParams= */ null,
+                        /* hasImageContents= */ false);
+        assertFalse("hasImageContents should be false", taintedCanvasParams.hasImageContents());
+    }
 }

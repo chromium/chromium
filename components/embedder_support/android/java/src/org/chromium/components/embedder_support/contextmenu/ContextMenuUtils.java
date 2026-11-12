@@ -214,7 +214,7 @@ public final class ContextMenuUtils {
     public static String getContextMenuTypeForHistogram(ContextMenuParams params) {
         if (params.isVideo()) {
             return "Video";
-        } else if (params.isImage()) {
+        } else if (params.isImage() || params.isCanvas()) {
             return params.isAnchor() ? "ImageLink" : "Image";
         } else if (params.getOpenedFromHighlight()) {
             return "SharedHighlightingInteraction";

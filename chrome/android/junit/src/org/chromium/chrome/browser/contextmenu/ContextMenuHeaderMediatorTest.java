@@ -123,6 +123,55 @@ public class ContextMenuHeaderMediatorTest {
     }
 
     @Test
+    public void testHeaderImage_Canvas() {
+        PropertyModel model =
+                new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS).build();
+        final GURL url = JUnitTestGURLs.EXAMPLE_URL;
+        final ContextMenuParams params =
+                new ContextMenuParams(
+                        null,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.CANVAS,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        url,
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        0,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* additionalNavigationParams= */ null);
+        new ContextMenuHeaderMediator(mActivity, model, params, mProfile, mNativeDelegate);
+
+        verify(mNativeDelegate)
+                .retrieveImageForContextMenu(
+                        anyInt(), anyInt(), mRetrieveImageCallbackCaptor.capture());
+        verify(mMockLargeIconBridgeJni, times(0))
+                .getLargeIconForURL(anyLong(), any(), any(), anyInt(), anyInt(), any());
+
+        Assert.assertNotNull(
+                "Retrieve image callback is null.", mRetrieveImageCallbackCaptor.getValue());
+        Assert.assertNull(
+                "Header image should be null before thumbnail callback triggers.",
+                model.get(ContextMenuHeaderProperties.IMAGE));
+
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        mRetrieveImageCallbackCaptor.getValue().onResult(bitmap);
+        Assert.assertNotNull(
+                "Thumbnail should be set for model in retrieve image callback.",
+                model.get(ContextMenuHeaderProperties.IMAGE));
+        Assert.assertFalse(
+                "Circle background should be invisible for thumbnail.",
+                model.get(ContextMenuHeaderProperties.CIRCLE_BG_VISIBLE));
+    }
+
+    @Test
     public void testHeaderImage_Video() {
         PropertyModel model =
                 new PropertyModel.Builder(ContextMenuHeaderProperties.ALL_KEYS).build();

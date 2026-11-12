@@ -111,7 +111,8 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
     public void startDownload(GURL url, boolean isMedia) {
         if (mNativePtr == null) return;
 
-        ContextMenuNativeDelegateImplJni.get().startDownload(mNativePtr, url, isMedia);
+        ContextMenuNativeDelegateImplJni.get()
+                .startDownload(mNativePtr, mRenderFrameHost, url, isMedia);
     }
 
     @Override
@@ -210,6 +211,7 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
 
         void startDownload(
                 JniPtr<NativeContextMenuNativeDelegateImpl> self,
+                @JniType("content::RenderFrameHost*") RenderFrameHost renderFrameHost,
                 @JniType("GURL") GURL url,
                 boolean isMedia);
 

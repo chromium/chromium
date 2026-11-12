@@ -836,4 +836,55 @@ public class ContextMenuUtilsUnitTest {
         menuParamsTaken.destroy();
         verify(takenParams, never()).destroy();
     }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_canvas() {
+        ContextMenuParams bareCanvasParams =
+                new ContextMenuParams(
+                        null,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.CANVAS,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        sPageGUrl,
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        ALT_TEXT,
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.MOUSE,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* additionalNavigationParams= */ null);
+        assertEquals("Image", ContextMenuUtils.getContextMenuTypeForHistogram(bareCanvasParams));
+    }
+
+    @Test
+    public void testGetContextMenuTypeForHistogram_canvasLink() {
+        ContextMenuParams linkedCanvasParams =
+                new ContextMenuParams(
+                        null,
+                        mMenuModelBridge,
+                        ContextMenuDataMediaType.CANVAS,
+                        ContextMenuDataMediaFlags.MEDIA_NONE,
+                        sPageGUrl,
+                        sLinkGUrl,
+                        sLinkText,
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        ALT_TEXT,
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.MOUSE,
+                        false,
+                        /* openedFromInterestFor= */ false,
+                        /* additionalNavigationParams= */ null);
+        assertEquals(
+                "ImageLink", ContextMenuUtils.getContextMenuTypeForHistogram(linkedCanvasParams));
+    }
 }

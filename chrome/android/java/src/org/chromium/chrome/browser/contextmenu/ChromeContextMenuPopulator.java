@@ -360,7 +360,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
             // Record SharedHighlightingInteraction only for Shared Highlighting V2 menu options
             // (share highlight, remove highlight and learn more).
-            if (params.getOpenedFromHighlight() && !params.isVideo() && !params.isImage()) {
+            if (params.getOpenedFromHighlight()
+                    && !params.isVideo()
+                    && !params.isImage()
+                    && !params.isCanvas()) {
                 assert histogramName.equals(
                         "ContextMenu.SelectedOptionAndroid.SharedHighlightingInteraction");
                 if (action != Action.SHARE_HIGHLIGHT
@@ -373,7 +376,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             RecordHistogram.recordEnumeratedHistogram(histogramName, action, Action.NUM_ENTRIES);
 
             if (params.isAnchor() && !params.isVideo() && !params.getOpenedFromHighlight()) {
-                if (params.isImage()) {
+                if (params.isImage() || params.isCanvas()) {
                     assert histogramName.equals("ContextMenu.SelectedOptionAndroid.ImageLink");
                 } else {
                     assert histogramName.equals("ContextMenu.SelectedOptionAndroid.Link");
@@ -487,6 +490,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         && ContentFeatureMap.isEnabled(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU))
                 || (mParams.getSourceType() == MenuSourceType.LONG_PRESS
                         && TabUtils.isUsingDesktopUserAgent(mItemDelegate.getWebContents())));
+    }
+
+    @VisibleForTesting
+    boolean shouldShowCanvasContextMenu() {
+        return mParams.getSourceType() == MenuSourceType.MOUSE
+                || (mParams.getSourceType() == MenuSourceType.KEYBOARD
+                        && ContentFeatureMap.isEnabled(
+                                BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU));
     }
 
     @VisibleForTesting
@@ -730,7 +741,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (!MailTo.isMailTo(mParams.getLinkUrl().getSpec())
                     && !UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
                 linkGroup.add(createListItem(Item.COPY_LINK_ADDRESS));
-                if (!mParams.getLinkText().trim().isEmpty() && !mParams.isImage()) {
+                if (!mParams.getLinkText().trim().isEmpty()
+                        && !mParams.isImage()
+                        && !mParams.isCanvas()) {
                     linkGroup.add(createListItem(Item.COPY_LINK_TEXT));
                 }
             }
@@ -763,6 +776,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     }
                 }
                 if (!mParams.isImage()
+                        && !mParams.isCanvas()
                         && BookmarkUtils.isReadingListSupported(mParams.getLinkUrl())
                         && (mMode != ContextMenuMode.THIN_WEB_VIEW
                                 || mItemDelegate.supportsReadLater())) {
@@ -889,6 +903,33 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             groupedItems.add(imageGroup);
         }
 
+        if (mParams.isCanvas()
+                && shouldShowCanvasContextMenu()
+                && areMandatoryFlowsCompleted(getProfile())) {
+            ModelList canvasGroup = new ModelList();
+            boolean hasImageContents = mParams.hasImageContents();
+            canvasGroup.add(
+                    createListItem(
+                            Item.COPY_IMAGE,
+                            /* showInProductHelp= */ false,
+                            /* enabled= */ hasImageContents));
+            if (mMode != ContextMenuMode.THIN_WEB_VIEW || mItemDelegate.supportsSaveImage()) {
+                canvasGroup.add(
+                        createListItem(
+                                Item.SAVE_IMAGE,
+                                /* showInProductHelp= */ false,
+                                /* enabled= */ hasImageContents && !mIsDownloadRestrictedByPolicy));
+            }
+            if (enableShareFromContextMenu()) {
+                canvasGroup.add(
+                        createShareListItem(
+                                Item.SHARE_IMAGE,
+                                Item.DIRECT_SHARE_IMAGE,
+                                /* enabled= */ hasImageContents));
+            }
+            groupedItems.add(canvasGroup);
+        }
+
         if (mParams.isVideo() && areMandatoryFlowsCompleted(getProfile())) {
             ModelList videoGroup = new ModelList();
             if (mParams.canSaveMedia()
@@ -995,7 +1036,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     developerGroup.add(createListItem(Item.VIEW_PAGE_SOURCE));
                 }
             }
-            if (mMode != ContextMenuMode.THIN_WEB_VIEW || mItemDelegate.supportsInspectElement()) {
+            if ((mMode != ContextMenuMode.THIN_WEB_VIEW || mItemDelegate.supportsInspectElement())
+                    && !groupedItems.isEmpty()) {
                 developerGroup.add(createListItem(Item.INSPECT_ELEMENT));
             }
             if (!developerGroup.isEmpty()) {
@@ -1312,7 +1354,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_direct_share_image) {
             recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_IMAGE);
             mNativeDelegate.retrieveImageForShare(
-                    ContextMenuImageFormat.ORIGINAL,
+                    mParams.isCanvas()
+                            ? ContextMenuImageFormat.PNG
+                            : ContextMenuImageFormat.ORIGINAL,
                     (Uri uri) -> {
                         assert ShareHelper.getLastShareComponentName() != null;
                         ShareParams params =
@@ -1575,7 +1619,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     /** Copy the image, that triggered the current context menu, to system clipboard. */
     private void copyImageToClipboard() {
         mNativeDelegate.retrieveImageForShare(
-                ContextMenuImageFormat.ORIGINAL,
+                mParams.isCanvas() ? ContextMenuImageFormat.PNG : ContextMenuImageFormat.ORIGINAL,
                 (Uri uri) ->
                         DataProtectionBridge.verifyCopyImageIsAllowedByPolicy(
                                 assertNonNull(uri.getPath()),
@@ -1619,7 +1663,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                         ? mParams.getLinkUrl()
                         : mParams.getSrcUrl();
         mNativeDelegate.retrieveImageForShare(
-                ContextMenuImageFormat.ORIGINAL,
+                mParams.isCanvas() ? ContextMenuImageFormat.PNG : ContextMenuImageFormat.ORIGINAL,
                 (Uri imageUri) -> {
                     ContentResolver contentResolver =
                             ContextUtils.getApplicationContext().getContentResolver();
@@ -1800,13 +1844,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     private ListItem createShareListItem(@Item int item, @Item int iconButtonItem) {
+        return createShareListItem(item, iconButtonItem, /* enabled= */ true);
+    }
+
+    private ListItem createShareListItem(
+            @Item int item, @Item int iconButtonItem, boolean enabled) {
         final boolean isLink = (item == Item.SHARE_LINK || item == Item.SHARE_PAGE);
         final Pair<@Nullable Drawable, @Nullable CharSequence> shareInfo =
-                createRecentShareAppInfo(isLink);
+                enabled ? createRecentShareAppInfo(isLink) : Pair.create(null, null);
         final PropertyModel model =
                 new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
                         .with(MENU_ITEM_ID, ChromeContextMenuItem.getMenuId(item))
-                        .with(ENABLED, true)
+                        .with(ENABLED, enabled)
                         .with(
                                 TITLE,
                                 ChromeContextMenuItem.getTitle(mContext, getProfile(), item, false))

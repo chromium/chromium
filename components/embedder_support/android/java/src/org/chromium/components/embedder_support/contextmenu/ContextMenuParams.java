@@ -46,7 +46,9 @@ public class ContextMenuParams {
     private final boolean mIsAnchor;
     private final boolean mIsImage;
     private final boolean mIsVideo;
+    private final boolean mIsCanvas;
     private final boolean mCanSaveMedia;
+    private final boolean mHasImageContents;
 
     private final @ContextMenuDataMediaFlags int mMediaFlags;
 
@@ -128,8 +130,18 @@ public class ContextMenuParams {
         return mIsVideo;
     }
 
+    /** Returns whether the context menu is being shown for a canvas. */
+    public boolean isCanvas() {
+        return mIsCanvas;
+    }
+
     public boolean canSaveMedia() {
         return mCanSaveMedia;
+    }
+
+    /** Returns whether the target element has readable image contents. */
+    public boolean hasImageContents() {
+        return mHasImageContents;
     }
 
     /**
@@ -246,6 +258,11 @@ public class ContextMenuParams {
         return mMenuModelBridge;
     }
 
+    /**
+     * Convenience constructor for tests that derives {@code hasImageContents} from {@code
+     * mediaType}. Production code always passes {@code hasImageContents} from native via {@link
+     * #create}.
+     */
     @VisibleForTesting
     public ContextMenuParams(
             @Nullable JniUniquePtr<NativeContextMenuParams> nativePtr,
@@ -266,6 +283,50 @@ public class ContextMenuParams {
             boolean openedFromHighlight,
             boolean openedFromInterestFor,
             @Nullable AdditionalNavigationParams additionalNavigationParams) {
+        this(
+                nativePtr,
+                menuModelBridge,
+                mediaType,
+                mediaFlags,
+                pageUrl,
+                linkUrl,
+                linkText,
+                unfilteredLinkUrl,
+                srcUrl,
+                titleText,
+                referrer,
+                canSaveMedia,
+                triggeringTouchXDp,
+                triggeringTouchYDp,
+                sourceType,
+                openedFromHighlight,
+                openedFromInterestFor,
+                additionalNavigationParams,
+                /* hasImageContents= */ mediaType == ContextMenuDataMediaType.IMAGE
+                        || mediaType == ContextMenuDataMediaType.CANVAS);
+    }
+
+    @VisibleForTesting
+    public ContextMenuParams(
+            @Nullable JniUniquePtr<NativeContextMenuParams> nativePtr,
+            MenuModelBridge menuModelBridge,
+            @ContextMenuDataMediaType int mediaType,
+            @ContextMenuDataMediaFlags int mediaFlags,
+            GURL pageUrl,
+            GURL linkUrl,
+            String linkText,
+            GURL unfilteredLinkUrl,
+            GURL srcUrl,
+            String titleText,
+            @Nullable Referrer referrer,
+            boolean canSaveMedia,
+            int triggeringTouchXDp,
+            int triggeringTouchYDp,
+            int sourceType,
+            boolean openedFromHighlight,
+            boolean openedFromInterestFor,
+            @Nullable AdditionalNavigationParams additionalNavigationParams,
+            boolean hasImageContents) {
         mNativePtr = nativePtr;
         mMenuModelBridge = menuModelBridge;
         mPageUrl = pageUrl;
@@ -286,7 +347,9 @@ public class ContextMenuParams {
         mIsAnchor = !linkUrl.isEmpty();
         mIsImage = mediaType == ContextMenuDataMediaType.IMAGE;
         mIsVideo = mediaType == ContextMenuDataMediaType.VIDEO;
+        mIsCanvas = mediaType == ContextMenuDataMediaType.CANVAS;
         mCanSaveMedia = canSaveMedia;
+        mHasImageContents = hasImageContents;
         mMediaFlags = mediaFlags;
         mTriggeringTouchXDp = triggeringTouchXDp;
         mTriggeringTouchYDp = triggeringTouchYDp;
@@ -316,7 +379,8 @@ public class ContextMenuParams {
             int sourceType,
             boolean openedFromHighlight,
             boolean openedFromInterestFor,
-            @Nullable AdditionalNavigationParams additionalNavigationParams) {
+            @Nullable AdditionalNavigationParams additionalNavigationParams,
+            boolean hasImageContents) {
         // TODO(crbug.com/40549331): Convert Referrer to use GURL.
         Referrer referrer =
                 sanitizedReferrer.isEmpty()
@@ -340,6 +404,7 @@ public class ContextMenuParams {
                 sourceType,
                 openedFromHighlight,
                 openedFromInterestFor,
-                additionalNavigationParams);
+                additionalNavigationParams,
+                hasImageContents);
     }
 }

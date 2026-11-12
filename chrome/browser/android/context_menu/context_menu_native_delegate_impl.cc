@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -138,9 +139,19 @@ ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
 
 ContextMenuNativeDelegateImpl::~ContextMenuNativeDelegateImpl() = default;
 
-void ContextMenuNativeDelegateImpl::StartDownload(JNIEnv* env,
-                                                  const GURL& url,
-                                                  bool jis_media) {
+void ContextMenuNativeDelegateImpl::StartDownload(
+    JNIEnv* env,
+    content::RenderFrameHost* render_frame_host,
+    const GURL& url,
+    bool jis_media) {
+  if (jis_media && context_menu_params_.media_type ==
+                       blink::mojom::ContextMenuDataMediaType::kCanvas) {
+    if (render_frame_host) {
+      render_frame_host->SaveImageAt(context_menu_params_.x,
+                                     context_menu_params_.y);
+    }
+    return;
+  }
   DownloadControllerBase::Get()->StartContextMenuDownload(
       url, context_menu_params_, web_contents_, jis_media);
 }

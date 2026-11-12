@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.KeyboardShortcutsJni;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
+import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -4017,7 +4018,8 @@ public class ChromeContextMenuPopulatorTest {
     private ListItem findItemWithId(List<ModelList> menuState, int itemId) {
         for (ModelList group : menuState) {
             for (ListItem item : group) {
-                if (item.type == MENU_ITEM) {
+                if (item.type == MENU_ITEM
+                        || item.type == ContextMenuItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
                     if (item.model.get(MENU_ITEM_ID) == itemId) {
                         return item;
                     }
@@ -4709,5 +4711,222 @@ public class ChromeContextMenuPopulatorTest {
         return delegate.getMenuItem("", null, 0, id, null, true, false, true, null, 0)
                 .model
                 .get(ListMenuItemProperties.SHORTCUT_TEXT);
+    }
+
+    private ContextMenuParams createCanvasParams(
+            int sourceType, String linkUrl, boolean hasImageContents) {
+        return new ContextMenuParams(
+                null,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.CANVAS,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                new GURL(PAGE_URL),
+                linkUrl.isEmpty() ? GURL.emptyGURL() : new GURL(linkUrl),
+                linkUrl.isEmpty() ? "" : LINK_TEXT,
+                linkUrl.isEmpty() ? GURL.emptyGURL() : new GURL(linkUrl),
+                GURL.emptyGURL(),
+                "",
+                null,
+                /* canSaveMedia= */ false,
+                0,
+                0,
+                sourceType,
+                /* openedFromHighlight= */ false,
+                /* openedFromInterestFor= */ false,
+                /* additionalNavigationParams= */ null,
+                hasImageContents);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testCanvas_MouseRightClick() {
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams mouseParams =
+                createCanvasParams(MenuSourceType.MOUSE, "", /* hasImageContents= */ true);
+
+        int[][] expectedCanvas = {
+            {
+                R.id.contextmenu_copy_image,
+                R.id.contextmenu_save_image,
+                R.id.contextmenu_share_image,
+            }
+        };
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, mouseParams);
+        checkMenuOptions(expectedCanvas);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, mouseParams);
+        checkMenuOptions(expectedCanvas);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, mouseParams);
+        checkMenuOptions(expectedCanvas);
+
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, mouseParams);
+        checkMenuOptions(expectedCanvas);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, mouseParams);
+        checkMenuOptions(expectedCanvas);
+
+        when(mItemDelegate.supportsSaveImage()).thenReturn(false);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, mouseParams);
+        checkMenuOptions(new int[][] {{R.id.contextmenu_copy_image, R.id.contextmenu_share_image}});
+        when(mItemDelegate.supportsSaveImage()).thenReturn(true);
+
+        // Developer menu appends Inspect Element in a second group.
+        int[][] expectedCanvasWithDevMenu = {
+            {
+                R.id.contextmenu_copy_image,
+                R.id.contextmenu_save_image,
+                R.id.contextmenu_share_image,
+            },
+            {R.id.contextmenu_inspect_element}
+        };
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                mouseParams,
+                /* shouldShowDeveloperMenu= */ true,
+                /* shouldShowViewPageSourceMenu= */ true,
+                /* supportPrint= */ true);
+        checkMenuOptions(expectedCanvasWithDevMenu);
+
+        // Keyboard context menu on <canvas> matches mouse right-click when flag is enabled.
+        ContextMenuParams keyboardParams =
+                createCanvasParams(MenuSourceType.KEYBOARD, "", /* hasImageContents= */ true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, keyboardParams);
+        checkMenuOptions(expectedCanvas);
+
+        // Linked <canvas> shows Link group first (excluding copy link text & reading list), then
+        // Canvas group.
+        ContextMenuParams linkedCanvasParams =
+                createCanvasParams(MenuSourceType.MOUSE, LINK_URL, /* hasImageContents= */ true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, linkedCanvasParams);
+        List<ModelList> linkedMenu = mPopulator.buildContextMenu();
+        assertEquals(2, linkedMenu.size());
+        assertNotNull(
+                findItemWithId(List.of(linkedMenu.get(0)), R.id.contextmenu_copy_link_address));
+        assertNull(findItemWithId(List.of(linkedMenu.get(0)), R.id.contextmenu_copy_link_text));
+        assertNull(findItemWithId(List.of(linkedMenu.get(0)), R.id.contextmenu_read_later));
+        assertEquals(3, linkedMenu.get(1).size());
+        assertEquals(R.id.contextmenu_copy_image, linkedMenu.get(1).get(0).model.get(MENU_ITEM_ID));
+        assertEquals(R.id.contextmenu_save_image, linkedMenu.get(1).get(1).model.get(MENU_ITEM_ID));
+        assertEquals(
+                R.id.contextmenu_share_image, linkedMenu.get(1).get(2).model.get(MENU_ITEM_ID));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testCanvas_TaintedCanvasDisablesImageItems() {
+        setAllMandatoryFlowsComplete();
+        ContextMenuParams taintedParams =
+                createCanvasParams(MenuSourceType.MOUSE, "", /* hasImageContents= */ false);
+
+        int[][] expectedCanvas = {
+            {
+                R.id.contextmenu_copy_image,
+                R.id.contextmenu_save_image,
+                R.id.contextmenu_share_image,
+            }
+        };
+        List<Integer> expectedDisabled =
+                Arrays.asList(
+                        R.id.contextmenu_copy_image,
+                        R.id.contextmenu_save_image,
+                        R.id.contextmenu_share_image);
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, taintedParams);
+        checkMenuOptions(expectedDisabled, expectedCanvas);
+
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+        ListItem shareItem = findItemWithId(menuState, R.id.contextmenu_share_image);
+        assertNotNull(shareItem);
+        assertFalse(shareItem.model.get(ENABLED));
+        assertNull(shareItem.model.get(ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE));
+        assertNull(
+                shareItem.model.get(
+                        ContextMenuItemWithIconButtonProperties.END_BUTTON_CONTENT_DESC));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testCanvas_TouchLongPress_SuppressesCanvasMenu() {
+        setAllMandatoryFlowsComplete();
+
+        // Bare <canvas> on LONG_PRESS and TOUCH suppresses the menu even with developer menu on.
+        ContextMenuParams longPressBare =
+                createCanvasParams(MenuSourceType.LONG_PRESS, "", /* hasImageContents= */ true);
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                longPressBare,
+                /* shouldShowDeveloperMenu= */ true,
+                /* shouldShowViewPageSourceMenu= */ true,
+                /* supportPrint= */ true);
+        assertTrue(mPopulator.buildContextMenu().isEmpty());
+
+        ContextMenuParams touchBare =
+                createCanvasParams(MenuSourceType.TOUCH, "", /* hasImageContents= */ true);
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                touchBare,
+                /* shouldShowDeveloperMenu= */ true,
+                /* shouldShowViewPageSourceMenu= */ true,
+                /* supportPrint= */ true);
+        assertTrue(mPopulator.buildContextMenu().isEmpty());
+
+        // Linked <canvas> on LONG_PRESS shows only Link group (plus developer group if enabled).
+        ContextMenuParams longPressLinked =
+                createCanvasParams(
+                        MenuSourceType.LONG_PRESS, LINK_URL, /* hasImageContents= */ true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, longPressLinked);
+        List<ModelList> linkedMenuNoDev = mPopulator.buildContextMenu();
+        assertEquals(1, linkedMenuNoDev.size());
+        assertNotNull(findItemWithId(linkedMenuNoDev, R.id.contextmenu_copy_link_address));
+        assertNull(findItemWithId(linkedMenuNoDev, R.id.contextmenu_copy_image));
+
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                longPressLinked,
+                /* shouldShowDeveloperMenu= */ true,
+                /* shouldShowViewPageSourceMenu= */ true,
+                /* supportPrint= */ true);
+        List<ModelList> linkedMenuWithDev = mPopulator.buildContextMenu();
+        assertEquals(2, linkedMenuWithDev.size());
+        assertNull(findItemWithId(linkedMenuWithDev, R.id.contextmenu_copy_image));
+        assertEquals(1, linkedMenuWithDev.get(1).size());
+        assertEquals(
+                R.id.contextmenu_inspect_element,
+                linkedMenuWithDev.get(1).get(0).model.get(MENU_ITEM_ID));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testCanvas_ActionsUsePngAndStartDownload() {
+        ContextMenuParams params =
+                createCanvasParams(MenuSourceType.MOUSE, "", /* hasImageContents= */ true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        when(mItemDelegate.startDownload(eq(GURL.emptyGURL()), eq(false))).thenReturn(true);
+
+        mPopulator.onItemSelected(R.id.contextmenu_copy_image);
+        verify(mNativeDelegate, Mockito.times(1))
+                .retrieveImageForShare(eq(ContextMenuImageFormat.PNG), any());
+
+        mPopulator.onItemSelected(R.id.contextmenu_share_image);
+        verify(mNativeDelegate, Mockito.times(2))
+                .retrieveImageForShare(eq(ContextMenuImageFormat.PNG), any());
+
+        mPopulator.onItemSelected(R.id.contextmenu_direct_share_image);
+        verify(mNativeDelegate, Mockito.times(3))
+                .retrieveImageForShare(eq(ContextMenuImageFormat.PNG), any());
+        verify(mNativeDelegate, never())
+                .retrieveImageForShare(eq(ContextMenuImageFormat.ORIGINAL), any());
+
+        mPopulator.onItemSelected(R.id.contextmenu_save_image);
+        verify(mItemDelegate).startDownload(eq(GURL.emptyGURL()), eq(false));
+        verify(mNativeDelegate).startDownload(eq(GURL.emptyGURL()), eq(true));
     }
 }

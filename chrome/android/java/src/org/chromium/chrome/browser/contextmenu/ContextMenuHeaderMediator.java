@@ -53,13 +53,13 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
         mModel = model;
         mModel.set(ContextMenuHeaderProperties.TITLE_AND_URL_CLICK_LISTENER, this);
 
-        if (params.isImage()) {
+        if (params.isImage() || params.isCanvas()) {
             final Resources res = mContext.getResources();
             final int imageMaxSize =
                     res.getDimensionPixelSize(R.dimen.context_menu_header_image_max_size);
             nativeDelegate.retrieveImageForContextMenu(
                     imageMaxSize, imageMaxSize, this::onImageThumbnailRetrieved);
-        } else if (!params.isImage() && !params.isVideo()) {
+        } else if (!params.isImage() && !params.isCanvas() && !params.isVideo()) {
             mIconBridge = new LargeIconBridge(profile);
             boolean willCall =
                     mIconBridge.getLargeIconForUrl(

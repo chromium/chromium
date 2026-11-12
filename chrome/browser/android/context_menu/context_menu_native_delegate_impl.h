@@ -41,7 +41,10 @@ class ContextMenuNativeDelegateImpl {
                              int32_t max_width_px,
                              int32_t max_height_px,
                              int32_t j_image_type);
-  void StartDownload(JNIEnv* env, const GURL& gurl, bool jis_media);
+  void StartDownload(JNIEnv* env,
+                     content::RenderFrameHost* render_frame_host,
+                     const GURL& gurl,
+                     bool jis_media);
   void SearchForImage(JNIEnv* env, content::RenderFrameHost* render_frame_host);
   void InspectElement(JNIEnv* env,
                       content::RenderFrameHost* render_frame_host,
