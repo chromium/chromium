@@ -10,6 +10,7 @@
 #import "components/ssl_errors/error_info.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/elide_url.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/page_info/constants/page_info_constants.h"
 #import "ios/chrome/browser/page_info/ui/page_info_site_security_description.h"
@@ -79,6 +80,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   if (URL.SchemeIs(kChromeUIScheme)) {
     dataHolder.siteURL =
         l10n_util::GetNSString(IDS_IOS_PAGE_INFO_CHROME_PAGE_LABEL);
+    dataHolder.siteDomain = dataHolder.siteURL;
     dataHolder.message = l10n_util::GetNSString(IDS_PAGE_INFO_INTERNAL_PAGE);
     dataHolder.isEmpty = YES;
     return dataHolder;
@@ -87,6 +89,9 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   // At this point, this is a web page.
   dataHolder.siteURL =
       base::SysUTF16ToNSString(url_formatter::IDNToUnicode(URL.GetHost()));
+  dataHolder.siteDomain = base::SysUTF16ToNSString(
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          URL));
   dataHolder.isEmpty = NO;
   dataHolder.status =
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_NOT_SECURE);

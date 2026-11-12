@@ -11,6 +11,9 @@
 @interface PageInfoSiteSecurityDescription : NSObject
 
 @property(nonatomic, copy) NSString* siteURL;
+// Formatted site domain omitting trivial subdomains (e.g., "www.") for display
+// in permission footers.
+@property(nonatomic, copy) NSString* siteDomain;
 @property(nonatomic, copy) NSString* status;
 @property(nonatomic, copy) NSString* securityStatus;
 @property(nonatomic, copy) NSString* message;

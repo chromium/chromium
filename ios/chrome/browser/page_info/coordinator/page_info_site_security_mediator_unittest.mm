@@ -61,6 +61,8 @@ TEST_F(PageInfoSiteSecurityMediatorTest, TestChromePageConfiguration) {
   EXPECT_TRUE(config.isEmpty);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PAGE_INFO_CHROME_PAGE_LABEL),
               config.siteURL);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_PAGE_INFO_CHROME_PAGE_LABEL),
+              config.siteDomain);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_PAGE_INFO_INTERNAL_PAGE),
               config.message);
 }
@@ -74,6 +76,7 @@ TEST_F(PageInfoSiteSecurityMediatorTest, TestWebPageConfiguration) {
 
   EXPECT_FALSE(config.isEmpty);
   EXPECT_NSEQ(@"example.com", config.siteURL);
+  EXPECT_NSEQ(@"example.com", config.siteDomain);
 }
 
 // Tests configuration for an Internationalized Domain Name (IDN) web page.
@@ -85,6 +88,21 @@ TEST_F(PageInfoSiteSecurityMediatorTest, TestIDNWebPageConfiguration) {
 
   EXPECT_FALSE(config.isEmpty);
   EXPECT_NSEQ(@"пример.рф", config.siteURL);
+  EXPECT_NSEQ(@"пример.рф", config.siteDomain);
+}
+
+// Tests that `siteDomain` omits "www." while `siteURL` preserves the full host.
+TEST_F(PageInfoSiteSecurityMediatorTest, TestSiteDomainOmitsTrivialSubdomains) {
+  SetVisibleURL(GURL("https://www.example.com/path"));
+  PageInfoSiteSecurityDescription* config =
+      [PageInfoSiteSecurityMediator configurationForWebState:web_state()];
+  EXPECT_NSEQ(@"www.example.com", config.siteURL);
+  EXPECT_NSEQ(@"example.com", config.siteDomain);
+
+  SetVisibleURL(GURL("https://m.example.com/path"));
+  config = [PageInfoSiteSecurityMediator configurationForWebState:web_state()];
+  EXPECT_NSEQ(@"m.example.com", config.siteURL);
+  EXPECT_NSEQ(@"m.example.com", config.siteDomain);
 }
 
 // Tests navigation item title view with both title and URL labels.

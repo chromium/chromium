@@ -54,6 +54,7 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 // Fake consumer that absorbs delegate events during testing.
@@ -537,4 +538,17 @@ TEST_F(PageActionMenuMediatorTest, PermissionFeatureToggle) {
                                     web::PermissionCamera);
   EXPECT_FALSE([mediator_ isFeatureAvailable:PageActionMenuCameraPermission]);
   EXPECT_FALSE(CameraFeature([mediator_ activeFeatures]));
+}
+
+// Tests that `currentSiteDomain` omits trivial subdomains like "www." while
+// preserving non-trivial subdomains.
+TEST_F(PageActionMenuMediatorTest, CurrentSiteDomainOmitsTrivialSubdomains) {
+  web_state_->SetCurrentURL(GURL("https://www.example.com/path?q=1"));
+  EXPECT_NSEQ([mediator_ currentSiteDomain], @"example.com");
+
+  web_state_->SetCurrentURL(GURL("https://m.example.com/path"));
+  EXPECT_NSEQ([mediator_ currentSiteDomain], @"m.example.com");
+
+  [mediator_ disconnect];
+  EXPECT_NSEQ([mediator_ currentSiteDomain], nil);
 }

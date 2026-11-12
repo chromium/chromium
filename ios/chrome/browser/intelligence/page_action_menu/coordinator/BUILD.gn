@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//components/translate/core/browser",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/account_menu/coordinator",
     "//ios/chrome/browser/authentication/account_menu/public",

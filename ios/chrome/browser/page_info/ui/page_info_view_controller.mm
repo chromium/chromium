@@ -596,7 +596,7 @@ SectionIdentifier PermissionSectionForItem(ItemIdentifier item_identifier) {
   int messageID = PermissionDisclaimerMessageID(permission, setting);
   NSString* description = l10n_util::GetNSStringF(
       messageID,
-      base::SysNSStringToUTF16(self.pageInfoSecurityDescription.siteURL));
+      base::SysNSStringToUTF16(self.pageInfoSecurityDescription.siteDomain));
   NSMutableAttributedString* descriptionAttributedString =
       [[NSMutableAttributedString alloc]
           initWithAttributedString:PutBoldPartInString(
