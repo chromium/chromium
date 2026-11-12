@@ -100,13 +100,17 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (extension_data_) {
-    copy->SetExtensionNavigationUIData(extension_data_->DeepCopy());
+    copy->SetExtensionNavigationUIData(
+        std::make_unique<extensions::ExtensionNavigationUIData>(
+            *extension_data_));
   }
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   if (offline_page_data_) {
-    copy->SetOfflinePageNavigationUIData(offline_page_data_->DeepCopy());
+    copy->SetOfflinePageNavigationUIData(
+        std::make_unique<offline_pages::OfflinePageNavigationUIData>(
+            *offline_page_data_));
   }
 #endif
 

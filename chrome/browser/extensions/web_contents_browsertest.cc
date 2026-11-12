@@ -5,6 +5,7 @@
 #include "content/public/browser/web_contents.h"
 
 #include <map>
+#include <memory>
 
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
@@ -70,7 +71,8 @@ class ExtensionNavigationUIDataObserver : public content::WebContentsObserver {
         navigation_handle->GetNavigationUIData());
     CHECK(data);
     navigation_ui_data_map_[render_frame_host] =
-        data->GetExtensionNavigationUIData()->DeepCopy();
+        std::make_unique<ExtensionNavigationUIData>(
+            *data->GetExtensionNavigationUIData());
   }
 
   std::map<content::RenderFrameHost*,

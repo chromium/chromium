@@ -65,6 +65,15 @@ std::optional<ExtensionNavigationUIData::WebViewData> GetWebViewData(
 }  // namespace
 
 ExtensionNavigationUIData::ExtensionNavigationUIData() = default;
+ExtensionNavigationUIData::ExtensionNavigationUIData(
+    const ExtensionNavigationUIData&) = default;
+ExtensionNavigationUIData& ExtensionNavigationUIData::operator=(
+    const ExtensionNavigationUIData&) = default;
+ExtensionNavigationUIData::ExtensionNavigationUIData(
+    ExtensionNavigationUIData&&) noexcept = default;
+ExtensionNavigationUIData& ExtensionNavigationUIData::operator=(
+    ExtensionNavigationUIData&&) noexcept = default;
+ExtensionNavigationUIData::~ExtensionNavigationUIData() = default;
 
 ExtensionNavigationUIData::ExtensionNavigationUIData(
     content::NavigationHandle* navigation_handle,
@@ -135,17 +144,6 @@ ExtensionNavigationUIData::CreateForMainFrameNavigation(
       api::extension_types::DocumentLifecycle::kActive,
       /*web_view_data=*/std::nullopt,
       web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
-}
-
-std::unique_ptr<ExtensionNavigationUIData> ExtensionNavigationUIData::DeepCopy()
-    const {
-  auto copy = std::make_unique<ExtensionNavigationUIData>();
-  copy->frame_data_ = frame_data_;
-  copy->web_view_data_ = web_view_data_;
-  copy->parent_routing_id_ = parent_routing_id_;
-  copy->is_privileged_ = is_privileged_;
-  copy->frame_tree_node_id_ = frame_tree_node_id_;
-  return copy;
 }
 
 ExtensionNavigationUIData::ExtensionNavigationUIData(

@@ -33,16 +33,16 @@ class ExtensionNavigationUIData {
                             int tab_id,
                             int window_id);
 
-  ExtensionNavigationUIData(const ExtensionNavigationUIData&) = delete;
-  ExtensionNavigationUIData& operator=(const ExtensionNavigationUIData&) =
-      delete;
+  ExtensionNavigationUIData(const ExtensionNavigationUIData&);
+  ExtensionNavigationUIData& operator=(const ExtensionNavigationUIData&);
+  ExtensionNavigationUIData(ExtensionNavigationUIData&&) noexcept;
+  ExtensionNavigationUIData& operator=(ExtensionNavigationUIData&&) noexcept;
+  ~ExtensionNavigationUIData();
 
   static std::unique_ptr<ExtensionNavigationUIData>
   CreateForMainFrameNavigation(content::WebContents* web_contents,
                                int tab_id,
                                int window_id);
-
-  std::unique_ptr<ExtensionNavigationUIData> DeepCopy() const;
 
   const ExtensionApiFrameIdMap::FrameData& frame_data() const {
     return frame_data_;

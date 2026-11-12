@@ -6,17 +6,7 @@
 
 namespace offline_pages {
 
-OfflinePageNavigationUIData::OfflinePageNavigationUIData() = default;
-
 OfflinePageNavigationUIData::OfflinePageNavigationUIData(bool is_offline_page)
     : is_offline_page_(is_offline_page) {}
-
-std::unique_ptr<OfflinePageNavigationUIData>
-OfflinePageNavigationUIData::DeepCopy() const {
-  std::unique_ptr<OfflinePageNavigationUIData> copy(
-      new OfflinePageNavigationUIData());
-  copy->is_offline_page_ = is_offline_page_;
-  return copy;
-}
 
 }  // namespace offline_pages
