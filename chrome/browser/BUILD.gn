@@ -5179,6 +5179,7 @@ source_set("core_unit_tests") {
       ":shell_integration_linux",
       "//chrome/browser/web_applications",
       "//chrome/common:channel_info",
+      "//chrome/test/base:chrome_test_scoped_utils",
       "//components/version_info:channel",
       "//components/webapps/common",
       "//ui/ozone",
