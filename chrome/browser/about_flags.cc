@@ -3187,25 +3187,18 @@ const FeatureEntry::FeatureVariation
 
 // Feature variation for kPdfInk2.
 #if BUILDFLAG(ENABLE_PDF_INK2)
-const FeatureEntry::FeatureParam kPdfInk2TextAnnotations[] = {
-    {"text-annotations", "true"},
-};
-const FeatureEntry::FeatureParam kPdfInk2TextAnnotationsExtraStyles[] = {
-    {"text-annotations", "true"},
+const FeatureEntry::FeatureParam kPdfInk2ExtraStyles[] = {
     {"text-annotations-extra-styles", "true"},
 };
-const FeatureEntry::FeatureParam kPdfInk2TextAnnotationsAndSignatures[] = {
+const FeatureEntry::FeatureParam kPdfInk2ExtraStylesAndSignatures[] = {
     {"signatures", "true"},
-    {"text-annotations", "true"},
     {"text-annotations-extra-styles", "true"},
 };
 
 const FeatureEntry::FeatureVariation kPdfInk2Variations[] = {
-    {"with text annotations", kPdfInk2TextAnnotations, nullptr},
-    {"with text annotations and extra styles",
-     kPdfInk2TextAnnotationsExtraStyles, nullptr},
-    {"with text annotations and signatures",
-     kPdfInk2TextAnnotationsAndSignatures, nullptr},
+    {"with extra text annotation styles", kPdfInk2ExtraStyles, nullptr},
+    {"with extra text annotation styles and signatures",
+     kPdfInk2ExtraStylesAndSignatures, nullptr},
 };
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
