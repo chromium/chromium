@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
+#include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -531,5 +532,50 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
   EXPECT_FALSE(MustShowOnNextInteraction());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// When a menu is open while the pointer lock exit instruction bubble times out,
+// the show may have been covered by the menu. That timeout must be reported as
+// `kInterrupted` rather than `kTimeout`, so that `PointerLockController` does
+// not grant silent pointer lock permission and suppress the exit instruction on
+// a subsequent target-initiated relock. See crbug.com/583171525.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       ObscuredPointerLockBubbleDoesNotGrantSilentLock) {
+  pointer_lock_bubble_hide_reason_recorder_.clear();
+  RequestToLockPointer(/*user_gesture=*/true,
+                       /*last_unlocked_by_target=*/false);
+  ASSERT_TRUE(GetExclusiveAccessManager()
+                  ->pointer_lock_controller()
+                  ->IsPointerLocked());
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+  EXPECT_EQ(EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION,
+            GetExclusiveAccessBubbleType());
+
+  OpenMenu();
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // Let the show time elapse while the menu is still open.
+  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  ASSERT_EQ(1ul, pointer_lock_bubble_hide_reason_recorder_.size());
+  EXPECT_EQ(ExclusiveAccessBubbleHideReason::kInterrupted,
+            pointer_lock_bubble_hide_reason_recorder_[0]);
+
+  // A subsequent target-initiated unlock + relock must not be silent and must
+  // display the exit instruction bubble.
+  LostPointerLock();
+  RequestToLockPointer(/*user_gesture=*/false,
+                       /*last_unlocked_by_target=*/true);
+
+  EXPECT_TRUE(GetExclusiveAccessManager()
+                  ->pointer_lock_controller()
+                  ->IsPointerLocked());
+  EXPECT_FALSE(GetExclusiveAccessManager()
+                   ->pointer_lock_controller()
+                   ->IsPointerLockedSilently());
+  EXPECT_EQ(EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION,
+            GetExclusiveAccessBubbleType());
+  EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
+}
 
 #endif  // !BUILDFLAG(IS_MAC)

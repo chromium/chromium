@@ -448,12 +448,18 @@ void ExclusiveAccessBubbleViews::Hide() {
   // fullscreen are user-initiated, and the user commonly opens the app menu
   // shortly after entering them. Re-showing the instruction then is unexpected
   // noise rather than a security benefit. See crbug.com/574452272.
-  if (IsTabFullscreenType(params_.type) &&
-      views::MenuController::GetActiveInstance()) {
+  const bool obscured_by_menu =
+      views::MenuController::GetActiveInstance() != nullptr;
+  if (IsTabFullscreenType(params_.type) && obscured_by_menu) {
     SetMustShowOnNextInteraction();
   }
 
-  RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kTimeout);
+  // Similarly, do not report `kTimeout` if a menu may have covered the bubble,
+  // as `PointerLockController` treats `kTimeout` as proof that the exit
+  // instruction was seen and grants silent pointer lock permission.
+  RunHideCallbackIfNeeded(obscured_by_menu
+                              ? ExclusiveAccessBubbleHideReason::kInterrupted
+                              : ExclusiveAccessBubbleHideReason::kTimeout);
   presentation_cb_.Reset();
 
   animation_->SetSlideDuration(base::Milliseconds(700));
