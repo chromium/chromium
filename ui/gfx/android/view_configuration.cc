@@ -12,7 +12,6 @@
 #include "ui/gfx/gfx_jni_headers/ViewConfigurationHelper_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaRef;
 
 namespace gfx {
 
@@ -21,8 +20,8 @@ namespace {
 struct ViewConfigurationData {
   ViewConfigurationData() {
     JNIEnv* env = AttachCurrentThread();
-    j_view_configuration_helper_.Reset(
-        Java_ViewConfigurationHelper_createWithListener(env));
+    base::android::ScopedJavaLocalRef<jobject> j_view_configuration_helper =
+        Java_ViewConfigurationHelper_createWithListener(env);
 
     double_tap_timeout_in_ms_ =
         Java_ViewConfigurationHelper_getDoubleTapTimeout(env);
@@ -31,17 +30,17 @@ struct ViewConfigurationData {
     tap_timeout_in_ms_ = Java_ViewConfigurationHelper_getTapTimeout(env);
 
     Update(Java_ViewConfigurationHelper_getMaximumFlingVelocity(
-               env, j_view_configuration_helper_),
+               env, j_view_configuration_helper),
            Java_ViewConfigurationHelper_getMinimumFlingVelocity(
-               env, j_view_configuration_helper_),
+               env, j_view_configuration_helper),
            Java_ViewConfigurationHelper_getTouchSlop(
-               env, j_view_configuration_helper_),
+               env, j_view_configuration_helper),
            Java_ViewConfigurationHelper_getDoubleTapSlop(
-               env, j_view_configuration_helper_),
+               env, j_view_configuration_helper),
            Java_ViewConfigurationHelper_getMinScalingSpan(
-               env, j_view_configuration_helper_),
+               env, j_view_configuration_helper),
            Java_ViewConfigurationHelper_getTextCursorBlinkInterval(
-               env, j_view_configuration_helper_));
+               env, j_view_configuration_helper));
   }
 
   ViewConfigurationData(const ViewConfigurationData&) = delete;
@@ -112,7 +111,6 @@ struct ViewConfigurationData {
   }
 
   base::Lock lock_;
-  base::android::ScopedJavaGlobalRef<jobject> j_view_configuration_helper_;
 
   // These values will remain constant throughout the lifetime of the app, so
   // read-access needn't be synchronized.
@@ -138,7 +136,6 @@ ViewConfigurationData& GetViewConfigurationData() {
 }  // namespace
 
 static void JNI_ViewConfigurationHelper_UpdateSharedViewConfiguration(
-    JNIEnv* env,
     float maximum_fling_velocity,
     float minimum_fling_velocity,
     float touch_slop,

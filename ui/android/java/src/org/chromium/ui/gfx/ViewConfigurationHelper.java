@@ -46,6 +46,9 @@ public class ViewConfigurationHelper {
     }
 
     private void registerListener() {
+        // Application.registerComponentCallbacks() strongly retains this anonymous inner
+        // ComponentCallbacks (and its implicit ViewConfigurationHelper.this reference) for the
+        // lifetime of the process, keeping this helper alive without a native GlobalRef.
         ContextUtils.getApplicationContext()
                 .registerComponentCallbacks(
                         new ComponentCallbacks() {
