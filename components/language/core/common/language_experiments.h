@@ -21,10 +21,6 @@ BASE_DECLARE_FEATURE(kDetailedLanguageSettings);
 // language.
 BASE_DECLARE_FEATURE(kCctAutoTranslate);
 
-// This feature enables opening language settings in a new tab when the user
-// clicks "Open language settings" in the Translate bubble menu.
-BASE_DECLARE_FEATURE(kTranslateOpenSettings);
-
 // When enabled this feature will disable the GeoLanguage model and default the
 // user to the fluent language model.
 BASE_DECLARE_FEATURE(kDisableGeoLanguageModel);

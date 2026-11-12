@@ -126,7 +126,6 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/input/features.h"
-#include "components/language/core/common/language_experiments.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
 #include "components/manta/features.h"
@@ -10442,12 +10441,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHidGetFeatureReportFixDescription, kOsWin,
      FEATURE_VALUE_TYPE(features::kHidGetFeatureReportFix)},
 #endif  // BUILDFLAG(IS_WIN)
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"translate-open-settings", flag_descriptions::kTranslateOpenSettingsName,
-     flag_descriptions::kTranslateOpenSettingsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(language::kTranslateOpenSettings)},
-#endif
 
     {"lens-aim-suggestions", flag_descriptions::kLensAimSuggestionsName,
      flag_descriptions::kLensAimSuggestionsDescription, kOsDesktop,

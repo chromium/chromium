@@ -446,8 +446,7 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   options_menu_model_->SetElementIdentifierAt(
       options_menu_model_->GetItemCount() - 1, kChangeSourceLanguage);
 
-  if (!is_in_incognito_window_ &&
-      base::FeatureList::IsEnabled(language::kTranslateOpenSettings)) {
+  if (!is_in_incognito_window_) {
     options_menu_model_->AddItem(
         static_cast<int>(OptionsMenuItem::kOpenLanguageSettings),
         l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS));

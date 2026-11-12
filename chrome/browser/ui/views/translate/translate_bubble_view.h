@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "components/language/core/common/language_experiments.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"

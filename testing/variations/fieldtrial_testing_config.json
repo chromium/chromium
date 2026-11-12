@@ -14542,24 +14542,6 @@
             ]
         }
     ],
-    "OpenTranslationSettings": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TranslateOpenSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptGuideBatchSRPTuning": [
         {
             "platforms": [

@@ -9637,11 +9637,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "translate-open-settings",
-    "owners": [ "perrier@chromium.org", "taox4@illinois.edu", "chrome-language@google.com" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "trees-in-viz",
     "owners": [
       "zmo@chromium.org",

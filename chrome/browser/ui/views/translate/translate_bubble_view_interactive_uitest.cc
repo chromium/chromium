@@ -159,16 +159,8 @@ class TranslateBubbleViewUITest
 
  protected:
   explicit TranslateBubbleViewUITest(bool enable_search_ui) {
-    if (enable_search_ui) {
-      scoped_feature_list_.InitWithFeatures(
-          {language::kTranslateOpenSettings,
-           translate::kTranslateLanguageSearchUI},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {language::kTranslateOpenSettings},
-          {translate::kTranslateLanguageSearchUI});
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        translate::kTranslateLanguageSearchUI, enable_search_ui);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

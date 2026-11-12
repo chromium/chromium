@@ -7169,10 +7169,6 @@ inline constexpr char kMainNodeAnnotationsDescription[] =
     "Uses Screen2x main content extractor to annotate the accessibility tree "
     "with the main landmark on the node identified as main.";
 
-inline constexpr char kTranslateOpenSettingsName[] = "Translate Open Settings";
-inline constexpr char kTranslateOpenSettingsDescription[] =
-    "Add an option to the translate bubble menu to open language settings.";
-
 inline constexpr char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 inline constexpr char
