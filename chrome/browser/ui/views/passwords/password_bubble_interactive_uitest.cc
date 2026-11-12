@@ -714,7 +714,6 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
 }
 
 // This is a regression test for crbug.com/40228526
-// TODO(crbug.com/330095872): Flaky on Mac
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
   base::HistogramTester histogram_tester;
 
