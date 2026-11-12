@@ -4,6 +4,7 @@
 
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -154,7 +155,13 @@ void ChromeSpeechRecognitionService::BindWebSpeechRecognizer(
     int sample_rate,
     media::mojom::SpeechRecognitionOptionsPtr options,
     bool continuous) {
-  LaunchIfNotRunning();
+  const std::optional<std::string> requested_language =
+      options ? options->language : std::nullopt;
+  if (!ResolveSodaLanguageConfig(requested_language)) {
+    return;
+  }
+
+  LaunchIfNotRunning(requested_language);
   if (speech_recognition_service_.is_bound()) {
     EnsureSpeechRecognitionContextBound();
     speech_recognition_context_remote_->BindWebSpeechRecognizer(
@@ -218,13 +225,17 @@ void ChromeSpeechRecognitionService::BindSodaRecognizer(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
-  LaunchIfNotRunning();
-  if (speech_recognition_service_.is_bound()) {
-    EnsureSpeechRecognitionContextBound();
-    speech_recognition_context_remote_->BindRecognizer(
-        std::move(receiver), std::move(client), std::move(options),
-        std::move(callback));
-    return;
+  const std::optional<std::string> requested_language =
+      options ? options->language : std::nullopt;
+  if (ResolveSodaLanguageConfig(requested_language)) {
+    LaunchIfNotRunning(requested_language);
+    if (speech_recognition_service_.is_bound()) {
+      EnsureSpeechRecognitionContextBound();
+      speech_recognition_context_remote_->BindRecognizer(
+          std::move(receiver), std::move(client), std::move(options),
+          std::move(callback));
+      return;
+    }
   }
 
   std::move(callback).Run(/*is_multichannel_supported=*/false);
@@ -257,7 +268,23 @@ void ChromeSpeechRecognitionService::OnSodaProgress(
     speech::LanguageCode /*language_code*/,
     int /*progress*/) {}
 
-void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
+std::optional<speech::SodaLanguagePackComponentConfig>
+ChromeSpeechRecognitionService::ResolveSodaLanguageConfig(
+    const std::optional<std::string>& language) const {
+  if (language.has_value()) {
+    return speech::GetLanguageComponentConfigMatchingLanguageSubtag(*language);
+  }
+
+  PrefService* profile_prefs = user_prefs::UserPrefs::Get(context_);
+  if (!profile_prefs) {
+    return std::nullopt;
+  }
+  return speech::GetLanguageComponentConfigMatchingLanguageSubtag(
+      prefs::GetLiveCaptionLanguageCode(profile_prefs));
+}
+
+void ChromeSpeechRecognitionService::LaunchIfNotRunning(
+    const std::optional<std::string>& language) {
   if (speech_recognition_service_.is_bound()) {
     return;
   }
@@ -269,27 +296,48 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
   CHECK(profile_prefs, base::NotFatalUntil::M162);
   CHECK(global_prefs, base::NotFatalUntil::M162);
 
-  // TODO(crbug.com/40162502): Language pack path should be configurable per
-  // SpeechRecognitionRecognizer to allow multiple features to use Speech
-  // recognition. For now, only Live Caption uses SpeechRecognitionService on
-  // non-Chrome OS Chrome, so hard-coding to the Live Caption language code.
-  const std::string language_name =
-      prefs::GetLiveCaptionLanguageCode(profile_prefs);
-
   std::optional<speech::SodaLanguagePackComponentConfig> language_config =
-      speech::GetLanguageComponentConfig(language_name);
-  CHECK(language_config);
-  base::UmaHistogramEnumeration("Accessibility.LiveCaption.SodaLanguage",
-                                language_config.value().language_code);
+      ResolveSodaLanguageConfig(language);
+  if (!language_config) {
+    LOG(ERROR) << "Unsupported SODA language.";
+    return;
+  }
+  // Keep reporting the Live Caption language whenever it is supported; fall
+  // back to the launch language when `kLiveCaptionLanguageCode` holds a locale
+  // that is unsupported on this platform (e.g. synced from ChromeOS).
+  const std::optional<speech::SodaLanguagePackComponentConfig>
+      live_caption_config = ResolveSodaLanguageConfig(std::nullopt);
+  base::UmaHistogramEnumeration(
+      "Accessibility.LiveCaption.SodaLanguage",
+      (live_caption_config ? *live_caption_config : *language_config)
+          .language_code);
 
   base::FilePath binary_path;
   binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
   base::flat_map<std::string, base::FilePath> config_paths =
       ChromeSpeechRecognitionService::GetSodaConfigPaths();
 
-  if (binary_path.empty() || config_paths[language_name].empty()) {
+  const std::string target_language(language_config->language_name);
+  auto config_it = config_paths.find(target_language);
+  if (binary_path.empty() || config_it == config_paths.end() ||
+      config_it->second.empty()) {
     LOG(ERROR) << "Unable to find SODA files on the device.";
     return;
+  }
+
+  // Prefer the profile's Live Caption language as the service default when it
+  // is supported and installed on this device; otherwise fall back to the
+  // target language for this launch (e.g. when `kLiveCaptionLanguageCode`
+  // holds a synced ChromeOS-only locale).
+  std::string default_live_caption_language = target_language;
+  if (live_caption_config) {
+    auto live_caption_it =
+        config_paths.find(live_caption_config->language_name);
+    if (live_caption_it != config_paths.end() &&
+        !live_caption_it->second.empty()) {
+      default_live_caption_language =
+          std::string(live_caption_config->language_name);
+    }
   }
 
   content::ServiceProcessHost::Options options;
@@ -302,12 +350,17 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   mojo::PendingRemote<media::mojom::SpeechRecognitionService> pending_remote;
-  content::ServiceProcessHost::Launch(
-      pending_remote.InitWithNewPipeAndPassReceiver(), options.Pass());
+  if (launch_service_callback_for_testing_) {
+    launch_service_callback_for_testing_.Run(
+        pending_remote.InitWithNewPipeAndPassReceiver());
+  } else {
+    content::ServiceProcessHost::Launch(
+        pending_remote.InitWithNewPipeAndPassReceiver(), options.Pass());
+  }
   BindServiceRemote(std::move(pending_remote));
   if (speech_recognition_service_.is_bound()) {
     speech_recognition_service_->SetSodaPaths(binary_path, config_paths,
-                                              language_name);
+                                              default_live_caption_language);
 
     bool mask_offensive_words =
         profile_prefs->GetBoolean(prefs::kLiveCaptionMaskOffensiveWords);

@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "chrome/browser/speech/speech_recognition_small_expert_model_installer.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -99,6 +102,9 @@ class ChromeSpeechRecognitionService
  private:
   friend class ChromeSpeechRecognitionServiceTest;
 
+  using LaunchServiceCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionService>)>;
+
   void OnModelClientAvailable(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
@@ -114,8 +120,17 @@ class ChromeSpeechRecognitionService
       media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback);
 
-  // Launches the speech recognition service in a sandboxed utility process.
-  void LaunchIfNotRunning();
+  // Resolves `language` (or the profile's Live Caption language preference when
+  // `language` is unset) to a SODA language pack config supported on this
+  // platform, or `std::nullopt` if unsupported.
+  std::optional<speech::SodaLanguagePackComponentConfig>
+  ResolveSodaLanguageConfig(const std::optional<std::string>& language) const;
+
+  // Launches the speech recognition service in a sandboxed utility process if
+  // it is not already running, validating SODA availability for `language` (or
+  // the profile's Live Caption language preference when `language` is unset).
+  void LaunchIfNotRunning(
+      const std::optional<std::string>& language = std::nullopt);
 
   // Binds `speech_recognition_service_` and configures disconnect and idle
   // handlers.
@@ -154,6 +169,8 @@ class ChromeSpeechRecognitionService
   base::ScopedObservation<SpeechRecognitionSmallExpertModelInstaller,
                           SpeechRecognitionSmallExpertModelInstaller::Observer>
       speech_recognition_small_expert_model_installer_observer_{this};
+
+  LaunchServiceCallback launch_service_callback_for_testing_;
 
   base::WeakPtrFactory<ChromeSpeechRecognitionService> weak_factory_{this};
 };
