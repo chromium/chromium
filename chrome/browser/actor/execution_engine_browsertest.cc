@@ -63,7 +63,7 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
-#include "components/javascript_dialogs/app_modal_dialog_queue.h"
+#include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -1012,23 +1012,6 @@ class ExecutionEngineSkipBeforeUnloadBrowserTest
   bool IsActorActive() const { return std::get<0>(GetParam()); }
   bool IsSkipFeatureEnabled() const { return std::get<1>(GetParam()); }
 
-  void WaitForAppModalDialogToClose() {
-    ASSERT_TRUE(base::test::RunUntil([] {
-      return !javascript_dialogs::AppModalDialogQueue::GetInstance()
-                  ->HasActiveDialog();
-    }));
-  }
-
-  void CancelActiveAppModalDialog() {
-    auto* dialog_queue = javascript_dialogs::AppModalDialogQueue::GetInstance();
-    ASSERT_TRUE(javascript_dialogs::AppModalDialogQueue::GetInstance()
-                    ->HasActiveDialog());
-    javascript_dialogs::AppModalDialogController* dialog =
-        dialog_queue->active_dialog();
-    dialog->OnCancel(true);
-    WaitForAppModalDialogToClose();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   bool previous_suppress_confirm_dialog_ = false;
@@ -1077,9 +1060,20 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineSkipBeforeUnloadBrowserTest,
                                           ::ui::PAGE_TRANSITION_TYPED,
                                           std::string());
 
-    ui_test_utils::WaitForAppModalDialog();
+    javascript_dialogs::AppModalDialogController* dialog =
+        ui_test_utils::WaitForAppModalDialog();
     EXPECT_EQ(beforeunload_url, web_contents->GetLastCommittedURL());
-    CancelActiveAppModalDialog();
+    dialog->view()->CancelAppModalDialog();
+    // Clear `window.onbeforeunload` so browser teardown is not blocked by the
+    // beforeunload handler. This round-trip on the same associated Mojo channel
+    // also ensures the renderer's `BeforeUnload(proceed=false)` reply has been
+    // processed and `is_waiting_for_beforeunload_completion_` is cleared on the
+    // RenderFrameHost before teardown begins.
+    ASSERT_TRUE(content::ExecJs(web_contents, "window.onbeforeunload = null;"));
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+    EXPECT_EQ(nullptr, web_contents->GetController().GetPendingEntry());
+    EXPECT_EQ(beforeunload_url, web_contents->GetLastCommittedURL());
+    EXPECT_FALSE(web_contents->NeedToFireBeforeUnloadOrUnloadEvents());
   }
 }
 

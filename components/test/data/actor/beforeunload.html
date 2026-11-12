@@ -4,10 +4,10 @@
 <body>
   <h1>Page with beforeunload</h1>
   <script>
-    window.addEventListener('beforeunload', function (event) {
+    window.onbeforeunload = function (event) {
       event.preventDefault();
       event.returnValue = 'Test';
-    });
+    };
   </script>
 </body>
 </html>
