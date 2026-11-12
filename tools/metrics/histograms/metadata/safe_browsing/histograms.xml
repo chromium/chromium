@@ -3069,11 +3069,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
     {UserCategory}
   </summary>
-  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory">
-    <variant name=".Offline"
-        summary="Logged only when the device is offline and the
-                 SafeBrowsingSkipRealTimeLookupIfOffline feature is disabled."/>
-  </token>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Network.Time{UserCategory}" units="ms"

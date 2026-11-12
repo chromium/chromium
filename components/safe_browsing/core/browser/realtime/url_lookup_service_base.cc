@@ -34,7 +34,6 @@
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/base/network_change_notifier.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -375,11 +374,6 @@ void RealTimeUrlLookupServiceBase::SendSampledRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(url.is_valid());
 
-  if (net::NetworkChangeNotifier::IsOffline() &&
-      base::FeatureList::IsEnabled(kSafeBrowsingSkipRealTimeLookupIfOffline)) {
-    return;
-  }
-
   MaybeSendRequest(url,
                    /* access_token_string */ std::string(),
                    /* response_callback */ base::NullCallback(),
@@ -459,10 +453,7 @@ void RealTimeUrlLookupServiceBase::StartMaybeCachedLookup(
     }
   }
 
-  if (IsInBackoffMode() || !CanPerformFullURLLookup() ||
-      (net::NetworkChangeNotifier::IsOffline() &&
-       base::FeatureList::IsEnabled(
-           kSafeBrowsingSkipRealTimeLookupIfOffline))) {
+  if (IsInBackoffMode() || !CanPerformFullURLLookup()) {
     callback_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(response_callback),
                                   /* is_rt_lookup_successful */ false,
@@ -585,13 +576,6 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
   RecordHttpResponseOrErrorCode(
       ("SafeBrowsing.RT.Network.Result" + report_type_suffix).c_str(),
       net_error, response_code);
-  // TODO(b/568906444): cleanup metric once root cause determined
-  if (net::NetworkChangeNotifier::IsOffline() &&
-      !base::FeatureList::IsEnabled(kSafeBrowsingSkipRealTimeLookupIfOffline)) {
-    RecordHttpResponseOrErrorCode("SafeBrowsing.RT.Network.Result.Offline",
-                                  net_error, response_code);
-  }
-
   if (response_code == net::HTTP_UNAUTHORIZED &&
       access_token_string.has_value()) {
     token_fetcher_->OnInvalidAccessToken(access_token_string.value());

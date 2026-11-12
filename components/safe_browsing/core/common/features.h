@@ -553,9 +553,6 @@ extern const base::FeatureParam<int>
 // the C++ implementation.
 BASE_DECLARE_FEATURE(kSafeBrowsingRustDmgParser);
 
-// Skips Safe Browsing Real-Time URL lookups when the device is offline.
-BASE_DECLARE_FEATURE(kSafeBrowsingSkipRealTimeLookupIfOffline);
-
 // Allows Safe Browsing Real-Time URL lookups to wait for DNS resolution of the
 // main frame URL.
 BASE_DECLARE_FEATURE(kSafeBrowsingWaitForDnsForRealTimeLookup);

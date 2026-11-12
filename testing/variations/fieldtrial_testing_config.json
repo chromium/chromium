@@ -722,23 +722,6 @@
             ]
         }
     ],
-    "AndroidEnterpriseSkipRealTimeUrlLookup": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "BothEnabled",
-                    "enable_features": [
-                        "EnterpriseRealTimeUrlCheckUrlSkiplist",
-                        "SafeBrowsingSkipRealTimeLookupIfOffline"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidFreLayoutUpdate": [
         {
             "platforms": [

@@ -357,7 +357,7 @@ BASE_FEATURE(kEnterpriseRealTimeUrlCheckNewUrl,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnterpriseRealTimeUrlCheckUrlSkiplist,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEsbAsASyncedSetting, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -552,9 +552,6 @@ constexpr base::FeatureParam<int>
 
 BASE_FEATURE(kSafeBrowsingRustDmgParser, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafeBrowsingSkipRealTimeLookupIfOffline,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafeBrowsingWaitForDnsForRealTimeLookup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -671,7 +668,6 @@ base::ListValue GetFeatureStatusList() {
       &kSafeBrowsingNoProtectionSuppressWarnings,
       &kSafeBrowsingNoProtectionTemporary,
       &kSafeBrowsingRustDmgParser,
-      &kSafeBrowsingSkipRealTimeLookupIfOffline,
       &kSafeBrowsingWaitForDnsForRealTimeLookup,
       &kShowManualNotificationRevocationsSafetyHub,
       &kShowUrlsInV5GetHashLookupsWebUI,
