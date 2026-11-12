@@ -238,6 +238,12 @@ bool OmniboxPopupWebUIBaseContent::EscClosesUI() const {
 }
 
 void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
+  // Hosts without a sizer lay out this View themselves, so auto-resize and
+  // sizer bounds updates are not used.
+  if (!sizer_) {
+    return;
+  }
+
   // Track if the location bar width actually changed. This indicates a browser
   // window resize. In that case, bypass the height debouncer to prevent
   // flickering due to being 'behind' during actual resizes with rapid changes.
@@ -252,15 +258,13 @@ void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
            : RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets()
                  .width());
 
-  if (sizer_) {
-    width = std::max(width, sizer_->GetPopupMinimumSize().width());
-    if (config_.draw_shadow_in_webui) {
-      // The WebView spans the whole widget, shadow margin included, and the
-      // page reserves that margin in its own layout. The renderer viewport
-      // must match the WebView or the content would be laid out narrower than
-      // the widget.
-      width += RoundedOmniboxResultsFrame::GetShadowInsets().width();
-    }
+  width = std::max(width, sizer_->GetPopupMinimumSize().width());
+  if (config_.draw_shadow_in_webui) {
+    // The WebView spans the whole widget, shadow margin included, and the
+    // page reserves that margin in its own layout. The renderer viewport
+    // must match the WebView or the content would be laid out narrower than
+    // the widget.
+    width += RoundedOmniboxResultsFrame::GetShadowInsets().width();
   }
 
   // Update the auto-resize limits for WebUI so that the WebUI updates
@@ -290,9 +294,7 @@ void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
                      [](base::WeakPtr<OmniboxPopupWebUIBaseContent> self) {
                        if (self) {
                          self->has_pending_synchronize_ = false;
-                         if (self->sizer_) {
-                           self->sizer_->SynchronizePopupBounds();
-                         }
+                         self->sizer_->SynchronizePopupBounds();
                        }
                      },
                      weak_factory_.GetWeakPtr()));
@@ -352,15 +354,13 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   //
   // Pre-populating the height directly from `GetViewBounds()` immediately
   // restores the cached height to `views::WebView` and the presenter on show.
-  if (is_full_webui_omnibox()) {
+  if (is_full_webui_omnibox() && sizer_) {
     if (auto* web_contents = GetWrappedWebContents()) {
       if (auto* rwhv = web_contents->GetRenderWidgetHostView()) {
         gfx::Size view_size = rwhv->GetViewBounds().size();
         if (view_size.height() > 1) {
           SetPreferredSize(view_size);
-          if (sizer_) {
-            sizer_->OnContentHeightChanged(view_size.height());
-          }
+          sizer_->OnContentHeightChanged(view_size.height());
         }
       }
     }
@@ -414,6 +414,9 @@ void OmniboxPopupWebUIBaseContent::ResizeDueToAutoResize(
   // sync. This prevents flickering during rapid continuous window resizes.
   const bool is_resizing = is_window_resizing_;
   is_window_resizing_ = false;
+  if (!sizer_) {
+    return;
+  }
 
   if (config_.defer_until_visual_state.has_value() || is_resizing ||
       !config_.debounce_resize) {

@@ -230,6 +230,7 @@ source_set("unit_tests") {
     "omnibox_popup_full_presenter_unittest.cc",
     "omnibox_popup_presenter_base_unittest.cc",
     "omnibox_popup_view_full_webui_unittest.cc",
+    "omnibox_popup_webui_base_content_unittest.cc",
     "omnibox_popup_webui_pool_unittest.cc",
     "omnibox_result_view_unittest.cc",
     "omnibox_view_views_unittest.cc",
