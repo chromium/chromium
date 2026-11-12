@@ -329,6 +329,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
+<!-- LINT.IfChange(AccountSwitchingPromoEvent) -->
+
+<enum name="AccountSwitchingPromoEvent">
+  <int value="0" label="Eligible on startup"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_metrics.h:AccountSwitchingPromoEvent) -->
+
 <!-- LINT.IfChange(AccountSwitchingSelectionOutcome) -->
 
 <enum name="AccountSwitchingSelectionOutcome">

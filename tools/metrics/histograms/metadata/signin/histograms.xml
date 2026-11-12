@@ -897,6 +897,18 @@ to monitor/debug fetching OAuth2 Token issues. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountSwitchingPromo.Events"
+    enum="AccountSwitchingPromoEvent" expires_after="2027-04-01">
+  <owner>arthurmilchior@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records lifecycle events for the iOS smart account switching full-screen
+    startup promo. Emitted at startup when eligible for display (reflecting
+    account and pair eligibility when registering with PromosManager, prior to
+    Feature Engagement throttling).
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountSwitchingPromo.SwitchedAwayWithin24Hours"
     enum="Boolean" expires_after="2027-04-01">
   <owner>arthurmilchior@chromium.org</owner>
