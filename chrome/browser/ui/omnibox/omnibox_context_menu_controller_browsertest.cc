@@ -1863,6 +1863,55 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
                                      ui::SimpleMenuModel::kDefaultIconSize));
 }
 
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       PendingTabContextCountsTowardInputLimit) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIOmniboxPopupAimURL)));
+
+  auto* web_contents = GetWebContents();
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+
+  auto* web_ui = web_contents->GetWebUI();
+  ASSERT_TRUE(web_ui);
+  auto* popup_ui = web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  ASSERT_TRUE(popup_ui);
+  auto* handler = popup_ui->composebox_handler();
+  ASSERT_TRUE(handler);
+
+  omnibox::InputState test_state;
+  test_state.allowed_models.emplace_back(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  test_state.allowed_input_types.emplace_back(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+  test_state.max_total_inputs = 1;
+  handler->input_state_model()->set_state_for_testing(test_state);
+
+  GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED));
+  GURL url2(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(AddTabAtIndex(2, url2, ui::PAGE_TRANSITION_TYPED));
+
+  // Mirrors `ContinueAddTabContext()` before the page context arrives: the tab
+  // is checked and has a token, but no `FileInfo` yet.
+  auto* session_handle = popup_ui->GetOrCreateContextualSessionHandle();
+  ASSERT_TRUE(session_handle);
+  auto token = base::UnguessableToken::Create();
+  session_handle->GetUploadedContextTokensForTesting().push_back(token);
+  int32_t tab1_id =
+      browser()->GetTabStripModel()->GetTabAtIndex(1)->GetHandle().raw_value();
+  handler->selected_tabs[token] = tab1_id;
+  ASSERT_TRUE(session_handle->GetUploadedContextFileInfos().empty());
+
+  OmniboxContextMenuController controller(&file_selector, web_contents);
+
+  // The pending tab fills the limit, so only the checked tab stays enabled.
+  EXPECT_TRUE(
+      controller.IsCommandIdEnabled(kMinOmniboxContextMenuRecentTabsCommandId));
+  EXPECT_FALSE(controller.IsCommandIdEnabled(
+      kMinOmniboxContextMenuRecentTabsCommandId + 1));
+}
+
 IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                        VerifyTabEnablementWhenLimitReached_NonPec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
