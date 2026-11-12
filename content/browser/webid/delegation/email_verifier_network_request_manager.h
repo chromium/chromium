@@ -38,6 +38,7 @@ class CONTENT_EXPORT EmailVerifierNetworkRequestManager
     GURL issuance_endpoint;
     GURL jwks_uri;
     std::vector<std::string> signing_alg_values_supported;
+    GURL brand_icon_url;
   };
 
   struct CONTENT_EXPORT TokenResult {

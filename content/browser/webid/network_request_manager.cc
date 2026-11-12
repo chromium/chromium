@@ -7,12 +7,14 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "base/values.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/connection_allowlist_util.h"
@@ -25,7 +27,10 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 
 namespace content::webid {
 
@@ -37,6 +42,10 @@ namespace {
 // Host prefix prepended to the eTLD+1 to form the FedCM well-known host:
 // "web-identity.well-known.<eTLD+1>".
 constexpr char kWebIdentitySubdomainHostPrefix[] = "web-identity.well-known.";
+
+// Keys in each entry of a 'branding' 'icons' list.
+constexpr char kBrandingIconUrl[] = "url";
+constexpr char kBrandingIconSize[] = "size";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -97,6 +106,56 @@ GURL ExtractEndpoint(const GURL& provider,
     return GURL();
   }
   return provider.Resolve(*endpoint);
+}
+
+GURL FindBestMatchingIconUrl(const base::ListValue* icons_value,
+                             int brand_icon_ideal_size,
+                             int brand_icon_minimum_size,
+                             const GURL& config_url) {
+  std::vector<blink::Manifest::ImageResource> icons;
+  for (const base::Value& icon_value : *icons_value) {
+    const base::DictValue* icon_value_dict = icon_value.GetIfDict();
+    if (!icon_value_dict) {
+      continue;
+    }
+
+    const std::string* icon_src = icon_value_dict->FindString(kBrandingIconUrl);
+    if (!icon_src) {
+      continue;
+    }
+
+    blink::Manifest::ImageResource icon;
+
+    if (!config_url.is_empty()) {
+      icon.src = config_url.Resolve(*icon_src);
+    } else {
+      icon.src = GURL(*icon_src);
+    }
+
+    if (!icon.src.is_valid() || !icon.src.SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
+
+    icon.purpose = {blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+
+    std::optional<int> icon_size = icon_value_dict->FindInt(kBrandingIconSize);
+    int icon_size_int = icon_size.value_or(0);
+    icon.sizes.emplace_back(icon_size_int, icon_size_int);
+
+    icons.push_back(icon);
+  }
+
+  blink::ManifestIconSelectorParams params;
+  params.ideal_icon_size_in_px = brand_icon_ideal_size;
+  params.minimum_icon_size_in_px = brand_icon_minimum_size;
+  params.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
+  // FedCM icons don't specify a `type`, and some icon URLs (e.g. RP icons
+  // served from image CDNs) have no file extension to infer one from. Don't
+  // reject those; the downloaded bytes are validated by DecodeImageIsolated().
+  params.allow_icons_with_unknown_type = true;
+  auto result =
+      blink::ManifestIconSelector::FindBestMatchingIcon(icons, params);
+  return result ? result->icon_url : GURL();
 }
 
 std::optional<GURL> ComputeWellKnownUrl(const GURL& provider,

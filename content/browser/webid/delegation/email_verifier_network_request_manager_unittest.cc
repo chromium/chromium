@@ -162,4 +162,62 @@ TEST_F(EmailVerifierNetworkRequestManagerTest, FetchWellKnownChecksIssuer) {
   }
 }
 
+// The optional `branding.icons` list uses the FedCM config format. The best
+// matching icon is selected and resolved against the well-known URL, and a
+// missing or malformed `branding` does not fail the fetch.
+TEST_F(EmailVerifierNetworkRequestManagerTest, FetchWellKnownParsesBranding) {
+  constexpr char kWellKnownUrl[] =
+      "https://idp.example/.well-known/email-verification";
+  struct {
+    const char* name;
+    const char* branding_member;  // Raw JSON, or nullptr to omit `branding`.
+    const char* expected_icon_url;
+  } kCases[] = {
+      {"absent", nullptr, ""},
+      {"not a dict", R"("logo.png")", ""},
+      {"no icons", R"({"background_color": "#fff"})", ""},
+      {"icons not a list", R"({"icons": "logo.png"})", ""},
+      {"single absolute icon",
+       R"({"icons": [{"url": "https://cdn.example/logo.png", "size": 40}]})",
+       "https://cdn.example/logo.png"},
+      {"relative icon is resolved",
+       R"({"icons": [{"url": "/logo.png", "size": 40}]})",
+       "https://idp.example/logo.png"},
+      {"prefers the ideal size",
+       R"({"icons": [{"url": "/32.png", "size": 32},
+                     {"url": "/40.png", "size": 40},
+                     {"url": "/96.png", "size": 96}]})",
+       "https://idp.example/40.png"},
+      {"rejects icons below the minimum size",
+       R"({"icons": [{"url": "/16.png", "size": 16}]})", ""},
+      {"rejects non-http icons",
+       R"({"icons": [{"url": "data:image/png;base64,AAAA", "size": 40}]})", ""},
+      {"rejects insecure icons",
+       R"({"icons": [{"url": "http://cdn.example/logo.png", "size": 40}]})",
+       ""},
+  };
+
+  for (const auto& test : kCases) {
+    SCOPED_TRACE(test.name);
+    std::string body = R"({"issuance_endpoint": "https://idp.example/token")";
+    if (test.branding_member) {
+      body += base::StrCat({R"(, "branding": )", test.branding_member});
+    }
+    body += "}";
+
+    auto head = network::CreateURLResponseHead(net::HTTP_OK);
+    head->headers->SetHeader("Content-Type", "application/json");
+    test_url_loader_factory_.AddResponse(
+        GURL(kWellKnownUrl), std::move(head), body,
+        network::URLLoaderCompletionStatus(net::OK));
+
+    base::test::TestFuture<FetchStatus,
+                           EmailVerifierNetworkRequestManager::WellKnown>
+        future;
+    manager_->FetchWellKnown(GURL("https://idp.example"), future.GetCallback());
+    EXPECT_EQ(ParseStatus::kSuccess, future.Get<0>().parse_status);
+    EXPECT_EQ(GURL(test.expected_icon_url), future.Get<1>().brand_icon_url);
+  }
+}
+
 }  // namespace content::webid

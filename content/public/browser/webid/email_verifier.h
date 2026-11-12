@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/webid/email_verification_request.mojom-shared.h"
+#include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
 namespace content::webid {
@@ -39,6 +40,12 @@ class EmailVerifier : public base::SupportsUserData::Data {
 
     // The signing algorithms supported by the issuer.
     std::vector<std::string> signing_alg_values_supported;
+
+    // The issuer's logo, if any.
+    gfx::Image brand_icon;
+
+    // The URL of `brand_icon`. Empty if `brand_icon` is empty.
+    GURL brand_icon_url;
 
     bool operator==(const Result& other) const = default;
   };

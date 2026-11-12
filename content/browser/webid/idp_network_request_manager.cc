@@ -61,7 +61,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
@@ -125,11 +124,9 @@ constexpr char kTermsOfServiceKey[] = "terms_of_service_url";
 constexpr char kClientIsThirdPartyToTopFrameOriginKey[] =
     "client_is_third_party_to_top_frame_origin";
 
-// Keys in 'branding' 'icons' dictionary in config for the IDP icon and client
-// metadata endpoint for the RP icon.
+// Key of the icons list in the config's 'branding' dictionary for the IDP icon,
+// and in the client metadata endpoint response for the RP icon.
 constexpr char kBrandingIconsKey[] = "icons";
-constexpr char kBrandingIconUrl[] = "url";
-constexpr char kBrandingIconSize[] = "size";
 
 // The id assertion endpoint contains a token result.
 constexpr char kTokenKey[] = "token";
@@ -198,56 +195,6 @@ std::optional<SkColor> ParseCssColor(const std::string* value) {
   }
 
   return SkColorSetA(color, 0xff);
-}
-
-GURL FindBestMatchingIconUrl(const base::ListValue* icons_value,
-                             int brand_icon_ideal_size,
-                             int brand_icon_minimum_size,
-                             const GURL& config_url) {
-  std::vector<blink::Manifest::ImageResource> icons;
-  for (const base::Value& icon_value : *icons_value) {
-    const base::DictValue* icon_value_dict = icon_value.GetIfDict();
-    if (!icon_value_dict) {
-      continue;
-    }
-
-    const std::string* icon_src = icon_value_dict->FindString(kBrandingIconUrl);
-    if (!icon_src) {
-      continue;
-    }
-
-    blink::Manifest::ImageResource icon;
-
-    if (!config_url.is_empty()) {
-      icon.src = config_url.Resolve(*icon_src);
-    } else {
-      icon.src = GURL(*icon_src);
-    }
-
-    if (!icon.src.is_valid() || !icon.src.SchemeIsHTTPOrHTTPS()) {
-      continue;
-    }
-
-    icon.purpose = {blink::mojom::ManifestImageResource_Purpose::MASKABLE};
-
-    std::optional<int> icon_size = icon_value_dict->FindInt(kBrandingIconSize);
-    int icon_size_int = icon_size.value_or(0);
-    icon.sizes.emplace_back(icon_size_int, icon_size_int);
-
-    icons.push_back(icon);
-  }
-
-  blink::ManifestIconSelectorParams params;
-  params.ideal_icon_size_in_px = brand_icon_ideal_size;
-  params.minimum_icon_size_in_px = brand_icon_minimum_size;
-  params.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
-  // FedCM icons don't specify a `type`, and some icon URLs (e.g. RP icons
-  // served from image CDNs) have no file extension to infer one from. Don't
-  // reject those; the downloaded bytes are validated by DecodeImageIsolated().
-  params.allow_icons_with_unknown_type = true;
-  auto result =
-      blink::ManifestIconSelector::FindBestMatchingIcon(icons, params);
-  return result ? result->icon_url : GURL();
 }
 
 // Parse IdentityProviderMetadata from given value. Overwrites |idp_metadata|
