@@ -47,8 +47,8 @@ _EXCLUSIONS = [
     r'.*third_party/jdk/.*',
     r'.*third_party/r8/.*',
     # Our tests don't need these.
-    r'.*/devtools-frontend/.*front_end/.*',
-    r'.*/devtools-frontend/.*inspector_overlay/.*',
+    r'.*/devtools(?:-frontend)?/.*front_end/.*',
+    r'.*/devtools(?:-frontend)?/.*inspector_overlay/.*',
     # Build artifacts:
     r'.*\.stamp',
     r'.*\.pak\.info',
