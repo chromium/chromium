@@ -1528,19 +1528,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.DisableReason" enum="ExtensionDisableReason"
-    expires_after="2022-08-28">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The count of disabled extensions on profile open grouped by disble reason
-    from disable_reason::DisableReason. When an extension is disabled, it can be
-    for one or more reasons (although typically just one), so the sum of these
-    may be greater than 'Extensions.Disabled' which is a count of the number of
-    unique extensions that are disabled.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DisableReason2" enum="ExtensionDisableReason"
     expires_after="2027-05-09">
   <owner>rdevlin.cronin@chromium.org</owner>
