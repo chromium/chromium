@@ -540,6 +540,7 @@ public class ExtensionsMenuCoordinator
 
     @Override
     public void destroy() {
+        mExtensionsToolbarBridge.removeObserver(this);
         mIsMenuOpen = false;
         mCurrentTabSupplier.removeObserver(mTabSupplierObserver);
         destroyMediator();
