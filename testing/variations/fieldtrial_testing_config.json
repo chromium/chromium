@@ -9194,6 +9194,25 @@
             ]
         }
     ],
+    "GlicActorAutofillOtp": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261109",
+                    "enable_features": [
+                        "AnnotatedPageContentAutofillOtpRedactions",
+                        "GlicActorAutofillOneTimePassword"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicActorObservationDelayExcludeAdFrameLoading": [
         {
             "platforms": [
