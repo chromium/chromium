@@ -454,5 +454,113 @@ IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
   EXPECT_EQ("", EvalJs(main_frame(), "getStableEventLog()"));
 }
 
+IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
+                       Invoke_PasswordFieldsOutsideForm_Succeeds) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/change_password_without_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  GetPageApc();
+
+  std::optional<DomNode> current_password_node =
+      GetDomNodeOnPage(*main_frame(), "#current_password");
+  std::optional<DomNode> new_password_node =
+      GetDomNodeOnPage(*main_frame(), "#new_password");
+  std::optional<DomNode> confirm_password_node =
+      GetDomNodeOnPage(*main_frame(), "#confirm_password");
+  ASSERT_TRUE(current_password_node);
+  ASSERT_TRUE(new_password_node);
+  ASSERT_TRUE(confirm_password_node);
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<ChangePasswordToolRequest>(
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          PageTarget(*current_password_node), PageTarget(*new_password_node),
+          PageTarget(*confirm_password_node),
+          /*confirm_button=*/std::nullopt);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ("dummy_current_password",
+            EvalJs(main_frame(),
+                   "document.getElementById('current_password').value"));
+  EXPECT_EQ(
+      "dummy_new_password",
+      EvalJs(main_frame(), "document.getElementById('new_password').value"));
+  EXPECT_EQ("dummy_new_password",
+            EvalJs(main_frame(),
+                   "document.getElementById('confirm_password').value"));
+}
+
+IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
+                       Invoke_NoPasswordFormOnPage_ReturnsError) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/select_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  GetPageApc();
+
+  std::optional<DomNode> select_node =
+      GetDomNodeOnPage(*main_frame(), "#plainSelect");
+  ASSERT_TRUE(select_node);
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<ChangePasswordToolRequest>(
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          /*current_password_field=*/std::nullopt, PageTarget(*select_node),
+          /*confirm_new_password_field=*/std::nullopt,
+          /*confirm_button=*/std::nullopt);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(
+      result.Get()[0].result->message,
+      absl::StrFormat(
+          "Target field is not a valid password field: new_password_field "
+          "(id %d).",
+                      select_node->node_id));
+}
+
+IN_PROC_BROWSER_TEST_F(ChangePasswordToolBrowserTest,
+                       Invoke_NonPasswordFieldPassedAsTarget_ReturnsError) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/sign_in_page.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  GetPageApc();
+
+  std::optional<DomNode> password_node =
+      GetDomNodeOnPage(*main_frame(), "#password");
+  std::optional<DomNode> username_node =
+      GetDomNodeOnPage(*main_frame(), "#username");
+  ASSERT_TRUE(password_node);
+  ASSERT_TRUE(username_node);
+
+  std::unique_ptr<ToolRequest> request =
+      std::make_unique<ChangePasswordToolRequest>(
+          ActorSurfaceHandle::From(active_tab()->GetHandle()),
+          PageTarget(*password_node), PageTarget(*username_node),
+          /*confirm_new_password_field=*/std::nullopt,
+          /*confirm_button=*/std::nullopt);
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+  ASSERT_EQ(result.Get().size(), 1u);
+  EXPECT_EQ(
+      result.Get()[0].result->message,
+      absl::StrFormat(
+          "Target field is not a valid password field: new_password_field "
+          "(id %d).",
+                      username_node->node_id));
+  EXPECT_EQ("",
+            EvalJs(main_frame(), "document.getElementById('password').value"));
+  EXPECT_EQ("",
+            EvalJs(main_frame(), "document.getElementById('username').value"));
+}
+
 }  // namespace
 }  // namespace actor

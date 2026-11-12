@@ -32,6 +32,9 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/password_form_cache.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -59,6 +62,75 @@ bool WasFieldFilled(const autofill::FormData& form_data,
                               &autofill::FormFieldData::renderer_id);
   return it != form_data.fields().end() &&
          it->is_autofilled_according_to_renderer();
+}
+
+// Returns the cached `PasswordFormManager` in `driver`'s frame that manages
+// `renderer_id` as a password input element, or `nullptr` if none matches.
+// Requires `driver` to be non-null and `IsRenderFrameHostSupported()`. The
+// returned pointer is owned by `PasswordFormCache` and must not be retained
+// across asynchronous boundaries.
+password_manager::PasswordFormManager* FindPasswordFormManagerForField(
+    password_manager::ContentPasswordManagerDriver* driver,
+    autofill::FieldRendererId renderer_id) {
+  CHECK(driver && driver->IsRenderFrameHostSupported());
+  if (!renderer_id) {
+    return nullptr;
+  }
+  password_manager::PasswordManagerInterface* password_manager =
+      driver->GetPasswordManager();
+  password_manager::PasswordFormCache* form_cache =
+      password_manager ? password_manager->GetPasswordFormCache() : nullptr;
+  if (!form_cache) {
+    return nullptr;
+  }
+  for (const std::unique_ptr<password_manager::PasswordFormManager>&
+           form_manager : form_cache->GetFormManagers()) {
+    if (!form_manager->DoesManage(renderer_id, driver)) {
+      continue;
+    }
+    const autofill::FormData* observed_form = form_manager->observed_form();
+    auto it = std::ranges::find(observed_form->fields(), renderer_id,
+                                &autofill::FormFieldData::renderer_id);
+    if (it != observed_form->fields().end() && it->IsPasswordInputElement()) {
+      return form_manager.get();
+    }
+  }
+  return nullptr;
+}
+
+// Returns an OK result if every provided target password field is managed as
+// a password input element in `driver`'s frame, or an error result listing
+// the invalid fields.
+mojom::ActionResultPtr ValidateTargetPasswordFields(
+    password_manager::ContentPasswordManagerDriver* driver,
+    autofill::FieldRendererId current_password_field_id,
+    autofill::FieldRendererId new_password_field_id,
+    autofill::FieldRendererId confirm_new_password_field_id) {
+  CHECK(driver && driver->IsRenderFrameHostSupported());
+  std::vector<std::string> invalid_fields;
+  for (auto [label, renderer_id] :
+       {std::pair{"current_password_field", current_password_field_id},
+        std::pair{"new_password_field", new_password_field_id},
+        std::pair{"confirm_new_password_field",
+                  confirm_new_password_field_id}}) {
+    if (!renderer_id) {
+      continue;
+    }
+    if (!FindPasswordFormManagerForField(driver, renderer_id)) {
+      invalid_fields.push_back(
+          absl::StrFormat("%s (id %v)", label, renderer_id.value()));
+    }
+  }
+  if (!invalid_fields.empty()) {
+    // TODO(crbug.com/584683291): Introduce a dedicated ActionResultCode for
+    // target fields that are not managed password inputs.
+    return MakeResult(mojom::ActionResultCode::kFormFillingUnknownAutofillError,
+                      /*requires_page_stabilization=*/false,
+                      absl::StrFormat("Target field is not a valid password "
+                                      "field: %s.",
+                                      base::JoinString(invalid_fields, ", ")));
+  }
+  return MakeOkResult();
 }
 
 }  // namespace
@@ -122,10 +194,10 @@ mojom::ActionResultPtr ChangePasswordTool::TimeOfUseValidation(
   }
 
   autofill::LocalFrameToken target_frame_token;
-  mojom::ActionResultPtr result =
+  mojom::ActionResultPtr extract_field_ids_result =
       ExtractFieldIds(last_observation, target_frame_token);
-  if (!IsOk(*result)) {
-    return result;
+  if (!IsOk(*extract_field_ids_result)) {
+    return extract_field_ids_result;
   }
 
   content::RenderFrameHost* rfh =
@@ -141,6 +213,14 @@ mojom::ActionResultPtr ChangePasswordTool::TimeOfUseValidation(
         "Target frame or password manager driver is unavailable.");
   }
   driver_ = driver->AsWeakPtrImpl();
+  mojom::ActionResultPtr validate_target_password_fields_result =
+      ValidateTargetPasswordFields(driver,
+                                   current_password_field_id_.renderer_id,
+                                   new_password_field_id_.renderer_id,
+                                   confirm_new_password_field_id_.renderer_id);
+  if (!IsOk(*validate_target_password_fields_result)) {
+    return validate_target_password_fields_result;
+  }
 
   return MakeOkResult();
 }
