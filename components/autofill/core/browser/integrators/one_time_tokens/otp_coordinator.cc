@@ -165,8 +165,9 @@ void OtpCoordinator::StopListeningForForm(
   });
 }
 
-std::vector<one_time_tokens::OneTimeToken> OtpCoordinator::GetAvailableTokens(
-    const OtpTarget& target) const {
+std::vector<one_time_tokens::OneTimeToken>
+OtpCoordinator::RenewSubscriptionsAndRetrieveAvailableTokens(
+    const OtpTarget& target) {
   if (!IsTargetActiveAndEligible(target)) {
     return {};
   }
@@ -178,6 +179,14 @@ std::vector<one_time_tokens::OneTimeToken> OtpCoordinator::GetAvailableTokens(
     return {one_time_tokens::OneTimeToken(
         one_time_tokens::OneTimeTokenType::kSmsOtp, std::move(mock_otp),
         base::TimeTicks::Now())};
+  }
+
+  if (!deliveries_.contains(target.field) ||
+      phishing_blocked_site_frames_.contains(GetSiteFrame(target))) {
+    return {};
+  }
+  for (const auto& source : sources_) {
+    source->Start(target);
   }
 
   std::optional<OtpCandidate> candidate = GetAvailableCandidate(target.field);
@@ -310,7 +319,8 @@ void OtpCoordinator::OnOtpFilled(const OtpTarget& target,
         it != used_tokens.end()) {
       it->recorded_at = now;
     } else {
-      used_tokens.push_back(UsedToken{.identity = identity, .recorded_at = now});
+      used_tokens.push_back(
+          UsedToken{.identity = identity, .recorded_at = now});
     }
   }
 }

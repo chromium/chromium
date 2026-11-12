@@ -762,14 +762,17 @@ TEST_F(GmailOtpSourceTest,
 
   source.Start(target);
   EXPECT_EQ(service_->num_callbacks(), 1u);
+  EXPECT_EQ(service_->num_get_freshest_cached_otp_calls(), 1u);
 
   const base::TimeDelta period =
       one_time_tokens::features::kGmailOtpSubscriptionPeriodParam.Get();
 
-  // Repeated `Start()` renews in place without creating a second subscription.
+  // Repeated `Start()` renews in place without creating a second subscription
+  // or re-fetching cached OTPs.
   task_environment_.FastForwardBy(period - base::Seconds(20));
   source.Start(target);
   EXPECT_EQ(service_->num_callbacks(), 1u);
+  EXPECT_EQ(service_->num_get_freshest_cached_otp_calls(), 1u);
 
   // Advancing across multiple expiration periods keeps the subscription alive.
   task_environment_.FastForwardBy(period * 2);
