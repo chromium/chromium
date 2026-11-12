@@ -67,29 +67,54 @@ CHROME_OPTIONS = [
     "--enable-webrtc-event-logging-extensions",
 ]
 
-PERFETTO_CONFIG = """
-buffers: {
+CHROME_RECEIVER_TRACE_CONFIG = (
+    r'{\"included_categories\":[\"openscreen\",\"cast.stream\",\"media\"]}'
+)
+
+PERFETTO_CONFIG = f"""
+buffers: {{
     size_kb: 65536
     fill_policy: DISCARD
-}
-data_sources: {
-    config {
+}}
+data_sources: {{
+    config {{
         name: "linux.ftrace"
-        ftrace_config {
+        ftrace_config {{
             ftrace_events: "sched/sched_switch"
             ftrace_events: "sched/sched_wakeup"
             ftrace_events: "power/cpu_frequency"
             ftrace_events: "power/cpu_idle"
-        }
-    }
-}
-data_sources: {
-    config {
-        name: "android.track_event"
-    }
-}
+        }}
+    }}
+}}
+data_sources: {{
+    config {{
+        name: "track_event"
+        track_event_config {{
+            disabled_categories: "*"
+            enabled_categories: "openscreen"
+            enabled_categories: "cast.stream"
+            enabled_categories: "media"
+        }}
+    }}
+}}
+data_sources: {{
+    config {{
+        name: "org.chromium.trace_event"
+        chrome_config {{
+            trace_config: "{CHROME_RECEIVER_TRACE_CONFIG}"
+        }}
+    }}
+}}
 duration_ms: 45000
 """
+
+# Chrome trace categories recorded on the sender. `openscreen` carries the
+# Open Screen frame and flow events, `cast.stream` carries frame drops and
+# transport slices, and `cast_perf_test` marks frames for this test.
+SENDER_TRACE_CATEGORIES = (
+    'openscreen,cast.stream,cast_perf_test,media,webrtc,gpu,blink'
+)
 
 
 def should_run_vp9_tests(args) -> bool:
@@ -161,7 +186,7 @@ def setup_test_environment(
             [
                 '--trace-startup',
                 f'--trace-startup-file={trace_file_path}',
-                '--trace-startup-categories=cast,media,webrtc,gpu,blink',
+                f'--trace-startup-categories={SENDER_TRACE_CATEGORIES}',
                 '--trace-startup-duration=45',
             ]
         )
@@ -186,7 +211,7 @@ def setup_test_environment(
     chrome_options.add_argument('--trace-startup')
     chrome_options.add_argument(f'--trace-startup-file={trace_file_path}')
     chrome_options.add_argument(
-        '--trace-startup-categories=cast,media,webrtc,gpu,blink'
+        f'--trace-startup-categories={SENDER_TRACE_CATEGORIES}'
     )
     chrome_options.add_argument('--trace-startup-duration=45')
 
@@ -951,6 +976,8 @@ def _run_tests(reporter):
             )
 
     actual_version = None
+    last_version = None
+    first_clip_error = None
     try:
         for codec_name, config in CONFIGURATIONS.items():
             if codec_name == 'VP9' and not run_vp9_tests:
@@ -1004,31 +1031,48 @@ def _run_tests(reporter):
                     )
                     continue
 
-                with reporter.case(case_name(codec_name, video)) as case:
-                    # Reset first: setup may fail before reporting one.
-                    actual_version = None
-                    try:
-                        session = setup_test_environment(
-                            args,
-                            cv,
-                            chrome_options_list,
-                            codec_name,
-                            video['name'],
+                setup_done = False
+                try:
+                    with reporter.case(case_name(codec_name, video)) as case:
+                        # Reset first: setup may fail before reporting one.
+                        actual_version = None
+                        try:
+                            session = setup_test_environment(
+                                args,
+                                cv,
+                                chrome_options_list,
+                                codec_name,
+                                video['name'],
+                            )
+                        except Exception:
+                            logging.exception(
+                                "Setup failed for video %s", video['name']
+                            )
+                            common.dump_remote_logs(args)
+                            raise
+                        setup_done = True
+                        actual_version = session.chrome_version
+                        last_version = actual_version
+                        run_video_case(
+                            args, session, codec_name, video['name'], case
                         )
-                    except Exception:
-                        logging.exception(
-                            "Setup failed for video %s", video['name']
-                        )
-                        common.dump_remote_logs(args)
+                except common.RemoteDeviceError:
+                    raise
+                except Exception as e:
+                    if not setup_done:
                         raise
-                    actual_version = session.chrome_version
-                    run_video_case(
-                        args, session, codec_name, video['name'], case
-                    )
+                    # `reporter.case()` already recorded FAIL for this clip.
+                    # Continue so the remaining videos still run and collect
+                    # their traces, then re-raise after the loop.
+                    if first_clip_error is None:
+                        first_clip_error = e
+        if first_clip_error is not None:
+            raise first_clip_error
     finally:
-        common.cleanup_binaries(args, actual_version)
+        final_version = actual_version or last_version
+        common.cleanup_binaries(args, final_version)
         # Last, since it raises if the upload fails.
-        common.finalize_results(actual_version)
+        common.finalize_results(final_version)
 
 
 if __name__ == '__main__':
