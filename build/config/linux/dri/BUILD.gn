@@ -6,13 +6,30 @@ import("//build/config/linux/pkg_config.gni")
 
 assert(is_linux, "This file should only be referenced on Linux")
 
-pkg_config("dri") {
-  packages = [ "dri" ]
-  dri_driver_dir = exec_script(pkg_config_script,
+# Only configure DRI support if the "dri" pkg-config package is available.
+# Use --atleast-version with a minimal version to test for package presence.
+has_dri =
+    use_sysroot || exec_script(pkg_config_script,
                                common_pkg_config_args + pkg_config_args + [
-                                     "--dridriverdir",
+                                     "--atleast-version",
+                                     "0",
                                      "dri",
                                    ],
-                               "string")
-  defines = [ "DRI_DRIVER_DIR=\"$dri_driver_dir\"" ]
+                               "trim string") == "true"
+
+if (has_dri) {
+  pkg_config("dri") {
+    packages = [ "dri" ]
+    dri_driver_dir = exec_script(pkg_config_script,
+                                 common_pkg_config_args + pkg_config_args + [
+                                       "--dridriverdir",
+                                       "dri",
+                                     ],
+                                 "string")
+    defines = [ "DRI_DRIVER_DIR=\"$dri_driver_dir\"" ]
+  }
+} else {
+  # Without dri.pc, DRI_DRIVER_DIR is left undefined.
+  config("dri") {
+  }
 }
