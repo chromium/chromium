@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -75,7 +75,7 @@ size_t GetContiguousI420BufferSize(size_t width, size_t height) {
              .GetArea();
 }
 
-I420Planes GetI420PlanesFromContiguousBuffer(uint8_t* data_base_address,
+I420Planes GetI420PlanesFromContiguousBuffer(base::span<uint8_t> buffer,
                                              size_t width,
                                              size_t height) {
   gfx::Size dimensions(width, height);
@@ -84,15 +84,17 @@ I420Planes GetI420PlanesFromContiguousBuffer(uint8_t* data_base_address,
   gfx::Size u_plane_size = VideoFrame::PlaneSize(
       PIXEL_FORMAT_I420, VideoFrame::Plane::kU, dimensions);
   gfx::Size v_plane_size = VideoFrame::PlaneSize(
-      PIXEL_FORMAT_I420, VideoFrame::Plane::kU, dimensions);
+      PIXEL_FORMAT_I420, VideoFrame::Plane::kV, dimensions);
   I420Planes i420_planes;
   i420_planes.width = width;
   i420_planes.height = height;
-  i420_planes.y_plane_data = data_base_address;
-  i420_planes.u_plane_data =
-      UNSAFE_TODO(i420_planes.y_plane_data + y_plane_size.GetArea());
+  base::span<uint8_t> u_and_v_planes =
+      buffer.subspan(static_cast<size_t>(y_plane_size.GetArea()));
+  i420_planes.y_plane_data = buffer.data();
+  i420_planes.u_plane_data = u_and_v_planes.data();
   i420_planes.v_plane_data =
-      UNSAFE_TODO(i420_planes.u_plane_data + u_plane_size.GetArea());
+      u_and_v_planes.subspan(static_cast<size_t>(u_plane_size.GetArea()))
+          .data();
   i420_planes.y_plane_stride = y_plane_size.width();
   i420_planes.u_plane_stride = u_plane_size.width();
   i420_planes.v_plane_stride = v_plane_size.width();
@@ -106,7 +108,7 @@ I420Planes EnsureI420BufferSizeAndGetPlanes(size_t width,
   if (i420_buffer->size() < required_size) {
     i420_buffer->resize(required_size);
   }
-  return GetI420PlanesFromContiguousBuffer(&(*i420_buffer)[0], width, height);
+  return GetI420PlanesFromContiguousBuffer(*i420_buffer, width, height);
 }
 
 I420Planes GetI420PlanesFromPixelBuffer(CVPixelBufferRef pixel_buffer) {
@@ -166,7 +168,7 @@ size_t GetContiguousNV12BufferSize(size_t width, size_t height) {
              .GetArea();
 }
 
-NV12Planes GetNV12PlanesFromContiguousBuffer(uint8_t* data_base_address,
+NV12Planes GetNV12PlanesFromContiguousBuffer(base::span<uint8_t> buffer,
                                              size_t width,
                                              size_t height) {
   gfx::Size dimensions(width, height);
@@ -177,9 +179,9 @@ NV12Planes GetNV12PlanesFromContiguousBuffer(uint8_t* data_base_address,
   NV12Planes nv12_planes;
   nv12_planes.width = width;
   nv12_planes.height = height;
-  nv12_planes.y_plane_data = data_base_address;
+  nv12_planes.y_plane_data = buffer.data();
   nv12_planes.uv_plane_data =
-      UNSAFE_TODO(nv12_planes.y_plane_data + y_plane_size.GetArea());
+      buffer.subspan(static_cast<size_t>(y_plane_size.GetArea())).data();
   nv12_planes.y_plane_stride = y_plane_size.width();
   nv12_planes.uv_plane_stride = uv_plane_size.width();
   return nv12_planes;
@@ -192,7 +194,7 @@ NV12Planes EnsureNV12BufferSizeAndGetPlanes(size_t width,
   if (nv12_buffer->size() < required_size) {
     nv12_buffer->resize(required_size);
   }
-  return GetNV12PlanesFromContiguousBuffer(&(*nv12_buffer)[0], width, height);
+  return GetNV12PlanesFromContiguousBuffer(*nv12_buffer, width, height);
 }
 
 NV12Planes GetNV12PlanesFromPixelBuffer(CVPixelBufferRef pixel_buffer) {
