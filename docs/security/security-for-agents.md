@@ -412,6 +412,26 @@ In general, a shorter bug report is better. Bug reports should be as short as
 possible, but no shorter. The report text must be at most 8,000 characters; put
 long logs and stack traces in attached files instead.
 
+### Before submitting
+
+Run the [`vuln-report-check`](../../agents/skills/vuln-report-check/SKILL.md)
+skill on your draft report and every file you plan to attach. Fix every "Must
+fix" finding before you submit.
+
+If you cannot load skills, run the checker directly (Python 3.10 or later, no
+other dependencies):
+
+```bash
+python3 agents/skills/vuln-report-check/check.py --report report.md \
+    repro.json poc.html
+```
+
+Without a Chromium checkout, download the skill folder from
+https://chromium.googlesource.com/chromium/src/+archive/refs/heads/main/agents/skills/vuln-report-check.tar.gz.
+
+Do not paste the checker output into the report. Passing the checks speeds up
+triage but does not guarantee automatic reproduction.
+
 ## Further Reading
 
 The docs/security directory contains other security-related documentation. You
