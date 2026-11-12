@@ -87,7 +87,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   private accessor destinationsManaged_: boolean = false;
   protected accessor documentSettings_: DocumentSettings =
       createDocumentSettings();
-  protected accessor error_: Error|null = null;
+  protected accessor error_: Error = Error.NONE;
   protected accessor margins_: Margins|null = null;
   protected accessor pageSize_: Size = new Size(612, 792);
   private accessor settingsManaged_: boolean = false;
@@ -169,7 +169,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
     }
 
     if (changedPrivateProperties.has('error_')) {
-      if (this.error_ !== null && this.error_ !== Error.NONE) {
+      if (this.error_ !== Error.NONE) {
         this.nativeLayer_!.recordInHistogram(
             'PrintPreview.StateError', this.error_, Error.MAX_BUCKET);
       }

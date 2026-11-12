@@ -12,7 +12,7 @@ export function getHtml(this: PrintPreviewSearchBoxElement) {
 <cr-input type="search" id="searchInput" class="search-box-input"
     @search="${this.onSearchTermSearch}" @input="${this.onSearchTermInput}"
     aria-label="${this.label}" placeholder="${this.label}"
-    autofocus="${this.autofocus}" spellcheck="false">
+    ?autofocus="${this.autofocus}" spellcheck="false">
   <div slot="inline-prefix" id="icon" class="cr-icon icon-search" alt=""></div>
   <cr-icon-button id="clearSearch" class="icon-cancel"
       ?hidden="${!this.hasSearchText}" slot="suffix"

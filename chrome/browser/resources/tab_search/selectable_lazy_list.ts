@@ -82,7 +82,9 @@ export class SelectableLazyListElement<T = any> extends CrLitElement {
   accessor expandedList: boolean = false;
   accessor maxHeight: number|undefined;
   accessor items: T[] = [];
-  accessor itemSize: number = 100;
+  // Passed through to cr-lazy-list. May be undefined before the parent measures
+  // item height, in which case cr-lazy-list omits --list-item-size.
+  accessor itemSize: number|undefined = 100;
   accessor template: (item: T, index: number) => TemplateResult = () => html``;
   accessor selected: number = NO_SELECTION;
   accessor isSelectable: (item: T) => boolean = (_item) => true;

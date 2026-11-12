@@ -160,7 +160,7 @@ export function getHtml(this: HistoryItemElement) {
           typed count: ${this.item?.debug.typedCount}
         </div>
         <div class="debug-info"
-            hidden="${!this.item?.debug.isUrlInLocalDatabase}">
+            ?hidden="${!this.item?.debug.isUrlInLocalDatabase}">
           visit count: ${this.item?.debug.visitCount}
         </div>
       </div>

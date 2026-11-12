@@ -40,11 +40,17 @@ export function getHtml(this: BindingsViolationsElement) {
     ?foo-boolean="false" foo-boolean="true" foo-string="true"
     fooNumber="3" fooString="${this.label}"
     .fooString="bar" .fooBoolean=" ${this.disabled}"
-    .fooNumber="${this.limits.min}px">
+    .fooNumber="${this.limits.min}px"
+    foo-number="${this.disabled}" foo-boolean="${this.disabled}"
+    foo-array="${this.label}" foo-object="${this.label}">
 </hello-world-child>
-<hello-world-child .fooString="prefix ${this.limits.min}"></hello-world-child>
+<hello-world-child .fooString="prefix ${this.limits.min}"
+    foo-number="${this.limits.min}" foo-string="${this.limits.min}">
+</hello-world-child>
+<input readonly="${this.disabled}" tabindex="${this.label}">
 <button disabled="true"></button>
-<div aria-hidden="true" draggable="true" .style="height: ${this.limits.min}px">
+<div aria-hidden="true" draggable="true" .style="height: ${this.limits.min}px"
+    style="${this.errorMessage}">
 </div>
 <svg viewBox="0 0 24 24"></svg>
 `;

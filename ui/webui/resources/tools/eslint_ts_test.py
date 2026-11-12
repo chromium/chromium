@@ -998,9 +998,13 @@ class EslintTsTest(unittest.TestCase):
 
     _INVALID_PROPERTY_EXPRESSION_ERROR = "Invalid property expression: '.%(propertyName)s=' only works with '${...}' rvalues. Use attribute expression '%(dashCaseName)s=\"...\"' for a static value, or '.%(propertyName)s=\"${...}\"' for a dynamic binding"
 
+    _BOOLEAN_PROPERTY_ATTRIBUTE_BINDING_ERROR = "Boolean property '%(propertyName)s' on element '%(tagName)s' can't be bound using a plain Lit attribute expression '%(attributeName)s=\"${...}\"'. Use either boolean attribute expression '?%(attributeName)s=\"${...}\"' or property expression '.%(propertyName)s=\"${...}\"' instead"
+
     _PROPERTY_TYPE_MISMATCH_ERROR = "Property type mismatch: '%(propertyName)s' is declared as '%(declaredType)s' reactive property but is typed as '%(tsType)s'"
 
     _BINDING_TYPE_MISMATCH_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s' expects type '%(expectedType)s', but was provided '%(providedType)s'"
+
+    _ATTRIBUTE_BINDING_TYPE_MISMATCH_ERROR = "Type mismatch in attribute binding: Property '%(propertyName)s' on element '%(tagName)s' expects type '%(expectedType)s', but was provided '%(providedType)s'"
 
     _PROPERTY_NOT_FOUND_ERROR = (
       "Property '%(propertyName)s' was not found on element '%(tagName)s'"
@@ -1172,6 +1176,37 @@ class EslintTsTest(unittest.TestCase):
         'expectedType': 'boolean',
         'providedType': 'string',
       },
+      _BOOLEAN_PROPERTY_ATTRIBUTE_BINDING_ERROR
+      % {
+        'propertyName': 'fooBoolean',
+        'tagName': 'hello-world-child',
+        'attributeName': 'foo-boolean',
+      },
+      _BOOLEAN_PROPERTY_ATTRIBUTE_BINDING_ERROR
+      % {
+        'propertyName': 'readOnly',
+        'tagName': 'input',
+        'attributeName': 'readonly',
+      },
+      _ATTRIBUTE_BINDING_TYPE_MISMATCH_ERROR
+      % {
+        'propertyName': 'fooNumber',
+        'tagName': 'hello-world-child',
+        'expectedType': 'number',
+        'providedType': 'boolean',
+      },
+      _INCORRECT_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'foo-array',
+        'propertyName': 'fooArray',
+        'propertyExpression': '.fooArray=',
+      },
+      _INCORRECT_ATTRIBUTE_ERROR
+      % {
+        'attributeName': 'foo-object',
+        'propertyName': 'fooObject',
+        'propertyExpression': '.fooObject=',
+      },
     ]
     for e in errors:
       self.assertTrue(
@@ -1258,6 +1293,27 @@ class EslintTsTest(unittest.TestCase):
         'propertyName': 'fooString',
         'tagName': 'hello-world-child',
         'expectedType': 'string',
+        'providedType': 'string',
+      },
+      _ATTRIBUTE_BINDING_TYPE_MISMATCH_ERROR
+      % {
+        'propertyName': 'fooNumber',
+        'tagName': 'hello-world-child',
+        'expectedType': 'number',
+        'providedType': 'number',
+      },
+      _ATTRIBUTE_BINDING_TYPE_MISMATCH_ERROR
+      % {
+        'propertyName': 'fooString',
+        'tagName': 'hello-world-child',
+        'expectedType': 'string',
+        'providedType': 'number',
+      },
+      _ATTRIBUTE_BINDING_TYPE_MISMATCH_ERROR
+      % {
+        'propertyName': 'tabIndex',
+        'tagName': 'input',
+        'expectedType': 'number',
         'providedType': 'string',
       },
     ]
