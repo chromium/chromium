@@ -202,6 +202,11 @@ class AudioServiceBrowserTestBase : public ContentBrowserTest {
   }
 
  protected:
+  void TestProcessingSettings(std::string_view gum_config,
+                              bool expected_ec,
+                              bool expected_ns,
+                              bool expected_agc);
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -260,8 +265,18 @@ class AudioProcessorControlsInterceptor
     GetForwardingInterface()->SetVoiceIsolation(enabled);
   }
 
+  void GetStats(GetStatsCallback callback) override {
+    get_stats_count_++;
+    if (on_get_stats_) {
+      on_get_stats_.Run();
+    }
+    GetForwardingInterface()->GetStats(std::move(callback));
+  }
+
   std::vector<bool> voice_isolation_states_;
   base::RepeatingCallback<void(bool)> on_set_voice_isolation_;
+  int get_stats_count_ = 0;
+  base::RepeatingClosure on_get_stats_;
 
  private:
   mojo::Remote<media::mojom::AudioProcessorControls> service_remote_;
@@ -563,6 +578,123 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+void AudioServiceBrowserTestBase::TestProcessingSettings(
+    std::string_view gum_config,
+    bool expected_ec,
+    bool expected_ns,
+    bool expected_agc) {
+  AudioServiceOverride audio_service_override;
+  audio_service_override.audio_manager_.default_device_params =
+      kInputParamsDefault;
+
+  if (!embedded_test_server()->Started()) {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/simple_page.html")));
+
+  base::test::TestFuture<void> streams_closed_future;
+  audio_service_override.audio_manager_.on_all_streams_closed_ =
+      streams_closed_future.GetSequenceBoundCallback();
+  EXPECT_EQ(
+      "success",
+      EvalJs(shell(), base::StringPrintf(
+                          "navigator.mediaDevices.getUserMedia(%s)"
+                          "    .then(stream => {"
+                          "      stream.getTracks().forEach(t => t.stop());"
+                          "      return 'success';"
+                          "    }, e => e.name)",
+                          std::string(gum_config).c_str())));
+  ASSERT_TRUE(streams_closed_future.Wait());
+
+  EXPECT_THAT(audio_service_override.audio_manager_.created_streams,
+              ElementsAre(CreatedStreamIs("default", SystemAec::kDisabled)));
+  const auto& stream_factory =
+      audio_service_override.stream_factory_interceptor_;
+  const auto& processing_settings =
+      stream_factory.last_created_processing_settings_;
+  ASSERT_TRUE(processing_settings.has_value());
+  EXPECT_EQ(expected_ec, processing_settings->echo_cancellation);
+  EXPECT_EQ(expected_ns, processing_settings->noise_suppression);
+  EXPECT_EQ(expected_agc, processing_settings->automatic_gain_control);
+  EXPECT_TRUE(stream_factory.last_stream_had_controls_receiver_);
+}
+
+IN_PROC_BROWSER_TEST_F(AudioServiceBrowserTestBase,
+                       GetUserMediaNoiseSuppression) {
+  // 1. Request with noiseSuppression: true and echoCancellation: false to
+  // verify that standalone noiseSuppression activates Audio Service APM.
+  TestProcessingSettings(
+      "{audio: {echoCancellation: {exact: false}, "
+      "noiseSuppression: {exact: true}}}",
+      /*expected_ec=*/false, /*expected_ns=*/true, /*expected_agc=*/false);
+
+  // 2. Request with noiseSuppression: false and echoCancellation: true to
+  // verify that noiseSuppression can be disabled while Audio Service APM runs.
+  TestProcessingSettings(
+      "{audio: {echoCancellation: {exact: true}, "
+      "noiseSuppression: {exact: false}}}",
+      /*expected_ec=*/true, /*expected_ns=*/false, /*expected_agc=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AudioServiceBrowserTestBase,
+                       GetUserMediaAutoGainControl) {
+  // 1. Request with autoGainControl: true and echoCancellation: false to
+  // verify that standalone autoGainControl activates Audio Service APM.
+  TestProcessingSettings(
+      "{audio: {echoCancellation: {exact: false}, "
+      "autoGainControl: {exact: true}}}",
+      /*expected_ec=*/false, /*expected_ns=*/false, /*expected_agc=*/true);
+
+  // 2. Request with autoGainControl: false and echoCancellation: true to
+  // verify that autoGainControl can be disabled while Audio Service APM runs.
+  TestProcessingSettings(
+      "{audio: {echoCancellation: {exact: true}, "
+      "autoGainControl: {exact: false}}}",
+      /*expected_ec=*/true, /*expected_ns=*/true, /*expected_agc=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(AudioServiceBrowserTestBase,
+                       AudioProcessorControlsGetStats) {
+  AudioServiceOverride audio_service_override;
+  audio_service_override.audio_manager_.default_device_params =
+      kInputParamsDefault;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/simple_page.html")));
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "navigator.mediaDevices.getUserMedia({"
+                         "  audio: {echoCancellation: {exact: true}}"
+                         "}).then(stream => {"
+                         "  window.stream = stream;"
+                         "  return true;"
+                         "})"));
+
+  auto& stream_factory = audio_service_override.stream_factory_interceptor_;
+  EXPECT_TRUE(stream_factory.last_stream_had_controls_receiver_);
+  ASSERT_EQ(stream_factory.controls_interceptors_.size(), 1u);
+  auto& controls = *stream_factory.controls_interceptors_.back();
+
+  // Verify periodic GetStats query initiated from Blink's
+  // AudioServiceAudioProcessorProxy over the AudioProcessorControls pipe.
+  if (controls.get_stats_count_ == 0) {
+    base::test::TestFuture<void> timer_stats_future;
+    controls.on_get_stats_ = timer_stats_future.GetRepeatingCallback();
+    EXPECT_TRUE(timer_stats_future.Wait());
+  }
+  EXPECT_GE(controls.get_stats_count_, 1);
+
+  base::test::TestFuture<void> streams_closed_future;
+  audio_service_override.audio_manager_.on_all_streams_closed_ =
+      streams_closed_future.GetSequenceBoundCallback();
+  EXPECT_EQ(true,
+            EvalJs(shell(),
+                   "window.stream.getTracks().forEach(t => t.stop()); true;"));
+  ASSERT_TRUE(streams_closed_future.Wait());
+}
+
 class AudioServiceVoiceIsolationTest : public AudioServiceBrowserTestBase {
  public:
   AudioServiceVoiceIsolationTest()
