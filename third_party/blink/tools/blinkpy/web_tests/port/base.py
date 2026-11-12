@@ -2373,6 +2373,11 @@ class Port(object):
         return self.results_directory()
 
     def inspector_build_directory(self):
+        merged_dir = self.build_path(
+            'gen', 'third_party', 'devtools', 'front_end'
+        )
+        if self._filesystem.exists(merged_dir):
+            return merged_dir
         return self.build_path(
             'gen', 'third_party', 'devtools-frontend', 'src', 'front_end'
         )
