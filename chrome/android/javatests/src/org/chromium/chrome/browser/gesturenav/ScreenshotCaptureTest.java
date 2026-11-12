@@ -221,6 +221,7 @@ public class ScreenshotCaptureTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/578542537")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testNavigatingAwayFromNtpToWebUiPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
