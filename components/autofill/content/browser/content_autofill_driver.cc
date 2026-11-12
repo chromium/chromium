@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -280,6 +281,18 @@ R RouteToAgent(AutofillDriverRouter& router,
       std::forward<ActualArgs>(args)...);
 }
 
+bool IsErrorDocument(content::RenderFrameHost* rfh) {
+  using enum content::RenderFrameHost::LifecycleState;
+  // RenderFrameHost::IsErrorDocument() CHECKs that `rfh` is not speculative and
+  // DCHECKs that it is not `kPendingCommit`. Note that IsInLifecycleState()
+  // returns false for all states when `rfh` is speculative.
+  const bool has_committed = rfh->IsInLifecycleState(kActive) ||
+                             rfh->IsInLifecycleState(kPrerendering) ||
+                             rfh->IsInLifecycleState(kInBackForwardCache) ||
+                             rfh->IsInLifecycleState(kPendingDeletion);
+  return has_committed && rfh->IsErrorDocument();
+}
+
 // Routes an event from the renderer to one or multiple AutofillManagers.
 //
 // Routing converts values and types: for example, renderer forms become browser
@@ -301,7 +314,8 @@ void RouteToManager(
                                          AutofillManager::RendererEventPassKey),
     ActualArgs&&... args) {
   if (!bad_message::CheckArgs(args...) ||
-      !bad_message::CheckFrameNotPrerendering(source.render_frame_host())) {
+      !bad_message::CheckFrameNotPrerendering(source.render_frame_host()) ||
+      IsErrorDocument(source.render_frame_host())) {
     return;
   }
   return (router.*router_fun)(

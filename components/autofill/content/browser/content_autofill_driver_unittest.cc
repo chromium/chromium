@@ -59,6 +59,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -1110,6 +1111,68 @@ TEST_F(ContentAutofillDriverTest_Prerender,
                                                       std::move(remote));
 
   run_loop.Run();
+}
+
+// Tests that renderer events from an error document are ignored without
+// triggering a bad message.
+TEST_F(ContentAutofillDriverTest, DropsEventsFromErrorDocument) {
+  NavigateAndCommit(GURL("https://a.test/"));
+  content::RenderFrameHost* child_rfh =
+      content::NavigationSimulator::NavigateAndFailFromDocument(
+          GURL("https://b.test/login"), net::ERR_BLOCKED_BY_CSP,
+          content::RenderFrameHostTester::For(main_rfh())
+              ->AppendChild("child"));
+  ASSERT_TRUE(child_rfh->IsErrorDocument());
+
+  BadMessageHelper bad_message_helper;
+  EXPECT_CALL(bad_message_helper.callback(), Run).Times(0);
+  EXPECT_CALL(manager(child_rfh), OnFormsSeen).Times(0);
+  EXPECT_CALL(manager(main_rfh()), OnFormsSeen).Times(0);
+  EXPECT_CALL(manager(child_rfh), OnAskForValuesToFill).Times(0);
+  EXPECT_CALL(manager(main_rfh()), OnAskForValuesToFill).Times(0);
+
+  FormData form = test::CreateTestAddressFormData();
+  driver(child_rfh).renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                /*removed_forms=*/{});
+  driver(child_rfh).renderer_events().AskForValuesToFill(
+      form, form.fields().front().renderer_id(), gfx::Rect(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      std::nullopt);
+}
+
+// Tests that renderer events on speculative or pending-commit RenderFrameHosts
+// do not hit RenderFrameHost::IsErrorDocument() lifecycle CHECKs/DCHECKs.
+TEST_F(ContentAutofillDriverTest, UncommittedFrameDoesNotCrash) {
+  struct SpeculativeFrameObserver : content::WebContentsObserver {
+    explicit SpeculativeFrameObserver(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+    void RenderFrameCreated(content::RenderFrameHost* rfh) override {
+      created_rfh = rfh;
+    }
+    raw_ptr<content::RenderFrameHost> created_rfh = nullptr;
+  };
+
+  NavigateAndCommit(GURL("https://a.test/"));
+  SpeculativeFrameObserver observer(web_contents());
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://b.test/"), web_contents());
+  navigation->Start();
+  ASSERT_TRUE(observer.created_rfh);
+  ContentAutofillDriver* speculative_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(observer.created_rfh);
+  ASSERT_TRUE(speculative_driver);
+  speculative_driver->renderer_events().FormsSeen(/*updated_forms=*/{},
+                                                  /*removed_forms=*/{});
+
+  navigation->ReadyToCommit();
+  content::RenderFrameHost* pending_rfh = navigation->GetFinalRenderFrameHost();
+  ASSERT_TRUE(pending_rfh->IsInLifecycleState(
+      content::RenderFrameHost::LifecycleState::kPendingCommit));
+  ContentAutofillDriver* pending_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(pending_rfh);
+  ASSERT_TRUE(pending_driver);
+  pending_driver->renderer_events().FormsSeen(/*updated_forms=*/{},
+                                              /*removed_forms=*/{});
 }
 
 // Tests that a renderer event with a FieldRendererId that doesn't belong to the
