@@ -15,9 +15,9 @@ D3D12VideoDecoderTask::D3D12VideoDecoderTask() = default;
 
 D3D12VideoDecoderTask::~D3D12VideoDecoderTask() {
   // The GPU may still be reading resources owned by this task (e.g.
-  // |command_allocator_|, |compressed_bitstream_|), so we must not let them be
-  // released until the fence has signaled. If the wait cannot be performed
-  // (only under catastrophic conditions such as being out of memory, where
+  // |compressed_bitstream_|), so we must not let them be released until the
+  // fence has signaled. If the wait cannot be performed (only under
+  // catastrophic conditions such as being out of memory, where
   // CreateEvent()/SetEventOnCompletion() fail), crash deterministically rather
   // than freeing GPU-referenced resources out from under the driver.
   CHECK(WaitForCompletion());
@@ -46,28 +46,6 @@ void D3D12VideoDecoderTask::ResetBuffers() {
   picture_parameters_buffer_.clear();
   inverse_quantization_matrix_buffer_.clear();
   slice_control_buffer_.clear();
-}
-
-Microsoft::WRL::ComPtr<ID3D12CommandAllocator>
-D3D12VideoDecoderTask::ResetAndGetCommandAllocator(ID3D12Device* device) {
-  CHECK(!fence_and_value_.first);
-
-  HRESULT hr;
-  if (!command_allocator_) {
-    hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE,
-                                        IID_PPV_ARGS(&command_allocator_));
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to create command allocator" << PrintHr(hr);
-      return nullptr;
-    }
-  } else {
-    hr = command_allocator_->Reset();
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to reset command allocator" << PrintHr(hr);
-      return nullptr;
-    }
-  }
-  return command_allocator_;
 }
 
 std::vector<uint8_t>& D3D12VideoDecoderTask::GetPictureParametersBuffer() {

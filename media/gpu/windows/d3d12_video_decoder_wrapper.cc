@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_handle.h"
+#include "media/gpu/windows/d3d12_command_allocator_provider.h"
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/d3d12_video_decode_task.h"
@@ -66,6 +67,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
         video_decoder_heap_(std::move(video_decoder_heap)),
         reference_frame_list_(std::move(video_decoder_heap)),
         fence_(std::move(fence)),
+        command_allocator_provider_(device_, fence_),
         tasks_(max_decode_requests) {
     input_stream_arguments_.pHeap = video_decoder_heap_.Get();
   }
@@ -180,25 +182,26 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
 
   bool SubmitDecode() override {
     TRACE_EVENT("gpu", "D3D12VideoDecoderWrapperImpl::SubmitDecode");
-    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator =
-        tasks_[current_task_index_].ResetAndGetCommandAllocator(device_.Get());
-    if (!command_allocator) {
+    auto command_allocator_or_error =
+        command_allocator_provider_.PrepareCommandAllocator();
+    if (!command_allocator_or_error.has_value()) {
       media_log_->NotifyError<D3DStatusTraits>(
-          {D3DStatusCode::kDecoderBeginFrameFailed,
-           "ResetAndGetCommandAllocator failed"});
+          std::move(command_allocator_or_error).error());
       return false;
     }
+    ID3D12CommandAllocator* command_allocator =
+        command_allocator_or_error.value();
     HRESULT hr;
     if (!command_list_) {
       TRACE_EVENT("gpu", "CreateCommandList");
       hr = device_->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE,
-                                      command_allocator.Get(), nullptr,
+                                      command_allocator, nullptr,
                                       IID_PPV_ARGS(&command_list_));
       RETURN_IF_FAILED("Failed to create command list",
                        D3DStatusCode::kDecoderBeginFrameFailed, hr);
     } else {
       TRACE_EVENT("gpu", "ResetCommandList");
-      hr = command_list_->Reset(command_allocator.Get());
+      hr = command_list_->Reset(command_allocator);
     }
     RETURN_IF_FAILED("Failed to reset command list",
                      D3DStatusCode::kDecoderBeginFrameFailed, hr);
@@ -231,6 +234,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
       return false;
     }
     uint64_t fence_value = std::move(fence_value_or_error).value();
+    command_allocator_provider_.OnSubmitted(fence_value);
     // Let the task know when it can be reused.
     tasks_[current_task_index_].SetFenceAndValue(fence_, fence_value);
     return true;
@@ -255,6 +259,10 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
   D3D12ReferenceFrameList reference_frame_list_;
 
   scoped_refptr<D3D12Fence> fence_;
+  // Declared before `tasks_` so that it is released after all the tasks have
+  // waited for the GPU to complete.
+  D3D12CommandAllocatorProvider command_allocator_provider_;
+
   // The task pool for multiple ongoing decode requests.
   std::vector<D3D12VideoDecoderTask> tasks_;
   uint32_t current_task_index_ = 0;

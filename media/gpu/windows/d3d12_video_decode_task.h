@@ -36,10 +36,6 @@ class D3D12VideoDecoderTask {
   // |GetBitstreamBuffer()|.
   void ResetBuffers();
 
-  // Create or reset the command allocator for the task and return it.
-  Microsoft::WRL::ComPtr<ID3D12CommandAllocator> ResetAndGetCommandAllocator(
-      ID3D12Device* device);
-
   std::vector<uint8_t>& GetPictureParametersBuffer();
   std::vector<uint8_t>& GetInverseQuantizationMatrixBuffer();
   std::vector<uint8_t>& GetSliceControlBuffer();
@@ -49,7 +45,6 @@ class D3D12VideoDecoderTask {
       size_t size);
 
  private:
-  Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
   std::vector<uint8_t> picture_parameters_buffer_;
   std::vector<uint8_t> inverse_quantization_matrix_buffer_;
   std::vector<uint8_t> slice_control_buffer_;
