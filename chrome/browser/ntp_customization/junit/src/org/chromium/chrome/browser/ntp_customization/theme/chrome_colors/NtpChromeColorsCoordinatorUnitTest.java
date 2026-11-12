@@ -11,8 +11,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -90,7 +93,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        mNtpCustomizationConfigManager = new NtpCustomizationConfigManager();
+        mNtpCustomizationConfigManager = spy(new NtpCustomizationConfigManager());
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
 
         createCoordinator();
@@ -118,9 +121,7 @@ public class NtpChromeColorsCoordinatorUnitTest {
         assertNotNull(
                 mPropertyModel.get(
                         NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER));
-        assertEquals(
-                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference(),
-                mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
+        assertFalse(mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
     }
 
     @Test
@@ -226,13 +227,13 @@ public class NtpChromeColorsCoordinatorUnitTest {
 
     @Test
     public void testDestroy_logMetricsWithDailyRefreshToggledOff() {
-        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        applyBlueChromeColor(/* isDailyRefreshEnabled= */ true);
         createCoordinator();
         OnCheckedChangeListener dailyRefreshSwitchChangeListener =
                 mPropertyModel.get(
                         NtpChromeColorsProperties.DAILY_REFRESH_SWITCH_ON_CHECKED_CHANGE_LISTENER);
         assertNotNull(dailyRefreshSwitchChangeListener);
-        assertTrue(NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+        assertTrue(mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
 
         dailyRefreshSwitchChangeListener.onCheckedChanged(null, false);
 
@@ -459,6 +460,16 @@ public class NtpChromeColorsCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnDailyRefreshSwitchToggled_dailyRefreshTurnedOn_commitsDailyColor() {
+        testOnDailyRefreshSwitchToggledCommitsImpl(/* isChecked= */ true);
+    }
+
+    @Test
+    public void testOnDailyRefreshSwitchToggled_dailyRefreshTurnedOff_commitsStaticColor() {
+        testOnDailyRefreshSwitchToggledCommitsImpl(/* isChecked= */ false);
+    }
+
+    @Test
     public void testDoNotReCreateWithSamePrimaryColorSelected() {
         // Sets the current theme as Chrome color.
         NtpThemeColorInfo colorInfo =
@@ -512,34 +523,19 @@ public class NtpChromeColorsCoordinatorUnitTest {
         // When no customized theme is selected, verifies that the Chrome color bottom sheet is
         // opened with daily refresh toggle turned off and no highlighted Chrome color item.
         verifyIsDailyRefreshCheckedState(
-                /* isDailyRefreshEnabled= */ false,
-                /* expectedToggleEnabled= */ false,
-                RecyclerView.NO_POSITION);
+                /* expectedToggleEnabled= */ false, RecyclerView.NO_POSITION);
 
         // Sets the current theme as Chrome color.
-        NtpThemeColorInfo colorInfo =
-                NtpThemeColorUtils.createNtpThemeColorInfo(
-                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
         int expectedPosition = NtpThemeColorId.NTP_COLORS_BLUE - 1;
-        NtpBackgroundDataColor backgroundData =
-                new NtpBackgroundDataColor(
-                        PlatformType.ANDROID,
-                        /* isChromeColorDailyRefreshEnabled= */ false,
-                        colorInfo);
-        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
+        applyBlueChromeColor(/* isDailyRefreshEnabled= */ false);
 
         // Verifies that the Chrome color bottom sheet is opened with highlighted item.
-        verifyIsDailyRefreshCheckedState(
-                /* isDailyRefreshEnabled= */ false,
-                /* expectedToggleEnabled= */ false,
-                expectedPosition);
+        verifyIsDailyRefreshCheckedState(/* expectedToggleEnabled= */ false, expectedPosition);
 
-        // If daily refresh is turned on, verifies that the Chrome color bottom sheet is opened with
-        // daily refresh toggle turned on.
-        verifyIsDailyRefreshCheckedState(
-                /* isDailyRefreshEnabled= */ true,
-                /* expectedToggleEnabled= */ true,
-                expectedPosition);
+        // If daily refresh is turned on for the Chrome color, verifies that the Chrome color bottom
+        // sheet is opened with daily refresh toggle turned on.
+        applyBlueChromeColor(/* isDailyRefreshEnabled= */ true);
+        verifyIsDailyRefreshCheckedState(/* expectedToggleEnabled= */ true, expectedPosition);
 
         // Selects an image background theme.
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
@@ -554,19 +550,23 @@ public class NtpChromeColorsCoordinatorUnitTest {
                         FILE_ID_HASH);
         mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, uploadImageData);
 
-        // Verifies that the Chrome color bottom sheet is opened without any highlighted item, and
-        // the daily refresh toggle turned off.
+        // Verifies that if the background type is no longer Chrome color before prepareToShow() is
+        // called, the daily refresh toggle is turned off even though it was on for the Chrome
+        // color, and there is no highlighted item.
         verifyIsDailyRefreshCheckedState(
-                /* isDailyRefreshEnabled= */ false,
-                /* expectedToggleEnabled= */ false,
-                RecyclerView.NO_POSITION);
+                /* expectedToggleEnabled= */ false, RecyclerView.NO_POSITION);
+    }
 
-        // Verifies that if the background type is no longer be chrome color before prepareToShow()
-        // is called, daily refresh toggle is always turned off, and no highlighted item.
-        verifyIsDailyRefreshCheckedState(
-                /* isDailyRefreshEnabled= */ true,
-                /* expectedToggleEnabled= */ false,
-                RecyclerView.NO_POSITION);
+    @Test
+    public void testPrepareToShow_syncedDailyColorNotAppliedYet_keepsSwitchOffAndSyncedColor() {
+        testPrepareToShowWithSyncedColorNotAppliedYetImpl(
+                /* isCurrentColorDailyRefreshEnabled= */ false);
+    }
+
+    @Test
+    public void testPrepareToShow_syncedStaticColorNotAppliedYet_keepsSwitchOnAndSyncedColor() {
+        testPrepareToShowWithSyncedColorNotAppliedYetImpl(
+                /* isCurrentColorDailyRefreshEnabled= */ true);
     }
 
     @Test
@@ -644,13 +644,61 @@ public class NtpChromeColorsCoordinatorUnitTest {
         assertTrue(mCoordinator.getIsDailyRefreshEnabledForTesting());
     }
 
-    private void verifyIsDailyRefreshCheckedState(
-            boolean isDailyRefreshEnabled,
-            boolean expectedToggleEnabled,
-            int expectedHighlightedItemPosition) {
-        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(
-                isDailyRefreshEnabled);
+    /**
+     * Turns the daily refresh switch on or off for a blue Chrome color that has the opposite
+     * setting, and checks that the color is committed with the new setting and saved to the theme
+     * history.
+     */
+    private void testOnDailyRefreshSwitchToggledCommitsImpl(boolean isChecked) {
+        applyBlueChromeColor(/* isDailyRefreshEnabled= */ !isChecked);
+        createCoordinator();
+        clearInvocations(mNtpCustomizationConfigManager);
 
+        mCoordinator.onDailyRefreshSwitchToggled(/* buttonView= */ null, isChecked);
+
+        NtpBackgroundDataColor expectedColor =
+                new NtpBackgroundDataColor(
+                        mContext, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_BLUE, isChecked);
+        verify(mNtpCustomizationConfigManager)
+                .onBackgroundDataChanged(
+                        eq(mContext), argThat(expectedColor::hasSameThemeAndColor));
+        verify(mNtpCustomizationConfigManager)
+                .maybeSaveUserSelectedBackgroundTypeToSharedPreference(mContext);
+    }
+
+    /**
+     * Applies the blue Chrome color with the given daily refresh setting, saves a synced aqua
+     * Chrome color with the opposite setting that isn't applied yet, and shows the bottom sheet.
+     * Checks that the switch shows the setting of the blue color, and that showing the bottom sheet
+     * neither commits a color nor changes the synced color or its saved setting.
+     */
+    private void testPrepareToShowWithSyncedColorNotAppliedYetImpl(
+            boolean isCurrentColorDailyRefreshEnabled) {
+        applyBlueChromeColor(isCurrentColorDailyRefreshEnabled);
+        NtpBackgroundDataColor syncedColor =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID,
+                        NtpThemeColorId.NTP_COLORS_AQUA,
+                        !isCurrentColorDailyRefreshEnabled);
+        mNtpCustomizationConfigManager.onSyncedChromeColorChanged(mContext, syncedColor);
+        clearInvocations(mNtpCustomizationConfigManager);
+
+        createCoordinator();
+
+        assertEquals(
+                isCurrentColorDailyRefreshEnabled,
+                mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
+        verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
+        assertEquals(syncedColor, mNtpCustomizationConfigManager.getSyncedNtpBackgroundData());
+        assertEquals(
+                !isCurrentColorDailyRefreshEnabled,
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+    }
+
+    /** Shows the bottom sheet and checks the daily refresh switch and the highlighted color. */
+    private void verifyIsDailyRefreshCheckedState(
+            boolean expectedToggleEnabled, int expectedHighlightedItemPosition) {
         mCoordinator.prepareToShow();
         assertEquals(
                 expectedToggleEnabled,
@@ -676,20 +724,21 @@ public class NtpChromeColorsCoordinatorUnitTest {
         mPropertyModel = mCoordinator.getPropertyModelForTesting();
     }
 
-    private void setupChromeColorSelectionState() {
+    /** Applies the blue Chrome color with the given daily refresh setting as the NTP theme. */
+    private void applyBlueChromeColor(boolean isDailyRefreshEnabled) {
         NtpThemeColorInfo colorInfo =
                 NtpThemeColorUtils.createNtpThemeColorInfo(
                         mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
-        NtpBackgroundDataColor backgroundData =
-                new NtpBackgroundDataColor(
-                        PlatformType.ANDROID,
-                        /* isChromeColorDailyRefreshEnabled= */ false,
-                        colorInfo);
-        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, backgroundData);
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(
+                mContext,
+                new NtpBackgroundDataColor(PlatformType.ANDROID, isDailyRefreshEnabled, colorInfo));
+    }
+
+    private void setupChromeColorSelectionState() {
+        applyBlueChromeColor(/* isDailyRefreshEnabled= */ false);
         mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, 5);
         mPropertyModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, true);
-        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
-        mCoordinator.onDailyRefreshSwitchToggled(null, true);
+        mCoordinator.onDailyRefreshSwitchToggled(/* buttonView= */ null, /* isChecked= */ true);
     }
 
     private void verifyChromeColorSelectionCleared() {
