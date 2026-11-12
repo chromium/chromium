@@ -6,13 +6,19 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "crypto/obsolete/md5.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -965,5 +971,283 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<EDIDParserTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+namespace {
+
+constexpr char kBlockZeroSerialNumberTypeMetric2[] =
+    "Display.External.BlockZeroSerialNumberType2";
+constexpr char kDescriptorBlockSerialNumberTypeMetric[] =
+    "Display.External.DescriptorBlockSerialNumberType";
+
+// Values of the EdidSerialNumberType histogram enum.
+constexpr int kNormalSerialNumber = 0;
+constexpr int kRepeatingPatternSerialNumber = 1;
+constexpr int kMissingSerialNumber = 2;
+constexpr int kSequentialPatternSerialNumber = 3;
+constexpr int kTooShortSerialNumber = 4;
+
+// Returns a copy of `kNormalDisplay` with the block zero serial number and the
+// text of the serial number descriptor replaced. `descriptor_text` is copied
+// as-is and the rest of the 13 byte text field is padded with spaces.
+std::vector<uint8_t> CreateEdidWithSerialNumbers(
+    base::span<const uint8_t, 4u> block_zero_serial_number,
+    std::string_view descriptor_text) {
+  constexpr size_t kBlockZeroSerialNumberOffset = 12u;
+  // The serial number descriptor is the 4th descriptor (offset 108) and its
+  // text starts at byte 5.
+  constexpr size_t kDescriptorSerialNumberOffset = 113u;
+  constexpr size_t kDescriptorTextLength = 13u;
+
+  std::vector<uint8_t> edid(std::begin(kNormalDisplay),
+                            std::end(kNormalDisplay));
+  base::span(edid).subspan<kBlockZeroSerialNumberOffset, 4u>().copy_from(
+      block_zero_serial_number);
+  auto text =
+      base::span(edid)
+          .subspan<kDescriptorSerialNumberOffset, kDescriptorTextLength>();
+  std::ranges::fill(text, ' ');
+  text.copy_prefix_from(base::as_byte_span(descriptor_text));
+  return edid;
+}
+
+// Returns the descriptor text for `serial_number` as specified by EDID: the
+// text is terminated with a line feed if it's shorter than 13 bytes, and then
+// padded with spaces.
+std::string ToDescriptorText(std::string_view serial_number) {
+  constexpr size_t kDescriptorTextLength = 13u;
+  std::string text(serial_number);
+  if (text.size() < kDescriptorTextLength) {
+    text += '\n';
+  }
+  return text;
+}
+
+}  // namespace
+
+TEST(EdidParserSerialNumberTypeTest, BlockZero) {
+  struct {
+    std::array<uint8_t, 4u> serial_number;
+    int expected_type;
+  } kSerialNumberTestCases[] = {
+      {{0x00, 0x00, 0x00, 0x00}, kMissingSerialNumber},
+      {{0x01, 0x01, 0x01, 0x01}, kRepeatingPatternSerialNumber},
+      {{0x0f, 0x0f, 0x0f, 0x0f}, kRepeatingPatternSerialNumber},
+      {{0x12, 0x34, 0x12, 0x34}, kRepeatingPatternSerialNumber},
+      {{0x00, 0x01, 0x00, 0x01}, kRepeatingPatternSerialNumber},
+      {{0x12, 0x34, 0x56, 0x78}, kNormalSerialNumber},
+      {{0x12, 0x12, 0x34, 0x34}, kNormalSerialNumber},
+      {{0x12, 0x34, 0x12, 0x35}, kNormalSerialNumber},
+      {{0x00, 0x00, 0x00, 0x01}, kNormalSerialNumber},
+      // Sequential patterns are only checked in the ASCII descriptor serial
+      // number. ASCII "1234" in block zero is reported as normal.
+      {{0x31, 0x32, 0x33, 0x34}, kNormalSerialNumber},
+  };
+
+  for (const auto& test_case : kSerialNumberTestCases) {
+    SCOPED_TRACE(base::HexEncode(test_case.serial_number));
+    base::HistogramTester histogram_tester;
+    EdidParser parser(
+        CreateEdidWithSerialNumbers(test_case.serial_number, "CN4202137Q\n"),
+        /*is_external=*/true);
+    histogram_tester.ExpectUniqueSample(kBlockZeroSerialNumberTypeMetric2,
+                                        test_case.expected_type, 1);
+  }
+}
+
+TEST(EdidParserSerialNumberTypeTest, DescriptorBlock) {
+  constexpr std::array<uint8_t, 4u> kBlockZeroSerialNumber = {0x12, 0x34, 0x56,
+                                                              0x78};
+  struct {
+    std::string_view serial_number;
+    int expected_type;
+  } kSerialNumberTestCases[] = {
+      {"", kMissingSerialNumber},
+      {"CN4202137Q", kNormalSerialNumber},
+      {"12345A", kNormalSerialNumber},
+      {"123123", kNormalSerialNumber},
+      // 4 or fewer characters.
+      {"0", kTooShortSerialNumber},
+      {"AB", kTooShortSerialNumber},
+      {"00", kTooShortSerialNumber},
+      {"1212", kTooShortSerialNumber},
+      {"1234", kTooShortSerialNumber},
+      {"abcd", kTooShortSerialNumber},
+      {"V123", kTooShortSerialNumber},
+      // Repeating patterns.
+      {"00000", kRepeatingPatternSerialNumber},
+      {"0000000000", kRepeatingPatternSerialNumber},
+      {"12121", kRepeatingPatternSerialNumber},
+      {"ABABABABABABA", kRepeatingPatternSerialNumber},
+      {"12312", kNormalSerialNumber},
+      // Sequential digits.
+      {"01234", kSequentialPatternSerialNumber},
+      {"12345", kSequentialPatternSerialNumber},
+      {"0123456789", kSequentialPatternSerialNumber},
+      {"1234567890", kSequentialPatternSerialNumber},
+      {"9876543210", kSequentialPatternSerialNumber},
+      {"0987654321", kSequentialPatternSerialNumber},
+      {"54321", kSequentialPatternSerialNumber},
+      {"34567", kNormalSerialNumber},
+      {"1234567891", kNormalSerialNumber},
+      // Sequential letters.
+      {"abcde", kSequentialPatternSerialNumber},
+      {"abcdefghijklm", kSequentialPatternSerialNumber},
+      {"ABCDEF", kSequentialPatternSerialNumber},
+      {"fedcba", kSequentialPatternSerialNumber},
+      {"EDCBA", kSequentialPatternSerialNumber},
+      {"ZYXWVUTSRQPON", kNormalSerialNumber},
+      {"bcdef", kNormalSerialNumber},
+      {"abcdE", kNormalSerialNumber},
+      {"ABCDF", kNormalSerialNumber},
+  };
+
+  for (const auto& test_case : kSerialNumberTestCases) {
+    SCOPED_TRACE(test_case.serial_number);
+    base::HistogramTester histogram_tester;
+    EdidParser parser(
+        CreateEdidWithSerialNumbers(kBlockZeroSerialNumber,
+                                    ToDescriptorText(test_case.serial_number)),
+        /*is_external=*/true);
+    histogram_tester.ExpectUniqueSample(kDescriptorBlockSerialNumberTypeMetric,
+                                        test_case.expected_type, 1);
+  }
+}
+
+// Trailing padding (line feed, carriage return, spaces and NUL bytes) is not
+// part of the serial number.
+TEST(EdidParserSerialNumberTypeTest, DescriptorBlockPadding) {
+  constexpr std::array<uint8_t, 4u> kBlockZeroSerialNumber = {0x12, 0x34, 0x56,
+                                                              0x78};
+  struct {
+    std::string_view descriptor_text;
+    int expected_type;
+  } kSerialNumberTestCases[] = {
+      // Spaces only, without a line feed.
+      {"12345", kSequentialPatternSerialNumber},
+      {"00000", kRepeatingPatternSerialNumber},
+      {"1234", kTooShortSerialNumber},
+      {"CN4202137Q", kNormalSerialNumber},
+      // Line feed followed by spaces.
+      {"12345\n", kSequentialPatternSerialNumber},
+      {"00000\n", kRepeatingPatternSerialNumber},
+      {"abcdef\n", kSequentialPatternSerialNumber},
+      {"1234\n", kTooShortSerialNumber},
+      {"CN4202137Q\n", kNormalSerialNumber},
+      // Carriage return and line feed followed by spaces.
+      {"12345\r\n", kSequentialPatternSerialNumber},
+      {"00000\r\n", kRepeatingPatternSerialNumber},
+      {"1234\r\n", kTooShortSerialNumber},
+      // Non-conforming NUL padding.
+      {base::MakeStringViewWithNulChars("1234\0\0\0\0\0\0\0\0\0"),
+       kTooShortSerialNumber},
+      {base::MakeStringViewWithNulChars("1234\0"), kTooShortSerialNumber},
+      {base::MakeStringViewWithNulChars("00000\0"),
+       kRepeatingPatternSerialNumber},
+      {base::MakeStringViewWithNulChars("12345\0"),
+       kSequentialPatternSerialNumber},
+      {base::MakeStringViewWithNulChars("CN4202137Q\0"), kNormalSerialNumber},
+      {base::MakeStringViewWithNulChars("1234 \0"), kTooShortSerialNumber},
+      // Padding only.
+      {"\n", kMissingSerialNumber},
+      {"\r\n", kMissingSerialNumber},
+      {base::MakeStringViewWithNulChars("\0\0\0"), kMissingSerialNumber},
+  };
+
+  for (const auto& test_case : kSerialNumberTestCases) {
+    SCOPED_TRACE(
+        base::HexEncode(base::as_byte_span(test_case.descriptor_text)));
+    base::HistogramTester histogram_tester;
+    EdidParser parser(CreateEdidWithSerialNumbers(kBlockZeroSerialNumber,
+                                                  test_case.descriptor_text),
+                      /*is_external=*/true);
+    histogram_tester.ExpectUniqueSample(kDescriptorBlockSerialNumberTypeMetric,
+                                        test_case.expected_type, 1);
+  }
+
+  // Trailing NUL bytes are stripped only for serial number classification, so
+  // `descriptor_block_serial_number_hash()` (used by `GetEdidBasedDisplayId()`)
+  // remains unchanged.
+  constexpr std::array<uint8_t, 4u> kMissingBlockZero = {0x00, 0x00, 0x00,
+                                                         0x00};
+  constexpr std::string_view kNulPaddedText =
+      base::MakeStringViewWithNulChars("1234\0");
+  EdidParser nul_padded(
+      CreateEdidWithSerialNumbers(kMissingBlockZero, kNulPaddedText),
+      /*is_external=*/true);
+  EXPECT_EQ(nul_padded.descriptor_block_serial_number_hash(),
+            Md5AsHex(kNulPaddedText));
+  EXPECT_FALSE(nul_padded.GetSerialNumberBasedIdentifier());
+}
+
+TEST(EdidParserSerialNumberTypeTest, NoSerialNumberDescriptor) {
+  base::HistogramTester histogram_tester;
+  EdidParser parser(
+      std::vector<uint8_t>(std::begin(kBlockZeroSerialNumberOnlyDisplay),
+                           std::end(kBlockZeroSerialNumberOnlyDisplay)),
+      /*is_external=*/true);
+  histogram_tester.ExpectUniqueSample(kDescriptorBlockSerialNumberTypeMetric,
+                                      kMissingSerialNumber, 1);
+}
+
+TEST(EdidParserSerialNumberTypeTest, SerialNumberBasedIdentifier) {
+  constexpr std::array<uint8_t, 4u> kValidBlockZero = {0x12, 0x34, 0x56, 0x78};
+  constexpr std::array<uint8_t, 4u> kOtherValidBlockZero = {0x12, 0x34, 0x56,
+                                                            0x79};
+  constexpr std::array<uint8_t, 4u> kRepeatingBlockZero = {0x01, 0x01, 0x01,
+                                                           0x01};
+  constexpr std::array<uint8_t, 4u> kMissingBlockZero = {0x00, 0x00, 0x00,
+                                                         0x00};
+  auto get_identifier = [](base::span<const uint8_t, 4u> block_zero,
+                           std::string_view descriptor_serial_number,
+                           bool is_external = true) {
+    return EdidParser(
+               CreateEdidWithSerialNumbers(
+                   block_zero, ToDescriptorText(descriptor_serial_number)),
+               is_external)
+        .GetSerialNumberBasedIdentifier();
+  };
+
+  // Placeholders only.
+  EXPECT_FALSE(get_identifier(kMissingBlockZero, ""));
+  EXPECT_FALSE(get_identifier(kRepeatingBlockZero, ""));
+  EXPECT_FALSE(get_identifier(kRepeatingBlockZero, "0000000000"));
+  EXPECT_FALSE(get_identifier(kRepeatingBlockZero, "0123456789"));
+  EXPECT_FALSE(get_identifier(kRepeatingBlockZero, "1234"));
+
+  // Internal displays have no identifier.
+  EXPECT_FALSE(get_identifier(kValidBlockZero, "CN4202137Q",
+                              /*is_external=*/false));
+
+  // Either valid serial number produces an identifier.
+  const auto block_zero_only = get_identifier(kValidBlockZero, "");
+  const auto descriptor_only =
+      get_identifier(kRepeatingBlockZero, "CN4202137Q");
+  const auto both = get_identifier(kValidBlockZero, "CN4202137Q");
+  ASSERT_TRUE(block_zero_only);
+  ASSERT_TRUE(descriptor_only);
+  ASSERT_TRUE(both);
+  EXPECT_NE(*block_zero_only, *descriptor_only);
+  EXPECT_NE(*block_zero_only, *both);
+  EXPECT_NE(*descriptor_only, *both);
+
+  // Placeholder serial numbers don't affect the identifier.
+  EXPECT_EQ(descriptor_only, get_identifier(kMissingBlockZero, "CN4202137Q"));
+  EXPECT_EQ(block_zero_only, get_identifier(kValidBlockZero, "0000000000"));
+
+  // The same serial numbers produce the same identifier, and different ones
+  // produce different identifiers.
+  EXPECT_EQ(both, get_identifier(kValidBlockZero, "CN4202137Q"));
+  EXPECT_NE(both, get_identifier(kOtherValidBlockZero, "CN4202137Q"));
+  EXPECT_NE(both, get_identifier(kValidBlockZero, "CN4202137R"));
+}
+
+TEST(EdidParserSerialNumberTypeTest, NotRecordedForInternalDisplay) {
+  base::HistogramTester histogram_tester;
+  EdidParser parser(std::vector<uint8_t>(std::begin(kNormalDisplay),
+                                         std::end(kNormalDisplay)),
+                    /*is_external=*/false);
+  histogram_tester.ExpectTotalCount(kBlockZeroSerialNumberTypeMetric2, 0);
+  histogram_tester.ExpectTotalCount(kDescriptorBlockSerialNumberTypeMetric, 0);
+}
 
 }  // namespace display

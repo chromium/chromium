@@ -273,13 +273,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Display.External.BlockZeroSerialNumberType"
-    enum="BlockZeroSerialNumberType" expires_after="2027-01-21">
-  <owner>gildekel@chromium.org</owner>
+<histogram name="Display.External.BlockZeroSerialNumberType2"
+    enum="EdidSerialNumberType" expires_after="2027-11-01">
+  <owner>oshima@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
-    The type of serial number retrieved from block zero of a display's EDID
-    during EDID parsing.
+    The type of serial number retrieved from block zero of an external display's
+    EDID. Recorded each time an external display's EDID is parsed. A repeating
+    pattern is a 1 or 2 byte unit repeated (e.g. 0x01010101 or 0x12121212).
+  </summary>
+</histogram>
+
+<histogram name="Display.External.DescriptorBlockSerialNumberType"
+    enum="EdidSerialNumberType" expires_after="2027-11-01">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <summary>
+    The type of serial number retrieved from the serial number descriptor block
+    of an external display's EDID. Recorded each time an external display's EDID
+    is parsed. Trailing padding (whitespace and NUL bytes) is ignored. Missing
+    means there is no serial number descriptor or its text is empty. Too short
+    means the text has 4 or fewer characters. A repeating pattern is a 1 or 2
+    character unit repeated (e.g. &quot;00000&quot; or &quot;121212&quot;). A
+    sequential pattern is digits counting up from 0 or 1, or letters counting up
+    from a or A, or the reverse of either (e.g. &quot;0123456789&quot;,
+    &quot;54321&quot; or &quot;abcdef&quot;).
   </summary>
 </histogram>
 
@@ -316,9 +334,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Display.MultipleDisplays.GenerateId.SerialNumberIdentifierCollision"
+    enum="BooleanDisplayIdCollision" expires_after="2027-11-01">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-gfx-display@google.com</owner>
+  <summary>
+    Whether two or more connected external displays produced the same serial
+    number based identifier. The identifier consists of the manufacturer ID,
+    product ID and the EDID serial numbers that are not placeholders (missing, a
+    repeating pattern, a sequential pattern or too short). This may occur when
+    identical displays use the same fixed serial number, or when the same
+    display is connected more than once. Recorded every time Chrome OS detects a
+    change in display configuration and two or more connected external displays
+    have such an identifier.
+  </summary>
+</histogram>
+
 <histogram name="Display.ParseEdidFailure" enum="ParseEdidFailure"
-    expires_after="2027-01-21">
-  <owner>gildekel@chromium.org</owner>
+    expires_after="2027-11-01">
+  <owner>oshima@chromium.org</owner>
   <owner>chromeos-gfx-display@google.com</owner>
   <summary>
     Type of failure that occurs during EDID parsing. Typically the failure is

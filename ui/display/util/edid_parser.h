@@ -93,6 +93,12 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   // due to known EDIDs' completeness and correctness issues.
   int64_t GetEdidBasedDisplayId() const;
 
+  // Returns a string that identifies an external display by its manufacturer
+  // ID, product ID and the serial numbers that are not placeholders (i.e. not
+  // missing, a repeating pattern, a sequential pattern or too short). Returns
+  // std::nullopt if the display is internal or has no such serial number.
+  std::optional<std::string> GetSerialNumberBasedIdentifier() const;
+
   // Bitmask of audio formats supported by the display.
   enum : uint32_t {
     kAudioBitstreamPcmLinear = 1u << 0,  // PCM is 'raw' amplitude samples.
@@ -149,6 +155,9 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   uint16_t product_id_;
   std::optional<std::string> block_zero_serial_number_hash_;
   std::optional<std::string> descriptor_block_serial_number_hash_;
+  // Whether the serial numbers above are present and not placeholders.
+  bool has_valid_block_zero_serial_number_ = false;
+  bool has_valid_descriptor_block_serial_number_ = false;
   std::optional<gfx::Size> max_image_size_;
   std::string display_name_;
   // Active pixel size from the first detailed timing descriptor in the EDID.

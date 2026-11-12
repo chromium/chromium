@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/display/util/edid_parser.h"
 
 #include <stddef.h>
@@ -10,6 +9,9 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
+#include <ranges>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -18,8 +20,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "crypto/obsolete/md5.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -38,8 +42,10 @@ namespace {
 constexpr char kParseEdidFailureMetric[] = "Display.ParseEdidFailure";
 constexpr char kParseExternalDisplayEdidOptionalsMetric[] =
     "Display.External.ParseEdidOptionals";
-constexpr char kBlockZeroSerialNumberTypeMetric[] =
-    "Display.External.BlockZeroSerialNumberType";
+constexpr char kBlockZeroSerialNumberTypeMetric2[] =
+    "Display.External.BlockZeroSerialNumberType2";
+constexpr char kDescriptorBlockSerialNumberTypeMetric[] =
+    "Display.External.DescriptorBlockSerialNumberType";
 constexpr char kNumOfSerialNumbersProvidedByExternalDisplay[] =
     "Display.External.NumOfSerialNumbersProvided";
 constexpr uint8_t kMaxSerialNumberCount = 2;
@@ -77,34 +83,116 @@ enum class ParseEdidOptionals {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum is used to track the
-// serial number types that can be retrieved from an EDID's block zero.
-enum class BlockZeroSerialNumberType {
+// serial number types that can be retrieved from an EDID's block zero and
+// serial number descriptor block.
+// LINT.IfChange(EdidSerialNumberType)
+enum class SerialNumberType {
   kNormal = 0,
   kRepeatingPattern = 1,
   kNoSerialNumber = 2,
-  kMaxValue = kNoSerialNumber,
+  kSequentialPattern = 3,
+  kTooShort = 4,
+  kMaxValue = kTooShort,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:EdidSerialNumberType)
 
-BlockZeroSerialNumberType GetSerialNumberType(
-    base::span<const uint8_t, 4u> serial_number) {
-  uint32_t sum = serial_number[0u];
-  bool all_equal = true;
-  for (size_t i = 1u; i < serial_number.size(); ++i) {
-    sum += serial_number[i];
-    if (serial_number[i - 1u] != serial_number[i]) {
-      all_equal = false;
+// Returns true if `data` consists of a 1 or 2 byte unit repeated at least
+// twice (e.g. 0x01010101, 0x12121212, "AAAA" or "ABAB").
+bool IsRepeatingPattern(base::span<const uint8_t> data) {
+  constexpr size_t kMaxUnitLength = 2u;
+  for (size_t unit_length = 1u;
+       unit_length <= kMaxUnitLength && data.size() >= 2u * unit_length;
+       ++unit_length) {
+    // `data` repeats with period `unit_length` iff it equals itself shifted by
+    // `unit_length`.
+    if (std::ranges::equal(data.first(data.size() - unit_length),
+                           data.subspan(unit_length))) {
+      return true;
     }
   }
+  return false;
+}
 
-  if (sum == 0u) {
-    return BlockZeroSerialNumberType::kNoSerialNumber;
+// Returns true if `chars` counts up by one from the start of the digits or the
+// alphabet: digits starting with '0' or '1' and wrapping from '9' to '0' (e.g.
+// "01234" or "1234567890"), or letters starting with 'a' or 'A' (e.g. "abcde"
+// or "ABCDEF").
+template <typename Range>
+bool IsAscendingSequence(Range&& chars) {
+  if (chars.empty()) {
+    return false;
+  }
+  const char first = chars[0];
+  char last;
+  if (first == '0' || first == '1') {
+    last = '9';
+  } else if (first == 'a') {
+    last = 'z';
+  } else if (first == 'A') {
+    last = 'Z';
+  } else {
+    return false;
+  }
+  const bool is_digit = last == '9';
+  char expected = first;
+  for (size_t i = 0; i < chars.size(); ++i) {
+    if (chars[i] != expected) {
+      return false;
+    }
+    if (expected != last) {
+      ++expected;
+    } else if (is_digit) {
+      expected = '0';
+    } else {
+      // Letters don't wrap around.
+      return i + 1 == chars.size();
+    }
+  }
+  return true;
+}
+
+// Returns true if `str` is a sequence counting up from the start of the digits
+// or the alphabet (e.g. "0123456789", "1234567890" or "abcdef"), or the
+// reverse of one (e.g. "9876543210", "54321" or "FEDCBA").
+bool IsSequentialPattern(std::string_view str) {
+  return IsAscendingSequence(str) ||
+         IsAscendingSequence(std::views::reverse(str));
+}
+
+SerialNumberType GetBlockZeroSerialNumberType(
+    base::span<const uint8_t, 4u> serial_number) {
+  if (std::ranges::all_of(serial_number, [](uint8_t b) { return b == 0u; })) {
+    return SerialNumberType::kNoSerialNumber;
   }
 
-  if (all_equal) {
-    return BlockZeroSerialNumberType::kRepeatingPattern;
+  if (IsRepeatingPattern(serial_number)) {
+    return SerialNumberType::kRepeatingPattern;
   }
 
-  return BlockZeroSerialNumberType::kNormal;
+  return SerialNumberType::kNormal;
+}
+
+SerialNumberType GetDescriptorBlockSerialNumberType(
+    std::string_view serial_number) {
+  if (serial_number.empty()) {
+    return SerialNumberType::kNoSerialNumber;
+  }
+
+  // A serial number of 4 or fewer characters is unlikely to be unique.
+  constexpr size_t kMaxTooShortLength = 4u;
+  if (serial_number.size() <= kMaxTooShortLength) {
+    return SerialNumberType::kTooShort;
+  }
+
+  if (IsRepeatingPattern(base::as_byte_span(serial_number))) {
+    return SerialNumberType::kRepeatingPattern;
+  }
+
+  if (IsSequentialPattern(serial_number)) {
+    return SerialNumberType::kSequentialPattern;
+  }
+
+  return SerialNumberType::kNormal;
 }
 }  // namespace
 
@@ -147,6 +235,22 @@ int64_t EdidParser::GetEdidBasedDisplayId() const {
       base::NumberToString(year_of_manufacture_) + max_image_size().ToString() +
       block_zero_serial_number_hash() + descriptor_block_serial_number_hash();
   return static_cast<int64_t>(base::PersistentHash(string_to_hash));
+}
+
+std::optional<std::string> EdidParser::GetSerialNumberBasedIdentifier() const {
+  if (!is_external_display_ || (!has_valid_block_zero_serial_number_ &&
+                                !has_valid_descriptor_block_serial_number_)) {
+    return std::nullopt;
+  }
+  return base::StrCat({base::NumberToString(manufacturer_id_), ":",
+                       base::NumberToString(product_id_), ":",
+                       has_valid_block_zero_serial_number_
+                           ? block_zero_serial_number_hash()
+                           : "",
+                       ":",
+                       has_valid_descriptor_block_serial_number_
+                           ? descriptor_block_serial_number_hash()
+                           : ""});
 }
 
 // static
@@ -246,11 +350,15 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
       base::span(edid).subspan<kSerialNumberOffset, kSerialNumberLength>();
 
   // Report the type of serial number encountered in block zero of external
-  // displays: empty (==0), repeating pattern (e.g. 01010101 or 0F0F0F0F),
+  // displays: empty (==0), repeating pattern (e.g. 01010101 or 12121212),
   // or normal.
+  const SerialNumberType block_zero_serial_number_type =
+      GetBlockZeroSerialNumberType(serial_number_bytes);
+  has_valid_block_zero_serial_number_ =
+      block_zero_serial_number_type == SerialNumberType::kNormal;
   if (is_external_display_) {
-    base::UmaHistogramEnumeration(kBlockZeroSerialNumberTypeMetric,
-                                  GetSerialNumberType(serial_number_bytes));
+    base::UmaHistogramEnumeration(kBlockZeroSerialNumberTypeMetric2,
+                                  block_zero_serial_number_type);
   }
 
   const uint32_t serial_number = base::U32FromLittleEndian(serial_number_bytes);
@@ -440,6 +548,8 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   constexpr uint8_t kMonitorSerialNumberDescriptor = 0xff;
 
   display_name_.clear();
+  SerialNumberType descriptor_block_serial_number_type =
+      SerialNumberType::kNoSerialNumber;
   for (size_t i = 0; i < kNumDescriptors; ++i) {
     if (edid.size() < kDescriptorOffset + (i + 1) * kDescriptorLength) {
       break;
@@ -545,9 +655,27 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
       if (!serial_number_str.empty()) {
         descriptor_block_serial_number_hash_ =
             Md5AsHexForEdid(serial_number_str);
+        // Non-conforming EDIDs may pad the descriptor with NUL bytes; strip
+        // trailing whitespace and NULs when classifying the serial number.
+        descriptor_block_serial_number_type =
+            GetDescriptorBlockSerialNumberType(base::TrimString(
+                serial_number_str,
+                base::MakeStringViewWithNulChars("\0\t\n\v\f\r "),
+                base::TRIM_TRAILING));
+        has_valid_descriptor_block_serial_number_ =
+            descriptor_block_serial_number_type == SerialNumberType::kNormal;
       }
       continue;
     }
+  }
+
+  // Report the type of serial number encountered in the serial number
+  // descriptor block of external displays: missing (or empty), too short (4 or
+  // fewer characters), repeating pattern (e.g. "00000" or "121212"),
+  // sequential pattern (e.g. "0123456789", "54321" or "abcdef"), or normal.
+  if (is_external_display_) {
+    base::UmaHistogramEnumeration(kDescriptorBlockSerialNumberTypeMetric,
+                                  descriptor_block_serial_number_type);
   }
 
   // Verify if the |display_name_| consists of printable characters only.

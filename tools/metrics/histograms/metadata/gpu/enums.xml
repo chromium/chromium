@@ -26,12 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BlockZeroSerialNumberType">
-  <int value="0" label="Normal serial number"/>
-  <int value="1" label="Repeating pattern in serial number"/>
-  <int value="2" label="Missing serial number"/>
-</enum>
-
 <enum name="BooleanANGLECanEmulateGLES3">
   <summary>Whether ANGLE can emulate GLES3.</summary>
   <int value="0" label="false"/>
@@ -385,6 +379,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="None (Unknown)"/>
   <int value="3" label="Composition Failure"/>
 </enum>
+
+<!-- LINT.IfChange(EdidSerialNumberType) -->
+
+<enum name="EdidSerialNumberType">
+  <int value="0" label="Normal serial number"/>
+  <int value="1" label="Repeating pattern in serial number"/>
+  <int value="2" label="Missing serial number"/>
+  <int value="3" label="Sequential pattern in serial number"/>
+  <int value="4" label="Serial number too short"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/display/util/edid_parser.cc:EdidSerialNumberType) -->
 
 <enum name="EGLDisplayType">
   <int value="0" label="Default"/>
