@@ -2894,16 +2894,22 @@ public class CustomTabActivityTest {
 
     private static List<HistoryItem> getHistory(Tab tab) throws TimeoutException {
         final TestBrowsingHistoryObserver historyObserver = new TestBrowsingHistoryObserver();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Profile profile = Profile.fromWebContents(tab.getWebContents());
-                    BrowsingHistoryBridge historyService = new BrowsingHistoryBridge(profile);
-                    historyService.setObserver(historyObserver);
-                    String historyQueryFilter = "";
-                    historyService.queryHistory(historyQueryFilter);
-                });
-        historyObserver.getQueryCallback().waitForCallback(0);
-        return historyObserver.getHistoryQueryResults();
+        BrowsingHistoryBridge historyService =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Profile profile = Profile.fromWebContents(tab.getWebContents());
+                            BrowsingHistoryBridge service = new BrowsingHistoryBridge(profile);
+                            service.setObserver(historyObserver);
+                            String historyQueryFilter = "";
+                            service.queryHistory(historyQueryFilter);
+                            return service;
+                        });
+        try {
+            historyObserver.getQueryCallback().waitForCallback(0);
+            return historyObserver.getHistoryQueryResults();
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(historyService::destroy);
+        }
     }
 
     private void assertLastLaunchedClientAppRecorded(
