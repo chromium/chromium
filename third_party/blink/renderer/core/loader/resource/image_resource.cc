@@ -647,8 +647,7 @@ void ImageResource::UpdateResourceInfoFromObservers() {
   GetContent()->UpdateResourceInfoFromObservers();
 }
 
-std::pair<std::optional<ResourcePriority>, std::optional<ResourcePriority>>
-ImageResource::PriorityFromObservers() const {
+std::optional<ResourcePriority> ImageResource::PriorityFromObservers() const {
   return GetContent()->PriorityFromObservers();
 }
 

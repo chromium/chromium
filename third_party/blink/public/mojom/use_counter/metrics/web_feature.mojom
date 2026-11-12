@@ -3648,7 +3648,7 @@ enum WebFeature {
   kSandboxIneffectiveAllowOriginAllowScript = 4373,
   kDocumentOpenDifferentWindow = 4374,
   kDocumentOpenMutateSandbox = 4375,
-  kEligibleForImageLoadingPrioritizationFix = 4376,
+  kOBSOLETE_EligibleForImageLoadingPrioritizationFix = 4376,
   kExecutedNonTrivialJavaScriptURL = 4377,
   kStorageBucketsOpen = 4378,
   kOBSOLETE_PerformanceEntryBufferSwaps = 4379,

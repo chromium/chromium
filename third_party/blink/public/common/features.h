@@ -591,10 +591,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
 // be reclaimed by garbage collection.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHeapVectorPromptlyFree);
 
-// If enabled, a fix for image loading prioritization based on visibility is
-// applied. See https://crbug.com/1369823.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kImageLoadingPrioritizationFix);
-
 // If enabled, allows the browser to render new content in place of an image.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kImageReplacement);
 

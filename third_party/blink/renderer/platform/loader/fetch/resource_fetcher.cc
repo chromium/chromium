@@ -2985,7 +2985,7 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
   speculative_decode_candidate_images_.erase_if(
       [](const WeakMember<Resource>& resource) -> bool {
         return resource->PriorityFromObservers()
-                   .first.value_or(ResourcePriority())
+                   .value_or(ResourcePriority())
                    .visibility == ResourcePriority::kNotVisible;
       });
   StartSpeculativeImageDecodes();
@@ -3002,9 +3002,8 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
     }
 
     resource->UpdateResourceInfoFromObservers();
-    auto priorities = resource->PriorityFromObservers();
     ResourcePriority resource_priority =
-        priorities.first.value_or(ResourcePriority());
+        resource->PriorityFromObservers().value_or(ResourcePriority());
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(
         ResourceType::kImage, resource->GetResourceRequest(),
         resource_priority.visibility, FetchParameters::DeferOption::kNoDefer,
@@ -3012,45 +3011,6 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
         RenderBlockingBehavior::kNonBlocking,
         mojom::blink::ScriptType::kClassic, false, std::nullopt, std::nullopt,
         resource_priority.is_lcp_resource);
-
-    ResourcePriority resource_priority_excluding_image_loader =
-        priorities.second.value_or(ResourcePriority());
-    ResourceLoadPriority computed_load_priority_excluding_image_loader =
-        ComputeLoadPriority(
-            ResourceType::kImage, resource->GetResourceRequest(),
-            resource_priority_excluding_image_loader.visibility,
-            FetchParameters::DeferOption::kNoDefer,
-            FetchParameters::SpeculativePreloadType::kNotSpeculative,
-            RenderBlockingBehavior::kNonBlocking,
-            mojom::blink::ScriptType::kClassic, false, std::nullopt,
-            std::nullopt,
-            resource_priority_excluding_image_loader.is_lcp_resource);
-
-    // When enabled, `priority` is used, which considers the resource priority
-    // via ImageLoader, i.e. ImageResourceContent
-    // -> ImageLoader (as ImageResourceObserver)
-    // -> LayoutImageResource
-    // -> LayoutObject.
-    //
-    // The same priority is considered in `priority_excluding_image_loader` via
-    // ImageResourceContent
-    // -> LayoutObject (as ImageResourceObserver),
-    // but the LayoutObject might be not registered yet as an
-    // ImageResourceObserver while loading.
-    // See https://crbug.com/1369823 for details.
-    static const bool fix_enabled =
-        base::FeatureList::IsEnabled(features::kImageLoadingPrioritizationFix);
-
-    if (computed_load_priority !=
-        computed_load_priority_excluding_image_loader) {
-      // Mark pages affected by this fix for performance evaluation.
-      use_counter_->CountUse(
-          WebFeature::kEligibleForImageLoadingPrioritizationFix);
-    }
-    if (!fix_enabled) {
-      resource_priority = resource_priority_excluding_image_loader;
-      computed_load_priority = computed_load_priority_excluding_image_loader;
-    }
 
     // Only boost the priority of an image, never lower it. This ensures that
     // there isn't priority churn if images move in and out of the viewport, or
@@ -3386,7 +3346,7 @@ void ResourceFetcher::StartSpeculativeImageDecodes() {
     // HTMLImageElement::DidFinishLayout). In that case, postpone making a
     // decision about this candidate until the next layout runs.
     std::optional<ResourcePriority> priority =
-        resource->PriorityFromObservers().first;
+        resource->PriorityFromObservers();
     if (!priority.has_value()) {
       continue;
     }

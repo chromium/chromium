@@ -952,8 +952,6 @@ ResourcePriority ImageLoader::ComputeResourcePriority() const {
     return ResourcePriority();
 
   ResourcePriority priority = image_resource->ComputeResourcePriority();
-  priority.source = ResourcePriority::Source::kImageLoader;
-
   static const bool is_image_lcpp_enabled =
       base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
       features::

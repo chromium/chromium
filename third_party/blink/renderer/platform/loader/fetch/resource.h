@@ -240,14 +240,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   virtual void UpdateResourceInfoFromObservers() {}
 
-  // Returns two priorities:
-  // - `first` is the priority with the fix of https://crbug.com/1369823.
-  // - `second` is the priority without the fix, ignoring the priority from
-  //   ImageLoader.
-  virtual std::pair<std::optional<ResourcePriority>,
-                    std::optional<ResourcePriority>>
-  PriorityFromObservers() const {
-    return std::make_pair(std::nullopt, std::nullopt);
+  virtual std::optional<ResourcePriority> PriorityFromObservers() const {
+    return std::nullopt;
   }
 
   virtual bool IsAboveSpeculativeDecodeSizeThreshold() const { return false; }

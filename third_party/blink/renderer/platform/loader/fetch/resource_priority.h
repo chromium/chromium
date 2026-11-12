@@ -51,14 +51,6 @@ struct ResourcePriority final {
 
   // Is true when the resource is used for a predicted LCP element.
   bool is_lcp_resource = false;
-
-  // For tracking priority information from ImageLoader
-  // https://crbug.com/1369823.
-  enum class Source {
-    kImageLoader,
-    kOther,
-  };
-  Source source = Source::kOther;
 };
 
 }  // namespace blink

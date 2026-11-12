@@ -106,8 +106,7 @@ class CORE_EXPORT ImageResource final
   bool ShouldIgnoreHTTPStatusCodeErrors() const override { return true; }
 
   void UpdateResourceInfoFromObservers() override;
-  std::pair<std::optional<ResourcePriority>, std::optional<ResourcePriority>>
-  PriorityFromObservers() const override;
+  std::optional<ResourcePriority> PriorityFromObservers() const override;
   bool IsAboveSpeculativeDecodeSizeThreshold() const override;
 
   // MultipartImageResourceParser::Client
