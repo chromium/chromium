@@ -14,6 +14,25 @@ namespace {
 
 class StyleVariablesTest : public PageTestBase {};
 
+// Generate strings until we find two that go into the same slot
+// (this will always happen in at most n+1 tries). (This presupposes
+// 64-bit; on 32-bit, the strings will generally not collide.)
+std::pair<AtomicString, AtomicString> CollidingNames() {
+  std::array<AtomicString, 16> strings;
+  for (unsigned i = 0; i < 17; ++i) {
+    char buf[16];
+    snprintf(buf, sizeof(buf), "--s-%u", i);
+    AtomicString s(buf);
+    unsigned slot = (reinterpret_cast<uintptr_t>(s.Impl()) >> 4) & 15;
+    if (strings[slot].IsNull()) {
+      strings[slot] = s;
+    } else {
+      return {strings[slot], s};
+    }
+  }
+  return {};
+}
+
 TEST_F(StyleVariablesTest, EmptyEqual) {
   StyleVariables vars1;
   StyleVariables vars2;
@@ -278,24 +297,7 @@ TEST_F(StyleVariablesTest, DifferentValueSize) {
 }
 
 TEST_F(StyleVariablesTest, CollisionComparison) {
-  // Generate strings until we find two that go into the same slot
-  // (this will always happen in at most n+1 tries). (This test
-  // presupposes 64-bit, and will generally be a no-op on 32-bit.)
-  AtomicString s1, s2;
-  std::array<AtomicString, 16> strings;
-  for (unsigned i = 0; i < 17; ++i) {
-    char buf[16];
-    snprintf(buf, sizeof(buf), "--s-%u", i);
-    AtomicString s(buf);
-    unsigned slot = (reinterpret_cast<uintptr_t>(s.Impl()) >> 4) & 15;
-    if (strings[slot].IsNull()) {
-      strings[slot] = s;
-    } else {
-      s1 = strings[slot];
-      s2 = s;
-      break;
-    }
-  }
+  auto [s1, s2] = CollidingNames();
   ASSERT_FALSE(s1.IsNull());
   ASSERT_FALSE(s2.IsNull());
 
@@ -308,6 +310,22 @@ TEST_F(StyleVariablesTest, CollisionComparison) {
 
   // This will crash if we don't deal with nullptr comparisons properly.
   EXPECT_NE(vars1, vars2);
+}
+
+TEST_F(StyleVariablesTest, CollisionInsertionOrder) {
+  auto [s1, s2] = CollidingNames();
+  ASSERT_FALSE(s1.IsNull());
+  ASSERT_FALSE(s2.IsNull());
+
+  StyleVariables vars1;
+  vars1.SetData(s1, css_test_helpers::CreateVariableData("foo"));
+  vars1.SetData(s2, css_test_helpers::CreateVariableData("bar"));
+
+  StyleVariables vars2;
+  vars2.SetData(s2, css_test_helpers::CreateVariableData("bar"));
+  vars2.SetData(s1, css_test_helpers::CreateVariableData("foo"));
+
+  EXPECT_EQ(vars1, vars2);
 }
 
 }  // namespace

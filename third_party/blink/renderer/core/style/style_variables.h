@@ -125,12 +125,14 @@ class HashTrieNode : public GarbageCollected<HashTrieNode<Data>> {
           new_this->children_[slot] = CreateSplitNode(
               keys_[slot], values_[slot], key, value, shift + kFanoutBits);
           new_this->keys_[slot] = AtomicString();
+          new_this->values_[slot] = nullptr;
           return new_this;
         } else {
           children_[slot] =
               CreateSplitNode(std::move(keys_[slot]), values_[slot], key, value,
                               shift + kFanoutBits);
           keys_[slot] = AtomicString();
+          values_[slot] = nullptr;
           return this;
         }
       }
