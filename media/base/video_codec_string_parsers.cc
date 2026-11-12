@@ -4,9 +4,13 @@
 
 #include "media/base/video_codec_string_parsers.h"
 
+#include <algorithm>
 #include <array>
+#include <optional>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,6 +18,8 @@
 #include "base/strings/string_util.h"
 #include "media/base/video_color_space.h"
 #include "ui/gfx/color_space.h"
+
+namespace media {
 
 namespace {
 
@@ -29,9 +35,175 @@ bool IsDolbyVisionAV1CodecId(std::string_view codec_id) {
   return codec_id.starts_with("dav1.");
 }
 
-}  // namespace
+// Common parsed representation for AOM ISOBMFF codecs parameter strings:
+//  AV1: https://aomediacodec.github.io/av1-isobmff/#codecsparam
+//  AV2: https://aomediacodec.github.io/av2-isobmff/main/#codecsparam
+//
+// Both specifications share a 10-field dot-separated layout:
+//   [0] <sample entry 4CC>        (validated against `valid_fourccs`)
+//   [1] <profile>                 (codec-specific width and enum mapping)
+//   [2] <level><tier>             (2-digit decimal 00..31 + 'M' or 'H')
+//   [3] <bitDepth>                ("08", "10", or "12")
+//   [4] <monochrome|channelCount> (codec-specific)
+//   [5] <chromaSubsampling>       (codec-specific: 3 digits vs 2 digits)
+//   [6] <colorPrimaries>          (optional, 2-digit CICP, default BT.709)
+//   [7] <transferCharacteristics> (optional, 2-digit CICP, default BT.709)
+//   [8] <matrixCoefficients>      (optional, 2-digit CICP, default BT.709)
+//   [9] <videoFullRangeFlag>      (optional, "0" or "1", default studio/0)
+struct ParsedAomCodecFields {
+  std::vector<std::string_view> fields;
+  std::vector<int> values;
+  VideoCodecLevel level = 0;
+  uint8_t bit_depth = 0;
+  VideoColorSpace color_space = VideoColorSpace::REC709();
+};
 
-namespace media {
+std::optional<ParsedAomCodecFields> ParseAomCodecFields(
+    std::string_view codec_id,
+    base::span<const std::string_view> valid_fourccs) {
+  ParsedAomCodecFields parsed;
+  parsed.fields = base::SplitStringPiece(codec_id, ".", base::KEEP_WHITESPACE,
+                                         base::SPLIT_WANT_ALL);
+
+  // The parameters sample entry 4CC, profile, level, tier, and bitDepth are all
+  // mandatory fields. If any of these fields are empty, or not within their
+  // allowed range, the processing device SHOULD treat it as an error.
+  if (parsed.fields.size() < 4 || parsed.fields.size() > 10) {
+    DVLOG(3) << __func__ << " Invalid number of fields ("
+             << parsed.fields.size() << ")";
+    return std::nullopt;
+  }
+
+  if (!std::ranges::contains(valid_fourccs, parsed.fields[0])) {
+    DVLOG(3) << __func__ << " Invalid AOM 4CC (" << parsed.fields[0] << ")";
+    return std::nullopt;
+  }
+
+  // The level parameter value SHALL equal the 2-digit level value indicated by
+  // seq_level_idx in the Sequence Header. The tier parameter value SHALL be
+  // equal to 'M' when seq_tier == 0, and 'H' when seq_tier == 1.
+  if (parsed.fields[2].size() != 3 ||
+      (parsed.fields[2][2] != 'M' && parsed.fields[2][2] != 'H')) {
+    DVLOG(3) << __func__ << " Invalid level+tier (" << parsed.fields[2] << ")";
+    return std::nullopt;
+  }
+
+  // Since tier has been validated, strip the trailing tier indicator to allow
+  // int conversion below.
+  parsed.fields[2] = parsed.fields[2].substr(0, 2);
+
+  // Fill with dummy values to ensure parallel indices with `fields`.
+  parsed.values.assign(parsed.fields.size(), 0);
+  for (size_t i = 1; i < parsed.fields.size(); ++i) {
+    if (parsed.fields[i].empty()) {
+      DVLOG(3) << __func__ << " Invalid empty field (position:" << i << ")";
+      return std::nullopt;
+    }
+    if (!std::ranges::all_of(parsed.fields[i],
+                             [](char c) { return base::IsAsciiDigit(c); })) {
+      DVLOG(3) << __func__ << " Non-digit character in field ("
+               << parsed.fields[i] << ")";
+      return std::nullopt;
+    }
+    if (!base::StringToInt(parsed.fields[i], &parsed.values[i]) ||
+        parsed.values[i] < 0) {
+      DVLOG(3) << __func__ << " Invalid field value (" << parsed.fields[i]
+               << ")";
+      return std::nullopt;
+    }
+  }
+
+  // Valid seq_level_idx values are 00..31 (5 bits). Leading zeros were
+  // validated above via the 3-character <level><tier> length check.
+  if (parsed.values[2] > 31) {
+    DVLOG(3) << __func__ << " Invalid level (" << parsed.values[2] << ")";
+    return std::nullopt;
+  }
+  parsed.level = static_cast<VideoCodecLevel>(parsed.values[2]);
+
+  // The bitDepth parameter value SHALL equal the BitDepth variable derived from
+  // the Sequence Header (08, 10, or 12). Leading zeros are required.
+  if (parsed.fields[3].size() != 2 ||
+      (parsed.values[3] != 8 && parsed.values[3] != 10 &&
+       parsed.values[3] != 12)) {
+    DVLOG(3) << __func__ << " Invalid bit-depth (" << parsed.fields[3] << ")";
+    return std::nullopt;
+  }
+  parsed.bit_depth = static_cast<uint8_t>(parsed.values[3]);
+
+  if (parsed.values.size() <= 6) {
+    return parsed;
+  }
+
+  // Fields 6..9 carry CICP colorPrimaries, transferCharacteristics,
+  // matrixCoefficients (each 2 digits), and videoFullRangeFlag (1 digit: 0 or
+  // 1). Unspecified trailing fields default to ITU-R BT.709 and studio swing.
+  auto primaries = VideoColorSpace::GetPrimaryID(parsed.values[6]);
+  if (parsed.fields[6].size() != 2 ||
+      primaries == VideoColorSpace::PrimaryID::INVALID) {
+    DVLOG(3) << __func__ << " Invalid color primaries (" << parsed.fields[6]
+             << ")";
+    return std::nullopt;
+  }
+
+  if (parsed.values.size() <= 7) {
+    parsed.color_space = VideoColorSpace(
+        primaries, VideoColorSpace::TransferID::BT709,
+        VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
+    return parsed;
+  }
+
+  auto transfer = VideoColorSpace::GetTransferID(parsed.values[7]);
+  if (parsed.fields[7].size() != 2 ||
+      transfer == VideoColorSpace::TransferID::INVALID) {
+    DVLOG(3) << __func__ << " Invalid transfer function (" << parsed.fields[7]
+             << ")";
+    return std::nullopt;
+  }
+
+  if (parsed.values.size() <= 8) {
+    parsed.color_space =
+        VideoColorSpace(primaries, transfer, VideoColorSpace::MatrixID::BT709,
+                        gfx::ColorSpace::RangeID::LIMITED);
+    return parsed;
+  }
+
+  auto matrix = VideoColorSpace::GetMatrixID(parsed.values[8]);
+  if (parsed.fields[8].size() != 2 ||
+      matrix == VideoColorSpace::MatrixID::INVALID) {
+    // TODO(dalecurtis): AV1/AV2 allow a few matrices we don't support yet.
+    // https://crbug.com/854290
+    if (parsed.values[8] == 12 || parsed.values[8] == 13 ||
+        parsed.values[8] == 14) {
+      DVLOG(3) << __func__ << " Unsupported matrix coefficients ("
+               << parsed.fields[8] << ")";
+    } else {
+      DVLOG(3) << __func__ << " Invalid matrix coefficients ("
+               << parsed.fields[8] << ")";
+    }
+    return std::nullopt;
+  }
+
+  if (parsed.values.size() <= 9) {
+    parsed.color_space = VideoColorSpace(primaries, transfer, matrix,
+                                         gfx::ColorSpace::RangeID::LIMITED);
+    return parsed;
+  }
+
+  const int video_full_range_flag = parsed.values[9];
+  if (parsed.fields[9].size() != 1 || video_full_range_flag > 1) {
+    DVLOG(3) << __func__ << " Invalid full range flag (" << parsed.fields[9]
+             << ")";
+    return std::nullopt;
+  }
+  gfx::ColorSpace::RangeID range = video_full_range_flag == 1
+                                       ? gfx::ColorSpace::RangeID::FULL
+                                       : gfx::ColorSpace::RangeID::LIMITED;
+  parsed.color_space = VideoColorSpace(primaries, transfer, matrix, range);
+  return parsed;
+}
+
+}  // namespace
 
 // TODO(crbug.com/40232176): Remove after rollout.
 // Allow parsing HEVC range extension codec string.
@@ -237,71 +409,33 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   // <sample entry4CC>.<profile>.<level><tier>.<bitDepth>.<monochrome>.
   // <chromaSubsampling>.<colorPrimaries>.<transferCharacteristics>.
   // <matrixCoefficients>.<videoFullRangeFlag>
-
-  std::vector<std::string_view> fields = base::SplitStringPiece(
-      codec_id, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  // The parameters sample entry 4CC, profile, level, tier, and bitDepth are all
-  // mandatory fields. If any of these fields are empty, or not within their
-  // allowed range, the processing device SHOULD treat it as an error.
-  if (fields.size() < 4 || fields.size() > 10) {
-    DVLOG(3) << __func__ << " Invalid number of fields (" << fields.size()
-             << ")";
+  //
+  // Optional fields (after bitDepth) default to:
+  //   mono_chrome              0
+  //   chromaSubsampling        112 (4:2:0 colocated with luma (0,0))
+  //   colorPrimaries           01 (ITU-R BT.709)
+  //   transferCharacteristics  01 (ITU-R BT.709)
+  //   matrixCoefficients       01 (ITU-R BT.709)
+  //   videoFullRangeFlag       0 (studio swing representation)
+  static constexpr std::string_view kAv1Fourccs[] = {"av01"};
+  std::optional<ParsedAomCodecFields> parsed =
+      ParseAomCodecFields(codec_id, kAv1Fourccs);
+  if (!parsed) {
     return std::nullopt;
   }
 
-  // All the other fields (including their leading '.') are optional, mutually
-  // inclusive (all or none) fields. If not specified then the values listed in
-  // the table below are assumed.
-  //
-  // mono_chrome              0
-  // chromaSubsampling        112 (4:2:0 colocated with luma (0,0))
-  // colorPrimaries           1 (ITU-R BT.709)
-  // transferCharacteristics  1 (ITU-R BT.709)
-  // matrixCoefficients       1 (ITU-R BT.709)
-  // videoFullRangeFlag       0 (studio swing representation)
-  // Initialize optional fields to their defaults.
   VideoType result = {
       .codec = VideoCodec::kAV1,
-      .color_space = VideoColorSpace::REC709(),
+      .level = parsed->level,
+      .color_space = parsed->color_space,
       .subsampling = VideoChromaSampling::k420,
+      .bit_depth = parsed->bit_depth,
   };
-
-  if (fields[0] != "av01") {
-    DVLOG(3) << __func__ << " Invalid AV1 4CC (" << fields[0] << ")";
-    return std::nullopt;
-  }
-
-  // The level parameter value SHALL equal the first level value indicated by
-  // seq_level_idx in the Sequence Header. The tier parameter value SHALL be
-  // equal to M when the first seq_tier value in the Sequence Header is equal to
-  // 0, and H when it is equal to 1.
-  if (fields[2].size() != 3 || (fields[2][2] != 'M' && fields[2][2] != 'H')) {
-    DVLOG(3) << __func__ << " Invalid level+tier (" << fields[2] << ")";
-    return std::nullopt;
-  }
-
-  // Since tier has been validated, strip the trailing tier indicator to allow
-  // int conversion below.
-  fields[2] = fields[2].substr(0, 2);
-
-  // Fill with dummy values to ensure parallel indices with fields.
-  std::vector<int> values(fields.size(), 0);
-  for (size_t i = 1; i < fields.size(); ++i) {
-    if (fields[i].empty()) {
-      DVLOG(3) << __func__ << " Invalid empty field (position:" << i << ")";
-      return std::nullopt;
-    }
-
-    if (!base::StringToInt(fields[i], &values[i]) || values[i] < 0) {
-      DVLOG(3) << __func__ << " Invalid field value (" << values[i] << ")";
-      return std::nullopt;
-    }
-  }
 
   // The profile parameter value, represented by a single digit decimal, SHALL
   // equal the value of seq_profile in the Sequence Header.
-  const int profile_idc = fields[1].size() == 1 ? values[1] : -1;
+  const int profile_idc =
+      parsed->fields[1].size() == 1 ? parsed->values[1] : -1;
   switch (profile_idc) {
     case 0:
       result.profile = AV1PROFILE_PROFILE_MAIN;
@@ -314,38 +448,19 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
       result.profile = AV1PROFILE_PROFILE_PRO;
       break;
     default:
-      DVLOG(3) << __func__ << " Invalid profile (" << fields[1] << ")";
+      DVLOG(3) << __func__ << " Invalid profile (" << parsed->fields[1] << ")";
       return std::nullopt;
   }
 
-  // The level parameter value SHALL equal the first level value indicated by
-  // seq_level_idx in the Sequence Header. Note: We validate that this field has
-  // the required leading zeros above.
-  result.level = values[2];
-  if (result.level > 31) {
-    DVLOG(3) << __func__ << " Invalid level (" << result.level << ")";
-    return std::nullopt;
-  }
-
-  // The bitDepth parameter value SHALL equal the value of BitDepth variable as
-  // defined in [AV1] derived from the Sequence Header. Leading zeros required.
-  result.bit_depth = values[3];
-  if (fields[3].size() != 2 ||
-      (result.bit_depth != 8 && result.bit_depth != 10 &&
-       result.bit_depth != 12)) {
-    DVLOG(3) << __func__ << " Invalid bit-depth (" << fields[3] << ")";
-    return std::nullopt;
-  }
-
-  if (values.size() <= 4) {
+  if (parsed->values.size() <= 4) {
     return result;
   }
 
   // The monochrome parameter value, represented by a single digit decimal,
   // SHALL equal the value of mono_chrome in the Sequence Header.
-  const int monochrome = values[4];
-  if (fields[4].size() != 1 || monochrome > 1) {
-    DVLOG(3) << __func__ << " Invalid monochrome (" << fields[4] << ")";
+  const int monochrome = parsed->values[4];
+  if (parsed->fields[4].size() != 1 || monochrome > 1) {
+    DVLOG(3) << __func__ << " Invalid monochrome (" << parsed->fields[4] << ")";
     return std::nullopt;
   }
   if (monochrome == 1 && result.profile == AV1PROFILE_PROFILE_HIGH) {
@@ -353,7 +468,7 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  if (values.size() <= 5) {
+  if (parsed->values.size() <= 5) {
     if (monochrome == 1) {
       result.subsampling = VideoChromaSampling::k400;
     }
@@ -365,24 +480,27 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   // digit equal to subsampling_y. If both subsampling_x and subsampling_y are
   // set to 1, then the third digit SHALL be equal to chroma_sample_position,
   // otherwise it SHALL be set to 0.
-  if (fields[5].size() != 3) {
-    DVLOG(3) << __func__ << " Invalid chroma subsampling (" << fields[5] << ")";
+  if (parsed->fields[5].size() != 3) {
+    DVLOG(3) << __func__ << " Invalid chroma subsampling (" << parsed->fields[5]
+             << ")";
     return std::nullopt;
   }
 
-  const char subsampling_x = fields[5][0];
-  const char subsampling_y = fields[5][1];
-  const char chroma_sample_position = fields[5][2];
+  const char subsampling_x = parsed->fields[5][0];
+  const char subsampling_y = parsed->fields[5][1];
+  const char chroma_sample_position = parsed->fields[5][2];
   if ((subsampling_x < '0' || subsampling_x > '1') ||
       (subsampling_y < '0' || subsampling_y > '1') ||
       (chroma_sample_position < '0' || chroma_sample_position > '3')) {
-    DVLOG(3) << __func__ << " Invalid chroma subsampling (" << fields[5] << ")";
+    DVLOG(3) << __func__ << " Invalid chroma subsampling (" << parsed->fields[5]
+             << ")";
     return std::nullopt;
   }
 
   if (((subsampling_x == '0' || subsampling_y == '0') &&
        chroma_sample_position != '0')) {
-    DVLOG(3) << __func__ << " Invalid chroma subsampling (" << fields[5] << ")";
+    DVLOG(3) << __func__ << " Invalid chroma subsampling (" << parsed->fields[5]
+             << ")";
     return std::nullopt;
   }
 
@@ -403,74 +521,6 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   } else if (subsampling_x == '1' && subsampling_y == '1' && monochrome == 1) {
     result.subsampling = VideoChromaSampling::k400;
   }
-
-  if (values.size() <= 6) {
-    return result;
-  }
-
-  // The colorPrimaries, transferCharacteristics, matrixCoefficients and
-  // videoFullRangeFlag parameter values SHALL equal the value of matching
-  // fields in the Sequence Header, if color_description_present_flag is set to
-  // 1, otherwise they SHOULD not be set, defaulting to the values below. The
-  // videoFullRangeFlag is represented by a single digit.
-  auto primaries = VideoColorSpace::GetPrimaryID(values[6]);
-  if (fields[6].size() != 2 ||
-      primaries == VideoColorSpace::PrimaryID::INVALID) {
-    DVLOG(3) << __func__ << " Invalid color primaries (" << fields[6] << ")";
-    return std::nullopt;
-  }
-
-  if (values.size() <= 7) {
-    // Default missing transfer/matrix to BT709 (AV1 ISOBMFF spec default).
-    result.color_space = VideoColorSpace(
-        primaries, VideoColorSpace::TransferID::BT709,
-        VideoColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
-    return result;
-  }
-
-  auto transfer = VideoColorSpace::GetTransferID(values[7]);
-  if (fields[7].size() != 2 ||
-      transfer == VideoColorSpace::TransferID::INVALID) {
-    DVLOG(3) << __func__ << " Invalid transfer function (" << fields[7] << ")";
-    return std::nullopt;
-  }
-
-  if (values.size() <= 8) {
-    result.color_space =
-        VideoColorSpace(primaries, transfer, VideoColorSpace::MatrixID::BT709,
-                        gfx::ColorSpace::RangeID::LIMITED);
-    return result;
-  }
-
-  auto matrix = VideoColorSpace::GetMatrixID(values[8]);
-  if (fields[8].size() != 2 || matrix == VideoColorSpace::MatrixID::INVALID) {
-    // TODO(dalecurtis): AV1 allows a few matrices we don't support yet.
-    // https://crbug.com/854290
-    if (values[8] == 12 || values[8] == 13 || values[8] == 14) {
-      DVLOG(3) << __func__ << " Unsupported matrix coefficients (" << fields[8]
-               << ")";
-    } else {
-      DVLOG(3) << __func__ << " Invalid matrix coefficients (" << fields[8]
-               << ")";
-    }
-    return std::nullopt;
-  }
-
-  if (values.size() <= 9) {
-    result.color_space = VideoColorSpace(primaries, transfer, matrix,
-                                         gfx::ColorSpace::RangeID::LIMITED);
-    return result;
-  }
-
-  const int video_full_range_flag = values[9];
-  if (fields[9].size() != 1 || video_full_range_flag > 1) {
-    DVLOG(3) << __func__ << " Invalid full range flag (" << fields[9] << ")";
-    return std::nullopt;
-  }
-  gfx::ColorSpace::RangeID range = video_full_range_flag == 1
-                                       ? gfx::ColorSpace::RangeID::FULL
-                                       : gfx::ColorSpace::RangeID::LIMITED;
-  result.color_space = VideoColorSpace(primaries, transfer, matrix, range);
 
   return result;
 }
