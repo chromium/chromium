@@ -41,13 +41,11 @@ base::android::ScopedJavaLocalRef<jobject> GlicInstanceHelper::GetJavaObject() {
 }
 
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_GlicInstanceHelper_GetForTab(JNIEnv* env,
-                                 const jni_zero::JavaRef<jobject>& j_tab) {
-  TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
-  if (!tab_android) {
+JNI_GlicInstanceHelper_GetForTab(JNIEnv* env, TabAndroid* tab) {
+  if (!tab) {
     return nullptr;
   }
-  GlicInstanceHelper* helper = GlicInstanceHelper::From(tab_android);
+  GlicInstanceHelper* helper = GlicInstanceHelper::From(tab);
   if (!helper) {
     return nullptr;
   }

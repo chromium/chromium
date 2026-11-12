@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicInstanceHelper;
+import org.chromium.chrome.browser.glic.GlicInstanceHelperJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider.TabSelectionDelegate;
@@ -92,7 +93,7 @@ public class ActorControlCoordinatorTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
-        GlicInstanceHelper.setNativesForTesting(mGlicInstanceHelperNatives);
+        GlicInstanceHelperJni.setInstanceForTesting(mGlicInstanceHelperNatives);
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mGlicInstanceHelperNatives.getForTab(mTab)).thenReturn(mGlicInstanceHelper);
 

@@ -61,16 +61,6 @@ public class GlicInstanceHelper {
     }
 
     /**
-     * Sets the {@link Natives} for testing.
-     *
-     * @param natives The {@link Natives} to set for testing. This is used to mock the native
-     *     methods of the {@link GlicInstanceHelper} in unit tests.
-     */
-    public static void setNativesForTesting(Natives natives) {
-        GlicInstanceHelperJni.setInstanceForTesting(natives);
-    }
-
-    /**
      * Returns the conversation ID for the current instance.
      *
      * @return The conversation ID for the current instance.
@@ -121,6 +111,6 @@ public class GlicInstanceHelper {
      */
     @NativeMethods
     public interface Natives {
-        GlicInstanceHelper getForTab(Tab tab);
+        GlicInstanceHelper getForTab(@JniType("TabAndroid*") Tab tab);
     }
 }
