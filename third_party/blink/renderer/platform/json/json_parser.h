@@ -48,20 +48,20 @@ enum class JSONCommentState {
 // Optional error struct may be passed in, which will contain
 // error details or |kNoError| if parsing succeeded.
 PLATFORM_EXPORT std::unique_ptr<JSONValue> ParseJSON(
-    const String& json,
+    const StringView& json,
     JSONParseError* opt_error = nullptr);
 
 // Do not introduce new uses of this function; JSON comments are not standard.
 //
 // If provided, |opt_has_comments| will indicate whether comments were found.
 PLATFORM_EXPORT std::unique_ptr<JSONValue> ParseJSONWithCommentsDeprecated(
-    const String& json,
+    const StringView& json,
     JSONParseError* opt_error = nullptr,
     bool* opt_has_comments = nullptr);
 
 // Exposed for testing.
 PLATFORM_EXPORT std::unique_ptr<JSONValue> ParseJSON(
-    const String& json,
+    const StringView& json,
     JSONCommentState& comment_state,
     int max_depth,
     JSONParseError* opt_error = nullptr);

@@ -649,7 +649,7 @@ JSONParseError ParseJSONInternal(base::span<const CharType> json,
 
 }  // anonymous namespace
 
-std::unique_ptr<JSONValue> ParseJSON(const String& json,
+std::unique_ptr<JSONValue> ParseJSON(const StringView& json,
                                      JSONParseError* opt_error) {
   JSONCommentState comments = JSONCommentState::kDisallowed;
   auto result = ParseJSON(json, comments, kMaxStackLimit, opt_error);
@@ -658,7 +658,7 @@ std::unique_ptr<JSONValue> ParseJSON(const String& json,
 }
 
 std::unique_ptr<JSONValue> ParseJSONWithCommentsDeprecated(
-    const String& json,
+    const StringView& json,
     JSONParseError* opt_error,
     bool* opt_has_comments) {
   JSONCommentState comment_state = JSONCommentState::kAllowedButAbsent;
@@ -669,7 +669,7 @@ std::unique_ptr<JSONValue> ParseJSONWithCommentsDeprecated(
   return result;
 }
 
-std::unique_ptr<JSONValue> ParseJSON(const String& json,
+std::unique_ptr<JSONValue> ParseJSON(const StringView& json,
                                      JSONCommentState& comment_state,
                                      int max_depth,
                                      JSONParseError* opt_error) {

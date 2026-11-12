@@ -580,7 +580,7 @@ TEST(JSONParserTest, Reading) {
     evil.Append('[');
   for (int i = 0; i < 1000000; ++i)
     evil.Append(']');
-  root = ParseJSON(evil.ToString(), &error);
+  root = ParseJSON(evil, &error);
   EXPECT_FALSE(root.get());
   EXPECT_EQ("Line: 1, column: 1001, Too much nesting.", error.message);
 
@@ -591,7 +591,7 @@ TEST(JSONParserTest, Reading) {
   for (int i = 0; i < 5000; ++i)
     not_evil.Append("[],");
   not_evil.Append("[]]");
-  root = ParseJSON(not_evil.ToString());
+  root = ParseJSON(not_evil);
   ASSERT_TRUE(root.get());
   EXPECT_EQ(JSONValue::kTypeArray, root->GetType());
   list = JSONArray::Cast(root.get());
@@ -724,9 +724,9 @@ TEST(JSONParserTest, LimitedDepth) {
     evil.Append('[');
   for (int i = 0; i < 1000; ++i)
     evil.Append(']');
-  root = ParseJSON(evil.ToString());
+  root = ParseJSON(evil);
   EXPECT_TRUE(root.get());
-  root = ParseJSON(evil.ToString(), comment_state, 1000);
+  root = ParseJSON(evil, comment_state, 1000);
   EXPECT_TRUE(root.get());
 
   // Test that the limit cannot be set higher than the constant maximum.
@@ -735,10 +735,10 @@ TEST(JSONParserTest, LimitedDepth) {
     evil.Append('[');
   for (int i = 0; i < 1001; ++i)
     evil.Append(']');
-  root = ParseJSON(evil.ToString(), &error);
+  root = ParseJSON(evil, &error);
   EXPECT_FALSE(root.get());
   EXPECT_EQ("Line: 1, column: 1001, Too much nesting.", error.message);
-  root = ParseJSON(evil.ToString(), comment_state, 1001, &error);
+  root = ParseJSON(evil, comment_state, 1001, &error);
   EXPECT_FALSE(root.get());
   EXPECT_EQ("Line: 1, column: 1001, Too much nesting.", error.message);
 }
