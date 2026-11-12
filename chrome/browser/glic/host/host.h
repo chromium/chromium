@@ -255,8 +255,6 @@ class Host : public GlicSharingManagerProvider {
     return pending_provider_change_;
   }
 
-  // Request panel closing.
-  void Close();
   // Reload the web contents.
   void Reload();
 

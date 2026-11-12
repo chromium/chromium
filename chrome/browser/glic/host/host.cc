@@ -211,10 +211,6 @@ void Host::InvokeInternal(mojom::InvokeOptionsPtr options,
   }
 }
 
-void Host::Close() {
-  delegate_->ClosePanel();
-}
-
 void Host::Reload() {
   if (!contents_) {
     return;

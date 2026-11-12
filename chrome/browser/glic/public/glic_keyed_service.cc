@@ -401,10 +401,6 @@ void GlicKeyedService::CloseAndShutdown(
   instance_coordinator().CloseAndShutdownInstanceWithFrame(render_frame_host);
 }
 
-void GlicKeyedService::CloseFloatingPanel() {
-  instance_coordinator().Close({});
-}
-
 GlicInstanceCoordinator& GlicKeyedService::instance_coordinator() const {
   CHECK(instance_coordinator_);
   return *instance_coordinator_.get();
@@ -423,10 +419,6 @@ GlicKeyedService::active_instance_sharing_manager() {
 bool GlicKeyedService::IsPanelShowingForBrowser(
     const BrowserWindowInterface& bwi) const {
   return instance_coordinator().IsPanelShowingForBrowser(bwi);
-}
-
-bool GlicKeyedService::IsWindowDetached() const {
-  return instance_coordinator().IsDetached();
 }
 
 base::CallbackListSubscription
@@ -607,11 +599,6 @@ GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
     return nullptr;
   }
   return instance_coordinator().GetInstanceForTab(tab_list->GetActiveTab());
-}
-
-void GlicKeyedService::Close(
-    content::RenderFrameHost* outermost_render_frame_host) {
-  instance_coordinator().CloseInstanceWithFrame(outermost_render_frame_host);
 }
 
 void GlicKeyedService::Archive(

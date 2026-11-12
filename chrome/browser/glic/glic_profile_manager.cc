@@ -135,7 +135,7 @@ void GlicProfileManager::SetCurrentDetachedGlic(Profile* profile) {
     return;
   }
   if (current_detached_glic_ && current_detached_glic_->profile() != profile) {
-    current_detached_glic_->instance_coordinator().Close({});
+    current_detached_glic_->instance_coordinator().CloseFloatingPanel();
   }
   current_detached_glic_ = GlicKeyedService::Get(profile)->GetWeakPtr();
 }
@@ -163,7 +163,7 @@ void GlicProfileManager::ShowProfilePicker() {
       &GlicProfileManager::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   // If the panel is not closed it will be on top of the profile picker.
   if (current_detached_glic_) {
-    current_detached_glic_->instance_coordinator().Close({});
+    current_detached_glic_->instance_coordinator().CloseFloatingPanel();
   }
 
   // TODO(crbug.com/450679848): Profile Picker doesn't make sense on ChromeOS.

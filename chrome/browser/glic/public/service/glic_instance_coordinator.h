@@ -21,7 +21,6 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
-#include "chrome/browser/glic/public/glic_close_options.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -30,24 +29,17 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class RenderFrameHost;
 }
-namespace gfx {
-class Point;
-}  // namespace gfx
 
 namespace tabs {
 class TabInterface;
 }
 
 namespace glic {
-DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
-
-class GlicWidget;
 
 // GlicInstanceCoordinator is the interface for managing Glic instances.
 class GlicInstanceCoordinator {
@@ -73,8 +65,6 @@ class GlicInstanceCoordinator {
   virtual GlicInstance* GetInstanceForTaskId(int task_id) const = 0;
   virtual GlicInstance* GetInstanceForTab(
       const tabs::TabInterface* tab) const = 0;
-  virtual GlicInstance* GetInstanceForTabGroup(
-      tab_groups::TabGroupId group_id) const = 0;
   virtual GlicInstance* ShowInstanceForTabGroup(
       tab_groups::TabGroupId group_id) = 0;
   virtual GlicSharingManagerInternal& active_instance_sharing_manager() = 0;
@@ -107,24 +97,18 @@ class GlicInstanceCoordinator {
   // show. Returns true if preloading proceeded, or false otherwise.
   virtual bool MaybeStartWarming(GlicWarmingTrigger trigger) = 0;
 
-  // Destroy the glic panel and its web contents.
+  // Shuts down all instances and coordinator resources.
   virtual void Shutdown() = 0;
 
-  // Close the panel but keep the glic WebContents alive in the background.
-  virtual void Close(const CloseOptions& options) = 0;
-  // Closes the active embedder of an instance with matching render_frame_host
-  // without resetting webcontents.
-  virtual void CloseInstanceWithFrame(
-      content::RenderFrameHost* render_frame_host) = 0;
+  // Closes the floating panel if an instance is currently showing one.
+  virtual void CloseFloatingPanel() = 0;
+
   // Closes the active embedder of an instance with matching render_frame_host
   // with resetting webcontents.
   virtual void CloseAndShutdownInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) = 0;
   virtual void ArchiveInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) = 0;
-  // Returns wehether or not the glic window is currently showing detached.
-  // When True |GetGlicWidget| will return a valid ptr.
-  virtual bool IsDetached() const = 0;
 
   // Returns whether the given browser is showing a glic panel for its active
   // tab.

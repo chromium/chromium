@@ -203,11 +203,9 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
 };
 
-// TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
-                       DISABLED_ProfileForLaunch_WithDetachedGlic) {
+                       ProfileForLaunch_WithDetachedGlic) {
   auto* profile0 = browser()->GetProfile();
-  auto* service0 = GetMockGlicKeyedService(profile0);
 
   // Setup Profile 1
   auto* profile1 =
@@ -221,12 +219,13 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   auto* profile_manager = GlicProfileManager::GetInstance();
   // Profile 0 is the last used Glic and Profile 1 is the last used window.
   // Profile 1 should be selected for launch.
-  CreateBrowser(profile1);
+  auto* browser1 = CreateBrowser(profile1);
+  ui_test_utils::WaitForBrowserSetLastActive(browser1);
   EXPECT_EQ(profile1, profile_manager->GetProfileForLaunch());
 
   // Simulate showing detached for Profile 0.
   // Profile 0 should now be selected for launch.
-  service0->SetWindowDetached(true);
+  profile_manager->SetCurrentDetachedGlic(profile0);
   EXPECT_EQ(profile0, profile_manager->GetProfileForLaunch());
 }
 

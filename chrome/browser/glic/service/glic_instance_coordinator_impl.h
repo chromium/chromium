@@ -54,10 +54,6 @@ namespace tabs {
 class TabInterface;
 }
 
-namespace gfx {
-class Point;
-}  // namespace gfx
-
 namespace glic {
 
 class GlicActiveInstanceSharingManager;
@@ -144,8 +140,6 @@ class GlicInstanceCoordinatorImpl
       const std::string& conversation_id) const override;
   GlicInstance* GetInstanceForTaskId(int task_id) const override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
-  GlicInstance* GetInstanceForTabGroup(
-      tab_groups::TabGroupId group_id) const override;
   GlicInstance* ShowInstanceForTabGroup(
       tab_groups::TabGroupId group_id) override;
   GlicInstance* GetInstanceWithGlicWebContents(
@@ -179,7 +173,7 @@ class GlicInstanceCoordinatorImpl
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.
   void Shutdown() override;
-  void Close(const CloseOptions& options) override;
+  void CloseFloatingPanel() override;
   base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options) override;
   base::WeakPtr<GlicInstance> InvokeWithAutoSubmit(
       InvokeWithAutoSubmitPasskey auto_submit_passkey,
@@ -189,14 +183,11 @@ class GlicInstanceCoordinatorImpl
       GlicInvokeOptions options,
       GlicInvokeWithAutoSubmitOptions auto_submit_options);
 
-  void CloseInstanceWithFrame(
-      content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
   void ArchiveInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
 
-  bool IsDetached() const override;
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override;
   bool WouldToggleClose(BrowserWindowInterface* browser) const override;
@@ -222,8 +213,6 @@ class GlicInstanceCoordinatorImpl
   // Testing support.
   void SetWarmingEnabledForTesting(bool warming_enabled);
   GlicWebContentsWarmingPool& GetWebContentsWarmingPoolForTesting();
-  std::string DescribeForTesting();
-  GlicInstanceCoordinatorMetrics& GetMetricsForTesting() { return metrics_; }
   InstanceIndependentHotkeyManager* GetHotkeyManagerForTesting() {
     return hotkey_manager_.get();
   }
@@ -285,8 +274,6 @@ class GlicInstanceCoordinatorImpl
       Target::Surface surface,
       const EmbedderKey& key,
       std::unique_ptr<GlicWindowInvocationTracker> invocation_tracker);
-
-  void CloseFloaty(const CloseOptions& options = {});
 
   // base::MemoryConsumer:
   void OnUpdateMemoryLimit() override;

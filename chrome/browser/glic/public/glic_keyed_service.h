@@ -159,12 +159,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // with this render frame host.
   void CloseAndShutdown(content::RenderFrameHost* render_frame_host);
 
-  // Close the panel. Virtual for testing.
-  // TODO(crbug.com/448406730): Remove testing logic that relies on
-  // GKS::CloseFloatingPanel since close panel is now being handled by
-  // EmbedderDelegate.
-  virtual void CloseFloatingPanel();
-
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
@@ -183,9 +177,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // for testing.
   virtual bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const;
-
-  // Virtual for testing.
-  virtual bool IsWindowDetached() const;
 
   void SetContextAccessIndicator(bool show);
 
@@ -245,9 +236,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   virtual void TryPreload(GlicWarmingTrigger trigger);
   void TryPreloadAfterDelay(GlicWarmingTrigger trigger);
   void Reload(content::RenderFrameHost* render_frame_host);
-  // Close the active embedder for an instance associated with this render frame
-  // host.
-  void Close(content::RenderFrameHost* outermost_render_frame_host);
   // Archive the active embedder for an instance associated with this render
   // frame host.
   void Archive(content::RenderFrameHost* outermost_render_frame_host);

@@ -2642,7 +2642,7 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
     }
     if (auto* service =
             glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile())) {
-      service->CloseFloatingPanel();
+      service->instance_coordinator().CloseFloatingPanel();
     }
     if (auto* const action = FindAction(kActionTtcToolbar, browser_)) {
       action->SetVisible(false);

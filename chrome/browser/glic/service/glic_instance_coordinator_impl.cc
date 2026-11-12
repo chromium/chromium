@@ -450,11 +450,6 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
   return GetInstanceImplForTab(tab);
 }
 
-GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTabGroup(
-    tab_groups::TabGroupId group_id) const {
-  return GetInstanceImplForTabGroup(group_id);
-}
-
 GlicInstance* GlicInstanceCoordinatorImpl::ShowInstanceForTabGroup(
     tab_groups::TabGroupId group_id) {
   GlicInstanceImpl* existing_instance = GetInstanceImplForTabGroup(group_id);
@@ -660,12 +655,6 @@ void GlicInstanceCoordinatorImpl::Shutdown() {
   }
   web_contents_warming_pool_->Shutdown();
   hotkey_manager_.reset();
-}
-
-void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
-  // TODO(crbug.com/450286204): Determine whether there are cases where this
-  // should be able to close a side panel UI instead.
-  CloseFloaty(options);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveAllInstances(
@@ -988,16 +977,6 @@ void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
   }
 }
 
-void GlicInstanceCoordinatorImpl::CloseInstanceWithFrame(
-    content::RenderFrameHost* render_frame_host) {
-  for (auto& [id, instance] : instances_) {
-    if (instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
-      instance->host().Close();
-      return;
-    }
-  }
-}
-
 void GlicInstanceCoordinatorImpl::ArchiveInstanceWithFrame(
     content::RenderFrameHost* render_frame_host) {
   for (auto& [id, instance] : instances_) {
@@ -1008,14 +987,10 @@ void GlicInstanceCoordinatorImpl::ArchiveInstanceWithFrame(
   }
 }
 
-void GlicInstanceCoordinatorImpl::CloseFloaty(const CloseOptions& options) {
+void GlicInstanceCoordinatorImpl::CloseFloatingPanel() {
   if (auto* floaty_instance = GetInstanceWithFloaty()) {
-    floaty_instance->Close(FloatingEmbedderKey{}, options);
+    floaty_instance->Close(FloatingEmbedderKey{});
   }
-}
-
-bool GlicInstanceCoordinatorImpl::IsDetached() const {
-  return GetInstanceWithFloaty() != nullptr;
 }
 
 bool GlicInstanceCoordinatorImpl::IsPanelShowingForBrowser(
@@ -1534,7 +1509,7 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceWithFloaty() const {
 }
 
 void GlicInstanceCoordinatorImpl::OnWillCreateFloaty() {
-  CloseFloaty();
+  CloseFloatingPanel();
 }
 
 void GlicInstanceCoordinatorImpl::OnTabEvent(const GlicTabEvent& event) {
@@ -1770,14 +1745,6 @@ void GlicInstanceCoordinatorImpl::MaybeStopListeningFloaty(
       mojom::MicrophoneStatus::kListening) {
     floaty_instance->host().StopMicrophone(base::DoNothing());
   }
-}
-
-std::string GlicInstanceCoordinatorImpl::DescribeForTesting() {
-  std::stringstream ss;
-  for (auto& inst : instances_) {
-    ss << inst.second->DescribeForTesting();  // IN-TEST
-  }
-  return ss.str();
 }
 
 Profile* GlicInstanceCoordinatorImpl::GetProfile() const {

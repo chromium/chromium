@@ -31,7 +31,6 @@ class MockGlicKeyedService : public GlicKeyedService {
               Invoke,
               (GlicInvokeOptions),
               (override));
-  MOCK_METHOD(void, CloseFloatingPanel, (), (override));
   MOCK_METHOD(void,
               ShowUI,
               (BrowserWindowInterface*, mojom::InvocationSource),
@@ -59,16 +58,12 @@ class MockGlicKeyedService : public GlicKeyedService {
                GlicInvokeWithAutoSubmitOptions),
               (override));
 
-  bool IsWindowDetached() const override { return detached_; }
-  void SetWindowDetached(bool detached) { detached_ = detached; }
-
   GlicInstanceCoordinator& instance_coordinator() const override {
     return const_cast<MockGlicInstanceCoordinator&>(mock_coordinator_);
   }
   MockGlicInstanceCoordinator& mock_coordinator() { return mock_coordinator_; }
 
  private:
-  bool detached_ = false;
   MockGlicInstanceCoordinator mock_coordinator_;
 };
 

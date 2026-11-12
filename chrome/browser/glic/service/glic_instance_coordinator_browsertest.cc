@@ -1774,7 +1774,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_TRUE(instance->GetBoundTabs().empty());
 
   // Close the floating window.
-  coordinator().Close(CloseOptions());
+  coordinator().CloseFloatingPanel();
   ASSERT_OK(WaitForGlicClose(instance));
   EXPECT_FALSE(instance->HasActiveEmbedder());
 
