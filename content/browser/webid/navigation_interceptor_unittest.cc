@@ -563,6 +563,53 @@ TEST_F(NavigationInterceptorTest,
   EXPECT_TRUE(was_resumed);
 }
 
+TEST_F(NavigationInterceptorTest, WillProcessResponseWithMalformedHeader) {
+  NavigateAndCommit(GURL("https://rp.example/"));
+
+  for (const char* header_name :
+       {"FedCM-Intercept-Navigation", "Federation-Initiate-Request"}) {
+    SCOPED_TRACE(header_name);
+
+    InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+    mock_navigation_handle.set_url(base_url_);
+    EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+        .WillRepeatedly(
+            Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+    mock_navigation_handle.set_render_frame_host(
+        web_contents()->GetPrimaryMainFrame());
+    mock_navigation_handle.set_is_in_primary_main_frame(true);
+    mock_navigation_handle.set_initiator_origin(
+        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->AddHeader(header_name, "!!!");
+    mock_navigation_handle.set_response_headers(headers);
+
+    MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+    MockRequestInitiator mock_initiator;
+    NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
+
+    EXPECT_CALL(mock_initiator, Run).Times(0);
+
+    base::RunLoop run_loop;
+    std::optional<NavigationThrottle::ThrottleCheckResult> cancel_result;
+    interceptor.set_cancel_deferred_navigation_callback_for_testing(
+        base::BindLambdaForTesting(
+            [&](NavigationThrottle::ThrottleCheckResult result) {
+              cancel_result = result;
+              run_loop.Quit();
+            }));
+
+    interceptor.WillStartRequest();
+    EXPECT_EQ(interceptor.WillProcessResponse(), NavigationThrottle::DEFER);
+
+    run_loop.Run();
+
+    ASSERT_TRUE(cancel_result.has_value());
+    EXPECT_EQ(cancel_result->action(), NavigationThrottle::CANCEL);
+  }
+}
+
 TEST_F(NavigationInterceptorTest, RequestBuilderBuildsRequest) {
   const char* kconfig_url = "https://idp.example/fedcm.json";
   const char* kclient_id = "1234";
@@ -1151,6 +1198,53 @@ TEST_F(NavigationInterceptorTest,
 }
 
 TEST_F(NavigationInterceptorTest,
+       WillProcessResponseWithMalformedConnectionStatus) {
+  bool connection_status_received = false;
+  FederatedEmbedderLoginRequest::Set(
+      web_contents(), url::Origin::Create(base_url_), "1234",
+      base::BindLambdaForTesting(
+          [&](FederatedLoginResult) { connection_status_received = true; }));
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("Federation-RP-Connection-Status", "!!!");
+  mock_navigation_handle.set_response_headers(headers);
+
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockRequestInitiator mock_initiator;
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
+
+  base::RunLoop run_loop;
+  std::optional<NavigationThrottle::ThrottleCheckResult> cancel_result;
+  interceptor.set_cancel_deferred_navigation_callback_for_testing(
+      base::BindLambdaForTesting(
+          [&](NavigationThrottle::ThrottleCheckResult result) {
+            cancel_result = result;
+            run_loop.Quit();
+          }));
+
+  interceptor.WillStartRequest();
+  EXPECT_EQ(interceptor.WillProcessResponse(), NavigationThrottle::DEFER);
+
+  run_loop.Run();
+
+  EXPECT_FALSE(connection_status_received);
+  ASSERT_TRUE(cancel_result.has_value());
+  EXPECT_EQ(cancel_result->action(), NavigationThrottle::CANCEL);
+}
+
+TEST_F(NavigationInterceptorTest,
        WillRedirectRequestWithValidSameOriginInterception) {
   NavigateAndCommit(GURL("https://rp.example/"));
 
@@ -1461,13 +1555,12 @@ TEST_F(NavigationInterceptorTest, TokenRequestFailsSynchronousDestruction) {
           }));
 
   interceptor_ptr->WillStartRequest();
-  auto result = interceptor_ptr->WillProcessResponse();
+  EXPECT_EQ(interceptor_ptr->WillProcessResponse(), NavigationThrottle::DEFER);
 
-  // If the interceptor was synchronously destroyed during WillProcessResponse
-  // because the callback ran inline, returning DEFER means it didn't crash via
-  // use-after-free inside NavigationInterceptor::OnHeaderParsed.
-  EXPECT_EQ(result, NavigationThrottle::DEFER);
-
+  // Verify that `OnTokenResponse()` running synchronously inside
+  // `request_initiator_.Run()` and destroying `interceptor` via
+  // `CancelDeferredNavigation()` does not cause a use-after-free while
+  // `OnHeaderParsed()` is still on the stack.
   run_loop.Run();
 
   EXPECT_TRUE(was_cancelled);

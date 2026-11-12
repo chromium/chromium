@@ -4,34 +4,40 @@
 
 #include "content/browser/webid/navigation_interceptor.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
-#include "base/strings/string_split.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/identity_registry.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/webid_utils.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
-#include "content/public/common/content_client.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/url_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

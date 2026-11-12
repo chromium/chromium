@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_WEBID_NAVIGATION_INTERCEPTOR_H_
 #define CONTENT_BROWSER_WEBID_NAVIGATION_INTERCEPTOR_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/request_service.h"
