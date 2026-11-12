@@ -6,6 +6,8 @@ component("private_insights") {
   public = [
     "event_queue.h",
     "populations/pending_events_batch.h",
+    "populations/population.h",
+    "populations/typed_population.h",
     "private_insights_features.h",
     "private_insights_service.h",
   ]
@@ -130,6 +132,7 @@ source_set("unit_tests") {
     "fcp_http_client_unittest.cc",
     "fcp_simple_task_environment_unittest.cc",
     "fcp_utils_unittest.cc",
+    "populations/typed_population_unittest.cc",
     "private_insights_service_unittest.cc",
   ]
   deps = [
