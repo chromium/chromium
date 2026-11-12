@@ -371,8 +371,10 @@ scoped_refptr<ExportedCanvasResource> GPUCanvasContext::GetResourceForPushFrame(
   return base::MakeRefCounted<ExportedCanvasResource>(
       std::move(client_si), sync_token,
       viz::TransferableResource::ResourceSource::kWebGPUSwapBuffer,
-      swap_buffers_->GetHDRMetadata(), std::move(release_callback),
-      context_provider_wrapper);
+      swap_buffers_->GetHDRMetadata(), context_provider_wrapper,
+      /*accelerated_raster=*/true, /*wait_sync_token=*/base::NullCallback(),
+      std::move(release_callback),
+      /*use_legacy_external_canvas_resource_bitmap_path=*/true);
 }
 
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(

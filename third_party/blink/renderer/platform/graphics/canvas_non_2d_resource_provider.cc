@@ -533,7 +533,8 @@ CanvasNon2DResourceProvider::CreateExportedResource(
       resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas, hdr_metadata_,
       context_provider_wrapper_, !IsSoftware(), std::move(wait_sync_token),
-      std::move(release_callback));
+      std::move(release_callback),
+      /*use_legacy_external_canvas_resource_bitmap_path=*/false);
 }
 
 scoped_refptr<ExportedCanvasResource>

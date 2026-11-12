@@ -1200,7 +1200,8 @@ BaseRenderingContext2D::CreateExportedResource(
       resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas,
       color_params_.GetGfxHdrMetadata(), context_provider_wrapper_,
-      is_accelerated_, std::move(wait_sync_token), std::move(release_callback));
+      is_accelerated_, std::move(wait_sync_token), std::move(release_callback),
+      /*use_legacy_external_canvas_resource_bitmap_path=*/false);
   exported_resource->SetOriginClean(OriginClean());
   return exported_resource;
 }

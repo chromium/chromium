@@ -295,7 +295,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
       resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
-      nullptr, false, base::NullCallback(), base::NullCallback());
+      nullptr, false, base::NullCallback(), base::NullCallback(),
+      /*use_legacy_external_canvas_resource_bitmap_path=*/false);
   dispatcher()->DispatchFrame(std::move(exported_resource), damage_rect,
                               !context_alpha /* is_opaque */);
   platform->RunUntilIdle();

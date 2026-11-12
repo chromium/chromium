@@ -26,15 +26,9 @@ class PLATFORM_EXPORT ExportedCanvasResource
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider,
       bool accelerated_raster,
       base::RepeatingCallback<void(gpu::SyncToken)> wait_sync_token,
-      viz::ReleaseCallback release_callback);
+      viz::ReleaseCallback release_callback,
+      bool use_legacy_external_canvas_resource_bitmap_path);
 
-  explicit ExportedCanvasResource(
-      scoped_refptr<gpu::ClientSharedImage> client_si,
-      const gpu::SyncToken& sync_token,
-      viz::TransferableResource::ResourceSource resource_source,
-      const gfx::HDRMetadata& hdr_metadata,
-      viz::ReleaseCallback callback,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper> provider);
   ~ExportedCanvasResource();
 
   static void OnPlaceholderReleasedResource(

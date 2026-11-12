@@ -305,7 +305,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   offscreen_canvas().PushFrame(base::MakeRefCounted<ExportedCanvasResource>(
       resource->GetSharedImage(), resource->sync_token(),
       viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
-      nullptr, false, base::NullCallback(), base::NullCallback()));
+      nullptr, false, base::NullCallback(), base::NullCallback(),
+      /*use_legacy_external_canvas_resource_bitmap_path=*/false));
   platform->RunUntilIdle();
 }
 
