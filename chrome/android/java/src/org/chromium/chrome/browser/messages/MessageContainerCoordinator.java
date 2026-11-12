@@ -9,14 +9,21 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Px;
+
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.messages.MessageContainer;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
  * Coordinator of {@link MessageContainer}, which can adjust margins of the message container and
@@ -26,19 +33,70 @@ import org.chromium.ui.base.ViewUtils;
 public class MessageContainerCoordinator implements BrowserControlsStateProvider.Observer {
     private @Nullable MessageContainer mContainer;
     private BrowserControlsManager mControlsManager;
+    private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier;
+    private final Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback =
+            this::onEdgeToEdgeControllerChanged;
+    private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster =
+            new EdgeToEdgePadAdjuster() {
+                @Override
+                public void overrideBottomInset(@Px int inset) {}
+
+                @Override
+                public void overrideTopInset(@Px int inset) {
+                    if (mTopInset == inset) return;
+                    mTopInset = inset;
+                    updateMargins();
+                }
+
+                @Override
+                public void destroy() {}
+            };
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    private @Px int mTopInset;
 
     /** The list of observers for the message container. */
     private final ObserverList<MessageContainerObserver> mObservers = new ObserverList<>();
 
     public MessageContainerCoordinator(
-            MessageContainer container, BrowserControlsManager controlsManager) {
+            @Nullable MessageContainer container, BrowserControlsManager controlsManager) {
+        this(container, controlsManager, /* edgeToEdgeControllerSupplier= */ null);
+    }
+
+    public MessageContainerCoordinator(
+            @Nullable MessageContainer container,
+            BrowserControlsManager controlsManager,
+            @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+                    edgeToEdgeControllerSupplier) {
         mContainer = container;
         mControlsManager = controlsManager;
         mControlsManager.addObserver(this);
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        if (mEdgeToEdgeControllerSupplier != null) {
+            mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                    mEdgeToEdgeControllerCallback);
+        }
+    }
+
+    private void onEdgeToEdgeControllerChanged(@Nullable EdgeToEdgeController controller) {
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
+        mEdgeToEdgeController = controller;
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     @SuppressWarnings("NullAway")
     public void destroy() {
+        if (mEdgeToEdgeControllerSupplier != null) {
+            mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerCallback);
+        }
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+            mEdgeToEdgeController = null;
+        }
         mControlsManager.removeObserver(this);
         mContainer = null;
         mControlsManager = null;
@@ -56,8 +114,7 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     }
 
     private void updateMargins() {
-        assert mContainer != null;
-        if (mContainer.getVisibility() != View.VISIBLE) {
+        if (mContainer == null || mContainer.getVisibility() != View.VISIBLE) {
             return;
         }
         ViewGroup.MarginLayoutParams params =
@@ -192,19 +249,23 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
      */
     private int getContainerTopOffset() {
         assert mContainer != null;
+        if (mControlsManager == null) return mTopInset;
 
         int contentOffset = mControlsManager.getContentOffset();
         if (contentOffset == 0
-                && mControlsManager.getControlsPosition()
-                        == BrowserControlsStateProvider.ControlsPosition.TOP
-                && mControlsManager.isVisibilityForced()) {
+                && mControlsManager.isVisibilityForced()
+                && mControlsManager.getBrowserVisibilityDelegate() != null
+                && mControlsManager.getBrowserVisibilityDelegate().get()
+                        == BrowserControlsState.SHOWN) {
             // https://crbug.com/477993278: workaround that BrowserControlsManager does not
             // signal onContentOffsetChanged on native pages.
             contentOffset = mControlsManager.getTopControlsHeight();
         }
 
-        if (contentOffset == 0) return 0;
+        if (contentOffset <= mTopInset) return mTopInset;
         final Resources res = mContainer.getResources();
-        return contentOffset - res.getDimensionPixelOffset(R.dimen.message_bubble_inset);
+        return Math.max(
+                mTopInset,
+                contentOffset - res.getDimensionPixelOffset(R.dimen.message_bubble_inset));
     }
 }

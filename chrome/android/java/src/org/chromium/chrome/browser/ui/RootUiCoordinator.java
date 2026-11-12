@@ -1716,7 +1716,8 @@ public class RootUiCoordinator
         MessagesResourceMapperInitializer.init();
         MessageContainer container = mActivity.findViewById(R.id.message_container);
         mMessageContainerCoordinator =
-                new MessageContainerCoordinator(container, mBrowserControlsManager);
+                new MessageContainerCoordinator(
+                        container, mBrowserControlsManager, mEdgeToEdgeControllerSupplier);
         mMessageContainerObserver =
                 new MessageContainerObserver() {
                     @Override

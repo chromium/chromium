@@ -35,8 +35,8 @@ public class ScrimProperties {
     public static final WritableIntPropertyKey BOTTOM_MARGIN = new WritableIntPropertyKey();
 
     /** Whether the scrim should affect the status bar color. */
-    public static final ReadableBooleanPropertyKey AFFECTS_STATUS_BAR =
-            new ReadableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey AFFECTS_STATUS_BAR =
+            new WritableBooleanPropertyKey();
 
     /** The view that the scrim is using to place itself relative to in the hierarchy. */
     public static final ReadableObjectPropertyKey<View> ANCHOR_VIEW =

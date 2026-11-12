@@ -12,8 +12,10 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
+import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -42,6 +44,7 @@ import org.chromium.components.webxr.XrDelegate;
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -66,6 +69,27 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     private final TabModelSelector mTabModelSelector;
     private final MonotonicObservableSupplier<ScrimManager> mScrimManagerSupplier;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback =
+            this::onEdgeToEdgeControllerChanged;
+    private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster =
+            new EdgeToEdgePadAdjuster() {
+                @Override
+                public void overrideBottomInset(@Px int inset) {}
+
+                @Override
+                public void overrideTopInset(@Px int inset) {
+                    if (mTopInset == inset) return;
+                    mTopInset = inset;
+                    mShouldUpdateContainerLayoutParams = true;
+                    maybeUpdateDialogLayout();
+                }
+
+                @Override
+                public void destroy() {}
+            };
+
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
+    private @Px int mTopInset;
 
     /** The active tab of which the dialog will be shown on top. */
     private @Nullable Tab mActiveTab;
@@ -111,7 +135,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
      * @param scrimManagerSupplier The supplier for {@link ScrimManager}. Used to darken the screen
      *     behind the dialog.
      * @param edgeToEdgeControllerSupplier The supplier for {@link EdgeToEdgeController}. Used to
-     *     decide how to position the scrim.
+     *     decide how to position the dialog container and the scrim.
      */
     public ChromeTabModalPresenter(
             Activity activity,
@@ -134,9 +158,30 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         mTabModelSelector = tabModelSelector;
         mScrimManagerSupplier = scrimManagerSupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
+        if (mEdgeToEdgeControllerSupplier != null) {
+            mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
+                    mEdgeToEdgeControllerCallback);
+        }
+    }
+
+    private void onEdgeToEdgeControllerChanged(@Nullable EdgeToEdgeController controller) {
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
+        mEdgeToEdgeController = controller;
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
     }
 
     public void destroy() {
+        if (mEdgeToEdgeControllerSupplier != null) {
+            mEdgeToEdgeControllerSupplier.removeObserver(mEdgeToEdgeControllerCallback);
+        }
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+            mEdgeToEdgeController = null;
+        }
         mBrowserControlsVisibilityManager.removeObserver(this);
     }
 
@@ -168,7 +213,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         MarginLayoutParams params = (MarginLayoutParams) dialogContainer.getLayoutParams();
         params.width = ViewGroup.MarginLayoutParams.MATCH_PARENT;
         params.height = ViewGroup.MarginLayoutParams.MATCH_PARENT;
-        params.topMargin = getContainerTopMargin(mBrowserControlsVisibilityManager);
+        params.topMargin = getContainerTopMargin();
         params.bottomMargin = getContainerBottomMargin(mBrowserControlsVisibilityManager);
         dialogContainer.setLayoutParams(params);
 
@@ -202,19 +247,19 @@ public class ChromeTabModalPresenter extends TabModalPresenter
             mScrimModel = null;
         }
 
+        boolean affectsStatusBar = doesScrimAffectStatusBar();
+        int topMargin = getScrimTopMargin(affectsStatusBar);
         boolean affectsNavBar = doesScrimAffectNavBar();
         int bottomMargin = getScrimBottomMargin(affectsNavBar);
 
         var scrimModelBuilder =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, affectsStatusBar)
                         .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, affectsNavBar)
                         .with(
                                 ScrimProperties.ANCHOR_VIEW,
                                 mActivity.findViewById(R.id.tab_modal_dialog_container))
-                        .with(
-                                ScrimProperties.TOP_MARGIN,
-                                getContainerTopMargin(mBrowserControlsVisibilityManager))
+                        .with(ScrimProperties.TOP_MARGIN, topMargin)
                         .with(ScrimProperties.BOTTOM_MARGIN, bottomMargin);
 
         if (ModalDialogFeatureMap.isLargeFormFactorUiEnabled(mActivity)) {
@@ -381,8 +426,7 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     }
 
     /**
-     * Calculate the top margin of the dialog container and the dialog scrim so that the scrim
-     * doesn't overlap the toolbar.
+     * Calculate the top margin of the dialog container so that it doesn't overlap the toolbar.
      *
      * @param provider {@link BrowserControlsStateProvider} for browser controls heights.
      * @return The container top margin.
@@ -391,8 +435,13 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         return provider.getTopControlsHeight();
     }
 
+    private int getContainerTopMargin() {
+        return Math.max(mBrowserControlsVisibilityManager.getTopControlsHeight(), mTopInset);
+    }
+
     /**
      * Calculate the bottom margin of the dialog container.
+     *
      * @param provider {@link BrowserControlsStateProvider} for browser controls heights.
      * @return The container bottom margin.
      */
@@ -457,6 +506,17 @@ public class ChromeTabModalPresenter extends TabModalPresenter
         return webContents.getMainFrame().areInputEventsIgnored();
     }
 
+    private boolean doesScrimAffectStatusBar() {
+        // Apply a scrim over the status bar when top edge-to-edge is active and only the top scalp
+        // (or no top controls) is present at the top (e.g. when the toolbar is at the bottom).
+        return mTopInset > 0
+                && mBrowserControlsVisibilityManager.getTopControlsHeight() <= mTopInset;
+    }
+
+    private int getScrimTopMargin(boolean affectsStatusBar) {
+        return affectsStatusBar ? 0 : getContainerTopMargin();
+    }
+
     private boolean doesScrimAffectNavBar() {
         int bottomInset =
                 mEdgeToEdgeControllerSupplier != null && mEdgeToEdgeControllerSupplier.get() != null
@@ -477,13 +537,13 @@ public class ChromeTabModalPresenter extends TabModalPresenter
     private void maybeUpdateDialogLayout() {
         if (mShouldUpdateContainerLayoutParams && getDialogContainer() != null) {
             MarginLayoutParams params = (MarginLayoutParams) getDialogContainer().getLayoutParams();
-            params.topMargin = getContainerTopMargin(mBrowserControlsVisibilityManager);
+            params.topMargin = getContainerTopMargin();
             params.bottomMargin = mBottomControlsHeight;
             getDialogContainer().setLayoutParams(params);
             if (mScrimModel != null) {
-                mScrimModel.set(
-                        ScrimProperties.TOP_MARGIN,
-                        getContainerTopMargin(mBrowserControlsVisibilityManager));
+                boolean affectsStatusBar = doesScrimAffectStatusBar();
+                mScrimModel.set(ScrimProperties.TOP_MARGIN, getScrimTopMargin(affectsStatusBar));
+                mScrimModel.set(ScrimProperties.AFFECTS_STATUS_BAR, affectsStatusBar);
                 boolean affectsNavBar = doesScrimAffectNavBar();
                 mScrimModel.set(ScrimProperties.BOTTOM_MARGIN, getScrimBottomMargin(affectsNavBar));
                 mScrimModel.set(ScrimProperties.AFFECTS_NAVIGATION_BAR, affectsNavBar);

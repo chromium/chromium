@@ -421,6 +421,37 @@ public class ScrimTest {
     @Test
     @SmallTest
     @Feature({"Scrim"})
+    public void testAffectsStatusBar_toggledWhileVisible() throws TimeoutException {
+        PropertyModel model = buildModel(false, true, Color.RED);
+        showScrim(model, /* animate= */ false);
+        assertStatusBarColor(Color.TRANSPARENT);
+
+        int callCount = mStatusBarColorHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(() -> model.set(AFFECTS_STATUS_BAR, true));
+        assertEquals(
+                Color.RED, mStatusBarColorHelper.getPayloadByIndexBlocking(callCount).intValue());
+
+        callCount = mStatusBarColorHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.setAlpha(0.0f, model));
+        assertEquals(
+                Color.TRANSPARENT,
+                mStatusBarColorHelper.getPayloadByIndexBlocking(callCount).intValue());
+
+        callCount = mStatusBarColorHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimManager.setAlpha(1.0f, model));
+        assertEquals(
+                Color.RED, mStatusBarColorHelper.getPayloadByIndexBlocking(callCount).intValue());
+
+        callCount = mStatusBarColorHelper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(() -> model.set(AFFECTS_STATUS_BAR, false));
+        assertEquals(
+                Color.TRANSPARENT,
+                mStatusBarColorHelper.getPayloadByIndexBlocking(callCount).intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
     public void testAffectsNavigationBar_enabled() throws TimeoutException {
         int colorCallCount = mNavBarColorHelper.getCallCount();
         PropertyModel model =

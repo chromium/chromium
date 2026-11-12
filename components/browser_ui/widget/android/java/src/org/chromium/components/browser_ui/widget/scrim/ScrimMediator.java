@@ -25,8 +25,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.TouchEventDelegate;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.ui.util.ColorUtils;
 
 /** This class holds the animation and related business logic for the scrim. */
@@ -45,10 +47,14 @@ class ScrimMediator implements TouchEventDelegate {
             ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private final SettableNonNullObservableSupplier<Integer> mNavigationBarColorSupplier =
             ObservableSuppliers.createNonNull(Color.TRANSPARENT);
-    private final SettableNonNullObservableSupplier<Float> mStatusBarScrimFractionSupplier =
-            ObservableSuppliers.createNonNull(0f);
-    private final SettableNonNullObservableSupplier<Float> mNavigationBarScrimFractionSupplier =
-            ObservableSuppliers.createNonNull(0f);
+    private final PropertyObserver<PropertyKey> mPropertyObserver =
+            (source, propertyKey) -> {
+                if (propertyKey == ScrimProperties.AFFECTS_STATUS_BAR
+                        || propertyKey == ScrimProperties.AFFECTS_NAVIGATION_BAR
+                        || propertyKey == ScrimProperties.ALPHA) {
+                    updateCompositeSuppliers();
+                }
+            };
 
     /** The animator for fading the view in. */
     private @Nullable ValueAnimator mOverlayFadeInAnimator;
@@ -82,10 +88,6 @@ class ScrimMediator implements TouchEventDelegate {
         mDefaultScrimColor = defaultScrimColor;
 
         mFullScrimColorSupplier.addSyncObserverAndPostIfNonNull(
-                (ignored2) -> updateCompositeSuppliers());
-        mStatusBarScrimFractionSupplier.addSyncObserverAndPostIfNonNull(
-                (ignored1) -> updateCompositeSuppliers());
-        mNavigationBarScrimFractionSupplier.addSyncObserverAndPostIfNonNull(
                 (ignored) -> updateCompositeSuppliers());
     }
 
@@ -135,7 +137,11 @@ class ScrimMediator implements TouchEventDelegate {
         assert model.get(ScrimProperties.ANCHOR_VIEW) != null
                 : "The anchor for the scrim cannot be null.";
 
+        if (mModel != null) {
+            mModel.removeObserver(mPropertyObserver);
+        }
         mModel = model;
+        mModel.addObserver(mPropertyObserver);
         mModel.set(ScrimProperties.TOUCH_EVENT_DELEGATE, this);
         mIsHidingOrHidden = false;
 
@@ -249,12 +255,6 @@ class ScrimMediator implements TouchEventDelegate {
         //                different order for animation events. Once deprecated we should remove it.
         if (mModel == null) return;
         mModel.set(ScrimProperties.ALPHA, alpha);
-        if (mModel.get(ScrimProperties.AFFECTS_STATUS_BAR)) {
-            mStatusBarScrimFractionSupplier.set(alpha);
-        }
-        if (mModel.get(ScrimProperties.AFFECTS_NAVIGATION_BAR)) {
-            mNavigationBarScrimFractionSupplier.set(alpha);
-        }
 
         boolean isVisible = alpha > Float.MIN_NORMAL;
         if (mModel.get(ScrimProperties.VISIBILITY_CALLBACK) != null
@@ -264,6 +264,7 @@ class ScrimMediator implements TouchEventDelegate {
         mCurrentVisibility = isVisible;
 
         if (mIsHidingOrHidden && !isVisible && mModel != null) {
+            mModel.removeObserver(mPropertyObserver);
             mModel = null;
             mFullScrimColorSupplier.set(Color.TRANSPARENT);
             mScrimHiddenRunnable.run();

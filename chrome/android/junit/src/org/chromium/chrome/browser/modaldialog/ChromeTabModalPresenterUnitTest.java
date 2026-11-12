@@ -25,6 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -34,6 +36,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -47,6 +50,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -66,11 +70,14 @@ public class ChromeTabModalPresenterUnitTest {
     @Mock private TabObscuringHandler mTabObscuringHandler;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private WebContents mWebContents;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private ScrimManager mScrimManager;
+    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
-    private final MonotonicObservableSupplier<ScrimManager> mScrimManagerSupplier =
-            ObservableSuppliers.alwaysNull();
-    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
-            ObservableSuppliers.alwaysNull();
+    private final SettableMonotonicObservableSupplier<ScrimManager> mScrimManagerSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier = ObservableSuppliers.createMonotonic();
 
     private ToolbarManager mCurrentToolbarManager;
     private final UserDataHost mUserDataHost = new UserDataHost();
@@ -102,6 +109,14 @@ public class ChromeTabModalPresenterUnitTest {
         public void setBrowserControlsAccess(boolean restricted) {
             super.setBrowserControlsAccess(restricted);
         }
+
+        @Override
+        public void showDialogContainer() {
+            super.showDialogContainer();
+        }
+
+        @Override
+        protected void runEnterAnimation() {}
 
         // Calls are verified on the spy; the real method needs a SelectionPopupController.
         @Override
@@ -150,7 +165,6 @@ public class ChromeTabModalPresenterUnitTest {
                         mTabModelSelector,
                         mScrimManagerSupplier,
                         mEdgeToEdgeControllerSupplier);
-        mPresenter = spy(mPresenter);
     }
 
     @Test
@@ -200,6 +214,7 @@ public class ChromeTabModalPresenterUnitTest {
      * setBrowserControlsAccess(false) with the given tab state.
      */
     private void simulateDialogHidden(boolean tabInteractable, Tab currentTab) {
+        mPresenter = spy(mPresenter);
         mPresenter.setActiveTabForTesting(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.isUserInteractable()).thenReturn(tabInteractable);
@@ -263,5 +278,112 @@ public class ChromeTabModalPresenterUnitTest {
                 "Scrim top margin should be updated.",
                 96,
                 scrimModel.get(ScrimProperties.TOP_MARGIN));
+        assertFalse(
+                "Scrim should not affect status bar when top edge-to-edge is inactive.",
+                scrimModel.get(ScrimProperties.AFFECTS_STATUS_BAR));
+    }
+
+    @Test
+    public void testShowDialogContainer_TopEdgeToEdgeWithOnlyScalp_ScrimAffectsStatusBar() {
+        mScrimManagerSupplier.set(mScrimManager);
+        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        mPadAdjusterCaptor.getValue().overrideTopInset(60);
+        when(mBrowserControlsVisibilityManager.getTopControlsHeight()).thenReturn(60);
+
+        ViewGroup container = new FrameLayout(mActivity);
+        container.setLayoutParams(
+                new MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mPresenter.setDialogContainerForTesting(container);
+
+        mPresenter.onTopControlsHeightChanged(60, 0);
+        mPresenter.showDialogContainer();
+
+        assertEquals(
+                "Dialog container top margin should stay below status bar.",
+                60,
+                ((MarginLayoutParams) container.getLayoutParams()).topMargin);
+        PropertyModel scrimModel = mPresenter.getScrimModelForTesting();
+        assertTrue(
+                "Scrim should affect status bar when only top scalp is at the top.",
+                scrimModel.get(ScrimProperties.AFFECTS_STATUS_BAR));
+        assertEquals(
+                "Scrim top margin should be 0 when covering the status bar.",
+                0,
+                scrimModel.get(ScrimProperties.TOP_MARGIN));
+    }
+
+    @Test
+    public void testTopControlsHeightChanged_TopEdgeToEdgeWithTopToolbar_DoesNotAffectStatusBar() {
+        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        mPadAdjusterCaptor.getValue().overrideTopInset(60);
+        when(mBrowserControlsVisibilityManager.getTopControlsHeight()).thenReturn(156);
+
+        ViewGroup container = new FrameLayout(mActivity);
+        container.setLayoutParams(
+                new MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mPresenter.setDialogContainerForTesting(container);
+
+        PropertyModel scrimModel =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.TOP_MARGIN, 0)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
+                        .build();
+        mPresenter.setScrimModelForTesting(scrimModel);
+
+        mPresenter.onTopControlsHeightChanged(156, 0);
+
+        assertEquals(
+                "Dialog container top margin should equal top controls height.",
+                156,
+                ((MarginLayoutParams) container.getLayoutParams()).topMargin);
+        assertFalse(
+                "Scrim should not affect status bar when top toolbar is visible.",
+                scrimModel.get(ScrimProperties.AFFECTS_STATUS_BAR));
+        assertEquals(
+                "Scrim top margin should equal top controls height.",
+                156,
+                scrimModel.get(ScrimProperties.TOP_MARGIN));
+    }
+
+    @Test
+    public void
+            testTopControlsHeightChanged_ZeroTopControlsWithTopInset_ClampsContainerTopMargin() {
+        mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        when(mBrowserControlsVisibilityManager.getTopControlsHeight()).thenReturn(0);
+
+        ViewGroup container = new FrameLayout(mActivity);
+        container.setLayoutParams(
+                new MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mPresenter.setDialogContainerForTesting(container);
+
+        PropertyModel scrimModel =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.TOP_MARGIN, 60)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
+                        .build();
+        mPresenter.setScrimModelForTesting(scrimModel);
+
+        mPadAdjusterCaptor.getValue().overrideTopInset(60);
+
+        assertEquals(
+                "Dialog container top margin should be clamped to topInset.",
+                60,
+                ((MarginLayoutParams) container.getLayoutParams()).topMargin);
+        assertTrue(
+                "Scrim should affect status bar when top controls height is 0.",
+                scrimModel.get(ScrimProperties.AFFECTS_STATUS_BAR));
+        assertEquals(
+                "Scrim top margin should be 0 when covering the status bar.",
+                0,
+                scrimModel.get(ScrimProperties.TOP_MARGIN));
+
+        mPresenter.destroy();
+        verify(mEdgeToEdgeController).unregisterAdjuster(mPadAdjusterCaptor.getValue());
     }
 }
