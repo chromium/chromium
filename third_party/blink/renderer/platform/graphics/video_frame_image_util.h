@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
-#include "cc/paint/paint_record.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -80,7 +79,6 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
-  void FlushRecording(cc::PaintRecord last_recording);
   void EnsureResourceReadyForDraw();
   bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();

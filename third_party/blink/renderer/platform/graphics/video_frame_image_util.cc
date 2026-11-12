@@ -354,9 +354,16 @@ void VideoFrameAcceleratedSnapshotPool::EnsureResourceReadyForDraw() {
   }
 }
 
-void VideoFrameAcceleratedSnapshotPool::FlushRecording(
-    cc::PaintRecord last_recording) {
-  if (IsValid()) {
+scoped_refptr<StaticBitmapImage>
+VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  MemoryManagedPaintRecorder recorder(Size(), /*client=*/nullptr);
+  draw_callback(recorder.getRecordingCanvas());
+  if (recorder.HasReleasableDrawOps()) {
     EnsureResourceReadyForDraw();
 
     const bool needs_clear = !is_cleared_;
@@ -380,7 +387,7 @@ void VideoFrameAcceleratedSnapshotPool::FlushRecording(
 
     gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
         resource_->GetSharedImage(), resource_->acquire_sync_token(),
-        std::move(last_recording), &image_provider, needs_clear);
+        recorder.ReleaseMainRecording(), &image_provider, needs_clear);
     resource_->SetReleaseSyncToken(sync_token);
 
     // Images are locked for the duration of the rasterization, in case they get
@@ -388,20 +395,6 @@ void VideoFrameAcceleratedSnapshotPool::FlushRecording(
     // complete.
     image_provider.ReleaseLockedImages();
     image_provider.UnbindTextureBackedImages();
-  }
-}
-
-scoped_refptr<StaticBitmapImage>
-VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
-    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
-  if (!IsValid()) {
-    return nullptr;
-  }
-
-  MemoryManagedPaintRecorder recorder(Size(), /*client=*/nullptr);
-  draw_callback(recorder.getRecordingCanvas());
-  if (recorder.HasReleasableDrawOps()) {
-    FlushRecording(recorder.ReleaseMainRecording());
   }
 
   if (!IsValid()) {
