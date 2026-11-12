@@ -77,6 +77,59 @@ enum class GlicExperimentalTriggeringExecutionOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringExecutionOutcome)
 
+// The reason an ExperimentalTriggeringUpdatesHandler was destroyed.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicExperimentalTriggeringHandlerDestroyReason)
+enum class GlicExperimentalTriggeringHandlerDestroyReason {
+  // Handler finished with no actuation session and no live work (e.g.,
+  // completed opt-in or script-tool action, or a one-shot request on a context
+  // with no active session).
+  kIdle = 0,
+  // Actuation session ended with COMPLETE.
+  kSessionComplete = 1,
+  // Actuation session ended with STOPPED (StopActuationRequest or
+  // kTerminalStopped).
+  kSessionStopped = 2,
+  // Actuation session ended with FAILED reported by the web client
+  // (kTerminalFailed or SubscriberObservationType::kError).
+  kSessionFailed = 3,
+  // Session ended because Chrome synchronously replied FAILED to an incoming
+  // request (e.g., refused initial trigger, missing metadata or payload,
+  // version mismatch, or failed continuation precondition).
+  kRejectedSynchronously = 4,
+  // Glic invocation failed with a GlicInvokeError other than supersession, tab
+  // closure, or instance destruction (e.g., timeout, invoke in progress, live
+  // mode active, or client load error).
+  kInvokeError = 5,
+  // Session was superseded by another non-continuation Glic invocation
+  // (GlicInvokeError::kSuperseded).
+  kSuperseded = 6,
+  // Target tab closed before completion (GlicInvokeError::kTabClosed,
+  // FailPreparedTabClosed(), or InstanceTeardownReason::kTabClosed).
+  kTabClosed = 7,
+  // GlicInstance was destroyed before completion
+  // (GlicInvokeError::kInstanceDestroyed* or
+  // InstanceTeardownReason::kInstanceDestroyed).
+  kInstanceDestroyed = 8,
+  // Web client Mojo pipe disconnected unexpectedly (including reconnect grace
+  // timeout).
+  kClientDisconnected = 9,
+  // Failed to register the updates handler with
+  // GlicExperimentalTriggeringManager (or manager unavailable).
+  kRegistrationFailed = 10,
+  // Coordinator was destroyed while the handler had not ended its session.
+  kCoordinatorShutdown = 11,
+  // Invariant-violation safety-net bucket: recorded if a handler is destroyed
+  // without going through OnUpdatesHandlerCleanup() or coordinator shutdown, or
+  // if OnUpdatesHandlerCleanup() destroys a handler that still has live work or
+  // an unfinished actuation session.
+  kUnexpectedLiveDestruction = 12,
+  kMaxValue = kUnexpectedLiveDestruction,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringHandlerDestroyReason)
+
 // Helper RAII class to log the
 // Glic.ExperimentalTriggering.IncomingMessageResult.{Channel} histogram for
 // the channel passed to the constructor. Enforces that a result is set on

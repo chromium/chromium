@@ -132,6 +132,7 @@ class GlicExperimentalTriggeringCoordinator
   }
 
   const raw_ptr<Profile> profile_;
+  const base::WeakPtr<actor::ActorKeyedService> actor_service_;
   std::map<std::string,
            std::unique_ptr<ExperimentalTriggeringUpdatesHandler>,
            std::less<>>

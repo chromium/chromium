@@ -388,6 +388,47 @@ std::string_view ChromeErrorCodeForTeardownReason(
       return kErrorCodeGlicDestroyedBeforeCompletion;
   }
 }
+
+GlicExperimentalTriggeringHandlerDestroyReason GlicInvokeErrorToDestroyReason(
+    GlicInvokeError error) {
+  switch (error) {
+    case GlicInvokeError::kSuperseded:
+      return GlicExperimentalTriggeringHandlerDestroyReason::kSuperseded;
+    case GlicInvokeError::kTabClosed:
+      return GlicExperimentalTriggeringHandlerDestroyReason::kTabClosed;
+    case GlicInvokeError::kInstanceDestroyedBlankInstanceClosed:
+    case GlicInvokeError::kInstanceDestroyedUnbound:
+    case GlicInvokeError::kInstanceDestroyedArchived:
+    case GlicInvokeError::kInstanceDestroyedSignedOut:
+    case GlicInvokeError::kInstanceDestroyedShutdown:
+      return GlicExperimentalTriggeringHandlerDestroyReason::kInstanceDestroyed;
+    default:
+      return GlicExperimentalTriggeringHandlerDestroyReason::kInvokeError;
+  }
+}
+
+GlicExperimentalTriggeringHandlerDestroyReason TeardownReasonToDestroyReason(
+    GlicExperimentalTriggeringManager::InstanceTeardownReason reason) {
+  switch (reason) {
+    case GlicExperimentalTriggeringManager::InstanceTeardownReason::kTabClosed:
+      return GlicExperimentalTriggeringHandlerDestroyReason::kTabClosed;
+    case GlicExperimentalTriggeringManager::InstanceTeardownReason::
+        kInstanceDestroyed:
+      return GlicExperimentalTriggeringHandlerDestroyReason::kInstanceDestroyed;
+  }
+}
+
+base::WeakPtr<actor::ActorKeyedService> GetActorServiceWeakPtr(
+    Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+  if (auto* actor_service = actor::ActorKeyedService::Get(profile)) {
+    return actor_service->GetWeakPtr();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // Handles every request for one context id, and owns the session that those
@@ -428,10 +469,14 @@ class ExperimentalTriggeringUpdatesHandler
         passkey_(std::move(passkey)),
         error_diagnostics_passkey_(std::move(error_diagnostics_passkey)),
         coordinator_(std::move(coordinator)),
+        actor_service_(coordinator_ ? coordinator_->actor_service_
+                                    : GetActorServiceWeakPtr(profile)),
         receiver_(this),
         metric_reporter_(profile) {}
 
   ~ExperimentalTriggeringUpdatesHandler() override {
+    const GlicExperimentalTriggeringHandlerDestroyReason destroy_reason =
+        ComputeDestroyReason();
     StopWaitingForBackgroundOptIn();
     // Covers destruction without a terminal update.
     RemovePendingTask();
@@ -441,6 +486,7 @@ class ExperimentalTriggeringUpdatesHandler
             TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
             GlicExperimentalTriggeringExecutionOutcome::
                 kDestroyedBeforeCompletion,
+            destroy_reason,
             "Experimental triggering handler destroyed before completion.",
             BuildChromeErrorMetadata(kErrorCodeGlicDestroyedBeforeCompletion));
       } else if (!outcome_recorded_) {
@@ -448,7 +494,13 @@ class ExperimentalTriggeringUpdatesHandler
                           kDestroyedBeforeCompletion);
       }
     }
+    metric_reporter_.RecordEnumeration(
+        "ExperimentalTriggering.UpdatesHandlerDestroyed", destroy_reason);
   }
+
+  enum class DeletionPath { kUnapproved, kCleanup, kCoordinatorShutdown };
+
+  void SetDeletionPath(DeletionPath path) { deletion_path_ = path; }
 
   // Ends the session for a terminal TaskUpdate (`state`, FAILED or STOPPED)
   // that the caller returns as the request's reply. Unlike
@@ -466,10 +518,15 @@ class ExperimentalTriggeringUpdatesHandler
               ? GlicExperimentalTriggeringExecutionOutcome::kTerminalStopped
               : GlicExperimentalTriggeringExecutionOutcome::kTerminalFailed;
     }
+    const GlicExperimentalTriggeringHandlerDestroyReason destroy_reason =
+        state == TaskUpdate::State::kStopped
+            ? GlicExperimentalTriggeringHandlerDestroyReason::kSessionStopped
+            : GlicExperimentalTriggeringHandlerDestroyReason::
+                  kRejectedSynchronously;
     // If the session already ended with an earlier terminal update, and its
     // cleanup is still pending, this does nothing. In particular, it doesn't
     // cancel the actor task after COMPLETE.
-    EndSession(state, outcome);
+    EndSession(state, outcome, destroy_reason);
   }
 
   // Sets `result` and builds a FAILED reply with `error` and this handler's
@@ -504,12 +561,8 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void RemovePendingTask() {
-    if (!coordinator_ || !coordinator_->profile_) {
-      return;
-    }
-    if (auto* actor_service =
-            actor::ActorKeyedService::Get(coordinator_->profile_)) {
-      actor_service->RemovePendingTask(context_id_);
+    if (actor_service_) {
+      actor_service_->RemovePendingTask(context_id_);
     }
   }
 
@@ -680,12 +733,14 @@ class ExperimentalTriggeringUpdatesHandler
       case mojom::SubscriberObservationType::kComplete:
         HandleTerminalUpdate(
             TaskUpdate::State::kComplete, TaskUpdate::DataType::kFinalResponse,
-            GlicExperimentalTriggeringExecutionOutcome::kSuccess);
+            GlicExperimentalTriggeringExecutionOutcome::kSuccess,
+            GlicExperimentalTriggeringHandlerDestroyReason::kSessionComplete);
         break;
       case mojom::SubscriberObservationType::kError:
         HandleTerminalUpdate(
             TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
-            GlicExperimentalTriggeringExecutionOutcome::kTerminalFailed);
+            GlicExperimentalTriggeringExecutionOutcome::kTerminalFailed,
+            GlicExperimentalTriggeringHandlerDestroyReason::kSessionFailed);
         break;
       case mojom::SubscriberObservationType::kUpdate: {
         if (!update) {
@@ -731,18 +786,22 @@ class ExperimentalTriggeringUpdatesHandler
                 TaskUpdate::State::kComplete,
                 TaskUpdate::DataType::kFinalResponse,
                 GlicExperimentalTriggeringExecutionOutcome::kSuccess,
+                GlicExperimentalTriggeringHandlerDestroyReason::
+                    kSessionComplete,
                 std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kTerminalStopped:
             HandleTerminalUpdate(
                 TaskUpdate::State::kStopped, std::nullopt,
                 GlicExperimentalTriggeringExecutionOutcome::kTerminalStopped,
+                GlicExperimentalTriggeringHandlerDestroyReason::kSessionStopped,
                 std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
             HandleTerminalUpdate(
                 TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
                 GlicExperimentalTriggeringExecutionOutcome::kTerminalFailed,
+                GlicExperimentalTriggeringHandlerDestroyReason::kSessionFailed,
                 std::move(update->data), std::move(metadata));
             break;
           case mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
@@ -767,6 +826,24 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
  private:
+  GlicExperimentalTriggeringHandlerDestroyReason ComputeDestroyReason() const {
+    using Reason = GlicExperimentalTriggeringHandlerDestroyReason;
+    if (deletion_path_ == DeletionPath::kUnapproved) {
+      return Reason::kUnexpectedLiveDestruction;
+    }
+    if (end_session_reason_) {
+      return *end_session_reason_;
+    }
+    if (deletion_path_ == DeletionPath::kCoordinatorShutdown) {
+      return Reason::kCoordinatorShutdown;
+    }
+    // `terminal_update_sent_` covers late non-actuation work (e.g. DeviceOptIn
+    // or ExecuteActions) that cleared `end_session_reason_` after an actuation
+    // ended and then finished cleanly (`!HasLiveWork()`).
+    return !HasLiveWork() && (!is_actuation_started_ || terminal_update_sent_)
+               ? Reason::kIdle
+               : Reason::kUnexpectedLiveDestruction;
+  }
   bool IsWaitingForBackgroundOptIn() const {
 #if BUILDFLAG(IS_ANDROID)
     return static_cast<bool>(opt_in_subscription_);
@@ -841,6 +918,7 @@ class ExperimentalTriggeringUpdatesHandler
           TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
           GlicExperimentalTriggeringExecutionOutcome::
               kUpdatesRegistrationFailed,
+          GlicExperimentalTriggeringHandlerDestroyReason::kRegistrationFailed,
           "GlicExperimentalTriggeringManager is not available.");
       return;
     }
@@ -870,6 +948,7 @@ class ExperimentalTriggeringUpdatesHandler
     HandleTerminalUpdate(
         TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
         GlicExperimentalTriggeringExecutionOutcome::kUpdatesRegistrationFailed,
+        GlicExperimentalTriggeringHandlerDestroyReason::kRegistrationFailed,
         "Failed to register experimental triggering updates handler.");
   }
 
@@ -910,11 +989,13 @@ class ExperimentalTriggeringUpdatesHandler
   // session already ended.
   bool EndSession(
       TaskUpdate::State state,
-      std::optional<GlicExperimentalTriggeringExecutionOutcome> outcome) {
+      std::optional<GlicExperimentalTriggeringExecutionOutcome> outcome,
+      GlicExperimentalTriggeringHandlerDestroyReason destroy_reason) {
     if (terminal_update_sent_) {
       return false;
     }
     terminal_update_sent_ = true;
+    end_session_reason_ = destroy_reason;
     CancelReconnectGrace();
     ReleaseActiveSession();
     if (outcome.has_value()) {
@@ -932,14 +1013,16 @@ class ExperimentalTriggeringUpdatesHandler
   // COMPLETE, STOPPED and FAILED are terminal: after one, the task is over for
   // the server too, and nothing more arrives for it. So Chrome must not keep
   // any work running, or keep the handler, once it has sent one.
-  void HandleTerminalUpdate(TaskUpdate::State state,
-                            std::optional<TaskUpdate::DataType> data_type,
-                            GlicExperimentalTriggeringExecutionOutcome outcome,
-                            std::optional<std::string> data = std::nullopt,
-                            std::map<std::string, std::string> metadata = {}) {
+  void HandleTerminalUpdate(
+      TaskUpdate::State state,
+      std::optional<TaskUpdate::DataType> data_type,
+      GlicExperimentalTriggeringExecutionOutcome outcome,
+      GlicExperimentalTriggeringHandlerDestroyReason destroy_reason,
+      std::optional<std::string> data = std::nullopt,
+      std::map<std::string, std::string> metadata = {}) {
     DCHECK(TaskUpdate::IsTerminalState(state));
     const base::TimeTicks end_time = base::TimeTicks::Now();
-    if (!EndSession(state, outcome)) {
+    if (!EndSession(state, outcome, destroy_reason)) {
       return;
     }
     if (outcome == GlicExperimentalTriggeringExecutionOutcome::kSuccess &&
@@ -1023,6 +1106,7 @@ class ExperimentalTriggeringUpdatesHandler
       HandleTerminalUpdate(TaskUpdate::State::kFailed,
                            TaskUpdate::DataType::kErrorMessage,
                            GlicInvokeErrorToOutcome(error, client_connected_),
+                           GlicInvokeErrorToDestroyReason(error),
                            base::StrCat({"Glic invocation failed: ",
                                          GlicInvokeErrorToString(error)}),
                            BuildInvokeErrorMetadata(error, diagnostic_info));
@@ -1033,6 +1117,7 @@ class ExperimentalTriggeringUpdatesHandler
     HandleTerminalUpdate(TaskUpdate::State::kFailed,
                          TaskUpdate::DataType::kErrorMessage,
                          GlicInvokeErrorToOutcome(error, client_connected_),
+                         GlicInvokeErrorToDestroyReason(error),
                          base::StrCat({"Glic invocation failed: ",
                                        GlicInvokeErrorToString(error)}),
                          BuildInvokeErrorMetadata(error, diagnostic_info));
@@ -1148,8 +1233,7 @@ class ExperimentalTriggeringUpdatesHandler
           has_invoked_instance && weak_this->instance_ &&
           !weak_this->instance_->IsActuating()) {
         if (actor::ActorKeyedService* actor_service =
-                actor::ActorKeyedService::Get(
-                    weak_this->coordinator_->profile_)) {
+                weak_this->actor_service_.get()) {
           actor_service->AddPendingTaskWithoutBackgroundSetup(context_id_);
           should_observe_task_creation = true;
         }
@@ -1271,7 +1355,7 @@ class ExperimentalTriggeringUpdatesHandler
     HandleTerminalUpdate(
         TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
         GlicExperimentalTriggeringExecutionOutcome::kDestroyedBeforeCompletion,
-        std::move(message),
+        TeardownReasonToDestroyReason(reason), std::move(message),
         BuildChromeErrorMetadata(ChromeErrorCodeForTeardownReason(reason)));
   }
 
@@ -1281,6 +1365,7 @@ class ExperimentalTriggeringUpdatesHandler
         TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
         GlicExperimentalTriggeringExecutionOutcome::
             kClientDisconnectedBeforeResponse,
+        GlicExperimentalTriggeringHandlerDestroyReason::kClientDisconnected,
         "Client disconnected unexpectedly.",
         BuildChromeErrorMetadata(kErrorCodeGlicClientDisconnected));
   }
@@ -1293,6 +1378,7 @@ class ExperimentalTriggeringUpdatesHandler
     HandleTerminalUpdate(
         TaskUpdate::State::kFailed, TaskUpdate::DataType::kErrorMessage,
         GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorTabClosed,
+        GlicExperimentalTriggeringHandlerDestroyReason::kTabClosed,
         "Target tab closed before completion.",
         BuildChromeErrorMetadata(kErrorCodeGlicTabClosed));
   }
@@ -1438,6 +1524,7 @@ class ExperimentalTriggeringUpdatesHandler
     first_response_received_ = false;
     terminal_update_sent_ = false;
     outcome_recorded_ = false;
+    end_session_reason_.reset();
 
     auto response = CreateResponseMessage(
         context_id_, TaskUpdate::State::kStarting, std::nullopt, "",
@@ -1711,11 +1798,8 @@ class ExperimentalTriggeringUpdatesHandler
 
     // If task is not yet started by glic session or is in a pending state,
     // clean up any pending state in actor related to the context.
-    if (coordinator_) {
-      if (auto* actor_service =
-              actor::ActorKeyedService::Get(coordinator_->profile_)) {
-        actor_service->OnMessageTriggerTaskStopped(context_id_);
-      }
+    if (actor_service_) {
+      actor_service_->OnMessageTriggerTaskStopped(context_id_);
     }
 
     return response;
@@ -1834,6 +1918,7 @@ class ExperimentalTriggeringUpdatesHandler
     // Passing a raw pointer is safe: the policy checker is owned by the
     // profile's GlicKeyedService, and the runner only consults it while its
     // task is running, which it stops from its destructor.
+    end_session_reason_.reset();
     actions_runner_ = std::make_unique<actor::ActorActionsRunner>(
         *coordinator_->profile_, std::move(source_info),
         std::move(sanitized_actions),
@@ -1916,6 +2001,7 @@ class ExperimentalTriggeringUpdatesHandler
         return std::nullopt;
       }
       if (DeferDeviceOptInUntilForeground()) {
+        end_session_reason_.reset();
         result_logger.set_result(
             GlicExperimentalTriggeringIncomingMessageResult::
                 kDeferredForBackgroundOptIn);
@@ -1956,6 +2042,7 @@ class ExperimentalTriggeringUpdatesHandler
         weak_ptr_factory_.GetWeakPtr());
 
     // Set before ShowDialog(), which may answer right away.
+    end_session_reason_.reset();
     awaiting_opt_in_ = true;
     glic_service->opt_in_controller().ShowDialog(web_contents,
                                                  std::move(callback));
@@ -2211,6 +2298,7 @@ class ExperimentalTriggeringUpdatesHandler
   InvokeWithAutoSubmitPasskey passkey_;
   InvokeErrorDiagnosticsPasskey error_diagnostics_passkey_;
   base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator_;
+  base::WeakPtr<actor::ActorKeyedService> actor_service_;
   base::WeakPtr<GlicInstance> instance_;
   base::CallbackListSubscription actuating_subscription_;
   std::unique_ptr<actor::ActorActionsRunner> actions_runner_;
@@ -2232,6 +2320,9 @@ class ExperimentalTriggeringUpdatesHandler
   bool first_response_received_ = false;
   bool outcome_recorded_ = false;
   bool is_cleaning_up_ = false;
+  DeletionPath deletion_path_ = DeletionPath::kUnapproved;
+  std::optional<GlicExperimentalTriggeringHandlerDestroyReason>
+      end_session_reason_;
   bool reconnect_attempted_ = false;
   std::optional<ExperimentalTriggeringRequest> last_actuation_request_;
   std::optional<base::WeakPtr<tabs::TabInterface>> last_prepared_tab_;
@@ -2285,15 +2376,19 @@ struct GlicExperimentalTriggeringCoordinator::PendingMessageData {
 
 GlicExperimentalTriggeringCoordinator::GlicExperimentalTriggeringCoordinator(
     Profile* profile)
-    : profile_(profile) {
+    : profile_(profile), actor_service_(GetActorServiceWeakPtr(profile)) {
   CHECK(profile_);
 }
 
 GlicExperimentalTriggeringCoordinator::
     ~GlicExperimentalTriggeringCoordinator() {
   CancelAllPendingMessages();
+  for (auto& [context_id, handler] : context_id_to_updates_handler_map_) {
+    handler->SetDeletionPath(ExperimentalTriggeringUpdatesHandler::
+                                 DeletionPath::kCoordinatorShutdown);
+  }
   // Clear handlers before `weak_ptr_factory_` is destroyed so their destructors
-  // can still access `coordinator_` to remove pending tasks.
+  // can still access `coordinator_`.
   context_id_to_updates_handler_map_.clear();
 }
 
@@ -2351,8 +2446,7 @@ void GlicExperimentalTriggeringCoordinator::OnProtoMessage(
     ScopedIncomingMessageResultLogger result_logger,
     GlicExperimentalTriggeringUpdateCallback update_callback,
     GlicExperimentalTriggeringResponseCallback response_callback) {
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(profile_);
+  actor::ActorKeyedService* actor_service = actor_service_.get();
   LogGlicExperimentalTriggeringProto(
       actor_service, "GlicExperimentalTriggering", context_id, proto);
 
@@ -2490,9 +2584,8 @@ void GlicExperimentalTriggeringCoordinator::OnBackgroundSetupFailed(
   if (messages.empty()) {
     return;
   }
-  if (actor::ActorKeyedService* actor_service =
-          actor::ActorKeyedService::Get(profile_)) {
-    actor_service->RemovePendingTask(context_id);
+  if (actor_service_) {
+    actor_service_->RemovePendingTask(context_id);
   }
   FailPendingMessages(
       context_id, std::move(messages),
@@ -2538,8 +2631,7 @@ void GlicExperimentalTriggeringCoordinator::CancelAllPendingMessages() {
   if (pending_messages_.empty()) {
     return;
   }
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(profile_);
+  actor::ActorKeyedService* actor_service = actor_service_.get();
   std::map<std::string, std::vector<PendingMessageData>, std::less<>>
       pending_messages = std::move(pending_messages_);
   pending_messages_.clear();
@@ -2564,9 +2656,9 @@ GlicExperimentalTriggeringCoordinator::OnRequest(
     ScopedIncomingMessageResultLogger result_logger,
     GlicExperimentalTriggeringUpdateCallback update_callback,
     tabs::TabInterface* prepared_tab) {
-  auto it = context_id_to_updates_handler_map_.find(context_id);
   ExperimentalTriggeringUpdatesHandler* handler = nullptr;
-  if (it != context_id_to_updates_handler_map_.end()) {
+  if (auto it = context_id_to_updates_handler_map_.find(context_id);
+      it != context_id_to_updates_handler_map_.end()) {
     handler = it->second.get();
   } else {
     handler =
@@ -2613,8 +2705,8 @@ void GlicExperimentalTriggeringCoordinator::RejectBeforeHandler(
   // tab is prepared, before any handler exists. This FAILED ends the task for
   // the server, so the queued messages must not start it later.
   if (pending_messages_.contains(context_id)) {
-    if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-      actor_service->RemovePendingTask(context_id);
+    if (actor_service_) {
+      actor_service_->RemovePendingTask(context_id);
     }
     FailPendingMessages(
         context_id, TakePendingMessages(context_id), result,
@@ -2641,13 +2733,13 @@ void GlicExperimentalTriggeringCoordinator::RejectBeforeHandler(
 
 void GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup(
     const std::string& context_id) {
-  if (profile_) {
-    if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-      actor_service->RemovePendingTask(context_id);
-    }
+  if (actor_service_) {
+    actor_service_->RemovePendingTask(context_id);
   }
   auto it = context_id_to_updates_handler_map_.find(context_id);
   if (it != context_id_to_updates_handler_map_.end()) {
+    it->second->SetDeletionPath(
+        ExperimentalTriggeringUpdatesHandler::DeletionPath::kCleanup);
     context_id_to_updates_handler_map_.erase(it);
   }
 }

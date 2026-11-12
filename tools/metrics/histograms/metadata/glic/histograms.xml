@@ -2266,6 +2266,28 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram
+    name="Glic{GlicProvider}.ExperimentalTriggering.UpdatesHandlerDestroyed"
+    enum="GlicExperimentalTriggeringHandlerDestroyReason"
+    expires_after="2027-08-01">
+  <owner>praneethsn@google.com</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records why a Glic experimental triggering updates handler was destroyed,
+    emitted once per handler from its destructor. Because a handler is created
+    whenever a request arrives on a context without a live handler, one-shot
+    requests (such as completed opt-in or script-tool requests, or stateless
+    requests with no session) each emit Idle, so the total count exceeds the
+    actuation session count. Also covers session endings, synchronous
+    rejections, invoke/tab/instance/disconnect/registration failures,
+    coordinator shutdown, and an UnexpectedLiveDestruction invariant bucket if a
+    handler is destroyed without cleanup/shutdown approval or while live work or
+    an unfinished actuation session remains active. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Fre.Accept.InvocationSource"
     enum="GlicInvocationSource" expires_after="2027-04-11">
   <owner>erikchen@chromium.org</owner>

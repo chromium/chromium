@@ -334,6 +334,67 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringExecutionOutcome) -->
 
+<!-- LINT.IfChange(GlicExperimentalTriggeringHandlerDestroyReason) -->
+
+<enum name="GlicExperimentalTriggeringHandlerDestroyReason">
+  <int value="0" label="Idle">
+    Handler finished with no actuation session and no live work (e.g., completed
+    opt-in or script-tool action, or a one-shot request with no active session).
+  </int>
+  <int value="1" label="Session Complete">
+    Actuation session ended with COMPLETE.
+  </int>
+  <int value="2" label="Session Stopped">
+    Actuation session ended with STOPPED (StopActuationRequest or
+    kTerminalStopped).
+  </int>
+  <int value="3" label="Session Failed">
+    Actuation session ended with FAILED reported by the web client
+    (kTerminalFailed or SubscriberObservationType::kError).
+  </int>
+  <int value="4" label="Rejected Synchronously">
+    Session ended because Chrome synchronously replied FAILED to an incoming
+    request (e.g., refused initial trigger, missing metadata/payload, version
+    mismatch, or failed continuation precondition).
+  </int>
+  <int value="5" label="Invoke Error">
+    Glic invocation failed with a GlicInvokeError other than supersession, tab
+    closure, or instance destruction.
+  </int>
+  <int value="6" label="Superseded">
+    Session was superseded by another non-continuation Glic invocation
+    (GlicInvokeError::kSuperseded).
+  </int>
+  <int value="7" label="Tab Closed">
+    Target tab closed before completion (GlicInvokeError::kTabClosed,
+    FailPreparedTabClosed(), or InstanceTeardownReason::kTabClosed).
+  </int>
+  <int value="8" label="Instance Destroyed">
+    GlicInstance was destroyed before completion
+    (GlicInvokeError::kInstanceDestroyed* or
+    InstanceTeardownReason::kInstanceDestroyed).
+  </int>
+  <int value="9" label="Client Disconnected">
+    Web client Mojo pipe disconnected unexpectedly (including reconnect grace
+    timeout).
+  </int>
+  <int value="10" label="Registration Failed">
+    Failed to register the updates handler with
+    GlicExperimentalTriggeringManager (or manager unavailable).
+  </int>
+  <int value="11" label="Coordinator Shutdown">
+    Coordinator was destroyed while the handler had not ended its session.
+  </int>
+  <int value="12" label="Unexpected Live Destruction">
+    Invariant-violation safety-net bucket: handler was destroyed without going
+    through OnUpdatesHandlerCleanup() or coordinator shutdown, or
+    OnUpdatesHandlerCleanup() destroyed a handler that still had live work or an
+    unfinished actuation session.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringHandlerDestroyReason) -->
+
 <!-- LINT.IfChange(GlicExperimentalTriggeringIncomingMessageResult) -->
 
 <enum name="GlicExperimentalTriggeringIncomingMessageResult">
