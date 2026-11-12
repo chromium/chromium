@@ -17,3 +17,5 @@ Technical Documentation:
 *   [Bindings System](/extensions/renderer/bindings.md)
 
 *   [Extension events](/extensions/docs/events.md)
+
+*   [Back/Forward Cache (BFCache) for Extension Frames](/extensions/docs/back_forward_cache.md)

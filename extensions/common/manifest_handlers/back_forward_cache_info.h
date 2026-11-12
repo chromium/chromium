@@ -26,6 +26,8 @@ struct BackForwardCacheInfo : public Extension::ManifestData {
 };
 
 // Parses the "back_forward_cache" manifest key.
+// See //extensions/docs/back_forward_cache.md for more details on BFCache
+// eligible component extensions.
 class BackForwardCacheHandler : public ManifestHandler {
  public:
   BackForwardCacheHandler();

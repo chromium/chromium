@@ -47,7 +47,7 @@ WindowAgent* WindowAgentFactory::GetAgentForAgentClusterKey(
   // Historically, all chrome extensions need to share the same agent because
   // they can access each other's windows directly. However, component
   // extensions can opt into bfcache and such an extension will have its own
-  // WindowAgent.
+  // WindowAgent (see //extensions/docs/back_forward_cache.md).
   scoped_refptr<const SecurityOrigin> origin =
       agent_cluster_key.IsOriginKeyed()
           ? scoped_refptr<const SecurityOrigin>(agent_cluster_key.GetOrigin())
