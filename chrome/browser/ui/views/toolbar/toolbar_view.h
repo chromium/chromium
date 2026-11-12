@@ -350,7 +350,6 @@ class ToolbarView : public views::AccessiblePaneView,
   AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface() override;
   ToolbarButton* GetBackButton() override;
   ReloadControl* GetReloadButton() override;
-  ToolbarButton* GetDownloadButton() override;
 
   // BrowserRootView::DropTarget
   std::optional<BrowserRootView::DropIndex> GetDropIndex(

@@ -32,6 +32,7 @@ source_set("impl") {
   deps = [
     "//base",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/views/frame:contents_web_view",

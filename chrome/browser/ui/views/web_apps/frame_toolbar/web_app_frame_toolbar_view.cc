@@ -382,10 +382,6 @@ ReloadControl* WebAppFrameToolbarView::GetReloadButton() {
 }
 
 
-ToolbarButton* WebAppFrameToolbarView::GetDownloadButton() {
-  return right_container_ ? right_container_->GetDownloadButton() : nullptr;
-}
-
 WebUIToolbarWebView* WebAppFrameToolbarView::GetWebUIToolbarViewForTesting() {
   return nullptr;
 }

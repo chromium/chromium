@@ -76,7 +76,6 @@ class MockToolbarButtonProvider : public ToolbarButtonProvider {
               (override));
   MOCK_METHOD(ToolbarButton*, GetBackButton, (), (override));
   MOCK_METHOD(ReloadControl*, GetReloadButton, (), (override));
-  MOCK_METHOD(ToolbarButton*, GetDownloadButton, (), (override));
   MOCK_METHOD(WebUIToolbarWebView*,
               GetWebUIToolbarViewForTesting,
               (),

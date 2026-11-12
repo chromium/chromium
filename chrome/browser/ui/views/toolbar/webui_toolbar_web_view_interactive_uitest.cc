@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -696,6 +697,49 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
       views::BubbleAnchor(toolbar_view->GetWebUIToolbarViewForTesting()));
   VerifyFocusDialogHotkeyFocusesBubble(browser(), browser_view,
                                        app_menu_control, bubble);
+}
+
+// Verifies that the focus-inactive-popup hotkey reaches a bubble anchored to
+// the WebUI Downloads pinned action, e.g. the auto-shown download bubble.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       FocusDialogHotkeyFocusesDownloadAnchoredBubble) {
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view);
+  PinnedToolbarActions* const pinned_toolbar_actions =
+      browser_view->toolbar_button_provider()->GetPinnedToolbarActions();
+  ASSERT_TRUE(pinned_toolbar_actions);
+
+  // Show the Downloads action the same way DownloadToolbarUIController does,
+  // and wait for its WebUI element to register.
+  pinned_toolbar_actions->ShowActionEphemerallyInToolbar(kActionShowDownloads,
+                                                         true);
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(browser_view);
+  ui::TrackedElement* download_element = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    download_element =
+        ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+            kToolbarDownloadButtonElementId, context);
+    return download_element != nullptr;
+  }));
+
+  TestAnchoredBubble bubble{views::BubbleAnchor(download_element)};
+  ASSERT_EQ(bubble.host->GetAnchor().GetIfElement(), download_element);
+
+  views::FocusManager* const focus_manager = bubble.widget->GetFocusManager();
+  ASSERT_TRUE(focus_manager);
+  views::View* const initially_focused_view =
+      bubble.host->GetInitiallyFocusedView();
+  ASSERT_TRUE(initially_focused_view);
+  focus_manager->ClearFocus();
+  EXPECT_FALSE(initially_focused_view->HasFocus());
+
+  BrowserFocusController::From(browser())->FocusInactivePopupForAccessibility();
+  EXPECT_TRUE(initially_focused_view->HasFocus());
 }
 
 class WebUIPinnedToolbarActionsInteractiveTest : public InteractiveBrowserTest {

@@ -2130,13 +2130,6 @@ ReloadControl* ToolbarView::GetReloadButton() {
   return reload_;
 }
 
-ToolbarButton* ToolbarView::GetDownloadButton() {
-  return pinned_toolbar_actions_container_
-             ? pinned_toolbar_actions_container_->GetButtonFor(
-                   kActionShowDownloads)
-             : nullptr;
-}
-
 WebUIToolbarWebView* ToolbarView::GetWebUIToolbarViewForTesting() {
   return toolbar_webview_;
 }

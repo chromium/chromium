@@ -100,9 +100,6 @@ class ToolbarButtonProvider {
   virtual ReloadControl* GetReloadButton() = 0;
 
 
-  // Returns the download button.
-  virtual ToolbarButton* GetDownloadButton() = 0;
-
   // Returns the WebUIToolbarWebView (if any) for testing.
   virtual WebUIToolbarWebView* GetWebUIToolbarViewForTesting() = 0;
 
