@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.accessibility;
 
+import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.HIGHLIGHTED;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.ICON;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_ITEM_ID;
@@ -21,6 +22,9 @@ import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -59,6 +63,13 @@ public class PageZoomMenuItemViewBinder {
             view.setFullscreenCallback(model.get(IMMERIVE_MODE_CALLBACK));
         } else if (key == HOVER_LISTENER) {
             view.setOnHoverListener(model.get(HOVER_LISTENER));
+        } else if (key == HIGHLIGHTED) {
+            if (model.get(HIGHLIGHTED)) {
+                ViewHighlighter.turnOnHighlight(
+                        view, new HighlightParams(HighlightShape.RECTANGLE));
+            } else {
+                ViewHighlighter.turnOffHighlight(view);
+            }
         }
     }
 }

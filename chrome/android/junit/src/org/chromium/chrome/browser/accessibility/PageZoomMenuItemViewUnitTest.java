@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.HIGHLIGHTED;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.ICON;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_ITEM_ID;
@@ -40,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.components.browser_ui.accessibility.PageZoomProperties;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -182,5 +184,14 @@ public class PageZoomMenuItemViewUnitTest {
         assertTrue(mHovered);
         assertFalse(mView.isHovered());
         hoverEnter.recycle();
+    }
+
+    @Test
+    public void testHighlighted() {
+        mModel.set(HIGHLIGHTED, true);
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOn(mView));
+
+        mModel.set(HIGHLIGHTED, false);
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOff(mView));
     }
 }
