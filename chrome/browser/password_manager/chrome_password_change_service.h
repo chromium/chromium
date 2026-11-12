@@ -32,6 +32,7 @@ class AffiliationService;
 }
 
 class OptimizationGuideKeyedService;
+class PasswordChangeDelegateImpl;
 
 namespace content {
 class WebContents;
@@ -133,11 +134,13 @@ class ChromePasswordChangeService
   bool UserIsActivePasswordChangeUser() const;
 
  private:
+#if !BUILDFLAG(IS_ANDROID)
   struct PasswordChangeData {
-    std::unique_ptr<PasswordChangeDelegate> delegate;
+    std::unique_ptr<PasswordChangeDelegateImpl> delegate;
     base::WeakPtr<content::WebContents> originator;
     password_manager::LeakedPasswordDetails details;
   };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // PasswordChangeDelegate::Observer impl.
   void OnPasswordChangeStopped(PasswordChangeDelegate* delegate) override;
@@ -157,12 +160,12 @@ class ChromePasswordChangeService
   PasswordChangeAvailability GetPerSiteAvailability(
       const password_manager::PasswordForm& form,
       bool is_non_password_login_detected = false) const;
-#endif
 
   // Returns the entry in `password_change_data_` that owns `delegate`, or
   // `password_change_data_.end()` if there is none.
   std::vector<PasswordChangeData>::iterator FindPasswordChangeData(
       PasswordChangeDelegate* delegate);
+#endif
 
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<affiliations::AffiliationService> affiliation_service_;
@@ -171,12 +174,12 @@ class ChromePasswordChangeService
       settings_service_;
   std::unique_ptr<password_manager::PasswordFeatureManager> feature_manager_;
 
-  std::vector<PasswordChangeData> password_change_data_;
-
   // The router for logs. Maybe be null in tests.
   const raw_ptr<autofill::LogRouter> log_router_;
 
 #if !BUILDFLAG(IS_ANDROID)
+  std::vector<PasswordChangeData> password_change_data_;
+
   std::vector<std::unique_ptr<PasswordChangeFromCheckupDelegate>>
       password_change_from_checkup_delegates_;
 #endif

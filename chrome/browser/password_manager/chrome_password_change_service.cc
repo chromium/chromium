@@ -118,7 +118,9 @@ ChromePasswordChangeService::ChromePasswordChangeService(
 }
 
 ChromePasswordChangeService::~ChromePasswordChangeService() {
+#if !BUILDFLAG(IS_ANDROID)
   CHECK(password_change_data_.empty());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromePasswordChangeService::IsPasswordChangeAvailable() const {
@@ -222,10 +224,9 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
         base::FeatureList::IsEnabled(
             password_change::features::kPasswordChangeWithGlic));
 
-  std::unique_ptr<PasswordChangeDelegate> delegate =
-      std::make_unique<PasswordChangeDelegateImpl>(
-          std::move(change_pwd_url), details.credentials,
-          tabs::TabInterface::GetFromContents(originator));
+  auto delegate = std::make_unique<PasswordChangeDelegateImpl>(
+      std::move(change_pwd_url), details.credentials,
+      tabs::TabInterface::GetFromContents(originator));
   delegate->AddObserver(this);
   password_change_data_.push_back(
       {std::move(delegate), originator->GetWeakPtr(), std::move(details)});
@@ -254,16 +255,19 @@ ChromePasswordChangeService::StartPasswordChangeFromCheckup(
 
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(
     content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
   for (const auto& data : password_change_data_) {
     if (data.delegate->IsPasswordChangeOngoing(web_contents)) {
       return data.delegate.get();
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
   return nullptr;
 }
 
 void ChromePasswordChangeService::OnPasswordChangeStopped(
     PasswordChangeDelegate* delegate) {
+#if !BUILDFLAG(IS_ANDROID)
   delegate->RemoveObserver(this);
 
   auto iter = FindPasswordChangeData(delegate);
@@ -274,6 +278,9 @@ void ChromePasswordChangeService::OnPasswordChangeStopped(
   password_change_data_.erase(iter);
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(deleted_delegate));
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordChangeService::OnPasswordChangeFinishedSuccessfully(
@@ -314,6 +321,7 @@ void ChromePasswordChangeService::OnLoginCheckFailedWithServerError(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::vector<ChromePasswordChangeService::PasswordChangeData>::iterator
 ChromePasswordChangeService::FindPasswordChangeData(
     PasswordChangeDelegate* delegate) {
@@ -321,13 +329,14 @@ ChromePasswordChangeService::FindPasswordChangeData(
       password_change_data_, delegate,
       [](const PasswordChangeData& data) { return data.delegate.get(); });
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromePasswordChangeService::Shutdown() {
+#if !BUILDFLAG(IS_ANDROID)
   for (const auto& data : password_change_data_) {
     data.delegate->RemoveObserver(this);
   }
   password_change_data_.clear();
-#if !BUILDFLAG(IS_ANDROID)
   for (const auto& delegate : password_change_from_checkup_delegates_) {
     delegate->Stop(actor::ActorTask::StoppedReason::kShutdown);
   }
