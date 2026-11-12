@@ -118,7 +118,6 @@ static_library("test_support") {
   deps = [
     "//base",
     "//components/gcm_driver/instance_id:test_support",
-    "//google_apis/gcm:test_support",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",
@@ -144,10 +143,14 @@ static_library("test_support") {
       "fake_gcm_client.h",
       "fake_gcm_client_factory.cc",
       "fake_gcm_client_factory.h",
+      "fake_gcm_server.cc",
+      "fake_gcm_server.h",
     ]
+    public_deps += [ "//google_apis/gcm:test_support" ]
     deps += [
       "//components/fcm/engine",
-      "//google_apis/gcm:test_support",
+      "//net:test_support",
+      "//url",
     ]
   }
 }
@@ -183,6 +186,7 @@ source_set("unit_tests") {
   if (!use_gcm_from_platform) {
     sources += [
       "gcm_client_impl_unittest.cc",
+      "gcm_driver_desktop_integration_unittest.cc",
       "gcm_driver_desktop_unittest.cc",
       "gcm_driver_unittest.cc",
     ]
@@ -190,6 +194,8 @@ source_set("unit_tests") {
     deps += [
       "//components/fcm/engine",
       "//google_apis",
+      "//services/network:test_support",
+      "//services/network/public/mojom",
     ]
   }
 }

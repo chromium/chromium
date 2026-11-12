@@ -5,11 +5,13 @@
 #ifndef GOOGLE_APIS_GCM_ENGINE_GSERVICES_SWITCHES_H_
 #define GOOGLE_APIS_GCM_ENGINE_GSERVICES_SWITCHES_H_
 
+#include "google_apis/gcm/base/gcm_export.h"
+
 namespace switches {
 
-extern const char kGCMCheckinURL[];
-extern const char kGCMMCSEndpoint[];
-extern const char kGCMRegistrationURL[];
+GCM_EXPORT extern const char kGCMCheckinURL[];
+GCM_EXPORT extern const char kGCMMCSEndpoint[];
+GCM_EXPORT extern const char kGCMRegistrationURL[];
 
 }  // namespace switches
 
