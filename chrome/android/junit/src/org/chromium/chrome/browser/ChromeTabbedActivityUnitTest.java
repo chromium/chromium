@@ -46,6 +46,8 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileManagerJni;
@@ -744,5 +746,51 @@ public class ChromeTabbedActivityUnitTest {
 
         assertTrue(activity.backShouldCloseTab(linkTab));
         assertFalse(activity.minimizationShouldCloseTab(linkTab));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+    public void testShouldIgnoreIncognitoFiles_withoutEnforceIncognitoIsolation() {
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.MIXED);
+        assertTrue(mActivity.shouldIgnoreIncognitoFiles(/* hadCipherData= */ false));
+        assertFalse(mActivity.shouldIgnoreIncognitoFiles(/* hadCipherData= */ true));
+
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        assertTrue(mActivity.shouldIgnoreIncognitoFiles(/* hadCipherData= */ false));
+        assertFalse(mActivity.shouldIgnoreIncognitoFiles(/* hadCipherData= */ true));
+
+        mActivity.setSupportedProfileTypeForTesting(SupportedProfileType.REGULAR);
+        assertTrue(mActivity.shouldIgnoreIncognitoFiles(/* hadCipherData= */ false));
+        assertTrue(mActivity.shouldIgnoreIncognitoFiles(/* hadCipherData= */ true));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)
+    public void testShouldIgnoreRegularFiles_withoutEnforceIncognitoIsolation() {
+        IncognitoUtils.Natives incognitoUtilsJni = mock(IncognitoUtils.Natives.class);
+        IncognitoUtilsJni.setInstanceForTesting(incognitoUtilsJni);
+
+        TestChromeTabbedActivity activity = new TestChromeTabbedActivity();
+        Profile regularProfile = mock(Profile.class);
+        ProfileProvider profileProvider = mock(ProfileProvider.class);
+        when(profileProvider.getOriginalProfile()).thenReturn(regularProfile);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+        activity.setProfileProviderSupplierForTesting(profileProviderSupplier);
+
+        when(incognitoUtilsJni.getIncognitoModeForced(regularProfile)).thenReturn(false);
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.MIXED);
+        assertFalse(activity.shouldIgnoreRegularFiles());
+
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.REGULAR);
+        assertFalse(activity.shouldIgnoreRegularFiles());
+
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.OFF_THE_RECORD);
+        assertTrue(activity.shouldIgnoreRegularFiles());
+
+        when(incognitoUtilsJni.getIncognitoModeForced(regularProfile)).thenReturn(true);
+        activity.setSupportedProfileTypeForTesting(SupportedProfileType.MIXED);
+        assertTrue(activity.shouldIgnoreRegularFiles());
     }
 }

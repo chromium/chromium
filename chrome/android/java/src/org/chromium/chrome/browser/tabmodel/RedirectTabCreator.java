@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -97,6 +98,15 @@ public class RedirectTabCreator extends ChromeTabCreator {
                         /* preferNew= */ false,
                         mIncognito,
                         openInTabGroup);
+        return null;
+    }
+
+    @Override
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
+        AsyncTabParams params = mAsyncTabParamsManager.remove(id);
+        if (params != null) {
+            params.destroy();
+        }
         return null;
     }
 }

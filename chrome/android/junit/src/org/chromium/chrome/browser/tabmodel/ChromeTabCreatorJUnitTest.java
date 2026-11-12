@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -367,6 +368,38 @@ public class ChromeTabCreatorJUnitTest {
                 "AsyncTabParams must be removed after RedirectTabCreator.createNewTab",
                 AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
         verify(mockTab).destroy();
+    }
+
+    @Test
+    public void testRedirectTabCreator_CreateFrozenTabReturnsNullAndDestroysAsyncParams() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        RedirectTabCreator redirectTabCreator =
+                new RedirectTabCreator(
+                        activity,
+                        mock(WindowAndroid.class),
+                        () -> mock(TabDelegateFactory.class),
+                        new OneshotSupplierImpl<>(),
+                        /* incognito= */ false,
+                        AsyncTabParamsManagerSingleton.getInstance(),
+                        SupplierUtils.ofNull(),
+                        SupplierUtils.ofNull());
+        TabModel tabModel = mock(TabModel.class);
+        TabModelOrderController orderController = mock(TabModelOrderController.class);
+        redirectTabCreator.setTabModel(tabModel);
+        redirectTabCreator.setTabModelOrderController(orderController);
+
+        int tabId = 654;
+        Tab mockTab = mock(Tab.class);
+        TabReparentingParams params = new TabReparentingParams(mockTab, null);
+        AsyncTabParamsManagerSingleton.getInstance().add(tabId, params);
+
+        assertNull(redirectTabCreator.createFrozenTab(/* state= */ null, tabId, /* index= */ 0));
+
+        assertFalse(
+                "AsyncTabParams must be removed after RedirectTabCreator.createFrozenTab",
+                AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
+        verify(mockTab).destroy();
+        verify(tabModel, never()).addTab(any(Tab.class), anyInt(), anyInt(), anyInt());
     }
 
     private ChromeTabCreator createTabCreator(Activity activity, boolean incognito) {
