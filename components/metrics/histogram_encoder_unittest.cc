@@ -10,6 +10,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sample_vector.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
@@ -87,16 +88,26 @@ TEST(HistogramEncoder, HistogramDenylist) {
   samples.Accumulate(3, 1);
 
   ChromeUserMetricsExtension uma_proto;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // These histograms are denylisted by default on mobile only.
   EXPECT_FALSE(
       EncodeHistogramDelta("Variations.FeatureAccess", samples, &uma_proto));
   EXPECT_FALSE(EncodeHistogramDelta("Variations.FeatureAccessEarly", samples,
                                     &uma_proto));
+  constexpr int kExpectedEvents = 1;
+#else
+  EXPECT_TRUE(
+      EncodeHistogramDelta("Variations.FeatureAccess", samples, &uma_proto));
+  EXPECT_TRUE(EncodeHistogramDelta("Variations.FeatureAccessEarly", samples,
+                                   &uma_proto));
+  constexpr int kExpectedEvents = 3;
+#endif
   EXPECT_TRUE(EncodeHistogramDelta("Test", samples, &uma_proto));
 
-  ASSERT_EQ(1, uma_proto.histogram_event_size());
-  EXPECT_TRUE(uma_proto.histogram_event(0).has_name_hash());
-  EXPECT_EQ(base::HashMetricName("Test"),
-            uma_proto.histogram_event(0).name_hash());
+  ASSERT_EQ(kExpectedEvents, uma_proto.histogram_event_size());
+  const auto& test_event = uma_proto.histogram_event(kExpectedEvents - 1);
+  EXPECT_TRUE(test_event.has_name_hash());
+  EXPECT_EQ(base::HashMetricName("Test"), test_event.name_hash());
 }
 
 }  // namespace

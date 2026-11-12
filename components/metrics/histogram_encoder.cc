@@ -15,6 +15,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 
 using base::SampleCountIterator;
 
@@ -26,9 +27,17 @@ namespace {
 // disabled, the default value specified here is used.
 const base::FeatureParam<std::string> kHistogramDenylistParam{
     &kHistogramDenylist, "histogram_denylist",
-    // TODO: crbug.com/518852743 - These histograms are currently problematic
-    // as they bloat UMA logs, causing them to be trimmed. Remove once fixed.
-    "Variations.FeatureAccess,Variations.FeatureAccessEarly"};
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    // TODO: crbug.com/518852743 - These histograms bloat UMA logs enough to get
+    // them trimmed on mobile. Remove once the VariationsFeatureAccessLogging
+    // study launches there.
+    "Variations.FeatureAccess,Variations.FeatureAccessEarly"
+#else
+    // Desktop platforms upload these histograms, as launched by the
+    // VariationsFeatureAccessLogging study.
+    ""
+#endif
+};
 
 const std::vector<uint64_t>& GetHistogramDenylist() {
   static const base::NoDestructor<std::vector<uint64_t>> histogram_denylist([] {
