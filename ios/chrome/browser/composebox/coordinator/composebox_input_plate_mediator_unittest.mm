@@ -254,7 +254,35 @@ constexpr base::TimeDelta kLazyTabUploadTimeout = base::Seconds(10);
 class TestContextualSearchSessionHandle
     : public contextual_search::MockContextualSearchSessionHandle {
  public:
+  TestContextualSearchSessionHandle() {
+    ON_CALL(*this, DeleteFile)
+        .WillByDefault([this](const base::UnguessableToken& file_token) {
+          return ContextualSearchSessionHandle::DeleteFile(file_token);
+        });
+    ON_CALL(*this, RemoveUploadedContextToken)
+        .WillByDefault([this](const base::UnguessableToken& file_token) {
+          return ContextualSearchSessionHandle::RemoveUploadedContextToken(
+              file_token);
+        });
+    ON_CALL(*this, OnTabClosedOrNavigated)
+        .WillByDefault([this](SessionID tab_session_id,
+                              std::optional<GURL> current_url,
+                              std::optional<std::string> current_title) {
+          return ContextualSearchSessionHandle::OnTabClosedOrNavigated(
+              tab_session_id, std::move(current_url), std::move(current_title));
+        });
+  }
+
   MOCK_METHOD(void, SetIsBackgrounded, (bool), (override));
+  MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&), (override));
+  MOCK_METHOD(bool,
+              RemoveUploadedContextToken,
+              (const base::UnguessableToken&),
+              (override));
+  MOCK_METHOD(std::vector<base::UnguessableToken>,
+              OnTabClosedOrNavigated,
+              (SessionID, std::optional<GURL>, std::optional<std::string>),
+              (override));
 };
 
 class ComposeboxInputPlateMediatorTest : public PlatformTest {
@@ -1345,12 +1373,8 @@ TEST_F(ComposeboxInputPlateMediatorTest, RemovesAttachedTabOnCloseInCobrowse) {
   base::UnguessableToken server_token = base::UnguessableToken::Create();
   consumer.items.firstObject.serverToken = server_token;
 
-  contextual_search::FileInfo file_info;
-  file_info.file_token = server_token;
-  ON_CALL(mock_controller, GetFileInfo(testing::Eq(server_token)))
-      .WillByDefault(testing::Return(&file_info));
-
-  EXPECT_CALL(mock_controller, DeleteFile(testing::Eq(server_token))).Times(1);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(server_token))
+      .WillOnce(testing::Return(true));
 
   // Close the attached tab.
   web_state_list_->CloseWebStateAt(0, WebStateList::ClosingReason::kUserAction);
@@ -1744,13 +1768,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   ON_CALL(*raw_mock_session, GetController())
       .WillByDefault(testing::Return(&mock_controller));
-  // Return a file for the empty token so that calling `DeleteFile` with an
-  // empty `serverToken` would reach `mock_controller.DeleteFile`.
-  contextual_search::FileInfo empty_token_file_info;
-  ON_CALL(mock_controller, GetFileInfo(testing::Eq(base::UnguessableToken())))
-      .WillByDefault(testing::Return(&empty_token_file_info));
-
-  EXPECT_CALL(mock_controller, DeleteFile(testing::_)).Times(0);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(testing::_)).Times(0);
 
   ComposeboxInputPlateMediator* mediator =
       CreateMediator(std::move(mock_session));
@@ -1830,12 +1848,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   base::UnguessableToken server_token_1 = base::UnguessableToken::Create();
   item.serverToken = server_token_1;
 
-  contextual_search::FileInfo file_info_1;
-  file_info_1.file_token = server_token_1;
-  ON_CALL(mock_controller, GetFileInfo(testing::Eq(server_token_1)))
-      .WillByDefault(testing::Return(&file_info_1));
-  EXPECT_CALL(mock_controller, DeleteFile(testing::Eq(server_token_1)))
-      .Times(1);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(server_token_1))
+      .WillOnce(testing::Return(true));
 
   [mediator removeItem:item];
   EXPECT_EQ(consumer.items.count, 0U);
@@ -1849,12 +1863,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   base::UnguessableToken server_token_2 = base::UnguessableToken::Create();
   invalidated_item.serverToken = server_token_2;
 
-  contextual_search::FileInfo file_info_2;
-  file_info_2.file_token = server_token_2;
-  ON_CALL(mock_controller, GetFileInfo(testing::Eq(server_token_2)))
-      .WillByDefault(testing::Return(&file_info_2));
-  EXPECT_CALL(mock_controller, DeleteFile(testing::Eq(server_token_2)))
-      .Times(1);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(server_token_2))
+      .WillOnce(testing::Return(true));
 
   [mediator inputStateManager:nil
                 didChangeMode:ComposeboxMode::kImageGeneration
@@ -2369,7 +2379,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 }
 
 // Tests that an auto-added tab stays in `kDeferred` without starting an upload,
-// and that removing it does not call `DeleteFile` on the session controller.
+// and that removing it does not call `DeleteFile` on the session.
 TEST_F(ComposeboxInputPlateMediatorTest,
        AutoAddedTabDefersUploadAndRemovesCleanlyWithoutDeleteFile) {
   SetAIMEligible(true);
@@ -2391,7 +2401,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_CALL(*raw_mock_session,
               StartTabContextUploadFlow(testing::_, testing::_, testing::_))
       .Times(0);
-  EXPECT_CALL(mock_controller, DeleteFile(testing::_)).Times(0);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(testing::_)).Times(0);
 
   ComposeboxInputPlateMediator* mediator =
       CreateMediator(std::move(mock_session));
@@ -3242,11 +3252,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   // Removing the shared tab deletes the file from the session handle and marks
   // the WebStateID as user-removed.
-  contextual_search::FileInfo file_info;
-  file_info.file_token = expected_server_token;
-  ON_CALL(mock_controller, GetFileInfo(expected_server_token))
-      .WillByDefault(testing::Return(&file_info));
-  EXPECT_CALL(mock_controller, DeleteFile(expected_server_token))
+  EXPECT_CALL(*raw_mock_session, DeleteFile(expected_server_token))
       .WillOnce(testing::Return(true));
   [mediator removeSharedTabWithInputItemIdentifier:restored_item.identifier];
   EXPECT_EQ(consumer.items.count, 0U);
@@ -3396,7 +3402,7 @@ TEST_F(ComposeboxInputPlateMediatorMockTimeTest,
                          errorType:std::nullopt];
   ASSERT_TRUE(url_loader_.prepareLoadCalled);
 
-  EXPECT_CALL(mock_controller, DeleteFile(testing::_)).Times(0);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(testing::_)).Times(0);
   task_environment_.FastForwardBy(kLazyTabUploadTimeout);
 
   EXPECT_EQ(cobrowse_consumer_.items.count, 1U);
