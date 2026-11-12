@@ -3864,8 +3864,11 @@ TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
   ui_manager->ShowForProfile(&profile_, GetContext());
   views::Widget* old_widget = ui_manager->widget();
   ASSERT_TRUE(old_widget);
-  content::WebContents* old_web_contents = ui_manager->web_contents();
-  ASSERT_TRUE(old_web_contents);
+  ASSERT_TRUE(ui_manager->web_contents());
+  // Use a WeakPtr rather than comparing raw pointers, since the new
+  // `WebContents` can be allocated at the address of the destroyed one.
+  base::WeakPtr<content::WebContents> old_web_contents =
+      ui_manager->web_contents()->GetWeakPtr();
   gfx::Rect bounds = old_widget->GetWindowBoundsInScreen();
   bounds.Offset(10, 10);
   old_widget->SetBounds(bounds);
@@ -3879,7 +3882,8 @@ TEST_F(OmniboxEverywhereUIManagerVirtualDesktopTest,
   EXPECT_NE(old_widget, new_widget);
   EXPECT_TRUE(new_widget->IsVisible());
   EXPECT_EQ(bounds.origin(), new_widget->GetRestoredBounds().origin());
-  EXPECT_NE(old_web_contents, ui_manager->web_contents());
+  EXPECT_FALSE(old_web_contents);
+  ASSERT_TRUE(ui_manager->web_contents());
   auto* web_view = views::AsViewClass<views::WebView>(
       ui_manager->widget_delegate()->GetContentsView());
   ASSERT_TRUE(web_view);
