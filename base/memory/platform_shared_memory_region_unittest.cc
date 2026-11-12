@@ -23,11 +23,14 @@
 #elif BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
+#include "base/containers/span.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -499,6 +502,35 @@ TEST_F(PlatformSharedMemoryRegionTest, CreateUnsafeAnonymous) {
   ASSERT_TRUE(mapping.IsValid());
   std::ranges::fill(mapping.GetMemoryAsSpan<uint8_t>(), 1);
   EXPECT_FALSE(PlatformSharedMemoryRegion::CreateUnsafeAnonymous(0).IsValid());
+}
+
+// Checks the size and contents of a new memory region, if backed by memfd.
+TEST_F(PlatformSharedMemoryRegionTest, MemfdRegionsAreSizedExactlyAndSparse) {
+  const size_t page_size = checked_cast<size_t>(sysconf(_SC_PAGESIZE));
+  const size_t size = 16 * page_size + 1;
+  for (auto create : {&PlatformSharedMemoryRegion::CreateWritable,
+                      &PlatformSharedMemoryRegion::CreateUnsafe,
+                      &PlatformSharedMemoryRegion::CreateUnsafeAnonymous}) {
+    PlatformSharedMemoryRegion region = create(size);
+    ASSERT_TRUE(region.IsValid());
+    const int fd = region.GetPlatformHandle().fd;
+    if (!IsMemfd(fd)) {
+      GTEST_SKIP() << "memfd_create() is not supported here";
+    }
+    struct stat st;
+    ASSERT_EQ(0, fstat(fd, &st));
+    EXPECT_EQ(checked_cast<off_t>(size), st.st_size);
+    // st_blocks is in 512-byte units; at most one page is backed so far.
+    EXPECT_LE(checked_cast<size_t>(st.st_blocks) * 512, page_size);
+
+    WritableSharedMemoryMapping mapping = MapForTesting(&region);
+    ASSERT_TRUE(mapping.IsValid());
+    span<uint8_t> bytes = mapping.GetMemoryAsSpan<uint8_t>();
+    ASSERT_EQ(size, bytes.size());
+    EXPECT_TRUE(std::ranges::all_of(bytes, [](uint8_t b) { return b == 0; }));
+    bytes.front() = 1;
+    bytes.back() = 2;
+  }
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

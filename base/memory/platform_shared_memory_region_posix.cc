@@ -87,6 +87,7 @@ std::optional<FDAccessModeError> CheckFDAccessMode(int fd, int expected_mode) {
 // the file-based implementation.
 ScopedFDPair CreateAnonymousRegion(PlatformSharedMemoryRegion::Mode mode,
                                    size_t size) {
+  CHECK_GT(size, 0u);
   // MFD_NOEXEC_SEAL creates the file non-executable and seals that state.
   // Kernels older than 6.3 reject the flag with EINVAL; remember that.
   // The raw system call is used (as in mojo/core/channel_linux.cc) so that
@@ -111,9 +112,27 @@ ScopedFDPair CreateAnonymousRegion(PlatformSharedMemoryRegion::Mode mode,
     return {};
   }
 
+  // Size the file with ftruncate(), falling back to writing its last byte.
+  //
+  // The fallback to pwrite() exists because the hardware video decoding
+  // sandbox on ChromeOS (bpf_hardware_video_decoding_policy_linux.cc) refuses
+  // ftruncate() with EPERM to avoid shrinking a file from under a mapping made
+  // by other processes. A fresh, unsealed memfd cannot produce EPERM for any
+  // other reason.
+  //
+  // Like ftruncate(), this extends i_size, but it also dirties the last page.
   if (HANDLE_EINTR(ftruncate(fd.get(), checked_cast<off_t>(size))) != 0) {
-    DPLOG(ERROR) << "ftruncate";
-    return {};
+    if (errno != EPERM) {
+      DPLOG(ERROR) << "ftruncate";
+      return {};
+    }
+    static constexpr char kZero = 0;
+    const ssize_t written = HANDLE_EINTR(
+        pwrite(fd.get(), &kZero, 1, checked_cast<off_t>(size - 1)));
+    if (written != 1) {
+      DPLOG_IF(ERROR, written < 0) << "pwrite";
+      return {};
+    }
   }
 
   // The size of a region never changes after creation. Sealing it means that

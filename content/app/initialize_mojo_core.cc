@@ -15,7 +15,6 @@
 #include "mojo/public/c/system/functions.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
-#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 
 namespace content {
@@ -46,20 +45,6 @@ void InitializeMojoCore() {
     // shared memory allocation. Sandboxed processes are allowed to allocate
     // shared memory directly.
     config.force_direct_shared_memory_allocation = true;
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    // Renderer and GPU processes create a lot of unsafe regions (data pipes,
-    // large IPC payloads) and their seccomp policies allow the memfd
-    // creation, sizing and sealing that base needs for one, so let them skip
-    // the broker round trip for those. Other sandbox types keep delegating
-    // everything; some of them (e.g. the hardware video decoder) deliberately
-    // forbid ftruncate().
-    const sandbox::mojom::Sandbox sandbox_type =
-        sandbox::policy::SandboxTypeFromCommandLine(command_line);
-    config.direct_unsafe_shared_memory_allocation =
-        sandbox_type == sandbox::mojom::Sandbox::kRenderer ||
-        sandbox_type == sandbox::mojom::Sandbox::kGpu;
 #endif
   }
 
