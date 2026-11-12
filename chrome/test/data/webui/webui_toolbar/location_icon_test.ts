@@ -449,6 +449,29 @@ suite('LocationIconTest', function() {
     assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipDrag'));
   });
 
+  // Only the pointer click that may follow a drag is suppressed. Keyboard
+  // activations, which have an empty pointerType and no preceding press, still
+  // open Page Info, like native Views.
+  test('Keyboard activation works after a drag', async function() {
+    await setClickable(true);
+    const container = locationIcon.$.button;
+
+    container.dispatchEvent(new PointerEvent(
+        'pointerdown', {pointerId: 1, button: 0, clientX: 0, clientY: 0}));
+    container.dispatchEvent(new PointerEvent(
+        'pointermove', {pointerId: 1, clientX: 20, clientY: 0}));
+    assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipDrag'));
+    container.dispatchEvent(
+        new PointerEvent('lostpointercapture', {pointerId: 1}));
+    container.dispatchEvent(new PointerEvent('click', {pointerType: 'mouse'}));
+    assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+
+    container.click();
+    assertEquals(1, toolbarUiHandler.getCallCount('onLhsChipClicked'));
+    assertFalse(
+        toolbarUiHandler.getArgs('onLhsChipClicked')[0].isMouseInteraction);
+  });
+
   test('Ctrl+click', async function() {
     locationIcon.state = {
       icon: {handleId: 0n},

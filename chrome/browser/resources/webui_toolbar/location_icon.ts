@@ -254,7 +254,8 @@ export class LocationIconElement extends LocationIconElementBase {
         LhsChipIdentifier.kLocationIcon, isMiddleClick);
 
     // `isDragging_` intentionally outlives pointerup so onClick_() can suppress
-    // the click that may follow a drag; it is only cleared on the next press.
+    // the pointer click that may follow a drag; it is only cleared on the next
+    // press.
     // Reset it for every accepted press, not just left, so a right-click right
     // after a drag still opens Page Info, as in native views.
     this.isDragging_ = false;
@@ -333,16 +334,19 @@ export class LocationIconElement extends LocationIconElementBase {
   }
 
   protected onClick_(e: PointerEvent) {
-    if (this.clickable && !this.isDragging_) {
-      TrackedElementManager.getInstance().notifyElementActivated(this);
-      // Note: 'click' and 'auxclick' events are dispatched using PointerEvents.
-      // Keyboard clicks (Enter/Space) also dispatch PointerEvents, but they
-      // have an empty pointerType (""). We only want to suppress true pointer
-      // interactions (mouse, touch, pen).
-      BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipClicked(
-          LhsChipIdentifier.kLocationIcon, e.pointerType !== '',
-          /*state_token=*/ 0);
+    // Note: 'click' and 'auxclick' events are dispatched using PointerEvents.
+    // Keyboard clicks (Enter/Space) have an empty pointerType ("") and no
+    // preceding press, so they are not suppressed after a drag. Pointer clicks,
+    // including those simulated by assistive technology, follow a pointerdown
+    // that clears `isDragging_`, so only the click that may follow a drag is
+    // suppressed.
+    const isPointerClick = e.pointerType !== '';
+    if (!this.clickable || (this.isDragging_ && isPointerClick)) {
+      return;
     }
+    TrackedElementManager.getInstance().notifyElementActivated(this);
+    BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipClicked(
+        LhsChipIdentifier.kLocationIcon, isPointerClick, /*state_token=*/ 0);
   }
 
   protected onAuxclick_(e: PointerEvent) {
