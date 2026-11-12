@@ -7466,6 +7466,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omit-native-frame-on-shadowless-menus",
+    "owners": [ "jamesleung@google.com", "mercerd@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "omnibox-aim-image-downscaling",
     "owners": ["jkoblinsky@google.com", "chrome-mobile-search@google.com"],
     "expiry_milestone": 160

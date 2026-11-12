@@ -3583,6 +3583,11 @@ inline constexpr char kOmitCorsClientCertDescription[] =
     "credential mode disallows. Without this flag enabled, Chrome will always "
     "try sending client certificates regardless of the credential mode.";
 
+inline constexpr char kOmitNativeFrameOnShadowlessMenusName[] =
+    "Omit native frame on shadowless menus";
+inline constexpr char kOmitNativeFrameOnShadowlessMenusDescription[] =
+    "Omits the native shadow and window frame on shadowless unbounded menus.";
+
 inline constexpr char kAIMSuppressVerbatimMatchName[] =
     "Omnibox AI Mode Suppress Verbatim Match";
 inline constexpr char kAIMSuppressVerbatimMatchDescription[] =

@@ -14165,6 +14165,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kDynamicAimFulfillmentRealbox)},
 
+    {"omit-native-frame-on-shadowless-menus",
+     flag_descriptions::kOmitNativeFrameOnShadowlessMenusName,
+     flag_descriptions::kOmitNativeFrameOnShadowlessMenusDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kOmitNativeFrameOnShadowlessMenus)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
