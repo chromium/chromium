@@ -127,7 +127,6 @@
 
 #if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #endif
 
 namespace {
@@ -336,8 +335,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   }
 
 #if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
-  content::URLDataSource::Add(profile,
-                              std::make_unique<SanitizedImageSource>(profile));
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
