@@ -61,21 +61,23 @@ public class SelectPopupDropdown implements SelectPopup.Ui {
         mDropdownPopupWindow.setInitialSelection(initialSelection);
         mDropdownPopupWindow.setAdapter(new DropdownAdapter(context, items, itemHeight, fontSize));
         mDropdownPopupWindow.setRtl(rightAligned);
-        mDropdownPopupWindow.setOnDismissListener(
-                new PopupWindow.OnDismissListener() {
-                    @Override
-                    public void onDismiss() {
-                        notifySelection(null);
-                    }
-                });
         GestureListenerManager gestureManager = GestureListenerManager.fromWebContents(webContents);
         assumeNonNull(gestureManager);
-        gestureManager.addListener(
+        GestureStateListener gestureListener =
                 new GestureStateListener() {
                     @Override
                     public void onScrollStarted(
                             int scrollOffsetY, int scrollExtentY, boolean isDirectionUp) {
                         hide(true);
+                    }
+                };
+        gestureManager.addListener(gestureListener);
+        mDropdownPopupWindow.setOnDismissListener(
+                new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        notifySelection(null);
+                        gestureManager.removeListener(gestureListener);
                     }
                 });
     }

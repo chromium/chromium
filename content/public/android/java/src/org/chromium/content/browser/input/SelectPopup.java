@@ -160,7 +160,11 @@ public class SelectPopup
         assert mNativeSelectPopupSourceFrame == 0 : "Zombie popup did not clear the frame source";
 
         Context context = mWebContents.getContext();
-        if (context == null) return;
+        if (context == null) {
+            mNativeSelectPopupSourceFrame = nativeSelectPopupSourceFrame;
+            selectMenuItems(null);
+            return;
+        }
 
         assert items.length == enabled.length;
         List<SelectPopupItem> popupItems = new ArrayList<SelectPopupItem>();
