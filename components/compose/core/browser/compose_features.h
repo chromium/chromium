@@ -33,9 +33,6 @@ BASE_DECLARE_FEATURE(kEnableComposeSavedStateNudge);
 // Controls whether or not the proactive nudge is enabled.
 BASE_DECLARE_FEATURE(kEnableComposeProactiveNudge);
 
-// Controls whether the language check is bypassed for the context menu option.
-BASE_DECLARE_FEATURE(kEnableComposeLanguageBypassForContextMenu);
-
 // Controls whether or not the Compose WebUI dialog has animations.
 BASE_DECLARE_FEATURE(kEnableComposeWebUIAnimations);
 

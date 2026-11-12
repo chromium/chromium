@@ -75,7 +75,6 @@ class ComposeEnabling {
   bool ShouldTriggerSavedStatePopup();
 
   bool ShouldTriggerContextMenu(Profile* profile,
-                                translate::TranslateManager* translate_manager,
                                 content::RenderFrameHost* rfh,
                                 content::ContextMenuParams& params);
 
@@ -87,11 +86,10 @@ class ComposeEnabling {
 
  private:
   base::expected<void, compose::ComposeShowStatus> PageLevelChecks(
-      translate::TranslateManager* translate_manager,
       GURL url,
       const url::Origin& top_level_frame_origin,
       const url::Origin& element_frame_origin,
-      bool is_newsted_within_fenced_frame);
+      bool is_nested_within_fenced_frame);
 
   static base::expected<void, compose::ComposeShowStatus> CheckEnabling(
       OptimizationGuideKeyedService* opt_guide,

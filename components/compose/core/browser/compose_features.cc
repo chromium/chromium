@@ -30,10 +30,6 @@ BASE_FEATURE(kEnableComposeProactiveNudge,
              "ComposeProactiveNudge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableComposeLanguageBypassForContextMenu,
-             "ComposeLanguageBypassForContextMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableComposeWebUIAnimations,
              "ComposeWebUIAnimations",
              base::FEATURE_DISABLED_BY_DEFAULT);

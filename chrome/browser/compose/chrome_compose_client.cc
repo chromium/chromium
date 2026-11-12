@@ -810,10 +810,8 @@ void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {
 bool ChromeComposeClient::ShouldTriggerContextMenu(
     content::RenderFrameHost* rfh,
     content::ContextMenuParams& params) {
-  translate::TranslateManager* translate_manager =
-      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
-  bool allow_context_menu = compose_enabling_->ShouldTriggerContextMenu(
-      profile_, translate_manager, rfh, params);
+  bool allow_context_menu =
+      compose_enabling_->ShouldTriggerContextMenu(profile_, rfh, params);
   if (allow_context_menu) {
     page_ukm_tracker_->MenuItemShown();
   }

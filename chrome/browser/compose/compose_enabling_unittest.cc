@@ -123,11 +123,9 @@ class ComposeEnablingTest : public ChromeRenderViewHostTestHarness {
     // without relyong on their default state. In other words, a change in
     // default state should not cause these tests to break.
     // Note: individual tests may reset flags to their default state.
-    ResetFeaturesAndConfig(
-        {compose::features::kEnableCompose,
-         compose::features::kEnableComposeSavedStateNudge,
-         compose::features::kEnableComposeLanguageBypassForContextMenu},
-        {compose::features::kEnableComposeProactiveNudge});
+    ResetFeaturesAndConfig({compose::features::kEnableCompose,
+                            compose::features::kEnableComposeSavedStateNudge},
+                           {compose::features::kEnableComposeProactiveNudge});
 
     mock_translate_ranker_ =
         std::make_unique<translate::testing::MockTranslateRanker>();
@@ -343,90 +341,41 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuDisabledTest) {
       {compose::features::kEnableCompose});
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(),
-      /*rfh=*/GetRenderFrameHost(), context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageTest) {
-  // Disable the language bypass.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableCompose},
-      {compose::features::kEnableComposeLanguageBypassForContextMenu});
-  // Enable all base requirements.
-  auto scoped_compose_enabled =
-      ComposeEnabling::ScopedEnableComposeForTesting();
-
-  // Set the mock to return a language we support (English).
+TEST_F(ComposeEnablingTest, IsPageLanguageSupportedTest) {
   SetLanguage("en");
-  EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
   EXPECT_TRUE(
       compose_enabling_->IsPageLanguageSupported(translate_manager_.get()));
 
-  // Set the mock to return a language we don't support (Esperanto).
   SetLanguage("eo");
-  EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
   EXPECT_FALSE(
+      compose_enabling_->IsPageLanguageSupported(translate_manager_.get()));
+
+  // Empty string simulates that translate doesn't have the answer yet.
+  SetLanguage("");
+  EXPECT_TRUE(
+      compose_enabling_->IsPageLanguageSupported(translate_manager_.get()));
+
+  // "und" simulates that translate could not determine the page language.
+  SetLanguage("und");
+  EXPECT_TRUE(
       compose_enabling_->IsPageLanguageSupported(translate_manager_.get()));
 }
 
-TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuLanguageBypassTest) {
+TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuIgnoresLanguageTest) {
   // Enable everything.
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
 
   // Set the mock to return a language we don't support (Esperanto).
   SetLanguage("eo");
-  // Although the language is unsupported, ShouldTrigger should return true as
-  // the bypass is enabled.
+  // Although the language is unsupported, ShouldTriggerContextMenu should
+  // return true because context menu does not check page language.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
   EXPECT_FALSE(
-      compose_enabling_->IsPageLanguageSupported(translate_manager_.get()));
-}
-
-TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuEmptyLanguageTest) {
-  // Disable the language bypass.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableCompose},
-      {compose::features::kEnableComposeLanguageBypassForContextMenu});
-  // Enable all base requirements.
-  auto scoped_compose_enabled =
-      ComposeEnabling::ScopedEnableComposeForTesting();
-
-  // Set the mock to return the empty string, simluating that translate doesn't
-  // have the answer yet.
-  SetLanguage("");
-  EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
-  EXPECT_TRUE(
-      compose_enabling_->IsPageLanguageSupported(translate_manager_.get()));
-}
-
-TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuUndeterminedLangugeTest) {
-  // Disable the language bypass.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {compose::features::kEnableCompose},
-      {compose::features::kEnableComposeLanguageBypassForContextMenu});
-  // Enable all base requirements.
-  auto scoped_compose_enabled =
-      ComposeEnabling::ScopedEnableComposeForTesting();
-
-  // Set the mock to return "und", simluating that translate could not determine
-  // the page language.
-  SetLanguage("und");
-  EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
-  EXPECT_TRUE(
       compose_enabling_->IsPageLanguageSupported(translate_manager_.get()));
 }
 
@@ -442,8 +391,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuFieldTypeTest) {
       blink::mojom::FormControlType::kInputButton;
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuIncorrectSchemeTest) {
@@ -456,7 +404,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuIncorrectSchemeTest) {
   auto* rfh = main_rfh();
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), rfh, context_menu_params_));
+      GetProfile(), rfh, context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest,
@@ -466,8 +414,7 @@ TEST_F(ComposeEnablingTest,
       ComposeEnabling::ScopedEnableComposeForTesting();
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
@@ -481,8 +428,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuAllEnabledTextAreaTest) {
       blink::mojom::FormControlType::kTextArea;
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupDefaultTest) {
@@ -694,8 +640,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuCrossOrigin) {
 
   context_menu_params_.frame_origin = url::Origin();
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
 
   // Check that a response result OK metric was emitted.
   histogram_tester.ExpectUniqueSample(
@@ -818,8 +763,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerDisableComposeByPolicyTest) {
               optimization_guide::OptimizationGuideDecision::kTrue)));
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
 
   // Check that the proactive nudge is also disabled.
   EXPECT_FALSE(compose_enabling_
@@ -874,8 +818,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerDisableNudgeByPolicy) {
 
   // The context is not disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerContextMenu(
-      GetProfile(), translate_manager_.get(), /*rfh=*/GetRenderFrameHost(),
-      context_menu_params_));
+      GetProfile(), /*rfh=*/GetRenderFrameHost(), context_menu_params_));
 
   // The saved state nudge is not disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup());
