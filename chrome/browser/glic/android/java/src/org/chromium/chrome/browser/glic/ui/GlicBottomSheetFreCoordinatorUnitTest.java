@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -146,6 +147,9 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
 
         ChromeClickableSpan[] clickableSpans = getSpans(bodyView, ChromeClickableSpan.class);
         assertEquals(2, clickableSpans.length);
+
+        View scrollView = rootView.findViewById(R.id.glic_fre_scroll_view);
+        assertNotNull(scrollView.findViewById(R.id.glic_fre_accept_button));
     }
 
     @Test
