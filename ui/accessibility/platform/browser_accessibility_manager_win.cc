@@ -595,27 +595,31 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       HandleAriaPropertiesChangedEvent(*wrapper);
       break;
     case AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-      CHECK(wrapper->GetData().IsRangeValueSupported(),
-            base::NotFatalUntil::M163);
+      // TODO(crbug.com/580063009): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(wrapper->GetData().IsRangeValueSupported());
       FireWinAccessibilityEvent(EVENT_OBJECT_VALUECHANGE, wrapper);
       FireUiaPropertyChangedEvent(UIA_RangeValueValuePropertyId, wrapper);
       HandleAriaPropertiesChangedEvent(*wrapper);
       break;
     case AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
-      CHECK(wrapper->GetData().IsRangeValueSupported(),
-            base::NotFatalUntil::M163);
+      // TODO(crbug.com/580063009): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(wrapper->GetData().IsRangeValueSupported());
       FireUiaPropertyChangedEvent(UIA_RangeValueMaximumPropertyId, wrapper);
       HandleAriaPropertiesChangedEvent(*wrapper);
       break;
     case AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
-      CHECK(wrapper->GetData().IsRangeValueSupported(),
-            base::NotFatalUntil::M163);
+      // TODO(crbug.com/580063009): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(wrapper->GetData().IsRangeValueSupported());
       FireUiaPropertyChangedEvent(UIA_RangeValueMinimumPropertyId, wrapper);
       HandleAriaPropertiesChangedEvent(*wrapper);
       break;
     case AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
-      CHECK(wrapper->GetData().IsRangeValueSupported(),
-            base::NotFatalUntil::M163);
+      // TODO(crbug.com/580063009): CHECK-exclusion: Convert to a CHECK once
+      // we are confident it won't be triggered.
+      DCHECK(wrapper->GetData().IsRangeValueSupported());
       FireUiaPropertyChangedEvent(UIA_RangeValueSmallChangePropertyId, wrapper);
       FireUiaPropertyChangedEvent(UIA_RangeValueLargeChangePropertyId, wrapper);
       HandleAriaPropertiesChangedEvent(*wrapper);
