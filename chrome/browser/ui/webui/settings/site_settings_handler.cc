@@ -52,8 +52,6 @@
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -97,7 +95,6 @@
 #include "components/permissions/permission_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/browser/metrics_collector/safe_browsing_metrics_collector.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -176,9 +173,6 @@ constexpr char kNumCookies[] = "numCookies";
 constexpr char kHasPermissionSettings[] = "hasPermissionSettings";
 constexpr char kHasInstalledPWA[] = "hasInstalledPWA";
 constexpr char kIsInstalled[] = "isInstalled";
-constexpr char kRwsOwner[] = "rwsOwner";
-constexpr char kRwsNumMembers[] = "rwsNumMembers";
-constexpr char kRwsEnterpriseManaged[] = "rwsEnterpriseManaged";
 constexpr char kZoom[] = "zoom";
 
 constexpr uint16_t kHttpsDefaultPort = 443;
@@ -204,9 +198,9 @@ enum class AllSitesAction2 {
   kRemoveSiteGroup = 7,
   kRemoveOrigin = 8,
   kRemoveOriginPartitioned = 9,
-  kFilterByFpsOwner = 10,
-  kDeleteForEntireFps = 11,
-  kMaxValue = kDeleteForEntireFps,
+  kDeprecatedFilterByFpsOwner = 10,
+  kDeprecatedDeleteForEntireFps = 11,
+  kMaxValue = kDeprecatedDeleteForEntireFps,
 };
 
 // Return an appropriate API Permission ID for the given string name.
@@ -452,50 +446,6 @@ std::string GetEtldPlusOne(const url::Origin& origin) {
   return GetEtldPlusOneForHost(origin.host());
 }
 
-// Converts |etld_plus1| into an HTTPS SchemefulSite.
-net::SchemefulSite ConvertEtldToSchemefulSite(std::string_view etld_plus1) {
-  return net::SchemefulSite(GURL(base::StrCat(
-      {url::kHttpsScheme, url::kStandardSchemeSeparator, etld_plus1, "/"})));
-}
-
-// Iterates over data owners in `browsing_data_model` which contains all sites
-// that have storage set and uses them to retrieve related website set
-// membership information. Returns a map of site eTLD+1 matched with their RWS
-// owner and count of related website set members.
-std::map<std::string, std::pair<std::string, int>> GetRwsMap(
-    PrivacySandboxService* privacy_sandbox_service,
-    BrowsingDataModel* browsing_data_model) {
-  // Used to count unique eTLD+1 owned by an RWS owner.
-  absl::flat_hash_map<std::string, absl::flat_hash_set<std::string>>
-      rws_owner_to_members;
-
-  // Count members by unique eTLD+1 for each related website set.
-  if (browsing_data_model) {
-    for (const auto& entry : *browsing_data_model) {
-      std::string etld_plus1 = GetEtldPlusOneForHost(
-          BrowsingDataModel::GetHost(entry.data_owner.get()));
-      auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
-      auto rws_owner = privacy_sandbox_service->GetRelatedWebsiteSetOwner(
-          schemeful_site.GetURL());
-      if (rws_owner.has_value()) {
-        rws_owner_to_members[rws_owner->GetURL().host()].insert(
-            std::move(etld_plus1));
-      }
-    }
-  }
-
-  // site eTLD+1 : {owner site eTLD+1, # of sites in that related website set}
-  std::map<std::string, std::pair<std::string, int>> rws_map;
-  for (const auto& rws : rws_owner_to_members) {
-    // Set rws owner and count of members for each eTLD+1
-    for (const auto& member : rws.second) {
-      rws_map[member] = {rws.first, rws.second.size()};
-    }
-  }
-
-  return rws_map;
-}
-
 // Resolves |origin| to the correct value for its site group if it is a
 // placeholder origin.
 url::Origin ResolveOriginInSiteGroup(const GroupingKey& grouping_key,
@@ -515,12 +465,8 @@ void ConvertSiteGroupMapToList(
     const SiteSettingsHandler::AllSitesMap& site_group_map,
     const std::set<url::Origin>& origin_permission_set,
     base::ListValue* list_value,
-    Profile* profile,
-    BrowsingDataModel* browsing_data_model) {
+    Profile* profile) {
   CHECK(profile, base::NotFatalUntil::M162);
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(profile);
-  auto rws_map = GetRwsMap(privacy_sandbox_service, browsing_data_model);
   base::flat_set<url::Origin> installed_origins =
       GetInstalledAppOrigins(profile);
   site_engagement::SiteEngagementService* engagement_service =
@@ -573,18 +519,6 @@ void ConvertSiteGroupMapToList(
     site_group.Set(kHasInstalledPWA, has_installed_pwa);
     site_group.Set(kNumCookies, 0);
     site_group.Set(kOriginList, std::move(origin_list));
-    if (etld_plus1.has_value()) {
-      if (auto it = rws_map.find(*etld_plus1); it != rws_map.end()) {
-        auto& [rws_owner, rws_num_members] = it->second;
-        site_group.Set(kRwsOwner, rws_owner);
-        site_group.Set(kRwsNumMembers, rws_num_members);
-        auto schemeful_site = ConvertEtldToSchemefulSite(*etld_plus1);
-        site_group.Set(
-            kRwsEnterpriseManaged,
-            privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
-                schemeful_site));
-      }
-    }
     list_value->Append(std::move(site_group));
   }
 }
@@ -720,10 +654,6 @@ void SiteSettingsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "fetchUsageTotal",
       base::BindRepeating(&SiteSettingsHandler::HandleFetchUsageTotal,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getRwsMembershipLabel",
-      base::BindRepeating(&SiteSettingsHandler::HandleGetRwsMembershipLabel,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "clearUnpartitionedUsage",
@@ -923,8 +853,6 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   int64_t size = 0;
   std::string usage_string;
   std::string cookie_string;
-  std::string rws_string;
-  bool rwsPolicy = false;
   // TODO(crbug.com/40256547): Ensure the key uniquely identifies the owner of
   // the browsing data (hostname is insufficient) in the BrowsingDataModel.
   int num_cookies = 0;
@@ -951,24 +879,8 @@ void SiteSettingsHandler::OnGetUsageInfo() {
         ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>(size))));
   }
 
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(profile_);
-  auto rws_map = GetRwsMap(privacy_sandbox_service, browsing_data_model_.get());
-  auto etld_plus1 = GetEtldPlusOne(usage_origin);
-  if (rws_map.count(etld_plus1)) {
-    rws_string =
-        base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
-            l10n_util::GetStringUTF16(
-                IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_MEMBERSHIP_LABEL),
-            "MEMBERS", static_cast<int>(rws_map[etld_plus1].second),
-            "RWS_OWNER", rws_map[etld_plus1].first));
-    rwsPolicy = privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
-        ConvertEtldToSchemefulSite(etld_plus1));
-  }
-
   FireWebUIListener("usage-total-changed", base::Value(usage_origin_),
-                    base::Value(usage_string), base::Value(cookie_string),
-                    base::Value(rws_string), base::Value(rwsPolicy));
+                    base::Value(usage_string), base::Value(cookie_string));
 }
 
 void SiteSettingsHandler::BrowsingDataModelCreated(
@@ -1059,24 +971,6 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue& args) {
 
   update_site_details_ = true;
   RebuildModel();
-}
-
-void SiteSettingsHandler::HandleGetRwsMembershipLabel(
-    const base::ListValue& args) {
-  AllowJavascript();
-  CHECK_EQ(3U, args.size());
-
-  const std::string& callback_id = args[0].GetString();
-  int num_members = args[1].GetInt();
-  const std::string& rws_owner = args[2].GetString();
-
-  const std::string label =
-      base::UTF16ToUTF8(base::i18n::MessageFormatter::FormatWithNamedArgs(
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_MEMBERSHIP_LABEL),
-          "MEMBERS", static_cast<int>(num_members), "RWS_OWNER", rws_owner));
-
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(label));
 }
 
 void SiteSettingsHandler::HandleClearUnpartitionedUsage(
@@ -1306,7 +1200,7 @@ void SiteSettingsHandler::HandleGetAllSites(const base::ListValue& args) {
 
   // Respond with currently available data.
   ConvertSiteGroupMapToList(all_sites_map_, origin_permission_set_, &result,
-                            profile, browsing_data_model_.get());
+                            profile);
 
   LogAllSitesAction(AllSitesAction2::kLoadPage);
 
@@ -1385,7 +1279,7 @@ base::ListValue SiteSettingsHandler::PopulateCookiesAndUsageData(
   GetOriginStorage(&all_sites_map_, &per_partition_origin_size_map);
   GetHostCookies(&all_sites_map_, &host_cookie_map);
   ConvertSiteGroupMapToList(all_sites_map_, origin_permission_set_, &list_value,
-                            profile, browsing_data_model_.get());
+                            profile);
 
   // Merge the origin usage and cookies number into |list_value|.
   for (base::Value& item : list_value) {

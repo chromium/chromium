@@ -60,8 +60,6 @@
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
@@ -238,52 +236,6 @@ MATCHER_P(IsOrigin, origin, "") {
   return arg == std::string("origin:") + origin.spec();
 }
 
-// Converts |etld_plus1| into an HTTPS SchemefulSite.
-net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
-  return net::SchemefulSite(GURL(std::string(url::kHttpsScheme) +
-                                 url::kStandardSchemeSeparator + etld_plus1 +
-                                 "/"));
-}
-
-// Validates that the list of sites are aligned with the related website sets
-// mapping.
-void ValidateSitesWithRws(
-    const base::ListValue& storage_and_cookie_list,
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>&
-        related_website_sets) {
-  for (const base::Value& site_group_value : storage_and_cookie_list) {
-    const base::DictValue& site_group = site_group_value.GetDict();
-    GroupingKey grouping_key = GroupingKey::Deserialize(
-        CHECK_DEREF(site_group.FindString("groupingKey")));
-    if (!grouping_key.GetEtldPlusOne().has_value()) {
-      return;
-    }
-    std::string etld_plus1 = *grouping_key.GetEtldPlusOne();
-    auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
-
-    if (related_website_sets.count(schemeful_site)) {
-      // Ensure that the `rwsOwner` is set correctly and aligned with
-      // |related_website_sets| mapping of site group owners.
-      std::string owner_etldplus1 =
-          related_website_sets[schemeful_site].GetURL().GetHost();
-      ASSERT_EQ(owner_etldplus1, *site_group.FindString("rwsOwner"));
-      if (owner_etldplus1 == "google.com") {
-        ASSERT_EQ(2, *site_group.FindInt("rwsNumMembers"));
-        ASSERT_EQ(false, *site_group.FindBool("rwsEnterpriseManaged"));
-      } else if (owner_etldplus1 == "example.com") {
-        ASSERT_EQ(1, *site_group.FindInt("rwsNumMembers"));
-        ASSERT_EQ(true, *site_group.FindBool("rwsEnterpriseManaged"));
-      }
-    } else {
-      // The site is not part of a RWS therefore doesn't have `rwsOwner` or
-      // `rwsNumMembers` set. `FindString` and `FindInt` should return null.
-      ASSERT_FALSE(site_group.FindString("rwsOwner"));
-      ASSERT_FALSE(site_group.FindInt("rwsNumMembers"));
-      ASSERT_FALSE(site_group.FindBool("rwsEnterpriseManaged"));
-    }
-  }
-}
-
 apps::AppPtr MakeApp(const std::string& app_id,
                      apps::AppType app_type,
                      const std::string& publisher_id,
@@ -383,11 +335,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     SetUpUserManager(profile_.get());
 #endif
 
-
-    mock_privacy_sandbox_service_ = static_cast<MockPrivacySandboxService*>(
-        PrivacySandboxServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), base::BindRepeating(&BuildMockPrivacySandboxService)));
-
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(profile()));
 
@@ -420,7 +367,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     scoped_user_manager_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    mock_privacy_sandbox_service_ = nullptr;
     incognito_profile_ = nullptr;
     profile_ = nullptr;
     profile_manager_ = nullptr;
@@ -451,9 +397,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
   Profile* incognito_profile() { return incognito_profile_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
   SiteSettingsHandler* handler() { return handler_.get(); }
-  MockPrivacySandboxService* mock_privacy_sandbox_service() {
-    return mock_privacy_sandbox_service_.get();
-  }
 
   void ValidateBlockAutoplay(bool expected_value, bool expected_enabled) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -564,18 +507,12 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
       ContentSetting content_setting,
       size_t expected_total_calls = 1U,
       bool is_incognito = false,
-      base::TimeDelta lifetime = base::TimeDelta(),
-      bool is_auto_granted = false) {
+      base::TimeDelta lifetime = base::TimeDelta()) {
     HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
         is_incognito ? incognito_profile() : profile());
 
     content_settings::ContentSettingConstraints constraints;
     constraints.set_lifetime(lifetime);
-    if (is_auto_granted) {
-      constraints.set_session_model(
-          content_settings::mojom::SessionModel::DURABLE);
-      constraints.set_decided_by_related_website_sets(true);
-    }
 
     map->SetContentSettingCustomScope(
         ContentSettingsPattern::FromString(primary_pattern),
@@ -865,9 +802,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
   void ValidateUsageInfo(const std::string& expected_usage_origin,
                          const std::string& expected_usage_string,
-                         const std::string& expected_cookie_string,
-                         const std::string& expected_rws_member_count_string,
-                         const bool expected_rws_policy) {
+                         const std::string& expected_cookie_string) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
@@ -882,12 +817,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     ASSERT_TRUE(data.arg_nth(3)->is_string());
     EXPECT_EQ(expected_cookie_string, data.arg_nth(3)->GetString());
-
-    ASSERT_TRUE(data.arg_nth(4)->is_string());
-    EXPECT_EQ(expected_rws_member_count_string, data.arg_nth(4)->GetString());
-
-    ASSERT_TRUE(data.arg_nth(5)->is_bool());
-    EXPECT_EQ(expected_rws_policy, data.arg_nth(5)->GetBool());
   }
 
   void CreateIncognitoProfile() {
@@ -965,34 +894,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     return data.arg2()->GetList().Clone();
-  }
-
-  void SetupDefaultRelatedWebsiteSets(MockPrivacySandboxService* mock_service) {
-    EXPECT_CALL(*mock_service, GetRelatedWebsiteSetOwner(_))
-        .WillRepeatedly(
-            [&](const GURL& url) -> std::optional<net::SchemefulSite> {
-              auto related_website_sets = GetTestRelatedWebsiteSets();
-              if (related_website_sets.count(net::SchemefulSite(url))) {
-                return related_website_sets[net::SchemefulSite(url)];
-              }
-
-              return std::nullopt;
-            });
-  }
-
-  base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetTestRelatedWebsiteSets() {
-    base::flat_map<net::SchemefulSite, net::SchemefulSite>
-        related_website_sets = {{ConvertEtldToSchemefulSite("google.com"),
-                                 ConvertEtldToSchemefulSite("google.com")},
-                                {ConvertEtldToSchemefulSite("google.com.au"),
-                                 ConvertEtldToSchemefulSite("google.com")},
-                                {ConvertEtldToSchemefulSite("example.com"),
-                                 ConvertEtldToSchemefulSite("example.com")},
-                                {ConvertEtldToSchemefulSite("unrelated.com"),
-                                 ConvertEtldToSchemefulSite("unrelated.com")}};
-
-    return related_website_sets;
   }
 
   scoped_refptr<const extensions::Extension> LoadExtension(
@@ -1219,7 +1120,6 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
-  raw_ptr<MockPrivacySandboxService> mock_privacy_sandbox_service_;
 };
 
 class SiteSettingsHandlerSchemeTest : public SiteSettingsHandlerBaseTest,
@@ -3903,27 +3803,6 @@ TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_DiffType) {
   handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
 
   // Verify that no exception is returned.
-  ValidateNoOrigin(2U);
-}
-
-TEST_F(SiteSettingsHandlerTest, StorageAccessExceptions_AutoGranted) {
-  const std::string kOrigin("https://[*.]google.com:443");
-  const std::string kEmbeddingOrigin("https://[*.]example.com:443");
-
-  SetContentSettingCustomScope(
-      kOrigin, kEmbeddingOrigin, kPermissionStorageAccess,
-      CONTENT_SETTING_BLOCK, /*expected_total_calls=*/1U,
-      /*is_incognito=*/false, /*lifetime=*/base::TimeDelta(),
-      /*is_auto_granted=*/true);
-
-  base::ListValue get_exception_list_args;
-  get_exception_list_args.Append(kCallbackId);
-  get_exception_list_args.Append(
-      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
-  handler()->HandleGetStorageAccessExceptionList(get_exception_list_args);
-
-  // Verify that no exception is returned since auto granted exceptions should
-  // not be returned.
   ValidateNoOrigin(2U);
 }
 
@@ -6771,20 +6650,6 @@ TEST_F(SiteSettingsHandlerTest,
   EXPECT_EQ(1, other_origin_on_google_au_after->FindDouble("numCookies"));
 }
 
-TEST_F(SiteSettingsHandlerTest, HandleGetRwsMembershipLabel) {
-  base::ListValue args;
-  args.Append("getRwsMembershipLabel");
-  args.Append(5);
-  args.Append("google.com");
-  handler()->HandleGetRwsMembershipLabel(args);
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-
-  EXPECT_EQ("cr.webUIResponse", data.function_name());
-  EXPECT_EQ("getRwsMembershipLabel", data.arg1()->GetString());
-  ASSERT_TRUE(data.arg2()->GetBool());
-  EXPECT_EQ("5 sites in google.com's group", data.arg3()->GetString());
-}
-
 TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
   const double size = 120000000000;
   base::ListValue get_args;
@@ -6803,18 +6668,6 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
-  SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
-
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              IsPartOfManagedRelatedWebsiteSet(_))
-      .Times(1)
-      .WillOnce(Return(false));
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              IsPartOfManagedRelatedWebsiteSet(
-                  ConvertEtldToSchemefulSite("example.com")))
-      .Times(2)
-      .WillRepeatedly(Return(true));
-
   // Confirm that usage info for an origin returns its total storage summed
   // across all partitions (both unpartitioned and partitioned). This is
   // intentionally different from OnStorageFetched, which reports each partition
@@ -6833,28 +6686,25 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   // quota) + 2 (local storage) + 100 (partitioned on google.com, secure) + 100
   // (partitioned on google.com, insecure) + 400 (partitioned on google.com.au)
   // = 702 B.
-  ValidateUsageInfo("http://www.example.com", "702 B", "1 cookie",
-                    "1 site in example.com's group", true);
+  ValidateUsageInfo("http://www.example.com", "702 B", "1 cookie");
 
   args.clear();
   args.Append("http://example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("http://example.com", "", "1 cookie",
-                    "1 site in example.com's group", true);
+  ValidateUsageInfo("http://example.com", "", "1 cookie");
 
   args.clear();
   args.Append("http://google.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("http://google.com", "100 B", "2 cookies",
-                    "2 sites in google.com's group", false);
+  ValidateUsageInfo("http://google.com", "100 B", "2 cookies");
 
   args.clear();
   args.Append("http://ungrouped.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("http://ungrouped.com", "", "1 cookie", "", false);
+  ValidateUsageInfo("http://ungrouped.com", "", "1 cookie");
 
   // Test that the argument URL formatting is preserved in the response because
   // the UI ignores responses with different URL strings.
@@ -6862,40 +6712,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("http://ungrouped.com//");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
-  ValidateUsageInfo("http://ungrouped.com//", "", "1 cookie", "", false);
-}
-
-TEST_F(SiteSettingsHandlerTest, RelatedWebsiteSetsMembership) {
-  SetupDefaultRelatedWebsiteSets(mock_privacy_sandbox_service());
-
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              IsPartOfManagedRelatedWebsiteSet(_))
-      .Times(2)
-      .WillRepeatedly(Return(false));
-  EXPECT_CALL(*mock_privacy_sandbox_service(),
-              IsPartOfManagedRelatedWebsiteSet(
-                  ConvertEtldToSchemefulSite("example.com")))
-      .Times(1)
-      .WillOnce(Return(true));
-
-  SetupModel();
-
-  handler()->ClearAllSitesMapForTesting();
-
-  handler()->OnStorageFetched();
-  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-
-  ASSERT_TRUE(data.arg1()->is_string());
-  EXPECT_EQ("onStorageListFetched", data.arg1()->GetString());
-
-  ASSERT_TRUE(data.arg2()->is_list());
-  const base::ListValue& storage_and_cookie_list = data.arg2()->GetList();
-  EXPECT_EQ(4U, storage_and_cookie_list.size());
-
-  auto related_website_sets = GetTestRelatedWebsiteSets();
-
-  ValidateSitesWithRws(storage_and_cookie_list, related_website_sets);
+  ValidateUsageInfo("http://ungrouped.com//", "", "1 cookie");
 }
 
 TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
@@ -6911,8 +6728,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
 
   ValidateUsageInfo(
       /*expected_usage_origin=*/iwa_url, /*expected_usage_string=*/"1,000 B",
-      /*expected_cookie_string=*/"",
-      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
+      /*expected_cookie_string=*/"");
 }
 
 TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearSiteGroupDataAndCookies) {
@@ -6965,8 +6781,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
   ValidateUsageInfo(
       /*expected_usage_origin=*/iwa_url.spec(),
       /*expected_usage_string=*/"1,000 B",
-      /*expected_cookie_string=*/"",
-      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
+      /*expected_cookie_string=*/"");
 
   base::ListValue clear_args;
   clear_args.Append(iwa_url.spec());
@@ -6978,8 +6793,7 @@ TEST_F(SiteSettingsHandlerTest, IsolatedWebAppClearUnpartitionedUsage) {
   ValidateUsageInfo(
       /*expected_usage_origin=*/iwa_url.spec(),
       /*expected_usage_string=*/"",
-      /*expected_cookie_string=*/"",
-      /*expected_rws_member_count_string=*/"", /*expected_rws_policy=*/false);
+      /*expected_cookie_string=*/"");
 }
 
 TEST_F(SiteSettingsHandlerTest, SiteExceptionScopeTypeMetrics) {

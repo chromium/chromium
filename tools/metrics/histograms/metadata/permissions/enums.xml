@@ -348,8 +348,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Remove Site Group"/>
   <int value="8" label="Remove Origin"/>
   <int value="9" label="Remove Origin Partitioned"/>
-  <int value="10" label="Filter sites by FPS owner"/>
-  <int value="11" label="Delete all site entries for a FPS owner"/>
+  <int value="10" label="(Obsolete) Filter sites by FPS owner"/>
+  <int value="11" label="(Obsolete) Delete all site entries for a FPS owner"/>
 </enum>
 
 </enums>

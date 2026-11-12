@@ -2865,9 +2865,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("cookiesSettingsHelpCenterURL",
                          chrome::kCookiesSettingsHelpCenterURL);
 
-  html_source->AddString("relatedWebsiteSetsLearnMoreURL",
-                         chrome::kRelatedWebsiteSetsLearnMoreURL);
-
   html_source->AddString("safeBrowsingHelpCenterURL",
                          chrome::kSafeBrowsingHelpCenterUpdatedURL);
 
@@ -3633,10 +3630,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_SETTINGS_DELETE_ALL_STORAGE_DIALOG_TITLE},
       {"siteSettingsDeleteDisplayedStorageDialogTitle",
        IDS_SETTINGS_SITE_SETTINGS_DELETE_DISPLAYED_STORAGE_DIALOG_TITLE},
-      {"siteSettingsRelatedWebsiteSetsLearnMore",
-       IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_LEARN_MORE},
-      {"siteSettingsRelatedWebsiteSetsLearnMoreAccessibility",
-       IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_LEARN_MORE_ACCESSIBILITY},
       {"siteSettingsClearAllStorageDescription",
        IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_DESCRIPTION},
       {"siteSettingsClearDisplayedStorageDescription",
@@ -3659,12 +3652,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_SIGN_OUT},
       {"siteSettingsSiteDetailsSubpageAccessibilityLabel",
        IDS_SETTINGS_SITE_SETTINGS_SITE_DETAILS_SUBPAGE_ACCESSIBILITY_LABEL},
-      {"relatedWebsiteSetsMoreActionsTitle",
-       IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_MORE_ACTIONS_TITLE},
-      {"relatedWebsiteSetsShowRelatedSitesButton",
-       IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_SHOW_RELATED_SITES_BUTTON},
-      {"relatedWebsiteSetsSiteDeleteStorageButton",
-       IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_SITE_DELETE_STORAGE_BUTTON},
       {"siteSettingsSiteClearStorage",
        IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE},
       {"siteSettingsSiteClearStorageConfirmation",

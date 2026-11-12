@@ -45,11 +45,6 @@ suite('SiteEntry', function() {
    */
   let testElement: SiteEntryElement;
 
-  function createPage() {
-    testElement = document.createElement('site-entry');
-    document.body.appendChild(testElement);
-  }
-
   // Initialize a site-list before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsBrowserProxy();
@@ -513,107 +508,6 @@ suite('SiteEntry', function() {
         routes.SITE_SETTINGS_SITE_DETAILS.path,
         Router.getInstance().getCurrentRoute().path);
   });
-
-  test(
-      'related website set information showed when available',
-      async function() {
-        await createPage();
-        // Set unowned site group.
-        testElement.siteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-        flush();
-
-        const rwsMembershipLabel = testElement.$.rwsMembership;
-        // Assert related website set membership information when no rws owner
-        // is set.
-        assertTrue(rwsMembershipLabel.hidden);
-
-        // Update related website set information and set siteGroup
-        const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-        fooSiteGroup.rwsOwner = 'foo.com';
-        fooSiteGroup.rwsNumMembers = 1;
-        testElement.siteGroup = fooSiteGroup;
-        flush();
-
-        await browserProxy.whenCalled('getRwsMembershipLabel');
-        // Assert related website set membership information is set correctly.
-        assertFalse(rwsMembershipLabel.hidden);
-        assertEquals(
-            '· 1 site in foo.com\'s group',
-            rwsMembershipLabel.innerText.trim());
-      });
-
-  test('related website set policy shown when managed key is true', function() {
-    // Set site group with related website set information.
-    const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-    fooSiteGroup.rwsOwner = 'foo.com';
-    fooSiteGroup.rwsNumMembers = 1;
-    fooSiteGroup.rwsEnterpriseManaged = true;
-    testElement.siteGroup = fooSiteGroup;
-    flush();
-    // Assert related website set policy is shown.
-    const rwsPolicy =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#rwsPolicy');
-    assertFalse(rwsPolicy!.hidden);
-  });
-
-  test(
-      'related website set policy undefined when managed key is false',
-      function() {
-        // Set site group with related website set information.
-        const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-        fooSiteGroup.rwsOwner = 'foo.com';
-        fooSiteGroup.rwsNumMembers = 1;
-        fooSiteGroup.rwsEnterpriseManaged = false;
-        testElement.siteGroup = fooSiteGroup;
-        flush();
-        // Assert related website set policy is null.
-        const rwsPolicy =
-            testElement.shadowRoot!.querySelector<HTMLElement>('#rwsPolicy');
-        assertEquals(null, rwsPolicy);
-      });
-
-  test('related website set more actions aria-label set correctly', function() {
-    // Set site group with related website set information.
-    const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-    fooSiteGroup.rwsOwner = 'foo.com';
-    fooSiteGroup.rwsNumMembers = 1;
-    fooSiteGroup.rwsEnterpriseManaged = false;
-    testElement.siteGroup = fooSiteGroup;
-    flush();
-
-    // Assert aria-label is set correctly
-    const moreActionsButton =
-        testElement.shadowRoot!.querySelector<HTMLElement>(
-            '#rwsOverflowMenuButton');
-    assertEquals('More actions for foo.com', moreActionsButton!.ariaLabel);
-  });
-
-  test(
-      'related website set more actions menu removed when filtered by rws owner',
-      function() {
-        // Set site group with related website set information.
-        const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-        fooSiteGroup.rwsOwner = 'foo.com';
-        fooSiteGroup.rwsNumMembers = 1;
-        fooSiteGroup.rwsEnterpriseManaged = false;
-        testElement.siteGroup = fooSiteGroup;
-        testElement.isRwsFiltered = false;
-        flush();
-
-        // Assert more actions button is visible and remove site button is
-        // hidden at the beginning of the test when no filter is applied.
-        assertTrue(isChildVisible(testElement, '#rwsOverflowMenuButton'));
-        assertFalse(isChildVisible(testElement, '#removeSiteButton'));
-
-        // Change `isRwsFiltered` state to true to test icon change.
-        testElement.isRwsFiltered = true;
-        flush();
-
-        // Assert more actions button hidden and replaced with remove site
-        // button.
-        assertFalse(isChildVisible(testElement, '#rwsOverflowMenuButton'));
-        assertTrue(isChildVisible(testElement, '#removeSiteButton'));
-      });
 
   test('extension site group is shown correctly', function() {
     const extensionSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);

@@ -66,24 +66,12 @@
               <span id="cookies" hidden$="[[!siteGroup.numCookies]]">
                 &middot; [[cookieString_]]
               </span>
-              <span id="rwsMembership" hidden$=
-                  "[[!isRwsMember_(siteGroup.rwsOwner, isRwsFiltered)]]">
-                &middot; [[rwsMembershipLabel_]]
-              </span>
               <span id="extensionIdDescription"
                   hidden$="[[!isExtension_(siteGroup)]]">
                 &middot; [[extensionIdDescription_(siteGroup)]]
               </span>
             </div>
           </div>
-          <template is="dom-if" restamp if="[[shouldShowPolicyPrefIndicator_(
-                            siteGroup.rwsEnterpriseManaged)]]">
-            <cr-policy-pref-indicator
-                id="rwsPolicy" pref="[[rwsEnterprisePref_]]"
-                icon-aria-label="[[label]]"
-                focus-row-control focus-type="policy">
-            </cr-policy-pref-indicator>
-          </template>
           <cr-icon-button id="expandIcon" class="icon-expand-more"
               hidden$="[[!grouped_(siteGroup)]]" aria-label$="[[displayName_]]"
               aria-describedby="displayName" aria-expanded="false"
@@ -95,26 +83,11 @@
               focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
         <div class="row-aligned">
-          <template is="dom-if" if=
-              "[[shouldShowOverflowMenu(siteGroup.rwsOwner, isRwsFiltered)]]">
-            <div class="separator"></div>
-            <cr-icon-button class="icon-more-vert"
-                id="rwsOverflowMenuButton"
-                title="$i18n{moreActions}"
-                on-click="showOverflowMenu_"
-                focus-row-control focus-type="more-actions"
-                aria-label$="[[getMoreActionsLabel_(siteGroup)]]">
-            </cr-icon-button>
-          </template>
-          <template is="dom-if" if=
-              "[[!shouldShowOverflowMenu(siteGroup.rwsOwner, isRwsFiltered)]]">
-            <div class="separator"></div>
-            <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
-                title$=
-                  "[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
-                on-click="onRemove_" focus-row-control focus-type="remove">
-            </cr-icon-button>
-          </template>
+          <div class="separator"></div>
+          <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
+              title$="[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
+              on-click="onRemove_" focus-row-control focus-type="remove">
+          </cr-icon-button>
         </div>
       </div>
 

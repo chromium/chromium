@@ -76,7 +76,6 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
       'clearPartitionedOriginDataAndCookies',
       'recordAction',
       'getRecentSitePermissions',
-      'getRwsMembershipLabel',
       'getNumCookiesString',
       'getSystemDeniedPermissions',
       'openSystemPermissionSettings',
@@ -620,15 +619,6 @@ export class TestSiteSettingsBrowserProxy extends TestBrowserProxy implements
 
   setProtocolHandlerDefault(value: boolean) {
     this.methodCalled('setProtocolHandlerDefault', value);
-  }
-
-  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string) {
-    this.methodCalled('getRwsMembershipLabel', rwsNumMembers, rwsOwner);
-    return Promise.resolve([
-      `${rwsNumMembers}`,
-      (rwsNumMembers === 1 ? 'site' : 'sites'),
-      `in ${rwsOwner}'s group`,
-    ].join(' '));
   }
 
   getNumCookiesString(numCookies: number) {

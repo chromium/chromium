@@ -31,21 +31,6 @@
       padding-inline-start: var(--cr-section-padding);
     }
 
-    #relatedWebsiteSetsLearnMore {
-      margin: 0 var(--cr-icon-button-margin-start);
-      padding-bottom: 16px;
-      padding-inline-end: var(--cr-section-padding);
-      padding-inline-start: var(--cr-section-padding);
-      width: 60%;
-    }
-
-    #relatedWebsiteSetsDescription {
-      margin: 0 var(--cr-icon-button-margin-start);
-      padding-bottom: 8px;
-      padding-inline-end: var(--cr-section-padding);
-      padding-inline-start: var(--cr-section-padding);
-    }
-
     #clearAllButton cr-button {
       white-space: nowrap;
     }
@@ -80,14 +65,6 @@
         </cr-button>
       </div>
     </div>
-    <div id="relatedWebsiteSetsLearnMore"
-        hidden$="[[!hasFilteredRwsSites_(filter, filteredList_)]]">
-      [[getRwsLearnMoreLabel_(filter)]]
-      <a href="$i18n{relatedWebsiteSetsLearnMoreURL}"
-          aria-label="$i18n{siteSettingsRelatedWebsiteSetsLearnMoreAccessibility}">
-        $i18n{learnMore}
-      </a>
-    </div>
     <div class="list-frame" hidden$="[[!siteGroupMapEmpty_(siteGroupMap)]]">
       <div class="list-item secondary">$i18n{emptyAllSitesPage}</div>
     </div>
@@ -106,27 +83,11 @@
               tabindex$="[[tabIndex]]"
               last-focused="{{lastFocused_}}"
               list-blurred="{{listBlurred_}}"
-              sort-method="[[sortMethod_]]"
-              is-rws-filtered="[[isRwsFiltered_(filter)]]">
+              sort-method="[[sortMethod_]]">
           </site-entry>
         </template>
       </iron-list>
     </div>
-
-    <!-- Overflow menu. -->
-    <cr-lazy-render id="menu">
-      <template>
-        <cr-action-menu role-description="$i18n{menu}">
-          <button class="dropdown-item" role="menuitem"
-              on-click="onShowRelatedSites_">
-            $i18n{relatedWebsiteSetsShowRelatedSitesButton}
-          </button>
-          <button class="dropdown-item" role="menuitem" on-click="onRemove_">
-            $i18n{relatedWebsiteSetsSiteDeleteStorageButton}
-          </button>
-        </cr-action-menu>
-      </template>
-    </cr-lazy-render>
 
     <!-- Confirm remove site dialog. -->
     <cr-lazy-render id="confirmRemoveSite">

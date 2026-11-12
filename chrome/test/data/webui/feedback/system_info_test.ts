@@ -15,7 +15,6 @@ import {TestFeedbackBrowserProxy} from './test_feedback_browser_proxy.js';
 export const SYSTEM_LOGS: chrome.feedbackPrivate.LogsMapEntry[] = [
   {key: 'CHROME VERSION', value: '122.0.6261.94'},
   {key: 'OS VERSION', value: 'Linux'},
-  {key: 'Related Website Sets', value: 'Disabled'},
 ];
 
 suite('SystemInfoTest', function() {

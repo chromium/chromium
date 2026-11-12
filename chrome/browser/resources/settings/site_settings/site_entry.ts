@@ -6,13 +6,11 @@
  * @fileoverview
  * 'site-entry' is an element representing a single eTLD+1 site entity.
  */
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
-import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import './cr_lazy_render.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
@@ -21,7 +19,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -41,7 +39,6 @@ export interface SiteEntryElement {
     expandIcon: CrIconButtonElement,
     collapseParent: HTMLElement,
     cookies: HTMLElement,
-    rwsMembership: HTMLElement,
     displayName: HTMLElement,
     originList: CrLazyRenderElement<CrCollapseElement>,
     toggleButton: HTMLElement,
@@ -85,26 +82,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
       cookieString_: String,
 
       /**
-       * The related website set info for a site including owner and members
-       * count.
-       */
-      rwsMembershipLabel_: {
-        type: String,
-        value: '',
-      },
-
-      /**
-       * Mock preference used to power managed policy icon for related website
-       * sets.
-       */
-      rwsEnterprisePref_: Object,
-
-      /**
-       * Whether site entry is shown with a related website set filter search.
-       */
-      isRwsFiltered: Boolean,
-
-      /**
        * The position of this site-entry in its parent list.
        */
       listIndex: {
@@ -146,25 +123,14 @@ export class SiteEntryElement extends SiteEntryElementBase {
     };
   }
 
-  static get observers() {
-    return [
-      'updateRwsMembershipLabel_(siteGroup.rwsNumMembers, siteGroup.rwsOwner)',
-      'updatePolicyPref_(siteGroup.rwsEnterpriseManaged)',
-      'updateFocus_(siteGroup.rwsOwner)',
-    ];
-  }
-
   declare siteGroup: SiteGroup;
   declare private displayName_: string;
   declare private cookieString_: string;
-  declare private rwsMembershipLabel_: string;
-  declare isRwsFiltered: boolean;
   declare listIndex: number;
   declare private overallUsageString_: string;
   declare private originUsages_: string[];
   declare private cookiesNum_: string[];
   declare sortMethod?: SortMethod;
-  declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
 
   private button_: Element|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -322,19 +288,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
     });
   }
 
-  private isRwsMember_(): boolean {
-    return !!this.siteGroup && this.siteGroup.rwsOwner !== undefined;
-  }
-
-  /**
-   * Evaluates whether the three dot menu should be shown for the site entry.
-   * @returns True if site group is a related website set member and filter by
-   * related website set owner is not applied.
-   */
-  private shouldShowOverflowMenu(): boolean {
-    return this.isRwsMember_() && !this.isRwsFiltered;
-  }
-
   /**
    * Get display string for number of cookies.
    */
@@ -343,62 +296,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
       return Promise.resolve('');
     }
     return this.browserProxy.getNumCookiesString(numCookies);
-  }
-
-  /**
-   * Updates the display string for RWS information of owner and member count.
-   * @param rwsNumMembers The number of members in the related website set.
-   * @param rwsOwner The eTLD+1 for the related website set owner.
-   */
-  private updateRwsMembershipLabel_() {
-    if (!this.siteGroup.rwsOwner) {
-      this.rwsMembershipLabel_ = '';
-    } else {
-      this.browserProxy
-          .getRwsMembershipLabel(
-              this.siteGroup.rwsNumMembers!, this.siteGroup.rwsOwner)
-          .then(label => this.rwsMembershipLabel_ = label);
-    }
-  }
-
-  /**
-   * Evaluates whether the policy icon should be shown.
-   * @returns True when `this.siteGroup.rwsEnterpriseManaged` is true,
-   * otherwise false.
-   */
-  private shouldShowPolicyPrefIndicator_(): boolean {
-    return !!this.siteGroup.rwsEnterpriseManaged;
-  }
-
-  /**
-   * Updates `rwsEnterprisePref_` based on `siteGroup.rwsEnterpriseManaged`.
-   */
-  private updatePolicyPref_() {
-    this.rwsEnterprisePref_ = this.siteGroup.rwsEnterpriseManaged ?
-        Object.assign({
-          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-          controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
-        }) :
-        Object.assign({
-          enforcement: undefined,
-          controlledBy: undefined,
-        });
-  }
-
-  private updateFocus_() {
-    // TODO(crbug.com/40875159): Re-focusing a changed entry (such as when an
-    // entry is removed from list) happens before the entry elements have been
-    // updated (e.g. different buttons shown / hidden). This causes the
-    // focusRowMixin to incorrectly identify an element which is about to be
-    // hidden / removed as a valid focus target.
-    const isCurrentlyFocused = this.isFocused;
-    afterNextRender(this, () => {
-      if (isCurrentlyFocused) {
-        (this.shouldShowOverflowMenu() ?
-             this.$$<CrIconButtonElement>('#rwsOverflowMenuButton') :
-             this.$$<CrIconButtonElement>('#removeSiteButton'))!.focus();
-      }
-    });
   }
 
   /**
@@ -477,21 +374,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
     this.fire('iron-resize');
   }
 
-  /**
-   * Fires a custom event when the menu button is clicked. Sends the details
-   * of the site entry item and where the menu should appear.
-   */
-  private showOverflowMenu_(e: Event) {
-    this.fire('open-menu', {
-      target: e.target,
-      index: this.listIndex,
-      item: this.siteGroup,
-      origin: (e.target as HTMLElement).dataset['origin'],
-      isPartitioned: (e.target as HTMLElement).dataset['partitioned'],
-      actionScope: (e.target as HTMLElement).dataset['context'],
-    });
-  }
-
   private onRemove_(e: Event) {
     this.fire('remove-site', {
       target: e.target,
@@ -526,10 +408,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
         'siteSettingsCookieRemoveSite', this.originRepresentation(origin));
   }
 
-  private getMoreActionsLabel_(): string {
-    return this.i18n(
-        'relatedWebsiteSetsMoreActionsTitle', this.siteGroup.displayName);
-  }
   /**
    * Update the order and data display text for origins.
    */

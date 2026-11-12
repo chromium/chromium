@@ -135,9 +135,6 @@ class SiteSettingsHandler
   // OnGetUsageInfo above.
   void HandleFetchUsageTotal(const base::ListValue& args);
 
-  // Asynchronously fetches the rws membership information label.
-  void HandleGetRwsMembershipLabel(const base::ListValue& args);
-
   // Deletes the storage being used for a given host.
   void HandleClearUnpartitionedUsage(const base::ListValue& args);
 

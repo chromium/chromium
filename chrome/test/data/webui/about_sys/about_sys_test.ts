@@ -16,7 +16,6 @@ import {TestAboutSysBrowserProxy} from './test_about_sys_browser_proxy.js';
 export const SYSTEM_LOGS: SystemLog[] = [
   {statName: 'CHROME VERSION', statValue: '122.0.6261.94'},
   {statName: 'OS VERSION', statValue: 'Linux: 6.5.13-1rodete2-amd64'},
-  {statName: 'Related Website Sets', statValue: 'Disabled'},
 ];
 
 async function createAppElement(): Promise<AppElement> {

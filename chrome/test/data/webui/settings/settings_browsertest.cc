@@ -1453,14 +1453,8 @@ IN_PROC_BROWSER_TEST_F(SettingsAboutPageTest, OfficialBuild) {
 
 using SettingsAllSitesTest = SettingsBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, EnableRelatedWebsiteSets) {
-  RunTest("settings/all_sites_test.js",
-          "runMochaSuite('EnableRelatedWebsiteSets')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, WithoutRelatedWebsiteSetsData) {
-  RunTest("settings/all_sites_test.js",
-          "runMochaSuite('WithoutRelatedWebsiteSetsData')");
+IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, AllSites) {
+  RunTest("settings/all_sites_test.js", "runMochaSuite('AllSites')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyGuidePromoVisibility) {

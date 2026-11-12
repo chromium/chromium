@@ -16,7 +16,6 @@ import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 export const ENTRIES: KeyValuePairEntry[] = [
   {key: 'CHROME VERSION', value: '1.2.3.4'},
   {key: 'OS VERSION', value: 'Linux'},
-  {key: 'Related Website Sets', value: 'Disabled'},
   {
     key: 'device_event_log',
     value: 't'.repeat(COLLAPSE_THRESHOLD + 1),

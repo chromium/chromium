@@ -1040,11 +1040,6 @@ void GetRawExceptionsForContentSettingsType(
       continue;
     }
 
-    // Don't add auto-granted permissions for storage access exceptions.
-    if (setting.metadata.decided_by_related_website_sets()) {
-      continue;
-    }
-
     auto content_setting = setting.GetContentSetting();
     // There is no user-facing concept of SESSION_ONLY cookie exceptions that
     // use secondary patterns. These are instead presented as ALLOW.

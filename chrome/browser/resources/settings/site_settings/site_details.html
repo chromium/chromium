@@ -25,11 +25,6 @@
         flex: 1;
         flex-direction: row;
       }
-
-      #fpsPolicyContainer {
-        display: flex;
-        padding: 8px;
-      }
     </style>
 
   <settings-subpage page-title="[[pageTitle_]]" route-path$="[[routePath]]">
@@ -112,20 +107,7 @@
                   [[numCookies_]]
                 </div>
               </div>
-              <div id="rwsMembership" class="secondary"
-                  hidden$="[[!rwsMembership_]]">
-                [[rwsMembership_]]
-              </div>
             </div>
-            <template is="dom-if" if="[[rwsEnterprisePref_]]">
-              <div id="fpsPolicyContainer">
-                <cr-policy-pref-indicator
-                    id="rwsPolicy" pref="[[rwsEnterprisePref_]]"
-                    icon-aria-label="[[label]]" focus-row-control
-                    focus-type="policy">
-                </cr-policy-pref-indicator>
-              </div>
-            </template>
           </div>
           <cr-button id="clearStorage" role="button" aria-disabled="false"
               on-click="onConfirmClearStorage_"

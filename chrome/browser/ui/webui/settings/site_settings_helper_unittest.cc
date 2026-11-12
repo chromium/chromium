@@ -933,27 +933,6 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   }
 }
 
-TEST_F(SiteSettingsHelperTest, HideAutograntedRWSPermissions) {
-  TestingProfile profile;
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(&profile);
-  content_settings::ContentSettingConstraints constraint;
-  constraint.set_session_model(content_settings::mojom::SessionModel::DURABLE);
-  constraint.set_decided_by_related_website_sets(true);
-  constexpr char kToplevelURL[] = "https://firstparty.com";
-  constexpr char kEmbeddedURL[] = "https://embedded.com";
-  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
-                                     ContentSettingsType::STORAGE_ACCESS,
-                                     CONTENT_SETTING_BLOCK, constraint);
-
-  base::ListValue exceptions;
-  site_settings::GetExceptionsForContentType(
-      ContentSettingsType::STORAGE_ACCESS, &profile,
-      /*web_ui=*/nullptr,
-      /*incognito=*/false, &exceptions);
-  EXPECT_TRUE(exceptions.empty());
-}
-
 TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
   TestingProfile profile;
   profile.SetPermissionControllerDelegate(

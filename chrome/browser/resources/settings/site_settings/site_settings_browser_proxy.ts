@@ -63,9 +63,6 @@ export interface SiteGroup {
   numCookies: number;
   origins: OriginInfo[];
   etldPlus1?: string;
-  rwsOwner?: string;
-  rwsNumMembers?: number;
-  rwsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
 }
 
@@ -500,14 +497,6 @@ export interface SiteSettingsBrowserProxy {
   recordAction(action: number): void;
 
   /**
-   * Gets display string for RWS information of owner and member count.
-   * @param rwsNumMembers The number of members in the related website set.
-   * @param rwsOwner The eTLD+1 for the related website set owner.
-   */
-  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string):
-      Promise<string>;
-
-  /**
    * Gets the plural string for a given number of cookies.
    * @param numCookies The number of cookies.
    */
@@ -705,11 +694,6 @@ export class SiteSettingsBrowserProxyImpl implements SiteSettingsBrowserProxy {
 
   recordAction(action: number) {
     chrome.send('recordAction', [action]);
-  }
-
-  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string) {
-    return sendWithPromise<string>(
-        'getRwsMembershipLabel', rwsNumMembers, rwsOwner);
   }
 
   getNumCookiesString(numCookies: number) {
