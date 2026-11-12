@@ -135,8 +135,6 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
   // across redirects, we need to set both the initiator origin and network
   // isolation key when fetching the well-known non-existing resource.
   // See the discussion in blink-dev/UN1BRg4qTbs for more details.
-  // TODO(crbug.com/40053332): Confirm that this works correctly within
-  // redirects.
   network::ResourceRequest::TrustedParams trusted_params;
 
   // Create a new IsolationInfo with RequestType::kOther since this is sort of
