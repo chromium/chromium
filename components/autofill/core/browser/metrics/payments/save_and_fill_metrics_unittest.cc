@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
+#include "components/autofill/core/browser/metrics/payments/payments_rpc_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,19 +18,17 @@ namespace {
 using PaymentsRpcResult =
     ::autofill::payments::PaymentsAutofillClient::PaymentsRpcResult;
 
-const std::tuple<PaymentsRpcResult, SaveAndFillPaymentsRequestResult>
+constexpr std::tuple<PaymentsRpcResult, PaymentsRpcResultMetric>
     kPaymentsRequestResultTestCases[] = {
-        {PaymentsRpcResult::kSuccess,
-         SaveAndFillPaymentsRequestResult::kSuccess},
+        {PaymentsRpcResult::kSuccess, PaymentsRpcResultMetric::kSuccess},
         {PaymentsRpcResult::kClientSideTimeout,
-         SaveAndFillPaymentsRequestResult::kTimeout},
+         PaymentsRpcResultMetric::kTimeout},
         {PaymentsRpcResult::kTryAgainFailure,
-         SaveAndFillPaymentsRequestResult::kFailure},
+         PaymentsRpcResultMetric::kFailure},
         {PaymentsRpcResult::kPermanentFailure,
-         SaveAndFillPaymentsRequestResult::kFailure},
-        {PaymentsRpcResult::kNetworkError,
-         SaveAndFillPaymentsRequestResult::kFailure},
-        {PaymentsRpcResult::kNone, SaveAndFillPaymentsRequestResult::kFailure},
+         PaymentsRpcResultMetric::kFailure},
+        {PaymentsRpcResult::kNetworkError, PaymentsRpcResultMetric::kFailure},
+        {PaymentsRpcResult::kNone, PaymentsRpcResultMetric::kFailure},
 };
 
 const std::tuple<SaveAndFillFlowScenario, std::string>
@@ -195,7 +194,7 @@ TEST_F(SaveAndFillMetricsTest, LogDialogShown_Local) {
 class SaveAndFillPaymentsRequestResultMetricsTest
     : public SaveAndFillMetricsTest,
       public testing::WithParamInterface<
-          std::tuple<PaymentsRpcResult, SaveAndFillPaymentsRequestResult>> {};
+          std::tuple<PaymentsRpcResult, PaymentsRpcResultMetric>> {};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SaveAndFillPaymentsRequestResultMetricsTest,

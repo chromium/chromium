@@ -91,18 +91,6 @@ enum class SaveAndFillDialogShown {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillDialogShown)
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(SaveAndFillPaymentsRequestResult)
-enum class SaveAndFillPaymentsRequestResult {
-  kSuccess = 0,
-  kFailure = 1,
-  kTimeout = 2,
-  kMaxValue = kTimeout,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillPaymentsRequestResult)
-
 enum class SaveAndFillServerRequestType {
   kGetDetailsForCreateCard,
   kCreateCard,

@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/payments_rpc_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
@@ -148,23 +149,11 @@ void LogSaveAndFillFunnelCanceled(SaveAndFillFlowScenario scenario,
 void LogSaveAndFillPaymentsRequestResult(
     SaveAndFillServerRequestType request_type,
     PaymentsRpcResult result) {
-  SaveAndFillPaymentsRequestResult metric_result;
-  switch (result) {
-    case PaymentsRpcResult::kSuccess:
-      metric_result = SaveAndFillPaymentsRequestResult::kSuccess;
-      break;
-    case PaymentsRpcResult::kClientSideTimeout:
-      metric_result = SaveAndFillPaymentsRequestResult::kTimeout;
-      break;
-    default:
-      metric_result = SaveAndFillPaymentsRequestResult::kFailure;
-      break;
-  }
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.SaveAndFill.",
                     GetSaveAndFillServerRequestTypeString(request_type),
                     ".Result"}),
-      metric_result);
+      GetPaymentsRpcResultMetric(result));
 }
 
 }  // namespace autofill::autofill_metrics

@@ -3320,6 +3320,16 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Editor closed without changes"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillPaymentsRpcResultMetric) -->
+
+<enum name="AutofillPaymentsRpcResultMetric">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/payments_rpc_metrics.h:PaymentsRpcResultMetric) -->
+
 <enum name="AutofillPhoneImportValidity">
   <int value="0" label="None: No phone number in import"/>
   <int value="1" label="Valid: Phone number was imported"/>
@@ -6117,16 +6127,6 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillFunnelSucceededStage) -->
-
-<!-- LINT.IfChange(SaveAndFillPaymentsRequestResult) -->
-
-<enum name="SaveAndFillPaymentsRequestResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure"/>
-  <int value="2" label="Timeout"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h:SaveAndFillPaymentsRequestResult) -->
 
 <!-- LINT.IfChange(SaveAndFillSuggestionEvent) -->
 
