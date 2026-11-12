@@ -120,7 +120,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     if (this.file && isHeifImage(this.file)) {
       return Boolean(this.file.thumbnailUrl);
     }
-    return this.isImage_() ||
+    return Boolean(this.isImage_() && this.file?.objectUrl) ||
         Boolean(this.file?.dataUrl || this.file?.thumbnailUrl) ||
         Boolean(this.isSupportedVideo_() && this.file?.objectUrl);
   }

@@ -138,6 +138,28 @@ suite('ComposeboxFileThumbnailTest', () => {
     assertEquals(icon.getAttribute('auto-src'), iconUrl);
   });
 
+  test('display image without visual source as document chip', async () => {
+    const iconUrl =
+        'https://drive-thirdparty.googleusercontent.com/32/type/image/jpeg';
+    fileThumbnailElement.file = createFile(0, {
+      type: 'image/jpeg',
+      objectUrl: null,
+      dataUrl: undefined,
+      thumbnailUrl: undefined,
+      iconUrl,
+    });
+    await microtasksFinished();
+
+    assertEquals(
+        null, fileThumbnailElement.shadowRoot.querySelector('#imgChip'));
+    assertTrue(
+        !!fileThumbnailElement.shadowRoot.querySelector('#documentChip'));
+    const icon =
+        fileThumbnailElement.shadowRoot.querySelector('.document-icon');
+    assertTrue(!!icon);
+    assertEquals(icon.getAttribute('auto-src'), iconUrl);
+  });
+
   test('display tab file', async () => {
     // Arrange.
     fileThumbnailElement.file = createFile(2, {
