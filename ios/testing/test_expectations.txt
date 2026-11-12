@@ -265,8 +265,6 @@ crbug.com/509785308 InactiveTabsSettingsTestCase/testInactiveTabsPreferenceChang
 
 # Migrated from in-source test disable annotations: auth, web, passwords.
 crbug.com/440027809 [ iOS26 iOS27 Device ] ForcedSigninTestCase/testSigninScreenTransferToOtherWindow [ Pass Failure ]
-# Fails to background the app from `backgroundApplication`.
-crbug.com/427699033 [ iOS26 iOS27 ] ForcedSigninTestCase/testSignInScreenOnIncognitoWithMultiWindows [ Pass Failure ]
 crbug.com/384874382 ForcedSigninTestCase/testSignInScreenOnTabSwitcherWithMultiWindows [ Pass Failure ]
 crbug.com/384874382 ForcedSigninTestCase/testSignInScreenOnRegularSigninPromptMultiWindows [ Pass Failure ]
 crbug.com/384874382 [ iPad ] ForcedSigninTestCase/testSignInScreenOnRegularSigninPromptMultiWindows [ Failure ]
