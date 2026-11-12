@@ -90,9 +90,6 @@ class ArcAuthService : public KeyedService,
 
   void RequestPrimaryAccount(RequestPrimaryAccountCallback callback) override;
 
-  // For supporting ArcServiceManager::GetService<T>().
-  static const char kArcServiceName[];
-
   // ConnectionObserver<mojom::AuthInstance>:
   void OnConnectionReady() override;
   void OnConnectionClosed() override;

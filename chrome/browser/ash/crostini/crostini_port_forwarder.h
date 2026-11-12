@@ -22,13 +22,9 @@ class Profile;
 namespace crostini {
 
 extern const char kDefaultInterfaceToForward[];
-extern const char kWlanInterface[];
 extern const char kPortNumberKey[];
 extern const char kPortProtocolKey[];
-extern const char kPortInterfaceKey[];
 extern const char kPortLabelKey[];
-extern const char kPortVmNameKey[];
-extern const char kPortContainerNameKey[];
 
 class CrostiniPortForwarder : public KeyedService {
  public:

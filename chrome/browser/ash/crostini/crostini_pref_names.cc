@@ -27,7 +27,6 @@ const char kCrostiniCreateOptionsContainerUsernameKey[] = "container_username";
 const char kCrostiniCreateOptionsDiskSizeBytesKey[] = "disk_size_bytes";
 const char kCrostiniCreateOptionsImageServerUrlKey[] = "image_server_url";
 const char kCrostiniCreateOptionsImageAliasKey[] = "image_alias";
-const char kCrostiniCreateOptionsAnsiblePlaybookKey[] = "ansible_playbook";
 const char kCrostiniCreateOptionsUsedKey[] = "used";
 
 // List of USB devices with their system guid, a name/description and their

@@ -248,9 +248,6 @@ void CompleteFetchSecondaryAccountInfoWithMetrics(
 }  // namespace
 
 // static
-const char ArcAuthService::kArcServiceName[] = "arc::ArcAuthService";
-
-// static
 ArcAuthService* ArcAuthService::GetForBrowserContext(
     content::BrowserContext* context) {
   return ArcAuthServiceFactory::GetForBrowserContext(context);

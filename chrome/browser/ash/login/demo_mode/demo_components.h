@@ -46,9 +46,6 @@ class DemoComponents {
   // The name of the demo mode app ChromeOS component.
   static const char kDemoModeAppComponentName[];
 
-  // The name of the preinstalled offline demo mode resources CrOS component.
-  static const char kOfflineDemoModeResourcesComponentName[];
-
   // Location on disk where pre-installed demo mode resources are expected to be
   // found.
   static base::FilePath GetPreInstalledPath();

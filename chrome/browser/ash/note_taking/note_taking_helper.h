@@ -118,9 +118,8 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   // Chrome app.
   static const char kDevKeepExtensionId[];
   static const char kProdKeepExtensionId[];
-  // Web app IDs for testing and development versions of note-taking web apps.
+  // Web app ID for testing versions of note-taking web apps.
   static const char kNoteTakingWebAppIdTest[];
-  static const char kNoteTakingWebAppIdDev[];
 
   // Names of histograms.
   static const char kPreferredLaunchResultHistogramName[];

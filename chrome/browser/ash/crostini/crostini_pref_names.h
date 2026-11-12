@@ -28,7 +28,6 @@ extern const char kCrostiniCreateOptionsContainerUsernameKey[];
 extern const char kCrostiniCreateOptionsDiskSizeBytesKey[];
 extern const char kCrostiniCreateOptionsImageServerUrlKey[];
 extern const char kCrostiniCreateOptionsImageAliasKey[];
-extern const char kCrostiniCreateOptionsAnsiblePlaybookKey[];
 extern const char kCrostiniCreateOptionsUsedKey[];
 
 extern const char kUserCrostiniAllowedByPolicy[];

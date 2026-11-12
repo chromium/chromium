@@ -44,12 +44,8 @@ inline constexpr char kFloatingWorkspaceStartupUiClosureReason[] =
 
 inline constexpr char kFloatingWorkspaceV2TemplateLaunchFailureStatus[] =
     "Ash.FloatingWorkspace.TemplateLaunchFailureStatus";
-inline constexpr char kFloatingWorkspaceV2TemplateLaunchTimedOut[] =
-    "Ash.FloatingWorkspace.TemplateLaunchTimeOut";
 inline constexpr char kFloatingWorkspaceV2TemplateLoadTime[] =
     "Ash.FloatingWorkspace.TemplateLoadTime";
-inline constexpr char kFloatingWorkspaceV2TemplateSize[] =
-    "Ash.FloatingWorkspace.TemplateSize";
 inline constexpr char kFloatingWorkspaceV2TemplateUploadStatus[] =
     "Ash.FloatingWorkspace.TemplateUploadStatus";
 inline constexpr char kFloatingWorkspaceV2Initialized[] =

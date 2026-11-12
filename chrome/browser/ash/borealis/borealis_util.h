@@ -40,9 +40,6 @@ extern const char kAllowedScheme[];
 // parsed with /usr/bin/get_compat_tool_versions.py in the Borealis VM does not
 // match the GameID expected based on extraction with kBorealisAppIdRegex.
 extern const char kCompatToolVersionGameMismatch[];
-// Query parameter key for device information in the borealis feedback
-// form.
-extern const char kDeviceInformationKey[];
 
 struct CompatToolInfo {
   std::optional<int> game_id;

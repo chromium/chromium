@@ -126,8 +126,6 @@ class PrefRegistrySyncable;
 namespace file_manager::file_tasks {
 
 inline constexpr char kActionIdView[] = "view";
-inline constexpr char kActionIdSend[] = "send";
-inline constexpr char kActionIdSendMultiple[] = "send_multiple";
 
 // Task types as explained in the comment above. Search for <task-type>.
 enum TaskType {

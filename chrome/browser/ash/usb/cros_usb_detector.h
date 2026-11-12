@@ -32,8 +32,6 @@ class Profile;
 
 namespace ash {
 
-inline constexpr uint8_t kInvalidUsbPortNumber = 0xff;
-
 // List of class codes to handle / not handle.
 // See https://www.usb.org/defined-class-codes for more information.
 enum UsbClassCode : uint8_t {

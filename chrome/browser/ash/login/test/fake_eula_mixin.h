@@ -21,7 +21,6 @@ using ::net::test_server::HttpResponse;
 class FakeEulaMixin : public InProcessBrowserTestMixin {
  public:
   static const char* kFakeOnlineEula;
-  static const char* kOfflineEULAWarning;
 
   FakeEulaMixin(InProcessBrowserTestMixinHost* host,
                 net::EmbeddedTestServer* test_server);

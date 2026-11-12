@@ -33,7 +33,6 @@ const re2::LazyRE2 kURLAllowlistRegex[] = {
     {"steam://subscriptioninstall/[0-9]{1,32}"},
     {"steam://launch/[0-9]{1,32}/Dialog"}};
 const char kCompatToolVersionGameMismatch[] = "UNKNOWN (GameID mismatch)";
-const char kDeviceInformationKey[] = "entry.1613887985";
 
 namespace {
 // Windows with these app IDs are not games. Don't prompt for feedback for them.

@@ -21,11 +21,6 @@
 
 class Profile;
 
-// TODO(crbug.com/377377749): add downloader which grabs image file from GS
-// bucket based on VERSION-PIN
-inline constexpr char kBaguettePath[] =
-    "/home/chronos/user/MyFiles/Downloads/baguette.img.zst";
-
 namespace crostini {
 
 // This class is responsible for managing (un)instatllation of Baguette - the

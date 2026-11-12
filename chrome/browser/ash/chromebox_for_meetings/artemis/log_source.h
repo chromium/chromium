@@ -16,10 +16,6 @@ inline constexpr char kCfmChromeLogFile[] = "/var/log/chrome/chrome";
 inline constexpr char kCfmChromeUserLogFile[] = "/home/chronos/user/log/chrome";
 inline constexpr char kCfmCrosEcLogFile[] = "/var/log/cros_ec.log";
 inline constexpr char kCfmFwupdLogFile[] = "/var/log/fwupd.log";
-inline constexpr char kCfmPowerdLogFile[] = "/var/log/powerd.out";
-inline constexpr char kCfmSyslogLogFile[] = "/var/log/messages";
-inline constexpr char kCfmUiLogFile[] = "/var/log/ui/ui.LATEST";
-inline constexpr char kCfmUpdateEngineLogFile[] = "/var/log/update_engine.log";
 
 // Dummy value for when a call to stat() fails to obtain
 // a valid inode. Unlikely to be used, but be defensive.

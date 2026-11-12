@@ -14,8 +14,6 @@ extern const char kKioskRamUsagePercentageHistogram[];
 extern const char kKioskSwapUsagePercentageHistogram[];
 
 extern const base::TimeDelta kPeriodicMetricsInterval;
-extern const base::TimeDelta kFirstIdleTimeout;
-extern const base::TimeDelta kRegularIdleTimeout;
 
 // This class save and record kiosk UMA metrics every
 // `kPeriodicMetricsInterval`.

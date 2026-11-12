@@ -59,7 +59,6 @@ inline constexpr std::string_view kPinyinPrefChinesePunctuation =
     "pinyinChinesePunctuation";
 inline constexpr std::string_view kPinyinPrefDefaultChinese =
     "pinyinDefaultChinese";
-inline constexpr std::string_view kPinyinPrefEnableFuzzy = "pinyinEnableFuzzy";
 inline constexpr std::string_view kPinyinPrefEnableLowerPaging =
     "pinyinEnableLowerPaging";
 inline constexpr std::string_view kPinyinPrefEnableUpperPaging =

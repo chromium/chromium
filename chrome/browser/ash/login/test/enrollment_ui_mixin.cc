@@ -21,7 +21,6 @@ const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepDeviceAttributes[] = "attribute-prompt";
 const char kEnrollmentStepError[] = "error";
 const char kEnrollmentStepKioskEnrollment[] = "kiosk-enrollment";
-const char kEnrollmentStepDeviceAttributesError[] = "attribute-prompt-error";
 
 }  // namespace ui
 

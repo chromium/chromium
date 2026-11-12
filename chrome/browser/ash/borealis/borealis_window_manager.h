@@ -23,10 +23,6 @@ class Window;
 
 namespace borealis {
 
-// Base64-encoded shell application id of borealis client when it is in full-
-// screen mode.
-extern const char kFullscreenClientShellId[];
-
 // Base64-encoded application id suffix for borealis client windows.
 extern const char kBorealisClientSuffix[];
 

@@ -104,7 +104,6 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   //     "auto_login_enabled": true  //
   //   }
   static const char kKioskDictionaryName[];
-  static const char kKeyAutoLoginState[];
 
   // Returns the manager instance. Crashes if it is not yet initialized.
   static KioskChromeAppManager* Get();
