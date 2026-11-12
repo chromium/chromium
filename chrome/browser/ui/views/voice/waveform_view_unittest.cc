@@ -6,11 +6,14 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/time/time.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/infinite_animation.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/widget/widget.h"
 
 namespace voice {
 
@@ -97,6 +100,25 @@ TEST_F(WaveformViewTest, DoesNotCollapseWhenIdle) {
   ASSERT_EQ(waveform_view->mode(), WaveformMode::kIdle);
   EXPECT_GT(waveform_view->GetPreferredSize().width(), 0);
   EXPECT_GT(waveform_view->GetPreferredSize().height(), 0);
+}
+
+TEST_F(WaveformViewTest, AnimatesOnlyWhenLiveOrProcessing) {
+  auto waveform = CreateFullSizeWaveformView();
+  waveform->SetMode(WaveformMode::kLive);
+  EXPECT_FALSE(waveform->animation_->is_animating());
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  WaveformView* const waveform_view =
+      widget->SetContentsView(std::move(waveform));
+  EXPECT_TRUE(waveform_view->animation_->is_animating());
+
+  waveform_view->SetMode(WaveformMode::kIdle);
+  EXPECT_FALSE(waveform_view->animation_->is_animating());
+  waveform_view->SetMode(WaveformMode::kProcessing);
+  EXPECT_TRUE(waveform_view->animation_->is_animating());
+  waveform_view->SetMode(WaveformMode::kWaiting);
+  EXPECT_FALSE(waveform_view->animation_->is_animating());
 }
 
 }  // namespace voice

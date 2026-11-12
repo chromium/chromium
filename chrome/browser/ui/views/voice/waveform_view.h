@@ -64,6 +64,7 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
  private:
   FRIEND_TEST_ALL_PREFIXES(WaveformViewTest, ProcessingWaveAnimation);
   FRIEND_TEST_ALL_PREFIXES(WaveformViewTest, AudioLevelMath);
+  FRIEND_TEST_ALL_PREFIXES(WaveformViewTest, AnimatesOnlyWhenLiveOrProcessing);
 
   struct AnimationState {
     float center_y = 0.0f;
@@ -71,6 +72,7 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   };
   // Animation update ticks (running at 60 FPS).
   void UpdatePhysics(base::TimeDelta delta);
+  void UpdateAnimation();
   float GetTargetHeightForBar(size_t index,
                               float min_height,
                               float max_height) const;

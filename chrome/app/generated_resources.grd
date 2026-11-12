@@ -14625,11 +14625,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TTC_MIC_MUTED_TOAST" translateable="false" desc="Text shown in a toast notification when the system mutes the microphone during a TTC session, e.g. with a hardware switch.">
         Your microphone is muted
       </message>
-      <message name="IDS_TTC_VOICE_PLATE_PROCESSING_ACCNAME" translateable="false" desc="Accessible status name for the TTC voice plate waveform while processing or connecting.">
-        Processing
+      <message name="IDS_TTC_VOICE_PLATE_INITIALIZING_ACCNAME" translateable="false" desc="Accessible status name for the TTC voice plate waveform while initializing.">
+        Initializing
       </message>
       <message name="IDS_TTC_VOICE_PLATE_LISTENING_ACCNAME" translateable="false" desc="Accessible status name announced by screen readers when the TTC voice plate is actively listening.">
         Listening
+      </message>
+      <message name="IDS_TTC_VOICE_PLATE_MIC_MUTED_ACCNAME" translateable="false" desc="Accessible status name announced by screen readers when the user mutes the microphone in the TTC voice plate.">
+        Microphone muted
+      </message>
+      <message name="IDS_TTC_VOICE_PLATE_MUTE" desc="Tooltip label of the TTC voice plate button that mutes the microphone in TTC." translateable="false">
+        Mute microphone
+      </message>
+      <message name="IDS_TTC_VOICE_PLATE_UNMUTE" desc="Tooltip label of the TTC voice plate button that unmutes the microphone in TTC." translateable="false">
+        Unmute microphone
       </message>
 
       <!-- Web and message center notifications -->

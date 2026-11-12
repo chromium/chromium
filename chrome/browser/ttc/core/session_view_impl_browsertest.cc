@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ttc/core/session_view_impl.h"
 
+#include <string>
+
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ttc/core/session_controller.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/views/ttc/ttc_voice_plate.h"
 #include "chrome/browser/ui/views/voice/waveform_mode.h"
 #include "chrome/browser/ui/views/voice/waveform_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "content/public/browser/web_contents.h"
@@ -26,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -60,6 +64,10 @@ class SessionViewImplBrowserTest : public TtcInteractiveBrowserTestBase {
     return Do([this, lifecycle]() {
       session_controller().SetSessionLifecycle(lifecycle);
     });
+  }
+
+  StepBuilder SetMicMuted(bool muted) {
+    return Do([this, muted]() { ttc_service().SetMicMuted(muted); });
   }
 
   void SetTabFullscreen(bool fullscreen) {
@@ -299,7 +307,13 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ClosingWindowKeepsUIState) {
     InContext(BrowserElements::From(second_browser)->GetContext(),
               CheckViewProperty(TtcVoicePlate::kWaveformElementId,
                                 &voice::WaveformView::mode,
-                                voice::WaveformMode::kLive))
+                                voice::WaveformMode::kLive)),
+
+    SetMicMuted(true),
+    InContext(BrowserElements::From(second_browser)->GetContext(),
+              CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                                &voice::WaveformView::mode,
+                                voice::WaveformMode::kIdle))
   );
   // clang-format on
 
@@ -315,7 +329,11 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, ClosingWindowKeepsUIState) {
               WaitForShow(TtcVoicePlate::kViewElementId),
               CheckViewProperty(TtcVoicePlate::kWaveformElementId,
                                 &voice::WaveformView::mode,
-                                voice::WaveformMode::kLive)),
+                                voice::WaveformMode::kIdle),
+              CheckViewProperty(
+                  TtcVoicePlate::kMuteButtonElementId,
+                  &views::View::GetTooltipText,
+                  l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_UNMUTE))),
     CheckHasSession(true)
   );
   // clang-format on
@@ -577,6 +595,65 @@ IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest,
   SetTabFullscreen(false);
   EXPECT_TRUE(base::test::RunUntil(
       [this, windowed_y]() { return GetPlateBounds().y() == windowed_y; }));
+}
+
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, MuteButtonMutesAndUnmutes) {
+  const std::u16string mute =
+      l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_MUTE);
+  const std::u16string unmute =
+      l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_UNMUTE);
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId),
+    CheckViewProperty(TtcVoicePlate::kMuteButtonElementId,
+                      &views::View::GetEnabled, false),
+
+    SetSessionLifecycle(SessionLifecycle::kLive),
+    CheckViewProperty(TtcVoicePlate::kMuteButtonElementId,
+                      &views::View::GetEnabled, true),
+    CheckViewProperty(TtcVoicePlate::kMuteButtonElementId,
+                      &views::View::GetTooltipText, mute),
+
+    PressButton(TtcVoicePlate::kMuteButtonElementId),
+    CheckResult([this]() { return ttc_service().IsMicMuted(); }, true),
+    CheckViewProperty(TtcVoicePlate::kMuteButtonElementId,
+                      &views::View::GetTooltipText, unmute),
+    CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                      &voice::WaveformView::mode, voice::WaveformMode::kIdle),
+
+    PressButton(TtcVoicePlate::kMuteButtonElementId),
+    CheckResult([this]() { return ttc_service().IsMicMuted(); }, false),
+    CheckViewProperty(TtcVoicePlate::kMuteButtonElementId,
+                      &views::View::GetTooltipText, mute),
+    CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                      &voice::WaveformView::mode, voice::WaveformMode::kLive)
+  );
+  // clang-format on
+}
+
+IN_PROC_BROWSER_TEST_F(SessionViewImplBrowserTest, MuteButtonFollowsMicMuted) {
+  // clang-format off
+  RunTestSequence(
+    StartSession(),
+    WaitForShow(TtcVoicePlate::kViewElementId),
+    SetSessionLifecycle(SessionLifecycle::kLive),
+
+    SetMicMuted(true),
+    CheckViewProperty(TtcVoicePlate::kMuteButtonElementId,
+                      &views::View::GetTooltipText,
+                      l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_UNMUTE)),
+    CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                      &voice::WaveformView::mode, voice::WaveformMode::kIdle),
+
+    SetMicMuted(false),
+    CheckViewProperty(TtcVoicePlate::kMuteButtonElementId,
+                      &views::View::GetTooltipText,
+                      l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_MUTE)),
+    CheckViewProperty(TtcVoicePlate::kWaveformElementId,
+                      &voice::WaveformView::mode, voice::WaveformMode::kLive)
+  );
+  // clang-format on
 }
 
 }  // namespace

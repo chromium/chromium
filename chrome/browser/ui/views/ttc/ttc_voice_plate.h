@@ -16,6 +16,7 @@ class View;
 }  // namespace views
 
 namespace voice {
+class MuteButton;
 class WaveformView;
 }  // namespace voice
 
@@ -41,10 +42,12 @@ class TtcVoicePlate : public voice::VoicePlate, public TtcView {
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kViewElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMuteButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
 
  private:
   raw_ptr<voice::WaveformView> waveform_view_ = nullptr;
+  raw_ptr<voice::MuteButton> mute_button_ = nullptr;
   base::CallbackListSubscription audio_level_subscription_;
 };
 

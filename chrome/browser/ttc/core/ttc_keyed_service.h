@@ -93,10 +93,9 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
   // The active session's controller, or null if there's none.
   SessionController* session_controller();
 
-  // Mutes or unmutes the active session's microphone (see
-  // SessionControllerImpl::SetMicMuted()). Returns whether the state changed:
-  // false if there's no live session, or the microphone already was in that
-  // state.
+  // Mutes or unmutes the active session's microphone. Returns whether the state
+  // changed: false if there's no live session, or the microphone already was in
+  // that state.
   bool SetMicMuted(bool muted);
   // Whether the user muted the active session's microphone. False if there's no
   // session.

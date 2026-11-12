@@ -21,6 +21,9 @@ class TtcViewDelegate {
   // Runs `callback` with each audio level update of the user's microphone.
   virtual base::CallbackListSubscription RegisterAudioLevelCallback(
       base::RepeatingCallback<void(float)> callback) = 0;
+
+  // Mutes the user's microphone, or unmutes it if it's muted.
+  virtual void ToggleMicMuted() = 0;
 };
 
 }  // namespace ttc

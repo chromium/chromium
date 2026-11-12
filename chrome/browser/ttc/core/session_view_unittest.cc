@@ -31,6 +31,13 @@ class FakeSessionViewDelegate : public SessionViewDelegate {
   SessionLifecycle GetSessionLifecycle() const override {
     return session_lifecycle_;
   }
+  bool SetMicMuted(bool muted) override {
+    if (app_mic_muted_ == muted) {
+      return false;
+    }
+    app_mic_muted_ = muted;
+    return true;
+  }
   bool IsMicMuted() const override { return app_mic_muted_; }
   Speaker GetSpeaker() const override { return Speaker::kIdle; }
 

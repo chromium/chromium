@@ -82,6 +82,7 @@ class SessionControllerImpl : public SessionController,
 
   // SessionViewDelegate implementation:
   BrowserWindowInterface* GetBrowserWindowInterface() override;
+  bool SetMicMuted(bool muted) override;
   bool IsMicMuted() const override;
   Speaker GetSpeaker() const override;
 
@@ -98,13 +99,6 @@ class SessionControllerImpl : public SessionController,
   // Replaces the session's actor task if it was stopped outside of the
   // session. Must be called before acting.
   void EnsureActorTaskCreated();
-
-  // Mutes or unmutes the user's microphone. While muted, no audio is captured
-  // or sent to the model. Only a live session can be muted, and it goes live
-  // unmuted. Returns whether the state changed: false unless the session is
-  // live, or if the microphone already was in that state. Observers are
-  // notified of changes.
-  bool SetMicMuted(bool muted);
 
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }

@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
@@ -43,6 +44,7 @@ using voice::WaveformView;
 class FakeTtcViewDelegate : public TtcViewDelegate {
  public:
   int end_session_count() const { return end_session_count_; }
+  int toggle_mic_muted_count() const { return toggle_mic_muted_count_; }
   base::RepeatingCallbackList<void(float)>& audio_level_callbacks() {
     return audio_level_callbacks_;
   }
@@ -53,9 +55,11 @@ class FakeTtcViewDelegate : public TtcViewDelegate {
       base::RepeatingCallback<void(float)> callback) override {
     return audio_level_callbacks_.Add(std::move(callback));
   }
+  void ToggleMicMuted() override { ++toggle_mic_muted_count_; }
 
  private:
   int end_session_count_ = 0;
+  int toggle_mic_muted_count_ = 0;
   base::RepeatingCallbackList<void(float)> audio_level_callbacks_;
 };
 
@@ -106,24 +110,55 @@ class TtcVoicePlateTest : public ChromeViewsTestBase {
   raw_ptr<views::View> anchor_view_ = nullptr;
 };
 
-TEST_F(TtcVoicePlateTest, InitializingShowsProcessingWaveform) {
+TEST_F(TtcVoicePlateTest,
+       InitializingShowsProcessingWaveformAndDisabledButton) {
   auto voice_plate = CreateVoicePlate();
   auto* waveform_view =
       GetView<WaveformView>(*voice_plate, TtcVoicePlate::kWaveformElementId);
+  auto* mute_button = GetView<views::MdTextButton>(
+      *voice_plate, TtcVoicePlate::kMuteButtonElementId);
   ASSERT_NE(waveform_view, nullptr);
+  ASSERT_NE(mute_button, nullptr);
 
   voice_plate->ApplyUiState(UiState::kInitializing);
   EXPECT_EQ(waveform_view->mode(), WaveformMode::kProcessing);
+  EXPECT_FALSE(mute_button->GetEnabled());
 }
 
-TEST_F(TtcVoicePlateTest, LiveShowsLiveWaveform) {
+TEST_F(TtcVoicePlateTest, LiveShowsLiveWaveformAndMuteButton) {
   auto voice_plate = CreateVoicePlate();
   auto* waveform_view =
       GetView<WaveformView>(*voice_plate, TtcVoicePlate::kWaveformElementId);
+  auto* mute_button = GetView<views::MdTextButton>(
+      *voice_plate, TtcVoicePlate::kMuteButtonElementId);
   ASSERT_NE(waveform_view, nullptr);
+  ASSERT_NE(mute_button, nullptr);
 
   voice_plate->ApplyUiState(UiState::kLive);
   EXPECT_EQ(waveform_view->mode(), WaveformMode::kLive);
+  EXPECT_TRUE(mute_button->GetEnabled());
+  const std::u16string mute =
+      l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_MUTE);
+  EXPECT_EQ(mute_button->GetAccessibleName(), mute);
+  EXPECT_EQ(mute_button->GetTooltipText(), mute);
+}
+
+TEST_F(TtcVoicePlateTest, MicMutedShowsIdleWaveformAndUnmuteButton) {
+  auto voice_plate = CreateVoicePlate();
+  auto* waveform_view =
+      GetView<WaveformView>(*voice_plate, TtcVoicePlate::kWaveformElementId);
+  auto* mute_button = GetView<views::MdTextButton>(
+      *voice_plate, TtcVoicePlate::kMuteButtonElementId);
+  ASSERT_NE(waveform_view, nullptr);
+  ASSERT_NE(mute_button, nullptr);
+
+  voice_plate->ApplyUiState(UiState::kMicMuted);
+  EXPECT_EQ(waveform_view->mode(), WaveformMode::kIdle);
+  EXPECT_TRUE(mute_button->GetEnabled());
+  const std::u16string unmute =
+      l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_UNMUTE);
+  EXPECT_EQ(mute_button->GetAccessibleName(), unmute);
+  EXPECT_EQ(mute_button->GetTooltipText(), unmute);
 }
 
 TEST_F(TtcVoicePlateTest, ShowsAudioLevelUntilDestroyed) {
@@ -137,6 +172,20 @@ TEST_F(TtcVoicePlateTest, ShowsAudioLevelUntilDestroyed) {
 
   voice_plate.reset();
   EXPECT_TRUE(delegate_.audio_level_callbacks().empty());
+}
+
+TEST_F(TtcVoicePlateTest, MuteButtonTogglesMicMuted) {
+  auto voice_plate = CreateVoicePlate();
+  voice_plate->ApplyUiState(UiState::kLive);
+  voice_plate->Show();
+  auto* mute_button = GetView<views::MdTextButton>(
+      *voice_plate, TtcVoicePlate::kMuteButtonElementId);
+  ASSERT_NE(mute_button, nullptr);
+
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks::Now(), 0, 0);
+  views::test::ButtonTestApi(mute_button).NotifyClick(click_event);
+  EXPECT_EQ(delegate_.toggle_mic_muted_count(), 1);
 }
 
 TEST_F(TtcVoicePlateTest, CloseButtonEndsSession) {
@@ -166,12 +215,24 @@ TEST_F(TtcVoicePlateTest, AccessibleTitleRoleAndStatusName) {
   EXPECT_EQ(waveform_accessibility.GetCachedRole(), ax::mojom::Role::kStatus);
 
   voice_plate->ApplyUiState(UiState::kInitializing);
-  EXPECT_EQ(waveform_accessibility.GetCachedName(),
-            l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_PROCESSING_ACCNAME));
+  EXPECT_EQ(
+      waveform_accessibility.GetCachedName(),
+      l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_INITIALIZING_ACCNAME));
 
   voice_plate->ApplyUiState(UiState::kLive);
   EXPECT_EQ(waveform_accessibility.GetCachedName(),
             l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_LISTENING_ACCNAME));
+}
+
+TEST_F(TtcVoicePlateTest, MicMutedStatusName) {
+  auto voice_plate = CreateVoicePlate();
+  auto* waveform =
+      GetView<WaveformView>(*voice_plate, TtcVoicePlate::kWaveformElementId);
+  ASSERT_NE(waveform, nullptr);
+
+  voice_plate->ApplyUiState(UiState::kMicMuted);
+  EXPECT_EQ(waveform->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_MIC_MUTED_ACCNAME));
 }
 
 // On Mac, announcements go to the native accessibility API instead of the root
@@ -187,11 +248,38 @@ TEST_F(TtcVoicePlateTest, AnnouncesListeningWhenVisible) {
             l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_LISTENING_ACCNAME));
 }
 
+TEST_F(TtcVoicePlateTest, AnnouncesMicMutedWhenVisible) {
+  auto voice_plate = CreateVoicePlate();
+  voice_plate->ApplyUiState(UiState::kLive);
+  voice_plate->Show();
+
+  voice_plate->ApplyUiState(UiState::kMicMuted);
+  EXPECT_EQ(GetAnnouncement(*voice_plate),
+            l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_MIC_MUTED_ACCNAME));
+}
+
+TEST_F(TtcVoicePlateTest, AnnouncesListeningWhenUnmuted) {
+  auto voice_plate = CreateVoicePlate();
+  voice_plate->ApplyUiState(UiState::kMicMuted);
+  voice_plate->Show();
+
+  voice_plate->ApplyUiState(UiState::kLive);
+  EXPECT_EQ(GetAnnouncement(*voice_plate),
+            l10n_util::GetStringUTF16(IDS_TTC_VOICE_PLATE_LISTENING_ACCNAME));
+}
+
 // The plate is recreated in kLive when it moves to another window; that
 // shouldn't announce listening again.
 TEST_F(TtcVoicePlateTest, DoesNotAnnounceBeforeShow) {
   auto voice_plate = CreateVoicePlate();
   voice_plate->ApplyUiState(UiState::kLive);
+  voice_plate->Show();
+  EXPECT_EQ(GetAnnouncement(*voice_plate), std::u16string());
+}
+
+TEST_F(TtcVoicePlateTest, DoesNotAnnounceMicMutedBeforeShow) {
+  auto voice_plate = CreateVoicePlate();
+  voice_plate->ApplyUiState(UiState::kMicMuted);
   voice_plate->Show();
   EXPECT_EQ(GetAnnouncement(*voice_plate), std::u16string());
 }

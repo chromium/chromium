@@ -40,6 +40,7 @@ class SessionViewImpl : public SessionView, public TtcViewDelegate {
   void EndSessionAsync() override;
   base::CallbackListSubscription RegisterAudioLevelCallback(
       base::RepeatingCallback<void(float)> callback) override;
+  void ToggleMicMuted() override;
 
  private:
   // SessionView:

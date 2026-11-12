@@ -93,6 +93,10 @@ base::CallbackListSubscription SessionViewImpl::RegisterAudioLevelCallback(
   return audio_level_callbacks_.Add(std::move(callback));
 }
 
+void SessionViewImpl::ToggleMicMuted() {
+  delegate().SetMicMuted(!delegate().IsMicMuted());
+}
+
 void SessionViewImpl::OnUiStateChanged(UiState state) {
   overlay_controller_->ApplyUiState(state);
 }

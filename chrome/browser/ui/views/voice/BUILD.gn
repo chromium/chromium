@@ -8,11 +8,13 @@ assert(toolkit_views)
 
 source_set("voice") {
   public = [
+    "mute_button.h",
     "voice_plate.h",
     "waveform_mode.h",
     "waveform_view.h",
   ]
   sources = [
+    "mute_button.cc",
     "voice_plate.cc",
     "waveform_view.cc",
   ]
@@ -26,6 +28,7 @@ source_set("voice") {
 
   deps = [
     "//chrome/browser/ui/views:layout_provider",
+    "//components/vector_icons",
     "//ui/color",
   ]
 }
@@ -33,6 +36,7 @@ source_set("voice") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "mute_button_unittest.cc",
     "voice_plate_unittest.cc",
     "waveform_view_unittest.cc",
   ]
@@ -41,7 +45,10 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/test:test_support",
+    "//components/vector_icons",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/color",
     "//ui/gfx",
     "//ui/views",
     "//ui/views:test_support",
