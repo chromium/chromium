@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -1367,9 +1368,7 @@ public class ChromeTabbedActivityTest {
         intent.setClass(mActivity, ChromeTabbedActivity.class);
 
         final ChromeTabbedActivity activity2 =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
+                MultiWindowTestHelper.waitForNewChromeTabbedActivity(
                         () -> mActivity.getApplicationContext().startActivity(intent));
 
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
