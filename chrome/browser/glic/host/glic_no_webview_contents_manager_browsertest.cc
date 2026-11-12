@@ -1879,9 +1879,17 @@ class GlicLegacyWebviewNativeLoadingTimeoutBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/585125049): Flaky/failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder \
+  DISABLED_ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder
+#else
+#define MAYBE_ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder \
+  ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder
+#endif
 IN_PROC_BROWSER_TEST_F(
     GlicLegacyWebviewNativeLoadingTimeoutBrowserTest,
-    ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder) {
+    MAYBE_ClientLoadTimeoutTransitionsToErrorAndHidesNativePlaceholder) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
 
   // Because /glic/test_data/page.html never initializes a Glic web client,
