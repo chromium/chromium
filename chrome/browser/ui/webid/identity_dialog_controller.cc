@@ -132,7 +132,14 @@ void IdentityDialogController::OnActorTaskStateChanged(actor::ActorTask& task) {
 void IdentityDialogController::UpdateTaskId(actor::TaskId task_id) {
   acting_task_id_ = task_id;
   if (account_view_) {
+    // Showing the UI again may dismiss it synchronously, which may destroy
+    // this object.
+    base::WeakPtr<IdentityDialogController> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     account_view_->SetCanShowUi(acting_task_id_.is_null());
+    if (!weak_this) {
+      return;
+    }
     if (acting_task_id_.is_null() && did_invoke_show_ui_) {
       did_show_ui_ = true;
     }

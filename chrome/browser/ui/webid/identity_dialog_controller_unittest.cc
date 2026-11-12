@@ -1178,6 +1178,41 @@ TEST_F(IdentityDialogControllerTest, ActiveModeDismissedWhenActorStopsActing) {
   controller->SetActingTaskIdForTesting(actor::TaskId());
 }
 
+// Tests that the controller does not access its members when it gets destroyed
+// while letting the view show UI again after an actor task stops acting.
+TEST_F(IdentityDialogControllerTest, ControllerDestroyedDuringSetCanShowUi) {
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  IdentityDialogController* controller_ptr = controller.get();
+  auto mock_view = std::make_unique<MockAccountSelectionView>();
+  MockAccountSelectionView* mock_view_ptr = mock_view.get();
+
+  // Simulate an active actor task.
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(false));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  controller->SetActingTaskIdForTesting(actor::TaskId::FromUnsafeValue(1));
+
+  accounts_ = CreateAccount();
+  IdentityProviderDataPtr idp_data = CreateIdentityProviderData(accounts_);
+
+  // Store a dismiss callback for an active mode request while the UI is
+  // suppressed.
+  base::MockCallback<DismissCallback> dismiss_callback;
+  EXPECT_CALL(*mock_view_ptr, Show).Times(0);
+  EXPECT_FALSE(controller->ShowAccountsDialog(
+      content::RelyingPartyData(kTopFrameEtldPlusOne, u""), {idp_data},
+      accounts_, {}, blink::mojom::RpMode::kActive, base::DoNothing(),
+      base::DoNothing(), dismiss_callback.Get(), base::DoNothing()));
+
+  // The actor task stops acting. Letting the view show UI again destroys the
+  // controller, so the controller must not run the dismiss callback afterwards.
+  EXPECT_CALL(*mock_view_ptr, SetCanShowUi(true)).WillOnce([&controller]() {
+    controller.reset();
+  });
+  EXPECT_CALL(dismiss_callback, Run).Times(0);
+  controller_ptr->SetActingTaskIdForTesting(actor::TaskId());
+  EXPECT_FALSE(controller);
+}
+
 TEST_F(IdentityDialogControllerTest, ShowNativeAppUiSuccess) {
   std::unique_ptr<IdentityDialogController> controller =
       std::make_unique<IdentityDialogController>(web_contents());
