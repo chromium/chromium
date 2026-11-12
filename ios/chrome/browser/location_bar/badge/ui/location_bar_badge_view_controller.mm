@@ -228,6 +228,11 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
   _badgeIcon.image = config.badgeImage;
   _badgeConfig = config;
+  if (![config isContextualPanelEntrypointBadge]) {
+    // Clear any stale `ReaderModeItem` type so `BadgesContainerView` does not
+    // suppress non-Contextual-Panel badges (such as Ask Gemini).
+    [self setContextualPanelItemType:std::nullopt];
+  }
 }
 
 #pragma mark - ContextualPanelEntrypointVisibilityDelegate
@@ -772,6 +777,10 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   [self collapseBadgeContainer];
   [self transitionToContextualPanelOpenedState:NO];
 
+  // Reset the item type before `setLocationBarBadgeHidden:YES` so
+  // `BadgesContainerView` does not run an intermediate visibility update with a
+  // stale `ReaderModeItem` type.
+  [self setContextualPanelItemType:std::nullopt];
   [self setLocationBarBadgeHidden:YES];
   if (_badgeConfig.badgeType == LocationBarBadgeType::kReaderMode) {
     [self.layoutGuideCenter referenceView:nil

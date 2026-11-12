@@ -814,3 +814,109 @@ TEST_F(LocationBarBadgeMediatorTest, TestDidStartNavigationDifferentPage) {
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
+
+// Tests that the Ask Gemini contextual cue chip has strict priority over the
+// Reader Mode contextual panel entrypoint and is not hidden or replaced when
+// `ContextualPanelTabHelper` updates arrive.
+TEST_F(LocationBarBadgeMediatorTest,
+       TestGeminiContextualCueChipPreventsReaderModeEntrypoint) {
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  GeminiTabHelper* gemini_tab_helper =
+      GeminiTabHelper::FromWebState(active_web_state);
+  ASSERT_TRUE(gemini_tab_helper);
+  ASSERT_FALSE(gemini_tab_helper->ShouldPreventContextualPanelEntryPoint());
+
+  // Present the Gemini contextual cue chip using `kAskGeminiChipIgnoreCriteria`
+  // so that suppression relies on `ShouldPreventContextualPanelEntryPoint()`
+  // rather than `_isFETPromoShowing`.
+  base::test::ScopedFeatureList ignore_criteria_feature_list;
+  ignore_criteria_feature_list.InitAndEnableFeature(
+      kAskGeminiChipIgnoreCriteria);
+
+  OCMExpect([mock_consumer_ isBadgeVisible]).andReturn(NO);
+  OCMExpect([mock_consumer_ setBadgeConfig:[OCMArg any]]);
+  OCMExpect([mock_consumer_ showBadge]);
+
+  LocationBarBadgeConfiguration* gemini_config =
+      CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
+  gemini_config.badgeText = kTestAccessibilityLabel;
+  [mediator_ updateBadgeConfig:gemini_config];
+
+  EXPECT_TRUE(gemini_tab_helper->ShouldPreventContextualPanelEntryPoint());
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Reset consumer mock to strictly reject any hide or override while the
+  // Gemini chip is active.
+  mock_consumer_ = OCMProtocolMock(@protocol(LocationBarBadgeConsumer));
+  mediator_.consumer = mock_consumer_;
+  OCMReject([mock_consumer_ hideBadge]);
+  OCMReject([mock_consumer_ setBadgeConfig:[OCMArg any]]);
+
+  FakeContextualPanelTabHelper* contextual_panel_tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(active_web_state));
+
+  // Case 1: `ReaderModeModel` returns `nullptr` at 1s, delivering empty
+  // configs.
+  contextual_panel_tab_helper->CallContextualPanelHasNewData({});
+
+  // Case 2: Even if a `ReaderModeItem` config is delivered, it is suppressed.
+  ContextualPanelItemConfiguration reader_mode_config(
+      ContextualPanelItemType::ReaderModeItem);
+  reader_mode_config.entrypoint_symbol = SymbolReaderMode;
+  contextual_panel_tab_helper->CallContextualPanelHasNewData(
+      {reader_mode_config.weak_ptr_factory.GetWeakPtr()});
+
+  // The Gemini chip should still expand on schedule at 2s.
+  OCMStub([mock_delegate_ canShowChip:[OCMArg any]]).andReturn(YES);
+  OCMExpect([mock_consumer_ expandBadgeContainer]);
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Once the Gemini chip collapses, Contextual Panel suppression is cleared.
+  [mediator_ handleBadgeContainerCollapse:LocationBarBadgeType::
+                                              kGeminiContextualCueChip];
+  EXPECT_FALSE(gemini_tab_helper->ShouldPreventContextualPanelEntryPoint());
+}
+
+// Tests that when `GeminiTabHelper::ShouldPreventContextualPanelEntryPoint()`
+// is true while a non-Gemini badge (such as `kReaderMode`) is displayed, an
+// entrypoint update still resets state and hides the non-Gemini badge without
+// presenting a new entrypoint.
+TEST_F(LocationBarBadgeMediatorTest,
+       TestGeminiPreventionHidesNonGeminiBadgeOnEntrypointUpdate) {
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  GeminiTabHelper* gemini_tab_helper =
+      GeminiTabHelper::FromWebState(active_web_state);
+  ASSERT_TRUE(gemini_tab_helper);
+
+  OCMExpect([mock_consumer_ isBadgeVisible]).andReturn(NO);
+  OCMExpect([mock_consumer_ setBadgeConfig:[OCMArg any]]);
+  OCMExpect([mock_consumer_ showBadge]);
+
+  LocationBarBadgeConfiguration* reader_mode_badge_config =
+      CreateBadgeConfiguration(LocationBarBadgeType::kReaderMode);
+  [mediator_ updateBadgeConfig:reader_mode_badge_config];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  gemini_tab_helper->SetPreventContextualPanelEntryPoint(true);
+  ASSERT_TRUE(gemini_tab_helper->ShouldPreventContextualPanelEntryPoint());
+
+  mock_consumer_ = OCMProtocolMock(@protocol(LocationBarBadgeConsumer));
+  mediator_.consumer = mock_consumer_;
+  OCMExpect([mock_consumer_ collapseBadgeContainer]);
+  OCMExpect([mock_consumer_ hideBadge]);
+  OCMReject([mock_consumer_ setBadgeConfig:[OCMArg any]]);
+  OCMReject([mock_consumer_ showBadge]);
+
+  FakeContextualPanelTabHelper* contextual_panel_tab_helper =
+      static_cast<FakeContextualPanelTabHelper*>(
+          FakeContextualPanelTabHelper::FromWebState(active_web_state));
+  ContextualPanelItemConfiguration reader_mode_config(
+      ContextualPanelItemType::ReaderModeItem);
+  reader_mode_config.entrypoint_symbol = SymbolReaderMode;
+  contextual_panel_tab_helper->CallContextualPanelHasNewData(
+      {reader_mode_config.weak_ptr_factory.GetWeakPtr()});
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}

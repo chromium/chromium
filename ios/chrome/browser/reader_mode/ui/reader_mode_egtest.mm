@@ -201,13 +201,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
       feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name;
 
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
-      [self isRunningTest:@selector(testReaderModeDistillationFailure)] ||
-      [self isRunningTest:@selector(testReaderModeDistillationTimeout)] ||
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)] ||
       [self isRunningTest:@selector(
                               testPageActionMenuDismissedOnReaderModeHide)] ||
       [self isRunningTest:@selector(
-                              testSampleContextualChipVisibleInReaderMode)]) {
+                              testSampleContextualChipVisibleInReaderMode)] ||
+      [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
     config.features_enabled.push_back(kPageActionMenu);
     config.features_enabled.push_back(kProactiveSuggestionsFramework);
   } else {
@@ -222,19 +221,33 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
   // TODO(crbug.com/517120013): Fix or clean up legacy contextual panel and
   // incognito badge tests under Chrome Next.
-  if ([self isRunningTest:@selector(testReaderModeDistillationFailure)] ||
+  if ([self
+          isRunningTest:
+              @selector(
+                  testToggleReaderModeInContextualPanelEntrypointForDistillablePage)] ||
+      [self isRunningTest:@selector(testReaderModeDistillationFailure)] ||
       [self isRunningTest:@selector(testReaderModeDistillationTimeout)] ||
       [self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
       [self isRunningTest:
                 @selector(
                     testToggleReaderModeForDistillablePageInIncognitoMode)] ||
-      [self isRunningTest:@selector(testReaderModeBadgeVisibleInIncognito)]) {
+      [self isRunningTest:@selector(testReaderModeBadgeVisibleInIncognito)] ||
+      [self
+          isRunningTest:
+              @selector(
+                  testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled)]) {
     config.features_disabled.push_back(kChromeNextIa);
   }
 
   if ([self isRunningTest:@selector(testReaderModeDistillationTimeout)]) {
     config.additional_args.push_back(
         "--" + std::string(switches::kForceReaderModeDistillationTimeout));
+  }
+  if ([self
+          isRunningTest:
+              @selector(
+                  testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled)]) {
+    config.features_disabled.push_back(kProactiveSuggestionsFramework);
   }
   if ([self isRunningTest:@selector(
                               testSampleContextualChipVisibleInReaderMode)]) {
@@ -458,6 +471,23 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   // Verifies that the navigation to the destination page happened.
   GREYAssertEqual(nonReaderModeURL, [ChromeEarlGrey webStateVisibleURL],
                   @"Did not navigate to non-Reader Mode url.");
+}
+
+// Tests that the user can show Reader Mode from the contextual panel entrypoint
+// on an eligible web page.
+- (void)testToggleReaderModeInContextualPanelEntrypointForDistillablePage {
+  [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
+  [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
+                                              "/article.html")];
+
+  // Open Reader Mode UI.
+  [self openReaderModeWithBadgeEntrypoint];
+  [self assertReaderModePageIsVisible];
+
+  // Check that the chip is a button with the expected accessibility label.
+  [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
+      assertWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                            IDS_IOS_READER_MODE_CHIP_ACCESSIBILITY_LABEL)];
 }
 
 // Tests that theme change is applied to the Reading Mode web page.
@@ -863,18 +893,27 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
-// Tests that a failure snackbar is presented when distillation fails.
+// Tests that the contextual panel entrypoint disappears and a failure snackbar
+// is presented when distillation fails.
 - (void)testReaderModeDistillationFailure {
   [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
 
+  // Wait for the contextual panel entrypoint to appear.
+  id<GREYMatcher> entrypoint = chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:entrypoint];
+
   // Make the page not distillable.
   [ChromeEarlGrey
       evaluateJavaScriptForSideEffect:@"document.body.outerHTML = ''"];
 
-  // Trigger distillation.
+  // Tap the entrypoint to trigger distillation.
   [self openReaderModeWithBadgeEntrypoint];
+
+  // The entrypoint should disappear.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint];
 
   // A snackbar should be displayed with a failure message.
   NSString* failureMessage =
@@ -885,13 +924,19 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 }
 
-// Tests that a failure snackbar is presented when distillation times out.
+// Tests that the contextual panel entrypoint disappears and a failure snackbar
+// is presented when distillation times out.
 - (void)testReaderModeDistillationTimeout {
   [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
 
   [self openReaderModeWithBadgeEntrypoint];
+
+  // The entrypoint should disappear.
+  id<GREYMatcher> entrypoint = chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint];
 
   // A snackbar should be displayed with a failure message.
   NSString* failureMessage =
@@ -934,6 +979,31 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that the Reader mode contextual chip is hidden inside Reader mode.
+- (void)testReaderModeChipHiddenInReaderMode {
+  [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
+  [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
+                                              "/article.html")];
+
+  // Wait for the Reader Mode contextual entrypoint to appear.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  // The Reader Mode contextual entrypoint should be hidden.
+  [[EarlGrey
+      selectElementWithMatcher:ContextualPanelEntrypointImageViewMatcher()]
+      assertWithMatcher:grey_notVisible()];
+  // The Reader mode badge button should be visible instead.
+  [[EarlGrey selectElementWithMatcher:ReaderModeBadge()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that the user can turn on Reader Mode from the page action menu.
 - (void)testTurnOnReaderModeViaPageActionMenu {
   GREYAssertTrue([ChromeEarlGrey isProactiveSuggestionsFrameworkEnabled],
@@ -942,6 +1012,13 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   [SigninEarlGrey signinWithFakeIdentity:self.fakeIdentity];
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
+
+  // Wait for the contextual chip to appear and then disappear.
+  id<GREYMatcher> entrypoint = chrome_test_util::ButtonWithAccessibilityLabelId(
+      IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:entrypoint];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint
+                                                 timeout:base::Seconds(10)];
 
   [self openReaderModeWithBadgeEntrypoint];
 
@@ -1195,11 +1272,43 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   }
 }
 
+// Tests that the Reader mode chip is visible when leaving Reader mode if
+// PSF is disabled.
+// TODO(crbug.com/467908483): Remove this test once PSF is launched with
+// Reading Mode.
+- (void)testReaderModeChipVisibleWhenLeavingReaderModeWithPSFDisabled {
+  [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
+                                              "/article.html")];
+
+  // Wait for the Reader mode contextual panel entry point chip to be visible.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  // Close Reader Mode UI.
+  [ChromeEarlGrey hideReaderMode];
+
+  [self assertReaderModePageIsHidden];
+
+  // Wait for the Reader mode contextual panel entry point chip to be visible.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
+}
+
 // Tests that the Reading Mode section in Content Settings shows multiple
 // options.
 - (void)testReaderModeContentSettingsNewOptions {
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];
+
+  // Wait for the contextual panel entrypoint to appear.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
 
   // Open Content Settings.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -1233,6 +1342,13 @@ TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
   // Go back to the page.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
+
+  // Reload the page to ensure the contextual panel entrypoint is updated.
+  [ChromeEarlGrey reload];
+
+  // The contextual panel entrypoint should be hidden.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      ContextualPanelEntrypointImageViewMatcher()];
 
   // Open Reader Mode UI to check for links-hidden class.
   GREYAssertTrue(

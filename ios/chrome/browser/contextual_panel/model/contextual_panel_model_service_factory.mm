@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model_factory.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_model_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -20,6 +22,7 @@ ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory(
           "ContextualPanelModelService",
           ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(SamplePanelModelFactory::GetInstance());
+  DependsOn(ReaderModeModelFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -33,6 +36,13 @@ ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
       IsContextualPanelForceShowEntrypointEnabled()) {
     models.emplace(ContextualPanelItemType::SamplePanelItem,
                    sample_panel_model_factory);
+  }
+
+  // `reader_mode_model` is `nullptr` in Incognito profiles.
+  ReaderModeModel* reader_mode_model =
+      ReaderModeModelFactory::GetForProfile(profile);
+  if (reader_mode_model) {
+    models.emplace(ContextualPanelItemType::ReaderModeItem, reader_mode_model);
   }
 
   return std::make_unique<ContextualPanelModelService>(models);
