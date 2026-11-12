@@ -80,30 +80,6 @@ void AppendEmptyOpening(const TrackOpeningCoordinates& opening,
   lane_openings.push_back(opening);
 }
 
-// Adds cross gaps at an item's final border-box start and end. Items with
-// available alignment space use kItemStart/kItemEnd; all others use the
-// occupancy-only types.
-void AppendOccupancyCrossGaps(const TrackOpeningCoordinates& bounds,
-                             bool has_alignment_space,
-                             GridTrackSizingDirection direction,
-                             LayoutUnit grid_axis_offset,
-                             Vector<CrossGap>& cross_gaps) {
-  const LogicalOffset start =
-      direction == kForColumns
-          ? LogicalOffset(grid_axis_offset, bounds.start_position)
-          : LogicalOffset(bounds.start_position, grid_axis_offset);
-  const LogicalOffset end =
-      direction == kForColumns
-          ? LogicalOffset(grid_axis_offset, bounds.end_position)
-          : LogicalOffset(bounds.end_position, grid_axis_offset);
-  cross_gaps.emplace_back(
-      start, has_alignment_space ? CrossGap::Type::kItemStart
-                                 : CrossGap::Type::kOccupiedStart);
-  cross_gaps.emplace_back(
-      end, has_alignment_space ? CrossGap::Type::kItemEnd
-                               : CrossGap::Type::kOccupiedEnd);
-}
-
 auto CrossGapLess(GridTrackSizingDirection direction) {
   return [direction](const CrossGap& a, const CrossGap& b) {
     return std::pair{a.GetGapOffset(direction), a.GetType()} <
@@ -175,6 +151,48 @@ class LaneGutterCursor {
   LayoutUnit content_start_;
   LayoutUnit content_end_;
   wtf_size_t index_ = 0;
+};
+
+// Rejects boundaries outside the content or covered by gutters in this lane
+// or its neighbors.
+class LaneBoundaryFilter {
+  STACK_ALLOCATED();
+
+ public:
+  LaneBoundaryFilter(const Vector<CrossGap>& own_gutters,
+                     const Vector<CrossGap>* before_gutters,
+                     const Vector<CrossGap>* after_gutters,
+                     GridTrackSizingDirection direction,
+                     LayoutUnit half_width,
+                     LayoutUnit content_start,
+                     LayoutUnit content_end)
+      : own_(&own_gutters, direction, half_width, content_start, content_end),
+        before_(before_gutters,
+                direction,
+                half_width,
+                content_start,
+                content_end),
+        after_(after_gutters,
+               direction,
+               half_width,
+               content_start,
+               content_end),
+        content_start_(content_start),
+        content_end_(content_end) {}
+
+  bool IsNeeded(LayoutUnit offset) {
+    // Own gutters cover both sides. A neighboring gutter covers only its side.
+    return offset > content_start_ && offset < content_end_ &&
+           !own_.Covers(offset) &&
+           !(before_.Covers(offset) && after_.Covers(offset));
+  }
+
+ private:
+  LaneGutterCursor own_;
+  LaneGutterCursor before_;
+  LaneGutterCursor after_;
+  LayoutUnit content_start_;
+  LayoutUnit content_end_;
 };
 
 }  // namespace
@@ -372,8 +390,10 @@ GridLanesGapAccumulator::SpannerBlockedIntervals(
 Vector<CrossGap> GridLanesGapAccumulator::BuildArtificialCrossGaps(
     const LaneItems& lane_items,
     wtf_size_t compact_track_index,
+    const Vector<Vector<CrossGap>>& lane_gutters,
     const GridLanesGapGeometryState& state,
-    const BoxFragmentBuilder& builder) {
+    const BoxFragmentBuilder& builder,
+    Vector<GridLanesOccupancyEvent>& occupancy) {
   const auto direction = gap_geometry_->GetMainDirection();
   const auto cross_direction = OppositeDirection(direction);
   const bool is_for_columns = direction == kForColumns;
@@ -381,16 +401,10 @@ Vector<CrossGap> GridLanesGapAccumulator::BuildArtificialCrossGaps(
       gap_geometry_->GridAxisOffsetForLaneBoundary(compact_track_index);
   const LayoutUnit lane_end =
       gap_geometry_->GridAxisOffsetForLaneBoundary(compact_track_index + 1);
-  const auto make_boundary = [&](LayoutUnit offset, CrossGap::Type type) {
-    return CrossGap(direction == kForColumns
-                        ? LogicalOffset(grid_axis_offset, offset)
-                        : LogicalOffset(offset, grid_axis_offset),
-                    type);
-  };
-  Vector<CrossGap> occupied_edges;
-  occupied_edges.ReserveInitialCapacity(2 * lane_items.size());
-  Vector<CrossGap> spanner_starts;
-  Vector<CrossGap> spanner_ends;
+  using Kind = GridLanesOccupancyEvent::Kind;
+  occupancy.ReserveInitialCapacity(2 * lane_items.size());
+  Vector<LayoutUnit> spanner_starts;
+  Vector<LayoutUnit> spanner_ends;
   const auto& alignment_items =
       items_with_alignment_space_[compact_track_index];
   wtf_size_t alignment_item_index = 0;
@@ -427,100 +441,92 @@ Vector<CrossGap> GridLanesGapAccumulator::BuildArtificialCrossGaps(
     if (is_spanner) {
       // Record the stacking-axis clearance: one stacking gap before and after
       // the spanner's final border box.
-      spanner_starts.push_back(
-          make_boundary(bounds.start_position - state.stacking_gap,
-                        CrossGap::Type::kSpannerBoundary));
-      spanner_ends.push_back(
-          make_boundary(bounds.end_position + state.stacking_gap,
-                        CrossGap::Type::kSpannerBoundary));
+      spanner_starts.push_back(bounds.start_position - state.stacking_gap);
+      spanner_ends.push_back(bounds.end_position + state.stacking_gap);
     }
 
     if (!occupies_lane) {
       continue;
     }
-    AppendOccupancyCrossGaps(bounds, has_alignment_space, direction,
-                             grid_axis_offset, occupied_edges);
+    occupancy.push_back(GridLanesOccupancyEvent{
+        bounds.start_position,
+        has_alignment_space ? Kind::kItemStart : Kind::kOccupiedStart});
+    occupancy.push_back(GridLanesOccupancyEvent{
+        bounds.end_position,
+        has_alignment_space ? Kind::kItemEnd : Kind::kOccupiedEnd});
   }
   CHECK_EQ(alignment_item_index, alignment_items.size());
-  // Start and end streams are checked separately: overlapping boxes can have
-  // ordered starts but disordered ends. Applying the same stacking gap to
-  // every offset in a stream cannot change its order.
-  EnsureCrossGapsOrdered(spanner_starts, cross_direction);
-  EnsureCrossGapsOrdered(spanner_ends, cross_direction);
-  // Final alignment, negative margins, and overlap can reorder individual
-  // item edges. Sort only when the final cross-gap order is inverted.
-  EnsureCrossGapsOrdered(occupied_edges, cross_direction);
+  const LayoutUnit content_start = is_for_columns
+                                       ? gap_geometry_->GetContentBlockStart()
+                                       : gap_geometry_->GetContentInlineStart();
+  const LayoutUnit content_end = is_for_columns
+                                     ? gap_geometry_->GetContentBlockEnd()
+                                     : gap_geometry_->GetContentInlineEnd();
+  const auto occupancy_less = [](const GridLanesOccupancyEvent& a,
+                                 const GridLanesOccupancyEvent& b) {
+    return std::pair{a.offset, a.kind} < std::pair{b.offset, b.kind};
+  };
+  if (!std::ranges::is_sorted(occupancy, occupancy_less)) {
+    std::ranges::sort(occupancy, occupancy_less);
+  }
+  const auto& own_gutters = lane_gutters.at(compact_track_index);
+  const auto* before_gutters = compact_track_index > 0
+                                   ? &lane_gutters[compact_track_index - 1]
+                                   : nullptr;
+  const auto* after_gutters = compact_track_index + 1 < lane_gutters.size()
+                                  ? &lane_gutters[compact_track_index + 1]
+                                  : nullptr;
+  LaneBoundaryFilter item_filter(own_gutters, before_gutters, after_gutters,
+                                 cross_direction, state.stacking_gap / 2,
+                                 content_start, content_end);
+  Vector<CrossGap> item_boundaries;
+  for (const auto& event : occupancy) {
+    const bool is_start = event.kind == Kind::kItemStart;
+    if (!is_start && event.kind != Kind::kItemEnd) {
+      continue;
+    }
+    if (item_filter.IsNeeded(event.offset)) {
+      item_boundaries.emplace_back(
+          is_for_columns ? LogicalOffset(grid_axis_offset, event.offset)
+                         : LogicalOffset(event.offset, grid_axis_offset),
+          is_start ? CrossGap::Type::kItemStart : CrossGap::Type::kItemEnd);
+    }
+  }
+  DCHECK(std::ranges::is_sorted(occupancy, occupancy_less));
+
+  const auto build_spanner_boundaries = [&](Vector<LayoutUnit>& offsets) {
+    // Overlapping boxes can have ordered starts but disordered ends.
+    if (!std::ranges::is_sorted(offsets)) {
+      std::ranges::sort(offsets);
+    }
+    LaneBoundaryFilter filter(own_gutters, before_gutters, after_gutters,
+                              cross_direction, state.stacking_gap / 2,
+                              content_start, content_end);
+    Vector<CrossGap> boundaries;
+    for (const LayoutUnit offset : offsets) {
+      if (filter.IsNeeded(offset)) {
+        boundaries.emplace_back(is_for_columns
+                                    ? LogicalOffset(grid_axis_offset, offset)
+                                    : LogicalOffset(offset, grid_axis_offset),
+                                CrossGap::Type::kSpannerBoundary);
+      }
+    }
+    return boundaries;
+  };
+  const auto start_boundaries = build_spanner_boundaries(spanner_starts);
+  const auto end_boundaries = build_spanner_boundaries(spanner_ends);
   return MergeCrossGaps(
-      occupied_edges,
-      MergeCrossGaps(spanner_starts, spanner_ends, cross_direction),
+      item_boundaries,
+      MergeCrossGaps(start_boundaries, end_boundaries, cross_direction),
       cross_direction);
 }
 
-void GridLanesGapAccumulator::FilterArtificialCrossGaps(
-    Vector<CrossGap>& boundaries,
-    wtf_size_t compact_track_index,
-    const Vector<Vector<CrossGap>>& lane_gutters,
-    LayoutUnit stacking_gap) const {
-  const auto direction = OppositeDirection(gap_geometry_->GetMainDirection());
-  const LayoutUnit content_start = direction == kForRows
-                                       ? gap_geometry_->GetContentBlockStart()
-                                       : gap_geometry_->GetContentInlineStart();
-  const LayoutUnit content_end = direction == kForRows
-                                     ? gap_geometry_->GetContentBlockEnd()
-                                     : gap_geometry_->GetContentInlineEnd();
-  const LayoutUnit half_width = stacking_gap / 2;
-  CHECK_LT(compact_track_index, lane_gutters.size());
-  LaneGutterCursor own(&lane_gutters[compact_track_index], direction,
-                       half_width, content_start, content_end);
-  LaneGutterCursor before(compact_track_index > 0
-                              ? &lane_gutters[compact_track_index - 1]
-                              : nullptr,
-                          direction, half_width, content_start, content_end);
-  LaneGutterCursor after(compact_track_index + 1 < lane_gutters.size()
-                             ? &lane_gutters[compact_track_index + 1]
-                             : nullptr,
-                         direction, half_width, content_start, content_end);
-
-  wtf_size_t kept_count = 0;
-  for (wtf_size_t i = 0; i < boundaries.size(); ++i) {
-    auto& boundary = boundaries[i];
-    const bool needs_gutter_check =
-        boundary.GetType() != CrossGap::Type::kOccupiedStart &&
-        boundary.GetType() != CrossGap::Type::kOccupiedEnd;
-    // Occupancy-only cross gaps are kept regardless of gutter coverage.
-    if (needs_gutter_check) {
-      const LayoutUnit offset = boundary.GetGapOffset(direction);
-      // A boundary in this lane's gutter is redundant on both sides. A
-      // neighboring gutter covers only that neighbor's side, so keep the
-      // boundary if the other adjacent main gap still needs it.
-      const bool is_covered =
-          own.Covers(offset) || (before.Covers(offset) && after.Covers(offset));
-      if (offset <= content_start || offset >= content_end || is_covered) {
-        if (boundary.GetType() == CrossGap::Type::kItemStart) {
-          boundary.SetType(CrossGap::Type::kOccupiedStart);
-        } else if (boundary.GetType() == CrossGap::Type::kItemEnd) {
-          boundary.SetType(CrossGap::Type::kOccupiedEnd);
-        } else {
-          // A redundant spanner boundary has no occupancy to retain.
-          continue;
-        }
-      }
-    }
-    if (kept_count != i) {
-      boundaries[kept_count] = boundary;
-    }
-    ++kept_count;
-  }
-  boundaries.Shrink(kept_count);
-  EnsureCrossGapsOrdered(boundaries, direction);
-  DCHECK(std::ranges::is_sorted(boundaries, CrossGapLess(direction)));
-}
-
 void GridLanesGapAccumulator::AppendLaneCrossGaps(
-    const Vector<CrossGap>& lane_cross_gaps,
+    const Vector<CrossGap>& gutters,
+    const Vector<CrossGap>& boundaries,
     wtf_size_t compact_track_index) {
   wtf_size_t paintable_gap_count = 0;
-  for (const auto& gap : lane_cross_gaps) {
+  const auto append_gap = [&](const CrossGap& gap) {
     const wtf_size_t cross_gap_index = gap_geometry_->CrossGapCount();
     gap_geometry_->AddCrossGap(gap.GetGapOffset(), gap.GetType());
     if (!gap.IsArtificial()) {
@@ -534,6 +540,23 @@ void GridLanesGapAccumulator::AppendLaneCrossGaps(
       gap_geometry_->MainGapAt(compact_track_index - 1)
           .IncrementRangeOfCrossGapsAfter(cross_gap_index);
     }
+  };
+  const auto less =
+      CrossGapLess(OppositeDirection(gap_geometry_->GetMainDirection()));
+  wtf_size_t gutter_index = 0;
+  wtf_size_t boundary_index = 0;
+  while (gutter_index < gutters.size() && boundary_index < boundaries.size()) {
+    if (less(boundaries[boundary_index], gutters[gutter_index])) {
+      append_gap(boundaries[boundary_index++]);
+    } else {
+      append_gap(gutters[gutter_index++]);
+    }
+  }
+  while (gutter_index < gutters.size()) {
+    append_gap(gutters[gutter_index++]);
+  }
+  while (boundary_index < boundaries.size()) {
+    append_gap(boundaries[boundary_index++]);
   }
   gap_geometry_->AddCrossGapDecorationSlots(paintable_gap_count);
 }
@@ -709,9 +732,14 @@ void GridLanesGapAccumulator::BuildCrossGaps(
     const GridLanesDataVector& grid_lanes,
     const GridLanesGapGeometryState& state,
     const BoxFragmentBuilder& builder) {
+  GridLanesItemOccupancy item_occupancy(HasMainGaps() ? UncollapsedTrackCount()
+                                                      : 0);
   // Placement is skipped when the container has no in-flow items. Main gaps
   // still exist, but there is no lane graph from which to build cross gaps.
   if (grid_lanes.empty()) {
+    if (HasMainGaps()) {
+      gap_geometry_->SetItemOccupancy(std::move(item_occupancy));
+    }
     return;
   }
 
@@ -724,22 +752,19 @@ void GridLanesGapAccumulator::BuildCrossGaps(
     const auto& items_in_lane = lane_items[compact_track_index];
     Vector<CrossGap> boundaries;
     if (HasMainGaps()) {
-      boundaries = BuildArtificialCrossGaps(items_in_lane, compact_track_index,
-                                            state, builder);
-      // Filter boundaries covered by real gutters or outside the content.
-      // Keep item start/end cross gaps as occupancy-only entries when their
-      // boundaries are not needed.
-      FilterArtificialCrossGaps(boundaries, compact_track_index, lane_gutters,
-                                state.stacking_gap);
+      boundaries = BuildArtificialCrossGaps(
+          items_in_lane, compact_track_index, lane_gutters, state, builder,
+          item_occupancy[compact_track_index]);
     }
-    AppendLaneCrossGaps(
-        MergeCrossGaps(lane_gutters[compact_track_index], boundaries,
-                       OppositeDirection(gap_geometry_->GetMainDirection())),
-        compact_track_index);
+    AppendLaneCrossGaps(lane_gutters[compact_track_index], boundaries,
+                        compact_track_index);
     if (compact_track_index > 0) {
       RecordMainGapSegmentStates(compact_track_index - 1, items_in_lane, state,
                                  builder);
     }
+  }
+  if (HasMainGaps()) {
+    gap_geometry_->SetItemOccupancy(std::move(item_occupancy));
   }
 }
 

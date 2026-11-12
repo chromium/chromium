@@ -22,6 +22,25 @@ class GridLanesGapGeometry;
 // logical stacking-axis coordinates.
 using GridLanesEmptyOpenings = Vector<Vector<TrackOpeningCoordinates>>;
 
+// Records the start or end of an item's final border box in a lane.
+// Offsets are relative to the container fragment along the stacking axis.
+struct GridLanesOccupancyEvent {
+  // Orders item events at coincident offsets.
+  enum class Kind : uint8_t {
+    kItemStart,
+    kItemEnd,
+    kOccupiedStart,
+    kOccupiedEnd,
+  };
+
+  LayoutUnit offset;
+  Kind kind;
+
+  bool operator==(const GridLanesOccupancyEvent&) const = default;
+};
+
+using GridLanesItemOccupancy = Vector<Vector<GridLanesOccupancyEvent>>;
+
 // Walks the gap decoration segments for a `MainGap` in a grid-lanes container.
 // Segments are formed by the intersections of the `MainGap` with the
 // `CrossGaps` (or items) in the adjacent lanes.
@@ -52,13 +71,9 @@ class GridLanesMainGapSegmentWalker {
   GridLanesMainGapSegmentWalker(const GridLanesGapGeometry& gap_geometry,
                                 wtf_size_t main_gap_index);
 
-  // Returns the next endpoint, skipping occupancy-only and covered boundaries.
+  // Returns the next endpoint, skipping covered artificial boundaries.
   std::optional<const Segment> Next();
   wtf_size_t IntersectionCapacity() const { return intersection_capacity_; }
-
-  // Marks actual occupancy after overlapping gutters have been reduced.
-  // Occupancy cursors still walk the full runs, including suppressed edges.
-  void MarkEmptySides(Vector<GapIntersection>& intersections);
 
  private:
   // Forward cursor over one side's contiguous `CrossGap` run.
@@ -94,18 +109,7 @@ class GridLanesMainGapSegmentWalker {
       SkipArtificialGaps(cross_gaps);
     }
 
-    // Consumes item entry/exit events to check the whole gutter-trimmed
-    // segment. Geometry and occupancy use independent forward cursors.
-    bool IsEmpty(const CrossGaps& cross_gaps,
-                 GridTrackSizingDirection direction,
-                 LayoutUnit start,
-                 LayoutUnit end);
-
    private:
-    // Counts overlapping item boxes so one exit cannot make the lane empty
-    // while another item still occupies it.
-    void ConsumeOccupancy(const CrossGap& gap);
-
     // Keep a separate lookahead for genuine gutters so artificial boundaries
     // cannot create or interrupt gutter overlap windows.
     void SkipArtificialGaps(const CrossGaps& cross_gaps) {
@@ -117,7 +121,6 @@ class GridLanesMainGapSegmentWalker {
     wtf_size_t current_ = 0;
     wtf_size_t end_ = 0;
     wtf_size_t next_gutter_ = 0;
-    wtf_size_t occupied_item_count_ = 0;
   };
 
   LayoutUnit CrossGapOffset(wtf_size_t index) const;
@@ -139,8 +142,6 @@ class GridLanesMainGapSegmentWalker {
   LayoutUnit cross_gap_width_;
   CrossGapRunCursor before_;
   CrossGapRunCursor after_;
-  CrossGapRunCursor occupancy_before_;
-  CrossGapRunCursor occupancy_after_;
   wtf_size_t intersection_capacity_ = 0;
 
   std::optional<LayoutUnit> previous_gutter_offset_;
@@ -158,8 +159,8 @@ class GridLanesMainGapSegmentWalker {
 //
 // Artificial cross gaps subdivide grid-axis rules for item visibility and
 // spanner blocking. They are not gutters: they never paint stacking-axis rules
-// or consume decoration-list values. Item edges that cannot be endpoints still
-// record occupancy but do not create intersections.
+// or consume decoration-list values. Actual item occupancy is stored in
+// separate compact events, including edges that do not create intersections.
 //
 // At artificial intersections, cap insets apply with zero crossing width.
 // These boundaries do not force an intersection break on an otherwise visible,
@@ -170,6 +171,10 @@ class CORE_EXPORT GridLanesGapGeometry final : public GapGeometry {
 
   // Stores finalized empty openings grouped by non-collapsed lane.
   void SetEmptyOpenings(GridLanesEmptyOpenings empty_openings);
+
+  void SetItemOccupancy(GridLanesItemOccupancy item_occupancy);
+  const Vector<GridLanesOccupancyEvent>& ItemOccupancyForLane(
+      wtf_size_t lane_index) const;
 
   // Records one lane's slots in the paintable cross-gap sequence, in lane
   // order. Artificial boundaries do not consume slots.
@@ -191,7 +196,7 @@ class CORE_EXPORT GridLanesGapGeometry final : public GapGeometry {
   LayoutUnit GridAxisOffsetForLaneBoundary(wtf_size_t lane_boundary) const;
 
  private:
-  // Compares each lane's placement openings and decoration-slot range.
+  // Compares placement openings, actual occupancy, and decoration-slot ranges.
   bool HasEqualSubclassFields(const GapGeometry& other) const override;
 
   // Each cross gap belongs to the lane that contains it.
@@ -223,6 +228,10 @@ class CORE_EXPORT GridLanesGapGeometry final : public GapGeometry {
                          RuleVisibilityItems rule_visibility,
                          Vector<GapIntersection>& intersections) const override;
 
+  // Checks actual occupancy after overlapping gutters have been reduced.
+  void MarkEmptySides(wtf_size_t main_gap_index,
+                      Vector<GapIntersection>& intersections) const;
+
   // Fills `intersections` for a grid-lanes `CrossGap` in the lane at
   // `cross_gap_owner_index`, which includes:
   // 1. The gap's start offset
@@ -237,9 +246,11 @@ class CORE_EXPORT GridLanesGapGeometry final : public GapGeometry {
       GapSegmentStateCursor& cursor,
       Vector<GapIntersection>& intersections) const override;
 
-  // `around` retains placement openings. `between` uses individual entry/exit
-  // events in the cross-gap runs instead of a separate opening list.
+  // `around` retains placement openings.
   GridLanesEmptyOpenings empty_openings_;
+
+  // Final border-box occupancy, indexed by non-collapsed lane.
+  GridLanesItemOccupancy item_occupancy_;
 
   // Restarts color/style/width list assignment for each lane without counting
   // artificial gaps as decoration slots.

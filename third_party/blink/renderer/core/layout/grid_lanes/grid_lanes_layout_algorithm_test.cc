@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/grid_lanes_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
@@ -2965,19 +2966,21 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumn) {
   EXPECT_EQ(gap_geometry->GetMainDirection(), kForColumns);
   EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(14));
   const Vector<CrossGap> expected_cross_gaps = {
-      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
       CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(45)),
                CrossGap::Type::kItemEnd),
-      CrossGap(LogicalOffset(LayoutUnit(92), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
       CrossGap(LogicalOffset(LayoutUnit(92), LayoutUnit(45)),
                CrossGap::Type::kItemEnd),
-      CrossGap(LogicalOffset(LayoutUnit(226), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
       CrossGap(LogicalOffset(LayoutUnit(226), LayoutUnit(45)),
                CrossGap::Type::kItemEnd)};
   EXPECT_EQ(gap_geometry->GetCrossGaps(), expected_cross_gaps);
+  using Kind = GridLanesOccupancyEvent::Kind;
+  const Vector<GridLanesOccupancyEvent> expected_occupancy = {
+      {LayoutUnit(5), Kind::kItemStart}, {LayoutUnit(45), Kind::kItemEnd}};
+  for (wtf_size_t lane = 0; lane < 3; ++lane) {
+    EXPECT_EQ(
+        To<GridLanesGapGeometry>(*gap_geometry).ItemOccupancyForLane(lane),
+        expected_occupancy);
+  }
 
   const auto& main_gaps = gap_geometry->GetMainGaps();
   ASSERT_EQ(main_gaps.size(), 2u);
@@ -3030,19 +3033,21 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRow) {
   EXPECT_EQ(gap_geometry->GetMainDirection(), kForRows);
   EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(12));
   const Vector<CrossGap> expected_cross_gaps = {
-      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
       CrossGap(LogicalOffset(LayoutUnit(45), LayoutUnit(5)),
                CrossGap::Type::kItemEnd),
-      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(101)),
-               CrossGap::Type::kOccupiedStart),
       CrossGap(LogicalOffset(LayoutUnit(45), LayoutUnit(101)),
                CrossGap::Type::kItemEnd),
-      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(243)),
-               CrossGap::Type::kOccupiedStart),
       CrossGap(LogicalOffset(LayoutUnit(45), LayoutUnit(243)),
                CrossGap::Type::kItemEnd)};
   EXPECT_EQ(gap_geometry->GetCrossGaps(), expected_cross_gaps);
+  using Kind = GridLanesOccupancyEvent::Kind;
+  const Vector<GridLanesOccupancyEvent> expected_occupancy = {
+      {LayoutUnit(5), Kind::kItemStart}, {LayoutUnit(45), Kind::kItemEnd}};
+  for (wtf_size_t lane = 0; lane < 3; ++lane) {
+    EXPECT_EQ(
+        To<GridLanesGapGeometry>(*gap_geometry).ItemOccupancyForLane(lane),
+        expected_occupancy);
+  }
 
   const auto& main_gaps = gap_geometry->GetMainGaps();
   ASSERT_EQ(main_gaps.size(), 2u);
@@ -3188,28 +3193,16 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryCollapsedAutoFitTracks) {
   const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   ASSERT_EQ(gap_geometry->MainGapCount(), 4u);
-  const Vector<CrossGap> expected_cross_gaps = {
-      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
-      CrossGap(LogicalOffset(LayoutUnit(5), LayoutUnit(105)),
-               CrossGap::Type::kOccupiedEnd),
-      CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
-      CrossGap(LogicalOffset(LayoutUnit(110), LayoutUnit(105)),
-               CrossGap::Type::kOccupiedEnd),
-      CrossGap(LogicalOffset(LayoutUnit(220), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
-      CrossGap(LogicalOffset(LayoutUnit(220), LayoutUnit(105)),
-               CrossGap::Type::kOccupiedEnd),
-      CrossGap(LogicalOffset(LayoutUnit(330), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
-      CrossGap(LogicalOffset(LayoutUnit(330), LayoutUnit(105)),
-               CrossGap::Type::kOccupiedEnd),
-      CrossGap(LogicalOffset(LayoutUnit(440), LayoutUnit(5)),
-               CrossGap::Type::kOccupiedStart),
-      CrossGap(LogicalOffset(LayoutUnit(440), LayoutUnit(105)),
-               CrossGap::Type::kOccupiedEnd)};
-  EXPECT_EQ(gap_geometry->GetCrossGaps(), expected_cross_gaps);
+  EXPECT_TRUE(gap_geometry->GetCrossGaps().empty());
+  using Kind = GridLanesOccupancyEvent::Kind;
+  const Vector<GridLanesOccupancyEvent> expected_occupancy = {
+      {LayoutUnit(5), Kind::kOccupiedStart},
+      {LayoutUnit(105), Kind::kOccupiedEnd}};
+  for (wtf_size_t lane = 0; lane < 5; ++lane) {
+    EXPECT_EQ(
+        To<GridLanesGapGeometry>(*gap_geometry).ItemOccupancyForLane(lane),
+        expected_occupancy);
+  }
   for (const auto& main_gap : gap_geometry->GetMainGaps()) {
     EXPECT_NE(main_gap.GetGapOffset(), LayoutUnit::Max());
   }

@@ -22,6 +22,7 @@ class GapGeometry;
 class GridLanesGapGeometry;
 class GridLanesRunningPositions;
 class GridLayoutTrackCollection;
+struct GridLanesOccupancyEvent;
 struct LogicalRect;
 
 // Placement-derived inputs used to build grid-lanes gap geometry.
@@ -43,7 +44,7 @@ struct GridLanesGapGeometryState {
 
 // Builds gap-decoration geometry and related state for grid-lanes.
 // Real cross gaps are stacking-axis gutters based on placement before item
-// self-alignment. Artificial cross gaps record final item occupancy and
+// self-alignment. Artificial cross gaps record final item boundaries and
 // positions one stacking gap before and after spanners.
 class CORE_EXPORT GridLanesGapAccumulator {
   STACK_ALLOCATED();
@@ -96,24 +97,20 @@ class CORE_EXPORT GridLanesGapAccumulator {
       const BoxFragmentBuilder& builder) const;
 
   // Builds ordered cross gaps for final item bounds and positions one stacking
-  // gap before and after spanners. Item-boundary types require available
-  // alignment space.
+  // gap before and after spanners. Redundant spanner offsets are filtered
+  // before creating cross gaps. Item-boundary types require available alignment
+  // space. Actual item entry/exit events are stored separately in `occupancy`.
   Vector<CrossGap> BuildArtificialCrossGaps(
       const LaneItems& lane_items,
       wtf_size_t compact_track_index,
+      const Vector<Vector<CrossGap>>& lane_gutters,
       const GridLanesGapGeometryState& state,
-      const BoxFragmentBuilder& builder);
+      const BoxFragmentBuilder& builder,
+      Vector<GridLanesOccupancyEvent>& occupancy);
 
-  // Keeps item and spanner boundaries only where at least one adjacent main
-  // gap needs them. Item boundaries covered by gutters or outside the content
-  // bounds become occupancy-only cross gaps.
-  void FilterArtificialCrossGaps(Vector<CrossGap>& boundaries,
-                                 wtf_size_t compact_track_index,
-                                 const Vector<Vector<CrossGap>>& lane_gutters,
-                                 LayoutUnit stacking_gap) const;
-
-  // Stores an ordered lane run and associates it with adjacent main gaps.
-  void AppendLaneCrossGaps(const Vector<CrossGap>& lane_cross_gaps,
+  // Merges ordered gutters and boundaries into geometry for adjacent main gaps.
+  void AppendLaneCrossGaps(const Vector<CrossGap>& gutters,
+                           const Vector<CrossGap>& boundaries,
                            wtf_size_t compact_track_index);
 
   // Records the item and adds its real cross gap when the lane traversal

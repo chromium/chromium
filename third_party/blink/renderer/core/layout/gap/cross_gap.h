@@ -77,10 +77,6 @@ class CORE_EXPORT CrossGap {
     // Marks where an item with alignment space stops occupying the lane.
     // Also records an item boundary.
     kItemEnd,
-    // Marks where an item starts to occupy the lane, without an item boundary.
-    kOccupiedStart,
-    // Marks where an item stops occupying the lane, without an item boundary.
-    kOccupiedEnd,
   };
 
   // Represents whether/how the gap borders the edge of the container. This

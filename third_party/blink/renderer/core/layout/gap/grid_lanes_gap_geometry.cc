@@ -10,6 +10,50 @@ namespace blink {
 
 namespace {
 
+// Walks a lane's ordered item events to check if a segment is empty.
+class ItemOccupancyCursor {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ItemOccupancyCursor(base::span<const GridLanesOccupancyEvent> events)
+      : remaining_(events) {}
+
+  // Consumes events to check if a segment is empty. Segments must not overlap
+  // and must be checked in increasing order.
+  bool ConsumeAndCheckEmpty(LayoutUnit start, LayoutUnit end) {
+    CHECK_LT(start, end);
+    bool is_empty = occupied_item_count_ == 0;
+    while (!remaining_.empty()) {
+      const auto& event = remaining_.front();
+      if (event.offset >= end) {
+        break;
+      }
+
+      using Kind = GridLanesOccupancyEvent::Kind;
+      if (event.kind == Kind::kItemStart ||
+          event.kind == Kind::kOccupiedStart) {
+        ++occupied_item_count_;
+      } else {
+        CHECK_GT(occupied_item_count_, 0u);
+        --occupied_item_count_;
+      }
+
+      const bool currently_empty = occupied_item_count_ == 0;
+      if (event.offset <= start) {
+        is_empty = currently_empty;
+      } else if (!currently_empty) {
+        is_empty = false;
+      }
+      remaining_ = remaining_.subspan(1u);
+    }
+    return is_empty;
+  }
+
+ private:
+  base::span<const GridLanesOccupancyEvent> remaining_;
+  wtf_size_t occupied_item_count_ = 0;
+};
+
 // Returns whether a lane is empty along a whole segment, meaning the segment
 // lies inside one of the lane's empty openings. A segment that only partly
 // overlaps empty space is not empty.
@@ -41,6 +85,7 @@ bool GridLanesGapGeometry::HasEqualSubclassFields(
     const GapGeometry& other) const {
   const auto& other_geometry = To<GridLanesGapGeometry>(other);
   return empty_openings_ == other_geometry.empty_openings_ &&
+         item_occupancy_ == other_geometry.item_occupancy_ &&
          cross_gap_decoration_ranges_ ==
              other_geometry.cross_gap_decoration_ranges_;
 }
@@ -49,6 +94,17 @@ void GridLanesGapGeometry::SetEmptyOpenings(
     GridLanesEmptyOpenings empty_openings) {
   CHECK_EQ(empty_openings.size(), MainGapCount() + 1);
   empty_openings_ = std::move(empty_openings);
+}
+
+void GridLanesGapGeometry::SetItemOccupancy(
+    GridLanesItemOccupancy item_occupancy) {
+  CHECK_EQ(item_occupancy.size(), MainGapCount() + 1);
+  item_occupancy_ = std::move(item_occupancy);
+}
+
+const Vector<GridLanesOccupancyEvent>&
+GridLanesGapGeometry::ItemOccupancyForLane(wtf_size_t lane_index) const {
+  return item_occupancy_[lane_index];
 }
 
 void GridLanesGapGeometry::AddCrossGapDecorationSlots(wtf_size_t gap_count) {
@@ -164,53 +220,7 @@ GridLanesMainGapSegmentWalker::GridLanesMainGapSegmentWalker(
   // The 2 accounts for the content-start and content-end intersections.
   intersection_capacity_ =
       2 + before_.RemainingCount() + after_.RemainingCount();
-  occupancy_before_ = before_;
-  occupancy_after_ = after_;
   SkipGapsAtOrBeforeContentStart();
-}
-
-void GridLanesMainGapSegmentWalker::CrossGapRunCursor::ConsumeOccupancy(
-    const CrossGap& gap) {
-  switch (gap.GetType()) {
-    case CrossGap::Type::kItemStart:
-    case CrossGap::Type::kOccupiedStart:
-      ++occupied_item_count_;
-      break;
-    case CrossGap::Type::kItemEnd:
-    case CrossGap::Type::kOccupiedEnd:
-      CHECK_GT(occupied_item_count_, 0u);
-      --occupied_item_count_;
-      break;
-    default:
-      break;
-  }
-}
-
-bool GridLanesMainGapSegmentWalker::CrossGapRunCursor::IsEmpty(
-    const CrossGaps& cross_gaps,
-    GridTrackSizingDirection direction,
-    LayoutUnit start,
-    LayoutUnit end) {
-  CHECK_LT(start, end);
-  bool is_empty = occupied_item_count_ == 0;
-  while (!AtEnd()) {
-    const auto& gap = cross_gaps[CrossGapIndex()];
-    const LayoutUnit offset = gap.GetGapOffset(direction);
-    if (offset >= end) {
-      break;
-    }
-
-    ConsumeOccupancy(gap);
-    Advance(cross_gaps);
-
-    const bool currently_empty = occupied_item_count_ == 0;
-    if (offset <= start) {
-      is_empty = currently_empty;
-    } else if (!currently_empty) {
-      is_empty = false;
-    }
-  }
-  return is_empty;
 }
 
 LayoutUnit GridLanesMainGapSegmentWalker::CrossGapOffset(
@@ -232,7 +242,7 @@ LayoutUnit GridLanesMainGapSegmentWalker::NextCrossGapOffset() const {
 
 CrossGap::Type GridLanesMainGapSegmentWalker::CrossGapTypeAtOffset(
     LayoutUnit offset) const {
-  CrossGap::Type type = CrossGap::Type::kOccupiedEnd;
+  CrossGap::Type type = CrossGap::Type::kItemEnd;
   for (const auto* run : {&before_, &after_}) {
     if (run->AtEnd() || CrossGapOffset(run->CrossGapIndex()) != offset) {
       continue;
@@ -266,10 +276,15 @@ bool GridLanesMainGapSegmentWalker::IsInsideGutter(LayoutUnit offset) const {
          next_gutter_offset - offset <= half_width;
 }
 
-void GridLanesMainGapSegmentWalker::MarkEmptySides(
-    Vector<GapIntersection>& intersections) {
-  const auto& cross_gaps = gap_geometry_.GetCrossGaps();
-  const LayoutUnit half_width = cross_gap_width_ / 2;
+void GridLanesGapGeometry::MarkEmptySides(
+    wtf_size_t main_gap_index,
+    Vector<GapIntersection>& intersections) const {
+  ItemOccupancyCursor occupancy_before(ItemOccupancyForLane(main_gap_index));
+  ItemOccupancyCursor occupancy_after(ItemOccupancyForLane(main_gap_index + 1));
+  const LayoutUnit half_width =
+      (GetMainDirection() == kForColumns ? GetBlockGapSize()
+                                         : GetInlineGapSize()) /
+      2;
   LayoutUnit segment_start = intersections.front().GetOffset();
 
   for (wtf_size_t i = 0; i + 1 < intersections.size(); ++i) {
@@ -289,12 +304,10 @@ void GridLanesMainGapSegmentWalker::MarkEmptySides(
     // A long overlap window can have a positive-length trimmed interior.
     if (segment_start < segment_end) {
       GapSegmentState state = intersection.SegmentState();
-      if (occupancy_before_.IsEmpty(cross_gaps, cross_direction_, segment_start,
-                                    segment_end)) {
+      if (occupancy_before.ConsumeAndCheckEmpty(segment_start, segment_end)) {
         state |= GapSegmentState::kEmptyBefore;
       }
-      if (occupancy_after_.IsEmpty(cross_gaps, cross_direction_, segment_start,
-                                   segment_end)) {
+      if (occupancy_after.ConsumeAndCheckEmpty(segment_start, segment_end)) {
         state |= GapSegmentState::kEmptyAfter;
       }
       intersection.SetSegmentState(state);
@@ -340,10 +353,7 @@ GridLanesMainGapSegmentWalker::Next() {
 
     const CrossGap::Type type = CrossGapTypeAtOffset(offset);
     const bool is_gutter = type == CrossGap::Type::kGutter;
-    const bool occupancy_only = type == CrossGap::Type::kOccupiedStart ||
-                                type == CrossGap::Type::kOccupiedEnd;
-    const bool skip_boundary =
-        occupancy_only || (!is_gutter && IsInsideGutter(offset));
+    const bool skip_boundary = !is_gutter && IsInsideGutter(offset);
     ConsumeRunAtOffset(before_, offset);
     ConsumeRunAtOffset(after_, offset);
     if (skip_boundary) {
@@ -428,7 +438,7 @@ void GridLanesGapGeometry::GenerateMainIntersectionList(
                                OverlapWindowState::kWindowClose);
   }
   if (needs_item_occupancy) {
-    walker.MarkEmptySides(intersections);
+    MarkEmptySides(gap_index, intersections);
   }
 }
 
