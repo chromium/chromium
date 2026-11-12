@@ -23,11 +23,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Unit tests for {@link OtpVerificationDialogBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
 public class OtpVerificationDialogBridgeTest {
     private JniRawPtr<OtpVerificationDialogBridge.NativeOtpVerificationDialogViewAndroid>
             mNativeDialogView;

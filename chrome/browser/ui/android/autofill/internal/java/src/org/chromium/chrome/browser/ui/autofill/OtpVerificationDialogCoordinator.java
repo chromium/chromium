@@ -18,7 +18,9 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -89,7 +91,10 @@ class OtpVerificationDialogCoordinator {
         TextView titleView = mDialogView.findViewById(R.id.title);
         titleView.setText(mContext.getString(R.string.autofill_card_unmask_otp_input_dialog_title));
         ImageView iconView = mDialogView.findViewById(R.id.title_icon);
-        iconView.setImageResource(R.drawable.google_pay);
+        iconView.setImageResource(
+                ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS)
+                        ? R.drawable.googlepay_with_gradient
+                        : R.drawable.google_pay);
 
         PropertyModel.Builder dialogModelBuilder = getModalDialogModelBuilder(mDialogView);
 
@@ -160,6 +165,9 @@ class OtpVerificationDialogCoordinator {
     private PropertyModel.Builder getModalDialogModelBuilder(View customView) {
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
+                .with(
+                        ModalDialogProperties.CONTENT_DESCRIPTION,
+                        mContext.getString(R.string.autofill_card_unmask_otp_input_dialog_title))
                 .with(
                         ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         mContext.getString(
