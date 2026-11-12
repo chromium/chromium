@@ -1382,6 +1382,25 @@ public final class StatusMediatorUnitTest {
     }
 
     @Test
+    public void testDestroy_duringActiveSession_unregistersInputObservers() {
+        mMediator.beginInput(mFuseboxSessionState);
+
+        assertTrue(mAutocompleteInput.getSiteSearchDataSupplier().hasObservers());
+        assertTrue(mAutocompleteInput.getRequestTypeSupplier().hasObservers());
+        assertTrue(mAutocompleteInput.getPreviewMatchUrlSupplier().hasObservers());
+        assertTrue(mAutocompleteInput.getDisplayStateSupplier().hasObservers());
+        assertTrue(mAutocompleteInput.getAutocompleteStateSupplier().hasObservers());
+
+        mMediator.destroy();
+
+        assertFalse(mAutocompleteInput.getSiteSearchDataSupplier().hasObservers());
+        assertFalse(mAutocompleteInput.getRequestTypeSupplier().hasObservers());
+        assertFalse(mAutocompleteInput.getPreviewMatchUrlSupplier().hasObservers());
+        assertFalse(mAutocompleteInput.getDisplayStateSupplier().hasObservers());
+        assertFalse(mAutocompleteInput.getAutocompleteStateSupplier().hasObservers());
+    }
+
+    @Test
     public void searchEngineLogo_hidden_whenPendingNavigationToWebPage() {
         // 1. Setup: NTP is visible initially
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();

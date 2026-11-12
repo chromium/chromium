@@ -282,24 +282,7 @@ public class StatusMediator
             mCookieControlsBridge = null;
         }
         mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
-        if (mInputSessionState != null) {
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getRequestTypeSupplier()
-                    .removeObserver(mOnAutocompleteRequestTypeChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getPreviewMatchUrlSupplier()
-                    .removeObserver(mOnPreviewMatchUrlChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getDisplayStateSupplier()
-                    .removeObserver(mOnDisplayStateChanged);
-            mInputSessionState
-                    .getAutocompleteInput()
-                    .getAutocompleteStateSupplier()
-                    .removeObserver(mOnAutocompleteStateChanged);
-        }
+        setFuseboxSessionState(null);
         mImageSupplier.destroy();
     }
 
