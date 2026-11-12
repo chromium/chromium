@@ -322,10 +322,4 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
   _forceApplicationMode = forceApplicationMode;
 }
 
-- (ApplicationModeForTabOpening)applicationMode {
-  // TODO(crbug.com/465336545): Remove this getter once the
-  // `kChromeStartupParametersAsync` is fully removed.
-  return _applicationMode;
-}
-
 @end

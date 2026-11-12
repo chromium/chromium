@@ -157,10 +157,6 @@ struct RemoteActorRequest;
 - (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
       forceApplicationMode:(BOOL)forceApplicationMode;
 
-// A temporary getter for the `applicationMode`. Note: This getter will be
-// removed once the async version is fully launched.
-- (ApplicationModeForTabOpening)applicationMode;
-
 @end
 
 #endif  // IOS_CHROME_APP_APP_STARTUP_PARAMETERS_H_
