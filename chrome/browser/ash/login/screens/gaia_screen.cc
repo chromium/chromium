@@ -19,16 +19,17 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "components/account_id/account_id.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
@@ -440,8 +441,7 @@ void GaiaScreen::OnAccountStatusFetched(const std::string& user_email,
     return;
   }
   if (status.enrollment_required) {
-    const std::string email_domain =
-        enterprise_util::GetDomainFromEmail(user_email);
+    const std::string email_domain = gaia::ExtractDomainName(user_email);
     // Cache email in case we will need to pass it to the enrollment screen.
     enrollment_nudge_email_ = user_email;
     view_->ShowEnrollmentNudge(email_domain);
@@ -463,10 +463,9 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
     // owned.
     return false;
   }
-  const std::string email_domain =
-      enterprise_util::GetDomainFromEmail(user_email);
   // Enrollment nudging can't apply to users not belonging to a managed domain
-  return !enterprise_util::IsKnownConsumerDomain(email_domain);
+  return signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+      user_email);
 }
 
 void GaiaScreen::OnQuickStartButtonClicked() {

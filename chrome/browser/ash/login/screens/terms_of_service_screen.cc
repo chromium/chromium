@@ -21,13 +21,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -152,7 +152,7 @@ void TermsOfServiceScreen::ShowImpl() {
   view_->Show(
       ash::InstallAttributes::Get()->IsEnterpriseManaged()
           ? browser_policy_connector_ash_->GetEnterpriseDomainManager()
-          : enterprise_util::GetDomainFromEmail(
+          : gaia::ExtractDomainName(
                 ProfileManager::GetActiveUserProfile()->GetProfileUserName()));
 
   // Start downloading the Terms of Service.
