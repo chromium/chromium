@@ -86,7 +86,9 @@ class FeedTopSectionMediatorTest : public PlatformTest {
 
 #pragma mark - Test signin promo
 
-TEST_F(FeedTopSectionMediatorTest, TestPromoForEngagedUser) {
+// TODO(crbug.com/584853494): Fails on iOS simulator due to state pollution
+// from FirstRun recency.
+TEST_F(FeedTopSectionMediatorTest, DISABLED_TestPromoForEngagedUser) {
   base::HistogramTester histogram_tester;
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults setBool:YES forKey:kEngagedWithFeedKey];
