@@ -264,6 +264,28 @@ TEST_F(DialogClientViewTest, RemoveAndUpdateButtons) {
   EXPECT_FALSE(client_view()->cancel_button()->GetIsDefault());
 }
 
+// Ensures that an explicit button style is not overwritten by `SetIsDefault()`
+// during button creation or when updating the default button.
+TEST_F(DialogClientViewTest, DefaultButtonExplicitStylePreserved) {
+  delegate()->SetButtonStyle(ui::mojom::DialogButton::kOk,
+                             ui::ButtonStyle::kTonal);
+  SetDialogButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+                   static_cast<int>(ui::mojom::DialogButton::kCancel));
+
+  ASSERT_NE(client_view()->ok_button(), nullptr);
+  EXPECT_TRUE(client_view()->ok_button()->GetIsDefault());
+  EXPECT_EQ(client_view()->ok_button()->GetStyle(), ui::ButtonStyle::kTonal);
+
+  delegate()->SetDefaultButton(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
+  EXPECT_FALSE(client_view()->ok_button()->GetIsDefault());
+  EXPECT_EQ(client_view()->ok_button()->GetStyle(), ui::ButtonStyle::kTonal);
+
+  delegate()->SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
+  EXPECT_TRUE(client_view()->ok_button()->GetIsDefault());
+  EXPECT_EQ(client_view()->ok_button()->GetStyle(), ui::ButtonStyle::kTonal);
+}
+
 // Test that views inside the dialog client view have the correct focus order.
 TEST_F(DialogClientViewTest, SetupFocusChain) {
   delegate()->GetContentsView()->SetFocusBehavior(View::FocusBehavior::ALWAYS);
