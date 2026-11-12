@@ -653,33 +653,36 @@ TEST_F(OtpCoordinatorTest,
               ElementsAre(second_form_targets[1].field));
 }
 
-TEST_F(OtpCoordinatorTest,
-       OnOtpSuggestionsShownSuppressesProactiveTriggerForSameCode) {
+TEST_F(OtpCoordinatorTest, OnOtpSuggestionsShownDeduplicatesByTimestamp) {
   const std::vector<OtpTarget> targets = AddOtpForm(2);
   const OtpTarget& field0 = targets[0];
   const base::Time t0 = base::Time::Now();
 
-  // Focus a non-OTP field so the initial arrival of "654321" is validated and
-  // stored without triggering a proactive popup.
-  FieldGlobalId non_otp_field(autofill_driver().GetFrameToken(),
-                              FieldRendererId(999));
+  // Hide the tab and focus `field0` so the initial arrival of "654321" at `t0`
+  // is validated, stored, and queued as a pending proactive trigger.
+  coordinator_->OnTabVisibilityChanged(false);
   coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(), field0.form,
-                               non_otp_field);
+                               field0.field);
   SendGmailOtp("654321", t0);
   phish_guard_delegate_->WaitForChecks();
   EXPECT_THAT(coordinator_->GetAvailableTokens(field0), HasValue("654321"));
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
 
   // Mark `field0` as shown (`OnOtpSuggestionsShown` records across all fields
-  // of `field0.form`), focus `targets[1]`, and resend "654321": no proactive
-  // trigger should fire for the already-shown code on either field.
+  // of `field0.form`), focus `targets[1]`, and unhide: the deferred trigger for
+  // `t0` is suppressed on `targets[1]`, while a strictly newer resend (`t0 +
+  // 10s`) triggers proactively.
   coordinator_->OnOtpSuggestionsShown(field0.field, "000000");
   coordinator_->OnOtpSuggestionsShown(field0.field, "654321");
   coordinator_->OnFocusChanged(autofill_driver().GetFrameToken(),
                                targets[1].form, targets[1].field);
+  coordinator_->OnTabVisibilityChanged(true);
+  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+
   SendGmailOtp("654321", t0 + base::Seconds(10));
   phish_guard_delegate_->WaitForChecks();
-  EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
+  EXPECT_THAT(frame_observer_->triggered_fields(),
+              ElementsAre(targets[1].field));
 }
 
 TEST_F(OtpCoordinatorTest, SuppressesProactiveTriggerOnNonOtpFocus) {

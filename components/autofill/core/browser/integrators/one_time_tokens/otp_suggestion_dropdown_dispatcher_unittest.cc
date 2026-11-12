@@ -58,8 +58,8 @@ class OtpSuggestionDropdownDispatcherTest : public Test {
 
 // Tests that `TriggerProactive()` rejects empty or consumed candidates without
 // invoking `trigger_callback`, does not record deduplication state when
-// `trigger_callback` returns false, and deduplicates identical OTP values or
-// non-newer timestamps once triggered.
+// `trigger_callback` returns false, and deduplicates non-newer timestamps once
+// triggered.
 TEST_F(OtpSuggestionDropdownDispatcherTest,
        TriggerProactive_DeduplicationAndCallbackResult) {
   OtpSuggestionDropdownDispatcher dispatcher;
@@ -95,28 +95,22 @@ TEST_F(OtpSuggestionDropdownDispatcherTest,
   EXPECT_TRUE(dispatcher.TriggerProactive(
       target, c1, /*can_show_on_screen_now=*/true, trigger_cb.AsStdFunction()));
 
-  // Same OTP value (even with a newer timestamp) and older/equal-timestamp OTPs
-  // are suppressed (both when visible and when hidden); a strictly newer OTP
-  // with a different value is allowed.
+  // Older/equal-timestamp OTPs are suppressed (both when visible and when
+  // hidden); a strictly newer OTP (even with the same value) is allowed.
   const OtpCandidate c1_dup =
       MakeSmsCandidate(target, "123456", t0 + base::Seconds(5));
   const OtpCandidate c_same_time = MakeSmsCandidate(target, "654321", t0);
-  const OtpCandidate c2_newer =
-      MakeSmsCandidate(target, "654321", t0 + base::Seconds(10));
   EXPECT_CALL(trigger_cb, Call).Times(0);
-  EXPECT_FALSE(dispatcher.TriggerProactive(target, c1_dup,
-                                           /*can_show_on_screen_now=*/true,
-                                           trigger_cb.AsStdFunction()));
   EXPECT_FALSE(dispatcher.TriggerProactive(target, c_same_time,
                                            /*can_show_on_screen_now=*/true,
                                            trigger_cb.AsStdFunction()));
-  EXPECT_FALSE(dispatcher.TriggerProactive(target, c1_dup,
+  EXPECT_FALSE(dispatcher.TriggerProactive(target, c_same_time,
                                            /*can_show_on_screen_now=*/false,
                                            trigger_cb.AsStdFunction()));
   EXPECT_FALSE(dispatcher.HasPendingTrigger(target.field));
 
   EXPECT_CALL(trigger_cb, Call(target)).WillOnce(Return(true));
-  EXPECT_TRUE(dispatcher.TriggerProactive(target, c2_newer,
+  EXPECT_TRUE(dispatcher.TriggerProactive(target, c1_dup,
                                           /*can_show_on_screen_now=*/true,
                                           trigger_cb.AsStdFunction()));
 }
@@ -131,8 +125,6 @@ TEST_F(OtpSuggestionDropdownDispatcherTest,
   const OtpTarget target = MakeTarget();
   const base::TimeTicks t0 = base::TimeTicks::Now();
   const OtpCandidate c1 = MakeSmsCandidate(target, "123456", t0);
-  const OtpCandidate c1_dup =
-      MakeSmsCandidate(target, "123456", t0 + base::Seconds(5));
   const OtpCandidate c2_newer =
       MakeSmsCandidate(target, "654321", t0 + base::Seconds(10));
   const OtpCandidate c3_newest =
@@ -195,9 +187,6 @@ TEST_F(OtpSuggestionDropdownDispatcherTest,
   // `last_offered_identity` back from `c2_newer` to `c1`.
   dispatcher.RecordShown(target.field, c1.identity);
   EXPECT_CALL(trigger_cb, Call).Times(0);
-  EXPECT_FALSE(dispatcher.TriggerProactive(target, c1_dup,
-                                           /*can_show_on_screen_now=*/true,
-                                           trigger_cb.AsStdFunction()));
   EXPECT_FALSE(dispatcher.TriggerProactive(target, c2_newer,
                                            /*can_show_on_screen_now=*/true,
                                            trigger_cb.AsStdFunction()));
@@ -224,10 +213,9 @@ TEST_F(OtpSuggestionDropdownDispatcherTest,
 }
 
 // Tests that `TriggerProactive()` orders Gmail OTPs by server-side
-// `email_received_timestamp` (taking precedence over `on_device_arrival`) and
-// suppresses duplicate Gmail OTP values.
+// `email_received_timestamp` (taking precedence over `on_device_arrival`).
 TEST_F(OtpSuggestionDropdownDispatcherTest,
-       GmailCandidates_ServerTimestampPrecedenceAndDuplicateSuppression) {
+       GmailCandidates_ServerTimestampPrecedence) {
   OtpSuggestionDropdownDispatcher dispatcher;
   const OtpTarget target = MakeTarget();
   const base::Time email_t0 = base::Time::Now();
@@ -244,22 +232,15 @@ TEST_F(OtpSuggestionDropdownDispatcherTest,
   const OtpCandidate g_older_email =
       MakeGmailCandidate(target, "222222", email_t0 - base::Seconds(5),
                          arrival_t0 + base::Seconds(10));
-  // Newer email with the same OTP value is suppressed.
-  const OtpCandidate g_same_value =
-      MakeGmailCandidate(target, "111111", email_t0 + base::Seconds(10),
-                         arrival_t0 + base::Seconds(10));
   EXPECT_CALL(trigger_cb, Call).Times(0);
   EXPECT_FALSE(dispatcher.TriggerProactive(target, g_older_email,
                                            /*can_show_on_screen_now=*/true,
                                            trigger_cb.AsStdFunction()));
-  EXPECT_FALSE(dispatcher.TriggerProactive(target, g_same_value,
-                                           /*can_show_on_screen_now=*/true,
-                                           trigger_cb.AsStdFunction()));
 
-  // Strictly newer email timestamp with a distinct value is accepted even if
-  // its on-device arrival timestamp is equal.
+  // Strictly newer email timestamp (even with the same OTP value and equal
+  // on-device arrival timestamp) is accepted.
   const OtpCandidate g2_newer = MakeGmailCandidate(
-      target, "333333", email_t0 + base::Seconds(10), arrival_t0);
+      target, "111111", email_t0 + base::Seconds(10), arrival_t0);
   EXPECT_CALL(trigger_cb, Call(target)).WillOnce(Return(true));
   EXPECT_TRUE(dispatcher.TriggerProactive(target, g2_newer,
                                           /*can_show_on_screen_now=*/true,
