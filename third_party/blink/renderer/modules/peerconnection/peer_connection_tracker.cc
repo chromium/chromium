@@ -885,7 +885,7 @@ void PeerConnectionTracker::TrackAddIceCandidateFailed(
   if (id == -1) {
     return;
   }
-  SendPeerConnectionUpdate(id, "addIceCandidateFailed", error);
+  SendPeerConnectionUpdate(id, "addIceCandidateOnFailure", error);
 }
 
 void PeerConnectionTracker::TrackIceCandidateError(

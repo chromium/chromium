@@ -173,8 +173,7 @@ export class PeerConnectionUpdateTable {
          update.value === '"failed"') ||
         (update.type === 'onconnectionstatechange' &&
          update.value === '"failed"') ||
-        update.type.indexOf('OnFailure') !== -1 ||
-        update.type === 'addIceCandidateFailed') {
+        update.type.indexOf('OnFailure') !== -1) {
       valueContainer.parentElement.classList.add('update-log-failure');
     }
 
