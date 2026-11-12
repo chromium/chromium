@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
 #define COMPONENTS_TRUSTED_VAULT_TEST_FAKE_SECURITY_DOMAINS_SERVER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
@@ -33,6 +34,14 @@ class FakeSecurityDomainsServer {
     // supposed to be handled by FakeSecurityDomainsServer (determined by the
     // URL prefix).
     virtual void OnRequestHandled() = 0;
+  };
+
+  // Represents a member registered in the security domain.
+  struct Member {
+    std::vector<uint8_t> public_key;
+    trusted_vault_pb::SecurityDomainMember::MemberType member_type;
+
+    friend bool operator==(const Member&, const Member&) = default;
   };
 
   static GURL GetServerURL(GURL base_url);
@@ -76,10 +85,26 @@ class FakeSecurityDomainsServer {
   void SetGaiaPasswordKeyPair(
       std::unique_ptr<SecureBoxKeyPair> gaia_password_key_pair);
 
+  // Returns the number of members registered in the security domain.
   int GetMemberCount() const;
+
+  // Returns all members registered in the security domain.
+  std::vector<Member> GetMembers() const;
+
+  // Returns all trusted vault keys in the security domain, ordered by
+  // increasing epoch.
   std::vector<std::vector<uint8_t>> GetAllTrustedVaultKeys() const;
+
+  // Returns whether every member in the security domain holds a shared key
+  // with a valid proof for `trusted_vault_key`.
   bool AllMembersHaveKey(const std::vector<uint8_t>& trusted_vault_key) const;
+
+  // Returns the current epoch of the security domain (0 when no members have
+  // joined and no keys have been set).
   int GetCurrentEpoch() const;
+
+  // Returns whether recoverability of the security domain is currently
+  // degraded.
   bool IsRecoverabilityDegraded() const;
 
   // Returns true if there was a request that violates supported protocol.

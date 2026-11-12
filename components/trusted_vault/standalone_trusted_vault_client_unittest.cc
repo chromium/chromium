@@ -56,9 +56,10 @@ namespace {
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
+using testing::Field;
 using testing::IsEmpty;
 using testing::Not;
-using testing::SizeIs;
+using testing::UnorderedElementsAreArray;
 
 constexpr char kTestEmail[] = "test@gmail.com";
 constexpr char kTestServerUrl[] = "http://trusted-vault.test";
@@ -67,12 +68,27 @@ constexpr char kTestServerUrl[] = "http://trusted-vault.test";
 constexpr char kKeychainAccessGroupPrefix[] = "test-access-group-prefix";
 constexpr char kKeychainAccessGroup[] =
     "test-access-group-prefix.com.google.common.folsom";
-// On Mac, both the physical device recovery factor and the iCloud Keychain
-// recovery factor are registered by default.
-constexpr int kDefaultExpectedMemberCount = 2;
-#else
-constexpr int kDefaultExpectedMemberCount = 1;
 #endif
+
+testing::Matcher<FakeSecurityDomainsServer::Member> MemberType(
+    trusted_vault_pb::SecurityDomainMember::MemberType expected_member_type) {
+  return Field(&FakeSecurityDomainsServer::Member::member_type,
+               expected_member_type);
+}
+
+// On Mac, both the physical device recovery factor and the iCloud Keychain
+// recovery factor are registered by default once non-constant keys exist.
+std::vector<testing::Matcher<FakeSecurityDomainsServer::Member>>
+DefaultLocalRecoveryFactorMatchers() {
+  return {
+      MemberType(
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE),
+#if BUILDFLAG(IS_MAC)
+      MemberType(
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_ICLOUD_KEYCHAIN),
+#endif
+  };
+}
 
 class MockTrustedVaultClientObserver : public TrustedVaultClient::Observer {
  public:
@@ -254,7 +270,9 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldPreEnrollOnStartup) {
   // recovery factor registration is not supported, so only physical device
   // recovery factor is registered.
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 1);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(),
+              ElementsAre(MemberType(trusted_vault_pb::SecurityDomainMember::
+                                         MEMBER_TYPE_PHYSICAL_DEVICE)));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(
       GetConstantTrustedVaultKey()));
 
@@ -276,7 +294,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   // Background pre-enrollment registration was rejected with
   // kLocalDataObsolete.
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 0);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(), IsEmpty());
   EXPECT_THAT(FetchKeys(client.get(), account_info), IsEmpty());
 
   // Fallback key retrieval via StoreKeys resolves error and registers factors.
@@ -287,8 +305,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
               OnTrustedVaultKeysChanged(/*trigger=*/Eq(std::nullopt)));
   StoreKeys(client.get(), account_info.gaia, {kServerKey}, kServerEpoch);
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(),
+              UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kServerKey));
 
   EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kServerKey));
@@ -299,7 +317,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 1);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(),
+              ElementsAre(MemberType(trusted_vault_pb::SecurityDomainMember::
+                                         MEMBER_TYPE_PHYSICAL_DEVICE)));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(
       GetConstantTrustedVaultKey()));
 
@@ -333,8 +353,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_THAT(FetchKeys(client.get(), account_info),
               ElementsAre(new_epoch_key));
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(),
+              UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(new_epoch_key));
 }
 
@@ -368,7 +388,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
   AddTrustedRecoveryMethod(client.get(), account_info.gaia,
                            key_pair->public_key().ExportToBytes(),
                            /*method_type_hint=*/3);
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 0);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(), IsEmpty());
 
   // Storing retrieved remote keys resolves kLocalDataObsolete and
   // auto-registers the default recovery factors.
@@ -377,8 +397,8 @@ TEST_F(StandaloneTrustedVaultClientTest,
   StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1, kRemoteKeyV2},
             kRemoteEpochV2);
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(),
+              UnorderedElementsAreArray(DefaultLocalRecoveryFactorMatchers()));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kRemoteKeyV2));
 
   EXPECT_THAT(FetchKeys(client.get(), account_info),
@@ -535,6 +555,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
   // First run with legacy storage enabled
   // (`kTrustedVaultSharedRecoveryFactorsAndEncryption` disabled).
+  std::vector<FakeSecurityDomainsServer::Member> initial_members;
   {
     base::test::ScopedFeatureList disable_new_storage;
     disable_new_storage.InitAndDisableFeature(
@@ -546,8 +567,9 @@ TEST_F(StandaloneTrustedVaultClientTest,
 
     EXPECT_TRUE(base::PathExists(legacy_file_path));
     EXPECT_FALSE(base::PathExists(new_file_path));
-    EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-              kDefaultExpectedMemberCount);
+    initial_members = fake_security_domains_server_->GetMembers();
+    EXPECT_THAT(initial_members, UnorderedElementsAreArray(
+                                     DefaultLocalRecoveryFactorMatchers()));
   }
   task_environment_.RunUntilIdle();
 
@@ -561,8 +583,7 @@ TEST_F(StandaloneTrustedVaultClientTest,
   // re-registering recovery factors.
   EXPECT_THAT(FetchKeys(migrated_client.get(), account_info),
               ElementsAre(kKey1));
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount);
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(), Eq(initial_members));
 
   // Verify that the migrated physical device private key can decrypt newly
   // rotated server keys.
@@ -596,8 +617,12 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldCheckCanEnrollEligibility) {
 }
 
 TEST_F(StandaloneTrustedVaultClientTest, ShouldEnroll) {
+  std::unique_ptr<SecureBoxKeyPair> gaia_password_key_pair =
+      SecureBoxKeyPair::GenerateRandom();
+  const std::vector<uint8_t> gaia_password_public_key =
+      gaia_password_key_pair->public_key().ExportToBytes();
   fake_security_domains_server_->SetGaiaPasswordKeyPair(
-      SecureBoxKeyPair::GenerateRandom());
+      std::move(gaia_password_key_pair));
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
 
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
@@ -620,8 +645,13 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldEnroll) {
 
   // Default local recovery factors plus the newly registered Gaia password
   // member should all hold `rotated_key`.
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount + 1);
+  std::vector<testing::Matcher<FakeSecurityDomainsServer::Member>>
+      expected_members = DefaultLocalRecoveryFactorMatchers();
+  expected_members.push_back(Eq(FakeSecurityDomainsServer::Member{
+      gaia_password_public_key,
+      trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_GAIA_PASSWORD}));
+  EXPECT_THAT(fake_security_domains_server_->GetMembers(),
+              UnorderedElementsAreArray(expected_members));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(rotated_key));
   EXPECT_FALSE(fake_security_domains_server_->ReceivedInvalidRequest());
 

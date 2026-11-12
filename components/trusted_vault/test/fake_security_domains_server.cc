@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
@@ -364,6 +365,23 @@ void FakeSecurityDomainsServer::SetGaiaPasswordKeyPair(
 int FakeSecurityDomainsServer::GetMemberCount() const {
   base::AutoLock autolock(lock_);
   return state_.public_key_to_shared_keys.size();
+}
+
+std::vector<FakeSecurityDomainsServer::Member>
+FakeSecurityDomainsServer::GetMembers() const {
+  base::AutoLock autolock(lock_);
+  std::vector<Member> members;
+  members.reserve(state_.public_key_to_shared_keys.size());
+  for (const auto& [public_key, unused_shared_keys] :
+       state_.public_key_to_shared_keys) {
+    auto type_it = state_.public_key_to_member_type.find(public_key);
+    const trusted_vault_pb::SecurityDomainMember::MemberType member_type =
+        type_it != state_.public_key_to_member_type.end()
+            ? type_it->second
+            : trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED;
+    members.push_back(Member{ProtoStringToBytes(public_key), member_type});
+  }
+  return members;
 }
 
 std::vector<std::vector<uint8_t>>
