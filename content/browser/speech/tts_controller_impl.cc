@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -751,19 +752,20 @@ void TtsControllerImpl::SpeakNextUtterance() {
 
   // Start speaking the next utterance in the queue.  Keep trying in case
   // one fails but there are still more in the queue to try.
-  TtsUtterance* previous_utterance = nullptr;
+  uintptr_t previous_utterance = 0u;
   while (!utterance_list_.empty() && !current_utterance_) {
     std::unique_ptr<TtsUtterance> utterance =
         std::move(utterance_list_.front());
     utterance_list_.pop_front();
-    CHECK(previous_utterance != utterance.get(), base::NotFatalUntil::M159);
+    uintptr_t utterance_addr = reinterpret_cast<uintptr_t>(utterance.get());
+    CHECK(previous_utterance != utterance_addr, base::NotFatalUntil::M159);
 
     if (ShouldSpeakUtterance(utterance.get()))
       SpeakNow(std::move(utterance));
     else
       utterance->Finish();
 
-    previous_utterance = utterance.get();
+    previous_utterance = utterance_addr;
   }
 }
 
