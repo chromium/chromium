@@ -711,6 +711,17 @@ TEST(AutocompleteGrouperSectionsTest, IOSComposeboxZpsSection) {
         // Nothing but personalized zero suggest and aim recommendations.
         {103, 102, 97, 101, 96});
   }
+  {
+    SCOPED_TRACE("Contextual search and multimodal matches");
+    test(
+        {
+            CreateMatch(99, omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED),
+            CreateMatch(98, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(97, omnibox::GROUP_MULTIMODAL),
+        },
+        // Canned first, then contextual/multimodal.
+        {99, 98, 97});
+  }
 }
 
 // Tests the groups, limits, and rules for the Desktop NTP ZPS section.
@@ -2353,15 +2364,17 @@ TEST(AutocompleteGrouperSectionsTest, DesktopComposeboxZpsSection) {
         {103, 102, 97, 101, 96});
   }
   {
-    SCOPED_TRACE("All contextual search with one verbatim match");
+    SCOPED_TRACE(
+        "All contextual search and multimodal with one verbatim match");
     test(
         {
             CreateMatch(96, omnibox::GROUP_SEARCH),
             CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_MULTIMODAL),
             CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
         },
-        // Group search gets in along with contextual searches.
-        {96, 95, 93});
+        // Group search gets in along with contextual and multimodal searches.
+        {96, 95, 93, 94});
   }
   {
     SCOPED_TRACE("ZPS rich image action matches only");
@@ -2560,12 +2573,27 @@ TEST(AutocompleteGrouperSectionsTest, AndroidComposeboxZpsSection) {
         {103, 102, 97, 101, 96});
   }
   {
+    SCOPED_TRACE("Single image attachment multimodal and contextual matches");
+    test(
+        {
+            CreateMatch(99, omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED),
+            CreateMatch(98, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(97, omnibox::GROUP_MULTIMODAL),
+            CreateMatch(96, omnibox::GROUP_MULTIMODAL),
+        },
+        // Canned first, then contextual search and multimodal.
+        {99, 98, 97, 96},
+        /*num_contextual_attachments=*/1u);
+  }
+  {
     SCOPED_TRACE("Multiple attachments suppress ZPS suggestions");
     test(
         {
             CreateMatch(103, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
             CreateMatch(101, omnibox::GROUP_MIA_RECOMMENDATIONS),
+            CreateMatch(99, omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED),
             CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_MULTIMODAL),
         },
         {}, /*num_contextual_attachments=*/2u);
   }
