@@ -24,9 +24,21 @@
 }
 
 :host-context([settings-refresh-2026]) {
+
+  &:host(.multi-card) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .multi-card > .card {
+    margin-top: 0;
+  }
+
   #headerLine {
     min-height: 0;
     padding: 0;
+    padding-top: 24px;
   }
 
   #closeButton {

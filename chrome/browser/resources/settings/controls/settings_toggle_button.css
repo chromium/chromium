@@ -16,6 +16,10 @@
   padding: 0 var(--cr-section-padding);
 }
 
+:host-context([settings-refresh-2026]) {
+  background-color: var(--color-settings-section-background);
+}
+
 :host([elide-label]),
 :host([elide-label]) #outerRow,
 :host([elide-label]) #outerRow > div.flex {

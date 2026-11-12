@@ -4,6 +4,8 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=../settings_shared_lit.css.js
+ * #include=settings-shared-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -27,11 +29,12 @@
   }
 
   #title {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
+    color: var(--color-settings-title-text);
+    font-size: var(--settings-header-font-size);
+    font-weight: var(--settings-header-font-weight);
+    line-height: var(--settings-header-line-height);
     margin: 0;
-    padding: 16px 20px;
+    padding: var(--settings-header-padding);
   }
 
   #card {

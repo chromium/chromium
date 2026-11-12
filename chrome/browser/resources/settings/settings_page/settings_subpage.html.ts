@@ -8,7 +8,7 @@ import type {SettingsSubpageElement} from './settings_subpage.js';
 
 export function getHtml(this: SettingsSubpageElement) {
   return html`<!--_html_template_start_-->
-<div class="cr-row first" id="headerLine">
+<div class="cr-row first section-header-row" id="headerLine">
   <cr-icon-button class="icon-arrow-back" id="closeButton"
       @click="${this.onBackClick_}"
       aria-label="${this.getBackButtonAriaLabel_()}"

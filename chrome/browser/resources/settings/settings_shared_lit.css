@@ -22,17 +22,19 @@
   --cr-separator-line: none;
   --cr-title-text-color: var(--color-settings-title-text);
   --cr-icon-button-margin-start: 8px;
+  --settings-header-font-size: 16px;
+  --settings-header-font-weight: 500;
+  --settings-header-line-height: 24px;
+  --settings-header-padding: 16px 20px;
 
-  .cr-title-text {
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
+  .cr-title-text,
+  .section-header {
+    color: var(--color-settings-title-text);
+    font-size: var(--settings-header-font-size);
+    font-weight: var(--settings-header-font-weight);
+    line-height: var(--settings-header-line-height);
     margin: 0;
-    padding: 16px 20px;
-  }
-
-  .cr-row:has(.cr-title-text) {
-    padding: 0;
+    padding: var(--settings-header-padding);
   }
 
   cr-input.stroked {
@@ -66,6 +68,35 @@
 
   .list-frame {
     padding-inline-start: var(--cr-section-padding);
+  }
+
+  .section-header-row {
+    align-items: center;
+    background-color: transparent;
+    display: flex;
+    justify-content: space-between;
+    min-height: 0;
+    padding: 0;
+    padding-inline-end: 4px;
+  }
+
+  .section-header-row .header-aligned-button {
+    margin-top: 0;
+  }
+
+  .header-aligned-button {
+    --cr-button-border: none;
+    --cr-button-disabled-border: none;
+  }
+
+  .settings-card,
+  .card {
+    background-color: transparent;
+    border-radius: var(--cr-card-border-radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    row-gap: 1px;
   }
 }
 
