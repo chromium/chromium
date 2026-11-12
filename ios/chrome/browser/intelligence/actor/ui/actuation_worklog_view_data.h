@@ -184,7 +184,7 @@ enum class InterventionActionIdentifier : NSInteger {
 // Title of the button triggering the action.
 @property(nonatomic, copy, readonly) NSString* title;
 
-// TODO(crbug.com/573145076): Add an optional `icon` for `columnItem`.
+// TODO(crbug.com/573964938): Add an optional `icon` for `columnItem`.
 
 // Designated initializer.
 - (instancetype)initWithIdentifier:(InterventionActionIdentifier)identifier
