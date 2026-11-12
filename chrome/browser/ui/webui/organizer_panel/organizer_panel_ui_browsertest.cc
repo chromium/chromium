@@ -8,14 +8,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,14 +31,6 @@ class OrganizerPanelUIBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUIBrowserTest, GetProfileLoadTimeData) {
   Profile* profile = browser()->GetProfile();
   base::DictValue dict = OrganizerPanelUI::GetProfileLoadTimeData(profile);
-  EXPECT_EQ(false, dict.FindBool("isUserSignedIn"));
-  EXPECT_EQ(false, dict.FindBool("isIncognitoMode"));
-
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(profile), "user@example.com",
-      signin::ConsentLevel::kSignin);
-  dict = OrganizerPanelUI::GetProfileLoadTimeData(profile);
-  EXPECT_EQ(true, dict.FindBool("isUserSignedIn"));
   EXPECT_EQ(false, dict.FindBool("isIncognitoMode"));
 
   dict = OrganizerPanelUI::GetProfileLoadTimeData(

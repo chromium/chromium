@@ -44,14 +44,14 @@ suite('ForeignTabsDelegateTest', () => {
 
   setup(() => {
     loadTimeData.resetForTesting({
-      diceSupportEnabled: true,
-      isUserSignedIn: true,
       tabsOnOtherDevices: 'Tabs on other devices',
       signInOnPhone: 'Sign in on your phone',
     });
     mockHandler = TestMock.fromClass(ForeignTabsPageHandlerRemote);
-    mockHandler.setResultFor(
-        'getForeignTabs', Promise.resolve({tabs: [...sampleTabs]}));
+    mockHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [...sampleTabs],
+      canShowCrossDeviceSignInPromo: false,
+    }));
     foreignTabsBrowserProxyFactory.setInstance({handler: mockHandler});
     delegate = new ForeignTabsDelegate();
   });
@@ -117,58 +117,47 @@ suite('ForeignTabsDelegateTest', () => {
     assertEquals(sampleTabs[1]!.sessionTabId, sessionTabId);
   });
 
-  test('shouldHide returns true when user is signed out', async () => {
-    loadTimeData.overrideValues({isUserSignedIn: false});
-    delegate = new ForeignTabsDelegate();
+  test('shouldHide defaults to true before getItems', () => {
     assertTrue(delegate.shouldHide());
+  });
 
+  test('shouldHide is true when empty and promo disallowed', async () => {
+    mockHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [],
+      canShowCrossDeviceSignInPromo: false,
+    }));
     const items = await delegate.getItems();
     assertEquals(0, items.length);
     assertTrue(delegate.shouldHide());
-    assertEquals(0, mockHandler.getCallCount('getForeignTabs'));
   });
 
-  test('shouldHide returns true when no DICE and no tabs', async () => {
-    loadTimeData.overrideValues({
-      isUserSignedIn: true,
-      diceSupportEnabled: false,
-    });
-    mockHandler.setResultFor('getForeignTabs', Promise.resolve({tabs: []}));
-    delegate = new ForeignTabsDelegate();
-    assertTrue(delegate.shouldHide());
-
+  test('shouldHide is false when empty and promo allowed', async () => {
+    mockHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [],
+      canShowCrossDeviceSignInPromo: true,
+    }));
     const items = await delegate.getItems();
     assertEquals(0, items.length);
-    assertTrue(delegate.shouldHide());
-    assertEquals(1, mockHandler.getCallCount('getForeignTabs'));
+    assertFalse(delegate.shouldHide());
   });
 
-  test('shouldHide returns false when no DICE and has tabs', async () => {
-    loadTimeData.overrideValues({
-      isUserSignedIn: true,
-      diceSupportEnabled: false,
-    });
-    mockHandler.setResultFor(
-        'getForeignTabs', Promise.resolve({tabs: [...sampleTabs]}));
-    delegate = new ForeignTabsDelegate();
-    assertTrue(delegate.shouldHide());
-
+  test('shouldHide is false with tabs and promo disallowed', async () => {
+    mockHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [...sampleTabs],
+      canShowCrossDeviceSignInPromo: false,
+    }));
     const items = await delegate.getItems();
     assertEquals(3, items.length);
     assertFalse(delegate.shouldHide());
   });
 
-  test('shouldHide returns false when DICE supported', async () => {
-    loadTimeData.overrideValues({
-      isUserSignedIn: true,
-      diceSupportEnabled: true,
-    });
-    mockHandler.setResultFor('getForeignTabs', Promise.resolve({tabs: []}));
-    delegate = new ForeignTabsDelegate();
-    assertFalse(delegate.shouldHide());
-
+  test('shouldHide is false with tabs and promo allowed', async () => {
+    mockHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [...sampleTabs],
+      canShowCrossDeviceSignInPromo: true,
+    }));
     const items = await delegate.getItems();
-    assertEquals(0, items.length);
+    assertEquals(3, items.length);
     assertFalse(delegate.shouldHide());
   });
 

@@ -13,7 +13,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -32,9 +31,6 @@
 #include "chrome/grit/organizer_panel_resources.h"
 #include "chrome/grit/organizer_panel_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -132,13 +128,6 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
     source->AddLocalizedStrings(GetProfileLoadTimeData(
         webui::GetUserProfile(web_ui->GetWebContents())));
   }
-  source->AddBoolean("diceSupportEnabled",
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-                     true
-#else
-                     false
-#endif
-  );
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
@@ -173,13 +162,8 @@ OrganizerPanelUI::~OrganizerPanelUI() = default;
 
 // static
 base::DictValue OrganizerPanelUI::GetProfileLoadTimeData(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  return base::DictValue()
-      .Set("isUserSignedIn",
-           identity_manager && identity_manager->HasPrimaryAccount(
-                                   signin::ConsentLevel::kSignin))
-      .Set("isIncognitoMode", profile->IsIncognitoProfile());
+  return base::DictValue().Set("isIncognitoMode",
+                               profile->IsIncognitoProfile());
 }
 
 void OrganizerPanelUI::WebUIRenderFrameCreated(

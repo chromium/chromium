@@ -21,8 +21,7 @@ import {getHostnameOrUrl} from './tab_delegate_utils.js';
 export class ForeignTabsDelegate implements
     OrganizerListSectionDelegate<ForeignTab> {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
-  private shouldHide_: boolean = !loadTimeData.getBoolean('isUserSignedIn') ||
-      !loadTimeData.getBoolean('diceSupportEnabled');
+  private shouldHide_: boolean = true;
 
   init(_sectionClient: OrganizerListSectionClient) {}
 
@@ -43,18 +42,10 @@ export class ForeignTabsDelegate implements
   }
 
   async getItems(): Promise<Array<OrganizerListSectionItem<ForeignTab>>> {
-    if (!loadTimeData.getBoolean('isUserSignedIn')) {
-      this.shouldHide_ = true;
-      return [];
-    }
+    const {tabs, canShowCrossDeviceSignInPromo} =
+        await this.browserProxy_.handler.getForeignTabs();
 
-    const {tabs} = await this.browserProxy_.handler.getForeignTabs();
-
-    if (!loadTimeData.getBoolean('diceSupportEnabled') && tabs.length === 0) {
-      this.shouldHide_ = true;
-    } else {
-      this.shouldHide_ = false;
-    }
+    this.shouldHide_ = tabs.length === 0 && !canShowCrossDeviceSignInPromo;
 
     return tabs.map(
         tab => ({
@@ -70,9 +61,6 @@ export class ForeignTabsDelegate implements
   }
 
   getZeroState(): TemplateResult {
-    // TODO(crbug.com/576361077): Add support for signed out users.
-    // TODO(crbug.com/579400988): Call ShouldStartShowingCrossDeviceSigninPromo
-    // before showing this zero state.
     const item: OrganizerListSectionItem<unknown> = {
       title: [loadTimeData.getString('signInOnPhone')],
       prefixIcon: {

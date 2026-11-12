@@ -9,14 +9,15 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
@@ -24,19 +25,36 @@
 #include "chrome/browser/ui/webui/organizer_panel/foreign_tabs.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/base/signin_switches.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
+#include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/sessions_global_id_mapper.h"
 #include "components/sync_sessions/synced_session.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager_test_api.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_user_settings.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/test_device_info_builder.h"
+#include "content/public/test/browser_test_utils.h"
+#endif
 
 namespace {
 
@@ -85,12 +103,34 @@ class ForeignTabsPageHandlerBrowserTest : public InProcessBrowserTest {
                                          -> std::unique_ptr<KeyedService> {
           return std::make_unique<FakeSessionSyncService>();
         }));
+    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::FakeDeviceInfoSyncService>();
+        }));
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
   }
 
   FakeSessionSyncService* session_sync_service() {
     return static_cast<FakeSessionSyncService*>(
         SessionSyncServiceFactory::GetInstance()->GetForProfile(
             browser()->GetProfile()));
+  }
+
+  syncer::FakeDeviceInfoTracker* device_info_tracker() {
+    auto* service = static_cast<syncer::FakeDeviceInfoSyncService*>(
+        DeviceInfoSyncServiceFactory::GetForProfile(browser()->GetProfile()));
+    return static_cast<syncer::FakeDeviceInfoTracker*>(
+        service->GetDeviceInfoTracker());
+  }
+
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(browser()->GetProfile()));
   }
 
  private:
@@ -104,11 +144,14 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
       remote.BindNewPipeAndPassReceiver(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
-  base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>>
+  base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                         bool>
       future;
   remote->GetForeignTabs(future.GetCallback());
 
-  EXPECT_TRUE(future.Take().empty());
+  auto [tabs, can_show_promo] = future.Take();
+  EXPECT_TRUE(tabs.empty());
+  EXPECT_FALSE(can_show_promo);
 }
 
 IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
@@ -150,11 +193,12 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
       remote.BindNewPipeAndPassReceiver(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
-  base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>>
+  base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                         bool>
       future;
   remote->GetForeignTabs(future.GetCallback());
 
-  auto tabs = future.Take();
+  auto tabs = std::get<0>(future.Take());
   ASSERT_EQ(3u, tabs.size());
 
   // 1st: YouTube (MacBook Pro, 2 mins ago)
@@ -200,11 +244,12 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerBrowserTest,
       remote.BindNewPipeAndPassReceiver(),
       browser()->GetTabStripModel()->GetActiveWebContents());
 
-  base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>>
+  base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                         bool>
       future;
   remote->GetForeignTabs(future.GetCallback());
 
-  auto tabs = future.Take();
+  auto tabs = std::get<0>(future.Take());
   ASSERT_EQ(1u, tabs.size());
   EXPECT_EQ("session_device", tabs[0]->session_tag);
   EXPECT_EQ(tab->tab_id.id(), tabs[0]->session_tab_id);
@@ -265,8 +310,14 @@ class ForeignTabsPageHandlerPromoBrowserTest
     : public ForeignTabsPageHandlerBrowserTest {
  public:
   ForeignTabsPageHandlerPromoBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        switches::kCrossDeviceSigninFromDesktopFollowup);
+    // Intentionally leave organizer_panel::kOrganizerPanelForeignTabs disabled
+    // so OrganizerPanelUI does not construct a second ForeignTabsPageHandler
+    // when SetOrganizerVisible(true) creates the panel WebContents.
+    scoped_feature_list_.InitWithFeatures(
+        {organizer_panel::kOrganizerPanel,
+         switches::kCrossDeviceSigninFromDesktop,
+         switches::kCrossDeviceSigninFromDesktopFollowup},
+        {});
   }
 
  private:
@@ -294,6 +345,249 @@ IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPromoBrowserTest,
       "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
       CrossDeviceSigninPromoEntryPoint::kForeignTabs, 1);
   EXPECT_TRUE(IsCrossDeviceSigninPromoBubbleOpen(browser()->GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPromoBrowserTest,
+                       ChecksPromoEligibilityOnEachPanelOpen) {
+  base::HistogramTester histogram_tester;
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, /*is_type_on=*/true);
+
+  mojo::Remote<organizer_panel::mojom::ForeignTabsPageHandler> remote;
+  ForeignTabsPageHandler handler(
+      remote.BindNewPipeAndPassReceiver(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  // Before the organizer panel opens, promo eligibility is not checked.
+  {
+    base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                           bool>
+        future;
+    remote->GetForeignTabs(future.GetCallback());
+    EXPECT_FALSE(std::get<1>(future.Take()));
+    histogram_tester.ExpectTotalCount(
+        "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 0);
+  }
+
+  // Opening the panel checks promo eligibility lazily on the first empty
+  // GetForeignTabs() call and caches it while the panel remains open.
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 0);
+  {
+    base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                           bool>
+        future;
+    remote->GetForeignTabs(future.GetCallback());
+    EXPECT_TRUE(std::get<1>(future.Take()));
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+  {
+    base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                           bool>
+        future;
+    remote->GetForeignTabs(future.GetCallback());
+    EXPECT_TRUE(std::get<1>(future.Take()));
+  }
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 1);
+
+  // Closing the panel does not check promo eligibility and resets the cache.
+  controller->SetOrganizerVisible(false, /*immediate=*/true);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 1);
+  {
+    base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                           bool>
+        future;
+    remote->GetForeignTabs(future.GetCallback());
+    EXPECT_FALSE(std::get<1>(future.Take()));
+  }
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 1);
+
+  // When foreign tabs exist (e.g. from another desktop), reopening does not
+  // evaluate promo eligibility or record the histogram.
+  auto* open_tabs = session_sync_service()->GetOpenTabsUIDelegate();
+  open_tabs->AddForeignSession("session_desktop", base::Time::Now());
+  open_tabs->AddTabToForeignSession("session_desktop",
+                                    GURL("https://www.example.com/"));
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  {
+    base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                           bool>
+        future;
+    remote->GetForeignTabs(future.GetCallback());
+    auto [tabs, can_show_promo] = future.Take();
+    EXPECT_EQ(1u, tabs.size());
+    EXPECT_FALSE(can_show_promo);
+  }
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 1);
+
+  // Removing the foreign tabs and adding a synced phone: reopening with empty
+  // tabs re-checks eligibility and returns false.
+  controller->SetOrganizerVisible(false, /*immediate=*/true);
+  open_tabs->DeleteForeignSession("session_desktop");
+  device_info_tracker()->Add(
+      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
+          .WithGuid("phone_guid")
+          .WithFormFactor(syncer::DeviceInfo::FormFactor::kPhone)
+          .WithLastUpdatedTimestamp(base::Time::Now())
+          .Build());
+
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  {
+    base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                           bool>
+        future;
+    remote->GetForeignTabs(future.GetCallback());
+    EXPECT_FALSE(std::get<1>(future.Take()));
+  }
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 2);
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs",
+      CrossDeviceSigninPromoShouldShowResult::kHasMobileDevice, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPromoBrowserTest,
+                       EvaluatesPromoWhenConstructedAfterPanelAlreadyOpen) {
+  base::HistogramTester histogram_tester;
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, /*is_type_on=*/true);
+
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+
+  mojo::Remote<organizer_panel::mojom::ForeignTabsPageHandler> remote;
+  ForeignTabsPageHandler handler(
+      remote.BindNewPipeAndPassReceiver(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  base::test::TestFuture<std::vector<organizer_panel::mojom::ForeignTabPtr>,
+                         bool>
+      future;
+  remote->GetForeignTabs(future.GetCallback());
+  EXPECT_TRUE(std::get<1>(future.Take()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+}
+
+class ForeignTabsPageHandlerPreloadPromoBrowserTest
+    : public ForeignTabsPageHandlerBrowserTest {
+ public:
+  ForeignTabsPageHandlerPreloadPromoBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {organizer_panel::kOrganizerPanel,
+         organizer_panel::kOrganizerPanelForeignTabs,
+         features::kPreloadTopChromeWebUI,
+         features::kPreloadTopChromeWebUIHideWhenReady,
+         switches::kCrossDeviceSigninFromDesktop,
+         switches::kCrossDeviceSigninFromDesktopFollowup},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ForeignTabsPageHandlerPreloadPromoBrowserTest,
+                       PreloadDoesNotCheckPromoUntilPanelOpens) {
+  base::HistogramTester histogram_tester;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  sync_service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, /*is_type_on=*/true);
+
+  WebUIContentsPreloadManagerTestAPI preload_api;
+  preload_api.PreloadUrl(browser()->GetProfile(),
+                         GURL(chrome::kChromeUIOrganizerPanelURL));
+  content::WebContents* const preloaded_contents =
+      preload_api.GetPreloadedWebContents();
+  ASSERT_TRUE(preloaded_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(preloaded_contents));
+
+  constexpr char kWaitForHiddenJs[] = R"(
+    new Promise(resolve => {
+      if (document.visibilityState === 'hidden') {
+        resolve(document.visibilityState);
+        return;
+      }
+      document.addEventListener(
+          'visibilitychange', () => resolve(document.visibilityState),
+          {once: true});
+    });
+  )";
+  constexpr char kWaitForVisibleAndRefreshForeignTabsJs[] = R"(
+    (async () => {
+      if (document.visibilityState !== 'visible') {
+        await new Promise(resolve => {
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              resolve();
+            }
+          }, {once: true});
+        });
+      }
+      const app = document.querySelector('organizer-panel-app');
+      const sections = Array.from(
+          app.$.list.shadowRoot.querySelectorAll('organizer-list-section'));
+      const foreignSection =
+          sections.find(s => s.delegate?.getId() === 'cross-device-tabs');
+      if (!foreignSection) {
+        return false;
+      }
+      await foreignSection.delegate.getItems();
+      return true;
+    })();
+  )";
+
+  // Wait until preload completes its initial load and hides the WebContents.
+  // Preloading must not trigger ShouldStartShowingCrossDeviceSigninPromo.
+  ASSERT_EQ("hidden", content::EvalJs(preloaded_contents, kWaitForHiddenJs));
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 0);
+
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+  ASSERT_EQ(true, content::EvalJs(preloaded_contents,
+                                  kWaitForVisibleAndRefreshForeignTabsJs));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+
+  // Minimizing/hiding the WebContents directly while the panel stays open and
+  // then making it visible again triggers visibilitychange -> GetForeignTabs(),
+  // which must not re-record the open check.
+  preloaded_contents->WasHidden();
+  ASSERT_EQ("hidden", content::EvalJs(preloaded_contents, kWaitForHiddenJs));
+  preloaded_contents->WasShown();
+  ASSERT_EQ(true, content::EvalJs(preloaded_contents,
+                                  kWaitForVisibleAndRefreshForeignTabsJs));
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.ForeignTabs", 1);
 }
 #endif
 

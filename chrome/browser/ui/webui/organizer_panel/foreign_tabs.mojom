@@ -19,8 +19,10 @@ struct ForeignTab {
 // Browser-side handler for requests from WebUI page.
 interface ForeignTabsPageHandler {
   // Get the list of foreign tabs that should be displayed in the
-  // organizer panel, sorted by how recently they were accessed.
-  GetForeignTabs() => (array<ForeignTab> tabs);
+  // organizer panel, sorted by how recently they were accessed, along with
+  // whether the cross-device sign-in promo can be shown if the list is empty.
+  GetForeignTabs() =>
+      (array<ForeignTab> tabs, bool can_show_cross_device_sign_in_promo);
 
   // Opens a foreign tab from another device.
   OpenTab(string session_tag, int32 session_tab_id);

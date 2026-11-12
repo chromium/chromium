@@ -42,11 +42,9 @@ suite('OrganizerPanelAppTest', () => {
       collapse: 'Collapse',
       createTabGroup: 'Create tab group',
       currentlyPlaying: 'Currently playing',
-      diceSupportEnabled: true,
       expand: 'Expand',
       foreignTabsEnabled: false,
       isIncognitoMode: false,
-      isUserSignedIn: true,
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
       openTabGroup: 'Open tab group',
@@ -99,8 +97,10 @@ suite('OrganizerPanelAppTest', () => {
     tabGroupsBrowserProxyFactory.setInstance(tabGroupsInstance);
 
     mockForeignTabsHandler = TestMock.fromClass(ForeignTabsPageHandlerRemote);
-    mockForeignTabsHandler.setResultFor(
-        'getForeignTabs', Promise.resolve({tabs: []}));
+    mockForeignTabsHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [],
+      canShowCrossDeviceSignInPromo: false,
+    }));
     foreignTabsBrowserProxyFactory.setInstance(
         {handler: mockForeignTabsHandler});
 
@@ -173,8 +173,12 @@ suite('OrganizerPanelAppTest', () => {
         delegate => !(delegate instanceof RecentTabsDelegate)));
   });
 
-  test('renders foreign tabs section when flag is enabled', async () => {
+  test('renders foreign tabs section when promo can show', async () => {
     loadTimeData.overrideValues({foreignTabsEnabled: true});
+    mockForeignTabsHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [],
+      canShowCrossDeviceSignInPromo: true,
+    }));
     const testApp = document.createElement('organizer-panel-app');
     document.body.appendChild(testApp);
     await microtasksFinished();
@@ -190,11 +194,12 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals(4, testApp.$.list.getVisibleSections().length);
   });
 
-  test('hides foreign tabs section when user is signed out', async () => {
-    loadTimeData.overrideValues({
-      foreignTabsEnabled: true,
-      isUserSignedIn: false,
-    });
+  test('hides foreign tabs section when empty and no promo', async () => {
+    loadTimeData.overrideValues({foreignTabsEnabled: true});
+    mockForeignTabsHandler.setResultFor('getForeignTabs', Promise.resolve({
+      tabs: [],
+      canShowCrossDeviceSignInPromo: false,
+    }));
     const testApp = document.createElement('organizer-panel-app');
     document.body.appendChild(testApp);
     await microtasksFinished();
