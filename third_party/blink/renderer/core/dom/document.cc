@@ -2496,6 +2496,9 @@ Document::CalculateStyleAndLayoutTreeUpdateForThisDocument() const {
   if (style_engine_->NeedsStyleRecalc()) {
     return StyleAndLayoutTreeUpdate::kAnalyzed;
   }
+  if (style_engine_->HasFlatTreeMovedNodes()) {
+    return StyleAndLayoutTreeUpdate::kAnalyzed;
+  }
   if (style_engine_->NeedsStyleInvalidation()) {
     return StyleAndLayoutTreeUpdate::kAnalyzed;
   }
@@ -2818,6 +2821,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   UpdateUseShadowTreesIfNeeded();
 
   UpdateOverscrollCommandTargets();
+
+  style_engine.DetachDisplayLockedFlatTreeMovedNodesIfNeeded();
 
   style_engine.UpdateActiveStyle();
   style_engine.UpdateCounterStyles();

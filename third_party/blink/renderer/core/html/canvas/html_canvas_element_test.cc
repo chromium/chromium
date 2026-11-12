@@ -1284,6 +1284,84 @@ TEST_P(HTMLCanvasElementTest, MoveElementBetweenShadowHostAndSlotKeepsFlag) {
   EXPECT_TRUE(slotted_child2->IsInCanvasSubtree());
 }
 
+TEST_P(HTMLCanvasElementTest,
+       MoveBeforeIntoDisplayLockedElementDetachesLayout) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <canvas content="drawable">
+      <div drawable id="drawable">
+        <div id="parent">
+          <div id="target"></div>
+          <div id="benign"></div>
+        </div>
+        <div id="unlocked_in_canvas"></div>
+        <div id="locked_in_canvas" style="content-visibility: hidden"></div>
+      </div>
+    </canvas>
+    <div id="outside_source">
+      <div id="moved_into_locked_canvas"></div>
+    </div>
+    <div id="locked" style="content-visibility: hidden"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* parent = GetDocument().getElementById(AtomicString("parent"));
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* benign = GetDocument().getElementById(AtomicString("benign"));
+  auto* unlocked_in_canvas =
+      GetDocument().getElementById(AtomicString("unlocked_in_canvas"));
+  auto* locked_in_canvas =
+      GetDocument().getElementById(AtomicString("locked_in_canvas"));
+  auto* moved_into_locked_canvas =
+      GetDocument().getElementById(AtomicString("moved_into_locked_canvas"));
+  auto* locked = GetDocument().getElementById(AtomicString("locked"));
+
+  ASSERT_TRUE(target->GetLayoutObject());
+  ASSERT_TRUE(benign->GetLayoutObject());
+  ASSERT_TRUE(moved_into_locked_canvas->GetLayoutObject());
+  EXPECT_TRUE(target->IsInCanvasSubtree());
+  EXPECT_TRUE(benign->IsInCanvasSubtree());
+  EXPECT_FALSE(moved_into_locked_canvas->IsInCanvasSubtree());
+
+  // 1. Moving an element out of canvas into a display-locked element clears
+  // IsInCanvasSubtree and detaches its LayoutObject on the next lifecycle
+  // update.
+  locked->moveBefore(target, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(target->IsInCanvasSubtree());
+
+  // 2. Moving an element from outside canvas into a display-locked element
+  // inside canvas sets IsInCanvasSubtree and detaches its LayoutObject from the
+  // old parent on the next lifecycle update.
+  locked_in_canvas->moveBefore(moved_into_locked_canvas, nullptr,
+                               ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(moved_into_locked_canvas->IsInCanvasSubtree());
+
+  // 3. Moving an element between unlocked containers inside canvas preserves
+  // its LayoutObject and IsInCanvasSubtree.
+  unlocked_in_canvas->moveBefore(benign, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(benign->IsInCanvasSubtree());
+  EXPECT_TRUE(benign->GetLayoutObject());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->IsInCanvasSubtree());
+  EXPECT_FALSE(target->GetLayoutObject());
+  EXPECT_FALSE(parent->GetLayoutObject()->SlowFirstChild());
+  EXPECT_TRUE(moved_into_locked_canvas->IsInCanvasSubtree());
+  EXPECT_FALSE(moved_into_locked_canvas->GetLayoutObject());
+  ASSERT_TRUE(benign->GetLayoutObject());
+  EXPECT_EQ(benign->GetLayoutObject()->Parent(),
+            unlocked_in_canvas->GetLayoutObject());
+
+  // Unlocking #locked_in_canvas attaches #moved_into_locked_canvas inside the
+  // canvas subtree.
+  locked_in_canvas->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(moved_into_locked_canvas->GetLayoutObject());
+  EXPECT_EQ(moved_into_locked_canvas->GetLayoutObject()->Parent(),
+            locked_in_canvas->GetLayoutObject());
+  EXPECT_TRUE(moved_into_locked_canvas->IsInCanvasSubtree());
+}
+
 // Moving a focused <input type=date> with no suggested value into a canvas
 // subtree must not rebuild its fields, so slot assignment recalc does not move
 // focus or run script.

@@ -3946,12 +3946,14 @@ void Node::FlatTreeParentChanged() {
   }
   const ComputedStyle* style =
       IsElementNode() ? To<Element>(this)->GetComputedStyle() : nullptr;
+  const bool had_style_or_layout = IsDirtyForStyleRecalc() ||
+                                   ChildNeedsStyleRecalc() || style ||
+                                   GetLayoutObject();
   if (ShouldSkipMarkingStyleDirty()) {
     // If we should not mark the node dirty in the new flat tree position,
     // detach to make sure all computes styles, layout objects, and dirty
     // flags are cleared.
-    if (IsDirtyForStyleRecalc() || ChildNeedsStyleRecalc() || style ||
-        GetLayoutObject()) {
+    if (had_style_or_layout) {
       StyleEngine& engine = GetDocument().GetStyleEngine();
       StyleEngine::DetachLayoutTreeScope detach_scope(engine);
       DetachLayoutTree();
@@ -3984,6 +3986,10 @@ void Node::FlatTreeParentChanged() {
     // We also need to force a layout tree re-attach since the layout tree
     // parent box may have changed.
     SetForceReattachLayoutTree();
+    if (had_style_or_layout) {
+      GetDocument().GetStyleEngine().AddFlatTreeMovedNode(*this);
+      GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
+    }
   }
   if (auto* element = DynamicTo<Element>(this)) {
     bool is_in_canvas_subtree = false;

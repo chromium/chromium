@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -542,11 +543,12 @@ TEST_F(AnimationDocumentTimelineTest, SlotRecalcDuringServiceAnimations) {
       <template shadowrootmode="open">
         <slot id="unlocked-slot" name="unlocked"></slot>
         <div id="lock">
-          <slot id="locked-slot" name="locked"></slot>
+          <slot id="styled-locked-slot" name="styled-locked"></slot>
         </div>
         <slot id="remove-slot" name="remove"></slot>
       </template>
       <div id="reassigned" slot="unlocked" class="animate"></div>
+      <div id="reassigned-styled" slot="unlocked" class="animate"></div>
       <div id="unslotted" slot="remove" class="animate"></div>
       <div id="kept" slot="unlocked" class="short-animate"></div>
     </div>
@@ -566,18 +568,21 @@ TEST_F(AnimationDocumentTimelineTest, SlotRecalcDuringServiceAnimations) {
   };
 
   Animation* reassigned_anim = GetFirstAnimation("reassigned");
+  Animation* reassigned_styled_anim = GetFirstAnimation("reassigned-styled");
   Animation* unslotted_anim = GetFirstAnimation("unslotted");
   Animation* kept_anim = GetFirstAnimation("kept");
 
   EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
             reassigned_anim->CalculateAnimationPlayState());
   EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
+            reassigned_styled_anim->CalculateAnimationPlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
             unslotted_anim->CalculateAnimationPlayState());
   EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
             kept_anim->CalculateAnimationPlayState());
   EXPECT_TRUE(doc_timeline.HasPendingUpdates());
   EXPECT_FALSE(doc_timeline.HasOutdatedAnimation());
-  EXPECT_EQ(3u, doc_timeline.AnimationsNeedingUpdateCount());
+  EXPECT_EQ(4u, doc_timeline.AnimationsNeedingUpdateCount());
 
   Element* host = GetElementById("host");
   ShadowRoot* shadow_root = host->GetShadowRoot();
@@ -591,6 +596,7 @@ TEST_F(AnimationDocumentTimelineTest, SlotRecalcDuringServiceAnimations) {
   // Lock #lock after the initial ServiceAnimations call so that
   // DisplayLockDocumentState::GetLockUpdateTimestamp() advances and
   // IsInDisplayLockedSubtree() re-walks the flat tree on the next frame.
+  // #styled-locked-slot retains its ComputedStyle from before #lock was locked.
   lock->setAttribute(html_names::kStyleAttr,
                      AtomicString("content-visibility: hidden"));
   UpdateAllLifecyclePhasesForTest();
@@ -598,30 +604,57 @@ TEST_F(AnimationDocumentTimelineTest, SlotRecalcDuringServiceAnimations) {
   // Mutate slot assignments without forcing style or layout so that
   // SlotAssignment::RecalcAssignment() is triggered during
   // ServiceAnimations() when IsInDisplayLockedSubtree() walks the flat tree.
+  // Appending #locked-slot after #lock is locked leaves it without a
+  // ComputedStyle, so #reassigned detaches synchronously during slot recalc,
+  // whereas #reassigned-styled defers layout detach until style recalc.
+  Element* locked_slot = GetDocument().CreateRawElement(html_names::kSlotTag);
+  locked_slot->setAttribute(html_names::kNameAttr, AtomicString("locked"));
+  lock->AppendChild(locked_slot);
   GetElementById("reassigned")
       ->setAttribute(html_names::kSlotAttr, AtomicString("locked"));
+  GetElementById("reassigned-styled")
+      ->setAttribute(html_names::kSlotAttr, AtomicString("styled-locked"));
   remove_slot->remove();
   unslotted_anim->setPlaybackRate(2);
   EXPECT_TRUE(shadow_root->NeedsSlotAssignmentRecalc());
   EXPECT_TRUE(doc_timeline.HasOutdatedAnimation());
 
   // At 2000ms, kept_anim finishes and IsInDisplayLockedSubtree() triggers
-  // slot assignment recalc, detaching #reassigned (into the display-locked
-  // slot) and #unslotted (removed from the flat tree) and cancelling their
-  // CSS animations while ServiceAnimations is in progress.
+  // slot assignment recalc, synchronously detaching #reassigned (into the
+  // unstyled display-locked slot) and #unslotted (removed from the flat tree)
+  // and cancelling their CSS animations while ServiceAnimations is in progress.
+  // #reassigned-styled (into the previously-styled display-locked slot) defers
+  // detach until the subsequent style update.
   GetAnimationClock().UpdateTime(TimeTicksFromMillisecondsD(2000));
   doc_timeline.ServiceAnimations(kTimingUpdateForAnimationFrame);
 
   EXPECT_FALSE(shadow_root->NeedsSlotAssignmentRecalc());
   EXPECT_EQ(V8AnimationPlayState::Enum::kIdle,
             reassigned_anim->CalculateAnimationPlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
+            reassigned_styled_anim->CalculateAnimationPlayState());
   EXPECT_EQ(V8AnimationPlayState::Enum::kIdle,
             unslotted_anim->CalculateAnimationPlayState());
   EXPECT_EQ(V8AnimationPlayState::Enum::kFinished,
             kept_anim->CalculateAnimationPlayState());
   EXPECT_FALSE(doc_timeline.HasOutdatedAnimation());
-  EXPECT_FALSE(doc_timeline.HasPendingUpdates());
+  EXPECT_TRUE(doc_timeline.HasPendingUpdates());
+  EXPECT_EQ(1u, doc_timeline.AnimationsNeedingUpdateCount());
+
+  // #reassigned-styled should cancel its animtion during style recalc.
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_EQ(V8AnimationPlayState::Enum::kIdle,
+            reassigned_styled_anim->CalculateAnimationPlayState());
+  EXPECT_FALSE(doc_timeline.HasOutdatedAnimation());
   EXPECT_EQ(0u, doc_timeline.AnimationsNeedingUpdateCount());
+
+  // Even though all the animations have been canceled, the next animation
+  // update has already been scheduled and it takes one additional
+  // BeginMainFrame to go completely idle (!HasPendingUpdates()).
+  UpdateAllLifecyclePhasesForTest();
+  doc_timeline.ServiceAnimations(kTimingUpdateOnDemand);
+  EXPECT_FALSE(doc_timeline.HasPendingUpdates());
 }
 
 }  // namespace blink

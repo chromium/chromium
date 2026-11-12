@@ -85,8 +85,9 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void DidRecalcAssignedNodes(bool display_locked_subtree) {
     UpdateFlatTreeNodeDataForAssignedNodes();
     RecalcFlatTreeChildren();
-    if (display_locked_subtree)
-      DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
+    if (display_locked_subtree) {
+      MarkAssignedNodesForDisplayLockDetachCheck();
+    }
   }
 
   void AttachLayoutTreeForSlotChildren(AttachContext&);
@@ -170,7 +171,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void RecalcFlatTreeChildren();
   void UpdateFlatTreeNodeDataForAssignedNodes();
   void ClearAssignedNodesAndFlatTreeChildren();
-  void DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
+  void MarkAssignedNodesForDisplayLockDetachCheck();
 
   void UpdateDirAutoAncestorsForSupportsAssignmentChange();
 

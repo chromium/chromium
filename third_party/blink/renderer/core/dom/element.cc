@@ -5193,6 +5193,7 @@ void Element::DetachDescendantsNeedingReattachDuringSkip() {
     // subtree is no longer skipped.
     if (child->GetForceReattachLayoutTree()) {
       child->DetachLayoutTree();
+      child->SetStyleChangeOnInsertion();
       child->SetForceReattachLayoutTree();
     } else if (child->ChildNeedsStyleRecalc()) {
       if (auto* child_element = DynamicTo<Element>(child)) {

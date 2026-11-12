@@ -71,6 +71,10 @@ class NodeTest : public EditingTestBase {
     second_shadow.AppendChild(class_div);
     return class_div;
   }
+
+  Node* GetStyleRecalcRoot() const {
+    return GetDocument().GetStyleEngine().style_recalc_root_.GetRootNode();
+  }
 };
 
 TEST_F(NodeTest, canStartSelection) {
@@ -798,6 +802,222 @@ TEST_F(NodeTest, moveBefore_ShadowDomInvalidationAndDetach) {
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(roundtrip_item->GetComputedStyle());
   EXPECT_NE(roundtrip_item->GetComputedStyle(), fallback_style);
+}
+
+TEST_F(NodeTest, moveBefore_DetachInDisplayLockedSubtree) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      .locked { content-visibility: hidden; }
+    </style>
+    <div id="source">
+      <div id="moved_direct"><span id="moved_child">text</span></div>
+      <div id="moved_nested"></div>
+      <div id="moved_dirty_slot"></div>
+    </div>
+    <div id="source_same_frame">
+      <div id="moved_same_frame"></div>
+      <span>sibling</span>
+    </div>
+    <div id="locked" class="locked">
+      <div id="nested"></div>
+    </div>
+    <div id="lock_later"></div>
+    <div id="slot_host">
+      <template shadowrootmode="open">
+        <slot name="unlocked_slot"></slot>
+        <div id="slot_lock" style="content-visibility: hidden">
+          <slot name="locked_slot"></slot>
+        </div>
+      </template>
+      <div id="wrapper" slot="unlocked_slot"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* locked = GetDocument().getElementById(AtomicString("locked"));
+  Element* nested = GetDocument().getElementById(AtomicString("nested"));
+  Element* lock_later =
+      GetDocument().getElementById(AtomicString("lock_later"));
+  Element* slot_host = GetDocument().getElementById(AtomicString("slot_host"));
+  Element* slot_lock =
+      slot_host->GetShadowRoot()->getElementById(AtomicString("slot_lock"));
+  Element* wrapper = GetDocument().getElementById(AtomicString("wrapper"));
+  Element* moved_direct =
+      GetDocument().getElementById(AtomicString("moved_direct"));
+  Element* moved_child =
+      GetDocument().getElementById(AtomicString("moved_child"));
+  Element* moved_nested =
+      GetDocument().getElementById(AtomicString("moved_nested"));
+  Element* moved_dirty_slot =
+      GetDocument().getElementById(AtomicString("moved_dirty_slot"));
+  Element* moved_same_frame =
+      GetDocument().getElementById(AtomicString("moved_same_frame"));
+
+  // Style #nested while unlocked, then re-lock #locked so #nested has a
+  // non-null ComputedStyle inside a locked subtree.
+  locked->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(nested->GetComputedStyle());
+  locked->setAttribute(html_names::kClassAttr, AtomicString("locked"));
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(locked->GetComputedStyle());
+  ASSERT_TRUE(nested->GetComputedStyle());
+
+  ASSERT_TRUE(moved_direct->GetLayoutObject());
+  ASSERT_TRUE(moved_child->GetLayoutObject());
+  ASSERT_TRUE(moved_nested->GetLayoutObject());
+  ASSERT_TRUE(moved_dirty_slot->GetLayoutObject());
+  ASSERT_TRUE(moved_same_frame->GetLayoutObject());
+
+  // Moving into a display-locked element or its styled descendant schedules a
+  // layout tree update and detaches the layout tree once slot assignments are
+  // clean, marking style dirty for when the lock is later unlocked.
+  locked->moveBefore(moved_direct, nullptr, ASSERT_NO_EXCEPTION);
+  nested->moveBefore(moved_nested, nullptr, ASSERT_NO_EXCEPTION);
+
+  // Moving into a wrapper whose slot assignment to a display-locked slot is
+  // still dirty when moveBefore() runs.
+  wrapper->setAttribute(html_names::kSlotAttr, AtomicString("locked_slot"));
+  wrapper->moveBefore(moved_dirty_slot, nullptr, ASSERT_NO_EXCEPTION);
+
+  // Moving into an unlocked container that becomes display-locked in the same
+  // lifecycle update detaches during style recalc skip.
+  lock_later->moveBefore(moved_same_frame, nullptr, ASSERT_NO_EXCEPTION);
+  lock_later->setAttribute(html_names::kClassAttr, AtomicString("locked"));
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(moved_direct->GetLayoutObject());
+  EXPECT_FALSE(moved_child->GetLayoutObject());
+  EXPECT_FALSE(moved_direct->GetComputedStyle());
+  EXPECT_TRUE(moved_direct->NeedsStyleRecalc());
+  EXPECT_FALSE(moved_nested->GetLayoutObject());
+  EXPECT_FALSE(moved_nested->GetComputedStyle());
+  EXPECT_TRUE(moved_nested->NeedsStyleRecalc());
+  EXPECT_FALSE(wrapper->GetLayoutObject());
+  EXPECT_FALSE(moved_dirty_slot->GetLayoutObject());
+  EXPECT_FALSE(moved_same_frame->GetLayoutObject());
+  EXPECT_TRUE(moved_same_frame->NeedsStyleRecalc());
+
+  // Unlocking all containers restyles and reattaches all moved elements under
+  // their new parents.
+  locked->removeAttribute(html_names::kClassAttr);
+  lock_later->removeAttribute(html_names::kClassAttr);
+  slot_lock->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(moved_direct->GetLayoutObject());
+  EXPECT_EQ(moved_direct->GetLayoutObject()->Parent(),
+            locked->GetLayoutObject());
+  EXPECT_TRUE(moved_child->GetLayoutObject());
+  ASSERT_TRUE(moved_nested->GetLayoutObject());
+  EXPECT_EQ(moved_nested->GetLayoutObject()->Parent(),
+            nested->GetLayoutObject());
+  ASSERT_TRUE(wrapper->GetLayoutObject());
+  ASSERT_TRUE(moved_dirty_slot->GetLayoutObject());
+  EXPECT_EQ(moved_dirty_slot->GetLayoutObject()->Parent(),
+            wrapper->GetLayoutObject());
+  ASSERT_TRUE(moved_same_frame->GetLayoutObject());
+  EXPECT_EQ(moved_same_frame->GetLayoutObject()->Parent(),
+            lock_later->GetLayoutObject());
+}
+
+TEST_F(NodeTest, moveBefore_DirtyStyleRecalcRootMovedViaDirtySlotIntoLock) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot id="s1" name="s1"></slot>
+        <div id="lock" style="content-visibility: hidden">
+          <slot id="s2" name="s2"></slot>
+        </div>
+      </template>
+      <div id="wrapper" slot="s1"></div>
+    </div>
+    <div id="source">
+      <div id="target"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* lock = host->GetShadowRoot()->getElementById(AtomicString("lock"));
+  Element* wrapper = GetDocument().getElementById(AtomicString("wrapper"));
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target->GetLayoutObject());
+
+  // Reassign #wrapper to the locked slot #s2 (dirtying slot assignment), then
+  // move #target into #wrapper while #wrapper's old AssignedSlotWithoutRecalc()
+  // still points to #s1.
+  wrapper->setAttribute(html_names::kSlotAttr, AtomicString("s2"));
+  wrapper->moveBefore(target, nullptr, ASSERT_NO_EXCEPTION);
+
+  // Updating lifecycle phases must detach #wrapper and #target and clean up
+  // StyleRecalcRoot and #s1's ChildNeedsStyleRecalc() without tripping DCHECKs.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(wrapper->GetLayoutObject());
+  EXPECT_FALSE(target->GetLayoutObject());
+
+  lock->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(wrapper->GetLayoutObject());
+  EXPECT_TRUE(target->GetLayoutObject());
+}
+
+TEST_F(NodeTest, SingleStyleRecalcRootDetachedWhenMovedIntoDisplayLock) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open">
+        <slot id="s1" name="s1"></slot>
+        <div id="lock">
+          <slot id="s2" name="s2"></slot>
+        </div>
+      </template>
+      <div id="x" slot="s1"></div>
+    </div>
+    <div id="direct_lock" style="content-visibility: hidden"></div>
+    <div id="y"></div>
+    <div id="z"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* lock = host->GetShadowRoot()->getElementById(AtomicString("lock"));
+  Element* x = GetDocument().getElementById(AtomicString("x"));
+  Element* y = GetDocument().getElementById(AtomicString("y"));
+  Element* z = GetDocument().getElementById(AtomicString("z"));
+  Element* direct_lock =
+      GetDocument().getElementById(AtomicString("direct_lock"));
+
+  // Lock #lock after #s2 already has a ComputedStyle, so moving nodes into #s2
+  // will not skip marking style dirty during slot assignment recalc.
+  lock->setAttribute(html_names::kStyleAttr,
+                     AtomicString("content-visibility: hidden"));
+  UpdateAllLifecyclePhasesForTest();
+
+  // Case 1: Make #x the single StyleRecalcRoot, then move it into the locked
+  // slot #s2 so DetachDisplayLockedFlatTreeMovedNodesIfNeeded detaches the
+  // single StyleRecalcRoot.
+  x->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  EXPECT_EQ(GetStyleRecalcRoot(), x);
+  x->setAttribute(html_names::kSlotAttr, AtomicString("s2"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(x->GetLayoutObject());
+
+  // Case 2: Make #y the single StyleRecalcRoot, move it into #direct_lock via
+  // moveBefore(), and update style/layout tree across the document.
+  y->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  EXPECT_EQ(GetStyleRecalcRoot(), y);
+  direct_lock->moveBefore(y, nullptr, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(y->GetLayoutObject());
+
+  // Case 3: Make #z the single StyleRecalcRoot, move it into #direct_lock via
+  // moveBefore(), and force style update for #z (e.g. getComputedStyle(z)).
+  z->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  EXPECT_EQ(GetStyleRecalcRoot(), z);
+  direct_lock->moveBefore(z, nullptr, ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTreeForElement(z,
+                                                   DocumentUpdateReason::kTest);
+  EXPECT_TRUE(z->GetComputedStyle());
 }
 
 #if DCHECK_IS_ON()

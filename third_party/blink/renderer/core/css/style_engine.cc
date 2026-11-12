@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_collection.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -1135,6 +1136,7 @@ void StyleEngine::DidDetach() {
   style_invalidation_root_.Clear();
   style_recalc_root_.Clear();
   layout_tree_rebuild_root_.Clear();
+  flat_tree_moved_nodes_.clear();
   if (font_selector_) {
     font_selector_->GetFontFaceCache()->ClearAll();
   }
@@ -4559,6 +4561,9 @@ StyleEngine::AncestorAnalysis StyleEngine::AnalyzeInclusiveAncestor(
   if (IsRootOrSibling(style_invalidation_root_.GetRootNode(), node)) {
     return AncestorAnalysis::kStyleRoot;
   }
+  if (flat_tree_moved_nodes_.Contains(const_cast<Node*>(&node))) {
+    return AncestorAnalysis::kStyleRoot;
+  }
   if (auto* element = DynamicTo<Element>(node)) {
     if (ComputedStyle::IsInterleavingRoot(element->GetComputedStyle())) {
       return AncestorAnalysis::kInterleavingRoot;
@@ -5033,7 +5038,50 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(random_base_value_cache_);
   visitor->Trace(element_keeps_random_caching_key_alive_);
   visitor->Trace(navigation_locations_);
+  visitor->Trace(flat_tree_moved_nodes_);
   FontSelectorClient::Trace(visitor);
+}
+
+void StyleEngine::DetachDisplayLockedFlatTreeMovedNodesIfNeeded() {
+  if (flat_tree_moved_nodes_.empty()) {
+    return;
+  }
+  HeapHashSet<WeakMember<Node>> moved_nodes;
+  moved_nodes.swap(flat_tree_moved_nodes_);
+  if (GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() ==
+      0) {
+    return;
+  }
+  for (Node* node : moved_nodes) {
+    if (!node || !node->isConnected()) {
+      continue;
+    }
+    const ComputedStyle* style =
+        node->IsElementNode() ? To<Element>(node)->GetComputedStyle() : nullptr;
+    if (!node->IsDirtyForStyleRecalc() && !node->ChildNeedsStyleRecalc() &&
+        !style && !node->GetLayoutObject()) {
+      continue;
+    }
+    if (DisplayLockUtilities::LockedAncestorPreventingStyle(*node)) {
+      {
+        DetachLayoutTreeScope detach_scope(*this);
+        node->DetachLayoutTree();
+        if (Node* root_node = style_recalc_root_.GetRootNode();
+            root_node && !root_node->IsDocumentNode() &&
+            !root_node->IsDirtyForStyleRecalc() &&
+            !root_node->ChildNeedsStyleRecalc()) {
+          style_recalc_root_.Clear();
+          if (Element* document_element = GetDocument().documentElement();
+              document_element && (document_element->IsDirtyForStyleRecalc() ||
+                                   document_element->ChildNeedsStyleRecalc())) {
+            style_recalc_root_.Update(nullptr, &GetDocument());
+          }
+        }
+      }
+      node->SetStyleChangeOnInsertion();
+      node->SetForceReattachLayoutTree();
+    }
+  }
 }
 
 namespace {

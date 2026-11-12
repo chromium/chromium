@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal_forbidden_scope.h"
@@ -346,22 +347,15 @@ void SlotAssignment::RecalcAssignment() {
     // Defense in depth: script is not supposed to run here, but
     // DidRecalcAssignedNodes() still can (crbug.com/574469802) and add or
     // remove slots. Iterate over a copy and skip slots that left this root.
+    const bool has_display_locks = owner_->GetDocument()
+                                       .GetDisplayLockDocumentState()
+                                       .LockedDisplayLockCount() > 0;
     const HeapVector<Member<HTMLSlotElement>> slots = Slots();
     for (auto& slot : slots) {
       if (slot->ContainingShadowRoot() != owner_) {
         continue;
       }
-      // TODO(crbug.com/1208573): Consider if we really need to be using
-      // IsInLockedSubtreeCrossingFrames, or if
-      // LockedInclusiveAncestorPreventingStyleWithinTreeScope is good enough
-      // as-is.
-      //
-      // If we have an ancestor that blocks style recalc, we should let
-      // DidRecalcAssignNodes know this, since we may need to do work that
-      // would otherwise be done in layout tree building.
-      slot->DidRecalcAssignedNodes(
-          !!DisplayLockUtilities::
-               LockedInclusiveAncestorPreventingStyleWithinTreeScope(*slot));
+      slot->DidRecalcAssignedNodes(has_display_locks);
     }
   }
 
