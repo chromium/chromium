@@ -4,37 +4,30 @@
 
 #include "chrome/browser/ui/ash/login/user_adding_screen_input_methods_controller.h"
 
-#include "components/user_manager/user_manager.h"
-
 namespace ash {
 
-UserAddingScreenInputMethodsController::UserAddingScreenInputMethodsController(
-    UserAddingScreen* screen)
-    : screen_(screen), active_user_on_show_(nullptr) {
-  screen_->AddObserver(this);
-}
+UserAddingScreenInputMethodsController::
+    UserAddingScreenInputMethodsController() = default;
 
 UserAddingScreenInputMethodsController::
-    ~UserAddingScreenInputMethodsController() {
-  screen_->RemoveObserver(this);
-}
+    ~UserAddingScreenInputMethodsController() = default;
 
-void UserAddingScreenInputMethodsController::OnBeforeUserAddingScreenStarted() {
-  active_user_on_show_ = user_manager::UserManager::Get()->GetActiveUser();
+void UserAddingScreenInputMethodsController::OnScreenShown(
+    bool has_active_session) {
   input_method::InputMethodManager* imm =
       input_method::InputMethodManager::Get();
   saved_ime_state_ = imm->GetActiveIMEState();
   imm->SetState(saved_ime_state_->Clone());
   imm->GetActiveIMEState()->DisableNonLockScreenLayouts();
   imm->GetActiveIMEState()->SetUIStyle(
-      user_manager::UserManager::Get()->IsUserLoggedIn()
+      has_active_session
           ? input_method::InputMethodManager::UIStyle::kSecondaryLogin
           : input_method::InputMethodManager::UIStyle::kLogin);
 }
 
-void UserAddingScreenInputMethodsController::OnUserAddingFinished() {
-  if (user_manager::UserManager::Get()->GetActiveUser() ==
-      active_user_on_show_) {
+void UserAddingScreenInputMethodsController::OnScreenHidden(
+    bool active_user_changed) {
+  if (!active_user_changed) {
     input_method::InputMethodManager::Get()->SetState(saved_ime_state_);
   }
 
