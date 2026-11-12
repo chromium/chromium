@@ -176,10 +176,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         mExternalNavHandler = handler;
     }
 
-    public @Nullable ExternalNavigationHelper getExternalNavigationHelper() {
-        return mExternalNavHandler;
-    }
-
     public void onActivityAttachmentChanged(boolean attached) {
         // Defensively cancel any pending checks if we change Activities during a check.
         if (mHasAttachedToActivity) {
