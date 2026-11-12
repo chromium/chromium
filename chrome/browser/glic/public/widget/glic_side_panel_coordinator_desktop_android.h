@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_WIDGET_GLIC_SIDE_PANEL_COORDINATOR_DESKTOP_ANDROID_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_WIDGET_GLIC_SIDE_PANEL_COORDINATOR_DESKTOP_ANDROID_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,17 +15,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_native_view.h"
-#include "third_party/jni_zero/jni_zero.h"
 
 class SidePanelEntryScope;
 class SidePanelRegistry;
 class SidePanelUI;
 
-namespace context_sharing {
-class CoBrowseViewsBridge;
-}
-
 namespace glic {
+class GlicCoBrowseViews;
 class GlicKeyedService;
 class GlicToast;
 
@@ -47,8 +45,9 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   bool SupportsPeek() const override;
   base::CallbackListSubscription AddStateCallback(
       base::RepeatingCallback<void(State state)> callback) override;
-  void SetWebContents(content::WebContents* web_contents) override;
-  void SetIsLoading(bool is_loading) override;
+  void SetCoBrowseViews(
+      std::unique_ptr<GlicCoBrowseViews> co_browse_views) override;
+  GlicCoBrowseViews* GetCoBrowseViews() const override;
   int GetPreferredWidth() override;
   bool IsGlicSidePanelActive() override;
 
@@ -79,8 +78,6 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   // Sets a new state and notifies about a state change.
   void SetState(State new_state);
 
-  void OnNativeCloseRequested();
-
   // Shows the message when Glic side panel is auto-closed due to window size
   // constraint, if applicable.
   //
@@ -95,15 +92,11 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   base::RepeatingCallbackList<void(State state)> state_changed_callbacks_;
 
   State state_ = State::kClosed;
-  bool is_loading_ = false;
 
-  std::unique_ptr<context_sharing::CoBrowseViewsBridge> cobrowse_views_bridge_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  std::unique_ptr<GlicCoBrowseViews> co_browse_views_;
   raw_ptr<GlicKeyedService> glic_service_ = nullptr;
 
   std::unique_ptr<GlicToast> resize_toast_;
-
-  jni_zero::ScopedJavaGlobalRef<jobject> java_component_provider_;
 
   base::WeakPtrFactory<GlicSidePanelCoordinatorDesktopAndroid>
       weak_ptr_factory_{this};

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_desktop_android.h"
 
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_views_bridge.h"
@@ -14,10 +16,10 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/widget/glic_co_browse_views.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -27,11 +29,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
-#include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
-
-// Must come after headers that provide symbols used by @JniType.
-#include "chrome/browser/glic/android/jni_headers/GlicSidePanelComponentProvider_jni.h"
 
 namespace glic {
 
@@ -108,6 +106,9 @@ void GlicSidePanelCoordinatorDesktopAndroid::Show(const ShowOptions& options) {
 
 void GlicSidePanelCoordinatorDesktopAndroid::Close(
     const CloseOptions& options) {
+  if (co_browse_views_) {
+    co_browse_views_->OnPanelClosed();
+  }
   auto* window_side_panel_ui = GetWindowSidePanelUI();
   if (!window_side_panel_ui || !entry_) {
     return;
@@ -149,6 +150,9 @@ void GlicSidePanelCoordinatorDesktopAndroid::OnEntryHiddenWithReason(
       MaybeShowResizeToast();
     }
   } else {
+    if (co_browse_views_) {
+      co_browse_views_->OnPanelClosed();
+    }
     SetState(State::kClosed);
   }
 }
@@ -218,28 +222,33 @@ void GlicSidePanelCoordinatorDesktopAndroid::OnGlicEnabledChanged() {
   }
 }
 
+void GlicSidePanelCoordinatorDesktopAndroid::SetCoBrowseViews(
+    std::unique_ptr<GlicCoBrowseViews> co_browse_views) {
+  if (!co_browse_views_ && !co_browse_views) {
+    return;
+  }
+  co_browse_views_ = std::move(co_browse_views);
+  if (entry_) {
+    entry_->ClearCachedView();
+  }
+}
+
+GlicCoBrowseViews* GlicSidePanelCoordinatorDesktopAndroid::GetCoBrowseViews()
+    const {
+  return co_browse_views_.get();
+}
+
 SidePanelNativeView GlicSidePanelCoordinatorDesktopAndroid::CreateView(
     SidePanelEntryScope& scope) {
-  if (!cobrowse_views_bridge_) {
-    JNIEnv* env = jni_zero::AttachCurrentThread();
-    java_component_provider_ =
-        Java_GlicSidePanelComponentProvider_createProvider(env);
-    cobrowse_views_bridge_ =
-        std::make_unique<context_sharing::CoBrowseViewsBridge>(
-            *tab_, context_sharing::TabBottomSheetClientType::kGlic,
-            context_sharing::CoBrowseContainerType::kSidePanel,
-            java_component_provider_,
-            /*enable_pinch_to_zoom=*/false, kColorGlicBackground,
-            kColorGlicPlaceholderElem,
-            base::BindRepeating(
-                &GlicSidePanelCoordinatorDesktopAndroid::OnNativeCloseRequested,
-                weak_ptr_factory_.GetWeakPtr()));
-    cobrowse_views_bridge_->SetIsLoading(is_loading_);
-    cobrowse_views_bridge_->CreateCoBrowseViews(web_contents_.get(),
-                                                /*request_focus=*/false);
+  if (!co_browse_views_) {
+    return nullptr;
+  }
+  auto java_views = co_browse_views_->GetOrCreateJavaCoBrowseViews();
+  if (!java_views) {
+    return nullptr;
   }
   auto view = context_sharing::CoBrowseViewsBridge::GetViewFromCoBrowseViews(
-      cobrowse_views_bridge_->GetCoBrowseViews());
+      java_views);
   if (!view) {
     return nullptr;
   }
@@ -250,26 +259,6 @@ base::CallbackListSubscription
 GlicSidePanelCoordinatorDesktopAndroid::AddStateCallback(
     base::RepeatingCallback<void(State state)> callback) {
   return state_changed_callbacks_.Add(std::move(callback));
-}
-
-void GlicSidePanelCoordinatorDesktopAndroid::SetWebContents(
-    content::WebContents* web_contents) {
-  web_contents_ = web_contents;
-  if (cobrowse_views_bridge_) {
-    cobrowse_views_bridge_->SetWebContents(web_contents,
-                                           /*request_focus=*/false);
-  }
-}
-
-void GlicSidePanelCoordinatorDesktopAndroid::SetIsLoading(bool is_loading) {
-  is_loading_ = is_loading;
-  if (cobrowse_views_bridge_) {
-    cobrowse_views_bridge_->SetIsLoading(is_loading);
-  }
-}
-
-void GlicSidePanelCoordinatorDesktopAndroid::OnNativeCloseRequested() {
-  Close({});
 }
 
 int GlicSidePanelCoordinatorDesktopAndroid::GetPreferredWidth() {

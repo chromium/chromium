@@ -58,8 +58,8 @@ public class GlicBottomSheetComponentProviderUnitTest {
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
 
-    private JniRawPtr<GlicBottomSheetComponentProvider.NativeGlicSidePanelCoordinatorAndroid>
-            mNativeCoordinator;
+    private JniRawPtr<GlicBottomSheetComponentProvider.NativeGlicCoBrowseViews>
+            mNativeCoBrowseViews;
     private Context mContext;
 
     @Before
@@ -73,26 +73,26 @@ public class GlicBottomSheetComponentProviderUnitTest {
 
     @After
     public void tearDown() {
-        if (mNativeCoordinator != null) {
-            mNativeCoordinator.release();
-            mNativeCoordinator = null;
+        if (mNativeCoBrowseViews != null) {
+            mNativeCoBrowseViews.release();
+            mNativeCoBrowseViews = null;
         }
     }
 
     @Test
     public void testNotifyCallsNativeOnlyWithLivePointer() {
-        mNativeCoordinator = spy(JniRawPtr.createForTesting(100L));
+        mNativeCoBrowseViews = spy(JniRawPtr.createForTesting(100L));
         GlicBottomSheetComponentProvider provider =
-                new GlicBottomSheetComponentProvider(mProfile, mNativeCoordinator);
+                new GlicBottomSheetComponentProvider(mProfile, mNativeCoBrowseViews);
 
         provider.configureNativeFre(/* showNativeFre= */ true);
         assertTrue(provider.mShowNativeFre);
         provider.notifyNativeFreAccepted();
         assertFalse(provider.mShowNativeFre);
-        verify(mNativesMock).onNativeFreAccepted(mNativeCoordinator);
+        verify(mNativesMock).onNativeFreAccepted(mNativeCoBrowseViews);
 
         provider.destroy();
-        verify(mNativeCoordinator).release();
+        verify(mNativeCoBrowseViews).release();
 
         provider.notifyNativeFreAccepted();
         verifyNoMoreInteractions(mNativesMock);
@@ -101,7 +101,7 @@ public class GlicBottomSheetComponentProviderUnitTest {
     @Test
     public void testNotifyWithNullCoordinatorIsNoOp() {
         GlicBottomSheetComponentProvider provider =
-                new GlicBottomSheetComponentProvider(mProfile, /* nativeCoordinator= */ null);
+                new GlicBottomSheetComponentProvider(mProfile, /* nativeCoBrowseViews= */ null);
 
         provider.configureNativeFre(/* showNativeFre= */ true);
         provider.notifyNativeFreAccepted();
@@ -163,9 +163,9 @@ public class GlicBottomSheetComponentProviderUnitTest {
 
     @Test
     public void testAcceptButton_notifiesNativeAndTearsDown() {
-        mNativeCoordinator = spy(JniRawPtr.createForTesting(100L));
+        mNativeCoBrowseViews = spy(JniRawPtr.createForTesting(100L));
         GlicBottomSheetComponentProvider provider =
-                new GlicBottomSheetComponentProvider(mProfile, mNativeCoordinator);
+                new GlicBottomSheetComponentProvider(mProfile, mNativeCoBrowseViews);
 
         provider.configureNativeFre(/* showNativeFre= */ true);
 
@@ -183,10 +183,10 @@ public class GlicBottomSheetComponentProviderUnitTest {
                             return null;
                         })
                 .when(mNativesMock)
-                .onNativeFreAccepted(mNativeCoordinator);
+                .onNativeFreAccepted(mNativeCoBrowseViews);
         acceptButton.performClick();
 
-        verify(mNativesMock).onNativeFreAccepted(mNativeCoordinator);
+        verify(mNativesMock).onNativeFreAccepted(mNativeCoBrowseViews);
         assertFalse(provider.mShowNativeFre);
         assertTrue(glicContent.isNativeFreShowingForTesting());
 

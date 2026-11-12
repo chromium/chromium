@@ -823,6 +823,8 @@ source_set("impl") {
       "glic_settings_util_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.cc",
       "host/context/favicon_impl/glic_tab_favicon_adapter_android.h",
+      "widget/glic_co_browse_views.cc",
+      "widget/glic_co_browse_views.h",
       "widget/glic_floating_ui_android.cc",
       "widget/glic_floating_ui_android.h",
       "widget/glic_inactive_side_panel_ui_android.cc",

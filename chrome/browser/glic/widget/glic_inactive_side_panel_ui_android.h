@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_ANDROID_H_
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_ANDROID_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -16,6 +17,8 @@ class TabInterface;
 }
 
 namespace glic {
+
+class GlicCoBrowseViews;
 
 class GlicInactiveSidePanelUi : public GlicUiEmbedder {
  public:
@@ -51,6 +54,8 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder {
   base::WeakPtr<tabs::TabInterface> tab_;
   const raw_ref<GlicUiEmbedder::Delegate> delegate_;
   base::CallbackListSubscription state_subscription_;
+  base::WeakPtr<GlicCoBrowseViews> co_browse_views_;
+  base::ScopedClosureRunner co_browse_views_resetter_;
 
   base::WeakPtrFactory<GlicInactiveSidePanelUi> weak_ptr_factory_{this};
 };

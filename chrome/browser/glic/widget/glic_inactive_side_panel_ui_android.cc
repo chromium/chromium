@@ -7,8 +7,10 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/widget/conversions.h"
+#include "chrome/browser/glic/widget/glic_co_browse_views.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -36,13 +38,26 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
     GlicUiEmbedder::Delegate& delegate)
     : tab_(tab), delegate_(delegate) {
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  if (glic_side_panel_coordinator) {
-    glic_side_panel_coordinator->SetIsLoading(false);
-    glic_side_panel_coordinator->SetWebContents(nullptr);
-    state_subscription_ = glic_side_panel_coordinator->AddStateCallback(
-        base::BindRepeating(&GlicInactiveSidePanelUi::OnSidePanelStateChanged,
-                            base::Unretained(this)));
+  if (!glic_side_panel_coordinator) {
+    return;
   }
+
+  if (!glic_side_panel_coordinator->GetCoBrowseViews()) {
+    glic_side_panel_coordinator->SetCoBrowseViews(
+        std::make_unique<GlicCoBrowseViews>(
+            tab_, delegate_->host().profile(),
+            glic_side_panel_coordinator->SupportsPeek()));
+  }
+  co_browse_views_ =
+      glic_side_panel_coordinator->GetCoBrowseViews()->GetWeakPtr();
+  co_browse_views_resetter_ = co_browse_views_->Configure({
+      .close_callback =
+          base::BindRepeating(&GlicInactiveSidePanelUi::Close,
+                              weak_ptr_factory_.GetWeakPtr(), CloseOptions()),
+  });
+  state_subscription_ = glic_side_panel_coordinator->AddStateCallback(
+      base::BindRepeating(&GlicInactiveSidePanelUi::OnSidePanelStateChanged,
+                          base::Unretained(this)));
 }
 
 GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
@@ -55,6 +70,10 @@ void GlicInactiveSidePanelUi::Show(const ShowOptions& options) {
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;
+  }
+  if (co_browse_views_) {
+    co_browse_views_->PrepareForShow(options.fre_override ==
+                                     mojom::FreOverride::kNativeFre);
   }
   glic_side_panel_coordinator->Show(ConvertToCoordinatorShowOptions(
       options, glic_side_panel_coordinator->SupportsPeek()));

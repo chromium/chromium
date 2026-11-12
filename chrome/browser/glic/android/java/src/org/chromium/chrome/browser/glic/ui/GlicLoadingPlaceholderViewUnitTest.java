@@ -217,7 +217,7 @@ public class GlicLoadingPlaceholderViewUnitTest {
         AtomicInteger closeClicks = new AtomicInteger();
 
         View bottomSheetPlaceholder =
-                new GlicBottomSheetComponentProvider(mProfile, /* nativeCoordinator= */ null)
+                new GlicBottomSheetComponentProvider(mProfile, /* nativeCoBrowseViews= */ null)
                         .createLoadingPlaceholderView(
                                 mContext,
                                 TEST_BG_COLOR,
