@@ -42,6 +42,11 @@ class MockCustomFormControlAgent : public mojom::CustomFormControlAgent {
                const std::string& script,
                LoadUnsafeScriptCallback callback),
               (override));
+  MOCK_METHOD(void,
+              DetectCustomFormControls,
+              (const blink::DocumentToken& document,
+               DetectCustomFormControlsCallback callback),
+              (override));
 
  private:
   mojo::AssociatedReceiverSet<mojom::CustomFormControlAgent> receivers_;

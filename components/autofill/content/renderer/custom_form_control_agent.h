@@ -50,6 +50,9 @@ class CustomFormControlAgent : public mojom::CustomFormControlAgent {
   void LoadUnsafeScript(const blink::DocumentToken& document,
                         const std::string& script,
                         LoadUnsafeScriptCallback callback) override;
+  void DetectCustomFormControls(
+      const blink::DocumentToken& document,
+      DetectCustomFormControlsCallback callback) override;
 
  private:
   // Returns whether `document` is the frame's current document.

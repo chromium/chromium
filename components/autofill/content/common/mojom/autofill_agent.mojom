@@ -273,6 +273,25 @@ interface PasswordGenerationAgent {
   FocusNextFieldAfterPasswords();
 };
 
+// A custom select (a select-like widget that isn't a <select> element) that the
+// custom form control script found. This is how the renderer's
+// `CustomFormControl` crosses the IPC: the element is identified by its
+// `FieldRendererId`. The renderer validates the `field_id`s that the
+// site-specific script returned before sending them, so the browser may treat
+// a violation of the requirements below as a bad message.
+struct DetectedCustomFormControl {
+  // The element that represents the control. Never null, and different for
+  // each control in a reply.
+  FieldRendererId field_id;
+  // The Autofill field type name that the script assigned, e.g.
+  // "ADDRESS_HOME_STATE". Untrusted: the browser must check that it names a
+  // `FieldType` (see `TypeNameToFieldType()`) before using it.
+  string field_type;
+  // Whether the control can be filled now, e.g. because it is visible and
+  // enabled.
+  bool is_active;
+};
+
 // Runs the custom form control script of a frame's current document in the
 // renderer. A custom form control script can detect, read and fill the page's
 // custom form controls (e.g. select-like widgets that aren't <select>
@@ -300,4 +319,12 @@ interface CustomFormControlAgent {
   // `features::kAutofillCustomFormControlScripts`.
   LoadUnsafeScript(blink.mojom.DocumentToken document, string script)
       => (bool success);
+
+  // Returns the custom form controls (for now, custom selects) that the loaded
+  // script finds in `document`. `controls` is empty if no script is loaded, if
+  // the script fails, or if `document` isn't the current document (see
+  // `LoadUnsafeScript()`). Has at most `kMaxExtractableFields` controls, with
+  // different `field_id`s (see `DetectedCustomFormControl`).
+  DetectCustomFormControls(blink.mojom.DocumentToken document)
+      => (array<DetectedCustomFormControl> controls);
 };
