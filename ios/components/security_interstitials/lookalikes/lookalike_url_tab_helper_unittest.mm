@@ -71,30 +71,44 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
   GURL lookalike_url("https://xn--googl-fsa.com/");
   lookalikes::InitializeSafetyTipConfig();
 
-  // Lookalike IDNs should be blocked.
+  // Lookalike IDNs should be blocked, including when wrapped in a blob: URL.
   EXPECT_FALSE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                    .ShouldAllowNavigation());
+  GURL blob_lookalike_url("blob:https://xn--googl-fsa.com/1234-5678");
+  EXPECT_FALSE(ShouldAllowResponseUrl(blob_lookalike_url, /*main_frame=*/true)
+                   .ShouldAllowNavigation());
+  std::unique_ptr<LookalikeUrlContainer::LookalikeUrlInfo> blob_info =
+      LookalikeUrlContainer::FromWebState(&web_state_)
+          ->ReleaseLookalikeUrlInfo();
+  ASSERT_TRUE(blob_info);
+  EXPECT_EQ(GURL("https://google.com/"), blob_info->safe_url);
+  EXPECT_EQ(GURL("https://xn--googl-fsa.com/"), blob_info->request_url);
   histogram_tester_.ExpectUniqueSample(
       lookalikes::kInterstitialHistogramName,
       static_cast<base::HistogramBase::Sample32>(
           lookalikes::NavigationSuggestionEvent::kMatchSkeletonTop500),
-      1);
+      2);
 
   // Non-main frame navigations should be allowed.
   EXPECT_TRUE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/false)
                   .ShouldAllowNavigation());
 
-  // Non-HTTP/S navigations should be allowed.
+  // Non-HTTP/S navigations (including opaque blob: URLs) should be allowed.
   GURL file_url("file://xn--googl-fsa.com/");
   EXPECT_TRUE(ShouldAllowResponseUrl(file_url, /*main_frame=*/true)
+                  .ShouldAllowNavigation());
+  GURL opaque_blob_url("blob:null/1234-5678");
+  EXPECT_TRUE(ShouldAllowResponseUrl(opaque_blob_url, /*main_frame=*/true)
                   .ShouldAllowNavigation());
 
   // Lookalike IDNs that have been allowlisted should not be blocked.
   allow_list()->AllowDomain("xn--googl-fsa.com");
   EXPECT_TRUE(ShouldAllowResponseUrl(lookalike_url, /*main_frame=*/true)
                   .ShouldAllowNavigation());
+  EXPECT_TRUE(ShouldAllowResponseUrl(blob_lookalike_url, /*main_frame=*/true)
+                  .ShouldAllowNavigation());
 
-  histogram_tester_.ExpectTotalCount(lookalikes::kInterstitialHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(lookalikes::kInterstitialHistogramName, 2);
 }
 
 // Tests that ShouldAllowResponse properly allows lookalike navigations

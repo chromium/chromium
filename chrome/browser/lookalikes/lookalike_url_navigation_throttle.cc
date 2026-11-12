@@ -45,6 +45,7 @@
 
 using lookalikes::DomainInfo;
 using lookalikes::GetETLDPlusOne;
+using lookalikes::GetUrlForLookalikeChecks;
 using lookalikes::LookalikeActionType;
 using lookalikes::LookalikeUrlMatchType;
 
@@ -183,8 +184,9 @@ void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync() {
 }
 
 void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckForURL(
-    const GURL& url,
+    const GURL& raw_url,
     const std::vector<DomainInfo>& engaged_sites) {
+  const GURL url = GetUrlForLookalikeChecks(raw_url);
   auto host = url.GetHost();
   if (lookalike_cache_.count(host) > 0) {
     return;
@@ -266,8 +268,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
   // for the engaged sites list to be loaded. This avoids deferring e.g. the
   // New Tab Page navigation at browser startup.
   if (base::FeatureList::IsEnabled(kLookalikeSkipEngagedSitesWaitForNonHttp) &&
-      !handle->GetRedirectChain()[0].SchemeIsHTTPOrHTTPS() &&
-      !handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+      !GetUrlForLookalikeChecks(handle->GetRedirectChain()[0])
+           .SchemeIsHTTPOrHTTPS() &&
+      !GetUrlForLookalikeChecks(handle->GetURL()).SchemeIsHTTPOrHTTPS()) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -286,8 +289,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
 
 bool LookalikeUrlNavigationThrottle::NeedsEngagedSitesForNavigation(
     const LookalikeUrlService* service) const {
-  const GURL& first_url = navigation_handle()->GetRedirectChain()[0];
-  const GURL& last_url = navigation_handle()->GetURL();
+  const GURL first_url =
+      GetUrlForLookalikeChecks(navigation_handle()->GetRedirectChain()[0]);
+  const GURL last_url = GetUrlForLookalikeChecks(navigation_handle()->GetURL());
   if (first_url.GetHost() != last_url.GetHost() &&
       !lookalike_cache_.contains(first_url.GetHost()) &&
       service->NeedsEngagedSitesForCheck(first_url)) {
@@ -427,8 +431,9 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
         base::NotFatalUntil::M161);
 
   // Check for two lookalikes -- at the beginning and end of the redirect chain.
-  const GURL& first_url = navigation_handle()->GetRedirectChain()[0];
-  const GURL& last_url = navigation_handle()->GetURL();
+  const GURL first_url =
+      GetUrlForLookalikeChecks(navigation_handle()->GetRedirectChain()[0]);
+  const GURL last_url = GetUrlForLookalikeChecks(navigation_handle()->GetURL());
 
   base::TimeTicks is_lookalike_url_start = base::TimeTicks::Now();
 

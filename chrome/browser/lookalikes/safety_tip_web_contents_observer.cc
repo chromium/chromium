@@ -181,7 +181,8 @@ void SafetyTipWebContentsObserver::MaybeShowSafetyTip(
     return;
   }
 
-  const GURL& url = web_contents()->GetLastCommittedURL();
+  const GURL url = lookalikes::GetUrlForLookalikeChecks(
+      web_contents()->GetLastCommittedURL());
   if (!url.SchemeIsHTTPOrHTTPS()) {
     MaybeCallSafetyTipCheckCallback(false);
     return;

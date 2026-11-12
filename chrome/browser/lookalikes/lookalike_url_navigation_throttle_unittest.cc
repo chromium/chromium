@@ -137,6 +137,67 @@ TEST_F(LookalikeThrottleTest, NeedsEngagedSitesForCheck) {
   EXPECT_FALSE(service->NeedsEngagedSitesForCheck(kNonTopUrl));
   service->ResetWarningDismissedETLDPlusOnesForTesting();
   EXPECT_TRUE(service->NeedsEngagedSitesForCheck(kNonTopUrl));
+
+  // 4. Nested `blob:` URLs unwrap to their inner HTTP(S) origin for both
+  // `NeedsEngagedSitesForCheck()` and `SetUserIgnore()`/`IsIgnored()`.
+  const GURL kNonTopBlobUrl("blob:https://non-top-example-domain.com/1234");
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(
+      GURL("blob:https://www.google.com/1234")));
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(GURL("blob:null/1234-5678")));
+  EXPECT_TRUE(service->NeedsEngagedSitesForCheck(kNonTopBlobUrl));
+  service->SetUserIgnore(kNonTopBlobUrl);
+  EXPECT_TRUE(service->IsIgnored(kNonTopUrl));
+  EXPECT_TRUE(service->IsIgnored(kNonTopBlobUrl));
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(kNonTopUrl));
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(kNonTopBlobUrl));
+
+  // Calling `SetUserIgnore()` on a URL with no public eTLD+1 (e.g. an opaque
+  // `blob:null/...` URL) must not insert an empty eTLD+1 that matches other
+  // hostless URLs.
+  service->SetUserIgnore(GURL("blob:null/1234"));
+  EXPECT_FALSE(service->IsIgnored(GURL("blob:null/5678")));
+}
+
+// Verifies that `blob:` navigations with a spoofy inner HTTP(S) origin are
+// blocked by the throttle, while benign and opaque `blob:` URLs proceed.
+TEST_F(LookalikeThrottleTest, SpoofsBlockedForBlobUrls) {
+  lookalikes::InitializeSafetyTipConfig();
+
+  const struct TestCase {
+    const char* url;
+    bool expected_blocked;
+  } kTestCases[] = {
+      {"blob:http://xn--ook-ooa.com/52ef8006-dc23-4613-a7b8-c74cf80b3f34",
+       true},
+      {"blob:http://private.hostname/52ef8006-dc23-4613-a7b8-c74cf80b3f34",
+       false},
+      {"blob:null/52ef8006-dc23-4613-a7b8-c74cf80b3f34", false},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    GURL url(test_case.url);
+    ::testing::NiceMock<content::MockNavigationHandle> handle(url, main_rfh());
+    handle.set_redirect_chain({url});
+    handle.set_page_transition(ui::PAGE_TRANSITION_LINK);
+    ::testing::NiceMock<content::MockNavigationThrottleRegistry> registry(
+        &handle,
+        content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+    LookalikeUrlNavigationThrottle::MaybeCreateAndAdd(registry);
+    ASSERT_EQ(1u, registry.throttles().size());
+    raw_ptr<LookalikeUrlNavigationThrottle> throttle =
+        static_cast<LookalikeUrlNavigationThrottle*>(
+            registry.throttles().back().get());
+    ASSERT_TRUE(throttle);
+    throttle->SetUseTestProfileForTesting();
+
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              throttle->WillStartRequest().action());
+    EXPECT_EQ(test_case.expected_blocked ? content::NavigationThrottle::CANCEL
+                                         : content::NavigationThrottle::PROCEED,
+              throttle->WillProcessResponse().action())
+        << "Failed: " << test_case.url;
+  }
 }
 
 }  // namespace lookalikes

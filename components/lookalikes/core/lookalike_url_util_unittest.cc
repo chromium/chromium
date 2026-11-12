@@ -862,3 +862,58 @@ TEST_F(LookalikeUrlUtilTest, RecordUMAFromMatchTypeIsolated) {
   histograms.ExpectTotalCount(lookalikes::kIncognitoInterstitialHistogramName,
                               0);
 }
+
+TEST_F(LookalikeUrlUtilTest, GetUrlForLookalikeChecks) {
+  // Standard HTTP(S) URLs are returned unchanged.
+  const GURL kHttpsUrl("https://example.com/path?query=1");
+  EXPECT_EQ(kHttpsUrl, lookalikes::GetUrlForLookalikeChecks(kHttpsUrl));
+  const GURL kHttpPortUrl("http://example.com:8080/path");
+  EXPECT_EQ(kHttpPortUrl, lookalikes::GetUrlForLookalikeChecks(kHttpPortUrl));
+
+  // Nested blob: and filesystem: URLs unwrap to their inner origin's URL,
+  // preserving scheme and port.
+  EXPECT_EQ(
+      GURL("https://example.com/"),
+      lookalikes::GetUrlForLookalikeChecks(
+          GURL("blob:https://example.com/52ef8006-dc23-4613-a7b8-c74cf80b3f")));
+  EXPECT_EQ(GURL("http://example.com:8080/"),
+            lookalikes::GetUrlForLookalikeChecks(
+                GURL("blob:http://example.com:8080/1234-5678")));
+  EXPECT_EQ(GURL("https://example.com/"),
+            lookalikes::GetUrlForLookalikeChecks(
+                GURL("filesystem:https://example.com/temporary/file.html")));
+  EXPECT_EQ(GURL("http://example.com:8080/"),
+            lookalikes::GetUrlForLookalikeChecks(GURL(
+                "filesystem:http://example.com:8080/persistent/file.html")));
+
+  // Non-HTTP(S) inner origins unwrap to non-HTTP(S) URLs; opaque inner origins
+  // (e.g. blob:null/...) remain valid non-HTTP(S) URLs.
+  const GURL kBlobFileUrl("blob:file:///tmp/1234");
+  EXPECT_FALSE(
+      lookalikes::GetUrlForLookalikeChecks(kBlobFileUrl).SchemeIsHTTPOrHTTPS());
+  const GURL kOpaqueBlobUrl("blob:null/52ef8006-dc23-4613-a7b8-c74cf80b3f34");
+  EXPECT_EQ(kOpaqueBlobUrl,
+            lookalikes::GetUrlForLookalikeChecks(kOpaqueBlobUrl));
+  EXPECT_FALSE(lookalikes::GetUrlForLookalikeChecks(kOpaqueBlobUrl)
+                   .SchemeIsHTTPOrHTTPS());
+
+  // Other schemes and invalid URLs are returned unchanged.
+  const GURL kDataUrl("data:text/html,hello");
+  EXPECT_EQ(kDataUrl, lookalikes::GetUrlForLookalikeChecks(kDataUrl));
+  const GURL kAboutUrl("about:blank");
+  EXPECT_EQ(kAboutUrl, lookalikes::GetUrlForLookalikeChecks(kAboutUrl));
+  EXPECT_EQ(GURL(), lookalikes::GetUrlForLookalikeChecks(GURL()));
+
+  // GetDomainInfo, GetConsoleMessage, and GetSuggestedURL use the unwrapped
+  // inner URL/hostname.
+  const GURL kLookalikeBlobUrl("blob:https://googlé.com/1234-5678");
+  EXPECT_EQ("xn--googl-fsa.com", GetDomainInfo(kLookalikeBlobUrl).hostname);
+  EXPECT_NE(std::string::npos,
+            lookalikes::GetConsoleMessage(kLookalikeBlobUrl,
+                                          /*is_new_heuristic=*/false)
+                .find("xn--googl-fsa.com"));
+  EXPECT_EQ(
+      GURL("https://google.com/"),
+      lookalikes::GetSuggestedURL(LookalikeUrlMatchType::kSkeletonMatchTop500,
+                                  kLookalikeBlobUrl, "google.com"));
+}

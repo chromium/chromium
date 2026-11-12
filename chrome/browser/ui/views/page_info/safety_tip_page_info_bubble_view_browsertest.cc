@@ -57,6 +57,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -522,6 +523,91 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest, ShowOnBlock) {
   EXPECT_FALSE(IsUIShowing());
   test_helper()->CheckSafetyTipUkmCount(1);
   test_helper()->CheckInterstitialUkmCount(0);
+}
+
+// Ensure top-level `blob:` navigations with a lookalike inner origin trigger
+// the Safety Tip bubble, Page Info warning, console warning, and dismissal
+// allowlisting (b/579583149).
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest, ShowOnBlobUrl) {
+  const GURL kAttackerUrl = GetURL("site1.com");
+  const GURL kLookalikeUrl = GetURL("accounts-google.com");
+  SetEngagementScore(browser(), kAttackerUrl, kLowEngagement);
+  SetEngagementScore(browser(), kLookalikeUrl, kLowEngagement);
+
+  NavigateToURL(browser(), kAttackerUrl,
+                ui::mojom::WindowOpenDisposition::kCurrentTab);
+  EXPECT_FALSE(IsUIShowing());
+
+  // Load the Safety-Tip-eligible lookalike host in a sandboxed subframe (which
+  // does not trigger Safety Tips).
+  content::TestNavigationObserver subframe_observer(web_contents(), 1);
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "const f = document.createElement('iframe');"
+          "f.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';"
+          "f.src = $1;"
+          "document.body.appendChild(f);",
+          kLookalikeUrl)));
+  subframe_observer.Wait();
+  EXPECT_FALSE(IsUIShowing());
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  const GURL blob_url(
+      content::EvalJs(
+          subframe,
+          "window.blobUrl = URL.createObjectURL(new Blob("
+          "['<!doctype html><title>Phish</title>'], {type: 'text/html'}));"
+          "window.blobUrl;",
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractString());
+  ASSERT_TRUE(blob_url.SchemeIsBlob());
+
+  // Reset the Safety Tip observer latch and navigate `top` to the blob URL
+  // without a user gesture.
+  SafetyTipWebContentsObserver* safety_tip_observer =
+      SafetyTipWebContentsObserver::FromWebContents(web_contents());
+  safety_tip_observer->reset_safety_tip_check_pending_for_testing();
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(
+      "*Chrome has determined that accounts-google.com could be fake or "
+      "fraudulent*");
+
+  content::TestNavigationObserver top_nav_observer(web_contents(), 1);
+  content::ExecuteScriptAsyncWithoutUserGesture(
+      subframe, "top.location.href = window.blobUrl;");
+  top_nav_observer.Wait();
+  if (safety_tip_observer->safety_tip_check_pending_for_testing()) {
+    base::RunLoop loop;
+    safety_tip_observer->RegisterSafetyTipCheckCallbackForTesting(
+        loop.QuitClosure());
+    loop.Run();
+  }
+
+  EXPECT_EQ(blob_url, web_contents()->GetLastCommittedURL());
+  EXPECT_TRUE(IsUIShowing());
+  ASSERT_TRUE(console_observer.Wait());
+
+  // Dismissing the Safety Tip on the blob: page ignores the inner lookalike
+  // domain for subsequent navigations, while Page Info still reflects the
+  // Safety Tip info on the current page.
+  CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
+  ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
+      browser(), security_state::SafetyTipStatus::kLookalike,
+      GURL("https://google.com")));
+
+  // Switch back to the original tab (CheckPageInfoShowsSafetyTipInfo opens a
+  // help center tab) using SwitchToTabAndWait so any visibility-triggered
+  // Safety Tip check completes cleanly, and verify that `accounts-google.com`
+  // remains ignored both on tab re-activation and on a fresh navigation.
+  safety_tip_observer->reset_safety_tip_check_pending_for_testing();
+  SwitchToTabAndWait(browser(), 0);
+  EXPECT_FALSE(IsUIShowing());
+  NavigateToURL(browser(), kLookalikeUrl,
+                ui::mojom::WindowOpenDisposition::kCurrentTab);
+  EXPECT_FALSE(IsUIShowing());
 }
 
 // Ensure blocked sites that don't load don't get blocked.

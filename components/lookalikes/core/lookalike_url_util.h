@@ -32,6 +32,13 @@ extern const char kIsolatedInterstitialHistogramName[];
 // Register applicable preferences with the provided registry.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+// Returns the URL to evaluate for lookalike checks. Unwraps nested `blob:` and
+// `filesystem:` URLs (e.g., `blob:https://example.com/uuid`) to their inner
+// origin's URL (`https://example.com/`), since a document committed from such a
+// URL executes in and displays that inner origin. Returns `url` unchanged for
+// other schemes or opaque inner origins.
+GURL GetUrlForLookalikeChecks(const GURL& url);
+
 // Returns the console message to be shown in devtools when a URL is flagged by
 // a lookalike heuristic. If is_new_heuristic is true, the message is for a new
 // heuristic that's not fully launched and it has an extra line about future
@@ -188,7 +195,8 @@ struct DomainInfo {
 // eTLD+1 is empty.
 DomainInfo GetDomainInfo(const std::string& hostname);
 
-// Convenience function for returning GetDomainInfo(url.host()).
+// Convenience function for returning
+// GetDomainInfo(GetUrlForLookalikeChecks(url).GetHost()).
 DomainInfo GetDomainInfo(const GURL& url);
 
 // Returns true if the Levenshtein distance between |str1| and |str2| is at most

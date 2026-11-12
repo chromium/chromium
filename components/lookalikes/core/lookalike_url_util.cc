@@ -33,6 +33,7 @@
 #include "net/base/url_util.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
+#include "url/origin.h"
 
 using lookalikes::ComboSquattingParams;
 using lookalikes::DomainInfo;
@@ -777,11 +778,22 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kLookalikeWarningAllowlistDomains);
 }
 
+GURL GetUrlForLookalikeChecks(const GURL& url) {
+  if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
+    const url::Origin origin = url::Origin::Create(url);
+    if (!origin.opaque()) {
+      return origin.GetURL();
+    }
+  }
+  return url;
+}
+
 std::string GetConsoleMessage(const GURL& lookalike_url,
                               bool is_new_heuristic) {
   const char* const kNewHeuristicMessage =
       "Future Chrome versions will show a warning on this domain name.\n";
-  return base::StrCat({"Chrome has determined that ", lookalike_url.host(),
+  return base::StrCat({"Chrome has determined that ",
+                       GetUrlForLookalikeChecks(lookalike_url).GetHost(),
                        " could be fake or fraudulent.\n\n",
                        is_new_heuristic ? kNewHeuristicMessage : "",
                        "If you believe this is shown in error please visit "
@@ -846,7 +858,7 @@ DomainInfo GetDomainInfo(const std::string& hostname) {
 }
 
 DomainInfo GetDomainInfo(const GURL& url) {
-  return GetDomainInfo(url.GetHost());
+  return GetDomainInfo(GetUrlForLookalikeChecks(url).GetHost());
 }
 
 std::string GetETLDPlusOne(const std::string& hostname) {
@@ -1318,12 +1330,13 @@ bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
 
 bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
                                  const GURL& url) {
+  const GURL check_url = GetUrlForLookalikeChecks(url);
   const base::ListValue& list =
       pref_service->GetList(prefs::kLookalikeWarningAllowlistDomains);
 
   for (const auto& domain_val : list) {
     const std::string& domain = domain_val.GetString();
-    if (url.DomainIs(domain)) {
+    if (check_url.DomainIs(domain)) {
       return true;
     }
   }
@@ -1556,8 +1569,9 @@ GURL GetSuggestedURL(LookalikeUrlMatchType match_type,
   // Drop everything but the parts of the origin.
   GURL::Replacements replace_host;
   replace_host.SetHostStr(suggested_domain);
-  GURL suggested_url =
-      navigated_url.ReplaceComponents(replace_host).GetWithEmptyPath();
+  GURL suggested_url = GetUrlForLookalikeChecks(navigated_url)
+                           .ReplaceComponents(replace_host)
+                           .GetWithEmptyPath();
 
   // Use https for top domain matches.
   // TODO(crbug.com/40755923): If the match is against an engaged site, use the

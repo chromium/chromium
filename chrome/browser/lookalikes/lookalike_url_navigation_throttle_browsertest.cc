@@ -48,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
@@ -65,6 +66,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -1877,6 +1879,173 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleSignedExchangeBrowserTest,
   const GURL kResolvedNavigatedUrl =
       https_server_.GetURL("/sxg/google-com.example.org_test.sxg");
   ASSERT_TRUE(HadSignedExchangeInAcceptHeader(kResolvedNavigatedUrl));
+}
+
+// Tests that a top-level navigation to a `blob:` URL minted by a lookalike
+// origin (e.g. from a sandboxed cross-origin subframe without a user gesture)
+// is blocked by the lookalike interstitial rather than bypassing scheme gates.
+// Regression test for b/579583149.
+IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
+                       BlobUrl_TopLevelNavigationFromSandboxedSubframe) {
+  const GURL kAttackerUrl = GetURL("site.test");
+  const GURL kLookalikeUrl = GetURL("google.com-test.com");
+  const GURL kExpectedSuggestedUrl = GetURLWithoutPath("google.com");
+  SetEngagementScore(browser(), kLookalikeUrl, kLowEngagement);
+  // Advance the clock so the stale engaged-sites path is also exercised.
+  test_clock()->Advance(base::Hours(1));
+
+  NavigateToURLSync(browser(), kAttackerUrl);
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Subframe navigations do not show the lookalike interstitial.
+  content::TestNavigationObserver subframe_observer(web_contents, 1);
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace(
+          "const f = document.createElement('iframe');"
+          "f.sandbox = 'allow-scripts allow-same-origin allow-top-navigation';"
+          "f.src = $1;"
+          "document.body.appendChild(f);",
+          kLookalikeUrl)));
+  subframe_observer.Wait();
+  EXPECT_EQ(nullptr, GetCurrentInterstitial(web_contents));
+
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+
+  const GURL blob_url(
+      content::EvalJs(
+          subframe,
+          "window.blobUrl = URL.createObjectURL(new Blob("
+          "['<!doctype html><title>Phish</title>'], {type: 'text/html'}));"
+          "window.blobUrl;",
+          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .ExtractString());
+  ASSERT_TRUE(blob_url.SchemeIsBlob());
+
+  base::HistogramTester histograms;
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetPattern(
+      "*Chrome has determined that google.com-test.com could be fake or "
+      "fraudulent*");
+  content::TestNavigationObserver top_nav_observer(web_contents, 1);
+  content::ExecuteScriptAsyncWithoutUserGesture(
+      subframe, "top.location.href = window.blobUrl;");
+  top_nav_observer.Wait();
+
+  EXPECT_EQ(LookalikeUrlBlockingPage::kTypeForTesting,
+            GetInterstitialType(web_contents));
+  EXPECT_FALSE(IsUrlShowing(browser()));
+  ASSERT_TRUE(console_observer.Wait());
+
+  SendInterstitialCommandSync(browser(),
+                              SecurityInterstitialCommand::CMD_DONT_PROCEED);
+  EXPECT_EQ(kExpectedSuggestedUrl, web_contents->GetVisibleURL());
+  histograms.ExpectUniqueSample(
+      kInterstitialHistogramName,
+      NavigationSuggestionEvent::kMatchTargetEmbedding, 1);
+  auto entries = test_ukm_recorder()->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  test_ukm_recorder()->ExpectEntryMetric(
+      entries[0], "MatchType",
+      static_cast<int>(LookalikeUrlMatchType::kTargetEmbedding));
+  test_ukm_recorder()->ExpectEntryMetric(
+      entries[0], "UserAction",
+      static_cast<int>(LookalikeUrlBlockingPageUserAction::kAcceptSuggestion));
+}
+
+// Tests that clicking through ("Ignore") on a `blob:` lookalike interstitial
+// allowlists the inner lookalike host so the reload commits the `blob:` page,
+// and that opaque-origin `blob:null/...` URLs are allowed without deferring.
+IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
+                       BlobUrl_ProceedAllowlistsInnerOriginAndOpaqueAllowed) {
+  const GURL kAttackerUrl = GetURL("site.test");
+  const GURL kLookalikeUrl = GetURL("google.com-test.com");
+  SetEngagementScore(browser(), kLookalikeUrl, kLowEngagement);
+
+  // Keep the lookalike subframe alive in the first tab so the blob URL remains
+  // registered across the interstitial reload in the second tab.
+  NavigateToURLSync(browser(), kAttackerUrl);
+  content::WebContents* holder_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  {
+    content::TestNavigationObserver subframe_observer(holder_contents, 1);
+    ASSERT_TRUE(content::ExecJs(
+        holder_contents,
+        content::JsReplace("const f = document.createElement('iframe');"
+                           "f.sandbox = 'allow-scripts allow-same-origin';"
+                           "f.src = $1;"
+                           "document.body.appendChild(f);",
+                           kLookalikeUrl)));
+    subframe_observer.Wait();
+  }
+  content::RenderFrameHost* lookalike_subframe =
+      content::ChildFrameAt(holder_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(lookalike_subframe);
+  const GURL blob_url(
+      content::EvalJs(
+          lookalike_subframe,
+          "window.keepBlob = URL.createObjectURL(new Blob("
+          "['<!doctype html><title>Allowed</title>'], {type: 'text/html'}));"
+          "window.keepBlob;")
+          .ExtractString());
+  ASSERT_TRUE(blob_url.SchemeIsBlob());
+
+  // Also mint an opaque-origin `blob:null/...` URL from a sandboxed subframe
+  // without `allow-same-origin`.
+  {
+    content::TestNavigationObserver opaque_observer(holder_contents, 1);
+    ASSERT_TRUE(content::ExecJs(
+        holder_contents,
+        content::JsReplace("const o = document.createElement('iframe');"
+                           "o.sandbox = 'allow-scripts';"
+                           "o.src = $1;"
+                           "document.body.appendChild(o);",
+                           kLookalikeUrl)));
+    opaque_observer.Wait();
+  }
+  content::RenderFrameHost* opaque_subframe =
+      content::ChildFrameAt(holder_contents->GetPrimaryMainFrame(), 1);
+  ASSERT_TRUE(opaque_subframe);
+  const GURL opaque_blob_url(
+      content::EvalJs(
+          opaque_subframe,
+          "window.opaqueBlob = URL.createObjectURL(new Blob("
+          "['<!doctype html><title>Opaque</title>'], {type: 'text/html'}));"
+          "window.opaqueBlob;")
+          .ExtractString());
+  ASSERT_TRUE(opaque_blob_url.SchemeIsBlob());
+  ASSERT_TRUE(url::Origin::Create(opaque_blob_url).opaque());
+
+  // Open a second foreground tab to test navigating to both blob URLs.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Opaque-origin blob:null/... navigation should not defer or show a warning.
+  {
+    base::HistogramTester histograms;
+    test_clock()->Advance(base::Hours(1));
+    NavigateToURLSync(browser(), opaque_blob_url);
+    EXPECT_EQ(nullptr, GetCurrentInterstitial(active_contents));
+    EXPECT_EQ(opaque_blob_url, active_contents->GetLastCommittedURL());
+    histograms.ExpectTotalCount(
+        "NavigationSuggestion.UpdateEngagedSitesDeferTime", 0);
+  }
+
+  // Lookalike-origin blob: navigation shows the interstitial, and proceeding
+  // allowlists the inner domain so the reload commits the blob document.
+  LoadAndCheckInterstitialAt(browser(), blob_url);
+  SendInterstitialCommandSync(browser(),
+                              SecurityInterstitialCommand::CMD_PROCEED);
+  EXPECT_EQ(blob_url, active_contents->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(kLookalikeUrl),
+            active_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 // TODO(meacer): Add a test for a failed SGX response. It should be treated
