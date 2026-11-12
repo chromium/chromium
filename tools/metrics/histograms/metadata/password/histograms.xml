@@ -1521,7 +1521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.EditsInSaveBubble"
-    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2026-12-06">
+    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2027-06-30">
   <owner>kazinova@google.com</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
@@ -3469,7 +3469,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}.ConnectionResultCode"
     enum="PasswordStoreAndroidBackendConnectionResultCode"
-    expires_after="2026-11-29">
+    expires_after="2027-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
@@ -3938,7 +3938,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.SingleUsername.PasswordFormHadUsernameField"
-    enum="PasswordFormHadUsernameField" expires_after="2026-12-06">
+    enum="PasswordFormHadUsernameField" expires_after="2027-06-30">
   <owner>kazinova@google.com</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
@@ -3992,7 +3992,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.SubmittedFormFrame2"
-    enum="SubmittedPasswordFormFrame" expires_after="2026-12-16">
+    enum="SubmittedPasswordFormFrame" expires_after="2027-06-30">
   <owner>kazinova@google.com</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
