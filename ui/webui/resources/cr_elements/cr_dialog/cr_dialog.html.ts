@@ -22,7 +22,7 @@ export function getHtml(this: CrDialogElement) {
         <slot name="title"></slot>
       </h2>
       ${this.showCloseButton ? html`
-        <cr-icon-button id="close" iron-icon="cr:close"
+        <cr-icon-button id="close" iron-icon="cr:close" part="close-button"
             aria-label="${this.closeText || nothing}"
             title="${this.closeText || nothing}" @click="${this.onCloseClick_}"
             @keypress="${this.onCloseKeypress_}">

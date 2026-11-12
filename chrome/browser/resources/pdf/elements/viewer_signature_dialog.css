@@ -29,15 +29,6 @@ cr-dialog::part(dialog) {
 cr-dialog::part(close-button) {
   /* --cr-fallback-color-on-surface-subtle in dark mode */
   --cr-icon-button-fill-color: rgb(199, 199, 199);
-  /* TODO(crbug.com/579037662): Remove --cr-icon-image overrides once shared
-     CSS url() works in chrome-extension:// UIs. */
-  --cr-icon-image: url(chrome://resources/images/icon_clear_old.svg);
-}
-
-:host-context([webui-rounded-icons]) cr-dialog::part(close-button) {
-  /* TODO(crbug.com/579037662): Remove --cr-icon-image overrides once shared
-     CSS url() works in chrome-extension:// UIs. */
-  --cr-icon-image: url(chrome://resources/images/icon_clear.svg);
 }
 
 [slot='title'] {
