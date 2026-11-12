@@ -230,6 +230,29 @@ public class HopOnOffUnitTest {
     }
 
     @Test
+    public void testTransition_withMultipleStationsActive_keepsWindowPosition() throws Throwable {
+        // Travelling in the first window must not move its Station behind the second window's:
+        // AutoResetCtaTransitTestRule and BatchedPublicTransitRule take the first active Station
+        // as the first window's.
+        Activity firstActivity = resumeActivity(Activity.class);
+        TestStation firstWindow = hopOnTo(firstActivity, new TestStation());
+        TestStation secondWindow =
+                new TestStation(
+                        /* activityClass= */ null, /* withUnfulfillableExitCondition= */ false);
+        secondWindow.setStateActiveWithoutTransition();
+        TrafficControl.notifyActiveStationsChanged(List.of(), List.of(secondWindow));
+        assertEquals(List.of(firstWindow, secondWindow), TrafficControl.getActiveStations());
+
+        TestStation destination = new TestStation();
+        mTransitRule.runTransition(
+                () -> Triggers.noopTo().withContext(firstWindow).arriveAt(destination));
+
+        assertEquals(Phase.FINISHED, firstWindow.getPhase());
+        assertEquals(Phase.ACTIVE, destination.getPhase());
+        assertEquals(List.of(destination, secondWindow), TrafficControl.getActiveStations());
+    }
+
+    @Test
     public void testHoppedOnStation_isUsableAsOriginOfNormalTransition() throws Throwable {
         // Hop on in a SubActivity, then travel to a Station<Activity>: requireToBeInSameTask()
         // must accept the origin's subclass instance rather than demand the exact declared class.
