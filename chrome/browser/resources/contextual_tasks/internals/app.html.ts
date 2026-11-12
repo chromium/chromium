@@ -120,67 +120,214 @@ export function getHtml(this: ContextualTasksInternalsAppElement) {
   </div>
   <div slot="tab">Eligibility</div>
   <div slot="panel">
-    <div class="card eligibility-section">
-      <div
-          class="eligibility-status ${
-              this.eligibilityState_?.isEligible ? 'eligible' : 'ineligible'}">
-        ${this.eligibilityState_?.isEligible ? 'Eligible' : 'Not Eligible'}
-      </div>
-      ${!this.eligibilityState_?.isEligible ? html`
-        <div class="eligibility-reasons">
-          <h3>Reasons for Ineligibility:</h3>
-          <ul>
-            ${!this.eligibilityState_?.isContextualTasksEnabled ? html`
-              <li>
-                Feature flag (kContextualTasks) is not enabled.
-                <strong>Tip:</strong> Enable it in chrome://flags.
-              </li>
-            ` : ''}
-            ${!this.eligibilityState_?.isSignedIn ? html`
-              <li>
-                User is not signed in with valid credentials.
-                <strong>Tip:</strong> Sign in to the browser.
-              </li>
-            ` : ''}
-            ${!this.eligibilityState_?.primaryAccountInCookieJar ? html`
-              <li>
-                Primary account is not in the cookie jar.
-                <strong>Tip:</strong> Are you signed in to google.com? Are you using multiple accounts?
-              </li>
-            ` : ''}
-            ${!this.eligibilityState_?.isDefaultSearchEngineGoogle ? html`
-              <li>
-                Google is not the default search engine.
-                <strong>Tip:</strong> Set Google as your default search engine in settings.
-              </li>
-            ` : html`
-              ${!this.eligibilityState_?.isAimEligible ? html`
+    ${this.eligibilityState_?.isRearchitectureEnabled ? html`
+      <div class="card eligibility-section">
+        <h2>Chrome Client Eligibility for the Tabs Picker in AIM</h2>
+        <div
+            class="eligibility-status ${
+                     this.eligibilityState_?.isAimTabsPickerEligible ?
+                'eligible' :
+                'ineligible'}">
+          ${this.eligibilityState_?.isAimTabsPickerEligible ? 'Eligible' :
+                                                            'Not Eligible'}
+        </div>
+        ${!this.eligibilityState_?.isAimTabsPickerEligible ? html`
+          <div class="eligibility-reasons">
+            <h3>Reasons for Ineligibility:</h3>
+            <ul>
+              ${!this.eligibilityState_
+                      ?.isContextualTasksRearchitectureEnabled ?
+                  html`
                 <li>
-                  User is not eligible for AI mode.
-                  <strong>Tip:</strong> Are you in a region when AIM is not allowed?
+                  Feature flag (kContextualTasksRearchitecture) is not enabled.
+                  <strong>Tip:</strong> Enable it in chrome://flags.
                 </li>
               ` : ''}
-            `}
-            ${!this.eligibilityState_?.isCobrowseEligible ? html`
-              <li>
-                User is not eligible for Co-Browse.
-                <strong>Tip:</strong> The AimEligibilityService is disabling Cobrowsing. Debug at
-                <a href="chrome://omnibox-internals/aim-eligibility"
-                    target="_blank">
-                  chrome://omnibox-internals/aim-eligibility
-                </a>
-              </li>
-            ` : ''}
-            ${!this.eligibilityState_?.isAimAllowedByPolicy ? html`
-              <li>AIM is not allowed by enterprise policy.</li>
-            ` : ''}
-            ${!this.eligibilityState_?.isContextSharingEnabled ? html`
-              <li>Page context sharing enterprise policy is disabled.</li>
-            ` : ''}
-          </ul>
+              ${!this.eligibilityState_?.isApiContextualTasksPrivateEnabled ?
+                  html`
+                <li>
+                  Feature flag (kApiContextualTasksPrivate) is not enabled.
+                  <strong>Tip:</strong> Enable it in chrome://flags.
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isDefaultSearchEngineGoogle ? html`
+                <li>
+                  Google is not the default search engine.
+                  <strong>Tip:</strong> Set Google as your default search engine
+                  in settings.
+                </li>
+              ` : html`
+                ${!this.eligibilityState_?.isAimEligible ? html`
+                  <li>
+                    User is not eligible for AI mode.
+                    <strong>Tip:</strong> Are you in a region when AIM is not
+                    allowed?
+                  </li>
+                ` : ''}
+              `}
+              ${!this.eligibilityState_?.isFuseboxEligible ? html`
+                <li>
+                  User is not eligible for Fusebox.
+                  <strong>Tip:</strong> The AimEligibilityService is disabling
+                  Fusebox. Debug at
+                  <a href="chrome://omnibox-internals/aim-eligibility"
+                      target="_blank">
+                    chrome://omnibox-internals/aim-eligibility
+                  </a>
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isAimAllowedByPolicy ? html`
+                <li>AIM is not allowed by enterprise policy.</li>
+              ` : ''}
+              ${!this.eligibilityState_?.isContextSharingEnabled ? html`
+                <li>Page context sharing enterprise policy is disabled.</li>
+              ` : ''}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+      <div class="card eligibility-section">
+        <h2>Chrome Client Eligibility for the Rearchitected Side Panel</h2>
+        <div
+            class="eligibility-status ${
+                this.eligibilityState_?.isRearchitectedSidePanelEligible ?
+                'eligible' :
+                'ineligible'}">
+          ${this.eligibilityState_?.isRearchitectedSidePanelEligible ?
+              'Eligible' :
+              'Not Eligible'}
         </div>
-      ` : ''}
-    </div>
+        ${!this.eligibilityState_?.isRearchitectedSidePanelEligible ? html`
+          <div class="eligibility-reasons">
+            <h3>Reasons for Ineligibility:</h3>
+            <ul>
+              ${!this.eligibilityState_?.isSidePanelRearchitectureEnabled ?
+                  html`
+                <li>
+                  Feature flag (kContextualTasksSidePanelRearchitecture) is not
+                  enabled.
+                  <strong>Tip:</strong> Enable it in chrome://flags.
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_
+                      ?.isContextualTasksRearchitectureEnabled ?
+                  html`
+                <li>
+                  Feature flag (kContextualTasksRearchitecture) is not enabled.
+                  <strong>Tip:</strong> Enable it in chrome://flags.
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isApiContextualTasksPrivateEnabled ?
+                  html`
+                <li>
+                  Feature flag (kApiContextualTasksPrivate) is not enabled.
+                  <strong>Tip:</strong> Enable it in chrome://flags.
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isDefaultSearchEngineGoogle ? html`
+                <li>
+                  Google is not the default search engine.
+                  <strong>Tip:</strong> Set Google as your default search engine
+                  in settings.
+                </li>
+              ` : html`
+                ${!this.eligibilityState_?.isAimEligible ? html`
+                  <li>
+                    User is not eligible for AI mode.
+                    <strong>Tip:</strong> Are you in a region when AIM is not
+                    allowed?
+                  </li>
+                ` : ''}
+              `}
+              ${!this.eligibilityState_?.isFuseboxEligible ? html`
+                <li>
+                  User is not eligible for Fusebox.
+                  <strong>Tip:</strong> The AimEligibilityService is disabling
+                  Fusebox. Debug at
+                  <a href="chrome://omnibox-internals/aim-eligibility"
+                      target="_blank">
+                    chrome://omnibox-internals/aim-eligibility
+                  </a>
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isAimAllowedByPolicy ? html`
+                <li>AIM is not allowed by enterprise policy.</li>
+              ` : ''}
+              ${!this.eligibilityState_?.isContextSharingEnabled ? html`
+                <li>Page context sharing enterprise policy is disabled.</li>
+              ` : ''}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+    ` : html`
+      <div class="card eligibility-section">
+        <div
+            class="eligibility-status ${
+                     this.eligibilityState_?.isEligible ? 'eligible' :
+                                                          'ineligible'}">
+          ${this.eligibilityState_?.isEligible ? 'Eligible' : 'Not Eligible'}
+        </div>
+        ${!this.eligibilityState_?.isEligible ? html`
+          <div class="eligibility-reasons">
+            <h3>Reasons for Ineligibility:</h3>
+            <ul>
+              ${!this.eligibilityState_?.isContextualTasksEnabled ? html`
+                <li>
+                  Feature flag (kContextualTasks) is not enabled.
+                  <strong>Tip:</strong> Enable it in chrome://flags.
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isSignedIn ? html`
+                <li>
+                  User is not signed in with valid credentials.
+                  <strong>Tip:</strong> Sign in to the browser.
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.primaryAccountInCookieJar ? html`
+                <li>
+                  Primary account is not in the cookie jar.
+                  <strong>Tip:</strong> Are you signed in to google.com? Are you
+                  using multiple accounts?
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isDefaultSearchEngineGoogle ? html`
+                <li>
+                  Google is not the default search engine.
+                  <strong>Tip:</strong> Set Google as your default search engine
+                  in settings.
+                </li>
+              ` : html`
+                ${!this.eligibilityState_?.isAimEligible ? html`
+                  <li>
+                    User is not eligible for AI mode.
+                    <strong>Tip:</strong> Are you in a region when AIM is not
+                    allowed?
+                  </li>
+                ` : ''}
+              `}
+              ${!this.eligibilityState_?.isCobrowseEligible ? html`
+                <li>
+                  User is not eligible for Co-Browse.
+                  <strong>Tip:</strong> The AimEligibilityService is disabling
+                  Cobrowsing. Debug at
+                  <a href="chrome://omnibox-internals/aim-eligibility"
+                      target="_blank">
+                    chrome://omnibox-internals/aim-eligibility
+                  </a>
+                </li>
+              ` : ''}
+              ${!this.eligibilityState_?.isAimAllowedByPolicy ? html`
+                <li>AIM is not allowed by enterprise policy.</li>
+              ` : ''}
+              ${!this.eligibilityState_?.isContextSharingEnabled ? html`
+                <li>Page context sharing enterprise policy is disabled.</li>
+              ` : ''}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+    `}
   </div>
   <div slot="tab">Session & User Data</div>
   <div slot="panel">

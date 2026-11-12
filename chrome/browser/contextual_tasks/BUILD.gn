@@ -612,6 +612,7 @@ source_set("ui_impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/resources/contextual_tasks/extension:resources",
+      "//extensions/common",
     ]
     if (!is_android) {
       sources += [
@@ -940,7 +941,10 @@ source_set("unit_tests") {
   }
 
   if (enable_extensions_core) {
-    deps += [ "//chrome/browser/extensions" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/common",
+    ]
     if (!is_android) {
       deps += [ "//chrome/browser/ui/views/extensions:extension_view_utils" ]
     }

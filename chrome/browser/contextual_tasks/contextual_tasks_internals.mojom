@@ -61,6 +61,20 @@ struct EligibilityState {
   bool is_context_sharing_enabled;
   // Whether the default search engine is Google.
   bool is_default_search_engine_google;
+  // Whether any Contextual Tasks rearchitecture feature flag is enabled.
+  bool is_rearchitecture_enabled;
+  // Whether the ContextualTasksRearchitecture feature flag is enabled.
+  bool is_contextual_tasks_rearchitecture_enabled;
+  // Whether the ContextualTasksSidePanelRearchitecture feature flag is enabled.
+  bool is_side_panel_rearchitecture_enabled;
+  // Whether the ApiContextualTasksPrivate extension feature flag is enabled.
+  bool is_api_contextual_tasks_private_enabled;
+  // Whether the user is eligible for Fusebox.
+  bool is_fusebox_eligible;
+  // Whether the Chrome client is eligible for the tabs picker in AIM.
+  bool is_aim_tabs_picker_eligible;
+  // Whether the Chrome client is eligible for the rearchitected side panel.
+  bool is_rearchitected_side_panel_eligible;
 };
 
 // Represents a TabHandle -> SessionID mapping recorded in WebContentsUserData.
