@@ -12,12 +12,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -296,12 +296,17 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
                                        url::Origin::Create(intercepted_url))) {
       const std::string* account_id = GetIfString(*result, "account_id");
 
+      base::WeakPtr<NavigationInterceptor> weak_this =
+          weak_ptr_factory_.GetWeakPtr();
       if (account_id && *account_id == embedder_login_request->account_id()) {
         embedder_login_request->OnFederatedResultReceived(
             FederatedLoginResult::kSuccess);
       } else {
         embedder_login_request->OnFederatedResultReceived(
             FederatedLoginResult::kExpectedAccountNotPresent);
+      }
+      if (!weak_this) {
+        return;
       }
     }
   }
@@ -342,17 +347,19 @@ void NavigationInterceptor::OnHeaderParsed(
   }
 
   should_cancel_ = false;
+  is_inside_onheaderparsed_ = true;
 
-  bool started = false;
-  {
-    base::AutoReset<bool> inside_guard(&is_inside_onheaderparsed_, true);
-    started = request_initiator_.Run(
-        rfh, std::move(*idp_get_params_vector),
-        password_manager::CredentialMediationRequirement::kOptional,
-        navigation_handle(), intercepted_url,
-        base::BindOnce(&NavigationInterceptor::OnTokenResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
+  base::WeakPtr<NavigationInterceptor> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  const bool started = request_initiator_.Run(
+      rfh, std::move(*idp_get_params_vector),
+      password_manager::CredentialMediationRequirement::kOptional,
+      navigation_handle(), intercepted_url,
+      base::BindOnce(&NavigationInterceptor::OnTokenResponse, weak_this));
+  if (!weak_this) {
+    return;
   }
+  is_inside_onheaderparsed_ = false;
 
   // If the synchronous callback requested a cancellation, perform it now.
   if (should_cancel_) {

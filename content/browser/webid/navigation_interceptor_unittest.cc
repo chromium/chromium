@@ -8,6 +8,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -1566,6 +1567,110 @@ TEST_F(NavigationInterceptorTest, TokenRequestFailsSynchronousDestruction) {
   EXPECT_TRUE(was_cancelled);
   ASSERT_TRUE(cancel_result.has_value());
   EXPECT_EQ(cancel_result->action(), NavigationThrottle::CANCEL);
+}
+
+TEST_F(NavigationInterceptorTest, RequestInitiatorSynchronousDestruction) {
+  NavigateAndCommit(GURL("https://rp.example/"));
+
+  auto mock_initiator = std::make_unique<MockRequestInitiator>();
+
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("FedCM-Intercept-Navigation",
+                     net::structured_headers::SerializeDictionary(
+                         EncodeParams({
+                             {"config_url", "https://idp.example/fedcm.json"},
+                             {"client_id", "1234"},
+                         }))
+                         .value());
+  mock_navigation_handle.set_response_headers(headers);
+
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  auto interceptor = std::make_unique<NavigationInterceptor>(
+      registry, mock_initiator->GetInitiator());
+
+  base::RunLoop run_loop;
+  bool was_resumed = false;
+  bool was_cancelled = false;
+  interceptor->set_resume_callback_for_testing(
+      base::BindLambdaForTesting([&]() { was_resumed = true; }));
+  interceptor->set_cancel_deferred_navigation_callback_for_testing(
+      base::BindLambdaForTesting([&](NavigationThrottle::ThrottleCheckResult) {
+        was_cancelled = true;
+      }));
+
+  EXPECT_CALL(*mock_initiator, Run).WillOnce([&]() {
+    interceptor.reset();
+    run_loop.Quit();
+    return false;
+  });
+
+  interceptor->WillStartRequest();
+  EXPECT_EQ(interceptor->WillProcessResponse(), NavigationThrottle::DEFER);
+
+  run_loop.Run();
+
+  EXPECT_FALSE(was_resumed);
+  EXPECT_FALSE(was_cancelled);
+}
+
+TEST_F(NavigationInterceptorTest, ConnectionStatusSynchronousDestruction) {
+  base::RunLoop run_loop;
+  bool connection_status_received = false;
+  bool was_resumed = false;
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("Federation-RP-Connection-Status",
+                     "status=\"connected\", account_id=\"1234\"");
+  mock_navigation_handle.set_response_headers(headers);
+
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+  MockRequestInitiator mock_initiator;
+  auto interceptor = std::make_unique<NavigationInterceptor>(
+      registry, mock_initiator.GetInitiator());
+  interceptor->set_resume_callback_for_testing(
+      base::BindLambdaForTesting([&]() { was_resumed = true; }));
+
+  FederatedEmbedderLoginRequest::Set(
+      web_contents(), url::Origin::Create(base_url_), "1234",
+      base::BindLambdaForTesting([&](FederatedLoginResult result) {
+        EXPECT_EQ(result, FederatedLoginResult::kSuccess);
+        connection_status_received = true;
+        interceptor.reset();
+        run_loop.Quit();
+      }));
+
+  interceptor->WillStartRequest();
+  EXPECT_EQ(interceptor->WillProcessResponse(), NavigationThrottle::DEFER);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(connection_status_received);
+  EXPECT_FALSE(was_resumed);
 }
 
 }  // namespace content::webid
