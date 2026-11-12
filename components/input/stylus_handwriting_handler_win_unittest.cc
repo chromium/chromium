@@ -7,6 +7,7 @@
 #include <array>
 #include <cmath>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "ui/events/win/stylus_handwriting_properties_win.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -49,21 +51,31 @@ constexpr WebInputEvent::Type kTerminalTapGestureTypes[] = {
     WebInputEvent::Type::kGestureLongTap,
 };
 
+ui::StylusHandwritingPropertiesWin HandwritingProperties() {
+  return ui::StylusHandwritingPropertiesWin(
+      1, 0, gfx::Vector2dF(kTestPixelsPerInchX, kTestPixelsPerInchY));
+}
+
 class TestStylusInterface final : public StylusInterface {
  public:
   bool ShouldInitiateStylusWriting() override { return true; }
   void NotifyHoverActionStylusWritable(bool) override {}
-  std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() override {
-    return pixels_per_inch_;
+  std::optional<ui::StylusHandwritingPropertiesWin>
+  TakeStylusHandwritingProperties(uint32_t touch_start_event_id) override {
+    EXPECT_EQ(touch_start_event_id_, touch_start_event_id);
+    return std::exchange(properties_, std::nullopt);
   }
 
-  void set_pixels_per_inch(std::optional<gfx::Vector2dF> pixels_per_inch) {
-    pixels_per_inch_ = pixels_per_inch;
+  void set_properties(
+      std::optional<ui::StylusHandwritingPropertiesWin> properties,
+      uint32_t touch_start_event_id) {
+    properties_ = properties;
+    touch_start_event_id_ = touch_start_event_id;
   }
 
  private:
-  std::optional<gfx::Vector2dF> pixels_per_inch_ =
-      gfx::Vector2dF(kTestPixelsPerInchX, kTestPixelsPerInchY);
+  std::optional<ui::StylusHandwritingPropertiesWin> properties_;
+  uint32_t touch_start_event_id_ = 0;
 };
 
 class TestInputRouterClient final : public InputRouterClient {
@@ -103,7 +115,11 @@ class TestInputRouterClient final : public InputRouterClient {
       const gfx::Range&,
       const std::optional<std::vector<gfx::Rect>>&) override {}
   StylusInterface* GetStylusInterface() override { return &stylus_interface_; }
-  void OnStartStylusWriting() override { ++start_stylus_writing_count_; }
+  void OnStartStylusWriting(
+      const std::optional<StylusWritingProperties>& properties) override {
+    ++start_stylus_writing_count_;
+    started_properties_ = properties;
+  }
   void OnUnconfirmedTapConvertedToTap() override {}
   DispatchToRendererCallback GetDispatchToRendererCallback() override {
     return base::DoNothing();
@@ -111,14 +127,21 @@ class TestInputRouterClient final : public InputRouterClient {
 
   int start_stylus_writing_count() const { return start_stylus_writing_count_; }
 
-  void set_stylus_pixels_per_inch(
-      std::optional<gfx::Vector2dF> pixels_per_inch) {
-    stylus_interface_.set_pixels_per_inch(pixels_per_inch);
+  const std::optional<ui::StylusHandwritingPropertiesWin>& started_properties()
+      const {
+    return started_properties_;
+  }
+
+  void set_handwriting_properties(
+      std::optional<ui::StylusHandwritingPropertiesWin> properties,
+      uint32_t touch_start_event_id) {
+    stylus_interface_.set_properties(properties, touch_start_event_id);
   }
 
  private:
   TestStylusInterface stylus_interface_;
   int start_stylus_writing_count_ = 0;
+  std::optional<ui::StylusHandwritingPropertiesWin> started_properties_;
 };
 
 cc::TouchAction WritableTouchAction() {
@@ -139,18 +162,23 @@ class StylusHandwritingHandlerWinTest : public testing::Test {
     return gfx::Vector2dF(x / kTestHimetricPerDipX, y / kTestHimetricPerDipY);
   }
 
-  uint32_t SendTouchStart(ui::EventPointerType pointer_type) {
+  uint32_t SendTouchStart(ui::EventPointerType pointer_type,
+                          std::optional<ui::StylusHandwritingPropertiesWin>
+                              properties = HandwritingProperties()) {
     const int point = touch_event_.PressPoint(kTouchStartPosition.x(),
                                               kTouchStartPosition.y());
     touch_event_.touches[point].pointer_type = pointer_type;
+    client_.set_handwriting_properties(properties,
+                                       touch_event_.unique_touch_event_id);
     handler_.OnTouchEvent(touch_event_, kTestDeviceScaleFactor);
     const uint32_t touch_start_event_id = touch_event_.unique_touch_event_id;
     touch_event_.ResetPoints();
     return touch_start_event_id;
   }
 
-  uint32_t SendPenTouchStart() {
-    return SendTouchStart(ui::EventPointerType::kPen);
+  uint32_t SendPenTouchStart(std::optional<ui::StylusHandwritingPropertiesWin>
+                                 properties = HandwritingProperties()) {
+    return SendTouchStart(ui::EventPointerType::kPen, properties);
   }
 
   int AddTouchPoint(float x, float y) {
@@ -247,10 +275,18 @@ TEST_F(StylusHandwritingHandlerWinTest, TouchStartCreatesHandwritingSequence) {
   EXPECT_TRUE(handler_.has_handwriting_sequence_for_testing());
 }
 
-TEST_F(StylusHandwritingHandlerWinTest, PixelsPerInchIsLatchedAtTouchStart) {
-  const uint32_t touch_start_event_id = SendPenTouchStart();
-  client_.set_stylus_pixels_per_inch(
-      gfx::Vector2dF(kTestPixelsPerInchX * 2.f, kTestPixelsPerInchY * 2.f));
+TEST_F(StylusHandwritingHandlerWinTest,
+       HandwritingPropertiesAreLatchedAtTouchStart) {
+  const ui::StylusHandwritingPropertiesWin properties(
+      37, 9000, gfx::Vector2dF(kTestPixelsPerInchX, kTestPixelsPerInchY));
+  const uint32_t touch_start_event_id = SendPenTouchStart(properties);
+  EXPECT_FALSE(client_.GetStylusInterface()->TakeStylusHandwritingProperties(
+      touch_start_event_id));
+  client_.set_handwriting_properties(
+      ui::StylusHandwritingPropertiesWin(
+          42, 9001,
+          gfx::Vector2dF(kTestPixelsPerInchX * 2.f, kTestPixelsPerInchY * 2.f)),
+      touch_start_event_id + 1);
   SendTapDown(touch_start_event_id);
   EXPECT_EQ(GestureHandlingResult::kNotHandled,
             SendShowPress(touch_start_event_id));
@@ -258,12 +294,34 @@ TEST_F(StylusHandwritingHandlerWinTest, PixelsPerInchIsLatchedAtTouchStart) {
   MovePenByHimetric(small_gesture_movement_threshold_in_himetric() + 1.f, 0.f);
 
   EXPECT_EQ(1, client_.start_stylus_writing_count());
+  ASSERT_TRUE(client_.started_properties());
+  EXPECT_EQ(properties.handwriting_pointer_id,
+            client_.started_properties()->handwriting_pointer_id);
+  EXPECT_EQ(properties.handwriting_stroke_id,
+            client_.started_properties()->handwriting_stroke_id);
+  EXPECT_EQ(properties.pixels_per_inch,
+            client_.started_properties()->pixels_per_inch);
+}
+
+TEST_F(StylusHandwritingHandlerWinTest, ScrollWritingUsesSequenceProperties) {
+  StartHandwritingSequence();
+
+  EXPECT_TRUE(handler_.StartStylusWriting());
+  EXPECT_TRUE(handler_.StartStylusWriting());
+  EXPECT_EQ(1, client_.start_stylus_writing_count());
+  ASSERT_TRUE(client_.started_properties());
+  const auto properties = HandwritingProperties();
+  EXPECT_EQ(properties.handwriting_pointer_id,
+            client_.started_properties()->handwriting_pointer_id);
+  EXPECT_EQ(properties.handwriting_stroke_id,
+            client_.started_properties()->handwriting_stroke_id);
+  EXPECT_EQ(properties.pixels_per_inch,
+            client_.started_properties()->pixels_per_inch);
 }
 
 TEST_F(StylusHandwritingHandlerWinTest,
        TouchStartWithoutHandwritingPropertiesDoesNotCreateSequence) {
-  client_.set_stylus_pixels_per_inch(std::nullopt);
-  SendPenTouchStart();
+  SendPenTouchStart(std::nullopt);
 
   EXPECT_FALSE(handler_.has_handwriting_sequence_for_testing());
   EXPECT_FALSE(handler_.StartStylusWriting());
@@ -690,8 +748,12 @@ TEST_F(StylusHandwritingHandlerWinTest, TapDownMustMatchPenSequence) {
 TEST_F(StylusHandwritingHandlerWinTest, QueuedSequencesStartInGestureOrder) {
   std::array<uint32_t, 3> starts;
   std::array<uint32_t, 3> releases;
+  std::array<ui::StylusHandwritingPropertiesWin, 3> properties;
   for (size_t i = 0; i < starts.size(); ++i) {
-    starts[i] = SendPenTouchStart();
+    properties[i] = ui::StylusHandwritingPropertiesWin(
+        static_cast<uint32_t>(i + 1), 101 + i,
+        gfx::Vector2dF(kTestPixelsPerInchX, kTestPixelsPerInchY));
+    starts[i] = SendPenTouchStart(properties[i]);
     releases[i] = ReleaseTouchPoint(0);
   }
   ASSERT_EQ(starts.size(), handler_.handwriting_sequence_count_for_testing());
@@ -705,6 +767,13 @@ TEST_F(StylusHandwritingHandlerWinTest, QueuedSequencesStartInGestureOrder) {
                                ui::EventPointerType::kPen, releases[i]),
                   WritableTouchAction()));
     EXPECT_EQ(static_cast<int>(i + 1), client_.start_stylus_writing_count());
+    ASSERT_TRUE(client_.started_properties());
+    EXPECT_EQ(properties[i].handwriting_pointer_id,
+              client_.started_properties()->handwriting_pointer_id);
+    EXPECT_EQ(properties[i].handwriting_stroke_id,
+              client_.started_properties()->handwriting_stroke_id);
+    EXPECT_EQ(properties[i].pixels_per_inch,
+              client_.started_properties()->pixels_per_inch);
     EXPECT_EQ(starts.size() - i - 1,
               handler_.handwriting_sequence_count_for_testing());
     // The following GestureEnd must not retire the next queued candidate.
@@ -730,12 +799,10 @@ TEST_F(StylusHandwritingHandlerWinTest, GesturesNewerThanQueuedSequences) {
   std::array<uint32_t, 8> starts;
   for (size_t i = 0; i < starts.size(); ++i) {
     if (i == 4 || i == 7) {
-      client_.set_stylus_pixels_per_inch(std::nullopt);
+      starts[i] = SendPenTouchStart(std::nullopt);
     } else {
-      client_.set_stylus_pixels_per_inch(
-          gfx::Vector2dF(kTestPixelsPerInchX, kTestPixelsPerInchY));
+      starts[i] = SendPenTouchStart();
     }
-    starts[i] = SendPenTouchStart();
     if (i == 0) {
       SendTapDown(starts[i]);
       SendShowPress(starts[i]);

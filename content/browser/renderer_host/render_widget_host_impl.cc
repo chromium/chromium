@@ -3585,9 +3585,10 @@ RenderWidgetHostViewBase* RenderWidgetHostImpl::GetRenderWidgetHostViewBase() {
   return GetView();
 }
 
-void RenderWidgetHostImpl::OnStartStylusWriting() {
+void RenderWidgetHostImpl::OnStartStylusWriting(
+    const std::optional<input::StylusWritingProperties>& properties) {
   if (view_) {
-    view_->OnStartStylusWriting();
+    view_->OnStartStylusWriting(properties);
   }
 }
 

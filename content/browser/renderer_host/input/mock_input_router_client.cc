@@ -154,7 +154,8 @@ input::StylusInterface* MockInputRouterClient::GetStylusInterface() {
   return render_widget_host_view_;
 }
 
-void MockInputRouterClient::OnStartStylusWriting() {
+void MockInputRouterClient::OnStartStylusWriting(
+    const std::optional<input::StylusWritingProperties>& properties) {
   on_start_stylus_writing_called_ = true;
 }
 

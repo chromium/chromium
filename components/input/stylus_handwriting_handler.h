@@ -49,6 +49,7 @@ class COMPONENT_EXPORT(INPUT) StylusHandwritingHandler {
 
  protected:
   InputRouterClient* client() const { return client_; }
+  virtual void OnStartStylusWriting();
 
  private:
   raw_ptr<InputRouterClient> client_;

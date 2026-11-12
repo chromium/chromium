@@ -4,11 +4,13 @@
 
 #include "components/input/stylus_handwriting_handler_win.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "components/input/input_router_client.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace input {
 
@@ -16,18 +18,18 @@ using blink::WebInputEvent;
 
 StylusHandwritingHandlerWin::HandwritingSequence::HandwritingSequence(
     const blink::WebTouchEvent& event,
-    const gfx::Vector2dF& pixels_per_inch,
+    const ui::StylusHandwritingPropertiesWin& properties,
     float device_scale_factor)
     : down_position_in_screen(event.touches[0].PositionInScreen()),
       touch_start_event_id(event.unique_touch_event_id),
       pointer_id(event.touches[0].id),
-      pixels_per_inch(pixels_per_inch),
+      properties(properties),
       device_scale_factor(device_scale_factor) {
   // `ScreenWin` returns `std::nullopt` for invalid pointer-device ranges, and
   // `StylusHandwritingPropertiesWin` replaces missing PPI with a positive
   // fallback, so stored PPI must be positive.
-  CHECK_GT(pixels_per_inch.x(), 0.0f);
-  CHECK_GT(pixels_per_inch.y(), 0.0f);
+  CHECK_GT(properties.pixels_per_inch.x(), 0.0f);
+  CHECK_GT(properties.pixels_per_inch.y(), 0.0f);
 }
 
 StylusHandwritingHandlerWin::StylusHandwritingHandlerWin(
@@ -56,12 +58,13 @@ void StylusHandwritingHandlerWin::OnTouchEvent(
     if (!stylus_interface) {
       return;
     }
-    const std::optional<gfx::Vector2dF> stylus_pixels_per_inch =
-        stylus_interface->GetStylusHandwritingPixelsPerInch();
-    if (!stylus_pixels_per_inch) {
+    const std::optional<ui::StylusHandwritingPropertiesWin> properties =
+        stylus_interface->TakeStylusHandwritingProperties(
+            event.unique_touch_event_id);
+    if (!properties) {
       return;
     }
-    handwriting_sequences_.emplace_back(event, *stylus_pixels_per_inch,
+    handwriting_sequences_.emplace_back(event, *properties,
                                         device_scale_factor);
     return;
   }
@@ -121,9 +124,9 @@ void StylusHandwritingHandlerWin::OnTouchEvent(
   gfx::Vector2dF movement_in_himetric =
       pen->PositionInScreen() - sequence.down_position_in_screen;
   movement_in_himetric.Scale(sequence.device_scale_factor * kHimetricPerInch /
-                                 sequence.pixels_per_inch.x(),
+                                 sequence.properties.pixels_per_inch.x(),
                              sequence.device_scale_factor * kHimetricPerInch /
-                                 sequence.pixels_per_inch.y());
+                                 sequence.properties.pixels_per_inch.y());
   if (movement_in_himetric.LengthSquared() >
       small_gesture_movement_threshold_hm_ *
           small_gesture_movement_threshold_hm_) {
@@ -289,12 +292,21 @@ StylusHandwritingHandlerWin::HandleGesture(
 }
 
 bool StylusHandwritingHandlerWin::StartStylusWriting() {
+  // The router's scroll-writing path calls Start directly, bypassing Try's
+  // small-gesture checks, so sequence eligibility must also be checked here.
   if (handwriting_sequences_.empty() ||
       !handwriting_sequences_.front().eligible) {
     return false;
   }
   return StylusWritingStarted() ||
          StylusHandwritingHandler::StartStylusWriting();
+}
+
+void StylusHandwritingHandlerWin::OnStartStylusWriting() {
+  CHECK(!handwriting_sequences_.empty());
+  const ui::StylusHandwritingPropertiesWin properties =
+      handwriting_sequences_.front().properties;
+  client()->OnStartStylusWriting(properties);
 }
 
 bool StylusHandwritingHandlerWin::IsGestureForCurrentSequence(

@@ -1477,6 +1477,13 @@ void RenderWidgetHostViewAura::GestureEventAck(
 void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
     const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
+#if BUILDFLAG(IS_WIN)
+  // A handler must take properties before dispatch. An entry left at ACK time
+  // was not claimed, even if the touch was dropped before reaching a renderer.
+  pending_stylus_handwriting_properties_.erase(
+      touch.event.unique_touch_event_id);
+#endif
+
   aura::WindowTreeHost* window_host = window_->GetHost();
   // |host| is NULL during tests.
   if (!window_host)
@@ -2750,24 +2757,31 @@ bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
   return StylusHandwritingControllerWin::IsHandwritingAPIAvailable();
 }
 
-std::optional<gfx::Vector2dF>
-RenderWidgetHostViewAura::GetStylusHandwritingPixelsPerInch() {
-  if (!last_stylus_handwriting_properties_) {
+std::optional<ui::StylusHandwritingPropertiesWin>
+RenderWidgetHostViewAura::TakeStylusHandwritingProperties(
+    uint32_t touch_start_event_id) {
+  auto it = pending_stylus_handwriting_properties_.find(touch_start_event_id);
+  if (it == pending_stylus_handwriting_properties_.end()) {
     return std::nullopt;
   }
-  return last_stylus_handwriting_properties_->pixels_per_inch;
+  ui::StylusHandwritingPropertiesWin properties = std::move(it->second);
+  pending_stylus_handwriting_properties_.erase(it);
+  return properties;
 }
 
-void RenderWidgetHostViewAura::OnStartStylusWriting() {
+void RenderWidgetHostViewAura::OnStartStylusWriting(
+    const std::optional<input::StylusWritingProperties>& properties) {
   StartStylusWritingImpl(
       this,
       base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      properties);
 }
 
 void RenderWidgetHostViewAura::StartStylusWritingImpl(
     RenderWidgetHostViewBase* initiating_view,
-    OnFocusHandwritingTargetCallback callback) {
+    OnFocusHandwritingTargetCallback callback,
+    const std::optional<input::StylusWritingProperties>& properties) {
   if (destroy_pending()) {
     return;
   }
@@ -2780,19 +2794,22 @@ void RenderWidgetHostViewAura::StartStylusWritingImpl(
     return;
   }
 
-  if (!last_stylus_handwriting_properties_.has_value()) {
-    mojo::ReportBadMessage(
-        "OnStartStylusWriting(): unexpected state. "
-        "Last stylus handwriting properties are empty");
-    return;
+  const bool use_legacy_properties = !properties;
+  if (use_legacy_properties) {
+    if (!last_stylus_handwriting_properties_) {
+      mojo::ReportBadMessage(
+          "OnStartStylusWriting(): unexpected state. "
+          "Last stylus handwriting properties are empty");
+      return;
+    }
   }
   // Call Windows Text Services Framework Shell Handwriting API.
   // Will call ITfHandwriting::RequestHandwritingForPointer to
   // display ink, then ITfHandwritingRequest::SetInputEvaluation to confirm
-  // intent. RequestHandwritingForPointer is an asynchronous request, however
-  // this method will be called after GestureScrollBegin, so intent can be
-  // confirmed immediately. After intent is confirmed, the API will request
-  // that the focus is updated by calling
+  // intent. RequestHandwritingForPointer is asynchronous, but the caller has
+  // already established intent through scroll or small-gesture eligibility,
+  // so intent can be confirmed immediately. The API will then request that
+  // focus is updated by calling
   // ITfHandwritingSink::FocusHandwritingTarget.
   //
   // To handle ITfHandwritingSink::FocusHandwritingTarget, the browser will
@@ -2810,8 +2827,10 @@ void RenderWidgetHostViewAura::StartStylusWritingImpl(
   // view is destroyed while a focus result is pending.
   handwriting_controller->OnStartStylusWriting(
       initiating_view, std::move(callback),
-      last_stylus_handwriting_properties_.value());
-  last_stylus_handwriting_properties_.reset();
+      properties ? *properties : *last_stylus_handwriting_properties_);
+  if (use_legacy_properties) {
+    last_stylus_handwriting_properties_.reset();
+  }
 }
 
 void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
@@ -2862,8 +2881,9 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
 
 void RenderWidgetHostViewAura::StartStylusWritingFromChildHostView(
     RenderWidgetHostViewBase* view,
-    OnFocusHandwritingTargetCallback callback) {
-  StartStylusWritingImpl(view, std::move(callback));
+    OnFocusHandwritingTargetCallback callback,
+    const std::optional<input::StylusWritingProperties>& properties) {
+  StartStylusWritingImpl(view, std::move(callback), properties);
 }
 
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
@@ -2904,6 +2924,11 @@ void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
     // handwriting request in OnStartStylusWriting().
     last_stylus_handwriting_properties_ =
         ui::GetStylusHandwritingProperties(*event);
+    if (stylus_handwriting::win::kStylusHandwritingWinSmallGestures.Get() &&
+        last_stylus_handwriting_properties_) {
+      pending_stylus_handwriting_properties_.insert_or_assign(
+          event->unique_event_id(), *last_stylus_handwriting_properties_);
+    }
     TRACE_EVENT2(
         "ime", "RenderWidgetHostViewAura::OnTouchEvent",
         "handwriting_pointer_id",
@@ -2931,6 +2956,13 @@ void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
 #endif  // BUILDFLAG(IS_WIN)
 
   event_handler_->OnTouchEvent(event);
+#if BUILDFLAG(IS_WIN)
+  // Invalid or locally consumed touches have no input-router ACK to clear
+  // their staged properties.
+  if (!event->synchronous_handling_disabled()) {
+    pending_stylus_handwriting_properties_.erase(event->unique_event_id());
+  }
+#endif
 }
 
 void RenderWidgetHostViewAura::OnGestureEvent(ui::GestureEvent* event) {

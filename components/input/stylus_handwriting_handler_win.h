@@ -13,8 +13,8 @@
 #include "base/containers/circular_deque.h"
 #include "cc/input/touch_action.h"
 #include "components/input/stylus_handwriting_handler.h"
+#include "ui/events/win/stylus_handwriting_properties_win.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace input {
 
@@ -34,11 +34,12 @@ namespace input {
 // the renderer. Raw touch events update the newest queued sequence; ordered
 // gestures operate on the oldest. Terminal tap gestures and the primary
 // GestureEnd retire that sequence. Once a scroll has started writing, it
-// remains queued until GestureScrollEnd. Once writing starts, the next press
-// or tap ends the renderer's pending tap by being forwarded as
-// GestureTapCancel unless a cancel was already received. A lower movement
-// threshold for handwriting aligns the Windows experience more closely with
-// the default Shell Handwriting experience.
+// remains queued until GestureScrollEnd. Each sequence takes ownership of the
+// native pointer/stroke properties staged for its TouchStart. Once writing
+// starts, the next press or tap ends the renderer's pending tap by being
+// forwarded as GestureTapCancel unless a cancel was already received. A lower
+// movement threshold for handwriting aligns the Windows experience more closely
+// with the default Shell Handwriting experience.
 class COMPONENT_EXPORT(INPUT) StylusHandwritingHandlerWin
     : public StylusHandwritingHandler {
  public:
@@ -69,13 +70,13 @@ class COMPONENT_EXPORT(INPUT) StylusHandwritingHandlerWin
  private:
   struct HandwritingSequence {
     HandwritingSequence(const blink::WebTouchEvent& event,
-                        const gfx::Vector2dF& pixels_per_inch,
+                        const ui::StylusHandwritingPropertiesWin& properties,
                         float device_scale_factor);
 
     gfx::PointF down_position_in_screen;
     uint32_t touch_start_event_id;
     int pointer_id;
-    gfx::Vector2dF pixels_per_inch;
+    ui::StylusHandwritingPropertiesWin properties;
     float device_scale_factor;
     // Retain rejected entries until their terminal gesture so later
     // sequences stay aligned with the ordered gesture stream.
@@ -89,6 +90,7 @@ class COMPONENT_EXPORT(INPUT) StylusHandwritingHandlerWin
     std::optional<uint32_t> primary_release_event_id;
   };
 
+  void OnStartStylusWriting() override;
   bool IsGestureForCurrentSequence(const blink::WebGestureEvent& event) const;
   bool TryStartStylusWriting(bool require_movement_threshold);
 

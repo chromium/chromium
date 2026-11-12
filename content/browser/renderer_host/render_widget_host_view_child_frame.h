@@ -20,6 +20,7 @@
 #include "cc/input/touch_action.h"
 #include "components/input/child_frame_input_helper.h"
 #include "components/input/event_with_latency_info.h"
+#include "components/input/input_router_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -130,8 +130,10 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   input::RenderWidgetHostViewInput* GetPinchZoomTarget() override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldInitiateStylusWriting() override;
-  std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() override;
-  void OnStartStylusWriting() override;
+  std::optional<ui::StylusHandwritingPropertiesWin>
+  TakeStylusHandwritingProperties(uint32_t touch_start_event_id) override;
+  void OnStartStylusWriting(
+      const std::optional<input::StylusWritingProperties>& properties) override;
   void OnEditElementFocusedForStylusWriting(
       blink::mojom::StylusWritingFocusResultPtr focus_result) override;
 #endif  // BUILDFLAG(IS_WIN)

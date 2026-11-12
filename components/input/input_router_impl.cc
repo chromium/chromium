@@ -288,7 +288,7 @@ bool InputRouterImpl::HandleGestureScrollForStylusWriting(
       if (client_->GetStylusInterface()->ShouldInitiateStylusWriting()) {
         stylus_writing_started_ = true;
         // The below call is done to Focus the stylus writable input element.
-        client_->OnStartStylusWriting();
+        client_->OnStartStylusWriting(std::nullopt);
         return true;
       }
       break;

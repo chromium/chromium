@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_
 #define COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_
 
+#include <cstdint>
 #include <optional>
 
+#include "build/build_config.h"
 #include "cc/input/touch_action.h"
 #include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
@@ -14,7 +16,10 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
-#include "ui/gfx/geometry/vector2d_f.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/events/win/stylus_handwriting_properties_win.h"
+#endif
 
 namespace ui {
 class LatencyInfo;
@@ -22,15 +27,25 @@ class LatencyInfo;
 
 namespace input {
 
+#if BUILDFLAG(IS_WIN)
+using StylusWritingProperties = ui::StylusHandwritingPropertiesWin;
+#else
+struct StylusWritingProperties {};
+#endif
+
 class StylusInterface {
  public:
   virtual ~StylusInterface() = default;
 
   virtual bool ShouldInitiateStylusWriting() = 0;
   virtual void NotifyHoverActionStylusWritable(bool stylus_writable) = 0;
-  // Returns the per-axis PPI for the current stylus handwriting input device,
-  // or nullopt when there are no cached handwriting properties.
-  virtual std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() = 0;
+#if BUILDFLAG(IS_WIN)
+  // Transfers the native properties captured for this touchstart to the caller.
+  // Call before dispatch; unclaimed properties are discarded at ACK time.
+  // Returns nullopt if no properties are staged for the event.
+  virtual std::optional<ui::StylusHandwritingPropertiesWin>
+  TakeStylusHandwritingProperties(uint32_t touch_start_event_id) = 0;
+#endif
 };
 
 class COMPONENT_EXPORT(INPUT) InputRouterClient {
@@ -116,7 +131,8 @@ class COMPONENT_EXPORT(INPUT) InputRouterClient {
       const gfx::Range& range,
       const std::optional<std::vector<gfx::Rect>>& character_bounds) = 0;
   virtual StylusInterface* GetStylusInterface() = 0;
-  virtual void OnStartStylusWriting() = 0;
+  virtual void OnStartStylusWriting(
+      const std::optional<StylusWritingProperties>& properties) = 0;
 
   virtual void OnUnconfirmedTapConvertedToTap() = 0;
 

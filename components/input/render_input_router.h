@@ -8,12 +8,14 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "components/input/fling_scheduler_base.h"
 #include "components/input/input_disposition_handler.h"
+#include "components/input/input_router_client.h"
 #include "components/input/input_router_impl.h"
 #include "components/input/render_input_router_delegate.h"
 #include "components/input/render_input_router_iterator.h"
@@ -97,7 +99,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
       const std::optional<std::vector<gfx::Rect>>& character_bounds) override;
   void OnImeCancelComposition() override;
   StylusInterface* GetStylusInterface() override;
-  void OnStartStylusWriting() override;
+  void OnStartStylusWriting(
+      const std::optional<StylusWritingProperties>& properties) override;
   bool IsWheelScrollInProgress() override;
   bool IsAutoscrollInProgress() override;
   void SetMouseCapture(bool capture) override;

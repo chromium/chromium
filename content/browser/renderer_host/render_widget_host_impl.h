@@ -35,6 +35,7 @@
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/input_disposition_handler.h"
+#include "components/input/input_router_client.h"
 #include "components/input/input_router_impl.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_input_router_client.h"
@@ -880,7 +881,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       const gfx::Range& range,
       const std::optional<std::vector<gfx::Rect>>& character_bounds) override;
   void OnImeCancelComposition() override;
-  void OnStartStylusWriting() override;
+  void OnStartStylusWriting(
+      const std::optional<input::StylusWritingProperties>& properties) override;
   void OnUnconfirmedTapConvertedToTap() override;
   void UpdateElementFocusForStylusWriting(
 #if BUILDFLAG(IS_WIN)

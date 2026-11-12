@@ -63,6 +63,7 @@
 #include "content/browser/renderer_host/input/stylus_handwriting_callback_sink_win.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_win_test_helper.h"
+#include "ui/events/win/stylus_handwriting_properties_win.h"
 
 using testing::_;
 using testing::Return;
@@ -159,6 +160,19 @@ class MockParentRenderWidgetHostView : public TestRenderWidgetHostView {
     bounds_ = bounds;
     bounds_without_transform_ = bounds_without;
   }
+
+#if BUILDFLAG(IS_WIN)
+  MOCK_METHOD(std::optional<ui::StylusHandwritingPropertiesWin>,
+              TakeStylusHandwritingProperties,
+              (uint32_t),
+              (override));
+  MOCK_METHOD(void,
+              StartStylusWritingFromChildHostView,
+              (RenderWidgetHostViewBase*,
+               OnFocusHandwritingTargetCallback,
+               const std::optional<input::StylusWritingProperties>&),
+              (override));
+#endif
 
  private:
   gfx::Rect bounds_;
@@ -395,6 +409,57 @@ class RenderWidgetHostViewChildFrameTest
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
   std::unique_ptr<MockFrameConnector> test_frame_connector_;
 };
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(RenderWidgetHostViewChildFrameTest,
+       ForwardsHandwritingPropertiesToRoot) {
+  auto root =
+      std::make_unique<testing::NiceMock<MockParentRenderWidgetHostView>>(
+          widget_host_.get());
+  test_frame_connector_->SetRootRenderWidgetHostView(root.get());
+  const ui::StylusHandwritingPropertiesWin properties(
+      1, 101, gfx::Vector2dF(192.f, 288.f));
+  EXPECT_CALL(*root, TakeStylusHandwritingProperties(1))
+      .WillOnce(Return(properties));
+  auto taken = view_->TakeStylusHandwritingProperties(1);
+  ASSERT_TRUE(taken);
+  EXPECT_EQ(properties.handwriting_pointer_id, taken->handwriting_pointer_id);
+  EXPECT_EQ(properties.handwriting_stroke_id, taken->handwriting_stroke_id);
+  EXPECT_EQ(properties.pixels_per_inch, taken->pixels_per_inch);
+  EXPECT_CALL(*root, StartStylusWritingFromChildHostView(view_.get(), _, _))
+      .WillOnce(
+          [&properties](
+              RenderWidgetHostViewBase*,
+              RenderWidgetHostViewBase::OnFocusHandwritingTargetCallback
+                  callback,
+              const std::optional<input::StylusWritingProperties>& forwarded) {
+            EXPECT_TRUE(callback);
+            ASSERT_TRUE(forwarded);
+            EXPECT_EQ(properties.handwriting_pointer_id,
+                      forwarded->handwriting_pointer_id);
+            EXPECT_EQ(properties.handwriting_stroke_id,
+                      forwarded->handwriting_stroke_id);
+            EXPECT_EQ(properties.pixels_per_inch, forwarded->pixels_per_inch);
+          });
+
+  view_->OnStartStylusWriting(*taken);
+  EXPECT_CALL(*root, StartStylusWritingFromChildHostView(view_.get(), _, _))
+      .WillOnce(
+          [](RenderWidgetHostViewBase*,
+             RenderWidgetHostViewBase::OnFocusHandwritingTargetCallback
+                 callback,
+             const std::optional<input::StylusWritingProperties>& forwarded) {
+            EXPECT_TRUE(callback);
+            EXPECT_FALSE(forwarded);
+          });
+  view_->OnStartStylusWriting(std::nullopt);
+  test_frame_connector_->SetRootRenderWidgetHostView(nullptr);
+
+  // Verify properties take and stylus writing fail after root is removed.
+  EXPECT_FALSE(view_->TakeStylusHandwritingProperties(1));
+  view_->OnStartStylusWriting(*taken);
+}
+#endif
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(RenderWidgetHostViewChildFrameTest, ShowSharePickerFromChildFrame) {

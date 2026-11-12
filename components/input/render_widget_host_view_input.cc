@@ -15,6 +15,14 @@ namespace input {
 RenderWidgetHostViewInput::RenderWidgetHostViewInput() = default;
 RenderWidgetHostViewInput::~RenderWidgetHostViewInput() = default;
 
+#if BUILDFLAG(IS_WIN)
+std::optional<ui::StylusHandwritingPropertiesWin>
+RenderWidgetHostViewInput::TakeStylusHandwritingProperties(
+    uint32_t touch_start_event_id) {
+  return std::nullopt;
+}
+#endif
+
 void RenderWidgetHostViewInput::NotifyObserversAboutShutdown() {
   // Note: RenderWidgetHostInputEventRouter is an observer, and uses the
   // following notification to remove this view from its surface owners map.

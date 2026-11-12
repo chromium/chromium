@@ -42,12 +42,6 @@ void RenderInputRouterSupportBase::NotifyHoverActionStylusWritable(
   NOTREACHED();
 }
 
-std::optional<gfx::Vector2dF>
-RenderInputRouterSupportBase::GetStylusHandwritingPixelsPerInch() {
-  // Currently there is no Stylus Handwriting support for InputVizard.
-  NOTREACHED();
-}
-
 base::WeakPtr<input::RenderWidgetHostViewInput>
 RenderInputRouterSupportBase::GetInputWeakPtr() {
   return weak_factory_.GetWeakPtr();

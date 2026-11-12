@@ -544,11 +544,6 @@ bool RenderWidgetHostViewBase::ShouldInitiateStylusWriting() {
   return false;
 }
 
-std::optional<gfx::Vector2dF>
-RenderWidgetHostViewBase::GetStylusHandwritingPixelsPerInch() {
-  return std::nullopt;
-}
-
 bool RenderWidgetHostViewBase::RequestRepaintOnNewSurface() {
   return false;
 }

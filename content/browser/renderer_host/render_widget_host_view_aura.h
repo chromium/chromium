@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/layers/deadline_policy.h"
+#include "components/input/input_router_client.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "content/browser/compositor/image_transport_factory.h"
@@ -48,11 +49,11 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/public/activation_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/containers/flat_map.h"
 #include "content/browser/renderer_host/virtual_keyboard_controller_win.h"
 #include "ui/events/win/stylus_handwriting_properties_win.h"
 #endif
@@ -236,13 +237,16 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
                           const gfx::Rect& node_bounds_in_screen) override;
 #if BUILDFLAG(IS_WIN)
   bool ShouldInitiateStylusWriting() override;
-  std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() override;
-  void OnStartStylusWriting() override;
+  std::optional<ui::StylusHandwritingPropertiesWin>
+  TakeStylusHandwritingProperties(uint32_t touch_start_event_id) override;
+  void OnStartStylusWriting(
+      const std::optional<input::StylusWritingProperties>& properties) override;
   void OnEditElementFocusedForStylusWriting(
       blink::mojom::StylusWritingFocusResultPtr focus_result) override;
   void StartStylusWritingFromChildHostView(
       RenderWidgetHostViewBase* view,
-      OnFocusHandwritingTargetCallback callback) override;
+      OnFocusHandwritingTargetCallback callback,
+      const std::optional<input::StylusWritingProperties>& properties) override;
 #endif  // BUILDFLAG(IS_WIN)
   void OnSynchronizedDisplayPropertiesChanged(bool rotation = false) override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
@@ -774,8 +778,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
       const gfx::Rect& focus_screen_rect_in_dips,
       const gfx::Size& tolerance_screen_distance_in_dips);
 
-  void StartStylusWritingImpl(RenderWidgetHostViewBase* initiating_view,
-                              OnFocusHandwritingTargetCallback callback);
+  void StartStylusWritingImpl(
+      RenderWidgetHostViewBase* initiating_view,
+      OnFocusHandwritingTargetCallback callback,
+      const std::optional<input::StylusWritingProperties>& properties);
 
   void ForwardArabicIndicCharEventWithLatencyInfo(const ui::KeyEvent& event,
                                                   char16_t ascii_char);
@@ -938,8 +944,14 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // Stores last stylus handwriting specific details including a handwriting
   // pointer id and a handwriting stroke id.
+  // TODO(crbug.com/355578906): Remove this and the legacy start path when the
+  // kStylusHandwritingWinSmallGestures flag is no longer needed.
   std::optional<ui::StylusHandwritingPropertiesWin>
       last_stylus_handwriting_properties_;
+
+  // Caches native properties by touchstart ID until the handler takes them.
+  base::flat_map<uint32_t, ui::StylusHandwritingPropertiesWin>
+      pending_stylus_handwriting_properties_;
 #endif  // BUILDFLAG(IS_WIN)
 
   std::optional<display::ScopedDisplayObserver> display_observer_;

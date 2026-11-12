@@ -33,6 +33,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "components/input/event_with_latency_info.h"
 #include "components/input/input_router.h"
 #include "components/input/mouse_wheel_event_queue.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -367,6 +368,15 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
       std::move(set_bounds_callback_).Run();
     }
   }
+
+#if BUILDFLAG(IS_WIN)
+  void SetPendingStylusHandwritingProperties(
+      uint32_t touch_start_event_id,
+      const ui::StylusHandwritingPropertiesWin& properties) {
+    pending_stylus_handwriting_properties_.insert_or_assign(
+        touch_start_event_id, properties);
+  }
+#endif
 
   bool use_real_should_skip_cursor_update_ = false;
   size_t can_synchronize_visual_properties_count_ = 0;
@@ -1221,6 +1231,194 @@ TEST_F(RenderWidgetHostViewAuraTest, InitController) {
   view_->OnMouseEvent(&mouse_event);
   EXPECT_EQ(StylusHandwritingControllerWin::StylusHandwritingSupportedOnBuild(),
             StylusHandwritingControllerWin::BindInterfacesCalledForTesting());
+}
+
+class RenderWidgetHostViewAuraHandwritingPropertiesTest
+    : public RenderWidgetHostViewAuraTest {
+ protected:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        stylus_handwriting::win::kStylusHandwritingWin);
+    RenderWidgetHostViewAuraTest::SetUp();
+    InitViewForFrame(nullptr);
+    ParentHostView(view_, parent_view_);
+    view_->ShowWithVisibility(PageVisibilityState::kVisible);
+    widget_host_->input_router()->OnHasTouchEventConsumers(
+        blink::mojom::TouchEventConsumers::New(HasTouchEventHandlers(true),
+                                               HasHitTestableScrollbar(false)));
+  }
+
+  ui::TouchEvent PenPress() {
+    return ui::TouchEvent(ui::EventType::kTouchPressed, gfx::Point(),
+                          ui::EventTimeForNow(),
+                          ui::PointerDetails(ui::EventPointerType::kPen, 0));
+  }
+};
+
+TEST_F(RenderWidgetHostViewAuraTest, TakesPropertiesForMatchingTouchStart) {
+  InitViewForFrame(nullptr);
+  const ui::StylusHandwritingPropertiesWin first_properties(
+      1, 101, gfx::Vector2dF(192.f, 288.f));
+  const ui::StylusHandwritingPropertiesWin second_properties(
+      2, 202, gfx::Vector2dF(240.f, 360.f));
+  view_->SetPendingStylusHandwritingProperties(1, first_properties);
+  view_->SetPendingStylusHandwritingProperties(2, second_properties);
+
+  EXPECT_FALSE(view_->TakeStylusHandwritingProperties(3));
+  auto first = view_->TakeStylusHandwritingProperties(1);
+  ASSERT_TRUE(first);
+  EXPECT_EQ(first_properties.handwriting_pointer_id,
+            first->handwriting_pointer_id);
+  EXPECT_EQ(first_properties.handwriting_stroke_id,
+            first->handwriting_stroke_id);
+  EXPECT_EQ(first_properties.pixels_per_inch, first->pixels_per_inch);
+  EXPECT_FALSE(view_->TakeStylusHandwritingProperties(1));
+
+  auto second = view_->TakeStylusHandwritingProperties(2);
+  ASSERT_TRUE(second);
+  EXPECT_EQ(second_properties.handwriting_pointer_id,
+            second->handwriting_pointer_id);
+  EXPECT_EQ(second_properties.handwriting_stroke_id,
+            second->handwriting_stroke_id);
+  EXPECT_EQ(second_properties.pixels_per_inch, second->pixels_per_inch);
+  EXPECT_FALSE(view_->TakeStylusHandwritingProperties(2));
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, DiscardsUnclaimedPropertiesOnTouchAck) {
+  InitViewForFrame(nullptr);
+  blink::SyntheticWebTouchEvent touch;
+  touch.PressPoint(0, 0);
+  view_->SetPendingStylusHandwritingProperties(
+      touch.unique_touch_event_id, ui::StylusHandwritingPropertiesWin(1, 0));
+  const uint32_t other_id = touch.unique_touch_event_id + 1;
+  view_->SetPendingStylusHandwritingProperties(
+      other_id, ui::StylusHandwritingPropertiesWin(2, 0));
+
+  view_->ProcessAckedTouchEvent(input::TouchEventWithLatencyInfo(touch),
+                                blink::mojom::InputEventResultState::kConsumed);
+
+  EXPECT_FALSE(
+      view_->TakeStylusHandwritingProperties(touch.unique_touch_event_id));
+  auto remaining = view_->TakeStylusHandwritingProperties(other_id);
+  ASSERT_TRUE(remaining);
+  EXPECT_EQ(2u, remaining->handwriting_pointer_id);
+}
+
+TEST_F(RenderWidgetHostViewAuraHandwritingPropertiesTest,
+       StagesPropertiesForTouchStart) {
+  const ui::StylusHandwritingPropertiesWin properties(
+      1, 101, gfx::Vector2dF(192.f, 288.f));
+  ui::TouchEvent press = PenPress();
+  ui::SetStylusHandwritingProperties(press, properties);
+  view_->OnTouchEvent(&press);
+
+  ASSERT_TRUE(press.synchronous_handling_disabled());
+  auto taken = view_->TakeStylusHandwritingProperties(press.unique_event_id());
+  ASSERT_TRUE(taken);
+  EXPECT_EQ(properties.handwriting_pointer_id, taken->handwriting_pointer_id);
+  EXPECT_EQ(properties.handwriting_stroke_id, taken->handwriting_stroke_id);
+  EXPECT_EQ(properties.pixels_per_inch, taken->pixels_per_inch);
+}
+
+TEST_F(RenderWidgetHostViewAuraHandwritingPropertiesTest,
+       DiscardsPropertiesForRejectedTouchStart) {
+  ui::TouchEvent press = PenPress();
+  ui::SetStylusHandwritingProperties(press,
+                                     ui::StylusHandwritingPropertiesWin(1, 0));
+  view_->OnTouchEvent(&press);
+
+  ui::TouchEvent duplicate_press = PenPress();
+  ui::SetStylusHandwritingProperties(duplicate_press,
+                                     ui::StylusHandwritingPropertiesWin(2, 0));
+  view_->OnTouchEvent(&duplicate_press);
+
+  EXPECT_TRUE(duplicate_press.stopped_propagation());
+  EXPECT_FALSE(duplicate_press.synchronous_handling_disabled());
+  EXPECT_FALSE(view_->TakeStylusHandwritingProperties(
+      duplicate_press.unique_event_id()));
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, StartsWritingWithPassedProperties) {
+  feature_list_.InitAndEnableFeature(
+      stylus_handwriting::win::kStylusHandwritingWin);
+  StylusHandwritingWinTestHelper handwriting_helper;
+  handwriting_helper.SetUpDefaultMockInfrastructure();
+  handwriting_helper.DefaultMockRequestHandwritingForPointerMethod();
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+
+  const ui::StylusHandwritingPropertiesWin properties(1, 101);
+  EXPECT_CALL(*handwriting_helper.mock_tf_impl(),
+              RequestHandwritingForPointer(1, 101, _, _))
+      .Times(3);
+
+  ASSERT_FALSE(view_->last_stylus_handwriting_properties());
+  view_->OnStartStylusWriting(properties);
+
+  // Populate the legacy cache with different properties to verify that the
+  // explicitly passed properties take precedence over the latest contact.
+  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(),
+                       ui::EventTimeForNow(),
+                       ui::PointerDetails(ui::EventPointerType::kPen, 0));
+  ui::SetStylusHandwritingProperties(
+      press, ui::StylusHandwritingPropertiesWin(2, 202));
+  EXPECT_CALL(*handwriting_helper.mock_tf_impl(),
+              GetHandwritingDistanceThreshold(_))
+      .WillOnce(SetValueParamAndReturnResult<0>(SIZE{10, 10}, S_OK));
+  view_->OnTouchEvent(&press);
+  ASSERT_TRUE(view_->last_stylus_handwriting_properties());
+  EXPECT_EQ(
+      2u, view_->last_stylus_handwriting_properties()->handwriting_pointer_id);
+  EXPECT_EQ(202u,
+            view_->last_stylus_handwriting_properties()->handwriting_stroke_id);
+
+  // Both start writing with explicit properties entry points must leave the
+  // legacy cache intact.
+  view_->OnStartStylusWriting(properties);
+  ASSERT_TRUE(view_->last_stylus_handwriting_properties());
+  EXPECT_EQ(
+      2u, view_->last_stylus_handwriting_properties()->handwriting_pointer_id);
+  EXPECT_EQ(202u,
+            view_->last_stylus_handwriting_properties()->handwriting_stroke_id);
+
+  view_->StartStylusWritingFromChildHostView(view_, base::DoNothing(),
+                                             properties);
+  ASSERT_TRUE(view_->last_stylus_handwriting_properties());
+  EXPECT_EQ(
+      2u, view_->last_stylus_handwriting_properties()->handwriting_pointer_id);
+  EXPECT_EQ(202u,
+            view_->last_stylus_handwriting_properties()->handwriting_stroke_id);
+
+  // Absent properties preserve the legacy behavior: use and clear the cache.
+  EXPECT_CALL(*handwriting_helper.mock_tf_impl(),
+              RequestHandwritingForPointer(2, 202, _, _));
+  view_->OnStartStylusWriting(std::nullopt);
+  EXPECT_FALSE(view_->last_stylus_handwriting_properties());
+}
+
+TEST_F(RenderWidgetHostViewAuraTest,
+       HandwritingPropertiesNotStagedWithoutSmallGestures) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      stylus_handwriting::win::kStylusHandwritingWin,
+      {{stylus_handwriting::win::kStylusHandwritingWinSmallGestures.name,
+        "false"}});
+  InitViewForFrame(nullptr);
+  view_->ShowWithVisibility(PageVisibilityState::kVisible);
+  widget_host_->input_router()->OnHasTouchEventConsumers(
+      blink::mojom::TouchEventConsumers::New(HasTouchEventHandlers(true),
+                                             HasHitTestableScrollbar(false)));
+  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(),
+                       ui::EventTimeForNow(),
+                       ui::PointerDetails(ui::EventPointerType::kPen, 0));
+  ui::SetStylusHandwritingProperties(press,
+                                     ui::StylusHandwritingPropertiesWin(1, 0));
+  view_->OnTouchEvent(&press);
+
+  EXPECT_FALSE(view_->TakeStylusHandwritingProperties(press.unique_event_id()));
+  ASSERT_TRUE(view_->last_stylus_handwriting_properties());
+  EXPECT_EQ(
+      1u, view_->last_stylus_handwriting_properties()->handwriting_pointer_id);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/input/event_with_latency_info.h"
+#include "components/input/input_router_client.h"
 #include "components/input/render_input_router.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
@@ -53,7 +54,6 @@
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
@@ -321,7 +321,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   bool ShouldInitiateStylusWriting() override;
   // Notify whether the hovered element action is stylus writable or not.
   void NotifyHoverActionStylusWritable(bool stylus_writable) override {}
-  std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() override;
 
   // Invalidates the `viz::SurfaceAllocationGroup` of this View. Also
   // invalidates `viz::SurfaceId` of it. This should be used when no previous
@@ -649,7 +648,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // view on its behalf. Only implemented by the root (Aura) view.
   virtual void StartStylusWritingFromChildHostView(
       RenderWidgetHostViewBase* view,
-      OnFocusHandwritingTargetCallback callback) {}
+      OnFocusHandwritingTargetCallback callback,
+      const std::optional<input::StylusWritingProperties>& properties) {}
 #endif  // BUILDFLAG(IS_WIN)
 
  protected:

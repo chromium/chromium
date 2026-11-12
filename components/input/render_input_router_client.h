@@ -38,7 +38,8 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouterClient {
       const gfx::Range& range,
       const std::optional<std::vector<gfx::Rect>>& character_bounds) = 0;
   // Initiate stylus handwriting.
-  virtual void OnStartStylusWriting() = 0;
+  virtual void OnStartStylusWriting(
+      const std::optional<StylusWritingProperties>& properties) = 0;
   // Update which editable element has focus for stylus writing. When
   // `focus_widget_rect_in_dips` is provided, sets focus and caret position
   // based on a hit test performed with that rect. Otherwise fallback to the

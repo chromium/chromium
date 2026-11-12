@@ -295,8 +295,9 @@ StylusInterface* RenderInputRouter::GetStylusInterface() {
   return delegate_->GetStylusInterface();
 }
 
-void RenderInputRouter::OnStartStylusWriting() {
-  render_input_router_client_->OnStartStylusWriting();
+void RenderInputRouter::OnStartStylusWriting(
+    const std::optional<StylusWritingProperties>& properties) {
+  render_input_router_client_->OnStartStylusWriting(properties);
 }
 
 bool RenderInputRouter::IsWheelScrollInProgress() {

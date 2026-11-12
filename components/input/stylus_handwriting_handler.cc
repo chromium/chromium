@@ -35,8 +35,12 @@ bool StylusHandwritingHandler::StartStylusWriting() {
     return false;
   }
   stylus_writing_started_ = true;
-  client_->OnStartStylusWriting();
+  OnStartStylusWriting();
   return true;
+}
+
+void StylusHandwritingHandler::OnStartStylusWriting() {
+  client_->OnStartStylusWriting(std::nullopt);
 }
 
 }  // namespace input

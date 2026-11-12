@@ -1858,7 +1858,8 @@ void RenderWidgetHostViewAndroid::NotifyHoverActionStylusWritable(
   view_.NotifyHoverActionStylusWritable(stylus_writable);
 }
 
-void RenderWidgetHostViewAndroid::OnStartStylusWriting() {
+void RenderWidgetHostViewAndroid::OnStartStylusWriting(
+    const std::optional<input::StylusWritingProperties>& properties) {
   if (host()) {
     host()->UpdateElementFocusForStylusWriting();
   }
