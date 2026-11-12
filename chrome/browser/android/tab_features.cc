@@ -87,6 +87,7 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
+#include "chrome/browser/preloading/prerender/prewarm_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
@@ -301,6 +302,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   new_tab_page_preload_pipeline_manager_ =
       GetUserDataFactory().CreateInstance<NewTabPagePreloadPipelineManager>(
           *tab, *tab, web_contents);
+
+  // TODO(https://crbug.com/406378765): Support Off-The-Record (Incognito) tabs
+  // (e.g., IncognitoNewTabPage and SearchPreloadProgressServiceFactory).
+  prewarm_tab_helper_ = PrewarmTabHelper::MaybeCreate(*tab, web_contents);
 
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsFirstDialogUi)) {

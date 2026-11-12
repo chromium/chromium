@@ -25,6 +25,7 @@
 #include "components/page_load_metrics/google/browser/search_prewarm_outcome.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
@@ -35,8 +36,13 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/preloading/android_prerender_manager.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -798,10 +804,12 @@ class PrerenderManagerPageLoadAndTabSwitchAfterPaintTest
 
   void SetUp() override {
     PrerenderManagerTest::SetUp();
+    ON_CALL(mock_tab_, IsInNormalWindow()).WillByDefault(testing::Return(true));
     // WebContentsImpl::UpdateWebContentsVisibility() ignores transitions to
     // HIDDEN/OCCLUDED until it has been set to VISIBLE at least once.
     web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
-    prewarm_tab_helper_ = PrewarmTabHelper::MaybeCreate(GetActiveWebContents());
+    prewarm_tab_helper_ =
+        PrewarmTabHelper::MaybeCreate(mock_tab_, GetActiveWebContents());
     ASSERT_TRUE(prewarm_tab_helper_);
   }
 
@@ -810,10 +818,14 @@ class PrerenderManagerPageLoadAndTabSwitchAfterPaintTest
     PrerenderManagerTest::TearDown();
   }
 
+ protected:
+  tabs::MockTabInterface& mock_tab() { return mock_tab_; }
+
  private:
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::
           kEnabledWithPageLoadAndTabSwitchAfterPaintTrigger};
+  tabs::MockTabInterface mock_tab_;
   std::unique_ptr<PrewarmTabHelper> prewarm_tab_helper_;
 };
 
@@ -933,5 +945,45 @@ TEST_F(PrerenderManagerPageLoadAndTabSwitchAfterPaintTest,
   registry_observer.WaitForTrigger(prewarm_url);
   EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
 }
+
+TEST_F(PrerenderManagerPageLoadAndTabSwitchAfterPaintTest,
+       NonNormalWindowDoesNotTriggerPrewarm) {
+  const GURL prewarm_url("https://search.example.com/prewarm.html");
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+  ON_CALL(mock_tab(), IsInNormalWindow()).WillByDefault(testing::Return(false));
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GetUrl("/test.html"), web_contents()->GetPrimaryMainFrame());
+  simulator->Commit();
+  web_contents_tester()->TestDidFirstVisuallyNonEmptyPaint();
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  EXPECT_FALSE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+
+  // If the tab is later reparented into a normal browser window (e.g., on
+  // Android), subsequent visibility transitions trigger prewarm.
+  ON_CALL(mock_tab(), IsInNormalWindow()).WillByDefault(testing::Return(true));
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::HIDDEN);
+  web_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
+  registry_observer.WaitForTrigger(prewarm_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PrerenderManagerPageLoadAndTabSwitchAfterPaintTest,
+       AndroidPrerenderManagerStartsPrewarm) {
+  const GURL prewarm_url("https://search.example.com/prewarm.html");
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  AndroidPrerenderManager::StartPrewarm(GetActiveWebContents());
+  registry_observer.WaitForTrigger(prewarm_url);
+  EXPECT_TRUE(prerender_manager()->HasSearchPrewarmTaskForTesting());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

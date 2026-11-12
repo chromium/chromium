@@ -961,7 +961,13 @@ base::CallbackListSubscription TabAndroid::RegisterModalUIChanged(
 }
 
 bool TabAndroid::IsInNormalWindow() const {
-  return true;
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_tab = GetJavaObject(env);
+  if (!j_tab) {
+    CHECK_IS_TEST();
+    return false;
+  }
+  return Java_TabImpl_isTabInBrowser(env, j_tab);
 }
 
 BrowserWindowInterface* TabAndroid::GetBrowserWindowInterface() {

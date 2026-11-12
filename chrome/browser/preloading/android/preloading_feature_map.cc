@@ -18,6 +18,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPrewarm,
     &features::kPrewarmZeroSuggestTrigger,
+    &features::kPrewarmPageLoadAndTabSwitchAfterPaintTrigger,
 };
 
 // static

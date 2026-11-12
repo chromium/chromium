@@ -72,6 +72,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.upload_image.Backgrou
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
+import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -354,6 +356,7 @@ public class NewTabPage
             if (!mTab.isHidden()) recordNtpShown();
 
             maybeUpdateCustomBackgroundFromDeviceSync();
+            maybeStartPrewarm();
         }
 
         @Override
@@ -500,6 +503,7 @@ public class NewTabPage
                         maybeUpdateCustomBackgroundFromDeviceSync();
                         mNewTabPageCoordinator.maybeUpdateHomeModules(mIsLoaded);
                         mNewTabPageCoordinator.onSwitchToForeground();
+                        maybeStartPrewarm();
                     }
 
                     @Override
@@ -646,7 +650,15 @@ public class NewTabPage
                             10 * TimeUtils.MILLISECONDS_PER_MINUTE,
                             100);
                     // LINT.ThenChange(/components/page_load_metrics/browser/page_load_metrics_util.h:page_load_histogram)
+                    maybeStartPrewarm();
                 });
+    }
+
+    private void maybeStartPrewarm() {
+        if (mIsDestroyed || mTab.isHidden() || !mIsLoaded || !mRecordedFcp) return;
+        if (PreloadingFeatureMap.getInstance().shouldPrewarmOnPageLoadAndTabSwitchAfterPaint()) {
+            AndroidPrerenderManager.startPrewarm(mTab.getWebContents());
+        }
     }
 
     /**

@@ -1043,6 +1043,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/ui/android/logo:utils_java",
+    "//chrome/browser/ui/android/preloading:java",
   ]
 }
 

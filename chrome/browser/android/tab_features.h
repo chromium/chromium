@@ -179,6 +179,7 @@ class OneTimePermissionsTrackerHelper;
 class OomInterventionTabHelper;
 class PluginObserverAndroid;
 class PolicyAuditorBridge;
+class PrewarmTabHelper;
 class RecentlyAudibleHelper;
 class RevokedPermissionsTabHelper;
 class SearchEngineTabHelper;
@@ -251,6 +252,7 @@ class TabFeatures {
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
   std::unique_ptr<NewTabPagePreloadPipelineManager>
       new_tab_page_preload_pipeline_manager_;
+  std::unique_ptr<PrewarmTabHelper> prewarm_tab_helper_;
   std::unique_ptr<contextual_tasks::ContextualTasksTabVisitTracker>
       contextual_tasks_tab_visit_tracker_;
   std::unique_ptr<lens::TabContextualizationController>

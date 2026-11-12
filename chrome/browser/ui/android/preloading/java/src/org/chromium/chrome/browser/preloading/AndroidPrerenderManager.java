@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /**
@@ -100,11 +101,23 @@ public class AndroidPrerenderManager {
         AndroidPrerenderManagerJni.get().stopPrerendering(mTab);
     }
 
+    /**
+     * Starts prewarming the default search engine page on the given {@link WebContents}.
+     *
+     * @param webContents The {@link WebContents} to start prewarming in.
+     */
+    public static void startPrewarm(@Nullable WebContents webContents) {
+        if (webContents == null) return;
+        AndroidPrerenderManagerJni.get().startPrewarm(webContents);
+    }
+
     @NativeMethods
     public interface Natives {
         void startPrerendering(
                 @JniType("GURL") GURL prerenderUrl, @JniType("TabAndroid*") Tab tab);
 
         void stopPrerendering(@JniType("TabAndroid*") Tab tab);
+
+        void startPrewarm(@JniType("content::WebContents*") WebContents webContents);
     }
 }

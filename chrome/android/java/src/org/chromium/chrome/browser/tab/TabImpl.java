@@ -2787,6 +2787,7 @@ class TabImpl implements Tab {
         return mDelegateFactory != null && mDelegateFactory.isTabInPwa();
     }
 
+    @CalledByNative
     @Override
     public boolean isTabInBrowser() {
         return mDelegateFactory != null && mDelegateFactory.isTabInBrowser();

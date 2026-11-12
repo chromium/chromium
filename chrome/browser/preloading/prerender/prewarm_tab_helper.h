@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -14,17 +15,22 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 // Observes page load completion, first paint, and visibility changes on a tab
 // to trigger Default Search Engine prewarm when
 // `kPrewarmPageLoadAndTabSwitchAfterPaintTrigger` is enabled. Owned by the
 // tab's TabFeatures.
-// Note: In this CL, `PrewarmTabHelper` is only wired up in desktop
-// `TabFeatures` (covering WebContents-backed pages including the desktop WebUI
-// NTP). Android `TabFeatures` wiring and Android native Java NTP
-// (`chrome-native://newtab`) support are implemented in a follow-up CL.
+// Note: `PrewarmTabHelper` covers WebContents-rendered pages (including the
+// desktop WebUI NTP). On Android, the native Java NTP
+// (`chrome-native://newtab`) is not rendered by Blink/WebContents and triggers
+// prewarm after its first view draw in `NewTabPage.java`.
 class PrewarmTabHelper : public content::WebContentsObserver {
  public:
   static std::unique_ptr<PrewarmTabHelper> MaybeCreate(
+      tabs::TabInterface& tab,
       content::WebContents* web_contents);
 
   PrewarmTabHelper(const PrewarmTabHelper&) = delete;
@@ -38,9 +44,11 @@ class PrewarmTabHelper : public content::WebContentsObserver {
   void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
-  explicit PrewarmTabHelper(content::WebContents* web_contents);
+  PrewarmTabHelper(tabs::TabInterface& tab, content::WebContents* web_contents);
 
   void MaybeTriggerPrewarm();
+
+  const raw_ref<tabs::TabInterface> tab_;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PRERENDER_PREWARM_TAB_HELPER_H_

@@ -154,8 +154,15 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/page_load_metrics/google/browser",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//content/test:test_support",
+    "//testing/gmock",
   ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/android" ]
+  }
 }
 
 if (!is_android) {

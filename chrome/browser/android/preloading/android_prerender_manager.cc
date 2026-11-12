@@ -12,6 +12,7 @@
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
@@ -44,6 +45,17 @@ void AndroidPrerenderManager::StopPrerendering(JNIEnv* env, TabAndroid* tab) {
 }
 
 // static
+void AndroidPrerenderManager::StartPrewarm(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  auto* prerender_manager =
+      PrerenderManager::GetOrCreateForWebContents(web_contents);
+  CHECK(prerender_manager);
+  prerender_manager->MaybeStartPrewarmSearchResult();
+}
+
+// static
 NewTabPagePreloadPipelineManager*
 AndroidPrerenderManager::GetNewTabPagePreloadPipelineManager(TabAndroid* tab) {
   return NewTabPagePreloadPipelineManager::From(tab);
@@ -59,6 +71,11 @@ static void JNI_AndroidPrerenderManager_StartPrerendering(
 static void JNI_AndroidPrerenderManager_StopPrerendering(JNIEnv* env,
                                                          TabAndroid* tab) {
   AndroidPrerenderManager::StopPrerendering(env, tab);
+}
+
+static void JNI_AndroidPrerenderManager_StartPrewarm(
+    content::WebContents* web_contents) {
+  AndroidPrerenderManager::StartPrewarm(web_contents);
 }
 
 DEFINE_JNI(AndroidPrerenderManager)

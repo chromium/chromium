@@ -274,8 +274,13 @@ class TabInterface : public SupportsTabHandles {
   virtual base::CallbackListSubscription RegisterModalUIChanged(
       TabInterfaceCallback callback) = 0;
 
-  // A normal browser window has a tab strip and an omnibox. The returned value
-  // never changes.
+  // A normal browser window has a tab strip and an omnibox. On desktop, the
+  // returned value never changes.
+  //
+  // Android specific notes:
+  // * The returned value can change across window attachment or reparenting
+  //   (e.g., when a detached spare tab is attached to a window, a Custom Tab is
+  //   reparented to Chrome, or a tab is moved to a popup).
   virtual bool IsInNormalWindow() const = 0;
 
   // Always valid in production code. Exceptions are:

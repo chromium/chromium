@@ -18,6 +18,11 @@ import org.chromium.build.annotations.Nullable;
 @JNINamespace("chrome::preloading::android")
 @NullMarked
 public class PreloadingFeatureMap extends FeatureMap {
+    public static final String PREWARM = "Prewarm";
+    public static final String PREWARM_ZERO_SUGGEST_TRIGGER = "PrewarmZeroSuggestTrigger";
+    public static final String PREWARM_PAGE_LOAD_AND_TAB_SWITCH_AFTER_PAINT_TRIGGER =
+            "PrewarmPageLoadAndTabSwitchAfterPaintTrigger";
+
     private static final PreloadingFeatureMap sInstance = new PreloadingFeatureMap();
     private static @Nullable PreloadingFeatureMap sInstanceForTesting;
 
@@ -48,14 +53,25 @@ public class PreloadingFeatureMap extends FeatureMap {
      * @return Whether prewarming should be triggered on zero-suggest prefetch.
      */
     public boolean shouldPrewarmOnZeroSuggest() {
-        return isEnabled("Prewarm") && isEnabled("PrewarmZeroSuggestTrigger");
+        return isEnabled(PREWARM) && isEnabled(PREWARM_ZERO_SUGGEST_TRIGGER);
     }
 
     /**
      * @return Whether prewarming should be triggered on autocomplete.
      */
     public boolean shouldPrewarmOnAutocomplete() {
-        return isEnabled("Prewarm") && !isEnabled("PrewarmZeroSuggestTrigger");
+        return isEnabled(PREWARM)
+                && !isEnabled(PREWARM_ZERO_SUGGEST_TRIGGER)
+                && !isEnabled(PREWARM_PAGE_LOAD_AND_TAB_SWITCH_AFTER_PAINT_TRIGGER);
+    }
+
+    /**
+     * @return Whether prewarming should be triggered on page load and tab switch after paint.
+     */
+    public boolean shouldPrewarmOnPageLoadAndTabSwitchAfterPaint() {
+        return isEnabled(PREWARM)
+                && !isEnabled(PREWARM_ZERO_SUGGEST_TRIGGER)
+                && isEnabled(PREWARM_PAGE_LOAD_AND_TAB_SWITCH_AFTER_PAINT_TRIGGER);
     }
 
     @Override

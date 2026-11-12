@@ -13,6 +13,10 @@
 class NewTabPagePreloadPipelineManager;
 class TabAndroid;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class AndroidPrerenderManager {
  public:
   AndroidPrerenderManager() = delete;
@@ -24,6 +28,8 @@ class AndroidPrerenderManager {
                                 TabAndroid* tab);
 
   static void StopPrerendering(JNIEnv* env, TabAndroid* tab);
+
+  static void StartPrewarm(content::WebContents* web_contents);
 
  private:
   static NewTabPagePreloadPipelineManager* GetNewTabPagePreloadPipelineManager(

@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -25,15 +26,17 @@ bool ShouldPrewarmOnPageLoadAndTabSwitchAfterPaint() {
 
 // static
 std::unique_ptr<PrewarmTabHelper> PrewarmTabHelper::MaybeCreate(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents) {
   if (!ShouldPrewarmOnPageLoadAndTabSwitchAfterPaint()) {
     return nullptr;
   }
-  return base::WrapUnique(new PrewarmTabHelper(web_contents));
+  return base::WrapUnique(new PrewarmTabHelper(tab, web_contents));
 }
 
-PrewarmTabHelper::PrewarmTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+PrewarmTabHelper::PrewarmTabHelper(tabs::TabInterface& tab,
+                                   content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents), tab_(tab) {}
 
 PrewarmTabHelper::~PrewarmTabHelper() = default;
 
@@ -52,6 +55,9 @@ void PrewarmTabHelper::OnVisibilityChanged(content::Visibility visibility) {
 }
 
 void PrewarmTabHelper::MaybeTriggerPrewarm() {
+  if (!tab_->IsInNormalWindow()) {
+    return;
+  }
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE &&
       !web_contents()->IsLoading() &&
       web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
