@@ -1,0 +1,16 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+agentic_review {
+  capability_groups {
+    path_expression: "ios/(?:.*/)?[^/]*\\.(?:h|mm)"
+    path_expression_exclusion: "ios/third_party/.*"
+    content_patterns: "@property[^;\\n]*\\b(?:Browser|ProfileIOS|AppState|ProfileState|SceneState|ApplicationContext|CommandDispatcher)\\s*\\*"
+    content_patterns: "-\\s*\\([^)]*\\)\\s*initWith[^;]*\\b(?:Browser|ProfileIOS|AppState|ProfileState|SceneState|ApplicationContext|CommandDispatcher)\\s*\\*"
+    content_patterns: "\\bHandlerForProtocol\\s*\\(\\s*(?:self\\.)?_?(?:commandD|d)ispatcher\\b"
+    content_patterns: "\\bGetApplicationContext\\s*\\(\\s*\\)"
+    content_patterns: "\\b[A-Za-z0-9_]+(?:Service)?Factory::GetFor(?:Profile|BrowserState)\\b"
+    rules: "ios/agents/knowledge_base/rules/chrome/line-in-the-sand-no-backbone-containers-in-mediators.md"
+  }
+}
