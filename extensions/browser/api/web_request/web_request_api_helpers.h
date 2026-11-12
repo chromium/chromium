@@ -395,6 +395,7 @@ EventResponseDelta CalculateOnBeforeSendHeadersDelta(
     net::HttpRequestHeaders* old_headers,
     net::HttpRequestHeaders* new_headers,
     int extra_info_spec);
+// `old_response_headers` may be null, in which case only `cancel` is kept.
 EventResponseDelta CalculateOnHeadersReceivedDelta(
     const extensions::ExtensionId& extension_id,
     const base::Time& extension_install_time,
@@ -479,7 +480,8 @@ void MergeCookiesInOnHeadersReceivedResponses(
 // fragment overwritten by that of the original URL). Stores in
 // `response_headers_modified` whether the response headers were modified.
 // Any actions within |request.dnr_actions| which result in headers being
-// modified are added to `matched_dnr_actions`.
+// modified are added to `matched_dnr_actions`. `original_response_headers`
+// may be null, in which case nothing is modified.
 void MergeOnHeadersReceivedResponses(
     const extensions::WebRequestInfo& request,
     const EventResponseDeltas& deltas,

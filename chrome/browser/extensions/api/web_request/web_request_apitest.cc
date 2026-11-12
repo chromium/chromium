@@ -6424,6 +6424,7 @@ class ProxyCORSWebRequestApiTest
     std::unique_ptr<net::test_server::BasicHttpResponse> response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    response->AddCustomHeader("Access-Control-Expose-Headers", "x-test");
     response->set_content_type("text/plain");
     response->set_content("PASS");
     response->set_code(net::HTTP_OK);
@@ -6431,15 +6432,17 @@ class ProxyCORSWebRequestApiTest
   }
 
   // Executes a CORS preflight request on the main frame with a custom preflight
-  // header.
+  // header. The XHR is stored in `window.corsXhr`, and `window.corsXhrDone`
+  // resolves to whether it succeeded.
   void ExecuteCorsPreflightedRequest() {
     content::WebContents* web_contents = GetActiveWebContents();
     ASSERT_TRUE(web_contents);
     static constexpr char kCORSPreflightedRequest[] = R"(
         var xhr = new XMLHttpRequest();
+        window.corsXhr = xhr;
         xhr.open('GET', '%s');
         xhr.setRequestHeader('%s', 'testvalue');
-        new Promise(resolve => {
+        window.corsXhrDone = new Promise(resolve => {
           xhr.onload = () => { resolve(true); };
           xhr.onerror = () => { resolve(false); };
           xhr.send();
@@ -6721,6 +6724,145 @@ IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTestWithContextTypeMv3,
 
   EXPECT_TRUE(result_catcher.GetNextResult());
   WaitForPreflightResponse();
+}
+
+// Tests that a blocking onHeadersReceived listener returning `responseHeaders`
+// doesn't crash when the original response headers are null, which happens
+// for a CORS preflight's proxy auth challenge routed to the main request.
+// Regression test for crbug.com/581338044.
+IN_PROC_BROWSER_TEST_P(ProxyCORSWebRequestApiTestWithContextTypeMv3,
+                       PreflightProxyAuthWithResponseHeadersListener) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Preflight proxy auth with onHeadersReceived responseHeaders",
+        "manifest_version": 3,
+        "version": "0.1",
+        "background": { "service_worker": "background.js" },
+        "permissions": ["webRequest", "webRequestBlocking"],
+        "host_permissions": ["<all_urls>"]
+      })");
+  // An empty status line means the event had no response headers.
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+        self.nullHeadersCount = 0;
+        chrome.webRequest.onHeadersReceived.addListener(
+            details => {
+              if (details.statusLine !== '') {
+                return {};
+              }
+              self.nullHeadersCount++;
+              // Non-empty so both header loops would run on the null headers.
+              return {responseHeaders: [{name: 'x-test', value: '1'}]};
+            },
+            {urls: ['<all_urls>']},
+            ['blocking', 'responseHeaders', 'extraHeaders']);
+        chrome.test.sendMessage('ready');
+      )");
+  ExtensionTestMessageListener ready_listener("ready");
+  // MV3 restricts 'webRequestBlocking' to policy-installed extensions.
+  const Extension* extension = InstallExtension(
+      test_dir.Pack(), 1, mojom::ManifestLocation::kExternalPolicyDownload);
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  preflight_waiter_ = std::make_unique<base::RunLoop>();
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/empty.html")));
+  ExecuteCorsPreflightedRequest();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
+  LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(
+      base::ASCIIToUTF16(std::string(kCORSProxyUser)),
+      base::ASCIIToUTF16(std::string(kCORSProxyPass)));
+
+  WaitForPreflightResponse();
+
+  // Ensure the null-headers path was actually exercised.
+  EXPECT_GE(GetCountFromBackgroundScript(extension, profile(),
+                                         "self.nullHeadersCount"),
+            1);
+
+  // The main request still completes.
+  EXPECT_EQ(200, EvalJs(GetActiveWebContents(),
+                        "corsXhrDone.then(ok => ok ? corsXhr.status : -1)"));
+}
+
+// Like the above, but triggered by a DNR rule modifying the main request's
+// response headers alone, without 'extraHeaders' or blocking webRequest.
+// Regression test for crbug.com/581338044.
+IN_PROC_BROWSER_TEST_P(ProxyCORSDeclarativeNetRequestApiTest,
+                       PreflightProxyAuthWithResponseHeadersDNRRule) {
+  static constexpr char kManifest[] = R"({
+    "name": "Preflight proxy auth with DNR response modifyHeaders",
+    "version": "0.1",
+    "manifest_version": 3,
+    "permissions": [ "declarativeNetRequest", "webRequest" ],
+    "host_permissions": [ "<all_urls>" ],
+    "background": { "service_worker": "background.js" },
+    "declarative_net_request" : {
+      "rule_resources" : [{
+        "id": "ruleset",
+        "enabled": true,
+        "path": "rules.json"
+      }]
+    }
+  })";
+  static constexpr char kRules[] = R"([{
+    "id": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "responseHeaders": [
+        { "header": "x-test", "operation": "set", "value": "1" }
+      ]
+    },
+    "condition": {
+      "urlFilter": "*",
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  }])";
+
+  // Only observes: without 'blocking' or 'extraHeaders', it can't trigger the
+  // null-headers path itself.
+  static constexpr char kBackgroundJs[] = R"(
+    chrome.webRequest.onHeadersReceived.addListener(details => {
+      if (details.statusLine === '') {
+        chrome.test.sendMessage('null-headers');
+      }
+    }, {urls: ['<all_urls>']});
+    chrome.test.sendMessage('ready');
+  )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("rules.json"), kRules);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  ExtensionTestMessageListener ready_listener("ready");
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  preflight_waiter_ = std::make_unique<base::RunLoop>();
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/empty.html")));
+  ExtensionTestMessageListener null_headers_listener("null-headers");
+  ExecuteCorsPreflightedRequest();
+
+  ASSERT_TRUE(base::test::RunUntil(
+      []() { return LoginHandler::GetAllLoginHandlersForTest().size() == 1; }));
+  LoginHandler::GetAllLoginHandlersForTest().front()->SetAuth(
+      base::ASCIIToUTF16(std::string(kCORSProxyUser)),
+      base::ASCIIToUTF16(std::string(kCORSProxyPass)));
+
+  WaitForPreflightResponse();
+
+  // Ensure the null-headers path was actually exercised.
+  EXPECT_TRUE(null_headers_listener.WaitUntilSatisfied());
+
+  // The main request still completes, and the rule still applies to its real
+  // response headers.
+  EXPECT_EQ(200, EvalJs(GetActiveWebContents(),
+                        "corsXhrDone.then(ok => ok ? corsXhr.status : -1)"));
+  EXPECT_EQ("1", EvalJs(GetActiveWebContents(),
+                        "corsXhr.getResponseHeader('x-test')"));
 }
 
 // Depends on declarativeWebRequest. crbug.com/332512510.

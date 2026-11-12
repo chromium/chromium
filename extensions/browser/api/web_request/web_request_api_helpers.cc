@@ -840,8 +840,16 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
     int extra_info_spec) {
   EventResponseDelta result(extension_id, extension_install_time);
   result.cancel = cancel;
-  result.new_url = new_url;
 
+  // `old_response_headers` can be null, e.g. for a CORS preflight's auth
+  // challenge routed to the main request, which has no headers yet. See
+  // crbug.com/581338044 and crbug.com/444248440. Drop `new_url` too, as
+  // MergeOnHeadersReceivedResponses() can't redirect without headers.
+  if (!old_response_headers) {
+    return result;
+  }
+
+  result.new_url = new_url;
   if (!new_response_headers) {
     return result;
   }
@@ -1602,9 +1610,13 @@ void MergeOnHeadersReceivedResponses(
     std::vector<const DNRRequestAction*>* matched_dnr_actions) {
   DCHECK(response_headers_modified);
   *response_headers_modified = false;
-
   DCHECK(request.dnr_actions);
   DCHECK(matched_dnr_actions);
+
+  // See CalculateOnHeadersReceivedDelta() for when this is null.
+  if (!original_response_headers) {
+    return;
+  }
 
   std::map<std::string_view, std::vector<DNRHeaderAction>> dnr_header_actions;
   for (const auto& action : *request.dnr_actions) {

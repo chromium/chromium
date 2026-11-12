@@ -963,6 +963,30 @@ TEST(ExtensionWebRequestHelpersTest, TestCalculateOnHeadersReceivedDelta) {
 }
 
 TEST(ExtensionWebRequestHelpersTest,
+     TestCalculateOnHeadersReceivedDeltaWithNullOriginalHeaders) {
+  ResponseHeaders new_headers = {{"Key1", "Value1"}};
+  GURL url(kExampleUrl);
+  GURL new_url("http://www.bar.com/");
+
+  EventResponseDelta delta = CalculateOnHeadersReceivedDelta(
+      "extid", base::Time::Now(), /*cancel=*/false, url, new_url,
+      /*old_response_headers=*/nullptr, &new_headers,
+      ExtraInfoSpec::EXTRA_HEADERS);
+  EXPECT_TRUE(delta.added_response_headers.empty());
+  EXPECT_TRUE(delta.deleted_response_headers.empty());
+  EXPECT_FALSE(delta.cancel);
+  // Can't redirect without headers, so the redirect isn't recorded either.
+  EXPECT_TRUE(delta.new_url.is_empty());
+
+  // `cancel` must still be honored without original headers.
+  EventResponseDelta cancel_delta = CalculateOnHeadersReceivedDelta(
+      "extid", base::Time::Now(), /*cancel=*/true, url, url,
+      /*old_response_headers=*/nullptr, &new_headers,
+      ExtraInfoSpec::EXTRA_HEADERS);
+  EXPECT_TRUE(cancel_delta.cancel);
+}
+
+TEST(ExtensionWebRequestHelpersTest,
      TestCalculateOnHeadersReceivedDeltaWithExtraHeaders) {
   std::string base_headers_string =
       "HTTP/1.0 200 OK\r\n"
@@ -2287,6 +2311,52 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
       HasIgnoredAction(ignored_actions, "extid3",
                        web_request::IgnoredActionType::kResponseHeaders));
   EXPECT_TRUE(response_headers_modified4);
+}
+
+TEST(ExtensionWebRequestHelpersTest,
+     TestMergeOnHeadersReceivedResponsesWithNullOriginalHeaders) {
+  EventResponseDeltas deltas;
+  {
+    EventResponseDelta d0("extid0", base::Time::Now());
+    d0.added_response_headers.push_back(ResponseHeader("Key1", "Value1"));
+    d0.new_url = GURL("http://www.bar.com/");
+    ResponseCookieModification add_cookie;
+    add_cookie.type = helpers::ADD;
+    add_cookie.modification.emplace();
+    add_cookie.modification->name = "name1";
+    add_cookie.modification->value = "value1";
+    d0.response_cookie_modifications.push_back(std::move(add_cookie));
+    deltas.push_back(std::move(d0));
+  }
+  WebRequestInfoInitParams info_params;
+  info_params.url = GURL(kExampleUrl);
+  WebRequestInfo info(std::move(info_params));
+  // A DNR response header modification must also not touch the null headers.
+  DNRRequestAction modify_headers_action =
+      CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
+  modify_headers_action.response_headers_to_modify = {
+      DNRRequestAction::HeaderInfo(
+          "key2", api::declarative_net_request::HeaderOperation::kSet,
+          "value2")};
+  info.dnr_actions = std::vector<DNRRequestAction>();
+  info.dnr_actions->push_back(std::move(modify_headers_action));
+
+  helpers::IgnoredActions ignored_actions;
+  bool response_headers_modified = true;
+  scoped_refptr<net::HttpResponseHeaders> new_headers;
+  GURL preserve_fragment_on_redirect_url;
+  std::optional<ExtensionId> extension_id;
+  std::vector<const DNRRequestAction*> matched_dnr_actions;
+  MergeOnHeadersReceivedResponses(
+      info, deltas, /*original_response_headers=*/nullptr, &new_headers,
+      &preserve_fragment_on_redirect_url, &extension_id, &ignored_actions,
+      &response_headers_modified, &matched_dnr_actions);
+  EXPECT_FALSE(new_headers);
+  EXPECT_FALSE(response_headers_modified);
+  EXPECT_TRUE(preserve_fragment_on_redirect_url.is_empty());
+  EXPECT_TRUE(matched_dnr_actions.empty());
+  EXPECT_TRUE(ignored_actions.empty());
+  EXPECT_FALSE(extension_id.has_value());
 }
 
 // Check that we do not delete too much
