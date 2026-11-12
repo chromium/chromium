@@ -61,6 +61,7 @@ class CORE_EXPORT BoxFragmentPainter : public BoxPainterBase {
   // AdLabelText().
   enum class AdLabelType {
     kPopup,
+    kPrestitial,
     kSticky,
     kVideo,
     kMaxValue = kVideo,

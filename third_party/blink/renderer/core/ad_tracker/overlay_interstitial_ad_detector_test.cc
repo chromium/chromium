@@ -137,7 +137,8 @@ TEST_F(OverlayInterstitialAdDetectorTest,
 }
 
 // An overlay ad that is already showing at the first contentful paint is a
-// prestitial, which is counted both as a pop-up ad and as a prestitial ad.
+// prestitial, which is counted both as a pop-up ad and as a prestitial ad, and
+// the element is tagged as both for the ad highlight label.
 TEST_F(OverlayInterstitialAdDetectorTest, PrestitialAdOnUnscrollablePage) {
   Element* ad =
       SetUpPageWithOverlayAd(/*scrollable=*/false, /*ad_hidden=*/false);
@@ -150,6 +151,7 @@ TEST_F(OverlayInterstitialAdDetectorTest, PrestitialAdOnUnscrollablePage) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPopupAd));
   EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPrestitialAd));
   EXPECT_TRUE(ad->IsOverlayPopupAd());
+  EXPECT_TRUE(ad->IsPrestitialAd());
 }
 
 // On a scrollable page the overlay is decided on at dismissal time; the
@@ -162,6 +164,8 @@ TEST_F(OverlayInterstitialAdDetectorTest, PrestitialAdOnScrollablePage) {
   // The overlay becomes a candidate.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsUseCounted(WebFeature::kOverlayPopupAd));
+  EXPECT_FALSE(ad->IsOverlayPopupAd());
+  EXPECT_FALSE(ad->IsPrestitialAd());
 
   // Dismiss the overlay without scrolling in between.
   SetAdDisplayed(ad, false);
@@ -169,13 +173,17 @@ TEST_F(OverlayInterstitialAdDetectorTest, PrestitialAdOnScrollablePage) {
 
   EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPopupAd));
   EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPrestitialAd));
+  EXPECT_TRUE(ad->IsOverlayPopupAd());
+  EXPECT_TRUE(ad->IsPrestitialAd());
 }
 
 // A pop-up ad appearing more than `kPrestitialWindow` after the first
-// contentful paint is not a prestitial.
+// contentful paint is not a prestitial: the element is tagged as a pop-up ad
+// only.
 TEST_F(OverlayInterstitialAdDetectorTest,
        NoPrestitialAdOutsideWindowAfterFirstContentfulPaint) {
-  SetUpPageWithOverlayAd(/*scrollable=*/false, /*ad_hidden=*/false);
+  Element* ad =
+      SetUpPageWithOverlayAd(/*scrollable=*/false, /*ad_hidden=*/false);
   SimulateFirstContentfulPaintAt(
       base::TimeTicks::Now() -
       OverlayInterstitialAdDetector::kPrestitialWindow - base::Seconds(1));
@@ -184,6 +192,8 @@ TEST_F(OverlayInterstitialAdDetectorTest,
 
   EXPECT_TRUE(IsUseCounted(WebFeature::kOverlayPopupAd));
   EXPECT_FALSE(IsUseCounted(WebFeature::kOverlayPrestitialAd));
+  EXPECT_TRUE(ad->IsOverlayPopupAd());
+  EXPECT_FALSE(ad->IsPrestitialAd());
 }
 
 // A pop-up ad appearing after the user has interacted with the page is not a

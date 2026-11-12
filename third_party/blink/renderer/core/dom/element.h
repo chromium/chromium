@@ -1959,6 +1959,11 @@ class CORE_EXPORT Element : public ContainerNode {
   // Marks this element as an overlay popup ad.
   void SetIsOverlayPopupAd();
 
+  // Marks this element as a prestitial ad: an overlay popup ad that appeared
+  // while the page was still loading and before the user interacted with it.
+  // The element must already be marked as an overlay popup ad.
+  void SetIsPrestitialAd();
+
   // Returns true if the element is considered ad-related.
   bool IsAdRelated() const;
 
@@ -1971,6 +1976,9 @@ class CORE_EXPORT Element : public ContainerNode {
 
   // Returns true if the element is an overlay popup ad.
   bool IsOverlayPopupAd() const;
+
+  // Returns true if the element is a prestitial ad. Implies IsOverlayPopupAd().
+  bool IsPrestitialAd() const;
 
   // Returns the `AdProvenance` if the element is ad-related, or `std::nullopt`
   // otherwise.

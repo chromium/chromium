@@ -672,6 +672,7 @@ TEST(BoxFragmentPainterAdLabelTest, AdLabelText) {
 
   // One type: no separator.
   EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kPopup}), "popup");
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kPrestitial}), "prestitial");
   EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kSticky}), "sticky");
   EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kVideo}), "video");
 
@@ -680,16 +681,27 @@ TEST(BoxFragmentPainterAdLabelTest, AdLabelText) {
             "popup, sticky");
   EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kSticky, Type::kVideo}),
             "sticky, video");
+  // A prestitial is always also a popup; the two words are adjacent.
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kPopup, Type::kPrestitial}),
+            "popup, prestitial");
 
   // Three types: two separators.
   EXPECT_EQ(BoxFragmentPainter::AdLabelText(
                 {Type::kPopup, Type::kSticky, Type::kVideo}),
             "popup, sticky, video");
 
+  // All types.
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText(
+                {Type::kPopup, Type::kPrestitial, Type::kSticky, Type::kVideo}),
+            "popup, prestitial, sticky, video");
+
   // Word order follows `AdLabelType` order, not the order the types were
   // listed in.
   EXPECT_EQ(BoxFragmentPainter::AdLabelText({Type::kVideo, Type::kPopup}),
             "popup, video");
+  EXPECT_EQ(BoxFragmentPainter::AdLabelText(
+                {Type::kVideo, Type::kPrestitial, Type::kPopup}),
+            "popup, prestitial, video");
 }
 
 TEST_P(BoxFragmentPainterTest, PaintPopupBadgeForOverlayPopupAd) {
@@ -977,6 +989,124 @@ TEST_P(BoxFragmentPainterTest, PaintCombinedBadgeForPopupVideoAd) {
   // wider; the single line of text keeps the height the same.
   EXPECT_GT(popup_video_label.width(), popup_label.width());
   EXPECT_EQ(popup_video_label.height(), popup_label.height());
+}
+
+// A prestitial ad is a popup ad that appeared before the user interacted with
+// the page, so it gets the combined "popup, prestitial" label (see the
+// AdLabelText test), not a separate label.
+TEST_P(BoxFragmentPainterTest, PaintCombinedBadgeForPrestitialAd) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  // Stacked vertically so the two labels can be told apart by their y-position.
+  SetBodyInnerHTML(R"HTML(
+    <div id="popup_ad" style="width: 200px; height: 100px;"></div>
+    <div id="prestitial_ad" style="width: 200px; height: 100px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* popup_ad = GetDocument().getElementById(AtomicString("popup_ad"));
+  Element* prestitial_ad =
+      GetDocument().getElementById(AtomicString("prestitial_ad"));
+  ASSERT_TRUE(popup_ad);
+  ASSERT_TRUE(prestitial_ad);
+  popup_ad->SetIsAdRelated(NoProvenance{});
+  popup_ad->SetIsOverlayPopupAd();
+  // What OverlayInterstitialAdDetector does for a prestitial: tag it as a
+  // popup ad first, then as a prestitial ad.
+  prestitial_ad->SetIsAdRelated(NoProvenance{});
+  prestitial_ad->SetIsOverlayPopupAd();
+  prestitial_ad->SetIsPrestitialAd();
+  ASSERT_TRUE(prestitial_ad->IsOverlayPopupAd());
+  ASSERT_TRUE(prestitial_ad->IsPrestitialAd());
+  ASSERT_FALSE(popup_ad->IsPrestitialAd());
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  PaintRecordBuilder builder;
+  GetDocument().View()->PaintOutsideOfLifecycle(
+      builder.Context(), PaintFlag::kOmitCompositingInfo, CullRect::Infinite());
+  auto record = builder.EndRecording();
+
+  // Both ads get the red highlight and one label each.
+  EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+  EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 2);
+
+  std::vector<SkRect> label_rects;
+  CollectDrawRectsWithColor(record, kAdLabelBackgroundColor, label_rects);
+  ASSERT_EQ(label_rects.size(), 2u);
+  std::ranges::sort(label_rects, {}, &SkRect::fTop);
+  const SkRect& popup_label = label_rects[0];
+  const SkRect& prestitial_label = label_rects[1];
+
+  // "popup, prestitial" has more text than "popup", so its box is wider; the
+  // single line of text keeps the height the same.
+  EXPECT_GT(prestitial_label.width(), popup_label.width());
+  EXPECT_EQ(prestitial_label.height(), popup_label.height());
+}
+
+TEST_P(BoxFragmentPainterTest, PrestitialBadgeAddedAfterAdHighlightIsPainted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAdHighlightLabel);
+
+  GetDocument().GetPage()->GetSettings().SetHighlightAds(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="ad" style="width: 200px; height: 100px;"></div>
+  )HTML");
+  SimulateFirstContentfulPaint(GetDocument());
+
+  Element* ad = GetElementById("ad");
+  ASSERT_TRUE(ad);
+  ad->SetIsAdRelated(NoProvenance{});
+  ad->SetIsOverlayPopupAd();
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  SkRect popup_label;
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 1);
+
+    std::vector<SkRect> label_rects;
+    CollectDrawRectsWithColor(record, kAdLabelBackgroundColor, label_rects);
+    ASSERT_EQ(label_rects.size(), 1u);
+    popup_label = label_rects[0];
+  }
+
+  // Now flag the already-painted popup ad as a prestitial ad too. Since the
+  // highlight is already shown with the "popup" label, this must invalidate
+  // paint so the label is repainted as "popup, prestitial". Check the
+  // invalidation flag directly: PaintRecordBuilder below paints without a
+  // display item cache, so it would show the new label even without
+  // invalidation.
+  ad->SetIsPrestitialAd();
+  EXPECT_TRUE(ad->GetLayoutObject()->ShouldDoFullPaintInvalidation());
+  UpdateAllLifecyclePhasesForTest();
+
+  {
+    PaintRecordBuilder builder;
+    GetDocument().View()->PaintOutsideOfLifecycle(
+        builder.Context(), PaintFlag::kOmitCompositingInfo,
+        CullRect::Infinite());
+    auto record = builder.EndRecording();
+    // Still one label, but wider now that it has more text.
+    EXPECT_TRUE(ContainsDrawRectWithColor(record, kRedOverlay));
+    EXPECT_EQ(CountDrawTextBlobOpsWithColor(record, kAdLabelTextColor), 1);
+
+    std::vector<SkRect> label_rects;
+    CollectDrawRectsWithColor(record, kAdLabelBackgroundColor, label_rects);
+    ASSERT_EQ(label_rects.size(), 1u);
+    EXPECT_GT(label_rects[0].width(), popup_label.width());
+    EXPECT_EQ(label_rects[0].height(), popup_label.height());
+  }
 }
 
 // Unlike popup and video, there is no setter for stickiness: it is detected by

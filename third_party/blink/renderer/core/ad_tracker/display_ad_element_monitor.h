@@ -65,6 +65,13 @@ class CORE_EXPORT DisplayAdElementMonitor final
   bool IsOverlayPopupAd() const { return is_overlay_popup_ad_; }
   void SetIsOverlayPopupAd();
 
+  // A prestitial ad is an overlay popup ad that appeared while the page was
+  // still loading and before the user interacted with it (see
+  // OverlayInterstitialAdDetector), so an element that is a prestitial ad is
+  // also an overlay popup ad.
+  bool IsPrestitialAd() const { return is_prestitial_ad_; }
+  void SetIsPrestitialAd();
+
   const AdProvenance& GetAdProvenance() const { return ad_provenance_; }
 
   void Trace(Visitor*) const override;
@@ -170,6 +177,7 @@ class CORE_EXPORT DisplayAdElementMonitor final
   bool started_ = false;
   bool is_video_ad_ = false;
   bool is_overlay_popup_ad_ = false;
+  bool is_prestitial_ad_ = false;
   bool did_record_video_ad_use_counter_ = false;
 
   // The anchor for `CalculateInlineAdState`.

@@ -295,9 +295,14 @@ void OverlayInterstitialAdDetector::OnPopupDetected(
                         WebFeature::kOverlayPrestitialAd);
     }
 
-    // Tag the element as popup ad for the ad highlight label.
+    // Tag the element as a popup ad, and as a prestitial ad if applicable, for
+    // the ad highlight label. The popup tag must come first: a prestitial is a
+    // kind of popup, and Element::SetIsPrestitialAd() checks that.
     if (ad_element) {
       ad_element->SetIsOverlayPopupAd();
+      if (is_prestitial_ad) {
+        ad_element->SetIsPrestitialAd();
+      }
     }
   }
 }

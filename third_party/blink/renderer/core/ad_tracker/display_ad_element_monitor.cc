@@ -258,6 +258,14 @@ void DisplayAdElementMonitor::SetIsOverlayPopupAd() {
   InvalidatePaintForAdLabel();
 }
 
+void DisplayAdElementMonitor::SetIsPrestitialAd() {
+  if (is_prestitial_ad_) {
+    return;
+  }
+  is_prestitial_ad_ = true;
+  InvalidatePaintForAdLabel();
+}
+
 void DisplayAdElementMonitor::InvalidatePaintForAdLabel() {
   // If the highlight is turned on later, DidFinishLifecycleUpdate() invalidates
   // paint on that transition.
