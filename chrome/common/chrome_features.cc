@@ -306,11 +306,6 @@ const base::FeatureParam<std::string>
 // Controls whether the Actor UI components are enabled.
 BASE_FEATURE(kGlicActorUi, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicConfirmTabClose, base::FEATURE_ENABLED_BY_DEFAULT);
-// Controls whether we ignore users preference of reduced motion enabled and
-// still show the tab indicator spinner. No-op if kGlicActorUiTabIndicator is
-// disabled.
-BASE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls theming updates for Actor UI, including the tab indicator spinner
 // and other elements.

@@ -119,8 +119,7 @@ class ActorUiTabControllerTest : public BaseActorUiTabControllerTest {
   ActorUiTabControllerTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicActorUi,
-          {{features::kGlicActorUiTabIndicator.name, "true"}}},
-         {features::kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion, {}}},
+          {{features::kGlicActorUiTabIndicator.name, "true"}}}},
         {});
   }
   ~ActorUiTabControllerTest() override = default;
@@ -349,64 +348,6 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
   EXPECT_FALSE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner(), nullptr);
-}
-
-class ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled
-    : public BaseActorUiTabControllerTest {
- public:
-  ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActorUi,
-          {{features::kGlicActorUiTabIndicator.name, "true"}}}},
-        {features::kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion});
-  }
-  ~ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled,
-                       TabIndicatorVisibleDuringActuation) {
-  Profile* const profile = browser()->GetProfile();
-  ActorUiStateManager* state_manager = ActorUiStateManager::Get(profile);
-  ASSERT_NE(state_manager, nullptr);
-  tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
-  ASSERT_NE(tab, nullptr);
-  ActorUiTabControllerInterface* controller = ActorUiTabController::From(tab);
-  ASSERT_NE(controller, nullptr);
-
-  // Initially, the indicator should not be visible.
-  tabs::TabAlertController* const tab_alert_controller =
-      tabs::TabAlertController::From(tab);
-  EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
-  EXPECT_EQ(GetSpinner(), nullptr);
-
-  // Start acting on the tab.
-  TestFuture<ActionResultPtr> result;
-  state_manager->OnUiEvent(
-      StartingToActOnTab(tab->GetHandle(), actor::TaskId(1)),
-      result.GetCallback());
-  ASSERT_TRUE(result.Wait());
-  actor::ExpectOkResult(result);
-
-  // The indicator should now be visible.
-  EXPECT_TRUE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
-  ASSERT_NE(GetSpinner(), nullptr);
-  EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kPlaying);
-  EXPECT_TRUE(GetSpinner()->GetVisible());
-  EXPECT_FALSE(GetSpinner()->bounds().IsEmpty());
-  EXPECT_FALSE(GetSpinner()
-                   ->animated_image()
-                   ->GetPlaybackConfig()
-                   ->ignore_reduced_motion);
-
-  // Stop acting on the tab.
-  state_manager->OnUiEvent(StoppedActingOnTab(tab->GetHandle()));
-
-  // The indicator should be hidden again.
-  EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
-  EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kStopped);
 }
 
 class ActorUiTabControllerNavigationConfirmTest
