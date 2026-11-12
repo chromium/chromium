@@ -441,13 +441,6 @@ VideoDecoderPipeline::GetSupportedConfigs(
   if (!configs)
     return std::nullopt;
 
-  if (workarounds.disable_accelerated_vp8_decode) {
-    std::erase_if(configs.value(), [](const auto& config) {
-      return config.profile_min >= VP8PROFILE_MIN &&
-             config.profile_max <= VP8PROFILE_MAX;
-    });
-  }
-
   if (workarounds.disable_accelerated_vp9_decode) {
     std::erase_if(configs.value(), [](const auto& config) {
       return config.profile_min >= VP9PROFILE_PROFILE0 &&
