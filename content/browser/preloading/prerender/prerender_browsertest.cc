@@ -16295,6 +16295,111 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(current_frame_host()->GetRenderWidgetHost(), render_widget_host);
 }
 
+class PrerenderPendingDeletionSubframeBrowserTest
+    : public PrerenderBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool IsInitialIframeCrossSite() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderPendingDeletionSubframeBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "CrossSiteIframe"
+                                             : "SameSiteIframe";
+                         });
+
+// Tests that a RenderFrameHost in a subframe's pending deletion list in a
+// prerendered page doesn't outlive the prerendering FrameTree on activation.
+// The subframe's FrameTreeNode, whose RenderFrameHostManager owns the pending
+// deletion list, is moved to the primary FrameTree on activation, but the
+// FrameTree pointer of those RenderFrameHosts is not updated. Covers both:
+// - `SameSiteIframe`: the old RenderFrameHost shares its SiteInstanceGroup and
+//   RenderViewHost with the main frame.
+// - `CrossSiteIframe`: the old RenderFrameHost is a local root and the last
+//   active frame in its SiteInstanceGroup, so deleting it during activation
+//   also tears down that group's proxies, its RenderViewHost, and its own
+//   RenderWidgetHost before TakePrerenderedPage().
+// Regression test for crbug.com/583734992.
+IN_PROC_BROWSER_TEST_P(PrerenderPendingDeletionSubframeBrowserTest,
+                       PendingDeletionSubframeRFHDeletedOnActivation) {
+  // Make sure that the cross-site subframe navigation below is cross-process,
+  // so that the old RenderFrameHost stays pending deletion waiting for the
+  // unload ACK.
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // Navigate to an initial page.
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start a prerender. The prerendered page opts in to cross-origin iframes so
+  // that cross-site subframe navigations below are not deferred until
+  // activation.
+  const GURL prerendering_url = GetUrl(
+      "/set-header?Supports-Loading-Mode: prerender-cross-origin-frames");
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+
+  // Add an iframe to the prerendered page.
+  const GURL initial_iframe_url = IsInitialIframeCrossSite()
+                                      ? GetCrossSiteUrl("/title1.html")
+                                      : GetUrl("/title1.html");
+  EXPECT_TRUE(AddTestUtilJS(prerender_rfh));
+  ASSERT_EQ("LOADED", EvalJs(prerender_rfh,
+                             JsReplace("add_iframe($1)", initial_iframe_url)));
+  ASSERT_EQ(prerender_rfh->child_count(), 1u);
+  FrameTreeNode* iframe = prerender_rfh->child_at(0);
+  RenderFrameHostImplWrapper old_iframe_rfh(iframe->current_frame_host());
+  if (IsInitialIframeCrossSite()) {
+    ASSERT_NE(old_iframe_rfh->GetProcess(), prerender_rfh->GetProcess());
+  } else {
+    ASSERT_EQ(old_iframe_rfh->GetProcess(), prerender_rfh->GetProcess());
+  }
+
+  // Keep the iframe's current RenderFrameHost in the pending deletion state
+  // after the cross-site navigation below, as if the renderer hasn't
+  // acknowledged the unload yet.
+  old_iframe_rfh->DoNotDeleteForTesting();
+
+  // Navigate the iframe to another site during prerendering. Initiate the
+  // navigation from the iframe itself so that the cross-site case doesn't go
+  // through RenderFrameProxyHost::OpenURL(), which cancels prerendering.
+  const GURL next_iframe_url =
+      IsInitialIframeCrossSite() ? ssl_server().GetURL("c.test", "/title2.html")
+                                 : GetCrossSiteUrl("/title2.html");
+  TestNavigationManager iframe_navigation(web_contents(), next_iframe_url);
+  ASSERT_TRUE(ExecJs(old_iframe_rfh.get(),
+                     JsReplace("location.href = $1;", next_iframe_url)));
+  ASSERT_TRUE(iframe_navigation.WaitForNavigationFinished());
+  ASSERT_TRUE(iframe_navigation.was_committed());
+  ASSERT_NE(iframe->current_frame_host(), old_iframe_rfh.get());
+  ASSERT_NE(iframe->current_frame_host()->GetProcess(),
+            old_iframe_rfh->GetProcess());
+  ASSERT_FALSE(old_iframe_rfh.IsDestroyed());
+  ASSERT_EQ(old_iframe_rfh->lifecycle_state(),
+            RenderFrameHostLifecycleStateImpl::kRunningUnloadHandlers);
+
+  // Activate.
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  NavigatePrimaryPage(prerendering_url);
+  ASSERT_TRUE(host_observer.was_activated());
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+  ASSERT_EQ(current_frame_host(), prerender_rfh);
+
+  // The pending deletion RenderFrameHost should be deleted on activation
+  // instead of being left with a dangling pointer to the destroyed prerendering
+  // FrameTree.
+  EXPECT_TRUE(old_iframe_rfh.IsDestroyed());
+
+  // The iframe should be in the primary FrameTree.
+  FrameTree& primary_frame_tree = web_contents_impl()->GetPrimaryFrameTree();
+  EXPECT_EQ(&iframe->frame_tree(), &primary_frame_tree);
+  EXPECT_EQ(iframe->current_frame_host()->frame_tree(), &primary_frame_tree);
+  EXPECT_EQ(iframe->current_frame_host()->GetLastCommittedURL(),
+            next_iframe_url);
+}
+
 // Tests that window.close() can cancel speculation rules.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, WindowClosedSpeculationRules) {
   ASSERT_TRUE(embedded_test_server()->Start());
