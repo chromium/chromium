@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -31,10 +31,10 @@ public class ResumableDelayedTaskRunnerTest {
         runner.setRunnable(mRunnable, /* delayMs= */ 2000);
         runner.resume();
 
-        Robolectric.getForegroundThreadScheduler().advanceBy(1500, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(1500, TimeUnit.MILLISECONDS);
         verify(mRunnable, never()).run();
 
-        Robolectric.getForegroundThreadScheduler().advanceBy(500, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(500, TimeUnit.MILLISECONDS);
         verify(mRunnable).run();
     }
 
@@ -46,12 +46,12 @@ public class ResumableDelayedTaskRunnerTest {
 
         runner.pause();
 
-        Robolectric.getForegroundThreadScheduler().advanceBy(2000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(2000, TimeUnit.MILLISECONDS);
         verify(mRunnable, never()).run();
 
         runner.resume();
 
-        Robolectric.getForegroundThreadScheduler().advanceBy(2000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(2000, TimeUnit.MILLISECONDS);
         verify(mRunnable).run();
     }
 
@@ -63,12 +63,12 @@ public class ResumableDelayedTaskRunnerTest {
 
         runner.cancel();
 
-        Robolectric.getForegroundThreadScheduler().advanceBy(2000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(2000, TimeUnit.MILLISECONDS);
         verify(mRunnable, never()).run();
 
         runner.resume();
 
-        Robolectric.getForegroundThreadScheduler().advanceBy(2000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(2000, TimeUnit.MILLISECONDS);
         verify(mRunnable, never()).run();
     }
 }

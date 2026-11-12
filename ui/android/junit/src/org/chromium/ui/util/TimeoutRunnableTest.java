@@ -7,7 +7,7 @@ package org.chromium.ui.util;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Holder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,7 +26,7 @@ public class TimeoutRunnableTest {
                 new TimeoutRunnable(normalCallback::notifyCalled, timeoutCallback::notifyCalled, 1);
         wrapped.startTimeout();
 
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         timeoutCallback.waitForOnly();
 
         wrapped.run();
@@ -49,7 +49,7 @@ public class TimeoutRunnableTest {
         Assert.assertEquals(1, normalRunCount.get());
         Assert.assertEquals(0, timeoutRunCount.get());
 
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals("Timeout should not fire", 0, timeoutRunCount.get());
         Assert.assertEquals("Normal callback should not run again", 1, normalRunCount.get());
 
@@ -72,7 +72,7 @@ public class TimeoutRunnableTest {
         Assert.assertEquals(
                 "Normal callback should not run after cancel", 0, normalCallback.getCallCount());
 
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(
                 "Timeout callback should not run after cancel", 0, timeoutCallback.getCallCount());
     }
@@ -89,7 +89,7 @@ public class TimeoutRunnableTest {
         Assert.assertEquals(1, normalCallback.getCallCount());
 
         wrapped.startTimeout();
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(0, timeoutCallback.getCallCount());
     }
 
@@ -104,7 +104,7 @@ public class TimeoutRunnableTest {
         wrapped.cancel();
         wrapped.startTimeout();
 
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertEquals(0, timeoutCallback.getCallCount());
 
         wrapped.run();
@@ -121,7 +121,7 @@ public class TimeoutRunnableTest {
         wrapped.startTimeout();
         wrapped.startTimeout();
 
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         timeoutCallback.waitForOnly();
         Assert.assertEquals(1, timeoutCallback.getCallCount());
     }

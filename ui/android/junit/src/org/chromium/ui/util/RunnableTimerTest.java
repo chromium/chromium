@@ -12,7 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -28,7 +28,7 @@ public class RunnableTimerTest {
         RunnableTimer timer = new RunnableTimer();
         timer.startTimer(duration, callbackHelper::notifyCalled);
         // Not flushing will make the looper blocked.
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         callbackHelper.waitForOnly("Callback should be called by the active timer");
     }
 

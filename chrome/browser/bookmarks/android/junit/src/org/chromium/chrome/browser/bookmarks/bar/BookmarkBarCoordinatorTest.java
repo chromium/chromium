@@ -45,7 +45,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -343,7 +342,7 @@ public class BookmarkBarCoordinatorTest {
                 activity -> {
                     assertItemsRenderedCount(0);
                     final var itemId = addItemToDesktopFolder("Item 1");
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(1);
                     assertItemRenderedAtIndex(itemId, 0);
                 });
@@ -355,14 +354,14 @@ public class BookmarkBarCoordinatorTest {
                 activity -> {
                     // Set up.
                     final var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
                     assertItemRenderedAtIndex(itemIds.get(1), 1);
 
                     // Test case.
                     moveItemToDesktopFolderAtIndex(itemIds.get(1), 0);
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(1), 0);
                     assertItemRenderedAtIndex(itemIds.get(0), 1);
@@ -375,14 +374,14 @@ public class BookmarkBarCoordinatorTest {
                 activity -> {
                     // Set up.
                     final var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
                     assertItemRenderedAtIndex(itemIds.get(1), 1);
 
                     // Test case.
                     removeItem(itemIds.get(0));
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(1);
                     assertItemRenderedAtIndex(itemIds.get(1), 0);
                 });
@@ -395,13 +394,13 @@ public class BookmarkBarCoordinatorTest {
                     // Set up.
                     assertItemsRenderedCount(0);
                     final var itemId = addItemToDesktopFolder("Item 1");
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(1);
                     assertItemRenderedAtIndex(itemId, 0);
 
                     // Test case.
                     setItemTitle(itemId, "Item 1 (Updated)");
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(1);
                     assertItemRenderedAtIndex(itemId, 0);
                 });
@@ -413,14 +412,14 @@ public class BookmarkBarCoordinatorTest {
                 activity -> {
                     // Set up.
                     var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
                     assertItemRenderedAtIndex(itemIds.get(1), 1);
 
                     // Test case.
                     itemIds = setItemsWithinDesktopFolder(List.of("Item 3", "Item 4"));
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
                     assertItemRenderedAtIndex(itemIds.get(1), 1);
@@ -438,7 +437,7 @@ public class BookmarkBarCoordinatorTest {
 
                     // Test case: minimally-populated state.
                     addItemToDesktopFolder("" + count.incrementAndGet());
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(count.get());
                     assertEquals(View.INVISIBLE, mOverflowButton.getVisibility());
 
@@ -447,14 +446,14 @@ public class BookmarkBarCoordinatorTest {
                     CriteriaHelper.pollUiThreadForJUnit(
                             () -> {
                                 id.set(addItemToDesktopFolder("" + count.incrementAndGet()));
-                                Robolectric.flushForegroundThreadScheduler();
+                                ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                                 assertItemsRenderedCount(count.get() - 1);
                                 assertEquals(View.VISIBLE, mOverflowButton.getVisibility());
                             });
 
                     // Test case: maximally-populated state.
                     removeItem(id.get());
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(count.decrementAndGet());
                     assertEquals(View.INVISIBLE, mOverflowButton.getVisibility());
                 });
@@ -466,7 +465,7 @@ public class BookmarkBarCoordinatorTest {
                 activity -> {
                     // Set up.
                     var itemIds = setItemsWithinDesktopFolder(List.of("Item 1", "Item 2"));
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
                     assertItemRenderedAtIndex(itemIds.get(1), 1);
@@ -475,7 +474,7 @@ public class BookmarkBarCoordinatorTest {
                     itemIds = setItemsWithinDesktopFolder(List.of("Item 3", "Item 4"));
                     BookmarkModel.setInstanceForTesting(mModel);
                     mProfileSupplier.set(Mockito.mock(Profile.class));
-                    Robolectric.flushForegroundThreadScheduler();
+                    ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
                     assertItemsRenderedCount(2);
                     assertItemRenderedAtIndex(itemIds.get(0), 0);
                     assertItemRenderedAtIndex(itemIds.get(1), 1);

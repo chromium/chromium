@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -114,7 +114,7 @@ public final class ScrollTrackerTest {
     }
 
     static void advanceByMs(long timeMs) {
-        Robolectric.getForegroundThreadScheduler().advanceBy(timeMs, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(timeMs, TimeUnit.MILLISECONDS);
     }
 
     static class ScrollTrackerForTest extends ScrollTracker {

@@ -300,7 +300,7 @@ public class SettingsSearchCoordinatorUnitTest {
         // Switch to single-column mode and notify via onHeaderLayoutUpdated().
         mUseMultiColumn = false;
         mCoordinator.onHeaderLayoutUpdated();
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         View appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
         assertEquals(appBarLayout, searchBox.getParent());

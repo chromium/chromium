@@ -6,6 +6,7 @@ package org.chromium.content.browser.input;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +42,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
+
+import java.time.Duration;
 
 /** Unit tests for {@link ThreadedInputConnectionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -127,6 +130,7 @@ public class ThreadedInputConnectionFactoryTest {
     private Handler mImeHandler;
     private Handler mUiHandler;
     private ShadowLooper mImeShadowLooper;
+    private ShadowLooper mUiShadowLooper;
     private TestFactory mFactory;
     private InputConnection mInputConnection;
     private InOrder mInOrder;
@@ -142,6 +146,7 @@ public class ThreadedInputConnectionFactoryTest {
         mFactory.onWindowFocusChanged(true);
         mImeHandler = mFactory.getHandler();
         mImeShadowLooper = (ShadowLooper) Shadow.extract(mImeHandler.getLooper());
+        mUiShadowLooper = ShadowLooper.shadowMainLooper();
 
         when(mContext.getSystemService(Context.INPUT_METHOD_SERVICE))
                 .thenReturn(mInputMethodManager);
@@ -220,14 +225,15 @@ public class ThreadedInputConnectionFactoryTest {
     }
 
     private void runOneUiTask() {
-        assertTrue(Robolectric.getForegroundThreadScheduler().runOneTask());
+        assertNotEquals(Duration.ZERO, mUiShadowLooper.getNextScheduledTaskTime());
+        mUiShadowLooper.runOneTask();
     }
 
     @Test
     @Feature({"TextInput"})
     public void testCreateInputConnection_Success() {
         // Pause all the loopers.
-        Robolectric.getForegroundThreadScheduler().pause();
+        mUiShadowLooper.pause();
         mImeShadowLooper.pause();
 
         activateInput();
@@ -261,7 +267,7 @@ public class ThreadedInputConnectionFactoryTest {
     @Feature({"TextInput"})
     public void testCreateInputConnection_Failure() {
         // Pause all the loopers.
-        Robolectric.getForegroundThreadScheduler().pause();
+        mUiShadowLooper.pause();
         mImeShadowLooper.pause();
 
         activateInput();
@@ -307,7 +313,7 @@ public class ThreadedInputConnectionFactoryTest {
     @Feature({"TextInput"})
     public void testCreateInputConnection_Delayed() {
         // Pause all the loopers.
-        Robolectric.getForegroundThreadScheduler().pause();
+        mUiShadowLooper.pause();
         mImeShadowLooper.pause();
 
         mFactory.onViewFocusChanged(false);

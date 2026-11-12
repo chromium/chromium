@@ -21,7 +21,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -150,6 +150,6 @@ public class TrustedWebActivityOpenTimeRecorderTest {
     }
 
     private void advanceTime(long millis) {
-        Robolectric.getForegroundThreadScheduler().advanceBy(millis, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(millis, TimeUnit.MILLISECONDS);
     }
 }

@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -138,7 +138,7 @@ public class BookmarkBarItemsLayoutManagerTest {
         mLayoutManager
                 .getItemsOverflowSupplier()
                 .addSyncObserverAndPostIfNonNull(mItemsOverflowSupplierObserver);
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mItemsOverflowSupplierObserver).onResult(false);
         clearInvocations(mItemsOverflowSupplierObserver);
 

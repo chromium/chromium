@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -36,7 +36,7 @@ public class TimedCallbackDelayerTest {
 
             delayer.delay(callback);
             verify(callback, never()).run();
-            Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
             verify(callback, times(1)).run();
         }
     }

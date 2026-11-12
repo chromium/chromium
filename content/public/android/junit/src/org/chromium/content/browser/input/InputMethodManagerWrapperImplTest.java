@@ -175,7 +175,7 @@ public class InputMethodManagerWrapperImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Post task: note that PostTask actually does not require
-        // Robolectric.getForegroundThreadScheduler().runOneTask() to be called.
+        // ShadowLooper.shadowMainLooper().runOneTask() to be called.
 
         // Check first if input method is still valid on the current view.
         mInOrder.verify(mInputMethodManager).isActive(mView);
@@ -237,7 +237,7 @@ public class InputMethodManagerWrapperImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Post task: note that PostTask actually does not require
-        // Robolectric.getForegroundThreadScheduler().runOneTask() to be called.
+        // ShadowLooper.shadowMainLooper().runOneTask() to be called.
 
         // Check first if input method is still valid on the current view.
         mInOrder.verify(mInputMethodManager).isActive(mView);
@@ -270,7 +270,7 @@ public class InputMethodManagerWrapperImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Post task: note that PostTask actually does not require
-        // Robolectric.getForegroundThreadScheduler().runOneTask() to be called.
+        // ShadowLooper.shadowMainLooper().runOneTask() to be called.
 
         // Check first if input method is still valid on the current view.
         mInOrder.verify(mInputMethodManager).isActive(mView);
