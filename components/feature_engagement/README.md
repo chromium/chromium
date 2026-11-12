@@ -1236,8 +1236,8 @@ The Feature Engagement Tracker automatically logs several UMA histograms and Use
     *   Records whether the event model was initialized and ready when an event was notified.
 *   **`InProductHelp.Config.ParsingEvent`** (`ConfigParsingEvent` enum):
     *   Tracks configuration parsing errors (e.g. `FAILURE_USED_EVENT_MISSING`, `FAILURE_TRIGGER_EVENT_PARSE`).
-*   **`InProductHelp.SnoozeAction`** and **`InProductHelp.TextBubble.ShowSnooze`**:
-    *   Tracks snooze impressions and actions taken (snoozed vs dismissed).
+*   **`InProductHelp.SnoozeAction`**:
+    *   Tracks snooze actions taken (snoozed vs dismissed).
 
 ## Example
 
