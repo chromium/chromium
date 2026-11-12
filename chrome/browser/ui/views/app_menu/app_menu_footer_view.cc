@@ -44,6 +44,7 @@ FooterContainer GetFooterContainerForAction(actions::ActionId action_id) {
     case kActionExit:
 #endif
     case kActionOptions:
+    case kActionUninstallWebApp:
       return FooterContainer::kLeft;
     default:
       return FooterContainer::kRight;
@@ -83,8 +84,8 @@ AppMenuFooterView::AppMenuFooterView(
   top_container_->SetInsideBorderInsets(
       provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
 
-  // Left sub-container: holds the Settings and Help action items (or just Help
-  // on Mac).
+  // Left sub-container: holds left-aligned footer items (Settings, Exit, or
+  // Uninstall).
   left_container_ =
       top_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   left_container_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -98,7 +99,8 @@ AppMenuFooterView::AppMenuFooterView(
   auto* spacer = top_container_->AddChildView(std::make_unique<views::View>());
   top_container_->SetFlexForView(spacer, 1);
 
-  // Right sub-container: holds the Exit action item (or Settings on Mac).
+  // Right sub-container: holds right-aligned footer items (Help, or Exit on
+  // ChromeOS).
   right_container_ =
       top_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
   right_container_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);

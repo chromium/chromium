@@ -1335,16 +1335,11 @@ void ActionAppMenuManager::AddWebAppActions(actions::ActionItem* root) {
       .AddSection(DisplayType::kSection, [this, app_browser_controller,
                                           is_isolated_web_app](
                                              AppMenuBuilder& section) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-        ExtensionsContainer* extensions_container =
-            ExtensionsContainer::From(*browser_window_interface_);
-        if (base::FeatureList::IsEnabled(
-                features::kDesktopPWAsElidedExtensionsMenu) &&
-            extensions_container && extensions_container->HasAnyExtensions() &&
-            !is_isolated_web_app) {
-          section.AddAction(kActionWebAppShowExtensions);
+        section.AddAction(kActionCopyUrl);
+
+        if (ShouldAllowOpenInChrome(browser_window_interface_)) {
+          section.AddAction(kActionOpenInChrome);
         }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
         if (app_browser_controller->has_tab_strip() &&
             !app_browser_controller->ShouldHideNewTabButton()) {
@@ -1353,12 +1348,6 @@ void ActionAppMenuManager::AddWebAppActions(actions::ActionItem* root) {
               {.icon_override = ui::ImageModel::FromVectorIcon(
                    features::IsRoundedIconsEnabled() ? kTabIcon
                                                      : kNewTabRefreshOldIcon)});
-        }
-
-        section.AddAction(kActionCopyUrl);
-
-        if (ShouldAllowOpenInChrome(browser_window_interface_)) {
-          section.AddAction(kActionOpenInChrome);
         }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1425,6 +1414,17 @@ void ActionAppMenuManager::AddWebAppActions(actions::ActionItem* root) {
           });
         }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+        ExtensionsContainer* extensions_container =
+            ExtensionsContainer::From(*browser_window_interface_);
+        if (base::FeatureList::IsEnabled(
+                features::kDesktopPWAsElidedExtensionsMenu) &&
+            extensions_container && extensions_container->HasAnyExtensions() &&
+            !is_isolated_web_app) {
+          section.AddAction(kActionWebAppShowExtensions);
+        }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
         section.AddDivider(ui::MenuSeparatorType::SPACING_SEPARATOR)
             .AddSubmenu(
