@@ -2117,23 +2117,37 @@ void ServiceWorkerVersion::PostMessageToClient(
     return;
   }
 
-  if (IsBackForwardCacheEnabled()) {
-    // When |PostMessageToClient| is called on a client that is in bfcache,
-    // evict the bfcache entry.
-    if (service_worker_client->IsInBackForwardCache()) {
-      EvictBackForwardCachedControllee(
-          service_worker_client, BackForwardCacheMetrics::NotRestoredReason::
-                                     kServiceWorkerPostMessage);
-      return;
-    }
-  }
-
   if (service_worker_client->key() != key_) {
     associated_interface_receiver_.ReportBadMessage(
         "Received Client#postMessage() request for a cross-origin client.");
     receiver_.reset();
     return;
   }
+
+  if (IsBackForwardCacheEnabled()) {
+    // When |PostMessageToClient| is called on a client that is in bfcache,
+    // evict the bfcache entry.
+    if (service_worker_client->IsInBackForwardCache()) {
+      // The client may be controlled by another service worker: this one can
+      // hold it from clients.matchAll({includeUncontrolled: true}) or as the
+      // source of a message. Only the controller has the client in its
+      // `bfcached_controllee_map_`, so evict it through the controller.
+      // Without a controller, nothing will Uncontrol() the client later, so
+      // evict it directly like ServiceWorkerRegistration::ClaimClients().
+      if (ServiceWorkerVersion* controller =
+              service_worker_client->controller()) {
+        controller->EvictBackForwardCachedControllee(
+            service_worker_client, BackForwardCacheMetrics::NotRestoredReason::
+                                       kServiceWorkerPostMessage);
+      } else {
+        service_worker_client->EvictFromBackForwardCache(
+            BackForwardCacheMetrics::NotRestoredReason::
+                kServiceWorkerPostMessage);
+      }
+      return;
+    }
+  }
+
   if (!service_worker_client->is_execution_ready()) {
     // It's subtle why this ReportBadMessage is correct. Consider the
     // sequence:
