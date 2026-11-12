@@ -471,8 +471,6 @@ BASE_DECLARE_FEATURE(kLobsterDogfood);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterDisabledByInvalidIME);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLobsterUseRewrittenQuery);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterAlwaysShowDisclaimerForTesting);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLobsterRightClickMenu);
@@ -980,7 +978,6 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKioskAppLaunchWatchdogEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterDisabledByInvalidIME();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterUseRewrittenQuery();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLobsterAlwaysShowDisclaimerForTesting();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLoginScreenProxyClientCertAuthEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMacAddressRandomizationEnabled();

@@ -248,9 +248,7 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
   }
 
   client_->InflateCandidate(
-      candidate->seed,
-      ash::features::IsLobsterUseRewrittenQuery() ? candidate->rewritten_query
-                                                  : candidate->user_query,
+      candidate->seed, candidate->rewritten_query,
       base::BindOnce(
           [](LobsterClient* lobster_client,
              LobsterImageDownloadActuator* actuator,
@@ -321,9 +319,7 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
   }
 
   client_->InflateCandidate(
-      candidate->seed,
-      ash::features::IsLobsterUseRewrittenQuery() ? candidate->rewritten_query
-                                                  : candidate->user_query,
+      candidate->seed, candidate->rewritten_query,
       base::BindOnce(
           [](LobsterClient* lobster_client, StatusCallback status_callback,
              const LobsterResult& result) {
@@ -371,9 +367,7 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
   }
 
   client_->InflateCandidate(
-      candidate->seed,
-      ash::features::IsLobsterUseRewrittenQuery() ? candidate->rewritten_query
-                                                  : candidate->user_query,
+      candidate->seed, candidate->rewritten_query,
       base::BindOnce(
           [](LobsterClient* lobster_client,
              LobsterImageDownloadActuator* actuator,
