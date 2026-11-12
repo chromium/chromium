@@ -133,7 +133,6 @@ TEST_F(SharedMemoryMappingTest, ConstCorrectness) {
   static_assert(std::is_const_v<ElementType<decltype(ro.data())>>);
   static_assert(std::is_const_v<ElementType<decltype(ro.begin())>>);
   static_assert(std::is_const_v<ElementType<decltype(ro.end())>>);
-  static_assert(std::is_const_v<ElementType<decltype(ro.memory())>>);
   static_assert(
       std::is_const_v<ElementType<decltype(ro.GetMemoryAs<uint8_t>())>>);
   static_assert(
@@ -152,7 +151,6 @@ TEST_F(SharedMemoryMappingTest, ConstCorrectness) {
   static_assert(std::is_const_v<ElementType<decltype(cro.data())>>);
   static_assert(std::is_const_v<ElementType<decltype(cro.begin())>>);
   static_assert(std::is_const_v<ElementType<decltype(cro.end())>>);
-  static_assert(std::is_const_v<ElementType<decltype(cro.memory())>>);
   static_assert(
       std::is_const_v<ElementType<decltype(cro.GetMemoryAs<uint8_t>())>>);
   static_assert(
@@ -171,7 +169,6 @@ TEST_F(SharedMemoryMappingTest, ConstCorrectness) {
   static_assert(!std::is_const_v<ElementType<decltype(rw.data())>>);
   static_assert(!std::is_const_v<ElementType<decltype(rw.begin())>>);
   static_assert(!std::is_const_v<ElementType<decltype(rw.end())>>);
-  static_assert(!std::is_const_v<ElementType<decltype(rw.memory())>>);
   static_assert(
       !std::is_const_v<ElementType<decltype(rw.GetMemoryAs<uint8_t>())>>);
   static_assert(
@@ -191,7 +188,6 @@ TEST_F(SharedMemoryMappingTest, ConstCorrectness) {
   static_assert(std::is_const_v<ElementType<decltype(crw.data())>>);
   static_assert(std::is_const_v<ElementType<decltype(crw.begin())>>);
   static_assert(std::is_const_v<ElementType<decltype(crw.end())>>);
-  static_assert(std::is_const_v<ElementType<decltype(crw.memory())>>);
   static_assert(
       std::is_const_v<ElementType<decltype(crw.GetMemoryAs<uint8_t>())>>);
   static_assert(

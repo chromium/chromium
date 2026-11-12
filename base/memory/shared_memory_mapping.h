@@ -132,12 +132,6 @@ class BASE_EXPORT ReadOnlySharedMemoryMapping : public SharedMemoryMapping {
     return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
   }
 
-  // TODO(crbug.com/355451178): Deprecated. Use `span(mapping)` to make a span
-  // of `uint8_t`, `GetMemoryAs<T>()` to access the memory as a single `T` or
-  // `GetMemoryAsSpan<T>()` to access it as an array of `T`, or `data()` for an
-  // unbounded pointer.
-  const void* memory() const { return data(); }
-
   // Returns a pointer to a page-aligned const T if the mapping is valid and
   // large enough to contain a T, or nullptr otherwise.
   template <typename T>
@@ -228,13 +222,6 @@ class BASE_EXPORT WritableSharedMemoryMapping : public SharedMemoryMapping {
     return UNSAFE_BUFFERS(
         const_iterator(data(), data() + size(), data() + size()));
   }
-
-  // TODO(crbug.com/355451178): Deprecated. Use `span(mapping)` to make a span
-  // of `uint8_t`, `GetMemoryAs<T>()` to access the memory as a single `T`, or
-  // `GetMemoryAsSpan<T>()` to access it as an array of `T` or `data()` for an
-  // unbounded pointer.
-  void* memory() { return data(); }
-  const void* memory() const { return data(); }
 
   // Returns a pointer to a page-aligned T if the mapping is valid and large
   // enough to contain a T, or nullptr otherwise.
