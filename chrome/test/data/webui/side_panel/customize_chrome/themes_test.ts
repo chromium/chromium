@@ -361,9 +361,18 @@ suite('ThemesTest', () => {
 
   [true, false].forEach((errorDetectionEnabled) => {
     suite(`ImageErrorDetectionEnabled_${errorDetectionEnabled}`, () => {
+      let originalEnabled: boolean;
+
       suiteSetup(() => {
+        originalEnabled = loadTimeData.getBoolean('imageErrorDetectionEnabled');
         loadTimeData.overrideValues({
           imageErrorDetectionEnabled: errorDetectionEnabled,
+        });
+      });
+
+      suiteTeardown(() => {
+        loadTimeData.overrideValues({
+          imageErrorDetectionEnabled: originalEnabled,
         });
       });
 
@@ -400,37 +409,64 @@ suite('ThemesTest', () => {
         assertTrue(isVisible(theme));
       });
     });
+  });
 
-    suite('ImageErrorDetectionMetric', () => {
-      suiteSetup(() => {
-        loadTimeData.overrideValues({
-          imageErrorDetectionEnabled: true,
-        });
+  suite('ImageErrorDetectionMetric', () => {
+    let originalEnabled: boolean;
+
+    suiteSetup(() => {
+      originalEnabled = loadTimeData.getBoolean('imageErrorDetectionEnabled');
+      loadTimeData.overrideValues({
+        imageErrorDetectionEnabled: true,
       });
+    });
 
-      test('error detection metrics fire correctly', async () => {
-        const numImages = 1;
-        await setCollection('test1', numImages);
-        const img = $$(themesElement, '.theme img');
-        assertTrue(!!img);
-
-        const metricCount = metrics.count(
-            'NewTabPage.BackgroundService.Images.Headers.ErrorDetected');
-        if (metricCount !== numImages) {
-          await eventToPromise('error', img);
-          await microtasksFinished();
-        }
-
-        assertEquals(
-            numImages,
-            metrics.count(
-                'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
-        assertEquals(
-            numImages,
-            metrics.count(
-                'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
-                NtpImageType.BACKGROUND_IMAGE));
+    suiteTeardown(() => {
+      loadTimeData.overrideValues({
+        imageErrorDetectionEnabled: originalEnabled,
       });
+    });
+
+    test('error detection metrics fire correctly', async () => {
+      const numImages = 1;
+      await setCollection('test1', numImages);
+      const img = $$(themesElement, '.theme img');
+      assertTrue(!!img);
+
+      const metricCount = metrics.count(
+          'NewTabPage.BackgroundService.Images.Headers.ErrorDetected');
+      if (metricCount !== numImages) {
+        await eventToPromise('error', img);
+        await microtasksFinished();
+      }
+
+      assertEquals(
+          numImages,
+          metrics.count(
+              'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
+      assertEquals(
+          numImages,
+          metrics.count(
+              'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
+              NtpImageType.BACKGROUND_IMAGE));
+    });
+
+    test('ignores load and error events after disconnect', async () => {
+      await setCollection('test1', 1);
+      const img = $$(themesElement, '.theme img');
+      assertTrue(!!img);
+
+      themesElement.remove();
+      metrics = fakeMetricsPrivate();
+      img.dispatchEvent(new Event('load'));
+      img.dispatchEvent(new Event('error'));
+
+      assertEquals(
+          0, metrics.count('NewTabPage.Images.ShownTime.ThemePreviewImage'));
+      assertEquals(
+          0,
+          metrics.count(
+              'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
     });
   });
 });

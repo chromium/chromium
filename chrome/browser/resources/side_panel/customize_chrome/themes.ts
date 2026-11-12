@@ -143,6 +143,9 @@ export class ThemesElement extends ThemesElementBase {
   }
 
   protected onPreviewImageLoad_(e: Event) {
+    if (!(e.currentTarget as HTMLElement).isConnected) {
+      return;
+    }
     if (this.imageErrorDetectionEnabled_) {
       const index = Number((e.currentTarget as HTMLElement).dataset['index']);
       assert(this.themes_[index]);
@@ -163,7 +166,10 @@ export class ThemesElement extends ThemesElementBase {
             this.previewImageLoadStartEpoch_));
   }
 
-  protected onPreviewImageError_() {
+  protected onPreviewImageError_(e: Event) {
+    if (!(e.currentTarget as HTMLElement).isConnected) {
+      return;
+    }
     if (this.imageErrorDetectionEnabled_) {
       recordCustomizeChromeImageError(NtpImageType.BACKGROUND_IMAGE);
     }
