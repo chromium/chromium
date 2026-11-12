@@ -103,13 +103,20 @@ void BoundSessionCookieObserver::OnCookieChange(
       break;
 
     // The cookie was automatically removed as it expired.
-    case net::CookieChangeCause::EXPIRED:
+    case net::CookieChangeCause::EXPIRED: {
       CHECK(net::CookieChangeCauseIsDeletion(change.cause),
             base::NotFatalUntil::M162);
-      // TODO(crbug.com/576071796): CHECK-exclusion: Convert to a CHECK once we
-      // are confident it won't be triggered.
-      DCHECK(change.cookie.ExpiryDate() < base::Time::Now());
-      callback_.Run(cookie_name_, change.cookie.ExpiryDate());
+      // Normally `ExpiryDate()` is in the past and passing it is a no-op for
+      // the controller. In the unlikely case it isn't (e.g. due to
+      // cross-process clock skew), fall back to `base::Time()` so the deleted
+      // cookie is not treated as fresh (https://crbug.com/576071796).
+      const base::Time expiration_date =
+          change.cookie.ExpiryDate() < base::Time::Now()
+              ? change.cookie.ExpiryDate()
+              : base::Time();
+      callback_.Run(cookie_name_, expiration_date);
+      break;
+    }
   }
 }
 

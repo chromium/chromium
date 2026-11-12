@@ -345,6 +345,36 @@ TEST_F(BoundSessionCookieObserverTest, CookieExpired) {
   EXPECT_EQ(cookie_expiration_date_, cookie.ExpiryDate());
 }
 
+// Verifies that if an `EXPIRED` notification arrives while the cookie's
+// `ExpiryDate()` is still in the future in the browser process (e.g., due to
+// cross-process wall-clock skew or `CookieMonster` GC with a future
+// `CreationDate()`), the observer falls back to `base::Time()` so the deleted
+// cookie is not treated as fresh.
+TEST_F(BoundSessionCookieObserverTest, CookieExpiredWithFutureExpiry) {
+  net::CanonicalCookie cookie = BoundSessionTestCookieManager::CreateCookie(
+      kGoogleUrl, kSIDTSCookieName, base::Time::Now() + base::Minutes(10));
+  cookie_manager()->SetCanonicalCookie(cookie, kGoogleUrl,
+                                       net::CookieOptions::MakeAllInclusive(),
+                                       base::DoNothing());
+  CreateObserver(kGoogleUrl);
+  EXPECT_EQ(update_expiration_date_call_count_, 1u);
+  EXPECT_EQ(cookie_expiration_date_, cookie.ExpiryDate());
+
+  base::test::TestFuture<const std::string&, base::Time> future;
+  SetNextCookieChangeCallback(future.GetCallback());
+  // `cookie_manager()` shares the mock clock and cannot emit `EXPIRED` for a
+  // cookie with a future `ExpiryDate()`, so notify the listener directly.
+  static_cast<network::mojom::CookieChangeListener*>(
+      bound_session_cookie_observer_.get())
+      ->OnCookieChange(net::CookieChangeInfo(cookie, net::CookieAccessResult(),
+                                             net::CookieChangeCause::EXPIRED));
+
+  EXPECT_EQ(future.Get<0>(), cookie.Name());
+  EXPECT_EQ(future.Get<1>(), base::Time());
+  EXPECT_EQ(update_expiration_date_call_count_, 2u);
+  EXPECT_EQ(cookie_expiration_date_, base::Time());
+}
+
 TEST_F(BoundSessionCookieObserverTest, OnCookieChangeListenerConnectionError) {
   // Set cookie.
   net::CanonicalCookie cookie =
