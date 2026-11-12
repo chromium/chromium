@@ -35,11 +35,17 @@ void VideoEncoderActiveMap::Initialize(const webrtc::DesktopSize& size) {
 
 void VideoEncoderActiveMap::Clear() {
   std::ranges::fill(active_map_, 0);
+  active_blocks_ = 0;
+}
+
+void VideoEncoderActiveMap::SetFull() {
+  std::ranges::fill(active_map_, 1);
+  active_blocks_ = active_map_.size();
 }
 
 void VideoEncoderActiveMap::Update(
     const webrtc::DesktopRegion& updated_region) {
-  if (active_map_.empty()) {
+  if (active_map_.empty() || active_blocks_ == active_map_.size()) {
     return;
   }
   const int map_width = active_map_size_.width();
@@ -56,7 +62,10 @@ void VideoEncoderActiveMap::Update(
     for (int y = top; y <= bottom; ++y) {
       const size_t row_offset = static_cast<size_t>(y) * map_width;
       for (int x = left; x <= right; ++x) {
-        active_map_[row_offset + x] = 1;
+        if (active_map_[row_offset + x] == 0) {
+          active_map_[row_offset + x] = 1;
+          ++active_blocks_;
+        }
       }
     }
   }

@@ -84,6 +84,7 @@ source_set("unit_tests") {
   sources = [
     "encoder_bitrate_filter_unittest.cc",
     "utils_unittest.cc",
+    "video_encoder_active_map_unittest.cc",
     "webrtc_video_encoder_av1_unittest.cc",
   ]
 

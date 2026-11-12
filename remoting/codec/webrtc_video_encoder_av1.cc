@@ -102,6 +102,7 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   DCHECK_NE(codec->name, nullptr);
   last_init_target_bitrate_kbps_ = config_.rc_target_bitrate;
 
+  codec_active_map_enabled_ = false;
   if (use_active_map_) {
     active_map_data_.Initialize(size);
     active_map_ = {
@@ -412,20 +413,52 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   PrepareImage(frame.get(), updated_region);
 
   if (use_active_map_) {
-    if (params.clear_active_map || params.key_frame) {
-      active_map_data_.Clear();
-    }
+    auto disable_codec_active_map = [&]() {
+      if (codec_active_map_enabled_) {
+        // Passing a null `active_map` buffer makes libaom's
+        // `av1_set_active_map()` reset `rc.percent_blocks_inactive = 0` without
+        // scanning the 4x4 MI grid; on the next encode,
+        // `av1_apply_active_map()` sees `percent_blocks_inactive == 0` and sets
+        // `active_map.enabled = 0, update = 1`.
+        aom_active_map_t empty_map = {nullptr, active_map_.rows,
+                                      active_map_.cols};
+        if (aom_codec_control(codec_.get(), AOME_SET_ACTIVEMAP, &empty_map)) {
+          LOG(ERROR) << "Unable to disable active map";
+        } else {
+          codec_active_map_enabled_ = false;
+        }
+      }
+    };
 
-    // AV1 does not use an active map for keyframes, but we still populate
-    // |active_map_data_| with the full frame so subsequent top-off frames (with
-    // clear_active_map = false) can top off the keyframe.
     if (params.key_frame) {
-      active_map_data_.Update(
-          webrtc::DesktopRegion(webrtc::DesktopRect::MakeSize(frame_size)));
+      // AV1 does not use an active map for keyframes, but we still populate
+      // |active_map_data_| with the full frame so subsequent top-off frames
+      // (with clear_active_map = false) know the entire frame is active.
+      active_map_data_.SetFull();
+      disable_codec_active_map();
     } else {
+      if (params.clear_active_map) {
+        active_map_data_.Clear();
+      }
       active_map_data_.Update(updated_region);
-      if (aom_codec_control(codec_.get(), AOME_SET_ACTIVEMAP, &active_map_)) {
-        LOG(ERROR) << "Unable to apply active map";
+
+      const size_t active_blocks = active_map_data_.active_blocks();
+      const size_t total_blocks = active_map_data_.total_blocks();
+      // Only enable libaom's active map when [2.5%, 25%] of 16x16 macroblocks
+      // are active (chosen via `webrtc_video_encoder_benchmark`). Below 2.5%,
+      // full-frame 4x4 segmentation-map coding outweighs superblock skip
+      // savings on tiny updates. Above 25%, active-map overhead and libaom
+      // disabling `set_zeromv_skip_based_on_source_sad` outweigh skipping the
+      // remaining inactive blocks.
+      if (active_blocks * 4 > total_blocks ||
+          active_blocks * 40 < total_blocks) {
+        disable_codec_active_map();
+      } else {
+        if (aom_codec_control(codec_.get(), AOME_SET_ACTIVEMAP, &active_map_)) {
+          LOG(ERROR) << "Unable to apply active map";
+        } else {
+          codec_active_map_enabled_ = true;
+        }
       }
     }
   }

@@ -45,6 +45,9 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   unsigned int last_init_target_bitrate_kbps_for_testing() const {
     return last_init_target_bitrate_kbps_;
   }
+  bool codec_active_map_enabled_for_testing() const {
+    return codec_active_map_enabled_;
+  }
 
  private:
   void ConfigureCodecParams();
@@ -68,11 +71,12 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   bool lossless_color_ = false;
   int av1_encoder_speed_ = -1;
 
-  // An active map is used to skip processing of unchanged macroblocks.
+  // An active map is used to skip processing of unchanged 16x16 macroblocks.
+  // Enabled by default and gated per delta frame to `[2.5%, 25%]` coverage.
   VideoEncoderActiveMap active_map_data_;
-  aom_active_map_t active_map_;
-  // Disable |active_map_| by default until we've tuned it.
-  bool use_active_map_ = false;
+  aom_active_map_t active_map_ = {};
+  bool use_active_map_ = true;
+  bool codec_active_map_enabled_ = false;
 
   // This timestamp is monotonically increased using the current frame duration.
   // It's only used for rate control and is not related to the timestamps on the
