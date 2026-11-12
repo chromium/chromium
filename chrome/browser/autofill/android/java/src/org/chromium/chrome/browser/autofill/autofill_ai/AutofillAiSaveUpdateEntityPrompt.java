@@ -52,10 +52,6 @@ import java.util.List;
 @NullMarked
 public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator.Delegate {
     @VisibleForTesting
-    public static final String ENTITY_EDITOR_OPENED_HISTOGRAM =
-            "Autofill.Ai.EntityEditor.OpenedFromSaveUpdatePrompt";
-
-    @VisibleForTesting
     public static final String WALLET_NOTICE_SAVE_FUNNEL_HISTOGRAM =
             "Autofill.Ai.WalletNotice.Save.Funnel";
 
@@ -66,7 +62,6 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
     private final View mDialogView;
     private EntityEditorCoordinator mEntityEditor;
     private boolean mEditorClosingPending;
-    private boolean mEditorWasOpened;
     private boolean mPromptDismissed;
 
     /** Save prompt to confirm saving an entity imported from a form submission. */
@@ -206,7 +201,6 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
                     .setOnClickListener(
                             v -> {
                                 mEditorClosingPending = false;
-                                mEditorWasOpened = true;
                                 mEntityEditor.showEditorDialog();
                             });
         }
@@ -402,11 +396,6 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
                 break;
         }
         mController.onPromptDismissed();
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT)) {
-            RecordHistogram.recordBooleanHistogram(
-                    ENTITY_EDITOR_OPENED_HISTOGRAM, mEditorWasOpened);
-        }
     }
 
     void setEntityEditorForTesting(EntityEditorCoordinator entityEditor) {
