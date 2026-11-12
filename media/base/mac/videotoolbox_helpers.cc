@@ -4,13 +4,9 @@
 
 #include "media/base/mac/videotoolbox_helpers.h"
 
-#include <array>
-#include <vector>
-
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -20,61 +16,33 @@
 namespace media::video_toolbox {
 
 namespace {
+
 static constexpr char kAnnexBHeaderBytes[4] = {0, 0, 0, 1};
-}  // anonymous namespace
 
 // Wrapper class for writing AnnexBBuffer output into.
 class AnnexBBuffer {
  public:
-  virtual bool Reserve(size_t size) = 0;
-  virtual void Append(base::span<const char> data) = 0;
-  virtual size_t GetReservedSize() const = 0;
-};
-
-class RawAnnexBBuffer : public AnnexBBuffer {
- public:
-  explicit RawAnnexBBuffer(base::span<char> annexb_buffer)
+  explicit AnnexBBuffer(base::span<char> annexb_buffer)
       : annexb_buffer_(annexb_buffer) {}
-  RawAnnexBBuffer() = delete;
-  RawAnnexBBuffer(const RawAnnexBBuffer&) = delete;
-  RawAnnexBBuffer& operator=(const RawAnnexBBuffer&) = delete;
+  AnnexBBuffer() = delete;
+  AnnexBBuffer(const AnnexBBuffer&) = delete;
+  AnnexBBuffer& operator=(const AnnexBBuffer&) = delete;
 
-  bool Reserve(size_t size) override {
+  bool Reserve(size_t size) {
     reserved_size_ = size;
     return size <= annexb_buffer_.size();
   }
-  void Append(base::span<const char> data) override {
+  void Append(base::span<const char> data) {
     annexb_buffer_.subspan(annexb_buffer_offset_, data.size()).copy_from(data);
     annexb_buffer_offset_ += data.size();
     DCHECK_GE(reserved_size_, annexb_buffer_offset_);
   }
-  size_t GetReservedSize() const override { return reserved_size_; }
+  size_t GetReservedSize() const { return reserved_size_; }
 
  private:
-  base::raw_span<char> annexb_buffer_;
+  const base::raw_span<char> annexb_buffer_;
   size_t annexb_buffer_offset_ = 0;
-  size_t reserved_size_;
-};
-
-class StringAnnexBBuffer : public AnnexBBuffer {
- public:
-  explicit StringAnnexBBuffer(std::string* str_annexb_buffer)
-      : str_annexb_buffer_(str_annexb_buffer) {}
-  StringAnnexBBuffer() = delete;
-  StringAnnexBBuffer(const StringAnnexBBuffer&) = delete;
-  StringAnnexBBuffer& operator=(const StringAnnexBBuffer&) = delete;
-
-  bool Reserve(size_t size) override {
-    str_annexb_buffer_->reserve(size);
-    return true;
-  }
-  void Append(base::span<const char> data) override {
-    str_annexb_buffer_->append(data.data(), data.size());
-  }
-  size_t GetReservedSize() const override { return str_annexb_buffer_->size(); }
-
- private:
-  raw_ptr<std::string> str_annexb_buffer_;
+  size_t reserved_size_ = 0;
 };
 
 template <typename NalSizeType>
@@ -246,13 +214,7 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
   return true;
 }
 
-bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
-                                    CMSampleBufferRef sbuf,
-                                    bool keyframe,
-                                    std::string* annexb_buffer) {
-  StringAnnexBBuffer buffer(annexb_buffer);
-  return CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe, {});
-}
+}  // anonymous namespace
 
 bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                     CMSampleBufferRef sbuf,
@@ -260,7 +222,7 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
                                     base::span<const uint8_t> sei_nalu,
                                     base::span<char> annexb_buffer,
                                     size_t* used_buffer_size) {
-  RawAnnexBBuffer buffer(annexb_buffer);
+  AnnexBBuffer buffer(annexb_buffer);
   const bool copy_rv =
       CopySampleBufferToAnnexBBuffer(codec, sbuf, &buffer, keyframe, sei_nalu);
   *used_buffer_size = buffer.GetReservedSize();
