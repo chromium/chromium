@@ -423,12 +423,12 @@ ci.builder(
                 swarming = targets.swarming(
                     # blink_web_tests has issues when mixing different CPUs.
                     # see https://crbug.com/1458859
-                    # As of 2024 Q4, all e2 machines in chromium.tests use
-                    # x86-64-Broadwell_GCE. But, the situation may change when
-                    # GCE replaces the hardwares. If that happens, it needs to
-                    # be updated to run on the most popular CPU platform.
+                    # All e4 machines in chromium.tests use
+                    # x86-64-Sapphire_Rapids_GCE. But, the situation may change
+                    # when GCE replaces the hardwares. If that happens, it needs
+                    # to be updated to run on the most popular CPU platform.
                     dimensions = {
-                        "cpu": "x86-64-Broadwell_GCE",
+                        "cpu": "x86-64-Sapphire_Rapids_GCE",
                     },
                     shards = 12,
                 ),
@@ -455,9 +455,33 @@ ci.builder(
             "content_browsertests": targets.mixin(
                 enable_rts_filtering = True,
             ),
+            "chrome_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # This suite's isolate has ~90k small WPT files, which leads
+                    # to ~3min of CAS setup & teardown disk I/O overhead on
+                    # non-SSD bots (eg: e2s).
+                    optional_dimensions = {
+                        30: {
+                            "ssd": "1",
+                        },
+                    },
+                ),
+            ),
             "chromedriver_py_tests": targets.mixin(
                 # TODO(crbug.com/40868908): Fix & re-enable.
                 isolate_profile_data = False,
+            ),
+            "headless_shell_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # This suite's isolate has ~90k small WPT files, which leads
+                    # to ~3min of CAS setup & teardown disk I/O overhead on
+                    # non-SSD bots (eg: e2s).
+                    optional_dimensions = {
+                        30: {
+                            "ssd": "1",
+                        },
+                    },
+                ),
             ),
             "interactive_ui_tests": targets.mixin(
                 enable_rts_filtering = True,
