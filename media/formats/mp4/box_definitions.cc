@@ -5,6 +5,7 @@
 #include "media/formats/mp4/box_definitions.h"
 
 #include <bitset>
+#include <limits>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "media/base/agtm.h"
+#include "media/base/bit_reader.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_types.h"
@@ -1110,6 +1112,294 @@ bool AV1CodecConfigurationRecord::ParseInternal(BufferReader* reader,
 }
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+
+namespace {
+
+constexpr uint8_t kAv2ObuSequenceHeader = 1;
+constexpr uint32_t kAv2MaxSeqNum = 16;
+
+std::optional<VideoCodecProfile> MapAV2ProfileIdc(uint32_t profile_idc) {
+  switch (profile_idc) {
+    case 0:
+      return AV2PROFILE_MAIN_420_10_IP0;
+    case 1:
+      return AV2PROFILE_MAIN_420_10_IP1;
+    case 2:
+      return AV2PROFILE_MAIN_420_10_IP2;
+    case 3:
+      return AV2PROFILE_MAIN_422_10_IP1;
+    case 4:
+      return AV2PROFILE_MAIN_444_10_IP1;
+    case 5:
+      return AV2PROFILE_MAIN_444C_12_IP2;
+    case 31:
+      return AV2PROFILE_CONFIGURABLE;
+    default:
+      return std::nullopt;
+  }
+}
+
+// Parses an unsigned-variable-length-code (uvlc), defined in section 4.11.3
+bool ReadAv2Uvlc(BitReader* br, uint32_t* out) {
+  bool done = false;
+  size_t leading_zeros = 0;
+  while (true) {
+    if (!br->ReadFlag(&done)) {
+      return false;
+    }
+    if (done) {
+      break;
+    }
+    if (++leading_zeros >= 32) {
+      return false;
+    }
+  }
+  if (!leading_zeros) {
+    *out = 0;
+    return true;
+  }
+  uint32_t value = 0;
+  if (!br->ReadBits(leading_zeros, &value)) {
+    return false;
+  }
+  *out = value + ((1u << leading_zeros) - 1u);
+  return true;
+}
+
+bool ParseLengthDelimitedOBUs(base::span<const uint8_t> buf,
+                              size_t obu_count,
+                              std::vector<base::span<const uint8_t>>* obus) {
+  obus->clear();
+  obus->reserve(obu_count);
+
+  size_t position = 0;
+  while (position < buf.size()) {
+    uint64_t obu_length = 0;
+    bool length_secured = false;
+    for (int i = 0; i < 8; i++) {
+      if (position >= buf.size()) {
+        return false;
+      }
+
+      const auto byte = buf[position++];
+      obu_length |= static_cast<uint64_t>(byte & 0x7f) << (i * 7);
+      if (!(byte & 0x80)) {
+        length_secured = true;
+        break;
+      }
+    }
+
+    if (!length_secured || obu_length == 0 ||
+        obu_length > std::numeric_limits<uint32_t>::max() ||
+        obu_length > buf.size() - position) {
+      return false;
+    }
+
+    obus->push_back(buf.subspan(position, static_cast<size_t>(obu_length)));
+    position += obu_length;
+  }
+  return obus->size() == obu_count;
+}
+
+bool ParseAv2SequenceHeaderBody(BitReader* br,
+                                MediaLog* log,
+                                VideoCodecProfile* out_profile,
+                                VideoCodecLevel* out_level) {
+  uint32_t header_id = 0;
+  if (!ReadAv2Uvlc(br, &header_id) || header_id >= kAv2MaxSeqNum) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: header-id out of range";
+    return false;
+  }
+
+  uint32_t profile_idc = 0;
+  uint32_t level_idx = 0;
+  bool single_pic = false;
+  if (!br->ReadBits(5, &profile_idc) || !br->ReadFlag(&single_pic) ||
+      !br->ReadBits(5, &level_idx)) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: malformed sequence header";
+    return false;
+  }
+
+  std::optional<VideoCodecProfile> profile = MapAV2ProfileIdc(profile_idc);
+  if (!profile.has_value()) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: bad profile: " << profile_idc;
+    return false;
+  }
+
+  if (level_idx > 3 && !single_pic && !br->SkipBits(1)) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: malformed sequence header";
+    return false;
+  }
+
+  uint32_t chroma = 0;
+  if (!ReadAv2Uvlc(br, &chroma) || chroma > 3) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: bad chroma format: " << chroma;
+    return false;
+  }
+
+  uint32_t bit_depth = 0;
+  // Note that we reject 12-bit streams (2) because we can't play them.
+  if (!ReadAv2Uvlc(br, &bit_depth) || bit_depth > 1) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: bad bit_depth: " << bit_depth;
+    return false;
+  }
+
+  *out_profile = *profile;
+  *out_level = level_idx;
+  return true;
+}
+
+}  // namespace
+
+AV2CodecConfigurationRecord::AV2CodecConfigurationRecord() = default;
+
+AV2CodecConfigurationRecord::AV2CodecConfigurationRecord(
+    const AV2CodecConfigurationRecord& other) = default;
+
+AV2CodecConfigurationRecord::~AV2CodecConfigurationRecord() = default;
+
+FourCC AV2CodecConfigurationRecord::BoxType() const {
+  return FOURCC_AV2C;
+}
+
+bool AV2CodecConfigurationRecord::Parse(BoxReader* reader) {
+  RCHECK(reader->pos() <= reader->box_size());
+  return ParseInternal(reader->buffer().subspan(reader->pos()),
+                       reader->media_log());
+}
+
+bool AV2CodecConfigurationRecord::Parse(base::span<const uint8_t> data) {
+  NullMediaLog media_log;
+  return ParseInternal(data, &media_log);
+}
+
+// Parse the AV2CodecConfigurationRecord, which has the following format:
+//   unsigned int (8) reserved1 = 0;
+//   unsigned int (8) config_obus_count_minus1;
+//   unsigned int (8)[config_obus_count_minus1 + 1][]
+bool AV2CodecConfigurationRecord::ParseInternal(base::span<const uint8_t> data,
+                                                MediaLog* log) {
+  // There must be at least one OBU so the minimum number of bytes is 4
+  if (data.size() < 4) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: payload too short";
+    return false;
+  }
+
+  // Per av2-isobmff spec section 3.2.2.3, `reserved1` SHALL be ignored.
+  const size_t obu_count = size_t{data[1]} + 1;
+  const base::span<const uint8_t> obu_data = data.subspan(2u);
+  std::vector<base::span<const uint8_t>> obus;
+
+  if (!ParseLengthDelimitedOBUs(obu_data, obu_count, &obus)) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: malformed OBU entries";
+    return false;
+  }
+
+  bool found_sequence_header = false;
+  for (const auto& obu : obus) {
+    BitReader br(obu);
+
+    // (1 bit) Has an additional 8 bits after tlayer_id
+    bool has_extension = false;
+
+    // OBU type (5 bits)
+    uint8_t obu_type = 0;
+
+    // Layer ID (2 bits), unused presently.
+    uint8_t tlayer_id = 0;
+
+    if (!br.ReadFlag(&has_extension) || !br.ReadBits(5, &obu_type) ||
+        !br.ReadBits(2, &tlayer_id) || (has_extension && !br.SkipBits(8))) {
+      MEDIA_LOG(ERROR, log) << "Invalid av2C box: malformed OBU header";
+      return false;
+    }
+
+    if (obu_type != kAv2ObuSequenceHeader) {
+      continue;
+    }
+
+    VideoCodecProfile parsed_profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+    VideoCodecLevel parsed_level = kNoVideoCodecLevel;
+
+    if (!ParseAv2SequenceHeaderBody(&br, log, &parsed_profile, &parsed_level)) {
+      // ParseAV2SequenceHeaderBody handles error logging.
+      return false;
+    }
+
+    if (!found_sequence_header) {
+      profile = parsed_profile;
+      level = parsed_level;
+      found_sequence_header = true;
+    }
+
+    // Note - there was a "legacy" encoder / muxer implementation which kept
+    // the only correct reference to width and height inside the sequence header
+    // OBU. This is no longer the case, and we can't parse this legacy muxed
+    // content.
+  }
+
+  if (!found_sequence_header) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2C box: missing sequence header OBU";
+    return false;
+  }
+
+  config_obus.assign(obu_data.begin(), obu_data.end());
+  return true;
+}
+
+InBandAV2CodecConfigurationRecord::InBandAV2CodecConfigurationRecord() =
+    default;
+
+InBandAV2CodecConfigurationRecord::InBandAV2CodecConfigurationRecord(
+    const InBandAV2CodecConfigurationRecord& other) = default;
+
+InBandAV2CodecConfigurationRecord::~InBandAV2CodecConfigurationRecord() =
+    default;
+
+FourCC InBandAV2CodecConfigurationRecord::BoxType() const {
+  return FOURCC_av2c;
+}
+
+bool InBandAV2CodecConfigurationRecord::Parse(BoxReader* reader) {
+  return ParseInternal(reader, reader->media_log());
+}
+
+bool InBandAV2CodecConfigurationRecord::Parse(base::span<const uint8_t> data) {
+  BufferReader reader(data);
+  NullMediaLog media_log;
+  return ParseInternal(&reader, &media_log);
+}
+
+// Parses the InBand version of the AV2CodecConfigurationRecord, which has the
+// following format:
+//   unsigned int (3) reserved1 = 0;
+//   unsigned int (2) max_num_streams_minus1;
+//   unsigned int (5) max_profile_idc;
+//   unsigned int (5) max_level_idx;
+//   unsigned int (1) max_tier;
+bool InBandAV2CodecConfigurationRecord::ParseInternal(BufferReader* reader,
+                                                      MediaLog* log) {
+  uint16_t packed = 0;
+  if (!reader->Read2(&packed)) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2c box: payload too short";
+    return false;
+  }
+
+  const uint32_t profile_idc = (packed >> 6) & 0x1f;
+  auto parsed_profile = MapAV2ProfileIdc(profile_idc);
+  if (!parsed_profile.has_value()) {
+    MEDIA_LOG(ERROR, log) << "Invalid av2c box: bad profile: " << profile_idc;
+    return false;
+  }
+
+  profile = *parsed_profile;
+  level = (packed >> 1) & 0x1f;
+  return true;
+}
+
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
+
 PixelAspectRatioBox::PixelAspectRatioBox() : h_spacing(1), v_spacing(1) {}
 PixelAspectRatioBox::PixelAspectRatioBox(const PixelAspectRatioBox& other) =
     default;
@@ -1409,6 +1699,38 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
       break;
     }
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+    case FOURCC_AV02:
+    case FOURCC_AV2E:
+    case FOURCC_av2e: {
+      {
+        AV2CodecConfigurationRecord av2_config;
+        // AV02 can identify either an in-band or an out-of-band config, so we
+        // need to check both. AV2E can only identify out-of-band, while av2e
+        // can only identify in-band.
+        if (actual_format == FOURCC_AV2E ||
+            (actual_format == FOURCC_AV02 && reader->HasChild(&av2_config))) {
+          RCHECK(reader->ReadChild(&av2_config));
+          video_info.codec = VideoCodec::kAV2;
+          video_info.profile = av2_config.profile;
+          video_info.level = av2_config.level;
+          extra_data = std::move(av2_config.config_obus);
+          frame_bitstream_converter = nullptr;
+          break;
+        }
+      }
+      {
+        InBandAV2CodecConfigurationRecord av2_config;
+        RCHECK(reader->ReadChild(&av2_config));
+        video_info.codec = VideoCodec::kAV2;
+        video_info.profile = av2_config.profile;
+        video_info.level = av2_config.level;
+        extra_data.clear();
+        frame_bitstream_converter = nullptr;
+        break;
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
     default:
       // Unknown/unsupported format
       MEDIA_LOG(ERROR, reader->media_log())
@@ -1490,6 +1812,12 @@ bool VideoSampleEntry::IsFormatValid() const {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
       return true;
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV2D_DECODER)
+    case FOURCC_AV02:
+    case FOURCC_AV2E:
+    case FOURCC_av2e:
+      return true;
+#endif  // BUILDFLAG(ENABLE_DAV2D_DECODER)
     default:
       return false;
   }
