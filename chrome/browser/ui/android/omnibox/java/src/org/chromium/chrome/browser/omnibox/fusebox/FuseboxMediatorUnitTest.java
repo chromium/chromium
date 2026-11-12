@@ -2850,6 +2850,67 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void modelSelection_toolDisablesActiveModelSelection_noModelSelected() {
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+        setInputState(createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_CANVAS));
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> modelButtons =
+                mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertEquals(2, modelButtons.size());
+        assertFalse(modelButtons.get(0).selected);
+        assertFalse(modelButtons.get(1).selected);
+        assertTrue(modelButtons.get(0).enabled);
+        assertTrue(modelButtons.get(1).enabled);
+    }
+
+    @Test
+    public void modelSelection_toolAllowsActiveModelSelection_activeModelSelected() {
+        mInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        setInputState(
+                createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH));
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> modelButtons =
+                mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertEquals("Auto", modelButtons.get(0).text);
+        assertTrue(modelButtons.get(0).selected);
+        assertFalse(modelButtons.get(1).selected);
+    }
+
+    @Test
+    public void modelSelection_dismissingToolRestoresActiveModelSelection() {
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+        setInputState(createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_CANVAS));
+        mMediator.onPlusButtonClicked();
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).get(0).selected);
+
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        setInputState(
+                createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED));
+
+        List<PopupButtonData> modelButtons =
+                mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertTrue(modelButtons.get(0).selected);
+        assertFalse(modelButtons.get(1).selected);
+    }
+
+    @Test
+    public void modelSelection_toolDisablesActiveModelSelection_clickSetsModelAndKeepsTool() {
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+        setInputState(createDefaultInputStateBuilder().withActiveTool(ToolMode.TOOL_MODE_CANVAS));
+        mMediator.onPlusButtonClicked();
+
+        // Picking a model keeps the tool active. The model shows as selected once the user leaves
+        // the tool.
+        mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).get(1).onClicked.run();
+
+        verify(mComposeboxQueryControllerBridge).setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO);
+        assertEquals(AutocompleteRequestType.CANVAS, mInput.getRequestType());
+        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+    }
+
+    @Test
     public void onInputStateChange_updatesEnabledStates() {
         setInputState(
                 createDefaultInputStateBuilder()

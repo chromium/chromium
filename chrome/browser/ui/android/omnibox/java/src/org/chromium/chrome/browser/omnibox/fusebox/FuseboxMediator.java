@@ -1665,10 +1665,16 @@ class FuseboxMediator implements BackPressHandler {
 
         List<PopupButtonData> modelButtonDataList = new ArrayList<>();
         if (inputState != null) {
+            boolean showActiveModel = isAimRequest && isModelSelectionAllowed(inputState);
             for (ModelConfig modelConfig : inputState.getModelConfigs()) {
                 int modelMode = modelConfig.getModelValue();
                 if (inputState.isModelVisible(modelMode)) {
-                    boolean selected = isAimRequest && inputState.activeModel == modelMode;
+                    // TODO(crbug.com/584861500): Remove this workaround once InputState exposes the
+                    // effective model instead of the default model. This check is a hack because
+                    // inputState.activeModel cannot be trusted when the active tool is incompatible
+                    // with selectable models, as it still reports the default model rather than the
+                    // effective model that would be used.
+                    boolean selected = showActiveModel && inputState.activeModel == modelMode;
                     String tooltip = modelConfig.getMenuTooltip();
                     int iconId =
                             modelConfig.hasIcon() && modelConfig.getIcon().hasIconId()
@@ -1819,6 +1825,15 @@ class FuseboxMediator implements BackPressHandler {
             }
         }
         return imageGenFallback;
+    }
+
+    /**
+     * Returns whether selecting a model is allowed while the active tool is selected. Returns true
+     * unless the active tool specifies that it is incompatible with selectable models.
+     */
+    private static boolean isModelSelectionAllowed(InputState inputState) {
+        ToolConfig toolConfig = getActiveToolConfig(inputState);
+        return toolConfig == null || !toolConfig.getDisableActiveModelSelection();
     }
 
     private String getNavigateButtonContentDescription(@Nullable ToolConfig toolConfig) {
