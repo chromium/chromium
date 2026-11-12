@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -20,7 +19,6 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
@@ -121,24 +119,18 @@ public class EdgeToEdgeControllerFactory {
      * @param topControlsStacker The {@link TopControlsStacker} instance.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} instance.
      * @param fullscreenManager The {@link FullscreenManager} providing fullscreen state.
-     * @param topUiThemeColorProvider The {@link TopUiThemeColorProvider} providing theme colors.
-     * @return The {@link Destroyable} instance, or null if disabled.
+     * @return The {@link SystemBarColorHelper} instance, or null if disabled.
      */
-    public static @Nullable Destroyable createTopScalp(
+    public static @Nullable SystemBarColorHelper createTopScalp(
             LayoutManager layoutManager,
             TopControlsStacker topControlsStacker,
             EdgeToEdgeController edgeToEdgeController,
-            FullscreenManager fullscreenManager,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            FullscreenManager fullscreenManager) {
         if (!EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()) {
             return null;
         }
         return new EdgeToEdgeTopScalpCoordinator(
-                layoutManager,
-                topControlsStacker,
-                edgeToEdgeController,
-                fullscreenManager,
-                topUiThemeColorProvider);
+                layoutManager, topControlsStacker, edgeToEdgeController, fullscreenManager);
     }
 
     /**

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.graphics.Color;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -14,7 +15,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,7 +29,7 @@ import java.util.Set;
  * top browser controls using a dedicated CC SceneLayer and PropertyModel.
  */
 @NullMarked
-public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
+public class EdgeToEdgeTopScalpCoordinator implements Destroyable, SystemBarColorHelper {
     private final EdgeToEdgeTopScalpMediator mMediator;
     private final EdgeToEdgeTopScalpSceneLayer mSceneLayer;
     private final PropertyModelChangeProcessor<
@@ -43,14 +44,12 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
      * @param topControlsStacker The {@link TopControlsStacker} to register this layer with.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for edge-to-edge state.
      * @param fullscreenManager The {@link FullscreenManager} providing fullscreen state.
-     * @param topUiThemeColorProvider The {@link TopUiThemeColorProvider} providing theme colors.
      */
     public EdgeToEdgeTopScalpCoordinator(
             LayoutManager layoutManager,
             TopControlsStacker topControlsStacker,
             EdgeToEdgeController edgeToEdgeController,
-            FullscreenManager fullscreenManager,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            FullscreenManager fullscreenManager) {
         this(
                 layoutManager,
                 topControlsStacker,
@@ -58,8 +57,7 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
                 // Pass null for requestRenderRunnable because mCompositorMCP requests a
                 // compositor frame whenever any scene-layer property changes.
                 new EdgeToEdgeTopScalpSceneLayer(/* requestRenderRunnable= */ null),
-                fullscreenManager,
-                topUiThemeColorProvider);
+                fullscreenManager);
     }
 
     @VisibleForTesting
@@ -68,8 +66,7 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
             TopControlsStacker topControlsStacker,
             EdgeToEdgeController edgeToEdgeController,
             EdgeToEdgeTopScalpSceneLayer sceneLayer,
-            FullscreenManager fullscreenManager,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            FullscreenManager fullscreenManager) {
         mSceneLayer = sceneLayer;
 
         PropertyModel model =
@@ -103,8 +100,7 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
                         topControlsStacker,
                         edgeToEdgeController,
                         layoutManager,
-                        fullscreenManager,
-                        topUiThemeColorProvider);
+                        fullscreenManager);
     }
 
     @Override
@@ -114,4 +110,15 @@ public class EdgeToEdgeTopScalpCoordinator implements Destroyable {
         mMediator.destroy();
         mSceneLayer.destroy();
     }
+
+    @Override
+    public void setStatusBarColor(@ColorInt int color) {
+        mMediator.updateColor(color);
+    }
+
+    @Override
+    public void setNavigationBarColor(int color) {}
+
+    @Override
+    public void setNavigationBarDividerColor(int dividerColor) {}
 }

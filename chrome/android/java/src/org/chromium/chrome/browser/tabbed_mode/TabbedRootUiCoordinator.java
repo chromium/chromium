@@ -2256,12 +2256,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         assert mLayoutManager != null;
         EdgeToEdgeController edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
         assert edgeToEdgeController != null;
-        return EdgeToEdgeControllerFactory.createTopScalp(
-                mLayoutManager,
-                mTopControlsStacker,
-                edgeToEdgeController,
-                mFullscreenManager,
-                getTopUiThemeColorProvider());
+        @Nullable SystemBarColorHelper topScalpColorHelper =
+                EdgeToEdgeControllerFactory.createTopScalp(
+                        mLayoutManager,
+                        mTopControlsStacker,
+                        edgeToEdgeController,
+                        mFullscreenManager);
+        if (topScalpColorHelper != null) {
+            mTopScalpColorHelperSupplier.set(topScalpColorHelper);
+        }
+        return topScalpColorHelper;
     }
 
     /**

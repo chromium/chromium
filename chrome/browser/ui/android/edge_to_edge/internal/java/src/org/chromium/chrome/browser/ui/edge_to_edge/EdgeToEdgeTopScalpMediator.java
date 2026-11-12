@@ -27,8 +27,6 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -38,15 +36,13 @@ class EdgeToEdgeTopScalpMediator
                 Destroyable,
                 EdgeToEdgeSupplier.ChangeObserver,
                 FullscreenManager.Observer,
-                LayoutStateProvider.LayoutStateObserver,
-                ThemeColorObserver {
+                LayoutStateProvider.LayoutStateObserver {
 
     private final PropertyModel mModel;
     private final TopControlsStacker mTopControlsStacker;
     private final EdgeToEdgeController mEdgeToEdgeController;
     private final LayoutManager mLayoutManager;
     private final FullscreenManager mFullscreenManager;
-    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private boolean mCanShow;
     private boolean mIsDrawingToTopEdge;
 
@@ -59,21 +55,18 @@ class EdgeToEdgeTopScalpMediator
      *     state.
      * @param layoutManager The {@link LayoutManager} for observing layout state changes.
      * @param fullscreenManager The {@link FullscreenManager} for observing fullscreen state.
-     * @param topUiThemeColorProvider The {@link TopUiThemeColorProvider} for theme colors.
      */
     EdgeToEdgeTopScalpMediator(
             PropertyModel model,
             TopControlsStacker topControlsStacker,
             EdgeToEdgeController edgeToEdgeController,
             LayoutManager layoutManager,
-            FullscreenManager fullscreenManager,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            FullscreenManager fullscreenManager) {
         mModel = model;
         mTopControlsStacker = topControlsStacker;
         mEdgeToEdgeController = edgeToEdgeController;
         mLayoutManager = layoutManager;
         mFullscreenManager = fullscreenManager;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
 
         mTopControlsStacker.addControl(this);
 
@@ -83,8 +76,6 @@ class EdgeToEdgeTopScalpMediator
         mEdgeToEdgeController.registerObserver(this);
         mLayoutManager.addObserver(this);
         mFullscreenManager.addObserver(this);
-        mTopUiThemeColorProvider.addThemeColorObserver(this);
-        updateColor(mTopUiThemeColorProvider.getThemeColor());
         updateHeightAndVisibility();
     }
 
@@ -93,7 +84,6 @@ class EdgeToEdgeTopScalpMediator
         mEdgeToEdgeController.unregisterObserver(this);
         mLayoutManager.removeObserver(this);
         mFullscreenManager.removeObserver(this);
-        mTopUiThemeColorProvider.removeThemeColorObserver(this);
         mTopControlsStacker.removeControl(this);
     }
 
@@ -143,18 +133,11 @@ class EdgeToEdgeTopScalpMediator
         }
     }
 
-    /** Updates the theme color of the scalp. */
-    private void updateColor(@ColorInt int themeColor) {
+    /** Updates the color of the scalp. */
+    void updateColor(@ColorInt int scalpColor) {
         // TODO(crbug.com/505803562): Defer COLOR model updates while !isVisible() to avoid
         // unnecessary compositor frame requests when hidden.
-        mModel.set(COLOR, themeColor);
-    }
-
-    @Override
-    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
-        // TODO(crbug.com/505803562): Support color animation parity with bottom chin / status
-        // indicator if shouldAnimate is true, for viewport-fit=auto.
-        updateColor(color);
+        mModel.set(COLOR, scalpColor);
     }
 
     @Override

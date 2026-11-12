@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 
 // EdgeToEdgeUtils.isTopEdgeToEdgeEnabled() requires Android R+ (API 30).
@@ -54,7 +53,6 @@ public class EdgeToEdgeTopScalpMediatorTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private LayoutManager mLayoutManager;
     @Mock private FullscreenManager mFullscreenManager;
-    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private Tab mTab;
     @Mock private FullscreenOptions mFullscreenOptions;
 
@@ -64,7 +62,6 @@ public class EdgeToEdgeTopScalpMediatorTest {
     @Before
     public void setUp() {
         mModel = new PropertyModel.Builder(EdgeToEdgeTopScalpProperties.ALL_KEYS).build();
-        when(mTopUiThemeColorProvider.getThemeColor()).thenReturn(Color.RED);
     }
 
     private EdgeToEdgeTopScalpMediator createMediator() {
@@ -73,8 +70,7 @@ public class EdgeToEdgeTopScalpMediatorTest {
                 mTopControlsStacker,
                 mEdgeToEdgeController,
                 mLayoutManager,
-                mFullscreenManager,
-                mTopUiThemeColorProvider);
+                mFullscreenManager);
     }
 
     @Test
@@ -133,13 +129,11 @@ public class EdgeToEdgeTopScalpMediatorTest {
     }
 
     @Test
-    public void testTopScalp_ThemeColor() {
+    public void testTopScalp_UpdateColor() {
         when(mEdgeToEdgeController.getSystemTopInsetPx()).thenReturn(75);
 
         mMediator = createMediator();
-        assertEquals(Color.RED, mModel.get(EdgeToEdgeTopScalpProperties.COLOR));
-
-        mMediator.onThemeColorChanged(Color.GREEN, /* shouldAnimate= */ false);
+        mMediator.updateColor(Color.GREEN);
         assertEquals(Color.GREEN, mModel.get(EdgeToEdgeTopScalpProperties.COLOR));
     }
 
@@ -155,7 +149,6 @@ public class EdgeToEdgeTopScalpMediatorTest {
         verify(mEdgeToEdgeController).registerObserver(mMediator);
         verify(mLayoutManager).addObserver(mMediator);
         verify(mFullscreenManager).addObserver(mMediator);
-        verify(mTopUiThemeColorProvider).addThemeColorObserver(mMediator);
         clearInvocations(mTopControlsStacker);
 
         mMediator.destroy();
@@ -163,7 +156,6 @@ public class EdgeToEdgeTopScalpMediatorTest {
         verify(mEdgeToEdgeController).unregisterObserver(mMediator);
         verify(mLayoutManager).removeObserver(mMediator);
         verify(mFullscreenManager).removeObserver(mMediator);
-        verify(mTopUiThemeColorProvider).removeThemeColorObserver(mMediator);
     }
 
     @Test

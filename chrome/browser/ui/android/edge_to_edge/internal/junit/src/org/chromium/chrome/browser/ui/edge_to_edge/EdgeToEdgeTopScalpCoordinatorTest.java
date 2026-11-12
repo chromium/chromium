@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +16,7 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProp
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeTopScalpProperties.Y_OFFSET;
 
+import android.graphics.Color;
 import android.os.Build;
 
 import org.junit.Before;
@@ -32,7 +35,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 
 import java.util.Set;
@@ -52,7 +54,6 @@ public class EdgeToEdgeTopScalpCoordinatorTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private EdgeToEdgeTopScalpSceneLayer mSceneLayer;
     @Mock private FullscreenManager mFullscreenManager;
-    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private CompositorModelChangeProcessor<EdgeToEdgeTopScalpSceneLayer> mCompositorMCP;
 
     @Before
@@ -72,8 +73,7 @@ public class EdgeToEdgeTopScalpCoordinatorTest {
                         mTopControlsStacker,
                         mEdgeToEdgeController,
                         mSceneLayer,
-                        mFullscreenManager,
-                        mTopUiThemeColorProvider);
+                        mFullscreenManager);
 
         verify(mSceneLayer).setHeight(100);
         verify(mSceneLayer).setIsVisible(true);
@@ -85,7 +85,6 @@ public class EdgeToEdgeTopScalpCoordinatorTest {
         verify(mEdgeToEdgeController).registerObserver(any());
         verify(mLayoutManager).addObserver(any());
         verify(mFullscreenManager).addObserver(any());
-        verify(mTopUiThemeColorProvider).addThemeColorObserver(any());
         clearInvocations(mSceneLayer);
 
         coordinator.destroy();
@@ -93,8 +92,38 @@ public class EdgeToEdgeTopScalpCoordinatorTest {
         verify(mEdgeToEdgeController).unregisterObserver(any());
         verify(mLayoutManager).removeObserver(any());
         verify(mFullscreenManager).removeObserver(any());
-        verify(mTopUiThemeColorProvider).removeThemeColorObserver(any());
         verify(mCompositorMCP).destroy();
         verify(mSceneLayer).destroy();
+    }
+
+    @Test
+    public void testSetStatusBarColor_updatesSceneLayerColor() {
+        EdgeToEdgeTopScalpCoordinator coordinator =
+                new EdgeToEdgeTopScalpCoordinator(
+                        mLayoutManager,
+                        mTopControlsStacker,
+                        mEdgeToEdgeController,
+                        mSceneLayer,
+                        mFullscreenManager);
+
+        coordinator.setStatusBarColor(Color.RED);
+        verify(mSceneLayer).setColor(Color.RED);
+    }
+
+    @Test
+    public void testSetNavigationBarColor_doesNotUpdateSceneLayerColor() {
+        EdgeToEdgeTopScalpCoordinator coordinator =
+                new EdgeToEdgeTopScalpCoordinator(
+                        mLayoutManager,
+                        mTopControlsStacker,
+                        mEdgeToEdgeController,
+                        mSceneLayer,
+                        mFullscreenManager);
+        clearInvocations(mSceneLayer);
+
+        coordinator.setNavigationBarColor(Color.BLUE);
+        coordinator.setNavigationBarDividerColor(Color.GREEN);
+
+        verify(mSceneLayer, never()).setColor(anyInt());
     }
 }
