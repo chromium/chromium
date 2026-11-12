@@ -4430,6 +4430,17 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SigninAllowedOnStartupState"
+    enum="SigninAllowedOnStartupState" expires_after="2027-02-10">
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Tracks how the user's signin-allowed preference (`prefs::kSigninAllowed`)
+    was resolved at profile startup on Desktop. Recorded once per regular
+    profile creation alongside `Signin.SigninAllowed`.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninCompletedAccessPoint{SigninAccountStatus}"
     enum="SigninAccessPoint" expires_after="2027-04-04">
   <owner>msarda@chromium.org</owner>

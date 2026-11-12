@@ -85,6 +85,12 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kGaiaCookieLastListAccountsBinaryData[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSigninAllowedOnNextStartup[];
+// Local cache of the effective value of `kSigninAllowedOnNextStartup` from the
+// previous session, persisted in user prefs to avoid startup races when policy
+// loading is delayed. Managed internally by `AccountConsistencyModeManager`;
+// other callers should use `kSigninAllowed` or `kSigninAllowedOnNextStartup`.
+inline constexpr char kSigninAllowedOnNextStartupCache[] =
+    "signin.allowed_on_next_startup_cache";
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAddressSignInPromoShownCountPerProfile[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

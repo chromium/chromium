@@ -7,9 +7,13 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -78,6 +82,81 @@ bool CanEnableDiceForBuild() {
 
   return false;
 }
+
+// Propagates settings changes from the previous launch to the signin-allowed
+// pref. `kSigninAllowedOnNextStartup` may be controlled by a policy that lives
+// only in memory (`MANAGED_STORE`) and is not yet loaded on startup if policy
+// loading races with profile initialization (e.g. on Windows). If
+// `kSigninAllowedOnNextStartup` is currently user-modifiable (i.e. not
+// overridden by a managed or supervised store) and a cached value from the
+// previous session exists, uses the cached value.
+AccountConsistencyModeManager::SigninAllowedOnStartupState
+ComputeSigninAllowedOnStartupState(PrefService* prefs,
+                                   const base::FilePath& profile_path) {
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ? g_browser_process->profile_manager()
+                ->GetProfileAttributesStorage()
+                .GetProfileAttributesWithPath(profile_path)
+          : nullptr;
+  if (!AccountConsistencyModeManager::IsDiceSignInAllowed(entry) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kExperimentalAiStableChannel)) {
+    return AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kDisallowedByCommandLineOrProfile;
+  }
+
+  const PrefService::Preference* next_startup_pref =
+      prefs->FindPreference(prefs::kSigninAllowedOnNextStartup);
+  const bool pref_value = next_startup_pref->GetValue()->GetBool();
+  if (!next_startup_pref->IsUserModifiable()) {
+    return pref_value ? AccountConsistencyModeManager::
+                            SigninAllowedOnStartupState::kAllowedByPolicy
+                      : AccountConsistencyModeManager::
+                            SigninAllowedOnStartupState::kDisallowedByPolicy;
+  }
+
+  if (prefs->HasPrefPath(prefs::kSigninAllowedOnNextStartupCache)) {
+    const bool cached_value =
+        prefs->GetBoolean(prefs::kSigninAllowedOnNextStartupCache);
+    if (cached_value != pref_value) {
+      return cached_value ? AccountConsistencyModeManager::
+                                SigninAllowedOnStartupState::kAllowedByCache
+                          : AccountConsistencyModeManager::
+                                SigninAllowedOnStartupState::kDisallowedByCache;
+    }
+  }
+
+  return pref_value ? AccountConsistencyModeManager::
+                          SigninAllowedOnStartupState::kAllowedByPref
+                    : AccountConsistencyModeManager::
+                          SigninAllowedOnStartupState::kDisallowedByPref;
+}
+
+bool IsSigninAllowedForStartupState(
+    AccountConsistencyModeManager::SigninAllowedOnStartupState state) {
+  switch (state) {
+    case AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kAllowedByPref:
+    case AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kAllowedByPolicy:
+      return true;
+    case AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kAllowedByCache:
+      return base::FeatureList::IsEnabled(kCacheSigninAllowedOnNextStartup);
+    case AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kDisallowedByPref:
+    case AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kDisallowedByPolicy:
+    case AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kDisallowedByCommandLineOrProfile:
+      return false;
+    case AccountConsistencyModeManager::SigninAllowedOnStartupState::
+        kDisallowedByCache:
+      return !base::FeatureList::IsEnabled(kCacheSigninAllowedOnNextStartup);
+  }
+  NOTREACHED();
+}
 #endif
 
 // Computes the account consistency method for the current profile. The account
@@ -110,31 +189,38 @@ signin::AccountConsistencyMethod ComputeAccountConsistencyMethod(
 
 }  // namespace
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kCacheSigninAllowedOnNextStartup,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
     : profile_(profile) {
   CHECK(profile_, base::NotFatalUntil::M162);
   CHECK(ShouldBuildServiceForProfile(profile), base::NotFatalUntil::M162);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  auto* entry = g_browser_process->profile_manager()
-                    ? g_browser_process->profile_manager()
-                          ->GetProfileAttributesStorage()
-                          .GetProfileAttributesWithPath(profile_->GetPath())
-                    : nullptr;
   PrefService* prefs = profile_->GetPrefs();
-  // Propagate settings changes from the previous launch to the signin-allowed
-  // pref.
-  bool signin_allowed = IsDiceSignInAllowed(entry) &&
-                        prefs->GetBoolean(prefs::kSigninAllowedOnNextStartup);
-
-  // Disable sign-in if experimental-ai is enabled, regardless of channel.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(::switches::kExperimentalAiStableChannel)) {
-    signin_allowed = false;
-  }
-
+  const SigninAllowedOnStartupState startup_state =
+      ComputeSigninAllowedOnStartupState(prefs, profile_->GetPath());
+  const bool signin_allowed = IsSigninAllowedForStartupState(startup_state);
   prefs->SetBoolean(prefs::kSigninAllowed, signin_allowed);
 
-  UMA_HISTOGRAM_BOOLEAN("Signin.SigninAllowed", signin_allowed);
+  // Seed or reset the cache to the current value of
+  // `kSigninAllowedOnNextStartup`. If a policy was removed while Chrome was
+  // closed, no pref change notification will fire during this session, so
+  // resetting here ensures the previous session's cached policy value is only
+  // used for one startup unless re-confirmed when policies finish loading.
+  UpdateSigninAllowedOnNextStartupCache();
+  pref_change_registrar_.Init(prefs);
+  pref_change_registrar_.Add(
+      prefs::kSigninAllowedOnNextStartup,
+      base::BindRepeating(
+          &AccountConsistencyModeManager::UpdateSigninAllowedOnNextStartupCache,
+          base::Unretained(this)));
+
+  base::UmaHistogramBoolean("Signin.SigninAllowed", signin_allowed);
+  base::UmaHistogramEnumeration("Signin.SigninAllowedOnStartupState",
+                                startup_state);
 #endif
 
   account_consistency_ = ComputeAccountConsistencyMethod(profile_);
@@ -145,10 +231,17 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
 
 AccountConsistencyModeManager::~AccountConsistencyModeManager() = default;
 
+void AccountConsistencyModeManager::Shutdown() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  pref_change_registrar_.RemoveAll();
+#endif
+}
+
 // static
 void AccountConsistencyModeManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kSigninAllowedOnNextStartup, true);
+  registry->RegisterBooleanPref(prefs::kSigninAllowedOnNextStartupCache, true);
 }
 
 // static
@@ -180,6 +273,12 @@ bool AccountConsistencyModeManager::IsDiceSignInAllowed(
   return CanEnableDiceForBuild() && IsBrowserSigninAllowedByCommandLine() &&
          !is_oidc_sign_in_disallowed &&
          (!entry || entry->GetProfileManagementEnrollmentToken().empty());
+}
+
+void AccountConsistencyModeManager::UpdateSigninAllowedOnNextStartupCache() {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(prefs::kSigninAllowedOnNextStartupCache,
+                    prefs->GetBoolean(prefs::kSigninAllowedOnNextStartup));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
