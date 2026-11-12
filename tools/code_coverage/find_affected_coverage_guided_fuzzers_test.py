@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import pathlib
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -20,9 +21,10 @@ from urllib.parse import urlparse
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import find_affected_coverage_guided_fuzzers
 
-FINDIT_FILE_LINES = ['// Comment.', 'void F() {', '  if (G())', '    H();', '}']
 # make_findit_response()'s covered lines, with their hit counts.
 FINDIT_COVERED_LINES = {2: 7, 3: 7, 5: 7}
+# The commit of make_findit_response()'s report.
+REPORT_REVISION = 'a' * 40
 
 
 def output_json_path(out_dir):
@@ -60,6 +62,7 @@ def make_findit_response(covered=True):
         [5, {'line': '}', 'count': count}],
       ],
     },
+    'gitiles_commit': {'revision': REPORT_REVISION},
     'path': '//base/test.cc',
     'warning': None,
   }
@@ -123,14 +126,14 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     coverage = find_affected_coverage_guided_fuzzers.parse_findit_response(
       make_findit_response(), '//base/test.cc'
     )
-    self.assertEqual(coverage.file_lines, FINDIT_FILE_LINES)
+    self.assertEqual(coverage.revision, REPORT_REVISION)
     self.assertEqual(coverage.covered_lines, FINDIT_COVERED_LINES)
 
   def test_parse_findit_response_without_covered_lines(self):
     coverage = find_affected_coverage_guided_fuzzers.parse_findit_response(
       make_findit_response(covered=False), '//base/test.cc'
     )
-    self.assertEqual(coverage.file_lines, FINDIT_FILE_LINES)
+    self.assertEqual(coverage.revision, REPORT_REVISION)
     self.assertEqual(coverage.covered_lines, {})
 
   def test_parse_findit_response_without_file_content(self):
@@ -397,7 +400,7 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       'base/test.cc', 'base_json_reader_fuzzer'
     )
     self.assertEqual(result.covered_lines, FINDIT_COVERED_LINES)
-    self.assertEqual(result.file_lines, FINDIT_FILE_LINES)
+    self.assertEqual(result.revision, REPORT_REVISION)
 
     req = mock_urlopen.call_args[0][0]
     self.assertEqual(
@@ -538,6 +541,124 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     self.assertIsNone(result)
     self.assertEqual(mock_urlopen.call_count, 1)
     mock_sleep.assert_not_called()
+
+
+class GitHelpersTest(unittest.TestCase):
+  """Runs the git helpers on a real repo, as they rely on how git behaves."""
+
+  def setUp(self):
+    self.repo = self.enterContext(tempfile.TemporaryDirectory())
+    self.enterContext(
+      mock.patch.object(
+        find_affected_coverage_guided_fuzzers, 'chromium_src_dir', self.repo
+      )
+    )
+    # Keep the user's git config and GIT_* variables (e.g. GIT_DIR when run
+    # from a git hook) out of the test.
+    env = {k: v for k, v in os.environ.items() if not k.startswith('GIT_')}
+    env.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM='1')
+    self.enterContext(mock.patch.dict(os.environ, env, clear=True))
+    self.git('init', '-q')
+    self.git('config', 'user.name', 'Test')
+    self.git('config', 'user.email', 'test@example.com')
+
+  def git(self, *args: str) -> str:
+    return subprocess.run(
+      ['git', *args], cwd=self.repo, capture_output=True, text=True, check=True
+    ).stdout.strip()
+
+  def commit(self, path: str, content: str) -> str:
+    """Commits content as path and returns the commit's hash."""
+    full_path = os.path.join(self.repo, path)
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+    with open(full_path, 'w', encoding='utf-8', newline='') as f:
+      f.write(content)
+    self.git('add', path)
+    self.git('commit', '-q', '-m', path)
+    return self.git('rev-parse', 'HEAD')
+
+  def test_get_parent_lines_changed_by_cl(self):
+    # Check that a developer's or bot's git config can't break get_diff_hunks().
+    # These settings break `git diff`:
+    self.git('config', 'color.ui', 'always')  # Colors the '@@' lines.
+    self.git('config', 'diff.external', 'true')  # Prints nothing.
+    self.git('config', 'diff.interHunkContext', '10')  # Merges nearby hunks.
+    self.commit('base/f.cc', ''.join(f'{i}\n' for i in range(1, 21)))
+    revision = self.commit(
+      'base/f.cc',
+      'top\n'  # Inserted at the top.
+      '1\n2\n'
+      'three\n'  # Line 3 modified.
+      '4\n5\n'
+      'a\nb\nc\n'  # Lines 6-7 replaced by three lines.
+      '8\n9\n10\n'
+      'x\ny\n'  # Two lines inserted after line 10.
+      '11\n12\n13\n14\n'  # Lines 15-17 deleted.
+      '18\n19\n20\n',
+    )
+    self.commit('base/g.cc', 'later\n')  # So that revision isn't HEAD.
+    # A pure insertion is returned as the line it follows.
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.get_parent_lines_changed_by_cl(
+        revision, 'base/f.cc'
+      ),
+      find_affected_coverage_guided_fuzzers.ChangedLines(
+        modified={3, 6, 7, 15, 16, 17}, insertions={0, 10}
+      ),
+    )
+
+  def test_get_parent_lines_changed_by_cl_new_file(self):
+    self.commit('base/f.cc', 'a\n')  # So that revision has a parent.
+    revision = self.commit('base/new.cc', 'b\nc\n')
+    # All of a new file's lines are one insertion at the top.
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.get_parent_lines_changed_by_cl(
+        revision, 'base/new.cc'
+      ),
+      find_affected_coverage_guided_fuzzers.ChangedLines(
+        modified=set(), insertions={0}
+      ),
+    )
+
+  def test_map_old_line_to_new(self):
+    # Between the report's commit and the CL's parent, another CL added x and
+    # y, and removed F.
+    report = self.commit('base/f.cc', 'A\nB\nC\nD\nE\nF\nG\nH\n')
+    parent = self.commit('base/f.cc', 'A\nB\nx\ny\nC\nD\nE\nG\nH\n')
+    hunks = find_affected_coverage_guided_fuzzers.get_diff_hunks(
+      parent, report, 'base/f.cc'
+    )
+    self.assertEqual(
+      [
+        find_affected_coverage_guided_fuzzers.map_old_line_to_new(hunks, line)
+        for line in range(1, 10)
+      ],
+      [1, 2, None, None, 3, 4, 5, 7, 8],
+    )
+
+  def test_get_diff_hunks_binary_looking_file(self):
+    # Without --text, git prints no hunks for a file with a NUL byte, so the
+    # file looks unchanged.
+    old = self.commit('base/f.cc', 'a\0\nb\n')
+    new = self.commit('base/f.cc', 'a\0\nB\n')
+    self.assertEqual(
+      find_affected_coverage_guided_fuzzers.get_diff_hunks(
+        old, new, 'base/f.cc'
+      ),
+      [
+        find_affected_coverage_guided_fuzzers.DiffHunk(
+          old_start=2, old_count=1, new_count=1
+        )
+      ],
+    )
+
+  def test_get_diff_hunks_missing_revision(self):
+    # E.g. a coverage report's commit that the checkout hasn't fetched.
+    revision = self.commit('base/f.cc', 'a\n')
+    with self.assertRaises(subprocess.CalledProcessError):
+      find_affected_coverage_guided_fuzzers.get_diff_hunks(
+        '1234567890abcdef1234567890abcdef12345678', revision, 'base/f.cc'
+      )
 
 
 if __name__ == '__main__':

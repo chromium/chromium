@@ -8,6 +8,7 @@ import concurrent.futures
 import json
 import logging
 import os
+import re
 import subprocess
 import sys
 import time
@@ -26,12 +27,39 @@ COVERAGE_API_URL = 'https://analysis.chromium.org/coverage/p/chromium/file'
 MAX_FINDIT_API_RETRIES = 3
 FINDIT_API_TIMEOUT = 10.0
 
+# Matches a unified diff hunk header: '@@ -start,count +start,count @@' for the
+# old and new file, with ',count' left out when it's 1, e.g. '@@ -12,3 +14 @@'.
+HUNK_HEADER_RE = re.compile(rb'^@@ -(\d+)(?:,(\d+))? \+\d+(?:,(\d+))? @@', re.M)
+
+
+class ChangedLines(NamedTuple):
+  """The lines a CL changes in a file, by their line numbers before the CL."""
+
+  # Lines the CL modifies or deletes.
+  modified: Set[int]
+  # For each pure insertion, the line it follows or 0 if it's at the top of the
+  # file. The inserted lines aren't in any coverage report, so an insertion can
+  # only be located by the lines around it.
+  insertions: Set[int]
+
+
+class DiffHunk(NamedTuple):
+  """Lines that differ between two versions of a file, as in a unified diff's
+  '@@ -old_start,old_count +new_start,new_count @@' header.
+  """
+
+  old_start: int
+  # 0 for a hunk that only adds lines. old_start is then the line they follow,
+  # or 0 if they're at the top of the file.
+  old_count: int
+  new_count: int
+
 
 class FinditCoverage(NamedTuple):
   """Fuzzing coverage of a file for one fuzzer or all fuzzers combined."""
 
-  # The file's lines in the report, in file order: file_lines[i] is line i + 1.
-  file_lines: List[str]
+  # The commit the report was generated at.
+  revision: str
   # Hit count of each line executed at least once, by 1-based line number.
   covered_lines: Dict[int, int]
 
@@ -118,6 +146,84 @@ def get_modified_files(revision: str) -> List[str]:
   ]
 
 
+def get_diff_hunks(
+  old_revision: str, new_revision: str, file_path: str
+) -> List[DiffHunk]:
+  """Returns the hunks of file_path's diff from old_revision to new_revision,
+  in file order. Raises if git fails, e.g. on a revision that isn't fetched,
+  rather than returning no hunks as if the file were unchanged.
+  """
+  # git diff-tree, unlike git diff, ignores diff settings from git config that
+  # would break the parsing, e.g. color.ui adds color codes to the '@@' lines
+  # and diff.interHunkContext merges nearby hunks. With --text, git prints
+  # hunks even for a file it thinks is binary, e.g. one with a NUL byte. We
+  # don't decode the output since the changed lines may not be valid UTF-8.
+  diff = subprocess.run(
+    [
+      'git',
+      'diff-tree',
+      '-U0',
+      '--text',
+      old_revision,
+      new_revision,
+      '--',
+      file_path,
+    ],
+    cwd=chromium_src_dir,
+    capture_output=True,
+    check=True,
+  ).stdout
+  return [
+    DiffHunk(
+      old_start=int(match[1]),
+      old_count=int(match[2] or 1),
+      new_count=int(match[3] or 1),
+    )
+    for match in HUNK_HEADER_RE.finditer(diff)
+  ]
+
+
+def get_parent_lines_changed_by_cl(
+  cl_revision: str, file_path: str
+) -> ChangedLines:
+  """Returns the lines of file_path that cl_revision changes, with the line
+  numbers the file had before cl_revision.
+  """
+  changes = ChangedLines(modified=set(), insertions=set())
+  for hunk in get_diff_hunks(f'{cl_revision}~', cl_revision, file_path):
+    if hunk.old_count == 0:
+      changes.insertions.add(hunk.old_start)
+    else:
+      changes.modified.update(
+        range(hunk.old_start, hunk.old_start + hunk.old_count)
+      )
+  return changes
+
+
+def map_old_line_to_new(hunks: List[DiffHunk], line: int) -> Optional[int]:
+  """Finds where a line of a diff's old version is in its new version.
+
+  Args:
+    hunks: The diff's hunks from get_diff_hunks(), e.g. from the CL's parent
+      to a coverage report's commit.
+    line: The line's number in the old version, counting from 1.
+
+  Returns:
+    Its number in the new version, or None if the diff modifies or deletes
+    it, e.g. because another CL changed it between the two commits.
+  """
+  offset = 0
+  for hunk in hunks:
+    if hunk.old_start <= line < hunk.old_start + hunk.old_count:
+      return None
+    if hunk.old_start >= line:
+      # This hunk and the ones after it are below the line.
+      break
+    # A hunk above the line shifts it by the lines it adds or removes.
+    offset += hunk.new_count - hunk.old_count
+  return line + offset
+
+
 def find_affected_fuzzers_for_file(
   file_path: str, out_dir: str, all_fuzzers: Set[str]
 ) -> Tuple[str, List[str]]:
@@ -145,9 +251,8 @@ def find_affected_fuzzers_for_file(
   # https://buganizer.corp.google.com/issues/560236801
 
   # TODO: Before matching, map the changed lines from the CL's parent commit
-  # to the coverage report's commit, since the file may have changed in
-  # between. The Findit response has the report's version of the file in
-  # data.line_to_data to diff the parent's version against.
+  # to the coverage report's commit with get_diff_hunks() and
+  # map_old_line_to_new(), since the file may have changed in between.
   # https://buganizer.corp.google.com/issues/560236801
 
   # TODO: Include newly added fuzzers as it will not have Findit Fuzzing
@@ -287,6 +392,7 @@ def parse_findit_response(
 ) -> Optional[FinditCoverage]:
   """Extracts the coverage of a file from a raw Findit Coverage API response.
 
+  'gitiles_commit.revision' is the commit the report was generated at.
   'data.line_to_data' is a list of [line_number, {'line': str, 'count': int,
   ...}] pairs with each line of the file at the report's revision and its hit
   count.
@@ -318,17 +424,15 @@ def parse_findit_response(
     logging.warning('Findit has no content for %s', file_path)
     return None
 
-  file_lines: List[str] = []
   covered_lines: Dict[int, int] = {}
   for line_number, line_data in line_to_data:
-    file_lines.append(line_data['line'])
     # The count is -1 for non-executable lines (e.g. comments) and 0 for
     # executable lines that weren't executed.
     if line_data['count'] > 0:
       covered_lines[line_number] = line_data['count']
 
   return FinditCoverage(
-    file_lines=file_lines,
+    revision=response['gitiles_commit']['revision'],
     covered_lines=covered_lines,
   )
 
