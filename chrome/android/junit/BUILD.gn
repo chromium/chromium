@@ -1338,7 +1338,6 @@ if (is_android) {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/tab/TabFaviconTest.java",
       "src/org/chromium/chrome/browser/tab/RequestDesktopUtilsUnitTest.java",
-      "src/org/chromium/chrome/browser/tab/TabArchiveSettingsTest.java",
       "src/org/chromium/chrome/browser/tab/TabArchiverUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabAttributesTest.java",
       "src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelperTest.java",

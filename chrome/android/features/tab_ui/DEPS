@@ -73,19 +73,11 @@ include_rules = [
 
 specific_include_rules = {
   # TODO(b/565320394): Remove once decoupled from chrome_java
-  "ArchivedTabsAutoDeletePromoCoordinator.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
-  ],
-  "ArchivedTabsAutoDeletePromoManager.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
-  ],
   "ArchivedTabsDialogCoordinator.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
   ],
   "ArchivedTabsMessageService.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
   ],
   "GroupWindowChecker.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerSingleton.java",
@@ -95,9 +87,6 @@ specific_include_rules = {
   ],
   "IncognitoTabSwitcherPane.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java",
-  ],
-  "TabArchive.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
   ],
   "TabDragHandlerBase.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragDropUtils.java",
@@ -184,9 +173,6 @@ specific_include_rules = {
   ],
   "TabVerticalViewBinder\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java",
-  ],
-  "TabsSettings.*\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
   ],
   "VerticalExternalViewDragDropReorderStrategy.*\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
@@ -290,7 +276,6 @@ specific_include_rules = {
     "+chrome/browser/ui/android/night_mode",
   ],
   "TabSwitcherMessageManagerUnitTest\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
     "+chrome/browser/device_reauth/android",
   ],
   "TabSwitcherMultiWindowTest\\.java": [
@@ -298,10 +283,6 @@ specific_include_rules = {
   ],
   "TabSwitcherPaneCoordinatorFactoryUnitTest\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
-  ],
-  "TabSwitcherPaneUnitTest\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/tab/TabArchiveSettings.java",
   ],
   "TabSwitcherSearchRenderTest\\.java": [
     "+chrome/browser/ui/android/night_mode",
