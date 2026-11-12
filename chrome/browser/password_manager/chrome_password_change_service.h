@@ -14,7 +14,7 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/password_change_service_interface.h"
+#include "components/password_manager/core/browser/password_change/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 #if !BUILDFLAG(IS_ANDROID)
