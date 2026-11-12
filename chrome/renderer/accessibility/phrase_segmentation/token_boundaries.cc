@@ -4,11 +4,13 @@
 
 #include "chrome/renderer/accessibility/phrase_segmentation/token_boundaries.h"
 
+#include <algorithm>
+#include <array>
 #include <cstdlib>
-#include <set>
-#include <string_view>
 
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_tree.h"
+
+namespace {
 
 // Constants used in the boundary weight calculation. These were calculated by
 // trial and error experiments on the eval_160 dataset.
@@ -19,9 +21,18 @@ const float kPhraseStartWeightBump = 1.0;
 // How much to bump up the weight of boundary with a phrase end indicator.
 const float kPhraseEndWeightBump = 4.0;
 
+// Punctuation that tend to mark the start of a phrase.
+constexpr auto kPhraseStartIndicators = std::to_array<char16_t>({u'(', u'"'});
+
+// Punctuation that tend to mark the end of a phrase.
+constexpr auto kPhraseEndIndicators =
+    std::to_array<char16_t>({u',', u';', u':', u')', u'"', u'—'});
+
 // What weight to assign to a boundary where the two adjacent tokens have the
 // same head.
 const float kSameDependencyHeadWeight = 1.0;
+
+}  // namespace
 
 TokenBoundaries::TokenBoundaries(const DependencyTree& tree)
     : boundary_weights_(tree.dep_head_array().size() - 1, -1) {
@@ -71,21 +82,18 @@ void TokenBoundaries::InitializeBoundaryWeightsFromTree(
       boundary_weights_[boundary_index] = kSameDependencyHeadWeight;
     }
 
-    const std::set<std::u16string_view> kPhraseEndIndicators = {
-        u",", u";", u":", u")", u"\"", u"—"};
-    const std::set<std::u16string_view> kPhraseStartIndicators = {u"(", u"\""};
     if (token2.char_offset ==
         token1.char_offset + static_cast<int>(token1.text.length())) {
       // If the adjacent tokens aren't separated by a space, we should not
       // break there, so zero out the weight.
       boundary_weights_[boundary_index] = 0;
-    } else if (kPhraseEndIndicators.find(token1.text) !=
-               kPhraseEndIndicators.end()) {
+    } else if (token1.text.length() == 1 &&
+               std::ranges::contains(kPhraseEndIndicators, token1.text[0])) {
       // If the first token is a phrase end-indicating punctuation, bias
       // towards breaking at that boundary by incrementing the weight.
       boundary_weights_[boundary_index] += kPhraseEndWeightBump;
-    } else if (kPhraseStartIndicators.find(token2.text) !=
-               kPhraseStartIndicators.end()) {
+    } else if (token2.text.length() == 1 &&
+               std::ranges::contains(kPhraseStartIndicators, token2.text[0])) {
       // If the second token is a phrase start-indicating punctuation, bias
       // towards breaking at that boundary by incrementing the weight.
       boundary_weights_[boundary_index] += kPhraseStartWeightBump;
