@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBID_NAVIGATION_INTERCEPTOR_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "net/http/structured_headers.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 
@@ -77,12 +77,10 @@ class CONTENT_EXPORT NavigationInterceptor
  private:
   ThrottleCheckResult ProcessRequest(const GURL& intercepted_url);
 
-  void OnHeaderParsed(
-      const GURL& intercepted_url,
-      std::optional<net::structured_headers::Dictionary> result);
-  void OnConnectionStatusHeaderParsed(
-      const GURL& intercepted_url,
-      std::optional<net::structured_headers::Dictionary> result);
+  void HandleInterceptHeader(const GURL& intercepted_url,
+                             const std::string& header);
+  void HandleConnectionStatusHeader(const GURL& intercepted_url,
+                                    const std::string& header);
   void OnTokenResponse(
       blink::mojom::RequestTokenStatus status,
       const std::optional<GURL>& selected_identity_provider_config_url,
@@ -91,7 +89,7 @@ class CONTENT_EXPORT NavigationInterceptor
       bool is_auto_selected);
 
   RequestInitiator request_initiator_;
-  bool is_inside_onheaderparsed_ = false;
+  bool is_handling_intercept_header_ = false;
   bool should_cancel_ = false;
   // Tracks the document present in the target RenderFrameHost at the time the
   // relevant navigation began. This will be navigated to complete the FedCM

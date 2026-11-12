@@ -226,46 +226,44 @@ NavigationThrottle::ThrottleCheckResult NavigationInterceptor::ProcessRequest(
     return PROCEED;
   }
 
-  // TODO(crbug.com/574411295): Investigate whether the asynchronous handling of
-  // the dictionaries can be replaced with synchronous handling.
+  // Handle the headers asynchronously rather than synchronously inside
+  // `WillRedirectRequest()`/`WillProcessResponse()`, as starting a FedCM token
+  // request (showing/closing UI) or invoking the embedder login callback may
+  // synchronously destroy the `WebContents`, and `NavigationThrottle` requires
+  // the `WebContents` to remain alive during throttle check methods.
   if (connection_status_header) {
     // It's possible that both headers are present. In that case, if there's no
     // embedder login request, we should just proceed.
     if (has_embedder_login_request) {
-      std::optional<net::structured_headers::Dictionary> dict =
-          net::structured_headers::ParseDictionary(*connection_status_header);
-
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&NavigationInterceptor::OnConnectionStatusHeaderParsed,
+          base::BindOnce(&NavigationInterceptor::HandleConnectionStatusHeader,
                          weak_ptr_factory_.GetWeakPtr(), intercepted_url,
-                         std::move(dict)));
+                         *std::move(connection_status_header)));
     } else {
       return PROCEED;
     }
   } else if (intercept_header) {
-    std::optional<net::structured_headers::Dictionary> dict =
-        net::structured_headers::ParseDictionary(*intercept_header);
-
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&NavigationInterceptor::OnHeaderParsed,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  intercepted_url, std::move(dict)));
+        FROM_HERE,
+        base::BindOnce(&NavigationInterceptor::HandleInterceptHeader,
+                       weak_ptr_factory_.GetWeakPtr(), intercepted_url,
+                       *std::move(intercept_header)));
   } else {
     return PROCEED;
   }
 
-  // TODO(http://crbug.com/455614294): Ideally, we'd like to cancel the
+  // TODO(https://crbug.com/455614294): Ideally, we'd like to cancel the
   // navigation early on so that the spinner stops. However, we need to
   // defer here because cancelling will destroy this object before the
-  // async header parsing and token request complete.
+  // async header handling and token request complete.
 
   return DEFER;
 }
 
-void NavigationInterceptor::OnConnectionStatusHeaderParsed(
+void NavigationInterceptor::HandleConnectionStatusHeader(
     const GURL& intercepted_url,
-    std::optional<net::structured_headers::Dictionary> result) {
+    const std::string& header) {
   RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
   if (!rfh) {
     // The document is no longer valid, likely because the target frame has
@@ -282,19 +280,21 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
     return;
   }
 
-  if (!result.has_value()) {
+  std::optional<net::structured_headers::Dictionary> dict =
+      net::structured_headers::ParseDictionary(header);
+  if (!dict.has_value()) {
     // The header was available, but malformed.
     // Cancel the navigation because it is a developer error.
     CancelDeferredNavigation(CANCEL);
     return;
   }
 
-  if (const std::string* status = GetIfString(*result, "status");
+  if (const std::string* status = GetIfString(*dict, "status");
       status && *status == "connected") {
     // The server can send this header without embedder login request.
     if (net::SchemefulSite::IsSameSite(embedder_login_request->idp_origin(),
                                        url::Origin::Create(intercepted_url))) {
-      const std::string* account_id = GetIfString(*result, "account_id");
+      const std::string* account_id = GetIfString(*dict, "account_id");
 
       base::WeakPtr<NavigationInterceptor> weak_this =
           weak_ptr_factory_.GetWeakPtr();
@@ -315,9 +315,8 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
   Resume();
 }
 
-void NavigationInterceptor::OnHeaderParsed(
-    const GURL& intercepted_url,
-    std::optional<net::structured_headers::Dictionary> result) {
+void NavigationInterceptor::HandleInterceptHeader(const GURL& intercepted_url,
+                                                  const std::string& header) {
   RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
   if (!rfh) {
     // The document is no longer valid, likely because the target frame has
@@ -327,7 +326,9 @@ void NavigationInterceptor::OnHeaderParsed(
     return;
   }
 
-  if (!result.has_value()) {
+  std::optional<net::structured_headers::Dictionary> dict =
+      net::structured_headers::ParseDictionary(header);
+  if (!dict.has_value()) {
     // The header was available, but malformed.
     // Cancel the navigation because it is a developer error.
     CancelDeferredNavigation(CANCEL);
@@ -336,7 +337,7 @@ void NavigationInterceptor::OnHeaderParsed(
 
   RequestBuilder request_builder;
   auto idp_get_params_vector =
-      request_builder.Build(intercepted_url, *std::move(result));
+      request_builder.Build(intercepted_url, *std::move(dict));
 
   if (!idp_get_params_vector) {
     // The header was available, parsed, but contained an invalid set of
@@ -347,7 +348,7 @@ void NavigationInterceptor::OnHeaderParsed(
   }
 
   should_cancel_ = false;
-  is_inside_onheaderparsed_ = true;
+  is_handling_intercept_header_ = true;
 
   base::WeakPtr<NavigationInterceptor> weak_this =
       weak_ptr_factory_.GetWeakPtr();
@@ -359,7 +360,7 @@ void NavigationInterceptor::OnHeaderParsed(
   if (!weak_this) {
     return;
   }
-  is_inside_onheaderparsed_ = false;
+  is_handling_intercept_header_ = false;
 
   // If the synchronous callback requested a cancellation, perform it now.
   if (should_cancel_) {
@@ -381,13 +382,14 @@ void NavigationInterceptor::OnTokenResponse(
     return;
   }
 
-  if (is_inside_onheaderparsed_) {
+  if (is_handling_intercept_header_) {
     // If the callback evaluates synchronously inside `Run()`, we cannot call
     // `CancelDeferredNavigation(CANCEL)` immediately because that would
     // synchronously destroy this `NavigationInterceptor` instance while
-    // `OnHeaderParsed` is still using the instance to continue its execution,
-    // leading to a UAF. Instead, signal an intent to cancel and let
-    // `OnHeaderParsed` perform the cancellation after `Run()` finishes.
+    // `HandleInterceptHeader()` is still using the instance to continue its
+    // execution, leading to a UAF. Instead, signal an intent to cancel and let
+    // `HandleInterceptHeader()` perform the cancellation after `Run()`
+    // finishes.
     should_cancel_ = true;
     return;
   }

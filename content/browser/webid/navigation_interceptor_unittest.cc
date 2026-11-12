@@ -1561,7 +1561,7 @@ TEST_F(NavigationInterceptorTest, TokenRequestFailsSynchronousDestruction) {
   // Verify that `OnTokenResponse()` running synchronously inside
   // `request_initiator_.Run()` and destroying `interceptor` via
   // `CancelDeferredNavigation()` does not cause a use-after-free while
-  // `OnHeaderParsed()` is still on the stack.
+  // `HandleInterceptHeader()` is still on the stack.
   run_loop.Run();
 
   EXPECT_TRUE(was_cancelled);
