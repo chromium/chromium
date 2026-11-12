@@ -1,6 +1,6 @@
 monorail: {
-  component: "UI>Browser>WebAppInstalls"
+  component: "UI>Browser>WebAppInstalls>NavigationCapturing"
 }
 buganizer_public: {
-  component_id: 1457043
+  component_id: 1457168
 }
