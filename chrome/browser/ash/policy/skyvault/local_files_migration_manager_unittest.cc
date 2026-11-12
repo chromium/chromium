@@ -31,6 +31,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
@@ -124,7 +125,8 @@ class LocalFilesMigrationManagerTest : public testing::Test {
 
   // Creates and registers MyFiles.
   void SetUpMyFiles() {
-    my_files_dir_ = GetMyFilesPath(profile());
+    my_files_dir_ = file_manager::util::GetMyFilesFolder(
+        *ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       ASSERT_TRUE(base::CreateDirectory(my_files_dir_));

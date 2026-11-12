@@ -11,7 +11,6 @@
 #include "ash/constants/chrome_pref_names.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/file_location_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -105,10 +104,6 @@ FileSaveDestination GetCameraDestination(Profile* profile) {
 bool DownloadToTemp(Profile* profile) {
   return base::FeatureList::IsEnabled(ash::features::kSkyVault) &&
          GetDownloadsDestination(profile) == FileSaveDestination::kOneDrive;
-}
-
-base::FilePath GetMyFilesPath(Profile* profile) {
-  return profile->GetPath().Append("MyFiles");
 }
 
 std::optional<base::Time> GetMigrationStartTime(Profile* profile) {

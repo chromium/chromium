@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,7 +53,8 @@ void OnMigrationStopped(std::unique_ptr<MigrationCloudUploader> uploader,
 // Returns the file's path relative to MyFiles.
 base::FilePath GetPathRelativeToMyFiles(Profile* profile,
                                         const base::FilePath& file_path) {
-  base::FilePath my_files_path = GetMyFilesPath(profile);
+  base::FilePath my_files_path = file_manager::util::GetMyFilesFolder(
+      *ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   base::FilePath rel_path;
   my_files_path.AppendRelativePath(file_path.DirName(), &rel_path);
   return rel_path;

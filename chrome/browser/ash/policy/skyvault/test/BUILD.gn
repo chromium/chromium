@@ -16,9 +16,11 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//content/test:test_support",
     "//storage/browser",
     "//testing/gtest",

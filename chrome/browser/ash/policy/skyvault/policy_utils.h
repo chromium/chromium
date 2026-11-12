@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/files/file_path.h"
 #include "base/time/time.h"
 
 class PrefService;
@@ -140,9 +139,6 @@ FileSaveDestination GetCameraDestination(Profile* profile);
 
 // Returns whether `download` should be saved to tmp/ directory.
 bool DownloadToTemp(Profile* profile);
-
-// Returns the path of MyFiles folder for `profile`.
-base::FilePath GetMyFilesPath(Profile* profile);
 
 // Returns the scheduled start time for local file migration or deletion.
 std::optional<base::Time> GetMigrationStartTime(Profile* profile);
