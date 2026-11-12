@@ -19,8 +19,8 @@
 //    leverages buildProxy and ObserverTree internally.
 //
 //  The format of change notifications is following Polymer observers
-//  notifications (with extensive test coverage to ensure compatibility), to
-//  make it easier to migrate Polymer observers to Observable observers.
+//  notifications, to make it easier to migrate Polymer observers to Observable
+//  observers.
 //
 //  Note: Array push() and splice() notifications are not implemented yet, will
 //  be implemented if/when the need arises.

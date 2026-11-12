@@ -128,7 +128,6 @@ ts_library("library") {
     "//chrome/test/data/webui/cr_elements:build_ts",
     "//chrome/test/data/webui/lens:build_ts",
     "//chrome/test/data/webui/password_manager:build_ts",
-    "//chrome/test/data/webui/print_preview:build_ts",
     "//chrome/test/data/webui/settings:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
   ]
