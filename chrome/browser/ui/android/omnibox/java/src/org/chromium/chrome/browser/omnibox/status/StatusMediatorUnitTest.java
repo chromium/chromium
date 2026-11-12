@@ -1183,7 +1183,7 @@ public final class StatusMediatorUnitTest {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
         ComposeplateUtils.setIsEnabledForTesting(true);
 
-        // Focus the search box (sets mUrlHasFocus = true).
+        // Focus the search box (begins input session).
         mMediator.beginInput(mFuseboxSessionState);
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);

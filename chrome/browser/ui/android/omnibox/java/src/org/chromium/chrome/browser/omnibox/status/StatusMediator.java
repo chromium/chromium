@@ -28,6 +28,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
@@ -149,7 +150,6 @@ public class StatusMediator
     private final Callback<@AutocompleteState Integer> mOnAutocompleteStateChanged =
             this::onAutocompleteStateChanged;
 
-    private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPaintPreview;
     private boolean mPageIsOffline;
@@ -399,9 +399,8 @@ public class StatusMediator
     }
 
     void beginInput(FuseboxSessionState sessionState) {
-        if (mUrlHasFocus) return;
+        if (isInInputSession()) return;
 
-        mUrlHasFocus = true;
         setFuseboxSessionState(sessionState);
         updateVerboseStatusTextVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -414,9 +413,8 @@ public class StatusMediator
     }
 
     void endInput() {
-        if (!mUrlHasFocus) return;
+        if (!isInInputSession()) return;
 
-        mUrlHasFocus = false;
         setFuseboxSessionState(null);
         updateVerboseStatusTextVisibility();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -452,6 +450,11 @@ public class StatusMediator
         }
     }
 
+    @EnsuresNonNullIf("mInputSessionState")
+    private boolean isInInputSession() {
+        return mInputSessionState != null;
+    }
+
     private void updateStatusViewMinWidth() {
         // Don't use isNtpVisible() here -- it reports NTP visibility when navigation is already
         // underway, making the onUrlChanged fail to detect the user is navigating out of the NTP.
@@ -464,7 +467,7 @@ public class StatusMediator
                 mLocationBarDataProvider.getPageClassification(/* prefetch= */ false);
         boolean useWideStatusIcon =
                 PageClassificationUtils.isHubOrTabSearch(pageClassification)
-                        || mUrlHasFocus
+                        || isInInputSession()
                         || isRegularNtpUrl;
         mModel.set(StatusProperties.USE_WIDE_STATUS_ICON, useWideStatusIcon);
     }
@@ -513,7 +516,7 @@ public class StatusMediator
         boolean newVisibility =
                 shouldShowVerboseStatusText()
                         && mVerboseStatusSpaceAvailable
-                        && !mUrlHasFocus
+                        && !isInInputSession()
                         && (statusText != 0);
 
         // Update status content only if it is visible. Note: PropertyModel will help us avoid
@@ -578,12 +581,12 @@ public class StatusMediator
         Profile profile = mProfileSupplier.get();
         TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
         boolean isStandbyNoFocus =
-                mInputSessionState != null
+                isInInputSession()
                         && mInputSessionState.getAutocompleteInput().getAutocompleteState()
                                 == AutocompleteState.STANDBY_NO_FOCUS;
         return isNtpVisible()
                 && !hasPendingNonNtpNavigation()
-                && (!mUrlHasFocus || isStandbyNoFocus)
+                && (!isInInputSession() || isStandbyNoFocus)
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 && FuseboxFeatureUtils.shouldShowNtpPlusButton(
                         mContext, profile, templateUrlService);
@@ -687,7 +690,7 @@ public class StatusMediator
                 return;
             }
             case StatusIconType.SECURITY -> {
-                if (mUrlHasFocus) {
+                if (isInInputSession()) {
                     mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
                 }
                 if (mPageSecurityLevel == ConnectionSecurityLevel.SECURE
@@ -754,7 +757,7 @@ public class StatusMediator
         boolean previewMatchFaviconsEnabled = OmniboxFeatures.sPreviewMatchFavicons.isEnabled();
         @AutocompleteRequestType int requestType = AutocompleteRequestType.SEARCH;
         @DisplayState int displayState = DisplayState.WEBSITE;
-        if (mInputSessionState != null) {
+        if (isInInputSession()) {
             AutocompleteInput autocompleteInput = mInputSessionState.getAutocompleteInput();
             requestType = autocompleteInput.getRequestType();
             displayState = autocompleteInput.getDisplayState();
@@ -774,7 +777,7 @@ public class StatusMediator
                 && mPreviewMatchFavicon != null) {
             return StatusIconType.PREVIEW_FAVICON;
         } else if (OmniboxCapabilities.isDesktopPlatform()
-                && mInputSessionState != null
+                && isInInputSession()
                 && ToolModeUtils.isAimRequest(requestType)) {
             return StatusIconType.AIM_SPARK;
         } else if (mFuseboxLayoutModeSupplier.get() == FuseboxLayoutMode.TOOLBAR
@@ -783,7 +786,7 @@ public class StatusMediator
             return StatusIconType.FUSEBOX_PLUS_BUTTON;
         } else if (shouldDisplaySearchEngineIcon()) {
             return StatusIconType.SEARCH_ENGINE;
-        } else if (mUrlHasFocus && !isInStandbyOnWebpage()) {
+        } else if (isInInputSession() && !isInStandbyOnWebpage()) {
             return StatusIconType.FOCUSED_NAVIGATION;
         } else if (mPermissionStatusHandler.isClapperQuietIconShowing()) {
             return StatusIconType.CLAPPER_QUIET_PERMISSION;
@@ -817,7 +820,7 @@ public class StatusMediator
     }
 
     private boolean isInStandbyOnWebpage() {
-        return mInputSessionState != null
+        return isInInputSession()
                 && mInputSessionState.getAutocompleteInput().isStandby()
                 && !isNtpVisible()
                 && !isIncognitoNtpVisible();
@@ -851,7 +854,7 @@ public class StatusMediator
             return false;
         }
 
-        if (mUrlHasFocus) {
+        if (isInInputSession()) {
             if (isInStandbyOnWebpage()) {
                 return false;
             }
@@ -940,7 +943,7 @@ public class StatusMediator
             return R.string.hub_search_status_view_back_button_icon_description;
         }
 
-        if (mUrlHasFocus && !mLocationBarDataProvider.isIncognitoBranded()) {
+        if (isInInputSession() && !mLocationBarDataProvider.isIncognitoBranded()) {
             return 0;
         }
         if (isPageInfoMovedAndConnectionNotSecure()) {
@@ -1176,7 +1179,7 @@ public class StatusMediator
 
     private void updateStatusViewVisibility() {
         setShowStatusView(
-                mUrlHasFocus
+                isInInputSession()
                         || PageClassificationUtils.isHubOrTabSearch(
                                 mLocationBarDataProvider.getPageClassification(
                                         /* prefetch= */ false))
