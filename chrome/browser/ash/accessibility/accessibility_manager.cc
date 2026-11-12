@@ -649,7 +649,6 @@ AccessibilityManager::~AccessibilityManager() {
 
   if (chromevox_panel_) {
     chromevox_panel_->CloseNow();
-    chromevox_panel_ = nullptr;
   }
 
   AcceleratorController::SetVolumeAdjustmentSoundCallback({});
@@ -2241,7 +2240,6 @@ void AccessibilityManager::PostUnloadChromeVox() {
 
   if (chromevox_panel_) {
     chromevox_panel_->Close();
-    chromevox_panel_ = nullptr;
   }
 
   // In case the user darkened the screen, undarken it now.
@@ -2254,7 +2252,7 @@ void AccessibilityManager::PostUnloadChromeVox() {
 void AccessibilityManager::CreateChromeVoxPanel() {
   CHECK(!chromevox_panel_ && spoken_feedback_enabled(),
         base::NotFatalUntil::M160);
-  chromevox_panel_ = new ChromeVoxPanel(profile_);
+  chromevox_panel_ = std::make_unique<ChromeVoxPanel>(profile_);
   chromevox_panel_widget_observer_ =
       std::make_unique<AccessibilityPanelWidgetObserver>(
           chromevox_panel_->GetWidget(),
@@ -2265,7 +2263,6 @@ void AccessibilityManager::CreateChromeVoxPanel() {
 void AccessibilityManager::PostSwitchChromeVoxProfile() {
   if (chromevox_panel_) {
     chromevox_panel_->CloseNow();
-    chromevox_panel_ = nullptr;
   }
   if (!chromevox_panel_ && spoken_feedback_enabled()) {
     CreateChromeVoxPanel();
@@ -2278,7 +2275,10 @@ content::BrowserContext* AccessibilityManager::browser_context() {
 
 void AccessibilityManager::OnChromeVoxPanelDestroying() {
   chromevox_panel_widget_observer_.reset(nullptr);
-  chromevox_panel_ = nullptr;
+  // The panel can't be deleted during its widget's notifications, and its
+  // window may still be closing. The panel frees its widget once the window is
+  // gone.
+  closed_chromevox_panel_ = std::move(chromevox_panel_);
 }
 
 void AccessibilityManager::PostLoadSelectToSpeak() {

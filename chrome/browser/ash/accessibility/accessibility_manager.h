@@ -764,7 +764,9 @@ class AccessibilityManager
 
   raw_ptr<FaceGazeSettingsEventHandler> facegaze_settings_event_handler_;
 
-  raw_ptr<ChromeVoxPanel> chromevox_panel_ = nullptr;
+  std::unique_ptr<ChromeVoxPanel> chromevox_panel_;
+  // The last closed panel, kept until the next one closes.
+  std::unique_ptr<ChromeVoxPanel> closed_chromevox_panel_;
   std::unique_ptr<AccessibilityPanelWidgetObserver>
       chromevox_panel_widget_observer_;
 

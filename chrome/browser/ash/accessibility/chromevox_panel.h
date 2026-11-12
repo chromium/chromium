@@ -46,6 +46,7 @@ class ChromeVoxPanel : public views::WidgetDelegate,
   const views::Widget* GetWidget() const override;
   views::Widget* GetWidget() override;
   views::View* GetContentsView() override;
+  void WidgetIsZombie(views::Widget* widget) override;
 
  private:
   class ChromeVoxPanelWebContentsObserver;
@@ -67,8 +68,11 @@ class ChromeVoxPanel : public views::WidgetDelegate,
 
   std::string GetUrlForContent();
 
+  // Destroys the widget and, with it, the WebView.
+  void DestroyWidget();
+
   std::unique_ptr<ChromeVoxPanelWebContentsObserver> web_contents_observer_;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::View> web_view_ = nullptr;
 };
 

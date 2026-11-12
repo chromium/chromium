@@ -91,8 +91,6 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
 };
 
 ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context) {
-  SetOwnedByWidget(OwnedByWidgetPassKey());
-
   views::WebView* web_view = new views::WebView(browser_context);
   content::WebContents* web_contents = web_view->GetWebContents();
   web_contents_observer_ =
@@ -109,9 +107,9 @@ ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context) {
   web_view->SetProperty(views::kElementIdentifierKey, kChromeVoxPanelElementId);
   web_view_ = web_view;
 
-  widget_ = new views::Widget();
+  widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   // Placing the panel in the accessibility panel container allows ash to manage
   // both the window bounds and display work area.
@@ -132,7 +130,9 @@ ChromeVoxPanel::ChromeVoxPanel(content::BrowserContext* browser_context) {
   SetAccessibilityPanelFullscreen(false);
 }
 
-ChromeVoxPanel::~ChromeVoxPanel() = default;
+ChromeVoxPanel::~ChromeVoxPanel() {
+  DestroyWidget();
+}
 
 void ChromeVoxPanel::CloseNow() {
   widget_->CloseNow();
@@ -145,15 +145,21 @@ void ChromeVoxPanel::Close() {
 }
 
 const views::Widget* ChromeVoxPanel::GetWidget() const {
-  return widget_;
+  return widget_.get();
 }
 
 views::Widget* ChromeVoxPanel::GetWidget() {
-  return widget_;
+  return widget_.get();
 }
 
 views::View* ChromeVoxPanel::GetContentsView() {
   return web_view_;
+}
+
+void ChromeVoxPanel::WidgetIsZombie(views::Widget* widget) {
+  // The widget's window is gone, either closed or destroyed with its parent.
+  // Free the widget and its WebView along with it.
+  DestroyWidget();
 }
 
 bool ChromeVoxPanel::HandleContextMenu(
@@ -208,6 +214,12 @@ std::string ChromeVoxPanel::GetUrlForContent() {
   }
 
   return url;
+}
+
+void ChromeVoxPanel::DestroyWidget() {
+  // The WebView is owned by the widget.
+  web_view_ = nullptr;
+  widget_.reset();
 }
 
 }  // namespace ash

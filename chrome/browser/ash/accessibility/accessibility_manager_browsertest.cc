@@ -547,7 +547,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   }
 
   ChromeVoxPanel* GetChromeVoxPanel() {
-    return AccessibilityManager::Get()->chromevox_panel_;
+    return AccessibilityManager::Get()->chromevox_panel_.get();
   }
 
   base::HistogramTester histogram_tester_;
