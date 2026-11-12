@@ -1,6 +1,9 @@
 {
   "entries": [
     {
+      "path": "agents/shared/skills/cl-description"
+    },
+    {
       "path": "agents/shared/skills/git-cl-helper"
     },
     {
