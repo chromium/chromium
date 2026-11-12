@@ -414,7 +414,7 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
   hb_font_t* unscaled_font = harfbuzz_font_data_->unscaled_font_.get();
 
   // Check whether computing is needed and compute for gpos/gsub.
-  if (features & kKerning &&
+  if (features.Has(TypesettingFeature::kKerning) &&
       harfbuzz_font_data_->space_in_gpos_ ==
           HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kUnknown) {
     if (space == kInvalidCodepoint && !GetSpaceGlyph(unscaled_font, space)) {
@@ -432,7 +432,7 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
 
   hb_set_clear(glyphs.get());
 
-  if (features & kLigatures &&
+  if (features.Has(TypesettingFeature::kLigatures) &&
       harfbuzz_font_data_->space_in_gsub_ ==
           HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kUnknown) {
     if (space == kInvalidCodepoint && !GetSpaceGlyph(unscaled_font, space)) {
@@ -448,10 +448,10 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
             : HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kNotPresent;
   }
 
-  return (features & kKerning &&
+  return (features.Has(TypesettingFeature::kKerning) &&
           harfbuzz_font_data_->space_in_gpos_ ==
               HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kPresent) ||
-         (features & kLigatures &&
+         (features.Has(TypesettingFeature::kLigatures) &&
           harfbuzz_font_data_->space_in_gsub_ ==
               HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kPresent);
 }

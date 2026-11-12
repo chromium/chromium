@@ -331,26 +331,28 @@ FontCacheKey FontDescription::CacheKey(
 }
 
 void FontDescription::UpdateTypesettingFeatures() {
-  fields_.typesetting_features_ = 0;
+  TypesettingFeatures features;
 
   switch (TextRendering()) {
     case TextRenderingMode::kAuto:
       break;
     case TextRenderingMode::kOptimizeSpeed:
-      fields_.typesetting_features_ &= ~(blink::kKerning | kLigatures);
+      features.RemoveAll(
+          {TypesettingFeature::kKerning, TypesettingFeature::kLigatures});
       break;
     case TextRenderingMode::kGeometricPrecision:
     case TextRenderingMode::kOptimizeLegibility:
-      fields_.typesetting_features_ |= blink::kKerning | kLigatures;
+      features.PutAll(
+          {TypesettingFeature::kKerning, TypesettingFeature::kLigatures});
       break;
   }
 
   switch (GetKerning()) {
     case FontDescription::kNoneKerning:
-      fields_.typesetting_features_ &= ~blink::kKerning;
+      features.Remove(TypesettingFeature::kKerning);
       break;
     case FontDescription::kNormalKerning:
-      fields_.typesetting_features_ |= blink::kKerning;
+      features.Put(TypesettingFeature::kKerning);
       break;
     case FontDescription::kAutoKerning:
       break;
@@ -363,10 +365,10 @@ void FontDescription::UpdateTypesettingFeatures() {
   if (letter_spacing_.IsZero()) {
     switch (CommonLigaturesState()) {
       case FontDescription::kDisabledLigaturesState:
-        fields_.typesetting_features_ &= ~blink::kLigatures;
+        features.Remove(TypesettingFeature::kLigatures);
         break;
       case FontDescription::kEnabledLigaturesState:
-        fields_.typesetting_features_ |= blink::kLigatures;
+        features.Put(TypesettingFeature::kLigatures);
         break;
       case FontDescription::kNormalLigaturesState:
         break;
@@ -376,12 +378,15 @@ void FontDescription::UpdateTypesettingFeatures() {
             FontDescription::kEnabledLigaturesState ||
         HistoricalLigaturesState() == FontDescription::kEnabledLigaturesState ||
         ContextualLigaturesState() == FontDescription::kEnabledLigaturesState) {
-      fields_.typesetting_features_ |= blink::kLigatures;
+      features.Put(TypesettingFeature::kLigatures);
     }
   }
 
-  if (VariantCaps() != kCapsNormal)
-    fields_.typesetting_features_ |= blink::kCaps;
+  if (VariantCaps() != kCapsNormal) {
+    features.Put(TypesettingFeature::kCaps);
+  }
+  fields_.typesetting_features_ =
+      static_cast<uint32_t>(features.ToEnumBitmask());
 }
 
 uint32_t FontDescription::StyleHashWithoutFamilyList() const {
@@ -784,11 +789,9 @@ String FontDescription::ToString() const {
       (locale_ ? locale_->LocaleString() : g_empty_atom), specified_size_,
       computed_size_, adjusted_size_, size_adjust_.ToString(), LetterSpacing(),
       WordSpacing(), font_selection_request_.ToString(),
-      blink::ToString(
-          static_cast<TypesettingFeatures>(fields_.typesetting_features_)),
-      blink::ToString(Orientation()), blink::ToString(WidthVariant()),
-      FontDescription::ToString(VariantCaps()), IsAbsoluteSize(),
-      FontDescription::ToString(GenericFamily()),
+      blink::ToString(GetTypesettingFeatures()), blink::ToString(Orientation()),
+      blink::ToString(WidthVariant()), FontDescription::ToString(VariantCaps()),
+      IsAbsoluteSize(), FontDescription::ToString(GenericFamily()),
       FontDescription::ToString(Kerning()), GetVariantLigatures().ToString(),
       KeywordSize(), blink::ToString(FontSmoothing()),
       blink::ToString(TextRendering()), IsSyntheticBold(), IsSyntheticItalic(),

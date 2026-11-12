@@ -469,7 +469,7 @@ class PLATFORM_EXPORT FontDescription {
   }
 
   TypesettingFeatures GetTypesettingFeatures() const {
-    return static_cast<TypesettingFeatures>(fields_.typesetting_features_);
+    return TypesettingFeatures::FromEnumBitmask(fields_.typesetting_features_);
   }
 
   static void SetSubpixelPositioning(bool b) {
@@ -588,7 +588,7 @@ class PLATFORM_EXPORT FontDescription {
     uint32_t font_synthesis_style_ : 1;
     uint32_t font_synthesis_small_caps_ : 1;
     uint32_t subpixel_text_position_ : 1;
-    uint32_t typesetting_features_ : 3;
+    uint32_t typesetting_features_ : TypesettingFeatures::kValueCount;
     uint32_t variant_numeric_ : 8;
     uint32_t variant_east_asian_ : 6;
     uint32_t subpixel_ascent_descent_ : 1;

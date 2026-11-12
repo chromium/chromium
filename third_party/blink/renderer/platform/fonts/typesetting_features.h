@@ -26,21 +26,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_TYPESETTING_FEATURES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_TYPESETTING_FEATURES_H_
 
+#include "base/containers/enum_set.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
-constexpr int kMaxTypesettingFeatureIndex = 2;
-enum TypesettingFeature {
-  kKerning = 1 << 0,
-  kLigatures = 1 << 1,
-  kCaps = 1 << kMaxTypesettingFeatureIndex
-  // When adding new features be sure to increment kMaxFeatureIndex
-  // and update kFeatureNames.
+enum class TypesettingFeature {
+  kKerning,
+  kLigatures,
+  kCaps,
+
+  kMinValue = kKerning,
+  kMaxValue = kCaps,
+  // When adding new features be sure to update kMaxValue and kFeatureNames.
 };
 
-using TypesettingFeatures = uint32_t;
+using TypesettingFeatures = base::EnumSet<TypesettingFeature>;
 
 PLATFORM_EXPORT String ToString(TypesettingFeatures);
 

@@ -299,8 +299,9 @@ bool FontFallbackList::HasSimpleFontFeatures(
 
 bool FontFallbackList::ComputeCanShapeWordByWord(
     const FontDescription& font_description) {
-  if (!font_description.GetTypesettingFeatures())
+  if (font_description.GetTypesettingFeatures().empty()) {
     return true;
+  }
 
   const SimpleFontData* primary_font =
       PrimarySimpleFontDataWithSpace(font_description);

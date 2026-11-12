@@ -11,15 +11,18 @@ namespace blink {
 
 TEST(TypesettingFeaturesTest, ToString) {
   {
-    TypesettingFeatures features = 0;
+    TypesettingFeatures features;
     EXPECT_EQ("", ToString(features));
   }
   {
-    TypesettingFeatures features = kKerning | kLigatures;
+    TypesettingFeatures features = {TypesettingFeature::kKerning,
+                                    TypesettingFeature::kLigatures};
     EXPECT_EQ("Kerning,Ligatures", ToString(features));
   }
   {
-    TypesettingFeatures features = kKerning | kLigatures | kCaps;
+    TypesettingFeatures features = {TypesettingFeature::kKerning,
+                                    TypesettingFeature::kLigatures,
+                                    TypesettingFeature::kCaps};
     EXPECT_EQ("Kerning,Ligatures,Caps", ToString(features));
   }
 }
