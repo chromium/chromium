@@ -11,9 +11,15 @@ import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVA
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
@@ -30,9 +36,11 @@ import org.junit.Rule;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
@@ -69,6 +77,8 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** This is a base class for various Contextual Search instrumentation tests. */
@@ -331,6 +341,9 @@ public class ContextualSearchInstrumentationBase {
 
     protected static final String EXTERNAL_APP_URL =
             "intent://test/#Intent;scheme=externalappscheme;end";
+    protected static final String GEO_SCHEME = "geo";
+    private static final String FAKE_MAPS_ACTIVITY_NAME = "FakeMapsActivity";
+    private static final String FAKE_MAPS_APP_NAME = "Maps";
 
     protected ContextualSearchManager mManager;
     protected ContextualSearchPolicy mPolicy;
@@ -356,6 +369,8 @@ public class ContextualSearchInstrumentationBase {
 
     @Before
     public void setUp() throws Exception {
+        ContextUtils.initApplicationContextForTests(
+                createContextWithGeoIntentHandler(ContextUtils.getApplicationContext()));
         final ChromeActivity activity = mActivityTestRule.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1376,5 +1391,70 @@ public class ContextualSearchInstrumentationBase {
                 () ->
                         readAloudController.setActivePlaybackTab(
                                 mActivityTestRule.getActivity().getActivityTab()));
+    }
+
+    private static Context createContextWithGeoIntentHandler(Context baseContext) {
+        if (baseContext.getPackageManager() instanceof GeoIntentPackageManager) {
+            return baseContext;
+        }
+        return new ContextWrapper(baseContext) {
+            private PackageManager mPackageManager;
+
+            @Override
+            public PackageManager getPackageManager() {
+                if (mPackageManager == null) {
+                    mPackageManager =
+                            new GeoIntentPackageManager(super.getPackageManager(), baseContext);
+                }
+                return mPackageManager;
+            }
+        };
+    }
+
+    private static class GeoIntentPackageManager extends PackageManagerWrapper {
+        private final Context mContext;
+
+        public GeoIntentPackageManager(PackageManager basePm, Context context) {
+            super(basePm);
+            mContext = context;
+        }
+
+        @Override
+        public ResolveInfo resolveActivity(Intent intent, int flags) {
+            if (intent != null && GEO_SCHEME.equals(intent.getScheme())) {
+                return createFakeGeoResolveInfo(mContext);
+            }
+            return super.resolveActivity(intent, flags);
+        }
+
+        @Override
+        public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
+            if (intent != null && GEO_SCHEME.equals(intent.getScheme())) {
+                return Collections.singletonList(createFakeGeoResolveInfo(mContext));
+            }
+            return super.queryIntentActivities(intent, flags);
+        }
+    }
+
+    private static ResolveInfo createFakeGeoResolveInfo(Context baseContext) {
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = baseContext.getPackageName();
+        activityInfo.name = FAKE_MAPS_ACTIVITY_NAME;
+        activityInfo.exported = true;
+        activityInfo.applicationInfo = baseContext.getApplicationInfo();
+        ResolveInfo resolveInfo =
+                new ResolveInfo() {
+                    @Override
+                    public Drawable loadIcon(PackageManager pm) {
+                        return baseContext.getApplicationInfo().loadIcon(pm);
+                    }
+
+                    @Override
+                    public CharSequence loadLabel(PackageManager pm) {
+                        return FAKE_MAPS_APP_NAME;
+                    }
+                };
+        resolveInfo.activityInfo = activityInfo;
+        return resolveInfo;
     }
 }
