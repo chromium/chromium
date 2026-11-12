@@ -145,7 +145,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   gpu::raster::RasterInterface* RasterInterface() const;
   CanvasImageProvider* GetOrCreateImageProvider();
-  void ClearUnusedResources();
   bool IsGpuContextLost() const;
 
   SkSurface* GetSkSurface() const;
@@ -177,12 +176,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
-
- private:
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const {
-    return context_provider_wrapper_;
-  }
 
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;

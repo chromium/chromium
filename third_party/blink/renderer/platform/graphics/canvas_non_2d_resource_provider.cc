@@ -325,7 +325,9 @@ void CanvasNon2DResourceProvider::OnContextLost() {
   if (notified_context_lost_) {
     return;
   }
-  ClearUnusedResources();
+  if (image_pool_) {
+    image_pool_->Clear();
+  }
   // Notify the owner of this resource provider that the GPU context was
   // lost. The call is done in a separate task, so that the owner can delete
   // this resource provider if needed.
@@ -370,12 +372,6 @@ void CanvasNon2DResourceProvider::OnFlushForImage(
   }
 }
 
-void CanvasNon2DResourceProvider::ClearUnusedResources() {
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
-
 void CanvasNon2DResourceProvider::OnResourceRefReturned(
     scoped_refptr<CanvasResourceSharedImage>&& resource) {
   if (!resource->IsLost() && resource->HasOneRef() && image_pool_) {
@@ -385,10 +381,10 @@ void CanvasNon2DResourceProvider::OnResourceRefReturned(
 
 gpu::raster::RasterInterface* CanvasNon2DResourceProvider::RasterInterface()
     const {
-  if (!ContextProviderWrapper()) {
+  if (!context_provider_wrapper_) {
     return nullptr;
   }
-  return ContextProviderWrapper()->ContextProvider().RasterInterface();
+  return context_provider_wrapper_->ContextProvider().RasterInterface();
 }
 
 bool CanvasNon2DResourceProvider::IsGpuContextLost() const {
