@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
-import org.chromium.chrome.test.transit.tabmodel.TabStateInitializedCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Utilities helper class for multi-window tests. */
@@ -218,10 +217,7 @@ public class MultiWindowTestHelper {
                 .getActivity();
     }
 
-    /**
-     * Enters a {@link CtaPageStation} in the window that {@code trip} opens, in a new task, and
-     * waits for its tab state to be initialized.
-     */
+    /** Enters a {@link CtaPageStation} in the window that {@code trip} opens, in a new task. */
     private static CtaPageStation arriveInNewWindow(
             TripBuilder trip, boolean isIncognito, boolean allowSubclasses) {
         CtaPageStation station =
@@ -232,8 +228,6 @@ public class MultiWindowTestHelper {
         if (allowSubclasses) {
             station.getActivityElement().allowSubclasses();
         }
-        return trip.inNewTask()
-                .waitForAnd(new TabStateInitializedCondition(station.tabModelSelectorElement))
-                .arriveAt(station);
+        return trip.inNewTask().arriveAt(station);
     }
 }

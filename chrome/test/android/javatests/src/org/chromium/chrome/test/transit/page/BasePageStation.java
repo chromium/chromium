@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.tabmodel.TabAddedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabStateInitializedCondition;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -269,6 +270,8 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             // callbacks.
             activityTabElement =
                     declareEnterConditionAsElement(new AnyActivityTabCondition<>(mActivityElement));
+            // The window may still be restoring tabs from disk.
+            declareEnterCondition(new TabStateInitializedCondition(tabModelSelectorElement));
         } else {
             Supplier<Tab> selectedTabSupplier;
             if (config.mNumTabsBeingSelected > 0) {
