@@ -106,6 +106,11 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
     }
   }
 
+  void FlushPendingWork() override {
+    viz::TestContextSupport::FlushPendingWork();
+    ++flush_pending_work_count_;
+  }
+
   void ShallowFlushCHROMIUM() override {
     viz::TestRasterInterface::ShallowFlushCHROMIUM();
     ++shallow_flush_count_;
@@ -114,6 +119,8 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
   size_t aggressively_free_resources_count() const {
     return aggressively_free_resources_count_;
   }
+
+  size_t flush_pending_work_count() const { return flush_pending_work_count_; }
 
   size_t shallow_flush_count() const { return shallow_flush_count_; }
 
@@ -128,6 +135,7 @@ class FakeGPUImageDecodeTestRasterInterface : public viz::TestRasterInterface,
   size_t mapped_entry_size_ = 0;
   base::AlignedHeapArray<uint8_t> mapped_entry_;
   size_t aggressively_free_resources_count_ = 0;
+  size_t flush_pending_work_count_ = 0;
   size_t shallow_flush_count_ = 0;
 };
 
@@ -4297,18 +4305,31 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest,
   EXPECT_EQ(cache_->GetNumCacheEntriesForTesting(), 0u);
   EXPECT_FALSE(cache_->HasPendingPurgeTaskForTesting());
   EXPECT_EQ(cache_->ids_pending_deletion_count_for_testing(), 0u);
+  EXPECT_EQ(test_support->flush_pending_work_count(), 5u);
   EXPECT_EQ(test_raster->shallow_flush_count(), 2u);
   EXPECT_EQ(test_support->aggressively_free_resources_count(), 3u);
 
-  FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(test_support->aggressively_free_resources_count(), 4u);
-
-  // When there are no pending unlock or deletion operations,
-  // TryFlushPendingWork() is a no-op and does not flush or schedule idle work.
+  // A per-frame `ReduceCacheUsage()` call with no pending unlock or deletion
+  // work while the 1s idle cleanup is pending still flushes context work, but
+  // does not notify `ContextCacheController` or delay the scheduled cleanup.
+  FastForwardBy(base::Milliseconds(500));
   cache_->ReduceCacheUsage();
-  FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(test_raster->shallow_flush_count(), 2u);
+  EXPECT_EQ(test_support->flush_pending_work_count(), 6u);
+  EXPECT_EQ(test_raster->shallow_flush_count(), 3u);
+  EXPECT_EQ(test_support->aggressively_free_resources_count(), 3u);
+
+  FastForwardBy(base::Milliseconds(500));
   EXPECT_EQ(test_support->aggressively_free_resources_count(), 4u);
+  EXPECT_EQ(test_support->flush_pending_work_count(), 7u);
+
+  // Once already idle, another no-op `ReduceCacheUsage()` still flushes
+  // pending context work without scheduling a new idle cleanup.
+  cache_->ReduceCacheUsage();
+  EXPECT_EQ(test_support->flush_pending_work_count(), 8u);
+  EXPECT_EQ(test_raster->shallow_flush_count(), 4u);
+  FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(test_support->aggressively_free_resources_count(), 4u);
+  EXPECT_EQ(test_support->flush_pending_work_count(), 8u);
 
   {
     viz::RasterContextProvider::ScopedRasterContextLock context_lock(

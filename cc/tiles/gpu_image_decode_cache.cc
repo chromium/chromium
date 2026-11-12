@@ -8,7 +8,9 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -1348,10 +1350,6 @@ Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
 }
 
 bool GpuImageDecodeCache::TryFlushPendingWork() {
-  if (ids_pending_unlock_.empty() && ids_pending_deletion_.empty()) {
-    return true;
-  }
-
   // This is typically called when no tasks are running (between scheduling
   // tasks). Try to lock and run pending operations if possible, but don't
   // block on it.
@@ -1367,7 +1365,15 @@ bool GpuImageDecodeCache::TryFlushPendingWork() {
     return false;
   }
 
-  auto busy = context_->CacheController()->ClientBecameBusy();
+  // Only notify `ContextCacheController` when there is pending unlock or
+  // deletion work to flush. The flush itself always runs below so that the
+  // GPU channel's deferred messages keep being sent every frame, but no-op
+  // calls must not count as busy periods: that would keep invalidating the
+  // controller's pending idle cleanup on every frame.
+  std::unique_ptr<viz::ContextCacheController::ScopedBusy> busy;
+  if (!ids_pending_unlock_.empty() || !ids_pending_deletion_.empty()) {
+    busy = context_->CacheController()->ClientBecameBusy();
+  }
 
   // The calls below will empty the cache on the GPU side. These calls will
   // also happen on the next frame, but we want to call them ourselves here to
@@ -1384,7 +1390,9 @@ bool GpuImageDecodeCache::TryFlushPendingWork() {
   // deleted. We only need a shallow flush because no glFlush() is required, we
   // merely need the deletion commands to be processed service-side.
   context_->RasterInterface()->ShallowFlushCHROMIUM();
-  context_->CacheController()->ClientBecameNotBusy(std::move(busy));
+  if (busy) {
+    context_->CacheController()->ClientBecameNotBusy(std::move(busy));
+  }
   if (context_->GetLock()) {
     CheckContextLockAcquiredIfNecessary();
     context_->GetLock()->Release();
