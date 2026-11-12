@@ -978,6 +978,8 @@ if (!is_android) {
   source_set("interactive_ui_test_support") {
     testonly = true
     sources = [
+      "contextual_tasks_context_management_interactive_test_base.cc",
+      "contextual_tasks_context_management_interactive_test_base.h",
       "contextual_tasks_interactive_test_base.cc",
       "contextual_tasks_interactive_test_base.h",
     ]
@@ -986,12 +988,18 @@ if (!is_android) {
       ":test_support",
       ":ui",
       "//chrome/browser/signin:identity_test_support",
+      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/lens:interactive_ui_test_support",
+      "//chrome/common:constants",
       "//components/contextual_tasks/public",
       "//components/omnibox/browser:test_support",
       "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//services/network/public/mojom",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/base/interaction",
+      "//ui/views/controls/webview",
     ]
     deps = [
       ":impl",
@@ -999,19 +1007,30 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/glic/browser_ui:glow",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/browser/signin:test_support",
       "//chrome/browser/sync",
+      "//chrome/browser/tab_list",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/contextual_search",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test/base:browser_test_waiters",
+      "//components/lens",
       "//components/lens:enterprise_policy",
+      "//components/omnibox/common:features",
+      "//components/sessions",
       "//components/signin/public/identity_manager:test_support",
       "//net:test_support",
       "//skia",
       "//third_party/lens_server_proto:lens_overlay_proto",
+      "//third_party/omnibox_proto",
+      "//ui/views",
     ]
   }
 }
@@ -1053,6 +1072,8 @@ source_set("interactive_ui_tests") {
     sources += [
       "contextual_tasks_context_management_interactive_uitest.cc",
       "contextual_tasks_interactive_uitest.cc",
+      "contextual_tasks_ntp_realbox_context_management_interactive_uitest.cc",
+      "contextual_tasks_omnibox_context_management_interactive_uitest.cc",
       "contextual_tasks_side_panel_coordinator_interactive_uitest.cc",
       "contextual_tasks_ui_service_interactive_uitest.cc",
       "search_journey_interactive_uitest.cc",
