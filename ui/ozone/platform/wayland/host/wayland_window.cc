@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -100,6 +101,25 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
   SetWmDragHandler(this, this);
 }
 
+WaylandWindow::PendingSubsurfaceDestroy::PendingSubsurfaceDestroy(
+    int64_t after_seq,
+    gfx::AcceleratedWidget child_widget,
+    std::unique_ptr<WaylandSurface> surface,
+    wl::Object<wl_subsurface> subsurface)
+    : after_seq(after_seq),
+      child_widget(child_widget),
+      surface(std::move(surface)),
+      subsurface(std::move(subsurface)) {}
+
+WaylandWindow::PendingSubsurfaceDestroy::PendingSubsurfaceDestroy(
+    PendingSubsurfaceDestroy&&) noexcept = default;
+
+WaylandWindow::PendingSubsurfaceDestroy&
+WaylandWindow::PendingSubsurfaceDestroy::operator=(
+    PendingSubsurfaceDestroy&&) noexcept = default;
+
+WaylandWindow::PendingSubsurfaceDestroy::~PendingSubsurfaceDestroy() = default;
+
 WaylandWindow::~WaylandWindow() {
   CHECK(ui_task_runner_->BelongsToCurrentThread());
   shutting_down_ = true;
@@ -108,7 +128,7 @@ WaylandWindow::~WaylandWindow() {
 
   ReleaseCapture();
 
-  if (wayland_overlay_delegation_enabled_) {
+  if (wayland_overlay_delegation_enabled_ && primary_subsurface_) {
     connection_->window_manager()->RemoveSubsurface(GetWidget(),
                                                     primary_subsurface_.get());
     connection_->window_manager()->RecycleSubsurface(
@@ -118,7 +138,7 @@ WaylandWindow::~WaylandWindow() {
     connection_->window_manager()->RemoveSubsurface(GetWidget(),
                                                     widget_subsurface.get());
   }
-  if (root_surface_) {
+  if (connection_->window_manager()->IsWindowValid(this)) {
     connection_->window_manager()->RemoveWindow(GetWidget());
   }
 
@@ -151,6 +171,7 @@ WaylandWindow::~WaylandWindow() {
   for (auto bubble : child_bubbles_) {
     bubble->set_parent_window(nullptr);
   }
+  pending_subsurface_destroys_.clear();
 
   if (focus_client_) {
     focus_client_->OnKeyboardFocusChanged(false);
@@ -276,6 +297,54 @@ void WaylandWindow::ActivateBubble(WaylandBubble* window) {
     auto weak_this = AsWeakPtr();
     delegate()->OnActivationChanged(IsActive());
   }
+}
+
+wl::Object<wl_subsurface> WaylandWindow::RemoveChildSubsurface(
+    gfx::AcceleratedWidget child,
+    std::unique_ptr<WaylandSurface> surface,
+    wl::Object<wl_subsurface> subsurface) {
+  if (!surface && !subsurface) {
+    std::erase_if(pending_subsurface_destroys_, [child](const auto& e) {
+      return !e.surface && e.child_widget == child;
+    });
+    return {};
+  }
+
+  if (surface && !subsurface) {
+    for (auto& e : pending_subsurface_destroys_) {
+      if (!e.surface && e.child_widget == child) {
+        e.surface = std::move(surface);
+        return {};
+      }
+    }
+    return {};
+  }
+
+  const std::optional<int64_t> after_seq = GetInFlightAppliedVizSeq();
+  if (!after_seq.has_value()) {
+    if (surface) {
+      subsurface.reset();
+      return {};
+    }
+    return subsurface;
+  }
+
+  // Per the wl_subsurface protocol specification, destroying a subsurface takes
+  // effect immediately. When this window has an unlatched state transition in
+  // flight (e.g. a compositor-initiated fullscreen exit during which Mutter
+  // freezes the window's surface actors until the resized parent buffer is
+  // committed), synchronize removal with the parent commit by switching to sync
+  // mode, attaching a null buffer, and deferring wl_subsurface destruction
+  // until OnFrameCommitted() commits that frame.
+  wl_subsurface_set_sync(subsurface.get());
+  if (surface) {
+    wl_surface_attach(surface->surface(), nullptr, 0, 0);
+    surface->Commit(false);
+    connection_->Flush();
+  }
+  pending_subsurface_destroys_.emplace_back(
+      *after_seq, child, std::move(surface), std::move(subsurface));
+  return {};
 }
 
 void WaylandWindow::SetWindowScale(float new_scale) {
@@ -501,12 +570,35 @@ void WaylandWindow::Hide() {
     wl_surface_attach(root_surface_->surface(), nullptr, 0, 0);
     root_surface_->Commit(false);
   }
+
+  pending_subsurface_destroys_.clear();
 }
 
 void WaylandWindow::ClearInFlightRequestsSerial() {
   for (auto& request : in_flight_requests_) {
     request.serial = -1;
   }
+}
+
+void WaylandWindow::OnFrameCommitted(int64_t seq) {
+  if (std::erase_if(pending_subsurface_destroys_, [seq](const auto& e) {
+        return seq == -1 || e.after_seq <= seq;
+      })) {
+    connection_->Flush();
+  }
+}
+
+std::optional<int64_t> WaylandWindow::GetInFlightAppliedVizSeq() {
+  if (!IsSurfaceConfigured() ||
+      applied_state_.window_state == PlatformWindowState::kMinimized) {
+    return std::nullopt;
+  }
+  for (const auto& req : base::Reversed(in_flight_requests_)) {
+    if (req.applied) {
+      return req.viz_seq;
+    }
+  }
+  return std::nullopt;
 }
 
 void WaylandWindow::OnChannelDestroyed() {
@@ -1248,6 +1340,10 @@ uint32_t WaylandWindow::DispatchEventToDelegate(
 std::unique_ptr<WaylandSurface> WaylandWindow::TakeWaylandSurface() {
   CHECK(shutting_down_, base::NotFatalUntil::M163);
   CHECK(root_surface_, base::NotFatalUntil::M163);
+  // Clear pending and submitted frames referencing `root_surface_` before
+  // transferring ownership, as the caller may destroy the returned surface
+  // before `~WaylandWindow()` destroys `frame_manager_`.
+  frame_manager_->ClearStates();
   root_surface_->UnsetRootWindow();
   return std::move(root_surface_);
 }
@@ -1669,7 +1765,11 @@ void WaylandWindow::ProcessSequencePoint(int64_t viz_seq) {
   }
 
   // Latch the latest state which was actually applied.
+  auto weak_this = AsWeakPtr();
   LatchStateRequest(*iter);
+  if (!weak_this) {
+    return;
+  }
 
   in_flight_requests_.erase(in_flight_requests_.begin(), ++iter);
 
@@ -1803,6 +1903,18 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
     return;
   }
   latest.viz_seq = viz_seq;
+  if (viz_seq == -1) {
+    if (std::erase_if(pending_subsurface_destroys_,
+                      [](const auto& e) { return e.after_seq == -1; })) {
+      connection_->Flush();
+    }
+  } else {
+    for (auto& e : pending_subsurface_destroys_) {
+      if (e.after_seq == -1) {
+        e.after_seq = viz_seq;
+      }
+    }
+  }
   OnStateRequestApplied(old, latest.state, viz_seq, latest.from_client);
 
   if (UseTestConfigForPlatformWindows()) {
@@ -1847,6 +1959,9 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // Otherwise, such tests as interactive_ui_tests fail.
   if (UseTestConfigForPlatformWindows() && latch_immediately_for_testing_) {
     ProcessSequencePoint(INT64_MAX);
+    if (weak_this) {
+      pending_subsurface_destroys_.clear();
+    }
   }
 }
 

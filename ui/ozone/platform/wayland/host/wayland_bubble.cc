@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"
 
+#include <utility>
+
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -25,6 +27,11 @@ WaylandBubble::WaylandBubble(PlatformWindowDelegate* delegate,
 
 WaylandBubble::~WaylandBubble() {
   if (parent_window()) {
+    if (root_surface()) {
+      set_shutting_down();
+      parent_window()->RemoveChildSubsurface(GetWidget(), TakeWaylandSurface(),
+                                             std::move(subsurface_));
+    }
     parent_window()->RemoveBubble(this);
   }
 }
@@ -39,6 +46,9 @@ void WaylandBubble::Show(bool inactive) {
   if (!weak_this) {
     return;
   }
+  if (parent_window()) {
+    parent_window()->RemoveChildSubsurface(GetWidget(), nullptr, {});
+  }
   AddToParentAsSubsurface();
   if (!weak_this) {
     return;
@@ -51,13 +61,18 @@ void WaylandBubble::Hide() {
     return;
   }
 
+  wl::Object<wl_subsurface> subsurface = std::move(subsurface_);
+  if (parent_window()) {
+    subsurface = parent_window()->RemoveChildSubsurface(GetWidget(), nullptr,
+                                                        std::move(subsurface));
+  }
   WaylandWindow::Hide();
+  subsurface.reset();
   auto weak_this = AsWeakPtr();
   Deactivate();
   if (!weak_this) {
     return;
   }
-  subsurface_.reset();
   connection()->Flush();
 }
 

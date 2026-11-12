@@ -797,6 +797,7 @@ void WaylandToplevelWindow::OnSequencePoint(int64_t seq) {
 }
 
 void WaylandToplevelWindow::OnFrameCommitted(int64_t seq) {
+  WaylandWindow::OnFrameCommitted(seq);
   if (pending_bounds_viz_seq_.has_value() &&
       (seq == -1 || seq >= *pending_bounds_viz_seq_)) {
     pending_bounds_viz_seq_.reset();

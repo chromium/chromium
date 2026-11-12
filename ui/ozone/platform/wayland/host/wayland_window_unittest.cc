@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -7202,6 +7203,347 @@ TEST_P(WaylandWindowTest, WaylandBubbleHideUaf) {
   // This should not crash if the bubble is destroyed during Hide().
   wayland_bubble->Hide();
   EXPECT_FALSE(wayland_bubble);
+}
+
+// Verifies that when a WaylandBubble is hidden and destroyed during a
+// compositor-initiated parent state transition (such as exiting fullscreen via
+// a window manager shortcut), its wl_subsurface switches to synchronized mode,
+// detaches its buffer, and remains alive until the parent surface commits the
+// frame latching that configure. See crbug.com/409838505.
+TEST_P(WaylandWindowTest, WaylandBubbleUnmapSyncedWithParentConfigureAndFrame) {
+  const gfx::Size kFullscreenSize(1280, 800);
+  const gfx::Size kRestoredSize(1026, 755);
+  const gfx::Size kBubbleSize(425, 55);
+  auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
+  buffer_manager_gpu_->Initialize(
+      std::move(interface_ptr), {},
+      ozone::mojom::WaylandBufferManagerCapabilities::New(
+          /*supports_dma_buf=*/false, /*supports_viewporter=*/true,
+          /*supports_acquire_fence=*/false, /*supports_overlays=*/true,
+          /*supports_single_pixel_buffer=*/true,
+          /*compositor_tone_maps_using_clli=*/false,
+          /*compositor_tone_maps_using_mdcv=*/false));
+  auto present_root_frame = [&](WaylandWindow* target_window,
+                                const gfx::Size& buffer_size, int64_t viz_seq) {
+    const uint32_t buffer_id = ++buffer_id_gen_;
+    buffer_manager_gpu_->CreateShmBasedBuffer(
+        MakeFD(), buffer_size.width() * buffer_size.height() * 4, buffer_size,
+        buffer_id);
+    // The buffer is created and the frame is committed through asynchronous
+    // mojo calls to the host, so wait for each of them to be processed.
+    WaylandBufferHandle* buffer = nullptr;
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      buffer = connection_->buffer_manager_host()->EnsureBufferHandle(
+          target_window->root_surface(), buffer_id);
+      return buffer != nullptr;
+    }));
+    std::vector<wl::WaylandOverlayConfig> overlays;
+    wl::WaylandOverlayConfig root_config;
+    root_config.z_order = INT32_MIN;
+    root_config.buffer_id = buffer->id();
+    root_config.bounds_rect = gfx::RectF(gfx::SizeF(buffer_size));
+    root_config.damage_region = gfx::Rect(buffer_size);
+    overlays.push_back(std::move(root_config));
+    gfx::FrameData frame_data(viz_seq);
+    target_window->CommitOverlays(++frame_id_gen_, std::move(frame_data),
+                                  overlays);
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return target_window->root_surface()->buffer_id() == buffer_id;
+    }));
+    WaylandTestBase::SyncDisplay();
+  };
+
+  // Enter fullscreen on the parent toplevel window and latch it.
+  auto fullscreen_states = MakeStateArray(
+      {XDG_TOPLEVEL_STATE_FULLSCREEN, XDG_TOPLEVEL_STATE_ACTIVATED});
+  SendConfigureEvent(surface_id_, kFullscreenSize, fullscreen_states, 10u);
+  const int64_t fullscreen_viz_seq = delegate_.viz_seq();
+  present_root_frame(window_.get(), kFullscreenSize, fullscreen_viz_seq);
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    server->GetObject<wl::MockSurface>(id)->SendFrameCallback();
+  });
+  WaylandTestBase::SyncDisplay();
+
+  // Show the fullscreen exit instruction bubble and attach a buffer to it.
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> bubble_delegate(
+      connection_.get());
+  auto wayland_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect({427, 40}, kBubbleSize),
+      &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+  const uint32_t bubble_surface_id =
+      wayland_bubble->root_surface()->get_surface_id();
+  present_root_frame(wayland_bubble.get(), kBubbleSize, /*viz_seq=*/-1);
+
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    ASSERT_TRUE(bubble_surface->sub_surface());
+    EXPECT_FALSE(bubble_surface->sub_surface()->sync());
+    EXPECT_NE(bubble_surface->attached_buffer(), nullptr);
+  });
+
+  // Simulate WM-initiated fullscreen exit: during OnWindowStateChanged,
+  // BrowserView::PrepareFullscreen(false) closes the bubble (calling Hide()
+  // synchronously, followed by widget destruction before the resized parent
+  // frame is produced by Viz).
+  EXPECT_CALL(delegate_, OnWindowStateChanged(PlatformWindowState::kFullScreen,
+                                              PlatformWindowState::kNormal))
+      .WillOnce([&]() { wayland_bubble->Hide(); });
+
+  constexpr uint32_t kUnfullscreenSerial = 11u;
+  auto restored_states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, kRestoredSize, restored_states,
+                     kUnfullscreenSerial);
+  const int64_t unfullscreen_viz_seq = delegate_.viz_seq();
+  EXPECT_FALSE(wayland_bubble->IsVisible());
+
+  // Destroy the WaylandBubble before the parent frame arrives (matching
+  // views::Widget::CloseNow posted task).
+  wayland_bubble.reset();
+  connection_->Flush();
+
+  // The bubble's wl_surface and wl_subsurface must remain alive in synchronized
+  // mode with a null buffer attached until the parent commits the frame for
+  // `unfullscreen_viz_seq`.
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    ASSERT_TRUE(bubble_surface->sub_surface());
+    EXPECT_TRUE(bubble_surface->sub_surface()->sync());
+    EXPECT_EQ(bubble_surface->attached_buffer(), nullptr);
+  });
+
+  // An earlier pre-configure frame (`fullscreen_viz_seq`) does not latch the
+  // unfullscreen configure and therefore must not destroy the subsurface yet.
+  present_root_frame(window_.get(), kFullscreenSize, fullscreen_viz_seq);
+  PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
+    server->GetObject<wl::MockSurface>(id)->SendFrameCallback();
+  });
+  WaylandTestBase::SyncDisplay();
+
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    EXPECT_TRUE(bubble_surface->sub_surface());
+  });
+
+  // Committing the resized parent frame that latches `unfullscreen_viz_seq`
+  // acks the configure and destroys the deferred bubble subsurface and surface.
+  present_root_frame(window_.get(), kRestoredSize, unfullscreen_viz_seq);
+
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    EXPECT_EQ(server->GetObject<wl::MockSurface>(bubble_surface_id), nullptr);
+  });
+}
+
+TEST_P(WaylandWindowTest,
+       WaylandBubbleHideShowReuseDuringPendingParentConfigure) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> bubble_delegate(
+      connection_.get());
+  auto wayland_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &bubble_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+  const uint32_t bubble_surface_id =
+      wayland_bubble->root_surface()->get_surface_id();
+
+  auto* buffer =
+      CreateTestShmBuffer(gfx::Size(50, 50), wayland_bubble->root_surface());
+  ASSERT_TRUE(buffer);
+  std::vector<wl::WaylandOverlayConfig> overlays;
+  wl::WaylandOverlayConfig root_config;
+  root_config.z_order = INT32_MIN;
+  root_config.buffer_id = buffer->id();
+  root_config.bounds_rect = gfx::RectF(50, 50);
+  root_config.damage_region = gfx::Rect(50, 50);
+  overlays.push_back(std::move(root_config));
+  wayland_bubble->CommitOverlays(++frame_id_gen_, gfx::FrameData(-1), overlays);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return wayland_bubble->root_surface()->buffer_id() == buffer->id();
+  }));
+  WaylandTestBase::SyncDisplay();
+
+  // When the parent has no in-flight configure, Hide() must attach a null
+  // buffer and commit before destroying the wl_subsurface (Weston raises a
+  // protocol error on wl_surface reuse if unmapped without attaching a null
+  // buffer first).
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    testing::InSequence seq;
+    EXPECT_CALL(*bubble_surface, Attach(nullptr, 0, 0))
+        .WillOnce([bubble_surface]() {
+          ASSERT_NE(bubble_surface->sub_surface(), nullptr);
+          EXPECT_FALSE(bubble_surface->sub_surface()->sync());
+        });
+    EXPECT_CALL(*bubble_surface, Commit()).WillOnce([bubble_surface]() {
+      ASSERT_NE(bubble_surface->sub_surface(), nullptr);
+      EXPECT_FALSE(bubble_surface->sub_surface()->sync());
+    });
+  });
+  wayland_bubble->Hide();
+  EXPECT_FALSE(wayland_bubble->IsVisible());
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    testing::Mock::VerifyAndClearExpectations(bubble_surface);
+    EXPECT_FALSE(bubble_surface->sub_surface());
+  });
+
+  wayland_bubble->Show(false);
+  EXPECT_TRUE(wayland_bubble->IsVisible());
+
+  // Send an unlatched resize configure to the parent.
+  auto states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, {500, 300}, states, 12u);
+
+  // Hiding while the parent configure is in flight switches the subsurface to
+  // sync mode before attaching the null buffer and keeps it alive.
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    testing::InSequence seq;
+    EXPECT_CALL(*bubble_surface, Attach(nullptr, 0, 0))
+        .WillOnce([bubble_surface]() {
+          ASSERT_NE(bubble_surface->sub_surface(), nullptr);
+          EXPECT_TRUE(bubble_surface->sub_surface()->sync());
+        });
+    EXPECT_CALL(*bubble_surface, Commit()).WillOnce([bubble_surface]() {
+      ASSERT_NE(bubble_surface->sub_surface(), nullptr);
+      EXPECT_TRUE(bubble_surface->sub_surface()->sync());
+    });
+  });
+  wayland_bubble->Hide();
+  EXPECT_FALSE(wayland_bubble->IsVisible());
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    testing::Mock::VerifyAndClearExpectations(bubble_surface);
+    ASSERT_TRUE(bubble_surface->sub_surface());
+    EXPECT_TRUE(bubble_surface->sub_surface()->sync());
+  });
+
+  // Showing the same bubble again before the parent latches must cleanly
+  // replace the pending subsurface without protocol errors.
+  wayland_bubble->Show(false);
+  EXPECT_TRUE(wayland_bubble->IsVisible());
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    ASSERT_TRUE(bubble_surface->sub_surface());
+    EXPECT_FALSE(bubble_surface->sub_surface()->sync());
+  });
+
+  // Hide again and advance the parent sequence point; the pending subsurface
+  // must now be destroyed while `wayland_bubble`'s wl_surface stays alive.
+  wayland_bubble->Hide();
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+  connection_->Flush();
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    EXPECT_FALSE(bubble_surface->sub_surface());
+  });
+}
+
+TEST_P(WaylandWindowTest, WaylandBubbleDirectDestroyGpuCrashAndNestedParent) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> bubble_delegate(
+      connection_.get());
+  auto wayland_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(10, 10, 50, 50), &bubble_delegate,
+      window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+  const uint32_t bubble_surface_id =
+      wayland_bubble->root_surface()->get_surface_id();
+
+  auto* buffer =
+      CreateTestShmBuffer(gfx::Size(50, 50), wayland_bubble->root_surface());
+  ASSERT_TRUE(buffer);
+  std::vector<wl::WaylandOverlayConfig> overlays;
+  wl::WaylandOverlayConfig root_config;
+  root_config.z_order = INT32_MIN;
+  root_config.buffer_id = buffer->id();
+  root_config.bounds_rect = gfx::RectF(50, 50);
+  root_config.damage_region = gfx::Rect(50, 50);
+  overlays.push_back(std::move(root_config));
+  wayland_bubble->CommitOverlays(++frame_id_gen_, gfx::FrameData(-1), overlays);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return wayland_bubble->root_surface()->buffer_id() == buffer->id();
+  }));
+  WaylandTestBase::SyncDisplay();
+
+  // Send an unlatched resize configure to `window_`.
+  auto states = InitializeWlArrayWithActivatedState();
+  SendConfigureEvent(surface_id_, {500, 300}, states, 15u);
+
+  // A nested bubble whose direct parent (`wayland_bubble`) has no in-flight
+  // configure of its own must not defer destruction against `window_`'s
+  // per-window `viz_seq`.
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> nested_delegate(
+      connection_.get());
+  auto nested_bubble = CreateWaylandWindowWithParams(
+      PlatformWindowType::kBubble, gfx::Rect(15, 15, 20, 20), &nested_delegate,
+      wayland_bubble->GetWidget());
+  ASSERT_TRUE(nested_bubble);
+  const uint32_t nested_surface_id =
+      nested_bubble->root_surface()->get_surface_id();
+  const uint32_t nested_buffer_id = ++buffer_id_gen_;
+  buffer_manager_gpu_->CreateShmBasedBuffer(
+      MakeFD(), 20 * 20 * 4, gfx::Size(20, 20), nested_buffer_id);
+  WaylandBufferHandle* nested_buffer = nullptr;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    nested_buffer = connection_->buffer_manager_host()->EnsureBufferHandle(
+        nested_bubble->root_surface(), nested_buffer_id);
+    return nested_buffer != nullptr;
+  }));
+  std::vector<wl::WaylandOverlayConfig> nested_overlays;
+  wl::WaylandOverlayConfig nested_root_config;
+  nested_root_config.z_order = INT32_MIN;
+  nested_root_config.buffer_id = nested_buffer->id();
+  nested_root_config.bounds_rect = gfx::RectF(20, 20);
+  nested_root_config.damage_region = gfx::Rect(20, 20);
+  nested_overlays.push_back(std::move(nested_root_config));
+  nested_bubble->CommitOverlays(++frame_id_gen_, gfx::FrameData(-1),
+                                nested_overlays);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return nested_bubble->root_surface()->buffer_id() == nested_buffer->id();
+  }));
+  WaylandTestBase::SyncDisplay();
+  nested_bubble.reset();
+  connection_->Flush();
+  PostToServerAndWait([nested_surface_id](wl::TestWaylandServerThread* server) {
+    EXPECT_EQ(server->GetObject<wl::MockSurface>(nested_surface_id), nullptr);
+  });
+
+  // Destroying `wayland_bubble` directly (without `Hide()`) while `window_` has
+  // an unlatched configure must switch to sync mode, attach a null buffer, and
+  // keep the surface and subsurface alive until released.
+  wayland_bubble.reset();
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    auto* bubble_surface =
+        server->GetObject<wl::MockSurface>(bubble_surface_id);
+    ASSERT_TRUE(bubble_surface);
+    ASSERT_TRUE(bubble_surface->sub_surface());
+    EXPECT_TRUE(bubble_surface->sub_surface()->sync());
+    EXPECT_EQ(bubble_surface->attached_buffer(), nullptr);
+  });
+
+  // GPU-process crash (`seq == -1` via `OnChannelDestroyed()`) releases all
+  // pending subsurface destroys immediately.
+  window_->OnChannelDestroyed();
+  PostToServerAndWait([bubble_surface_id](wl::TestWaylandServerThread* server) {
+    EXPECT_EQ(server->GetObject<wl::MockSurface>(bubble_surface_id), nullptr);
+  });
 }
 
 TEST_P(WaylandWindowTest, WaylandPopupShowUaf) {
