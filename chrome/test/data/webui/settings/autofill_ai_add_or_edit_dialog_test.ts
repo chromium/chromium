@@ -584,6 +584,82 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           'IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT'));
     }
   });
+
+  test('WalletLogoWithGradient', async function() {
+    loadTimeData.overrideValues({
+      isAutofillAiWalletPassBranding2026Enabled: false,
+      autofillEnableGradientGoogleLogos: true,
+    });
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+    const newPrivatePass = structuredClone(testEntityInstance);
+    newPrivatePass.guid = '';
+    newPrivatePass.type.supportsWalletStorage = true;
+    newPrivatePass.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    dialog.entityInstance = newPrivatePass;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const brandingImage = dialog.shadowRoot.querySelector('#branding-image');
+    // `#branding-image` is only present in Google Chrome branded builds.
+    if (brandingImage) {
+      const source = brandingImage.querySelector('source');
+      const img = brandingImage.querySelector('img');
+      assertTrue(!!source);
+      assertTrue(!!img);
+      assertTrue(source.srcset.includes(
+          'IDR_AUTOFILL_GOOGLE_WALLET_WITH_GRADIENT_DARK'));
+      assertTrue(
+          img.srcset.includes('IDR_AUTOFILL_GOOGLE_WALLET_WITH_GRADIENT'));
+    }
+  });
+
+  test('WalletLogoWithoutGradient', async function() {
+    loadTimeData.overrideValues({
+      isAutofillAiWalletPassBranding2026Enabled: false,
+      autofillEnableGradientGoogleLogos: false,
+    });
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+    const newPrivatePass = structuredClone(testEntityInstance);
+    newPrivatePass.guid = '';
+    newPrivatePass.type.supportsWalletStorage = true;
+    newPrivatePass.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    dialog.entityInstance = newPrivatePass;
+    document.body.appendChild(dialog);
+
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
+
+    const brandingImage = dialog.shadowRoot.querySelector('#branding-image');
+    // `#branding-image` is only present in Google Chrome branded builds.
+    if (brandingImage) {
+      const source = brandingImage.querySelector('source');
+      const img = brandingImage.querySelector('img');
+      assertTrue(!!source);
+      assertTrue(!!img);
+      assertTrue(source.srcset.includes('IDR_AUTOFILL_GOOGLE_WALLET_DARK'));
+      assertFalse(source.srcset.includes(
+          'IDR_AUTOFILL_GOOGLE_WALLET_WITH_GRADIENT_DARK'));
+      assertTrue(img.srcset.includes('IDR_AUTOFILL_GOOGLE_WALLET'));
+      assertFalse(
+          img.srcset.includes('IDR_AUTOFILL_GOOGLE_WALLET_WITH_GRADIENT'));
+    }
+  });
 });
 
 suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {

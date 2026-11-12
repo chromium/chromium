@@ -23,14 +23,10 @@ export function getHtml(this: SettingsAutofillAiAddOrEditDialogElement) {
       ` : html`
         <div class="title-icon-container">
           <picture id="branding-image">
-            <source
-                srcset="${this.getScaledSrcSet_(
-                    'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_DARK')}"
+            <source srcset="${this.getWalletDarkModeLogoSrcSet_()}"
                 media="(prefers-color-scheme: dark)">
-            <img
-                srcset="${this.getScaledSrcSet_(
-                    'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET')}"
-                alt="" role="presentation">
+            <img srcset="${this.getWalletLightModeLogoSrcSet_()}" alt=""
+                role="presentation">
           </picture>
         </div>
       `}

@@ -602,6 +602,20 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     return this.getScaledSrcSet_(iconId);
   }
 
+  protected getWalletLightModeLogoSrcSet_(): string {
+    const logoId = this.autofillEnableGradientGoogleLogos_ ?
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_WITH_GRADIENT' :
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET';
+    return this.getScaledSrcSet_(logoId);
+  }
+
+  protected getWalletDarkModeLogoSrcSet_(): string {
+    const logoId = this.autofillEnableGradientGoogleLogos_ ?
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_WITH_GRADIENT_DARK' :
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_DARK';
+    return this.getScaledSrcSet_(logoId);
+  }
+
   /**
    * Returns true if the date is invalid. A date is invalid either if it is
    * incomplete (i.e. only some of the month, day, year selectors are empty), or
