@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/common/instance_independent_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/host/context/glic_active_instance_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -142,6 +143,11 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       this, profile_, enabling);
   onboarding_tracker_ =
       std::make_unique<GlicOnboardingTracker>(profile_, enabling);
+  wayfinding_controller_ = std::make_unique<GlicWayfindingController>(
+      profile_->GetPrefs(),
+      /*was_opened_before=*/!profile_->GetPrefs()
+          ->GetTime(prefs::kGlicLastInvokedTime)
+          .is_null());
   metrics_.StartPeriodicMetricsRecording();
 }
 
@@ -255,6 +261,9 @@ GlicInstanceCoordinatorImpl::TakeInvokeHandlers(GlicInstance* instance) {
 
 void GlicInstanceCoordinatorImpl::OnInvoked(mojom::InvocationSource source,
                                             ukm::SourceId source_id) {
+  if (wayfinding_controller_) {
+    wayfinding_controller_->OnInvoke(source);
+  }
   if (onboarding_tracker_) {
     onboarding_tracker_->OnInvoke(source, source_id);
   }

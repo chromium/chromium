@@ -37,6 +37,7 @@
 #include "chrome/browser/glic/service/glic_instance_limit_calculator.h"
 #include "chrome/browser/glic/service/glic_invoke_handler.h"
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
+#include "chrome/browser/glic/service/glic_wayfinding_controller.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
 #include "chrome/browser/profiles/profile.h"
@@ -408,6 +409,7 @@ class GlicInstanceCoordinatorImpl
   bool warming_enabled_ = true;
 
   std::unique_ptr<GlicOnboardingTracker> onboarding_tracker_;
+  std::unique_ptr<GlicWayfindingController> wayfinding_controller_;
 
   GlicInstanceCoordinatorMetrics metrics_;
 

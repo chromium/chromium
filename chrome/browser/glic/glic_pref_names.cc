@@ -11,6 +11,7 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/service/glic_onboarding_status.h"
 #include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -156,6 +157,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kGlicLastProfileReadyState,
       static_cast<int>(glic::mojom::ProfileReadyState::kReady));
   registry->RegisterIntegerPref(prefs::kGlicMarketingAutoOpenCount, 0);
+  registry->RegisterIntegerPref(
+      prefs::kGlicWayfindingFirstInvocationSource,
+      std::to_underlying(mojom::InvocationSource::kUnsupported));
+  registry->RegisterBooleanPref(prefs::kGlicWayfindingUsedSelfStartedOpen,
+                                false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kGlicLastCanActuateInBackground, false);
 #endif  // BUILDFLAG(IS_ANDROID)

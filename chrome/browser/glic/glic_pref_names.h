@@ -246,6 +246,17 @@ inline constexpr char kGlicPreviouslyNotAllowed[] =
 inline constexpr char kGlicMarketingAutoOpenCount[] =
     "glic.marketing_auto_open_count";
 
+// The `mojom::InvocationSource` of this profile's first Glic open, for Ask
+// Gemini Wayfinding. kUnsupported if the profile opened Glic before Wayfinding
+// was enabled, or hasn't opened it yet.
+inline constexpr char kGlicWayfindingFirstInvocationSource[] =
+    "glic.wayfinding.first_invocation_source";
+
+// Whether this profile has opened Glic from the Ask Gemini button or hotkey,
+// which shows the user already knows how to reach it.
+inline constexpr char kGlicWayfindingUsedSelfStartedOpen[] =
+    "glic.wayfinding.used_self_started_open";
+
 #if BUILDFLAG(IS_MAC)
 inline constexpr char kGlicUseAltOSIcon[] = "glic.use_alt_os_icon";
 #endif
