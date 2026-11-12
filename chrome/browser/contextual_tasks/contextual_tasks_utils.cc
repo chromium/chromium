@@ -37,6 +37,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_response_headers.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "build/branding_buildflags.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -45,8 +46,10 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -56,6 +59,10 @@
 #include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/actions/actions.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #endif
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -738,6 +745,26 @@ void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window) {
   if (!action_item) {
     return;
   }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (features::IsWebUIPinnedToolbarActionsEnabled() &&
+      ShouldUseSuperGIconForPinButtons()) {
+    // WebUI pinned toolbar actions resolves known resource images by comparing
+    // the ImageSkia backing object against ResourceBundle, and applies the icon
+    // size delta in CSS. Replace the resized ImageSkia with the raw resource
+    // image if it is not already set so WebUI's known-resource check succeeds.
+    const gfx::ImageSkia* const raw_super_g =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GOOGLE_G_GRADIENT_20);
+    if (raw_super_g && (!action_item->GetImage().IsImage() ||
+                        !action_item->GetImage()
+                             .GetImage()
+                             .AsImageSkia()
+                             .BackedBySameObjectAs(*raw_super_g))) {
+      action_item->SetImage(ui::ImageModel::FromImageSkia(*raw_super_g));
+    }
+  }
+#endif
 
   const bool is_pinning_eligible =
       contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(

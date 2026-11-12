@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -81,6 +82,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -4681,5 +4683,43 @@ IN_PROC_BROWSER_TEST_F(
                 .GetTotalCountsForPrefix(
                     "ContextualTasks.EphemeralToolbarButton.ShownDuration")
                 .empty());
+      }));
+}
+
+class ContextualTasksWebUIPinnedToolbarSuperGInteractiveTest
+    : public ContextualTasksEphemeralButtonPinningV2InteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonPinningV2InteractiveTest::
+            GetEnabledFeatures();
+    enabled_features.push_back({features::kInitialWebUI, {}});
+    enabled_features.push_back({features::kWebUIReloadButton, {}});
+    enabled_features.push_back({features::kWebUIPinnedToolbarActions, {}});
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksUnifyPinButtonLogos,
+         {{"ContextualTasksUnifyPinButtonLogo", "super-g"}}});
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksWebUIPinnedToolbarSuperGInteractiveTest,
+                       PinAndUnpinSuperGIconInWebUIToolbar) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), Do([&]() {
+        auto* const model =
+            PinnedToolbarActionsModel::Get(browser()->GetProfile());
+        auto* const pinned_actions =
+            ToolbarButtonProvider::From(browser())->GetPinnedToolbarActions();
+        ASSERT_NE(model, nullptr);
+        ASSERT_NE(pinned_actions, nullptr);
+
+        model->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+        EXPECT_TRUE(pinned_actions->IsActionPinned(
+            kActionSidePanelShowContextualTasks));
+
+        model->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
+        EXPECT_FALSE(pinned_actions->IsActionPinned(
+            kActionSidePanelShowContextualTasks));
       }));
 }

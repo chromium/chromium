@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/aim_message_poster.h"
@@ -24,7 +25,9 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -38,6 +41,7 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -49,6 +53,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "ui/actions/actions.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace contextual_tasks {
 
@@ -278,6 +288,61 @@ TEST_F(ContextualTasksUtilsTest, UpdatePinButtonVisibilityState_Ineligible_Pinne
   EXPECT_TRUE(action_item->GetVisible());
   EXPECT_TRUE(model->Contains(kActionSidePanelShowContextualTasks));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(
+    ContextualTasksUtilsTest,
+    UpdatePinButtonVisibilityState_WebUIPinnedToolbarActionsUsesRawSuperGImage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kInitialWebUI, {}},
+       {features::kWebUIPinnedToolbarActions, {}},
+       {contextual_tasks::kContextualTasksUnifyPinButtonLogos,
+        {{"ContextualTasksUnifyPinButtonLogo", "super-g"}}}},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasksEphemeralPinButtonRefactor});
+
+  const gfx::ImageSkia* raw_super_g =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_GOOGLE_G_GRADIENT_20);
+  ASSERT_NE(raw_super_g, nullptr);
+  const gfx::ImageSkia resized_super_g =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          *raw_super_g, skia::ImageOperations::RESIZE_BEST, gfx::Size(18, 18));
+  ASSERT_FALSE(resized_super_g.BackedBySameObjectAs(*raw_super_g));
+
+  root_action_ = actions::ActionItem::Builder().Build();
+  actions::ActionItem* action_item = root_action_->AddChild(
+      actions::ActionItem::Builder()
+          .SetActionId(kActionSidePanelShowContextualTasks)
+          .SetImage(ui::ImageModel::FromImageSkia(resized_super_g))
+          .SetVisible(true)
+          .SetEnabled(true)
+          .Build());
+
+  browser_actions_->set_root_action_item_for_testing(root_action_.get());
+
+  int action_changed_count = 0;
+  base::CallbackListSubscription subscription =
+      action_item->AddActionChangedCallback(base::BindRepeating(
+          [](int* count) { ++(*count); }, &action_changed_count));
+
+  UpdatePinButtonVisibilityState(browser_window_.get());
+
+  ASSERT_TRUE(action_item->GetImage().IsImage());
+  EXPECT_TRUE(action_item->GetImage()
+                  .GetImage()
+                  .AsImageSkia()
+                  .BackedBySameObjectAs(*raw_super_g));
+  EXPECT_EQ(action_changed_count, 1);
+
+  // Calling again when the raw Super G image is already set should not
+  // redundantly update the image.
+  UpdatePinButtonVisibilityState(browser_window_.get());
+  EXPECT_EQ(action_changed_count, 1);
+}
+#endif
 
 TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_NullProfile) {
   EXPECT_FALSE(IsTabSharingEligible(nullptr));
