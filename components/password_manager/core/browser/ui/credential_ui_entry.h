@@ -82,6 +82,9 @@ struct CredentialFacet {
   // The web realm affiliated with the Android application, if the it is an
   // Android credential. Otherwise, the string is empty.
   std::string affiliated_web_realm;
+
+  friend bool operator==(const CredentialFacet& lhs,
+                         const CredentialFacet& rhs) = default;
 };
 
 // Simple struct that represents an entry inside Settings UI. Allows implicit

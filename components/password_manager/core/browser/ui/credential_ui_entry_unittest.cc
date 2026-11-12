@@ -458,6 +458,36 @@ TEST(CredentialUIEntryTest, CredentialUIEntryFromStoredCredentialsVector) {
   EXPECT_TRUE(entry.stored_in.contains(PasswordForm::Store::kAccountStore));
 }
 
+TEST(CredentialUIEntryTest,
+     CredentialUIEntryFromStoredCredentialsVectorDeduplicatesFacets) {
+  StoredCredential profile_cred;
+  profile_cred.app_display_name = "example.com";
+  profile_cred.signon_realm = "https://example.com/";
+  profile_cred.url = GURL(profile_cred.signon_realm);
+  profile_cred.username_value = u"user";
+  profile_cred.password_value = PasswordString(u"pass");
+  profile_cred.in_store = PasswordForm::Store::kProfileStore;
+
+  StoredCredential account_cred;
+  account_cred.app_display_name = "example.com";
+  account_cred.signon_realm = "https://example.com/";
+  account_cred.url = GURL(account_cred.signon_realm);
+  account_cred.username_value = u"user";
+  account_cred.password_value = PasswordString(u"pass");
+  account_cred.in_store = PasswordForm::Store::kAccountStore;
+
+  std::vector<StoredCredential> creds;
+  creds.push_back(std::move(profile_cred));
+  creds.push_back(std::move(account_cred));
+
+  CredentialUIEntry entry(creds);
+
+  EXPECT_EQ(entry.facets.size(), 1u);
+  EXPECT_EQ(entry.stored_in.size(), 2u);
+  EXPECT_TRUE(entry.stored_in.contains(PasswordForm::Store::kProfileStore));
+  EXPECT_TRUE(entry.stored_in.contains(PasswordForm::Store::kAccountStore));
+}
+
 TEST(CredentialUIEntryTest, AreCredentialsEquivalent) {
   PasswordForm form;
   form.signon_realm = "https://g.com/";

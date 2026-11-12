@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
+#include <algorithm>
+
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -151,7 +153,9 @@ CredentialUIEntry::CredentialUIEntry(
     facet.signon_realm = credential.signon_realm;
     facet.affiliated_web_realm = credential.affiliated_web_realm;
 
-    facets.push_back(std::move(facet));
+    if (!std::ranges::contains(facets, facet)) {
+      facets.push_back(std::move(facet));
+    }
 
     if (credential.IsUsingAccountStore()) {
       stored_in.insert(PasswordForm::Store::kAccountStore);
