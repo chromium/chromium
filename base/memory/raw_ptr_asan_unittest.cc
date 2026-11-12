@@ -38,6 +38,10 @@ const char kAsanBrpUnprotectedInRelease_Quarantine[] =
     ASAN_BRP_UNPROTECTED_IN_RELEASE(
         "only kept quarantined by raw_ptr<T> objects marked "
         "UnprotectedInRelease");
+#if PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT)
+const char kAsanBrpProtected_Quarantine[] =
+    ASAN_BRP_PROTECTED("assignment to a raw_ptr<T> of a pointer to a dangling");
+#endif  // PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT)
 #endif  // PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
 
 struct AsanStruct {
@@ -45,6 +49,14 @@ struct AsanStruct {
 
   char big[0xfff8];
 };
+
+#define EXPECT_DEATH_AT_EXIT_IF_SUPPORTED(statement, pattern)       \
+  EXPECT_DEATH_IF_SUPPORTED(                                        \
+      {                                                             \
+        statement;                                                  \
+        RawPtrAsanService::GetInstance().CheckLogAndAbortOnError(); \
+      },                                                            \
+      (pattern))
 
 class AsanBackupRefPtrTest : public testing::Test {
  protected:
@@ -60,6 +72,69 @@ class AsanBackupRefPtrTest : public testing::Test {
 
   void ClearLog() { RawPtrAsanService::GetInstance().ClearLogForTesting(); }
 
+#if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
+  template <RawPtrTraits Traits>
+  static void TestTraitQuarantine(bool expect_unprotected_in_release) {
+    RawPtrAsanService& service = RawPtrAsanService::GetInstance();
+
+    char* ptr = static_cast<char*>(malloc(1));
+    raw_ptr<char, Traits> unprotected_ptr(ptr);
+    free(ptr);
+
+    uintptr_t address = reinterpret_cast<uintptr_t>(unprotected_ptr.get());
+    EXPECT_TRUE(service.IsQuarantined(address));
+    EXPECT_FALSE(service.IsFreed(address));
+    EXPECT_EQ(service.IsUnprotectedInReleaseOnly(address),
+              expect_unprotected_in_release);
+
+    // Dropping the last reference frees the allocation.
+    unprotected_ptr = nullptr;
+    EXPECT_FALSE(service.IsQuarantined(reinterpret_cast<uintptr_t>(ptr)));
+    EXPECT_TRUE(service.IsFreed(reinterpret_cast<uintptr_t>(ptr)));
+  }
+
+  template <RawPtrTraits Traits>
+  static void TestTraitMixedIsProtected(bool expect_unprotected_in_release) {
+    RawPtrAsanService& service = RawPtrAsanService::GetInstance();
+
+    char* ptr = static_cast<char*>(malloc(1));
+    raw_ptr<char> protected_ptr(ptr);
+    raw_ptr<char, Traits> unprotected_ptr(ptr);
+    free(ptr);
+
+    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+    EXPECT_TRUE(service.IsQuarantined(address));
+    EXPECT_FALSE(service.IsUnprotectedInReleaseOnly(address));
+
+    // Dropping the protective reference leaves only the tested reference.
+    protected_ptr = nullptr;
+    EXPECT_TRUE(service.IsQuarantined(address));
+    EXPECT_EQ(service.IsUnprotectedInReleaseOnly(address),
+              expect_unprotected_in_release);
+
+    unprotected_ptr = nullptr;
+    EXPECT_TRUE(service.IsFreed(address));
+  }
+
+  template <RawPtrTraits Traits>
+  static void TestTraitReported(const char* expected_pattern) {
+    // Aliased to avoid the template comma being parsed as a macro arg
+    // separator.
+    using UnprotectedCharPtr = raw_ptr<char, Traits>;
+
+    char* ptr = static_cast<char*>(malloc(1));
+    UnprotectedCharPtr unprotected_ptr(ptr);
+    free(ptr);
+
+    // Assigning the dangling (quarantined) pointer to another raw_ptr logs a
+    // quarantine event that the exit-time report classifies. `unprotected_ptr`
+    // keeps the allocation quarantined until exit.
+    EXPECT_DEATH_AT_EXIT_IF_SUPPORTED(
+        [[maybe_unused]] UnprotectedCharPtr unprotected_ptr2 = ptr,
+        expected_pattern);
+  }
+#endif  // PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
+
   static void SetUpTestSuite() {
     dangling_early_allocation_ptr_ = new AsanStruct;
     delete dangling_early_allocation_ptr_.get();
@@ -73,14 +148,6 @@ class AsanBackupRefPtrTest : public testing::Test {
 raw_ptr<AsanStruct> AsanBackupRefPtrTest::dangling_early_allocation_ptr_ =
     nullptr;
 raw_ptr<AsanStruct> AsanBackupRefPtrTest::early_allocation_ptr_ = nullptr;
-
-#define EXPECT_DEATH_AT_EXIT_IF_SUPPORTED(statement, pattern)       \
-  EXPECT_DEATH_IF_SUPPORTED(                                        \
-      {                                                             \
-        statement;                                                  \
-        RawPtrAsanService::GetInstance().CheckLogAndAbortOnError(); \
-      },                                                            \
-      (pattern))
 
 TEST_F(AsanBackupRefPtrTest, SingleByteOverflowStillDetected) {
   volatile char no_optimize = 0;
@@ -180,71 +247,53 @@ TEST_F(AsanBackupRefPtrTest, RawPtrQuarantineWorks) {
 }
 
 #if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
-// A raw_ptr<T, UnprotectedInRelease> keeps its allocation quarantined (so the
-// dangling access is still detected), but the allocation is classified as
-// unprotected-in-release rather than protected: such a field uses the no-op
-// impl (no protection) in a release build.
+// A `raw_ptr<T, UnprotectedInRelease>` keeps its allocation quarantined (so the
+// dangling access is still detected), and is classified as unprotected in
+// release unless `REMOVE_UNPROTECTED_IN_RELEASE_TRAIT` gives it protection.
 TEST_F(AsanBackupRefPtrTest, RawPtrUnprotectedInReleaseQuarantine) {
-  RawPtrAsanService& service = RawPtrAsanService::GetInstance();
-
-  char* ptr = static_cast<char*>(malloc(1));
-  raw_ptr<char, ::UnprotectedInRelease> unprotected_ptr(ptr);
-  free(ptr);
-
-  uintptr_t address = reinterpret_cast<uintptr_t>(unprotected_ptr.get());
-  // Quarantined for detection, but reported as unprotected-in-release only.
-  EXPECT_TRUE(service.IsQuarantined(address));
-  EXPECT_FALSE(service.IsFreed(address));
-  EXPECT_TRUE(service.IsUnprotectedInReleaseOnly(address));
-
-  // Dropping the last (unprotected-in-release) reference frees the allocation.
-  unprotected_ptr = nullptr;
-  EXPECT_FALSE(service.IsQuarantined(reinterpret_cast<uintptr_t>(ptr)));
-  EXPECT_TRUE(service.IsFreed(reinterpret_cast<uintptr_t>(ptr)));
+  TestTraitQuarantine<::UnprotectedInRelease>(
+      !PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT));
 }
 
 // When an allocation has at least one protective (normal) raw_ptr reference, it
 // is genuinely protected -- not unprotected-in-release -- even if it also has
 // unprotected-in-release references. The classification only flips once the
-// last protective reference is gone.
+// last protective reference is gone (unless
+// `REMOVE_UNPROTECTED_IN_RELEASE_TRAIT` is enabled, in which case both
+// references are protective).
 TEST_F(AsanBackupRefPtrTest, RawPtrUnprotectedInReleaseMixedIsProtected) {
-  RawPtrAsanService& service = RawPtrAsanService::GetInstance();
-
-  char* ptr = static_cast<char*>(malloc(1));
-  raw_ptr<char> protected_ptr(ptr);
-  raw_ptr<char, ::UnprotectedInRelease> unprotected_ptr(ptr);
-  free(ptr);
-
-  uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
-  EXPECT_TRUE(service.IsQuarantined(address));
-  EXPECT_FALSE(service.IsUnprotectedInReleaseOnly(address));
-
-  // Dropping the protective reference leaves only the unprotected-in-release
-  // one: still quarantined for detection, but now unprotected-in-release.
-  protected_ptr = nullptr;
-  EXPECT_TRUE(service.IsQuarantined(address));
-  EXPECT_TRUE(service.IsUnprotectedInReleaseOnly(address));
-
-  unprotected_ptr = nullptr;
-  EXPECT_TRUE(service.IsFreed(address));
+  TestTraitMixedIsProtected<::UnprotectedInRelease>(
+      !PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT));
 }
 
 // The exit-time aggregate report -- the output read by the automatic bug
 // classifier -- must show "MiraclePtr Status: NOT PROTECTED IN RELEASE BUILD"
-// for an allocation kept quarantined only by unprotected-in-release pointers.
+// for an allocation kept quarantined only by unprotected-in-release pointers,
+// or "PROTECTED" when `REMOVE_UNPROTECTED_IN_RELEASE_TRAIT` is enabled.
 TEST_F(AsanBackupRefPtrTest, RawPtrUnprotectedInReleaseReportedNotProtected) {
-  // Aliased to avoid the template comma being parsed as a macro arg separator.
-  using UnprotectedInReleaseCharPtr = raw_ptr<char, ::UnprotectedInRelease>;
+#if PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT)
+  TestTraitReported<::UnprotectedInRelease>(kAsanBrpProtected_Quarantine);
+#else
+  TestTraitReported<::UnprotectedInRelease>(
+      kAsanBrpUnprotectedInRelease_Quarantine);
+#endif
+}
 
-  char* ptr = static_cast<char*>(malloc(1));
-  UnprotectedInReleaseCharPtr unprotected_ptr(ptr);
-  free(ptr);  // Quarantined: count == 0, unprotected_in_release_count == 1.
+// `UnprotectedInReleaseForPerformance` remains unprotected in release builds
+// even when `REMOVE_UNPROTECTED_IN_RELEASE_TRAIT` is enabled.
+TEST_F(AsanBackupRefPtrTest,
+       RawPtrUnprotectedInReleaseForPerformanceQuarantine) {
+  TestTraitQuarantine<::UnprotectedInReleaseForPerformance>(true);
+}
 
-  // Assigning the dangling (quarantined) pointer to another unprotected-in-
-  // release raw_ptr logs a quarantine event that the exit-time report
-  // classifies. `unprotected_ptr` keeps the allocation quarantined until exit.
-  EXPECT_DEATH_AT_EXIT_IF_SUPPORTED(
-      [[maybe_unused]] UnprotectedInReleaseCharPtr unprotected_ptr2 = ptr,
+TEST_F(AsanBackupRefPtrTest,
+       RawPtrUnprotectedInReleaseForPerformanceMixedIsProtected) {
+  TestTraitMixedIsProtected<::UnprotectedInReleaseForPerformance>(true);
+}
+
+TEST_F(AsanBackupRefPtrTest,
+       RawPtrUnprotectedInReleaseForPerformanceReportedNotProtected) {
+  TestTraitReported<::UnprotectedInReleaseForPerformance>(
       kAsanBrpUnprotectedInRelease_Quarantine);
 }
 #endif  // PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
@@ -333,6 +382,47 @@ class AsanBackupRefPtrTest : public testing::Test {
     }
   }
 
+#if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
+  template <RawPtrTraits Traits>
+  static void TestTraitDereference(const char* expected_pattern) {
+    raw_ptr<AsanStruct, Traits> ptr = new AsanStruct;
+
+    ptr->x = 1;  // Shouldn't crash while the allocation is valid.
+
+    delete ptr.get();
+
+    EXPECT_DEATH_IF_SUPPORTED(ptr->func(), expected_pattern);
+  }
+
+  template <RawPtrTraits Traits>
+  static void TestTraitExtraction(const char* expected_pattern) {
+    raw_ptr<AsanStruct, Traits> ptr = new AsanStruct;
+
+    AsanStruct* ptr1 = ptr;  // Shouldn't crash.
+    ptr1->x = 0;
+
+    delete ptr.get();
+
+    EXPECT_DEATH_IF_SUPPORTED(
+        {
+          AsanStruct* ptr2 = ptr;
+          ptr2->x = 1;
+        },
+        expected_pattern);
+  }
+
+  template <RawPtrTraits Traits>
+  static void TestBoundTrait(const char* expected_pattern) {
+    raw_ptr<AsanStruct, Traits> ptr = new AsanStruct;
+    auto callback =
+        base::BindOnce([](AsanStruct* p) { p->func(); }, base::Unretained(ptr));
+    delete ptr.get();
+    ptr = nullptr;
+
+    EXPECT_DEATH_IF_SUPPORTED(std::move(callback).Run(), expected_pattern);
+  }
+#endif  // PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
+
   static void SetUpTestSuite() { early_allocation_ptr_ = new AsanStruct; }
   static void TearDownTestSuite() { delete early_allocation_ptr_; }
   static raw_ptr<AsanStruct> early_allocation_ptr_;
@@ -382,51 +472,60 @@ TEST_F(AsanBackupRefPtrTest, Extraction) {
 }
 
 #if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
-// A `raw_ptr<T, UnprotectedInRelease>` is instrumented in this build, but it
-// uses the no-op impl (no protection) in release builds. A dangling access must
-// therefore be reported as unprotected-in-release rather than protected. These
-// tests only apply when such pointers are instrumented in the current build.
+// A `raw_ptr<T, UnprotectedInRelease>` is instrumented in this build, and uses
+// the no-op impl (no protection) in release builds unless
+// `REMOVE_UNPROTECTED_IN_RELEASE_TRAIT` is enabled (which gives it BackupRefPtr
+// protection).
 TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseDereference) {
-  raw_ptr<AsanStruct, ::UnprotectedInRelease> ptr = new AsanStruct;
-
-  ptr->x = 1;  // Shouldn't crash while the allocation is valid.
-
-  delete ptr.get();
-
-  EXPECT_DEATH_IF_SUPPORTED(ptr->func(),
-                            kAsanBrpUnprotectedInRelease_Dereference);
+#if PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT)
+  TestTraitDereference<::UnprotectedInRelease>(kAsanBrpProtected_Dereference);
+#else
+  TestTraitDereference<::UnprotectedInRelease>(
+      kAsanBrpUnprotectedInRelease_Dereference);
+#endif
 }
 
 TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseExtraction) {
-  raw_ptr<AsanStruct, ::UnprotectedInRelease> ptr = new AsanStruct;
-
-  AsanStruct* ptr1 = ptr;  // Shouldn't crash.
-  ptr1->x = 0;
-
-  delete ptr.get();
-
-  EXPECT_DEATH_IF_SUPPORTED(
-      {
-        AsanStruct* ptr2 = ptr;
-        ptr2->x = 1;
-      },
+#if PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT)
+  TestTraitExtraction<::UnprotectedInRelease>(
+      kAsanBrpMaybeProtected_Extraction);
+#else
+  TestTraitExtraction<::UnprotectedInRelease>(
       kAsanBrpUnprotectedInRelease_Extraction);
+#endif
 }
 
 // The core guarantee: an unprotected-in-release pointer must never be reported
 // as protected -- including when bound into a callback. The bound-arg tracker
 // would otherwise claim protection (it only records the address), but the bound
 // pointer's own extraction carries the unprotected-in-release status, which
-// takes precedence in the report.
+// takes precedence in the report (unless `REMOVE_UNPROTECTED_IN_RELEASE_TRAIT`
+// is enabled, in which case the pointer is protected).
 TEST_F(AsanBackupRefPtrTest, BoundUnprotectedInReleaseNotProtected) {
-  raw_ptr<AsanStruct, ::UnprotectedInRelease> ptr = new AsanStruct;
-  auto callback =
-      base::BindOnce([](AsanStruct* p) { p->func(); }, base::Unretained(ptr));
-  delete ptr.get();
-  ptr = nullptr;
+#if PA_BUILDFLAG(REMOVE_UNPROTECTED_IN_RELEASE_TRAIT)
+  TestBoundTrait<::UnprotectedInRelease>(kAsanBrpProtected_Callback);
+#else
+  TestBoundTrait<::UnprotectedInRelease>(
+      kAsanBrpUnprotectedInRelease_Extraction);
+#endif
+}
 
-  EXPECT_DEATH_IF_SUPPORTED(std::move(callback).Run(),
-                            kAsanBrpUnprotectedInRelease_Extraction);
+// `UnprotectedInReleaseForPerformance` remains unprotected in release builds
+// even when `REMOVE_UNPROTECTED_IN_RELEASE_TRAIT` is enabled.
+TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseForPerformanceDereference) {
+  TestTraitDereference<::UnprotectedInReleaseForPerformance>(
+      kAsanBrpUnprotectedInRelease_Dereference);
+}
+
+TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseForPerformanceExtraction) {
+  TestTraitExtraction<::UnprotectedInReleaseForPerformance>(
+      kAsanBrpUnprotectedInRelease_Extraction);
+}
+
+TEST_F(AsanBackupRefPtrTest,
+       BoundUnprotectedInReleaseForPerformanceNotProtected) {
+  TestBoundTrait<::UnprotectedInReleaseForPerformance>(
+      kAsanBrpUnprotectedInRelease_Extraction);
 }
 #endif  // PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
 
