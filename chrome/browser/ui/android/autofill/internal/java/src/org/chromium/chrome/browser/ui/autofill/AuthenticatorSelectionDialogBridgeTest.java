@@ -35,7 +35,10 @@ import java.util.List;
 
 /** Unit tests for {@link AuthenticatorSelectionDialogBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.RESET_NATIVE_POINTER_IN_CREDIT_CARD_AUTH_DIALOG})
+@EnableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS,
+    ChromeFeatureList.RESET_NATIVE_POINTER_IN_CREDIT_CARD_AUTH_DIALOG,
+})
 public class AuthenticatorSelectionDialogBridgeTest {
     // The icon set on the AuthenticatorOption is not important and any icon would do.
     private static final AuthenticatorOption OPTION_1 =

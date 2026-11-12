@@ -32,9 +32,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ui.autofill.AuthenticatorOptionsAdapter.AuthenticatorOptionViewHolder;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -45,6 +48,9 @@ import java.util.ArrayList;
 
 /** Unit tests for {@link AuthenticatorSelectionDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({
+    AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS,
+})
 public class AuthenticatorSelectionDialogTest {
     // The icon set on the AuthenticatorOption is not important and any icon would do.
     private static final AuthenticatorOption OPTION_1 =
@@ -269,7 +275,8 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    public void testSingleAuthenticatorOption_titleView() throws Exception {
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testSingleAuthenticatorOption_titleViewWithGPayLogo() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
 
@@ -300,7 +307,8 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    public void testMultipleAuthenticatorOption_titleView() throws Exception {
+    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testMultipleAuthenticatorOption_titleViewWithGPayLogo() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
         options.add(OPTION_2);
@@ -329,6 +337,74 @@ public class AuthenticatorSelectionDialogTest {
                 ResourcesCompat.getDrawable(
                         mResources,
                         R.drawable.google_pay,
+                        ApplicationProvider.getApplicationContext().getTheme());
+        assertThat(titleIcon.getVisibility()).isEqualTo(View.VISIBLE);
+        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(titleIcon.getDrawable())));
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testSingleAuthenticatorOption_titleViewWithGradientGPayLogo() throws Exception {
+        ArrayList<AuthenticatorOption> options = new ArrayList<>();
+        options.add(OPTION_1);
+
+        mAuthenticatorSelectionDialog.show(options);
+
+        PropertyModel model = mModalDialogManager.getShownDialogModel();
+        assertThat(model).isNotNull();
+
+        forceAuthenticatorOptionsViewLayout(model);
+
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        // Verify that the title set by custom view is correct.
+        TextView title = customView.findViewById(R.id.title);
+        assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(title.getText())
+                .isEqualTo(mResources.getString(R.string.autofill_card_unmask_verification_title));
+
+        // Verify that the title icon set by custom view is correct.
+        ImageView titleIcon = customView.findViewById(R.id.title_icon);
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        R.drawable.googlepay_with_gradient,
+                        ApplicationProvider.getApplicationContext().getTheme());
+        assertThat(titleIcon.getVisibility()).isEqualTo(View.VISIBLE);
+        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(titleIcon.getDrawable())));
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_GRADIENT_GOOGLE_LOGOS})
+    public void testMultipleAuthenticatorOption_titleViewWithGradientGPayLogo() throws Exception {
+        ArrayList<AuthenticatorOption> options = new ArrayList<>();
+        options.add(OPTION_1);
+        options.add(OPTION_2);
+
+        mAuthenticatorSelectionDialog.show(options);
+
+        PropertyModel model = mModalDialogManager.getShownDialogModel();
+        assertThat(model).isNotNull();
+
+        forceAuthenticatorOptionsViewLayout(model);
+
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        // Verify that the title set by custom view is correct.
+        TextView title = customView.findViewById(R.id.title);
+        assertThat(title.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(title.getText())
+                .isEqualTo(
+                        mResources.getString(
+                                R.string
+                                        .autofill_card_auth_selection_dialog_title_multiple_options));
+
+        // Verify that the title icon set by custom view is correct.
+        ImageView titleIcon = customView.findViewById(R.id.title_icon);
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        R.drawable.googlepay_with_gradient,
                         ApplicationProvider.getApplicationContext().getTheme());
         assertThat(titleIcon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(titleIcon.getDrawable())));
