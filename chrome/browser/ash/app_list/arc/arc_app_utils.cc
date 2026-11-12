@@ -291,7 +291,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   if (management_transition != ArcManagementTransition::NO_TRANSITION) {
     VLOG(1) << "Attempt to launch " << app_id << " while management transition "
             << management_transition << " is in progress.";
-    arc::ShowManagementTransitionNotification(profile);
+    arc::ShowManagementTransitionNotification(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context));
     return false;
   }
 

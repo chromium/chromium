@@ -23,7 +23,6 @@ static_library("multi_user") {
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/auth",
-    "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/profiles",
@@ -43,7 +42,6 @@ static_library("multi_user") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/system_web_apps/apps",
   ]

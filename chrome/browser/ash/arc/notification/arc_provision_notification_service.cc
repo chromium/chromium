@@ -14,10 +14,10 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
@@ -103,12 +103,13 @@ void ArcProvisionNotificationService::MaybeShowNotification() {
 }
 
 void ArcProvisionNotificationService::ShowNotification() {
-  Profile* profile = Profile::FromBrowserContext(context_);
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
       kManagedProvisionNotifierId, ash::NotificationCatalogName::kArcProvision);
+  // This service is created only for the BrowserContext that ARC is running
+  // for, so the notification belongs to the ARC user.
   notifier_id.profile_id =
-      multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
+      ArcServiceManager::Get()->account_id().GetUserEmail();
   message_center::RichNotificationData optional_fields;
   optional_fields.never_timeout = true;
 

@@ -20,6 +20,8 @@
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
@@ -134,6 +136,9 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
     // Notification has expected icon.
     EXPECT_EQ(&notification->vector_small_image(),
               expected_notification_icon());
+    // Notification is associated with the user.
+    EXPECT_EQ(arc_app_test()->user()->GetAccountId().GetUserEmail(),
+              notification->notifier_id().profile_id);
   }
 
   // Last launch is not set, indicating that launch attempt was blocked.
@@ -151,7 +156,9 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   // automatically dismissed.
   profile()->GetPrefs()->SetInteger(prefs::kArcManagementTransition,
                                     static_cast<int>(arc_transition()));
-  ShowManagementTransitionNotification(profile());
+  ShowManagementTransitionNotification(
+      user_manager::UserManager::Get()->FindUserAndModify(
+          arc_app_test()->user()->GetAccountId()));
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       kManagementTransitionNotificationId));
   profile()->GetPrefs()->SetBoolean(prefs::kArcEnabled, false);

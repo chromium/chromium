@@ -31,6 +31,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_service_registry.h"
@@ -73,6 +74,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
 
     arc_service_manager_->set_browser_context(profile());
+    arc_service_manager_->set_account_id(GetPrimaryAccountId());
     // Create the service (normally handled by ArcServiceLauncher).
     ArcProvisionNotificationService::GetForBrowserContext(profile());
 
@@ -99,12 +101,13 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     return session_manager::SessionManager::Get();
   }
 
+  static const AccountId& GetPrimaryAccountId() {
+    return session_manager()->GetPrimarySession()->account_id();
+  }
+
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     ash::ScopedAccountIdAnnotator annotator(
-        profile_manager()->profile_manager(),
-        session_manager::SessionManager::Get()
-            ->GetPrimarySession()
-            ->account_id());
+        profile_manager()->profile_manager(), GetPrimaryAccountId());
     return BrowserWithTestWindowTest::CreateProfile(profile_name);
   }
 
@@ -143,8 +146,14 @@ TEST_F(ArcProvisionNotificationServiceTest,
           kArcManagedProvisionNotificationId));
 
   session_manager()->SetSessionState(session_manager::SessionState::ACTIVE);
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      kArcManagedProvisionNotificationId));
+  {
+    const message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            kArcManagedProvisionNotificationId);
+    ASSERT_TRUE(notification);
+    EXPECT_EQ(GetPrimaryAccountId().GetUserEmail(),
+              notification->notifier_id().profile_id);
+  }
   EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager_->state());
   arc_session_manager_->StartArcForTesting();

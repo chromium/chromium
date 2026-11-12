@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_MANAGEMENT_TRANSITION_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_ARC_NOTIFICATION_ARC_MANAGEMENT_TRANSITION_NOTIFICATION_H_
 
-class Profile;
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace arc {
 
@@ -16,7 +18,9 @@ extern const char kManagementTransitionNotificationId[];
 // reachable while management transition is in progress. This is informative
 // notification only. This notification is automatically dismissed when ARC++ is
 // opted out or management transition is completed.
-void ShowManagementTransitionNotification(Profile* profile);
+// `user` must be non-null and have its profile prefs ready. The notification
+// keeps referring to the prefs until it is dismissed, so they must outlive it.
+void ShowManagementTransitionNotification(user_manager::User* user);
 
 }  // namespace arc
 
