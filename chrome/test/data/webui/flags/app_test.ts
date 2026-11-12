@@ -254,13 +254,16 @@ suite('FlagsAppTest', function() {
     // Focus the first experiment's <select> and simulate a change.
     const select = experiments[0]!.shadowRoot.querySelector('select');
     assertTrue(!!select);
+    await simulateSelectChange(select, 1);
     select.focus();
     assertEquals(select, getDeepActiveElement());
-    await simulateSelectChange(select, 1);
 
     // Simulate a 'Tab' keystroke, and check that the 'restart' button is
     // focused, instead of the next experiment.
     select.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab'}));
+    // Programmatic focus() only fires 'blur' when the page has OS focus, which
+    // is not guaranteed in browser_tests.
+    select.dispatchEvent(new Event('blur'));
     const restartButton =
         app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
     assertEquals(restartButton, getDeepActiveElement());
@@ -269,6 +272,7 @@ suite('FlagsAppTest', function() {
     // changed <select> should be focused.
     restartButton.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'Tab', shiftKey: true}));
+    restartButton.dispatchEvent(new Event('blur'));
     assertEquals(select, getDeepActiveElement());
 
     // Simulate another 'Tab' keystroke. This time the next experiment should be
