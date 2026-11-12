@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
@@ -1040,52 +1041,35 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
   pending_focus_task_.Cancel();
   refocus_on_activation_ = false;
   ResetPermissionPromptShowingState();
-  OmniboxEditModel* edit_model = controller()->edit_model();
-  edit_model->RevertUneditedText();
+  OmniboxPopupViewFullWebUI::BlurOmnibox(*controller(), [&] {
+    if (auto* focus_manager = GetBrowserFocusManager()) {
+          views::View* restore_view =
+              delegate().GetLocationBarFocusRestoreView();
+          views::View* stored_view = focus_manager->GetStoredFocusView();
+          if (stored_view == restore_view) {
+            focus_manager->SetStoredFocusView(nullptr);
+          }
+          switch (focus_after_blur) {
+            case FocusAfterBlur::kWebContents:
+              focus_manager->ClearFocus();
+              break;
+            case FocusAfterBlur::kNone:
+              // Another window, such as a bubble, took activation. Only clear
+              // Views focus here as `ClearFocus()` also clears native focus,
+              // which on Windows calls `::SetFocus()` on the browser HWND and
+              // reactivates it, stealing activation back from that window.
+              focus_manager->SetFocusedView(nullptr);
+              break;
+            case FocusAfterBlur::kCurrent:
+              // Another view took focus. Leave it there.
+              break;
+          }
+        }
 
-  if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
-    popup_view->OnBlur();
-  }
-
-  if (auto* focus_manager = GetBrowserFocusManager()) {
-    views::View* restore_view = delegate().GetLocationBarFocusRestoreView();
-    views::View* stored_view = focus_manager->GetStoredFocusView();
-    if (stored_view == restore_view) {
-      focus_manager->SetStoredFocusView(nullptr);
-    }
-    switch (focus_after_blur) {
-      case FocusAfterBlur::kWebContents:
-        focus_manager->ClearFocus();
-        break;
-      case FocusAfterBlur::kNone:
-        // Another window, such as a bubble, took activation. Only clear Views
-        // focus here as `ClearFocus()` also clears native focus, which on
-        // Windows calls `::SetFocus()` on the browser HWND and reactivates it,
-        // stealing activation back from that window.
-        focus_manager->SetFocusedView(nullptr);
-        break;
-      case FocusAfterBlur::kCurrent:
-        // Another view took focus. Leave it there.
-        break;
-    }
-  }
-
-  if (focus_after_blur == FocusAfterBlur::kWebContents) {
-    controller()->client()->FocusWebContents();
-  }
-  edit_model->OnKillFocus();
-
-  // Close the popup unless the user has an uncommitted draft. Keyword mode
-  // counts as a draft even if the user text is empty.
-  // NOTE: Query values directly from edit model, as they are not guaranteed to
-  // remain consistent after calling `Revert()` or `OnKillFocus()`.
-  if (!edit_model->HasDraft()) {
-    if (controller()->popup_state_manager()->popup_state() ==
-        OmniboxPopupState::kFull) {
-      controller()->popup_state_manager()->SetPopupState(
-          OmniboxPopupState::kNone);
-    }
-  }
+        if (focus_after_blur == FocusAfterBlur::kWebContents) {
+          controller()->client()->FocusWebContents();
+        }
+      });
 }
 
 void OmniboxPopupFullPresenter::OnWidgetPresentedChanged(bool presented) {

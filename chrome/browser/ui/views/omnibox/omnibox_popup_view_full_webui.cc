@@ -87,6 +87,32 @@ void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {
   // focus fights during deactivation or autocomplete changes.
 }
 
+// static
+void OmniboxPopupViewFullWebUI::BlurOmnibox(
+    OmniboxController& controller,
+    base::FunctionRef<void()> move_focus) {
+  OmniboxEditModel* edit_model = controller.edit_model();
+  edit_model->RevertUneditedText();
+
+  if (OmniboxPopupView* popup_view = edit_model->popup_view()) {
+    popup_view->OnBlur();
+  }
+
+  move_focus();
+  edit_model->OnKillFocus();
+
+  // Close the popup unless the user has an uncommitted draft. Keyword mode
+  // counts as a draft even if the user text is empty.
+  // NOTE: Query values directly from edit model, as they are not guaranteed to
+  // remain consistent after calling `Revert()` or `OnKillFocus()`.
+  if (!edit_model->HasDraft()) {
+    if (controller.popup_state_manager()->popup_state() ==
+        OmniboxPopupState::kFull) {
+      controller.popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
+    }
+  }
+}
+
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps,
                                                        bool show_full_url) {
   SyncNativeStateToWebUIImpl(
@@ -446,7 +472,7 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
 
 void OmniboxPopupViewFullWebUI::ReshowPopup() {
   // Only a draft reopens the popup, as only a draft keeps it open when the
-  // omnibox is blurred (see `OmniboxPopupFullPresenter`).
+  // omnibox is blurred (see `BlurOmnibox()`).
   if (controller()->popup_state_manager()->popup_state() !=
           OmniboxPopupState::kNone ||
       !IsPopupHandlerReady() || !controller()->edit_model()->HasDraft()) {

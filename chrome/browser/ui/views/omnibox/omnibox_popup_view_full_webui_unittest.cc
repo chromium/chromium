@@ -11,7 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_host.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -134,6 +136,62 @@ TEST_F(OmniboxPopupViewFullWebUITest, BlurDeactivatesHostAndKillsFocus) {
   popup_view_->Blur();
 
   EXPECT_THAT(calls_, ElementsAre("DeactivateAndKillFocus"));
+}
+
+TEST_F(OmniboxPopupViewFullWebUITest, BlurOmniboxBlursInOrderAndCloses) {
+  CreatePopupView();
+  popup_view_->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                       /*show_full_url=*/false);
+  OmniboxEditModel* edit_model = controller_->edit_model();
+  edit_model->SetUserText(u"");
+  ASSERT_TRUE(edit_model->user_input_in_progress());
+  ASSERT_TRUE(edit_model->has_focus());
+  ASSERT_TRUE(popup_view_->is_focused());
+  ASSERT_EQ(controller_->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kFull);
+
+  bool moved_focus = false;
+  OmniboxPopupViewFullWebUI::BlurOmnibox(*controller_, [&] {
+    // Unedited text is reverted and the WebUI is told before the host moves
+    // focus, and the edit model is blurred after.
+    EXPECT_FALSE(edit_model->user_input_in_progress());
+    EXPECT_FALSE(popup_view_->is_focused());
+    EXPECT_TRUE(edit_model->has_focus());
+    moved_focus = true;
+  });
+
+  EXPECT_TRUE(moved_focus);
+  EXPECT_FALSE(edit_model->has_focus());
+  EXPECT_EQ(controller_->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kNone);
+}
+
+TEST_F(OmniboxPopupViewFullWebUITest, BlurOmniboxKeepsPopupOpenForDraft) {
+  CreatePopupView();
+  popup_view_->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                       /*show_full_url=*/false);
+  controller_->edit_model()->SetUserText(u"draft");
+
+  OmniboxPopupViewFullWebUI::BlurOmnibox(*controller_, [] {});
+
+  EXPECT_FALSE(controller_->edit_model()->has_focus());
+  EXPECT_EQ(controller_->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kFull);
+}
+
+TEST_F(OmniboxPopupViewFullWebUITest,
+       BlurOmniboxWithoutPopupViewStillBlursAndCloses) {
+  CreatePopupView();
+  popup_view_->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                       /*show_full_url=*/false);
+  popup_host_ = nullptr;
+  popup_view_.reset();
+
+  OmniboxPopupViewFullWebUI::BlurOmnibox(*controller_, [] {});
+
+  EXPECT_FALSE(controller_->edit_model()->has_focus());
+  EXPECT_EQ(controller_->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kNone);
 }
 
 // Uses a test WebContents for `OnTabChanged()`.
