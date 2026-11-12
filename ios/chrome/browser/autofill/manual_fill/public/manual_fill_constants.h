@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string_view>
+
 #import "components/autofill/core/browser/filling/filling_product.h"
 
 namespace manual_fill {
@@ -45,6 +47,11 @@ extern NSString* const kMaskedPasswordButtonText;
 extern NSString* const kSubtitleFormat;
 
 // Payments
+
+// Histogram recording the index of an accepted payment method suggestion in
+// manual fallback.
+inline constexpr std::string_view kAcceptedCardSuggestionHistogram =
+    "Autofill.UserAcceptedSuggestionAtIndex.CreditCard.ManualFallback";
 
 // Accessibility identifier for the GPay logo shown in the payment manual fill
 // cells when the corresponding card is a server card.

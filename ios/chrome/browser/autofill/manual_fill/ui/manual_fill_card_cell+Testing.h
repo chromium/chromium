@@ -31,6 +31,12 @@
 // The button to autofill the current form with the card's data.
 @property(nonatomic, strong, readonly) UIButton* autofillFormButton;
 
+// The button to autofill or request the card number.
+@property(nonatomic, readonly) UIButton* cardNumberButton;
+
+// The button to autofill the cardholder name.
+@property(nonatomic, readonly) UIButton* cardholderButton;
+
 // The button to autofill or request the card's CVC.
 @property(nonatomic, readonly) UIButton* cvcButton;
 

@@ -18383,6 +18383,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_CreditCard_SelectCvc">
+  <owner>tmartino@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    The user tapped on a credit card CVC in the Credit Card Fallback view.
+  </description>
+</action>
+
 <action name="ManualFallback_CreditCard_SelectExpirationMonth">
   <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -18696,6 +18705,16 @@ should be able to be added at any place in this file.
   <owner>siyua@chromium.org</owner>
   <description>
     The user tapped on a virtual card number in the Credit Card Fallback view.
+  </description>
+</action>
+
+<action name="ManualFallback_VirtualCard_SelectCvc">
+  <owner>chbannon@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    The user tapped on the CVC of a virtual card in the Credit Card Fallback
+    view.
   </description>
 </action>
 

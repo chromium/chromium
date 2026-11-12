@@ -4,26 +4,36 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/coordinator/manual_fill_card_mediator.h"
 
+#import <optional>
 #import <vector>
 
+#import "base/check.h"
 #import "base/containers/to_vector.h"
 #import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/payments/payments_service_url.h"
 #import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/full_card_request_result_delegate_bridge.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credit_card.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/card_consumer.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/card_list_delegate.h"
@@ -31,6 +41,7 @@
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_card_cell.h"
 #import "ios/chrome/browser/autofill/model/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -46,6 +57,43 @@ using autofill::CreditCard;
 using manual_fill::PaymentFieldType;
 
 namespace {
+
+// Returns the user metrics action recorded when `field_type` is tapped on a
+// virtual or regular credit card.
+base::UserMetricsAction ActionForFieldType(ManualFillCardFieldType field_type,
+                                           bool is_virtual_card) {
+  switch (field_type) {
+    case ManualFillCardFieldType::kCardNumber:
+      return is_virtual_card
+                 ? base::UserMetricsAction(
+                       "ManualFallback_VirtualCard_SelectCardNumber")
+                 : base::UserMetricsAction(
+                       "ManualFallback_CreditCard_SelectCardNumber");
+    case ManualFillCardFieldType::kCardholderName:
+      return is_virtual_card
+                 ? base::UserMetricsAction(
+                       "ManualFallback_VirtualCard_SelectCardholderName")
+                 : base::UserMetricsAction(
+                       "ManualFallback_CreditCard_SelectCardholderName");
+    case ManualFillCardFieldType::kExpirationMonth:
+      return is_virtual_card
+                 ? base::UserMetricsAction(
+                       "ManualFallback_VirtualCard_SelectExpirationMonth")
+                 : base::UserMetricsAction(
+                       "ManualFallback_CreditCard_SelectExpirationMonth");
+    case ManualFillCardFieldType::kExpirationYear:
+      return is_virtual_card
+                 ? base::UserMetricsAction(
+                       "ManualFallback_VirtualCard_SelectExpirationYear")
+                 : base::UserMetricsAction(
+                       "ManualFallback_CreditCard_SelectExpirationYear");
+    case ManualFillCardFieldType::kCVC:
+      return is_virtual_card ? base::UserMetricsAction(
+                                   "ManualFallback_VirtualCard_SelectCvc")
+                             : base::UserMetricsAction(
+                                   "ManualFallback_CreditCard_SelectCvc");
+  }
+}
 
 // Returns `true` if overflow menu actions should be made available in the
 // manual fill cell of a card with the given `record_type`.
@@ -154,6 +202,116 @@ std::vector<CreditCard> FetchCards(
   }
 }
 
+#pragma mark - ManualFillCardCellMutator
+
+- (void)didTapChipForCard:(ManualFillCreditCard*)card
+                fieldType:(ManualFillCardFieldType)fieldType {
+  CHECK(card);
+  const bool isVirtualCard =
+      card.recordType == CreditCard::RecordType::kVirtualCard;
+  NSString* fillValue = nil;
+  BOOL requiresHTTPS = NO;
+  std::optional<PaymentFieldType> unmaskFieldType;
+
+  switch (fieldType) {
+    case ManualFillCardFieldType::kCardNumber:
+      fillValue = card.number;
+      requiresHTTPS = YES;
+      if (!card.canFillDirectly) {
+        unmaskFieldType = PaymentFieldType::kCardNumber;
+      }
+      break;
+    case ManualFillCardFieldType::kCardholderName:
+      fillValue = card.cardHolder;
+      break;
+    case ManualFillCardFieldType::kExpirationMonth:
+      fillValue = card.expirationMonth;
+      requiresHTTPS = isVirtualCard;
+      if (isVirtualCard) {
+        unmaskFieldType = PaymentFieldType::kExpirationMonth;
+      }
+      break;
+    case ManualFillCardFieldType::kExpirationYear:
+      fillValue = card.expirationYear;
+      requiresHTTPS = isVirtualCard;
+      if (isVirtualCard) {
+        unmaskFieldType = PaymentFieldType::kExpirationYear;
+      }
+      break;
+    case ManualFillCardFieldType::kCVC:
+      fillValue = card.CVC;
+      requiresHTTPS = YES;
+      if (!card.canFillDirectly) {
+        unmaskFieldType = PaymentFieldType::kCVC;
+      }
+      break;
+  }
+
+  if (requiresHTTPS &&
+      ![self.contentInjector canUserInjectInPasswordField:NO
+                                            requiresHTTPS:YES]) {
+    return;
+  }
+
+  base::RecordAction(ActionForFieldType(fieldType, isVirtualCard));
+
+  if (unmaskFieldType.has_value()) {
+    [self.navigationDelegate requestFullCreditCard:card
+                                         fieldType:*unmaskFieldType];
+    return;
+  }
+
+  [self.contentInjector
+      userDidPickContent:fillValue
+           passwordField:NO
+           requiresHTTPS:requiresHTTPS
+         jumpToNextField:YES
+              actionType:autofill::mojom::FieldActionType::kReplaceAll];
+}
+
+- (void)didTapAutofillFormButtonForCard:(ManualFillCreditCard*)card
+                              cellIndex:(NSInteger)cellIndex {
+  CHECK(card);
+  if (![self.contentInjector canUserInjectInPasswordField:NO
+                                            requiresHTTPS:YES]) {
+    return;
+  }
+
+  base::UmaHistogramSparse(manual_fill::kAcceptedCardSuggestionHistogram,
+                           cellIndex);
+  base::RecordAction(
+      base::UserMetricsAction("ManualFallback_CreditCard_SuggestionAccepted"));
+
+  FormSuggestion* suggestion = [FormSuggestion
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:card.recordType ==
+                                          CreditCard::RecordType::kVirtualCard
+                                      ? autofill::SuggestionType::
+                                            kVirtualCreditCardEntry
+                                      : autofill::SuggestionType::
+                                            kCreditCardEntry
+                          payload:autofill::Suggestion::Guid(
+                                      base::SysNSStringToUTF8(card.GUID))
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:l10n_util::GetNSString(
+                                      IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM)];
+
+  [self.contentInjector autofillFormWithSuggestion:suggestion
+                                           atIndex:cellIndex];
+}
+
+- (void)didTapVirtualCardLearnMore {
+  GURL URL = autofill::payments::GetVirtualCardEnrollmentSupportUrl();
+  NSString* title = l10n_util::GetNSString(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL);
+  [self.navigationDelegate openURL:[[CrURL alloc] initWithGURL:URL]
+                         withTitle:title];
+}
+
 #pragma mark - Private
 
 // Posts the cards to the consumer.
@@ -228,8 +386,7 @@ std::vector<CreditCard> FetchCards(
 
   return
       [[ManualFillCardItem alloc] initWithCreditCard:manualFillCreditCard
-                                     contentInjector:self.contentInjector
-                                  navigationDelegate:self.navigationDelegate
+                                             mutator:self
                                          menuActions:menuActions
                                            cellIndex:cellIndex
                          cellIndexAccessibilityLabel:cellIndexAccessibilityLabel

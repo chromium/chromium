@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/autofill/manual_fill/model/full_card_request_result_delegate_bridge.h"
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_card_cell_mutator.h"
 
 namespace autofill {
 class CreditCard;
@@ -25,7 +26,8 @@ class WebState;
 // Object in charge of getting the cards relevant for the manual fill
 // cards UI.
 @interface ManualFillCardMediator
-    : NSObject <FullCardRequestResultDelegateObserving>
+    : NSObject <FullCardRequestResultDelegateObserving,
+                ManualFillCardCellMutator>
 
 // The consumer for cards updates. Setting it will trigger the consumer
 // methods with the current data.

@@ -5,27 +5,20 @@
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_card_cell.h"
 
 #import "base/feature_list.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/user_metrics.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
-#import "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
-#import "components/autofill/core/browser/payments/payments_service_url.h"
-#import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
-#import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credit_card.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_constants.h"
-#import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
-#import "ios/chrome/browser/autofill/manual_fill/ui/card_list_delegate.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_card_cell+Testing.h"
+#import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_card_cell_mutator.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/manual_fill/ui/manual_fill_labeled_chip.h"
-#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -33,24 +26,17 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-#import "url/gurl.h"
 
 using autofill::CreditCard::RecordType::kVirtualCard;
-using base::SysNSStringToUTF8;
 
 @interface ManualFillCardItem ()
 
-// The content delegate for this item.
-@property(nonatomic, weak, readonly) id<ManualFillContentInjector>
-    contentInjector;
-
-// The navigation delegate for this item.
-@property(nonatomic, weak, readonly) id<CardListDelegate> navigationDelegate;
+// The mutator for user actions in the cell.
+@property(nonatomic, weak, readonly) id<ManualFillCardCellMutator> mutator;
 
 // The credit card for this item.
-@property(nonatomic, readonly) ManualFillCreditCard* card;
+@property(nonatomic, strong, readonly) ManualFillCreditCard* card;
 
 // The UIActions that should be available from the cell's overflow menu button.
 @property(nonatomic, strong) NSArray<UIAction*>* menuActions;
@@ -72,17 +58,14 @@ using base::SysNSStringToUTF8;
 }
 
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card
-                   contentInjector:
-                       (id<ManualFillContentInjector>)contentInjector
-                navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                           mutator:(id<ManualFillCardCellMutator>)mutator
                        menuActions:(NSArray<UIAction*>*)menuActions
                          cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
-    _contentInjector = contentInjector;
-    _navigationDelegate = navigationDelegate;
+    _mutator = mutator;
     _card = card;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
@@ -96,8 +79,7 @@ using base::SysNSStringToUTF8;
 - (void)configureCell:(ManualFillCardCell*)cell {
   [super configureCell:cell];
   [cell setUpWithCreditCard:self.card
-                  contentInjector:self.contentInjector
-               navigationDelegate:self.navigationDelegate
+                          mutator:self.mutator
                       menuActions:self.menuActions
                         cellIndex:_cellIndex
       cellIndexAccessibilityLabel:self.cellIndexAccessibilityLabel
@@ -195,14 +177,11 @@ CGFloat GPayIconTopAnchorOffset() {
 // A labeled chip showing the card's CVC.
 @property(nonatomic, strong) ManualFillLabeledChip* CVCLabeledChip;
 
-// The content delegate for this item.
-@property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
-
-// The navigation delegate for this item.
-@property(nonatomic, weak) id<CardListDelegate> navigationDelegate;
+// The mutator in charge of processing user actions in this cell.
+@property(nonatomic, weak) id<ManualFillCardCellMutator> mutator;
 
 // The credit card data for this cell.
-@property(nonatomic, weak) ManualFillCreditCard* card;
+@property(nonatomic, strong) ManualFillCreditCard* card;
 
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
@@ -249,16 +228,14 @@ CGFloat GPayIconTopAnchorOffset() {
   [self.cardholderLabeledChip prepareForReuse];
   [self.CVCLabeledChip prepareForReuse];
 
-  self.contentInjector = nil;
-  self.navigationDelegate = nil;
+  self.mutator = nil;
   self.cardIcon.image = nil;
   self.card = nil;
   _showAutofillFormButton = NO;
 }
 
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
-                contentInjector:(id<ManualFillContentInjector>)contentInjector
-             navigationDelegate:(id<CardListDelegate>)navigationDelegate
+                        mutator:(id<ManualFillCardCellMutator>)mutator
                     menuActions:(NSArray<UIAction*>*)menuActions
                       cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
@@ -274,8 +251,7 @@ CGFloat GPayIconTopAnchorOffset() {
     [self createViewHierarchy];
   }
 
-  self.contentInjector = contentInjector;
-  self.navigationDelegate = navigationDelegate;
+  self.mutator = mutator;
   self.card = card;
 
   [self populateViewsWithCardData:card menuActions:menuActions];
@@ -569,150 +545,33 @@ CGFloat GPayIconTopAnchorOffset() {
 }
 
 - (void)userDidTapCardNumber:(UIButton*)sender {
-  NSString* number = self.card.number;
-  if (![self.contentInjector canUserInjectInPasswordField:NO
-                                            requiresHTTPS:YES]) {
-    return;
-  }
-
-  base::RecordAction(
-      base::UserMetricsAction([self createMetricsAction:@"SelectCardNumber"]));
-
-  if (self.card.canFillDirectly) {
-    [self.contentInjector
-        userDidPickContent:number
-             passwordField:NO
-             requiresHTTPS:YES
-           jumpToNextField:YES
-                actionType:autofill::mojom::FieldActionType::kReplaceAll];
-  } else {
-    [self.navigationDelegate
-        requestFullCreditCard:self.card
-                    fieldType:manual_fill::PaymentFieldType::kCardNumber];
-  }
+  [self.mutator didTapChipForCard:self.card
+                        fieldType:ManualFillCardFieldType::kCardNumber];
 }
 
 - (void)userDidTapCardholderName:(UIButton*)sender {
-  base::RecordAction(base::UserMetricsAction(
-      [self createMetricsAction:@"SelectCardholderName"]));
-  [self.contentInjector
-      userDidPickContent:sender.titleLabel.text
-           passwordField:NO
-           requiresHTTPS:NO
-         jumpToNextField:YES
-              actionType:autofill::mojom::FieldActionType::kReplaceAll];
+  [self.mutator didTapChipForCard:self.card
+                        fieldType:ManualFillCardFieldType::kCardholderName];
 }
 
 - (void)userDidTapExpirationMonth:(UIButton*)sender {
-  base::RecordAction(base::UserMetricsAction(
-      [self createMetricsAction:@"SelectExpirationMonth"]));
-  if (self.card.recordType == kVirtualCard) {
-    if (![self.contentInjector canUserInjectInPasswordField:NO
-                                              requiresHTTPS:YES]) {
-      return;
-    }
-    [self.navigationDelegate
-        requestFullCreditCard:self.card
-                    fieldType:manual_fill::PaymentFieldType::kExpirationMonth];
-  } else {
-    [self.contentInjector
-        userDidPickContent:sender.titleLabel.text
-             passwordField:NO
-             requiresHTTPS:NO
-           jumpToNextField:YES
-                actionType:autofill::mojom::FieldActionType::kReplaceAll];
-  }
+  [self.mutator didTapChipForCard:self.card
+                        fieldType:ManualFillCardFieldType::kExpirationMonth];
 }
 
 - (void)userDidTapExpirationYear:(UIButton*)sender {
-  base::RecordAction(base::UserMetricsAction(
-      [self createMetricsAction:@"SelectExpirationYear"]));
-  if (self.card.recordType == kVirtualCard) {
-    if (![self.contentInjector canUserInjectInPasswordField:NO
-                                              requiresHTTPS:YES]) {
-      return;
-    }
-    [self.navigationDelegate
-        requestFullCreditCard:self.card
-                    fieldType:manual_fill::PaymentFieldType::kExpirationYear];
-  } else {
-    [self.contentInjector
-        userDidPickContent:sender.titleLabel.text
-             passwordField:NO
-             requiresHTTPS:NO
-           jumpToNextField:YES
-                actionType:autofill::mojom::FieldActionType::kReplaceAll];
-  }
+  [self.mutator didTapChipForCard:self.card
+                        fieldType:ManualFillCardFieldType::kExpirationYear];
 }
 
 - (void)userDidTapCVC:(UIButton*)sender {
-  if (![self.contentInjector canUserInjectInPasswordField:NO
-                                            requiresHTTPS:YES]) {
-    return;
-  }
-
-  base::RecordAction(
-      base::UserMetricsAction([self createMetricsAction:@"SelectCvc"]));
-
-  // For cards that can be filled directly (e.g. local cards or unmasked virtual
-  // cards), insert the stored CVC.
-  if (self.card.canFillDirectly) {
-    [self.contentInjector
-        userDidPickContent:self.card.CVC
-             passwordField:NO
-             requiresHTTPS:YES
-           jumpToNextField:YES
-                actionType:autofill::mojom::FieldActionType::kReplaceAll];
-  } else {
-    [self.navigationDelegate
-        requestFullCreditCard:self.card
-                    fieldType:manual_fill::PaymentFieldType::kCVC];
-  }
+  [self.mutator didTapChipForCard:self.card
+                        fieldType:ManualFillCardFieldType::kCVC];
 }
 
-// Called when the "Autofill Form" button is tapped. Fills the current form with
-// the card's data.
+// Called when the "Autofill Form" button is tapped.
 - (void)onAutofillFormButtonTapped {
-  if (![self.contentInjector canUserInjectInPasswordField:NO
-                                            requiresHTTPS:YES]) {
-    return;
-  }
-
-  base::UmaHistogramSparse(
-      "Autofill.UserAcceptedSuggestionAtIndex.CreditCard.ManualFallback",
-      _cellIndex);
-  base::RecordAction(
-      base::UserMetricsAction("ManualFallback_CreditCard_SuggestionAccepted"));
-
-  autofill::SuggestionType type =
-      [self.card recordType] == kVirtualCard
-          ? autofill::SuggestionType::kVirtualCreditCardEntry
-          : autofill::SuggestionType::kCreditCardEntry;
-  FormSuggestion* suggestion = [FormSuggestion
-              suggestionWithValue:nil
-                       minorValue:nil
-               displayDescription:nil
-                             icon:nil
-                             type:type
-                          payload:autofill::Suggestion::Guid(
-                                      base::SysNSStringToUTF8([self.card GUID]))
-      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
-                   requiresReauth:NO
-       acceptanceA11yAnnouncement:
-           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
-
-  [self.contentInjector autofillFormWithSuggestion:suggestion
-                                           atIndex:_cellIndex];
-}
-
-- (const char*)createMetricsAction:(NSString*)selectedChip {
-  return [NSString stringWithFormat:@"ManualFallback_%@_%@",
-                                    self.card.recordType == kVirtualCard
-                                        ? @"VirtualCard"
-                                        : @"CreditCard",
-                                    selectedChip]
-      .UTF8String;
+  [self.mutator didTapAutofillFormButtonForCard:self.card cellIndex:_cellIndex];
 }
 
 - (NSString*)createCardName:(ManualFillCreditCard*)card {
@@ -829,14 +688,10 @@ CGFloat GPayIconTopAnchorOffset() {
     return defaultAction;
   }
 
-  GURL URL = autofill::payments::GetVirtualCardEnrollmentSupportUrl();
-  NSString* text = textView.text;
-  NSRange range = textItem.range;
   __weak __typeof(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
     // The learn more link was clicked.
-    [weakSelf.navigationDelegate openURL:[[CrURL alloc] initWithGURL:URL]
-                               withTitle:[text substringWithRange:range]];
+    [weakSelf.mutator didTapVirtualCardLearnMore];
   }];
 }
 
@@ -866,6 +721,14 @@ CGFloat GPayIconTopAnchorOffset() {
 }
 
 #pragma mark - Testing
+
+- (UIButton*)cardNumberButton {
+  return self.cardNumberLabeledChip.singleButton;
+}
+
+- (UIButton*)cardholderButton {
+  return self.cardholderLabeledChip.singleButton;
+}
 
 - (UIButton*)cvcButton {
   return self.CVCLabeledChip.singleButton;

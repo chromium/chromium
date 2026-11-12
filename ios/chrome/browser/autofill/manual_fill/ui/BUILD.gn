@@ -26,6 +26,7 @@ source_set("ui") {
     "manual_fill_card_cell+Testing.h",
     "manual_fill_card_cell.h",
     "manual_fill_card_cell.mm",
+    "manual_fill_card_cell_mutator.h",
     "manual_fill_cell_button.h",
     "manual_fill_cell_button.mm",
     "manual_fill_cell_utils.h",

@@ -76,8 +76,7 @@ TEST_F(CardViewControllerTest, CheckNoDataItemsMessageRemoved) {
   // Add an card data item.
   ManualFillCardItem* cardItem =
       [[ManualFillCardItem alloc] initWithCreditCard:nil
-                                     contentInjector:nil
-                                  navigationDelegate:nil
+                                             mutator:nil
                                          menuActions:@[]
                                            cellIndex:0
                          cellIndexAccessibilityLabel:nil
