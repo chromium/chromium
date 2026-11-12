@@ -95,11 +95,6 @@ class DownloadController : public DownloadControllerBase {
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
-  // The download item contains dangerous file types. Shows the
-  // DangerousDownloadDialog (generic dangerous filetype warning). Returns
-  // whether the dialog was shown.
-  bool OnDangerousDownload(download::DownloadItem* item);
-
   // The download item contains sensitive content. Shows the
   // PolicyWarningDownloadDialog. Returns whether the dialog was shown.
   bool OnSensitiveDownload(download::DownloadItem* item);

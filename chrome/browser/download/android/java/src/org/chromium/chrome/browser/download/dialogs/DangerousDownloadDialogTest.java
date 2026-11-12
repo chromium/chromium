@@ -252,20 +252,7 @@ public class DangerousDownloadDialogTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.MALICIOUS_APK_DOWNLOAD_CHECK)
-    public void testShowDialog_featureDisabled_usesTabDialogType() {
-        mDialog = new DangerousDownloadDialog();
-        mDialog.show(
-                mContext,
-                mModalDialogManager,
-                "test.apk",
-                1024,
-                "example.com",
-                0,
-                mResultCallback,
-                /* isDangerous= */ true);
-
-        ArgumentCaptor<PropertyModel> captor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager)
-                .showDialog(captor.capture(), eq(ModalDialogManager.ModalDialogType.TAB));
+    public void testShowDialog_featureDisabled_usesAppDialogType() {
+        createAndShowDialog(/* isDangerous= */ true);
     }
 }

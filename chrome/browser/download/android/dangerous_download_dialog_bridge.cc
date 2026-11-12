@@ -66,13 +66,6 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
       std::ranges::contains(download_items_, download_item)) {
     return;
   }
-  // When kMaliciousApkDownloadCheck is enabled, a null `window_android` is
-  // forwarded to Java so the dialog is queued until a valid Activity resumes.
-  if (!window_android && !base::FeatureList::IsEnabled(
-                             safe_browsing::kMaliciousApkDownloadCheck)) {
-    DownloadController::ScheduleRemoveDownloadItem(download_item);
-    return;
-  }
   download_item->AddObserver(this);
   download_items_.push_back(download_item);
 

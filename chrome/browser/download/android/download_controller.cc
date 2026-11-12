@@ -335,9 +335,14 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
     return;
   }
 
-  // If the download is dangerous, don't close the tab now. The dangerous
-  // infobar needs to be shown.
-  if (download && download->IsDangerous() &&
+  // Sensitive content warnings still use a tab-modal dialog
+  // (PolicyWarningDownloadDialog), which would be automatically dismissed if
+  // the tab were closed here. Other dangerous downloads use an app-modal
+  // dialog (DangerousDownloadDialog) or download message and can safely close
+  // the empty tab.
+  if (download &&
+      download->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING &&
       (download->GetState() != DownloadItem::CANCELLED)) {
     return;
   }
@@ -482,7 +487,7 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
     } else {
       // Don't show notification for a dangerous download, as user can resume
       // the download after browser crash through notification.
-      warning_shown = OnDangerousDownload(item);
+      warning_shown = ShowDangerousDownloadDialog(item);
     }
 
     if (warning_shown) {
@@ -550,24 +555,6 @@ bool DownloadController::ShowDangerousDownloadWarning(DownloadUIModel& model) {
   return false;
 }
 
-bool DownloadController::OnDangerousDownload(download::DownloadItem* item) {
-  // The chrome.downloads extension API uses the dangerous download prompt
-  // shared by all extensions platforms (see download_danger_dialog.cc).
-  if (item->GetDownloadSource() == download::DownloadSource::EXTENSION_API) {
-    return false;
-  }
-
-  ui::WindowAndroid* window_android =
-      GetWindowHelper(item, /*should_schedule_removal=*/true);
-
-  if (!dangerous_download_bridge_) {
-    dangerous_download_bridge_ =
-        std::make_unique<DangerousDownloadDialogBridge>();
-  }
-  dangerous_download_bridge_->Show(item, window_android);
-  return (window_android != nullptr);
-}
-
 bool DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
   ui::WindowAndroid* window_android =
       GetWindowHelper(item, /*should_schedule_removal=*/true);
@@ -582,6 +569,8 @@ bool DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
 
 bool DownloadController::ShowDangerousDownloadDialog(
     download::DownloadItem* item) {
+  // The chrome.downloads extension API uses the dangerous download prompt
+  // shared by all extensions platforms (see download_danger_dialog.cc).
   if (item->GetDownloadSource() == download::DownloadSource::EXTENSION_API) {
     return false;
   }
@@ -593,10 +582,6 @@ bool DownloadController::ShowDangerousDownloadDialog(
           content::DownloadItemUtils::GetBrowserContext(item)));
   if (!window_android) {
     window_android = GetWindowHelper(item, /*should_schedule_removal=*/false);
-  }
-  if (!window_android && !base::FeatureList::IsEnabled(
-                             safe_browsing::kMaliciousApkDownloadCheck)) {
-    return false;
   }
 
   if (!dangerous_download_bridge_) {

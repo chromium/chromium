@@ -11,7 +11,6 @@
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -28,6 +27,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_renderer_host.h"
@@ -45,6 +45,14 @@ using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
 
 namespace {
+
+class MockDangerousDownloadDialogBridge : public DangerousDownloadDialogBridge {
+ public:
+  MOCK_METHOD(void,
+              Show,
+              (download::DownloadItem*, ui::WindowAndroid*),
+              (override));
+};
 
 std::unique_ptr<TestTabModel> CreateRegisteredTestTabModel(
     Profile* profile,
@@ -100,15 +108,15 @@ class DownloadControllerTest : public testing::Test {
   TestMockDownloadItem* item() { return &item_; }
   Profile* profile() { return &profile_; }
 
-  content::MockDownloadManager* download_manager() {
-    return static_cast<content::MockDownloadManager*>(
-        profile_.GetDownloadManager());
-  }
-
   DownloadController* controller() { return &controller_; }
 
   DangerousDownloadDialogBridge* dangerous_download_bridge() {
     return controller_.dangerous_download_bridge_.get();
+  }
+
+  void SetDangerousDownloadDialogBridge(
+      std::unique_ptr<DangerousDownloadDialogBridge> bridge) {
+    controller_.dangerous_download_bridge_ = std::move(bridge);
   }
 
   bool ShouldShowAppVerificationPrompt(download::DownloadItem* item) {
@@ -200,8 +208,17 @@ TEST_F(DownloadControllerTest,
 
   EXPECT_CALL(*item(), GetDownloadSource())
       .WillRepeatedly(Return(download::DownloadSource::NAVIGATION));
+  EXPECT_CALL(*item(), IsDone()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*item(), GetGuid())
+      .WillRepeatedly(ReturnRefOfCopy(std::string("test-guid")));
+  EXPECT_CALL(*item(), GetFileNameToReportUser())
+      .WillRepeatedly(Return(base::FilePath(FILE_PATH_LITERAL("test.apk"))));
+  EXPECT_CALL(*item(), GetTotalBytes()).WillRepeatedly(Return(1024));
+  EXPECT_CALL(*item(), GetURL())
+      .WillRepeatedly(ReturnRefOfCopy(GURL("https://example.com/path")));
+  EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
 
-  EXPECT_FALSE(controller()->ShowDangerousDownloadDialog(item()));
+  EXPECT_TRUE(controller()->ShowDangerousDownloadDialog(item()));
 }
 
 TEST_F(DownloadControllerTest,
@@ -226,8 +243,9 @@ TEST_F(DownloadControllerTest,
 
 TEST_F(DownloadControllerTest,
        ShowDangerousDownloadDialog_IgnoresActiveTabModelFromOtherProfile) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(safe_browsing::kMaliciousApkDownloadCheck);
+  auto bridge = std::make_unique<MockDangerousDownloadDialogBridge>();
+  MockDangerousDownloadDialogBridge* raw_bridge = bridge.get();
+  SetDangerousDownloadDialogBridge(std::move(bridge));
 
   StubDownloadInfoGetters();
   EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
@@ -258,17 +276,12 @@ TEST_F(DownloadControllerTest,
                                    /*is_active=*/false);
   ASSERT_EQ(own_web_contents.get(), own_tab_model->GetActiveWebContents());
 
-  EXPECT_FALSE(controller()->ShowDangerousDownloadDialog(item()));
-
-  base::test::TestFuture<void> remove_future;
-  EXPECT_CALL(*download_manager(), GetDownloadByGuid("test-guid"))
-      .WillOnce(Return(item()));
-  EXPECT_CALL(*item(), Remove())
-      .WillOnce(base::test::InvokeFuture(remove_future));
+  EXPECT_CALL(*raw_bridge, Show(item(), nullptr)).Times(1);
+  EXPECT_TRUE(controller()->ShowDangerousDownloadDialog(item()));
 
   own_tab_model->SetIsActiveModel(true);
+  EXPECT_CALL(*raw_bridge, Show(item(), scoped_window->get())).Times(1);
   EXPECT_TRUE(controller()->ShowDangerousDownloadDialog(item()));
-  EXPECT_TRUE(remove_future.Wait());
 }
 
 TEST_F(DownloadControllerTest,
@@ -374,4 +387,51 @@ TEST_F(DownloadControllerTest,
   ASSERT_NE(nullptr, dangerous_download_bridge());
   EXPECT_CALL(*item(), ValidateDangerousDownload()).Times(1);
   dangerous_download_bridge()->Accepted(kGuid);
+}
+
+namespace {
+class MockClosingWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  MOCK_METHOD(void, CloseContents, (content::WebContents*), (override));
+};
+}  // namespace
+
+TEST_F(DownloadControllerTest, CloseTabIfEmpty_DangerousDownload) {
+  content::RenderViewHostTestEnabler rvh_enabler;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  std::unique_ptr<content::WebContents> other_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  ASSERT_TRUE(web_contents->GetController().IsInitialNavigation());
+
+  NiceMock<MockClosingWebContentsDelegate> delegate;
+  web_contents->SetDelegate(&delegate);
+
+  TestTabModel tab_model(profile());
+  tab_model.SetWebContentsList({web_contents.get(), other_web_contents.get()});
+  TabModelList::AddTabModel(&tab_model);
+
+  EXPECT_CALL(*item(), IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*item(), GetState())
+      .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_CALL(*item(), GetMimeType())
+      .WillRepeatedly(Return("application/vnd.android.package-archive"));
+  EXPECT_CALL(*item(), IsFromExternalApp()).WillRepeatedly(Return(false));
+
+  // Sensitive content warnings use a tab-modal dialog, so the empty tab must
+  // stay open.
+  EXPECT_CALL(*item(), GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(0);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), item());
+
+  // Generic dangerous file downloads use an app-modal dialog, so the empty tab
+  // should close.
+  EXPECT_CALL(*item(), GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+  EXPECT_CALL(delegate, CloseContents(web_contents.get())).Times(1);
+  DownloadController::CloseTabIfEmpty(web_contents.get(), item());
+
+  TabModelList::RemoveTabModel(&tab_model);
 }

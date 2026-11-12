@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog;
 import org.chromium.chrome.browser.download.dialogs.DangerousDownloadDialog.DangerousDownloadDialogEvent;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -105,45 +104,6 @@ public class DangerousDownloadDialogBridge {
             @JniType("std::u16string") String downloadDomain,
             int iconId,
             boolean isDangerous) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MALICIOUS_APK_DOWNLOAD_CHECK)) {
-            Activity activity =
-                    (windowAndroid != null && windowAndroid.getActivity() != null)
-                            ? windowAndroid.getActivity().get()
-                            : null;
-            if (!(activity instanceof ModalDialogManagerHolder)) {
-                onCancel(guid, windowAndroid);
-                return;
-            }
-
-            ModalDialogManager dialogManager =
-                    ((ModalDialogManagerHolder) activity).getModalDialogManager();
-            if (dialogManager == null) {
-                onCancel(guid, windowAndroid);
-                return;
-            }
-
-            DangerousDownloadDialog dialog = new DangerousDownloadDialog();
-            mShowingDialogs.put(guid, dialog);
-            dialog.show(
-                    activity,
-                    dialogManager,
-                    fileName,
-                    totalBytes,
-                    downloadDomain,
-                    iconId,
-                    (result) -> {
-                        mShowingDialogs.remove(guid);
-                        if (result
-                                == DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CONFIRM) {
-                            onAccepted(guid);
-                        } else {
-                            onCancel(guid, windowAndroid);
-                        }
-                    },
-                    isDangerous);
-            return;
-        }
-
         PendingDialog pending =
                 new PendingDialog(
                         windowAndroid,
@@ -237,9 +197,7 @@ public class DangerousDownloadDialogBridge {
                         cleanUpListenerIfEmpty();
                         onAccepted(pending.mGuid);
                     } else if (result
-                                    == DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CANCEL
-                            || !ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.MALICIOUS_APK_DOWNLOAD_CHECK)) {
+                            == DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_CANCEL) {
                         mPendingDialogs.remove(pending.mGuid);
                         cleanUpListenerIfEmpty();
                         onCancel(pending.mGuid, pending.mWindowAndroid);

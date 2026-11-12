@@ -167,8 +167,7 @@ TEST_F(DangerousDownloadDialogBridgeTest,
             DangerousDownloadDialogBridge::GetDownloadDomainForTesting(&item_));
 }
 
-TEST_F(DangerousDownloadDialogBridgeTest,
-       Show_NullWindowAndroid_QueuesWhenFeatureEnabled) {
+TEST_F(DangerousDownloadDialogBridgeTest, Show_NullWindowAndroid_QueuesDialog) {
   std::string guid = "test-guid";
 
   EXPECT_CALL(item_, IsDone()).WillRepeatedly(Return(false));
@@ -178,6 +177,28 @@ TEST_F(DangerousDownloadDialogBridgeTest,
   EXPECT_CALL(item_, GetTotalBytes()).WillRepeatedly(Return(1024));
   EXPECT_CALL(item_, GetTabUrl())
       .WillRepeatedly(ReturnRefOfCopy(GURL("https://tab.example.com/path")));
+  EXPECT_CALL(item_, IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item_, ValidateDangerousDownload()).Times(1);
+
+  DangerousDownloadDialogBridge bridge;
+  bridge.Show(&item_, /*window_android=*/nullptr);
+  bridge.Accepted(guid);
+}
+
+TEST_F(DangerousDownloadDialogBridgeTest,
+       Show_NullWindowAndroid_QueuesWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(safe_browsing::kMaliciousApkDownloadCheck);
+
+  std::string guid = "test-guid";
+
+  EXPECT_CALL(item_, IsDone()).WillRepeatedly(Return(false));
+  EXPECT_CALL(item_, GetGuid()).WillRepeatedly(ReturnRefOfCopy(guid));
+  EXPECT_CALL(item_, GetFileNameToReportUser())
+      .WillRepeatedly(Return(base::FilePath(FILE_PATH_LITERAL("test.apk"))));
+  EXPECT_CALL(item_, GetTotalBytes()).WillRepeatedly(Return(1024));
+  EXPECT_CALL(item_, GetURL())
+      .WillRepeatedly(ReturnRefOfCopy(GURL("https://example.com/test.apk")));
   EXPECT_CALL(item_, IsDangerous()).WillRepeatedly(Return(true));
   EXPECT_CALL(item_, ValidateDangerousDownload()).Times(1);
 

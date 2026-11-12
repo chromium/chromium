@@ -20,7 +20,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.ui.UiUtils;
@@ -203,22 +202,15 @@ public class DangerousDownloadDialog {
         }
         recordDownloadDialogEvent(
                 DangerousDownloadDialogEvent.DANGEROUS_DOWNLOAD_DIALOG_SHOW, isDangerous);
-        @ModalDialogManager.ModalDialogType
-        int dialogType =
-                ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()
-                        ? ModalDialogManager.ModalDialogType.APP
-                        : ModalDialogManager.ModalDialogType.TAB;
-        if (ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()) {
-            builder.with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
-                    .with(
-                            ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
-                            new OnBackPressedCallback(true) {
-                                @Override
-                                public void handleOnBackPressed() {}
-                            });
-        }
+        builder.with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                .with(
+                        ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                        new OnBackPressedCallback(true) {
+                            @Override
+                            public void handleOnBackPressed() {}
+                        });
         mModel = builder.build();
-        modalDialogManager.showDialog(mModel, dialogType);
+        modalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     /**
