@@ -273,13 +273,7 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
                            StoreDownsamplingParametersInReport);
 
   struct MetricAggregate {
-    uint64_t total_count = 0;
     double value_sum = 0;
-    double value_square_sum = 0.0;
-    uint64_t dropped_due_to_limits = 0;
-    uint64_t dropped_due_to_sampling = 0;
-    uint64_t dropped_due_to_filter = 0;
-    uint64_t dropped_due_to_unconfigured = 0;
   };
 
   struct EventAggregate {
@@ -293,11 +287,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     uint64_t total_count = 0;
     uint64_t dropped_due_to_limits = 0;
     uint64_t dropped_due_to_sampling = 0;
-    uint64_t dropped_due_to_filter = 0;
     uint64_t dropped_due_to_unconfigured = 0;
   };
-
-  using MetricAggregateMap = std::map<uint64_t, MetricAggregate>;
 
   // Marks for deletion if the |source_id| is of a certain type.
   void MaybeMarkForDeletion(SourceId source_id);

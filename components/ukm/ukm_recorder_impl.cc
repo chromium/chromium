@@ -906,31 +906,12 @@ void UkmRecorderImpl::EventAggregate::FillProto(
   proto_aggregate->set_total_count(total_count);
   proto_aggregate->set_dropped_due_to_limits(dropped_due_to_limits);
   proto_aggregate->set_dropped_due_to_sampling(dropped_due_to_sampling);
-  proto_aggregate->set_dropped_due_to_filter(dropped_due_to_filter);
   proto_aggregate->set_dropped_due_to_unconfigured(dropped_due_to_unconfigured);
   for (const auto& metric_and_aggregate : metrics) {
     const MetricAggregate& aggregate = metric_and_aggregate.second;
     Aggregate::Metric* proto_metric = proto_aggregate->add_metrics();
     proto_metric->set_metric_hash(metric_and_aggregate.first);
     proto_metric->set_value_sum(aggregate.value_sum);
-    proto_metric->set_value_square_sum(aggregate.value_square_sum);
-    if (aggregate.total_count != total_count) {
-      proto_metric->set_total_count(aggregate.total_count);
-    }
-    if (aggregate.dropped_due_to_limits != dropped_due_to_limits) {
-      proto_metric->set_dropped_due_to_limits(aggregate.dropped_due_to_limits);
-    }
-    if (aggregate.dropped_due_to_sampling != dropped_due_to_sampling) {
-      proto_metric->set_dropped_due_to_sampling(
-          aggregate.dropped_due_to_sampling);
-    }
-    if (aggregate.dropped_due_to_filter != dropped_due_to_filter) {
-      proto_metric->set_dropped_due_to_filter(aggregate.dropped_due_to_filter);
-    }
-    if (aggregate.dropped_due_to_unconfigured != dropped_due_to_unconfigured) {
-      proto_metric->set_dropped_due_to_unconfigured(
-          aggregate.dropped_due_to_unconfigured);
-    }
   }
 }
 
@@ -1099,18 +1080,13 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   event_aggregate.total_count++;
   for (const auto& metric : entry->metrics) {
     MetricAggregate& aggregate = event_aggregate.metrics[metric.first];
-    double value = metric.second;
-    aggregate.total_count++;
-    aggregate.value_sum += value;
-    aggregate.value_square_sum += value * value;
+    aggregate.value_sum += metric.second;
   }
 
   if (!IsSamplingConfigured()) {
     RecordDroppedEntry(entry->event_hash,
                        DroppedDataReason::SAMPLING_UNCONFIGURED);
     event_aggregate.dropped_due_to_unconfigured++;
-    for (auto& metric : entry->metrics)
-      event_aggregate.metrics[metric.first].dropped_due_to_unconfigured++;
     return;
   }
 
@@ -1123,16 +1099,12 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   if (!sampled_in) {
     RecordDroppedEntry(entry->event_hash, DroppedDataReason::SAMPLED_OUT);
     event_aggregate.dropped_due_to_sampling++;
-    for (auto& metric : entry->metrics)
-      event_aggregate.metrics[metric.first].dropped_due_to_sampling++;
     return;
   }
 
   if (recordings_.entries.size() >= max_entries_) {
     RecordDroppedEntry(entry->event_hash, DroppedDataReason::MAX_HIT);
     event_aggregate.dropped_due_to_limits++;
-    for (auto& metric : entry->metrics)
-      event_aggregate.metrics[metric.first].dropped_due_to_limits++;
     return;
   }
 
