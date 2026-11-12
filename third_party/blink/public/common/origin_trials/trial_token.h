@@ -111,7 +111,7 @@ class BLINK_COMMON_EXPORT TrialToken {
 
   // Returns a token object if the string represents a well-formed JSON token
   // payload, or nullptr otherwise.
-  static std::unique_ptr<TrialToken> Parse(const std::string& token_payload,
+  static std::unique_ptr<TrialToken> Parse(std::string_view token_payload,
                                            const uint8_t version);
 
   bool ValidateOrigin(const url::Origin& origin) const;

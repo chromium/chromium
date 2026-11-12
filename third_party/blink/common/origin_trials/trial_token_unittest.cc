@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
@@ -743,7 +744,7 @@ class TrialTokenTest : public testing::Test {
                    &token_version);
   }
 
-  std::unique_ptr<TrialToken> Parse(const std::string& token_payload,
+  std::unique_ptr<TrialToken> Parse(std::string_view token_payload,
                                     const uint8_t token_version) {
     return TrialToken::Parse(token_payload, token_version);
   }

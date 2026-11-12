@@ -183,7 +183,7 @@ OriginTrialTokenStatus TrialToken::Extract(
 }
 
 // static
-std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
+std::unique_ptr<TrialToken> TrialToken::Parse(std::string_view token_payload,
                                               const uint8_t version) {
   // Protect against attempting to parse arbitrarily large tokens. This check is
   // required here because the fuzzer calls Parse() directly, bypassing the size
