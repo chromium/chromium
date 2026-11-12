@@ -4,6 +4,8 @@
 
 source_set("tracked_element") {
   sources = [
+    "anchored_dialog_registry_webui.cc",
+    "anchored_dialog_registry_webui.h",
     "element_highlighter_webui.cc",
     "element_highlighter_webui.h",
     "tracked_element_handler.cc",

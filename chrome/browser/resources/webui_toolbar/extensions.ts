@@ -58,11 +58,14 @@ export class ExtensionsElement extends ExtensionsElementBase {
     return getExtensionActionKey(state.id);
   }
 
-  // OverflowableToolbarActionContainerMixin override. Relies on the template
-  // only containing extension actions and the divider.
+  // OverflowableToolbarActionContainerMixin override. Selects the extension
+  // actions and the divider by tag name, since they may not be the only
+  // children: TrackedElementManager adds an element after an action while a
+  // dialog is anchored to it.
   override getActions(): OverflowableToolbarActionElement[] {
-    return Array.from(this.shadowRoot.children) as
-        OverflowableToolbarActionElement[];
+    return Array.from(
+        this.shadowRoot.querySelectorAll<OverflowableToolbarActionElement>(
+            `${this.childTagName}, toolbar-divider`));
   }
 
   override moveItem(id: string, index: number) {

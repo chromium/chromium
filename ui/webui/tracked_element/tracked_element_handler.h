@@ -129,6 +129,18 @@ class TrackedElementHandler
                          bool highlight,
                          base::PassKey<TrackedElementWebUI>);
 
+  // Tells the WebUI side whether the given element has an anchored dialog that
+  // takes part in sequential focus navigation.
+  void SetHasAnchoredDialog(TrackedElementWebUI& element,
+                            bool has_anchored_dialog,
+                            base::PassKey<TrackedElementWebUI>);
+
+  // Overrides whether the WebUI is considered to have keyboard focus, which
+  // FocusAnchoredDialog() requires.
+  void SetHasKeyboardFocusForTesting(std::optional<bool> has_keyboard_focus) {
+    has_keyboard_focus_for_testing_ = has_keyboard_focus;
+  }
+
   std::vector<std::string> GetIdentifiers();
   ui::ElementContext context() { return context_; }
   content::RenderFrameHost* render_frame_host() const;
@@ -184,6 +196,10 @@ class TrackedElementHandler
   void TrackedElementCanHighlightChanged(
       tracked_element::mojom::TrackedElementIdentifierPtr id,
       bool can_highlight) override;
+  void FocusAnchoredDialog(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      bool reverse,
+      FocusAnchoredDialogCallback callback) override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility new_visibility) override;
@@ -214,6 +230,9 @@ class TrackedElementHandler
       const tracked_element::mojom::TrackedElementIdentifierPtr& id,
       bool create_if_not_present = false);
 
+  // Whether the WebUI currently has keyboard focus.
+  bool HasKeyboardFocus() const;
+
   void ReportBadMessage(
       std::string_view description,
       const tracked_element::mojom::TrackedElementIdentifierPtr& id);
@@ -227,6 +246,7 @@ class TrackedElementHandler
 
   bool is_web_contents_visible_ = false;
   absl::flat_hash_set<content::GlobalRenderFrameHostId> occluded_subframes_;
+  std::optional<bool> has_keyboard_focus_for_testing_;
   base::WeakPtr<user_education::HelpBubbleHandlerBase> help_bubble_handler_;
 #if !BUILDFLAG(IS_ANDROID)
   // Caches the host WebView once located (or set in tests). Marked mutable so

@@ -5,9 +5,12 @@
 #ifndef UI_WEBUI_TRACKED_ELEMENT_TRACKED_ELEMENT_WEB_UI_H_
 #define UI_WEBUI_TRACKED_ELEMENT_TRACKED_ELEMENT_WEB_UI_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/interaction/anchored_dialog_registry.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/safe_castable.h"
@@ -109,6 +112,19 @@ class TrackedElementWebUI : public ui::TrackedElement {
   views::WebView* GetWebView() const;
 #endif
 
+  base::WeakPtr<TrackedElementWebUI> GetWeakPtr();
+
+  // Adds or removes a dialog anchored to this element that takes part in the
+  // WebUI's sequential focus navigation, right after this element and its
+  // descendants. If there are several, the most recently added one is entered.
+  // Called by AnchoredDialogRegistryWebUI.
+  void AddAnchoredDialog(AnchoredDialogRegistry::FocusTarget& dialog);
+  void RemoveAnchoredDialog(AnchoredDialogRegistry::FocusTarget& dialog);
+
+  // Moves focus into the most recently added anchored dialog. Returns false if
+  // there is none or focus could not be moved.
+  bool FocusAnchoredDialog(bool reverse);
+
  private:
   friend class TrackedElementHandler;
   friend class TrackedElementVisibilityLock;
@@ -133,6 +149,8 @@ class TrackedElementWebUI : public ui::TrackedElement {
   gfx::RectF last_known_bounds_;
   int visibility_lock_count_ = 0;
   raw_ptr<HighlightHandle> highlight_handle_ = nullptr;
+  // Dialogs anchored to this element, in the order they were added.
+  std::vector<raw_ptr<AnchoredDialogRegistry::FocusTarget>> anchored_dialogs_;
 
   base::WeakPtrFactory<TrackedElementWebUI> weak_ptr_factory_{this};
 };

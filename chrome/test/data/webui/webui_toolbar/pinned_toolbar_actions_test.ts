@@ -244,6 +244,54 @@ suite('PinnedToolbarActions', function() {
     assertFalse(action2.preventOverflow);
   });
 
+  test('Elements added after an action stay with it', async () => {
+    // Remove actions right away, without an exit animation.
+    AnimationTracker.showAnimations = false;
+    const action1 =
+        container.shadowRoot.querySelectorAll('pinned-toolbar-action')[0]!;
+    assertEquals(1, action1.state.action);
+    assertEquals(3, container.getActions().length);
+    container.setToMinWidth();
+    const overflowItemCount = container.controlsToAddToOverflowMenu().length;
+    container.setToPreferredWidth();
+
+    // TrackedElementManager adds an element after an action while a dialog is
+    // anchored to the action, and relies on it staying there.
+    const sentinel = document.createElement('div');
+    action1.after(sentinel);
+
+    // Move action 1 after action 2.
+    container.states = [
+      container.states[1]!,
+      container.states[0]!,
+      container.states[2]!,
+    ];
+    await microtasksFinished();
+    const actionElements =
+        container.shadowRoot.querySelectorAll('pinned-toolbar-action');
+    assertEquals(2, actionElements.length);
+    assertEquals(action1, actionElements[1]);
+    assertEquals(sentinel, action1.nextElementSibling);
+
+    // The element is not treated as an action.
+    const actions = container.getActions();
+    assertEquals(3, actions.length);
+    assertEquals(actionElements[0], actions[0]);
+    assertEquals(action1, actions[1]);
+    assertEquals('toolbar-divider', actions[2]!.localName);
+    container.setToMinWidth();
+    assertFalse(sentinel.classList.contains('overflow-display-none'));
+    assertEquals(
+        overflowItemCount, container.controlsToAddToOverflowMenu().length);
+
+    // Remove action 1.
+    container.states = container.states.filter(s => s.action !== 1);
+    await microtasksFinished();
+    assertFalse(action1.isConnected);
+    assertFalse(sentinel.isConnected);
+    assertEquals(2, container.getActions().length);
+  });
+
   test('Pops out all elements when there is no divider', async () => {
     // Without a divider, nothing is pinned, so all actions are popped out into
     // the overflow menu, and none of them may be dragged.

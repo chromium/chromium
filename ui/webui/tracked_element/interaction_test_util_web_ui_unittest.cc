@@ -52,6 +52,10 @@ class MockTrackedElementManager
       tracked_element::mojom::TrackedElementIdentifierPtr id,
       bool highlighted) override {}
 
+  void OnElementAnchoredDialogChanged(
+      tracked_element::mojom::TrackedElementIdentifierPtr id,
+      bool has_anchored_dialog) override {}
+
   void ClickElement(tracked_element::mojom::TrackedElementIdentifierPtr id,
                     tracked_element::mojom::InputType input_type,
                     ClickElementCallback callback) override {

@@ -81,6 +81,17 @@ interface TrackedElementHandler {
   // `custom_event_name`.
   TrackedElementCustomEvent(TrackedElementIdentifier identifier,
                             string custom_event_name);
+
+  // Called when sequential focus navigation (Tab / Shift+Tab) in the WebUI
+  // reaches the position right after the subtree of an element that has an
+  // anchored dialog (see
+  // TrackedElementManager.OnElementAnchoredDialogChanged()). Moves focus into
+  // the most recently anchored dialog: to its first focusable item, or to its
+  // last one if `reverse` is true. `success` is false if focus could not be
+  // moved, e.g. because the dialog has closed in the meantime. Only honored
+  // while the WebUI has keyboard focus.
+  FocusAnchoredDialog(TrackedElementIdentifier identifier, bool reverse)
+      => (bool success);
 };
 
 // Implemented by WebUI. The browser asks WebUI to update elements in some way.
@@ -89,6 +100,14 @@ interface TrackedElementManager {
   // help relate it to a bubble popup.
   OnElementHighlightChanged(TrackedElementIdentifier identifier,
                             bool highlighted);
+
+  // Notifies whether a visible dialog that can take focus (e.g. a bubble) is
+  // anchored to the element. While one is, it is part of the WebUI's
+  // sequential focus order, right after the element and its descendants, and
+  // the WebUI should call TrackedElementHandler.FocusAnchoredDialog() when
+  // focus navigation reaches it.
+  OnElementAnchoredDialogChanged(TrackedElementIdentifier identifier,
+                                 bool has_anchored_dialog);
 
   // Simulates a click on the element.
   ClickElement(TrackedElementIdentifier identifier, InputType input_type)

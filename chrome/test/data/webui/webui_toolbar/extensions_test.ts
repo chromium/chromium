@@ -1268,6 +1268,30 @@ suite('Extensions', function() {
     assertTrue(actions[3]!.isDivider);
   });
 
+  test('getActions ignores other elements', async () => {
+    const action1 = container.getActions()[0]!;
+    // TrackedElementManager adds an element after an action while a dialog is
+    // anchored to the action.
+    const sentinel = document.createElement('div');
+    action1.after(sentinel);
+    container.requestUpdate();
+    await microtasksFinished();
+
+    const actions = container.getActions();
+    assertEquals(4, actions.length);
+    assertEquals(action1, actions[0]);
+    assertEquals('action-2', actions[1]!.getAttribute('data-key'));
+    // The extensions menu button and the divider.
+    assertEquals('webui-toolbar-extension', actions[2]!.localName);
+    assertEquals('', actions[2]!.getAttribute('data-key'));
+    assertEquals('toolbar-divider', actions[3]!.localName);
+
+    // The element is not treated as an action that can overflow either.
+    container.setToMinWidth();
+    assertFalse(sentinel.classList.contains('overflow-display-none'));
+    assertEquals(0, container.controlsToAddToOverflowMenu().length);
+  });
+
   test('Prevents overflow of force-visible actions', async () => {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');

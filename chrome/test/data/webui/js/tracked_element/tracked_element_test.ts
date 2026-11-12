@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isMac} from 'chrome://resources/js/platform.js';
 import {TRACKED_ELEMENT_VISIBILITY_CHANGED_EVENT, TrackedElementManager} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import type {TrackedElement, TrackedElementVisibilityChangedEvent} from 'chrome://resources/js/tracked_element/tracked_element_manager.js';
 import type {TrackedElementProxy} from 'chrome://resources/js/tracked_element/tracked_element_proxy.js';
@@ -16,6 +17,7 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 class MockTrackedElementHandler extends TestBrowserProxy implements
     TrackedElementHandlerInterface {
   managerRemote?: TrackedElementManagerRemote;
+  focusAnchoredDialogResult: boolean = true;
 
   constructor() {
     super([
@@ -24,6 +26,7 @@ class MockTrackedElementHandler extends TestBrowserProxy implements
       'trackedElementActivated',
       'trackedElementCustomEvent',
       'trackedElementCanHighlightChanged',
+      'focusAnchoredDialog',
     ]);
   }
 
@@ -48,6 +51,11 @@ class MockTrackedElementHandler extends TestBrowserProxy implements
   trackedElementCanHighlightChanged(
       id: TrackedElementIdentifier, canHighlight: boolean) {
     this.methodCalled('trackedElementCanHighlightChanged', id, canHighlight);
+  }
+
+  focusAnchoredDialog(id: TrackedElementIdentifier, reverse: boolean) {
+    this.methodCalled('focusAnchoredDialog', id, reverse);
+    return Promise.resolve({success: this.focusAnchoredDialogResult});
   }
 }
 
@@ -1243,4 +1251,254 @@ suite('TrackedElementTest', function() {
             },
             lastCall[2]);
       });
+
+  function addButton(parent: Node, id: string): HTMLButtonElement {
+    const button = document.createElement('button');
+    button.id = id;
+    button.textContent = id;
+    parent.appendChild(button);
+    return button;
+  }
+
+  /**
+   * Tracks `anchor` and tells the manager that it has an anchored dialog.
+   * Returns the dialog's sentinel.
+   */
+  async function anchorDialogTo(anchor: HTMLElement): Promise<HTMLElement> {
+    manager.startTracking(
+        anchor, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    await waitForVisibilityEvents();
+    managerRemote.onElementAnchoredDialogChanged(ELEMENT_ID, true);
+    await managerRemote.$.flushForTesting();
+    handler.reset();
+    handler.focusAnchoredDialogResult = true;
+    const sentinel = anchor.nextElementSibling;
+    assertTrue(sentinel instanceof HTMLElement);
+    return sentinel;
+  }
+
+  /**
+   * Focuses `sentinel` like the browser does, i.e. not because of a key press.
+   */
+  function focusSentinel(sentinel: HTMLElement) {
+    sentinel.focus();
+    if (!document.hasFocus()) {
+      // Blink only dispatches focus events in focused documents.
+      sentinel.dispatchEvent(new FocusEvent('focus'));
+    }
+  }
+
+  /**
+   * Simulates a Tab key press on `origin`. This doesn't move focus: where Tab
+   * goes is up to Blink, which only handles real key presses.
+   */
+  function pressTab(origin: HTMLElement, modifiers: KeyboardEventInit = {}) {
+    origin.focus();
+    origin.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      code: 'Tab',
+      bubbles: true,
+      composed: true,
+      ...modifiers,
+    }));
+  }
+
+  /** Simulates a Tab key press on `origin` that moves focus to `sentinel`. */
+  function tabTo(
+      origin: HTMLElement, sentinel: HTMLElement,
+      modifiers: KeyboardEventInit = {}) {
+    pressTab(origin, modifiers);
+    focusSentinel(sentinel);
+  }
+
+  /** Waits until a simulated Tab key press no longer counts. */
+  function tabKeyPressDone(): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve));
+  }
+
+  test('Anchored dialog has a sentinel after its anchor', async () => {
+    const anchor = document.createElement('div');
+    document.body.appendChild(anchor);
+    const last = addButton(anchor, 'last');
+    const after = addButton(document.body, 'after');
+    const sentinel = await anchorDialogTo(anchor);
+
+    // Blink puts the sentinel after all of the anchor in the focus order.
+    assertEquals(last, anchor.lastElementChild);
+    assertEquals(after, sentinel.nextElementSibling);
+    assertEquals(0, sentinel.tabIndex);
+    const afterX = after.getBoundingClientRect().x;
+    assertEquals(0, sentinel.getBoundingClientRect().width);
+    assertEquals(0, sentinel.getBoundingClientRect().height);
+
+    managerRemote.onElementAnchoredDialogChanged(ELEMENT_ID, false);
+    await managerRemote.$.flushForTesting();
+    assertFalse(sentinel.isConnected);
+    assertEquals(after, anchor.nextElementSibling);
+    // The sentinel didn't take up any space.
+    assertEquals(afterX, after.getBoundingClientRect().x);
+  });
+
+  test('Tab to the sentinel enters anchored dialog', async () => {
+    const anchor = addButton(document.body, 'anchor');
+    const after = addButton(document.body, 'after');
+    const sentinel = await anchorDialogTo(anchor);
+
+    tabTo(anchor, sentinel);
+    await tabKeyPressDone();
+    tabTo(after, sentinel, {shiftKey: true});
+    assertDeepEquals(
+        [[ELEMENT_ID, false], [ELEMENT_ID, true]],
+        handler.getArgs('focusAnchoredDialog'));
+  });
+
+  test('Focus from outside enters anchored dialog from the end', async () => {
+    const anchor = addButton(document.body, 'anchor');
+    const sentinel = await anchorDialogTo(anchor);
+
+    focusSentinel(sentinel);
+    assertDeepEquals(
+        [[ELEMENT_ID, true]], handler.getArgs('focusAnchoredDialog'));
+
+    // There is nowhere to give focus back to, but it doesn't stay on the
+    // sentinel.
+    window.dispatchEvent(new Event('blur'));
+    assertNotEquals(sentinel, document.activeElement);
+  });
+
+  test('Tab with modifiers that keep it from moving focus', async () => {
+    const anchor = addButton(document.body, 'anchor');
+    const sentinel = await anchorDialogTo(anchor);
+
+    // Blink doesn't move focus for these key presses. If the sentinel gets
+    // focus afterwards, it is for another reason, and is treated like focus
+    // that comes from outside of the document (see the test above). Tab
+    // without Shift would enter the dialog forwards, so entering it from the
+    // end shows that the key press wasn't taken to be what moved focus.
+    pressTab(anchor, {ctrlKey: true});
+    focusSentinel(sentinel);
+    pressTab(anchor, {metaKey: true});
+    focusSentinel(sentinel);
+    assertDeepEquals(
+        [[ELEMENT_ID, true], [ELEMENT_ID, true]],
+        handler.getArgs('focusAnchoredDialog'));
+
+    // Alt is the exception on Mac, where Option-Tab moves focus.
+    handler.reset();
+    pressTab(anchor, {altKey: true});
+    focusSentinel(sentinel);
+    assertDeepEquals(
+        [[ELEMENT_ID, !isMac]], handler.getArgs('focusAnchoredDialog'));
+  });
+
+  test('Focus returns when the anchored dialog goes away', async () => {
+    const anchor = addButton(document.body, 'anchor');
+    const sentinel = await anchorDialogTo(anchor);
+
+    tabTo(anchor, sentinel);
+    assertEquals(sentinel, document.activeElement);
+
+    managerRemote.onElementAnchoredDialogChanged(ELEMENT_ID, false);
+    await managerRemote.$.flushForTesting();
+    assertEquals(anchor, document.activeElement);
+  });
+
+  test('Focus returns when the document loses focus', async () => {
+    const anchor = addButton(document.body, 'anchor');
+    const sentinel = await anchorDialogTo(anchor);
+
+    tabTo(anchor, sentinel);
+    assertEquals(sentinel, document.activeElement);
+
+    // Focus moves on into the dialog.
+    window.dispatchEvent(new Event('blur'));
+    assertEquals(anchor, document.activeElement);
+    assertEquals(1, handler.getCallCount('focusAnchoredDialog'));
+    assertTrue(sentinel.isConnected);
+  });
+
+  test('Hiding the anchor removes the sentinel', async () => {
+    const anchor = addButton(document.body, 'anchor');
+    const sentinel = await anchorDialogTo(anchor);
+
+    anchor.hidden = true;
+    await waitForVisibilityEvents();
+    assertFalse(sentinel.isConnected);
+    anchor.hidden = false;
+    await waitForVisibilityEvents();
+    assertFalse(sentinel.isConnected);
+    assertEquals(null, anchor.nextElementSibling);
+  });
+
+  test('Removing only the anchor removes the sentinel', async () => {
+    // Code that removes the anchor may leave the sentinel behind. The anchor is
+    // in a shadow root here, like an element in a custom element's template.
+    const host = document.createElement('div');
+    const shadowRoot = host.attachShadow({mode: 'open'});
+    document.body.appendChild(host);
+    const anchor = addButton(shadowRoot, 'anchor');
+    const sentinel = await anchorDialogTo(anchor);
+
+    anchor.remove();
+    assertTrue(sentinel.isConnected);
+    await waitForVisibilityEvents();
+    assertFalse(sentinel.isConnected);
+  });
+
+  test('Tab puts a sentinel back after its anchor', async () => {
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const anchor = addButton(container, 'anchor');
+    const after = addButton(container, 'after');
+    const sentinel = await anchorDialogTo(anchor);
+
+    // Code that doesn't know about the sentinel drops it.
+    container.replaceChildren(anchor, after);
+    assertFalse(sentinel.isConnected);
+    pressTab(anchor);
+    assertEquals(sentinel, anchor.nextSibling);
+    assertEquals(after, sentinel.nextSibling);
+
+    // Or it moves the anchor away from it.
+    const otherContainer = document.createElement('div');
+    document.body.appendChild(otherContainer);
+    otherContainer.appendChild(anchor);
+    assertEquals(container, sentinel.parentNode);
+    pressTab(after);
+    assertEquals(sentinel, anchor.nextSibling);
+    assertEquals(after, container.lastChild);
+    assertEquals(1, container.childNodes.length);
+
+    tabTo(anchor, sentinel);
+    assertDeepEquals(
+        [[ELEMENT_ID, false]], handler.getArgs('focusAnchoredDialog'));
+  });
+
+  test('Sentinel goes away if the dialog cannot take focus', async () => {
+    const anchor = addButton(document.body, 'anchor');
+    const sentinel = await anchorDialogTo(anchor);
+    handler.focusAnchoredDialogResult = false;
+
+    tabTo(anchor, sentinel);
+    await handler.whenCalled('focusAnchoredDialog');
+    await microtasksFinished();
+    assertFalse(sentinel.isConnected);
+    assertEquals(anchor, document.activeElement);
+  });
+
+  test('Sentinel of a slotted anchor is in the same slot', async () => {
+    const host = document.createElement('div');
+    const shadowRoot = host.attachShadow({mode: 'open'});
+    const slot = document.createElement('slot');
+    slot.name = 'named';
+    shadowRoot.appendChild(slot);
+    const anchor = addButton(host, 'slotted-anchor');
+    anchor.slot = 'named';
+    document.body.appendChild(host);
+
+    const sentinel = await anchorDialogTo(anchor);
+    assertEquals(slot, anchor.assignedSlot);
+    assertEquals(slot, sentinel.assignedSlot);
+  });
 });

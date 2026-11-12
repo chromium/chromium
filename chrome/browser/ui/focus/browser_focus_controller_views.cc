@@ -81,6 +81,12 @@ bool BrowserFocusControllerViews::
   // TODO: this fixes https://crbug.com/40668249 and https://crbug.com/40674460,
   // but a more general solution should be desirable to find any bubbles
   // anchored in the views hierarchy.
+  // TODO(crbug.com/585053540): This misses bubbles whose anchor isn't one of
+  // those checked below, e.g. the permission prompt anchored to the permission
+  // chip, with both the Views and the WebUI location bar. For anchors that
+  // aren't Views, consider looking the bubbles up through
+  // ui::AnchoredDialogRegistry, which already knows about them for Tab
+  // traversal.
   views::DialogDelegate* bubble = nullptr;
   if (auto* control = toolbar_button_provider_->GetAppMenuControl()) {
     auto* dialog = control->GetDialogDelegate();
