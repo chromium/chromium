@@ -1196,6 +1196,47 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
   // This should not crash or trigger UAF.
   host_platform->Restore();
 }
+
+// Creates platform windows that never provide an accelerated widget, like an
+// X11 status icon window when there is no system tray.
+class NoWidgetPlatformWindowFactoryDelegate
+    : public aura::WindowTreeHostPlatform::
+          PlatformWindowFactoryDelegateForTesting {
+ public:
+  NoWidgetPlatformWindowFactoryDelegate() {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        this);
+  }
+  NoWidgetPlatformWindowFactoryDelegate(
+      const NoWidgetPlatformWindowFactoryDelegate&) = delete;
+  NoWidgetPlatformWindowFactoryDelegate& operator=(
+      const NoWidgetPlatformWindowFactoryDelegate&) = delete;
+  ~NoWidgetPlatformWindowFactoryDelegate() override {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        nullptr);
+  }
+
+  std::unique_ptr<ui::PlatformWindow> Create(
+      aura::WindowTreeHostPlatform* host) override {
+    return std::make_unique<ui::StubWindow>(
+        host, /*use_default_accelerated_widget=*/false,
+        gfx::Rect(100, 100, 100, 100));
+  }
+};
+
+// The compositor must not be given a null accelerated widget when the platform
+// window fails to provide one.
+TEST_F(DesktopWindowTreeHostPlatformTest, NoAcceleratedWidget) {
+  NoWidgetPlatformWindowFactoryDelegate scoped_platform_window_factory_delegate;
+
+  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
+  aura::WindowTreeHost* host = widget->GetNativeWindow()->GetHost();
+  EXPECT_EQ(host->GetAcceleratedWidget(), gfx::kNullAcceleratedWidget);
+  EXPECT_FALSE(aura::WindowTreeHost::GetForAcceleratedWidget(
+      gfx::kNullAcceleratedWidget));
+
+  widget->CloseNow();
+}
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace views

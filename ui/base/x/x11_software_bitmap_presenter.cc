@@ -134,9 +134,7 @@ X11SoftwareBitmapPresenter::X11SoftwareBitmapPresenter(
     : widget_(static_cast<x11::Window>(widget)),
       connection_(connection),
       enable_multibuffering_(enable_multibuffering) {
-  // TODO(crbug.com/584624838): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK_NE(widget_, x11::Window::None);
+  CHECK_NE(widget_, x11::Window::None, base::NotFatalUntil::M163);
 
   gc_ = connection_->GenerateId<x11::GraphicsContext>();
   connection_->CreateGC({gc_, widget_});

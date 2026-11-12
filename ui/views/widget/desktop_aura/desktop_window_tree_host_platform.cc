@@ -314,7 +314,12 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
     compositor()->set_wait_for_all_frame_sinks(false);
   }
 
-  WindowTreeHost::OnAcceleratedWidgetAvailable();
+  // The platform window may fail to create a native window (e.g. an X11 status
+  // icon without a system tray). Don't give the compositor a null widget, or it
+  // would request a frame sink that has no surface to present to.
+  if (GetAcceleratedWidget() != gfx::kNullAcceleratedWidget) {
+    WindowTreeHost::OnAcceleratedWidgetAvailable();
+  }
   InitHost();
   window()->Show();
 }
