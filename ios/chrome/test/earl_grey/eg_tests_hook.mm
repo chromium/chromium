@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
@@ -74,6 +75,7 @@
 #import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/signin_test_util.h"
+#import "ios/chrome/test/earl_grey/duo_simulator_util.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -241,6 +243,13 @@ void LoadMinimalAppUI(UIWindow* window) {
   ]];
   window.rootViewController = viewController;
   [window makeKeyAndVisible];
+}
+
+bool IsWindowSceneOnDuoCoverDisplay(UIWindowScene* scene) {
+  // Unlike the internal provider, the Chromium provider always allows window
+  // scene activation. Report when `scene` is on the cover display of a closed
+  // iPhone Duo so that tests disallow activation like on the device.
+  return IsDuoDevice() && IsDuoCoverDisplaySize(scene.screen.bounds.size);
 }
 
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {

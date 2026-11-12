@@ -76,6 +76,10 @@ bool ShouldLoadMinimalAppUI() {
 
 void LoadMinimalAppUI(UIWindow* window) {}
 
+bool IsWindowSceneOnDuoCoverDisplay(UIWindowScene* scene) {
+  return false;
+}
+
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }

@@ -77,6 +77,10 @@ bool ShouldLoadMinimalAppUI() {
 
 void LoadMinimalAppUI(UIWindow* window) {}
 
+bool IsWindowSceneOnDuoCoverDisplay(UIWindowScene* scene) {
+  return false;
+}
+
 std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
     PrefService* user_prefs,
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {

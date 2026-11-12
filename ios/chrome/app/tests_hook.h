@@ -24,6 +24,7 @@ class TrustedVaultClientBackend;
 @class UIImage;
 @class UIViewController;
 @class UIWindow;
+@class UIWindowScene;
 @protocol ChromeLensViewFinderController;
 @protocol ReauthenticationProtocol;
 
@@ -156,6 +157,10 @@ bool ShouldLoadMinimalAppUI();
 // Loads a minimal UI for testing in the given window (usually after loading a
 // simple UILabel into the first UIWindow).
 void LoadMinimalAppUI(UIWindow* window);
+
+// Returns true if `scene` is displayed on the cover display of a closed iPhone
+// Duo in tests.
+bool IsWindowSceneOnDuoCoverDisplay(UIWindowScene* scene);
 
 // Returns a policy provider that should be installed as the platform policy
 // provider when testing. May return nullptr.

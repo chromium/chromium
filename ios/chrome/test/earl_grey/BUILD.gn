@@ -33,10 +33,35 @@ source_set("eg2_tests") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("duo_simulator_util") {
+  testonly = true
+  sources = [
+    "duo_simulator_util.h",
+    "duo_simulator_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/web/common:uikit",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "duo_simulator_util_unittest.mm" ]
+  deps = [
+    ":duo_simulator_util",
+    "//testing/gtest",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("hooks") {
   testonly = true
   sources = [ "eg_tests_hook.mm" ]
   deps = [
+    ":duo_simulator_util",
     ":switches",
     "//base",
     "//base/test:test_support",
@@ -122,8 +147,6 @@ source_set("eg_app_support+eg2") {
     "chrome_matchers_app_interface.mm",
     "chrome_test_case_app_interface.h",
     "chrome_test_case_app_interface.mm",
-    "duo_simulator_util.h",
-    "duo_simulator_util.mm",
     "earl_grey_scoped_block_swizzler_app_interface.h",
     "earl_grey_scoped_block_swizzler_app_interface.mm",
     "recording_command_dispatcher.h",
@@ -131,6 +154,7 @@ source_set("eg_app_support+eg2") {
   ]
 
   deps = [
+    ":duo_simulator_util",
     ":switches",
     "//base",
     "//base/test:test_support",

@@ -203,7 +203,8 @@ void SyncBreadcrumbsLog() {
 
 - (BOOL)multipleScenesAvailableForScene:(UIWindowScene*)scene {
   return base::ios::IsMultipleScenesSupported() &&
-         ios::provider::IsWindowSceneActivationAllowed(scene);
+         ios::provider::IsWindowSceneActivationAllowed(scene) &&
+         !tests_hook::IsWindowSceneOnDuoCoverDisplay(scene);
 }
 
 #pragma mark Transitioning to the Foreground

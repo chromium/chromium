@@ -10,6 +10,12 @@
 // Returns true if running on an iPhone Duo simulator.
 bool IsDuoSimulator();
 
+// Returns true if `size` matches the iPhone Duo cover display (shown when the
+// device is closed) rather than the inner display. Works on device too.
+// TODO(crbug.com/584222905): Remove once a public API to detect this is
+// available.
+bool IsDuoCoverDisplaySize(CGSize size);
+
 // Sends a simulated hinge angle event (0.0 = Closed, 130.0 = Book,
 // 180.0 = Open).
 bool DispatchSimulatedDuoHingeAngle(double angle_in_degrees);

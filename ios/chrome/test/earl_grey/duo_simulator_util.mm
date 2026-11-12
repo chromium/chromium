@@ -44,6 +44,10 @@ namespace {
 
 NSString* const kDuoSimulatorModelIdentifier = @"iPhone19,4";
 
+// Maximum short-edge dimension (in points) of the iPhone Duo cover display. The
+// inner display is 951x669 pt.
+constexpr CGFloat kCoverDisplayMaxShortDimension = 500.0;
+
 #if TARGET_OS_SIMULATOR
 // Vendor-defined HID usage monitored by locationd for simulator posture events.
 constexpr uint32_t kVendorDefinedUsagePage = 0xFF61;
@@ -52,7 +56,6 @@ constexpr int32_t kVirtualEventSystemClientType = 4;
 constexpr CFOptionFlags kIOCFSerializeToBinary = 1;
 
 constexpr double kClosedAngleMaxDegrees = 5.0;
-constexpr CGFloat kCoverDisplayMaxShortDimension = 500.0;
 constexpr CGFloat kInnerDisplayMinShortDimension = 600.0;
 
 constexpr base::TimeDelta kVirtualServiceRegistrationDelay =
@@ -310,7 +313,7 @@ bool IsWindowInExpectedHingeStatus(UIWindow* window, double angle_in_degrees) {
       std::min(window.bounds.size.width, window.bounds.size.height);
   bool expect_closed = (angle_in_degrees <= kClosedAngleMaxDegrees);
   bool display_matches = expect_closed
-                             ? (min_dimension < kCoverDisplayMaxShortDimension)
+                             ? IsDuoCoverDisplaySize(window.bounds.size)
                              : (min_dimension > kInnerDisplayMinShortDimension);
   if (!display_matches) {
     return false;
@@ -335,6 +338,12 @@ bool IsWindowInExpectedHingeStatus(UIWindow* window, double angle_in_degrees) {
 bool IsDuoSimulator() {
   return [NSProcessInfo.processInfo.environment[@"SIMULATOR_MODEL_IDENTIFIER"]
       isEqualToString:kDuoSimulatorModelIdentifier];
+}
+
+bool IsDuoCoverDisplaySize(CGSize size) {
+  CGFloat short_dimension = std::min(size.width, size.height);
+  return short_dimension > 0 &&
+         short_dimension < kCoverDisplayMaxShortDimension;
 }
 
 bool DispatchSimulatedDuoHingeAngle(double angle_in_degrees) {
