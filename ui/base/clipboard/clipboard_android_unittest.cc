@@ -4,6 +4,7 @@
 
 #include "ui/base/clipboard/clipboard_android.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -12,11 +13,15 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/pickle.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -137,6 +142,77 @@ TEST_F(ClipboardAndroidTest, StaleImageFormatsClearedOnPrimaryClipChanged) {
   formats = get_all_formats();
   EXPECT_FALSE(formats.contains(ClipboardFormatType::PngType()));
   EXPECT_FALSE(formats.contains(ClipboardFormatType::BitmapType()));
+}
+
+TEST_F(ClipboardAndroidTest, ReentrantReadInsideGetSourceCallback) {
+  const ClipboardFormatType test_format =
+      ClipboardFormatType::CustomPlatformType("chromium/x-test-token");
+
+  // First, verify when clipboard is cleared.
+  clipboard_->Clear(ClipboardBuffer::kCopyPaste);
+  bool first_callback_ran = false;
+  clipboard_->GetSource(
+      ClipboardBuffer::kCopyPaste,
+      base::BindLambdaForTesting(
+          [&](std::optional<DataTransferEndpoint> source) {
+            first_callback_ran = true;
+            EXPECT_FALSE(source.has_value());
+
+            std::string read_data = "initial";
+            clipboard_->ReadData(
+                test_format, /*data_dst=*/std::nullopt,
+                base::BindLambdaForTesting(
+                    [&](std::string data) { read_data = std::move(data); }));
+            EXPECT_TRUE(read_data.empty());
+
+            std::u16string read_text = u"initial";
+            clipboard_->ReadText(
+                ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+                base::BindLambdaForTesting(
+                    [&](std::u16string text) { read_text = std::move(text); }));
+            EXPECT_TRUE(read_text.empty());
+          }));
+  EXPECT_TRUE(first_callback_ran);
+
+  // Second, write text, pickled custom data, and a URL DataTransferEndpoint.
+  base::Pickle pickle;
+  pickle.WriteString("test_payload");
+  std::string expected_pickle_bytes(pickle.AsStringView());
+
+  {
+    ScopedClipboardWriter writer(
+        ClipboardBuffer::kCopyPaste,
+        std::make_unique<DataTransferEndpoint>(GURL("https://example.com")));
+    writer.WriteText(u"hello");
+    writer.WritePickledData(pickle, test_format);
+  }
+
+  bool second_callback_ran = false;
+  clipboard_->GetSource(
+      ClipboardBuffer::kCopyPaste,
+      base::BindLambdaForTesting(
+          [&](std::optional<DataTransferEndpoint> source) {
+            second_callback_ran = true;
+            ASSERT_TRUE(source.has_value());
+            EXPECT_TRUE(source->IsUrlType());
+            ASSERT_TRUE(source->GetURL());
+            EXPECT_EQ(*source->GetURL(), GURL("https://example.com"));
+
+            std::string read_data;
+            clipboard_->ReadData(
+                test_format, /*data_dst=*/std::nullopt,
+                base::BindLambdaForTesting(
+                    [&](std::string data) { read_data = std::move(data); }));
+            EXPECT_EQ(read_data, expected_pickle_bytes);
+
+            std::u16string read_text;
+            clipboard_->ReadText(
+                ClipboardBuffer::kCopyPaste, /*data_dst=*/std::nullopt,
+                base::BindLambdaForTesting(
+                    [&](std::u16string text) { read_text = std::move(text); }));
+            EXPECT_EQ(read_text, u"hello");
+          }));
+  EXPECT_TRUE(second_callback_ran);
 }
 
 }  // namespace ui

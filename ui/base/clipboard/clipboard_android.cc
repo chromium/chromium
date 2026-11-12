@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -471,15 +472,15 @@ void ClipboardMap::CommitToAndroidClipboard(GURL data_source) {
 }
 
 void ClipboardMap::GetSource(Clipboard::GetSourceCallback callback) {
-  base::AutoLock lock(lock_);
-
-  auto iter = map_.find(ClipboardFormatType::InternalSourceUrlType());
-  if (iter == map_.end()) {
-    std::move(callback).Run(std::nullopt);
-    return;
+  std::optional<DataTransferEndpoint> data_src;
+  {
+    base::AutoLock lock(lock_);
+    if (auto iter = map_.find(ClipboardFormatType::InternalSourceUrlType());
+        iter != map_.end()) {
+      data_src.emplace(GURL(iter->second));
+    }
   }
-
-  std::move(callback).Run(DataTransferEndpoint(GURL(iter->second)));
+  std::move(callback).Run(std::move(data_src));
 }
 
 void ClipboardMap::Clear() {
