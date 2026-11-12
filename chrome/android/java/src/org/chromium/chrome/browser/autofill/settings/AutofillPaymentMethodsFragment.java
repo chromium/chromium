@@ -220,10 +220,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
         boolean hasPixAccounts = hasPixAccounts(personalDataManager);
         boolean hasEwallets = hasEwallets(personalDataManager);
-        boolean showA2aToggle =
-                personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+        boolean showA2aToggle = personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref();
 
         if (shouldShowManagePix(personalDataManager, getProfile())) {
             Preference pixFinancialAccountsPref = new ChromeBasePreference(getStyledContext());
@@ -891,10 +888,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                     boolean hasPixAccounts = hasPixAccounts(personalDataManager);
                     boolean hasEwallets = hasEwallets(personalDataManager);
                     boolean showA2aToggle =
-                            personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
-                                    && ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList
-                                                    .FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+                            personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref();
                     if (isPlatformAutofillEnabledForProfile(profile)) {
                         indexData.addEntryForKey(
                                 frag,

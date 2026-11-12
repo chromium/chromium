@@ -83,10 +83,4 @@ BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEwalletPayments, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// When enabled, Chrome will offer an app list when a supported payment link is
-// detected. Users can choose the payment app they want to
-// use and be redirected to the chosen app to complete the payment flow.
-BASE_FEATURE(kFacilitatedPaymentsEnableA2APayment,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace payments::facilitated

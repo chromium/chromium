@@ -72,10 +72,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletAccountLinkingPromptProperties;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -100,7 +98,6 @@ import java.util.List;
 
 /** Instrumentation tests for {@link FacilitatedPaymentsPaymentMethodsView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
 public final class FacilitatedPaymentsPaymentMethodsViewTest {
     private static final BankAccount BANK_ACCOUNT_1 =
             new BankAccount.Builder()
@@ -379,7 +376,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testEwalletAndPaymentAppShown() {
         runOnUiThreadBlocking(
                 () -> {
@@ -405,7 +401,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     // header product icon is present to user when eWallet and payment app both are available.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testPaymentAppHeaderWhenBothEwalletAndPaymentAppAvailable() {
         runOnUiThreadBlocking(
                 () -> {
@@ -436,7 +431,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     // are not shown to user when only payment app is available.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void
             testPaymentAppProductionIconSecurtityCheckAndDescriptionNotVisibleWhenOnlyPaymentAppAvailable() {
         runOnUiThreadBlocking(
@@ -466,7 +460,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void
             testPaymentAppHeaderProductIconContentDescriptionWhenEwalletAndPaymentAppAvailable() {
         runOnUiThreadBlocking(
@@ -636,7 +629,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testPaymentAppHeaderProductIconAndTitleMargin() {
         runOnUiThreadBlocking(
                 () -> {
@@ -709,7 +701,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testEwalletAndPaymentAppDescriptionLine() {
         runOnUiThreadBlocking(
                 () -> {
@@ -736,7 +727,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testPaymentAppDescriptionLineShown() {
         runOnUiThreadBlocking(
                 () -> {

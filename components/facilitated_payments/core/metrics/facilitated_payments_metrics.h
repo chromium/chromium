@@ -83,7 +83,7 @@ enum class A2AFlowExitedReason {
   kFopSelectorClosedByUser = 4,
   // Another type of FOP selected.
   kOtherFopSelected = 5,
-  // The A2A payment flag is not enabled.
+  // Obsolete: flag launched and cleaned up in M159.
   kFlagNotEnabled = 6,
   kMaxValue = kFlagNotEnabled
 };

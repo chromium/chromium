@@ -28,7 +28,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
@@ -121,7 +120,6 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // shown.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aFlowTriggeredAtLeastOnce_a2aSwitchShown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -137,29 +135,11 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // Test that when the A2A flow has never been triggered, the A2A preference toggle is not shown.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aFlowNeverTriggered_a2aSwitchNotShown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getPrefService()
                             .setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, false);
-                });
-
-        SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        ChromeSwitchPreference a2aSwitch = getA2aSwitchPreference(activity);
-        assertThat(a2aSwitch).isNull();
-    }
-
-    // Test that when the A2A flow has been triggered at least once, but the A2A experiment flag is
-    // off, the A2A preference toggle is not shown.
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
-    public void testA2aFlowTriggeredAtLeastOnce_a2aFlagOff_a2aSwitchNotShown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    getPrefService().setBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE, true);
                 });
 
         SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity();
@@ -191,7 +171,6 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // Test that when the A2A preference is set to true, the A2A toggle is checked.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aPrefEnabled_a2aSwitchEnabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -207,7 +186,6 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Flaky. See crbug.com/514670265")
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aPrefDisabled_a2aSwitchDisabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -269,7 +247,6 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     // Test that the A2A toggle correctly sets the underlying preference.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aToggle_updatesPrefCorrectly() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -365,7 +342,6 @@ public class NonCardPaymentMethodsManagementFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aToggleTurnedOn_histogramLogged() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -391,7 +367,6 @@ public class NonCardPaymentMethodsManagementFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2aToggleTurnedOff_histogramLogged() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

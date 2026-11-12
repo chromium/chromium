@@ -2130,12 +2130,6 @@ inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
 inline constexpr char kContextualSearchWithCredentialsForDebugDescription[] =
     "When this is enabled, if a user do the contextual search, the credentials "
     "mode will be include.";
-inline constexpr char kFacilitatedPaymentsEnableA2APaymentName[] =
-    "Enable Account to Account payments";
-inline constexpr char kFacilitatedPaymentsEnableA2APaymentDescription[] =
-    "When enabled, Chrome will offer an app list when a supported "
-    "payment link is detected. Users can choose the payment app they want to "
-    "use and be redirected to the chosen app to complete the payment flow";
 
 inline constexpr char kForceAiSubscriptionTierName[] =
     "Force AI Subscription Tier";

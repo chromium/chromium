@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -120,10 +119,7 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
         mEwallets = mPersonalDataManager.getEwallets();
         // LINT.IfChange(PrefConditions)
         boolean addEwalletPref = mEwallets.length > 0;
-        boolean addA2aPref =
-                mPersonalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+        boolean addA2aPref = mPersonalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref();
         // LINT.ThenChange(:DynamicPrefConditions)
 
         // LINT.IfChange(EwalletPrefConditions)
@@ -246,10 +242,7 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
                     // LINT.IfChange(DynamicPrefConditions)
                     boolean addEwalletPref = personalDataManager.getEwallets().length > 0;
                     boolean addA2aPref =
-                            personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
-                                    && ChromeFeatureList.isEnabled(
-                                            ChromeFeatureList
-                                                    .FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+                            personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref();
                     // LINT.ThenChange()
 
                     String prefFrag = getPrefFragmentName();

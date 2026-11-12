@@ -1833,42 +1833,15 @@ class PaymentLinkManagerTestForA2AFlow : public PaymentLinkManagerTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockDeviceDelegate> mock_device_delegate_;
   std::unique_ptr<MockFacilitatedPaymentsAppInfoList>
       mock_facilitated_payments_app_info_list_;
 };
 
-// A2A payment prompt is not shown when the flag is off.
-TEST_F(PaymentLinkManagerTestForA2AFlow, FlagOff_A2APaymentPromptNotShown) {
-  base::HistogramTester histogram_tester;
-  feature_list_.InitAndDisableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
-  GURL supported_payment_link(
-      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
-  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
-      .WillByDefault(testing::Return(2));
-
-  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
-
-  payment_link_manager_->TriggerPaymentLinkPushPayment(
-      supported_payment_link, GURL("https://www.example.com"),
-      ukm::UkmRecorder::GetNewSourceID());
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.A2A.PayflowExitedReason",
-      A2AFlowExitedReason::kFlagNotEnabled, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.A2A.PayflowExitedReason.PromptPay",
-      A2AFlowExitedReason::kFlagNotEnabled, /*expected_bucket_count=*/1);
-}
-
 // A2A payment prompt is not shown when there are no supported payment apps.
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        NoSupportedPaymentApps_A2APaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
 
@@ -1893,8 +1866,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 TEST_F(PaymentLinkManagerTestForA2AFlow, A2APaymentPromptShown) {
   base::HistogramTester histogram_tester;
 
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
   EXPECT_CALL(*mock_facilitated_payments_app_info_list_, Size())
@@ -1932,8 +1903,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, A2APaymentPromptShown) {
 TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
   base::HistogramTester histogram_tester;
 
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   autofill::Ewallet supported_ewallet(
       /*instrument_id=*/100, /*nickname=*/u"nickname",
       /*display_icon_url=*/GURL("http://www.example.com"), u"ewallet_name",
@@ -1978,8 +1947,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
 
 // A2A payment prompt is shown for websites in the allolwist.
 TEST_F(PaymentLinkManagerTestForA2AFlow, UrlInAllowlist_A2APaymentPromptShown) {
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL page_url("https://www.example.com");
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
@@ -2006,8 +1973,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, UrlInAllowlist_A2APaymentPromptShown) {
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        UrlNotInAllowlist_A2APaymentPromptNotShown) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL page_url("https://www.example.com");
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
@@ -2036,8 +2001,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 // FacilitatedPaymentsA2ATriggeredOnce pref to `true` is invoked;
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        A2APaymentPromptShown_A2ATriggeredOncePrefSet) {
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
   EXPECT_CALL(*mock_facilitated_payments_app_info_list_, Size())
@@ -2056,8 +2019,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 // A2A payment prompt is not shown if the user has opted out of the A2A flow.
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        UserOptedOut_A2APaymentPromptNotShown) {
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
   ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
@@ -2223,8 +2184,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        OnPaymentAppSelected_WithEwalletAvailable_RecordHistogram) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
 
   // Setup for InvokePaymentApp call.
   const std::string package_name = "com.example.app";
@@ -2322,8 +2281,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, OnEwalletSelected_RecordHistogram) {
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        OnEwalletSelected_WithPaymentAppAvailable_RecordHistogram) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
 
   const GURL payment_link(
       "https://www.itmx.co.th/facilitated-payment/"
@@ -2375,8 +2332,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        FopSelectorClosedNotByUser_A2AFlowExitedReasonLogged) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
   ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
@@ -2407,8 +2362,6 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 TEST_F(PaymentLinkManagerTestForA2AFlow,
        FopSelectorClosedByUser_A2AFlowExitedReasonLogged) {
   base::HistogramTester histogram_tester;
-  feature_list_.InitAndEnableFeature(
-      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
   GURL supported_payment_link(
       "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
   ON_CALL(*mock_facilitated_payments_app_info_list_, Size)

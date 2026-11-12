@@ -11687,15 +11687,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kShowTabListAnimations)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"facilitated-payments-enable-a2a-payment",
-     flag_descriptions::kFacilitatedPaymentsEnableA2APaymentName,
-     flag_descriptions::kFacilitatedPaymentsEnableA2APaymentDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         payments::facilitated::kFacilitatedPaymentsEnableA2APayment)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"cras-output-plugin-processor",
      flag_descriptions::kCrasOutputPluginProcessorName,

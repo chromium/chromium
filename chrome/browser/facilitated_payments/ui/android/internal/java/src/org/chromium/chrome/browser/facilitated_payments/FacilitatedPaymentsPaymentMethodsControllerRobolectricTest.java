@@ -138,7 +138,6 @@ import java.util.stream.StreamSupport;
  * FacilitatedPaymentsPaymentMethodsMediator}
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
 public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     private static final BankAccount BANK_ACCOUNT_1 =
             new BankAccount.Builder()
@@ -306,7 +305,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testCreatesModelForFopSelectorScreen_PaymentAppFopSelector() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
 
@@ -353,7 +351,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testEwalletAndPaymentAppsShown() {
         mCoordinator.showSheetForPaymentLink(
                 List.of(EWALLET_1), List.of(PAYMENT_APP_1, PAYMENT_APP_2));
@@ -401,7 +398,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testSinglePaymentAppShown() {
         mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
 
@@ -417,7 +413,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testMultiplePaymentAppsShown() {
         mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1, PAYMENT_APP_2));
         // Verify the screen contents set in the model when only 1 payment app account exists.
@@ -501,34 +496,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
-    public void testEwalletPaymentLinkGenericHeaderTitleUsed() {
-        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1, EWALLET_3), List.of());
-
-        // Verify the header model uses the generic title when multiple providers are displayed.
-        ModelList itemList =
-                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        PropertyModel header = itemList.get(0).model;
-
-        assertThat(header.get(TITLE), is("Pay without switching apps"));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
-    public void testEwalletPaymentLinkSpecificHeaderTitleUsed() {
-        mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2, EWALLET_3), List.of());
-
-        // Verify the header model uses the provider specific title when all eWallets use the same
-        // provider.
-        ModelList itemList =
-                mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN_VIEW_MODEL).get(SCREEN_ITEMS);
-        PropertyModel header = itemList.get(0).model;
-
-        assertThat(header.get(TITLE), is("Pay with eWalletName2 without switching apps"));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testEwalletAndPaymentAppSpecificHeaderTitleUsed() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_2), List.of(PAYMENT_APP_1));
 
@@ -542,7 +509,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testPaymentAppSpecificHeaderTitleUsed() {
         mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
 
@@ -775,10 +741,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT,
-        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
-    })
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void testEwalletAndA2AShowsFinancialAccountsManagementSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
 
@@ -811,10 +774,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT,
-        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
-    })
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void testA2AOnlyShowsFinancialAccountsManagementSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
 
@@ -847,10 +807,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT,
-        ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
-    })
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
     public void testEwalletOnlyShowsFinancialAccountsManagementSettings() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
@@ -1177,7 +1134,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testEwalletAndA2AShowManagePaymentMethodsSettingsOnFooter() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
 
@@ -1209,7 +1165,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testA2AOnlyShowManagePaymentMethodsSettingsOnFooter() {
         mCoordinator.showSheetForPaymentLink(List.of(), List.of(PAYMENT_APP_1));
 
@@ -1241,7 +1196,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testEwalletOnlyShowManagePaymentMethodsSettingsOnFooter() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of());
 
@@ -1309,7 +1263,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testCallbackIsCalledWhenPaymentAppIsSelected() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));
@@ -1379,7 +1332,6 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void testNoCallbackForSelectedPaymentAppBeforeInputTime() {
         mCoordinator.showSheetForPaymentLink(List.of(EWALLET_1), List.of(PAYMENT_APP_1));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(SHOWN));

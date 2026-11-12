@@ -107,18 +107,10 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   if (CanTriggerAppPaymentFlow(page_url)) {
     supported_apps = client_->GetDeviceDelegate()->GetSupportedPaymentApps(
         PaymentLinkValidator::SanitizeForPaymentAppRetrieval(payment_link_url));
-    if ((!supported_apps || supported_apps->Size() == 0) &&
-        base::FeatureList::IsEnabled(
-            payments::facilitated::kFacilitatedPaymentsEnableA2APayment)) {
+    if (!supported_apps || supported_apps->Size() == 0) {
       LogA2APayflowExitedReason(A2AFlowExitedReason::kNoSupportedPaymentApp,
                                 scheme_);
     }
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          payments::facilitated::kFacilitatedPaymentsEnableA2APayment)) {
-    LogA2APayflowExitedReason(A2AFlowExitedReason::kFlagNotEnabled, scheme_);
-    supported_apps.reset();
   }
 
   // Cache availability before moving the unique_ptr resources

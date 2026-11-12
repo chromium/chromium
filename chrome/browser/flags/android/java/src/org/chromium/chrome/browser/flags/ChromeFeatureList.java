@@ -651,8 +651,6 @@ public abstract class ChromeFeatureList {
     public static final String ENFORCE_INCOGNITO_ISOLATION = "EnforceIncognitoIsolation";
     public static final String EXCLUDE_CHROME_IN_INCOGNITO_SHARE_SHEET =
             "ExcludeChromeInIncognitoShareSheet";
-    public static final String FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT =
-            "FacilitatedPaymentsEnableA2APayment";
     public static final String FEED_AUDIO_OVERVIEWS = "FeedAudioOverviews";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_CONTAINMENT_CLIP_FIRST_CARD = "FeedContainmentClipFirstCard";
