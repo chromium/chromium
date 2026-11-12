@@ -234,6 +234,9 @@ ExperimentalActorPerformActionsFunction::Run() {
       case optimization_guide::proto::Action::kScriptTool:
         ConvertActionTabId(action.mutable_script_tool(), browser_context());
         break;
+      case optimization_guide::proto::Action::kExecuteJs:
+        ConvertActionTabId(action.mutable_execute_js(), browser_context());
+        break;
       case optimization_guide::proto::Action::kScrollTo:
         ConvertActionTabId(action.mutable_scroll_to(), browser_context());
         break;

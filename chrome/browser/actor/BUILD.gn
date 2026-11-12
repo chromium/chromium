@@ -494,6 +494,7 @@ source_set("unit_tests") {
     "tab_observation_strategy_unittest.cc",
     "tools/autofill/attempt_form_filling/attempt_form_filling_tool_request_unittest.cc",
     "tools/click_tool_request_unittest.cc",
+    "tools/execute_js_tool_request_unittest.cc",
     "tools/file_picker_interceptor_unittest.cc",
     "tools/file_upload_tool_request_unittest.cc",
     "tools/file_upload_tool_unittest.cc",

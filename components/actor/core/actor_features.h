@@ -169,6 +169,8 @@ BASE_DECLARE_FEATURE(kActorScriptToolTransientUserActivation);
 // name since the observation.
 BASE_DECLARE_FEATURE(kActorScriptToolIdValidation);
 
+BASE_DECLARE_FEATURE(kActorExecuteJsTool);
+
 // Guards the new Actor Task invocation source completion metrics.
 BASE_DECLARE_FEATURE(kActorRecordInvocationSourceCompletionMetrics);
 
