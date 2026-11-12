@@ -73,10 +73,6 @@ class ASH_EXPORT ShellDelegate {
   // The Shell owns the delegate.
   virtual ~ShellDelegate() = default;
 
-  // Returns true if |window| can be shown for the delegate's concept of current
-  // user.
-  virtual bool CanShowWindowForUser(const aura::Window* window) const = 0;
-
   // Creates and returns the delegate of the Capture Mode feature.
   virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate(
       PrefService* local_state) const = 0;

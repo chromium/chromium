@@ -33,7 +33,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -47,13 +46,11 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
-#include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -95,30 +92,6 @@ const char kBAccountIdString[] =
     R"({"account_type":"google","email":"b","gaia_id":"gaia_b"})";
 const char kArrowBAccountIdString[] =
     R"(->{"account_type":"google","email":"b","gaia_id":"gaia_b"})";
-
-const content::BrowserContext* GetActiveContext() {
-  const user_manager::UserManager* user_manager =
-      user_manager::UserManager::Get();
-  const user_manager::User* active_user = user_manager->GetActiveUser();
-  if (!active_user) {
-    return nullptr;
-  }
-  return ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
-}
-
-class TestShellDelegateChromeOS : public ash::TestShellDelegate {
- public:
-  TestShellDelegateChromeOS() = default;
-
-  TestShellDelegateChromeOS(const TestShellDelegateChromeOS&) = delete;
-  TestShellDelegateChromeOS& operator=(const TestShellDelegateChromeOS&) =
-      delete;
-
-  bool CanShowWindowForUser(const aura::Window* window) const override {
-    return ::CanShowWindowForUser(window,
-                                  base::BindRepeating(&GetActiveContext));
-  }
-};
 
 }  // namespace
 
@@ -349,7 +322,6 @@ void MultiUserWindowManagerBrowserAdaptorTest::SetUpInitParams(
     ash::AshTestHelper::InitParams& init_params) {
   ChromeAshTestBase::SetUpInitParams(init_params);
   init_params.users.clear();
-  init_params.delegate = std::make_unique<TestShellDelegateChromeOS>();
 }
 
 void MultiUserWindowManagerBrowserAdaptorTest::SetUp() {
@@ -1820,6 +1792,46 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
   SwitchActiveUser(kAccountIdB);
   EXPECT_TRUE(::wm::CanActivateWindow(window(0)));
   EXPECT_TRUE(::wm::CanActivateWindow(window(1)));
+}
+
+// Tests CanShowWindowForCurrentUser() for owned, teleported and unowned
+// windows.
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, CanShowWindowForCurrentUser) {
+  AddLoggedInUsers({kAccountIdA, kAccountIdB});
+
+  SetUpForThisManyWindows(3);
+
+  // Window #2 is not owned by any user.
+  multi_user_window_manager()->SetWindowOwner(window(0), kAccountIdA);
+  multi_user_window_manager()->SetWindowOwner(window(1), kAccountIdB);
+
+  SwitchActiveUser(kAccountIdA);
+  EXPECT_TRUE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(0)));
+  EXPECT_FALSE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(1)));
+  EXPECT_TRUE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(2)));
+
+  // Teleport window #1 (owned by user B) to user A's desktop. It can now be
+  // shown for user A, since user A is presenting it.
+  ShowWindowForUserNoUserTransition(window(1), kAccountIdA);
+  EXPECT_TRUE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(0)));
+  EXPECT_TRUE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(1)));
+  EXPECT_TRUE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(2)));
+
+  // For user B, window #0 is neither owned by nor presented to user B. Window
+  // #1 is still owned by user B, even though it is presented to user A.
+  SwitchActiveUser(kAccountIdB);
+  EXPECT_FALSE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(0)));
+  EXPECT_TRUE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(1)));
+  EXPECT_TRUE(
+      multi_user_window_manager()->CanShowWindowForCurrentUser(window(2)));
 }
 
 // Test that teleported window has the kAvatarIconKey window property.

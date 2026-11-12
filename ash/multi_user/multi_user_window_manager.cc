@@ -250,6 +250,27 @@ const AccountId& MultiUserWindowManager::GetUserPresentingWindow(
                                           : iter->second->show_for_user();
 }
 
+bool MultiUserWindowManager::CanShowWindowForCurrentUser(
+    const aura::Window* window) const {
+  CHECK(window);
+  // `current_account_id_` is set when the first (primary) user session becomes
+  // active, and is never reset after that. So it is unset only before any
+  // user session starts, e.g. on the login screen or in OOBE. No window is
+  // hidden for another user in that state, so treat every window as showable.
+  if (!current_account_id_.has_value()) {
+    return true;
+  }
+
+  const AccountId& owner = GetWindowOwner(window);
+  if (!owner.is_valid() || owner == *current_account_id_) {
+    return true;
+  }
+
+  // The window is owned by another user. It can be shown only if it is
+  // presented on the current user's desktop (i.e. teleported).
+  return GetUserPresentingWindow(window) == *current_account_id_;
+}
+
 const AccountId& MultiUserWindowManager::CurrentAccountId() const {
   CHECK(current_account_id_.has_value());
   return *current_account_id_;

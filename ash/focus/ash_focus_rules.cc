@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <ranges>
 
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -90,7 +90,9 @@ bool AshFocusRules::IsWindowConsideredVisibleForActivation(
   Shell* shell = Shell::Get();
   // If the |window| doesn't belong to the current active user and also doesn't
   // show for the current active user, then it should not be activated.
-  if (!shell->shell_delegate()->CanShowWindowForUser(window)) {
+  if (auto* multi_user_window_manager = shell->multi_user_window_manager();
+      multi_user_window_manager &&
+      !multi_user_window_manager->CanShowWindowForCurrentUser(window)) {
     return false;
   }
 

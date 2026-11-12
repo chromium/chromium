@@ -47,7 +47,6 @@ static_library("session") {
     "//components/user_manager",
     "//components/user_manager:multi_user",
     "//content/public/browser",
-    "//ui/aura",
     "//ui/base",
     "//ui/chromeos",
     "//ui/gfx",

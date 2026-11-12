@@ -46,7 +46,6 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/ash/game_dashboard",
     "//chrome/browser/ui/ash/global_media_controls",
     "//chrome/browser/ui/ash/keyboard",
-    "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/ash/wm",
     "//chrome/browser/ui/chromeos/tab_scrubber",

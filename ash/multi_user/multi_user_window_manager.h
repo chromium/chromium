@@ -113,6 +113,12 @@ class ASH_EXPORT MultiUserWindowManager : public SessionObserver,
   bool IsWindowOnDesktopOfUser(aura::Window* window,
                                const AccountId& account_id) const;
 
+  // Returns true if |window| can be shown for the currently active user. That
+  // is, |window| is not owned by any user, or it is owned by or presented on
+  // the desktop of the currently active user. Returns true if there is no
+  // active user yet.
+  bool CanShowWindowForCurrentUser(const aura::Window* window) const;
+
   // Returns the id of the currently active user.
   const AccountId& CurrentAccountId() const;
 

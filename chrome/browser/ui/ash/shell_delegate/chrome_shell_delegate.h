@@ -39,7 +39,6 @@ class ChromeShellDelegate : public ash::ShellDelegate,
   ~ChromeShellDelegate() override;
 
   // ash::ShellDelegate:
-  bool CanShowWindowForUser(const aura::Window* window) const override;
   std::unique_ptr<ash::CaptureModeDelegate> CreateCaptureModeDelegate(
       PrefService* local_state) const override;
   std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
