@@ -93,6 +93,7 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
+    case PIXEL_FORMAT_RGBAF16:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV24:
