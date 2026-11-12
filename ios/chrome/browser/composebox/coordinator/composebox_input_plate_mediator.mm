@@ -1236,6 +1236,20 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   }
 }
 
+// Removes input items associated with a detached `detachedWebState`.
+- (void)handleDetachedWebState:(web::WebState*)detachedWebState {
+  if (!detachedWebState) {
+    return;
+  }
+  web::WebStateID detachedID = detachedWebState->GetUniqueIdentifier();
+  for (ComposeboxInputItem* item in [_items.containedItems copy]) {
+    if (_latestTabSelectionMapping[item.identifier] == detachedID &&
+        item.tabURL == detachedWebState->GetVisibleURL()) {
+      [self removeItemInternal:item];
+    }
+  }
+}
+
 // Creates an input item for the given `webState` and adds it to the items list.
 // Returns the identifier of the created item.
 - (base::UnguessableToken)createInputItemForWebState:(web::WebState*)webState
@@ -2966,17 +2980,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detachChange =
           change.As<WebStateListChangeDetach>();
-      web::WebState* detachedWebState = detachChange.detached_web_state();
-      if (!detachedWebState) {
-        return;
-      }
-      web::WebStateID detachedID = detachedWebState->GetUniqueIdentifier();
-      for (ComposeboxInputItem* item in [_items.containedItems copy]) {
-        if (_latestTabSelectionMapping[item.identifier] == detachedID &&
-            item.tabURL == detachedWebState->GetVisibleURL()) {
-          [self removeItemInternal:item];
-        }
-      }
+      [self handleDetachedWebState:detachChange.detached_web_state()];
       break;
     }
     default:
