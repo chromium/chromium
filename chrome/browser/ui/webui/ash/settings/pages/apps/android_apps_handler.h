@@ -9,10 +9,10 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -20,14 +20,19 @@
 
 class Profile;
 
+namespace apps {
+class AppService;
+}  // namespace apps
+
 namespace ash::settings {
 
 class AndroidAppsHandler : public content::WebUIMessageHandler,
                            public ArcAppListPrefs::Observer,
                            public arc::ArcSessionManagerObserver {
  public:
-  explicit AndroidAppsHandler(Profile* profile,
-                              apps::AppServiceProxy* app_service_proxy);
+  // `app_service` is the AppService of the user of `profile`. It must outlive
+  // `this`.
+  AndroidAppsHandler(Profile* profile, apps::AppService* app_service);
 
   AndroidAppsHandler(const AndroidAppsHandler&) = delete;
   AndroidAppsHandler& operator=(const AndroidAppsHandler&) = delete;
@@ -63,7 +68,7 @@ class AndroidAppsHandler : public content::WebUIMessageHandler,
                           arc::ArcSessionManagerObserver>
       arc_session_manager_observation_{this};
   raw_ptr<Profile> profile_;  // unowned
-  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ref<apps::AppService> app_service_;
   base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_{this};
 };
 
