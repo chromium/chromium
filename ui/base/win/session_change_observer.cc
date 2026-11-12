@@ -53,7 +53,9 @@ class SessionChangeObserver::WtsRegistrationNotificationManager {
   ~WtsRegistrationNotificationManager() { ResetHwndSubscription(); }
 
   void AddObserver(SessionChangeObserver* observer) {
-    CHECK(hwnd_subscription_, base::NotFatalUntil::M163);
+    // TODO(crbug.com/582565048): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(hwnd_subscription_);
     observer_list_.AddObserver(observer);
   }
 
