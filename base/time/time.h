@@ -220,6 +220,11 @@ class BASE_EXPORT TimeDelta {
 #if BUILDFLAG(IS_FUCHSIA)
   zx_duration_t ToZxDuration() const;
 #endif
+#if BUILDFLAG(IS_APPLE)
+  // Converts a finite, non-negative TimeDelta to Mach time ticks; CHECKs on
+  // negative, infinite, or overflowing values.
+  uint64_t ToMachTime() const;
+#endif  // BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(IS_WIN)
   ABI::Windows::Foundation::DateTime ToWinrtDateTime() const;
   ABI::Windows::Foundation::TimeSpan ToWinrtTimeSpan() const;
@@ -1263,6 +1268,9 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
 #if BUILDFLAG(IS_APPLE)
   static TimeTicks FromMachAbsoluteTime(uint64_t mach_absolute_time);
+  // Converts a finite, non-negative TimeTicks value to a `mach_absolute_time()`
+  // tick count; CHECKs on negative, infinite, or overflowing values.
+  uint64_t ToMachAbsoluteTime() const;
 
   // Sets the current Mach timebase to `timebase`. Returns the old timebase.
   static mach_timebase_info_data_t SetMachTimebaseInfoForTesting(

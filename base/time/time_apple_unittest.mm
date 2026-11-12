@@ -174,5 +174,106 @@ TEST(TimeMacTest, MachTimeToMicrosecondsNoUnderflowM1) {
             TimeDelta::FromMachTime(kMinimumTicks - 1).InMicroseconds() * 1UL);
 }
 
+TEST(TimeMacTest, MicrosecondsToMachTimeIntelTimebase) {
+  ScopedTimebase timebase(kIntelTimebase);
+
+  EXPECT_EQ(0u, TimeDelta().ToMachTime());
+  EXPECT_EQ(0u, TimeTicks().ToMachAbsoluteTime());
+
+  constexpr int64_t kArbitraryMicroseconds = 59090101;
+  constexpr uint64_t kExpectedTicks =
+      kArbitraryMicroseconds * Time::kNanosecondsPerMicrosecond;
+  EXPECT_EQ(kExpectedTicks, Microseconds(kArbitraryMicroseconds).ToMachTime());
+
+  const TimeTicks ticks = TimeTicks() + Microseconds(kArbitraryMicroseconds);
+  EXPECT_EQ(kExpectedTicks, ticks.ToMachAbsoluteTime());
+  EXPECT_EQ(ticks, TimeTicks::FromMachAbsoluteTime(ticks.ToMachAbsoluteTime()));
+}
+
+TEST(TimeMacTest, MicrosecondsToMachTimeM1Timebase) {
+  ScopedTimebase timebase(kM1Timebase);
+
+  EXPECT_EQ(0u, TimeDelta().ToMachTime());
+  EXPECT_EQ(0u, TimeTicks().ToMachAbsoluteTime());
+
+  // 1 microsecond at 24 MHz (numer = 125, denom = 3) is 24 Mach ticks.
+  EXPECT_EQ(24u, Microseconds(1).ToMachTime());
+
+  constexpr int64_t kArbitraryMicroseconds = 3864088625;
+  const uint64_t kExpectedTicks =
+      (static_cast<uint64_t>(kArbitraryMicroseconds) *
+       Time::kNanosecondsPerMicrosecond * kM1Timebase.denom) /
+      kM1Timebase.numer;
+  EXPECT_EQ(kExpectedTicks, Microseconds(kArbitraryMicroseconds).ToMachTime());
+
+  const TimeTicks ticks = TimeTicks() + Microseconds(kArbitraryMicroseconds);
+  EXPECT_EQ(kExpectedTicks, ticks.ToMachAbsoluteTime());
+  EXPECT_EQ(ticks, TimeTicks::FromMachAbsoluteTime(ticks.ToMachAbsoluteTime()));
+}
+
+TEST(TimeMacTest, MicrosecondsToMachTimeEqualTimebaseMembers) {
+  ScopedTimebase timebase({UINT_MAX, UINT_MAX});
+
+  constexpr int64_t kArbitraryMicroseconds = 175920053;
+  EXPECT_EQ(static_cast<uint64_t>(kArbitraryMicroseconds) *
+                Time::kNanosecondsPerMicrosecond,
+            (TimeTicks() + Microseconds(kArbitraryMicroseconds))
+                .ToMachAbsoluteTime());
+}
+
+TEST(TimeMacTest, MicrosecondsToMachTimeNoIntermediateOverflow) {
+  // With 1 tick == 1 microsecond (numer = 1000, denom = 1), FiniteMax() fits
+  // in uint64_t even though us * 1000 alone would overflow 64 bits.
+  ScopedTimebase timebase({Time::kNanosecondsPerMicrosecond, 1});
+  const TimeDelta max_finite = TimeDelta::FiniteMax();
+  EXPECT_EQ(static_cast<uint64_t>(max_finite.InMicroseconds()),
+            max_finite.ToMachTime());
+}
+
+TEST(TimeMacTest, RoundTripMachTime) {
+  {
+    ScopedTimebase timebase(kIntelTimebase);
+    constexpr int64_t kUs = 59090101;
+    const TimeDelta delta = Microseconds(kUs);
+    const TimeTicks ticks = TimeTicks() + delta;
+    EXPECT_EQ(delta, TimeDelta::FromMachTime(delta.ToMachTime()));
+    EXPECT_EQ(ticks,
+              TimeTicks::FromMachAbsoluteTime(ticks.ToMachAbsoluteTime()));
+
+    // Microsecond-aligned Mach ticks (1000 ticks/us) round-trip exactly;
+    // sub-microsecond ticks truncate to the microsecond boundary.
+    constexpr uint64_t kAlignedMach = 59090101000;
+    EXPECT_EQ(kAlignedMach, TimeDelta::FromMachTime(kAlignedMach).ToMachTime());
+    EXPECT_EQ(
+        kAlignedMach,
+        TimeTicks::FromMachAbsoluteTime(kAlignedMach).ToMachAbsoluteTime());
+    EXPECT_EQ(kAlignedMach, TimeTicks::FromMachAbsoluteTime(kAlignedMach + 999)
+                                .ToMachAbsoluteTime());
+  }
+
+  {
+    ScopedTimebase timebase(kM1Timebase);
+    constexpr int64_t kUs = 3864088625;
+    const TimeDelta delta = Microseconds(kUs);
+    const TimeTicks ticks = TimeTicks() + delta;
+    EXPECT_EQ(delta, TimeDelta::FromMachTime(delta.ToMachTime()));
+    EXPECT_EQ(ticks,
+              TimeTicks::FromMachAbsoluteTime(ticks.ToMachAbsoluteTime()));
+
+    // At 24 MHz (24 ticks/us), multiples of 24 round-trip exactly and
+    // sub-microsecond remainders (< 24 ticks) truncate to the microsecond.
+    constexpr uint64_t kAlignedMach = 92738127000;  // 3864088625 * 24
+    EXPECT_EQ(kAlignedMach, TimeDelta::FromMachTime(kAlignedMach).ToMachTime());
+    EXPECT_EQ(
+        kAlignedMach,
+        TimeTicks::FromMachAbsoluteTime(kAlignedMach).ToMachAbsoluteTime());
+    EXPECT_EQ(kAlignedMach, TimeTicks::FromMachAbsoluteTime(kAlignedMach + 23)
+                                .ToMachAbsoluteTime());
+  }
+
+  const TimeTicks now = TimeTicks::Now();
+  EXPECT_EQ(now, TimeTicks::FromMachAbsoluteTime(now.ToMachAbsoluteTime()));
+}
+
 }  // namespace
 }  // namespace base
