@@ -1050,11 +1050,13 @@ source_set("interactive_ui_tests") {
       "contextual_tasks_interactive_uitest.cc",
       "contextual_tasks_side_panel_coordinator_interactive_uitest.cc",
       "contextual_tasks_ui_service_interactive_uitest.cc",
+      "search_journey_interactive_uitest.cc",
     ]
     deps += [
       ":interactive_ui_test_support",
       ":ui",
       ":user_data",
+      "//chrome/browser/contextual_cueing",
       "//chrome/browser/extensions",
       "//chrome/browser/infobars",
       "//chrome/browser/ui/omnibox",
@@ -1075,6 +1077,7 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/ui/views/contextual_tasks:onboarding_bubble",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/infobars",
+      "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/site_data",
       "//chrome/browser/ui/views/toolbar",
@@ -1087,11 +1090,14 @@ source_set("interactive_ui_tests") {
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/lens:enterprise_policy",
+      "//components/search_engines",
+      "//components/sessions",
       "//components/strings:components_strings",
       "//extensions/common",
       "//third_party/lens_server_proto:lens_overlay_proto",
       "//ui/base/interaction:test_support",
       "//ui/views",
+      "//ui/views/controls/webview",
     ]
   }
 
