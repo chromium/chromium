@@ -180,11 +180,20 @@ size_t GetMaxAttachmentSizeBytes() {
   return max_size > 0 ? max_size : kDefaultMaxFileSizeBytes;
 }
 
-std::string GetMimeTypeForFile(const base::FilePath& path, bool is_image) {
+// Returns the MIME type for `path`. Set `allow_platform_lookup` to false when
+// calling from the UI thread, since the platform lookup can block on disk I/O
+// (e.g. XDG mime.cache on Linux).
+std::string GetMimeTypeForFile(const base::FilePath& path,
+                               bool is_image,
+                               bool allow_platform_lookup = true) {
   std::string mime_type;
   base::FilePath::StringType ext = path.FinalExtension();
   if (ext.starts_with(FILE_PATH_LITERAL('.'))) {
-    net::GetMimeTypeFromExtension(ext.substr(1), &mime_type);
+    if (allow_platform_lookup) {
+      net::GetMimeTypeFromExtension(ext.substr(1), &mime_type);
+    } else {
+      net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
+    }
   }
   if (!mime_type.empty()) {
     return mime_type;
@@ -277,7 +286,8 @@ void OmniboxPopupFileSelector::MultiFilesSelected(
       // pushes a direct validation error to SearchboxContextData.
       // The frontend immediately displays the global limit error toast and
       // deletes this dummy context silently, rendering no failed chip.
-      const std::string mime_type = GetMimeTypeForFile(file.path(), is_image_);
+      const std::string mime_type = GetMimeTypeForFile(
+          file.path(), is_image_, /*allow_platform_lookup=*/false);
       contextual_search::ContextUploadErrorType error_type = contextual_search::
           ContextUploadErrorType::kBrowserProcessingMaxFilesExceededError;
       if (is_image_ || base::StartsWith(mime_type, "image/",
