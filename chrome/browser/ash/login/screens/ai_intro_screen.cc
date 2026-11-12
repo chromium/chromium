@@ -13,10 +13,9 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 
@@ -33,21 +32,27 @@ std::string AiIntroScreen::GetResultString(Result result) {
 }
 
 // static
-bool AiIntroScreen::ShouldBeSkipped() {
+bool AiIntroScreen::ShouldBeSkipped(const user_manager::User* onboarding_user) {
   if (!features::IsOobeAiIntroEnabled()) {
     return true;
   }
 
-  auto* user_manager = user_manager::UserManager::Get();
-  if (user_manager->IsLoggedInAsChildUser()) {
+  if (onboarding_user && onboarding_user->IsChild()) {
     return true;
+  }
+
+  // May run before anybody has signed in, and there are no prefs to read
+  // then.
+  const PrefService* const pref_service =
+      onboarding_user ? onboarding_user->GetProfilePrefs() : nullptr;
+  if (!pref_service) {
+    return false;
   }
 
   // Skip the screen if `kShowAiIntroScreenEnabled` preference is set by
   // managed user default or admin to false.
   const PrefService::Preference* pref =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
-          prefs::kShowAiIntroScreenEnabled);
+      pref_service->FindPreference(prefs::kShowAiIntroScreenEnabled);
   if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
     return true;
   }
@@ -70,7 +75,7 @@ bool AiIntroScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
-  if (AiIntroScreen::ShouldBeSkipped()) {
+  if (AiIntroScreen::ShouldBeSkipped(context.onboarding_user)) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }

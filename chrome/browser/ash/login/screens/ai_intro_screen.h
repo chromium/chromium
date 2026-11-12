@@ -54,7 +54,9 @@ class AiIntroScreen
   }
 
   static std::string GetResultString(Result result);
-  static bool ShouldBeSkipped();
+  // `onboarding_user` is the user going through onboarding, whose prefs
+  // decide this. It is null before anybody has signed in.
+  static bool ShouldBeSkipped(const user_manager::User* onboarding_user);
 
  private:
   // BaseScreen:

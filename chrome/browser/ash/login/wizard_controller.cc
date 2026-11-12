@@ -3099,7 +3099,7 @@ void WizardController::OnGeminiIntroScreenExit(
                GeminiIntroScreen::GetResultString(result));
 
   if (result == GeminiIntroScreen::Result::kBack) {
-    CHECK(!AiIntroScreen::ShouldBeSkipped());
+    CHECK(!AiIntroScreen::ShouldBeSkipped(wizard_context_->onboarding_user));
     ShowAiIntroScreen();
     return;
   }

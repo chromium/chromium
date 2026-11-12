@@ -6,17 +6,16 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/device_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -128,9 +127,13 @@ FingerprintSetupScreen::~FingerprintSetupScreen() = default;
 
 bool FingerprintSetupScreen::ShouldBeSkipped(
     const WizardContext& context) const {
-  if (context.skip_post_login_screens_for_tests ||
-      !fp_engine_.IsFingerprintEnabled(
-          *ProfileManager::GetActiveUserProfile()->GetPrefs(),
+  if (context.skip_post_login_screens_for_tests) {
+    return true;
+  }
+
+  if (!fp_engine_.IsFingerprintEnabled(
+          CHECK_DEREF(
+              CHECK_DEREF(context.onboarding_user.get()).GetProfilePrefs()),
           LegacyFingerprintEngine::Purpose::kAny) ||
       chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin()) {
     return true;
@@ -147,6 +150,7 @@ bool FingerprintSetupScreen::MaybeSkip(WizardContext& context) {
 }
 
 void FingerprintSetupScreen::ShowImpl() {
+  onboarding_user_ = context()->onboarding_user;
   StartAddingFinger();
   if (view_)
     view_->Show();
@@ -210,10 +214,21 @@ void FingerprintSetupScreen::OnEnrollScanDone(
         /* enable = */ enrolled_finger_count_ < kMaxAllowedFingerprints);
   }
 
+  // The screen observes the fingerprint service from its constructor, so a
+  // scan it did not ask for can land here: one from another client, or one
+  // that arrives after the user's profile is gone. Neither has a record to
+  // write.
+  PrefService* const pref_service =
+      onboarding_user_ ? onboarding_user_->GetProfilePrefs() : nullptr;
+  if (!pref_service) {
+    LOG(ERROR) << "Cannot save the fingerprint record: no user prefs.";
+    return;
+  }
+
   // Update the number of registered fingers, it's fine to override because
   // this is the first time user log in and have no finger registered.
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetInteger(
-      prefs::kQuickUnlockFingerprintRecord, enrolled_finger_count_);
+  pref_service->SetInteger(prefs::kQuickUnlockFingerprintRecord,
+                           enrolled_finger_count_);
 }
 
 void FingerprintSetupScreen::OnAuthScanDone(
@@ -231,8 +246,7 @@ void FingerprintSetupScreen::StartAddingFinger() {
 
   enroll_session_started_ = true;
   fp_service_->StartEnrollSession(
-      ProfileHelper::Get()->GetUserIdHashFromProfile(
-          ProfileManager::GetActiveUserProfile()),
+      CHECK_DEREF(onboarding_user_.get()).username_hash(),
       GetDefaultFingerprintName(enrolled_finger_count_));
 }
 

@@ -14,10 +14,9 @@
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/gemini_intro_screen_handler.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user.h"
 
 namespace ash {
 
@@ -36,25 +35,31 @@ std::string GeminiIntroScreen::GetResultString(Result result) {
 }
 
 // static
-bool GeminiIntroScreen::ShouldBeSkipped() {
-  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+bool GeminiIntroScreen::ShouldBeSkipped(
+    const user_manager::User* onboarding_user) {
+  if (onboarding_user && onboarding_user->IsChild()) {
+    return true;
+  }
+
+  // May run before anybody has signed in, and every check below is about
+  // the signed-in user.
+  const PrefService* const pref_service =
+      onboarding_user ? onboarding_user->GetProfilePrefs() : nullptr;
+  if (!pref_service) {
+    return false;
+  }
 
   // Skip the screen if the perk was already shown to the user in perks
   // discovery.
   if (features::IsOobePerksDiscoveryEnabled() &&
-      prefs->GetBoolean(prefs::kOobePerksDiscoveryGamgeeShown)) {
-    return true;
-  }
-
-  auto* user_manager = user_manager::UserManager::Get();
-  if (user_manager->IsLoggedInAsChildUser()) {
+      pref_service->GetBoolean(prefs::kOobePerksDiscoveryGamgeeShown)) {
     return true;
   }
 
   // Skip the screen if `kShowGeminiIntroScreenEnabled` preference is set by
   // managed user default or admin to false.
   const PrefService::Preference* pref =
-      prefs->FindPreference(prefs::kShowGeminiIntroScreenEnabled);
+      pref_service->FindPreference(prefs::kShowGeminiIntroScreenEnabled);
   if (pref->IsManaged() && !pref->GetValue()->GetBool()) {
     return true;
   }
@@ -77,7 +82,7 @@ bool GeminiIntroScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
-  if (GeminiIntroScreen::ShouldBeSkipped()) {
+  if (GeminiIntroScreen::ShouldBeSkipped(context.onboarding_user)) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
@@ -91,7 +96,8 @@ void GeminiIntroScreen::ShowImpl() {
   }
 
   base::DictValue params = base::DictValue().Set(
-      "backButtonVisible", !AiIntroScreen::ShouldBeSkipped());
+      "backButtonVisible",
+      !AiIntroScreen::ShouldBeSkipped(context()->onboarding_user));
   view_->Show(std::move(params));
 }
 

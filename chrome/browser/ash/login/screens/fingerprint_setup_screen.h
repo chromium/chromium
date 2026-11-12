@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -15,6 +16,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
@@ -89,6 +94,12 @@ class FingerprintSetupScreen : public BaseScreen,
  private:
   void StartAddingFinger();
   void OnCancelCurrentEnrollSession(bool success);
+
+  // The user going through onboarding, taken from the wizard context when the
+  // screen is shown. The enroll session this screen starts outlives being
+  // shown - OnEnrollScanDone() can arrive after Hide() has cleared the
+  // context - so the user is remembered here rather than read from context().
+  raw_ptr<user_manager::User> onboarding_user_ = nullptr;
 
   mojo::Remote<device::mojom::Fingerprint> fp_service_;
   mojo::Receiver<device::mojom::FingerprintObserver> receiver_{this};
