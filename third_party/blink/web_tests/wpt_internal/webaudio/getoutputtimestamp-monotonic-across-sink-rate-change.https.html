@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>getOutputTimestamp() across a sink sample rate increase</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async t => {
+  const probe = new AudioContext();
+  const deviceRate = probe.sampleRate;
+  await probe.close();
+  assert_implements_optional(deviceRate < 96000, 'device rate < 96 kHz');
+
+  const context = new AudioContext({sampleRate: 96000});
+  t.add_cleanup(() => context.close());
+
+  const preSource = new AudioBufferSourceNode(context, {
+    buffer: new AudioBuffer({length: 9600, sampleRate: 96000}),
+  });
+  preSource.connect(context.destination);
+  preSource.start();
+  await Promise.all([
+    context.resume(),
+    new Promise(resolve => { preSource.onended = resolve; }),
+  ]);
+  await context.suspend();
+
+  const before = context.getOutputTimestamp().contextTime;
+  assert_greater_than(before, 0, 'contextTime must advance before switching');
+
+  await context.setSinkId({type: 'none'});
+
+  const postSource = new AudioBufferSourceNode(context, {
+    buffer: new AudioBuffer({length: 512, sampleRate: 96000}),
+  });
+  postSource.connect(context.destination);
+  postSource.start();
+  await Promise.all([
+    context.resume(),
+    new Promise(resolve => { postSource.onended = resolve; }),
+  ]);
+  await context.suspend();
+
+  assert_greater_than_equal(
+      context.getOutputTimestamp().contextTime, before,
+      'contextTime must not go backward');
+}, 'contextTime is monotonic when the sink sample rate increases');
+</script>

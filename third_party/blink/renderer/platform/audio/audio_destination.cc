@@ -32,9 +32,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -833,7 +835,15 @@ void AudioDestination::TransferElapsedFramesFrom(
     const scoped_refptr<AudioDestination> previous_platform_destination) {
   DCHECK(IsMainThread());
   DCHECK(!IsPlaying() && !previous_platform_destination->IsPlaying());
-  frames_elapsed_ += previous_platform_destination->FramesElapsed();
+  CHECK_GT(web_audio_device_->SampleRate(), 0.0, base::NotFatalUntil::M163);
+  CHECK_GT(previous_platform_destination->web_audio_device_->SampleRate(), 0.0,
+           base::NotFatalUntil::M163);
+  // `frames_elapsed_` counts frames at the device sample rate, which differs
+  // between sinks when either one resamples from the context rate.
+  frames_elapsed_ += base::ClampRound<size_t>(
+      previous_platform_destination->FramesElapsed() *
+      web_audio_device_->SampleRate() /
+      previous_platform_destination->web_audio_device_->SampleRate());
 }
 
 void AudioDestination::SendLogMessage(const String& function_name,

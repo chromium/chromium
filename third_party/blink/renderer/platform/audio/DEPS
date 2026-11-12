@@ -27,3 +27,9 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/wtf",
 ]
+
+specific_include_rules = {
+    "audio_destination_test.cc": [
+        "+media/base/limits.h",
+    ],
+}

@@ -153,14 +153,15 @@ class PLATFORM_EXPORT AudioDestination final
   // from the constructor of AudioContext and AudioContext.setSinkId() method.
   media::OutputDeviceStatus MaybeCreateSinkAndGetStatus();
 
-  // Returns the elapsed frames of the destination. This only gets called when
-  // switching sink devices. (i.e. stopped destinations)
+  // Returns the number of frames requested by the output device at its sample
+  // rate (not SampleRate(), which is the context sample rate). This only gets
+  // called when switching sink devices (i.e. stopped destinations).
   size_t FramesElapsed() const;
 
-  // Transfer the elapsed frame from the previous platform destination to
-  // the new one. This ensures the timestamp, which is based on the frame
-  // count, does not go backward. This only gets called when switching sink
-  // devices.
+  // Transfer the elapsed frames from the previous platform destination to
+  // the new one, converted to this destination's device sample rate. This
+  // ensures the timestamp, which is based on the frame count, does not go
+  // backward. This only gets called when switching sink devices.
   void TransferElapsedFramesFrom(
       const scoped_refptr<AudioDestination> previous_platform_destination);
 

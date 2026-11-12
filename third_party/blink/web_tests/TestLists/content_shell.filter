@@ -31,6 +31,7 @@ virtual/global-privacy-control-force/wpt_internal/*
 # wpt_internal tests only run in blink_wpt_tests, which runs the tests in
 # content_shell.filter.
 virtual/composite-hover-text-decoration/wpt_internal/*
+virtual/webaudio-destination-resampler/wpt_internal/*
 
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.

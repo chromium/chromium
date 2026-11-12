@@ -4421,6 +4421,20 @@
     ],
     "expires": "Mar 1, 2027"
   },
+  "Runs Web Audio sink tests with the AudioDestination resampler, which",
+  "Android still uses, so that desktop bots cover sinks running at a device",
+  "rate that differs from the context rate.",
+  {
+    "prefix": "webaudio-destination-resampler",
+    "platforms": ["Linux"],
+    "bases": [
+      "wpt_internal/webaudio/getoutputtimestamp-monotonic-across-sink-rate-change.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--disable-features=WebAudioRemoveAudioDestinationResampler"],
+    "owners": ["kmaheshb@google.com"],
+    "expires": "Nov 1, 2027"
+  },
   {
     "prefix": "webaudio-playback-stats",
     "platforms": ["Linux", "Mac", "Win"],

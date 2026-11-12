@@ -21,6 +21,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/limits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
@@ -112,8 +113,8 @@ class TestPlatform : public TestingPlatformSupport {
       std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
     CHECK(webaudio_device_)
-        << "Calling CreateAudioDevice (via AudioDestination::Create) multiple "
-           "times in one test is not supported.";
+        << "CreateMockWebAudioDevice() must be called before each "
+           "CreateAudioDevice() (via AudioDestination::Create).";
     return std::move(webaudio_device_);
   }
 
@@ -769,6 +770,105 @@ TEST_F(AudioDestinationTest, DestructOnMainThread) {
   // Run the loop. It will be quit when MockWebAudioDevice is destroyed on the
   // main thread.
   run_loop.Run();
+}
+
+// Covers sink switches where the two devices run at different sample rates
+// while the context rate stays fixed, as with resampling sinks on Android.
+class AudioDestinationTransferElapsedFramesTest : public AudioDestinationTest {
+ protected:
+  static constexpr float kContextSampleRate = 48000;
+  static constexpr float kLowDeviceSampleRate = 44100;
+  static constexpr float kHighDeviceSampleRate = 48000;
+  // 147 @ 44.1 kHz and 160 @ 48 kHz both span 1/300 s (3 callbacks = 10 ms).
+  static constexpr int kLowCommensurateBufferSize = 147;
+  static constexpr int kHighCommensurateBufferSize = 160;
+  // Non-tie counts whose exact scaled values (18.5034 and 39.50625) round up.
+  static constexpr int kLowNonCommensurateBufferSize = 17;
+  static constexpr int kHighNonCommensurateBufferSize = 43;
+
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        features::kWebAudioRemoveAudioDestinationResampler);
+  }
+
+  scoped_refptr<AudioDestination> CreateDestination(float device_sample_rate,
+                                                    int device_buffer_size) {
+    platform_->CreateMockWebAudioDevice(device_sample_rate, device_buffer_size);
+    EXPECT_CALL(platform_->web_audio_device(), Start)
+        .Times(::testing::AtMost(1));
+    EXPECT_CALL(platform_->web_audio_device(), Stop)
+        .Times(::testing::AtMost(1));
+    return CreateAudioDestination(
+        kContextSampleRate,
+        WebAudioLatencyHint(WebAudioLatencyHint::kCategoryInteractive));
+  }
+
+  void RenderCallbacksAndStop(AudioDestination& destination,
+                              int callback_count) {
+    auto audio_bus = media::AudioBus::Create(
+        kDefaultHardwareOutputChannelNumber, destination.FramesPerBuffer());
+    destination.Start();
+    for (int i = 0; i < callback_count; ++i) {
+      destination.Render(base::TimeDelta(), base::TimeTicks::Now(), {},
+                         audio_bus.get());
+    }
+    destination.Stop();
+  }
+
+  ScopedTestingPlatformSupport<TestPlatform> platform_;
+};
+
+TEST_F(AudioDestinationTransferElapsedFramesTest, RescalesAcrossRateChanges) {
+  scoped_refptr<AudioDestination> first =
+      CreateDestination(kLowDeviceSampleRate, kLowCommensurateBufferSize);
+  RenderCallbacksAndStop(*first, 3);
+  ASSERT_EQ(first->FramesElapsed(), 441u);
+
+  scoped_refptr<AudioDestination> second =
+      CreateDestination(kHighDeviceSampleRate, kHighCommensurateBufferSize);
+  second->TransferElapsedFramesFrom(first);
+  EXPECT_EQ(second->FramesElapsed(), 480u);
+
+  RenderCallbacksAndStop(*second, 3);
+  ASSERT_EQ(second->FramesElapsed(), 960u);
+
+  scoped_refptr<AudioDestination> third =
+      CreateDestination(kLowDeviceSampleRate, kLowCommensurateBufferSize);
+  third->TransferElapsedFramesFrom(second);
+  EXPECT_EQ(third->FramesElapsed(), 882u);
+}
+
+TEST_F(AudioDestinationTransferElapsedFramesTest, RoundsToNearestFrame) {
+  scoped_refptr<AudioDestination> low =
+      CreateDestination(kLowDeviceSampleRate, kLowNonCommensurateBufferSize);
+  RenderCallbacksAndStop(*low, 1);
+  scoped_refptr<AudioDestination> high =
+      CreateDestination(kHighDeviceSampleRate, kHighCommensurateBufferSize);
+  high->TransferElapsedFramesFrom(low);
+  EXPECT_EQ(high->FramesElapsed(), 19u);
+
+  scoped_refptr<AudioDestination> next_high =
+      CreateDestination(kHighDeviceSampleRate, kHighNonCommensurateBufferSize);
+  RenderCallbacksAndStop(*next_high, 1);
+  scoped_refptr<AudioDestination> next_low =
+      CreateDestination(kLowDeviceSampleRate, kLowCommensurateBufferSize);
+  next_low->TransferElapsedFramesFrom(next_high);
+  EXPECT_EQ(next_low->FramesElapsed(), 40u);
+}
+
+TEST_F(AudioDestinationTransferElapsedFramesTest, SameRateAndZeroFrames) {
+  scoped_refptr<AudioDestination> previous = CreateDestination(
+      media::limits::kMaxSampleRate, kHighNonCommensurateBufferSize);
+  scoped_refptr<AudioDestination> next = CreateDestination(
+      media::limits::kMaxSampleRate, kHighNonCommensurateBufferSize);
+
+  next->TransferElapsedFramesFrom(previous);
+  EXPECT_EQ(next->FramesElapsed(), 0u);
+
+  RenderCallbacksAndStop(*previous, 1);
+  ASSERT_EQ(previous->FramesElapsed(), 43u);
+  next->TransferElapsedFramesFrom(previous);
+  EXPECT_EQ(next->FramesElapsed(), 43u);
 }
 
 class AudioDestinationSmallRenderQuantumTest
