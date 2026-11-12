@@ -30,7 +30,7 @@ import {getHtml} from './passwords_section.html.js';
 import {isSavingNewPasswordsBlockedByMandatoryPolicy} from './prefs/policy_utils.js';
 import type {Route} from './router.js';
 import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
-import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import {TrustedVaultUnlockDialogSource, UserUtilMixinLit} from './user_utils_mixin_lit.js';
 
 export interface PasswordsSectionElement {
   $: {
@@ -222,7 +222,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   protected onAddPasswordClick_() {
     this.executeIfTrustedVaultUnlocked(() => {
       this.showAddPasswordDialog_ = true;
-    });
+    }, TrustedVaultUnlockDialogSource.ADD_PASSWORD);
   }
 
   protected onAddPasswordDialogClose_() {

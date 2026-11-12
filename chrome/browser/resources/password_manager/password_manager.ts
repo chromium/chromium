@@ -30,7 +30,7 @@ export {EditPasskeyDialogElement} from './dialogs/edit_passkey_dialog.js';
 export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
 export {MovePasswordsDialogElement} from './dialogs/move_passwords_dialog.js';
 export {RemoveActorLoginPermissionDialogElement} from './dialogs/remove_actor_login_permission_dialog.js';
-export {TrustedVaultErrorDialogElement} from './dialogs/trusted_vault_error_dialog.js';
+export {TrustedVaultErrorDialogElement, TrustedVaultUnlockDialogAction} from './dialogs/trusted_vault_error_dialog.js';
 export {FindShortcutMixin} from './find_shortcut_mixin.js';
 export {FullDataResetElement} from './full_data_reset.js';
 export {NotificationCardId} from './notification_cards/notification_card.js';
@@ -68,3 +68,4 @@ export {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl, TrustedVaultBanner
 export {PasswordManagerToolbarElement} from './toolbar.js';
 export {UserUtilMixin} from './user_utils_mixin.js';
 export type {UserUtilMixinInterface} from './user_utils_mixin.js';
+export {TrustedVaultUnlockDialogSource} from './user_utils_mixin_lit.js';

@@ -15,6 +15,32 @@ import {SyncBrowserProxyImpl} from './sync_browser_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
+/**
+ * What caused the trusted vault unlock dialog to be shown. The values are used
+ * as suffixes of the PasswordManager.TrustedVaultUnlockDialog.Action.{Source}
+ * histogram.
+ */
+// LINT.IfChange(TrustedVaultUnlockDialogSource)
+export enum TrustedVaultUnlockDialogSource {
+  // Shown automatically when the trusted vault becomes locked, e.g. when the
+  // page loads in a locked state.
+  AUTO_ON_LOAD = 'AutoOnLoad',
+  // Shown when the user tried to add a password.
+  ADD_PASSWORD = 'AddPassword',
+  // Shown when the user tried to import passwords.
+  IMPORT = 'Import',
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/histograms.xml:TrustedVaultUnlockDialogSource)
+
+export type ShowTrustedVaultErrorDialogEvent =
+    CustomEvent<{source: TrustedVaultUnlockDialogSource}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'show-trusted-vault-error-dialog': ShowTrustedVaultErrorDialogEvent;
+  }
+}
+
 const WebUiListenerMixinLitBase =
     <T extends Constructor<CrLitElement>>(superClass: T) =>
         WebUiListenerMixinLit(superClass);
@@ -142,10 +168,13 @@ export const UserUtilMixinLit = dedupingMixin(
         /**
          * Executes `action` if the trusted vault is unlocked. If the vault is
          * locked, dispatches an event to display the unlock/recovery dialog.
+         * `source` identifies the user action that was blocked by the locked
+         * vault and is used for metrics.
          */
-        executeIfTrustedVaultUnlocked(action: () => void) {
+        executeIfTrustedVaultUnlocked(
+            action: () => void, source: TrustedVaultUnlockDialogSource) {
           if (this.isTrustedVaultKeyNeeded()) {
-            this.fire('show-trusted-vault-error-dialog');
+            this.fire('show-trusted-vault-error-dialog', {source});
             return;
           }
           action();
@@ -175,5 +204,6 @@ export interface UserUtilMixinLitInterface {
   accountEmail: string;
   avatarImage: string;
   isTrustedVaultKeyNeeded(): boolean;
-  executeIfTrustedVaultUnlocked(action: () => void): void;
+  executeIfTrustedVaultUnlocked(
+      action: () => void, source: TrustedVaultUnlockDialogSource): void;
 }

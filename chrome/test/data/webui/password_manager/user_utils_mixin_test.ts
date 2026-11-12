@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerActionableError, PasswordManagerImpl, SyncBrowserProxyImpl, UserUtilMixin} from 'chrome://password-manager/password_manager.js';
+import {PasswordManagerActionableError, PasswordManagerImpl, SyncBrowserProxyImpl, TrustedVaultUnlockDialogSource, UserUtilMixin} from 'chrome://password-manager/password_manager.js';
 import type {UserUtilMixinInterface} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -84,17 +84,17 @@ suite('UserUtilMixinTest', function() {
                  .TRUSTED_VAULT_KEY_NEEDED);
         await flushTasks();
 
-        let dialogFired = false;
-        element.addEventListener('show-trusted-vault-error-dialog', () => {
-          dialogFired = true;
+        let dialogSource: TrustedVaultUnlockDialogSource|null = null;
+        element.addEventListener('show-trusted-vault-error-dialog', e => {
+          dialogSource = e.detail.source;
         });
 
         let actionExecuted = false;
         element.executeIfTrustedVaultUnlocked(() => {
           actionExecuted = true;
-        });
+        }, TrustedVaultUnlockDialogSource.IMPORT);
 
-        assertTrue(dialogFired);
+        assertEquals(TrustedVaultUnlockDialogSource.IMPORT, dialogSource);
         assertFalse(actionExecuted);
       });
 
@@ -114,7 +114,7 @@ suite('UserUtilMixinTest', function() {
         let actionExecuted = false;
         element.executeIfTrustedVaultUnlocked(() => {
           actionExecuted = true;
-        });
+        }, TrustedVaultUnlockDialogSource.ADD_PASSWORD);
 
         assertFalse(dialogFired);
         assertTrue(actionExecuted);

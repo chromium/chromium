@@ -48,6 +48,8 @@ import type {SettingsSectionElement} from './settings_section.js';
 import type {PasswordManagerSideBarElement} from './side_bar.js';
 import type {PasswordManagerToolbarElement} from './toolbar.js';
 import {UserUtilMixin} from './user_utils_mixin.js';
+import type {ShowTrustedVaultErrorDialogEvent} from './user_utils_mixin_lit.js';
+import {TrustedVaultUnlockDialogSource} from './user_utils_mixin_lit.js';
 
 /**
  * Checks if an HTML element is an editable. An editable is either a text
@@ -126,6 +128,9 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
       showTrustedVaultErrorDialog_: Boolean,
 
+      /** What caused the trusted vault error dialog to be shown. */
+      trustedVaultErrorDialogSource_: String,
+
       toastMessage_: String,
 
       /**
@@ -160,6 +165,8 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   declare private collapsed_: boolean;
   declare private pageTitle_: string;
   declare private showTrustedVaultErrorDialog_: boolean;
+  declare private trustedVaultErrorDialogSource_:
+      TrustedVaultUnlockDialogSource;
   declare private toastMessage_: string;
   declare private showUndo_: boolean;
   declare private focusConfig_: FocusConfig;
@@ -189,7 +196,8 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
     this.eventTracker_.add(
         this, 'show-trusted-vault-error-dialog',
-        () => this.showTrustedVaultErrorDialog_ = true);
+        (e: ShowTrustedVaultErrorDialogEvent) =>
+            this.openTrustedVaultErrorDialog_(e.detail.source));
   }
 
   override disconnectedCallback() {
@@ -401,7 +409,21 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
   }
 
   private onActionableErrorChanged_() {
-    this.showTrustedVaultErrorDialog_ = this.isTrustedVaultKeyNeeded();
+    if (this.isTrustedVaultKeyNeeded()) {
+      this.openTrustedVaultErrorDialog_(
+          TrustedVaultUnlockDialogSource.AUTO_ON_LOAD);
+    } else {
+      this.showTrustedVaultErrorDialog_ = false;
+    }
+  }
+
+  private openTrustedVaultErrorDialog_(source: TrustedVaultUnlockDialogSource) {
+    if (this.showTrustedVaultErrorDialog_) {
+      // Keep the source of the dialog which is already shown.
+      return;
+    }
+    this.trustedVaultErrorDialogSource_ = source;
+    this.showTrustedVaultErrorDialog_ = true;
   }
 
   private onTrustedVaultErrorDialogClose_() {

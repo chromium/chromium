@@ -65,7 +65,7 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getCss} from './passwords_importer.css.js';
 import {getHtml} from './passwords_importer.html.js';
 import {Page, Router} from './router.js';
-import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
+import {TrustedVaultUnlockDialogSource, UserUtilMixinLit} from './user_utils_mixin_lit.js';
 
 export interface PasswordsImporterElement {
   $: {
@@ -198,7 +198,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
           this.selectFileHelper_();
         }
       }, 200);
-    });
+    }, TrustedVaultUnlockDialogSource.IMPORT);
   }
 
   protected isState_(state: DialogState): boolean {
@@ -229,7 +229,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       if (this.isAccountStoreUser && this.isState_(DialogState.NO_DIALOG)) {
         this.dialogState_ = DialogState.STORE_PICKER;
       }
-    });
+    }, TrustedVaultUnlockDialogSource.IMPORT);
   }
 
   private closeDialog_() {
@@ -301,7 +301,7 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   protected onSelectFileClick_() {
     this.executeIfTrustedVaultUnlocked(() => {
       this.selectFileHelper_();
-    });
+    }, TrustedVaultUnlockDialogSource.IMPORT);
   }
 
   private async continueImportHelper_(selectedIds: number[]) {

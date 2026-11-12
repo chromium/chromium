@@ -2008,6 +2008,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UI error, not shown"/>
 </enum>
 
+<!-- LINT.IfChange(TrustedVaultUnlockDialogAction) -->
+
+<enum name="TrustedVaultUnlockDialogAction">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Continue"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/password_manager/dialogs/trusted_vault_error_dialog.ts:TrustedVaultUnlockDialogAction) -->
+
 <enum name="UsernameDetectionMethod">
   <int value="0" label="No username detected"/>
   <int value="1" label="Base heuristic"/>

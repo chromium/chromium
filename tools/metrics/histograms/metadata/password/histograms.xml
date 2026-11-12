@@ -148,6 +148,22 @@ chromium-metrics-reviews@google.com.
       summary="errors returned from the underlying store are not reported."/>
 </variants>
 
+<!-- LINT.IfChange(TrustedVaultUnlockDialogSource) -->
+
+<variants name="TrustedVaultUnlockDialogSource">
+  <variant name="AddPassword"
+      summary="the user tried to add a password while the trusted vault was
+               locked"/>
+  <variant name="AutoOnLoad"
+      summary="the dialog was shown automatically because the trusted vault
+               was locked, e.g. when the page was loaded"/>
+  <variant name="Import"
+      summary="the user tried to import passwords while the trusted vault was
+               locked"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/password_manager/user_utils_mixin_lit.ts:TrustedVaultUnlockDialogSource) -->
+
 <variants name="UserSyncingType">
   <variant name="" summary="all users."/>
   <variant name=".SignedInAccountStoreUser"
@@ -4242,6 +4258,18 @@ useful for Chirp alerts (go/crca-alerts). -->
     seconds after Chrome startup when Sync engine is initialized and passwords
     encryption type is trusted vault.
   </summary>
+</histogram>
+
+<histogram name="PasswordManager.TrustedVaultUnlockDialog.Action.{Source}"
+    enum="TrustedVaultUnlockDialogAction" expires_after="2027-11-07">
+  <owner>ammarmk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Records interactions with the trusted vault unlock dialog in
+    chrome://password-manager, shown when {Source}. 'Dismissed' covers the 'Not
+    now' button and Esc. Desktop only.
+  </summary>
+  <token key="Source" variants="TrustedVaultUnlockDialogSource"/>
 </histogram>
 
 <histogram name="PasswordManager.UI.OpenedPasswordDetailsWhileSearching"

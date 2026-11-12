@@ -1,4 +1,4 @@
-<cr-dialog id="dialog" show-on-attach>
+<cr-dialog id="dialog" show-on-attach @cancel="${this.onDialogCancel_}">
   <div slot="title">
     <if expr="_google_chrome">
       <picture>

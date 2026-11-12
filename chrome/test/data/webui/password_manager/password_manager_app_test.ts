@@ -5,10 +5,11 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {PasswordManagerAppElement, TrustedVaultErrorDialogElement} from 'chrome://password-manager/password_manager.js';
-import {OpenWindowProxyImpl, Page, PasswordManagerActionableError, PasswordManagerImpl, PrefsBrowserProxy, PrefService, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerActionableError, PasswordManagerImpl, PrefsBrowserProxy, PrefService, Router, TrustedVaultUnlockDialogAction, TrustedVaultUnlockDialogSource, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -432,6 +433,7 @@ suite('PasswordManagerAppTest', function() {
     app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
       bubbles: true,
       composed: true,
+      detail: {source: TrustedVaultUnlockDialogSource.ADD_PASSWORD},
     }));
     await flushTasks();
 
@@ -440,6 +442,122 @@ suite('PasswordManagerAppTest', function() {
             'trusted-vault-error-dialog');
     assertTrue(!!errorDialog);
     assertTrue(errorDialog.$.dialog.open);
+    assertEquals(
+        TrustedVaultUnlockDialogSource.ADD_PASSWORD, errorDialog.source);
+  });
+
+  [TrustedVaultUnlockDialogSource.ADD_PASSWORD,
+   TrustedVaultUnlockDialogSource.IMPORT,
+  ].forEach(source => {
+    test(
+        `records shown with source ${source} from show event`,
+        async function() {
+          const metrics = fakeMetricsPrivate();
+          app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
+            bubbles: true,
+            composed: true,
+            detail: {source},
+          }));
+          await flushTasks();
+
+          const prefix = 'PasswordManager.TrustedVaultUnlockDialog.Action.';
+          assertEquals(
+              1,
+              metrics.count(
+                  prefix + source, TrustedVaultUnlockDialogAction.SHOWN));
+          assertEquals(
+              0,
+              metrics.count(
+                  prefix + TrustedVaultUnlockDialogSource.AUTO_ON_LOAD));
+        });
+  });
+
+  test('records shown with AutoOnLoad source when locked', async function() {
+    const metrics = fakeMetricsPrivate();
+    app.actionableError = PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+    await flushTasks();
+
+    const errorDialog =
+        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+            'trusted-vault-error-dialog');
+    assertTrue(!!errorDialog);
+    assertEquals(
+        TrustedVaultUnlockDialogSource.AUTO_ON_LOAD, errorDialog.source);
+    assertEquals(
+        1,
+        metrics.count(
+            'PasswordManager.TrustedVaultUnlockDialog.Action.AutoOnLoad',
+            TrustedVaultUnlockDialogAction.SHOWN));
+  });
+
+  test(
+      'keeps source of already shown dialog on subsequent show event',
+      async function() {
+        const metrics = fakeMetricsPrivate();
+        app.actionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+        await flushTasks();
+
+        app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
+          bubbles: true,
+          composed: true,
+          detail: {source: TrustedVaultUnlockDialogSource.IMPORT},
+        }));
+        await flushTasks();
+
+        const errorDialog =
+            app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+                'trusted-vault-error-dialog');
+        assertTrue(!!errorDialog);
+        assertEquals(
+            TrustedVaultUnlockDialogSource.AUTO_ON_LOAD, errorDialog.source);
+        assertEquals(
+            1,
+            metrics.count(
+                'PasswordManager.TrustedVaultUnlockDialog.Action.AutoOnLoad',
+                TrustedVaultUnlockDialogAction.SHOWN));
+        assertEquals(
+            0,
+            metrics.count(
+                'PasswordManager.TrustedVaultUnlockDialog.Action.Import'));
+      });
+
+  test('uses new source when dialog is reopened', async function() {
+    const metrics = fakeMetricsPrivate();
+    app.actionableError = PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+    await flushTasks();
+
+    let errorDialog =
+        app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+            'trusted-vault-error-dialog');
+    assertTrue(!!errorDialog);
+    const whenClosed = eventToPromise('close', errorDialog);
+    errorDialog.shadowRoot.querySelector<HTMLElement>('#cancelButton')!.click();
+    await whenClosed;
+    await flushTasks();
+    assertFalse(!!app.shadowRoot!.querySelector('trusted-vault-error-dialog'));
+
+    app.dispatchEvent(new CustomEvent('show-trusted-vault-error-dialog', {
+      bubbles: true,
+      composed: true,
+      detail: {source: TrustedVaultUnlockDialogSource.IMPORT},
+    }));
+    await flushTasks();
+
+    errorDialog = app.shadowRoot!.querySelector<TrustedVaultErrorDialogElement>(
+        'trusted-vault-error-dialog');
+    assertTrue(!!errorDialog);
+    assertEquals(TrustedVaultUnlockDialogSource.IMPORT, errorDialog.source);
+    assertEquals(
+        1,
+        metrics.count(
+            'PasswordManager.TrustedVaultUnlockDialog.Action.AutoOnLoad',
+            TrustedVaultUnlockDialogAction.DISMISSED));
+    assertEquals(
+        1,
+        metrics.count(
+            'PasswordManager.TrustedVaultUnlockDialog.Action.Import',
+            TrustedVaultUnlockDialogAction.SHOWN));
   });
 });
 

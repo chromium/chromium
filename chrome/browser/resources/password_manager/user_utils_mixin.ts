@@ -12,6 +12,7 @@ import {PasswordManagerActionableError} from './password_manager.mojom-webui.js'
 import {PasswordManagerImpl, toMojoActionableError} from './password_manager_proxy.js';
 import type {AccountInfo, SyncInfo} from './sync_browser_proxy.js';
 import {SyncBrowserProxyImpl} from './sync_browser_proxy.js';
+import type {TrustedVaultUnlockDialogSource} from './user_utils_mixin_lit.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -148,13 +149,17 @@ export const UserUtilMixin = dedupingMixin(
         /**
          * Executes `action` if the trusted vault is unlocked. If the vault is
          * locked, dispatches an event to display the unlock/recovery dialog.
+         * `source` identifies the user action that was blocked by the locked
+         * vault and is used for metrics.
          */
-        executeIfTrustedVaultUnlocked(action: () => void) {
+        executeIfTrustedVaultUnlocked(
+            action: () => void, source: TrustedVaultUnlockDialogSource) {
           if (this.isTrustedVaultKeyNeeded()) {
             this.dispatchEvent(
                 new CustomEvent('show-trusted-vault-error-dialog', {
                   bubbles: true,
                   composed: true,
+                  detail: {source},
                 }));
             return;
           }
@@ -185,5 +190,6 @@ export interface UserUtilMixinInterface {
   accountEmail: string;
   avatarImage: string;
   isTrustedVaultKeyNeeded(): boolean;
-  executeIfTrustedVaultUnlocked(action: () => void): void;
+  executeIfTrustedVaultUnlocked(
+      action: () => void, source: TrustedVaultUnlockDialogSource): void;
 }

@@ -5,7 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {AddPasswordDialogElement, AuthTimedOutDialogElement, MovePasswordsDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {Page, PasswordManagerActionableError, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordManagerActionableError, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, PrefsBrowserProxy, PrefService, Router, SyncBrowserProxyImpl, TrustedVaultUnlockDialogSource, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -800,7 +800,9 @@ suite('PasswordsSectionTest', function() {
         const addButton = section.$.addPasswordButton;
         assertTrue(!!addButton);
         addButton.click();
-        await eventPromise;
+        const event = await eventPromise;
+        assertEquals(
+            TrustedVaultUnlockDialogSource.ADD_PASSWORD, event.detail.source);
         assertFalse(!!section.shadowRoot.querySelector('add-password-dialog'));
       });
 });

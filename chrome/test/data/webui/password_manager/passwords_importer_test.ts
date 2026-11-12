@@ -5,7 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {CrButtonElement, CrDialogElement, PasswordsImporterElement} from 'chrome://password-manager/password_manager.js';
-import {ImportEntryStatus, ImportResultsStatus, Page, PasswordManagerActionableError, PasswordManagerImpl, PluralStringProxyImpl, Router, SyncBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+import {ImportEntryStatus, ImportResultsStatus, Page, PasswordManagerActionableError, PasswordManagerImpl, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, TrustedVaultUnlockDialogSource} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -894,7 +894,9 @@ suite('PasswordsImporterTest', function() {
         const eventPromise =
             eventToPromise('show-trusted-vault-error-dialog', importer);
         importer.$.linkRow.click();
-        await eventPromise;
+        const event = await eventPromise;
+        assertEquals(
+            TrustedVaultUnlockDialogSource.IMPORT, event.detail.source);
       });
 
   test(
@@ -909,7 +911,9 @@ suite('PasswordsImporterTest', function() {
         const eventPromise =
             eventToPromise('show-trusted-vault-error-dialog', importer);
         importer.$.selectFileButtonLinkRow.click();
-        await eventPromise;
+        const event = await eventPromise;
+        assertEquals(
+            TrustedVaultUnlockDialogSource.IMPORT, event.detail.source);
       });
 
   test(
@@ -924,6 +928,8 @@ suite('PasswordsImporterTest', function() {
         const eventPromise =
             eventToPromise('show-trusted-vault-error-dialog', importer);
         importer.launchImport();
-        await eventPromise;
+        const event = await eventPromise;
+        assertEquals(
+            TrustedVaultUnlockDialogSource.IMPORT, event.detail.source);
       });
 });
