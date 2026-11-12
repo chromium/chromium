@@ -4202,17 +4202,13 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
       }
 #if !BUILDFLAG(IS_LINUX)
       // Match the platform restriction on InScopePWAPopupsHaveCorrectSize.
+      // The toolbar decision for an about:blank popup is made from the
+      // inherited origin as soon as the window exists, before the requested
+      // popup size is applied in OnReceivedInitialURL(), so the content area
+      // keeps its requested size whether or not the toolbar is shown.
       controller->UpdateCustomTabBarVisibility(false);
-      const gfx::Size actual_size =
-          BrowserWindow::FromBrowser(popup_browser)->GetContentsSize();
-      EXPECT_EQ(size.width(), actual_size.width());
-      if (should_show_toolbar) {
-        // Record the current content-height loss without depending on a
-        // platform-specific toolbar height.
-        EXPECT_LT(actual_size.height(), size.height());
-      } else {
-        EXPECT_EQ(size.height(), actual_size.height());
-      }
+      EXPECT_EQ(size,
+                BrowserWindow::FromBrowser(popup_browser)->GetContentsSize());
 #endif
       web_app::CloseAndWait(popup_browser);
     }

@@ -396,6 +396,29 @@ bool AppBrowserController::ShouldShowCustomTabBar() const {
   GURL last_committed_url = web_contents->GetLastCommittedURL();
 
   if (last_committed_url.is_empty() && visible_url.is_empty()) {
+    // Both URLs are empty while the window is still on its initial empty
+    // document. This happens before the first navigation starts, and it also
+    // happens when the opener aborts the pending navigation by calling
+    // document.open() + document.write() on the new window, which hides the
+    // pending URL (see NavigationController::GetVisibleEntry()). In that case
+    // the document's contents are controlled by the opener, whose origin the
+    // initial empty document inherited. Show the toolbar unless that origin is
+    // allowed to control app windows, so the origin is revealed next to the
+    // page-controlled title.
+    //
+    // An origin with a tuple or precursor tuple was derived from web content
+    // (inherited from the opener, possibly through a sandboxed opaque origin),
+    // so a page could have written into the document. Windows launched by
+    // Chrome itself start with a precursor-less opaque origin and keep the
+    // toolbar hidden. This deliberately does not depend on HasOpener() or the
+    // original opener chain, both of which the page can sever (window.opener =
+    // null, removing the opener frame) after writing into the document.
+    const url::Origin& origin =
+        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    if (!IsOriginAllowedForAboutBlankPopup(origin) &&
+        origin.GetTupleOrPrecursorTupleIfOpaque().IsValid()) {
+      return true;
+    }
     return should_show_toolbar_for_url(initial_url());
   }
 
@@ -611,6 +634,10 @@ std::u16string AppBrowserController::GetLaunchFlashText() const {
 
   // Identify the document's inherited origin when an about:blank app popup
   // does not need the custom tab bar, regardless of how it is in app scope.
+  // TODO(crbug.com/584876043): Also handle an empty last committed URL, which
+  // is what a popup has after its opener aborts the pending navigation via
+  // document.open() + document.write(); today this falls through and flashes
+  // the start URL instead of the opener origin.
   if (browser()->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP &&
       !ShouldShowCustomTabBar()) {
     content::WebContents* contents =

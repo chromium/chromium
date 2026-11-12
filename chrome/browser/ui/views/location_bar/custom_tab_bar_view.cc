@@ -28,6 +28,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -56,6 +58,7 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -386,16 +389,27 @@ void CustomTabBarView::UpdateContents() {
     title = WindowMetadataController::FormatTitleForDisplay(
         entry->GetTitleForDisplay());
   }
-  const GURL visible_url = contents->GetVisibleURL();
+  GURL url_to_display = contents->GetVisibleURL();
+  if (url_to_display.is_empty()) {
+    // The initial empty document has no URL to show, e.g. when the opener
+    // aborted the pending navigation via document.open() + document.write().
+    // Display the origin the document inherited from its opener instead, so
+    // the page cannot control the entire bar through document.title. Opaque
+    // origins display as about:blank, matching the omnibox.
+    const url::Origin& committed_origin =
+        contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    url_to_display = committed_origin.opaque() ? GURL(url::kAboutBlankURL)
+                                               : committed_origin.GetURL();
+  }
   if (ShouldDisplayUrl(contents)) {
     location = web_app::AppBrowserController::FormatUrlOrigin(
-        visible_url, url_formatter::kFormatUrlOmitDefaults);
+        url_to_display, url_formatter::kFormatUrlOmitDefaults);
   }
 
   // Only head-elide hierarchical HTTP/HTTPS origins (where the registrable
   // domain is at the end). For opaque origins or non-HTTP/HTTPS schemes, tail
   // elision is required so that a crafted suffix cannot spoof an HTTPS origin.
-  const url::Origin origin = url::Origin::Create(visible_url);
+  const url::Origin origin = url::Origin::Create(url_to_display);
   const gfx::ElideBehavior location_elide_behavior =
       (!origin.opaque() && origin.GetURL().SchemeIsHTTPOrHTTPS())
           ? gfx::ElideBehavior::ELIDE_HEAD

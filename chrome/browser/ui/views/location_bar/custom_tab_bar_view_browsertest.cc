@@ -6,6 +6,7 @@
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -885,4 +886,259 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 
   chrome::Zoom(app_browser_, content::PAGE_ZOOM_IN);
   EXPECT_TRUE(zoom_view->GetVisible());
+}
+
+// Verify that when a cross-origin frame inside an installed PWA window opens a
+// popup or new app window and replaces its initial document via
+// document.open() + document.write() (aborting the pending navigation so both
+// visible_url and last_committed_url are empty), the CustomTabBarView is shown
+// and displays the opener's committed origin rather than hiding the origin line
+// or omitting the bar (b/580569850).
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
+                       WindowOpenDocumentWriteCrossOriginShowsOriginBar) {
+  // Install at the server root so that /hung is in scope. The opened URLs never
+  // respond, so the navigation can never commit over the written document and
+  // race the assertions below.
+  const GURL app_url =
+      embedded_https_test_server().GetURL("app.com", "/simple.html");
+  const GURL in_scope_hung_url =
+      embedded_https_test_server().GetURL("app.com", "/hung");
+  const GURL out_of_scope_hung_url =
+      embedded_https_test_server().GetURL("other.com", "/hung");
+  const GURL cross_origin_frame_url = embedded_https_test_server().GetURL(
+      "example.com", "/ssl/blank_page.html");
+
+  InstallPWA(app_url);
+  ASSERT_TRUE(app_browser_);
+  EXPECT_EQ(app_browser_->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  content::WebContents* app_contents = app_view->GetActiveWebContents();
+  EXPECT_FALSE(app_controller_->ShouldShowCustomTabBar());
+
+  // Embed a cross-origin iframe inside the in-scope app window.
+  content::TestNavigationObserver iframe_nav_observer(app_contents);
+  ASSERT_TRUE(content::ExecJs(
+      app_contents,
+      content::JsReplace("const f = document.createElement('iframe');"
+                         "f.src = $1;"
+                         "document.body.appendChild(f);",
+                         cross_origin_frame_url)));
+  iframe_nav_observer.Wait();
+
+  content::RenderFrameHost* cross_origin_rfh =
+      content::ChildFrameAt(app_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(cross_origin_rfh);
+  ASSERT_TRUE(cross_origin_rfh->GetLastCommittedOrigin().IsSameOriginWith(
+      cross_origin_frame_url));
+
+  const std::u16string expected_location =
+      web_app::AppBrowserController::FormatUrlOrigin(
+          cross_origin_frame_url, url_formatter::kFormatUrlOmitDefaults);
+  const std::u16string spoofed_title = u"accounts.google.com";
+
+  // Opens `target_url` from the cross-origin frame, writes into the new window
+  // and verifies the custom tab bar reveals the opener's origin.
+  auto open_write_and_check = [&](const GURL& target_url,
+                                  std::string_view target_name,
+                                  std::string_view features,
+                                  BrowserWindowInterface::Type expected_type) {
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    EXPECT_TRUE(content::ExecJs(
+        cross_origin_rfh,
+        content::JsReplace("const w = window.open($1, $2, $3);"
+                           "w.document.open();"
+                           "w.document.write('<!doctype html><h1>Spoof</h1>');"
+                           "w.document.close();"
+                           "w.document.title = 'accounts.google.com';",
+                           target_url, target_name, features)));
+    BrowserWindowInterface* new_browser = browser_created_observer.Wait();
+    EXPECT_EQ(new_browser->GetType(), expected_type);
+    BrowserView* new_view = BrowserView::GetBrowserViewForBrowser(new_browser);
+    content::WebContents* new_contents = new_view->GetActiveWebContents();
+    CustomTabBarView* bar = new_view->toolbar()->custom_tab_bar();
+    web_app::AppBrowserController* controller =
+        web_app::AppBrowserController::From(new_browser);
+    ASSERT_TRUE(controller);
+
+    // Poll instead of observing: the title update may already have been
+    // applied to the bar before an observer could be installed.
+    EXPECT_TRUE(base::test::RunUntil(
+        [&] { return bar->title_for_testing() == spoofed_title; }));
+
+    EXPECT_TRUE(new_contents->GetLastCommittedURL().is_empty());
+    EXPECT_TRUE(new_contents->GetVisibleURL().is_empty());
+    EXPECT_TRUE(controller->ShouldShowCustomTabBar());
+    EXPECT_TRUE(bar->GetVisible());
+    EXPECT_TRUE(bar->IsShowingOriginForTesting());
+    EXPECT_EQ(bar->location_for_testing(), expected_location);
+    EXPECT_EQ(bar->title_for_testing(), spoofed_title);
+    EXPECT_EQ(bar->GetLocationElideBehaviorForTesting(),
+              gfx::ElideBehavior::ELIDE_HEAD);
+    EXPECT_TRUE(bar->location_icon_view()->GetVisible());
+  };
+
+  {
+    SCOPED_TRACE("popup, in-scope URL");
+    open_write_and_check(in_scope_hung_url, "", "popup,width=400,height=400",
+                         BrowserWindowInterface::Type::TYPE_APP_POPUP);
+  }
+  {
+    SCOPED_TRACE("popup, out-of-scope URL");
+    open_write_and_check(out_of_scope_hung_url, "",
+                         "popup,width=400,height=400",
+                         BrowserWindowInterface::Type::TYPE_APP_POPUP);
+  }
+  {
+    SCOPED_TRACE("_blank, in-scope URL");
+    open_write_and_check(in_scope_hung_url, "_blank", "",
+                         BrowserWindowInterface::Type::TYPE_APP);
+  }
+}
+
+// Verify that when an opaque-origin frame (such as a sandboxed iframe with
+// allow-popups-to-escape-sandbox) opens a popup and writes into it via
+// document.open() + document.write(), the CustomTabBarView is shown and falls
+// back to displaying "about:blank" with tail elision. Covers both an aborted
+// in-scope navigation and a javascript: URL that never reaches the browser,
+// with the page severing window.opener afterwards.
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
+                       WindowOpenDocumentWriteOpaqueOriginShowsAboutBlank) {
+  // Install at the server root so that /hung is in scope; see the cross-origin
+  // test above for why the opened URL must never respond.
+  const GURL app_url =
+      embedded_https_test_server().GetURL("app.com", "/simple.html");
+  const GURL in_scope_hung_url =
+      embedded_https_test_server().GetURL("app.com", "/hung");
+
+  InstallPWA(app_url);
+  ASSERT_TRUE(app_browser_);
+
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  content::WebContents* app_contents = app_view->GetActiveWebContents();
+
+  // Create a sandboxed iframe (opaque origin) with
+  // allow-popups-to-escape-sandbox so its popup inherits the iframe's opaque
+  // origin on the initial empty document rather than minting a distinct
+  // sandboxed opaque origin.
+  ASSERT_TRUE(content::ExecJs(
+      app_contents,
+      "const f = document.createElement('iframe');"
+      "f.sandbox = 'allow-scripts allow-popups allow-popups-to-escape-sandbox';"
+      "f.srcdoc = '<body>sandbox</body>';"
+      "document.body.appendChild(f);"));
+  ASSERT_TRUE(content::WaitForLoadStop(app_contents));
+
+  content::RenderFrameHost* sandbox_rfh =
+      content::ChildFrameAt(app_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(sandbox_rfh);
+  ASSERT_TRUE(sandbox_rfh->GetLastCommittedOrigin().opaque());
+
+  auto open_write_and_check = [&](const std::string& open_url_literal) {
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    EXPECT_TRUE(content::ExecJs(
+        sandbox_rfh,
+        "const w = window.open(" + open_url_literal +
+            ", '', 'popup,width=400,height=400');"
+            "w.document.open();"
+            "w.document.write('<!doctype html><title>accounts.google.com"
+            "</title><h1>spoof</h1>');"
+            "w.document.close();"
+            // Sever the opener relationship after writing; the bar must not
+            // depend on it.
+            "w.opener = null;"));
+
+    BrowserWindowInterface* popup_browser = browser_created_observer.Wait();
+    BrowserView* popup_view =
+        BrowserView::GetBrowserViewForBrowser(popup_browser);
+    CustomTabBarView* popup_bar = popup_view->toolbar()->custom_tab_bar();
+    content::WebContents* popup_contents = popup_view->GetActiveWebContents();
+    web_app::AppBrowserController* popup_controller =
+        web_app::AppBrowserController::From(popup_browser);
+    ASSERT_TRUE(popup_controller);
+
+    // Poll instead of observing: the title update may already have been
+    // applied to the bar before an observer could be installed.
+    EXPECT_TRUE(base::test::RunUntil([&] {
+      return popup_bar->title_for_testing() == u"accounts.google.com";
+    }));
+    EXPECT_TRUE(
+        base::test::RunUntil([&] { return !popup_contents->HasOpener(); }));
+
+    EXPECT_TRUE(popup_contents->GetLastCommittedURL().is_empty());
+    EXPECT_TRUE(popup_contents->GetVisibleURL().is_empty());
+    EXPECT_TRUE(popup_contents->GetPrimaryMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .opaque());
+    EXPECT_TRUE(popup_controller->ShouldShowCustomTabBar());
+    EXPECT_TRUE(popup_bar->GetVisible());
+    EXPECT_TRUE(popup_bar->IsShowingOriginForTesting());
+    EXPECT_EQ(popup_bar->title_for_testing(), u"accounts.google.com");
+    EXPECT_EQ(popup_bar->location_for_testing(), u"about:blank");
+    EXPECT_EQ(popup_bar->GetLocationElideBehaviorForTesting(),
+              gfx::ElideBehavior::ELIDE_TAIL);
+    EXPECT_TRUE(popup_bar->location_icon_view()->GetVisible());
+  };
+
+  {
+    SCOPED_TRACE("aborted in-scope navigation");
+    open_write_and_check(content::JsReplace("$1", in_scope_hung_url));
+  }
+  {
+    // A javascript: URL is handled entirely in the renderer, so no navigation
+    // ever starts in the browser and initial_url() stays empty.
+    SCOPED_TRACE("javascript: URL");
+    open_write_and_check("'javascript:void(0)'");
+  }
+}
+
+// Verify that an in-scope document opening an app popup to an in-scope URL and
+// writing to it via document.open() + document.write() continues to omit the
+// custom tab bar, matching about:blank popup behavior for allowed origins.
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
+                       WindowOpenDocumentWriteSameOriginInScopeHidesOriginBar) {
+  // Install at the server root so that /hung is in scope; see the cross-origin
+  // test above for why the opened URL must never respond.
+  const GURL app_url =
+      embedded_https_test_server().GetURL("app.com", "/simple.html");
+  const GURL in_scope_hung_url =
+      embedded_https_test_server().GetURL("app.com", "/hung");
+
+  InstallPWA(app_url);
+  ASSERT_TRUE(app_browser_);
+
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  content::WebContents* app_contents = app_view->GetActiveWebContents();
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  EXPECT_TRUE(content::ExecJs(
+      app_contents,
+      content::JsReplace(
+          "const w = window.open($1, '', 'popup,width=400,height=400');"
+          "w.document.open();"
+          "w.document.write('<!doctype html><title>In-scope popup</title>');"
+          "w.document.close();",
+          in_scope_hung_url)));
+
+  BrowserWindowInterface* popup_browser = browser_created_observer.Wait();
+  EXPECT_EQ(popup_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_APP_POPUP);
+  BrowserView* popup_view =
+      BrowserView::GetBrowserViewForBrowser(popup_browser);
+  content::WebContents* popup_contents = popup_view->GetActiveWebContents();
+  CustomTabBarView* popup_bar = popup_view->toolbar()->custom_tab_bar();
+  web_app::AppBrowserController* popup_controller =
+      web_app::AppBrowserController::From(popup_browser);
+
+  // Wait for the written document's title to prove document.write() ran, then
+  // verify the navigation was aborted rather than committed.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return popup_contents->GetTitle() == u"In-scope popup"; }));
+  EXPECT_TRUE(popup_contents->GetLastCommittedURL().is_empty());
+  EXPECT_TRUE(popup_contents->GetVisibleURL().is_empty());
+  EXPECT_TRUE(popup_contents->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .IsSameOriginWith(app_url));
+  EXPECT_FALSE(popup_controller->ShouldShowCustomTabBar());
+  EXPECT_FALSE(popup_bar->GetVisible());
 }
