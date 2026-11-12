@@ -8,14 +8,15 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
-#include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/at_exit.h"
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -722,16 +723,18 @@ void UpdaterUtilApp::UnpackCRX() {
 }
 
 void UpdaterUtilApp::FirstTaskRun() {
-  const std::map<std::string, void (UpdaterUtilApp::*)()> commands = {
-      {kListAppsSwitch, &UpdaterUtilApp::ListApps},
-      {kListUpdateSwitch, &UpdaterUtilApp::ListUpdate},
-      {kUpdateSwitch, &UpdaterUtilApp::Update},
-      {kListPoliciesSwitch, &UpdaterUtilApp::ListPolicies},
-      {kListCBCMPoliciesSwitch, &UpdaterUtilApp::ListCBCMPolicies},
-      {kUnpackSwitch, &UpdaterUtilApp::UnpackCRX}};
+  static constexpr auto kCommands =
+      base::MakeFixedFlatMap<std::string_view, void (UpdaterUtilApp::*)()>({
+          {kListAppsSwitch, &UpdaterUtilApp::ListApps},
+          {kListUpdateSwitch, &UpdaterUtilApp::ListUpdate},
+          {kUpdateSwitch, &UpdaterUtilApp::Update},
+          {kListPoliciesSwitch, &UpdaterUtilApp::ListPolicies},
+          {kListCBCMPoliciesSwitch, &UpdaterUtilApp::ListCBCMPolicies},
+          {kUnpackSwitch, &UpdaterUtilApp::UnpackCRX},
+      });
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  for (const auto& [switch_name, func] : commands) {
+  for (const auto& [switch_name, func] : kCommands) {
     if (command_line->HasSwitch(switch_name)) {
       (this->*func)();
       return;
