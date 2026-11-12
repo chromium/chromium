@@ -6,12 +6,10 @@
 #define COMPONENTS_SYNC_PREFERENCES_DUAL_LAYER_USER_PREF_STORE_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -114,7 +112,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // Return the set of active pref types.
-  base::flat_set<syncer::DataType> GetActiveTypesForTest() const;
+  syncer::DataTypeSet GetActiveTypesForTest() const;
 
   bool IsHistorySyncEnabledForTest() const;
   void SetIsHistorySyncEnabledForTest(bool is_history_sync_enabled);
@@ -270,7 +268,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
       read_error_delegate_;
 
   // List of preference types currently syncing.
-  base::flat_set<syncer::DataType> active_types_;
+  syncer::DataTypeSet active_types_;
 
   // Set to true while this store is setting prefs in the underlying stores.
   // Used to avoid self-notifications.

@@ -1117,7 +1117,7 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
   ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "pref-value"));
 
   // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+  ASSERT_FALSE(store()->GetActiveTypesForTest().Has(syncer::PREFERENCES));
 
   // `kPrefName` is read from the account store even if PREFERENCES type is not
   // active.
@@ -1171,7 +1171,7 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
   ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "account_value"));
 
   // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+  ASSERT_FALSE(store()->GetActiveTypesForTest().Has(syncer::PREFERENCES));
 
   // `kPrefName` is set to the account store even if PREFERENCES type is not
   // active since it already exists in the account store.
@@ -1248,7 +1248,7 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
   store()->SetUserSelectedTypesForTest(
       {syncer::UserSelectableType::kPreferences});
   // PREFERENCES type is not active.
-  ASSERT_EQ(0u, store()->GetActiveTypesForTest().count(syncer::PREFERENCES));
+  ASSERT_FALSE(store()->GetActiveTypesForTest().Has(syncer::PREFERENCES));
 
   // `kPrefName` is set in the account store even though PREFERENCES type is not
   // active and the pref does not already exist in the account store.

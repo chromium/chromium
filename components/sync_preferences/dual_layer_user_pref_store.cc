@@ -581,7 +581,7 @@ void DualLayerUserPrefStore::EnableType(syncer::DataType data_type) {
         data_type == syncer::OS_PRIORITY_PREFERENCES
 #endif  // BUILDFLAG(IS_CHROMEOS)
   );
-  active_types_.insert(data_type);
+  active_types_.Put(data_type);
 }
 
 bool DualLayerUserPrefStore::ShouldSetValueInLocalStore(
@@ -625,7 +625,7 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
         data_type == syncer::OS_PRIORITY_PREFERENCES
 #endif  // BUILDFLAG(IS_CHROMEOS)
   );
-  active_types_.erase(data_type);
+  active_types_.Remove(data_type);
 
   if (!pref_model_associator_client_) {
     // No pref is treated as syncable in this case. No need to clear the account
@@ -903,8 +903,7 @@ std::vector<std::string> DualLayerUserPrefStore::GetSyncablePrefNamesInStore(
   return keys;
 }
 
-base::flat_set<syncer::DataType> DualLayerUserPrefStore::GetActiveTypesForTest()
-    const {
+syncer::DataTypeSet DualLayerUserPrefStore::GetActiveTypesForTest() const {
   return active_types_;
 }
 
