@@ -486,15 +486,28 @@ void MediaStreamDispatcherHost::GenerateStreams(
     return;
   }
 
+  // In getDisplayMedia(), `restrictOwnAudio` can only be an ideal value. The
+  // renderer rejects exact and min with a TypeError before this IPC, so the
+  // browser can ignore the value. The renderer and the browser can disagree
+  // about platform support. For example, if the user runs Chrome in Windows 8
+  // compatibility mode on Windows 11, the browser process sees Windows 8 but
+  // the renderer process sees Windows 11. Ignore the value, but do not kill
+  // the renderer. See https://crbug.com/578099459.
+  blink::StreamControls sanitized_controls = controls;
+  if (sanitized_controls.restrict_own_audio &&
+      !media::IsRestrictOwnAudioSupported()) {
+    sanitized_controls.restrict_own_audio = false;
+  }
+
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           &MediaStreamDispatcherHost::GenerateStreamsChecksOnUIThread,
-          render_frame_host_id_, controls.request_all_screens,
+          render_frame_host_id_, sanitized_controls.request_all_screens,
           base::BindOnce(get_salt_and_origin_cb_, render_frame_host_id_),
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &MediaStreamDispatcherHost::DoGenerateStreams,
-              weak_factory_.GetWeakPtr(), page_request_id, controls,
+              weak_factory_.GetWeakPtr(), page_request_id, sanitized_controls,
               user_gesture, std::move(audio_stream_selection_info_ptr),
               std::move(callback)))));
 }
@@ -827,10 +840,6 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
             blink::mojom::PreferredDisplaySurface::MONITOR) {
       return bad_message::MSDH_EXCLUDE_MONITORS_BUT_PREFERRED_MONITOR_REQUESTED;
     }
-  }
-
-  if (controls.restrict_own_audio && !media::IsRestrictOwnAudioSupported()) {
-    return bad_message::MSDH_RESTRICT_OWN_AUDIO_IS_SET_WHEN_UNSUPPORTED;
   }
 
   return std::nullopt;

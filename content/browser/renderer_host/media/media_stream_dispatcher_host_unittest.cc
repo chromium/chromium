@@ -685,19 +685,17 @@ TEST_F(MediaStreamDispatcherHostTest,
   host_->OnGenerateStreams(kPageRequestId, controls);
 }
 
+// The browser ignores `restrict_own_audio` if the platform does not support
+// it. It does not kill the renderer. See https://crbug.com/578099459.
 TEST_F(MediaStreamDispatcherHostTest,
-       BadMessageIfRestrictOwnAudioWhenNotSupported) {
+       NoBadMessageIfRestrictOwnAudioWhenNotSupported) {
   blink::StreamControls controls;
   controls.audio.stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
   controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
   controls.restrict_own_audio = true;
   SetupFakeUI(/*expect_started=*/true);
 
-  EXPECT_CALL(*this,
-              MockOnBadMessage(
-                  main_rfh()->GetGlobalId().child_id,
-                  bad_message::MSDH_RESTRICT_OWN_AUDIO_IS_SET_WHEN_UNSUPPORTED))
-      .Times(media::IsRestrictOwnAudioSupported() ? 0 : 1);
+  EXPECT_CALL(*this, MockOnBadMessage(_, _)).Times(0);
   host_->OnGenerateStreams(kPageRequestId, controls);
 }
 
