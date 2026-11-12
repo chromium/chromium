@@ -15,7 +15,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/optional_util.h"
 #include "gpu/command_buffer/client/dawn_client_memory_transfer_service.h"
 #include "gpu/command_buffer/client/dawn_client_serializer.h"
 #include "gpu/command_buffer/client/gpu_control.h"
@@ -38,10 +37,8 @@ DawnWireServices::DawnWireServices(
     WebGPUImplementation* webgpu_implementation,
     WebGPUCmdHelper* helper,
     MappedMemoryManager* mapped_memory,
-    std::unique_ptr<TransferBuffer> transfer_buffer,
-    bool support_locking)
-    : lock_(support_locking ? std::make_optional<base::Lock>() : std::nullopt),
-      memory_transfer_service_(
+    std::unique_ptr<TransferBuffer> transfer_buffer)
+    : memory_transfer_service_(
           mapped_memory,
           base::FeatureList::IsEnabled(
               features::kWebGPUUseDedicatedTransferBuffer)),
@@ -72,7 +69,7 @@ WGPUInstance DawnWireServices::GetWGPUInstance() const {
 
 void DawnWireServices::Disconnect() {
   {
-    base::AutoLockMaybe lock(OptionalToPtr(lock_));
+    base::AutoLock lock(lock_);
     disconnected_ = true;
   }
   wire_client_.Disconnect();
@@ -86,7 +83,7 @@ void DawnWireServices::HandleCommands(
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnReturnCommands",
               perfetto::TerminatingFlow::Global(trace_id));
 
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
+  base::AutoLock lock(lock_);
   if (disconnected_) {
     return;
   }
@@ -102,29 +99,29 @@ void DawnWireServices::ProcessEvents() {
 dawn::wire::ReservedBuffer DawnWireServices::ReserveBuffer(
     WGPUDevice device,
     const WGPUBufferDescriptor* desc) {
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
+  base::AutoLock lock(lock_);
   return wire_client_.ReserveBuffer(device, desc);
 }
 
 dawn::wire::ReservedTexture DawnWireServices::ReserveTexture(
     WGPUDevice device,
     const WGPUTextureDescriptor* desc) {
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
+  base::AutoLock lock(lock_);
   return wire_client_.ReserveTexture(device, desc);
 }
 
 void DawnWireServices::Commit() {
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
+  base::AutoLock lock(lock_);
   serializer_.Commit();
 }
 
 void DawnWireServices::SetAwaitingFlush(bool awaiting_flush) {
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
+  base::AutoLock lock(lock_);
   serializer_.SetAwaitingFlush(awaiting_flush);
 }
 
 bool DawnWireServices::EnsureAwaitingFlush() {
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
+  base::AutoLock lock(lock_);
   // If there is already a flush waiting, we don't need to flush.
   // We only want to ask for a flush on state transition from
   // false -> true.
@@ -138,7 +135,7 @@ bool DawnWireServices::EnsureAwaitingFlush() {
 }
 
 void DawnWireServices::FreeMappedResources(WebGPUCmdHelper* helper) {
-  base::AutoLockMaybe lock(OptionalToPtr(lock_));
+  base::AutoLock lock(lock_);
   memory_transfer_service_.FreeHandles(helper);
 }
 #endif
@@ -151,8 +148,7 @@ void DawnWireServices::FreeMappedResources(WebGPUCmdHelper* helper) {
 WebGPUImplementation::WebGPUImplementation(
     WebGPUCmdHelper* helper,
     TransferBufferInterface* transfer_buffer,
-    GpuControl* gpu_control,
-    bool support_locking)
+    GpuControl* gpu_control)
     : ImplementationBase(helper, transfer_buffer, gpu_control),
       helper_(helper),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
@@ -208,8 +204,7 @@ gpu::ContextResult WebGPUImplementation::Initialize(
 
 #if BUILDFLAG(USE_DAWN)
   dawn_wire_ = base::MakeRefCounted<DawnWireServices>(
-      this, helper_, mapped_memory_.get(), std::move(transfer_buffer),
-      main_task_runner_ != nullptr);
+      this, helper_, mapped_memory_.get(), std::move(transfer_buffer));
 #endif
 
   return gpu::ContextResult::kSuccess;
