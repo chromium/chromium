@@ -149,6 +149,11 @@ bool IsCreditCardFormForSignaturePurposes(
          DenseSet<FormType>{FormType::kCreditCardForm};
 }
 
+bool IsPrimaryMainFrame(AutofillDriver& driver) {
+  return driver.IsActive() && driver.GetParent() == nullptr &&
+         !driver.IsEmbedded();
+}
+
 }  // namespace
 
 // Form parsing happens asynchronously. This struct holds the necessary context.
@@ -210,7 +215,7 @@ void AutofillManager::OnLanguageDetermined(
     return;
   }
   if (details.adopted_language == language_detection::kUnknownLanguageCode ||
-      !driver_->IsActive() || driver_->GetParent() || driver_->IsEmbedded()) {
+      !IsPrimaryMainFrame(driver())) {
     // OnLanguageDetermined() is fired on all frames. To avoid redundant
     // reextraction, we extract only on the primary main frame.
     return;
@@ -1180,9 +1185,7 @@ void AutofillManager::MaybeLoadCustomFormControlScript() {
   // `AutofillManager`, an iframe's `AutofillManager` can still receive
   // `OnFormsSeen()` if the parent frame's form hasn't been extracted into
   // `FormForest` yet.
-  bool is_primary_main_frame = driver().GetParent() == nullptr &&
-                               !driver().IsEmbedded() && driver().IsActive();
-  if (!is_primary_main_frame) {
+  if (!IsPrimaryMainFrame(driver())) {
     return;
   }
   const CustomFormControlScriptIndex* index =
