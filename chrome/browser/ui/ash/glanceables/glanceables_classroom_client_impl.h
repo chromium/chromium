@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/common/api_error_codes.h"
@@ -27,6 +26,10 @@
 
 class PolicyBlocklistService;
 class PrefService;
+
+namespace apps {
+class AppRegistryCache;
+}  // namespace apps
 
 namespace base {
 class Clock;
@@ -59,9 +62,11 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const GlanceablesClassroomCourseWorkItem* lhs,
       const GlanceablesClassroomCourseWorkItem* rhs)>;
 
+  // `app_registry_cache` is null if the AppService is not available for the
+  // user. Otherwise it must outlive `this`.
   GlanceablesClassroomClientImpl(
       PrefService* pref_service,
-      apps::AppServiceProxy* app_service_proxy,
+      apps::AppRegistryCache* app_registry_cache,
       PolicyBlocklistService* policy_blocklist_service,
       base::Clock* clock,
       const CreateRequestSenderCallback& create_request_sender_callback);
@@ -396,7 +401,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   google_apis::RequestSender* GetRequestSender();
 
   const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ptr<apps::AppRegistryCache> app_registry_cache_;
   const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
   // Clock to be used to retrieve current time - expected to be default clock in

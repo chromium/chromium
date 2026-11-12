@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -85,15 +86,16 @@ std::unique_ptr<KeyedService>
 GlanceablesKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  apps::AppServiceProxy* app_service_proxy =
+  apps::AppRegistryCache* app_registry_cache =
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
-          ? apps::AppServiceProxyFactory::GetForProfile(profile)
+          ? &apps::AppServiceProxyFactory::GetForProfile(profile)
+                 ->AppRegistryCache()
           : nullptr;
   return std::make_unique<GlanceablesKeyedService>(
       BrowserContextHelper::Get()
           ->GetUserByBrowserContext(profile)
           ->GetAccountId(),
-      profile->GetPrefs(), app_service_proxy,
+      profile->GetPrefs(), app_registry_cache,
       AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       profile->GetURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));

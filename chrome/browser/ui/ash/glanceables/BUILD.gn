@@ -31,6 +31,7 @@ static_library("glanceables") {
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/prefs",
+    "//components/services/app_service",
     "//content/public/browser",
     "//google_apis/classroom",
     "//google_apis/common",

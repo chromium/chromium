@@ -15,7 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.h"
 #include "components/account_id/account_id.h"
@@ -72,7 +71,7 @@ constexpr net::NetworkTrafficAnnotationTag kTasksTrafficAnnotation =
 GlanceablesKeyedService::GlanceablesKeyedService(
     const AccountId& account_id,
     PrefService* pref_service,
-    apps::AppServiceProxy* app_service_proxy,
+    apps::AppRegistryCache* app_registry_cache,
     PolicyBlocklistService* policy_blocklist_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
@@ -83,13 +82,11 @@ GlanceablesKeyedService::GlanceablesKeyedService(
       &GlanceablesKeyedService::CreateRequestSenderForClient,
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
-      pref_service, app_service_proxy, policy_blocklist_service,
+      pref_service, app_registry_cache, policy_blocklist_service,
       base::DefaultClock::GetInstance(), create_request_sender_callback);
   tasks_client_ = std::make_unique<api::TasksClientImpl>(
-      pref_service,
-      (app_service_proxy ? &app_service_proxy->AppRegistryCache() : nullptr),
-      policy_blocklist_service, create_request_sender_callback,
-      kTasksTrafficAnnotation);
+      pref_service, app_registry_cache, policy_blocklist_service,
+      create_request_sender_callback, kTasksTrafficAnnotation);
 
   if (Shell::HasInstance() && Shell::Get()->glanceables_controller()) {
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(

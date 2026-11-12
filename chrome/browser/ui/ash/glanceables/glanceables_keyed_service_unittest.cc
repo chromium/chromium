@@ -9,6 +9,7 @@
 
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -31,7 +32,8 @@ std::unique_ptr<GlanceablesKeyedService> BuildService(Profile* profile) {
       BrowserContextHelper::Get()
           ->GetUserByBrowserContext(profile)
           ->GetAccountId(),
-      profile->GetPrefs(), apps::AppServiceProxyFactory::GetForProfile(profile),
+      profile->GetPrefs(),
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache(),
       AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       profile->GetURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile));

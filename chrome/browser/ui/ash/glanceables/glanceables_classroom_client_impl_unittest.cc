@@ -149,7 +149,8 @@ class GlanceablesClassroomClientImplIsDisabledByAdminTest
       Profile* profile) const {
     return GlanceablesClassroomClientImpl(
         profile->GetPrefs(),
-        apps::AppServiceProxyFactory::GetForProfile(profile),
+        &apps::AppServiceProxyFactory::GetForProfile(profile)
+             ->AppRegistryCache(),
         AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         base::DefaultClock::GetInstance(),
         base::BindLambdaForTesting(
@@ -237,7 +238,8 @@ class GlanceablesClassroomClientImplTest : public testing::Test {
         /*testing_factories=*/{}, url_loader_factory_);
     client_ = std::make_unique<GlanceablesClassroomClientImpl>(
         profile->GetPrefs(),
-        apps::AppServiceProxyFactory::GetForProfile(profile),
+        &apps::AppServiceProxyFactory::GetForProfile(profile)
+             ->AppRegistryCache(),
         AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         &test_clock_, create_request_sender_callback);
 

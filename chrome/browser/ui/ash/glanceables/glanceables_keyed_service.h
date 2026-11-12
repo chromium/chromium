@@ -10,13 +10,16 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class PolicyBlocklistService;
 class PrefService;
+
+namespace apps {
+class AppRegistryCache;
+}  // namespace apps
 
 namespace google_apis {
 class RequestSender;
@@ -50,11 +53,13 @@ class GlanceablesClassroomClientImpl;
 // support is needed.
 class GlanceablesKeyedService : public KeyedService {
  public:
+  // `app_registry_cache` is null if the AppService is not available for the
+  // user. Otherwise it must outlive `this`.
   // LINT.IfChange(Deps)
   GlanceablesKeyedService(
       const AccountId& account_id,
       PrefService* pref_service,
-      apps::AppServiceProxy* app_service_proxy,
+      apps::AppRegistryCache* app_registry_cache,
       PolicyBlocklistService* policy_blocklist_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager);
