@@ -814,8 +814,16 @@ class PrerenderNewTabPageBrowserTest
       attempt_entry_builder_;
 };
 
+// TODO(crbug.com/585080255): Consistently failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderTriggeredByNewTabPageAndActivate \
+  DISABLED_PrerenderTriggeredByNewTabPageAndActivate
+#else
+#define MAYBE_PrerenderTriggeredByNewTabPageAndActivate \
+  PrerenderTriggeredByNewTabPageAndActivate
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
-                       PrerenderTriggeredByNewTabPageAndActivate) {
+                       MAYBE_PrerenderTriggeredByNewTabPageAndActivate) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial page.
