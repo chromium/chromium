@@ -55,9 +55,6 @@ migrating Chromium Android instrumentation tests (`javatests`) to
   `AutoResetCtaTransitTestRule`. Replace calls with
   `mActivityTestRule.startOnWebPage(mTestServer.getURL(url))` or
   `mActivityTestRule.startOnWebPage(url)`.
-- **FreshCta-Specific Methods**: Methods like `skipWindowAndTabStateCleanup()`
-  in `tearDown()` are specific to `FreshCtaTransitTestRule`. Keep
-  `FreshCtaTransitTestRule` if such cleanup overrides are required.
 
 ______________________________________________________________________
 
