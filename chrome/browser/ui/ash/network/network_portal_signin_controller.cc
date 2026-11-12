@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/network/network_portal_web_contents_observer.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
@@ -29,6 +30,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
@@ -80,8 +82,15 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
   ~SigninWebDialogDelegate() override = default;
 
   void OnLoadingStateChanged(content::WebContents* source) override {
-    NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
+    if (!web_contents_observer_ ||
+        web_contents_observer_->web_contents() != source) {
+      web_contents_observer_ =
+          std::make_unique<NetworkPortalWebContentsObserver>(source);
+    }
   }
+
+ private:
+  std::unique_ptr<NetworkPortalWebContentsObserver> web_contents_observer_;
 };
 
 }  // namespace
@@ -117,16 +126,17 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
   if (!default_network) {
     // If no network is connected, do not attempt to show the signin page.
-    NET_LOG(EVENT) << "Show signin mode from: " << source << ": No network.";
+    NET_LOG(EVENT) << NetworkIdWithSession(default_network) << " " << __func__
+                   << ": Show signin mode from: " << source << ": No network.";
     return;
   }
   auto portal_state = default_network->portal_state();
   if (portal_state != NetworkState::PortalState::kPortal &&
       portal_state != NetworkState::PortalState::kPortalSuspected) {
     // If no portal signin is required, do not attempt to show the signin page.
-    NET_LOG(EVENT) << "Show signin mode from: " << source << ": Network '"
-                   << NetworkId(default_network)
-                   << "' is in a non portal state: " << portal_state;
+    NET_LOG(EVENT) << NetworkIdWithSession(default_network) << " " << __func__
+                   << ": Show signin mode from: " << source
+                   << ": Network is in a non portal state: " << portal_state;
     return;
   }
 
@@ -136,7 +146,8 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
   }
 
   SigninMode mode = GetSigninMode(portal_state);
-  NET_LOG(EVENT) << "Show signin mode: " << mode << " from: " << source;
+  NET_LOG(EVENT) << NetworkIdWithSession(default_network) << " " << __func__
+                 << ": Show signin mode: " << mode << " from: " << source;
   base::UmaHistogramEnumeration("Network.NetworkPortalSigninMode", mode);
   base::UmaHistogramEnumeration("Network.NetworkPortalSigninSource", source);
 
@@ -235,6 +246,7 @@ void NetworkPortalSigninController::CloseSignin() {
   if (dialog_widget_) {
     dialog_widget_->Close();
   }
+  tab_observer_.reset();
 }
 
 bool NetworkPortalSigninController::DialogIsShown() {
@@ -278,16 +290,20 @@ void NetworkPortalSigninController::PortalStateChanged(
     dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
 
-  // If signin is using a browser window, the user may still be using the window
-  // so we don't try to close it.
+  // If signin is using a browser window or tab, the user may still be using it
+  // so we don't try to close it, but stop observing captive portal tab
+  // navigations once signin completes or the network changes.
+  tab_observer_.reset();
 }
 
 void NetworkPortalSigninController::OnShuttingDown() {
+  tab_observer_.reset();
   network_state_handler_observation_.Reset();
 }
 
 void NetworkPortalSigninController::ShowSigninDialog(const GURL& url) {
   if (dialog_widget_) {
+    NET_LOG(EVENT) << DefaultNetworkIdWithSession() << " " << __func__;
     dialog_widget_->Show();
     return;
   }
@@ -300,6 +316,7 @@ void NetworkPortalSigninController::ShowSigninDialog(const GURL& url) {
       chrome::ShowWebDialog(nullptr, ProfileHelper::GetSigninProfile(),
                             web_dialog_delegate.release(), /*show=*/true,
                             captive_portal::CaptivePortalWindowType::kPopup));
+  NET_LOG(EVENT) << DefaultNetworkIdWithSession() << " " << __func__;
   dialog_widget_observation_.Observe(dialog_widget_.get());
 }
 
@@ -311,16 +328,22 @@ void NetworkPortalSigninController::ShowSigninWindow(const GURL& url) {
 void NetworkPortalSigninController::ShowTab(const GURL& url) {
   const auto& session =
       CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
-  BrowserController::GetInstance()->OpenCaptivePortalSignin(
-      session.account_id(), url,
-      BrowserController::CaptivePortalWindowMode::kTab);
+  content::WebContents* contents =
+      BrowserController::GetInstance()->OpenCaptivePortalSignin(
+          session.account_id(), url,
+          BrowserController::CaptivePortalWindowMode::kTab);
+  if (!contents) {
+    NET_LOG(ERROR) << DefaultNetworkIdWithSession() << " " << __func__
+                   << ": Failed to navigate to captive portal url: " << url;
+    tab_observer_.reset();
+    return;
+  }
+  NET_LOG(EVENT) << DefaultNetworkIdWithSession() << " " << __func__;
+  tab_observer_ = std::make_unique<NetworkPortalWebContentsObserver>(contents);
 }
 
 void NetworkPortalSigninController::ShowActiveProfileTab(const GURL& url) {
-  // Opens a new tab the appropriate browser.
-  ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-      NewWindowDelegate::Disposition::kNewForegroundTab);
+  ShowTab(url);
 }
 
 std::ostream& operator<<(

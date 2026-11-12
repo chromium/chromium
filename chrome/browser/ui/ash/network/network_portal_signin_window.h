@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/ash/network/network_portal_web_contents_observer.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace ash {
 
@@ -37,7 +38,9 @@ class NetworkPortalSigninWindow {
   content::WebContents* GetWebContentsForTesting();
 
   int portal_detection_requested_for_testing() const {
-    return portal_detection_requested_for_testing_;
+    return window_observer_
+               ? window_observer_->portal_detection_requested_for_testing()
+               : 0;
   }
 
  protected:
@@ -46,13 +49,10 @@ class NetworkPortalSigninWindow {
   NetworkPortalSigninWindow();
 
  private:
-  class WindowObserver;
-
   BrowserDelegate* GetBrowser();
 
   SessionID window_session_id_{SessionID::InvalidValue()};
-  std::unique_ptr<WindowObserver> window_observer_;
-  int portal_detection_requested_for_testing_ = 0;
+  std::unique_ptr<NetworkPortalWebContentsObserver> window_observer_;
 };
 
 }  // namespace ash

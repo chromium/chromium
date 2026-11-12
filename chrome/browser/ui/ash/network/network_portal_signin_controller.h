@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/ash/network/network_portal_web_contents_observer.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/prefs/pref_service.h"
@@ -124,6 +127,7 @@ class NetworkPortalSigninController : public views::WidgetObserver,
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       dialog_widget_observation_{this};
+  std::unique_ptr<NetworkPortalWebContentsObserver> tab_observer_;
   NetworkStateHandlerScopedObservation network_state_handler_observation_{this};
   std::string signin_network_guid_;
   base::TimeTicks signin_start_time_;

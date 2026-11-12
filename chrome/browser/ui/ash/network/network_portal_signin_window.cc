@@ -6,47 +6,18 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/ash/network/network_portal_web_contents_observer.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sessions/core/session_id.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/page_transition_types.h"
 
 namespace ash {
-
-class NetworkPortalSigninWindow::WindowObserver
-    : public content::WebContentsObserver {
- public:
-  WindowObserver(content::WebContents* web_contents,
-                 NetworkPortalSigninWindow* controller)
-      : content::WebContentsObserver(web_contents), controller_(controller) {}
-  ~WindowObserver() override = default;
-
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    RequestPortalDetection();
-  }
-
-  void WebContentsDestroyed() override { RequestPortalDetection(); }
-
- private:
-  void RequestPortalDetection() {
-    NET_LOG(EVENT) << "Request portal detection";
-    controller_->portal_detection_requested_for_testing_++;
-    NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
-  }
-
- private:
-  raw_ptr<NetworkPortalSigninWindow> controller_;
-};
 
 // static
 NetworkPortalSigninWindow* NetworkPortalSigninWindow::Get() {
@@ -60,13 +31,12 @@ NetworkPortalSigninWindow::~NetworkPortalSigninWindow() = default;
 
 void NetworkPortalSigninWindow::Show(const GURL& url) {
   if (BrowserDelegate* browser = GetBrowser()) {
-    NET_LOG(EVENT) << "Show existing portal signin window";
+    NET_LOG(EVENT) << DefaultNetworkIdWithSession() << " " << __func__;
     browser->LoadUrl(url, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                      {.show_window = true});
     return;
   }
 
-  NET_LOG(EVENT) << "Show new portal signin window";
   const auto& session =
       CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
   content::WebContents* contents =
@@ -74,14 +44,18 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
           session.account_id(), url,
           BrowserController::CaptivePortalWindowMode::kPopup);
   if (!contents) {
-    NET_LOG(ERROR) << "Failed to navigate to captive portal url: " << url;
+    NET_LOG(ERROR) << DefaultNetworkIdWithSession() << " " << __func__
+                   << ": Failed to navigate to captive portal url: " << url;
     window_session_id_ = SessionID::InvalidValue();
+    window_observer_.reset();
     return;
   }
+  NET_LOG(EVENT) << DefaultNetworkIdWithSession() << " " << __func__;
   window_session_id_ =
       CHECK_DEREF(BrowserController::GetInstance()->GetBrowserForTab(contents))
           .GetSessionID();
-  window_observer_ = std::make_unique<WindowObserver>(contents, this);
+  window_observer_ =
+      std::make_unique<NetworkPortalWebContentsObserver>(contents);
 }
 
 BrowserDelegate* NetworkPortalSigninWindow::GetBrowser() {
