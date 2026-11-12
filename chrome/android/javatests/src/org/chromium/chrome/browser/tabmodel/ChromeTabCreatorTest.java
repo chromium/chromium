@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
@@ -333,16 +334,11 @@ public class ChromeTabCreatorTest {
         assertFalse(bgTab.isLoading());
 
         // Switch tabs and verify that the tab is loaded as it gets foregrounded.
-        Runnable loadPage =
-                () -> {
-                    ThreadUtils.runOnUiThreadBlocking(
-                            () -> {
-                                TabModelUtils.setIndex(
-                                        mActivityTestRule.getActivity().getCurrentTabModel(),
-                                        indexOf(bgTab));
-                            });
-                };
-        ChromeTabUtils.waitForTabPageLoaded(bgTab, targetUrl, loadPage);
+        mPage =
+                mPage.selectTabFast(
+                        bgTab,
+                        () -> WebPageStation.newBuilder().withExpectedUrlSubstring(targetUrl));
+        assertSame(bgTab, mPage.getTab());
         assertNotNull(bgTab.getView());
 
         // Title should change when the page loads.

@@ -27,19 +27,19 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -134,14 +134,10 @@ public final class ServiceTabLauncherTest {
     }
 
     private void waitForTabLoaded(ChromeTabbedActivity activity, String url) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(activity.getActivityTab(), Matchers.notNullValue());
-                },
-                CHROME_LAUNCH_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
-        ChromeTabUtils.waitForTabPageLoaded(tab, url);
+        // The activity was just launched, so its tab may not exist yet.
+        Triggers.noopTo()
+                .withTimeout(CHROME_LAUNCH_TIMEOUT_MS)
+                .hopOnTo(activity, WebPageStation.newBuilder().initForEntryPointUrl(url).build());
     }
 
     /**

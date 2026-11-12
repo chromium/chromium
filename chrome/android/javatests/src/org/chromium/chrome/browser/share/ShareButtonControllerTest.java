@@ -31,9 +31,9 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredicto
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -86,9 +86,8 @@ public final class ShareButtonControllerTest {
     @Test
     @MediumTest
     public void testShareButtonInToolbarIsDisabledOnStartNTP() {
-        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
-        ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivityTab(), getOriginalNativeNtpUrl());
+        mInitialPage.loadPageProgrammatically(
+                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newNativeNtpBuilder());
 
         View experimentalButton =
                 BottomBarTestUtils.findOptionalButton(mActivityTestRule.getActivity());

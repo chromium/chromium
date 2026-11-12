@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
@@ -60,7 +62,6 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.signin.SignedOutAccountMenuFacility;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.SettingsTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -657,12 +658,15 @@ public class SigninButtonCoordinatorTest {
         onView(withId(R.id.signin_button)).perform(click());
 
         ViewUtils.waitForVisibleView(withId(R.id.account_menu_container));
-        ViewUtils.waitForVisibleView(withId(R.id.account_menu_managed_header));
 
-        onView(withId(R.id.account_menu_managed_header)).perform(click());
-
-        ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivityTab(), UrlConstants.MANAGEMENT_URL);
+        // The management page opens in a new tab.
+        waitForView(withId(R.id.account_menu_managed_header))
+                .clickTo()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .initOpeningNewTab()
+                                .withExpectedUrlSubstring(UrlConstants.MANAGEMENT_URL)
+                                .build());
     }
 
     @Test

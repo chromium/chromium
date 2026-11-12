@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -86,7 +85,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.SettingsTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -142,7 +140,6 @@ public class IdentityDiscControllerTest {
                     .build();
 
     private RegularNewTabPageStation mPage;
-    private Tab mTab;
     private ChromeTabbedActivity mActivity;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private String mFallbackAccountName;
@@ -177,7 +174,6 @@ public class IdentityDiscControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mProfileSupplier = ObservableSuppliers.createMonotonic());
         mPage = mActivityTestRule.startOnNtp();
-        mTab = mPage.getTab();
         mActivity = mPage.getActivity();
         assertNotNull(mActivity);
         mActivityTestRule.getActivityTestRule().setActivity(mActivity);
@@ -208,9 +204,6 @@ public class IdentityDiscControllerTest {
         // NewTabPageCoordinator, which removes the pending callback.
         if (mActivity != null && !mActivity.isActivityFinishingOrDestroyed()) {
             mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-            ChromeTabUtils.waitForTabPageLoaded(
-                    mActivityTestRule.getActivityTab(),
-                    ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -819,8 +812,7 @@ public class IdentityDiscControllerTest {
     }
 
     private void leaveNtp() {
-        mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        ChromeTabUtils.waitForTabPageLoaded(mTab, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        mPage.loadAboutBlank();
     }
 
     private AccountInfo addAndSigninAccountWithNonDisplayableEmail() {
