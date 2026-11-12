@@ -46,8 +46,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   ~Canvas2DResourceProvider() override;
 
-  bool IsSingleBuffered() const;
-
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
 
   void SetResourceRecyclingEnabled(bool value);

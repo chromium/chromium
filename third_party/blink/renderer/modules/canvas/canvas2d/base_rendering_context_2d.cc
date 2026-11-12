@@ -237,7 +237,9 @@ void BaseRenderingContext2D::SetResourceRecyclingEnabled(bool value) {
 }
 
 bool BaseRenderingContext2D::IsSingleBuffered() const {
-  return shared_image_provider_ && shared_image_provider_->IsSingleBuffered();
+  return shared_image_provider_ &&
+         shared_image_provider_->image_pool_->GetImageInfo().usage.Has(
+             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
 }
 
 int BaseRenderingContext2D::NumInflightResourcesForTesting() const {
@@ -859,7 +861,7 @@ bool BaseRenderingContext2D::ShouldReplaceTargetBuffer() {
   // are allowed. Note that we ignore the resource lost case as well since
   // that only indicates that we did not get a sync token for read/write
   // synchronization which is not a requirement for single buffered canvas.
-  if (shared_image_provider_->IsSingleBuffered()) {
+  if (IsSingleBuffered()) {
     return false;
   }
 
@@ -925,8 +927,7 @@ void BaseRenderingContext2D::EnsureWriteAccess() {
   DCHECK(resource_);
   // In software mode, we don't need write access to the resource during
   // drawing since it is executed on CPU memory managed by Skia.
-  DCHECK(resource_->HasOneRef() || shared_image_provider_->IsSingleBuffered() ||
-         !is_accelerated_)
+  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || !is_accelerated_)
       << "Write access requires exclusive access to the resource";
   DCHECK(!resource_->is_cross_thread())
       << "Write access is only allowed on the owning thread";
