@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.reader_mode.ReaderModeBottomSheetManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -482,6 +483,19 @@ public class TabbedRootUiCoordinatorUnitTest {
         mCoordinator = createCoordinator(/* bottomBarHostManager= */ null);
 
         assertNull(mCoordinator.getActionRegistryForTesting());
+    }
+
+    @Test
+    public void testInitReaderModeBottomSheetManager_usesTopUiThemeColorProvider() {
+        mCoordinator.onPreInflationStartup();
+
+        ReaderModeBottomSheetManager readerModeBottomSheetManager =
+                mCoordinator.initReaderModeBottomSheetManagerForTesting();
+
+        assertNotNull(readerModeBottomSheetManager);
+        assertSame(
+                mCoordinator.getTopUiThemeColorProvider(),
+                readerModeBottomSheetManager.getThemeColorProviderForTesting());
     }
 
     private AtomicInteger attachLoadingStub() {
