@@ -31,10 +31,12 @@
 #include "base/test/test_future.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
+#include "components/autofill/content/browser/integrators/custom_form_controls/mock_custom_form_control_agent.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_router.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -79,9 +81,11 @@ namespace {
 
 using ::autofill::test::LazyRef;
 using ::autofill::test::SaveArgPtr;
+using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -377,12 +381,20 @@ class ContentAutofillDriverWithFakeAutofillAgent
         mojom::AutofillAgent::Name_,
         base::BindRepeating(&FakeAutofillAgent::BindPendingReceiver,
                             base::Unretained(&agent_)));
+    remote_interfaces->OverrideBinderForTesting(
+        mojom::CustomFormControlAgent::Name_,
+        base::BindRepeating(&MockCustomFormControlAgent::BindPendingReceiver,
+                            base::Unretained(&custom_form_control_agent_)));
   }
 
   FakeAutofillAgent& agent() { return agent_; }
+  MockCustomFormControlAgent& custom_form_control_agent() {
+    return custom_form_control_agent_;
+  }
 
  private:
   FakeAutofillAgent agent_;
+  MockCustomFormControlAgent custom_form_control_agent_;
 };
 
 // RAII type that intercepts mojom::ReportBadMessage() calls.
@@ -431,6 +443,12 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 
   FakeAutofillAgent& agent(content::RenderFrameHost* rfh = nullptr) {
     return autofill_driver_injector_[rfh ? rfh : main_frame()]->agent();
+  }
+
+  MockCustomFormControlAgent& custom_form_control_agent(
+      content::RenderFrameHost* rfh = nullptr) {
+    return autofill_driver_injector_[rfh ? rfh : main_frame()]
+        ->custom_form_control_agent();
   }
 
   MockBrowserAutofillManager& manager(content::RenderFrameHost* rfh = nullptr) {
@@ -1017,6 +1035,18 @@ TEST_F(ContentAutofillDriverTest, ExtractLabeledTextNodeValue_Success) {
 
   // Verify that the correct result is captured.
   EXPECT_EQ(captured_result_for_test.Get<std::string>(), "$1,234.56");
+}
+
+// Tests that `LoadCustomFormControlScript()` forwards the script to the main
+// frame's `CustomFormControlAgent`.
+TEST_F(ContentAutofillDriverTest, LoadCustomFormControlScript) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(custom_form_control_agent(main_frame()),
+              LoadUnsafeScript(main_frame()->GetDocumentToken(), "script1", _))
+      .WillOnce(
+          DoAll(RunClosure(run_loop.QuitClosure()), RunOnceCallback<2>(true)));
+  driver(main_frame()).browser_events().LoadCustomFormControlScript("script1");
+  run_loop.Run();
 }
 
 class MockAutofillVisibilityObserver

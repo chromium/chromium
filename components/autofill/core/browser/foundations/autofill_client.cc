@@ -589,4 +589,9 @@ bool AutofillClient::IsAutofillTypeBlockedByPolicy(
   return false;
 }
 
+const CustomFormControlScriptIndex*
+AutofillClient::GetCustomFormControlScriptIndex() const {
+  return nullptr;
+}
+
 }  // namespace autofill

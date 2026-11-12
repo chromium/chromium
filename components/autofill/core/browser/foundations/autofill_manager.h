@@ -659,6 +659,11 @@ class AutofillManager
   std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
+  // Loads the custom form control script for the current document if this is
+  // the primary main frame and a script has not yet been attempted to be loaded
+  // since the last `Reset()`.
+  void MaybeLoadCustomFormControlScript();
+
   // Provides driver-level context to the shared code of the component.
   // `*driver_` owns this object.
   const raw_ref<AutofillDriver> driver_;
@@ -670,6 +675,10 @@ class AutofillManager
 
   // Our copy of the form data.
   std::map<FormGlobalId, std::unique_ptr<FormStructure>> form_structures_;
+
+  // Whether `OnFormsSeen()` has already attempted to load a custom form control
+  // script since the last `Reset()`.
+  bool attempted_loading_custom_form_control_script_ = false;
 
   // Observers that listen to updates of this instance.
   base::ObserverList<Observer> observers_;

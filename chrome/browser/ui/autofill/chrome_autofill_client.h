@@ -90,6 +90,7 @@ class TouchToFillAutofillController;
 class ActorAutofillManager;
 class AutofillAiPersonalContextAccessManager;
 class AutofillOptimizationGuideDecider;
+class CustomFormControlScriptIndex;
 class CustomFormControlScriptRunner;
 class EmailVerificationController;
 class EmailVerifierDelegate;
@@ -258,6 +259,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
   bool IsWalletPublicPassStorageEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
   bool UsesPlatformAutofill() const final;
+  const CustomFormControlScriptIndex* GetCustomFormControlScriptIndex()
+      const final;
   bool IsContextSecure() const final;
   LogManager* GetCurrentLogManager() final;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()

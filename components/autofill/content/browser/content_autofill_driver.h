@@ -289,6 +289,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Group (1d): browser -> renderer events, unrouted (see comment above).
   // autofill::AutofillDriver:
+  void LoadCustomFormControlScript(const std::string& script) override;
   void TriggerFormExtractionInDriverFrame(
       AutofillDriverRouterAndFormForestPassKey pass_key,
       bool force) override;

@@ -495,6 +495,10 @@ void AutofillDriverIOS::ExtractLabeledTextNodeValue(
   NOTIMPLEMENTED();
 }
 
+void AutofillDriverIOS::LoadCustomFormControlScript(const std::string& script) {
+  NOTIMPLEMENTED();
+}
+
 void AutofillDriverIOS::RendererShouldClearPreviewedForm() {}
 
 void AutofillDriverIOS::RendererShouldTriggerSuggestions(

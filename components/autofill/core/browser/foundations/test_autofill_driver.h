@@ -134,6 +134,7 @@ class TestAutofillDriverTemplate : public T {
                                   const std::string& email,
                                   const std::string& token) override {}
   void ScrollFieldIntoView(FieldGlobalId field_id) override {}
+  void LoadCustomFormControlScript(const std::string& script) override {}
   bool IsSafeToFill(const FormFieldData& field,
                     FieldType filled_type,
                     const url::Origin& main_origin,

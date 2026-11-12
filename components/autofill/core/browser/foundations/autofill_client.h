@@ -143,6 +143,7 @@ class AutofillSnackbarControllerImpl;
 #endif  // BUILDFLAG(IS_ANDROID)
 class AutofillSuggestionDelegate;
 enum class AutofillTriggerSource;
+class CustomFormControlScriptIndex;
 class IdentityCredentialDelegate;
 class EntityDataManager;
 class FieldClassificationModelHandler;
@@ -1106,6 +1107,10 @@ class AutofillClient {
   // Returns whether the client uses platform-native autofill rather than
   // Chrome's built-in autofill UI/logic.
   virtual bool UsesPlatformAutofill() const = 0;
+
+  // Returns the process-wide `CustomFormControlScriptIndex`, if available.
+  virtual const CustomFormControlScriptIndex* GetCustomFormControlScriptIndex()
+      const;
 };
 
 }  // namespace autofill

@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
@@ -880,6 +881,15 @@ class TestAutofillClientTemplate : public T {
     return otp_coordinator_.get();
   }
 
+  CustomFormControlScriptIndex* GetCustomFormControlScriptIndex() {
+    return &custom_form_control_script_index_;
+  }
+
+  const CustomFormControlScriptIndex* GetCustomFormControlScriptIndex()
+      const override {
+    return &custom_form_control_script_index_;
+  }
+
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   // Lazily initialized: `IdentityTestEnvironment` has platform-specific test
@@ -1029,6 +1039,7 @@ class TestAutofillClientTemplate : public T {
 
   raw_ptr<affiliations::AffiliationService> affiliation_service_ = nullptr;
   std::unique_ptr<OtpCoordinator> otp_coordinator_;
+  CustomFormControlScriptIndex custom_form_control_script_index_;
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };

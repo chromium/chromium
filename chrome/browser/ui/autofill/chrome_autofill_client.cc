@@ -133,6 +133,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_coordinator.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
@@ -255,7 +256,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"  // nogncheck
-#include "components/autofill/core/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1414,16 +1414,15 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
         this, HistoryServiceFactory::GetForProfile(
                   GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   }
-#if !BUILDFLAG(IS_ANDROID)
-  // The index only exists if `features::kAutofillCustomFormControlScripts` is
-  // enabled and a script directory is set.
+  // When AutofillCustomFormControlExtraction is enabled,
+  // `AutofillManager::OnFormsSeen()` loads the script instead.
   if (const CustomFormControlScriptIndex* index =
-          g_browser_process->GetFeatures()
-              ->custom_form_control_script_index()) {
+          GetCustomFormControlScriptIndex();
+      index && !base::FeatureList::IsEnabled(
+                   features::kAutofillCustomFormControlExtraction)) {
     custom_form_control_script_runner_ =
         std::make_unique<CustomFormControlScriptRunner>(*this, index);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     autofill_ai_save_update_entity_flow_manager_ =
@@ -2015,6 +2014,15 @@ bool ChromeAutofillClient::IsGlicConsented() const {
   return glic::GlicEnabling::HasConsentedForProfile(GetProfile()) &&
          glic::GetGlicProviderSpec(GetProfile())
              .SupportsFeature(glic::GlicFeature::kAutofill);
+}
+
+const CustomFormControlScriptIndex*
+ChromeAutofillClient::GetCustomFormControlScriptIndex() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return g_browser_process->GetFeatures()->custom_form_control_script_index();
+#else
+  return nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace autofill
