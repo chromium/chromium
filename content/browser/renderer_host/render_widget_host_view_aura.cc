@@ -467,8 +467,8 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
     InputScope last_input_scope =
         host->window()->GetProperty(kLastInputScopeKey);
     if (last_input_scope != input_scope) {
-      ui::tsf_inputscope::SetInputScope(GetHostWindowHWND(), input_scope);
       host->window()->SetProperty(kLastInputScopeKey, input_scope);
+      ui::tsf_inputscope::SetInputScope(GetHostWindowHWND(), input_scope);
     }
   }
 #endif
