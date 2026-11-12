@@ -1758,22 +1758,23 @@ TabDragController::Detach(ReleaseCapture release_capture) {
           attached_model->DetachTabsAndCollectionsForInsertion(dragged_indices);
 
   if (detaching_ephemeral_group_header) {
-    // DetachTabsAndCollectionsForInsertion() removes ephemeral focused groups
+    // DetachTabsAndCollectionsForInsertion() dissolves ephemeral focused groups
     // into ungrouped tabs so they are not promoted to a permanent group in the
     // target window. Update `drag_data_` to reflect that the group header no
     // longer exists and the remaining drag is a normal multi-tab drag.
-    const tab_groups::TabGroupId removed_group = *drag_data_.group_header_id();
+    const tab_groups::TabGroupId dissolved_group =
+        *drag_data_.group_header_id();
     std::erase_if(drag_data_.tab_drag_data_, [&](const TabDragData& datum) {
       return datum.is_group_header && datum.tab_group_data.has_value() &&
-             datum.tab_group_data->group_id == removed_group;
+             datum.tab_group_data->group_id == dissolved_group;
     });
     for (TabDragData& datum : drag_data_.tab_drag_data_) {
       if (datum.tab_group_data.has_value() &&
-          datum.tab_group_data->group_id == removed_group) {
+          datum.tab_group_data->group_id == dissolved_group) {
         datum.tab_group_data.reset();
       }
     }
-    drag_data_.dragging_groups.erase(removed_group);
+    drag_data_.dragging_groups.erase(dissolved_group);
     drag_data_.group_header_drag_data_.reset();
     drag_data_.source_view_index_ = 0;
   }

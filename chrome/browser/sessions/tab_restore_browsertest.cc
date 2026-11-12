@@ -4171,7 +4171,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
     EXPECT_FALSE(sync_service->GetGroup(group).has_value());
   }
 
-  // Close the tab again, then exit focus mode (which removes the ephemeral
+  // Close the tab again, then exit focus mode (which dissolves the ephemeral
   // group and clears `ephemeral_group` via GroupClosed).
   CloseTab(2);
   ASSERT_EQ(2, tab_strip_model->count());
@@ -4194,7 +4194,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
   EXPECT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
 
   // Enter focus mode on {1, 2}, close both tabs one by one so closing the last
-  // tab removes the ephemeral group and clears `ephemeral_group` on both.
+  // tab dissolves the ephemeral group and clears `ephemeral_group` on both.
   const tab_groups::TabGroupId second_group =
       tab_strip_model->EnterFocusMode({1, 2});
   CloseTab(2);

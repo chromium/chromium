@@ -1328,11 +1328,6 @@ class TabStripModel {
       const std::vector<int>& indices,
       bool is_ephemeral);
 
-  // Enters / exits focus mode. Used by `EnterFocusMode()` / `ExitFocusMode()`
-  // and by other mutations that change focus as a side effect.
-  void EnterFocusModeImpl(const tab_groups::TabGroupId& group);
-  void ExitFocusModeImpl(std::optional<TabGroupFocusExitReason> reason);
-
   // Runs when the runner returned by `TakeEphemeralGroupRemovalLock()` runs or
   // is destroyed: releases the lock and removes `group_id` if it is still an
   // unfocused ephemeral group.

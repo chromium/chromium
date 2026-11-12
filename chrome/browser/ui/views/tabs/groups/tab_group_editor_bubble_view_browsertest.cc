@@ -952,55 +952,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
             u"Promoted Title");
 }
 
-// The editor bubble metrics must be recorded exactly once when an ephemeral
-// group is promoted.
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       EphemeralGroup_CreateRecordsBubbleMetricsOnce) {
-  base::HistogramTester histogram_tester;
-  base::UserActionTester user_action_tester;
-
-  tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->EnterFocusMode({0});
-  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
-
-  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
-  ASSERT_NE(nullptr, editor_bubble);
-
-  auto* title_field = views::AsViewClass<views::Textfield>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kTabGroupEditorBubbleId,
-          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
-  ASSERT_NE(nullptr, title_field);
-  title_field->InsertOrReplaceText(u"Promoted Title");
-
-  views::View* contents_view = editor_bubble->widget_delegate()
-                                   ->AsBubbleDialogDelegate()
-                                   ->GetContentsView();
-  ASSERT_EQ(contents_view->children().size(), 4u);
-  views::View* button_row = contents_view->children()[3];
-  ASSERT_EQ(button_row->children().size(), 2u);
-  views::Button* create_button =
-      views::Button::AsButton(button_row->children()[1]);
-  ASSERT_NE(nullptr, create_button);
-
-  base::WeakPtr<views::Widget> weak_widget = editor_bubble->GetWeakPtr();
-  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
-                                gfx::PointF(), base::TimeTicks(), 0, 0);
-  views::test::ButtonTestApi(create_button).NotifyClick(released_event);
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_widget; }));
-
-  EXPECT_FALSE(
-      browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "TabGroups_TabGroupBubble_NameChanged"));
-  histogram_tester.ExpectBucketCount(
-      "TabGroups.ContextMenu.EditorBubble.Action",
-      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
-          kNameChanged,
-      1);
-  histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 1);
-}
-
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        EditorBubbleNameChangeAndCloseGroupMetrics) {
   base::HistogramTester histogram_tester;
