@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -45,7 +44,6 @@
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
-#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/permissions/permission_request_manager.h"
@@ -117,18 +115,7 @@ void OmniboxPopupFullPresenter::Show() {
     }
   }
 
-  auto* controller =
-      GetWebUIContent()->contents_wrapper()->GetWebUIController();
-  if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
-    // Compute visibility from the omnibox state rather than reading the Views
-    // AIM chip. During a tab change, `Show()` runs before the location bar's
-    // page action container is rebound to the new tab, so the chip still
-    // reflects the deactivated previous tab and would report hidden, briefly
-    // hiding the AIM button on new tab creation.
-    handler->SetAimButtonVisible(
-        omnibox::AiModePageActionController::ShouldShowPageAction(
-            location_bar()->GetProfile(), *location_bar()));
-  }
+  GetWebUIContent()->UpdateAimButtonVisibility();
 
   views::Widget* browser_widget = GetBrowserWidget();
   if (browser_widget && !browser_widget_observation_.IsObserving()) {
@@ -1054,30 +1041,7 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
   refocus_on_activation_ = false;
   ResetPermissionPromptShowingState();
   OmniboxEditModel* edit_model = controller()->edit_model();
-
-  // Keyword mode is an uncommitted draft even when the user text is empty,
-  // e.g. on the NTP after entering keyword mode via the keyword chip. Blurring
-  // should never exit keyword mode (see `OmniboxViewViews::OnBlur()`), so
-  // neither revert nor close the popup in that case.
-  const bool is_keyword_selected = edit_model->is_keyword_selected();
-
-  // If the view is showing text that's not user-text, revert the text to the
-  // permanent display text. This usually occurs if Steady State Elisions is on
-  // and the user has unelided, but not edited the URL.
-  // Also revert if the text has been edited but currently exactly matches
-  // the permanent text. An example of this scenario is someone typing on the
-  // new tab page and then deleting everything using backspace/delete.
-  //
-  // This should never exit keyword mode.
-  if (!is_keyword_selected &&
-      ((!edit_model->user_input_in_progress() &&
-        edit_model->user_text() != edit_model->GetPermanentDisplayText()) ||
-       (edit_model->user_input_in_progress() &&
-        (edit_model->user_text() == edit_model->GetPermanentDisplayText() ||
-         edit_model->user_text() ==
-             controller()->client()->GetFormattedFullURL())))) {
-    edit_model->Revert();
-  }
+  edit_model->RevertUneditedText();
 
   if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
     popup_view->OnBlur();

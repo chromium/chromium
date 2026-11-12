@@ -375,6 +375,12 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   OnLocationBarBoundsChanged();
 
   is_shown_ = true;
+
+  // Mark the WebContents visible so that a frame will be produced for visual
+  // state callbacks.
+  if (content::WebContents* web_contents = GetWrappedWebContents()) {
+    web_contents->WasShown();
+  }
 }
 
 void OmniboxPopupWebUIBaseContent::ShowCustomContextMenu(
@@ -684,6 +690,22 @@ void OmniboxPopupWebUIBaseContent::Detach() {
 
 content::WebContents* OmniboxPopupWebUIBaseContent::GetWrappedWebContents() {
   return contents_wrapper_ ? contents_wrapper_->web_contents() : nullptr;
+}
+
+void OmniboxPopupWebUIBaseContent::HideUI() {
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIPopupMarkAsHidden)) {
+    if (content::WebContents* web_contents = GetWrappedWebContents()) {
+      web_contents->WasHidden();
+    }
+  }
+  Clear();
+}
+
+bool OmniboxPopupWebUIBaseContent::CompletedFirstVisuallyNonEmptyPaint() {
+  // Read the wrapped contents, since `GetWebContents()` creates new contents
+  // while the popup is hidden and its contents are detached.
+  content::WebContents* web_contents = GetWrappedWebContents();
+  return web_contents && web_contents->CompletedFirstVisuallyNonEmptyPaint();
 }
 
 void OmniboxPopupWebUIBaseContent::OnMenuClosed() {

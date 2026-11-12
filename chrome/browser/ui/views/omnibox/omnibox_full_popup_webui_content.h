@@ -67,6 +67,10 @@ class OmniboxFullPopupWebUIContent
 
   void CancelPendingContextMenuRequest();
 
+  // Shows or hides the WebUI's AI Mode button to match the location bar's AI
+  // Mode page action.
+  void UpdateAimButtonVisibility();
+
   // content::WebContentsObserver:
   void OnFocusChangedInPage(
       const content::FocusedNodeDetails& details) override;

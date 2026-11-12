@@ -340,6 +340,44 @@ TEST_F(OmniboxEditModelTest, RevertZeroSuggestTemporaryText) {
             controller()->autocomplete_controller()->input().focus_type());
 }
 
+TEST_F(OmniboxEditModelTest, RevertUneditedText) {
+  location_bar_model()->set_url(GURL("https://www.example.com/"));
+  location_bar_model()->set_url_for_display(u"example.com");
+  EXPECT_TRUE(model()->ResetDisplayTexts());
+  model()->Revert();
+
+  // Unelided permanent text without user input reverts back to display text.
+  model()->Unelide();
+  EXPECT_EQ(u"https://www.example.com/", view()->GetText());
+  model()->RevertUneditedText();
+  EXPECT_EQ(u"example.com", view()->GetText());
+  EXPECT_FALSE(model()->user_input_in_progress());
+
+  // User text matching the permanent display text or full URL reverts.
+  model()->SetUserText(u"example.com");
+  EXPECT_TRUE(model()->user_input_in_progress());
+  model()->RevertUneditedText();
+  EXPECT_FALSE(model()->user_input_in_progress());
+
+  model()->SetUserText(u"https://www.example.com/");
+  EXPECT_TRUE(model()->user_input_in_progress());
+  model()->RevertUneditedText();
+  EXPECT_FALSE(model()->user_input_in_progress());
+
+  // Edited drafts and keyword mode stay untouched.
+  model()->SetUserText(u"draft");
+  model()->RevertUneditedText();
+  EXPECT_TRUE(model()->user_input_in_progress());
+  EXPECT_EQ(u"draft", model()->user_text());
+
+  model()->SetUserText(u"");
+  model()->EnterKeywordModeForDefaultSearchProvider(
+      OmniboxEventProto::KEYBOARD_SHORTCUT);
+  ASSERT_TRUE(model()->is_keyword_selected());
+  model()->RevertUneditedText();
+  EXPECT_TRUE(model()->is_keyword_selected());
+}
+
 TEST_F(OmniboxEditModelTest, FullWebUISuppressesZeroSuggestRequest) {
   view()->set_is_full_webui_omnibox(true);
   location_bar_model()->set_url(GURL("https://www.example.com/"));

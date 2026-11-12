@@ -12,11 +12,13 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_content_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -146,9 +148,23 @@ void OmniboxFullPopupWebUIContent::OnFocusChangedInPage(
   }
 }
 
+void OmniboxFullPopupWebUIContent::UpdateAimButtonVisibility() {
+  auto* controller = contents_wrapper()->GetWebUIController();
+  if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
+    // Compute visibility from the omnibox state rather than reading the Views
+    // AIM chip. During a tab change, the popup is shown before the location
+    // bar's page action container is rebound to the new tab, so the chip still
+    // reflects the deactivated previous tab and would report hidden, briefly
+    // hiding the AIM button on new tab creation.
+    handler->SetAimButtonVisible(
+        omnibox::AiModePageActionController::ShouldShowPageAction(
+            location_bar()->GetProfile(), *location_bar()));
+  }
+}
+
 void OmniboxFullPopupWebUIContent::DidFirstVisuallyNonEmptyPaint() {
-  // `OmniboxPopupPresenterBase::CompletedFirstVisuallyNonEmptyPaint()` turns
-  // true with this paint, so let `LocationBarView` drop its native focus ring.
+  // The host's `CompletedFirstVisuallyNonEmptyPaint()` turns true with this
+  // paint, so let `LocationBarView` drop its native focus ring.
   if (auto* delegate = presenter_delegate()) {
     delegate->OnPopupFirstVisuallyNonEmptyPaint();
   }
