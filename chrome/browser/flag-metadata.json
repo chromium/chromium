@@ -2792,7 +2792,7 @@
   {
     "name": "cws-promotion-banner-flag",
     "owners": ["przybytniowska@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 186
   },
   {
     "name": "cws-review-prompting-native-ui",
