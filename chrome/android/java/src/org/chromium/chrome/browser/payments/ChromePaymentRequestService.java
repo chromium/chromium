@@ -551,12 +551,15 @@ public class ChromePaymentRequestService
 
     // Implements BrowserPaymentRequest:
     @Override
-    public @Nullable WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
+    public @Nullable WebContents openPaymentHandlerWindow(
+            GURL url, long ukmSourceId, @Nullable Integer preferredHeightCssPx) {
         if (mPaymentRequestService == null) return null;
 
         @Nullable WebContents paymentHandlerWebContents =
                 mPaymentUiService.showPaymentHandlerUi(
-                        url, mPaymentRequestService.getPaymentRequestSecurityOrigin());
+                        url,
+                        mPaymentRequestService.getPaymentRequestSecurityOrigin(),
+                        preferredHeightCssPx);
         if (paymentHandlerWebContents != null) {
             ServiceWorkerPaymentAppBridge.onOpeningPaymentAppWindow(
                     /* paymentRequestWebContents= */ mWebContents,

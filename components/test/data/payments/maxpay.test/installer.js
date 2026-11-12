@@ -21,17 +21,20 @@ function updateLogView(text) {
  * Launches the payment handler and waits until its window is ready.
  * @param {string} url - The URL to open in the payment handler window.
  * @param {string} paymentMethod - The payment method identifier.
+ * @param {Object=} openWindowOptions - The options for
+ * PaymentRequestEvent.openWindow(), e.g. {preferredSize: {width, height}}.
  * @return {Promise<string>} - the message about the launch result.
  */
 function launchAndWaitUntilReady(
-    url = './payment_handler_window.html', paymentMethod = methodName) {
+    url = './payment_handler_window.html', paymentMethod = methodName,
+    openWindowOptions = undefined) {
   let appReadyResolver;
   appReadyPromise = new Promise((r) => {
     appReadyResolver = r;
   });
   try {
     const request = new PaymentRequest(
-      [{supportedMethods: paymentMethod, data: {url}}],
+        [{supportedMethods: paymentMethod, data: {url, openWindowOptions}}],
         {total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}}});
     request.onpaymentmethodchange = (event) => {
       appReadyResolver(event.methodDetails.status);

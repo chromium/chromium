@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.os.Handler;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -30,6 +31,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.payments.mojom.PaymentEventResponseType;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -47,6 +49,17 @@ import java.lang.annotation.RetentionPolicy;
     /* package */ static final float FULL_HEIGHT_RATIO = 0.9f;
     /* package */ static final float HALF_HEIGHT_RATIO = 0.5f;
 
+    // The height of the bottom sheet's drag handlebar: 6dp padding plus the 4dp drag_handlebar in
+    // bottom_sheet.xml. Must be kept in sync with that layout.
+    // TODO(crbug.com/582307863): Get the handlebar height from the bottom sheet instead. The handle
+    // bar height is also different on android desktop.
+    private static final float HANDLEBAR_HEIGHT_DP = 10f;
+
+    // The minimum height of the payment app's web view when it has a preferred height, so that
+    // a too small request still leaves room for a select and a pay button. Matches desktop's
+    // kPaymentHandlerMinDialogHeight (196) minus its header (48) and progress bar (2).
+    private static final float MIN_CONTENT_HEIGHT_DP = 146f;
+
     private final PropertyModel mModel;
     // Whenever invoked, invoked outside of the WebContentsObserver callbacks.
     private final Runnable mHider;
@@ -58,6 +71,14 @@ import java.lang.annotation.RetentionPolicy;
     private final Handler mHandler = new Handler();
     private final BottomSheetController mBottomSheetController;
     private final int mToolbarViewHeightPx;
+    // The preferred content height in px: the height set by the payment app via
+    // PaymentRequestEvent.openWindow(url, {preferredSize}), or the default height supplied when it
+    // did not set one. Null for the legacy ServiceTabLauncher path, which uses the half/full sheet.
+    private final @Nullable Integer mPreferredContentHeightPx;
+    // See HANDLEBAR_HEIGHT_DP.
+    private final int mHandlebarHeightPx;
+    // See MIN_CONTENT_HEIGHT_DP.
+    private final int mMinContentHeightPx;
     private @CloseReason int mCloseReason = CloseReason.OTHERS;
     private final ActivityStateListener mActivityStateListener;
     private final InputProtector mInputProtector;
@@ -92,6 +113,9 @@ import java.lang.annotation.RetentionPolicy;
      * @param observer The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @param bottomSheetController The controller of the bottom sheet that shows this UI.
      * @param toolbarViewHeightPx The height of the toolbar view in px.
+     * @param preferredContentHeightPx The preferred content height in px: the height set by the
+     *     payment app, or the default height supplied when it did not set one. Null for the legacy
+     *     ServiceTabLauncher path, which uses the half/full sheet.
      * @param activity The current android {@link Activity}.
      */
     /* package */ PaymentHandlerMediator(
@@ -102,6 +126,7 @@ import java.lang.annotation.RetentionPolicy;
             PaymentHandlerUiObserver observer,
             BottomSheetController bottomSheetController,
             int toolbarViewHeightPx,
+            @Nullable Integer preferredContentHeightPx,
             Activity activity,
             InputProtector inputProtector) {
         super(paymentHandlerWebContents);
@@ -110,6 +135,9 @@ import java.lang.annotation.RetentionPolicy;
         mPaymentRequestWebContents = paymentRequestWebContents;
         mPaymentHandlerWebContents = paymentHandlerWebContents;
         mToolbarViewHeightPx = toolbarViewHeightPx;
+        mPreferredContentHeightPx = preferredContentHeightPx;
+        mHandlebarHeightPx = ViewUtils.dpToPx(activity, HANDLEBAR_HEIGHT_DP);
+        mMinContentHeightPx = ViewUtils.dpToPx(activity, MIN_CONTENT_HEIGHT_DP);
         mModel = model;
         mModel.set(PaymentHandlerProperties.BACK_PRESS_CALLBACK, this::onSystemBackButtonClicked);
         mHider = hider;
@@ -188,7 +216,9 @@ import java.lang.annotation.RetentionPolicy;
     /**
      * Pushes the height the payment app's web view should have to the view. This is the height of
      * the sheet's content area when the sheet is fully expanded. It does not change when the user
-     * drags the sheet between half and full, because the sheet moves rather than resizes.
+     * drags the sheet between half and full, because the sheet moves rather than resizes. With a
+     * preferred height, it is the clamped preferred height instead; see
+     * computeWrapContentWebViewHeightPx().
      */
     private void updateContentVisibleHeight() {
         int visibleHeightPx = contentVisibleHeight();
@@ -200,7 +230,52 @@ import java.lang.annotation.RetentionPolicy;
      * @return The height of visible area of the bottom sheet's content part.
      */
     private int contentVisibleHeight() {
+        if (mPreferredContentHeightPx != null) {
+            return computeWrapContentWebViewHeightPx(
+                    mPreferredContentHeightPx,
+                    mMinContentHeightPx,
+                    mToolbarViewHeightPx,
+                    mHandlebarHeightPx,
+                    mBottomSheetController.getMaxSheetHeight());
+        }
         return mBottomSheetController.getMaxOffset() - mToolbarViewHeightPx;
+    }
+
+    /**
+     * Whether the sheet has a preferred height and wraps its content: either the payment app set
+     * one via PaymentRequestEvent.openWindow(url, {preferredSize}), or a default height was
+     * supplied because it did not. False for the legacy ServiceTabLauncher path, which uses the
+     * half/full sheet.
+     */
+    private boolean hasPreferredHeight() {
+        return mPreferredContentHeightPx != null;
+    }
+
+    /**
+     * Returns the preferred height, raised to the minimum content height, then clamped so that the
+     * whole sheet (handlebar, toolbar and web view) fits within the full height ratio of the
+     * maximum sheet height. The available space wins over the minimum, so the sheet never overflows
+     * a small window.
+     *
+     * @param preferredContentHeightPx The preferred content height, in pixels: the height set by
+     *     the payment app, or the default height supplied when it did not set one.
+     * @param minContentHeightPx The minimum content height, in pixels.
+     * @param toolbarHeightPx The height of the Payment Handler toolbar, in pixels.
+     * @param handlebarHeightPx The height of the bottom sheet's handlebar, in pixels.
+     * @param maxSheetHeightPx The maximum height of the bottom sheet, in pixels, or a non-positive
+     *     value if unknown.
+     * @return The web view height in pixels, or a non-positive value if it can't be computed yet.
+     */
+    @VisibleForTesting
+    /* package */ static int computeWrapContentWebViewHeightPx(
+            int preferredContentHeightPx,
+            int minContentHeightPx,
+            int toolbarHeightPx,
+            int handlebarHeightPx,
+            int maxSheetHeightPx) {
+        int availablePx =
+                (int) (FULL_HEIGHT_RATIO * maxSheetHeightPx) - toolbarHeightPx - handlebarHeightPx;
+        return Math.min(availablePx, Math.max(minContentHeightPx, preferredContentHeightPx));
     }
 
     // Implement BottomSheetObserver:
@@ -222,7 +297,19 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement BottomSheetObserver:
     @Override
-    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
+    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+        // Size the web view to the preferred height as soon as the sheet shows this content, i.e.
+        // right after requestShowContent(). The sheet's max height is only known from this point on
+        // the first show, since the bottom sheet is created lazily in requestShowContent().
+        if (hasPreferredHeight()) updateContentVisibleHeight();
+    }
+
+    // Implement BottomSheetObserver:
+    @Override
+    public void onContainerSizeChanged(int newWidth, int newHeight) {
+        // TODO(crbug.com/582307771): Re-clamp the preferred height when the container size
+        // changes, e.g. on rotation.
+    }
 
     // Implement WebContentsObserver:
     @Override

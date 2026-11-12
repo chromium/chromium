@@ -565,6 +565,7 @@
 #include "chrome/common/chrome_descriptors_android.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
+#include "components/payments/content/android/payment_handler_window_android.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/android/java_interfaces.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -7828,6 +7829,18 @@ bool ChromeContentBrowserClient::ShowPaymentHandlerWindow(
     const std::optional<gfx::Size>& preferred_web_contents_size,
     base::OnceCallback<void(bool, int, int)> callback) {
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPaymentHandlerStaticCustomSize)) {
+    // Android only uses the height; the sheet is always full width.
+    payments::android::ShowPaymentHandlerWindow(
+        url,
+        preferred_web_contents_size
+            ? std::make_optional(preferred_web_contents_size->height())
+            : std::nullopt,
+        std::move(callback));
+    return true;
+  }
+  // Fall back to opening the window via ServiceTabLauncher.
   return false;
 #else
   payments::PaymentRequestDisplayManagerFactory::GetInstance()

@@ -35,6 +35,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -79,6 +80,9 @@ public class PaymentHandlerCoordinator {
      * @param url The url of the payment handler app, i.e., that of
      *     "PaymentRequestEvent.openWindow(url)".
      * @param initiatorOrigin The security origin of the frame that invoked PaymentRequest.
+     * @param preferredHeightCssPx The preferred height of the payment app's web content in CSS
+     *     pixels, i.e., "PaymentRequestEvent.openWindow(url, {preferredSize}).height" (or a
+     *     default), or null for the legacy ServiceTabLauncher path.
      * @param uiObserver The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @return The WebContents of the payment handler that's just opened when the showing is
      *     successful; null if failed. When null is returned, caller should also call hide().
@@ -87,6 +91,7 @@ public class PaymentHandlerCoordinator {
             WebContents paymentRequestWebContents,
             GURL url,
             Origin initiatorOrigin,
+            @Nullable Integer preferredHeightCssPx,
             PaymentHandlerUiObserver uiObserver) {
         assert mHider == null : "Already showing payment-handler UI";
         assert paymentRequestWebContents != null;
@@ -131,6 +136,11 @@ public class PaymentHandlerCoordinator {
 
         PropertyModel model = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
 
+        // One CSS pixel is one dp at 100% page zoom. Page zoom is not applied, matching desktop.
+        @Nullable Integer preferredContentHeightPx =
+                preferredHeightCssPx != null
+                        ? ViewUtils.dpToPx(activity, preferredHeightCssPx)
+                        : null;
         PaymentHandlerMediator mediator =
                 new PaymentHandlerMediator(
                         model,
@@ -140,6 +150,7 @@ public class PaymentHandlerCoordinator {
                         uiObserver,
                         bottomSheetController,
                         mToolbarCoordinator.getToolbarHeightPx(),
+                        preferredContentHeightPx,
                         activity,
                         mInputProtector);
 
@@ -166,7 +177,8 @@ public class PaymentHandlerCoordinator {
                         mPaymentHandlerWebContents,
                         mToolbarCoordinator.getView(),
                         thinWebView.getView(),
-                        mInputProtector);
+                        mInputProtector,
+                        /* hasPreferredHeight= */ preferredContentHeightPx != null);
         assert mToolbarCoordinator.getToolbarHeightPx() == view.getToolbarHeightPx();
         PropertyModelChangeProcessor changeProcessor =
                 PropertyModelChangeProcessor.create(model, view, PaymentHandlerViewBinder::bind);

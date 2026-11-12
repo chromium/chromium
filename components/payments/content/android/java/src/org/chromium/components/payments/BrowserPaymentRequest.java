@@ -148,9 +148,12 @@ public interface BrowserPaymentRequest {
      *
      * @param url The url of the page to be opened in the window.
      * @param ukmSourceId The ukm source id assigned to the payment app.
+     * @param preferredHeightCssPx The preferred height of the payment app's web content in CSS
+     *     pixels, or null for the legacy ServiceTabLauncher path (no custom sizing).
      * @return The created WebContents.
      */
-    default @Nullable WebContents openPaymentHandlerWindow(GURL url, long ukmSourceId) {
+    default @Nullable WebContents openPaymentHandlerWindow(
+            GURL url, long ukmSourceId, @Nullable Integer preferredHeightCssPx) {
         return null;
     }
 

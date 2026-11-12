@@ -22,6 +22,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -46,6 +47,10 @@ public class PaymentHandlerMediatorUnitTest {
     /** The full-state sheet height a Pixel Tablet reports once the sheet has settled. */
     private static final int MAX_OFFSET_PX = 1375;
 
+    private static final int TALL_MAX_SHEET_HEIGHT_PX = 2000;
+    private static final int SHORT_MAX_SHEET_HEIGHT_PX = 500;
+    private static final int PREFERRED_CONTENT_HEIGHT_PX = 300;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock(extraInterfaces = WebContentsObserver.Observable.class)
@@ -61,24 +66,27 @@ public class PaymentHandlerMediatorUnitTest {
 
     private PropertyModel mModel;
     private PaymentHandlerMediator mMediator;
-
     private Activity mActivity;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mMediator = createMediator(/* preferredContentHeightPx= */ null);
+    }
+
+    private PaymentHandlerMediator createMediator(@Nullable Integer preferredContentHeightPx) {
         mModel = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
-        mMediator =
-                new PaymentHandlerMediator(
-                        mModel,
-                        mHider,
-                        mPaymentRequestWebContents,
-                        mPaymentHandlerWebContents,
-                        mUiObserver,
-                        mBottomSheetController,
-                        TOOLBAR_HEIGHT_PX,
-                        mActivity,
-                        mInputProtector);
+        return new PaymentHandlerMediator(
+                mModel,
+                mHider,
+                mPaymentRequestWebContents,
+                mPaymentHandlerWebContents,
+                mUiObserver,
+                mBottomSheetController,
+                TOOLBAR_HEIGHT_PX,
+                preferredContentHeightPx,
+                mActivity,
+                mInputProtector);
     }
 
     private int contentVisibleHeight() {
@@ -148,5 +156,93 @@ public class PaymentHandlerMediatorUnitTest {
     public void testHiderRunsSynchronouslyOnActivityDestroyed() {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.DESTROYED);
         verify(mHider).run();
+    }
+
+    @Test
+    public void testPreferredHeightIsSetWhenTheContentIsShown() {
+        // Available: 0.9 * 2000 - 140 (toolbar) - 10 (handlebar, 10dp at mdpi) = 1650.
+        // 300 <= 1650, so the preferred height fits as is.
+        when(mBottomSheetController.getMaxSheetHeight()).thenReturn(TALL_MAX_SHEET_HEIGHT_PX);
+        mMediator = createMediator(PREFERRED_CONTENT_HEIGHT_PX);
+
+        mMediator.onSheetContentChanged(null);
+
+        assertEquals(PREFERRED_CONTENT_HEIGHT_PX, contentVisibleHeight());
+    }
+
+    @Test
+    public void testPreferredHeightIsClampedToFullHeightRatio() {
+        // Available: 0.9 * 500 - 140 (toolbar) - 10 (handlebar, 10dp at mdpi) = 300.
+        // 500 > 300, so the preferred height is clamped to 300.
+        when(mBottomSheetController.getMaxSheetHeight()).thenReturn(SHORT_MAX_SHEET_HEIGHT_PX);
+        mMediator = createMediator(SHORT_MAX_SHEET_HEIGHT_PX);
+
+        mMediator.onSheetContentChanged(null);
+
+        assertEquals(300, contentVisibleHeight());
+    }
+
+    @Test
+    public void testPreferredHeightIsRaisedToMinimum() {
+        // Available: 0.9 * 2000 - 140 (toolbar) - 10 (handlebar, 10dp at mdpi) = 1650.
+        // 50 < 146 (minimum, 146dp at mdpi), so the preferred height is raised to 146.
+        when(mBottomSheetController.getMaxSheetHeight()).thenReturn(TALL_MAX_SHEET_HEIGHT_PX);
+        mMediator = createMediator(/* preferredContentHeightPx= */ 50);
+
+        mMediator.onSheetContentChanged(null);
+
+        assertEquals(146, contentVisibleHeight());
+    }
+
+    @Test
+    public void testComputeWrapContentWebViewHeightPx() {
+        // Available in all cases: 0.9 * 1000 - 100 (toolbar) - 10 (handlebar) = 790.
+
+        // Fits: 146 <= 300 <= 790.
+        assertEquals(
+                300,
+                PaymentHandlerMediator.computeWrapContentWebViewHeightPx(
+                        /* preferredContentHeightPx= */ 300,
+                        /* minContentHeightPx= */ 146,
+                        /* toolbarHeightPx= */ 100,
+                        /* handlebarHeightPx= */ 10,
+                        /* maxSheetHeightPx= */ 1000));
+        // Exactly fits: 790 == 790.
+        assertEquals(
+                790,
+                PaymentHandlerMediator.computeWrapContentWebViewHeightPx(
+                        /* preferredContentHeightPx= */ 790,
+                        /* minContentHeightPx= */ 146,
+                        /* toolbarHeightPx= */ 100,
+                        /* handlebarHeightPx= */ 10,
+                        /* maxSheetHeightPx= */ 1000));
+        // Clamped: 2000 > 790.
+        assertEquals(
+                790,
+                PaymentHandlerMediator.computeWrapContentWebViewHeightPx(
+                        /* preferredContentHeightPx= */ 2000,
+                        /* minContentHeightPx= */ 146,
+                        /* toolbarHeightPx= */ 100,
+                        /* handlebarHeightPx= */ 10,
+                        /* maxSheetHeightPx= */ 1000));
+        // Raised to the minimum: 1 < 146.
+        assertEquals(
+                146,
+                PaymentHandlerMediator.computeWrapContentWebViewHeightPx(
+                        /* preferredContentHeightPx= */ 1,
+                        /* minContentHeightPx= */ 146,
+                        /* toolbarHeightPx= */ 100,
+                        /* handlebarHeightPx= */ 10,
+                        /* maxSheetHeightPx= */ 1000));
+        // The available space wins over the minimum in a small window:
+        // 0.9 * 250 - 100 - 10 = 115 < 146.
+        assertEquals(
+                115,
+                PaymentHandlerMediator.computeWrapContentWebViewHeightPx(
+                        /* preferredContentHeightPx= */ 1,
+                        /* minContentHeightPx= */ 146,
+                        /* toolbarHeightPx= */ 100,
+                        /* handlebarHeightPx= */ 10,
+                        /* maxSheetHeightPx= */ 250));
     }
 }

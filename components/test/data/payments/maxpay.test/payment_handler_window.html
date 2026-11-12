@@ -54,6 +54,25 @@ function isWindowClientReady() {
   return window_client_ready;
 }
 
+/**
+ * Waits until the service worker has received a WindowClient from
+ * PaymentRequestEvent.openWindow().
+ * @return {Promise<boolean>} - Resolves to true once the window client is
+ * ready.
+ */
+function waitUntilWindowClientReady() {
+  return new Promise((resolve) => {
+    const check = () => {
+      if (window_client_ready) {
+        resolve(true);
+      } else {
+        setTimeout(check, 50);
+      }
+    };
+    check();
+  });
+}
+
 window.onload = function() {
   navigator.serviceWorker.controller.postMessage('app_is_ready');
   updateLogView('app is ready.');
