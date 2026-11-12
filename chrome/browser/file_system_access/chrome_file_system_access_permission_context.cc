@@ -2673,10 +2673,10 @@ void ChromeFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
   }
 
   // CreateForFilesInWebContents() only handles real OS files. Any kExternal
-  // entries that failed to resolve will be ignored by the scanner and
-  // reconciled based on the policy's default action (fail-open or fail-closed).
-  // TODO(crbug.com/535207208): Add a test to validate that unscannedFileEvent
-  // is reported for these unresolved files.
+  // entries that failed to resolve can't be opened by the scanner, so they are
+  // reported as unscanned and reconciled based on the policy's default action
+  // (fail-open or fail-closed). See
+  // ContentAnalysisDelegateUnresolvedFileBrowserTest.
   enterprise_connectors::ContentAnalysisDelegate::CreateForFilesInWebContents(
       web_contents, std::move(data),
       base::BindOnce(

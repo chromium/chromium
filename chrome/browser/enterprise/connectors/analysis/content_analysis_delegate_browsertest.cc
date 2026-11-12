@@ -8,6 +8,9 @@
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -2507,8 +2510,151 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateFilesBrowserTest,
   content_analysis_run_loop.Run();
 }
 
+// This class tests how ContentAnalysisDelegate handles files that can't be
+// opened by the scanner, such as ChromeOS virtual paths that failed to resolve
+// to a physical path (see crbug.com/501437361). The test parameter represents
+// whether the `default_action` setting is set to fail closed.
+class ContentAnalysisDelegateUnresolvedFileBrowserTest
+    : public ContentAnalysisDelegateBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContentAnalysisDelegateUnresolvedFileBrowserTest()
+      : ContentAnalysisDelegateBrowserTestBase(/*machine_scope=*/true) {}
 
-IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, UaFOnWebContentsDestroyed) {
+  bool fail_closed() const { return GetParam(); }
+
+  // Use a string since the setting value is inserted into a JSON policy.
+  const char* default_action_setting_value() const {
+    return fail_closed() ? "block" : "allow";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ContentAnalysisDelegateUnresolvedFileBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnresolvedFileBrowserTest,
+                       ReportsUnscannedFileEvent) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up delegate and upload service.
+  EnableUploadsScanningAndReporting();
+  constexpr char kDefaultActionPref[] = R"({
+    "service_provider": "google",
+    "enable": [
+      {
+        "url_list": ["*"],
+        "tags": ["dlp"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "default_action": "%s"
+  })";
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(), FILE_ATTACHED,
+      base::StringPrintf(kDefaultActionPref, default_action_setting_value()),
+      /*machine_scope=*/true);
+
+  base::RunLoop content_analysis_run_loop;
+  ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
+                          content_analysis_run_loop.QuitClosure()));
+
+  FakeBinaryUploadServiceStorage()->SetAuthorized(true);
+  FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);
+
+  // A path that doesn't exist on disk is what the scanner receives when a
+  // virtual path fails to resolve. It must not be dropped during path
+  // expansion so that it can be reported and handled by `default_action`.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath missing_file = temp_dir.GetPath().AppendASCII("missing.doc");
+  ASSERT_FALSE(base::PathExists(missing_file));
+
+  ContentAnalysisDelegate::Data data;
+  data.paths.emplace_back(missing_file);
+  data.reason = ContentAnalysisRequest::FILE_PICKER_DIALOG;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
+      browser()->GetProfile(), GURL(kTestUrl), &data, FILE_ATTACHED));
+
+  // The file can't be opened, so it's reported as unscanned without being
+  // uploaded. Its event result depends on whether the policy fails closed.
+  test::EventReportValidator validator(client());
+  base::RunLoop validator_run_loop;
+  validator.SetDoneClosure(validator_run_loop.QuitClosure());
+
+  chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
+  expected_event.set_url("about:blank");
+  expected_event.set_tab_url("about:blank");
+  expected_event.set_source("");
+  expected_event.set_destination("");
+#if BUILDFLAG(IS_CHROMEOS)
+  expected_event.set_file_name("missing.doc");
+#else
+  expected_event.set_file_name(missing_file.AsUTF8Unsafe());
+#endif
+  // No hash, mimetype or size can be obtained from a file that can't be opened.
+  expected_event.set_download_digest_sha_256("");
+  expected_event.set_content_type("");
+  expected_event.set_content_size(0);
+
+  expected_event.set_unscanned_reason(
+      chrome::cros::reporting::proto::UnscannedFileEvent::SERVICE_UNAVAILABLE);
+  expected_event.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+  expected_event.set_scan_id("");
+  expected_event.set_event_result(
+      fail_closed()
+          ? chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED
+          : chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+  expected_event.set_clicked_through(false);
+  expected_event.set_content_transfer_method(
+      chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_FILE_PICKER);
+
+  expected_event.set_profile_identifier(GetProfileIdentifier());
+  expected_event.set_profile_user_name(kUserName);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    auto* referrer = expected_event.add_referrers();
+    referrer->set_url("about:blank");
+  }
+
+  validator.ExpectUnscannedFileEvent(std::move(expected_event));
+
+  bool called = false;
+  base::RunLoop run_loop;
+  SetQuitClosure(run_loop.QuitClosure());
+
+  // Start test.
+  ContentAnalysisDelegate::CreateForFilesInWebContents(
+      browser()->GetTabStripModel()->GetActiveWebContents(), std::move(data),
+      base::BindLambdaForTesting(
+          [this, &called, &missing_file](std::vector<base::FilePath> paths,
+                                         std::vector<bool> result) {
+            ASSERT_EQ(paths.size(), 1u);
+            ASSERT_EQ(paths[0], missing_file);
+            ASSERT_EQ(result.size(), 1u);
+            ASSERT_EQ(result[0], !fail_closed());
+            called = true;
+          }),
+      DeepScanAccessPoint::UPLOAD);
+
+  run_loop.Run();
+  EXPECT_TRUE(called);
+
+  // A file that can't be opened is never uploaded, so there is no request for
+  // authentication nor any ack.
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->requests_count(), 0);
+  ASSERT_EQ(FakeBinaryUploadServiceStorage()->ack_count(), 0);
+
+  // Ensure the ContentAnalysisDelegate is destroyed before the end of the test.
+  content_analysis_run_loop.Run();
+
+  validator_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
+                       UaFOnWebContentsDestroyed) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   EnableUploadsScanningAndReporting();
