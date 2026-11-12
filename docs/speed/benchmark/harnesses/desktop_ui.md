@@ -19,6 +19,8 @@ in different stories representing different scenarios such as
 * tab_search:close_and_open:2020 - Test open, close and reopen Tab Search UI
 * tab_search:scroll_up_and_down:2020 - Test srolling down, up and down 100 tabs, before all tabs are loaded
 
+Equivalent `organizer_panel:*` stories (in [organizer_panel_story.py](../../../../tools/perf/page_sets/desktop_ui/organizer_panel_story.py)) cover the same scenarios for the Organizer Panel UI (`organizer_panel:top10:2020`, `organizer_panel:top50:2020`, `organizer_panel:top10:loading:2020`, `organizer_panel:top50:loading:2020`, `organizer_panel:close_and_open:2020`, `organizer_panel:close_and_open:loading:2020`, `organizer_panel:scroll_up_and_down:2020`, `organizer_panel:*_recently_closed`, `organizer_panel:clean_slate`, and `organizer_panel:measure_memory:*`).
+
 
 For more information please see this [doc](https://docs.google.com/document/d/1-1ijT7wt05hlBZmSKjX_DaTCzVqpxbfTM1y-j7kYHlc?usp=sharing).
 

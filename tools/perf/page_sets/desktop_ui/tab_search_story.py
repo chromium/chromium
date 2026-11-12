@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/585173863): Delete this file once organizer panel is launched.
+
 import logging
 import py_utils
 

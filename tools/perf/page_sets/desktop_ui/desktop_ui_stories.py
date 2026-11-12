@@ -6,11 +6,14 @@ from telemetry import story
 from page_sets.desktop_ui import (
   new_tab_page_story,
   omnibox_story,
+  organizer_panel_story,
   tab_search_story,
 )
 
 
 class DesktopUIStorySet(story.StorySet):
+  # TODO(crbug.com/585173863): Delete tab search stories once organizer panel is
+  # launched.
   TAB_SEARCH_STORIES = [
     tab_search_story.TabSearchStoryTop10,
     tab_search_story.TabSearchStoryTop50,
@@ -30,6 +33,25 @@ class DesktopUIStorySet(story.StorySet):
     tab_search_story.TabSearchStoryMeasureMemory3TabSearch,
   ]
 
+  ORGANIZER_PANEL_STORIES = [
+    organizer_panel_story.OrganizerPanelStoryTop10,
+    organizer_panel_story.OrganizerPanelStoryTop50,
+    organizer_panel_story.OrganizerPanelStoryTop10Loading,
+    organizer_panel_story.OrganizerPanelStoryRecentlyClosed10,
+    organizer_panel_story.OrganizerPanelStoryRecentlyClosed50,
+    organizer_panel_story.OrganizerPanelStoryRecentlyClosed100,
+    organizer_panel_story.OrganizerPanelStoryTop50Loading,
+    organizer_panel_story.OrganizerPanelStoryCloseAndOpen,
+    organizer_panel_story.OrganizerPanelStoryCloseAndOpenLoading,
+    organizer_panel_story.OrganizerPanelStoryScrollUpAndDown,
+    organizer_panel_story.OrganizerPanelStoryCleanSlate,
+    organizer_panel_story.OrganizerPanelStoryMeasureMemoryBefore,
+    organizer_panel_story.OrganizerPanelStoryMeasureMemoryAfter,
+    organizer_panel_story.OrganizerPanelStoryMeasureMemoryMultiwindow,
+    organizer_panel_story.OrganizerPanelStoryMeasureMemory2OrganizerPanel,
+    organizer_panel_story.OrganizerPanelStoryMeasureMemory3OrganizerPanel,
+  ]
+
   OMNIBOX_STORIES = [
     omnibox_story.OmniboxStoryPedal,
     omnibox_story.OmniboxStoryScopedSearch,
@@ -45,6 +67,8 @@ class DesktopUIStorySet(story.StorySet):
       archive_data_file=('../data/desktop_ui.json'),
       cloud_storage_bucket=story.PARTNER_BUCKET,
     )
+    # TODO(crbug.com/585173863): Delete tab search stories once organizer panel
+    # is launched.
     for cls in self.TAB_SEARCH_STORIES:
       self.AddStory(
         cls(
@@ -52,6 +76,18 @@ class DesktopUIStorySet(story.StorySet):
           [
             '--top-chrome-touch-ui=disabled',
             '--enable-features=TabSearchUseMetricsReporter',
+            '--disable-features=OrganizerPanel',
+          ],
+        )
+      )
+
+    for cls in self.ORGANIZER_PANEL_STORIES:
+      self.AddStory(
+        cls(
+          self,
+          [
+            '--top-chrome-touch-ui=disabled',
+            '--enable-features=OrganizerPanel',
           ],
         )
       )

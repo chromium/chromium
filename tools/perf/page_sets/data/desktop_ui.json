@@ -12,6 +12,27 @@
         "omnibox:search": {
             "DEFAULT": "desktop_ui_43a34671bf.wprgo"
         },
+        "organizer_panel:close_and_open:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "organizer_panel:close_and_open:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "organizer_panel:scroll_up_and_down:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "organizer_panel:top10:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "organizer_panel:top10:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "organizer_panel:top50:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "organizer_panel:top50:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
         "side_search:measure_memory": {
             "DEFAULT": "desktop_ui_0a53cfa584.wprgo"
         },
