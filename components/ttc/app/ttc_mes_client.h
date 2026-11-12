@@ -54,7 +54,9 @@ class TtcMesClient
       const GURL& url,
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
-  void ReportPlaybackStatus(int64_t last_played_sequence_number) override;
+  void ReportPlaybackStatus(base::TimeDelta playback_progress,
+                            bool playback_complete,
+                            int64_t generation_id) override;
   void Close() override;
   bool is_transport_connected() const override;
   std::optional<std::string> GetSessionId() const override;

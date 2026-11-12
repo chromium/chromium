@@ -708,11 +708,7 @@ void AiOverlayDialogPageHandler::SendTextInput(const std::string& text) {
 }
 
 void AiOverlayDialogPageHandler::ReportPlaybackStatus(
-    int64_t last_played_sequence_number) {
-  if (ttc_mes_client_ && ttc_mes_client_->is_transport_connected()) {
-    ttc_mes_client_->ReportPlaybackStatus(last_played_sequence_number);
-  }
-}
+    int64_t last_played_sequence_number) {}
 
 void AiOverlayDialogPageHandler::StopStreamingSession() {
   if (ttc_mes_client_) {

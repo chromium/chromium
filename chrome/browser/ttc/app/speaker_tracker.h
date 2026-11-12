@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_TTC_APP_SPEAKER_TRACKER_H_
 #define CHROME_BROWSER_TTC_APP_SPEAKER_TRACKER_H_
 
-#include <stdint.h>
-
 #include "base/functional/callback.h"
 #include "chrome/browser/ttc/core/states.h"
 #include "components/ttc/app/public/turn_state_update.h"
@@ -26,8 +24,7 @@ class SpeakerTracker {
   SpeakerTracker(const SpeakerTracker&) = delete;
   SpeakerTracker& operator=(const SpeakerTracker&) = delete;
 
-  void OnModelTurnStateUpdate(ModelTurnStateUpdate update,
-                              int64_t generation_id);
+  void OnModelTurnStateUpdate(ModelTurnStateUpdate update);
   void OnUserTurnStateUpdate(UserTurnStateUpdate update);
 
   Speaker speaker() const { return speaker_; }

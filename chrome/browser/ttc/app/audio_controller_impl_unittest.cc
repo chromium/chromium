@@ -61,8 +61,12 @@ class MockAudioControllerObserver : public AudioController::Observer {
               OnModelAudioEnvelopeReady,
               (const AudioEnvelope& envelope),
               (override));
-  MOCK_METHOD(void, OnPlaybackCompleted, (int64_t sequence_number), (override));
+  MOCK_METHOD(void,
+              OnPlaybackProgress,
+              (base::TimeDelta played_duration, bool did_fully_drain_queue),
+              (override));
   MOCK_METHOD(void, OnAudioError, (ErrorCode error), (override));
+  MOCK_METHOD(void, OnPlaybackError, (), (override));
 };
 
 // Records what's reported to the debug tools.
@@ -124,15 +128,16 @@ TEST_F(AudioControllerImplTest, LoopbackCaptureToPlayback) {
                     const media::AudioParameters& params, float energy) {
         captured_pcm.assign(pcm_data.begin(), pcm_data.end());
         // Feed mic input directly into playback (loopback)
-        controller.PlayAudio(pcm_data, params, /*sequence_number=*/101);
+        controller.PlayAudio(pcm_data, params);
         capture_loop.Quit();
       });
 
-  int64_t completed_seq = -1;
+  base::TimeDelta played_duration;
   base::RunLoop completion_loop;
-  EXPECT_CALL(observer_, OnPlaybackCompleted)
-      .WillOnce([&](int64_t sequence_number) {
-        completed_seq = sequence_number;
+  EXPECT_CALL(observer_, OnPlaybackProgress)
+      .WillOnce([&](base::TimeDelta duration, bool did_fully_drain_queue) {
+        played_duration = duration;
+        EXPECT_TRUE(did_fully_drain_queue);
         completion_loop.Quit();
       });
 
@@ -159,7 +164,7 @@ TEST_F(AudioControllerImplTest, LoopbackCaptureToPlayback) {
   EXPECT_EQ(rendered, frames);
   completion_loop.Run();
 
-  EXPECT_EQ(completed_seq, 101);
+  EXPECT_EQ(played_duration, base::Milliseconds(100));
   EXPECT_FALSE(controller.is_playing());
 
   // Verify the rendered audio samples match the input audio samples closely
@@ -182,8 +187,7 @@ TEST_F(AudioControllerImplTest, LoopbackWithDelay) {
             FROM_HERE,
             base::BindLambdaForTesting(
                 [&controller, pcm_copy = std::move(pcm_copy), params]() {
-                  controller.PlayAudio(pcm_copy, params,
-                                       /*sequence_number=*/202);
+                  controller.PlayAudio(pcm_copy, params);
                 }),
             base::Milliseconds(50));
         capture_loop.Quit();
@@ -243,7 +247,7 @@ TEST_F(AudioControllerImplTest, PlaybackQueueClearing) {
   AudioControllerImpl controller;
 
   std::vector<int16_t> pcm_chunk(1600, 0x3030);
-  controller.PlayAudio(pcm_chunk, /*sequence_number=*/1);
+  controller.PlayAudio(pcm_chunk);
   EXPECT_TRUE(controller.is_playing());
 
   controller.ClearPlaybackQueue();
@@ -267,32 +271,43 @@ TEST_F(AudioControllerImplTest, PartialFrameRendering) {
   // 1000 frames of PCM16 mono (2000 bytes)
   std::vector<int16_t> samples(1000, 10000);
 
-  int64_t completed_seq = -1;
+  int progress_calls = 0;
+  base::TimeDelta total_played;
   base::RunLoop completion_loop;
-  EXPECT_CALL(observer_, OnPlaybackCompleted).WillOnce([&](int64_t seq) {
-    completed_seq = seq;
-    completion_loop.Quit();
-  });
+  EXPECT_CALL(observer_, OnPlaybackProgress)
+      .WillRepeatedly(
+          [&](base::TimeDelta played_duration, bool did_fully_drain_queue) {
+            ++progress_calls;
+            total_played += played_duration;
+            if (progress_calls == 3) {
+              EXPECT_TRUE(did_fully_drain_queue);
+              completion_loop.Quit();
+            } else {
+              EXPECT_FALSE(did_fully_drain_queue);
+            }
+          });
 
-  controller.PlayAudio(samples, /*sequence_number=*/456);
+  controller.PlayAudio(samples);
 
   // Render first 400 frames
   auto bus1 = media::AudioBus::Create(1, 400);
   controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus1.get());
-  EXPECT_EQ(completed_seq, -1);
   EXPECT_TRUE(controller.is_playing());
 
   // Render second 400 frames
   auto bus2 = media::AudioBus::Create(1, 400);
   controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus2.get());
-  EXPECT_EQ(completed_seq, -1);
   EXPECT_TRUE(controller.is_playing());
 
   // Render remaining 400 frames (chunk only has 200 frames left)
   auto bus3 = media::AudioBus::Create(1, 400);
   controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus3.get());
   completion_loop.Run();
-  EXPECT_EQ(completed_seq, 456);
+  EXPECT_EQ(progress_calls, 3);
+  // At 24kHz, the three renders (400, 400, and 200 frames) round up to
+  // ceil(400e6 / 24000) = 16667 us, 16667 us, and ceil(200e6 / 24000) =
+  // 8334 us, totaling 41668 us.
+  EXPECT_EQ(total_played, base::Microseconds(41668));
   EXPECT_FALSE(controller.is_playing());
 
   // First 200 frames of bus3 should be non-zero, next 200 frames should be zero
@@ -309,7 +324,7 @@ TEST_F(AudioControllerImplTest,
   AudioControllerImpl controller;
 
   std::vector<int16_t> samples(200, 15000);
-  controller.PlayAudio(samples, /*sequence_number=*/1);
+  controller.PlayAudio(samples);
 
   // Render into stereo (2 channels)
   auto stereo_bus = media::AudioBus::Create(2, 200);
@@ -332,7 +347,7 @@ TEST_F(AudioControllerImplTest, RenderNullBusReturnsZero) {
 
 TEST_F(AudioControllerImplTest, PlayEmptyAudioChunkDoesNotQueue) {
   AudioControllerImpl controller;
-  controller.PlayAudio(base::span<const int16_t>(), /*sequence_number=*/1);
+  controller.PlayAudio(base::span<const int16_t>());
   EXPECT_FALSE(controller.is_playing());
 }
 
@@ -340,7 +355,7 @@ TEST_F(AudioControllerImplTest, PlayPlaceholderAudioChunkDoesNotQueue) {
   AudioControllerImpl controller;
   // A single sample is treated as a placeholder chunk and dropped.
   std::vector<int16_t> tiny_chunk(1, 0);
-  controller.PlayAudio(tiny_chunk, /*sequence_number=*/1);
+  controller.PlayAudio(tiny_chunk);
   EXPECT_FALSE(controller.is_playing());
 }
 
@@ -839,7 +854,7 @@ TEST_F(AudioControllerImplTest, PlayAudioExtractsAndDispatchesAudioEnvelope) {
   AudioEnvelope first_envelope;
   EXPECT_CALL(observer_, OnModelAudioEnvelopeReady(testing::_))
       .WillOnce(testing::SaveArg<0>(&first_envelope));
-  controller.PlayAudio(pcm_samples, /*sequence_number=*/1);
+  controller.PlayAudio(pcm_samples);
 
   EXPECT_GT(first_envelope.rms, 0.3f);
   EXPECT_GT(first_envelope.peak_amplitude, 0.45f);
@@ -854,8 +869,7 @@ TEST_F(AudioControllerImplTest, PlayAudioExtractsAndDispatchesAudioEnvelope) {
   AudioEnvelope second_envelope;
   EXPECT_CALL(observer_, OnModelAudioEnvelopeReady(testing::_))
       .WillOnce(testing::SaveArg<0>(&second_envelope));
-  controller.PlayAudio(base::span(pcm_samples).first(480u),
-                       /*sequence_number=*/2);
+  controller.PlayAudio(base::span(pcm_samples).first(480u));
   ASSERT_EQ(second_envelope.segments.size(), 1u);
   EXPECT_EQ(second_envelope.segments[0].start_time, base::Milliseconds(160));
   EXPECT_EQ(second_envelope.segments[0].duration, base::Milliseconds(20));
@@ -865,8 +879,7 @@ TEST_F(AudioControllerImplTest, PlayAudioExtractsAndDispatchesAudioEnvelope) {
   AudioEnvelope third_envelope;
   EXPECT_CALL(observer_, OnModelAudioEnvelopeReady(testing::_))
       .WillOnce(testing::SaveArg<0>(&third_envelope));
-  controller.PlayAudio(base::span(pcm_samples).first(480u),
-                       /*sequence_number=*/3);
+  controller.PlayAudio(base::span(pcm_samples).first(480u));
   ASSERT_EQ(third_envelope.segments.size(), 1u);
   EXPECT_EQ(third_envelope.segments[0].start_time, base::Milliseconds(0));
   EXPECT_EQ(third_envelope.segments[0].duration, base::Milliseconds(20));
@@ -995,6 +1008,90 @@ TEST_F(AudioControllerImplTest, DebugSinkIsOptional) {
   controller.OnCaptureMuted(true);
   controller.OnRenderError();
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AudioControllerImplTest,
+       IsPlayingRemainsTrueUntilPendingRenderCallbacksRun) {
+  AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
+
+  std::vector<int16_t> samples(800, 1000);
+  controller.PlayAudio(samples);
+
+  // First render: 400 frames rendered, 400 remain in queue.
+  auto bus1 = media::AudioBus::Create(1, 400);
+  controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus1.get());
+  EXPECT_TRUE(controller.is_playing());
+
+  // Second render: remaining 400 frames rendered, playback_queue_ is now empty.
+  auto bus2 = media::AudioBus::Create(1, 400);
+  controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus2.get());
+
+  // Although playback_queue_ is completely empty, pending render callbacks are
+  // still posted on the main thread, so is_playing() must remain true.
+  EXPECT_TRUE(controller.is_playing());
+
+  base::RunLoop run_loop;
+  std::vector<bool> drain_states;
+  EXPECT_CALL(observer_, OnPlaybackProgress)
+      .WillRepeatedly(
+          [&](base::TimeDelta duration, bool did_fully_drain_queue) {
+            drain_states.push_back(did_fully_drain_queue);
+            // On the first callback, is_playing() must still be true because
+            // the second callback is still pending.
+            if (drain_states.size() == 1u) {
+              EXPECT_TRUE(controller.is_playing());
+            } else if (drain_states.size() == 2u) {
+              run_loop.Quit();
+            }
+          });
+
+  run_loop.Run();
+
+  EXPECT_THAT(drain_states, testing::ElementsAre(false, true));
+  EXPECT_FALSE(controller.is_playing());
+}
+
+TEST_F(AudioControllerImplTest,
+       ClearPlaybackQueueResetsPendingRenderCallbacks) {
+  AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
+
+  std::vector<int16_t> samples(400, 1000);
+  controller.PlayAudio(samples);
+
+  auto bus = media::AudioBus::Create(1, 400);
+  controller.Render(base::TimeDelta(), base::TimeTicks::Now(), {}, bus.get());
+  EXPECT_TRUE(controller.is_playing());
+
+  controller.ClearPlaybackQueue();
+  EXPECT_FALSE(controller.is_playing());
+
+  // Stale callback for the cleared epoch should be dropped.
+  EXPECT_CALL(observer_, OnPlaybackProgress).Times(0);
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_FALSE(controller.is_playing());
+}
+
+TEST_F(AudioControllerImplTest,
+       RenderErrorClearsPlaybackQueueAndNotifiesPlaybackError) {
+  AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
+
+  std::vector<int16_t> samples(400, 1000);
+  controller.PlayAudio(samples);
+  EXPECT_TRUE(controller.is_playing());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnPlaybackError()).WillOnce([&] { run_loop.Quit(); });
+
+  controller.OnRenderError();
+  run_loop.Run();
+
+  EXPECT_FALSE(controller.is_playing());
 }
 
 }  // namespace ttc

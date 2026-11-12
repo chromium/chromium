@@ -204,8 +204,8 @@ TEST_F(TtcDebugSessionTest, SuccessfulTurnRecordsLatencies) {
   task_environment_.FastForwardBy(base::Milliseconds(400));
   ReceiveAudio(3);
   task_environment_.FastForwardBy(base::Milliseconds(100));
-  session_->OnClientFrame(
-      DebugSink::PlaybackStatus{.last_played_sequence_number = 0});
+  session_->OnClientFrame(DebugSink::PlaybackStatus{
+      .playback_progress = base::Milliseconds(200), .generation_id = 1});
   session_->OnServerFrame(DebugSink::TurnComplete());
 
   ASSERT_EQ(session_->turns().size(), 1u);
@@ -332,8 +332,8 @@ TEST_F(TtcDebugSessionTest, StageDetailsDescribeTheCapture) {
 
   // Playback reported by the client counts for the speaker.
   ReceiveAudio(1);
-  session_->OnClientFrame(
-      DebugSink::PlaybackStatus{.last_played_sequence_number = 0});
+  session_->OnClientFrame(DebugSink::PlaybackStatus{
+      .playback_progress = base::Milliseconds(200), .generation_id = 1});
   EXPECT_EQ(StageHealth(Stage::kSpeaker), Health::kOk);
 }
 
@@ -370,8 +370,8 @@ TEST_F(TtcDebugSessionTest, InterruptionDiscardsUnplayedReplyAudio) {
 
 TEST_F(TtcDebugSessionTest, CountsClientFrames) {
   Speak(2, 0.1f);
-  session_->OnClientFrame(
-      DebugSink::PlaybackStatus{.last_played_sequence_number = 4});
+  session_->OnClientFrame(DebugSink::PlaybackStatus{
+      .playback_progress = base::Milliseconds(800), .generation_id = 1});
   // Not recorded yet.
   session_->OnClientFrame(DebugSink::TextInput{.text = "hi"});
 
@@ -431,7 +431,9 @@ TEST_F(TtcDebugSessionTest, ExportOmitsVerboseEvents) {
       DebugSink::Transcript{.is_input = true, .text = "hello"});
   ReceiveAudio(1);
   session_->OnClientFrame(
-      DebugSink::PlaybackStatus{.last_played_sequence_number = 0});
+      DebugSink::PlaybackStatus{.playback_progress = base::Milliseconds(200),
+                                .playback_complete = true,
+                                .generation_id = 1});
   base::DictValue value = session_->ToValue();
   const base::DictValue* snapshot = value.FindDict("snapshot");
   ASSERT_TRUE(snapshot);
@@ -635,8 +637,8 @@ TEST_F(TtcDebugSessionTest, UnplayedAudioIsFlagged) {
   task_environment_.FastForwardBy(TtcDebugSession::kPlaybackStallTimeout +
                                   TtcDebugSession::kDetectorInterval);
   EXPECT_TRUE(OpenIssue("playback_stalled"));
-  session_->OnClientFrame(
-      DebugSink::PlaybackStatus{.last_played_sequence_number = 1});
+  session_->OnClientFrame(DebugSink::PlaybackStatus{
+      .playback_progress = base::Milliseconds(200), .generation_id = 1});
   task_environment_.FastForwardBy(TtcDebugSession::kDetectorInterval);
   EXPECT_FALSE(OpenIssue("playback_stalled"));
 }
@@ -965,8 +967,8 @@ TEST_F(TtcDebugSessionTest, PlaybackAfterTurnClosedIsRecorded) {
 
   // Playback lags behind the server.
   task_environment_.FastForwardBy(base::Milliseconds(100));
-  session_->OnClientFrame(
-      DebugSink::PlaybackStatus{.last_played_sequence_number = 0});
+  session_->OnClientFrame(DebugSink::PlaybackStatus{
+      .playback_progress = base::Milliseconds(200), .generation_id = 1});
   EXPECT_TRUE(session_->turns()[0].first_playback_ms.has_value());
 }
 

@@ -17,8 +17,7 @@ SpeakerTracker::SpeakerTracker(SpeakerChangedCallback speaker_changed_callback)
 
 SpeakerTracker::~SpeakerTracker() = default;
 
-void SpeakerTracker::OnModelTurnStateUpdate(ModelTurnStateUpdate update,
-                                            int64_t generation_id) {
+void SpeakerTracker::OnModelTurnStateUpdate(ModelTurnStateUpdate update) {
   switch (update) {
     case ModelTurnStateUpdate::kTurnStarted:
       SetSpeaker(Speaker::kModel);

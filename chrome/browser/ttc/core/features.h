@@ -23,6 +23,12 @@ inline constexpr base::FeatureParam<double>
     kSessionInactivityAudioEnergyThreshold{
         &kTtc, "session_inactivity_audio_energy_threshold", 0.05};
 
+// Finch-configurable interval between periodic playback status reports during
+// a model turn.
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kPlaybackStatusReportInterval{&kTtc, "playback_status_report_interval",
+                                  base::Milliseconds(200)};
+
 // Enables the first run experience feature for TTC. While FRE is under
 // development, this is used to hide the unfinished FRE. Once FRE is complete,
 // this can be used to suppress the feature in tests.

@@ -35,10 +35,8 @@ class EvalAudioController : public AudioController {
   void RemoveObserver(Observer* observer) override;
 
   void PlayAudio(base::span<const int16_t> pcm_data,
-                 const media::AudioParameters& params,
-                 int64_t sequence_number) override;
-  void PlayAudio(base::span<const int16_t> pcm_data,
-                 int64_t sequence_number) override;
+                 const media::AudioParameters& params) override;
+  void PlayAudio(base::span<const int16_t> pcm_data) override;
 
   void ClearPlaybackQueue() override;
   void StopPlayback() override;
@@ -56,7 +54,6 @@ class EvalAudioController : public AudioController {
 
  private:
   bool is_capturing_ = false;
-  bool is_playing_ = false;
 
   std::vector<int16_t> recorded_audio_;
   AudioEnvelopeExtractor audio_envelope_extractor_;

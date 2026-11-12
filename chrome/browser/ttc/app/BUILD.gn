@@ -10,7 +10,10 @@ source_set("public") {
     "public/audio_envelope.h",
     "public/make_conversation.h",
   ]
-  sources = [ "public/audio_envelope.cc" ]
+  sources = [
+    "public/audio_controller.cc",
+    "public/audio_envelope.cc",
+  ]
   public_deps = [
     "//base",
     "//components/actor/public/mojom:mojo_bindings",
@@ -46,6 +49,8 @@ source_set("impl") {
     "conversation_impl.cc",
     "conversation_impl.h",
     "make_conversation.cc",
+    "playback_status_reporter.cc",
+    "playback_status_reporter.h",
     "speaker_tracker.cc",
     "speaker_tracker.h",
   ]
@@ -72,6 +77,7 @@ source_set("unit_tests") {
   sources = [
     "audio_controller_impl_unittest.cc",
     "conversation_impl_unittest.cc",
+    "playback_status_reporter_unittest.cc",
   ]
   deps = [
     ":app",

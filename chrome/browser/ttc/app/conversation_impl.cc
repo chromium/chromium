@@ -48,6 +48,7 @@ void ConversationImpl::Stop() {
 
   audio_controller_->StopCapture();
   audio_controller_->StopPlayback();
+  playback_status_reporter_.reset();
 
   if (backend_->is_transport_connected()) {
     backend_->Close();
@@ -112,12 +113,22 @@ void ConversationImpl::OnModelAudioEnvelopeReady(
   session_controller_->OnModelAudioEnvelopeReady(envelope);
 }
 
-void ConversationImpl::OnPlaybackCompleted(int64_t sequence_number) {
-  backend_->ReportPlaybackStatus(sequence_number);
+void ConversationImpl::OnPlaybackProgress(base::TimeDelta played_duration,
+                                          bool did_fully_drain_queue) {
+  if (playback_status_reporter_) {
+    playback_status_reporter_->OnPlaybackProgress(played_duration,
+                                                  did_fully_drain_queue);
+  }
 }
 
 void ConversationImpl::OnAudioError(ErrorCode error) {
   session_controller_->OnError(error);
+}
+
+void ConversationImpl::OnPlaybackError() {
+  if (playback_status_reporter_) {
+    playback_status_reporter_->OnPlaybackError();
+  }
 }
 
 void ConversationImpl::OnBackendInitialized() {
@@ -161,7 +172,7 @@ void ConversationImpl::OnTranscriptions(
 
 void ConversationImpl::OnAudioOutput(base::span<const int16_t> audio_data,
                                      int64_t sequence_number) {
-  audio_controller_->PlayAudio(audio_data, sequence_number);
+  audio_controller_->PlayAudio(audio_data);
 }
 
 void ConversationImpl::OnGenerationStateChanged(bool started,
@@ -187,7 +198,37 @@ void ConversationImpl::OnGenerationStateChanged(bool started,
 
 void ConversationImpl::OnModelTurnStateUpdate(ModelTurnStateUpdate update,
                                               int64_t generation_id) {
-  speaker_tracker_.OnModelTurnStateUpdate(update, generation_id);
+  speaker_tracker_.OnModelTurnStateUpdate(update);
+
+  if (update == ModelTurnStateUpdate::kInterrupted) {
+    audio_controller_->ClearPlaybackQueue();
+  }
+
+  switch (update) {
+    case ModelTurnStateUpdate::kTurnStarted:
+      playback_status_reporter_ = std::make_unique<PlaybackStatusReporter>(
+          generation_id,
+          base::BindRepeating(&ConversationImpl::SendPlaybackStatusReport,
+                              base::Unretained(this)));
+      break;
+    case ModelTurnStateUpdate::kGenerationCompleted:
+      if (playback_status_reporter_) {
+        playback_status_reporter_->OnGenerationCompleted(
+            audio_controller_->is_playing());
+      }
+      break;
+    case ModelTurnStateUpdate::kInterrupted:
+      if (playback_status_reporter_) {
+        playback_status_reporter_->OnInterrupted();
+      }
+      break;
+    case ModelTurnStateUpdate::kTurnCompleted:
+      if (playback_status_reporter_) {
+        playback_status_reporter_->CompleteIfNeeded();
+        playback_status_reporter_.reset();
+      }
+      break;
+  }
 }
 
 void ConversationImpl::OnUserTurnStateUpdate(UserTurnStateUpdate update) {
@@ -200,6 +241,14 @@ void ConversationImpl::OnSpeakerChanged(Speaker old_speaker,
     audio_logger_.DumpToJournal(session_controller_->GetJournal());
   }
   session_controller_->OnSpeakerChanged(new_speaker);
+}
+
+void ConversationImpl::SendPlaybackStatusReport(
+    base::TimeDelta playback_progress,
+    bool playback_complete,
+    int64_t generation_id) {
+  backend_->ReportPlaybackStatus(playback_progress, playback_complete,
+                                 generation_id);
 }
 
 void ConversationImpl::OnToolCall(const ToolRequest& tool_request,

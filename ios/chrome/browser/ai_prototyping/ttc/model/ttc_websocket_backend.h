@@ -16,6 +16,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
+#import "base/time/time.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/public/tool_types.h"
 #import "components/ttc/app/ttc_backend.h"
@@ -50,7 +51,9 @@ class TtcWebSocketBackend : public ttc::TtcBackend {
       const GURL& url,
       const std::string& title,
       const optimization_guide::proto::AnnotatedPageContent& apc) override;
-  void ReportPlaybackStatus(int64_t last_played_sequence_number) override;
+  void ReportPlaybackStatus(base::TimeDelta playback_progress,
+                            bool playback_complete,
+                            int64_t generation_id) override;
   void Close() override;
   bool is_transport_connected() const override;
 

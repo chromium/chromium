@@ -132,6 +132,12 @@ base::Time ToTime(const optimization_guide::proto::Timestamp& proto_timestamp) {
          base::Nanoseconds(proto_timestamp.nanos());
 }
 
+base::TimeDelta ToTimeDelta(
+    const optimization_guide::proto::Duration& proto_duration) {
+  return base::Seconds(proto_duration.seconds()) +
+         base::Nanoseconds(proto_duration.nanos());
+}
+
 ServerJournalEvent ToServerJournalEvent(
     const optimization_guide::proto::JournalEvent& proto_event) {
   ServerJournalEvent event;
@@ -566,10 +572,22 @@ void TtcMesClient::SendContextUpdate(
   SendFrame(frame);
 }
 
-void TtcMesClient::ReportPlaybackStatus(int64_t last_played_sequence_number) {
+void TtcMesClient::ReportPlaybackStatus(base::TimeDelta playback_progress,
+                                        bool playback_complete,
+                                        int64_t generation_id) {
+  CHECK(!playback_progress.is_negative());
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
+  auto* status = frame.mutable_playback_status();
+  auto* duration = status->mutable_playback_progress();
+  const int64_t seconds = playback_progress.InSeconds();
+  const int64_t nanos =
+      (playback_progress - base::Seconds(seconds)).InNanoseconds();
+  duration->set_seconds(seconds);
+  duration->set_nanos(static_cast<int32_t>(nanos));
+  status->set_playback_complete(playback_complete);
+  status->set_generation_id(generation_id);
   SendFrame(frame);
 }
 
@@ -648,12 +666,15 @@ void TtcMesClient::ReportClientFrameToDebugSink(
               frame.tool_response().visual_content().image_data().size(),
       });
       break;
-    case Frame::kPlaybackStatus:
-      // TODO(bokan): this is being replaced by duration and generation_id.
+    case Frame::kPlaybackStatus: {
+      const auto& status = frame.playback_status();
       debug_sink_->OnClientFrame(DebugSink::PlaybackStatus{
-          .last_played_sequence_number = 0,
+          .playback_progress = ToTimeDelta(status.playback_progress()),
+          .playback_complete = status.playback_complete(),
+          .generation_id = status.generation_id(),
       });
       break;
+    }
     case Frame::kCloseRequest:
       debug_sink_->OnClientFrame(
           DebugSink::CloseRequest{.reason = frame.close_request().reason()});
@@ -837,9 +858,16 @@ void TtcMesClient::LogClientFrame(
       }
       break;
     }
-    case optimization_guide::proto::TtcClientFrame::kPlaybackStatus:
+    case optimization_guide::proto::TtcClientFrame::kPlaybackStatus: {
       event_name = "PlaybackStatus";
+      const auto& status = frame.playback_status();
+      details
+          .Add("playback_progress_ms",
+               ToTimeDelta(status.playback_progress()).InMilliseconds())
+          .Add("playback_complete", status.playback_complete())
+          .Add("generation_id", status.generation_id());
       break;
+    }
     case optimization_guide::proto::TtcClientFrame::kCloseRequest:
       event_name = "CloseSessionRequest";
       details.Add("reason", frame.close_request().reason());

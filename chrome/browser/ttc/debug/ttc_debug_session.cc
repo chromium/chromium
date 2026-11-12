@@ -512,18 +512,19 @@ void TtcDebugSession::OnClientFrame(const ClientFrame& frame) {
     recorder_.Append(Stream::kInput, now, audio->pcm);
     MaybeReportCapReached();
   } else if (const auto* status = std::get_if<PlaybackStatus>(&frame)) {
-    // Sent for each chunk played.
-    const double now = NowMs();
-    ++audio_chunks_played_;
-    last_playback_ms_ = now;
-    AddEvent(EventKind::kPlayback,
-             static_cast<float>(status->last_played_sequence_number));
-    // Playback lags behind the server, so the turn may have closed already.
-    if (!turns_.empty()) {
-      Turn& turn = turns_.back();
-      if (turn.first_audio_ms && !turn.first_playback_ms) {
-        turn.first_playback_ms = now;
-        MarkTurnChanged(turn);
+    if (status->playback_progress.is_positive()) {
+      const double now = NowMs();
+      ++audio_chunks_played_;
+      last_playback_ms_ = now;
+      AddEvent(EventKind::kPlayback,
+               static_cast<float>(status->playback_progress.InMillisecondsF()));
+      // Playback lags behind the server, so the turn may have closed already.
+      if (!turns_.empty()) {
+        Turn& turn = turns_.back();
+        if (turn.first_audio_ms && !turn.first_playback_ms) {
+          turn.first_playback_ms = now;
+          MarkTurnChanged(turn);
+        }
       }
     }
   } else if (const auto* context = std::get_if<ContextUpdate>(&frame)) {

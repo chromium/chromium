@@ -77,10 +77,8 @@ class AudioControllerImpl : public AudioController,
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void PlayAudio(base::span<const int16_t> pcm_data,
-                 const media::AudioParameters& params,
-                 int64_t sequence_number) override;
-  void PlayAudio(base::span<const int16_t> pcm_data,
-                 int64_t sequence_number) override;
+                 const media::AudioParameters& params) override;
+  void PlayAudio(base::span<const int16_t> pcm_data) override;
   void ClearPlaybackQueue() override;
   void StopPlayback() override;
   bool is_playing() const override;
@@ -120,7 +118,6 @@ class AudioControllerImpl : public AudioController,
   struct QueuedAudioChunk {
     std::vector<int16_t> pcm_data;
     size_t read_offset = 0;
-    int64_t sequence_number = 0;
   };
 
   void CreateAudioOutputDevice(const media::AudioParameters& params);
@@ -136,7 +133,8 @@ class AudioControllerImpl : public AudioController,
   void OnCapturedAudioOnMainThread(std::vector<int16_t> pcm_data,
                                    media::AudioParameters params,
                                    float energy);
-  void OnAudioRenderedOnMainThread(int64_t completed_sequence);
+  void OnAudioRenderedOnMainThread(base::TimeDelta played_duration,
+                                   uint64_t epoch);
   void OnAudioErrorOnMainThread(ErrorCode error_code);
   void OnRenderErrorOnMainThread();
 
@@ -156,7 +154,8 @@ class AudioControllerImpl : public AudioController,
   base::RepeatingCallback<
       void(std::vector<int16_t>, media::AudioParameters, float)>
       capture_callback_runner_;
-  base::RepeatingCallback<void(int64_t)> render_callback_runner_;
+  base::RepeatingCallback<void(base::TimeDelta, uint64_t)>
+      render_callback_runner_;
   base::RepeatingCallback<void(ErrorCode)> error_callback_runner_;
   base::RepeatingClosure render_error_callback_runner_;
 
@@ -180,6 +179,20 @@ class AudioControllerImpl : public AudioController,
   mutable base::Lock playback_lock_;
   base::circular_deque<QueuedAudioChunk> playback_queue_
       GUARDED_BY(playback_lock_);
+
+  // Used to track played duration across audio render callbacks:
+  //
+  // Sample rate of incoming audio. Each chunk is confirmed to have this sample
+  // rate but it's expected never to change.
+  int playback_sample_rate_ GUARDED_BY(playback_lock_) = 0;
+  // Incremented by ClearPlaybackQueue() so stale render callbacks posted
+  // before a queue flush are ignored.
+  uint64_t playback_epoch_ GUARDED_BY(playback_lock_) = 0;
+  // The number of posted render callback back to the main thread. This is
+  // tracked to know when rendered chunks have completed and been signaled to
+  // the observer since queued chunks are popped on the audio thread.
+  size_t pending_render_callbacks_ GUARDED_BY(playback_lock_) = 0;
+
   AudioEnvelopeExtractor audio_envelope_extractor_;
 
   // Only for `capture_callback_runner_`, so that StopCapture() can drop the

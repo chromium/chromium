@@ -176,9 +176,12 @@ class FakeDebugSink : public DebugSink {
               last_response_image_bytes = response.image_bytes;
             },
             [&](const PlaybackStatus& status) {
-              client_frames.push_back(base::StrCat(
-                  {"playback_status:",
-                   base::NumberToString(status.last_played_sequence_number)}));
+              client_frames.push_back(
+                  base::StrCat({"playback_status:",
+                                base::NumberToString(
+                                    status.playback_progress.InMilliseconds()),
+                                "|", status.playback_complete ? "1" : "0", "|",
+                                base::NumberToString(status.generation_id)}));
             },
             [&](const CloseRequest& close) {
               client_frames.push_back(
@@ -506,16 +509,17 @@ TEST_F(TtcMesClientTest, DebugSinkGetsClientFrames) {
   tools[0].name = "open_tab";
   tools[1].name = "scroll";
   client().SendToolSetUpdate(tools);
+  client().ReportPlaybackStatus(base::Milliseconds(1250),
+                                /*playback_complete=*/true,
+                                /*generation_id=*/12);
 
-  // TODO(b/584066906): Test this once it's implemented.
-  client().ReportPlaybackStatus(12);
-
-  EXPECT_THAT(debug_sink_.client_frames,
-              testing::ElementsAre(
-                  "text_input:hi",
-                  base::StrCat({"context_update:https://a.test/|",
-                                base::NumberToString(apc.ByteSizeLong())}),
-                  "toolset_update:open_tab,scroll"));
+  EXPECT_THAT(
+      debug_sink_.client_frames,
+      testing::ElementsAre(
+          "text_input:hi",
+          base::StrCat({"context_update:https://a.test/|",
+                        base::NumberToString(apc.ByteSizeLong())}),
+          "toolset_update:open_tab,scroll", "playback_status:1250|1|12"));
   EXPECT_EQ(debug_sink_.dropped, 0);
 }
 
@@ -791,7 +795,9 @@ TEST_F(TtcMesClientTest, NullDebugSinkIsSafe) {
   client.SendContextUpdate(GURL("https://a.test"), "title",
                            optimization_guide::proto::AnnotatedPageContent());
   client.SendToolSetUpdate(std::vector<ToolDefinition>(1));
-  client.ReportPlaybackStatus(1);
+  client.ReportPlaybackStatus(base::Milliseconds(200),
+                              /*playback_complete=*/false,
+                              /*generation_id=*/1);
   ToolResponseCallback callback = observer.TakeToolResponseCallback();
   ASSERT_TRUE(callback);
   std::move(callback).Run(ToolResponse::Success());

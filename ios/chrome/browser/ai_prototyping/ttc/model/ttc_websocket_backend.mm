@@ -290,9 +290,10 @@ void TtcWebSocketBackend::SendContextUpdate(
 }
 
 void TtcWebSocketBackend::ReportPlaybackStatus(
-    int64_t last_played_sequence_number) {
+    base::TimeDelta playback_progress,
+    bool playback_complete,
+    int64_t generation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Playback sequence status reported for server-side jitter buffer alignment.
 }
 
 #pragma mark - Session Delegate Notifications (Called on Sequence)

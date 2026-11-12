@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -398,18 +399,20 @@ void AudioControllerImpl::RemoveObserver(Observer* observer) {
 }
 
 void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
-                                    const media::AudioParameters& params,
-                                    int64_t sequence_number) {
+                                    const media::AudioParameters& params) {
   // Ignore empty or placeholder/preamble chunks (< 2 samples) that carry no
   // usable audio and can cause buffer underruns.
   if (pcm_data.size() < 2u) {
     return;
   }
+  CHECK_GT(params.sample_rate(), 0);
   {
     base::AutoLock auto_lock(playback_lock_);
+    CHECK(playback_sample_rate_ == 0 ||
+          playback_sample_rate_ == params.sample_rate());
+    playback_sample_rate_ = params.sample_rate();
     playback_queue_.push_back(
-        {std::vector<int16_t>(pcm_data.begin(), pcm_data.end()), 0,
-         sequence_number});
+        {std::vector<int16_t>(pcm_data.begin(), pcm_data.end()), 0});
   }
   CreateAudioOutputDevice(params);
 
@@ -417,15 +420,16 @@ void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
   observers_.Notify(&Observer::OnModelAudioEnvelopeReady, envelope);
 }
 
-void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data,
-                                    int64_t sequence_number) {
-  PlayAudio(pcm_data, GetDefaultPlaybackAudioParameters(), sequence_number);
+void AudioControllerImpl::PlayAudio(base::span<const int16_t> pcm_data) {
+  PlayAudio(pcm_data, GetDefaultPlaybackAudioParameters());
 }
 
 void AudioControllerImpl::ClearPlaybackQueue() {
   {
     base::AutoLock auto_lock(playback_lock_);
     playback_queue_.clear();
+    pending_render_callbacks_ = 0;
+    ++playback_epoch_;
   }
   audio_envelope_extractor_.Reset();
 }
@@ -433,11 +437,15 @@ void AudioControllerImpl::ClearPlaybackQueue() {
 void AudioControllerImpl::StopPlayback() {
   ClearPlaybackQueue();
   output_device_.reset();
+  {
+    base::AutoLock auto_lock(playback_lock_);
+    playback_sample_rate_ = 0;
+  }
 }
 
 bool AudioControllerImpl::is_playing() const {
   base::AutoLock auto_lock(playback_lock_);
-  return !playback_queue_.empty();
+  return !playback_queue_.empty() || pending_render_callbacks_ > 0;
 }
 
 void AudioControllerImpl::CreateAudioOutputDevice(
@@ -547,10 +555,13 @@ int AudioControllerImpl::Render(base::TimeDelta delay,
   }
 
   int frames_rendered = 0;
-  int64_t completed_sequence = -1;
+  int sample_rate = 0;
+  uint64_t epoch = 0;
 
   {
     base::AutoLock auto_lock(playback_lock_);
+    epoch = playback_epoch_;
+    sample_rate = playback_sample_rate_;
     while (frames_rendered < dest->frames() && !playback_queue_.empty()) {
       auto& chunk = playback_queue_.front();
       const size_t total_chunk_frames = chunk.pcm_data.size();
@@ -573,9 +584,12 @@ int AudioControllerImpl::Render(base::TimeDelta delay,
       chunk.read_offset += frames_to_copy;
 
       if (chunk.read_offset >= total_chunk_frames) {
-        completed_sequence = chunk.sequence_number;
         playback_queue_.pop_front();
       }
+    }
+
+    if (frames_rendered > 0) {
+      ++pending_render_callbacks_;
     }
   }
 
@@ -589,8 +603,10 @@ int AudioControllerImpl::Render(base::TimeDelta delay,
     }
   }
 
-  if (completed_sequence >= 0) {
-    render_callback_runner_.Run(completed_sequence);
+  if (frames_rendered > 0) {
+    const base::TimeDelta played_duration =
+        FramesToCeilingTimeDelta(frames_rendered, sample_rate);
+    render_callback_runner_.Run(played_duration, epoch);
   }
 
   return dest->frames();
@@ -602,13 +618,24 @@ void AudioControllerImpl::OnRenderError() {
 }
 
 void AudioControllerImpl::OnAudioRenderedOnMainThread(
-    int64_t completed_sequence) {
-  if (!is_playing()) {
+    base::TimeDelta played_duration,
+    uint64_t epoch) {
+  bool did_fully_drain_queue = false;
+  {
+    base::AutoLock auto_lock(playback_lock_);
+    if (epoch != playback_epoch_) {
+      return;
+    }
+    CHECK_GT(pending_render_callbacks_, 0u);
+    --pending_render_callbacks_;
+    did_fully_drain_queue =
+        playback_queue_.empty() && pending_render_callbacks_ == 0;
+  }
+  if (did_fully_drain_queue) {
     audio_envelope_extractor_.Reset();
   }
-  if (completed_sequence >= 0) {
-    observers_.Notify(&Observer::OnPlaybackCompleted, completed_sequence);
-  }
+  observers_.Notify(&Observer::OnPlaybackProgress, played_duration,
+                    did_fully_drain_queue);
 }
 
 void AudioControllerImpl::OnAudioErrorOnMainThread(ErrorCode error_code) {
@@ -619,6 +646,8 @@ void AudioControllerImpl::OnRenderErrorOnMainThread() {
   if (debug_sink_) {
     debug_sink_->OnRenderError();
   }
+  StopPlayback();
+  observers_.Notify(&Observer::OnPlaybackError);
 }
 
 }  // namespace ttc

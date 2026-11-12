@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "media/base/audio_parameters.h"
@@ -55,14 +56,24 @@ class AudioController {
     // queued playback chunk.
     virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) {}
 
-    // Called when an audio chunk sequence finishes playback.
-    virtual void OnPlaybackCompleted(int64_t sequence_number) {}
+    // Called as queued playback audio is rendered, reporting the duration of
+    // audio just played and whether the playback queue has been fully drained.
+    virtual void OnPlaybackProgress(base::TimeDelta played_duration,
+                                    bool did_fully_drain_queue) {}
 
     // Called when an audio capture error occurs.
     virtual void OnAudioError(ErrorCode error) {}
+
+    // Called when an audio playback/render error occurs.
+    virtual void OnPlaybackError() {}
   };
 
   virtual ~AudioController() = default;
+
+  // Computes the duration represented by `frames` rendered at `sample_rate`,
+  // rounded up so played duration never under-reports rendered audio.
+  static base::TimeDelta FramesToCeilingTimeDelta(int64_t frames,
+                                                  int sample_rate);
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -84,12 +95,10 @@ class AudioController {
   // Enqueues signed PCM16 audio data to be rendered natively with specific
   // parameters.
   virtual void PlayAudio(base::span<const int16_t> pcm_data,
-                         const media::AudioParameters& params,
-                         int64_t sequence_number) = 0;
+                         const media::AudioParameters& params) = 0;
 
   // Enqueues audio data using default 24kHz mono PCM16 parameters.
-  virtual void PlayAudio(base::span<const int16_t> pcm_data,
-                         int64_t sequence_number) = 0;
+  virtual void PlayAudio(base::span<const int16_t> pcm_data) = 0;
 
   // Instantly flushes all queued playback audio (used on barge-in /
   // interruption).

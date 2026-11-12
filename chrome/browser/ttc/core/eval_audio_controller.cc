@@ -8,7 +8,16 @@
 #include <cmath>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/time/time.h"
+
 namespace ttc {
+
+namespace {
+
+constexpr int kDefaultPlaybackSampleRate = 24000;
+
+}  // namespace
 
 EvalAudioController::EvalAudioController() = default;
 EvalAudioController::~EvalAudioController() = default;
@@ -42,36 +51,45 @@ void EvalAudioController::RemoveObserver(Observer* observer) {
 }
 
 void EvalAudioController::PlayAudio(base::span<const int16_t> pcm_data,
-                                    const media::AudioParameters& params,
-                                    int64_t sequence_number) {
-  PlayAudio(pcm_data, sequence_number);
-}
-
-void EvalAudioController::PlayAudio(base::span<const int16_t> pcm_data,
-                                    int64_t sequence_number) {
-  is_playing_ = true;
+                                    const media::AudioParameters& params) {
   recorded_audio_.insert(recorded_audio_.end(), pcm_data.begin(),
                          pcm_data.end());
-  if (!pcm_data.empty()) {
-    const AudioEnvelope envelope = audio_envelope_extractor_.Extract(pcm_data);
-    observers_.Notify(&Observer::OnModelAudioEnvelopeReady, envelope);
+  if (pcm_data.empty()) {
+    return;
   }
-  observers_.Notify(&Observer::OnPlaybackCompleted, sequence_number);
+  const AudioEnvelope envelope = audio_envelope_extractor_.Extract(pcm_data);
+  observers_.Notify(&Observer::OnModelAudioEnvelopeReady, envelope);
+
+  CHECK_GT(params.sample_rate(), 0);
+  const base::TimeDelta played_duration =
+      FramesToCeilingTimeDelta(pcm_data.size(), params.sample_rate());
+  observers_.Notify(&Observer::OnPlaybackProgress, played_duration,
+                    /*did_fully_drain_queue=*/true);
+}
+
+void EvalAudioController::PlayAudio(base::span<const int16_t> pcm_data) {
+  media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), kDefaultPlaybackSampleRate,
+      std::max<int>(1, static_cast<int>(pcm_data.size())));
+  PlayAudio(pcm_data, params);
 }
 
 void EvalAudioController::ClearPlaybackQueue() {
   recorded_audio_.clear();
-  is_playing_ = false;
   audio_envelope_extractor_.Reset();
 }
 
 void EvalAudioController::StopPlayback() {
-  is_playing_ = false;
   audio_envelope_extractor_.Reset();
 }
 
 bool EvalAudioController::is_playing() const {
-  return is_playing_;
+  // PlayAudio() consumes each chunk and notifies OnPlaybackProgress()
+  // synchronously rather than queuing audio for asynchronous output;
+  // therefore, the audio is effectively played instantly so is_playing() will
+  // always return false.
+  return false;
 }
 
 void EvalAudioController::InjectCapturedAudio(
