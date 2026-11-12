@@ -107,11 +107,10 @@ void OsEventsIsEventSupportedFunction::RunIfAllowed() {
   std::string feature_name = GetFeatureName(params->category);
   const auto* feature =
       extensions::FeatureProvider::GetAPIFeatures()->GetFeature(feature_name);
-  // Healthd team uses feature flag "TelemetryExtensionPendingApprovalApi" for
-  // pending APIs. "os.events" API has been released, and we keep adding API
-  // under it like "os.events.abc" and use the feature flag for pending
-  // approval. Once it's approved, we remove it from the "_api_features.json"
-  // file.
+  // The "os.events" API has been released, but newly added sub-APIs (like
+  // "os.events.abc") are gated behind a feature flag in "_api_features.json"
+  // while pending approval. Once approved, their entry is removed from
+  // "_api_features.json".
   //
   // Hence, for the API under "os.events", as long as we can find it in the
   // "_api_features.json" file, it means it's behind a feature flag and then we
