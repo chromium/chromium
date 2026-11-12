@@ -220,16 +220,19 @@ message GlicExperimentalTriggering {
       optional string error_message = 2;
     }
 
-    // `task_update` reports the lifecycle of an actuation task. It is meant
-    // only for TriggerActuationRequest, ContinueActuationRequest and
-    // StopActuationRequest, and for the task's own progress updates. Other
-    // requests are answered with their own result payload: an empty
-    // synchronous reply while the work runs asynchronously, then
-    // `device_opt_in_result`, `screenshot_result`, `execute_actions_response`
-    // or `confirmation_result` on completion or early failure.
-    // TODO(b/574916669): ExecuteActionsRequest, the Android DeviceOptInRequest
-    // path, and requests rejected before reaching a handler still report early
-    // failures as a failed `task_update`.
+    // `task_update` reports the lifecycle of an actuation task: it answers
+    // TriggerActuationRequest, ContinueActuationRequest and
+    // StopActuationRequest, and carries the task's own progress updates.
+    // ExecuteActionsRequest is a separate one-off task on its own context_id:
+    // it gets a failed `task_update` if refused, or else an empty reply
+    // followed by one final `execute_actions_response`.
+    // DeviceOptInRequest, GetScreenshotRequest and SubmitConfirmation get
+    // their own result: synchronously if refused, or after an empty reply
+    // when the work ends.
+    // A `GlicExperimentalTriggering` message rejected before reaching a
+    // per-request handler (e.g. unsupported version, missing `task_metadata`
+    // or `request` payload, or unavailable coordinator) gets a failed
+    // `task_update`, whatever its type.
     oneof payload {
       TaskUpdate task_update = 3;
       DeviceOptInResult device_opt_in_result = 4;
