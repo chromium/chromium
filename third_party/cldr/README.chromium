@@ -3,10 +3,10 @@ Short Name: cldr
 URL: https://github.com/unicode-org/cldr
 Version: release-45
 Revision: dd5776f650183c9172abe2a57313ed41619d41fb
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/584852234)
 License: Unicode-DFS-2016
 License File: LICENSE
-Security Critical: yes
+Security Critical: no
 Shipped: yes
 
 Description:
