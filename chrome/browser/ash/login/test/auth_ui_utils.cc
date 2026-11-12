@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/factor_setup_success_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -61,8 +60,6 @@ constexpr UIPath kDataLossWarningBack = {"local-data-loss-warning",
                                          "backButton"};
 constexpr UIPath kDataLossWarningRemove = {"local-data-loss-warning",
                                            "proceedRemove"};
-constexpr UIPath kDataLossWarningReset = {"local-data-loss-warning",
-                                          "powerwash"};
 
 constexpr UIPath kRecoveryReauthNotificationStep = {"cryptohome-recovery",
                                                     "reauthNotificationDialog"};
@@ -72,8 +69,6 @@ constexpr UIPath kRecoveryReauthButton = {"cryptohome-recovery",
 constexpr UIPath kFactorSetupSuccessElement = {"factor-setup-success"};
 constexpr UIPath kFactorSetupSuccessDoneButton = {"factor-setup-success",
                                                   "doneButton"};
-constexpr UIPath kFactorSetupSuccessNextButton = {"factor-setup-success",
-                                                  "nextButton"};
 
 constexpr UIPath kLocalPasswordSetupElement = {"local-password-setup"};
 constexpr UIPath kLocalPasswordSetupFirstInput = {
@@ -426,10 +421,6 @@ void AuthErrorBubbleActor::PressRecoveryButton() {
   LoginScreenTestApi::PressAuthErrorRecoveryButton();
 }
 
-void AuthErrorBubbleActor::PressLearnMoreButton() {
-  LoginScreenTestApi::PressAuthErrorLearnMoreButton();
-}
-
 // ----------------------------------------------------------
 
 std::unique_ptr<test::TestConditionWaiter> CreateOldPasswordEnterPageWaiter() {
@@ -478,20 +469,12 @@ void LocalDataLossWarningPageRemoveAction() {
   test::OobeJS().ClickOnPath(kDataLossWarningRemove);
 }
 
-void LocalDataLossWarningPageResetAction() {
-  test::OobeJS().ClickOnPath(kDataLossWarningReset);
-}
-
 void LocalDataLossWarningPageExpectGoBack() {
   test::OobeJS().ExpectVisiblePath(kDataLossWarningBack);
 }
 
 void LocalDataLossWarningPageExpectRemove() {
   test::OobeJS().ExpectVisiblePath(kDataLossWarningRemove);
-}
-
-void LocalDataLossWarningPageExpectReset() {
-  test::OobeJS().ExpectVisiblePath(kDataLossWarningReset);
 }
 
 std::unique_ptr<test::TestConditionWaiter>
@@ -501,14 +484,6 @@ CreatePasswordUpdateNoticePageWaiter() {
       std::make_unique<OobeScreenWaiter>(
           ash::FactorSetupSuccessScreenView::kScreenId),
       OobeJS().CreateVisibilityWaiter(true, kFactorSetupSuccessElement));
-}
-
-void PasswordUpdateNoticeExpectNext() {
-  test::OobeJS().ExpectVisiblePath(kFactorSetupSuccessNextButton);
-}
-
-void PasswordUpdateNoticeNextAction() {
-  test::OobeJS().ClickOnPath(kFactorSetupSuccessNextButton);
 }
 
 void PasswordUpdateNoticeExpectDone() {
@@ -569,13 +544,6 @@ std::unique_ptr<LocalPasswordSetupPageActor> AwaitLocalPasswordSetupUI() {
 void RecoveryPasswordUpdatedProceedAction() {
   // TODO(b/315829727): inline this and other now-one-line-methods.
   PasswordUpdateNoticeDoneAction();
-}
-
-std::unique_ptr<test::TestConditionWaiter> RecoveryErrorPageWaiter() {
-  return std::make_unique<CompositeWaiter>(
-      std::make_unique<OobeWindowVisibilityWaiter>(true),
-      std::make_unique<OobeScreenWaiter>(
-          ash::OSAuthErrorScreenView::kScreenId));
 }
 
 std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter() {

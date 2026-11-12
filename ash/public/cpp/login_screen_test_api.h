@@ -121,7 +121,6 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static void ShowAuthError(int unlock_attempt);
   static void HideAuthError();
   static void PressAuthErrorRecoveryButton();
-  static void PressAuthErrorLearnMoreButton();
 };
 
 }  // namespace ash

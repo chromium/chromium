@@ -659,13 +659,6 @@ FakeUserDataAuthClient::TestApi::GetUserState(
   return user_it->second;
 }
 
-void FakeUserDataAuthClient::TestApi::SendLegacyFPAuthSignal(
-    user_data_auth::FingerprintScanResult result) {
-  for (auto& observer : g_instance->fingerprint_observers_) {
-    observer.OnFingerprintScan(result);
-  }
-}
-
 void FakeUserDataAuthClient::TestApi::SetNextOperationError(
     Operation operation,
     cryptohome::ErrorWrapper error) {

@@ -40,8 +40,6 @@ struct UserAuthConfig {
   UserAuthConfig& WithLocalPassword(const std::string& local_password);
   UserAuthConfig& WithCryptohomePin(const std::string& pin,
                                     const std::string& salt);
-  UserAuthConfig& WithLegacyPin(const std::string& pin,
-                                const std::string& pin_salt);
   UserAuthConfig& WithRecoveryFactor();
   UserAuthConfig& RequireReauth(bool require_reauth = true);
 

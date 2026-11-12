@@ -50,7 +50,6 @@ class DemoModeTestHelper {
   // before returning.
   // Only use with InitializeSessionWithPendingComponent().
   void FinishLoadingComponent();
-  void FailLoadingComponent();
 
   // Returns the path that fake Demo Mode resources will be mounted from.
   base::FilePath GetDemoResourcesPath();

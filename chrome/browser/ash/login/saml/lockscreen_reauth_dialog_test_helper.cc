@@ -156,11 +156,6 @@ void LockScreenReauthDialogTestHelper::WaitForPrimaryGaiaButtonToBeEnabled() {
   DialogJS().CreateEnabledWaiter(/*enabled=*/true, kGaiaPrimaryButton)->Wait();
 }
 
-void LockScreenReauthDialogTestHelper::ExpectGaiaButtonsVisible() {
-  ExpectSigninWebviewVisible();
-  DialogJS().ExpectVisiblePath(kGaiaButtons);
-}
-
 void LockScreenReauthDialogTestHelper::ExpectGaiaButtonsHidden() {
   DialogJS().ExpectHiddenPath(kGaiaButtons);
 }
@@ -191,10 +186,6 @@ void LockScreenReauthDialogTestHelper::ExpectSigninWebviewVisible() {
 
 void LockScreenReauthDialogTestHelper::ExpectSigninWebviewHidden() {
   DialogJS().ExpectHiddenPath(kWebviewContainer);
-}
-
-void LockScreenReauthDialogTestHelper::ExpectGaiaScreenVisible() {
-  DialogJS().ExpectAttributeEQ("isDefaultSsoProvider", {"main-element"}, false);
 }
 
 void LockScreenReauthDialogTestHelper::ExpectSamlConfirmPasswordVisible() {
@@ -235,10 +226,6 @@ test::UIPath LockScreenReauthDialogTestHelper::SamlNoticeMessage() const {
 
 void LockScreenReauthDialogTestHelper::ExpectSamlNoticeMessageVisible() {
   DialogJS().ExpectVisiblePath(kSamlNoticeMessage);
-}
-
-void LockScreenReauthDialogTestHelper::ExpectSamlNoticeMessageHidden() {
-  DialogJS().ExpectHiddenPath(kSamlNoticeMessage);
 }
 
 std::unique_ptr<test::TestConditionWaiter>
@@ -346,10 +333,6 @@ void LockScreenReauthDialogTestHelper::WaitForNetworkDialogAndSetHandlers() {
 void LockScreenReauthDialogTestHelper::ShowNetworkScreenAndWait() {
   reauth_dialog_->ShowLockScreenNetworkDialog();
   WaitForNetworkDialogAndSetHandlers();
-}
-
-void LockScreenReauthDialogTestHelper::CloseNetworkScreen() {
-  reauth_dialog_->DismissLockScreenNetworkDialog();
 }
 
 void LockScreenReauthDialogTestHelper::ExpectNetworkDialogVisible() {

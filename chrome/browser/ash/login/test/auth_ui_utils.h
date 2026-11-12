@@ -142,7 +142,6 @@ class AuthErrorBubbleActor {
   bool IsVisible();
   void Hide();
   void PressRecoveryButton();
-  void PressLearnMoreButton();
 };
 
 std::unique_ptr<FullScreenAuthSurface> OnLoginScreen();
@@ -172,16 +171,12 @@ std::unique_ptr<test::TestConditionWaiter> LocalDataLossWarningPageWaiter();
 void LocalDataLossWarningPageCancelAction();
 void LocalDataLossWarningPageGoBackAction();
 void LocalDataLossWarningPageRemoveAction();
-void LocalDataLossWarningPageResetAction();
 
 void LocalDataLossWarningPageExpectGoBack();
 void LocalDataLossWarningPageExpectRemove();
-void LocalDataLossWarningPageExpectReset();
 
 std::unique_ptr<test::TestConditionWaiter>
 CreatePasswordUpdateNoticePageWaiter();
-void PasswordUpdateNoticeExpectNext();
-void PasswordUpdateNoticeNextAction();
 void PasswordUpdateNoticeExpectDone();
 void PasswordUpdateNoticeDoneAction();
 
@@ -197,10 +192,6 @@ void LocalPasswordSetupTypeConfirmPassword(const std::string& pw);
 
 std::unique_ptr<test::TestConditionWaiter> RecoveryPasswordUpdatedPageWaiter();
 void RecoveryPasswordUpdatedProceedAction();
-
-std::unique_ptr<test::TestConditionWaiter> RecoveryErrorPageWaiter();
-void RecoveryErrorExpectFallback();
-void RecoveryErrorFallbackAction();
 
 std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter();
 

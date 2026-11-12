@@ -133,15 +133,6 @@ user_manager::User* FakeChromeUserManager::AddKioskIwaUser(
   return user;
 }
 
-user_manager::User* FakeChromeUserManager::AddKioskArcvmAppUser(
-    const AccountId& account_id) {
-  user_manager::User* user =
-      user_manager::User::CreateKioskArcvmAppUser(account_id);
-  user_storage_.emplace_back(user);
-  persisted_users_.push_back(user);
-  return user;
-}
-
 user_manager::User* FakeChromeUserManager::AddGuestUser() {
   user_manager::User* user =
       user_manager::User::CreateGuestUser(user_manager::GuestAccountId());

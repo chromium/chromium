@@ -211,10 +211,6 @@ bool FakeSamlIdpMixin::IsLastChallengeResponseExists() const {
   return challenge_response_.has_value();
 }
 
-bool FakeSamlIdpMixin::IsLastChallengeResponseError() const {
-  return error_challenge_response_.has_value();
-}
-
 int FakeSamlIdpMixin::GetChallengeResponseCount() const {
   return challenge_response_count_;
 }
@@ -504,14 +500,11 @@ void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
 
   if (challenge_response_string) {
     challenge_response_ = response;
-  } else {
-    error_challenge_response_ = response;
   }
 }
 
 void FakeSamlIdpMixin::ClearChallengeResponse() {
   challenge_response_.reset();
-  error_challenge_response_.reset();
 }
 
 }  // namespace ash

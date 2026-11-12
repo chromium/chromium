@@ -65,7 +65,6 @@ class ASH_EXPORT LockContentsViewTestApi {
   void ShowAuthErrorBubble(int unlock_attempt) const;
   void HideAuthErrorBubble() const;
   void PressAuthErrorRecoveryButton() const;
-  void PressAuthErrorLearnMoreButton() const;
 
   // Called for debugging to make |user| managed and display an icon along with
   // a note in the menu user view.

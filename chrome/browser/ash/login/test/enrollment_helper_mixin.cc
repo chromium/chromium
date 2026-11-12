@@ -21,7 +21,6 @@ namespace test {
 namespace {
 
 using ::testing::_;
-using ::testing::AtLeast;
 using ::testing::Mock;
 
 MATCHER_P(ConfigModeMatches, mode, "") {
@@ -68,12 +67,6 @@ void EnrollmentHelperMixin::ExpectEnrollmentTokenConfig(
       Setup(ConfigModeIsTokenEnrollmentAndTokenMatches(enrollment_token), _));
 }
 
-void EnrollmentHelperMixin::ExpectEnrollmentModeRepeated(
-    policy::EnrollmentConfig::Mode mode) {
-  EXPECT_CALL(mock_enrollment_launcher_, Setup(ConfigModeMatches(mode), _))
-      .Times(AtLeast(1));
-}
-
 void EnrollmentHelperMixin::ExpectSuccessfulOAuthEnrollment() {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
       .WillOnce([this]() {
@@ -104,15 +97,6 @@ void EnrollmentHelperMixin::ExpectAttestationEnrollmentError(
       });
 }
 
-void EnrollmentHelperMixin::ExpectAttestationEnrollmentErrorRepeated(
-    policy::EnrollmentStatus status) {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-      .Times(AtLeast(1))
-      .WillRepeatedly([this, status]() {
-        mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
-      });
-}
-
 void EnrollmentHelperMixin::ExpectTokenBasedEnrollmentSuccess() {
   EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingEnrollmentToken())
       .WillOnce([this]() {
@@ -133,10 +117,6 @@ void EnrollmentHelperMixin::SetupClearAuth() {
       .WillByDefault([](base::OnceClosure callback, bool revoke_oauth2_tokens) {
         std::move(callback).Run();
       });
-}
-
-void EnrollmentHelperMixin::ExpectEnrollmentCredentials() {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode));
 }
 
 void EnrollmentHelperMixin::DisableAttributePromptUpdate() {

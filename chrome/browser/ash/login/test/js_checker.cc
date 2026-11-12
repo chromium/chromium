@@ -394,11 +394,6 @@ void JSChecker::ExpectEnabledPath(
   ExpectAttributeEQ("disabled", element_ids, false);
 }
 
-void JSChecker::ExpectInvalidPath(
-    std::initializer_list<std::string_view> element_ids) {
-  ExpectAttributeEQ("invalid", element_ids, true);
-}
-
 void JSChecker::ExpectValidPath(
     std::initializer_list<std::string_view> element_ids) {
   ExpectAttributeEQ("invalid", element_ids, false);
@@ -492,13 +487,6 @@ void JSChecker::TapLinkOnPath(
   Evaluate(GetOobeElementPath(element_ids) + ".click()");
 }
 
-void JSChecker::SelectRadioPath(
-    std::initializer_list<std::string_view> element_ids) {
-  ExpectVisiblePath(element_ids);
-  // Polymer radio buttons only support click events.
-  Evaluate(GetOobeElementPath(element_ids) + ".click()");
-}
-
 void JSChecker::TypeIntoPath(
     const std::string& value,
     std::initializer_list<std::string_view> element_ids) {
@@ -555,11 +543,6 @@ JSChecker OobeJS() {
 void ExecuteOobeJS(const std::string& script) {
   ASSERT_TRUE(content::ExecJs(
       LoginDisplayHost::default_host()->GetOobeWebContents(), script));
-}
-
-void ExecuteOobeJSAsync(const std::string& script) {
-  content::ExecuteScriptAsync(
-      LoginDisplayHost::default_host()->GetOobeWebContents(), script);
 }
 
 std::string GetOobeElementPath(

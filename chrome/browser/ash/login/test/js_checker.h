@@ -171,9 +171,6 @@ class JSChecker {
   // Expects that the indicated UI element is not disabled.
   void ExpectEnabledPath(std::initializer_list<std::string_view> element_ids);
 
-  // Expects that the indicated UI element is invalid.
-  void ExpectInvalidPath(std::initializer_list<std::string_view> element_ids);
-
   // Expects that the indicated UI element is not invalid.
   void ExpectValidPath(std::initializer_list<std::string_view> element_ids);
 
@@ -223,9 +220,6 @@ class JSChecker {
   // Clicks on the indicated UI element that should be a link.
   void TapLinkOnPath(std::initializer_list<std::string_view> element_ids);
 
-  // Select particular radio button.
-  void SelectRadioPath(std::initializer_list<std::string_view> element_ids);
-
   // Types text into indicated input field. There is no single-element version
   // of method to avoid confusion.
   void TypeIntoPath(const std::string& value,
@@ -254,7 +248,6 @@ JSChecker OobeJS();
 
 // Helper method to execute the given script in the context of OOBE.
 void ExecuteOobeJS(const std::string& script);
-void ExecuteOobeJSAsync(const std::string& script);
 
 // Generates JS expression that evaluates to element in hierarchy (elements
 // are searched by ID in parent). It is assumed that all intermediate elements

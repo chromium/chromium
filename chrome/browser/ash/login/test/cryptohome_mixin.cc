@@ -185,24 +185,6 @@ bool CryptohomeMixin::HasGaiaPasswordFactor(const AccountId& user) {
       cryptohome::CreateAccountIdentifierFromAccountId(user));
 }
 
-void CryptohomeMixin::SendLegacyFingerprintSuccessScan() {
-  CHECK(FakeUserDataAuthClient::TestApi::Get());
-  FakeUserDataAuthClient::TestApi::Get()->SendLegacyFPAuthSignal(
-      user_data_auth::FingerprintScanResult::FINGERPRINT_SCAN_RESULT_SUCCESS);
-}
-
-void CryptohomeMixin::SendLegacyFingerprintFailureScan() {
-  CHECK(FakeUserDataAuthClient::TestApi::Get());
-  FakeUserDataAuthClient::TestApi::Get()->SendLegacyFPAuthSignal(
-      user_data_auth::FingerprintScanResult::FINGERPRINT_SCAN_RESULT_RETRY);
-}
-
-void CryptohomeMixin::SendLegacyFingerprintFailureLockoutScan() {
-  CHECK(FakeUserDataAuthClient::TestApi::Get());
-  FakeUserDataAuthClient::TestApi::Get()->SendLegacyFPAuthSignal(
-      user_data_auth::FingerprintScanResult::FINGERPRINT_SCAN_RESULT_LOCKOUT);
-}
-
 bool CryptohomeMixin::IsAuthenticated(const AccountId& user) {
   CHECK(FakeUserDataAuthClient::TestApi::Get());
   return FakeUserDataAuthClient::TestApi::Get()->IsAuthenticated(

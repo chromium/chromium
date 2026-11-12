@@ -72,8 +72,6 @@ static_library("test_support") {
     "network_portal_detector_mixin.h",
     "offline_login_test_mixin.cc",
     "offline_login_test_mixin.h",
-    "oobe_auth_page_waiter.cc",
-    "oobe_auth_page_waiter.h",
     "oobe_base_test.cc",
     "oobe_base_test.h",
     "oobe_configuration_waiter.cc",

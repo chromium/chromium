@@ -1021,14 +1021,4 @@ void LoginScreenTestApi::PressAuthErrorRecoveryButton() {
   lock_contents_test.PressAuthErrorRecoveryButton();
 }
 
-// static
-void LoginScreenTestApi::PressAuthErrorLearnMoreButton() {
-  if (!IsAuthErrorBubbleShown()) {
-    ADD_FAILURE() << "Auth error bubble is not shown.";
-  }
-  LockScreen::TestApi lock_screen_test(LockScreen::Get());
-  LockContentsViewTestApi lock_contents_test(lock_screen_test.contents_view());
-  lock_contents_test.PressAuthErrorLearnMoreButton();
-}
-
 }  // namespace ash

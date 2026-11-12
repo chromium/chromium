@@ -53,10 +53,6 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
   void AddRecoveryFactor(const AccountId& user);
   bool HasRecoveryFactor(const AccountId& user);
 
-  void SendLegacyFingerprintSuccessScan();
-  void SendLegacyFingerprintFailureScan();
-  void SendLegacyFingerprintFailureLockoutScan();
-
   bool IsAuthenticated(const AccountId& user);
 };
 

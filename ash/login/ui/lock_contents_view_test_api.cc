@@ -200,11 +200,6 @@ void LockContentsViewTestApi::PressAuthErrorRecoveryButton() const {
   auth_error_bubble()->OnRecoverButtonPressed();
 }
 
-void LockContentsViewTestApi::PressAuthErrorLearnMoreButton() const {
-  CHECK(IsAuthErrorBubbleVisible());
-  auth_error_bubble()->OnLearnMoreButtonPressed();
-}
-
 void LockContentsViewTestApi::ToggleManagementForUser(const AccountId& user) {
   auto replace = [](const LoginUserInfo& user_info) {
     auto changed = user_info;

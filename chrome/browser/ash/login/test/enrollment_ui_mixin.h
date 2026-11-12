@@ -76,12 +76,6 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
 
   void ConfirmKioskEnrollment();
 
-  // Selects enrollment license.
-  void SelectEnrollmentLicense(const std::string& license_type);
-
-  // Proceeds with selected license.
-  void UseSelectedLicense();
-
   void SetExitHandler();
   // Runs loop until the enrollment screen reports exit. It will return the
   // last result returned by the enrollment screen.

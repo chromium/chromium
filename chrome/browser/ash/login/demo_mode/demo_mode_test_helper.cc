@@ -128,21 +128,4 @@ void DemoModeTestHelper::FinishLoadingComponent() {
   run_loop.Run();
 }
 
-void DemoModeTestHelper::FailLoadingComponent() {
-  base::RunLoop run_loop;
-  DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
-
-  // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
-  if (DemoSession::GetDemoConfig(
-          CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())) ==
-      DemoSession::DemoModeConfig::kOnline) {
-    CHECK(fake_component_manager_ash_->FinishLoadRequest(
-        DemoComponents::kDemoModeResourcesComponentName,
-        component_updater::FakeComponentManagerAsh::ComponentInfo(
-            component_updater::ComponentManagerAsh::Error::INSTALL_FAILURE,
-            base::FilePath(), base::FilePath())));
-  }
-  run_loop.Run();
-}
-
 }  // namespace ash

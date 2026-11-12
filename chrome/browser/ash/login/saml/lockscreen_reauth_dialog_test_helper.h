@@ -76,8 +76,6 @@ class LockScreenReauthDialogTestHelper {
   void ClickPrimaryGaiaButton();
   void WaitForPrimaryGaiaButtonToBeEnabled();
 
-  // Check visibility of native Gaia button on online re-authentication dialog.
-  void ExpectGaiaButtonsVisible();
   void ExpectGaiaButtonsHidden();
 
   // Check visibility of the button which allows to restart online flow from the
@@ -91,8 +89,6 @@ class LockScreenReauthDialogTestHelper {
   void ExpectSigninWebviewVisible();
   void ExpectSigninWebviewHidden();
 
-  void ExpectGaiaScreenVisible();
-
   // Next members allow to check visibility of some elements on 'confirm
   // password screen' and also help to fill forms. Precondition: 'confirm
   // password screen' is visible.
@@ -105,7 +101,6 @@ class LockScreenReauthDialogTestHelper {
 
   void ShowNetworkScreenAndWait();
   void WaitForNetworkDialogAndSetHandlers();
-  void CloseNetworkScreen();
 
   void ExpectNetworkDialogVisible();
   void ExpectNetworkDialogHidden();
@@ -117,7 +112,6 @@ class LockScreenReauthDialogTestHelper {
   // SAML notice message is displayed when we show a 3P IdP page.
   test::UIPath SamlNoticeMessage() const;
   void ExpectSamlNoticeMessageVisible();
-  void ExpectSamlNoticeMessageHidden();
 
   std::unique_ptr<test::TestConditionWaiter> CreateSamlPageLoadWaiter();
 
