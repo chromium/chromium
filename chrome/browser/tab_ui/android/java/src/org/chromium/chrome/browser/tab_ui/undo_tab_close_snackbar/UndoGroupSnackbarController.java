@@ -100,11 +100,6 @@ public class UndoGroupSnackbarController
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        dismissSnackbars();
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         dismissSnackbars();

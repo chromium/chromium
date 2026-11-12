@@ -227,35 +227,9 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void removeMessageItemsWhenCloseLastTab() {
         // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
         doReturn(2).when(mTabModel).getCount();
-        getTabModelObserver(0).willCloseTab(mTab1, true);
-        verify(mTabListCoordinator, never()).removeSpecialListItem(anyInt(), anyInt());
-
-        // Mock that mTab1 is the only tab in the current tab model and it will be closed.
-        doReturn(1).when(mTabModel).getCount();
-        getTabModelObserver(0).willCloseTab(mTab1, true);
-
-        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
-                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator, never())
-                .removeSpecialListItem(
-                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
-        verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void removeMessageItemsWhenCloseLastTab_WillCloseTabs() {
-        // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
-        doReturn(2).when(mTabModel).getCount();
         getTabModelObserver(0)
                 .willCloseTabs(
                         List.of(mTab1), /* isAllTabs= */ false, /* allowUndo= */ true);
@@ -281,35 +255,9 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void removeMessageItemsWhenCloseMultipleTabs() {
         // Simulate only some tabs being closed.
         doReturn(3).when(mTabModel).getCount();
-        getTabModelObserver(0).willCloseMultipleTabs(false, List.of(mTab1, mTab2));
-        verify(mTabListCoordinator, never()).removeSpecialListItem(anyInt(), anyInt());
-
-        // Simulate all tabs being closed.
-        doReturn(2).when(mTabModel).getCount();
-        getTabModelObserver(0).willCloseMultipleTabs(false, List.of(mTab1, mTab2));
-
-        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
-                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator, never())
-                .removeSpecialListItem(
-                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
-        verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void removeMessageItemsWhenCloseMultipleTabs_WillCloseTabs() {
-        // Simulate only some tabs being closed.
-        doReturn(3).when(mTabModel).getCount();
         getTabModelObserver(0)
                 .willCloseTabs(
                         List.of(mTab1, mTab2), /* isAllTabs= */ false, /* allowUndo= */ false);
@@ -335,40 +283,7 @@ public class TabSwitcherMessageManagerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void removeMessageItemsWhenCloseLastTab_withGroupSuggestion() {
-        createGroupSuggestion();
-
-        // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
-        doReturn(2).when(mTabModel).getCount();
-        getTabModelObserver(0).willCloseTab(mTab1, true);
-        verify(mTabListCoordinator, never()).removeSpecialListItem(anyInt(), anyInt());
-
-        // Mock that mTab1 is the only tab in the current tab model and it will be closed.
-        doReturn(1).when(mTabModel).getCount();
-        getTabModelObserver(0).willCloseTab(mTab1, true);
-
-        verify(mTabListCoordinator).removeSpecialListItem(UiType.IPH_MESSAGE, MessageType.IPH);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(UiType.PRICE_MESSAGE, MessageType.PRICE_MESSAGE);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        UiType.INCOGNITO_REAUTH_PROMO_MESSAGE,
-                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
-        verify(mTabListCoordinator, never())
-                .removeSpecialListItem(
-                        UiType.ARCHIVED_TABS_MESSAGE, MessageType.ARCHIVED_TABS_MESSAGE);
-        verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        UiType.TAB_GROUP_SUGGESTION_MESSAGE,
-                        MessageType.TAB_GROUP_SUGGESTION_MESSAGE);
-        verify(mTabListHighlighter).unhighlightTabs();
-        verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void removeMessageItemsWhenCloseLastTab_withGroupSuggestion_WillCloseTabs() {
         createGroupSuggestion();
 
         // Mock that mTab1 is not the only tab in the current tab model and it will be closed.

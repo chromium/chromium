@@ -47,16 +47,6 @@ public class PriceWelcomeMessageController {
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
-                public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                    TabModel tabModel = mCurrentTabModelSupplier.get();
-                    assumeNonNull(tabModel);
-                    assert mPriceMessageService != null;
-                    if (mPriceMessageService.getBindingTabId() == tab.getId()) {
-                        removePriceWelcomeMessage();
-                    }
-                }
-
-                @Override
                 public void willCloseTabs(
                         List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                     TabModel tabModel = mCurrentTabModelSupplier.get();

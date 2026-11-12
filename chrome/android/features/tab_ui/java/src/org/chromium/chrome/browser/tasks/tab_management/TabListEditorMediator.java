@@ -201,14 +201,6 @@ class TabListEditorMediator
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        if (mTabActionState != TabProperties.TabActionState.CLOSABLE) {
-                            assumeNonNull(mNavigationProvider);
-                            mNavigationProvider.goBack();
-                        }
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         if (mTabActionState != TabProperties.TabActionState.CLOSABLE) {

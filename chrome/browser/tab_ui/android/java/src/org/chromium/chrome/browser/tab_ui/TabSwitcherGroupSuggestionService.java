@@ -169,11 +169,6 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                    clearSuggestions();
-                }
-
-                @Override
                 public void willCloseTabs(
                         List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                     clearSuggestions();

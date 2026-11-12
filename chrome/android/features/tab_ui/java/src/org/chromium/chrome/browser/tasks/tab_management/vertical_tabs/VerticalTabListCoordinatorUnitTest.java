@@ -1966,20 +1966,7 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testHoverCard_TabClosed_HidesHoverCard() {
-        Tab tab = prepareAndShowHoverCard(mMockTab1);
-
-        // Notify tab model that tab will close
-        for (TabModelObserver observer : mTabModelObservers) {
-            observer.willCloseTab(tab, /* didCloseAlone= */ false);
-        }
-        verify(mTabHoverCardView).hide();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testHoverCard_TabClosed_HidesHoverCard_WillCloseTabs() {
         Tab tab = prepareAndShowHoverCard(mMockTab1);
 
         // Notify tab model that tab will close

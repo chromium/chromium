@@ -194,7 +194,8 @@ public class TabDragHandlerBaseTest {
 
         mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
 
-        observer.willCloseTab(tab, /* didCloseAlone= */ true);
+        observer.willCloseTabs(
+                Collections.singletonList(tab), /* isAllTabs= */ false, /* allowUndo= */ true);
         verify(dragSourceView).cancelDragAndDrop();
     }
 
@@ -215,7 +216,8 @@ public class TabDragHandlerBaseTest {
 
         mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
 
-        observer.willCloseTab(tab2, /* didCloseAlone= */ true);
+        observer.willCloseTabs(
+                Collections.singletonList(tab2), /* isAllTabs= */ false, /* allowUndo= */ true);
         verify(dragSourceView, never()).cancelDragAndDrop();
     }
 
@@ -262,7 +264,8 @@ public class TabDragHandlerBaseTest {
 
         mTabDragHandler.startDrag(dragSourceView, mDragShadowBuilder, dropData);
 
-        observer.willCloseTab(tab1, /* didCloseAlone= */ true);
+        observer.willCloseTabs(
+                Collections.singletonList(tab1), /* isAllTabs= */ false, /* allowUndo= */ true);
         verify(dragSourceView).cancelDragAndDrop();
     }
 

@@ -862,11 +862,6 @@ public class VerticalTabListCoordinator {
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        mTabItemHoverController.resetHoverState();
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         mTabItemHoverController.resetHoverState();

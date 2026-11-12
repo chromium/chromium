@@ -106,11 +106,6 @@ public abstract class TabDragHandlerBase
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(mTabModelSelector) {
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        onTabsClosed(Collections.singletonList(tab));
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         onTabsClosed(tabs);

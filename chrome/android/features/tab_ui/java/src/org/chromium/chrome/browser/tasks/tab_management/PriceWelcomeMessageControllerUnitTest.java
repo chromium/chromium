@@ -32,9 +32,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -194,23 +191,7 @@ public class PriceWelcomeMessageControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testTabModelObserver_willCloseTab() {
-        TabModelObserver observer = mTabModelObserverCaptor.getValue();
-
-        when(mPriceMessageService.getBindingTabId()).thenReturn(OTHER_TAB_ID);
-        observer.willCloseTab(mTab, false);
-
-        verify(mPriceMessageUpdateObserver, never()).onRemovePriceWelcomeMessage();
-        when(mPriceMessageService.getBindingTabId()).thenReturn(TAB_ID);
-
-        observer.willCloseTab(mTab, false);
-        verify(mPriceMessageUpdateObserver).onRemovePriceWelcomeMessage();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testTabModelObserver_willCloseTab_WillCloseTabs() {
+    public void testTabModelObserver_willCloseTabs() {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         when(mPriceMessageService.getBindingTabId()).thenReturn(OTHER_TAB_ID);

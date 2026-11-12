@@ -121,18 +121,6 @@ public class TabSwitcherMessageManager {
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
-                public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                    removeMessagesIfTabModelEmpty(/* numTabsToRemove= */ 1);
-                }
-
-                @Override
-                public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                    // Handles case where all tabs are removed without using 'Close All Tabs'
-                    // option.
-                    removeMessagesIfTabModelEmpty(/* numTabsToRemove= */ tabs.size());
-                }
-
-                @Override
                 public void willCloseTabs(
                         List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                     removeMessagesIfTabModelEmpty(/* numTabsToRemove= */ tabs.size());
