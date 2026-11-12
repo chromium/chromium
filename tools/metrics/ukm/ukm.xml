@@ -19114,13 +19114,6 @@ be describing additional metrics about the same event.
       Records whether a form is an OTP form, a normal multi-use password form,
       or a combination of both.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -19136,13 +19129,6 @@ be describing additional metrics about the same event.
     <summary>
       True if there was a password form detected on the page.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -19193,13 +19179,6 @@ be describing additional metrics about the same event.
       user. Obsolete: The metric is not recorded in M131+. However this entry is
       kept to gather UKM data from pre-M131 clients.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -19321,13 +19300,6 @@ be describing additional metrics about the same event.
       Records if a site supports .well-known/change-password and if a url
       override was used or not.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
