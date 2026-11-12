@@ -38,7 +38,22 @@
   const tracingHelper = new TracingHelper(testRunner, session);
   await tracingHelper.invokeAsyncWithTracing(performActions);
 
-  const domStatsEvents = tracingHelper.findEvents('DOMStats', 'I');
+  const tracingStarted =
+      tracingHelper.findEvents('TracingStartedInBrowser', 'I').at(-1);
+  if (!tracingStarted) {
+    testRunner.log('FAIL: TracingStartedInBrowser event not found.');
+  }
+
+  const domStatsEvents = tracingHelper.findEvents(
+      'DOMStats', 'I', e => tracingStarted && e.ts >= tracingStarted.ts);
+
+  if (domStatsEvents.length === 0) {
+    testRunner.log(
+        'FAIL: No DOMStats events found after TracingStartedInBrowser.');
+    testRunner.completeTest();
+    return;
+  }
+
   testRunner.log('First DOM stats');
   tracingHelper.logEventShape(domStatsEvents.at(0), [], ['numChildren', 'depth', 'totalElements', 'nodeName']);
   testRunner.log('Last DOM stats');

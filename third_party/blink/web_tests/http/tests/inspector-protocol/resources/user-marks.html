@@ -21,12 +21,26 @@
             console.timeStamp("Timestamp with unexpected object", {foo: 'bar'});
         }
         function dispatchConsoleTimeStampsForWorkerThread() {
-              const workerCode = `
-                  const start = performance.now();
-                  console.timeStamp("Timestamp for worker thread", start, undefined, "WorkerTrack");`;
+            const workerCode = `
+                const start = performance.now();
+                console.timeStamp("Timestamp for worker thread", start, undefined, "WorkerTrack");
+                postMessage("done");`;
             const blob = new Blob([workerCode], { type: 'application/javascript' });
             const workerUrl = URL.createObjectURL(blob);
             const worker = new Worker(workerUrl);
+
+            return new Promise((resolve, reject) => {
+                worker.onmessage = () => {
+                    URL.revokeObjectURL(workerUrl);
+                    worker.terminate();
+                    resolve();
+                };
+                worker.onerror = (err) => {
+                    URL.revokeObjectURL(workerUrl);
+                    worker.terminate();
+                    reject(err);
+                };
+            });
         }
         async function dispatchUserTimings() {
             let userTimingCallback;
