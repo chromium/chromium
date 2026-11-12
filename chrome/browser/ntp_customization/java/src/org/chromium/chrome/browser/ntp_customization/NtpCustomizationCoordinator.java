@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpThemeSyncHist
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -62,6 +63,7 @@ public class NtpCustomizationCoordinator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final Supplier<@Nullable Profile> mProfileSupplier;
+    private final WindowAndroid mWindowAndroid;
     private final @Nullable ModuleRegistry mModuleRegistry;
     private final int mBottomSheetType;
     private final boolean mIsNtpCustomizationSyncEnabled;
@@ -157,6 +159,7 @@ public class NtpCustomizationCoordinator {
         mBottomSheetController = bottomSheetController;
         mProfileSupplier = profileSupplier;
         mBottomSheetType = bottomSheetType;
+        mWindowAndroid = windowAndroid;
         mModuleRegistry = moduleRegistry;
 
         View contentView =
@@ -215,9 +218,7 @@ public class NtpCustomizationCoordinator {
             mMediator.registerClickListener(MVT, getOptionClickListener(MVT));
             mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
             mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
-            if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
-                mMediator.registerClickListener(THEME, getOptionClickListener(THEME));
-            }
+            mMediator.registerClickListener(THEME, getOptionClickListener(THEME));
             mMediator.renderListContent();
         }
     }
@@ -253,7 +254,10 @@ public class NtpCustomizationCoordinator {
     }
 
     private void showMainBottomSheet() {
-        if (mIsNtpCustomizationSyncEnabled) {
+        if (mIsNtpCustomizationSyncEnabled
+                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled(
+                        mWindowAndroid,
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext))) {
             if (mNtpThemeSyncHistoryCoordinator == null) {
                 mNtpThemeSyncHistoryCoordinator =
                         new NtpThemeSyncHistoryCoordinator(

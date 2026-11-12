@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.USE_WEB_UI_NTP_ANDROID;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
@@ -27,6 +28,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,7 @@ import android.widget.ViewFlipper;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +44,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -67,9 +72,11 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(sdk = Build.VERSION_CODES.R)
 public class NtpCustomizationCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJni;
@@ -90,6 +97,7 @@ public class NtpCustomizationCoordinatorUnitTest {
     private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
     private ViewFlipper mViewFlipper;
     private View mContentView;
+    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
 
@@ -119,6 +127,7 @@ public class NtpCustomizationCoordinatorUnitTest {
         NtpThemeCollectionBridgeJni.setInstanceForTesting(mNtpThemeCollectionBridgeJni);
         when(mNtpThemeCollectionBridgeJni.init(any(), any())).thenReturn(1L);
         CrossDeviceThemeTracker.setInstanceForTesting(mCrossDeviceThemeTrackerJni);
+        mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
 
         mNtpCustomizationCoordinator =
                 new NtpCustomizationCoordinator(
@@ -131,6 +140,11 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mSnackbarManager);
         mNtpCustomizationCoordinator.setViewFlipperForTesting(mViewFlipper);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
+    }
+
+    @After
+    public void tearDown() {
+        mEdgeToEdgeStateProvider.detach();
     }
 
     @Test
@@ -358,6 +372,25 @@ public class NtpCustomizationCoordinatorUnitTest {
     @Test
     @DisableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testShowBottomSheet_SyncDisabled() {
+        testShowBottomSheetDoesNotCreateThemeSyncHistoryImpl(/* isDesktop= */ false);
+    }
+
+    @Test
+    @EnableFeatures({
+        NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC,
+        USE_WEB_UI_NTP_ANDROID
+    })
+    public void testShowBottomSheet_webUiNtpEnabled_doesNotCreateThemeSyncHistory() {
+        testShowBottomSheetDoesNotCreateThemeSyncHistoryImpl(/* isDesktop= */ true);
+    }
+
+    /**
+     * Verifies that {@link NtpThemeSyncHistoryCoordinator} is not created when showing the main
+     * bottom sheet.
+     */
+    private void testShowBottomSheetDoesNotCreateThemeSyncHistoryImpl(boolean isDesktop) {
+        DeviceInfo.setIsDesktopForTesting(isDesktop);
         mNtpCustomizationCoordinator.showBottomSheet();
         assertNull(mNtpCustomizationCoordinator.getNtpThemeSyncHistoryCoordinatorForTesting());
     }
