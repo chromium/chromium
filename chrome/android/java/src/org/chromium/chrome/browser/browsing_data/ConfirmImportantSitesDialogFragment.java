@@ -36,7 +36,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -55,12 +55,13 @@ import java.util.Set;
 
 /**
  * Modal dialog that shows a list of important domains to the user which they can uncheck. Used to
- * allow the user to exclude domains from being cleared by the clear browsing data function.
- * We use proper bundle construction (through the {@link #newInstance(String[], int[], String[])}
- * method) and onActivityResult return conventions.
+ * allow the user to exclude domains from being cleared by the clear browsing data function. We use
+ * proper bundle construction (through the {@link #newInstance(String[], int[], String[])} method)
+ * and onActivityResult return conventions.
  */
 @NullMarked
-public class ConfirmImportantSitesDialogFragment extends DialogFragment {
+public class ConfirmImportantSitesDialogFragment extends DialogFragment
+        implements ProfileDependentSetting {
     private class ClearBrowsingDataAdapter extends ArrayAdapter<String>
             implements AdapterView.OnItemClickListener {
         private final String[] mDomains;
@@ -233,6 +234,11 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         mCheckedState = new HashMap<>();
     }
 
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
+    }
+
     @Initializer
     @Override
     public void setArguments(@Nullable Bundle args) {
@@ -283,21 +289,22 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
             mImportantDomains = new String[0];
             mFaviconURLs = new String[0];
             dismiss();
+        } else {
+            assert mProfile != null;
+            mLargeIconBridge = new LargeIconBridge(mProfile);
+            ActivityManager activityManager =
+                    ((ActivityManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.ACTIVITY_SERVICE));
+            int maxSize =
+                    Math.min(
+                            activityManager.getMemoryClass()
+                                    / 16
+                                    * 25
+                                    * ConversionUtils.BYTES_PER_KILOBYTE,
+                            FAVICON_MAX_CACHE_SIZE_BYTES);
+            mLargeIconBridge.createCache(maxSize);
         }
-        mProfile = ProfileManager.getLastUsedRegularProfile();
-        mLargeIconBridge = new LargeIconBridge(mProfile);
-        ActivityManager activityManager =
-                ((ActivityManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.ACTIVITY_SERVICE));
-        int maxSize =
-                Math.min(
-                        activityManager.getMemoryClass()
-                                / 16
-                                * 25
-                                * ConversionUtils.BYTES_PER_KILOBYTE,
-                        FAVICON_MAX_CACHE_SIZE_BYTES);
-        mLargeIconBridge.createCache(maxSize);
 
         mAdapter = new ClearBrowsingDataAdapter(mImportantDomains, mFaviconURLs, getResources());
         DialogInterface.OnClickListener listener =
