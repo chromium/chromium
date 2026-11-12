@@ -25,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/version.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
@@ -215,8 +216,7 @@ const std::string& CampaignsManagerClientImpl::GetUserLocale() const {
       user_manager::UserManager::Get()->FindUser(account_id_);
   const PrefService* prefs = user ? user->GetProfilePrefs() : nullptr;
   if (!prefs) {
-    static const base::NoDestructor<std::string> empty_locale;
-    return *empty_locale;
+    return base::EmptyString();
   }
   return prefs->GetString(language::prefs::kApplicationLocale);
 }
