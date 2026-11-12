@@ -215,8 +215,9 @@ void ParseSucceeded(const mojom::blink::ManifestPtr& manifest,
 // parse failed, e.g. if it contains custom (or ill-formed) regex.
 std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
     const std::optional<String>& field,
-    const String default_field_value) {
-  const String value = field.has_value() ? field.value() : default_field_value;
+    StringView default_field_value) {
+  StringView value =
+      field.has_value() ? StringView(*field) : default_field_value;
   if (value.empty()) {
     return std::vector<liburlpattern::Part>();
   }
@@ -590,33 +591,6 @@ void ManifestParser::TakeErrors(
 
 bool ManifestParser::failed() const {
   return failed_;
-}
-
-ManifestParser::PatternInit::PatternInit(std::optional<String> protocol,
-                                         std::optional<String> username,
-                                         std::optional<String> password,
-                                         std::optional<String> hostname,
-                                         std::optional<String> port,
-                                         std::optional<String> pathname,
-                                         std::optional<String> search,
-                                         std::optional<String> hash,
-                                         KURL base_url)
-    : protocol(std::move(protocol)),
-      username(std::move(username)),
-      password(std::move(password)),
-      hostname(std::move(hostname)),
-      port(std::move(port)),
-      pathname(std::move(pathname)),
-      search(std::move(search)),
-      hash(std::move(hash)),
-      base_url(base_url) {}
-ManifestParser::PatternInit::~PatternInit() = default;
-ManifestParser::PatternInit::PatternInit(PatternInit&&) = default;
-ManifestParser::PatternInit& ManifestParser::PatternInit::operator=(
-    PatternInit&&) = default;
-
-bool ManifestParser::PatternInit::IsAbsolute() const {
-  return protocol.has_value() || hostname.has_value() || port.has_value();
 }
 
 bool ManifestParser::ParseBoolean(const JSONObject* object,
@@ -2590,7 +2564,8 @@ Vector<SafeUrlPattern> ManifestParser::ParseUrlPatterns(
       continue;
     }
 
-    std::optional<PatternInit> init = MaybeCreatePatternInit(pattern_object);
+    std::optional<PatternInit> init =
+        MaybeCreatePatternInit(pattern_object, field_name);
     if (init.has_value()) {
       auto base_url = init->base_url.IsValid() ? init->base_url : manifest_url_;
       std::optional<SafeUrlPattern> pattern =
@@ -2608,196 +2583,134 @@ std::optional<SafeUrlPattern> ManifestParser::ParseUrlPattern(
     const String& field_name,
     const PatternInit& init,
     const KURL& base_url) {
-  auto url_pattern = std::make_optional<SafeUrlPattern>();
+  SafeUrlPattern url_pattern;
 
-  {
-    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
-    // Always fall back to baseURL protocol if init does not contain protocol.
+  auto parse_part = [&](const char* property_name,
+                        const std::optional<String>& field,
+                        StringView default_value,
+                        std::vector<liburlpattern::Part>& out_parts) -> bool {
     std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.protocol, base_url.Protocol());
+        ParsePatternInitField(field, default_value);
     if (!part_list.has_value()) {
       AddErrorInfo(
-          StrCat({"property 'protocol' in '", field_name,
+          StrCat({"property '", property_name, "' in '", field_name,
                   "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
+      return false;
     }
-    url_pattern->protocol = std::move(part_list.value());
+    out_parts = std::move(*part_list);
+    return true;
+  };
+
+  // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
+  // Always fall back to baseURL protocol if init does not contain protocol.
+  if (!parse_part("protocol", init.protocol, base_url.Protocol(),
+                  url_pattern.protocol)) {
+    return std::nullopt;
   }
 
-  {
-    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
-    // Only fall back to baseURL username if init does not contain any of
-    // protocol, hostname, or port.
-    String default_username;
-    if (!init.IsAbsolute()) {
-      default_username = base_url.User().ToString();
-    }
-    std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.username, default_username);
-    if (!part_list.has_value()) {
-      AddErrorInfo(
-          StrCat({"property 'username' in '", field_name,
-                  "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
-    }
-    url_pattern->username = std::move(part_list.value());
+  // Only fall back to baseURL username if init does not contain any of
+  // protocol, hostname, or port.
+  StringView default_username =
+      init.IsAbsolute() ? StringView() : base_url.User();
+  if (!parse_part("username", init.username, default_username,
+                  url_pattern.username)) {
+    return std::nullopt;
   }
 
-  {
-    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
-    // Only fall back to baseURL password if init does not contain any of
-    // protocol, hostname, port, or username.
-    String default_password;
-    if (!init.IsAbsolute() && !init.username.has_value()) {
-      default_password = base_url.Pass().ToString();
-    }
-    std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.password, default_password);
-    if (!part_list.has_value()) {
-      AddErrorInfo(
-          StrCat({"property 'password' in '", field_name,
-                  "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
-    }
-    url_pattern->password = std::move(part_list.value());
+  // Only fall back to baseURL password if init does not contain any of
+  // protocol, hostname, port, or username.
+  StringView default_password =
+      (!init.IsAbsolute() && !init.username.has_value()) ? base_url.Pass()
+                                                         : StringView();
+  if (!parse_part("password", init.password, default_password,
+                  url_pattern.password)) {
+    return std::nullopt;
   }
 
-  {
-    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
-    // Only fall back to baseURL hostname if init does not contain protocol.
-    String default_hostname;
-    if (!init.protocol.has_value()) {
-      default_hostname = base_url.Host().ToString();
-    }
-    std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.hostname, default_hostname);
-    if (!part_list.has_value()) {
-      AddErrorInfo(
-          StrCat({"property 'hostname' in '", field_name,
-                  "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
-    }
-    url_pattern->hostname = std::move(part_list.value());
+  // Only fall back to baseURL hostname if init does not contain protocol.
+  StringView default_hostname =
+      !init.protocol.has_value() ? base_url.Host() : StringView();
+  if (!parse_part("hostname", init.hostname, default_hostname,
+                  url_pattern.hostname)) {
+    return std::nullopt;
   }
 
-  {
-    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
-    // Only fall back to baseURL port if init does not contain any of
-    // protocol, hostname, or port, and the baseURL port exists.
-    String default_port;
-    if (!init.IsAbsolute() && base_url.HasPort()) {
-      default_port = String::Number(base_url.Port());
-    }
-    std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.port, default_port);
-    if (!part_list.has_value()) {
-      AddErrorInfo(
-          StrCat({"property 'port' in '", field_name,
-                  "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
-    }
-    url_pattern->port = std::move(part_list.value());
+  // Only fall back to baseURL port if init does not contain any of
+  // protocol, hostname, or port, and the baseURL port exists.
+  String default_port = (!init.IsAbsolute() && base_url.HasPort())
+                            ? String::Number(base_url.Port())
+                            : String();
+  if (!parse_part("port", init.port, default_port, url_pattern.port)) {
+    return std::nullopt;
   }
 
-  {
-    String default_path;
-    if (init.pathname.has_value()) {
-      // A possibly-relative path is given; resolve it against base URL's path.
-      default_path =
-          ResolveRelativePathnamePattern(base_url, init.pathname.value());
-    } else if (!init.IsAbsolute()) {
-      // No path, protocol, host or port is given; use the base URL's path.
-      default_path = EscapePatternString(base_url.GetPath());
-    }
-    // else: no path, but a protocol, host or port was given, making this
-    // pattern absolute, so treat the path as empty.
+  String default_path;
+  if (init.pathname.has_value()) {
+    // A possibly-relative path is given; resolve it against base URL's path.
+    default_path =
+        ResolveRelativePathnamePattern(base_url, init.pathname.value());
+  } else if (!init.IsAbsolute()) {
+    // No path, protocol, host or port is given; use the base URL's path.
+    default_path = EscapePatternString(base_url.GetPath());
+  }
+  // else: no path, but a protocol, host or port was given, making this
+  // pattern absolute, so treat the path as empty.
 
-    std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(std::nullopt, default_path);
-    if (!part_list.has_value()) {
-      AddErrorInfo(
-          StrCat({"property 'pathname' in '", field_name,
-                  "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
-    }
-    url_pattern->pathname = std::move(part_list.value());
+  if (!parse_part("pathname", std::nullopt, default_path,
+                  url_pattern.pathname)) {
+    return std::nullopt;
   }
 
-  {
-    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
-    // Only fall back to baseURL search if init does not contain any of
-    // protocol, hostname, port, or pathname.
-    String default_search;
-    if (!init.IsAbsolute() && !init.pathname.has_value()) {
-      default_search = base_url.Query().ToString();
-    }
-    std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.search, default_search);
-    if (!part_list.has_value()) {
-      AddErrorInfo(
-          StrCat({"property 'search' in '", field_name,
-                  "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
-    }
-    url_pattern->search = std::move(part_list.value());
+  // Only fall back to baseURL search if init does not contain any of
+  // protocol, hostname, port, or pathname.
+  StringView default_search = (!init.IsAbsolute() && !init.pathname.has_value())
+                                  ? base_url.Query()
+                                  : StringView();
+  if (!parse_part("search", init.search, default_search, url_pattern.search)) {
+    return std::nullopt;
   }
 
-  {
-    // https://urlpattern.spec.whatwg.org/#process-a-urlpatterninit
-    // Only fall back to baseURL hash if init does not contain any of
-    // protocol, hostname, port, pathname, or search.
-    String default_hash;
-    if (!init.IsAbsolute() && !init.pathname.has_value() &&
-        !init.search.has_value()) {
-      default_hash = base_url.FragmentIdentifier().ToString();
-    }
-    std::optional<std::vector<liburlpattern::Part>> part_list =
-        ParsePatternInitField(init.hash, default_hash);
-    if (!part_list.has_value()) {
-      AddErrorInfo(
-          StrCat({"property 'hash' in '", field_name,
-                  "' pattern could not be parsed or contains banned regex."}));
-      return std::nullopt;
-    }
-    url_pattern->hash = std::move(part_list.value());
+  // Only fall back to baseURL hash if init does not contain any of
+  // protocol, hostname, port, pathname, or search.
+  StringView default_hash = (!init.IsAbsolute() && !init.pathname.has_value() &&
+                             !init.search.has_value())
+                                ? base_url.FragmentIdentifier()
+                                : StringView();
+  if (!parse_part("hash", init.hash, default_hash, url_pattern.hash)) {
+    return std::nullopt;
   }
 
   return url_pattern;
 }
 
 std::optional<ManifestParser::PatternInit>
-ManifestParser::MaybeCreatePatternInit(const JSONObject* pattern_object) {
-  std::optional<String> protocol = ParseStringForMember(
-      pattern_object, "scope_patterns", "protocol", false, Trim(true));
-  std::optional<String> username = ParseStringForMember(
-      pattern_object, "scope_patterns", "username", false, Trim(true));
-  std::optional<String> password = ParseStringForMember(
-      pattern_object, "scope_patterns", "password", false, Trim(true));
-  std::optional<String> hostname = ParseStringForMember(
-      pattern_object, "scope_patterns", "hostname", false, Trim(true));
-  std::optional<String> port = ParseStringForMember(
-      pattern_object, "scope_patterns", "port", false, Trim(true));
-  std::optional<String> pathname = ParseStringForMember(
-      pattern_object, "scope_patterns", "pathname", false, Trim(true));
-  std::optional<String> search = ParseStringForMember(
-      pattern_object, "scope_patterns", "search", false, Trim(true));
-  std::optional<String> hash = ParseStringForMember(
-      pattern_object, "scope_patterns", "hash", false, Trim(true));
+ManifestParser::MaybeCreatePatternInit(const JSONObject* pattern_object,
+                                       const String& field_name) {
+  auto parse_field = [&](const char* key) {
+    return ParseStringForMember(pattern_object, field_name, key,
+                                /*required=*/false, Trim(true));
+  };
 
-  KURL base_url;
+  PatternInit init = {
+      .protocol = parse_field("protocol"),
+      .username = parse_field("username"),
+      .password = parse_field("password"),
+      .hostname = parse_field("hostname"),
+      .port = parse_field("port"),
+      .pathname = parse_field("pathname"),
+      .search = parse_field("search"),
+      .hash = parse_field("hash"),
+  };
 
   if (pattern_object->Get("baseURL")) {
-    base_url = ParseURL(pattern_object, "baseURL", NullUrl(),
-                        ParseURLRestrictions::kNoRestrictions);
-    if (!base_url.IsValid()) {
+    init.base_url = ParseURL(pattern_object, "baseURL", NullUrl(),
+                             ParseURLRestrictions::kNoRestrictions);
+    if (!init.base_url.IsValid()) {
       return std::nullopt;
     }
   }
 
-  return std::make_optional<PatternInit>(
-      std::move(protocol), std::move(username), std::move(password),
-      std::move(hostname), std::move(port), std::move(pathname),
-      std::move(search), std::move(hash), base_url);
+  return init;
 }
 
 String ManifestParser::ParseVersion(const JSONObject* object) {

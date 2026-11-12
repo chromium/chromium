@@ -1413,6 +1413,29 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
             DisplayOverrideItemIs(blink::mojom::DisplayMode::kBrowser)));
     EXPECT_EQ(0u, GetErrorCount());
   }
+
+  // Invalid property type in url_patterns reports 'url_patterns' as member.
+  {
+    base::test::ScopedFeatureList feature_list(blink::features::kUnframedIwa);
+    auto& manifest = ParseManifest(R"({
+      "display_override": [
+        {
+          "display": "unframed",
+          "url_patterns": [ {"protocol": 123} ]
+        }
+      ]
+    })");
+    EXPECT_THAT(manifest->display_override,
+                ElementsAre(DisplayOverrideItemIs(
+                    blink::mojom::DisplayMode::kUnframed,
+                    {PatternDataEq({.protocol = {"http"},
+                                    .hostname = {"foo.com"},
+                                    .pathname = {"/manifest.json"}})})));
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'protocol' of 'url_patterns' ignored, type string expected.",
+        errors()[0]);
+  }
 }
 
 TEST_F(ManifestParserTest, DisplayOverrideAcceptsOutOfScopeUrlPatterns) {

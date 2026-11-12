@@ -80,23 +80,10 @@ class MODULES_EXPORT ManifestParser {
   // Partially represents `URLPatternInit` in the URL Pattern spec.
   // https://urlpattern.spec.whatwg.org/#dictdef-urlpatterninit
   struct PatternInit {
-    PatternInit(std::optional<String> protocol,
-                std::optional<String> username,
-                std::optional<String> password,
-                std::optional<String> hostname,
-                std::optional<String> port,
-                std::optional<String> pathname,
-                std::optional<String> search,
-                std::optional<String> hash,
-                KURL base_url);
-    ~PatternInit();
-    PatternInit(const PatternInit&) = delete;
-    PatternInit& operator=(const PatternInit&) = delete;
-    PatternInit(PatternInit&&);
-    PatternInit& operator=(PatternInit&&);
-
     // Returns true if any of protocol, hostname, or port are filled.
-    bool IsAbsolute() const;
+    bool IsAbsolute() const {
+      return protocol.has_value() || hostname.has_value() || port.has_value();
+    }
 
     std::optional<String> protocol;
     std::optional<String> username;
@@ -592,7 +579,7 @@ class MODULES_EXPORT ManifestParser {
 
   // Helper function to parse an individual URL pattern. See also
   // `ParseUrlPatterns`.
-  std::optional<SafeUrlPattern> ParseUrlPattern(const String& property_name,
+  std::optional<SafeUrlPattern> ParseUrlPattern(const String& field_name,
                                                 const PatternInit& init,
                                                 const KURL& base_url);
 
@@ -609,7 +596,8 @@ class MODULES_EXPORT ManifestParser {
   ParseDescriptionLocalized(const JSONObject* object);
 
   std::optional<PatternInit> MaybeCreatePatternInit(
-      const JSONObject* pattern_object);
+      const JSONObject* pattern_object,
+      const String& field_name);
 
   String ParseVersion(const JSONObject* object);
 
