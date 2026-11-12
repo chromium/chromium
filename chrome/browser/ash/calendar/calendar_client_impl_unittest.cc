@@ -36,7 +36,8 @@ namespace {
 
 std::unique_ptr<CalendarClientImpl> BuildClient(Profile* profile) {
   return std::make_unique<CalendarClientImpl>(
-      profile->GetPrefs(), apps::AppServiceProxyFactory::GetForProfile(profile),
+      profile->GetPrefs(),
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache(),
       AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       CalendarKeyedServiceFactory::GetInstance()->GetService(profile));
 }

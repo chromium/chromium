@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/calendar/calendar_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -25,6 +24,10 @@
 
 class PolicyBlocklistService;
 class PrefService;
+
+namespace apps {
+class AppRegistryCache;
+}  // namespace apps
 
 namespace google_apis {
 
@@ -49,11 +52,12 @@ namespace ash {
 // per-profile.
 class CalendarKeyedService : public KeyedService {
  public:
+  // `app_registry_cache` must not be null, and must outlive `this`.
   // LINT.IfChange(Deps)
   CalendarKeyedService(
       const AccountId& account_id,
       PrefService* pref_service,
-      apps::AppServiceProxy* app_service_proxy,
+      apps::AppRegistryCache* app_registry_cache,
       PolicyBlocklistService* policy_blocklist_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

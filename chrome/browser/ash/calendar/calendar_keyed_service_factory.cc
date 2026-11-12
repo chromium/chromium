@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -58,12 +59,11 @@ std::unique_ptr<KeyedService>
     return nullptr;
   }
 
-  apps::AppServiceProxy* app_service_proxy =
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
-          ? apps::AppServiceProxyFactory::GetForProfile(profile)
-          : nullptr;
+  // The service is created only for the regular user's original Profile,
+  // so AppService is always available.
   return std::make_unique<CalendarKeyedService>(
-      user->GetAccountId(), profile->GetPrefs(), app_service_proxy,
+      user->GetAccountId(), profile->GetPrefs(),
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache(),
       AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory());

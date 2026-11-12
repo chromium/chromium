@@ -25,7 +25,7 @@ static_library("calendar") {
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/prefs",
-    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/user_manager",

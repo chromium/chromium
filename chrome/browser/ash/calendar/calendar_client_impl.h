@@ -9,12 +9,16 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "google_apis/calendar/calendar_api_requests.h"
 
 class PolicyBlocklistService;
 class PrefService;
+
+namespace apps {
+class AppRegistryCache;
+}  // namespace apps
 
 namespace ash {
 
@@ -23,8 +27,9 @@ class CalendarKeyedService;
 // Implementation of the calendar browser client, one per multiprofile user.
 class CalendarClientImpl : public CalendarClient {
  public:
+  // `app_registry_cache` must not be null, and must outlive `this`.
   CalendarClientImpl(PrefService* pref_service,
-                     apps::AppServiceProxy* app_service_proxy,
+                     apps::AppRegistryCache* app_registry_cache,
                      PolicyBlocklistService* policy_blocklist_service,
                      CalendarKeyedService* calendar_keyed_service);
   CalendarClientImpl(const CalendarClientImpl& other) = delete;
@@ -48,7 +53,7 @@ class CalendarClientImpl : public CalendarClient {
 
  private:
   const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ref<apps::AppRegistryCache> app_registry_cache_;
   const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
   const raw_ptr<CalendarKeyedService> calendar_keyed_service_;
 };

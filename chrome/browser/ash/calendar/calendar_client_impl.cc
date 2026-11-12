@@ -10,13 +10,14 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "google_apis/common/api_error_codes.h"
@@ -31,11 +32,11 @@ constexpr char kCalendarUrl[] = "https://calendar.google.com/";
 
 CalendarClientImpl::CalendarClientImpl(
     PrefService* pref_service,
-    apps::AppServiceProxy* app_service_proxy,
+    apps::AppRegistryCache* app_registry_cache,
     PolicyBlocklistService* policy_blocklist_service,
     CalendarKeyedService* calendar_keyed_service)
     : pref_service_(pref_service),
-      app_service_proxy_(app_service_proxy),
+      app_registry_cache_(CHECK_DEREF(app_registry_cache)),
       policy_blocklist_service_(policy_blocklist_service),
       calendar_keyed_service_(calendar_keyed_service) {}
 
@@ -54,11 +55,8 @@ bool CalendarClientImpl::IsDisabledByAdmin() const {
   }
 
   // 2) Check if the Calendar app is disabled by policy.
-  if (!app_service_proxy_) {
-    return true;
-  }
   auto calendar_app_readiness = apps::Readiness::kUnknown;
-  app_service_proxy_->AppRegistryCache().ForOneApp(
+  app_registry_cache_->ForOneApp(
       ash::kGoogleCalendarAppId,
       [&calendar_app_readiness](const apps::AppUpdate& update) {
         calendar_app_readiness = update.Readiness();

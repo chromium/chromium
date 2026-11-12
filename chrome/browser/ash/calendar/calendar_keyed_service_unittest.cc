@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -47,7 +48,7 @@ constexpr char kTestUserAgent[] = "test-user-agent";
 std::unique_ptr<CalendarKeyedService> BuildService(Profile* profile) {
   return std::make_unique<CalendarKeyedService>(
       AccountId::FromUserEmail("test@email.com"), profile->GetPrefs(),
-      apps::AppServiceProxyFactory::GetForProfile(profile),
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache(),
       AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory());

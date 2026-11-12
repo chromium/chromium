@@ -72,13 +72,13 @@ constexpr net::NetworkTrafficAnnotationTag kCalendarTrafficAnnotation =
 CalendarKeyedService::CalendarKeyedService(
     const AccountId& account_id,
     PrefService* pref_service,
-    apps::AppServiceProxy* app_service_proxy,
+    apps::AppRegistryCache* app_registry_cache,
     PolicyBlocklistService* policy_blocklist_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : account_id_(account_id),
       calendar_client_(pref_service,
-                       app_service_proxy,
+                       app_registry_cache,
                        policy_blocklist_service,
                        this),
       identity_manager_(identity_manager),
