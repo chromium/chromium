@@ -318,6 +318,7 @@ std::unique_ptr<PrePrefetchService> PrePrefetchService::Create(
     std::optional<bool> initial_should_append_variations_header_hint) {
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  base::ElapsedTimer timer;
   if (base::FeatureList::IsEnabled(
           features::kPrePrefetchServiceCreatesPrefetchService)) {
     // Note: This `IsEnabled()` check activates the field trial only for
@@ -329,11 +330,14 @@ std::unique_ptr<PrePrefetchService> PrePrefetchService::Create(
         "Preloading.Prefetch.PrePrefetch.EagerPrefetchServiceCreationTime",
         prefetch_service_timer.Elapsed());
   }
-  return std::make_unique<PrePrefetchServiceImpl>(
+  auto service = std::make_unique<PrePrefetchServiceImpl>(
       browser_context,
       std::move(embedder_non_ui_thread_update_headers_callbacks),
       initial_origin_hint, initial_javascript_enabled_hint,
       initial_should_append_variations_header_hint);
+  base::UmaHistogramMicrosecondsTimes(
+      "Preloading.Prefetch.PrePrefetch.ServiceCreationTime", timer.Elapsed());
+  return service;
 }
 
 PrePrefetchServiceImpl::PrePrefetchServiceImpl(

@@ -89,12 +89,34 @@ TEST_F(PrePrefetchServiceImplTest, CreateOnUIThread) {
   EXPECT_NE(service, nullptr);
 }
 
-// Test the metrics recorded by `PrePrefetchService::Create()`.
+// Test the metrics recorded by `PrePrefetchService::Create()` and the
+// subsequent creation of `PrefetchService`.
 TEST_F(PrePrefetchServiceImplTest, CreationMetrics) {
+  const bool is_high_resolution = base::TimeTicks::IsHighResolution();
+
   auto service = PrePrefetchService::Create(browser_context());
   ASSERT_NE(service, nullptr);
   histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrePrefetch.ServiceCreationTime",
+      is_high_resolution ? 1 : 0);
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrefetchService.ServiceCreationTime", 0);
+  histogram_tester().ExpectTotalCount(
       "Preloading.Prefetch.PrePrefetch.EagerPrefetchServiceCreationTime", 0);
+
+  // `PrefetchService` is created later, e.g. on the first navigation.
+  BrowserContextImpl* browser_context_impl =
+      BrowserContextImpl::From(browser_context());
+  ASSERT_TRUE(browser_context_impl->GetPrefetchService());
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrefetchService.ServiceCreationTime",
+      is_high_resolution ? 1 : 0);
+
+  // The metrics are recorded only when `PrefetchService` is created.
+  ASSERT_TRUE(browser_context_impl->GetPrefetchService());
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrefetchService.ServiceCreationTime",
+      is_high_resolution ? 1 : 0);
 }
 
 class PrePrefetchServiceImplCreatesPrefetchServiceTest
@@ -123,10 +145,19 @@ TEST_F(PrePrefetchServiceImplCreatesPrefetchServiceTest,
   histogram_tester().ExpectTotalCount(
       "Preloading.Prefetch.PrePrefetch.EagerPrefetchServiceCreationTime",
       is_high_resolution ? 1 : 0);
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrefetchService.ServiceCreationTime",
+      is_high_resolution ? 1 : 0);
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrePrefetch.ServiceCreationTime",
+      is_high_resolution ? 1 : 0);
 
-  // `PrefetchService` is already created.
+  // `PrefetchService` is already created, and thus isn't created again.
   ASSERT_TRUE(
       BrowserContextImpl::From(browser_context())->GetPrefetchService());
+  histogram_tester().ExpectTotalCount(
+      "Preloading.Prefetch.PrefetchService.ServiceCreationTime",
+      is_high_resolution ? 1 : 0);
 }
 
 // Test that `PrePrefetchServiceImpl::StartPrePrefetchRequest` can be called

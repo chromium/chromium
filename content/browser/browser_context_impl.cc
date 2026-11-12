@@ -12,7 +12,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
@@ -357,7 +359,11 @@ storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {
 
 PrefetchService* BrowserContextImpl::GetPrefetchService() {
   if (!prefetch_service_) {
+    base::ElapsedTimer timer;
     prefetch_service_ = std::make_unique<PrefetchService>(self_);
+    base::UmaHistogramMicrosecondsTimes(
+        "Preloading.Prefetch.PrefetchService.ServiceCreationTime",
+        timer.Elapsed());
   }
 
   return prefetch_service_.get();
