@@ -43,6 +43,11 @@ void LinearTimingFunction::Range(double* min_value, double* max_value) const {
   if (IsTrivial()) {
     return;
   }
+
+  if (*max_value <= *min_value) {
+    std::swap(*min_value, *max_value);
+  }
+
   //
   //        (min_it) # *               (max_it) ^ *
   //                 | | *                      | |

@@ -306,6 +306,20 @@ TEST_F(TimingFunctionTest, LinearRange) {
   EXPECT_NEAR(.75, end, 0.01);
 }
 
+// ASAN Regression test for crbug.com/568408119
+TEST_F(TimingFunctionTest, InvertedLinearRange) {
+  // Endpoint before start. Although not typical, ::Range should handle this.
+  double start = 4;
+  double end = 1;
+  // Linear timing function that only defines 200->300% range.
+  std::vector<gfx::LinearEasingPoint> points{{200, 0}, {300, 1}};
+  scoped_refptr<TimingFunction> linear_timing_complex =
+      LinearTimingFunction::Create(std::move(points));
+  linear_timing_complex->Range(&start, &end);
+  EXPECT_NEAR(-1, start, 0.01);
+  EXPECT_NEAR(2, end, 0.01);
+}
+
 TEST_F(TimingFunctionTest, StepRange) {
   double start = 0;
   double end = 1;
