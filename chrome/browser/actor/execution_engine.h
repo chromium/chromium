@@ -34,7 +34,6 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/origin_gating/core/client_tool.h"
-#include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_checker.h"
 #include "components/origin_gating/core/origin_gating_registration.h"
 #include "components/origin_gating/core/origin_gating_service.h"
@@ -531,10 +530,6 @@ class ExecutionEngine : public ToolDelegate,
   // destruction.
   std::unique_ptr<origin_gating::OriginGatingRegistration>
       origin_gating_registration_;
-
-  // This will allow us to store already-recorded origins to avoid duplication
-  // of dark launch metrics.
-  origin_gating::OriginGatingCache dark_launch_origin_gating_cache_;
 
   TabObservationStrategy observation_strategy_;
 

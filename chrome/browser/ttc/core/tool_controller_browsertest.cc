@@ -1606,8 +1606,7 @@ class ToolControllerNavigationGatingBrowserTest
   ToolControllerNavigationGatingBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         actor::kGlicCrossOriginNavigationGating,
-        {{"confirm_navigation_to_new_origins", "true"},
-         {"confirm_navigation_to_new_origins_dark_launch", "false"}});
+        {{"confirm_navigation_to_new_origins", "true"}});
   }
 
  private:

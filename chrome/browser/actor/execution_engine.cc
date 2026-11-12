@@ -756,32 +756,6 @@ MayActOnUrlBlockReason ResolveGatingDecision(
   return MapGatingDecisionToBlockReason(decision, url);
 }
 
-void OnNavigationConfirmationDecisionInBackground(
-    ExecutionEngine::State state,
-    ukm::SourceId ukm_source_id,
-    base::ScopedUmaHistogramTimer timer,
-    webui::mojom::NavigationConfirmationResponsePtr response) {
-  switch (response->result->which()) {
-    case webui::mojom::ConfirmationRequestResult::Tag::kPermissionGranted: {
-      bool permission_granted = response->result->get_permission_granted();
-      base::UmaHistogramBoolean(kPermissionGrantedHistogram,
-                                permission_granted);
-      ukm::builders::Actor_OriginGating builder(ukm_source_id);
-      builder
-          .SetServerConfirmationResult(static_cast<int64_t>(
-              permission_granted
-                  ? ExecutionEngine::ActorServerConfirmationResult::kAccepted
-                  : ExecutionEngine::ActorServerConfirmationResult::kRejected))
-          .SetEngineState(static_cast<int64_t>(state));
-      builder.Record(ukm::UkmRecorder::Get());
-      return;
-    }
-    case webui::mojom::ConfirmationRequestResult::Tag::kErrorReason:
-      return;
-  }
-  NOTREACHED();
-}
-
 origin_gating::OriginGatingConfiguration::CacheScope
 GetOriginGatingCacheScope() {
   using CacheScope = origin_gating::OriginGatingConfiguration::CacheScope;
@@ -950,8 +924,7 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
           std::make_unique<autofill::ActorOneTimeTokenFillingServiceImpl>(
               task_->GetProfile(),
               journal_,
-              task_->id())),
-      dark_launch_origin_gating_cache_(GetOriginGatingCacheScope()) {
+              task_->id())) {
   TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
   origin_gating_registration_ =
       GetOriginGatingService().CreateAndRegisterChecker(
@@ -1245,22 +1218,6 @@ void ExecutionEngine::HandleNavigationToNewOrigin(
     base::ScopedUmaHistogramTimer timer,
     base::OnceCallback<void(NoVerdictResult)> callback) {
   if (!kGlicConfirmNavigationToNewOrigins.Get()) {
-    if (kGlicConfirmNavigationToNewOriginsDarkLaunch.Get() &&
-        !dark_launch_origin_gating_cache_.IsNavigationAllowed(url::Origin(),
-                                                              destination)) {
-      SendNavigationConfirmationRequest(
-          destination,
-          base::BindOnce(&OnNavigationConfirmationDecisionInBackground, state_,
-                         ukm_source_id,
-                         base::ScopedUmaHistogramTimer(
-                             "Actor.NavigationGating."
-                             "DarkLaunchConfirmationRequestLatency")));
-      // Navigation is auto-approved, so add to origin checker allowlist to skip
-      // future checks and metrics.
-      dark_launch_origin_gating_cache_.AllowNavigationTo(
-          destination,
-          /*is_user_confirmed=*/false);
-    }
     std::move(callback).Run({.is_allowed = true, .did_prompt_user = false});
     return;
   }

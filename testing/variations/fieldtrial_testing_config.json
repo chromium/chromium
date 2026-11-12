@@ -9430,30 +9430,6 @@
             ]
         }
     ],
-    "GlicConfirmNavigationToNewOrigins": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows",
-                "android",
-                "android_desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_DarkLaunch",
-                    "params": {
-                        "confirm_navigation_to_new_origins": "false",
-                        "confirm_navigation_to_new_origins_dark_launch": "true"
-                    },
-                    "enable_features": [
-                        "GlicCrossOriginNavigationGating"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicCookieSyncOnTokenChange": [
         {
             "platforms": [
