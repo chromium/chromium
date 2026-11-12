@@ -514,15 +514,13 @@ void MLTensor::OnConnectionError() {
 //            │                          |                  WaitSyncToken(t3)
 //            |                          |                        |
 //
-// clang-format off
+// clang-format on
 //
 // The method is annotated with the comment taken from the diagram above to make
 // it more clear which part of the code corresponds to which step.
-GPUBuffer* MLTensor::ExportToGPUImpl(
-    webnn::ScopedTrace scoped_trace,
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-
+GPUBuffer* MLTensor::ExportToGPUImpl(webnn::ScopedTrace scoped_trace,
+                                     ScriptState* script_state,
+                                     ExceptionState& exception_state) {
   if (!gpu_device_) {
     exception_state.ThrowTypeError(kTensorWebGPUInteropUnsupportedError);
     return nullptr;
@@ -550,8 +548,8 @@ GPUBuffer* MLTensor::ExportToGPUImpl(
     return nullptr;
   }
 
-  gpu::SyncToken sync_token = gpu::WebNNScopedAccess::EndAccess(
-      std::move(webnn_scoped_access_), [&]() {
+  gpu::SyncToken sync_token =
+      gpu::WebNNScopedAccess::EndAccess(std::move(webnn_scoped_access_), [&]() {
         gpu::SyncToken release_token =
             ml_context_->GenerateVerifiedReleaseToken();
         // If SyncPointGraphValidation is disabled, we need to flush the command
@@ -567,8 +565,8 @@ GPUBuffer* MLTensor::ExportToGPUImpl(
       });
 
   auto webgpu_finished_access_callback = blink::BindOnce(
-      [](MLTensor* tensor, gpu::ClientSharedImage* shared_image, uint64_t flow_id,
-         const gpu::SyncToken& webgpu_finished_access_token) {
+      [](MLTensor* tensor, gpu::ClientSharedImage* shared_image,
+         uint64_t flow_id, const gpu::SyncToken& webgpu_finished_access_token) {
         // Update the SyncToken to ensure that we will wait for it even if we
         // immediately destroy the exported tensor.
         shared_image->UpdateDestructionSyncToken(webgpu_finished_access_token);
@@ -579,7 +577,8 @@ GPUBuffer* MLTensor::ExportToGPUImpl(
           return;
         }
 
-        TRACE_EVENT("webnn", "MLTensor::ImportTensor", perfetto::Flow::Global(flow_id));
+        TRACE_EVENT("webnn", "MLTensor::ImportTensor",
+                    perfetto::Flow::Global(flow_id));
 
         // WaitSyncToken(t3)
         // WebNNTensor::ImportTensor calls WaitSyncToken.
@@ -614,9 +613,9 @@ GPUBuffer* MLTensor::ExportToGPUImpl(
           std::move(webgpu_finished_access_callback));
   CHECK(mailbox_buffer);
 
-  gpu_buffer_ = MakeGarbageCollected<GPUBuffer>(gpu_device_, tensor_buffer_desc.size,
-                                                std::move(mailbox_buffer),
-                                                String::FromUtf8(tensor_buffer_desc.label));
+  gpu_buffer_ = MakeGarbageCollected<GPUBuffer>(
+      gpu_device_, tensor_buffer_desc.size, std::move(mailbox_buffer),
+      String::FromUtf8(tensor_buffer_desc.label));
   return gpu_buffer_;
 }
 
