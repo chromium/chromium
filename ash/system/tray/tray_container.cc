@@ -11,7 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -21,8 +21,7 @@ namespace ash {
 TrayContainer::TrayContainer(Shelf* shelf) : shelf_(shelf) {
   DCHECK(shelf_);
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   UpdateLayout();
 }
 
