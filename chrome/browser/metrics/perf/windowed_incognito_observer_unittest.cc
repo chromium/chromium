@@ -31,6 +31,7 @@ class TestWindowedIncognitoMonitor : public WindowedIncognitoMonitor {
   int num_on_browser_added() { return num_on_browser_added_; }
   int num_on_browser_removed() { return num_on_browser_removed_; }
 
+  using WindowedIncognitoMonitor::CreateIncognitoObserver;
   using WindowedIncognitoMonitor::num_active_incognito_windows;
   using WindowedIncognitoMonitor::num_incognito_window_opened;
 
@@ -213,7 +214,7 @@ TEST_F(WindowedIncognitoMonitorTest, NumIncognitoWindow) {
 
 // Test that WindowedIncognitoObserver returns the correct incognito state.
 TEST_F(WindowedIncognitoMonitorTest, IncognitoObserver) {
-  auto observer1 = incognito_monitor_->CreateObserver();
+  auto observer1 = incognito_monitor_->CreateIncognitoObserver();
   EXPECT_FALSE(observer1->IncognitoActive());
   EXPECT_FALSE(observer1->IncognitoLaunched());
 
@@ -223,7 +224,7 @@ TEST_F(WindowedIncognitoMonitorTest, IncognitoObserver) {
   EXPECT_TRUE(observer1->IncognitoLaunched());
 
   // |observer2| is created after incognito window is opened.
-  auto observer2 = incognito_monitor_->CreateObserver();
+  auto observer2 = incognito_monitor_->CreateIncognitoObserver();
   EXPECT_TRUE(observer2->IncognitoActive());
   EXPECT_FALSE(observer2->IncognitoLaunched());
 
@@ -244,7 +245,7 @@ TEST_F(WindowedIncognitoMonitorTest, IncognitoObserver) {
   EXPECT_TRUE(observer2->IncognitoLaunched());
 
   // An observer created now should not see incognito active of launched.
-  auto observer3 = incognito_monitor_->CreateObserver();
+  auto observer3 = incognito_monitor_->CreateIncognitoObserver();
   EXPECT_FALSE(observer3->IncognitoActive());
   EXPECT_FALSE(observer3->IncognitoLaunched());
 
