@@ -5,4 +5,5 @@ include_rules = [
 ]
 skip_child_includes = [
   "checkdeps_test",
+  "syntax_warning",
 ]

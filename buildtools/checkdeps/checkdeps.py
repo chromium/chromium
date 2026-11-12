@@ -288,7 +288,7 @@ def main():
     action='store_true',
     dest='suppress_syntax_warnings',
     default=False,
-    help='Suppress SyntaxWarning messages from Python',
+    help='Deprecated no-op; SyntaxWarnings are now treated as errors.',
   )
   option_parser.add_option(
     '-v',
@@ -309,11 +309,6 @@ def main():
   )
 
   options, args = option_parser.parse_args()
-
-  if options.suppress_syntax_warnings:
-    import warnings
-
-    warnings.filterwarnings("ignore", category=SyntaxWarning)
 
   deps_checker = DepsChecker(
     options.base_directory,

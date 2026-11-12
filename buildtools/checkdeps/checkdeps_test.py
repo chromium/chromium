@@ -400,17 +400,30 @@ class CheckDepsTest(unittest.TestCase):
     )
     self.assertTrue(problems)
 
-  def testSuppressSyntaxWarnings(self):
-    import subprocess
-    import tempfile
+  def testSyntaxWarningIsError(self):
     import sys
+
+    syntax_warning_dir = os.path.join(
+      self.deps_checker.base_directory,
+      'buildtools',
+      'checkdeps',
+      'testdata',
+      'syntax_warning',
+    )
+    with self.assertRaises(builddeps.DepsBuilderError) as ctx:
+      self.deps_checker._ParseDeps(syntax_warning_dir)
+    err_msg = str(ctx.exception)
+    self.assertIn(os.path.join(syntax_warning_dir, 'DEPS') + ':2:', err_msg)
+    self.assertIn('invalid escape sequence', err_msg)
+    self.assertIn('use \\\\. or a raw string', err_msg)
 
     with tempfile.TemporaryDirectory() as temp_dir:
       subprocess.check_call(['git', 'init', '-q', temp_dir])
       deps_path = os.path.join(temp_dir, 'DEPS')
-      # Include expressions that trigger a SyntaxWarning in Python 3.11
-      # ("is" with a literal) and Python 3.12+ (invalid escape sequence).
-      _write(deps_path, 'x = (1 is 1)\ninclude_rules = ["+foo\\."]\n')
+      _write(
+        deps_path,
+        'specific_include_rules = {".*_unittest\\.cc": ["+foo"]}\n',
+      )
 
       script_path = os.path.join(
         self.deps_checker.base_directory,
@@ -419,33 +432,22 @@ class CheckDepsTest(unittest.TestCase):
         'checkdeps.py',
       )
 
-      # Run without flag
-      res_no_flag = subprocess.run(
-        [sys.executable, script_path, '--root', temp_dir],
-        capture_output=True,
-        text=True,
-      )
-
-      # Run with flag
-      res_with_flag = subprocess.run(
-        [
-          sys.executable,
-          script_path,
-          '--root',
-          temp_dir,
-          '--suppress-syntax-warnings',
-        ],
-        capture_output=True,
-        text=True,
-      )
-
-      # Verify that without the flag, the DEPS filename is shown instead of
-      # <string>.
-      self.assertIn(os.path.normcase(deps_path), res_no_flag.stderr)
-      self.assertNotIn('<string>', res_no_flag.stderr)
-
-      # Verify that with the flag, there are no SyntaxWarnings.
-      self.assertNotIn('SyntaxWarning', res_with_flag.stderr)
+      for extra_args in ([], ['--suppress-syntax-warnings']):
+        res = subprocess.run(
+          [sys.executable, script_path, '--root', temp_dir] + extra_args,
+          capture_output=True,
+          text=True,
+        )
+        self.assertNotEqual(0, res.returncode)
+        combined_output = res.stdout + res.stderr
+        # checkdeps reports normcase'd paths (lowercase drive letter on
+        # Windows), so compare case-insensitively.
+        self.assertIn(
+          os.path.normcase(deps_path) + ':1:',
+          os.path.normcase(combined_output),
+        )
+        self.assertIn('invalid escape sequence', combined_output)
+        self.assertIn('use \\\\. or a raw string', combined_output)
 
   def testCheckAddedJavaImports(self):
     with tempfile.TemporaryDirectory() as temp_dir:

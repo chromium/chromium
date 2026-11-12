@@ -14,6 +14,7 @@ import functools
 import os.path
 import posixpath
 import subprocess
+import warnings
 
 import rules
 
@@ -120,7 +121,35 @@ def _ParseDepsMemoize(dir_path, under_test, verbose):
   ):
     try:
       with open(deps_file_path) as file:
-        code = compile(file.read(), os.path.normcase(deps_file_path), 'exec')
+        try:
+          # An invalid escape sequence such as "\." in a non-raw string
+          # is *not* a SyntaxError: Python still compiles the file and
+          # keeps the backslash, so the regex silently works by accident.
+          # The only signal is a warning (DeprecationWarning before
+          # Python 3.12, SyntaxWarning since), which is easy to miss in
+          # bot output. Escalate those warnings to errors so that the
+          # DEPS file fails to parse with an actionable message. Future
+          # Python versions will turn this into a real SyntaxError, which
+          # the same handler below also covers.
+          with warnings.catch_warnings():
+            warnings.simplefilter('error', SyntaxWarning)
+            # Python < 3.12 reports invalid escape sequences as a
+            # DeprecationWarning instead of a SyntaxWarning.
+            warnings.filterwarnings(
+              'error',
+              message='invalid escape sequence',
+              category=DeprecationWarning,
+            )
+            code = compile(
+              file.read(), os.path.normcase(deps_file_path), 'exec'
+            )
+        except (SyntaxError, SyntaxWarning, DeprecationWarning) as e:
+          msg = getattr(e, 'msg', str(e))
+          if 'invalid escape sequence' in msg:
+            msg += ' (use \\\\. or a raw string)'
+          raise DepsBuilderError(
+            '%s:%s: %s' % (deps_file_path, getattr(e, 'lineno', '?'), msg)
+          ) from e
       exec(code, global_scope, local_scope)
     except Exception as e:
       print(' Error reading %s: %s' % (deps_file_path, str(e)))
