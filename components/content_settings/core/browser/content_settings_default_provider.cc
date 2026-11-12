@@ -102,6 +102,9 @@ constexpr char kLocalNetworkAccessMigrateDefaultValuePref[] =
     "profile.default_content_setting_values.has_migrated_local_network_access";
 constexpr char kObsoleteTrackingProtectionDefaultPref[] =
     "profile.default_content_setting_values.tracking_protection";
+// Deprecated 11/2026. Remove after 11/2027.
+constexpr char kObsoleteReducedAcceptLanguageDefaultPref[] =
+    "profile.default_content_setting_values.reduced_accept_language";
 #endif  // !BUILDFLAG(IS_IOS)
 
 base::Value GetDefaultValue(const WebsiteSettingsInfo* info) {
@@ -158,6 +161,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoleteTopLevelTpcdTrialDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteTrackingProtectionDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteReducedAcceptLanguageDefaultPref, 0);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kObsoleteMouseLockDefaultPref, 0,
@@ -417,6 +421,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteTopLevelTpcdTrialDefaultPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref);
   prefs_->ClearPref(kObsoleteTrackingProtectionDefaultPref);
+  prefs_->ClearPref(kObsoleteReducedAcceptLanguageDefaultPref);
 #if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);

@@ -101,7 +101,7 @@ inline constexpr auto kContentSettingsTypeToHistogramValue =
         {ContentSettingsType::REQUEST_DESKTOP_SITE, 84},
         {ContentSettingsType::FEDERATED_IDENTITY_API, 85},
         {ContentSettingsType::NOTIFICATION_INTERACTIONS, 86},
-        {ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, 87},
+        // Removed REDUCED_ACCEPT_LANGUAGE in M159.
         {ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, 88},
         // Removed PRIVATE_NETWORK_GUARD in M140
         // Removed PRIVATE_NETWORK_CHOOSER_DATA in M140

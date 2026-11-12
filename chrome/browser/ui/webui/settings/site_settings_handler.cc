@@ -2559,12 +2559,6 @@ void SiteSettingsHandler::RemoveNonModelData(
         ->SetWebsiteSettingDefaultScope(origin.GetURL(), GURL(),
                                         ContentSettingsType::CLIENT_HINTS,
                                         base::Value());
-    // Once user clears site setting data for `origins`, all corresponding
-    // reduced accept language stored in the setting map should also be cleaned.
-    HostContentSettingsMapFactory::GetForProfile(profile_)
-        ->SetWebsiteSettingDefaultScope(
-            origin.GetURL(), GURL(),
-            ContentSettingsType::REDUCED_ACCEPT_LANGUAGE, base::Value());
     // Once user clears site setting data for `origins`, the Persistent storage
     // bit should also be reset.
     // TODO(crbug.com/40287777): This should be replaced when integrated with

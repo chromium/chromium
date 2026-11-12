@@ -159,7 +159,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::REQUEST_DESKTOP_SITE:
       case ContentSettingsType::FEDERATED_IDENTITY_API:
       case ContentSettingsType::NOTIFICATION_INTERACTIONS:
-      case ContentSettingsType::REDUCED_ACCEPT_LANGUAGE:
       case ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW:
       case ContentSettingsType::
           FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS:

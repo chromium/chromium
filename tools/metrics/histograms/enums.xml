@@ -2313,7 +2313,7 @@ Called by update_net_error_codes.py.-->
   <int value="84" label="Request desktop site"/>
   <int value="85" label="Federated identity browser JavaScript API"/>
   <int value="86" label="Notification interactions"/>
-  <int value="87" label="Reduce accept language"/>
+  <int value="87" label="(Obsolete) Reduce accept language"/>
   <int value="88" label="Notification permission review"/>
   <int value="89" label="(Obsolete) Private network guard"/>
   <int value="90" label="(Obsolete) Private network chooser data"/>
