@@ -306,7 +306,17 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
+// TODO(crbug.com/568519275): this test is failing flakily on linux debug
+// builders and linux asan builders.
+#if BUILDFLAG(IS_LINUX) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#define MAYBE_RepeatedlyMoveActuatedTabToNewWindow \
+  DISABLED_RepeatedlyMoveActuatedTabToNewWindow
+#else
+#define MAYBE_RepeatedlyMoveActuatedTabToNewWindow \
+  RepeatedlyMoveActuatedTabToNewWindow
+#endif
+IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
+                       MAYBE_RepeatedlyMoveActuatedTabToNewWindow) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManager* state_manager = ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
