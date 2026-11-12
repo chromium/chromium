@@ -8471,14 +8471,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "profile-disc-on-all-pages",
-    "owners": [
-      "crowleso@google.com",
-      "chrome-signin-mobile-team@google.com"
-    ],
-    "expiry_milestone": 158
-  },
-  {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 170

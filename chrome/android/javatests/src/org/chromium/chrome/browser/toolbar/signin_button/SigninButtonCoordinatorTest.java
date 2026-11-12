@@ -79,7 +79,7 @@ import org.chromium.ui.util.ValueUtils;
 /** Integration tests for {@link SigninButtonCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, SigninFeatures.PROFILE_DISC_ON_ALL_PAGES})
+@EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
 public class SigninButtonCoordinatorTest {
 
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
@@ -366,22 +366,7 @@ public class SigninButtonCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
-    public void testSigninButtonHiddenOnNavigation() {
-        startActivityOnNtp();
-
-        // Initially visible on NTP.
-        mPage.signinButtonElement.checkPresent();
-
-        // Should be hidden on navigation away from NTP.
-        WebPageStation aboutBlank = mPage.loadAboutBlank();
-
-        aboutBlank.signinButtonElement.checkAbsent();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testSigninButton_InflatesAndShowsWhenNavigatingToNtp() {
         // Start on a non-NTP page so button should not be inflated.
         WebPageStation blankPage = mActivityTestRule.startOnBlankPage();

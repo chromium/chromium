@@ -120,6 +120,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
 
     /**
      * Sets whether the button should be shown on all pages. Otherwise, it is only shown on the NTP.
+     * Tablet toolbars pass true; phone keeps the default (NTP only).
      *
      * @param showOnAllPages Whether the button should be shown on all pages.
      */

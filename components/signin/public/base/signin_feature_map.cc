@@ -58,7 +58,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSigninButtonProfileMenuErrorCard,
     &switches::kSigninButtonProfileMenuRefinements,
     &switches::kSigninLevelUpButton,
-    &switches::kProfileDiscOnAllPages,
     &switches::kSwitchToIncognitoInSettings,
 };
 

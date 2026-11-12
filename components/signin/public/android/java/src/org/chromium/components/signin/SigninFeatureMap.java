@@ -34,12 +34,6 @@ public final class SigninFeatureMap extends FeatureMap {
                     SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sProfileDiscOnAllPages =
-            new CachedFlag(
-                    sInstance,
-                    SigninFeatures.PROFILE_DISC_ON_ALL_PAGES,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sSigninLevelUpButton =
             new CachedFlag(
                     sInstance,
@@ -50,7 +44,6 @@ public final class SigninFeatureMap extends FeatureMap {
             List.of(
                     sFullscreenSigninMediatorStateMachine,
                     sMigrateAccountManagerDelegate,
-                    sProfileDiscOnAllPages,
                     sSigninLevelUpButton);
 
     /**

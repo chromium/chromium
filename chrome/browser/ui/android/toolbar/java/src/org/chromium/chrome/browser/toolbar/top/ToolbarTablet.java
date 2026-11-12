@@ -72,7 +72,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -485,8 +484,7 @@ public class ToolbarTablet extends ToolbarLayout {
                 new OptionalButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.SIGNIN_BUTTON] = signinButtonCoordinator;
         if (signinButtonCoordinator != null) {
-            signinButtonCoordinator.setShowOnAllPages(
-                    SigninFeatureMap.sProfileDiscOnAllPages.isEnabled());
+            signinButtonCoordinator.setShowOnAllPages(true);
         }
         mToolbarWidthConsumers[ToolbarComponentId.DOWNLOAD_BUTTON] = downloadButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;

@@ -4425,12 +4425,6 @@ inline constexpr char kNtpComposeboxUsesChromeComposeClientDescription[] =
     "Composebox will use chrome-compose client when querying suggest for "
     "unimodal typed inputs instead of chrome-omni.";
 
-inline constexpr char kProfileDiscOnAllPagesName[] =
-    "Profile Disc on All Pages";
-inline constexpr char kProfileDiscOnAllPagesDescription[] =
-    "Enables showing the Signin Button Profile Disc in the toolbar on all "
-    "pages, rather than solely the NTP.";
-
 inline constexpr char kOrganizerPanelName[] = "Organizer Panel";
 inline constexpr char kOrganizerPanelDescription[] =
     "Enables the Organizer Panel.";

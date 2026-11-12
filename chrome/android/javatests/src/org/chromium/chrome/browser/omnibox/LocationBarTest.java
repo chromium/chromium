@@ -44,7 +44,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -397,60 +396,27 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
+    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopDisabled() {
+    public void testFocusLogic_buttonVisibilityTablet_DesktopDisabled() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
-        testFocusLogic_buttonVisibilityTablet(
-                /* expectDesktopMode= */ false, /* profileDiscEnabled= */ false);
+        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ false);
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        SigninFeatures.PROFILE_DISC_ON_ALL_PAGES,
-        SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
-    })
+    @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscEnabled_DesktopDisabled() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
-        DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
-        DeviceInput.setSupportsPrecisionPointerForTesting(false);
-        testFocusLogic_buttonVisibilityTablet(
-                /* expectDesktopMode= */ false, /* profileDiscEnabled= */ true);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopEnabled() {
+    public void testFocusLogic_buttonVisibilityTablet_DesktopEnabled() {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
-        testFocusLogic_buttonVisibilityTablet(
-                /* expectDesktopMode= */ true, /* profileDiscEnabled= */ false);
+        testFocusLogic_buttonVisibilityTablet(/* expectDesktopMode= */ true);
     }
 
-    @Test
-    @MediumTest
-    @EnableFeatures({
-        SigninFeatures.PROFILE_DISC_ON_ALL_PAGES,
-        SigninFeatures.SIGNIN_LEVEL_UP_BUTTON
-    })
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testFocusLogic_buttonVisibilityTablet_ProfileDiscEnabled_DesktopEnabled() {
-        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
-        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
-        DeviceInput.setSupportsPrecisionPointerForTesting(true);
-        testFocusLogic_buttonVisibilityTablet(
-                /* expectDesktopMode= */ true, /* profileDiscEnabled= */ true);
-    }
-
-    private void testFocusLogic_buttonVisibilityTablet(
-            boolean expectDesktopMode, boolean profileDiscEnabled) {
+    private void testFocusLogic_buttonVisibilityTablet(boolean expectDesktopMode) {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(expectDesktopMode);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(expectDesktopMode);
         startActivityNormally();
@@ -482,8 +448,8 @@ public class LocationBarTest {
         } else {
             onView(withId(R.id.mic_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-            // With profileDiscEnabled a Signin button appears with priority over the lens button.
-            onView(withId(profileDiscEnabled ? R.id.signin_button : R.id.lens_camera_button))
+            // A Signin button appears with priority over the lens button.
+            onView(withId(R.id.signin_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
             onView(withId(R.id.delete_button))
                     .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));

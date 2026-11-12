@@ -13234,12 +13234,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"profile-disc-on-all-pages", flag_descriptions::kProfileDiscOnAllPagesName,
-     flag_descriptions::kProfileDiscOnAllPagesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kProfileDiscOnAllPages)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"fullscreen-signin-mediator-state-machine",
      flag_descriptions::kFullscreenSigninMediatorStateMachineName,
      flag_descriptions::kFullscreenSigninMediatorStateMachineDescription,
