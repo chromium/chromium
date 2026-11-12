@@ -1486,13 +1486,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_RECENT_TAB);
       break;
-    case IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS:
-      if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes(
-            "WrenchMenu.TimeToAction.LoginForDeviceTabs", delta);
-      }
-      LogMenuAction(MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS);
-      break;
     case IDC_RECENT_TABS_SEE_DEVICE_TABS:
       if (!uma_action_recorded_) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.SeeDeviceTabs",

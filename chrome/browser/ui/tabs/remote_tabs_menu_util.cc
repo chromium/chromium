@@ -21,7 +21,6 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/session_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -61,38 +60,36 @@ void OnRemoteTabFaviconAvailable(
 
 bool ShouldShowTabsFromOtherDevices(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(profile);
-    if (!sync_service) {
-      return false;
-    }
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return false;
+  }
 
-    if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-            sync_service, {syncer::UserSelectableType::kTabs})) {
-      // Tabs from other devices should not be offered if syncing tabs is
-      // disabled by policy.
-      return false;
-    }
+  if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+          sync_service, {syncer::UserSelectableType::kTabs})) {
+    // Tabs from other devices should not be offered if syncing tabs is
+    // disabled by policy.
+    return false;
+  }
 
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    switch (signin_util::GetSignedInState(identity_manager)) {
-      case signin_util::SignedInState::kSignedIn:
-      case signin_util::SignedInState::kSignInPending:
-        if (signin_util::HasExplicitlyDisabledHistorySync(sync_service,
-                                                          identity_manager)) {
-          // Tabs from other devices should not be offered if syncing tabs is
-          // explicitly disabled by the user.
-          return false;
-        }
-        break;
-      case signin_util::SignedInState::kSignedOut:
-      case signin_util::SignedInState::kWebOnlySignedIn:
-      case signin_util::SignedInState::kSyncing:
-      case signin_util::SignedInState::kSyncPaused:
-        break;
-    }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  switch (signin_util::GetSignedInState(identity_manager)) {
+    case signin_util::SignedInState::kSignedIn:
+    case signin_util::SignedInState::kSignInPending:
+      if (signin_util::HasExplicitlyDisabledHistorySync(sync_service,
+                                                        identity_manager)) {
+        // Tabs from other devices should not be offered if syncing tabs is
+        // explicitly disabled by the user.
+        return false;
+      }
+      break;
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kWebOnlySignedIn:
+    case signin_util::SignedInState::kSyncing:
+    case signin_util::SignedInState::kSyncPaused:
+      break;
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   return true;

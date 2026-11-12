@@ -82,8 +82,9 @@ class CollaborationControllerDelegateDesktop
   void ShowErrorDialog(const ErrorInfo& error);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void MaybeShowSignInUiForHistorySyncOptin();
-#endif
+#else
   void MaybeShowSignInAndSyncUi();
+#endif
   void MaybeShowSignInOrSyncPromptDialog();
   void OnPromptDialogOk();
   void OnPromptDialogCancel();

@@ -1972,8 +1972,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_FALSE(
       chrome::IsCommandEnabled(incognito_browser, IDC_RECENT_TABS_MENU));
   EXPECT_FALSE(chrome::IsCommandEnabled(incognito_browser,
-                                        IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS));
-  EXPECT_FALSE(chrome::IsCommandEnabled(incognito_browser,
                                         IDC_RECENT_TABS_SEE_DEVICE_TABS));
 }
 
@@ -2002,8 +2000,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestIsolatedTest,
 
   EXPECT_FALSE(
       chrome::IsCommandEnabled(isolated_browser, IDC_RECENT_TABS_MENU));
-  EXPECT_FALSE(chrome::IsCommandEnabled(isolated_browser,
-                                        IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS));
   EXPECT_FALSE(chrome::IsCommandEnabled(isolated_browser,
                                         IDC_RECENT_TABS_SEE_DEVICE_TABS));
 }

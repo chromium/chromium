@@ -216,8 +216,6 @@
   E(kActionManageSkills, IDC_MANAGE_SKILLS) \
   E(kActionBrowseSkills, IDC_BROWSE_SKILLS) \
   E(kActionReadingListMenuAddTab, IDC_READING_LIST_MENU_ADD_TAB) \
-  E(kActionRecentTabsLoginForDeviceTabs, \
-    IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) \
   E(kActionRecentTabsSeeDeviceTabs, \
     IDC_RECENT_TABS_SEE_DEVICE_TABS) \
   E(kActionOpenRecentTab, IDC_OPEN_RECENT_TAB) \

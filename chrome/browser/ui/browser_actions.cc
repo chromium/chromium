@@ -3714,17 +3714,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ShowSettingsSubPage(bwi, chrome::kPeopleSubPage);
-              },
-              bwi))
-          .SetActionId(kActionRecentTabsLoginForDeviceTabs)
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
                 chrome::ShowHistorySubPage(bwi,
                                            chrome::kChromeUIHistorySyncedTabs);
               },

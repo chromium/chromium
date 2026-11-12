@@ -203,10 +203,6 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionOpenOtherDeviceTab:
       RecordAction(MENU_ACTION_OTHER_DEVICE_TAB, "OpenOtherDeviceTab");
       break;
-    case kActionRecentTabsLoginForDeviceTabs:
-      RecordAction(MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
-                   "LoginForDeviceTabs");
-      break;
     case kActionRecentTabsSeeDeviceTabs:
       RecordAction(MENU_ACTION_RECENT_TABS_SEE_DEVICE_TABS, "SeeDeviceTabs");
       break;

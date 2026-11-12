@@ -100,8 +100,7 @@ DialogText GetPromptDialogTextFromStatus(
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-      status.signin_status != collaboration::SigninStatus::kSigninDisabled) {
+  if (status.signin_status != collaboration::SigninStatus::kSigninDisabled) {
     title_id = IDS_SYNC_HISTORY_TITLE;
     ok_button_text_id = IDS_SYNC_HISTORY_BUTTON;
 
@@ -139,12 +138,14 @@ DialogText GetPromptDialogTextFromStatus(
   }
 }
 
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
 void ShowSignInAndSyncUi(Profile* profile,
                          signin_metrics::AccessPoint access_point) {
   signin_ui_util::EnableHistorySyncFromSingleAccountPromo(
       profile, GetAccountInfoFromProfile(profile).GetCoreAccountInfo(),
       access_point);
 }
+#endif
 
 signin_metrics::AccessPoint GetAccessPointForFlowType(
     collaboration::FlowType flow_type) {
@@ -470,8 +471,7 @@ void CollaborationControllerDelegateDesktop::
   signin_ui_util::SignInAndEnableHistorySync(browser_, browser_->GetProfile(),
                                              access_point_);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
+#else
 void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
   collaboration::ServiceStatus status = GetServiceStatus();
   if (!browser_) {
@@ -511,6 +511,7 @@ void CollaborationControllerDelegateDesktop::MaybeShowSignInAndSyncUi() {
       break;
   }
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void CollaborationControllerDelegateDesktop::
     MaybeShowSignInOrSyncPromptDialog() {
@@ -567,36 +568,33 @@ void CollaborationControllerDelegateDesktop::
               .SetEnabled(true));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    dialog_builder.SetFootnote(ui::DialogModelLabel(dialog_text.footnote));
+  dialog_builder.SetFootnote(ui::DialogModelLabel(dialog_text.footnote));
 
-    // Record metrics about signin and history sync opt in being offered.
-    switch (status.signin_status) {
-      case collaboration::SigninStatus::kSigninDisabled:
-        break;
-      case collaboration::SigninStatus::kNotSignedIn:
-        signin_metrics::LogSignInOffered(
-            access_point_,
-            account_for_promo.IsEmpty()
-                ? signin_metrics::PromoAction::
-                      PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
-                : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+  // Record metrics about signin and history sync opt in being offered.
+  switch (status.signin_status) {
+    case collaboration::SigninStatus::kSigninDisabled:
+      break;
+    case collaboration::SigninStatus::kNotSignedIn:
+      signin_metrics::LogSignInOffered(
+          access_point_,
+          account_for_promo.IsEmpty()
+              ? signin_metrics::PromoAction::
+                    PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+              : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+      signin_metrics::LogHistorySyncOptInOffered(access_point_);
+      break;
+    case collaboration::SigninStatus::kSignedInPaused:
+    case collaboration::SigninStatus::kSignedIn:
+      if (status.sync_status != collaboration::SyncStatus::kSyncEnabled) {
         signin_metrics::LogHistorySyncOptInOffered(access_point_);
-        break;
-      case collaboration::SigninStatus::kSignedInPaused:
-      case collaboration::SigninStatus::kSignedIn:
-        if (status.sync_status != collaboration::SyncStatus::kSyncEnabled) {
-          signin_metrics::LogHistorySyncOptInOffered(access_point_);
-        }
-        break;
-    }
+      }
+      break;
   }
 #endif
 
   // Don't show the account card when the user is signed in, since the email is
   // already mentioned in the body.
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled() ||
-      status.signin_status != collaboration::SigninStatus::kSignedIn) {
+  if (status.signin_status != collaboration::SigninStatus::kSignedIn) {
     dialog_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             std::make_unique<AccountCardView>(account_for_promo),
@@ -622,13 +620,10 @@ void CollaborationControllerDelegateDesktop::OnPromptDialogOk() {
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    MaybeShowSignInUiForHistorySyncOptin();
-    return;
-  }
-#endif
-
+  MaybeShowSignInUiForHistorySyncOptin();
+#else
   MaybeShowSignInAndSyncUi();
+#endif
 }
 
 void CollaborationControllerDelegateDesktop::OnPromptDialogCancel() {

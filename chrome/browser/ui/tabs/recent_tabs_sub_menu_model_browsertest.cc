@@ -309,31 +309,6 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
-                       LogMenuMetricsForRecentTabsLoginForDeviceTabs) {
-  Init();
-  FakeIconDelegate fake_delegate;
-  AppMenuIconController app_menu_icon_controller(browser()->GetProfile(),
-                                                 &fake_delegate);
-  TestLogMetricsAppMenuModel app_menu_model(nullptr, browser(),
-                                            &app_menu_icon_controller);
-  app_menu_model.Init();
-  RecentTabsSubMenuModel recent_tab_sub_menu_model(nullptr, browser());
-  recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
-      base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
-                          base::Unretained(&app_menu_model)));
-  base::HistogramTester histogram_tester;
-  recent_tab_sub_menu_model.ExecuteCommand(
-      IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, 0);
-  histogram_tester.ExpectUniqueSample(
-      "WrenchMenu.MenuAction", MENU_ACTION_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
-      1);
-
-  // Check that we arrive at the expected page.
-  EXPECT_EQ(GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kPeopleSubPage),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
-}
-
-IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
                        LogMenuMetricsForRecentTabsSeeDeviceTabs) {
   Init();
   FakeIconDelegate fake_delegate;
@@ -1138,10 +1113,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     RecentTabsSubMenuModelWithoutOtherDeviceTabsInAppMenuTest,
     OtherDevicesAvailability) {
-  if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    GTEST_SKIP();
-  }
-
   std::vector<ModelData> kDataWithOtherDevices = {
       {ui::MenuModel::TYPE_COMMAND, true},    // History
       {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster

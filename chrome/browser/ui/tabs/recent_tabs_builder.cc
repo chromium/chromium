@@ -515,7 +515,7 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
           l10n_util::GetStringUTF16(IDS_RECENT_TABS_NO_DEVICE_TABS));
       no_tabs.set_enabled(false);
       items.push_back(std::move(no_tabs));
-    } else if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
+    } else {
       RecentTabItem see_tabs(
           RecentTabItem::Type::kCommand,
           l10n_util::GetStringUTF16(IDS_RECENT_TABS_SEE_DEVICE_TABS));
@@ -525,16 +525,6 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildRemoteEntries(
                                             : kSyncRefreshOldIcon,
           ui::kColorMenuIcon, gfx::kFaviconSize));
       items.push_back(std::move(see_tabs));
-    } else {
-      RecentTabItem login_tabs(
-          RecentTabItem::Type::kCommand,
-          l10n_util::GetStringUTF16(IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS));
-      login_tabs.set_action_id(kActionRecentTabsLoginForDeviceTabs);
-      login_tabs.set_icon(ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
-                                            : kSyncRefreshOldIcon,
-          ui::kColorMenuIcon, gfx::kFaviconSize));
-      items.push_back(std::move(login_tabs));
     }
     return items;
   }

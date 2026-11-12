@@ -1283,10 +1283,6 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_CARET_BROWSING_TOGGLE:
       ToggleCaretBrowsing(browser_);
       break;
-    case IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS:
-      ShowSettingsSubPage(webui::GetBrowserForOpeningWebUi(browser_),
-                          chrome::kPeopleSubPage);
-      break;
     case IDC_RECENT_TABS_SEE_DEVICE_TABS:
       ShowHistorySubPage(webui::GetBrowserForOpeningWebUi(browser_),
                          kChromeUIHistorySyncedTabs);
@@ -1980,10 +1976,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SAVED_TAB_GROUPS_MENU, true);
   command_updater_->UpdateCommandEnabled(
       IDC_RECENT_TABS_MENU,
-      (!guest_session && !profile()->IsSystemProfile() &&
-       !profile()->IsPrimaryOTRProfileWithRegularParent()));
-  command_updater_->UpdateCommandEnabled(
-      IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
       (!guest_session && !profile()->IsSystemProfile() &&
        !profile()->IsPrimaryOTRProfileWithRegularParent()));
   command_updater_->UpdateCommandEnabled(

@@ -202,7 +202,6 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionProfilingEnabled, u"Profiling enabled");
   add_action(kActionShowChromeLabs, u"Chrome Labs");
   add_action(kActionRecentTabsSeeDeviceTabs, u"See Device Tabs");
-  add_action(kActionRecentTabsLoginForDeviceTabs, u"Login for Device Tabs");
   add_action(kActionSidePanelShowHistoryCluster, u"History Clusters");
   add_action(kActionSidePanelShowHistory, u"History");
   add_action(kActionSidePanelShowTabsFromOtherDevices,
