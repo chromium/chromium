@@ -61,6 +61,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -594,33 +595,42 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 
-  // Give focus to a different tab.
+  // Give focus to a different tab. Don't wait for it to load: the signin tab
+  // would no longer be reused once its navigation fails, as Gaia is not
+  // reachable in browser tests.
   TabStripModel* tab_strip = browser()->GetTabStripModel();
   ASSERT_EQ(0, tab_strip->active_index());
   GURL other_url = GURL("https://example.com");
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), other_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   tab_strip->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
   ASSERT_EQ(other_url, tab_strip->GetActiveWebContents()->GetVisibleURL());
   ASSERT_EQ(1, tab_strip->active_index());
+  ui::BaseWindow* window = browser()->GetWindow();
+  window->Hide();
+  ASSERT_FALSE(window->IsVisible());
 
-  // Extensions reuse the tab but do not take focus.
+  // Extensions reuse the tab but do not take focus or show the window.
   access_point_ = signin_metrics::AccessPoint::kExtensions;
   EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
-  EXPECT_EQ(2, tab_strip->active_index());
+  EXPECT_EQ(2, tab_strip->count());
+  EXPECT_EQ(1, tab_strip->active_index());
+  EXPECT_FALSE(window->IsVisible());
 
-  // Other access points reuse the tab and take focus.
+  // Other access points reuse the tab, take focus and show the window.
   access_point_ = signin_metrics::AccessPoint::kSettings;
   EnableSync(CoreAccountInfo(), false);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
-  EXPECT_EQ(2, tab_strip->active_index());
+  EXPECT_EQ(2, tab_strip->count());
+  EXPECT_EQ(0, tab_strip->active_index());
+  EXPECT_TRUE(window->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {

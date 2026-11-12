@@ -109,6 +109,16 @@ class SigninViewController {
   // Returns true if Chrome new tab page/blank is displayed in `contents`.
   static bool IsNTPTab(content::WebContents* contents);
 
+  // Returns true if a tabbed browser of `profile` has a Chrome signin tab that
+  // can be reused for an extension request, i.e. a tab for the signin page
+  // that `ShowEnableHistorySyncTab()` (if `enable_history_sync` is true) or
+  // `ShowDiceAddAccountTab()` would open for `AccessPoint::kExtensions` and
+  // `email_hint`. Extensions do not activate an existing signin tab, so there
+  // is nothing to show for the request in this case.
+  static bool HasDiceSigninTabForExtensions(Profile* profile,
+                                            bool enable_history_sync,
+                                            const std::string& email_hint);
+
   // Shows a Chrome signin tab that offers history sync after signin when
   // appropriate for `access_point`. `email_hint` may be empty.
   // Note: If the user has already set a syncing primary account, then this is

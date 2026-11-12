@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -68,6 +69,7 @@
 #include "chrome/browser/signin/logout_tab_helper.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -245,6 +247,16 @@ void HandleSignoutConfirmationChoice(
   }
 }
 
+// Parameters of the Dice signin tab opened by
+// `SigninViewController::ShowEnableHistorySyncTab()` and
+// `SigninViewController::ShowDiceAddAccountTab()`.
+struct DiceSigninTabParams {
+  signin_metrics::Reason reason = signin_metrics::Reason::kUnknownReason;
+  std::string email_hint;
+  GURL redirect_url;
+  signin::Flow flow = signin::Flow::NONE;
+};
+
 // URL of the Gaia page loaded in the Dice signin tab, with the information
 // needed to record metrics if it is loaded.
 struct DiceSigninUrlInfo {
@@ -258,32 +270,42 @@ struct DiceSigninUrlInfo {
 // record metrics: the caller records them if it loads the URL.
 DiceSigninUrlInfo GetSigninUrlForDiceSigninTab(
     const signin::IdentityManager& identity_manager,
-    signin_metrics::AccessPoint access_point,
-    signin_metrics::Reason signin_reason,
-    const std::string& email_hint,
-    const GURL& continue_url,
-    signin::Flow signin_flow = signin::Flow::NONE) {
+    const DiceSigninTabParams& params) {
+  // We would like to redirect to the NTP, but it's not possible through the
+  // `continue_url`, because Gaia cannot redirect to chrome:// URLs. Use the
+  // google base URL instead here, and the `DiceTabHelper` redirect to the NTP
+  // later.
+  // Note: Gaia rejects some continue URLs as invalid and responds with HTTP
+  // error 400. This seems to happen in particular if the continue URL is not a
+  // Google-owned domain. Chrome cannot enforce that only valid URLs are used,
+  // because the set of valid URLs is not specified.
+  const GURL continue_url =
+      (params.redirect_url.is_empty() ||
+       !params.redirect_url.SchemeIsHTTPOrHTTPS())
+          ? GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+          : params.redirect_url;
+
   // Use the add account URL if it's a reauthentication, or if we are adding a
   // secondary account and already have a primary account.
   // TODO(crbug.com/425645725): Investigates simplifying the params such as the
   // signin_reason and its available values.
   const bool is_reauth =
-      signin_reason == signin_metrics::Reason::kReauthentication;
+      params.reason == signin_metrics::Reason::kReauthentication;
 
   // For reauth, use `/AccountChooser` with the "Proceed To Challenge"
   // capability so Gaia skips the identifier page and directly shows the
   // challenge (e.g. password) page, unless the cookie jar shows that Gaia
   // would complete the flow without a new sign-in.
   std::optional<signin::ReauthProceedToChallengeResult> reauth_result;
-  if (is_reauth && !email_hint.empty() &&
+  if (is_reauth && !params.email_hint.empty() &&
       base::FeatureList::IsEnabled(switches::kReauthSkipIdentifierPage)) {
     reauth_result = signin::GetReauthProceedToChallengeResult(
-        email_hint, identity_manager.GetAccountsInCookieJar());
+        params.email_hint, identity_manager.GetAccountsInCookieJar());
     if (reauth_result ==
             signin::ReauthProceedToChallengeResult::kProceedToChallenge ||
         reauth_result ==
             signin::ReauthProceedToChallengeResult::kAccountNotInCookies) {
-      return {.url = signin::GetChromeReauthURL({.email = email_hint,
+      return {.url = signin::GetChromeReauthURL({.email = params.email_hint,
                                                  .continue_url = continue_url,
                                                  .proceed_to_challenge = true}),
               .reauth_proceed_to_challenge_result = reauth_result};
@@ -292,17 +314,63 @@ DiceSigninUrlInfo GetSigninUrlForDiceSigninTab(
 
   bool use_add_account_url =
       is_reauth ||
-      (signin_reason == signin_metrics::Reason::kAddSecondaryAccount &&
+      (params.reason == signin_metrics::Reason::kAddSecondaryAccount &&
        identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   if (use_add_account_url) {
-    return {.url = signin::GetAddAccountURLForDice(email_hint, continue_url),
-            .reauth_proceed_to_challenge_result = reauth_result};
+    return {
+        .url = signin::GetAddAccountURLForDice(params.email_hint, continue_url),
+        .reauth_proceed_to_challenge_result = reauth_result};
   }
 
-  signin::ChromeSyncUrlArgs sync_url_args{
-      .email = email_hint, .continue_url = continue_url, .flow = signin_flow};
+  signin::ChromeSyncUrlArgs sync_url_args{.email = params.email_hint,
+                                          .continue_url = continue_url,
+                                          .flow = params.flow};
   return {.url = signin::GetChromeSyncURLForDice(sync_url_args)};
+}
+
+DiceSigninTabParams GetEnableHistorySyncTabParams(
+    const signin::IdentityManager& identity_manager,
+    const std::string& email_hint) {
+  DiceSigninTabParams params{
+      .reason = signin_metrics::Reason::kSigninPrimaryAccount,
+      .email_hint = email_hint,
+      .redirect_url = chrome::ChromeUINewTabURLAsGURL()};
+  if (identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // Avoids asking for the Sync consent as it has been already given.
+    params.reason = signin_metrics::Reason::kReauthentication;
+    params.email_hint =
+        identity_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
+    CHECK(email_hint.empty() ||
+              gaia::AreEmailsSame(email_hint, params.email_hint),
+          base::NotFatalUntil::M162);
+  }
+  return params;
+}
+
+DiceSigninTabParams GetDiceAddAccountTabParams(
+    const signin::IdentityManager& identity_manager,
+    signin_metrics::AccessPoint access_point,
+    const std::string& email_hint) {
+  DiceSigninTabParams params{
+      .reason =
+          identity_manager.HasPrimaryAccount(signin::ConsentLevel::kSignin)
+              ? signin_metrics::Reason::kAddSecondaryAccount
+              : signin_metrics::Reason::kSigninPrimaryAccount,
+      .email_hint = email_hint,
+      .flow = (access_point == signin_metrics::AccessPoint::kExtensions)
+                  ? signin::Flow::PROMO
+                  : signin::Flow::NONE};
+  if (!email_hint.empty() &&
+      !identity_manager.FindExtendedAccountInfoByEmailAddress(email_hint)
+           .IsEmpty()) {
+    // If the account is already known, this is a reauth. Besides metrics, this
+    // selects the reauth/add-account Gaia URL, and (when signed out) means the
+    // tab does not track a Chrome sign-in flow in `DiceTabHelper`.
+    params.reason = signin_metrics::Reason::kReauthentication;
+  }
+  return params;
 }
 
 ChromeSignoutConfirmationPromptVariant GetSignoutConfirmationPromptVariant(
@@ -400,6 +468,53 @@ bool SigninViewController::IsNTPTab(content::WebContents* contents) {
   const GURL& contents_url = contents->GetVisibleURL();
   return contents_url == chrome::ChromeUINewTabURLAsGURL() ||
          search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL;
+}
+
+// static
+bool SigninViewController::HasDiceSigninTabForExtensions(
+    Profile* profile,
+    bool enable_history_sync,
+    const std::string& email_hint) {
+  CHECK(profile);
+  std::optional<GURL> signin_url;
+  bool found = false;
+  ProfileBrowserCollection::GetForProfile(profile)->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        // Only check open tabbed browsers.
+        if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+            browser->IsDeleteScheduled()) {
+          return true;  // Continue iterating.
+        }
+        TabStripModel* tab_strip = browser->GetTabStripModel();
+        for (int tab_index = 0; tab_index < tab_strip->count(); ++tab_index) {
+          DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(
+              tab_strip->GetWebContentsAt(tab_index));
+          // Ignore tabs that are not currently on a Chrome signin page.
+          if (!tab_helper || !tab_helper->IsChromeSigninPage()) {
+            continue;
+          }
+          // Lazily compute the signin URL, as it may query the Gaia cookies.
+          if (!signin_url) {
+            const signin::IdentityManager& identity_manager =
+                CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile));
+            const DiceSigninTabParams params =
+                enable_history_sync
+                    ? GetEnableHistorySyncTabParams(identity_manager,
+                                                    email_hint)
+                    : GetDiceAddAccountTabParams(
+                          identity_manager,
+                          signin_metrics::AccessPoint::kExtensions, email_hint);
+            signin_url =
+                GetSigninUrlForDiceSigninTab(identity_manager, params).url;
+          }
+          if (tab_helper->signin_url() == *signin_url) {
+            found = true;
+            return false;  // Stop iterating.
+          }
+        }
+        return true;  // Continue iterating.
+      });
+  return found;
 }
 
 void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
@@ -747,40 +862,29 @@ void SigninViewController::ShowDiceSigninTab(
   }
 #endif
 
-  // We would like to redirect to the NTP, but it's not possible through the
-  // `continue_url`, because Gaia cannot redirect to chrome:// URLs. Use the
-  // google base URL instead here, and the `DiceTabHelper` redirect to the NTP
-  // later.
-  // Note: Gaia rejects some continue URLs as invalid and responds with HTTP
-  // error 400. This seems to happen in particular if the continue URL is not a
-  // Google-owned domain. Chrome cannot enforce that only valid URLs are used,
-  // because the set of valid URLs is not specified.
-  const GURL continue_url =
-      (redirect_url.is_empty() || !redirect_url.SchemeIsHTTPOrHTTPS())
-          ? GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
-          : redirect_url;
-
   const DiceSigninUrlInfo signin_url_info = GetSigninUrlForDiceSigninTab(
-      *IdentityManagerFactory::GetForProfile(GetProfile()), access_point,
-      signin_reason, email_hint, continue_url, signin_flow);
+      *IdentityManagerFactory::GetForProfile(GetProfile()),
+      {.reason = signin_reason,
+       .email_hint = email_hint,
+       .redirect_url = redirect_url,
+       .flow = signin_flow});
   const GURL& signin_url = signin_url_info.url;
 
   // Check if there is already a signin-tab open.
   const int dice_tab_index = FindDiceSigninTab(GetTabStripModel(), signin_url);
   if (dice_tab_index != -1) {
-    if (access_point != signin_metrics::AccessPoint::kExtensions) {
-      // Extensions do not activate the tab to prevent misbehaving extensions
-      // from keeping the signin tab focused.
-      tab_strip_model_->ActivateTabAt(
-          dice_tab_index, TabStripUserGestureDetails(
-                              TabStripUserGestureDetails::GestureType::kOther));
+    // Extensions are handled earlier: `SigninUiDelegateImplDice` returns early
+    // when `HasDiceSigninTabForExtensions()` finds the tab.
+    CHECK_NE(access_point, signin_metrics::AccessPoint::kExtensions);
+    tab_strip_model_->ActivateTabAt(
+        dice_tab_index, TabStripUserGestureDetails(
+                            TabStripUserGestureDetails::GestureType::kOther));
 
-      // Update the access point of the signin tab, so that the next signin is
-      // recorded from the latest access point.
-      DiceTabHelper::FromWebContents(
-          tab_strip_model_->GetActiveTab()->GetContents())
-          ->SetAccessPoint(access_point);
-    }
+    // Update the access point of the signin tab, so that the next signin is
+    // recorded from the latest access point.
+    DiceTabHelper::FromWebContents(
+        tab_strip_model_->GetActiveTab()->GetContents())
+        ->SetAccessPoint(access_point);
     // Do not create a new signin tab, because there is already one.
     return;
   }
@@ -820,47 +924,21 @@ void SigninViewController::ShowEnableHistorySyncTab(
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
     const std::string& email_hint) {
-  signin_metrics::Reason reason = signin_metrics::Reason::kSigninPrimaryAccount;
-  std::string email_to_use = email_hint;
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    // Avoids asking for the Sync consent as it has been already given.
-    reason = signin_metrics::Reason::kReauthentication;
-    email_to_use =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .email;
-    CHECK(email_hint.empty() || gaia::AreEmailsSame(email_hint, email_to_use),
-          base::NotFatalUntil::M162);
-  }
-  ShowDiceSigninTab(reason, access_point, promo_action, email_to_use,
-                    chrome::ChromeUINewTabURLAsGURL());
+  const DiceSigninTabParams params = GetEnableHistorySyncTabParams(
+      *IdentityManagerFactory::GetForProfile(GetProfile()), email_hint);
+  ShowDiceSigninTab(params.reason, access_point, promo_action,
+                    params.email_hint, params.redirect_url, params.flow);
 }
 
 void SigninViewController::ShowDiceAddAccountTab(
     signin_metrics::AccessPoint access_point,
     const std::string& email_hint) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  signin_metrics::Reason reason =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
-          ? signin_metrics::Reason::kAddSecondaryAccount
-          : signin_metrics::Reason::kSigninPrimaryAccount;
-  if (!email_hint.empty() &&
-      !identity_manager->FindExtendedAccountInfoByEmailAddress(email_hint)
-           .IsEmpty()) {
-    // If the account is already known, this is a reauth. Besides metrics, this
-    // selects the reauth/add-account Gaia URL, and (when signed out) means the
-    // tab does not track a Chrome sign-in flow in `DiceTabHelper`.
-    reason = signin_metrics::Reason::kReauthentication;
-  }
-
-  signin::Flow flow = (access_point == signin_metrics::AccessPoint::kExtensions)
-                          ? signin::Flow::PROMO
-                          : signin::Flow::NONE;
-  ShowDiceSigninTab(reason, access_point,
+  const DiceSigninTabParams params = GetDiceAddAccountTabParams(
+      *IdentityManagerFactory::GetForProfile(GetProfile()), access_point,
+      email_hint);
+  ShowDiceSigninTab(params.reason, access_point,
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-                    email_hint, /*redirect_url=*/GURL(), flow);
+                    params.email_hint, params.redirect_url, params.flow);
 }
 
 void SigninViewController::ShowGaiaLogoutTab(

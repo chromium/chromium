@@ -61,9 +61,6 @@ class SigninUiDelegate {
       GURL qr_code_url,
       base::OnceClosure closing_callback,
       CrossDeviceSigninPromoEntryPoint entry_point) = 0;
-
- protected:
-  static BrowserWindowInterface* EnsureBrowser(Profile* profile);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 

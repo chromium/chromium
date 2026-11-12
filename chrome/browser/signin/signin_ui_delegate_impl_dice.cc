@@ -4,9 +4,11 @@
 
 #include "chrome/browser/signin/signin_ui_delegate_impl_dice.h"
 
+#include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/signin/cross_device_signin_qr_bubble.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "url/gurl.h"
@@ -15,11 +17,24 @@ namespace signin_ui_util {
 
 namespace {
 
-void ShowDiceTab(BrowserWindowInterface* browser,
+void ShowDiceTab(Profile* profile,
                  const std::string& email,
                  bool enable_history_sync,
                  signin_metrics::AccessPoint access_point,
                  signin_metrics::PromoAction promo_action) {
+  CHECK(profile);
+
+  // Extensions don't activate an existing signin tab, to prevent misbehaving
+  // extensions from keeping it focused, so return before
+  // `ScopedTabbedBrowserDisplayer` shows a window.
+  if (access_point == signin_metrics::AccessPoint::kExtensions &&
+      SigninViewController::HasDiceSigninTabForExtensions(
+          profile, enable_history_sync, email)) {
+    return;
+  }
+
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
+  BrowserWindowInterface* browser = displayer.browser_window_interface();
   // Failed to create a browser. Bailing.
   if (!browser)
     return;
@@ -41,8 +56,8 @@ void SigninUiDelegateImplDice::ShowSigninUI(
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
     const std::string& extension_name) {
-  ShowDiceTab(EnsureBrowser(profile), /*email=*/std::string(),
-              enable_history_sync, access_point, promo_action);
+  ShowDiceTab(profile, /*email=*/std::string(), enable_history_sync,
+              access_point, promo_action);
 }
 
 void SigninUiDelegateImplDice::ShowReauthUI(
@@ -51,10 +66,7 @@ void SigninUiDelegateImplDice::ShowReauthUI(
     bool enable_history_sync,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action) {
-  CHECK(profile, base::NotFatalUntil::M162);
-
-  ShowDiceTab(EnsureBrowser(profile), email, enable_history_sync, access_point,
-              promo_action);
+  ShowDiceTab(profile, email, enable_history_sync, access_point, promo_action);
 }
 
 void SigninUiDelegateImplDice::ShowCrossDeviceSigninQrBubble(
