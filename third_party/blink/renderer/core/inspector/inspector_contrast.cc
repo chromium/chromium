@@ -168,14 +168,13 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   rtree_built_ = true;
 }
 
-std::vector<ContrastInfo> InspectorContrast::GetElementsWithContrastIssues(
+HeapVector<ContrastInfo> InspectorContrast::GetElementsWithContrastIssues(
     bool report_aaa,
     size_t max_elements = 0) {
   TRACE_EVENT0("devtools.contrast",
                "InspectorContrast::GetElementsWithContrastIssues");
   CollectNodesAndBuildRTreeIfNeeded();
-  STACK_ALLOCATED_IGNORE("https://crbug.com/350256130")
-  std::vector<ContrastInfo> result;
+  HeapVector<ContrastInfo> result;
   for (Node* node : elements_) {
     auto info = GetContrast(To<Element>(node));
     if (info.able_to_compute_contrast &&

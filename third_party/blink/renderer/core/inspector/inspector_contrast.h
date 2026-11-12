@@ -8,14 +8,21 @@
 #include "cc/base/rtree.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 namespace blink {
 
 struct CORE_EXPORT ContrastInfo {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
-  Element* element;
+  void Trace(Visitor* visitor) const { visitor->Trace(element); }
+
+  Member<Element> element;
   bool able_to_compute_contrast = false;
   float threshold_aa;
   float threshold_aaa;
@@ -39,8 +46,8 @@ class CORE_EXPORT InspectorContrast {
  public:
   explicit InspectorContrast(Document*);
   ContrastInfo GetContrast(Element*);
-  std::vector<ContrastInfo> GetElementsWithContrastIssues(bool report_aaa,
-                                                          size_t max_elements);
+  HeapVector<ContrastInfo> GetElementsWithContrastIssues(bool report_aaa,
+                                                         size_t max_elements);
   Vector<Color> GetBackgroundColors(Element*, float* text_opacity);
   TextInfo GetTextInfo(Element*);
 
@@ -66,5 +73,7 @@ class CORE_EXPORT InspectorContrast {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ContrastInfo)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_CONTRAST_H_
