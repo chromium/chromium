@@ -36,6 +36,7 @@ source_set("common") {
       "glic_tab_observer_impl.h",
     ]
     deps += [
+      "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//content/public/browser",

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_COMMON_GLIC_TAB_OBSERVER_IMPL_H_
 #define CHROME_BROWSER_GLIC_COMMON_GLIC_TAB_OBSERVER_IMPL_H_
 
+#include <map>
+
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -34,20 +37,24 @@ class GlicTabObserverImpl : public GlicTabObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      TabChangeType change_type) override;
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                               std::optional<tab_groups::TabGroupId> old_group,
                               std::optional<tab_groups::TabGroupId> new_group,
                               tabs::TabHandle tab) override;
 
  private:
+  void StartObservingBrowser(BrowserWindowInterface* browser);
+  void StartObservingTab(tabs::TabInterface* tab);
+  void StopObservingTab(tabs::TabInterface* tab);
+  void OnTabUIChanged();
   TabCreationType DetermineTabCreationType(tabs::TabInterface* new_tab);
 
   raw_ptr<Profile> profile_;
   EventCallback callback_;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_observation_{this};
+  std::map<tabs::TabHandle, base::CallbackListSubscription>
+      tab_ui_subscriptions_;
 
   base::WeakPtrFactory<GlicTabObserverImpl> weak_ptr_factory_{this};
 };

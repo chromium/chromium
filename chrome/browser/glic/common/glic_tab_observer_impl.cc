@@ -4,12 +4,13 @@
 
 #include "chrome/browser/glic/common/glic_tab_observer_impl.h"
 
+#include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
-#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -25,7 +26,7 @@ GlicTabObserverImpl::GlicTabObserverImpl(Profile* profile,
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, profile](BrowserWindowInterface* browser) {
         if (browser->GetProfile() == profile) {
-          browser->GetTabStripModel()->AddObserver(this);
+          StartObservingBrowser(browser);
         }
         return true;
       });
@@ -43,13 +44,17 @@ GlicTabObserverImpl::~GlicTabObserverImpl() {
 
 void GlicTabObserverImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
   if (browser->GetProfile() == profile_) {
-    browser->GetTabStripModel()->AddObserver(this);
+    StartObservingBrowser(browser);
   }
 }
 
 void GlicTabObserverImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
   if (browser->GetProfile() == profile_) {
-    browser->GetTabStripModel()->RemoveObserver(this);
+    TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+    for (tabs::TabInterface* tab : *tab_strip_model) {
+      StopObservingTab(tab);
+    }
+    tab_strip_model->RemoveObserver(this);
   }
 }
 
@@ -69,12 +74,19 @@ void GlicTabObserverImpl::OnTabStripModelChanged(
       if (!new_tab->IsInNormalWindow()) {
         continue;
       }
+      StartObservingTab(new_tab);
       TabCreationType type = DetermineTabCreationType(new_tab);
       tabs::TabInterface* opener =
           tab_strip_model->GetOpenerOfTabAt(content.index);
       callback_.Run(TabCreationEvent{new_tab, selection.old_tab, opener, type});
     }
     return;
+  }
+
+  if (change.type() == TabStripModelChange::kRemoved) {
+    for (const auto& removed_tab : change.GetRemove()->contents) {
+      StopObservingTab(removed_tab.tab);
+    }
   }
 
   if (selection.active_tab_changed()) {
@@ -88,8 +100,34 @@ void GlicTabObserverImpl::OnTabStripModelChanged(
   }
 }
 
-void GlicTabObserverImpl::OnTabChangedAt(tabs::TabInterface* tab,
-                                         TabChangeType change_type) {
+void GlicTabObserverImpl::StartObservingBrowser(
+    BrowserWindowInterface* browser) {
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  tab_strip_model->AddObserver(this);
+  for (tabs::TabInterface* tab : *tab_strip_model) {
+    StartObservingTab(tab);
+  }
+}
+
+void GlicTabObserverImpl::StartObservingTab(tabs::TabInterface* tab) {
+  if (!tab || !tab->IsInNormalWindow()) {
+    return;
+  }
+  if (TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab)) {
+    tab_ui_subscriptions_[tab->GetHandle()] =
+        tab_ui_helper->AddTabUIChangeCallback(base::BindRepeating(
+            &GlicTabObserverImpl::OnTabUIChanged, base::Unretained(this)));
+  }
+}
+
+void GlicTabObserverImpl::StopObservingTab(tabs::TabInterface* tab) {
+  if (!tab) {
+    return;
+  }
+  tab_ui_subscriptions_.erase(tab->GetHandle());
+}
+
+void GlicTabObserverImpl::OnTabUIChanged() {
   callback_.Run(TabMutationEvent{});
 }
 
