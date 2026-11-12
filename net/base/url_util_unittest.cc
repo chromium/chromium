@@ -62,7 +62,7 @@ TEST(UrlUtilTest, AppendOrReplaceQueryParameter) {
           GURL("http://example.com/path?existing=one"),
           "na me", "v.alue=").spec());
 
-  // Replace value of an existing paramater.
+  // Replace value of an existing parameter.
   EXPECT_EQ("http://example.com/path?existing=one&name=new",
       AppendOrReplaceQueryParameter(
           GURL("http://example.com/path?existing=one&name=old"),
