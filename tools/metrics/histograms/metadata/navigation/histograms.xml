@@ -407,21 +407,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame.TimeUntilIPCReceived"
-    units="ms" expires_after="2024-07-07">
-  <owner>fergal@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    Duration between start of page being stored in the back-forward cache and
-    when the unexpected IPC call is received by a frame while in the cache.
-
-    Recorded when an IPC task is posted to frames that have already been stored
-    in the back-forward cache, after a 15 second delay to account for completion
-    of all freezing-related operations.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.History.EntryMatch"
     enum="BackForwardCacheEntryMatchResult" expires_after="2027-04-11">
   <owner>annasato@chromium.org</owner>

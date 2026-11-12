@@ -1345,14 +1345,6 @@ void FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache(
       "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."
       "MethodHash",
       static_cast<int32_t>(ipc_hash));
-
-  base::TimeDelta duration =
-      main_thread_scheduler_->NowTicks() -
-      parent_page_scheduler_->GetStoredInBackForwardCacheTimestamp();
-  base::UmaHistogramCustomTimes(
-      "BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame."
-      "TimeUntilIPCReceived",
-      duration, base::TimeDelta(), base::Minutes(5), 100);
 }
 
 HashSet<SchedulingPolicy::Feature>

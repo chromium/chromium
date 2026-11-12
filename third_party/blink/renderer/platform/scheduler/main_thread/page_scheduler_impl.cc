@@ -277,12 +277,9 @@ void PageSchedulerImpl::SetPageBackForwardCached(
   if (!is_stored_in_back_forward_cache_) {
     TRACE_EVENT_INSTANT("navigation",
                         "PageSchedulerImpl::SetPageBackForwardCached_Restore");
-    stored_in_back_forward_cache_timestamp_ = base::TimeTicks();
   } else {
     TRACE_EVENT_INSTANT("navigation",
                         "PageSchedulerImpl::SetPageBackForwardCached_Store");
-    stored_in_back_forward_cache_timestamp_ =
-        main_thread_scheduler_->NowTicks();
 
     // Incorporate a delay of 15 seconds to allow for caching operations to
     // complete before tasks are logged.

@@ -1472,14 +1472,6 @@ TEST_F(FrameSchedulerImplTest, LogIpcsPostedToFramesInBackForwardCache) {
           "BackForwardCache.Experimental."
           "UnexpectedIPCMessagePostedToCachedFrame.MethodHash"),
       testing::UnorderedElementsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
-
-  // TimeUntilIPCReceived should have values in the 300000 bucket corresponding
-  // with the hour delay in task_environment_.FastForwardBy.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          "BackForwardCache.Experimental."
-          "UnexpectedIPCMessagePostedToCachedFrame.TimeUntilIPCReceived"),
-      testing::UnorderedElementsAre(base::Bucket(300000, 2)));
 }
 
 TEST_F(FrameSchedulerImplTest,

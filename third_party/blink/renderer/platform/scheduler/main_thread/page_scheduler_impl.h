@@ -70,9 +70,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool IsPageVisible() const override;
   void SetPageFrozen(bool) override;
   void SetPageBackForwardCached(bool) override;
-  base::TimeTicks GetStoredInBackForwardCacheTimestamp() {
-    return stored_in_back_forward_cache_timestamp_;
-  }
   bool IsInBackForwardCache() const override {
     return is_stored_in_back_forward_cache_;
   }
@@ -299,7 +296,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   bool is_stored_in_back_forward_cache_ = false;
   TaskHandle set_ipc_posted_handler_task_;
-  base::TimeTicks stored_in_back_forward_cache_timestamp_;
 
   base::WeakPtrFactory<PageSchedulerImpl> weak_factory_{this};
 };
