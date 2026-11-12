@@ -8,6 +8,7 @@
 #include <bitset>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -466,6 +467,14 @@ base::HeapArray<uint8_t> TransposeConstantData(
   if (base::FeatureList::IsEnabled(
           kWebNNUseXNNPackForConstantTransposeFolding) &&
       rank <= XNN_MAX_TENSOR_DIMS) {
+    // XNNPACK microkernels may read up to XNN_EXTRA_BYTES past the end of the
+    // input, so the input must be copied into a padded buffer.
+    // `WithSize()` zero-initializes, so the padding bytes are deterministic.
+    auto padded_input =
+        base::HeapArray<uint8_t>::WithSize(data.size() + XNN_EXTRA_BYTES);
+    base::span(padded_input).first(data.size()).copy_from(data);
+    const uint8_t* const xnn_input = padded_input.data();
+
     base::FixedArray<size_t> xnn_shape(rank);
     base::FixedArray<size_t> xnn_perm(rank);
     for (size_t i = 0; i < rank; ++i) {
@@ -476,28 +485,28 @@ base::HeapArray<uint8_t> TransposeConstantData(
     switch (element_size) {
       case 1: {
         xnn_status status = xnn_run_transpose_nd_x8(
-            data.data(), transposed_data.data(), rank, xnn_shape.data(),
+            xnn_input, transposed_data.data(), rank, xnn_shape.data(),
             xnn_perm.data(), 0, nullptr);
         CHECK_EQ(status, xnn_status_success);
         break;
       }
       case 2: {
         xnn_status status = xnn_run_transpose_nd_x16(
-            data.data(), transposed_data.data(), rank, xnn_shape.data(),
+            xnn_input, transposed_data.data(), rank, xnn_shape.data(),
             xnn_perm.data(), 0, nullptr);
         CHECK_EQ(status, xnn_status_success);
         break;
       }
       case 4: {
         xnn_status status = xnn_run_transpose_nd_x32(
-            data.data(), transposed_data.data(), rank, xnn_shape.data(),
+            xnn_input, transposed_data.data(), rank, xnn_shape.data(),
             xnn_perm.data(), 0, nullptr);
         CHECK_EQ(status, xnn_status_success);
         break;
       }
       case 8: {
         xnn_status status = xnn_run_transpose_nd_x64(
-            data.data(), transposed_data.data(), rank, xnn_shape.data(),
+            xnn_input, transposed_data.data(), rank, xnn_shape.data(),
             xnn_perm.data(), 0, nullptr);
         CHECK_EQ(status, xnn_status_success);
         break;
