@@ -64,6 +64,9 @@ public class MinimizeAppAndCloseTabBackPressHandler
 
     private static @Nullable Integer sVersionForTesting;
 
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(MinimizeAppAndCloseTabType)
     @IntDef({
         MinimizeAppAndCloseTabType.MINIMIZE_APP,
         MinimizeAppAndCloseTabType.CLOSE_TAB,
@@ -76,6 +79,8 @@ public class MinimizeAppAndCloseTabBackPressHandler
         int MINIMIZE_APP_AND_CLOSE_TAB = 2;
         int NUM_TYPES = 3;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:MinimizeAppAndCloseTabType)
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.

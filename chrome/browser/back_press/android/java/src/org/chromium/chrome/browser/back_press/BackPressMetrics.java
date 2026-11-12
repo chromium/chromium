@@ -45,6 +45,9 @@ public class BackPressMetrics {
     private static final String STRICT_BACK_FALSING_HISTOGRAM =
             "Android.BackPress.StrictBackfalsing";
 
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(PredictiveGestureNavPhase)
     @IntDef({
         PredictiveGestureNavPhase.ACTIVATED,
         PredictiveGestureNavPhase.CANCELLED,
@@ -59,6 +62,8 @@ public class BackPressMetrics {
         int NUM_ENTRIES = 3;
     }
 
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:PredictiveNavTransitionPhase)
+
     /**
      * Used to record when trying to capture a screenshot of native page view used for back forward
      * transition.
@@ -66,6 +71,7 @@ public class BackPressMetrics {
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
      * should never be reused.
      */
+    // LINT.IfChange(CaptureNativeViewResult)
     @IntDef({
         CaptureNativeViewResult.NULL_WINDOW_ANDROID,
         CaptureNativeViewResult.VIEW_NOT_LAID_OUT,
@@ -82,8 +88,11 @@ public class BackPressMetrics {
         int NUM_ENTRIES = 4;
     }
 
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:CaptureNativeViewResult)
+
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
+    // LINT.IfChange(NavigationDirection)
     @IntDef({
         NavigationDirection.FORWARD,
         NavigationDirection.BACKWARD,
@@ -97,6 +106,8 @@ public class BackPressMetrics {
 
         int NUM_ENTRIES = 3;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:NavigationDirection)
 
     /**
      * @param navigationDirection The direction of the navigation.
