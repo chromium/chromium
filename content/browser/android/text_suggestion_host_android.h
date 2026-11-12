@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_ANDROID_H_
 #define CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_ANDROID_H_
 
+#include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/input/timeout_monitor.h"
 #include "content/public/browser/document_user_data.h"
@@ -82,12 +83,20 @@ class TextSuggestionHostAndroid
 
   explicit TextSuggestionHostAndroid(RenderFrameHost* rfh);
 
+  base::android::ScopedJavaLocalRef<jobject> EnsureJavaHost(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& jweb_contents);
   const mojo::Remote<blink::mojom::TextSuggestionBackend>&
   GetTextSuggestionBackend();
   // Used by the spell check menu timer to notify Blink that the timer has
   // expired.
   void OnSuggestionMenuTimeout();
 
+  // Weak reference to this document's Java TextSuggestionHost.
+  // TextSuggestionPopupController holds the strong reference and releases our
+  // JniRawPtr in destroy(); holding it strongly from native would keep WebView
+  // from being garbage collected.
+  JavaObjectWeakGlobalRef java_host_;
   mojo::Remote<blink::mojom::TextSuggestionBackend> text_suggestion_backend_;
   std::unique_ptr<TextSuggestionHostMojoImplAndroid> text_suggestion_impl_;
   input::TimeoutMonitor suggestion_menu_timeout_;

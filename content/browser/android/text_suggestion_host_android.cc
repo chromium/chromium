@@ -15,6 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/gfx/android/view_configuration.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -48,14 +49,39 @@ TextSuggestionHostAndroid::TextSuggestionHostAndroid(RenderFrameHost* rfh)
           GetUIThreadTaskRunner({BrowserTaskType::kUserInput})) {}
 
 TextSuggestionHostAndroid::~TextSuggestionHostAndroid() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> host = java_host_.get(env);
+  if (!host) {
+    return;
+  }
+  Java_TextSuggestionHost_destroy(env, host);
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   if (web_contents) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_TextSuggestionPopupController_onNativeTextSuggestionHostDestroyed(
-        env, web_contents->GetJavaWebContents(),
-        reinterpret_cast<intptr_t>(this));
+    ScopedJavaLocalRef<jobject> jweb_contents =
+        web_contents->GetJavaWebContents();
+    if (jweb_contents) {
+      Java_TextSuggestionPopupController_onNativeTextSuggestionHostDestroyed(
+          env, jweb_contents, host);
+    }
   }
+}
+
+ScopedJavaLocalRef<jobject> TextSuggestionHostAndroid::EnsureJavaHost(
+    JNIEnv* env,
+    const JavaRef<jobject>& jweb_contents) {
+  if (!jweb_contents) {
+    return nullptr;
+  }
+  ScopedJavaLocalRef<jobject> host = java_host_.get(env);
+  if (!host) {
+    host = Java_TextSuggestionPopupController_createTextSuggestionHost(
+        env, jweb_contents, jni_zero::MakeRaw(this));
+    if (host) {
+      java_host_ = JavaObjectWeakGlobalRef(env, host);
+    }
+  }
+  return host;
 }
 
 void TextSuggestionHostAndroid::ApplySpellCheckSuggestion(
@@ -129,9 +155,15 @@ void TextSuggestionHostAndroid::ShowSpellCheckSuggestionMenu(
   }
 
   JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jweb_contents =
+      web_contents->GetJavaWebContents();
+  ScopedJavaLocalRef<jobject> host = EnsureJavaHost(env, jweb_contents);
+  if (!host) {
+    return;
+  }
   Java_TextSuggestionPopupController_showSpellCheckSuggestionMenu(
-      env, web_contents->GetJavaWebContents(), reinterpret_cast<intptr_t>(this),
-      caret_x, caret_y, ConvertUTF8ToJavaString(env, marked_text),
+      env, jweb_contents, host, caret_x, caret_y,
+      ConvertUTF8ToJavaString(env, marked_text),
       ToJavaArrayOfStrings(env, suggestion_strings));
 }
 
@@ -151,6 +183,12 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
   }
 
   JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jweb_contents =
+      web_contents->GetJavaWebContents();
+  ScopedJavaLocalRef<jobject> host = EnsureJavaHost(env, jweb_contents);
+  if (!host) {
+    return;
+  }
 
   // Enforce kMaxNumberOfSuggestions here in case the renderer is hijacked and
   // tries to send bad input.
@@ -170,9 +208,8 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
   }
 
   Java_TextSuggestionPopupController_showTextSuggestionMenu(
-      env, web_contents->GetJavaWebContents(), reinterpret_cast<intptr_t>(this),
-      caret_x, caret_y, ConvertUTF8ToJavaString(env, marked_text),
-      jsuggestion_infos);
+      env, jweb_contents, host, caret_x, caret_y,
+      ConvertUTF8ToJavaString(env, marked_text), jsuggestion_infos);
 }
 
 void TextSuggestionHostAndroid::StartSuggestionMenuTimer() {

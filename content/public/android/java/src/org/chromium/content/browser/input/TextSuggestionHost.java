@@ -4,35 +4,52 @@
 
 package org.chromium.content.browser.input;
 
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Handles calling back to C++ for text suggestions. */
+/**
+ * Handles calling back to C++ for text suggestions. One instance exists per native
+ * TextSuggestionHostAndroid and owns its {@link JniRawPtr} until {@link #destroy()} is called by
+ * the native destructor or {@link TextSuggestionPopupController#destroy()}.
+ */
 @JNINamespace("content")
 @NullMarked
 public class TextSuggestionHost {
-    private long mNativePtr;
+    @JniType("::content::TextSuggestionHostAndroid")
+    interface NativeTextSuggestionHostAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeTextSuggestionHostAndroid> mNativePtr;
     private final Runnable mOnDismissCallback;
 
-    public TextSuggestionHost(long nativePtr, Runnable onDismissCallback) {
+    TextSuggestionHost(
+            JniRawPtr<NativeTextSuggestionHostAndroid> nativePtr, Runnable onDismissCallback) {
         mNativePtr = nativePtr;
         mOnDismissCallback = onDismissCallback;
     }
 
+    @CalledByNative
     public void destroy() {
-        mNativePtr = 0;
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
     }
 
-    public long getNativePtrForTesting() {
+    @Nullable JniRawPtr<NativeTextSuggestionHostAndroid> getNativePtrForTesting() {
         return mNativePtr;
     }
 
     /** Tells Blink to replace the active suggestion range with the specified replacement. */
     public void applySpellCheckSuggestion(String suggestion) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         TextSuggestionHostJni.get().applySpellCheckSuggestion(mNativePtr, suggestion);
     }
 
@@ -41,19 +58,19 @@ public class TextSuggestionHost {
      * specified marker.
      */
     public void applyTextSuggestion(int markerTag, int suggestionIndex) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         TextSuggestionHostJni.get().applyTextSuggestion(mNativePtr, markerTag, suggestionIndex);
     }
 
     /** Tells Blink to delete the active suggestion range. */
     public void deleteActiveSuggestionRange() {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         TextSuggestionHostJni.get().deleteActiveSuggestionRange(mNativePtr);
     }
 
     /** Tells Blink to remove spelling markers under all instances of the specified word. */
     public void onNewWordAddedToDictionary(@Nullable String word) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         TextSuggestionHostJni.get().onNewWordAddedToDictionary(mNativePtr, word);
     }
 
@@ -62,7 +79,7 @@ public class TextSuggestionHost {
      * SuggestionsPopupWindow instance so it can be garbage collected).
      */
     public void onSuggestionMenuClosed(boolean dismissedByItemTap) {
-        if (!dismissedByItemTap && mNativePtr != 0) {
+        if (!dismissedByItemTap && mNativePtr != null) {
             TextSuggestionHostJni.get().onSuggestionMenuClosed(mNativePtr);
         }
         mOnDismissCallback.run();
@@ -70,16 +87,17 @@ public class TextSuggestionHost {
 
     @NativeMethods
     interface Natives {
-        void applySpellCheckSuggestion(long nativeTextSuggestionHostAndroid, String suggestion);
+        void applySpellCheckSuggestion(
+                JniPtr<NativeTextSuggestionHostAndroid> self, String suggestion);
 
         void applyTextSuggestion(
-                long nativeTextSuggestionHostAndroid, int markerTag, int suggestionIndex);
+                JniPtr<NativeTextSuggestionHostAndroid> self, int markerTag, int suggestionIndex);
 
-        void deleteActiveSuggestionRange(long nativeTextSuggestionHostAndroid);
+        void deleteActiveSuggestionRange(JniPtr<NativeTextSuggestionHostAndroid> self);
 
         void onNewWordAddedToDictionary(
-                long nativeTextSuggestionHostAndroid, @Nullable String word);
+                JniPtr<NativeTextSuggestionHostAndroid> self, @Nullable String word);
 
-        void onSuggestionMenuClosed(long nativeTextSuggestionHostAndroid);
+        void onSuggestionMenuClosed(JniPtr<NativeTextSuggestionHostAndroid> self);
     }
 }
