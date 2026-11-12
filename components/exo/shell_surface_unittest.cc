@@ -3496,6 +3496,11 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
       ash::Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
           widget->GetNativeWindow());
   ASSERT_TRUE(resize_shadow);
+  ui::Decoration* resize_shadow_decoration =
+      ash::Shell::Get()
+          ->resize_shadow_controller()
+          ->GetDecorationForWindowForTest(widget->GetNativeWindow());
+  ASSERT_TRUE(resize_shadow_decoration);
   shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
   shell_surface->root_surface()->Commit();
   EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
@@ -3510,7 +3515,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   constexpr int kResizeShadowThickness = 8;
 
   EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
-            resize_shadow->GetLayerForTest()->bounds().size());
+            resize_shadow_decoration->layer()->bounds().size());
   EXPECT_EQ(size, normal_decoration->content_bounds().size());
 
   constexpr gfx::Rect kNewBounds(kOrigin, {100, 100});
@@ -3535,14 +3540,14 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   // updated yet until commit.
   shell_surface->AcknowledgeConfigure(serial);
   EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
-            resize_shadow->GetLayerForTest()->bounds().size());
+            resize_shadow_decoration->layer()->bounds().size());
   EXPECT_EQ(size, normal_decoration->content_bounds().size());
 
   // Normal and resize shadow sizes are updated after commit.
   shell_surface->root_surface()->Commit();
   EXPECT_EQ(gfx::Size(kNewBounds.width() + kResizeShadowThickness,
                       kNewBounds.height()),
-            resize_shadow->GetLayerForTest()->bounds().size());
+            resize_shadow_decoration->layer()->bounds().size());
   EXPECT_EQ(kNewBounds.size(), normal_decoration->content_bounds().size());
 
   // Explicitly ends the drag here.
@@ -3581,7 +3586,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
       bounds.width() + kResizeShadowThickness,
       bounds.height() + kResizeShadowThickness);
   EXPECT_EQ(expected_shadow_on_secondary,
-            resize_shadow->GetLayerForTest()->bounds());
+            resize_shadow_decoration->layer()->bounds());
 
   aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
   constexpr gfx::Rect kResizedBoundsOn2nd{950, 50, 150, 150};
@@ -3591,7 +3596,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   shell_surface->AcknowledgeConfigure(serial);
 
   EXPECT_EQ(expected_shadow_on_secondary,
-            resize_shadow->GetLayerForTest()->bounds());
+            resize_shadow_decoration->layer()->bounds());
 
   shell_surface->root_surface()->Commit();
   constexpr gfx::Rect kExpectedShadowBoundsOn2nd(
@@ -3600,7 +3605,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
       kResizedBoundsOn2nd.height() + kResizeShadowThickness);
 
   EXPECT_EQ(kExpectedShadowBoundsOn2nd,
-            resize_shadow->GetLayerForTest()->bounds());
+            resize_shadow_decoration->layer()->bounds());
 }
 
 // Make sure that resize shadow updates as soon as widget bounds change when
@@ -3622,10 +3627,11 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
   event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
 
   // Creates resize shadow and normal shadow for resizable exo window.
-  ash::ResizeShadow* resize_shadow =
-      ash::Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
-          widget->GetNativeWindow());
-  ASSERT_TRUE(resize_shadow);
+  ui::Decoration* resize_shadow_decoration =
+      ash::Shell::Get()
+          ->resize_shadow_controller()
+          ->GetDecorationForWindowForTest(widget->GetNativeWindow());
+  ASSERT_TRUE(resize_shadow_decoration);
   shell_surface->root_surface()->SetFrame(SurfaceFrameType::SHADOW);
   shell_surface->root_surface()->Commit();
   EXPECT_FALSE(widget->GetNativeWindow()->GetProperty(
@@ -3643,7 +3649,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
   const int kResizeShadowThickness = 8;
 
   EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
-            resize_shadow->GetLayerForTest()->bounds().size());
+            resize_shadow_decoration->layer()->bounds().size());
   EXPECT_EQ(size, normal_decoration->content_bounds().size());
 
   gfx::Size new_size(100, 100);
@@ -3656,7 +3662,7 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
   // Shadow bounds are updated as soon as the widget bounds change.
   EXPECT_EQ(
       gfx::Size(new_size.width() + kResizeShadowThickness, new_size.height()),
-      resize_shadow->GetLayerForTest()->bounds().size());
+      resize_shadow_decoration->layer()->bounds().size());
   EXPECT_EQ(new_size, normal_decoration->content_bounds().size());
 }
 

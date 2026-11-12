@@ -4,252 +4,169 @@
 
 #include "ash/wm/resize_shadow.h"
 
-#include <map>
+#include <algorithm>
+#include <optional>
 
-#include "ash/root_window_controller.h"
-#include "base/no_destructor.h"
-#include "base/time/time.h"
-#include "ui/aura/window.h"
-#include "ui/color/color_provider.h"
-#include "ui/color/color_provider_source.h"
-#include "ui/compositor/layer_nine_patch.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/export_template.h"
+#include "cc/paint/paint_flags.h"
+#include "ui/decoration/decoration_util.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/image/canvas_image_source.h"
+#include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+
+namespace ash {
 
 namespace {
 
-// The features that uniquely described a shadow's appearance.
-struct ShadowFeaturesKey {
-  bool operator==(const ShadowFeaturesKey& other) const {
-    return MakeTuple() == other.MakeTuple();
-  }
-  bool operator<(const ShadowFeaturesKey& other) const {
-    return MakeTuple() < other.MakeTuple();
-  }
-
-  std::tuple<int, int, SkColor> MakeTuple() const {
-    return std::make_tuple(width, corner_radius, color);
-  }
-
-  // The total width of the shadow region.
-  int width = 0;
-  int corner_radius = 0;
-  SkColor color = gfx::kPlaceholderColor;
-};
-
-// Get shadow image size with given init params.
-int ShadowImageSize(const ash::ResizeShadow::InitParams& params) {
-  //  The image has to have enough space to depict the visual thickness
-  //  (left and right) plus an inset for extending beneath the window's
-  //  rounded corner plus one pixel for the center of the nine patch.
-  return 2 * (params.thickness + params.window_corner_radius) + 1;
-}
-
-// This class simply draws a roundrect. The layout and tiling is handled by
-// ResizeShadow and NinePatchLayer.
-class ResizeShadowImageSource : public gfx::CanvasImageSource {
- public:
-  explicit ResizeShadowImageSource(const ShadowFeaturesKey& features)
-      : gfx::CanvasImageSource(gfx::Size(features.width, features.width)),
-        shadow_corner_radius_(features.corner_radius),
-        color_(features.color) {}
-  ResizeShadowImageSource(const ResizeShadowImageSource&) = delete;
-  ResizeShadowImageSource& operator=(const ResizeShadowImageSource&) = delete;
-  ~ResizeShadowImageSource() override = default;
-
-  // gfx::CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override {
-    cc::PaintFlags paint;
-    paint.setAntiAlias(true);
-    paint.setColor(color_);
-    canvas->DrawRoundRect(gfx::RectF(gfx::SizeF(size())), shadow_corner_radius_,
-                          paint);
-  }
-
-  int shadow_corner_radius_;
-  SkColor color_;
-};
-
-// Calculate outsets of the |window_| based on a |hit_test| code and |thickness|
-const gfx::Insets CalculateOutsets(int hit, int thickness) {
-  bool show_top = hit == HTTOPLEFT || hit == HTTOP || hit == HTTOPRIGHT;
-  bool show_left = hit == HTTOPLEFT || hit == HTLEFT || hit == HTBOTTOMLEFT;
-  bool show_bottom =
+// Calculates outward margins for the active resize edges of `hit` with
+// `thickness`.
+gfx::Outsets CalculateOutsets(int hit, int thickness) {
+  const bool show_top = hit == HTTOPLEFT || hit == HTTOP || hit == HTTOPRIGHT;
+  const bool show_left =
+      hit == HTTOPLEFT || hit == HTLEFT || hit == HTBOTTOMLEFT;
+  const bool show_bottom =
       hit == HTBOTTOMLEFT || hit == HTBOTTOM || hit == HTBOTTOMRIGHT;
-  bool show_right = hit == HTTOPRIGHT || hit == HTRIGHT || hit == HTBOTTOMRIGHT;
+  const bool show_right =
+      hit == HTTOPRIGHT || hit == HTRIGHT || hit == HTBOTTOMRIGHT;
 
-  const int outset = -thickness;
-  return gfx::Insets::TLBR(show_top ? outset : 0, show_left ? outset : 0,
-                           show_bottom ? outset : 0, show_right ? outset : 0);
-}
-
-// static
-const gfx::ImageSkia& MakeShadowImageOnce(
-    const ash::ResizeShadow::InitParams& params,
-    const ui::ColorProvider* color_provider) {
-  // Resolve the color with color type. Note that color_provider will be NULL
-  // when `params.color` is semantic.
-  const SkColor color = params.color.ResolveToSkColor(color_provider);
-
-  // Generate the shadow features key.
-  const ShadowFeaturesKey features_key{ShadowImageSize(params),
-                                       params.shadow_corner_radius, color};
-
-  // Create a cache saving the shadow textures for each shadow features key.
-  static base::NoDestructor<std::map<ShadowFeaturesKey, gfx::ImageSkia>>
-      shadow_image_cache;
-  auto iter = shadow_image_cache->find(features_key);
-
-  // If requiring a new shadow texture, evict unused textures and create a new
-  // one with given shadow features.
-  if (iter == shadow_image_cache->end()) {
-    std::erase_if(*shadow_image_cache, [](auto& key_and_image_source) {
-      return key_and_image_source.second.IsUniquelyOwned();
-    });
-
-    iter =
-        shadow_image_cache
-            ->emplace(
-                features_key,
-                gfx::CanvasImageSource::MakeImageSkia<ResizeShadowImageSource>(
-                    features_key))
-            .first;
-  }
-
-  return iter->second;
+  return gfx::Outsets::TLBR(show_top ? thickness : 0, show_left ? thickness : 0,
+                            show_bottom ? thickness : 0,
+                            show_right ? thickness : 0);
 }
 
 }  // namespace
 
-namespace ash {
+// static
+gfx::Outsets ResizeShadowGenerator::GetMargins(const ResizeShadowValue& value) {
+  return value.outsets();
+}
 
-ResizeShadow::InitParams::InitParams() = default;
+// static
+gfx::Insets ResizeShadowGenerator::GetNineboxApertureInsets(
+    const ResizeShadowValue& value,
+    const gfx::RoundedCornersF& rounded_corners) {
+  // Each corner patch must extend beneath both the outward shadow margin and
+  // the window's rounded corner, and must also be at least
+  // `corner_radius` so the shadow's own rounded corners stay outside the
+  // stretchable 1x1 center aperture.
+  const gfx::Insets corner_insets =
+      ui::decoration::GetInsetsForRoundedCorners(rounded_corners);
+  const gfx::Outsets& outsets = value.outsets();
+  const int radius = value.corner_radius();
+  return gfx::Insets::TLBR(
+      std::max(outsets.top() + corner_insets.top(), radius),
+      std::max(outsets.left() + corner_insets.left(), radius),
+      std::max(outsets.bottom() + corner_insets.bottom(), radius),
+      std::max(outsets.right() + corner_insets.right(), radius));
+}
 
-ResizeShadow::InitParams::InitParams(const InitParams& other) = default;
-ResizeShadow::InitParams& ResizeShadow::InitParams::operator=(
-    const InitParams& other) = default;
+// static
+void ResizeShadowGenerator::Draw(gfx::Canvas* canvas,
+                                 const ResizeShadowValue& value,
+                                 const gfx::RoundedCornersF& rounded_corners,
+                                 const gfx::Rect& content_rect) {
+  gfx::Rect shadow_rect = content_rect;
+  shadow_rect.Outset(value.outsets());
 
-ResizeShadow::InitParams::~InitParams() = default;
+  cc::PaintFlags paint;
+  paint.setAntiAlias(true);
+  paint.setColor(value.color());
+  canvas->DrawRoundRect(gfx::RectF(shadow_rect), value.corner_radius(), paint);
+}
 
-ResizeShadow::ResizeShadow(aura::Window* window,
-                           const InitParams& params,
-                           ResizeShadowType type)
-    : window_(window), params_(params), type_(type) {
-  // Use a NinePatchLayer to tile the shadow image (which is simply a
-  // roundrect).
-  layer_ = std::make_unique<ui::LayerNinePatch>();
-  layer_->SetName("ResizeShadow:WindowShadow");
-  layer_->SetFillsBoundsOpaquely(false);
-  layer_->SetOpacity(0.f);
-  layer_->SetVisible(false);
+DEFINE_SAFE_CAST_TARGET(ResizeShadow)
 
-  // If use static color, create the shadow image. Otherwise, observe the color
-  // provider source to update the shadow color.
-  if (params_.color.IsPhysical()) {
-    UpdateShadowLayer();
-  } else {
-    Observe(RootWindowController::ForWindow(window)->color_provider_source());
-  }
-
-  const gfx::Insets aperture_insets(params_.thickness +
-                                    params_.window_corner_radius);
-  const int image_size = ShadowImageSize(params_);
-  gfx::Rect aperture(gfx::Size(image_size, image_size));
-  aperture.Inset(aperture_insets);
-  layer_->UpdateNinePatchLayerAperture(aperture);
-  layer_->UpdateNinePatchLayerBorder(
-      gfx::Rect(aperture_insets.left(), aperture_insets.top(),
-                aperture_insets.width(), aperture_insets.height()));
-
-  ReparentLayer();
+ResizeShadow::ResizeShadow(const InitParams& params, ResizeShadowType type)
+    : params_(params), type_(type) {
+  CHECK_GT(params_.thickness, 0);
 }
 
 ResizeShadow::~ResizeShadow() = default;
 
-void ResizeShadow::OnColorProviderChanged() {
-  // This function will also be called when the color provider source is
-  // destroyed. We should guarantee the color provider exists.
-  if (params_.color.IsLogical() && GetColorProviderSource()) {
-    UpdateShadowLayer();
+void ResizeShadow::SetColor(SkColor color) {
+  if (color_ == color) {
+    return;
   }
+  color_ = color;
+  NotifyDecorationChanged();
 }
 
-void ResizeShadow::OnWindowParentToRootWindow() {
-  if (params_.color.IsLogical()) {
-    Observe(RootWindowController::ForWindow(window_)->color_provider_source());
+std::optional<ResizeShadowValue> ResizeShadow::GetSpec(
+    const gfx::Rect& content_bounds,
+    const gfx::RoundedCornersF& rounded_corners) const {
+  CHECK(!content_bounds.IsEmpty());
+  if (outsets_.IsEmpty()) {
+    return std::nullopt;
   }
+
+  const ResizeShadowValue spec(outsets_, params_.shadow_corner_radius, color_);
+  gfx::Rect layer_bounds = content_bounds;
+  layer_bounds.Outset(outsets_);
+  const gfx::Insets aperture_insets =
+      ResizeShadowGenerator::GetNineboxApertureInsets(spec, rounded_corners);
+  if (aperture_insets.width() > layer_bounds.width() ||
+      aperture_insets.height() > layer_bounds.height()) {
+    return std::nullopt;
+  }
+  return spec;
 }
 
-void ResizeShadow::UpdateShadowLayer() {
-  auto* color_provider_source = GetColorProviderSource();
-  const auto& shadow_image = MakeShadowImageOnce(
-      params_, color_provider_source ? color_provider_source->GetColorProvider()
-                                     : nullptr);
-  layer_->UpdateNinePatchLayerImage(shadow_image);
+std::optional<ui::decoration::DecorationSource::Details>
+ResizeShadow::GetDetails(const gfx::Rect& content_bounds,
+                         const gfx::RoundedCornersF& rounded_corners) {
+  const std::optional<ResizeShadowValue> spec =
+      GetSpec(content_bounds, rounded_corners);
+  if (!spec.has_value()) {
+    return std::nullopt;
+  }
+
+  const ResizeShadowDetails& details =
+      ResizeShadowDetails::Get(rounded_corners, *spec);
+
+  gfx::Rect occlusion_rect(content_bounds.size());
+  occlusion_rect.Inset(
+      ui::decoration::GetInsetsForRoundedCorners(rounded_corners));
+
+  return Details{
+      .appearance =
+          {
+              .nine_patch_image = details.nine_patch_image,
+              .aperture_insets = details.aperture_insets,
+              .margins = details.margins,
+          },
+      .occlusion_rect = occlusion_rect,
+  };
 }
 
-void ResizeShadow::ShowForHitTest(int hit) {
-  UpdateHitTest(hit);
-  visible_ = true;
-  UpdateBoundsAndVisibility();
+void ResizeShadow::ShowForHitTest(int hit_test) {
+  last_hit_test_ = hit_test;
+  const gfx::Outsets new_outsets =
+      params_.hit_test_enabled
+          ? CalculateOutsets(last_hit_test_, params_.thickness)
+          : gfx::Outsets(params_.thickness);
+  visible_ = !new_outsets.IsEmpty();
+  if (visible_ && outsets_ != new_outsets) {
+    outsets_ = new_outsets;
+    NotifyDecorationChanged();
+  }
 }
 
 void ResizeShadow::Hide() {
-  UpdateHitTest(HTNOWHERE);
+  last_hit_test_ = HTNOWHERE;
   visible_ = false;
-  UpdateBoundsAndVisibility();
-}
-
-void ResizeShadow::UpdateHitTest(int hit) {
-  // Don't start animations unless something changed.
-  if (hit == last_hit_test_)
-    return;
-  last_hit_test_ = hit;
-}
-
-void ResizeShadow::UpdateBoundsAndVisibility() {
-  UpdateBounds(window_->bounds());
-}
-
-void ResizeShadow::UpdateBounds(const gfx::Rect& window_bounds) {
-  // The shadow layer is positioned such that one or two edges will stick out
-  // from underneath |window_|. Thus |window_| occludes the rest of the
-  // roundrect.
-  const gfx::Insets outsets =
-      params_.hit_test_enabled
-          ? CalculateOutsets(last_hit_test_, params_.thickness)
-          : gfx::Insets(-params_.thickness);
-
-  if (outsets.IsEmpty() && !layer_->GetTargetVisibility())
-    return;
-
-  visible_ &= !outsets.IsEmpty();
-  if (visible_) {
-    gfx::Rect bounds = window_bounds;
-    bounds.Inset(outsets);
-    layer_->SetBounds(bounds);
-  }
-
-  ui::ScopedLayerAnimationSettings settings(layer_->GetAnimator());
-  if (!visible_)
-    settings.SetTransitionDuration(
-        base::Milliseconds(params_.hide_duration_ms));
-  layer_->SetOpacity(visible_ ? params_.opacity : 0.f);
-  layer_->SetVisible(visible_);
-}
-
-void ResizeShadow::ReparentLayer() {
-  // This shadow could belong to a window that has been removed from its parent.
-  // In that case, we should not try to access `window_`'s parent.
-  if (!window_->layer()->parent())
-    return;
-
-  if (layer_->parent() != window_->layer()->parent())
-    window_->layer()->parent()->Add(layer_.get());
-  layer_->parent()->StackBelow(layer_.get(), window_->layer());
 }
 
 }  // namespace ash
+
+namespace ui::decoration {
+
+template class EXPORT_TEMPLATE_DEFINE(
+    ASH_EXPORT) internal::DecorationCache<ash::ResizeShadowValue,
+                                          ash::ResizeShadowGenerator>;
+
+}  // namespace ui::decoration

@@ -5,13 +5,19 @@
 #ifndef ASH_WM_RESIZE_SHADOW_CONTROLLER_H_
 #define ASH_WM_RESIZE_SHADOW_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
-#include "ui/gfx/color_palette.h"
+
+namespace ui {
+class ColorProviderSourceObserver;
+class Decoration;
+}  // namespace ui
 
 namespace ash {
 class ResizeShadow;
@@ -61,24 +67,38 @@ class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
                                         const gfx::Rect& bounds);
 
   ResizeShadow* GetShadowForWindowForTest(aura::Window* window);
+  ui::Decoration* GetDecorationForWindowForTest(aura::Window* window);
+  ui::ColorProviderSourceObserver* GetColorObserverForWindowForTest(
+      aura::Window* window);
 
  private:
+  class WindowResizeShadow;
+
   // Removes all shadows.
   void RemoveAllShadows();
 
-  // Recreates a shadow for a given |window| and the type from the |window|'s
-  // property if there's no shadow registered or it has one but its type is
-  // different. |window_shadows_| owns the memory.
+  // Recreates a shadow for `window` if none is registered or its type / corner
+  // configuration changed.
   void RecreateShadowIfNeeded(aura::Window* window);
 
-  // Returns the resize shadow for |window| or NULL if no shadow exists.
+  WindowResizeShadow* GetWindowResizeShadow(aura::Window* window) const;
+
+  // Returns the resize shadow for `window` or nullptr if none exists.
   ResizeShadow* GetShadowForWindow(aura::Window* window) const;
+
+  // Reparents `window`'s shadow layer directly beneath `window->layer()`.
+  void ReparentShadowLayer(aura::Window* window) const;
+
+  // Updates bounds, opacity, and visibility of `window`'s shadow layer.
+  void UpdateShadowBoundsAndVisibility(aura::Window* window,
+                                       const gfx::Rect& window_bounds) const;
 
   // Update shadow visibility for a given |window|.
   void UpdateShadowVisibility(aura::Window* window, bool visible) const;
   bool ShouldShowShadowForWindow(aura::Window* window) const;
 
-  base::flat_map<aura::Window*, std::unique_ptr<ResizeShadow>> window_shadows_;
+  base::flat_map<aura::Window*, std::unique_ptr<WindowResizeShadow>>
+      window_shadows_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       windows_observation_{this};

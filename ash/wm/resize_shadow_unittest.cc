@@ -30,7 +30,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
+#include "ui/color/color_provider_source.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_nine_patch.h"
+#include "ui/decoration/decoration.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -76,11 +80,19 @@ class ResizeShadowTest : public AshTestBase {
   void TearDown() override {
     window_ = nullptr;
     AshTestBase::TearDown();
+    ResizeShadowDetails::ClearDetailsCacheForTest();
   }
 
   const ResizeShadow* GetShadow() const {
     return Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
         window_);
+  }
+
+  const ui::Layer* GetShadowLayer(aura::Window* target_window) const {
+    auto* decoration =
+        Shell::Get()->resize_shadow_controller()->GetDecorationForWindowForTest(
+            target_window);
+    return decoration ? decoration->layer() : nullptr;
   }
 
   // Returns the hit test code if there is a resize shadow. Returns HTNOWHERE if
@@ -97,7 +109,8 @@ class ResizeShadowTest : public AshTestBase {
       EXPECT_TRUE(GetShadow());
     }
     if (GetShadow()) {
-      const ui::Layer* shadow_layer = GetShadow()->GetLayerForTest();
+      const ui::Layer* shadow_layer = GetShadowLayer(window_);
+      ASSERT_TRUE(shadow_layer);
       EXPECT_EQ(visible, shadow_layer->GetTargetVisibility());
       ASSERT_TRUE(window_->layer());
       EXPECT_EQ(window_->layer()->parent(), shadow_layer->parent());
@@ -345,7 +358,8 @@ TEST_F(ResizeShadowTest, LockShadowBounds) {
   auto* resize_shadow = GetShadow();
   ASSERT_TRUE(resize_shadow);
   VerifyResizeShadow(true);
-  auto* layer = resize_shadow->GetLayerForTest();
+  const auto* layer = GetShadowLayer(window());
+  ASSERT_TRUE(layer);
   constexpr int kVisualThickness = 6;
   EXPECT_EQ(gfx::Rect(kOldBounds.width() + kVisualThickness * 2,
                       kOldBounds.height() + kVisualThickness * 2)
@@ -412,13 +426,12 @@ TEST_F(ResizeShadowTest, ResizeShadowTypeChange) {
   window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kLock);
   Shell::Get()->resize_shadow_controller()->ShowShadow(window());
   ASSERT_TRUE(GetShadow());
-  ASSERT_EQ(GetShadow()->GetResizeShadowTypeForTest(), ResizeShadowType::kLock);
+  ASSERT_EQ(GetShadow()->type(), ResizeShadowType::kLock);
   Shell::Get()->resize_shadow_controller()->HideShadow(window());
 
   window()->SetProperty(kResizeShadowTypeKey, ResizeShadowType::kUnlock);
   Shell::Get()->resize_shadow_controller()->ShowShadow(window());
-  ASSERT_EQ(GetShadow()->GetResizeShadowTypeForTest(),
-            ResizeShadowType::kUnlock);
+  ASSERT_EQ(GetShadow()->type(), ResizeShadowType::kUnlock);
   Shell::Get()->resize_shadow_controller()->HideShadow(window());
 }
 
@@ -480,6 +493,31 @@ TEST_F(ResizeShadowWithRoundedWindowsTest, ResizeShadowMatchesWindowRoundness) {
   window_state->Restore();
   ASSERT_TRUE(window_state->IsNormalStateType());
   EXPECT_TRUE(GetShadow()->is_for_large_rounded_corners());
+}
+
+// Verifies that a window with dimensions smaller than the aperture insets of
+// its resize shadow does not trigger geometry limitation crashes.
+TEST_F(ResizeShadowWithRoundedWindowsTest, TinyWindowDoesNotCrash) {
+  auto* const controller = Shell::Get()->resize_shadow_controller();
+  window()->SetBounds(gfx::Rect(0, 0, 100, 20));
+  controller->ShowShadow(window(), HTRIGHT);
+
+  auto* const decoration = controller->GetDecorationForWindowForTest(window());
+  ASSERT_TRUE(decoration);
+  ASSERT_TRUE(GetShadow());
+  EXPECT_FALSE(decoration->decoration_layer_for_testing()->visible());
+  EXPECT_EQ(decoration->layer()->bounds().size(), gfx::Size(100, 20));
+
+  window()->SetBounds(gfx::Rect(0, 0, 100, 40));
+  EXPECT_TRUE(decoration->decoration_layer_for_testing()->visible());
+  EXPECT_EQ(decoration->layer()->bounds().size(), gfx::Size(106, 40));
+
+  window()->SetBounds(gfx::Rect(0, 0, 1, 1));
+  controller->ShowShadow(window(), HTTOPLEFT);
+  EXPECT_FALSE(decoration->decoration_layer_for_testing()->visible());
+
+  window()->SetBounds(gfx::Rect(0, 0, 0, 0));
+  EXPECT_FALSE(decoration->decoration_layer_for_testing()->visible());
 }
 
 // Tests that shadow gets updated when the window's state changed.
@@ -546,17 +584,20 @@ TEST_F(ResizeShadowTest, ShadowCanExistInUnparentedWindow) {
   parent->AddChild(window());
 }
 
-// Tests that the resize shadow will observe a new color provider source when
-// the window is reparented to other root windows.
+// Tests that the resize shadow controller will observe a new color provider
+// source when the window is reparented to other root windows.
 TEST_F(ResizeShadowTest, NoCrashOnRootWindowChange) {
+  ResizeShadowController* controller = Shell::Get()->resize_shadow_controller();
   // Create a resize shadow on primary root window.
-  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
-  // The color provider source of primary root window should be observed by
-  // resize shadow.
+  controller->ShowShadow(window());
+  ui::ColorProviderSourceObserver* observer =
+      controller->GetColorObserverForWindowForTest(window());
+  ASSERT_TRUE(observer);
+  // The color provider source of primary root window should be observed.
   EXPECT_TRUE(Shell::GetPrimaryRootWindowController()
                   ->color_provider_source()
                   ->observers_for_testing()
-                  .HasObserver(GetShadow()));
+                  .HasObserver(observer));
 
   // Add an secondary display.
   display_manager()->AddRemoveDisplay();
@@ -569,23 +610,23 @@ TEST_F(ResizeShadowTest, NoCrashOnRootWindowChange) {
   }
   EXPECT_TRUE(!!secondary_root);
 
-  // Move the window to secondary display and the resize shadow should observe
-  // the color provider source of secondary root window.
+  // Move the window to secondary display and the controller should observe the
+  // color provider source of secondary root window.
   Shell::GetContainer(secondary_root, desks_util::GetActiveDeskContainerId())
       ->AddChild(window());
   EXPECT_TRUE(RootWindowController::ForWindow(secondary_root)
                   ->color_provider_source()
                   ->observers_for_testing()
-                  .HasObserver(GetShadow()));
+                  .HasObserver(observer));
 
   // Remove secondary root window. The window will be reparent to primary
-  // display, the resize shadow will observe the color provider source of
-  // primary root window, and there should be no crash.
+  // display, the controller will observe the color provider source of primary
+  // root window, and there should be no crash.
   display_manager()->AddRemoveDisplay();
   EXPECT_TRUE(Shell::GetPrimaryRootWindowController()
                   ->color_provider_source()
                   ->observers_for_testing()
-                  .HasObserver(GetShadow()));
+                  .HasObserver(observer));
 }
 
 // Tests if the resize shadow is beneath window when float the window by
@@ -620,7 +661,8 @@ TEST_F(ResizeShadowTest, KeepShadowBeneathFloatWindow) {
   // Check if the resize shadow layer is beneath the window layer. We check
   // their positions in their parent layer's children container. The highest
   // index is the topmost.
-  auto* shadow_layer = resize_shadow->GetLayerForTest();
+  const auto* shadow_layer = GetShadowLayer(test_window.get());
+  ASSERT_TRUE(shadow_layer);
   auto parent_children = shadow_layer->parent()->children();
   auto* window_layer = test_window->layer();
 
@@ -628,6 +670,39 @@ TEST_F(ResizeShadowTest, KeepShadowBeneathFloatWindow) {
   auto window_iter = std::ranges::find(parent_children, window_layer);
   EXPECT_LT(std::distance(parent_children.begin(), shadow_iter),
             std::distance(parent_children.begin(), window_iter));
+}
+
+// Verifies that ResizeShadowDetails caches nine-patch images per corner radius
+// and ResizeShadowValue, and accommodates large shadow corner radii on
+// single-edge outsets.
+TEST_F(ResizeShadowTest, ResizeShadowDetailsCachingAndInsets) {
+  ResizeShadowDetails::ClearDetailsCacheForTest();
+  EXPECT_EQ(0u, ResizeShadowDetails::GetDetailsCacheSizeForTest());
+
+  const gfx::RoundedCornersF kSmallCorners(2.f);
+  const ResizeShadowValue kRightSpec(gfx::Outsets::TLBR(0, 0, 0, 8),
+                                     /*corner_radius=*/2, SK_ColorBLACK);
+  const ResizeShadowDetails& first =
+      ResizeShadowDetails::Get(kSmallCorners, kRightSpec);
+  const ResizeShadowDetails& cached =
+      ResizeShadowDetails::Get(kSmallCorners, kRightSpec);
+  EXPECT_EQ(1u, ResizeShadowDetails::GetDetailsCacheSizeForTest());
+  EXPECT_TRUE(
+      first.nine_patch_image.BackedBySameObjectAs(cached.nine_patch_image));
+  EXPECT_EQ(gfx::Outsets::TLBR(0, 0, 0, 8), first.margins);
+  EXPECT_EQ(gfx::Insets::TLBR(2, 2, 2, 10), first.aperture_insets);
+
+  // Large rounded corners (window radius 12, shadow radius 16) on a single
+  // hovered edge must reserve at least `corner_radius` on non-outset
+  // edges so the 16px corner arc fits outside the 1x1 center aperture.
+  const gfx::RoundedCornersF kLargeCorners(12.f);
+  const ResizeShadowValue kLargeRightSpec(gfx::Outsets::TLBR(0, 0, 0, 6),
+                                          /*corner_radius=*/16, SK_ColorBLACK);
+  const ResizeShadowDetails& large_details =
+      ResizeShadowDetails::Get(kLargeCorners, kLargeRightSpec);
+  EXPECT_EQ(2u, ResizeShadowDetails::GetDetailsCacheSizeForTest());
+  EXPECT_EQ(gfx::Insets::TLBR(16, 16, 16, 18), large_details.aperture_insets);
+  EXPECT_EQ(gfx::Size(35, 33), large_details.nine_patch_image.size());
 }
 
 }  // namespace ash
