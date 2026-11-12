@@ -19,7 +19,6 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -201,13 +200,6 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
         profile, "123456", logger_.get(),
         identity_test_env_.identity_manager());
 
-    // TODO(crbug.com/417950948): ConsentLevel::kSync is deprecated and should
-    // be removed. See ConsentLevel::kSync documentation for details.
-    signin::ConsentLevel consent_level =
-        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync;
-
     discovery_interface_->SetEndpointFetcherForTesting(
         std::make_unique<EndpointFetcher>(
             test_url_loader_factory, identity_test_env_.identity_manager(),
@@ -216,7 +208,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
                 .SetAuthType(endpoint_fetcher::OAUTH)
                 .SetOAuthConsumerId(
                     signin::OAuthConsumerId::kAccessCodeCastDiscovery)
-                .SetConsentLevel(consent_level)
+                .SetConsentLevel(signin::ConsentLevel::kSignin)
                 .SetContentType(kMockContentType)
                 .SetTimeout(kMockTimeout)
                 .SetUrl(GURL(kMockEndpoint))
@@ -269,16 +261,9 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
   }
 
   void SignIn() {
-    signin::ConsentLevel consent_level =
-        syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-            ? signin::ConsentLevel::kSignin
-            : signin::ConsentLevel::kSync;
-    SetProfileConsent(consent_level);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
-  }
-
-  void SetProfileConsent(signin::ConsentLevel consent_level) {
-    identity_test_env_.MakePrimaryAccountAvailable(kEmail, consent_level);
   }
 
   MockEndpointFetcherCallback& endpoint_fetcher_callback() {
@@ -345,16 +330,12 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerError) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-// Revoking Sync consent is not possible on ChromeOS.
+// Clearing the primary account is not possible on ChromeOS.
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    GTEST_SKIP() << "RevokeSyncConsent() is no-op as Sync is deprecated";
-  }
-
-  // Test to validate a fetch request without sync set for the account will
-  // return a SYNC_ERROR.
+  // Test to validate a fetch request without a primary account will return a
+  // SYNC_ERROR.
   MockDiscoveryDeviceCallback mock_callback;
-  identity_test_env().RevokeSyncConsent();
+  identity_test_env().ClearPrimaryAccount();
   EXPECT_CALL(mock_callback,
               Run(Eq(std::nullopt), AddSinkResultCode::PROFILE_SYNC_ERROR));
 

@@ -23,7 +23,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -246,13 +245,6 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
     const std::string& access_code) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
-  // TODO(crbug.com/417950948): ConsentLevel::kSync is deprecated and should be
-  // removed. See ConsentLevel::kSync documentation for details.
-  const signin::ConsentLevel consent_level =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-
   return std::make_unique<EndpointFetcher>(
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
@@ -261,7 +253,7 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
           endpoint_fetcher::HttpMethod::kGet, kTrafficAnnotation)
           .SetAuthType(endpoint_fetcher::OAUTH)
           .SetOAuthConsumerId(signin::OAuthConsumerId::kAccessCodeCastDiscovery)
-          .SetConsentLevel(consent_level)
+          .SetConsentLevel(signin::ConsentLevel::kSignin)
           .SetContentType(kContentType)
           .SetTimeout(kTimeout)
           .SetUrl(GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})))
@@ -330,8 +322,7 @@ void AccessCodeCastDiscoveryInterface::HandleServerError(
     case FetchErrorType::kAuthError:
       if (response->response == "No primary accounts found") {
         logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                          "The account needs to have sync enabled.", "", "",
-                          "");
+                          "The account needs to be signed in.", "", "", "");
         ReportErrorViaCallback(AddSinkResultCode::PROFILE_SYNC_ERROR);
       } else {
         logger_->LogError(

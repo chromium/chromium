@@ -37,7 +37,6 @@
 #include "components/media_router/common/test/test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -220,19 +219,14 @@ void AccessCodeCastIntegrationBrowserTest::SetUpPrimaryAccountWithHostedDomain(
     bool sign_in_account) {
   ASSERT_TRUE(identity_test_environment_);
 
-  signin::ConsentLevel consent_level =
-      syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-          ? signin::ConsentLevel::kSignin
-          : signin::ConsentLevel::kSync;
-
   // Ensure that the stub user is signed in.
   identity_test_environment_->MakePrimaryAccountAvailable(
-      user_manager::kStubUserEmail, consent_level);
+      user_manager::kStubUserEmail, signin::ConsentLevel::kSignin);
 
   if (sign_in_account) {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile),
-        user_manager::kStubUserEmail, consent_level);
+        user_manager::kStubUserEmail, signin::ConsentLevel::kSignin);
   }
 
   identity_test_environment_->SetAutomaticIssueOfAccessTokens(true);
