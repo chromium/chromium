@@ -213,3 +213,105 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     self._testThrows(
       'a.mojom', contents, 'Extensible.*?required.*?Stable.*?enum'
     )
+
+  def testUnverifiedValidOnRequestParameter(self):
+    self._testValid(
+      'a.mojom',
+      """
+      module a;
+      interface Foo {
+        Bar([Unverified] int32 a) => (int32 b);
+      };
+    """,
+    )
+
+  def testUnverifiedDisallowedOnResponseParameter(self):
+    contents = """
+      module a;
+      interface Foo {
+        Bar(int32 a) => ([Unverified] int32 b);
+      };
+    """
+    self._testThrows(
+      'a.mojom',
+      contents,
+      'attribute Unverified not allowed on response parameter',
+    )
+
+  def testUnverifiedDisallowedOnStructField(self):
+    contents = """
+      module a;
+      struct S {
+        [Unverified] int32 a;
+      };
+    """
+    self._testThrows(
+      'a.mojom', contents, 'attribute Unverified not allowed on struct field'
+    )
+
+  def testUnverifiedDisallowedOnUnionField(self):
+    contents = """
+      module a;
+      union U {
+        [Unverified] int32 a;
+      };
+    """
+    self._testThrows(
+      'a.mojom', contents, 'attribute Unverified not allowed on union field'
+    )
+
+  def testUnverifiedDisallowedOnMethod(self):
+    contents = """
+      module a;
+      interface Foo {
+        [Unverified]
+        Bar(int32 a);
+      };
+    """
+    self._testThrows(
+      'a.mojom', contents, 'attribute Unverified not allowed on method'
+    )
+
+  def testUnverifiedDisallowedOnInterface(self):
+    contents = """
+      module a;
+      [Unverified]
+      interface Foo {
+        Bar(int32 a);
+      };
+    """
+    self._testThrows(
+      'a.mojom', contents, 'attribute Unverified not allowed on interface'
+    )
+
+  def testUnverifiedDisallowsExplicitValue(self):
+    self._testThrows(
+      'a.mojom',
+      """
+      module a;
+      interface Foo {
+        Bar([Unverified=False] int32 a);
+      };
+      """,
+      'attribute Unverified on parameter Foo.Bar.a must not specify a value',
+    )
+    self._testThrows(
+      'b.mojom',
+      """
+      module a;
+      interface Foo {
+        Bar([Unverified="x"] int32 a);
+      };
+      """,
+      'attribute Unverified on parameter Foo.Bar.a must not specify a value',
+    )
+    self._testThrows(
+      'c.mojom',
+      """
+      module a;
+      interface Foo {
+        Bar([Unverified=1] int32 a);
+      };
+      """,
+      'attribute Unverified on parameter Foo.Bar.a must not specify a value',
+    )

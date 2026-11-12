@@ -652,3 +652,15 @@ class VersionCompatibilityTest(MojomParserTestCase):
       'union U { hash_map<string, int32> m; };',
       'union U { map<string, int32> m; };',
     )
+
+  def testUnverifiedParameterCompatibility(self):
+    """Adding or removing [Unverified] on request parameters does not alter the
+    wire format and is backward-compatible."""
+    self.assertBackwardCompatible(
+      'interface F { A(int32 x, string s); };',
+      'interface F { A([Unverified] int32 x, [Unverified] string s); };',
+    )
+    self.assertBackwardCompatible(
+      'interface F { A([Unverified] int32 x, [Unverified] string s); };',
+      'interface F { A(int32 x, string s); };',
+    )

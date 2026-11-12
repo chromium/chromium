@@ -69,7 +69,11 @@ _MODULE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
   'IncludeSendValidation',
 }
 
-_PARAMETER_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES
+_PARAMETER_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES | {
+  'Unverified',
+}
+
+_RESPONSE_PARAMETER_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES
 
 _STRUCT_ATTRIBUTES = _COMMON_ATTRIBUTES | {
   'CustomSerializer',
@@ -223,10 +227,21 @@ class Check(check.Check):
         self._CheckAttributes(
           "parameter", _PARAMETER_ATTRIBUTES, param.attributes
         )
+        if param.attributes and 'Unverified' in param.attributes:
+          val = param.attributes['Unverified']
+          if val is not True:
+            raise check.CheckException(
+              self.module,
+              f"attribute Unverified on parameter "
+              f"{interface.mojom_name}.{method.mojom_name}.{param.mojom_name} "
+              f"must not specify a value",
+            )
       if method.response_parameters:
         for param in method.response_parameters:
           self._CheckAttributes(
-            "parameter", _PARAMETER_ATTRIBUTES, param.attributes
+            "response parameter",
+            _RESPONSE_PARAMETER_ATTRIBUTES,
+            param.attributes,
           )
     for enum in interface.enums:
       self._CheckEnumAttributes(enum)
