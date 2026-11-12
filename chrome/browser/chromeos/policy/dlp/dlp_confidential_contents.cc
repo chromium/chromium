@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -54,6 +55,12 @@ DlpConfidentialContent::DlpConfidentialContent(aura::Window* window,
     : icon(GetWindowIcon(window)),
       title(window->GetTitle()),
       url(url.GetWithoutRef()) {}
+
+DlpConfidentialContent::DlpConfidentialContent(const std::u16string& title,
+                                               const GURL& url)
+    : title(title), url(url.GetWithoutRef()) {
+  CHECK_IS_TEST();
+}
 
 DlpConfidentialContent::DlpConfidentialContent(
     const DlpConfidentialContent& other) = default;
@@ -174,12 +181,9 @@ void DlpConfidentialContentsCache::Cache(
       std::make_unique<Entry>(content, restriction, base::TimeTicks::Now());
   StartEvictionTimer(entry.get());
   entries_.push_front(std::move(entry));
-  const bool evicted = entries_.size() > cache_size_limit_;
-  if (evicted) {
+  if (entries_.size() > cache_size_limit_) {
     entries_.pop_back();
   }
-  data_controls::DlpBooleanHistogram(
-      data_controls::dlp::kConfidentialContentsCacheEvictedOnFull, evicted);
   data_controls::DlpCountHistogram(
       data_controls::dlp::kConfidentialContentsCount, entries_.size(),
       cache_size_limit_);

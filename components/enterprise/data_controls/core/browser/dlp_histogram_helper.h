@@ -68,8 +68,6 @@ inline constexpr char kReportedWarnProceedLevelRestriction[] =
 inline constexpr char kReportedEventStatus[] = "ReportedEventStatus";
 inline constexpr char kConfidentialContentsCount[] =
     "ConfidentialContentsCount";
-inline constexpr char kConfidentialContentsCacheEvictedOnFull[] =
-    "ConfidentialContentsCacheEvictedOnFull";
 inline constexpr char kActiveFileEventsCount[] = "ActiveFileEventsCount";
 inline constexpr char kErrorsReportQueueNotReady[] =
     "Errors.ReportQueueNotReady";

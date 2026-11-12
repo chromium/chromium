@@ -40,6 +40,9 @@ struct DlpConfidentialContent {
   // Constructs DlpConfidentialContent from the title and icon obtained from
   // |window|, which cannot be null and |url|.
   DlpConfidentialContent(aura::Window* window, const GURL& url);
+  // Constructs `DlpConfidentialContent` from `title` and `url` with an empty
+  // icon. For testing only.
+  DlpConfidentialContent(const std::u16string& title, const GURL& url);
   DlpConfidentialContent(const DlpConfidentialContent& other);
   DlpConfidentialContent& operator=(const DlpConfidentialContent& other);
   ~DlpConfidentialContent() = default;
