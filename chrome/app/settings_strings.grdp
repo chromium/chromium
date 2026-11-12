@@ -3712,6 +3712,9 @@
       <message name="IDS_ACCOUNT_CHROMEOS_DEVICE_ACCOUNTS" desc="Title shown on the manage accounts on this device button item.">
         Manage accounts on this device
       </message>
+      <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL" desc="Label of Account Manager submenu in Settings page.">
+        Google Accounts
+      </message>
     </if>
 
     <if expr="not is_chromeos">

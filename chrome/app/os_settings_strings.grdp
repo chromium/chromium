@@ -7,11 +7,6 @@
     Restart
   </message>
 
-  <!-- People (OS settings) -->
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL" desc="Label of Account Manager submenu in Settings page.">
-    Google Accounts
-  </message>
-
   <!-- A11y (OS Settings) -->
   <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
     Manage accessibility features

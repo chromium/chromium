@@ -549,8 +549,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"osPeoplePageTitle", IDS_OS_SETTINGS_PEOPLE_V2},
       {"accountsMenuItemDescription",
        IDS_OS_SETTINGS_ACCOUNTS_MENU_ITEM_DESCRIPTION},
-      {"accountManagerSubMenuLabel",
-       IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},
       {"accountManagerPageTitle", IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE},
       {"lockScreenFingerprintTitle",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE},
