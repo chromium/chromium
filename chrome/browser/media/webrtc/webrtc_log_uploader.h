@@ -46,6 +46,7 @@ struct WebRtcLogUploadFailureReason {
     // Deprecated value.
     // kStoredLogNotFound = 1,
     kNetworkError = 2,
+    kInvalidReportId = 3,
   };
 };
 
@@ -243,7 +244,8 @@ class WebRtcLogUploader {
   void NotifyUploadDoneAndLogStats(std::optional<int> response_code,
                                    int network_error_code,
                                    const std::string& report_id,
-                                   UploadDoneData upload_done_data);
+                                   UploadDoneData upload_done_data,
+                                   bool is_invalid_report_id);
 
   using SimpleURLLoaderList =
       std::list<std::unique_ptr<network::SimpleURLLoader>>;

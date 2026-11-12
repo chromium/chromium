@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -22,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -49,10 +51,27 @@ namespace {
 const int kLogCountLimit = 20;
 const uint32_t kIntermediateCompressionBufferBytes = 256 * 1024;  // 256 KB
 const int kLogListLimitLines = 50;
+constexpr size_t kMaxReportIdLength = 256;
+// Maximum upload response body size: a report ID of up to kMaxReportIdLength
+// characters, plus room for a trailing "\r\n", which is trimmed before
+// validation. IsValidReportId() enforces kMaxReportIdLength itself.
+constexpr size_t kMaxUploadResponseBodyBytes = kMaxReportIdLength + 2;
 
 const char kWebrtcLogUploadContentType[] = "multipart/form-data";
 const char kWebrtcLogMultipartBoundary[] =
     "----**--yradnuoBgoLtrapitluMklaTelgooG--**----";
+
+bool IsValidReportId(std::string_view report_id) {
+  if (report_id.empty() || report_id.size() > kMaxReportIdLength) {
+    return false;
+  }
+  for (char c : report_id) {
+    if (!base::IsAsciiPrintable(c) || c == ' ' || c == ',') {
+      return false;
+    }
+  }
+  return true;
+}
 
 // Adds the header section for a gzip file to the multipart |post_data|.
 void AddMultipartFileContentHeader(std::string* post_data,
@@ -240,7 +259,8 @@ void WebRtcLogUploader::PrepareMultipartPostData(
   if (post_data_) {
     *post_data_ = *post_data;
     NotifyUploadDoneAndLogStats(net::HTTP_OK, net::OK, "",
-                                std::move(upload_done_data));
+                                std::move(upload_done_data),
+                                /*is_invalid_report_id=*/false);
     return;
   }
 
@@ -335,8 +355,34 @@ void WebRtcLogUploader::OnSimpleLoaderComplete(
   }
   const int network_error_code = loader->NetError();
   pending_uploads_.erase(it);
-  std::string report_id = std::move(response_body).value_or("");
-  if (!upload_done_data.paths.directory.empty() && !report_id.empty()) {
+
+  // An HTTP 200 response whose body is not a valid report ID is treated as a
+  // failed upload (kInvalidReportId). An empty 200 body keeps its pre-existing
+  // behavior: success without a report ID.
+  std::string report_id;
+  bool is_invalid_report_id = false;
+  if (response_code == net::HTTP_OK) {
+    if (!response_body) {
+      // DownloadToString() stops with ERR_INSUFFICIENT_RESOURCES when the body
+      // is larger than kMaxUploadResponseBodyBytes.
+      is_invalid_report_id =
+          network_error_code == net::ERR_INSUFFICIENT_RESOURCES;
+    } else {
+      // Tolerate a trailing line break in the server response; everything
+      // else must pass IsValidReportId().
+      const std::string_view body =
+          base::TrimString(*response_body, "\r\n", base::TRIM_TRAILING);
+      if (body.empty() || IsValidReportId(body)) {
+        report_id = std::string(body);  // Empty: success without an ID.
+      } else {
+        // A non-empty body that IsValidReportId() rejects, e.g. one containing
+        // whitespace, ',' or non-printable characters.
+        is_invalid_report_id = true;
+      }
+    }
+  }
+  if (!upload_done_data.paths.directory.empty() &&
+      !upload_done_data.local_log_id.empty() && !report_id.empty()) {
     base::FilePath log_list_path =
         webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(
             upload_done_data.paths.directory);
@@ -347,7 +393,8 @@ void WebRtcLogUploader::OnSimpleLoaderComplete(
                        report_id));
   }
   NotifyUploadDoneAndLogStats(response_code, network_error_code, report_id,
-                              std::move(upload_done_data));
+                              std::move(upload_done_data),
+                              is_invalid_report_id);
 }
 
 void WebRtcLogUploader::SetupMultipart(
@@ -508,11 +555,12 @@ void WebRtcLogUploader::UploadCompressedLog(
   auto it = pending_uploads_.insert(pending_uploads_.begin(),
                                     std::move(simple_url_loader));
   network::SimpleURLLoader* raw_loader = it->get();
-  raw_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  raw_loader->DownloadToString(
       g_browser_process->shared_url_loader_factory().get(),
       base::BindOnce(&WebRtcLogUploader::OnSimpleLoaderComplete,
                      base::Unretained(this), std::move(it),
-                     std::move(upload_done_data)));
+                     std::move(upload_done_data)),
+      kMaxUploadResponseBodyBytes);
 }
 
 void WebRtcLogUploader::DecreaseLogCount() {
@@ -581,7 +629,10 @@ void WebRtcLogUploader::AddUploadedLogInfoToUploadListFile(
   // TODO(crbug.com/581840776): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK(!local_log_id.empty());
-  CHECK(!report_id.empty(), base::NotFatalUntil::M161);
+  if (!IsValidReportId(report_id)) {
+    DVLOG(1) << "Invalid WebRTC log upload report ID.";
+    return;
+  }
 
   std::string contents;
 
@@ -615,11 +666,12 @@ void WebRtcLogUploader::NotifyUploadDoneAndLogStats(
     std::optional<int> response_code,
     int network_error_code,
     const std::string& report_id,
-    WebRtcLogUploader::UploadDoneData upload_done_data) {
+    WebRtcLogUploader::UploadDoneData upload_done_data,
+    bool is_invalid_report_id) {
   if (upload_done_data.callback.is_null())
     return;
 
-  const bool success = response_code == net::HTTP_OK;
+  const bool success = response_code == net::HTTP_OK && !is_invalid_report_id;
   std::string error_message;
   if (success) {
     base::UmaHistogramSparse("WebRtcTextLogging.UploadSuccessful",
@@ -627,20 +679,24 @@ void WebRtcLogUploader::NotifyUploadDoneAndLogStats(
   } else {
     base::UmaHistogramSparse("WebRtcTextLogging.UploadFailed",
                              upload_done_data.web_app_id);
-    if (response_code.has_value()) {
+    if (is_invalid_report_id) {
+      base::UmaHistogramSparse("WebRtcTextLogging.UploadFailureReason",
+                               WebRtcLogUploadFailureReason::kInvalidReportId);
+      error_message = "Uploading failed, invalid report ID";
+    } else if (response_code.has_value()) {
       base::UmaHistogramSparse("WebRtcTextLogging.UploadFailureReason",
                                response_code.value());
+      error_message =
+          base::StrCat({"Uploading failed, response code: ",
+                        base::NumberToString(response_code.value())});
     } else {
       CHECK_NE(network_error_code, net::OK, base::NotFatalUntil::M161);
       base::UmaHistogramSparse("WebRtcTextLogging.UploadFailureReason",
                                WebRtcLogUploadFailureReason::kNetworkError);
       base::UmaHistogramSparse("WebRtcTextLogging.UploadFailureNetErrorCode",
                                std::abs(network_error_code));
+      error_message = "Uploading failed, response code: <no value>";
     }
-    error_message = base::StrCat(
-        {"Uploading failed, response code: ",
-         response_code.has_value() ? base::NumberToString(response_code.value())
-                                   : "<no value>"});
   }
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(upload_done_data).callback, success,

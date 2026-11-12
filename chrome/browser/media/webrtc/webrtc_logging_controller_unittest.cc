@@ -8,13 +8,18 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
@@ -26,6 +31,7 @@
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,6 +63,7 @@ class FakeWebRtcLoggingAgent : public chrome::mojom::WebRtcLoggingAgent {
 
   void Start(
       mojo::PendingRemote<chrome::mojom::WebRtcLoggingClient> client) override {
+    client_.reset();
     client_.Bind(std::move(client));
   }
 
@@ -427,6 +434,225 @@ TEST_F(WebRtcLoggingControllerTest, DestroyWhileUploadOnRenderClosePending) {
 
   webrtc_logging_controller_ = nullptr;
   rph_.reset();
+}
+
+TEST_F(WebRtcLoggingControllerTest, UploadLog_ReportIdValidationAndMaxLength) {
+  LoadMainTestProfile(true);
+  WebRtcLogUploader* uploader =
+      TestingBrowserProcess::GetGlobal()->webrtc_log_uploader();
+  const base::FilePath log_dir =
+      webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+          browser_context_->GetPath(), webrtc_logging::ApiType::kExtension);
+  const base::FilePath log_list_path =
+      webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(log_dir);
+
+  auto run_upload_with_response = [&](const std::string& response_body) {
+    base::test::TestFuture<bool, const std::string&> start_future;
+    webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+    EXPECT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+
+    base::test::TestFuture<bool, const std::string&> stop_future;
+    webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+    EXPECT_TRUE(stop_future.Get<0>()) << stop_future.Get<1>();
+
+    base::test::TestFuture<bool, const std::string&, const std::string&>
+        upload_future;
+    webrtc_logging_controller_->UploadLog(upload_future.GetCallback());
+
+    base::RunLoop wait_for_request;
+    test_url_loader_factory_.SetInterceptor(
+        base::BindRepeating([](base::RepeatingClosure quit,
+                               const network::ResourceRequest&) { quit.Run(); },
+                            wait_for_request.QuitClosure()));
+    wait_for_request.Run();
+    test_url_loader_factory_.SetInterceptor(
+        network::TestURLLoaderFactory::Interceptor());
+
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        uploader->upload_url().spec(), response_body));
+    auto result = upload_future.Take();
+
+    base::RunLoop flush_bg;
+    uploader->background_task_runner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), flush_bg.QuitClosure());
+    flush_bg.Run();
+    return result;
+  };
+
+  auto read_log_list_lines = [&]() {
+    std::string log_list;
+    EXPECT_TRUE(base::ReadFileToString(log_list_path, &log_list));
+    return base::SplitString(log_list, "\n", base::KEEP_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  };
+  auto expect_uploaded_line = [](const std::string& line,
+                                 const std::string& expected_report_id) {
+    std::vector<std::string> fields = base::SplitString(
+        line, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    ASSERT_EQ(4u, fields.size());
+    EXPECT_FALSE(fields[0].empty());           // upload time filled in
+    EXPECT_EQ(expected_report_id, fields[1]);  // report ID
+    EXPECT_FALSE(fields[2].empty());  // local ID kept: updated in place
+  };
+  auto expect_failure_histograms = [](const base::HistogramTester& tester) {
+    tester.ExpectTotalCount("WebRtcTextLogging.UploadSuccessful", 0);
+    tester.ExpectTotalCount("WebRtcTextLogging.UploadFailed", 1);
+    tester.ExpectUniqueSample("WebRtcTextLogging.UploadFailureReason",
+                              WebRtcLogUploadFailureReason::kInvalidReportId,
+                              1);
+    tester.ExpectTotalCount("WebRtcTextLogging.UploadFailureNetErrorCode", 0);
+  };
+  auto expect_success_histograms = [](const base::HistogramTester& tester) {
+    tester.ExpectTotalCount("WebRtcTextLogging.UploadSuccessful", 1);
+    tester.ExpectTotalCount("WebRtcTextLogging.UploadFailed", 0);
+    tester.ExpectTotalCount("WebRtcTextLogging.UploadFailureReason", 0);
+    tester.ExpectTotalCount("WebRtcTextLogging.UploadFailureNetErrorCode", 0);
+  };
+  const std::string valid_256(256, 'b');
+
+  // (a) A 257-character body exceeds kMaxReportIdLength (256) and must fail.
+  {
+    base::HistogramTester histogram_tester;
+    auto [success, report_id, error] =
+        run_upload_with_response(std::string(257, 'a'));
+    EXPECT_FALSE(success);
+    EXPECT_EQ("", report_id);
+    EXPECT_EQ("Uploading failed, invalid report ID", error);
+    expect_failure_histograms(histogram_tester);
+
+    std::vector<std::string> lines = read_log_list_lines();
+    ASSERT_EQ(1u, lines.size());
+    EXPECT_TRUE(lines[0].starts_with(",,"));
+  }
+
+  // (b) A body with an embedded newline fails IsValidReportId() and must fail.
+  {
+    base::HistogramTester histogram_tester;
+    auto [success, report_id, error] = run_upload_with_response("bad\nid");
+    EXPECT_FALSE(success);
+    EXPECT_EQ("", report_id);
+    EXPECT_EQ("Uploading failed, invalid report ID", error);
+    expect_failure_histograms(histogram_tester);
+
+    std::vector<std::string> lines = read_log_list_lines();
+    ASSERT_EQ(2u, lines.size());
+    EXPECT_TRUE(lines[1].starts_with(",,"));
+  }
+
+  // (c) Exactly 256 valid characters succeeds and updates Log List in place.
+  {
+    base::HistogramTester histogram_tester;
+    auto [success, report_id, error] = run_upload_with_response(valid_256);
+    EXPECT_TRUE(success);
+    EXPECT_EQ(valid_256, report_id);
+    EXPECT_EQ("", error);
+    expect_success_histograms(histogram_tester);
+
+    std::vector<std::string> lines = read_log_list_lines();
+    ASSERT_EQ(3u, lines.size());
+    EXPECT_TRUE(lines[0].starts_with(",,"));  // (a) untouched
+    EXPECT_TRUE(lines[1].starts_with(",,"));  // (b) untouched
+    expect_uploaded_line(lines[2], valid_256);
+  }
+
+  // (d) A trailing "\r\n" is trimmed, so a 256-character ID followed by a line
+  // break (258 bytes) still succeeds.
+  {
+    base::HistogramTester histogram_tester;
+    auto [success, report_id, error] =
+        run_upload_with_response(valid_256 + "\r\n");
+    EXPECT_TRUE(success);
+    EXPECT_EQ(valid_256, report_id);
+    EXPECT_EQ("", error);
+    expect_success_histograms(histogram_tester);
+
+    std::vector<std::string> lines = read_log_list_lines();
+    ASSERT_EQ(4u, lines.size());
+    expect_uploaded_line(lines[3], valid_256);
+  }
+
+  // (e) A body larger than the download cap makes DownloadToString() fail with
+  // ERR_INSUFFICIENT_RESOURCES, which must also be reported as an invalid
+  // report ID.
+  {
+    base::HistogramTester histogram_tester;
+    auto [success, report_id, error] =
+        run_upload_with_response(std::string(300, 'c'));
+    EXPECT_FALSE(success);
+    EXPECT_EQ("", report_id);
+    EXPECT_EQ("Uploading failed, invalid report ID", error);
+    expect_failure_histograms(histogram_tester);
+
+    std::vector<std::string> lines = read_log_list_lines();
+    ASSERT_EQ(5u, lines.size());
+    EXPECT_TRUE(lines[4].starts_with(",,"));
+  }
+}
+
+// If no local copy of the log was stored (empty local_log_id), a successful
+// upload must not touch Log List. Previously the report ID was written into
+// whichever unrelated entry matched first (and a CHECK fired, see
+// crbug.com/581840776).
+TEST_F(WebRtcLoggingControllerTest, UploadLog_NoLocalCopyDoesNotTouchLogList) {
+  LoadMainTestProfile(true);
+  WebRtcLogUploader* uploader =
+      TestingBrowserProcess::GetGlobal()->webrtc_log_uploader();
+  const base::FilePath log_dir =
+      webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+          browser_context_->GetPath(), webrtc_logging::ApiType::kExtension);
+  const base::FilePath log_list_path =
+      webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(log_dir);
+
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+  ASSERT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+
+  base::test::TestFuture<bool, const std::string&> stop_future;
+  webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+  ASSERT_TRUE(stop_future.Get<0>()) << stop_future.Get<1>();
+
+  base::test::TestFuture<bool, const std::string&, const std::string&>
+      upload_future;
+  webrtc_logging_controller_->UploadLog(upload_future.GetCallback());
+  // The directory getter and WebRtcLogUploader::OnLoggingStopped() both run on
+  // the uploader's background sequence, so this runs after the directory is
+  // created and before OnLoggingStopped() checks it: no local copy is stored
+  // and local_log_id stays empty.
+  uploader->background_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     log_dir));
+
+  base::RunLoop wait_for_request;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindRepeating([](base::RepeatingClosure quit,
+                             const network::ResourceRequest&) { quit.Run(); },
+                          wait_for_request.QuitClosure()));
+  wait_for_request.Run();
+  test_url_loader_factory_.SetInterceptor(
+      network::TestURLLoaderFactory::Interceptor());
+  ASSERT_FALSE(base::PathExists(log_dir));
+
+  // Before the server responds, plant a Log List with one unrelated,
+  // not-yet-uploaded entry.
+  ASSERT_TRUE(base::CreateDirectory(log_dir));
+  constexpr char kUnrelatedLine[] = ",,other-local-id,1700000000\n";
+  ASSERT_TRUE(base::WriteFile(log_list_path, kUnrelatedLine));
+
+  ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      uploader->upload_url().spec(), "valid-report-id"));
+  auto [success, report_id, error] = upload_future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_EQ("valid-report-id", report_id);
+
+  base::RunLoop flush_bg;
+  uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), flush_bg.QuitClosure());
+  flush_bg.Run();
+
+  std::string log_list;
+  ASSERT_TRUE(base::ReadFileToString(log_list_path, &log_list));
+  EXPECT_EQ(kUnrelatedLine, log_list);
 }
 
 }  // namespace webrtc_text_log

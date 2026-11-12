@@ -4332,7 +4332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.UploadFailureNetErrorCode"
-    enum="NetErrorCodes" expires_after="2026-11-06">
+    enum="NetErrorCodes" expires_after="2027-11-06">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -4345,7 +4345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.UploadFailureReason"
-    enum="WebRtcLoggingUploadFailureReason" expires_after="2026-11-06">
+    enum="WebRtcLoggingUploadFailureReason" expires_after="2027-11-06">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -4359,7 +4359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging{WebRtcLoggingEvent}"
-    enum="WebRtcLoggingWebAppIdHash" expires_after="2026-11-26">
+    enum="WebRtcLoggingWebAppIdHash" expires_after="2027-11-06">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>

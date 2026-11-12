@@ -232,6 +232,14 @@ class WebRtcLogUploaderTest : public testing::Test {
     run_loop.Run();
   }
 
+  static void AddUploadedLogInfoToUploadListFile(
+      const base::FilePath& upload_list_path,
+      const std::string& local_log_id,
+      const std::string& report_id) {
+    WebRtcLogUploader::AddUploadedLogInfoToUploadListFile(
+        upload_list_path, local_log_id, report_id);
+  }
+
   void FlushRunLoop() {
     base::RunLoop run_loop;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -551,4 +559,52 @@ TEST_F(WebRtcLogUploaderTest, GuidIncludedWithoutFeature) {
   UploadPostData(WebRtcLogUploadSite::kSameSite, post_data);
 
   EXPECT_EQ("0", GetValueFromMultipart(post_data, "guid"));
+}
+
+TEST_F(WebRtcLogUploaderTest, RejectsInvalidReportIds) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  test_list_path_ = temp_dir.GetPath().AppendASCII("Log List");
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+
+  AddLocallyStoredLogInfoToUploadListFile(webrtc_log_uploader.get(),
+                                          test_list_path_, kTestLocalId);
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasLocalStorageInfoOnly());
+
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId, "");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "\nssh-ed25519 AAAA attacker\n");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "report\rid");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "report\tid");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "report id");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "report,injected");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "report\x01id");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "report\x7fid");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     "report\x80id");
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     std::string(257, 'a'));
+
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasLocalStorageInfoOnly());
+
+  const std::string max_len_report_id(256, 'a');
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     max_len_report_id);
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  std::vector<std::string> line_parts =
+      base::SplitString(GetLastLineFromListFile(), ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_ALL);
+  ASSERT_EQ(4u, line_parts.size());
+  EXPECT_EQ(max_len_report_id, line_parts[1]);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
 }
