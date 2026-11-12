@@ -1022,7 +1022,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DrDcEnabled" enum="Boolean" expires_after="2026-11-15">
+<histogram name="GPU.DrDcEnabled" enum="Boolean" expires_after="2027-05-15">
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
