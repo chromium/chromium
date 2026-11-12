@@ -2571,12 +2571,6 @@ inline constexpr char kEnableNtpBrowserPromosDescription[] =
     "Shows suggestions to explore browser capabilities (eg. signing in) on the "
     "new tab page.";
 
-inline constexpr char kEnableLensStandaloneName[] =
-    "Enable Lens features in Chrome.";
-inline constexpr char kEnableLensStandaloneDescription[] =
-    "Enables Lens image and region search to learn about the visual content "
-    "you see while you browse and shop on the web.";
-
 inline constexpr char kEnableManagedConfigurationWebApiName[] =
     "Enable Managed Configuration Web API";
 inline constexpr char kEnableManagedConfigurationWebApiDescription[] =
@@ -3356,16 +3350,6 @@ inline constexpr char
         "Enables invoking the Lens overlay from the selected text context "
         "menu.";
 
-inline constexpr char kLensOverlayTranslateButtonName[] =
-    "Lens overlay translate button";
-inline constexpr char kLensOverlayTranslateButtonDescription[] =
-    "Enables translate button via the Lens overlay.";
-
-inline constexpr char kLensOverlayTranslateLanguagesName[] =
-    "More Lens overlay translate languages";
-inline constexpr char kLensOverlayTranslateLanguagesDescription[] =
-    "Enables more translate languages in the Lens Overlay.";
-
 inline constexpr char kLensOverlayLatencyOptimizationsName[] =
     "Lens overlay latency optimizations";
 inline constexpr char kLensOverlayLatencyOptimizationsDescription[] =
@@ -3393,21 +3377,6 @@ inline constexpr char kLensAimSuggestionsGradientBackgroundDescription[] =
     "Enables a gradient background for the Lens composebox dropdown that does "
     "not cover the entire side panel.";
 
-inline constexpr char kLensSearchReinvocationAffordanceName[] =
-    "Lens search reinvocation affordance";
-inline constexpr char kLensSearchReinvocationAffordanceDescription[] =
-    "Enables the Lens button in the AIM Searchbox for reinvocation of "
-    "selection overlay.";
-
-inline constexpr char kLensVideoCitationsName[] = "Lens video citations";
-inline constexpr char kLensVideoCitationsDescription[] =
-    "Enables special handling for video citations in Lens.";
-
-inline constexpr char kLensUpdatedFeedbackEntrypointName[] =
-    "Lens updated feedback entrypoint";
-inline constexpr char kLensUpdatedFeedbackEntrypointDescription[] =
-    "Enables an updated feedback entry point in the Lens side panel.";
-
 inline constexpr char kLensUseSeparateRequestIdForViewportImagesName[] =
     "Lens Use Separate Request ID for Viewport Images";
 inline constexpr char kLensUseSeparateRequestIdForViewportImagesDescription[] =
@@ -3419,11 +3388,6 @@ inline constexpr char kLensSendDriveTabUrlsInComposeboxesName[] =
 inline constexpr char kLensSendDriveTabUrlsInComposeboxesDescription[] =
     "Enables sending Google Drive / Docs tab URLs as unresolved URLs in "
     "composeboxes.";
-
-inline constexpr char kLensSidePanelUnificationName[] =
-    "Lens Side Panel Unification";
-inline constexpr char kLensSidePanelUnificationDescription[] =
-    "Unifies the Lens and Contextual Tasks side panels into a single panel.";
 
 inline constexpr char kLensBypassCompressionForC2paName[] =
     "Lens Bypass Compression for C2PA";
@@ -3948,12 +3912,6 @@ inline constexpr char kContextualSuggestionsAblateOthersWhenPresentName[] =
 inline constexpr char
     kContextualSuggestionsAblateOthersWhenPresentDescription[] =
         "Makes contextual search suggestions exclusive in zero suggest.";
-
-inline constexpr char kContextualSuggestionsUiImprovementsName[] =
-    "Contextual suggestions UI improvements";
-inline constexpr char kContextualSuggestionsUiImprovementsDescription[] =
-    "Enables UI improvements for contextual suggestions (e.g. icon and "
-    "animation).";
 
 inline constexpr char kOmniboxContextualSearchOnFocusSuggestionsName[] =
     "Omnibox contextual search on focus suggestions";

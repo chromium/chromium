@@ -2417,11 +2417,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "contextual-suggestion-ui-improvements",
-    "owners": [ "juanmojica@google.com", "lens-chrome-eng@google.com", "chrome-desktop-search@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "contextual-suggestions-ablate-others-when-present",
     "owners": [ "orinj@chromium.org", "khalidpeer@chromium.org", "chrome-desktop-search@google.com"],
     "expiry_milestone": 150
@@ -4287,16 +4282,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "enable-lens-overlay-translate-button",
-    "owners": [ "juanmojica@google.com", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "enable-lens-overlay-translate-languages",
-    "owners": [ "juanmojica@google.com", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "enable-lens-overlay-updated-visuals",
     "owners": [ "mercerd@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 140
@@ -4310,16 +4295,6 @@
     "name": "enable-lens-search-aim-m3",
     "owners": [ "mercerd@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 142
-  },
-  {
-    "name": "enable-lens-side-panel-unification",
-    "owners": [ "juanmojica@google.com", "lens-chrome-eng@google.com" ],
-    "expiry_milestone": 159
-  },
-  {
-    "name": "enable-lens-standalone",
-    "owners": [ "stanfield@google.com", "benwgold@google.com", "juanmojica@google.com" ],
-    "expiry_milestone": 124
   },
   {
     "name": "enable-lens-view-finder-unified-experience",
@@ -6766,11 +6741,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "lens-reinvocation-affordance",
-    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 152
-  },
-  {
     "name": "lens-send-drive-tab-urls-in-composeboxes",
     "owners": ["hujasonx@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 165
@@ -6786,19 +6756,9 @@
     "expiry_milestone": 165
   },
   {
-    "name": "lens-updated-feedback-entrypoint",
-    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 152
-  },
-  {
     "name": "lens-use-separate-request-id-for-viewport-images",
     "owners": ["hujasonx@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 165
-  },
-  {
-    "name": "lens-video-citations",
-    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 152
   },
   {
     "name": "light-app-bar",

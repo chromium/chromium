@@ -1622,13 +1622,6 @@ const FeatureEntry::FeatureVariation
          kContextualSuggestionsAblateOthersWhenPresentAblateUrlOnly, nullptr},
 };
 
-const FeatureEntry::Choice kContextualSuggestionsUiImprovementsChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
-     "LoadingSuggestionsAnimation,SuggestionsFulfilledByLensSupported,"
-     "OpenLensActionUITweaks"},
-};
-
 const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalDefault[] =
     {
         {"ModuleMinStalenessUpdateTimeInterval", "24h"},
@@ -8973,10 +8966,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensBypassCompressionForC2paDescription, kOsAll,
      FEATURE_VALUE_TYPE(lens::features::kLensBypassCompressionForC2pa)},
 
-    {"enable-lens-standalone", flag_descriptions::kEnableLensStandaloneName,
-     flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensStandalone)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-android", flag_descriptions::kLensOverlayAndroidName,
      flag_descriptions::kLensOverlayAndroidDescription, kOsAndroid,
@@ -10645,13 +10634,6 @@ const FeatureEntry kFeatureEntries[] = {
          "PermissionsGestureGatedPrompts")},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-lens-overlay-translate-button",
-     flag_descriptions::kLensOverlayTranslateButtonName,
-     flag_descriptions::kLensOverlayTranslateButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateButton)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-latency-optimizations",
      flag_descriptions::kLensOverlayLatencyOptimizationsName,
      flag_descriptions::kLensOverlayLatencyOptimizationsDescription, kOsDesktop,
@@ -10678,11 +10660,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-lens-search-aim-m3", flag_descriptions::kLensSearchAimM3Name,
      flag_descriptions::kLensSearchAimM3Description, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensSearchAimM3)},
-
-    {"enable-lens-side-panel-unification",
-     flag_descriptions::kLensSidePanelUnificationName,
-     flag_descriptions::kLensSidePanelUnificationDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensSidePanelUnification)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     {"enable-segmentation-internals-survey",
@@ -10807,10 +10784,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-lens-overlay-translate-languages",
-     flag_descriptions::kLensOverlayTranslateLanguagesName,
-     flag_descriptions::kLensOverlayTranslateLanguagesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateLanguages)},
     {"ai-overlay-disable-navigation-context",
      flag_descriptions::kAiOverlayDisableNavigationContextName,
      flag_descriptions::kAiOverlayDisableNavigationContextDescription,
@@ -12062,15 +12035,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kMediaCodecLowDelayMode)},
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-    {"contextual-suggestion-ui-improvements",
-     flag_descriptions::kContextualSuggestionsUiImprovementsName,
-     flag_descriptions::kContextualSuggestionsUiImprovementsDescription,
-     kOsDesktop, MULTI_VALUE_TYPE(kContextualSuggestionsUiImprovementsChoices)},
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-
     {"verify-qwacs", flag_descriptions::kVerifyQWACsName,
      flag_descriptions::kVerifyQWACsDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kVerifyQWACs)},
@@ -12405,24 +12369,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCryptographyComplianceCnsaName,
      flag_descriptions::kCryptographyComplianceCnsaDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kCryptographyComplianceCnsa)},
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-    {"lens-reinvocation-affordance",
-     flag_descriptions::kLensSearchReinvocationAffordanceName,
-     flag_descriptions::kLensSearchReinvocationAffordanceDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensSearchReinvocationAffordance)},
-
-    {"lens-updated-feedback-entrypoint",
-     flag_descriptions::kLensUpdatedFeedbackEntrypointName,
-     flag_descriptions::kLensUpdatedFeedbackEntrypointDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensUpdatedFeedbackEntrypoint)},
-
-    {"lens-video-citations", flag_descriptions::kLensVideoCitationsName,
-     flag_descriptions::kLensVideoCitationsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensVideoCitations)},
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"trusted-web-activity-contacts-delegation",
