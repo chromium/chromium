@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<title>Tests that responsive images that are never connected are collected</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gc.js"></script>
+<body>
+<script>
+const n = 20;
+const pixel = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+
+function createImage(srcset) {
+  const img = document.createElement('img');
+  img.srcset = srcset;
+  return img;
+}
+
+// Clones a <picture> from a <template> and moves it through a fragment of the
+// page into another template clone, like Svelte does.
+function createImageViaTemplate(doc, srcset) {
+  const template = doc.createElement('template');
+  template.innerHTML = '<div><picture><source><img></picture></div>';
+  const div = template.content.firstChild.cloneNode(true);
+  const img = div.querySelector('img');
+  div.querySelector('source').srcset = srcset;
+  img.srcset = srcset;
+  const fragment = doc.createDocumentFragment();
+  fragment.append(div);
+  template.innerHTML = '<div></div>';
+  const parent = template.content.firstChild.cloneNode(true);
+  parent.append(fragment);
+  return img;
+}
+
+promise_setup(async () => {
+  assert_own_property(window, 'internals', 'This test requires internals');
+});
+
+function testCollected(create, description) {
+  promise_test(async () => {
+    await asyncGC();
+    const nodesBefore = internals.numberOfLiveNodes();
+    for (let i = 0; i < n; ++i)
+      await create().decode().catch(() => {});
+    await asyncGC();
+    assert_less_than(internals.numberOfLiveNodes() - nodesBefore, n);
+  }, description);
+}
+
+testCollected(() => createImage(`${pixel} 1x, ${pixel}#2 2x`),
+              'srcset with x descriptors');
+
+testCollected(() => createImage(`${pixel} 100w, ${pixel}#2 200w`),
+              'srcset with w descriptors');
+
+testCollected(() => {
+  const img = createImage(`${pixel} 1x, ${pixel}#2 2x`);
+  document.createElement('div').append(img);
+  return img;
+}, 'srcset in a disconnected parent');
+
+testCollected(() => {
+  const img = document.createElement('img');
+  img.sizes = '50vw';
+  img.src = pixel;
+  document.createElement('div').append(img);
+  return img;
+}, 'sizes set before src in a disconnected parent');
+
+testCollected(() => {
+  const img = document.createElement('img');
+  img.sizes = '50vw';
+  img.srcset = `${pixel} 100w, ${pixel}#2 200w`;
+  document.createElement('div').append(img);
+  return img;
+}, 'sizes and w descriptors in a disconnected parent');
+
+testCollected(() => createImageViaTemplate(document, `${pixel} 100w`),
+              'picture moved between the template and page documents');
+
+promise_test(async () => {
+  const iframe = document.createElement('iframe');
+  iframe.style.width = '80px';
+  document.body.append(iframe);
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  const doc = iframe.contentDocument;
+  const img = createImageViaTemplate(
+      doc, 'resources/blue_rect.jpg 90w, resources/image-set-4x.png 120w');
+  const loaded = () => new Promise(resolve => img.onload = resolve);
+  let load = loaded();
+  doc.body.append(img.closest('div').parentNode);
+  await load;
+  assert_true(img.currentSrc.endsWith('blue_rect.jpg'));
+  load = loaded();
+  iframe.style.width = '120px';
+  await load;
+  assert_true(img.currentSrc.endsWith('image-set-4x.png'));
+}, 'Image connected after being created elsewhere reacts to viewport changes');
+
+promise_test(async () => {
+  const iframe = document.createElement('iframe');
+  iframe.style.width = '80px';
+  document.body.append(iframe);
+  await new Promise(resolve => requestAnimationFrame(resolve));
+  const doc = iframe.contentDocument;
+  const img = doc.createElement('img');
+  img.srcset = 'resources/blue_rect.jpg?reselect 90w, ' +
+               'resources/image-set-4x.png?reselect 120w';
+  await img.decode();
+  assert_true(img.currentSrc.endsWith('blue_rect.jpg?reselect'));
+  iframe.style.width = '120px';
+  await new Promise(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  doc.body.append(img);
+  await img.decode();
+  assert_true(img.currentSrc.endsWith('image-set-4x.png?reselect'));
+}, 'Image picks a new candidate when connected after a viewport change');
+</script>

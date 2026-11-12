@@ -75,7 +75,8 @@ class CORE_EXPORT MediaQueryMatcher final
   using MediaQueryListSet = HeapLinkedHashSet<WeakMember<MediaQueryList>>;
   MediaQueryListSet media_lists_;
 
-  using ViewportListenerSet = HeapLinkedHashSet<Member<MediaQueryListListener>>;
+  using ViewportListenerSet =
+      HeapLinkedHashSet<WeakMember<MediaQueryListListener>>;
   ViewportListenerSet viewport_listeners_;
 
   // The set of result flags seen by Evaluate.
