@@ -66,6 +66,7 @@
     "cipd/libs/androidx_datastore_datastore_android",
     "cipd/libs/androidx_datastore_datastore_core_android",
     "cipd/libs/androidx_datastore_datastore_core_okio_jvm",
+    "cipd/libs/androidx_datastore_datastore_guava",
     "cipd/libs/androidx_datastore_datastore_preferences_android",
     "cipd/libs/androidx_datastore_datastore_preferences_core_android",
     "cipd/libs/androidx_datastore_datastore_preferences_external_protobuf",

@@ -698,6 +698,23 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_datastore_datastore_guava_java") {
+    aar_path = "../androidx/cipd/libs/androidx_datastore_datastore_guava/datastore-guava.aar"
+    info_path = "../androidx/committed/libs/androidx_datastore_datastore_guava/androidx_datastore_datastore_guava.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_concurrent_concurrent_futures_java",
+      ":androidx_concurrent_concurrent_futures_ktx_java",
+      ":androidx_core_core_java",
+      ":androidx_datastore_datastore_java",
+      "//third_party/android_deps:guava_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_datastore_datastore_preferences_java") {
     deps = [ ":androidx_datastore_datastore_preferences_android_java" ]
   }
@@ -2375,6 +2392,7 @@ if (!limit_android_deps) {
       "//third_party/android_deps:*",
     ]
     deps = [
+      ":androidx_annotation_annotation_experimental_java",
       ":androidx_collection_collection_java",
       ":androidx_compose_animation_animation_java",
       ":androidx_compose_foundation_foundation_java",

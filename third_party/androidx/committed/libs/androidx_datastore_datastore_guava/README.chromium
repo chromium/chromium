@@ -1,0 +1,20 @@
+Name: DataStore Guava
+Short Name: datastore-guava
+URL: https://dl.google.com/dl/android/maven2/androidx/datastore/datastore-guava/1.3.0/datastore-guava-1.3.0.aar
+Version: 1.3.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Android DataStore Guava - contains wrappers for using DataStore using ListenableFuture
+
+See also: https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0
+
+
+Local Modifications:
+No modifications.

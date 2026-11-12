@@ -1,7 +1,7 @@
 Name: AndroidX Test Library
 Short Name: runner
-URL: https://dl.google.com/dl/android/maven2/androidx/test/runner/1.8.0-alpha03/runner-1.8.0-alpha03.aar
-Version: 1.8.0-alpha03
+URL: https://dl.google.com/dl/android/maven2/androidx/test/runner/1.8.0-alpha04/runner-1.8.0-alpha04.aar
+Version: 1.8.0-alpha04
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
