@@ -4149,35 +4149,38 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
 }
 
 std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
-EnclaveManager::CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) {
+EnclaveManager::DownloadAccountState(DownloadAccountStateCallback callback) {
   CoreAccountInfo account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  GaiaId gaia_id = account_info.gaia;
   return trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
       account_info, trusted_vault::SecurityDomainId::kPasskeys,
       base::BindOnce(
-          [](GpmPinAvailabilityCallback callback,
+          [](GaiaId gaia_id, DownloadAccountStateCallback callback,
              trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-                 result) {
-            if (!result.gpm_pin_metadata) {
-              std::move(callback).Run(GpmPinAvailability::kGpmPinUnset);
-              return;
-            }
-            if (!result.gpm_pin_metadata->usable_pin_metadata) {
-              std::move(callback).Run(
-                  GpmPinAvailability::kGpmPinSetButNotUsable);
-              return;
-            }
-            EnclaveLocalState::WrappedPIN wrapped_pin;
-            bool pin_is_usable = wrapped_pin.ParseFromString(
-                                     result.gpm_pin_metadata
-                                         ->usable_pin_metadata->wrapped_pin) &&
-                                 !CheckPINInvariants(wrapped_pin).has_value();
-            std::move(callback).Run(
-                pin_is_usable ? GpmPinAvailability::kGpmPinSetAndUsable
-                              : GpmPinAvailability::kGpmPinSetButNotUsable);
+                 state) {
+            std::move(callback).Run(std::move(state), std::move(gaia_id));
           },
-          std::move(callback)),
+          std::move(gaia_id), std::move(callback)),
       base::DoNothing());
+}
+
+EnclaveManager::GpmPinAvailability EnclaveManager::CheckGpmPinAvailability(
+    const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+        account_state) const {
+  if (!account_state.gpm_pin_metadata) {
+    return GpmPinAvailability::kGpmPinUnset;
+  }
+  if (!account_state.gpm_pin_metadata->usable_pin_metadata) {
+    return GpmPinAvailability::kGpmPinSetButNotUsable;
+  }
+  EnclaveLocalState::WrappedPIN wrapped_pin;
+  bool pin_is_usable =
+      wrapped_pin.ParseFromString(
+          account_state.gpm_pin_metadata->usable_pin_metadata->wrapped_pin) &&
+      !CheckPINInvariants(wrapped_pin).has_value();
+  return pin_is_usable ? GpmPinAvailability::kGpmPinSetAndUsable
+                       : GpmPinAvailability::kGpmPinSetButNotUsable;
 }
 
 #if BUILDFLAG(IS_MAC)

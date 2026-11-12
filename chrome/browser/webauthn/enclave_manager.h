@@ -453,7 +453,10 @@ class EnclaveManager : public EnclaveManagerInterface {
   UvKeyState uv_key_state(PlatformUvSupport platform_uv_support) const;
 
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
-  CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) override;
+  DownloadAccountState(DownloadAccountStateCallback callback) override;
+  GpmPinAvailability CheckGpmPinAvailability(
+      const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+          account_state) const override;
 
 #if BUILDFLAG(IS_MAC)
   void RecoverWithICloudKeychain(

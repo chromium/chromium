@@ -30,9 +30,14 @@ class MockEnclaveManager : public EnclaveManagerInterface {
   MOCK_METHOD(bool, IsLoaded, (), (const, override));
   MOCK_METHOD(bool, IsReady, (), (const, override));
   MOCK_METHOD(std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>,
-              CheckGpmPinAvailability,
-              (EnclaveManagerInterface::GpmPinAvailabilityCallback),
+              DownloadAccountState,
+              (EnclaveManagerInterface::DownloadAccountStateCallback),
               (override));
+  MOCK_METHOD(EnclaveManagerInterface::GpmPinAvailability,
+              CheckGpmPinAvailability,
+              (const trusted_vault::
+                   DownloadAuthenticationFactorsRegistrationStateResult&),
+              (const, override));
 #if BUILDFLAG(IS_MAC)
   MOCK_METHOD(
       void,

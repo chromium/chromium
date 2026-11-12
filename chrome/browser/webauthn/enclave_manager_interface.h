@@ -26,8 +26,14 @@ class EnclaveManagerInterface : public KeyedService {
   using Callback = base::OnceCallback<void(bool)>;
 
   using GpmPinAvailability = webauthn::GpmPinAvailability;
-  using GpmPinAvailabilityCallback =
-      base::OnceCallback<void(GpmPinAvailability)>;
+
+  // Callback for `DownloadAccountState()`. Receives the downloaded security
+  // domain state and the `GaiaId` of the account it was downloaded for. The
+  // primary account may have changed while the download was in flight, so
+  // callers must not assume the `GaiaId` still matches the primary account.
+  using DownloadAccountStateCallback = base::OnceCallback<void(
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult,
+      GaiaId)>;
 
   // An enum that expresses the outcome of the operation of storing the
   // opportunistically retrieved keys.
@@ -93,12 +99,19 @@ class EnclaveManagerInterface : public KeyedService {
   // any state and is a no-op if no registration exists.
   virtual void Unenroll(Callback callback) = 0;
 
-  // Asynchronously checks if the current user has a GPM PIN. The caller must
-  // keep the returned Request object alive until the callback is run.
-  // Destroying the Request object will cancel the operation.
+  // Downloads the security domain state of the current user and invokes
+  // `callback` with the downloaded state and the `GaiaId` of the account it was
+  // downloaded for (which may no longer be the primary account when `callback`
+  // runs). The caller must keep the returned Request object alive until the
+  // callback is run. Destroying the Request object will cancel the operation.
   [[nodiscard]] virtual std::unique_ptr<
       trusted_vault::TrustedVaultConnection::Request>
-  CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) = 0;
+  DownloadAccountState(DownloadAccountStateCallback callback) = 0;
+
+  // Returns the GPM PIN availability described by `account_state`.
+  virtual GpmPinAvailability CheckGpmPinAvailability(
+      const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+          account_state) const = 0;
 
 #if BUILDFLAG(IS_MAC)
   // Attempts to recover the security domain secret using local iCloud Keychain
