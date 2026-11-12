@@ -53,7 +53,8 @@ struct NET_EXPORT DnsConfig {
   std::string dns_over_tls_hostname;
 
   // Suffix search list; used on first lookup when number of dots in given name
-  // is less than |ndots|.
+  // is less than `ndots`. Not applied to multi-label names on DoH transactions
+  // when `features::kDnsHttpsDontAppendToMultiLabelName` is enabled.
   std::vector<std::string> search;
 
   DnsHosts hosts;
@@ -63,12 +64,16 @@ struct NET_EXPORT DnsConfig {
   bool unhandled_options = false;
 
   // AppendToMultiLabelName: is suffix search performed for multi-label names?
-  // True, except on Windows where it can be configured.
+  // True, except on Windows where it can be configured. Ignored for DoH
+  // transactions when `features::kDnsHttpsDontAppendToMultiLabelName` is
+  // enabled.
   bool append_to_multi_label_name = true;
 
   // Resolver options; see man resolv.conf.
 
-  // Minimum number of dots before global resolution precedes |search|.
+  // Minimum number of dots before global resolution precedes `search`. Ignored
+  // for multi-label names on DoH transactions when
+  // `features::kDnsHttpsDontAppendToMultiLabelName` is enabled.
   int ndots = 1;
   // Time between retransmissions, see res_state.retrans.
   // Used by Chrome as the initial transaction attempt fallback period (before

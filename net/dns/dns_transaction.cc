@@ -516,7 +516,15 @@ class DnsTransactionImpl final : public DnsTransaction {
 
     int ndots = CountLabels(labeled_qname.value()) - 1;
 
-    if (ndots > 0 && !config.append_to_multi_label_name) {
+    // Never append `config.search` suffixes or apply `config.ndots` ordering to
+    // multi-label names (`ndots > 0`) on DoH transactions
+    // (`AttemptMode::kHttp`), matching Windows' default
+    // `append_to_multi_label_name = false` and `ndots = 1` behavior.
+    if (ndots > 0 &&
+        (!config.append_to_multi_label_name ||
+         (attempt_mode_ == DnsTransactionFactory::AttemptMode::kHttp &&
+          base::FeatureList::IsEnabled(
+              features::kDnsHttpsDontAppendToMultiLabelName)))) {
       qnames_.push_back(std::move(labeled_qname).value());
       return OK;
     }

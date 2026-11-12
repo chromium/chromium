@@ -38,9 +38,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/idempotency.h"
 #include "net/base/ip_address.h"
 #include "net/base/isolation_info.h"
+#include "net/base/net_errors.h"
 #include "net/base/port_util.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/url_util.h"
@@ -1572,6 +1574,103 @@ TEST_F(DnsTransactionTest, DontAppendToMultiLabelName) {
                            dns_protocol::kTypeA, DnsTransactionFactory::AttemptMode::kClassic,
                            resolve_context_.get());
   helper2.RunUntilComplete();
+}
+
+TEST_F(DnsTransactionTest, HttpsDontAppendToMultiLabelNameAboveNdots) {
+  config_.search.push_back("a");
+  config_.search.push_back("b");
+  config_.search.push_back("c");
+  config_.append_to_multi_label_name = true;
+  config_.ndots = 2;
+  ConfigureDohServers(/*use_post=*/true);
+
+  // Multi-label name at or above `config_.ndots` is queried as-is without
+  // appending search suffixes on NXDOMAIN.
+  AddQueryAndRcode("x.y.z", dns_protocol::kTypeA, dns_protocol::kRcodeNXDOMAIN,
+                   ASYNC, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+
+  TransactionHelper helper0(ERR_NAME_NOT_RESOLVED);
+  helper0.StartTransaction(
+      transaction_factory_.get(), "x.y.z", dns_protocol::kTypeA,
+      DnsTransactionFactory::AttemptMode::kHttp, resolve_context_.get());
+  helper0.RunUntilComplete();
+}
+
+TEST_F(DnsTransactionTest, HttpsDontAppendToMultiLabelNameBelowNdots) {
+  config_.search.push_back("a");
+  config_.search.push_back("b");
+  config_.search.push_back("c");
+  config_.append_to_multi_label_name = true;
+  config_.ndots = 2;
+  ConfigureDohServers(/*use_post=*/true);
+
+  // Multi-label name below `config_.ndots` is queried directly as-is without
+  // prepending or appending search suffixes.
+  AddQueryAndRcode("x.y", dns_protocol::kTypeA, dns_protocol::kRcodeNXDOMAIN,
+                   ASYNC, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+
+  TransactionHelper helper0(ERR_NAME_NOT_RESOLVED);
+  helper0.StartTransaction(
+      transaction_factory_.get(), "x.y", dns_protocol::kTypeA,
+      DnsTransactionFactory::AttemptMode::kHttp, resolve_context_.get());
+  helper0.RunUntilComplete();
+}
+
+TEST_F(DnsTransactionTest, HttpsSingleLabelAppendsSearchSuffixes) {
+  config_.search.push_back("a");
+  config_.search.push_back("b");
+  config_.search.push_back("c");
+  config_.append_to_multi_label_name = true;
+  config_.ndots = 2;
+  ConfigureDohServers(/*use_post=*/true);
+
+  // Single-label name still expands search suffixes.
+  AddQueryAndRcode("x.a", dns_protocol::kTypeA, dns_protocol::kRcodeNXDOMAIN,
+                   ASYNC, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+  AddQueryAndRcode("x.b", dns_protocol::kTypeA, dns_protocol::kRcodeNXDOMAIN,
+                   ASYNC, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+  AddQueryAndRcode("x.c", dns_protocol::kTypeA, dns_protocol::kRcodeNXDOMAIN,
+                   ASYNC, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+
+  TransactionHelper helper0(ERR_NAME_NOT_RESOLVED);
+  helper0.StartTransaction(
+      transaction_factory_.get(), "x", dns_protocol::kTypeA,
+      DnsTransactionFactory::AttemptMode::kHttp, resolve_context_.get());
+  helper0.RunUntilComplete();
+}
+
+TEST_F(DnsTransactionTest, HttpsDontAppendToMultiLabelNameFeatureDisabled) {
+  AddScopedFeatureList().InitAndDisableFeature(
+      features::kDnsHttpsDontAppendToMultiLabelName);
+
+  config_.search.push_back("a");
+  config_.append_to_multi_label_name = true;
+  ConfigureDohServers(/*use_post=*/true);
+
+  AddQueryAndRcode("x.y", dns_protocol::kTypeA, dns_protocol::kRcodeNXDOMAIN,
+                   ASYNC, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+  AddQueryAndRcode("x.y.a", dns_protocol::kTypeA, dns_protocol::kRcodeNXDOMAIN,
+                   ASYNC, Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, /*id=*/0,
+                   /*enqueue_transaction_id=*/false);
+
+  TransactionHelper helper0(ERR_NAME_NOT_RESOLVED);
+  helper0.StartTransaction(
+      transaction_factory_.get(), "x.y", dns_protocol::kTypeA,
+      DnsTransactionFactory::AttemptMode::kHttp, resolve_context_.get());
+  helper0.RunUntilComplete();
 }
 
 const uint8_t kResponseNoData[] = {

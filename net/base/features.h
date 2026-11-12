@@ -82,6 +82,11 @@ NET_EXPORT extern const base::FeatureParam<bool>
 // system resolver.
 NET_EXPORT BASE_DECLARE_FEATURE(kDnsTaskAllowPartialAddressResults);
 
+// If enabled, DoH (`AttemptMode::kHttp`) transactions query multi-label
+// hostnames (`ndots > 0`) directly as-is without applying `DnsConfig::search`
+// suffixes or `DnsConfig::ndots > 1` ordering.
+NET_EXPORT BASE_DECLARE_FEATURE(kDnsHttpsDontAppendToMultiLabelName);
+
 // Enables querying HTTPS DNS records that will affect results from HostResolver
 // and may be used to affect connection behavior. Whether or not those results
 // are used (e.g. to connect via ECH) may be controlled by separate features.

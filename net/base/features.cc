@@ -90,6 +90,9 @@ const base::FeatureParam<bool> kDnsPlatformCancelPreviousAttemptOnRetry{
 BASE_FEATURE(kDnsTaskAllowPartialAddressResults,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDnsHttpsDontAppendToMultiLabelName,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseDnsHttpsSvcb, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseDnsHttpsSvcbAddressHints, base::FEATURE_DISABLED_BY_DEFAULT);
