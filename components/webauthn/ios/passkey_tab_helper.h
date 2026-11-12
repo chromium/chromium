@@ -125,13 +125,11 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Requests a passkey to be created given the provided request ID. Fetches the
   // shared keys list and calls the CompletePasskeyCreation callback.
-  // TODO(crbug.com/460485333): Test passkey creation flow.
   void StartPasskeyCreation(std::string request_id, bool did_complete_uv);
 
   // Requests that the passkey matching the provided credential ID be used for
   // passkey assertion given the provided request ID. Fetches the shared keys
   // list and calls the CompletePasskeyAssertion callback.
-  // TODO(crbug.com/460485333): Test passkey assertion flow.
   void StartPasskeyAssertion(std::string request_id,
                              std::string credential_id,
                              bool did_complete_uv);
