@@ -40,6 +40,7 @@
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_display.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -709,6 +710,10 @@ void SessionServiceImpl::OnRegistrationComplete(
 std::ranges::subrange<SessionServiceImpl::SessionsMap::iterator>
 SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
   const auto now = base::Time::Now();
+  // Deleting a session can synchronously re-enter this class and modify
+  // `unpartitioned_sessions_`, so expired sessions are extracted first and
+  // deleted only after the iteration below is done.
+  std::vector<SessionsMap::node_type> expired_sessions;
   // Session keys are sorted by site, then identifier. So the first
   // element not less than (`site`, "") is the first session for this
   // site.
@@ -718,20 +723,34 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
     auto curit = it;
     ++it;
 
-    const auto& [session_key, session] = *curit;
-    if (now >= session->expiry_date()) {
-      // Since this deletion is not due to a request, we do not need to
-      // provide a per-request callback here.
-      DeleteSessionAndNotifyInternal(DeletionReason::kExpired, curit,
-                                     base::NullCallback());
+    if (now >= curit->second->expiry_date()) {
+      expired_sessions.push_back(unpartitioned_sessions_.extract(curit));
     } else {
-      session->RecordAccess();
+      curit->second->RecordAccess();
     }
   }
 
-  return std::ranges::subrange<SessionsMap::iterator>(
-      unpartitioned_sessions_.lower_bound(SessionKey{site, Session::Id("")}),
-      it);
+  if (expired_sessions.empty()) {
+    return std::ranges::subrange<SessionsMap::iterator>(
+        unpartitioned_sessions_.lower_bound(SessionKey{site, Session::Id("")}),
+        it);
+  }
+
+  for (SessionsMap::node_type& node : expired_sessions) {
+    // Since this deletion is not due to a request, we do not need to
+    // provide a per-request callback here.
+    DeleteSessionAndNotifyInternal(DeletionReason::kExpired, std::move(node),
+                                   base::NullCallback());
+  }
+
+  // The map may have changed while deleting, so compute the range again.
+  auto begin =
+      unpartitioned_sessions_.lower_bound(SessionKey{site, Session::Id("")});
+  auto end = begin;
+  while (end != unpartitioned_sessions_.end() && end->first.site == site) {
+    ++end;
+  }
+  return std::ranges::subrange<SessionsMap::iterator>(begin, end);
 }
 
 std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
@@ -752,7 +771,16 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
   DebugHeaderBuilder debug_header_builder;
   const base::flat_map<SessionKey, RefreshResult>& previous_deferrals =
       request.device_bound_session_deferrals();
-  for (const auto& [session_key, session] : GetSessionsForSite(site)) {
+  // Iterate over a copy of the keys: starting a proactive refresh below can
+  // complete synchronously and delete sessions.
+  const std::vector<SessionKey> session_keys = base::ToVector(
+      GetSessionsForSite(site), [](const auto& entry) { return entry.first; });
+  for (const SessionKey& session_key : session_keys) {
+    Session* session = GetSession(session_key);
+    if (!session) {
+      continue;
+    }
+
     MaybeIncreaseSessionUsage(session_key, request,
                               SessionUsage::kNoSiteMatchNotInScope);
 
@@ -907,17 +935,21 @@ void SessionServiceImpl::UnblockWaitingRequests(
     std::optional<SessionDisplay> new_session_display,
     std::optional<bool> is_proactive_refresh_candidate,
     std::optional<base::TimeDelta> minimum_proactive_refresh_threshold) {
-  bool has_proactive_request = false;
-  if (auto node = proactive_requests_.extract(session_key)) {
-    has_proactive_request = true;
-    base::UmaHistogramTimes("Net.DeviceBoundSessions.ProactiveRefreshDuration",
-                            node.mapped().timer.Elapsed());
-    CompleteProactiveRefresh(session_key, result,
-                             std::move(node.mapped().completion_callbacks));
-  }
+  // Remove both entries before running any callbacks, since they can re-enter
+  // this class. Requests deferred re-entrantly then wait for a new refresh
+  // instead of completing with `result`.
+  auto proactive_node = proactive_requests_.extract(session_key);
+  auto deferred_node = deferred_requests_.extract(session_key);
+  const bool has_proactive_request = !proactive_node.empty();
+  const bool has_deferred_request = !deferred_node.empty();
 
-  auto it = deferred_requests_.find(session_key);
-  bool has_deferred_request = it != deferred_requests_.end();
+  if (has_proactive_request) {
+    base::UmaHistogramTimes("Net.DeviceBoundSessions.ProactiveRefreshDuration",
+                            proactive_node.mapped().timer.Elapsed());
+    CompleteProactiveRefresh(
+        session_key, result,
+        std::move(proactive_node.mapped().completion_callbacks));
+  }
 
   if (has_proactive_request || has_deferred_request) {
     NotifyIfEventCallbackListeners([&] {
@@ -933,8 +965,7 @@ void SessionServiceImpl::UnblockWaitingRequests(
     return;
   }
 
-  auto requests = std::move(it->second);
-  deferred_requests_.erase(it);
+  auto requests = std::move(deferred_node.mapped());
 
   base::UmaHistogramCounts100("Net.DeviceBoundSessions.RequestDeferredCount",
                               requests.size());
@@ -1109,12 +1140,7 @@ void SessionServiceImpl::DeleteSessionAndNotify(
     return;
   }
 
-  auto it = unpartitioned_sessions_.find(session_key);
-  if (it == unpartitioned_sessions_.end()) {
-    return;
-  }
-
-  DeleteSessionAndNotifyInternal(reason, it, per_request_callback);
+  DeleteSessionAndNotifyInternal(reason, session_key, per_request_callback);
 }
 
 const Session* SessionServiceImpl::GetSession(
@@ -1212,8 +1238,7 @@ void SessionServiceImpl::AddSessionAndNotify(
     SessionStore::SaveSessionMode mode) {
   SessionKey session_key{site, session->id()};
   if (mode != SessionStore::SaveSessionMode::kRefresh) {
-    auto it = unpartitioned_sessions_.find(session_key);
-    if (it != unpartitioned_sessions_.end()) {
+    if (auto node = unpartitioned_sessions_.extract(session_key)) {
       LogSessionDeletionReason(DeletionReason::kReplaced);
 
       if (session_store_) {
@@ -1222,14 +1247,12 @@ void SessionServiceImpl::AddSessionAndNotify(
 
       NotifySessionAccess(base::NullCallback(),
                           SessionAccess::AccessType::kTermination, session_key,
-                          *it->second);
+                          *node.mapped());
       NotifyIfEventCallbackListeners([&] {
         return SessionEvent::MakeTerminationEvent(
             session_key.site, session_key.id.value(),
             /*succeeded=*/true, DeletionReason::kReplaced);
       });
-
-      unpartitioned_sessions_.erase(it);
     }
   }
 
@@ -1276,6 +1299,10 @@ void SessionServiceImpl::DeleteAllSessions(
     return;
   }
 
+  // Extract all matching sessions before deleting any of them. Deleting a
+  // session can synchronously re-enter this class and modify
+  // `unpartitioned_sessions_`, which would invalidate iterators held here.
+  std::vector<SessionsMap::node_type> sessions_to_delete;
   for (auto it = unpartitioned_sessions_.begin();
        it != unpartitioned_sessions_.end();) {
     auto curit = it;
@@ -1284,8 +1311,13 @@ void SessionServiceImpl::DeleteAllSessions(
     if (SessionMatchesFilter(curit->first.site, *curit->second,
                              created_after_time, created_before_time,
                              origin_and_site_matcher)) {
-      DeleteSessionAndNotifyInternal(reason, curit, base::NullCallback());
+      sessions_to_delete.push_back(unpartitioned_sessions_.extract(curit));
     }
+  }
+
+  for (SessionsMap::node_type& node : sessions_to_delete) {
+    DeleteSessionAndNotifyInternal(reason, std::move(node),
+                                   base::NullCallback());
   }
 
   std::move(completion_callback).Run();
@@ -1309,28 +1341,47 @@ base::CallbackListSubscription SessionServiceImpl::AddEventObserver(
 
 void SessionServiceImpl::DeleteSessionAndNotifyInternal(
     DeletionReason reason,
-    SessionServiceImpl::SessionsMap::iterator it,
-    SessionService::OnAccessCallback per_request_callback) {
+    SessionServiceImpl::SessionsMap::node_type node,
+    SessionService::OnAccessCallback per_request_callback,
+    std::optional<SessionError> fetch_error) {
+  CHECK(!node.empty());
   LogSessionDeletionReason(reason);
 
-  const auto& [session_key, session] = *it;
+  // `node` is owned here and is no longer in `unpartitioned_sessions_`, so
+  // these references stay valid even if the calls below re-enter this class.
+  const SessionKey& session_key = node.key();
+  const Session& session = *node.mapped();
 
-  UnblockWaitingRequests(session_key, RefreshResult::kFatalError);
-
+  // Delete the session from the store before unblocking the waiting requests,
+  // to keep the store in sync with `unpartitioned_sessions_` if they re-enter
+  // this class (e.g. to save a new session with the same key).
   if (session_store_) {
     session_store_->DeleteSession(session_key);
   }
 
+  UnblockWaitingRequests(session_key, RefreshResult::kFatalError,
+                         std::move(fetch_error));
+
   NotifySessionAccess(per_request_callback,
                       SessionAccess::AccessType::kTermination, session_key,
-                      *session);
+                      session);
   NotifyIfEventCallbackListeners([&] {
     return SessionEvent::MakeTerminationEvent(session_key.site,
                                               session_key.id.value(),
                                               /*succeeded=*/true, reason);
   });
+}
 
-  unpartitioned_sessions_.erase(it);
+void SessionServiceImpl::DeleteSessionAndNotifyInternal(
+    DeletionReason reason,
+    const SessionKey& session_key,
+    SessionService::OnAccessCallback per_request_callback,
+    std::optional<SessionError> fetch_error) {
+  if (auto node = unpartitioned_sessions_.extract(session_key)) {
+    DeleteSessionAndNotifyInternal(reason, std::move(node),
+                                   std::move(per_request_callback),
+                                   std::move(fetch_error));
+  }
 }
 
 void SessionServiceImpl::NotifySessionAccess(
@@ -1517,19 +1568,20 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
               },
               [&](SessionError error) {
                 const SessionError::ErrorType error_type = error.type;
-                std::optional<DeletionReason> deletion_reason =
-                    error.GetDeletionReason();
-                RefreshResult refresh_result =
-                    error.GetRefreshResult().value_or(
-                        deletion_reason ? RefreshResult::kFatalError
-                                        : RefreshResult::kUnreachable);
-
-                UnblockWaitingRequests(session_key, refresh_result,
-                                       std::move(error));
-
-                if (deletion_reason) {
-                  DeleteSessionAndNotify(*deletion_reason, session_key,
-                                         on_access_callback);
+                if (std::optional<DeletionReason> deletion_reason =
+                        error.GetDeletionReason()) {
+                  // Deleting the session also unblocks its waiting requests.
+                  // If it was already deleted while the refresh was in
+                  // flight, they were unblocked then.
+                  DeleteSessionAndNotifyInternal(*deletion_reason, session_key,
+                                                 on_access_callback,
+                                                 std::move(error));
+                } else {
+                  const RefreshResult refresh_result =
+                      error.GetRefreshResult().value_or(
+                          RefreshResult::kUnreachable);
+                  UnblockWaitingRequests(session_key, refresh_result,
+                                         std::move(error));
                 }
                 return error_type;
               }));
@@ -1572,15 +1624,15 @@ void SessionServiceImpl::OnSessionKeyRestored(
         std::optional<unexportable_keys::UnexportableSigningKeyId>)> callback,
     Session::KeyIdOrError key_id_or_error) {
   if (!key_id_or_error.has_value()) {
-    const bool is_persistent_error =
-        unexportable_keys::IsPersistentError(key_id_or_error.error());
-    UnblockWaitingRequests(session_key,
-                           is_persistent_error
-                               ? RefreshResult::kFatalError
-                               : RefreshResult::kTransientSigningError);
-    if (is_persistent_error) {
+    if (unexportable_keys::IsPersistentError(key_id_or_error.error())) {
+      // Deleting the session also unblocks its waiting requests. If it was
+      // already deleted while the key was being restored, they were unblocked
+      // then.
       DeleteSessionAndNotify(DeletionReason::kFailedToUnwrapKey, session_key,
                              on_access_callback);
+    } else {
+      UnblockWaitingRequests(session_key,
+                             RefreshResult::kTransientSigningError);
     }
     std::move(callback).Run(std::nullopt);
     return;
@@ -1612,12 +1664,11 @@ void SessionServiceImpl::StartSessionRefresh(const SessionKey& session_key,
           params.priority;
       RestoreSessionKey(
           session_key, access_callback, priority,
-          base::BindOnce(&SessionServiceImpl::RefreshSessionInternal,
+          base::BindOnce(&SessionServiceImpl::OnSessionKeyRestoredForRefresh,
                          weak_factory_.GetWeakPtr(), std::move(params),
                          session_key));
       return;
     } else {
-      UnblockWaitingRequests(session_key, RefreshResult::kFatalError);
       DeleteSessionAndNotify(DeletionReason::kFailedToRestoreKey, session_key,
                              params.access_callback);
       return;
@@ -1627,20 +1678,29 @@ void SessionServiceImpl::StartSessionRefresh(const SessionKey& session_key,
   RefreshSessionInternal(std::move(params), session_key, *key_id);
 }
 
-void SessionServiceImpl::RefreshSessionInternal(
+void SessionServiceImpl::OnSessionKeyRestoredForRefresh(
     RefreshParams params,
     const SessionKey& session_key,
     std::optional<unexportable_keys::UnexportableSigningKeyId> key_id) {
   if (!key_id) {
-    UnblockWaitingRequests(session_key, RefreshResult::kFatalError);
+    // `OnSessionKeyRestored()` already unblocked the waiting requests.
+    // Unblocking again would fail requests that were deferred re-entrantly
+    // while it ran.
     return;
   }
 
+  RefreshSessionInternal(std::move(params), session_key, *key_id);
+}
+
+void SessionServiceImpl::RefreshSessionInternal(
+    RefreshParams params,
+    const SessionKey& session_key,
+    unexportable_keys::UnexportableSigningKeyId key_id) {
   Session* session = GetSession(session_key);
   // `session` must exist because this is either called synchronously from
-  // `StartSessionRefresh` (which checks `session`), or asynchronously after
-  // `OnSessionKeyRestored` which also checks `session` and returns early if
-  // null.
+  // `StartSessionRefresh` (which checks `session`), or from
+  // `OnSessionKeyRestoredForRefresh` with a key, which `OnSessionKeyRestored`
+  // only passes if `session` still exists.
   CHECK(session);
 
   if (params.trigger == RefreshTrigger::kMissingCookie) {
@@ -1704,7 +1764,7 @@ void SessionServiceImpl::RefreshSessionInternal(
           net_log_source_for_refresh, params.initiator, params.priority);
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
-  fetcher_raw->StartFetchWithExistingKey(registration_param, *key_id,
+  fetcher_raw->StartFetchWithExistingKey(registration_param, key_id,
                                          std::move(callback));
   // `fetcher_raw` may be deleted.
 }

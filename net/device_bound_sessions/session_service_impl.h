@@ -26,6 +26,7 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/session_store.h"
@@ -303,13 +304,30 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   std::ranges::subrange<SessionsMap::iterator> GetSessionsForSite(
       const SchemefulSite& site);
 
-  // Remove a session from the session map. It also clears the session
-  // from `session_store_` and notifies any observers (including
-  // `per_request_callback`) about the termination.
+  // Deletes a session that was already extracted from
+  // `unpartitioned_sessions_`. It also clears the session from
+  // `session_store_`, unblocks the requests waiting on the session with
+  // `RefreshResult::kFatalError`, and notifies any observers (including
+  // `per_request_callback`) about the termination. If set, `fetch_error` is
+  // reported in the refresh event for the unblocked requests.
+  //
+  // Callers must extract the node before calling this, because unblocking
+  // deferred requests can synchronously re-enter this class and modify
+  // `unpartitioned_sessions_`.
   void DeleteSessionAndNotifyInternal(
       DeletionReason reason,
-      SessionsMap::iterator it,
-      SessionService::OnAccessCallback per_request_callback);
+      SessionsMap::node_type node,
+      SessionService::OnAccessCallback per_request_callback,
+      std::optional<SessionError> fetch_error = std::nullopt);
+
+  // If the session identified by `session_key` exists, extracts it from
+  // `unpartitioned_sessions_` and deletes it with the overload above. Unlike
+  // `DeleteSessionAndNotify()`, this doesn't wait for sessions to load.
+  void DeleteSessionAndNotifyInternal(
+      DeletionReason reason,
+      const SessionKey& session_key,
+      SessionService::OnAccessCallback per_request_callback,
+      std::optional<SessionError> fetch_error = std::nullopt);
 
   // Notify all observers about an access to a session. Will update
   // `per_request_callback` unconditionally, and any observers in
@@ -365,10 +383,18 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Helper function for starting a refresh.
   void StartSessionRefresh(const SessionKey& session_key, RefreshParams params);
 
-  void RefreshSessionInternal(
+  // Continues the refresh started by `StartSessionRefresh` after restoring the
+  // session key. Does nothing if the key wasn't restored, because
+  // `OnSessionKeyRestored` already unblocked the waiting requests.
+  void OnSessionKeyRestoredForRefresh(
       RefreshParams params,
       const SessionKey& session_key,
       std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
+
+  void RefreshSessionInternal(
+      RefreshParams params,
+      const SessionKey& session_key,
+      unexportable_keys::UnexportableSigningKeyId key_id);
 
   // Add a header to `request` indicating which sessions should have
   // applied, but did not due to error conditions.

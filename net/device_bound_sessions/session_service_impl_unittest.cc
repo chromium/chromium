@@ -2997,6 +2997,85 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
         std::move(callback));
   }
 
+  // Loads sessions "session_1" and "session_2" for `kTestUrl`, along with
+  // `other_sessions`, then defers `request` on "session_1", whose key restore
+  // is left pending. Like `URLRequestHttpJob`, the request is re-evaluated
+  // synchronously when its deferral is unblocked, and it is deferred again on
+  // "session_2". The key restore for "session_2" fails synchronously, which
+  // deletes that session and runs `callback`. Sessions 1 and 2 are each
+  // expected to be deleted from the store once.
+  void LoadSessionsAndDeferReentrantRequest(
+      URLRequest* request,
+      SessionService::RefreshCompleteCallback callback,
+      SessionStore::SessionsMap other_sessions = {}) {
+    const SchemefulSite site(kTestUrl);
+    const SessionKey session_key_1{site, Session::Id("session_1")};
+    const SessionKey session_key_2{site, Session::Id("session_2")};
+
+    EXPECT_CALL(store(), LoadSessions).Times(1);
+    service().LoadSessionsAsync();
+    ASSERT_OK_AND_ASSIGN(
+        std::unique_ptr<Session> session_1,
+        Session::CreateFromProto(CreateSessionProto("session_1", kUrlString)));
+    ASSERT_OK_AND_ASSIGN(
+        std::unique_ptr<Session> session_2,
+        Session::CreateFromProto(CreateSessionProto("session_2", kUrlString)));
+    SessionStore::SessionsMap session_map = std::move(other_sessions);
+    session_map.insert({session_key_1, std::move(session_1)});
+    session_map.insert({session_key_2, std::move(session_2)});
+    FinishLoadingSessions(std::move(session_map));
+
+    HttpRequestHeaders extra_headers;
+    DbscRequest dbsc_request(request);
+    std::optional<SessionService::DeferralParams> deferral =
+        service().ShouldDefer(dbsc_request, &extra_headers);
+    ASSERT_TRUE(deferral);
+    EXPECT_EQ(deferral->session_id, session_key_1.id);
+
+    // Key restore for session 1 stays pending; for session 2 it fails inline.
+    EXPECT_CALL(
+        store(),
+        RestoreSessionBindingKey(
+            session_key_1,
+            unexportable_keys::BackgroundTaskPriority::kUserBlocking, _));
+    EXPECT_CALL(
+        store(),
+        RestoreSessionBindingKey(
+            session_key_2,
+            unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+        .WillOnce(RunOnceCallback<2>(
+            base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
+    EXPECT_CALL(store(), DeleteSession(session_key_1)).Times(1);
+    EXPECT_CALL(store(), DeleteSession(session_key_2)).Times(1);
+
+    // Model `URLRequestHttpJob`: on unblock, record the deferral and
+    // synchronously re-evaluate the request, deferring it again on session 2.
+    service().DeferRequestForRefresh(
+        dbsc_request, *deferral,
+        base::BindLambdaForTesting(
+            [this, request, session_key_1, session_key_2,
+             callback = std::move(callback)](RefreshResult result) mutable {
+              EXPECT_EQ(result, RefreshResult::kFatalError);
+              EXPECT_EQ(service().GetSession(session_key_1), nullptr);
+              request->AddDeviceBoundSessionDeferral(session_key_1, result);
+              DbscRequest restarted_request(request);
+              HttpRequestHeaders restarted_extra_headers;
+              std::optional<SessionService::DeferralParams> next_deferral =
+                  service().ShouldDefer(restarted_request,
+                                        &restarted_extra_headers);
+              ASSERT_TRUE(next_deferral);
+              EXPECT_EQ(next_deferral->session_id, session_key_2.id);
+              service().DeferRequestForRefresh(
+                  restarted_request, *next_deferral,
+                  base::BindLambdaForTesting(
+                      [this, session_key_2, callback = std::move(callback)](
+                          RefreshResult inner_result) mutable {
+                        EXPECT_EQ(service().GetSession(session_key_2), nullptr);
+                        std::move(callback).Run(inner_result);
+                      }));
+            }));
+  }
+
   void TearDown() override {
     net::URLRequestFilter::GetInstance()->ClearHandlers();
   }
@@ -3177,6 +3256,82 @@ TEST_F(SessionServiceImplWithStoreTest,
 
   // The session should be deleted.
   EXPECT_EQ(GetSiteSessionsCount(SchemefulSite(kTestUrl)), 0u);
+}
+
+// Deleting a session unblocks its deferred requests synchronously. A restarted
+// request can then defer on another session whose key restore fails
+// synchronously, which deletes that session while DeleteAllSessions() is still
+// iterating.
+TEST_F(SessionServiceImplWithStoreTest,
+       DeleteAllSessionsUnblocksRequestTriggeringKeyRestoreFailure) {
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  base::test::TestFuture<RefreshResult> final_refresh_future;
+  ASSERT_NO_FATAL_FAILURE(LoadSessionsAndDeferReentrantRequest(
+      request.get(), final_refresh_future.GetCallback()));
+
+  const SchemefulSite site(kTestUrl);
+  const SessionKey session_key_1{site, Session::Id("session_1")};
+  const SessionKey session_key_2{site, Session::Id("session_2")};
+  const base::Time creation_time_1 = base::Time::Now() - base::Hours(2);
+  const base::Time creation_time_2 = base::Time::Now() - base::Hours(1);
+  service().GetSession(session_key_1)->set_creation_date(creation_time_1);
+  service().GetSession(session_key_2)->set_creation_date(creation_time_2);
+
+  // Only session 1 matches the filter (`created_before_time` is inclusive).
+  base::test::TestFuture<void> delete_future;
+  service().DeleteAllSessions(DeletionReason::kClearBrowsingData,
+                              /*created_after_time=*/std::nullopt,
+                              /*created_before_time=*/creation_time_1,
+                              base::NullCallback(),
+                              delete_future.GetCallback());
+
+  EXPECT_TRUE(delete_future.Wait());
+  ASSERT_TRUE(final_refresh_future.IsReady());
+  EXPECT_EQ(final_refresh_future.Take(), RefreshResult::kFatalError);
+  EXPECT_EQ(service().GetSession(session_key_1), nullptr);
+  EXPECT_EQ(service().GetSession(session_key_2), nullptr);
+}
+
+// Deleting an expired session in GetSessionsForSite() unblocks a request that
+// synchronously re-enters the service before the deletion finishes.
+TEST_F(SessionServiceImplWithStoreTest,
+       GetSessionsForSiteExpiredSessionUnblocksRequestReentrantly) {
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  const SchemefulSite site(kTestUrl);
+  const SessionKey session_key_1{site, Session::Id("session_1")};
+  const SessionKey session_key_2{site, Session::Id("session_2")};
+  const SessionKey session_key_3{site, Session::Id("session_3")};
+  // Also load a live session 3, which sorts after the other two sessions.
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> session_3,
+      Session::CreateFromProto(CreateSessionProto("session_3", kUrlString)));
+  SessionStore::SessionsMap other_sessions;
+  other_sessions.insert({session_key_3, std::move(session_3)});
+  base::test::TestFuture<RefreshResult> final_refresh_future;
+  ASSERT_NO_FATAL_FAILURE(LoadSessionsAndDeferReentrantRequest(
+      request.get(), final_refresh_future.GetCallback(),
+      std::move(other_sessions)));
+
+  Session* session_1 = service().GetSession(session_key_1);
+  ASSERT_TRUE(session_1);
+  session_1->set_expiry_date(base::Time::Now() - base::Seconds(1));
+
+  // Calls GetSessionsForSite(), which deletes the expired session 1 (and
+  // re-entrantly deletes session 2) and returns the remaining live session 3.
+  EXPECT_EQ(GetSiteSessionsCount(site), 1u);
+  ASSERT_TRUE(final_refresh_future.IsReady());
+  EXPECT_EQ(final_refresh_future.Take(), RefreshResult::kFatalError);
+  EXPECT_EQ(service().GetSession(session_key_1), nullptr);
+  EXPECT_EQ(service().GetSession(session_key_2), nullptr);
+  EXPECT_NE(service().GetSession(session_key_3), nullptr);
 }
 
 TEST_F(SessionServiceImplWithStoreTest,
@@ -3733,6 +3888,60 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   EXPECT_EQ(future_b.Take(), RefreshResult::kRefreshed);
 }
 
+// A transient key restore error unblocks the waiting requests. A request that
+// is deferred on the same session while they are being unblocked waits for its
+// own refresh instead of failing with the first one.
+TEST_F(SessionServiceImplWithStoreTest,
+       TransientKeyRestoreErrorDoesNotFailReentrantDeferral) {
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback_a;
+  ASSERT_NO_FATAL_FAILURE(
+      LoadSessionWithUnrestoredKey(&restore_key_callback_a));
+
+  net::TestDelegate delegate_a;
+  std::unique_ptr<URLRequest> request_a = CreateRequestWithContext(
+      context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate_a);
+  DbscRequest dbsc_request_a(request_a.get());
+  net::TestDelegate delegate_b;
+  std::unique_ptr<URLRequest> request_b = CreateRequestWithContext(
+      context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate_b);
+  DbscRequest dbsc_request_b(request_b.get());
+  const auto deferral = SessionService::DeferralParams(Session::Id(kSessionId));
+
+  // Request B is deferred on the same session when request A is unblocked.
+  base::test::TestFuture<RefreshResult> future_a;
+  base::test::TestFuture<RefreshResult> future_b;
+  service().DeferRequestForRefresh(
+      dbsc_request_a, deferral,
+      base::BindLambdaForTesting([this, &future_a, &dbsc_request_b, &deferral,
+                                  &future_b](RefreshResult result) {
+        future_a.SetValue(result);
+        service().DeferRequestForRefresh(dbsc_request_b, deferral,
+                                         future_b.GetCallback());
+      }));
+  ASSERT_TRUE(restore_key_callback_a);
+
+  // Request B starts a second key restore, which stays pending.
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback_b;
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce(SaveArgByMove<2>(&restore_key_callback_b));
+  std::move(restore_key_callback_a)
+      .Run(base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+  EXPECT_EQ(future_a.Take(), RefreshResult::kTransientSigningError);
+  ASSERT_FALSE(future_b.IsReady());
+  ASSERT_TRUE(restore_key_callback_b);
+
+  // Request B is unblocked when its own refresh completes.
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kUrlString, kOrigin);
+  EXPECT_CALL(store(), SaveSession);
+  std::move(restore_key_callback_b)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+  EXPECT_EQ(future_b.Take(), RefreshResult::kRefreshed);
+}
+
 TEST_F(SessionServiceImplWithStoreTest,
        PrewarmSessionsForUrl_KeyRestorationFailure) {
   EXPECT_CALL(store(), LoadSessions).Times(1);
@@ -4281,6 +4490,73 @@ TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksDeferring) {
   histograms.ExpectUniqueSample(
       "Net.DeviceBoundSessions.ProactiveRefreshAttempt",
       SessionServiceImpl::ProactiveRefreshAttempt::kAttempted, 1);
+}
+
+// A proactive refresh started from ShouldDefer() can complete synchronously
+// and delete the session that ShouldDefer() is iterating over.
+TEST_F(SessionServiceImplTest,
+       ShouldDeferHandlesSessionDeletedBySynchronousProactiveRefresh) {
+  base::HistogramTester histograms;
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin},
+                         {kSessionId3, kRefreshUrlString, kOrigin}});
+
+  // Every refresh fails inline with an error that deletes the session.
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::kSigningError, kRefreshUrlString);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation,
+                               net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // The bound cookie expires soon, which triggers a proactive refresh instead
+  // of a deferral.
+  CookieInclusionStatus status;
+  auto cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v; Secure; Max-Age=1", base::Time::Now(),
+      std::nullopt, std::nullopt, CookieSourceType::kHTTP, &status);
+  ASSERT_TRUE(cookie);
+  request->set_maybe_sent_cookies({{*cookie, CookieAccessResult()}});
+
+  HttpRequestHeaders extra_headers;
+  DbscRequest dbsc_request(request.get());
+  EXPECT_FALSE(service().ShouldDefer(dbsc_request, &extra_headers));
+
+  const SchemefulSite site(kTestUrl);
+  EXPECT_FALSE(service().GetSession({site, Session::Id(kSessionId)}));
+  EXPECT_FALSE(service().GetSession({site, Session::Id(kSessionId3)}));
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.DeletionReason",
+                                DeletionReason::kRefreshFatalError, 2);
+}
+
+// A refresh error that deletes the session removes it before the deferred
+// requests are unblocked, because they can synchronously re-enter the service.
+TEST_F(SessionServiceImplTest,
+       FatalRefreshErrorDeletesSessionBeforeUnblockingRequests) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::kSigningError, kRefreshUrlString);
+  const SessionKey session_key{SchemefulSite(kTestUrl),
+                               Session::Id(kSessionId)};
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request = CreateRequestWithContext(
+      context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate);
+  DbscRequest dbsc_request(request.get());
+  base::test::TestFuture<RefreshResult> future;
+  bool session_found_while_unblocking = true;
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      base::BindLambdaForTesting([this, &session_found_while_unblocking,
+                                  &session_key, &future](RefreshResult result) {
+        session_found_while_unblocking = !!service().GetSession(session_key);
+        future.SetValue(result);
+      }));
+
+  EXPECT_EQ(future.Take(), RefreshResult::kFatalError);
+  EXPECT_FALSE(session_found_while_unblocking);
+  EXPECT_EQ(service().GetSession(session_key), nullptr);
 }
 
 TEST_F(SessionServiceImplTest, ProactiveRefreshBlocksProactive) {
