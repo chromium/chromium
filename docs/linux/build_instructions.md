@@ -320,7 +320,7 @@ load("@builtin//struct.star", "module")
 def __platform_properties(ctx):
     # fyi: this image is created by
     # https://chromium.googlesource.com/infra/infra/+/refs/heads/main/rbe/images/siso-chromium/linux/Dockerfile
-    container_image = "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:2ab815965d0886100cec5495c53757698d7c73fa21b344b42ff182234391e47a"
+    container_image = "docker://gcr.io/chops-public-images-prod/rbe/siso-chromium/linux@sha256:bd0231e5a90df1485cc44f624494fd3df3c7bae5dcbef51b7929429f1170a345"
     return {
         "default": {
             # set platform properties for your worker.
