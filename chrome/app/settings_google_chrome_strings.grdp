@@ -446,9 +446,6 @@
   <message name="IDS_SETTINGS_SKILLS_TOGGLE_LABEL" desc="Label for the toggle button on the Skills settings subpage.">
     Enable Skills in Chrome
   </message>
-  <message name="IDS_SETTINGS_SYNC_SKILLS_SEPARATE_INFORMATION" desc="Info text on the Sync page explaining that skills are managed separately from sync.">
-    AI innovations like skills are saved to your Google Account and managed separately from Chrome sync
-  </message>
   <message name="IDS_SETTINGS_SKILLS_WHEN_ON_BULLET_TWO" desc="Second bullet point under the 'When on' column in the Skills settings page.">
     Use them alongside other Gemini features in Chrome
   </message>
@@ -462,10 +459,6 @@
   </message>
   <message name="IDS_SETTINGS_DICTATION_SHORTCUT_SUBLABEL" translateable="false" desc="Sublabel for the keyboard shortcut setting in Dictation settings page.">
     Open talk to type with a keyboard shortcut
-  </message>
-  <!-- Appearance Page -->
-  <message name="IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_IN_CHROME" desc="Label for configuring Google Search side panel alignment.">
-    Google Search in Chrome
   </message>
 
   <!-- On-device AI Settings Page -->
