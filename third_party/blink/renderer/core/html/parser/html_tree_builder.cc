@@ -905,26 +905,33 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
         bool add_select_end_tag =
             !RuntimeEnabledFeatures::InputInSelectEnabled();
 
-        if (parent_select || parent_option_optgroup) {
-          if (RuntimeEnabledFeatures::InputInSelectEnabled()) {
-            add_select_end_tag = true;
-          }
-        } else {
+        // TODO(crbug.com/396300371): Obsolete and remove these use counters
+        // after the InputInSelect flag is removed.
+        if (!parent_select && !parent_option_optgroup) {
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kInputParsedAncestorSelect);
         }
-
         if (parent_select && !parent_select->WasOptionInserted()) {
-          if (RuntimeEnabledFeatures::InputInSelectEnabled()) {
-            // <input> tags are allowed inside <select> if they come before any
-            // of the <option>s.
-            add_select_end_tag = false;
-          }
           UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                             WebFeature::kInputParsedParentSelectNoOptions);
         }
 
-        if (add_select_end_tag) {
+        if (!add_select_end_tag) {
+          // After this feature is enabled, website maintainers will likely
+          // still want a console message to help them fix their sites in case
+          // they are broken. After the InputInSelect flag is removed, we can
+          // remove this console message.
+          tree_.OpenElements()->TopNode()->AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "An <input> tag was parsed within an open <select> tag. Previous "
+              "versions of this browser automatically inserted a </select> end "
+              "tag before the <input>, but this browser now keeps the <input> "
+              "inside the <select>. If the <input> is not meant to be inside "
+              "the <select>, please add the missing </select> end tag before "
+              "it. This warning is temporary and will be removed in a future "
+              "version of this browser.");
+        } else {
           tree_.OpenElements()->TopNode()->AddConsoleMessage(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,

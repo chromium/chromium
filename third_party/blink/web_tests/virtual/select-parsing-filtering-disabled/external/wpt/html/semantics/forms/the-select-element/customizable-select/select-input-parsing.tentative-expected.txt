@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] Input tags should parse inside select if there are no options first.
+[FAIL] Input tags should parse inside select before any options.
   assert_equals: expected "<button>button</button><input>" but got "<button>button</button>"
 [FAIL] Input tags should parse inside select if nested in another tag
   assert_equals: expected "<div><input></div>" but got "<div></div>"
+[FAIL] Input tags should parse inside select when directly inside an <option>
+  assert_equals: expected "<option><input></option>" but got "<option></option>"
+[FAIL] Input tags should parse inside select when placed after an <option>
+  assert_equals: expected "<option></option><input>" but got "<option></option>"
 Harness: the test ran to completion.
 

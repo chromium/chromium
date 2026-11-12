@@ -1,4 +1,5 @@
 CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE WARNING: An <input> tag was parsed within an open <select> tag. Previous versions of this browser automatically inserted a </select> end tag before the <input>, but this browser now keeps the <input> inside the <select>. If the <input> is not meant to be inside the <select>, please add the missing </select> end tag before it. This warning is temporary and will be removed in a future version of this browser.
 CONSOLE WARNING: A <select> tag was parsed within another <select> tag and was converted into </select>. Please add the missing </select> end tag.
 ../resources/tests7.dat:
 17

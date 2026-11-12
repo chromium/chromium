@@ -39,15 +39,27 @@ test(() => {
   internals.clearUseCounter(document, kInputParsedParentSelectNoOptions);
 
   target.innerHTML = '<select><option>option</option><input>';
-  assert_equals(target.innerHTML, '<select><option>option</option></select><input>',
-    '<input> should not be included in <select> after <option>s.');
-  assert_false(internals.isUseCounted(document, kInputParsedParentSelectNoOptions,
-    '<input> in <select> after <option> should not trigger use counter.'));
+  assert_equals(target.innerHTML, '<select><option>option</option><input></select>',
+    '<input> should be included in <select> after <option>s.');
+  assert_false(internals.isUseCounted(document, kInputParsedParentSelectNoOptions),
+    '<input> in <select> after <option> should not trigger use counter.');
 
   target.innerHTML = '<select><input><option>option';
   assert_equals(target.innerHTML, '<select><input><option>option</option></select>',
     '<input> should be included in <select> before <option>s.');
-  assert_true(internals.isUseCounted(document, kInputParsedParentSelectNoOptions,
-    '<input> in <select> before <option> should trigger use counter.'));
+  assert_true(internals.isUseCounted(document, kInputParsedParentSelectNoOptions),
+    '<input> in <select> before <option> should trigger use counter.');
 }, 'UseCounters and parsing behavior for <input> in <select> before <option>s');
+
+const kInputParsedParentOptionOrOptgroup = 5580;
+
+test(() => {
+  internals.clearUseCounter(document, kInputParsedParentOptionOrOptgroup);
+
+  target.innerHTML = '<select><option><input></option></select>';
+  assert_equals(target.innerHTML, '<select><option><input></option></select>',
+    '<input> should be included in <option>.');
+  assert_true(internals.isUseCounted(document, kInputParsedParentOptionOrOptgroup),
+    '<input> in <option> should trigger use counter.');
+}, 'UseCounters and parsing behavior for <input> in <option>');
 </script>
