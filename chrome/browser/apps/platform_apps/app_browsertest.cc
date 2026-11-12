@@ -1477,8 +1477,17 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, NewWindowAboutBlank) {
 // While the app window itself does not scale in response to a pinch, we
 // still offer the synthetic wheels for pages that want to implement custom
 // pinch zoom behaviour.
+// TODO(crbug.com/504843634): Re-enable on Windows ARM64 once the timeout is
+// fixed.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_TouchpadPinchSyntheticWheelEvents \
+  DISABLED_TouchpadPinchSyntheticWheelEvents
+#else
+#define MAYBE_TouchpadPinchSyntheticWheelEvents \
+  TouchpadPinchSyntheticWheelEvents
+#endif
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
-                       TouchpadPinchSyntheticWheelEvents) {
+                       MAYBE_TouchpadPinchSyntheticWheelEvents) {
   LoadAndLaunchPlatformApp("touchpad_pinch", "Launched");
 
   WebContents* web_contents = GetFirstAppWindowWebContents();
