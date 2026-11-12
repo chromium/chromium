@@ -98,6 +98,8 @@ public class PdfUtils {
         PdfToolbarAction.SINGLE_PAGE_VIEW,
         PdfToolbarAction.DOCUMENT_PROPERTIES,
         PdfToolbarAction.ANNOTATION,
+        PdfToolbarAction.DOWNLOAD_ORIGINAL,
+        PdfToolbarAction.DOWNLOAD_EDITED,
         PdfToolbarAction.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -113,9 +115,12 @@ public class PdfUtils {
         int SINGLE_PAGE_VIEW = 8;
         int DOCUMENT_PROPERTIES = 9;
         int ANNOTATION = 10;
+        int DOWNLOAD_ORIGINAL = 11;
+        int DOWNLOAD_EDITED = 12;
 
-        int NUM_ENTRIES = 11;
+        int NUM_ENTRIES = 13;
     }
+
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfToolbarAction)
 
     // LINT.IfChange(PdfSelectionMenuItem)

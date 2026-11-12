@@ -210,6 +210,12 @@ class PdfToolbarViewBinder {
             moreMenuButton.setDelegate(
                     model.get(PdfToolbarProperties.MENU_BUTTON_DELEGATE),
                     /* overrideOnClickListener= */ true);
+        } else if (PdfToolbarProperties.DOWNLOAD_MENU_BUTTON_DELEGATE == key) {
+            ListMenuButton downloadButton = view.findViewById(R.id.download_button);
+            downloadButton.tryToFitLargestItem(true);
+            downloadButton.setDelegate(
+                    model.get(PdfToolbarProperties.DOWNLOAD_MENU_BUTTON_DELEGATE),
+                    /* overrideOnClickListener= */ false);
         }
     }
 

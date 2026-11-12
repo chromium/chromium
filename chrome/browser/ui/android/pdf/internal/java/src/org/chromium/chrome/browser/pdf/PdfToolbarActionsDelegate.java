@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pdf;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Interface to handle actions from the PDF toolbar. */
 @NullMarked
@@ -51,10 +52,25 @@ public interface PdfToolbarActionsDelegate {
     /** Downloads the PDF document. */
     void download();
 
+    /**
+     * Downloads the PDF document.
+     *
+     * @param includeAnnotations Whether to include the user's changes in the downloaded file. When
+     *     false, the original (unedited) document is downloaded.
+     */
+    void download(boolean includeAnnotations);
+
+    /** Returns whether the document has any changes (saved or unsaved). */
+    boolean hasChanges();
+
+    /**
+     * Returns the URL for re-downloading the original (unedited) PDF document, or null for local
+     * PDFs (e.g. {@code file://} or {@code content://}).
+     */
+    @Nullable String getDownloadUrl();
+
     /** Triggers printing for the PDF document. */
     void print();
-
-
 
     /** Shows the document properties dialog. */
     void showDocumentProperties();
@@ -66,4 +82,3 @@ public interface PdfToolbarActionsDelegate {
      */
     void onPageNavAndEditVisibilityChanged(boolean visible);
 }
-

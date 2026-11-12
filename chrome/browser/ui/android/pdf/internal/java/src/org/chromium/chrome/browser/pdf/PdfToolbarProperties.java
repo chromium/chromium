@@ -84,6 +84,10 @@ class PdfToolbarProperties {
     static final WritableObjectPropertyKey<ListMenuDelegate> MENU_BUTTON_DELEGATE =
             new WritableObjectPropertyKey<>();
 
+    /** The delegate for the download button's context menu (shown when the PDF has changes). */
+    static final WritableObjectPropertyKey<ListMenuDelegate> DOWNLOAD_MENU_BUTTON_DELEGATE =
+            new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
         CURRENT_PAGE_NUMBER,
         TITLE,
@@ -102,6 +106,7 @@ class PdfToolbarProperties {
         ZOOM_CONTROLS_VISIBLE,
         PAGE_NAV_AND_EDIT_VISIBLE,
         MENU_BUTTON_DELEGATE,
+        DOWNLOAD_MENU_BUTTON_DELEGATE,
         ZOOM_EDIT_LISTENER
     };
 }

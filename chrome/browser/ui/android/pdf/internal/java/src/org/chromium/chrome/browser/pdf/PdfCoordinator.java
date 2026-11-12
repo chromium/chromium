@@ -2138,7 +2138,7 @@ public class PdfCoordinator
         }
         if (mChromePdfViewerFragment != null && mChromePdfViewerFragment.isAdded()) {
             try {
-                return mChromePdfViewerFragment.hasUnsavedChanges() || isEditModeActive();
+                return mChromePdfViewerFragment.hasUnsavedChanges();
             } catch (IllegalStateException e) {
                 return false;
             }
@@ -2504,13 +2504,18 @@ public class PdfCoordinator
 
     @Override
     public void download() {
+        download(/* includeAnnotations= */ true);
+    }
+
+    @Override
+    public void download(boolean includeAnnotations) {
         // Extract the download URL; null for local PDFs (e.g. file:// or content://).
         String downloadUrl = getDownloadUrl();
 
-        // Re-download unmodified web/blob/data PDFs or fallback when V2 is disabled.
-        // For unmodified local PDFs, downloadUrl is null and this is a no-op since the file is
-        // already on the device.
-        if (!PdfUtils.isInlinePdfV2Enabled() || !hasChanges()) {
+        // Re-download the original web/blob/data PDF when there are no changes, when annotations
+        // are excluded, or as a fallback when V2 is disabled. For local PDFs, downloadUrl is null
+        // and this is a no-op since the original file is already on the device.
+        if (!includeAnnotations || !PdfUtils.isInlinePdfV2Enabled() || !hasChanges()) {
             if (downloadUrl != null) {
                 mNativePageHost.downloadUrl(downloadUrl);
             }
@@ -2518,7 +2523,7 @@ public class PdfCoordinator
         }
 
         // If there are unsaved edits, flush draft edits first before triggering download.
-        if (mChromePdfViewerFragment != null && (hasUnsavedChanges() || isEditModeActive())) {
+        if (mChromePdfViewerFragment != null && hasUnsavedChanges()) {
             mDownloadAfterSave = true;
             mChromePdfViewerFragment.applyDraftEdits();
         } else {
@@ -2527,7 +2532,8 @@ public class PdfCoordinator
         }
     }
 
-    private @Nullable String getDownloadUrl() {
+    @Override
+    public @Nullable String getDownloadUrl() {
         String downloadUrl = PdfUtils.getPdfReDownloadUrl(mUrl);
         if (downloadUrl != null) {
             return downloadUrl;

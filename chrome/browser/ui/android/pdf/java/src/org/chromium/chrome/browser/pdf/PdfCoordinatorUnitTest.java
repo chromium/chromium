@@ -2635,7 +2635,12 @@ public class PdfCoordinatorUnitTest {
         doReturn(true).when(spyFragment).isAdded();
 
         mPdfCoordinator.onEditModeChanged(true);
-        assertTrue(mPdfCoordinator.hasChanges());
+        assertFalse(
+                "hasChanges should be false when entering edit mode without edits",
+                mPdfCoordinator.hasChanges());
+
+        mPdfCoordinator.onEditsApplied();
+        assertTrue("hasChanges should be true after edits applied", mPdfCoordinator.hasChanges());
 
         mPdfCoordinator.resetLoadState();
 
@@ -3507,6 +3512,80 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void testDownload_InEditModeWithoutChanges_CallsHostDownloadUrl() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditModeChanged(true);
+
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(mPdfCoordinator.mChromePdfViewerFragment, "test_pdf_tag")
+                .commitNow();
+
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        shadowFragment.setHasUnsavedChanges(false);
+
+        mPdfCoordinator.download();
+
+        assertFalse(shadowFragment.wasApplyDraftEditsCalled());
+        verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void testDownload_WithUnsavedChanges_IncludeAnnotationsFalse_DoesNotApplyEdits() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(mPdfCoordinator.mChromePdfViewerFragment, "test_pdf_tag")
+                .commitNow();
+
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        shadowFragment.setHasUnsavedChanges(true);
+
+        mPdfCoordinator.download(/* includeAnnotations= */ false);
+
+        assertFalse(shadowFragment.wasApplyDraftEditsCalled());
+        verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
+        verify(mNativePageHost, never()).downloadLocalFile(any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_WithAnnotations_IncludeAnnotationsFalse_CallsHostDownloadUrl() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
+
+        mPdfCoordinator.download(/* includeAnnotations= */ false);
+
+        verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
+        verify(mNativePageHost, never()).downloadLocalFile(any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_WithAnnotations_IncludeAnnotationsTrue_CallsDownloadLocalFile() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
+
+        mPdfCoordinator.download(/* includeAnnotations= */ true);
+
+        verify(mNativePageHost, never()).downloadUrl(any());
+        verify(mNativePageHost).downloadLocalFile(TEST_CONTENT_URI, PDF_TITLE);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testDownload_WithAnnotations_StripsReloadQueryAndCallsDownloadLocalFile() {
         createPdfCoordinator();
         mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
@@ -3713,12 +3792,26 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
         mPdfCoordinator.onEditsApplied();
 
+        assertNull(mPdfCoordinator.getDownloadUrl());
         mPdfCoordinator.download();
 
         verify(mNativePageHost, never()).downloadUrl(any());
         verify(mNativePageHost)
                 .downloadLocalFile(Uri.fromFile(new File(mFilePath)).toString(), PDF_TITLE);
         assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testGetDownloadUrl_ReturnsUrlForDownloadableSchemesAndNullForLocalPdf() {
+        createPdfCoordinator();
+        assertEquals(PDF_DOWNLOAD_URL, mPdfCoordinator.getDownloadUrl());
+
+        mPdfCoordinator.onUrlChanged(TEST_CONTENT_URI);
+        assertNull(mPdfCoordinator.getDownloadUrl());
+
+        mPdfCoordinator.onUrlChanged(Uri.fromFile(new File(mFilePath)).toString());
+        assertNull(mPdfCoordinator.getDownloadUrl());
     }
 
     @Test

@@ -208,7 +208,7 @@ found in the LICENSE file.
             android:paddingEnd="0dp"
             app:layout_constrainedWidth="true">
 
-            <org.chromium.ui.widget.ChromeImageButton
+            <org.chromium.ui.listmenu.ListMenuButton
                 android:id="@+id/download_button"
                 android:contentDescription="@string/menu_save_page_as"
                 style="@style/ToolbarButton"
@@ -220,6 +220,7 @@ found in the LICENSE file.
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_download"
                 android:background="@drawable/pdf_toolbar_button_background"
+                app:menuMaxWidth="@dimen/list_menu_popup_max_width"
                 app:tint="@color/default_icon_color_tint_list" />
 
             <org.chromium.ui.widget.ButtonCompat
@@ -256,6 +257,7 @@ found in the LICENSE file.
                 android:paddingEnd="12dp"
                 android:src="@drawable/ic_more_vert_24dp"
                 android:background="@drawable/pdf_toolbar_button_background"
+                app:menuMaxWidth="@dimen/list_menu_popup_max_width"
                 app:tint="@color/default_icon_color_tint_list" />
 
         </LinearLayout>

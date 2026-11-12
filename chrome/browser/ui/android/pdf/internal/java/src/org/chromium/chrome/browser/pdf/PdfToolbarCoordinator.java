@@ -17,8 +17,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -64,6 +68,14 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     private float mDefaultZoomLevel = -1f;
     private @Nullable PdfToolbar mToolbar;
     private @Nullable ListMenu mListMenu;
+    private @Nullable ListMenu mDownloadListMenu;
+    private final ListMenu.Delegate mListMenuItemDelegate =
+            (model, view) -> {
+                View.OnClickListener listener = model.get(ListMenuItemProperties.CLICK_LISTENER);
+                if (listener != null) {
+                    listener.onClick(view);
+                }
+            };
 
     public PdfToolbarCoordinator(View parentView, PdfToolbarActionsDelegate delegate) {
         mDelegate = delegate;
@@ -97,7 +109,24 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                         .with(PdfToolbarProperties.DONE_BUTTON_VISIBLE, false)
                         .with(
                                 PdfToolbarProperties.MENU_BUTTON_DELEGATE,
-                                () -> createListMenu(assumeNonNull(mToolbar).getContext()))
+                                new ListMenuDelegate() {
+                                    @Override
+                                    public ListMenu getListMenu() {
+                                        return createListMenu(assumeNonNull(mToolbar).getContext());
+                                    }
+
+                                    @Override
+                                    public ListMenu getListMenuFromItems(List<ListItem> items) {
+                                        Context context = assumeNonNull(mToolbar).getContext();
+                                        ModelList modelList = new ModelList();
+                                        modelList.addAll(items);
+                                        return BrowserUiListMenuUtils.getBasicListMenu(
+                                                context, modelList, mListMenuItemDelegate);
+                                    }
+                                })
+                        .with(
+                                PdfToolbarProperties.DOWNLOAD_MENU_BUTTON_DELEGATE,
+                                () -> createDownloadListMenu(assumeNonNull(mToolbar).getContext()))
                         .build();
 
         toolbar.setOnWidthChangedListener(this::onWidthChanged);
@@ -136,7 +165,13 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             mDelegate.toggleFitToPage(showFitToPage, Math.max(0, currentPageNumber - 1));
             mModel.set(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON, !showFitToPage);
         } else if (actionId == R.id.download_button) {
-            mDelegate.download();
+            if (mDelegate.hasChanges()
+                    && mDelegate.getDownloadUrl() != null
+                    && view instanceof ListMenuButton) {
+                ((ListMenuButton) view).showMenu();
+            } else {
+                triggerDownload();
+            }
         } else if (actionId == R.id.print_button) {
             PdfUtils.recordToolbarAction(PdfUtils.PdfToolbarAction.PRINT);
             mDelegate.print();
@@ -181,19 +216,61 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false);
     }
 
+    private void triggerDownload() {
+        recordDownloadAction(mDelegate.hasChanges());
+        mDelegate.download();
+    }
+
+    private void triggerDownload(boolean includeAnnotations) {
+        recordDownloadAction(includeAnnotations);
+        mDelegate.download(includeAnnotations);
+    }
+
+    private void recordDownloadAction(boolean isEdited) {
+        PdfUtils.recordToolbarAction(
+                isEdited
+                        ? PdfUtils.PdfToolbarAction.DOWNLOAD_EDITED
+                        : PdfUtils.PdfToolbarAction.DOWNLOAD_ORIGINAL);
+    }
+
+    private List<ListItem> buildDownloadMenuItems() {
+        return List.of(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.pdf_download_edited)
+                        .withClickListener(v -> triggerDownload(/* includeAnnotations= */ true))
+                        .build(),
+                new ListItemBuilder()
+                        .withTitleRes(R.string.pdf_download_original)
+                        .withClickListener(v -> triggerDownload(/* includeAnnotations= */ false))
+                        .build());
+    }
+
+    private ListMenu createDownloadListMenu(Context context) {
+        ModelList modelList = new ModelList();
+        modelList.addAll(buildDownloadMenuItems());
+        mDownloadListMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(context, modelList, mListMenuItemDelegate);
+        return mDownloadListMenu;
+    }
+
     private ListMenu createListMenu(Context context) {
         ModelList modelList = new ModelList();
 
         if (PdfUtils.isInlinePdfV2DownloadEnabled()
                 && !mModel.get(PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE)) {
-            modelList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.pdf_download)
-                            .withClickListener(
-                                    v -> {
-                                        mDelegate.download();
-                                    })
-                            .build());
+            if (mDelegate.hasChanges() && mDelegate.getDownloadUrl() != null) {
+                modelList.add(
+                        new ListItemBuilder()
+                                .withTitle(context.getString(R.string.pdf_download))
+                                .withSubmenuProvider(this::buildDownloadMenuItems)
+                                .build());
+            } else {
+                modelList.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.pdf_download)
+                                .withClickListener(v -> triggerDownload())
+                                .build());
+            }
         }
 
         if (!mModel.get(PdfToolbarProperties.FIT_TO_PAGE_BUTTON_VISIBLE)) {
@@ -246,15 +323,17 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
                             .build());
         }
 
-        ListMenu.Delegate delegate =
-                (model, view) -> {
-                    View.OnClickListener listener =
-                            model.get(ListMenuItemProperties.CLICK_LISTENER);
-                    if (listener != null) {
-                        listener.onClick(view);
-                    }
-                };
-        mListMenu = BrowserUiListMenuUtils.getBasicListMenu(context, modelList, delegate);
+        BasicListMenu basicListMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(context, modelList, mListMenuItemDelegate);
+        if (mToolbar != null) {
+            ListMenuButton moreMenuButton = mToolbar.findViewById(R.id.more_menu_button);
+            if (moreMenuButton != null) {
+                basicListMenu.setupCallbacks(
+                        moreMenuButton::dismiss,
+                        moreMenuButton.getHost().getHierarchicalMenuController());
+            }
+        }
+        mListMenu = basicListMenu;
         return mListMenu;
     }
 
@@ -414,7 +493,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mDelegate.onPageNavAndEditVisibilityChanged(showNavEdit);
     }
 
-
     /** Sets whether edit mode is active in the model. */
     public void setEditModeActive(boolean active) {
         mModel.set(PdfToolbarProperties.EDIT_MODE_ACTIVE, active);
@@ -431,11 +509,27 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mPropertyModelChangeProcessor.destroy();
         if (mToolbar != null) {
             mToolbar.setOnWidthChangedListener(null);
+            ListMenuButton moreMenuButton = mToolbar.findViewById(R.id.more_menu_button);
+            if (moreMenuButton != null) {
+                moreMenuButton.dismiss();
+                moreMenuButton.setDelegate(null, false);
+            }
+            ListMenuButton downloadButton = mToolbar.findViewById(R.id.download_button);
+            if (downloadButton != null) {
+                downloadButton.dismiss();
+                downloadButton.setDelegate(null, false);
+            }
         }
+        mListMenu = null;
+        mDownloadListMenu = null;
         mToolbar = null;
     }
 
     public @Nullable ListMenu getListMenuForTesting() {
         return mListMenu;
+    }
+
+    public @Nullable ListMenu getDownloadListMenuForTesting() {
+        return mDownloadListMenu;
     }
 }
