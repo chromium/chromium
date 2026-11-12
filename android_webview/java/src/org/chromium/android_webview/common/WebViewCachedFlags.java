@@ -149,8 +149,7 @@ public class WebViewCachedFlags {
                     Map.entry(
                             AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
                             DefaultState.DISABLED),
-                    Map.entry(
-                            AwFeatures.WEBVIEW_USE_WVLES_FOR_LAYERED_STUDY, DefaultState.DISABLED),
+                    Map.entry(AwFeatures.WEBVIEW_USE_WVLES_FOR_LAYERED_STUDY, DefaultState.ENABLED),
                     Map.entry(
                             AwFeatures.WEBVIEW_COOKIE_MANAGER_SIMPLER_URL_FIXUPS,
                             DefaultState.DISABLED),
