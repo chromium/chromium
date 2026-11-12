@@ -47,6 +47,7 @@
 #include "net/base/url_util.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -581,7 +582,7 @@ void AppBannerManagerAndroid::CreateJavaBannerManager(
     content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_banner_manager_.Reset(
-      Java_AppBannerManager_create(env, reinterpret_cast<intptr_t>(this)));
+      Java_AppBannerManager_create(env, jni_zero::MakeRaw(this)));
 }
 
 base::expected<AppBannerManagerAndroid::QueryNativeAppConfig,

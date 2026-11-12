@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -12,7 +14,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -34,6 +39,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @JNINamespace("webapps")
 @NullMarked
 public class AppBannerManager {
+    @JniType("::webapps::AppBannerManagerAndroid")
+    interface NativeAppBannerManagerAndroid extends JniTypeToken {}
+
     /**
      * A struct containing the string resources IDs for the strings to show in the install dialog
      * (both the dialog title and the accept button).
@@ -59,7 +67,7 @@ public class AppBannerManager {
     private static @Nullable AppDetailsDelegate sAppDetailsDelegate;
 
     /** Pointer to the native side AppBannerManager. */
-    private long mNativePointer;
+    private @Nullable JniRawPtr<NativeAppBannerManagerAndroid> mNativePointer;
 
     private static final CopyOnWriteArraySet<Observer> sObservers = new CopyOnWriteArraySet<>();
 
@@ -108,18 +116,21 @@ public class AppBannerManager {
      *
      * @param nativePointer the native-side object that owns this AppBannerManager.
      */
-    private AppBannerManager(long nativePointer) {
+    private AppBannerManager(JniRawPtr<NativeAppBannerManagerAndroid> nativePointer) {
         mNativePointer = nativePointer;
     }
 
     @CalledByNative
-    private static AppBannerManager create(long nativePointer) {
+    static AppBannerManager create(JniRawPtr<NativeAppBannerManagerAndroid> nativePointer) {
         return new AppBannerManager(nativePointer);
     }
 
     @CalledByNative
     private void destroy() {
-        mNativePointer = 0;
+        if (mNativePointer != null) {
+            mNativePointer.release();
+            mNativePointer = null;
+        }
     }
 
     /**
@@ -169,7 +180,7 @@ public class AppBannerManager {
              */
             @Override
             public void onAppDetailsRetrieved(AppData data) {
-                if (data == null || mNativePointer == 0) return;
+                if (data == null || mNativePointer == null) return;
 
                 String imageUrl = data.imageUrl();
                 if (TextUtils.isEmpty(imageUrl)) return;
@@ -212,24 +223,24 @@ public class AppBannerManager {
     }
 
     public void recheckInstallability() {
-        if (mNativePointer != 0) {
+        if (mNativePointer != null) {
             AppBannerManagerJni.get().recheckInstallability(mNativePointer);
         }
     }
 
     /** Returns whether the native AppBannerManager is working. */
     public boolean isRunningForTesting() {
-        return AppBannerManagerJni.get().isRunningForTesting(mNativePointer);
+        return AppBannerManagerJni.get().isRunningForTesting(assumeNonNull(mNativePointer));
     }
 
     /** Returns the state of the current pipeline. */
     public int getPipelineStatusForTesting() {
-        return AppBannerManagerJni.get().getPipelineStatusForTesting(mNativePointer);
+        return AppBannerManagerJni.get().getPipelineStatusForTesting(assumeNonNull(mNativePointer));
     }
 
     /** Returns the state of the ambient badge. */
     public int getBadgeStatusForTesting() {
-        return AppBannerManagerJni.get().getBadgeStatusForTesting(mNativePointer);
+        return AppBannerManagerJni.get().getBadgeStatusForTesting(assumeNonNull(mNativePointer));
     }
 
     /** Sets constants (in days) the banner should be blocked for after dismissing and ignoring. */
@@ -277,7 +288,7 @@ public class AppBannerManager {
                 @JniType("content::WebContents*") WebContents webContents);
 
         void onAppDetailsRetrieved(
-                long nativeAppBannerManagerAndroid,
+                JniPtr<NativeAppBannerManagerAndroid> self,
                 int requestId,
                 AppData data,
                 @JniType("std::u16string") @Nullable String title,
@@ -287,11 +298,11 @@ public class AppBannerManager {
         // Testing methods.
         void ignoreChromeChannelForTesting();
 
-        boolean isRunningForTesting(long nativeAppBannerManagerAndroid);
+        boolean isRunningForTesting(JniPtr<NativeAppBannerManagerAndroid> self);
 
-        int getPipelineStatusForTesting(long nativeAppBannerManagerAndroid);
+        int getPipelineStatusForTesting(JniPtr<NativeAppBannerManagerAndroid> self);
 
-        int getBadgeStatusForTesting(long nativeAppBannerManagerAndroid);
+        int getBadgeStatusForTesting(JniPtr<NativeAppBannerManagerAndroid> self);
 
         void setDaysAfterDismissAndIgnoreToTrigger(int dismissDays, int ignoreDays);
 
@@ -299,7 +310,7 @@ public class AppBannerManager {
 
         void setOverrideSegmentationResultForTesting(boolean show);
 
-        void recheckInstallability(long nativeAppBannerManagerAndroid);
+        void recheckInstallability(JniPtr<NativeAppBannerManagerAndroid> self);
 
         boolean isProbablyPromotable(@JniType("content::WebContents*") WebContents contents);
     }
