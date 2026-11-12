@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/ozone.gni")
 import("//chrome/browser/ttc/core/buildflags.gni")
+import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 buildflag_header("buildflags") {
@@ -54,6 +55,7 @@ source_set("core") {
   public = [
     "entrypoint_controller.h",
     "eval_audio_controller.h",
+    "hotl/hotl_speech_recognizer.h",
     "page_context.h",
     "session_controller.h",
     "session_view.h",
@@ -170,12 +172,26 @@ source_set("impl") {
     "//components/ttc/app/public",
     "//content/public/browser",
     "//content/public/common",
+    "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common:headers",
     "//ui/actions:actions_headers",
     "//ui/base/idle",
     "//ui/gfx/geometry",
     "//url",
   ]
+  if (enable_speech_service) {
+    sources += [
+      "hotl/soda_hotl_speech_recognizer.cc",
+      "hotl/soda_hotl_speech_recognizer.h",
+    ]
+    deps += [
+      "//chrome/browser/speech",
+      "//chrome/services/speech/buildflags",
+      "//media",
+      "//media/mojo/mojom:audio_data",
+      "//media/mojo/mojom:speech_recognition",
+    ]
+  }
   if (is_android) {
     sources += [
       "voice_focused_contents_tracker_android.cc",
@@ -282,12 +298,21 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//components/ttc/app/public",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//url",
   ]
+  if (enable_speech_service) {
+    sources += [ "hotl/soda_hotl_speech_recognizer_unittest.cc" ]
+    deps += [
+      "//media",
+      "//media/mojo/mojom:audio_data",
+      "//media/mojo/mojom:speech_recognition",
+    ]
+  }
   if (is_android) {
     sources += [ "voice_focused_contents_tracker_android_unittest.cc" ]
     deps += [
