@@ -1216,6 +1216,38 @@ TEST_F(WebStateImplTest, NavigationStartTrigger) {
   EXPECT_EQ(trigger_manager.last_trigger_name(), "navigation-start");
 }
 
+// Tests that `OnNavigationStarted` cancels dialogs for document-changing
+// navigations, but preserves dialogs for same-document navigations.
+TEST_F(WebStateImplTest, OnNavigationStartedClearsDialogsOnlyOnDocumentChange) {
+  std::unique_ptr<WebStateImpl> web_state =
+      CreateWebStateImpl(WebState::CreateParams(GetBrowserState()));
+  FakeWebStateDelegate delegate;
+  web_state->SetDelegate(&delegate);
+
+  FakeJavaScriptDialogPresenter* presenter =
+      delegate.GetFakeJavaScriptDialogPresenter();
+  const GURL url("https://chromium.test/");
+
+  std::unique_ptr<NavigationContextImpl> same_document_context =
+      NavigationContextImpl::CreateNavigationContext(
+          web_state.get(), url, /*has_user_gesture=*/false,
+          ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+          /*is_renderer_initiated=*/true);
+  same_document_context->SetIsSameDocument(true);
+  web_state->OnNavigationStarted(same_document_context.get());
+  EXPECT_FALSE(delegate.get_java_script_dialog_presenter_called());
+  EXPECT_FALSE(presenter->cancel_dialogs_called());
+
+  std::unique_ptr<NavigationContextImpl> document_change_context =
+      NavigationContextImpl::CreateNavigationContext(
+          web_state.get(), url, /*has_user_gesture=*/false,
+          ui::PageTransition::PAGE_TRANSITION_CLIENT_REDIRECT,
+          /*is_renderer_initiated=*/true);
+  web_state->OnNavigationStarted(document_change_context.get());
+  EXPECT_TRUE(delegate.get_java_script_dialog_presenter_called());
+  EXPECT_TRUE(presenter->cancel_dialogs_called());
+}
+
 // Tests that RequestGeolocationPermissionWithDecisionHandler denies permission
 // for non-secure origins.
 TEST_F(WebStateImplTest, RequestGeolocationPermissionInsecureOrigin) {
