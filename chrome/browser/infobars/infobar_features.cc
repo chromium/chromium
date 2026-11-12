@@ -116,7 +116,7 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE_PARAM(bool,
                    kMigratedChromeForTesting,
                    &kCentralizedInfoBarFramework,
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kMigratedPinInfoBar,
