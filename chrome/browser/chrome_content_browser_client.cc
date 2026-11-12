@@ -8189,13 +8189,16 @@ void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
   url::Origin top_frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
   content::BrowserContext* browser_context = rfh->GetBrowserContext();
 
-  // Persistent MediaDevice IDs are allowed iff cookies are allowed.
+  // Persistent MediaDevice IDs are allowed iff cookies are allowed. A browser
+  // context without cookie settings, e.g. TopChromeWebUIProfile, gets an
+  // ephemeral salt.
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
-  bool allowed = cookie_settings->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
-      storage_key.ToCookiePartitionKey());
+  bool allowed = cookie_settings && cookie_settings->IsFullCookieAccessAllowed(
+                                        url, site_for_cookies, top_frame_origin,
+                                        net::CookieSettingOverrides(),
+                                        storage_key.ToCookiePartitionKey());
   ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
       rfh, storage_key,
       ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt, !allowed);

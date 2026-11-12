@@ -133,6 +133,7 @@
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -2531,6 +2532,28 @@ TEST_F(ChromeContentBrowserClientTest,
   EXPECT_FALSE(client.ShouldForceDownloadResource(
       webui::GetTopChromeWebUIProfile(), GURL("chrome://webui-toolbar/"),
       "text/html"));
+}
+
+// Tests that GetMediaDeviceIDSalt() returns an ephemeral salt for
+// TopChromeWebUIProfile, which has no cookie settings, instead of crashing.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileGetsEphemeralMediaDeviceIDSalt) {
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+  Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(top_chrome_webui_profile);
+
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(top_chrome_webui_profile);
+  ChromeContentBrowserClient client;
+  const GURL url("chrome://omnibox-popup.top-chrome/");
+  base::test::TestFuture<bool, const std::string&> future;
+  client.GetMediaDeviceIDSalt(
+      web_contents->GetPrimaryMainFrame(), net::SiteForCookies::FromUrl(url),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+      future.GetCallback());
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(top_chrome_webui_profile->UniqueId(), future.Get<1>());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
