@@ -9,7 +9,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/no_destructor.h"
@@ -70,10 +69,8 @@ class DriverImpl : public IpczDriver {
     return IPCZ_RESULT_OK;
   }
 
-  IpczResult Deserialize(const volatile void* data,
-                         size_t num_bytes,
-                         const IpczDriverHandle* handles,
-                         size_t num_handles,
+  IpczResult Deserialize(base::span<const uint8_t> data,
+                         base::span<const IpczDriverHandle> handles,
                          IpczDriverHandle transport_handle,
                          uint32_t flags,
                          const void* options,
@@ -83,14 +80,9 @@ class DriverImpl : public IpczDriver {
       return IPCZ_RESULT_INVALID_ARGUMENT;
     }
 
-    // TODO(crbug.com/40270656): Propagate the volatile qualifier on
-    // `data`.
     scoped_refptr<ObjectBase> object;
-    const IpczResult result = transport->DeserializeObject(
-        UNSAFE_TODO(base::span(
-            static_cast<const uint8_t*>(const_cast<const void*>(data)),
-            num_bytes)),
-        UNSAFE_TODO(base::span(handles, num_handles)), object);
+    const IpczResult result =
+        transport->DeserializeObject(data, handles, object);
     if (result != IPCZ_RESULT_OK) {
       return result;
     }
@@ -198,10 +190,8 @@ class DriverImpl : public IpczDriver {
   }
 
   IpczResult Transmit(IpczDriverHandle transport_handle,
-                      const void* data,
-                      size_t num_bytes,
-                      const IpczDriverHandle* handles,
-                      size_t num_handles,
+                      base::span<const uint8_t> data,
+                      base::span<const IpczDriverHandle> handles,
                       uint32_t flags,
                       const void* options) const override {
     Transport* transport = Transport::FromHandle(transport_handle);
@@ -209,9 +199,7 @@ class DriverImpl : public IpczDriver {
       return IPCZ_RESULT_INVALID_ARGUMENT;
     }
 
-    transport->Transmit(
-        UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), num_bytes)),
-        UNSAFE_TODO(base::span(handles, num_handles)));
+    transport->Transmit(data, handles);
     return IPCZ_RESULT_OK;
   }
 
@@ -297,17 +285,13 @@ class DriverImpl : public IpczDriver {
     return IPCZ_RESULT_OK;
   }
 
-  IpczResult GenerateRandomBytes(size_t num_bytes,
+  IpczResult GenerateRandomBytes(base::span<uint8_t> buffer,
                                  uint32_t flags,
-                                 const void* options,
-                                 void* buffer) const override {
-    if (!buffer || !num_bytes) {
+                                 const void* options) const override {
+    if (buffer.empty()) {
       return IPCZ_RESULT_INVALID_ARGUMENT;
     }
-    base::RandBytes(
-        // SAFETY: This requires the caller to provide a valid pointer/size
-        // pair. The function API is a C API so can't use a span.
-        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(buffer), num_bytes)));
+    base::RandBytes(buffer);
     return IPCZ_RESULT_OK;
   }
 };

@@ -54,7 +54,7 @@ decltype(&ProcessPrng) GetProcessPrng() {
 #endif
 
 #if defined(OS_POSIX) && !BUILDFLAG(IS_MAC)
-void RandomBytesFromDevUrandom(absl::Span<uint8_t> destination) {
+void RandomBytesFromDevUrandom(base::span<uint8_t> destination) {
   static int urandom_fd = [] {
     for (;;) {
       int result = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
@@ -71,14 +71,14 @@ void RandomBytesFromDevUrandom(absl::Span<uint8_t> destination) {
       ABSL_ASSERT(errno == EINTR);
       continue;
     }
-    destination.remove_prefix(result);
+    destination = destination.subspan(static_cast<size_t>(result));
   }
 }
 #endif
 
 }  // namespace
 
-void RandomBytes(absl::Span<uint8_t> destination) {
+void RandomBytes(base::span<uint8_t> destination) {
 #if BUILDFLAG(IS_WIN)
   static decltype(&ProcessPrng) process_prng_fn = GetProcessPrng();
   process_prng_fn(destination.data(), destination.size());
@@ -91,7 +91,7 @@ void RandomBytes(absl::Span<uint8_t> destination) {
     if (result == -1 && errno == EINTR) {
       continue;
     } else if (result > 0) {
-      destination.remove_prefix(result);
+      destination = destination.subspan(static_cast<size_t>(result));
     } else {
       RandomBytesFromDevUrandom(destination);
       return;

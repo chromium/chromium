@@ -113,9 +113,8 @@ IpczResult DriverTransport::Transmit(Message& message) {
   const absl::Span<const uint8_t> data = message.data_view();
   const absl::Span<const IpczDriverHandle> handles =
       message.transmissible_driver_handles();
-  return transport_.driver()->Transmit(transport_.handle(), data.data(),
-                                       data.size(), handles.data(),
-                                       handles.size(), IPCZ_NO_FLAGS, nullptr);
+  return transport_.driver()->Transmit(transport_.handle(), data, handles,
+                                       IPCZ_NO_FLAGS, nullptr);
 }
 
 bool DriverTransport::Notify(const RawMessage& message,

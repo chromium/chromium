@@ -5,6 +5,7 @@
 #include <array>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/sanitizer_buildflags.h"
 #include "build/build_config.h"
 #include "ipcz/ipcz.h"
@@ -105,10 +106,9 @@ MULTINODE_TEST(ConnectTest, DisconnectOnBadBrokerMessage) {
 
   // Send some garbage to the other node.
   const char kBadMessage[] = "this will never be a valid handshake message!";
-  EXPECT_EQ(
-      IPCZ_RESULT_OK,
-      GetDriver().Transmit(our_transport, kBadMessage, std::size(kBadMessage),
-                           nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            GetDriver().Transmit(our_transport, base::as_byte_span(kBadMessage),
+                                 {}, IPCZ_NO_FLAGS, nullptr));
   ActivateAndClose(our_transport);
 
   // The other node will only shut down once it's observed peer closure on its
@@ -120,10 +120,9 @@ MULTINODE_TEST_NODE(ConnectTestNode, TransmitSomeGarbage) {
   // Instead of doing the usual connection dance, send some garbage back to the
   // broker. It should disconnect ASAP.
   const char kBadMessage[] = "this will never be a valid handshake message!";
-  EXPECT_EQ(
-      IPCZ_RESULT_OK,
-      GetDriver().Transmit(transport(), kBadMessage, std::size(kBadMessage),
-                           nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            GetDriver().Transmit(transport(), base::as_byte_span(kBadMessage),
+                                 {}, IPCZ_NO_FLAGS, nullptr));
 
   test::TestTransportListener listener(node(), ReleaseTransport());
   absl::Notification done;
@@ -211,10 +210,10 @@ MULTINODE_TEST_NODE(ConnectTestNode, BadNonBrokerReferralClient) {
 
   // Transmit something invalid from the referred node's side of the transport.
   const char kBadMessage[] = "i am a terrible node plz reject";
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            GetDriver().Transmit(transports.theirs, kBadMessage,
-                                 std::size(kBadMessage), nullptr, 0,
-                                 IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(
+      IPCZ_RESULT_OK,
+      GetDriver().Transmit(transports.theirs, base::as_byte_span(kBadMessage),
+                           {}, IPCZ_NO_FLAGS, nullptr));
 
   auto ignore_activity =
       [](IpczHandle, const void*, size_t, const IpczDriverHandle*, size_t,

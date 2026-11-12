@@ -123,6 +123,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
+
 #define IPCZ_NO_FLAGS ((uint32_t)0)
 
 // Helper to clarify flag definitions.
@@ -297,17 +299,20 @@ class IpczDriver {
   // driver handles that was originally produced by Serialize() and received by
   // activity on `transport`.
   //
+  // Unlike the output buffer given to Serialize(), `data` never points into
+  // shared memory: ipcz copies all received data into private memory before
+  // deserializing any driver objects from it.
+  //
   // Any return value other than IPCZ_RESULT_OK indicates an error and implies
   // that `handle` is unmodified. Otherwise `*handle` must be set to a valid
   // driver handle which identifies the deserialized object upon return.
-  virtual IpczResult Deserialize(const volatile void* data,               // in
-                                 size_t num_bytes,                        // in
-                                 const IpczDriverHandle* driver_handles,  // in
-                                 size_t num_driver_handles,               // in
-                                 IpczDriverHandle transport,              // in
-                                 uint32_t flags,                          // in
-                                 const void* options,                     // in
-                                 IpczDriverHandle* handle) const = 0;     // out
+  virtual IpczResult Deserialize(
+      base::span<const uint8_t> data,                     // in
+      base::span<const IpczDriverHandle> driver_handles,  // in
+      IpczDriverHandle transport,                         // in
+      uint32_t flags,                                     // in
+      const void* options,                                // in
+      IpczDriverHandle* handle) const = 0;                // out
 
   // Creates a new pair of entangled bidirectional transports, returning them in
   // `new_transport0` and `new_transport1`.
@@ -390,18 +395,17 @@ class IpczDriver {
   //
   // The driver is responsible for ensuring that every Transmit() on a transport
   // results in a corresponding activity handler invocation on the remote peer's
-  // transport, even if `num_bytes` and `num_driver_handles` are both zero.
+  // transport, even if `data` and `driver_handles` are both empty.
   //
   // IMPORTANT: For any sequence of Transmit() calls from the same thread, the
   // corresponding activity handler invocations on the peer transport must
   // occur in the same order.
-  virtual IpczResult Transmit(IpczDriverHandle transport,              // in
-                              const void* data,                        // in
-                              size_t num_bytes,                        // in
-                              const IpczDriverHandle* driver_handles,  // in
-                              size_t num_driver_handles,               // in
-                              uint32_t flags,                          // in
-                              const void* options) const = 0;          // in
+  virtual IpczResult Transmit(
+      IpczDriverHandle transport,                         // in
+      base::span<const uint8_t> data,                     // in
+      base::span<const IpczDriverHandle> driver_handles,  // in
+      uint32_t flags,                                     // in
+      const void* options) const = 0;                     // in
 
   // The ipcz Reject() API can be used by an application to reject a specific
   // parcel received from a portal. If the parcel in question came from a
@@ -457,11 +461,10 @@ class IpczDriver {
       volatile void** address,                      // out
       IpczDriverHandle* driver_mapping) const = 0;  // out
 
-  // Generates `num_bytes` bytes of random data to fill `buffer`.
-  virtual IpczResult GenerateRandomBytes(size_t num_bytes,         // in
-                                         uint32_t flags,           // in
-                                         const void* options,      // in
-                                         void* buffer) const = 0;  // out
+  // Fills `buffer` with random data.
+  virtual IpczResult GenerateRandomBytes(base::span<uint8_t> buffer,      // out
+                                         uint32_t flags,                  // in
+                                         const void* options) const = 0;  // in
 };
 
 // Flags which may be passed via the `memory_flags` field of

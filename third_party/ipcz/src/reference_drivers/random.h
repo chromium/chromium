@@ -7,11 +7,11 @@
 
 #include <cstdint>
 
-#include "third_party/abseil-cpp/absl/types/span.h"
+#include "base/containers/span.h"
 
 namespace ipcz::reference_drivers {
 
-void RandomBytes(absl::Span<uint8_t> destination);
+void RandomBytes(base::span<uint8_t> destination);
 
 }  // namespace ipcz::reference_drivers
 

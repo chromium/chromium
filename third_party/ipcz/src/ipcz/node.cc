@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/features.h"
@@ -225,8 +226,8 @@ Ref<NodeLink> Node::GetLink(const NodeName& name) {
 
 NodeName Node::GenerateRandomName() const {
   NodeName name;
-  IpczResult result =
-      driver_.GenerateRandomBytes(sizeof(name), IPCZ_NO_FLAGS, nullptr, &name);
+  IpczResult result = driver_.GenerateRandomBytes(
+      base::byte_span_from_ref(name), IPCZ_NO_FLAGS, nullptr);
   ABSL_ASSERT(result == IPCZ_RESULT_OK);
   return name;
 }

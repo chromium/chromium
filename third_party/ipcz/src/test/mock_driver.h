@@ -5,6 +5,9 @@
 #ifndef IPCZ_SRC_TEST_MOCK_DRIVER_H_
 #define IPCZ_SRC_TEST_MOCK_DRIVER_H_
 
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "ipcz/ipcz.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -32,10 +35,8 @@ class MockDriver {
                size_t*));
   MOCK_METHOD(IpczResult,
               Deserialize,
-              (const volatile void*,
-               size_t,
-               const IpczDriverHandle*,
-               size_t,
+              (base::span<const uint8_t>,
+               base::span<const IpczDriverHandle>,
                IpczDriverHandle,
                uint32_t,
                const void*,
@@ -61,10 +62,8 @@ class MockDriver {
   MOCK_METHOD(IpczResult,
               Transmit,
               (IpczDriverHandle,
-               const void*,
-               size_t,
-               const IpczDriverHandle*,
-               size_t,
+               base::span<const uint8_t>,
+               base::span<const IpczDriverHandle>,
                uint32_t,
                const void*));
   MOCK_METHOD(IpczResult,
@@ -88,7 +87,7 @@ class MockDriver {
                IpczDriverHandle*));
   MOCK_METHOD(IpczResult,
               GenerateRandomBytes,
-              (size_t, uint32_t, const void*, void*));
+              (base::span<uint8_t>, uint32_t, const void*));
 };
 
 // An ipcz driver which forwards its API invocations to the only currently

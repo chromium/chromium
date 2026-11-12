@@ -10,6 +10,7 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
@@ -123,10 +124,8 @@ class Fuzzer {
                        size_t* num_bytes,
                        IpczDriverHandle* handles,
                        size_t* num_handles);
-  IpczResult Deserialize(const volatile void* data,
-                         size_t num_bytes,
-                         const IpczDriverHandle* handles,
-                         size_t num_handles,
+  IpczResult Deserialize(base::span<const uint8_t> data,
+                         base::span<const IpczDriverHandle> handles,
                          IpczDriverHandle transport,
                          IpczDriverHandle* handle);
   IpczResult CreateTransports(IpczDriverHandle* transport0,
@@ -137,10 +136,8 @@ class Fuzzer {
                                IpczTransportActivityHandler handler);
   IpczResult DeactivateTransport(IpczDriverHandle transport);
   IpczResult Transmit(IpczDriverHandle transport,
-                      const void* data,
-                      size_t num_bytes,
-                      const IpczDriverHandle* handles,
-                      size_t num_handles);
+                      base::span<const uint8_t> data,
+                      base::span<const IpczDriverHandle> handles);
   IpczResult AllocateSharedMemory(size_t num_bytes, IpczDriverHandle* memory);
   IpczResult GetSharedMemoryInfo(IpczDriverHandle memory,
                                  IpczSharedMemoryInfo* info);
@@ -149,7 +146,7 @@ class Fuzzer {
   IpczResult MapSharedMemory(IpczDriverHandle memory,
                              volatile void** address,
                              IpczDriverHandle* mapping);
-  IpczResult GenerateRandomBytes(absl::Span<uint8_t> bytes);
+  IpczResult GenerateRandomBytes(base::span<uint8_t> bytes);
 
  private:
   class Memory;

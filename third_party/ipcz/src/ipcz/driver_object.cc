@@ -108,9 +108,9 @@ DriverObject DriverObject::Deserialize(
     absl::Span<const IpczDriverHandle> handles) {
   IpczDriverHandle handle;
   const IpczDriver* driver = transport.driver_object().driver();
-  IpczResult result = driver->Deserialize(
-      data.data(), data.size(), handles.data(), handles.size(),
-      transport.driver_object().handle(), IPCZ_NO_FLAGS, nullptr, &handle);
+  IpczResult result =
+      driver->Deserialize(data, handles, transport.driver_object().handle(),
+                          IPCZ_NO_FLAGS, nullptr, &handle);
   if (result != IPCZ_RESULT_OK) {
     return DriverObject();
   }

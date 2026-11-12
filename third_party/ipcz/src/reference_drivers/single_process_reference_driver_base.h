@@ -7,6 +7,7 @@
 
 #include <functional>
 
+#include "base/containers/span.h"
 #include "ipcz/ipcz.h"
 
 namespace ipcz::reference_drivers {
@@ -24,10 +25,8 @@ class SingleProcessReferenceDriverBase : public IpczDriver {
                        size_t* num_bytes,
                        IpczDriverHandle* handles,
                        size_t* num_handles) const override;
-  IpczResult Deserialize(const volatile void* data,
-                         size_t num_bytes,
-                         const IpczDriverHandle* driver_handles,
-                         size_t num_driver_handles,
+  IpczResult Deserialize(base::span<const uint8_t> data,
+                         base::span<const IpczDriverHandle> driver_handles,
                          IpczDriverHandle transport,
                          uint32_t flags,
                          const void* options,
@@ -55,10 +54,9 @@ class SingleProcessReferenceDriverBase : public IpczDriver {
                              const void* options,
                              volatile void** address,
                              IpczDriverHandle* driver_mapping) const override;
-  IpczResult GenerateRandomBytes(size_t num_bytes,
+  IpczResult GenerateRandomBytes(base::span<uint8_t> buffer,
                                  uint32_t flags,
-                                 const void* options,
-                                 void* buffer) const override;
+                                 const void* options) const override;
 };
 
 // Installs a hook to be invoked any time ReportBadTransportActivity() is called

@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/object.h"
@@ -362,15 +363,11 @@ class SyncReferenceDriverImpl : public SingleProcessReferenceDriverBase {
   }
 
   IpczResult Transmit(IpczDriverHandle transport,
-                      const void* data,
-                      size_t num_bytes,
-                      const IpczDriverHandle* handles,
-                      size_t num_driver_handles,
+                      base::span<const uint8_t> data,
+                      base::span<const IpczDriverHandle> handles,
                       uint32_t flags,
                       const void* options) const override {
-    return InProcessTransport::FromHandle(transport)->Transmit(
-        absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
-        absl::MakeSpan(handles, num_driver_handles));
+    return InProcessTransport::FromHandle(transport)->Transmit(data, handles);
   }
 };
 

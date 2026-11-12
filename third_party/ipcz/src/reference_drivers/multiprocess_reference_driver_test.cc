@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "base/containers/span.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/wrapped_file_descriptor.h"
@@ -43,8 +44,8 @@ TEST(MultiprocessReferenceDriverTest, SendDeactivated) {
   // this Transmit(), and if it does, the test will hang below.
   IpczDriverHandle handle =
       WrappedFileDescriptor::Create(FileDescriptor(fds[0]));
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            driver.Transmit(a, nullptr, 0, &handle, 1, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, driver.Transmit(a, {}, base::span_from_ref(handle),
+                                            IPCZ_NO_FLAGS, nullptr));
 
   // Wait for the other side to be closed by the driver. Since this is a
   // blocking socket, a successful zero-length read() indicates EOF.

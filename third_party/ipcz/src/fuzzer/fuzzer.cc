@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "fuzzer/driver.h"
 #include "fuzzer/fuzzer.h"
 #include "ipcz/ipcz.h"
@@ -351,13 +352,11 @@ IpczResult Fuzzer::Serialize(IpczDriverHandle handle,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult Fuzzer::Deserialize(const volatile void* data,
-                               size_t num_bytes,
-                               const IpczDriverHandle* handles,
-                               size_t num_handles,
+IpczResult Fuzzer::Deserialize(base::span<const uint8_t> data,
+                               base::span<const IpczDriverHandle> handles,
                                IpczDriverHandle transport,
                                IpczDriverHandle* handle) {
-  if (num_handles != 1) {
+  if (handles.size() != 1) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
   if (!GetDriverObject(handles[0])) {
@@ -396,14 +395,10 @@ IpczResult Fuzzer::DeactivateTransport(IpczDriverHandle transport_handle) {
 }
 
 IpczResult Fuzzer::Transmit(IpczDriverHandle transport_handle,
-                            const void* data,
-                            size_t num_bytes,
-                            const IpczDriverHandle* handles,
-                            size_t num_handles) {
+                            base::span<const uint8_t> data,
+                            base::span<const IpczDriverHandle> handles) {
   if (auto transport = GetDriverObjectAs<Transport>(transport_handle)) {
-    transport->Transmit(
-        absl::Span(static_cast<const uint8_t*>(data), num_bytes),
-        absl::Span(handles, num_handles));
+    transport->Transmit(data, handles);
     return IPCZ_RESULT_OK;
   }
   return IPCZ_RESULT_INVALID_ARGUMENT;
@@ -446,7 +441,7 @@ IpczResult Fuzzer::MapSharedMemory(IpczDriverHandle memory_handle,
   return IPCZ_RESULT_INVALID_ARGUMENT;
 }
 
-IpczResult Fuzzer::GenerateRandomBytes(absl::Span<uint8_t> bytes) {
+IpczResult Fuzzer::GenerateRandomBytes(base::span<uint8_t> bytes) {
   // Our "random" bytes are deterministic and not random. This ensures that
   // node names (and ultimately, the contents of well-formed messages throughout
   // fuzzer testcases) are consistent across runs.

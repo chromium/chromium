@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/object.h"
@@ -232,15 +233,11 @@ class AsyncReferenceDriverImpl : public SingleProcessReferenceDriverBase {
   }
 
   IpczResult Transmit(IpczDriverHandle transport,
-                      const void* data,
-                      size_t num_bytes,
-                      const IpczDriverHandle* handles,
-                      size_t num_driver_handles,
+                      base::span<const uint8_t> data,
+                      base::span<const IpczDriverHandle> handles,
                       uint32_t flags,
                       const void* options) const override {
-    AsyncTransport::FromHandle(transport)->Transmit(
-        {static_cast<const uint8_t*>(data), num_bytes},
-        {handles, num_driver_handles});
+    AsyncTransport::FromHandle(transport)->Transmit(data, handles);
     return IPCZ_RESULT_OK;
   }
 };

@@ -4,6 +4,7 @@
 
 #include "test/mock_driver.h"
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 
@@ -42,16 +43,14 @@ class MockDriverImpl : public IpczDriver {
                                  num_bytes, handles, num_handles);
   }
 
-  IpczResult Deserialize(const volatile void* data,
-                         size_t num_bytes,
-                         const IpczDriverHandle* handles,
-                         size_t num_handles,
+  IpczResult Deserialize(base::span<const uint8_t> data,
+                         base::span<const IpczDriverHandle> handles,
                          IpczDriverHandle transport,
                          uint32_t flags,
                          const void* options,
                          IpczDriverHandle* driver_handle) const override {
-    return GetDriver().Deserialize(data, num_bytes, handles, num_handles,
-                                   transport, flags, options, driver_handle);
+    return GetDriver().Deserialize(data, handles, transport, flags, options,
+                                   driver_handle);
   }
 
   IpczResult CreateTransports(IpczDriverHandle transport0,
@@ -88,14 +87,12 @@ class MockDriverImpl : public IpczDriver {
   }
 
   IpczResult Transmit(IpczDriverHandle driver_transport,
-                      const void* data,
-                      size_t num_bytes,
-                      const IpczDriverHandle* handles,
-                      size_t num_handles,
+                      base::span<const uint8_t> data,
+                      base::span<const IpczDriverHandle> handles,
                       uint32_t flags,
                       const void* options) const override {
-    return GetDriver().Transmit(driver_transport, data, num_bytes, handles,
-                                num_handles, flags, options);
+    return GetDriver().Transmit(driver_transport, data, handles, flags,
+                                options);
   }
 
   IpczResult AllocateSharedMemory(
@@ -132,11 +129,10 @@ class MockDriverImpl : public IpczDriver {
                                        driver_mapping);
   }
 
-  IpczResult GenerateRandomBytes(size_t num_bytes,
+  IpczResult GenerateRandomBytes(base::span<uint8_t> buffer,
                                  uint32_t flags,
-                                 const void* options,
-                                 void* buffer) const override {
-    return GetDriver().GenerateRandomBytes(num_bytes, flags, options, buffer);
+                                 const void* options) const override {
+    return GetDriver().GenerateRandomBytes(buffer, flags, options);
   }
 };
 

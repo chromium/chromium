@@ -16,6 +16,7 @@ buildflag_header("test_buildflags") {
 source_set("ipcz_header") {
   visibility = [ ":*" ]
   public = [ "../include/ipcz/ipcz.h" ]
+  public_deps = [ "//base" ]
   public_configs = [ ":ipcz_include_dir" ]
 }
 
@@ -347,9 +348,11 @@ source_set("fuzzer_sources") {
     ":ipcz",
     ":reference_drivers",
     ":util",
-    "//base",
     "//third_party/abseil-cpp:absl",
   ]
+
+  # fuzzer.h exposes base::span in its API.
+  public_deps = [ "//base" ]
   public_configs = [
     ":ipcz_include_dir",
     ":ipcz_include_src_dir",

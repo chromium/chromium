@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "fuzzer/fuzzer.h"
 #include "ipcz/ipcz.h"
@@ -33,16 +34,13 @@ class FuzzerDriverImpl : public IpczDriver {
                                    num_handles);
   }
 
-  IpczResult Deserialize(const volatile void* data,
-                         size_t num_bytes,
-                         const IpczDriverHandle* handles,
-                         size_t num_handles,
+  IpczResult Deserialize(base::span<const uint8_t> data,
+                         base::span<const IpczDriverHandle> handles,
                          IpczDriverHandle transport,
                          uint32_t flags,
                          const void* options,
                          IpczDriverHandle* handle) const override {
-    return Fuzzer::Get().Deserialize(data, num_bytes, handles, num_handles,
-                                     transport, handle);
+    return Fuzzer::Get().Deserialize(data, handles, transport, handle);
   }
 
   IpczResult CreateTransports(IpczDriverHandle transport0,
@@ -77,14 +75,11 @@ class FuzzerDriverImpl : public IpczDriver {
   }
 
   IpczResult Transmit(IpczDriverHandle transport,
-                      const void* data,
-                      size_t num_bytes,
-                      const IpczDriverHandle* handles,
-                      size_t num_handles,
+                      base::span<const uint8_t> data,
+                      base::span<const IpczDriverHandle> handles,
                       uint32_t flags,
                       const void* options) const override {
-    return Fuzzer::Get().Transmit(transport, data, num_bytes, handles,
-                                  num_handles);
+    return Fuzzer::Get().Transmit(transport, data, handles);
   }
 
   IpczResult ReportBadTransportActivity(IpczDriverHandle transport,
@@ -123,12 +118,10 @@ class FuzzerDriverImpl : public IpczDriver {
     return Fuzzer::Get().MapSharedMemory(memory, address, mapping);
   }
 
-  IpczResult GenerateRandomBytes(size_t num_bytes,
+  IpczResult GenerateRandomBytes(base::span<uint8_t> buffer,
                                  uint32_t flags,
-                                 const void* options,
-                                 void* buffer) const override {
-    return Fuzzer::Get().GenerateRandomBytes(
-        absl::MakeSpan(static_cast<uint8_t*>(buffer), num_bytes));
+                                 const void* options) const override {
+    return Fuzzer::Get().GenerateRandomBytes(buffer);
   }
 };
 

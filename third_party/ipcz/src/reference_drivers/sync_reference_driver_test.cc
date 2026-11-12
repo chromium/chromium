@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "ipcz/api_object.h"
 #include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,9 +99,8 @@ TEST(SyncReferenceDriverTest, TransmitBeforeActive) {
                                     nullptr, &a, &b));
 
   const std::string kMessage = "hello, world?";
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            driver.Transmit(a, kMessage.data(), kMessage.size(), nullptr, 0,
-                            IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, driver.Transmit(a, base::as_byte_span(kMessage), {},
+                                            IPCZ_NO_FLAGS, nullptr));
 
   bool received = false;
   TransportReceiver receiver({.on_message = [&](TransportMessage message) {
@@ -145,9 +145,8 @@ TEST(SyncReferenceDriverTest, TransmitWhileActive) {
 
   // Transmission must result in synchronous receipt of the message.
   EXPECT_FALSE(received);
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            driver.Transmit(a, kMessage.data(), kMessage.size(), nullptr, 0,
-                            IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, driver.Transmit(a, base::as_byte_span(kMessage), {},
+                                            IPCZ_NO_FLAGS, nullptr));
   EXPECT_TRUE(received);
 
   EXPECT_EQ(IPCZ_RESULT_OK,
@@ -209,9 +208,8 @@ TEST(SyncReferenceDriverTest, TransmitAfterDeactivated) {
   EXPECT_TRUE(deactivated);
 
   const std::string kMessage = "hello, world?";
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            driver.Transmit(a, kMessage.data(), kMessage.size(), nullptr, 0,
-                            IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, driver.Transmit(a, base::as_byte_span(kMessage), {},
+                                            IPCZ_NO_FLAGS, nullptr));
   EXPECT_FALSE(message_received);
 
   EXPECT_EQ(IPCZ_RESULT_OK, driver.Close(a, IPCZ_NO_FLAGS, nullptr));
@@ -243,9 +241,8 @@ TEST(SyncReferenceDriverTest, NotifyError) {
                                      nullptr));
 
   const std::string kMessage = "hello, world?";
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            driver.Transmit(a, kMessage.data(), kMessage.size(), nullptr, 0,
-                            IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, driver.Transmit(a, base::as_byte_span(kMessage), {},
+                                            IPCZ_NO_FLAGS, nullptr));
   EXPECT_TRUE(observed_error);
 
   // Errors imply deactivation, so no separate notification happens for
@@ -323,8 +320,8 @@ TEST(SyncReferenceDriverTest, TransmitHandles) {
             driver.AllocateSharedMemory(64, IPCZ_NO_FLAGS, nullptr, &memory));
   EXPECT_NE(IPCZ_INVALID_DRIVER_HANDLE, memory);
 
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            driver.Transmit(a, nullptr, 0, &memory, 1, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, driver.Transmit(a, {}, base::span_from_ref(memory),
+                                            IPCZ_NO_FLAGS, nullptr));
 
   // Driver handles transmitted through the single-process driver should retain
   // the value across transmission.

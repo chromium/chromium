@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/object.h"
 #include "reference_drivers/random.h"
@@ -106,16 +107,14 @@ IpczResult SingleProcessReferenceDriverBase::Serialize(
 }
 
 IpczResult SingleProcessReferenceDriverBase::Deserialize(
-    const volatile void* data,
-    size_t num_bytes,
-    const IpczDriverHandle* handles,
-    size_t num_handles,
+    base::span<const uint8_t> data,
+    base::span<const IpczDriverHandle> handles,
     IpczDriverHandle transport,
     uint32_t flags,
     const void* options,
     IpczDriverHandle* driver_handle) const {
-  ABSL_ASSERT(num_bytes == 0);
-  ABSL_ASSERT(num_handles == 1);
+  ABSL_ASSERT(data.empty());
+  ABSL_ASSERT(handles.size() == 1);
   *driver_handle = handles[0];
   return IPCZ_RESULT_OK;
 }
@@ -185,11 +184,10 @@ IpczResult SingleProcessReferenceDriverBase::MapSharedMemory(
 }
 
 IpczResult SingleProcessReferenceDriverBase::GenerateRandomBytes(
-    size_t num_bytes,
+    base::span<uint8_t> buffer,
     uint32_t flags,
-    const void* options,
-    void* buffer) const {
-  RandomBytes(absl::MakeSpan(static_cast<uint8_t*>(buffer), num_bytes));
+    const void* options) const {
+  RandomBytes(buffer);
   return IPCZ_RESULT_OK;
 }
 

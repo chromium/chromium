@@ -4,12 +4,14 @@
 
 #include "reference_drivers/multiprocess_reference_driver.h"
 
+#include <cstdint>
 #include <cstring>
 #include <limits>
 #include <memory>
 #include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/file_descriptor.h"
@@ -250,24 +252,23 @@ class MultiprocessReferenceDriverImpl : public IpczDriver {
     return IPCZ_RESULT_OK;
   }
 
-  IpczResult Deserialize(const volatile void* data,
-                         size_t num_bytes,
-                         const IpczDriverHandle* handles,
-                         size_t num_handles,
+  IpczResult Deserialize(base::span<const uint8_t> data,
+                         base::span<const IpczDriverHandle> handles,
                          IpczDriverHandle transport,
                          uint32_t flags,
                          const void* options,
                          IpczDriverHandle* driver_handle) const override {
-    const auto& header =
-        *static_cast<const volatile SerializedObjectHeader*>(data);
-    if (num_bytes < sizeof(header)) {
+    if (data.size() < sizeof(SerializedObjectHeader)) {
       return IPCZ_RESULT_INVALID_ARGUMENT;
     }
+    SerializedObjectHeader header;
+    base::byte_span_from_ref(header).copy_from(
+        data.first<sizeof(SerializedObjectHeader)>());
 
     Ref<Object> object;
     switch (header.type) {
       case Object::kTransport:
-        if (num_handles == 1) {
+        if (handles.size() == 1) {
           object = MakeRefCounted<MultiprocessTransport>(
               MakeRefCounted<SocketTransport>(
                   WrappedFileDescriptor::UnwrapHandle(handles[0])));
@@ -275,7 +276,7 @@ class MultiprocessReferenceDriverImpl : public IpczDriver {
         break;
 
       case Object::kMemory:
-        if (num_handles == 1) {
+        if (handles.size() == 1) {
           object = MakeRefCounted<MultiprocessMemory>(
               WrappedFileDescriptor::UnwrapHandle(handles[0]),
               header.memory_size);
@@ -327,15 +328,12 @@ class MultiprocessReferenceDriverImpl : public IpczDriver {
   }
 
   IpczResult Transmit(IpczDriverHandle transport,
-                      const void* data,
-                      size_t num_bytes,
-                      const IpczDriverHandle* handles,
-                      size_t num_handles,
+                      base::span<const uint8_t> data,
+                      base::span<const IpczDriverHandle> handles,
                       uint32_t flags,
                       const void* options) const override {
-    return MultiprocessTransport::FromHandle(transport)->Transmit(
-        absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
-        absl::MakeSpan(handles, num_handles));
+    return MultiprocessTransport::FromHandle(transport)->Transmit(data,
+                                                                  handles);
   }
 
   IpczResult ReportBadTransportActivity(IpczDriverHandle transport,
@@ -391,11 +389,10 @@ class MultiprocessReferenceDriverImpl : public IpczDriver {
     return IPCZ_RESULT_OK;
   }
 
-  IpczResult GenerateRandomBytes(size_t num_bytes,
+  IpczResult GenerateRandomBytes(base::span<uint8_t> buffer,
                                  uint32_t flags,
-                                 const void* options,
-                                 void* buffer) const override {
-    RandomBytes(absl::MakeSpan(static_cast<uint8_t*>(buffer), num_bytes));
+                                 const void* options) const override {
+    RandomBytes(buffer);
     return IPCZ_RESULT_OK;
   }
 };

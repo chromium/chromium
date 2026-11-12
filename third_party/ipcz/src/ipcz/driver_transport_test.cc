@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/driver_object.h"
@@ -25,6 +26,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
+using ::testing::Truly;
 
 class DriverTransportTest : public testing::Test {
  public:
@@ -156,8 +158,13 @@ TEST_F(DriverTransportTest, Transmit) {
   message.v0()->foo = 5;
   message.v0()->bar = 7;
 
-  EXPECT_CALL(driver(), Transmit(kTransport0, message.data_view().data(),
-                                 message.data_view().size(), _, _, _, _))
+  const auto expected_data = message.data_view();
+  EXPECT_CALL(driver(),
+              Transmit(kTransport0, Truly([&](base::span<const uint8_t> data) {
+                         return data.data() == expected_data.data() &&
+                                data.size() == expected_data.size();
+                       }),
+                       _, _, _))
       .WillOnce(Return(IPCZ_RESULT_OK));
 
   a->Transmit(message);
