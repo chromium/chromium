@@ -305,9 +305,18 @@ static inline bool CanHaveWhitespaceChildren(
       parent.IsFlexibleBox() || parent.IsLayoutGridOrGridLanes() ||
       parent.IsSVGRoot() || parent.IsSVGContainer() || parent.IsSVGImage() ||
       parent.IsSVGShape()) {
-    if (!context.use_previous_in_flow || !context.previous_in_flow ||
-        !context.previous_in_flow->IsText())
+    if (!context.use_previous_in_flow || !context.previous_in_flow) {
       return false;
+    }
+
+    // White space after an inline in a table goes into the same anonymous
+    // cell as the inline, so keep it.
+    // https://drafts.csswg.org/css-tables/#fixup-algorithm
+    if (!context.previous_in_flow->IsText()) {
+      return (parent.IsTable() || parent.IsTableRow() ||
+              parent.IsTableSection()) &&
+             context.previous_in_flow->IsInline();
+    }
 
     return style.ShouldPreserveBreaks() ||
            !EndsWithWhitespace(

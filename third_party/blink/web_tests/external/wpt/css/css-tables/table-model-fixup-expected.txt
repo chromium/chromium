@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] 1.4. Anonymous inline boxes which contains only white space and are between two immediate siblings *each* of which is a table-non-root element, are treated as if they had display: none.
-  assert_equals: expected true but got false
-Harness: the test ran to completion.
-

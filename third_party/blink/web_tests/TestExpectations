@@ -778,7 +778,6 @@ crbug.com/338842128 fast/table/border-collapsing/composited-cell-collapsed-borde
 crbug.com/338842128 fast/table/border-collapsing/composited-row-collapsed-border.html [ Failure ]
 
 ### external/wpt/css/css-tables/
-crbug.com/694374 external/wpt/css/css-tables/anonymous-table-ws-001.html [ Failure ]
 crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-004.html [ Failure ]
 crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-colspan-003.html [ Failure ]
 crbug.com/1179497 external/wpt/css/css-tables/col-definite-max-size-001.html [ Failure ]
@@ -787,7 +786,6 @@ crbug.com/1179497 external/wpt/css/css-tables/col-definite-size-001.html [ Failu
 crbug.com/1171616 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Failure ]
 crbug.com/910725 external/wpt/css/css-tables/tentative/paint/overflow-hidden-table.html [ Failure ]
 crbug.com/40736545 external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Failure ]
-crbug.com/694374 external/wpt/css/css-tables/whitespace-001.html [ Failure ]
 
 # [css-ui]
 # The `input-security` property not implemented yet.
