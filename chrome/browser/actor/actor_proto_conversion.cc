@@ -96,7 +96,6 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #else
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
 
@@ -1874,14 +1873,13 @@ void BuildActionsResultWithObservations(
         // Treat the first window as active.
         window_observation->set_active(response->windows_size() == 1);
 
-        if (TabModel* tab_model =
-                static_cast<TabModel*>(TabListInterface::From(browser))) {
-          if (tabs::TabInterface* active_tab = tab_model->GetActiveTab()) {
+        if (TabListInterface* tab_list = TabListInterface::From(browser)) {
+          if (tabs::TabInterface* active_tab = tab_list->GetActiveTab()) {
             window_observation->set_activated_tab_id(
                 active_tab->GetHandle().raw_value());
           }
 
-          for (const tabs::TabInterface* tab : tab_model->GetAllTabs()) {
+          for (const tabs::TabInterface* tab : tab_list->GetAllTabs()) {
             window_observation->add_tab_ids(tab->GetHandle().raw_value());
           }
         }

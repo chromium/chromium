@@ -32,7 +32,6 @@
 #else
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
 
@@ -213,14 +212,13 @@ void TabObservationController::PopulateWindowObservations(ActorTask* task) {
         window_observation.set_id(browser->GetSessionID().id());
         window_observation.set_active(result_->window_observations.empty());
 
-        if (TabModel* tab_model =
-                static_cast<TabModel*>(TabListInterface::From(browser))) {
-          if (tabs::TabInterface* active_tab = tab_model->GetActiveTab()) {
+        if (TabListInterface* tab_list = TabListInterface::From(browser)) {
+          if (tabs::TabInterface* active_tab = tab_list->GetActiveTab()) {
             window_observation.set_activated_tab_id(
                 active_tab->GetHandle().raw_value());
           }
 
-          for (const tabs::TabInterface* tab : tab_model->GetAllTabs()) {
+          for (const tabs::TabInterface* tab : tab_list->GetAllTabs()) {
             window_observation.add_tab_ids(tab->GetHandle().raw_value());
           }
         }
@@ -230,9 +228,10 @@ void TabObservationController::PopulateWindowObservations(ActorTask* task) {
       },
       BrowserCollection::Order::kActivation);
 
-  // TODO(crbug.com/535626765): Consider adding off screen
-  // BrowserWindowInterface to GlobalBrowserCollection instead of special case
-  // here.
+  // Background actor tabs are detached from their TabModel, so they are not in
+  // any BrowserWindowInterface. GlobalBrowserCollection on Android only tracks
+  // Activity-backed windows (via ChromeAndroidTaskTracker), so report these
+  // tabs separately.
   PopulateAndroidOffscreenWindowObservations(task);
 #endif
   PopulateHeadlessWindowObservations(task);
