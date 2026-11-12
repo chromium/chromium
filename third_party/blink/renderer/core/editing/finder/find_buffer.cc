@@ -77,19 +77,17 @@ bool FindBuffer::ShouldIgnoreContents(const Node& node) {
       !To<TextControlElement>(*element).SuggestedValue().empty()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::FindIgnoreSuggestionFixEnabled()) {
-    if (const auto* control = DynamicTo<HTMLFormControlElement>(element)) {
-      if (control->IsPreviewed()) {
-        return true;
-      }
+  if (const auto* control = DynamicTo<HTMLFormControlElement>(element)) {
+    if (control->IsPreviewed()) {
+      return true;
     }
-    // The autofill popover should not be showing, otherwise it would be
-    // possible for the page to figure out what the suggested option is.
-    if (const auto* select = DynamicTo<HTMLSelectElement>(element)) {
-      HTMLSelectElement::SelectAutofillPreviewElement* preview =
-          select->GetAutofillPreviewElement();
-      CHECK(!preview || !preview->popoverOpen());
-    }
+  }
+  // The autofill popover should not be showing, otherwise it would be
+  // possible for the page to figure out what the suggested option is.
+  if (const auto* select = DynamicTo<HTMLSelectElement>(element)) {
+    HTMLSelectElement::SelectAutofillPreviewElement* preview =
+        select->GetAutofillPreviewElement();
+    CHECK(!preview || !preview->popoverOpen());
   }
 
   return (!element->ShouldSerializeEndTag() &&

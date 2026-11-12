@@ -1403,9 +1403,7 @@ void HTMLInputElement::SetValue(const String& value,
   if (!input_type_->CanSetValue(value))
     return;
 
-  const bool had_suggested_value =
-      RuntimeEnabledFeatures::FindIgnoreSuggestionFixEnabled() &&
-      !SuggestedValue().empty();
+  const bool had_suggested_value = !SuggestedValue().empty();
   // Clear the suggested value. Use the base class version to not trigger a view
   // update.
   TextControlElement::SetSuggestedValue(String());

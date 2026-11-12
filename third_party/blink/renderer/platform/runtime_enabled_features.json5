@@ -3339,11 +3339,6 @@
       status: "stable",
     },
     {
-      // crbug.com/553136688 and crbug.com/553252820
-      name: "FindIgnoreSuggestionFix",
-      status: "stable",
-    },
-    {
       // Enables asymmetric diacritic matching in Find-in-Page so base
       // characters match diacritic variants while explicit diacritics only
       // match that diacritic (https://crbug.com/40518349).
