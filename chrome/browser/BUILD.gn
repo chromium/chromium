@@ -5145,6 +5145,7 @@ source_set("core_unit_tests") {
       "//chrome/app:command_ids",
       "//chrome/browser/profiles:profile",
       "//chrome/common:channel_info",
+      "//chrome/test/base:chrome_test_scoped_utils",
       "//components/version_info:channel",
     ]
   }
