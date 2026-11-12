@@ -53,7 +53,6 @@ class GlicTabObserverAndroid : public GlicTabObserver,
   void WillCloseTabs(const std::vector<TabAndroid*>& tabs,
                      bool is_all_tabs,
                      bool allow_undo) override;
-  void WillCloseTab(TabAndroid* tab) override;
   void OnTabModelDestroyed(TabModel& tab_model) override;
 
   // TabAndroid::Observer:

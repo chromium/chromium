@@ -46,20 +46,12 @@ void PageContentExtractionTabModelObserverAndroid::WillCloseTabs(
     const std::vector<TabAndroid*>& tabs,
     bool is_all_tabs,
     bool allow_undo) {
-  // Observe WillCloseTab instead of OnFinishingTabClosure since we might never
+  // Observe WillCloseTabs instead of OnFinishingTabClosure since we might never
   // receive this observation if the app quit before the undo timeout. It is
   // more reliable to observe this and undo closure.
   for (TabAndroid* tab : tabs) {
     service_->OnTabClosed(tab->GetAndroidId());
   }
-}
-
-void PageContentExtractionTabModelObserverAndroid::WillCloseTab(
-    TabAndroid* tab) {
-  // Observe WillCloseTab instead of OnFinishingTabClosure since we might never
-  // receive this observation if the app quit before the undo timeout. It is
-  // more reliable to observe this and undo closure.
-  service_->OnTabClosed(tab->GetAndroidId());
 }
 
 void PageContentExtractionTabModelObserverAndroid::TabClosureUndone(

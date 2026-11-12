@@ -93,10 +93,6 @@ void SidePanelTabModelObserver::WillCloseTabs(
   }
 }
 
-void SidePanelTabModelObserver::AllTabsAreClosing() {
-  WillCloseTabs({}, /*is_all_tabs=*/true, /*allow_undo=*/false);
-}
-
 void SidePanelTabModelObserver::OnTabModelDestroyed(TabModel& tab_model) {
   CHECK(tab_model_ == &tab_model);
   tab_model_->RemoveObserver(this);

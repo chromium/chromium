@@ -58,7 +58,6 @@ class AutoPictureInPictureTabModelObserverHelper final
   void WillCloseTabs(const std::vector<TabAndroid*>& tabs,
                      bool is_all_tabs,
                      bool allow_undo) override;
-  void WillCloseTab(TabAndroid* tab) override;
 
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* model) override;

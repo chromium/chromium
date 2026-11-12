@@ -49,7 +49,6 @@ class PageContentExtractionTabModelObserverAndroid
   void WillCloseTabs(const std::vector<TabAndroid*>& tabs,
                      bool is_all_tabs,
                      bool allow_undo) override;
-  void WillCloseTab(TabAndroid* tab) override;
   void TabClosureUndone(TabAndroid* tab) override;
 
   // tab_window::TabWindowManagerObserver:
