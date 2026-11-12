@@ -6680,6 +6680,52 @@ TEST_P(WaylandWindowTest, UiScale_HandlePopupGeometry) {
             gfx::Point(110, 110));
   // Screen API uses UI DIP coordinates.
   EXPECT_EQ(screen_->GetCursorScreenPoint(), gfx::Point(88, 88));
+
+  // Verify that repositioning the popup via SetBoundsInDIP scales the new
+  // origin and anchor rect by `ui_scale` (1.25f), reuses `geometry_size_dip`
+  // (rounding fractional dimensions down without leaking fractional origin
+  // remainders into size), and round-trips through `HandlePopupConfigure()`
+  // without shrinking or +1 DIP rounding drift. Regression test for
+  // https://crbug.com/504686729.
+  ui::OwnedWindowAnchor updated_anchor{
+      .anchor_rect = gfx::Rect(120, 120, 40, 40),
+      .anchor_position = OwnedWindowAnchorPosition::kBottomRight,
+      .anchor_gravity = OwnedWindowAnchorGravity::kBottomLeft};
+  EXPECT_CALL(menu_delegate, GetOwnedWindowAnchorAndRectInDIP())
+      .WillOnce(Return(updated_anchor));
+  menu_window->SetBoundsInDIP(gfx::Rect(121, 120, 41, 61));
+  PostToServerAndWait([menu_surface_id](wl::TestWaylandServerThread* server) {
+    auto* surface = server->GetObject<wl::MockSurface>(menu_surface_id);
+    ASSERT_TRUE(surface);
+    auto* xdg_surface = surface->xdg_surface();
+    ASSERT_TRUE(xdg_surface);
+    auto* popup = xdg_surface->xdg_popup();
+    ASSERT_TRUE(popup);
+    ASSERT_TRUE(popup->resource());
+    EXPECT_EQ(popup->anchor_rect(), gfx::Rect(150, 150, 50, 50));
+    EXPECT_EQ(popup->size(), gfx::Size(51, 76));
+
+    xdg_popup_send_configure(popup->resource(), 151, 150, popup->size().width(),
+                             popup->size().height());
+    xdg_surface_send_configure(xdg_surface->resource(),
+                               kLatestConfigureSerial + 1);
+  });
+  EXPECT_EQ(menu_window->applied_state().bounds_dip.size(), gfx::Size(41, 61));
+
+  // Verify that repositioning when `GetOwnedWindowAnchorAndRectInDIP()` returns
+  // `std::nullopt` clears the previously set anchor and falls back to default
+  // anchoring.
+  EXPECT_CALL(menu_delegate, GetOwnedWindowAnchorAndRectInDIP())
+      .WillOnce(Return(std::nullopt));
+  menu_window->SetBoundsInDIP(gfx::Rect(100, 100, 40, 60));
+  PostToServerAndWait([menu_surface_id](wl::TestWaylandServerThread* server) {
+    auto* popup = GetTestXdgPopupByWindow(server, menu_surface_id);
+    ASSERT_TRUE(popup);
+    EXPECT_EQ(popup->anchor_rect(), gfx::Rect(125, 125, 1, 1));
+    EXPECT_EQ(popup->size(), gfx::Size(50, 75));
+    EXPECT_EQ(popup->anchor(), XDG_POSITIONER_ANCHOR_TOP_LEFT);
+    EXPECT_EQ(popup->gravity(), XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT);
+  });
 }
 
 TEST_P(WaylandWindowTest, UiScale_SanitizeFontScale) {

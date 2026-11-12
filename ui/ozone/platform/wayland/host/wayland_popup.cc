@@ -5,7 +5,9 @@
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -85,22 +87,8 @@ bool WaylandPopup::CreateShellPopup() {
       .anchor = delegate()->GetOwnedWindowAnchorAndRectInDIP(),
   };
   if (params.anchor.has_value()) {
-    // The anchor rectangle must be relative to the window geometry, rather
-    // than the root surface origin. See https://crbug.com/1292486.
-    gfx::Rect anchor_rect(
-        wl::TranslateBoundsToParentCoordinates(
-            params.anchor->anchor_rect, xdg_parent_window->GetBoundsInDIP()) -
-        xdg_parent_window->GetWindowGeometryOffsetInDIP());
-
-    // Convert `anchor_rect` to Wayland coordinates space.
-    anchor_rect = gfx::ScaleToEnclosingRectIgnoringError(anchor_rect, ui_scale);
-
-    // If size is empty, set 1x1.
-    if (anchor_rect.size().IsEmpty()) {
-      anchor_rect.set_size({1, 1});
-    }
-
-    params.anchor->anchor_rect = anchor_rect;
+    params.anchor->anchor_rect =
+        TranslateAnchorRect(params.anchor->anchor_rect);
   }
 
   // Certain Wayland compositors (E.g. Mutter) expects wl_surface to have no
@@ -227,11 +215,21 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
     // won't make Wayland compositor apply these new bounds.
     schedule_redraw_ = old_bounds_dip.origin() != GetBoundsInDIP().origin();
 
+    const gfx::Rect scaled_bounds(
+        gfx::ScaleToEnclosingRectIgnoringError(bounds_dip_in_parent,
+                                               applied_state().ui_scale)
+            .origin(),
+        applied_state().geometry_size_dip);
+    auto anchor = delegate()->GetOwnedWindowAnchorAndRectInDIP();
+    if (anchor.has_value()) {
+      anchor->anchor_rect = TranslateAnchorRect(anchor->anchor_rect);
+    }
+
     // If ShellPopup doesn't support repositioning, the popup will be recreated
     // with new geometry applied. Availability of methods to move/resize popup
     // surfaces purely depends on a protocol. See implementations of ShellPopup
     // for more details.
-    if (!xdg_popup_->SetBounds(bounds_dip_in_parent)) {
+    if (!xdg_popup_->SetBounds(scaled_bounds, std::move(anchor))) {
       // Always force redraw for recreated objects.
       schedule_redraw_ = true;
       // This will also close all the children windows...
@@ -240,6 +238,29 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
       GetTopMostChildWindow()->Show(false);
     }
   }
+}
+
+gfx::Rect WaylandPopup::TranslateAnchorRect(const gfx::Rect& anchor_rect_dip) {
+  auto* xdg_parent_window = GetXdgParentWindow();
+  CHECK(xdg_parent_window);
+
+  // The anchor rectangle must be relative to the window geometry, rather
+  // than the root surface origin. See https://crbug.com/1292486.
+  gfx::Rect anchor_rect(
+      wl::TranslateBoundsToParentCoordinates(
+          anchor_rect_dip, xdg_parent_window->GetBoundsInDIP()) -
+      xdg_parent_window->GetWindowGeometryOffsetInDIP());
+
+  // Convert `anchor_rect` to Wayland coordinates space.
+  anchor_rect = gfx::ScaleToEnclosingRectIgnoringError(
+      anchor_rect, applied_state().ui_scale);
+
+  // If size is empty, set 1x1.
+  if (anchor_rect.size().IsEmpty()) {
+    anchor_rect.set_size({1, 1});
+  }
+
+  return anchor_rect;
 }
 
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& geometry_dip) {

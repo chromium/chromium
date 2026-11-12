@@ -57,6 +57,10 @@ class WaylandPopup final : public WaylandWindow {
   // Returns bounds with origin relative to parent window's origin.
   gfx::Rect AdjustPopupWindowPosition();
 
+  // Translates and scales `anchor_rect_dip` from top-level UI DIP coordinates
+  // into parent-relative Wayland surface coordinates.
+  gfx::Rect TranslateAnchorRect(const gfx::Rect& anchor_rect_dip);
+
   std::unique_ptr<XdgPopup> xdg_popup_;
 
   PlatformWindowShadowType shadow_type_ = PlatformWindowShadowType::kNone;

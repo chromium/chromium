@@ -7,6 +7,7 @@
 #include <xdg-shell-client-protocol.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -195,13 +196,15 @@ bool XdgPopup::IsConfigured() {
   return xdg_surface_->IsConfigured();
 }
 
-bool XdgPopup::SetBounds(const gfx::Rect& new_bounds) {
+bool XdgPopup::SetBounds(const gfx::Rect& new_bounds,
+                         std::optional<OwnedWindowAnchor> anchor) {
   if (xdg_popup_get_version(xdg_popup_.get()) <
       XDG_POPUP_REPOSITIONED_SINCE_VERSION) {
     return false;
   }
 
   params_.bounds = new_bounds;
+  params_.anchor = std::move(anchor);
 
   // Create a new positioner with new bounds.
   auto positioner = CreatePositioner();

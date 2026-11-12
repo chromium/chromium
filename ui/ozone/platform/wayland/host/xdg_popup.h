@@ -45,7 +45,8 @@ class XdgPopup {
   bool Initialize(const InitParams& params);
   void AckConfigure(uint32_t serial);
   bool IsConfigured();
-  bool SetBounds(const gfx::Rect& new_bounds);
+  bool SetBounds(const gfx::Rect& new_bounds,
+                 std::optional<OwnedWindowAnchor> anchor);
   void SetWindowGeometry(const gfx::Rect& bounds);
   void Grab(uint32_t serial);
   bool has_grab() const { return has_grab_; }
