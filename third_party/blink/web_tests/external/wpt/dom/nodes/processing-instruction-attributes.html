@@ -167,13 +167,16 @@
     function test_attribute_value(value) {
       test(() => {
         const pi = createProcessingInstruction("target", "");
-        const element = pi.ownerDocument.createElement("el");
         pi.setAttribute("attr", value);
-        element.setAttribute("attr", value);
-        assert_equals(pi.getAttribute("attr"), element.getAttribute("attr"));
-        const extracted = element.outerHTML.match(/el\s+([^>]+?)\s*\/?>/);
-        assert_equals(pi.data, extracted[1]);
-      }, `check attribute value: "${value}" (source: "${source}")`);
+        assert_true(pi.hasAttribute("attr"));
+        assert_equals(pi.getAttribute("attr"), value);
+        const escaped = value
+          .replaceAll("&", "&amp;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+        assert_equals(pi.data, `attr="${escaped}"`);
+      }, `check attribute value: ${format_value(value)} (source: "${source}")`);
     }
 
     function test_valid_attribute_name(name) {
@@ -237,12 +240,25 @@
       );
     }
 
+    test_attribute_value("");
+
+    // Escaped in PI https://dom.spec.whatwg.org/#update-data-from-attributes
+    test_attribute_value("&");
+    test_attribute_value('"');
+    test_attribute_value("<");
+    test_attribute_value(">");
+
+    // Escaped in XML attributes but not in PIs
+    test_attribute_value("\t");
+    test_attribute_value("\n");
+    test_attribute_value("\r");
+
+    // Escaped in HTML attributes but not in PIs
+    test_attribute_value("\u00A0");
+
+    // These should not be escaped
     test_attribute_value("=");
-    test_attribute_value('axx"');
-    test_attribute_value("axx>");
-    test_attribute_value("some<>");
-    test_attribute_value("'\"\"'");
-    test_attribute_value('aa"aa"');
+    test_attribute_value("'");
 
     test_invalid_attribute_name("=");
     test_invalid_attribute_name("a=");

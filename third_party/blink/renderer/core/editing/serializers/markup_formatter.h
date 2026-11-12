@@ -65,6 +65,9 @@ enum EntityMask {
   // https://github.com/whatwg/html/pull/6362.
   kEntityMaskInHtmlAttributeValue =
       kEntityAmp | kEntityQuot | kEntityLt | kEntityGt | kEntityNbsp,
+  // https://dom.spec.whatwg.org/#update-data-from-attributes
+  kEntityMaskInPiAttributeValue =
+      kEntityAmp | kEntityQuot | kEntityLt | kEntityGt,
 };
 
 enum class SerializationType { kHtml, kXml };
