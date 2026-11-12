@@ -51,6 +51,7 @@ test("fuzzing_unittests") {
     data_deps += [
       ":llvm_asan_service_crashing_fuzzer",
       ":llvm_asan_service_stub_fuzzer",
+      ":llvm_check_fuzzer",
       ":llvm_crashing_fuzzer",
       ":llvm_stub_fuzzer",
       ":lpm_stub_fuzzer",
@@ -66,11 +67,19 @@ test("fuzzing_unittests") {
         ":fuzztest_proto_stub_fuzzer_FuzzTestProtoStub_Stub_fuzzer__generate",
         ":fuzztest_stub_fuzzer_FuzzTestStub_Stub_fuzzer__generate",
       ]
+
+      # TODO(crbug.com/584855924): Also run on Windows; see `kFuzzerTestCases`
+      # in `fuzzer_smoke_test.cc`.
+      if (!is_win) {
+        data_deps += [ ":fuzztest_crashing_fuzzer_FuzzTestCrashing_CheckFailure_fuzzer__generate" ]
+      }
+
       if (use_centipede) {
         data_deps += [
           ":test_config_only_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_asan_service_crashing_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_asan_service_stub_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
+          ":wrapped_llvm_check_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_crashing_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
           ":wrapped_llvm_stub_fuzzer_LLVMFuzzer_TestOneInput_fuzzer__generate",
         ]
@@ -200,6 +209,14 @@ fuzzer_test("llvm_crashing_fuzzer") {
   is_fuzztest_compatible = false
 }
 
+fuzzer_test("llvm_check_fuzzer") {
+  sources = [ "llvm_check_fuzzer.cc" ]
+  deps = [ "//base" ]
+  deps += _test_fuzzer_extra_deps
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  is_fuzztest_compatible = false
+}
+
 fuzzer_test("llvm_asan_service_stub_fuzzer") {
   sources = [ "llvm_asan_service_stub_fuzzer.cc" ]
   deps = [ "//base" ]
@@ -242,7 +259,10 @@ test("fuzztest_stub_fuzzer") {
 
 test("fuzztest_crashing_fuzzer") {
   sources = [ "fuzztest_crashing_fuzzer.cc" ]
-  fuzztests = [ "FuzzTestCrashing.FastCrash" ]
+  fuzztests = [
+    "FuzzTestCrashing.CheckFailure",
+    "FuzzTestCrashing.FastCrash",
+  ]
   deps = [
     "//base",
     "//third_party/fuzztest:fuzztest_gtest_main",
@@ -285,6 +305,17 @@ if (use_centipede) {
 
   test("wrapped_llvm_crashing_fuzzer") {
     sources = [ "llvm_crashing_fuzzer.cc" ]
+    fuzztests = [ "LLVMFuzzer.TestOneInput" ]
+    deps = [
+      "//base",
+      "//third_party/fuzztest:llvm_wrapper",
+    ]
+    deps += _test_fuzzer_extra_deps
+    configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+  }
+
+  test("wrapped_llvm_check_fuzzer") {
+    sources = [ "llvm_check_fuzzer.cc" ]
     fuzztests = [ "LLVMFuzzer.TestOneInput" ]
     deps = [
       "//base",

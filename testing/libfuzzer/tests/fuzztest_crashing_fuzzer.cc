@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
@@ -20,3 +21,16 @@ static void FastCrash(int input) {
 }
 
 FUZZ_TEST(FuzzTestCrashing, FastCrash);
+
+// This exercises the CHECK failure path: base logging prints
+// "Check failed: ..." and then base::ImmediateCrash() calls abort() (SIGABRT),
+// or executes a trap instruction on Windows.
+NOINLINE void TriggerCheckFailure() {
+  CHECK(false);
+}
+
+static void CheckFailure(int input) {
+  TriggerCheckFailure();
+}
+
+FUZZ_TEST(FuzzTestCrashing, CheckFailure);

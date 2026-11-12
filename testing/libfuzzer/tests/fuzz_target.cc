@@ -4,24 +4,66 @@
 
 #include "testing/libfuzzer/tests/fuzz_target.h"
 
+#include <string>
+#include <string_view>
+#include <utility>
+
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "testing/libfuzzer/buildflags.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
 
 namespace fuzzing {
 namespace {
+
+// Signal-handling options that sanitizers leave off by default. ClusterFuzz
+// sets them when it runs fuzzers, so these tests set them too to match.
+// Without them, a CHECK failure (SIGABRT on POSIX; a breakpoint exception on
+// Windows, which ASan only reports with handle_sigill) may not reach a handler
+// that makes the engine save the crashing input.
+constexpr std::string_view kSignalHandlingSanitizerOptions =
+    "handle_abort=1 handle_sigill=1";
+
+constexpr base::cstring_view kSanitizerOptionsVariables[] = {
+    "ASAN_OPTIONS",
+    "MSAN_OPTIONS",
+    "UBSAN_OPTIONS",
+};
 
 base::FilePath BinaryPath(std::string_view file_name) {
   base::FilePath out_dir;
   base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &out_dir);
 
   return out_dir.AppendASCII(file_name);
+}
+
+// Returns options that launch a fuzzer with `kSignalHandlingSanitizerOptions`
+// appended to the sanitizer options inherited from this process.
+base::LaunchOptions FuzzLaunchOptions() {
+  base::Environment env;
+  base::LaunchOptions options;
+  for (base::cstring_view variable : kSanitizerOptionsVariables) {
+    std::string value = base::StrCat({env.GetVar(variable).value_or(""), " ",
+                                      kSignalHandlingSanitizerOptions});
+#if BUILDFLAG(IS_WIN)
+    options.environment[base::UTF8ToWide(variable)] = base::UTF8ToWide(value);
+#else
+    options.environment[std::string(variable)] = std::move(value);
+#endif
+  }
+  return options;
 }
 
 }  // namespace
@@ -75,7 +117,7 @@ base::CommandLine FuzzTarget::FuzzCommandLine() const {
 
 bool FuzzTarget::Fuzz() {
   base::Process process =
-      base::LaunchProcess(FuzzCommandLine(), base::LaunchOptions());
+      base::LaunchProcess(FuzzCommandLine(), FuzzLaunchOptions());
   CHECK(process.IsValid());
   int exit_code = 0;
   if (!process.WaitForExit(&exit_code)) {
