@@ -54,6 +54,15 @@ OmniboxPopupContentConfig OmniboxPopupContentConfig::ForFull() {
 }
 
 // static
+OmniboxPopupContentConfig OmniboxPopupContentConfig::ForFullInLocationBar() {
+  OmniboxPopupContentConfig config = ForFull();
+  // Embedded in LocationBarView; the popped-out dropdown draws its own
+  // shadow, never the host content.
+  config.draw_shadow_in_webui = false;
+  return config;
+}
+
+// static
 OmniboxPopupContentConfig OmniboxPopupContentConfig::ForAim() {
   OmniboxPopupContentConfig config;
   config.evict_on_hide = omnibox::ShouldAimEvictOnHide();

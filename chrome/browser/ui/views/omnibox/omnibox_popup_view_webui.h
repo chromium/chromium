@@ -80,7 +80,8 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   raw_ptr<LocationBar> location_bar_;
 
   // Shows the popup's WebUI. In production this is the presenter that owns the
-  // popup widget anchored to the location bar.
+  // popup widget anchored to the location bar, or OmniboxPopupLocationBarHost,
+  // which shows it inside LocationBarView.
   std::unique_ptr<OmniboxPopupHost> popup_host_;
 
   // TODO(crbug.com/584371333): Remove once the remaining callers use

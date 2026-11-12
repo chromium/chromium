@@ -404,6 +404,7 @@ if (!is_chromeos_device) {
     sources = [
       "inline_location_signaling_interactive_uitest.cc",
       "omnibox_aim_popup_interactive_uitest.cc",
+      "omnibox_popup_location_bar_host_interactive_uitest.cc",
       "omnibox_popup_view_views_interactive_uitest.cc",
       "omnibox_popup_view_webui_interactive_uitest.cc",
       "omnibox_view_views_interactive_uitest.cc",

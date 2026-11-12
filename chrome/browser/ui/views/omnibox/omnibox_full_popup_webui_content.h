@@ -64,6 +64,7 @@ class OmniboxFullPopupWebUIContent
 
   // Whether the popup has presented a frame since it was last shown.
   void OnPopupWidgetPresentedChanged(bool presented);
+  bool popup_presented_for_testing() const { return popup_presented_; }
 
   void CancelPendingContextMenuRequest();
 
