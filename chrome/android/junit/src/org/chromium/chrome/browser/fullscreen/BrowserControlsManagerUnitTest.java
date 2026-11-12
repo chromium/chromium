@@ -54,6 +54,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsOffsetTags;
 import org.chromium.cc.input.BrowserControlsState;
@@ -206,6 +207,35 @@ public class BrowserControlsManagerUnitTest {
                     /* topControlsMinHeightOffsetY= */ 0,
                     /* bottomControlsMinHeightOffsetY= */ 0);
         }
+    }
+
+    /** Simulates a renderer offset report for {@link #mTab} with no bottom controls movement. */
+    private void simulateRendererOffsets(
+            int topControlsOffset, int contentOffset, int topControlsMinHeightOffset) {
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(
+                        mTab,
+                        topControlsOffset,
+                        /* bottomControlsOffsetY= */ 0,
+                        contentOffset,
+                        topControlsMinHeightOffset,
+                        /* bottomControlsMinHeightOffsetY= */ 0);
+    }
+
+    private void assertTopControlsFullyShown(int topControlsHeight, int topControlsMinHeight) {
+        assertEquals(
+                "Content offset should equal the top controls height.",
+                topControlsHeight,
+                mBrowserControlsManager.getContentOffset());
+        assertEquals(
+                "Top controls should not be scrolled.",
+                0,
+                mBrowserControlsManager.getTopControlOffset());
+        assertEquals(
+                "Min-height offset should equal the min-height.",
+                topControlsMinHeight,
+                mBrowserControlsManager.getTopControlsMinHeightOffset());
     }
 
     @Test
@@ -476,7 +506,8 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
-    public void testChangeTopHeightWithoutAnimation_Native() {
+    @DisableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SNAP_ON_HEIGHT_CHANGE)
+    public void testChangeTopHeightWithoutAnimation_Native_snapDisabled() {
         int contentOffset = mBrowserControlsManager.getContentOffset();
         int controlOffset = mBrowserControlsManager.getTopControlOffset();
         int minHeightOffset = mBrowserControlsManager.getTopControlsMinHeightOffset();
@@ -534,6 +565,86 @@ public class BrowserControlsManagerUnitTest {
                 mBrowserControlsManager.getTopControlsMinHeightOffset());
 
         verify(mBrowserControlsStateProviderObserver).onTopControlsHeightChanged(TOOLBAR_HEIGHT, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SNAP_ON_HEIGHT_CHANGE)
+    public void testChangeTopHeightWithoutAnimation_Native_snapsWhenFullyShown() {
+        final int heightWithLayer = TOOLBAR_HEIGHT + EXTRA_TOP_CONTROL_HEIGHT;
+        assertTopControlsFullyShown(TOOLBAR_HEIGHT, 0);
+
+        // Add a non-scrollable layer above the toolbar.
+        mBrowserControlsManager.setTopControlsHeight(
+                heightWithLayer, /* topControlsMinHeight= */ EXTRA_TOP_CONTROL_HEIGHT);
+
+        // Offsets are applied by the browser without a renderer round-trip.
+        verify(mBrowserControlsManager).showAndroidControls(false);
+        assertTopControlsFullyShown(heightWithLayer, EXTRA_TOP_CONTROL_HEIGHT);
+        verify(mBrowserControlsStateProviderObserver)
+                .onTopControlsHeightChanged(heightWithLayer, EXTRA_TOP_CONTROL_HEIGHT);
+
+        // Remove the layer again.
+        mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, /* topControlsMinHeight= */ 0);
+
+        verify(mBrowserControlsManager, times(2)).showAndroidControls(false);
+        assertTopControlsFullyShown(TOOLBAR_HEIGHT, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SNAP_ON_HEIGHT_CHANGE)
+    public void testChangeTopHeightWithoutAnimation_Native_partiallyScrolledFollowsRenderer() {
+        final int heightWithLayer = TOOLBAR_HEIGHT + EXTRA_TOP_CONTROL_HEIGHT;
+        final int scrolledOffset = -TOOLBAR_HEIGHT / 2;
+        simulateRendererOffsets(
+                scrolledOffset,
+                /* contentOffset= */ TOOLBAR_HEIGHT + scrolledOffset,
+                /* topControlsMinHeightOffset= */ 0);
+        assertEquals(scrolledOffset, mBrowserControlsManager.getTopControlOffset());
+
+        // Add a scrollable layer above the toolbar.
+        mBrowserControlsManager.setTopControlsHeight(
+                heightWithLayer, /* topControlsMinHeight= */ 0);
+
+        // Not fully shown: the renderer keeps driving the offsets.
+        verify(mBrowserControlsManager, never()).showAndroidControls(anyBoolean());
+        assertEquals(scrolledOffset, mBrowserControlsManager.getTopControlOffset());
+        assertEquals(TOOLBAR_HEIGHT + scrolledOffset, mBrowserControlsManager.getContentOffset());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SNAP_ON_HEIGHT_CHANGE)
+    public void testChangeTopHeightWithAnimation_Native_doesNotSnap() {
+        final int heightWithLayer = TOOLBAR_HEIGHT + EXTRA_TOP_CONTROL_HEIGHT;
+        // Add a non-scrollable layer above the toolbar, animated.
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+        mBrowserControlsManager.setTopControlsHeight(
+                heightWithLayer, /* topControlsMinHeight= */ EXTRA_TOP_CONTROL_HEIGHT);
+
+        // Animated changes stay renderer-driven.
+        verify(mBrowserControlsManager, never()).showAndroidControls(anyBoolean());
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsManager.getContentOffset());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_SNAP_ON_HEIGHT_CHANGE)
+    public void testChangeTopHeightWithoutAnimation_Native_snapsAfterClampedTabOffsets() {
+        // Locked controls: the min-height is the full height.
+        final int lockedHeight = TOOLBAR_HEIGHT + EXTRA_TOP_CONTROL_HEIGHT;
+        // Offsets reported for locked controls taller than the current height are clamped to it.
+        simulateRendererOffsets(
+                /* topControlsOffset= */ 0,
+                /* contentOffset= */ lockedHeight,
+                /* topControlsMinHeightOffset= */ lockedHeight);
+        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsManager.getContentOffset());
+        assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+
+        // Lock the controls at that height. This is a no-op for the renderer, so no new report
+        // follows; the browser must apply the end state itself.
+        mBrowserControlsManager.setTopControlsHeight(
+                lockedHeight, /* topControlsMinHeight= */ lockedHeight);
+
+        verify(mBrowserControlsManager).showAndroidControls(false);
+        assertTopControlsFullyShown(lockedHeight, lockedHeight);
     }
 
     @Test

@@ -503,6 +503,9 @@ public class CompositorViewHolderUnitTest {
         assertTrue(
                 "Browser controls aren't fully hidden.",
                 BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsManager));
+        // Setting the height while the controls were shown already resized the view once; count
+        // resizes from the hidden state only.
+        clearInvocations(mCompositorViewJni);
 
         // Simulate the browser issuing a "show browser controls" signal to the renderer.
         mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ false);
@@ -545,6 +548,9 @@ public class CompositorViewHolderUnitTest {
         assertTrue(
                 "Browser controls aren't fully hidden.",
                 BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsManager));
+        // Setting the height while the controls were shown already resized the view once; count
+        // resizes from the hidden state only.
+        clearInvocations(mCompositorViewJni);
 
         // Simulate the browser issuing a "show browser controls" signal to the renderer.
         mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ false);
@@ -617,6 +623,9 @@ public class CompositorViewHolderUnitTest {
         assertTrue(
                 "Browser controls aren't fully hidden.",
                 BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsManager));
+        // Setting the height while the controls were shown already resized the view once; count
+        // resizes from the hidden state only.
+        clearInvocations(mCompositorViewJni);
 
         // Simulate the browser issuing a "show browser controls" signal to the renderer.
         mCompositorViewHolder.onWillShowBrowserControls(/* viewTransitionOptIn= */ false);
