@@ -17,6 +17,9 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/form_cache_query_util.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -29,6 +32,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/prefs/pref_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
 namespace {
@@ -47,6 +51,16 @@ base::Time ComputeSubscriptionExpiration() {
                  .default_value;
   }
   return base::Time::Now() + period;
+}
+
+ukm::SourceId GetPageUkmSourceId(AutofillClient& client) {
+  for (AutofillDriver* driver :
+       client.GetAutofillDriverFactory().GetExistingDrivers()) {
+    if (driver && !driver->GetParent() && IsActiveNonEmbeddedDriver(*driver)) {
+      return driver->GetPageUkmSourceId();
+    }
+  }
+  return ukm::kInvalidSourceId;
 }
 
 }  // namespace
@@ -195,7 +209,7 @@ void GmailOtpSource::FetchFreshestCachedOtpForOrigin(
     return;
   }
   gmail_otp_service_->GetFreshestCachedOtp(
-      origin, /*allow_psl_matching=*/true,
+      origin, GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true,
       base::BindOnce(&GmailOtpSource::OnCachedOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), origin));
 }
@@ -205,7 +219,8 @@ one_time_tokens::ExpiringSubscription GmailOtpSource::SubscribeToService(
     base::Time expiration) {
   CHECK(gmail_otp_service_);
   return gmail_otp_service_->Subscribe(
-      origin, /*allow_psl_matching=*/true, expiration,
+      origin, GetPageUkmSourceId(*client_), /*allow_psl_matching=*/true,
+      expiration,
       base::BindRepeating(&GmailOtpSource::OnIncomingTokenReceived,
                           weak_ptr_factory_.GetWeakPtr(), origin),
       base::BindOnce(&GmailOtpSource::EnsureContinuousSubscriptionForOrigin,

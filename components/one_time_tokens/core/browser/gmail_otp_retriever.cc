@@ -31,8 +31,6 @@ namespace one_time_tokens {
 
 namespace {
 
-// TODO(crbug.com/583695450): Record the same UKM metrics in the non-agentic
-// flow (GmailOtpServiceImpl) once the OtpCoordinator refactoring lands.
 void RecordSenderDomainMatchRejectionReason(
     GmailOtpSenderDomainMatchType reason,
     bool is_cached,

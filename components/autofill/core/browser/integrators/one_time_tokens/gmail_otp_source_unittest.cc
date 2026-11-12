@@ -14,16 +14,23 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/fake_gmail_otp_service.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_service_impl.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -920,6 +927,46 @@ TEST_F(GmailOtpSourceTest, ForwardsBackendRetrievalErrorToObserver) {
   EXPECT_EQ(observer_.last_target(), std::nullopt);
   EXPECT_THAT(observer_.last_result(),
               Optional(ErrorIs(OneTimeTokenRetrievalError::kGmailOtpUnknown)));
+}
+
+TEST_F(GmailOtpSourceTest, RecordsSenderDomainMatchUkmAgainstPage) {
+  using UkmEntry = ukm::builders::OneTimeTokens;
+  affiliations::FakeAffiliationService affiliation_service;
+  one_time_tokens::FakeGmailOtpBackend backend;
+  service_ = nullptr;
+  client_.set_gmail_otp_service(
+      std::make_unique<one_time_tokens::GmailOtpServiceImpl>(
+          &backend, &affiliation_service, std::nullopt));
+
+  auto owned_driver = std::make_unique<TestAutofillDriver>(&client_);
+  owned_driver->set_autofill_manager(
+      std::make_unique<TestBrowserAutofillManager>(owned_driver.get()));
+  TestAutofillDriver& driver =
+      client_.GetAutofillDriverFactory().TakeOwnership(std::move(owned_driver));
+
+  {
+    GmailOtpSource source(client_);
+    source.SetObserver(&observer_);
+
+    const OtpTarget target = MakeTarget("https://a.test");
+    source.Start(target);
+    backend.ProcessCallbacks(MakeToken("654321", "otp@mail.a.test"));
+    task_environment_.RunUntilIdle();
+
+    EXPECT_THAT(observer_.last_result(),
+                Optional(ValueIs(IsGmailCandidate(target.origin, "654321"))));
+  }
+
+  auto entries =
+      client_.GetUkmRecorder()->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0]->source_id, driver.GetPageUkmSourceId());
+  client_.GetUkmRecorder()->ExpectEntryMetric(
+      entries[0],
+      UkmEntry::kGmail_SenderDomainMatchAcceptedMatchType_ReceivedName,
+      std::to_underlying(one_time_tokens::GmailOtpSenderDomainMatchType::kPsl));
+
+  client_.set_gmail_otp_service(nullptr);
 }
 
 }  // namespace

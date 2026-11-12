@@ -20,6 +20,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
 namespace one_time_tokens {
@@ -34,10 +35,12 @@ class FakeGmailOtpService : public GmailOtpService {
   // GmailOtpService:
   GmailOtpBackend* GetBackend() override;
   void GetFreshestCachedOtp(const url::Origin& origin,
+                            ukm::SourceId ukm_source_id,
                             bool allow_psl_matching,
                             GetFreshestCachedOtpCallback callback) override;
   [[nodiscard]] ExpiringSubscription Subscribe(
       const url::Origin& origin,
+      ukm::SourceId ukm_source_id,
       bool allow_psl_matching,
       base::Time expiration,
       IncomingTokenCallback callback,

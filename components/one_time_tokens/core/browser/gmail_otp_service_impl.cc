@@ -20,6 +20,9 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_sender_domain_matcher.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace one_time_tokens {
 
@@ -55,24 +58,48 @@ bool IsMatchTypeAllowed(GmailOtpSenderDomainMatchType match_type,
 
 void RecordSenderDomainMatchRejectionReason(
     GmailOtpSenderDomainMatchType reason,
-    bool is_cached) {
+    bool is_cached,
+    ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration(
       is_cached ? "OneTimeTokens.GmailNonAgentic."
                   "SenderDomainMatchRejectionReason.Cached"
                 : "OneTimeTokens.GmailNonAgentic."
                   "SenderDomainMatchRejectionReason.Received",
       reason);
+  if (ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::OneTimeTokens builder(ukm_source_id);
+    if (is_cached) {
+      builder.SetGmail_SenderDomainMatchRejectionReason_Cached(
+          std::to_underlying(reason));
+    } else {
+      builder.SetGmail_SenderDomainMatchRejectionReason_Received(
+          std::to_underlying(reason));
+    }
+    builder.Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void RecordSenderDomainMatchAcceptedMatchType(
     GmailOtpSenderDomainMatchType match_type,
-    bool is_cached) {
+    bool is_cached,
+    ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration(
       is_cached ? "OneTimeTokens.GmailNonAgentic."
                   "SenderDomainMatchAcceptedMatchType.Cached"
                 : "OneTimeTokens.GmailNonAgentic."
                   "SenderDomainMatchAcceptedMatchType.Received",
       match_type);
+  if (ukm_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::OneTimeTokens builder(ukm_source_id);
+    if (is_cached) {
+      builder.SetGmail_SenderDomainMatchAcceptedMatchType_Cached(
+          std::to_underlying(match_type));
+    } else {
+      builder.SetGmail_SenderDomainMatchAcceptedMatchType_Received(
+          std::to_underlying(match_type));
+    }
+    builder.Record(ukm::UkmRecorder::Get());
+  }
 }
 
 }  // namespace
@@ -109,6 +136,7 @@ GmailOtpBackend* GmailOtpServiceImpl::GetBackend() {
 
 void GmailOtpServiceImpl::GetFreshestCachedOtp(
     const url::Origin& origin,
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     GetFreshestCachedOtpCallback callback) {
   if (origin.opaque()) {
@@ -143,7 +171,7 @@ void GmailOtpServiceImpl::GetFreshestCachedOtp(
                            std::make_unique<GmailOtpSenderDomainMatcher>(
                                &domain_relation_checker_, origin));
   StartCachedOtpCheck(std::move(check_handle), std::move(cached_tokens),
-                      /*current_index=*/0, allow_psl_matching,
+                      /*current_index=*/0, ukm_source_id, allow_psl_matching,
                       std::move(callback));
 }
 
@@ -151,6 +179,7 @@ void GmailOtpServiceImpl::StartCachedOtpCheck(
     ExpiringSubscriptionHandle check_handle,
     std::vector<OneTimeToken> tokens,
     size_t current_index,
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     GetFreshestCachedOtpCallback callback) {
   if (current_index >= tokens.size()) {
@@ -174,14 +203,15 @@ void GmailOtpServiceImpl::StartCachedOtpCheck(
       sender_address,
       base::BindOnce(&GmailOtpServiceImpl::OnCachedTokenMatchChecked,
                      weak_ptr_factory_.GetWeakPtr(), std::move(check_handle),
-                     std::move(tokens), current_index, allow_psl_matching,
-                     std::move(callback)));
+                     std::move(tokens), current_index, ukm_source_id,
+                     allow_psl_matching, std::move(callback)));
 }
 
 void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
     ExpiringSubscriptionHandle check_handle,
     std::vector<OneTimeToken> tokens,
     size_t current_index,
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     GetFreshestCachedOtpCallback callback,
     GmailOtpSenderDomainMatchType match_type) {
@@ -193,7 +223,8 @@ void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
       << ", allow_psl_matching=" << allow_psl_matching;
   if (allowed) {
     domain_matchers_.erase(check_handle);
-    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true);
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true,
+                                             ukm_source_id);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -201,14 +232,16 @@ void GmailOtpServiceImpl::OnCachedTokenMatchChecked(
     return;
   }
 
-  RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/true);
+  RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/true,
+                                         ukm_source_id);
   StartCachedOtpCheck(std::move(check_handle), std::move(tokens),
-                      current_index + 1, allow_psl_matching,
+                      current_index + 1, ukm_source_id, allow_psl_matching,
                       std::move(callback));
 }
 
 ExpiringSubscription GmailOtpServiceImpl::Subscribe(
     const url::Origin& origin,
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     base::Time expiration,
     IncomingTokenCallback callback,
@@ -230,8 +263,8 @@ ExpiringSubscription GmailOtpServiceImpl::Subscribe(
       expiration,
       base::BindRepeating(&GmailOtpServiceImpl::NotifySubscriber,
                           weak_ptr_factory_.GetWeakPtr(),
-                          base::Owned(std::move(cleanup)), allow_psl_matching,
-                          std::move(callback)),
+                          base::Owned(std::move(cleanup)), ukm_source_id,
+                          allow_psl_matching, std::move(callback)),
       std::move(expiration_callback));
 
   cleanup_ptr->service = weak_ptr_factory_.GetWeakPtr();
@@ -273,6 +306,7 @@ void GmailOtpServiceImpl::EnsureBackendSubscription(base::Time expiration) {
 
 void GmailOtpServiceImpl::NotifySubscriber(
     const ScopedDomainMatcherCleanup* cleanup,
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     IncomingTokenCallback callback,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> result) {
@@ -294,8 +328,9 @@ void GmailOtpServiceImpl::NotifySubscriber(
   domain_matcher.Check(
       sender_address,
       base::BindOnce(&GmailOtpServiceImpl::OnSubscriberDomainMatchChecked,
-                     weak_ptr_factory_.GetWeakPtr(), allow_psl_matching,
-                     std::move(callback), std::move(token)));
+                     weak_ptr_factory_.GetWeakPtr(), ukm_source_id,
+                     allow_psl_matching, std::move(callback),
+                     std::move(token)));
 }
 
 void GmailOtpServiceImpl::OnBackendTokenReceived(
@@ -315,6 +350,7 @@ void GmailOtpServiceImpl::OnBackendSubscriptionExpired() {
 }
 
 void GmailOtpServiceImpl::OnSubscriberDomainMatchChecked(
+    ukm::SourceId ukm_source_id,
     bool allow_psl_matching,
     IncomingTokenCallback callback,
     OneTimeToken token,
@@ -326,10 +362,12 @@ void GmailOtpServiceImpl::OnSubscriberDomainMatchChecked(
       << ", match_type=" << match_type
       << ", allow_psl_matching=" << allow_psl_matching;
   if (allowed) {
-    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false);
+    RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false,
+                                             ukm_source_id);
     callback.Run(base::ok(std::move(token)));
   } else {
-    RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/false);
+    RecordSenderDomainMatchRejectionReason(match_type, /*is_cached=*/false,
+                                           ukm_source_id);
     callback.Run(base::unexpected(
         OneTimeTokenRetrievalError::kGmailOtpSenderDomainMismatch));
   }
