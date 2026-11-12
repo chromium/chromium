@@ -70,9 +70,7 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
      */
     private SearchActivityPreferencesManager() {}
 
-    /**
-     * @return The instance of the SearchActivityPreferencesManager singleton.
-     */
+    /** Returns the instance of the SearchActivityPreferencesManager singleton. */
     public static SearchActivityPreferencesManager get() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {

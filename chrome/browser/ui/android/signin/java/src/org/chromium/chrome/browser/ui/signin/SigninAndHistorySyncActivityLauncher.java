@@ -62,6 +62,7 @@ public interface SigninAndHistorySyncActivityLauncher {
      * Create {@link Intent} for the {@link SigninAndHistorySyncActivity} from an eligible access
      * point, Show an error if the intent can't be created.
      *
+     * @param context The {@link Context} used to create the intent or show the error.
      * @param profile the current profile.
      * @param config The object containing configurations for the sign-in & history sync views.
      * @param accessPoint The access point from which the sign-in was triggered.
@@ -88,10 +89,11 @@ public interface SigninAndHistorySyncActivityLauncher {
      *     notified of flow completion for instance.
      * @param deviceLockActivityLauncher The launcher for the device lock challenge.
      * @param profileSupplier The supplier of the {@link Profile}.
-     * @param bottomSheetController The {@link BottomSheetController} to show the sign-in bottom
-     *     sheet.
+     * @param bottomSheetControllerSupplier The supplier of the {@link BottomSheetController} to
+     *     show the sign-in bottom sheet.
      * @param modalDialogManagerSupplier The supplier of the {@link ModalDialogManager}.
-     * @param snackbarManager The {@link SnackbarManager} to show sign-in/sign-out snackbars.
+     * @param snackbarManagerSupplier The supplier of the {@link SnackbarManager} to show
+     *     sign-in/sign-out snackbars.
      * @param signinAccessPoint The entry point for the sign-in flow.
      */
     @MainThread
@@ -113,8 +115,10 @@ public interface SigninAndHistorySyncActivityLauncher {
      * if sign-in and history opt-in are allowed. Does not show any error if the intent can't be
      * created.
      *
+     * @param context The {@link Context} used to create the intent.
+     * @param profile The current profile.
      * @param config The object containing IDS of resources for the sign-in & history sync views.
-     * @param accessPoint The access point from which the sign-in was triggered.
+     * @param signinAccessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
     @Nullable Intent createFullscreenSigninIntent(
@@ -127,8 +131,10 @@ public interface SigninAndHistorySyncActivityLauncher {
      * Create {@link Intent} for the fullscreen flavor of the {@link SigninAndHistorySyncActivity}
      * if sign-in and history opt-in are allowed. Show an error if the intent can't be created.
      *
+     * @param context The {@link Context} used to create the intent or show the error.
+     * @param profile The current profile.
      * @param config The object containing IDS of resources for the sign-in & history sync views.
-     * @param accessPoint The access point from which the sign-in was triggered.
+     * @param signinAccessPoint The access point from which the sign-in was triggered.
      */
     @MainThread
     @Nullable Intent createFullscreenSigninIntentOrShowError(

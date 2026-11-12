@@ -74,7 +74,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         boolean onBackPressed();
 
         /**
-         * @return A supplier that determines if back press will be handled by the sheet content.
+         * Returns a supplier that determines if back press will be handled by the sheet content.
          */
         default NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
             return ObservableSuppliers.alwaysFalse();

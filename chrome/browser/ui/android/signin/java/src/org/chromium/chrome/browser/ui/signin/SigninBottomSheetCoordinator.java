@@ -94,9 +94,12 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
      *
      * @param windowAndroid The window that hosts the sign-in flow.
      * @param activity The {@link Activity} that hosts the sign-in flow.
+     * @param modalDialogManager The {@link ModalDialogManager} used to show sign-in dialogs.
      * @param bottomSheetController The controller of the sign-in bottomsheet.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      * @param signinManager The sign-in manager to start the sign-in.
+     * @param accountPreviewDataService The service providing account preview data, or null if
+     *     unavailable.
      * @param bottomSheetStrings The object containing the strings shown by the bottom sheet.
      * @param accountPickerLaunchMode Indicate the first bottom sheet view shown to the user.
      * @param isSeamlessSigninFlow If true, attempt a seamless sign-in flow, which automatically

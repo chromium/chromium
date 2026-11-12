@@ -75,13 +75,14 @@ public class ConsentTextTracker {
     }
 
     /**
-     * Applies a |transformation| on the string resource with given |id|, assigns the resulting
-     * text to |view|, and caches the string resource |id| which will later be needed for consent
-     * recording.
+     * Applies a {@code transformation} on the string resource with given {@code id}, assigns the
+     * resulting text to {@code view}, and caches the string resource {@code id} which will later be
+     * needed for consent recording.
+     *
      * @param view The TextView to which the text should be assigned.
      * @param id The id of the string resource with the text.
      * @param transformation The transformation to be applied on the text. Can be null to indicate
-     *         no transformation (i.e. identity).
+     *     no transformation (i.e. identity).
      */
     public void setText(
             TextView view, @StringRes int id, @Nullable TextTransformation transformation) {
@@ -103,8 +104,8 @@ public class ConsentTextTracker {
     }
 
     /**
-     * Assigns a |text| to the given |view| and remembers that this text should be out of scope for
-     * consent recording.
+     * Assigns a {@code text} to the given {@code view} and remembers that this text should be out
+     * of scope for consent recording.
      *
      * @see #setText(TextView, int, TextTransformation)
      * @param view The TextView to which the text should be assigned.
@@ -122,12 +123,13 @@ public class ConsentTextTracker {
     }
 
     /**
-     * Retrieves the string resource id from a given TextView while verifying that it corresponds
-     * to the text of that TextView. This can be only done if the text was previously set by
-     * {#link setText()} or {#link setTextNonRecordable()}.
+     * Retrieves the string resource id from a given TextView while verifying that it corresponds to
+     * the text of that TextView. This can be only done if the text was previously set by {#link
+     * setText()} or {#link setTextNonRecordable()}.
+     *
      * @param view The TextView whose string resource id should be retrieved.
-     * @return The string resource id of the |view|'s text. Can be 0 if this |view|'s text shouldn't
-     *         be part of the consent record (Note: 0 is not a valid resource id).
+     * @return The string resource id of the {@code view}'s text. Can be 0 if this {@code view}'s
+     *     text shouldn't be part of the consent record (Note: 0 is not a valid resource id).
      */
     private @StringRes int getConsentStringResource(TextView view) {
         TextViewMetadata metadata = mTextViewToMetadataMap.get(view);
@@ -150,8 +152,8 @@ public class ConsentTextTracker {
 
     /**
      * @param view The root View where to start scanning.
-     * @param outViews The output list to which |view| and all its transitive
-     *         children, if visible, will be appended.
+     * @param outViews The output list to which {@code view} and all its transitive children, if
+     *     visible, will be appended.
      */
     private void getAllVisibleViews(View view, ArrayList<View> outViews) {
         if (view.getVisibility() != View.VISIBLE) return;

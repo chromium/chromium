@@ -145,6 +145,11 @@ public final class FullscreenSigninPromoLauncher {
     /**
      * Creates an {@link Intent} for launching {@link SigninAndHistorySyncActivity}.
      *
+     * @param context The {@link Context} to launch the {@link SigninAndHistorySyncActivity}.
+     * @param profile The active user profile.
+     * @param signinAndHistorySyncActivityLauncher launcher used to launch the {@link
+     *     SigninAndHistorySyncActivity}.
+     * @param accessPoint The access point from which the sign-in was triggered.
      * @param shouldCallTrackerDismissed Whether this flow is gated by the Feature Engagement {@link
      *     Tracker} and must call {@link Tracker#dismissed} when the fullscreen coordinator is
      *     destroyed.

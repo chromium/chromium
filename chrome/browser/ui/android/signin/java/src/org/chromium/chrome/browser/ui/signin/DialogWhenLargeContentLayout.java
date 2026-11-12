@@ -75,8 +75,8 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
     }
 
     /**
-     * @return True if DialogWhenLargeContentLayout should show as a dialog instead of fullscreen in
-     *     the given context.
+     * Returns true if DialogWhenLargeContentLayout should show as a dialog instead of fullscreen in
+     * the given context.
      */
     public static boolean shouldShowAsDialog(Context context) {
         Configuration configuration = context.getResources().getConfiguration();

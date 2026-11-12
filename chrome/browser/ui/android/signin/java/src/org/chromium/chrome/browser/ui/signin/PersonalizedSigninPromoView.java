@@ -53,60 +53,48 @@ public class PersonalizedSigninPromoView extends FrameLayout {
         setupDismissButtonTouchDelegate();
     }
 
-    /**
-     * @return A reference to the image of the promo.
-     */
+    /** Returns a reference to the image of the promo. */
     public ImageView getImage() {
         return mImage;
     }
 
-    /**
-     * @return A reference to the dismiss button.
-     */
+    /** Returns a reference to the dismiss button. */
     public ImageButton getDismissButton() {
         return mDismissButton;
     }
 
-    /**
-     * @return A reference to the title of the sync promo.
-     */
+    /** Returns a reference to the title of the sync promo. */
     public TextView getTitle() {
         return mTitle;
     }
 
-    /**
-     * @return A reference to the description of the promo.
-     */
+    /** Returns a reference to the description of the promo. */
     public TextView getDescription() {
         return mDescription;
     }
 
-    /**
-     * @return A reference to the signin button.
-     */
+    /** Returns a reference to the signin button. */
     public ButtonCompat getPrimaryButton() {
         return mPrimaryButton;
     }
 
-    /**
-     * @return A reference to the selected account view.
-     */
+    /** Returns a reference to the selected account view. */
     public View getSelectedAccountView() {
         return mSelectedAccountView;
     }
 
     /**
-     * @return A reference to the additional profile image (normally hidden) that is used to
-     *     construct the layout for the case when the user is signed in for the `compact` seamless
-     *     sign-in layout.
+     * Returns a reference to the additional profile image (normally hidden) that is used to
+     * construct the layout for the case when the user is signed in for the {@code compact} seamless
+     * sign-in layout.
      */
     public ImageView getSignedInPromoProfileImage() {
         return mSignedInPromoProfileImage;
     }
 
     /**
-     * @return A reference to the additional profile image and description container for the
-     *     `compact` seamless sign-in layout.
+     * Returns a reference to the additional profile image and description container for the {@code
+     * compact} seamless sign-in layout.
      */
     public LinearLayout getImageAndDescriptionContainer() {
         return mImageAndDescriptionContainer;
