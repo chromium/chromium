@@ -164,8 +164,11 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
                                     LanguageCode::kEnIn};
     available_languages["en-SG"] = {"libsoda-model-en-sg-cnch24d3",
                                     LanguageCode::kEnSg};
-    available_languages["en-US"] = {"libsoda-model-en-us-cnch24d3",
-                                    LanguageCode::kEnUs};
+    if (!base::FeatureList::IsEnabled(
+            kAlwaysUsePreloadedSodaModelEnUsForTesting)) {
+      available_languages["en-US"] = {"libsoda-model-en-us-cnch24d3",
+                                      LanguageCode::kEnUs};
+    }
     available_languages["es-ES"] = {"libsoda-model-es-es-cnch24d3",
                                     LanguageCode::kEsEs};
     available_languages["es-US"] = {"libsoda-model-es-us-cnch24d3",

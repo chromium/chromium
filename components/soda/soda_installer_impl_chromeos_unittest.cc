@@ -248,6 +248,35 @@ TEST_F(SodaInstallerImplChromeOSTest, ConchInLiveCaptionFullList) {
               ::testing::IsSupersetOf({"da-DK", "nb-NO", "nl-NL", "sv-SE"}));
 }
 
+TEST_F(SodaInstallerImplChromeOSTest, AlwaysUsePreloadedSodaModelEnUs) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list_internal;
+    scoped_feature_list_internal.InitWithFeatures(
+        {::speech::kCrosSodaConchLanguages,
+         ::speech::kFeatureManagementCrosSodaConchLanguages},
+        {});
+    soda_installer_impl_.reset();
+    soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
+    EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale(kUsEnglishLocale),
+              "libsoda-model-en-us-cnch24d3");
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_internal;
+  scoped_feature_list_internal.InitWithFeatures(
+      {::speech::kCrosSodaConchLanguages,
+       ::speech::kFeatureManagementCrosSodaConchLanguages,
+       ::speech::kAlwaysUsePreloadedSodaModelEnUsForTesting},
+      {});
+  soda_installer_impl_.reset();
+  soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale(kUsEnglishLocale),
+            "libsoda-model-en-us-df24d2");
+  EXPECT_EQ(GetInstance()->GetLanguageDlcNameForLocale("da-DK"),
+            "libsoda-model-da-dk-cnch24d3");
+  EXPECT_THAT(GetInstance()->GetLiveCaptionEnabledLanguages(),
+              ::testing::IsSupersetOf({"da-DK", "nb-NO", "nl-NL", "sv-SE"}));
+}
+
 TEST_F(SodaInstallerImplChromeOSTest, IsAnyLanguagePackInstalled) {
   ASSERT_FALSE(IsAnyLanguagePackInstalled());
   Init();

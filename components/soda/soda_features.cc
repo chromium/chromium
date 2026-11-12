@@ -13,5 +13,9 @@ BASE_FEATURE(kFeatureManagementCrosSodaConchLanguages,
 // This flag is required for external Tast tests.
 // TODO(b/512784860): Replace this flag with a lighter one for just en-US.
 BASE_FEATURE(kCrosSodaConchLanguages, base::FEATURE_ENABLED_BY_DEFAULT);
+// Forces en-US to use the preloaded medium SODA model DLC even on devices with
+// kFeatureManagementCrosSodaConchLanguages enabled.
+BASE_FEATURE(kAlwaysUsePreloadedSodaModelEnUsForTesting,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 }  // namespace speech
