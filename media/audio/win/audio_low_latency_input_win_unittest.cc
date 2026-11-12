@@ -50,6 +50,7 @@
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
+using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Gt;
 using ::testing::IsFalse;
@@ -898,16 +899,7 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
 // small caller buffer size (`frames_per_buffer` <
 // SincResampler::kMinRequestSize) delivers finite audio samples and stops
 // cleanly without underflowing `AudioBlockFifo`.
-// TODO(crbug.com/462045912): this fails on debug due to
-// checker.CalledOnValidSequence(&bound_at) check.
-#if !defined(NDEBUG)
-#define MAYBE_WASAPIAudioInputStreamResampleSmallBuffer \
-  DISABLED_WASAPIAudioInputStreamResampleSmallBuffer
-#else
-#define MAYBE_WASAPIAudioInputStreamResampleSmallBuffer \
-  WASAPIAudioInputStreamResampleSmallBuffer
-#endif
-TEST_F(WinAudioInputTest, MAYBE_WASAPIAudioInputStreamResampleSmallBuffer) {
+TEST_F(WinAudioInputTest, WASAPIAudioInputStreamResampleSmallBuffer) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
 
   AudioParameters params;
@@ -934,25 +926,26 @@ TEST_F(WinAudioInputTest, MAYBE_WASAPIAudioInputStreamResampleSmallBuffer) {
 
   MockAudioInputCallback sink;
   base::RunLoop run_loop;
-  int callbacks = 0;
+  int count = 0;
   bool saw_corrupt_sample = false;
 
   EXPECT_CALL(sink, OnError(_)).Times(0);
   EXPECT_CALL(sink, OnData(NotNull(), _, _, _))
-      .WillRepeatedly([&](const AudioBus* src, base::TimeTicks, double,
-                          const AudioGlitchInfo&) {
-        for (auto channel : src->AllChannels()) {
-          for (float sample : channel) {
-            if (!std::isfinite(sample) || std::abs(sample) > 4.0f) {
-              saw_corrupt_sample = true;
+      .Times(AtLeast(10))
+      .WillRepeatedly(DoAll(
+          [&](const AudioBus* src, base::TimeTicks, double,
+              const AudioGlitchInfo&) {
+            for (auto channel : src->AllChannels()) {
+              for (float sample : channel) {
+                if (!std::isfinite(sample) || std::abs(sample) > 4.0f) {
+                  saw_corrupt_sample = true;
+                }
+              }
             }
-          }
-        }
-        if (++callbacks == 10) {
-          task_environment_.GetMainThreadTaskRunner()->PostTask(
-              FROM_HERE, run_loop.QuitWhenIdleClosure());
-        }
-      });
+          },
+          CheckCountAndPostQuitTask(&count, 10,
+                                    task_environment_.GetMainThreadTaskRunner(),
+                                    run_loop.QuitWhenIdleClosure())));
 
   ais->Start(&sink);
   run_loop.Run();
