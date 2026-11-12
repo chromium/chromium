@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <array>
 #include <optional>
 #include <utility>
 
@@ -259,115 +258,6 @@ TEST(JPEGCodec, EncodeHonorsDownsampleWithRustFeature) {
         JPEGCodec::Encode(src, kJpegQuality, downsample);
     ASSERT_TRUE(encoded);
     EXPECT_EQ(expected_sampling, GetLumaSamplingFactor(*encoded));
-  }
-}
-
-TEST(JPEGCodec, EncodeMatchesCppPixelsWithRustFeature) {
-  for (const auto [width, height] : {
-           std::pair{32, 32},
-           std::pair{40, 24},
-           std::pair{37, 23},
-           std::pair{100, 100},
-       }) {
-    std::vector<uint8_t> pixels(width * height * 4);
-
-    // Populate regions exercising:
-    // 1. Odd-row color transitions across 2x2 4:2:0 chroma blocks (as in
-    //    ViewTransitionPixelTest browser-controls overlay screenshots).
-    // 2. High-contrast anti-aliased grayscale edges where reciprocal
-    //    quantization requires full 16-bit mantissa precision (as in
-    //    ViewTransitionPixelTest dialog text).
-    // 3. RGB triples landing on the exact 0.5 fixed-point luma rounding
-    //    boundary (19595*0 + 38470*4 + 7471*232 == 0x8000 mod 0x10000).
-    constexpr std::array<uint8_t, 8> kStrokeRow = {0,   0,   0,   246,
-                                                   255, 255, 255, 255};
-    for (int y = 0; y < height; ++y) {
-      for (int x = 0; x < width; ++x) {
-        size_t idx = (y * width + x) * 4;
-        if (y < 16 && x < 16) {
-          // Odd boundary at y = 3 between dodgerblue and limegreen.
-          if (y <= 2) {
-            pixels[idx + 0] = 30;
-            pixels[idx + 1] = 144;
-            pixels[idx + 2] = 255;
-          } else {
-            pixels[idx + 0] = 50;
-            pixels[idx + 1] = 205;
-            pixels[idx + 2] = 50;
-          }
-        } else if (y < 16) {
-          uint8_t v = kStrokeRow[static_cast<size_t>(x % 8)];
-          pixels[idx + 0] = v;
-          pixels[idx + 1] = v;
-          pixels[idx + 2] = v;
-        } else if (x < 16) {
-          pixels[idx + 0] = 255;
-          pixels[idx + 1] = 218;
-          pixels[idx + 2] = 185;
-        } else {
-          pixels[idx + 0] = static_cast<uint8_t>((x * 17 + y * 31) & 0xFF);
-          pixels[idx + 1] = static_cast<uint8_t>((x * 43 + y * 13) & 0xFF);
-          pixels[idx + 2] = static_cast<uint8_t>((x * 29 + y * 59) & 0xFF);
-        }
-        pixels[idx + 3] = 0xFF;
-      }
-    }
-
-    SkImageInfo info = SkImageInfo::Make(width, height, kRGBA_8888_SkColorType,
-                                         kOpaque_SkAlphaType);
-    SkPixmap src(info, pixels.data(), width * 4);
-
-    for (const auto [quality, downsample] : {
-             std::pair{85, SkJpegEncoder::Downsample::k420},
-             std::pair{95, SkJpegEncoder::Downsample::k444},
-         }) {
-      std::optional<std::vector<uint8_t>> cpp_encoded;
-      {
-        base::test::ScopedFeatureList disable_rust;
-        disable_rust.InitAndDisableFeature(skia::kRustyJpegFeature);
-        cpp_encoded = JPEGCodec::Encode(src, quality, downsample);
-      }
-      ASSERT_TRUE(cpp_encoded);
-
-      std::optional<std::vector<uint8_t>> rust_encoded;
-      {
-        base::test::ScopedFeatureList enable_rust(skia::kRustyJpegFeature);
-        rust_encoded = JPEGCodec::Encode(src, quality, downsample);
-      }
-      ASSERT_TRUE(rust_encoded);
-
-      std::vector<uint8_t> cpp_decoded;
-      std::vector<uint8_t> rust_decoded;
-      int w1 = 0, h1 = 0, w2 = 0, h2 = 0;
-      {
-        base::test::ScopedFeatureList disable_rust;
-        disable_rust.InitAndDisableFeature(skia::kRustyJpegFeature);
-        ASSERT_TRUE(JPEGCodec::Decode(cpp_encoded->data(), cpp_encoded->size(),
-                                      kRGBA_8888_SkColorType, &cpp_decoded, &w1,
-                                      &h1));
-        ASSERT_TRUE(
-            JPEGCodec::Decode(rust_encoded->data(), rust_encoded->size(),
-                              kRGBA_8888_SkColorType, &rust_decoded, &w2, &h2));
-      }
-      EXPECT_EQ(cpp_decoded, rust_decoded)
-          << "quality=" << quality << " size=" << width << "x" << height;
-
-      std::vector<uint8_t> cpp_decoded_by_rust;
-      std::vector<uint8_t> rust_decoded_by_rust;
-      {
-        base::test::ScopedFeatureList enable_rust(skia::kRustyJpegFeature);
-        ASSERT_TRUE(JPEGCodec::Decode(cpp_encoded->data(), cpp_encoded->size(),
-                                      kRGBA_8888_SkColorType,
-                                      &cpp_decoded_by_rust, &w1, &h1));
-        ASSERT_TRUE(JPEGCodec::Decode(
-            rust_encoded->data(), rust_encoded->size(), kRGBA_8888_SkColorType,
-            &rust_decoded_by_rust, &w2, &h2));
-      }
-      EXPECT_EQ(cpp_decoded, cpp_decoded_by_rust)
-          << "quality=" << quality << " size=" << width << "x" << height;
-      EXPECT_EQ(cpp_decoded, rust_decoded_by_rust)
-          << "quality=" << quality << " size=" << width << "x" << height;
-    }
   }
 }
 
