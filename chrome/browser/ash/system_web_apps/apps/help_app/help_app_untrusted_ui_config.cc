@@ -150,8 +150,6 @@ void PopulateLoadTimeData(
     source->AddBoolean("HelpAppAppDetailPage", true);
     source->AddBoolean("HelpAppAppsList", true);
     source->AddBoolean("HelpAppHomePageAppArticles", true);
-    // TODO(crbug.com/563193206): Clean up flag in Showoff code.
-    source->AddBoolean("HelpAppAutoTriggerInstallDialog", true);
     source->AddBoolean("HelpAppOnboardingRevamp", true);
     // TODO(crbug.com/370386104): Clean up flag in Showoff code.
     source->AddBoolean("HelpAppAppMall", true);
