@@ -12,16 +12,20 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_enterprise_policy_checker.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/origin_gating/core/origin_gating_checker.h"
+#include "components/origin_gating/core/task_policy_config_slot.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -121,6 +125,87 @@ TEST_F(ActorKeyedServiceAdapterTest, StartTaskPopulatesTitleAndBoundSurfaces) {
   ASSERT_TRUE(task);
   EXPECT_EQ(task->title(), "Book flight");
   EXPECT_TRUE(task->HasTab(mock_tab->GetHandle()));
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       StartTaskAssignsAndLocksAgentContainerConfigWhenPresent) {
+  proto::StartTaskRequest start_request;
+  optimization_guide::proto::Site* start_site =
+      start_request.mutable_agent_container_config()
+          ->add_location_rules()
+          ->mutable_location()
+          ->mutable_site();
+  start_site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  start_site->set_domain("example.com");
+
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(start_request, start_future.GetCallback());
+
+  const auto& [task_id, start_response] = start_future.Get();
+  EXPECT_EQ(start_response.status(), proto::StartTaskResponse::STATUS_OK);
+
+  ActorTask* task = actor_service_->GetTask(task_id);
+  ASSERT_TRUE(task);
+  const auto& slot = task->GetExecutionEngine()
+                         .GetOriginGatingChecker()
+                         .task_policy_config_slot();
+  ASSERT_TRUE(slot.has_value());
+  EXPECT_EQ(slot.value(), ConvertAgentContainerConfig(
+                              start_request.agent_container_config()));
+
+  proto::PerformActionsRequest act_request;
+  act_request.add_actions()->mutable_wait()->set_wait_time_ms(0);
+  optimization_guide::proto::Site* act_site =
+      act_request.mutable_agent_container_config()
+          ->add_location_rules()
+          ->mutable_location()
+          ->mutable_site();
+  act_site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  act_site->set_domain("other.com");
+
+  base::test::TestFuture<proto::PerformActionsResponse> act_future;
+  adapter_.Act(task_id, act_request, act_future.GetCallback());
+  EXPECT_EQ(act_future.Get().status(),
+            proto::PerformActionsResponse::STATUS_OK);
+
+  EXPECT_EQ(slot.value(), ConvertAgentContainerConfig(
+                              start_request.agent_container_config()));
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       StartTaskWithoutAgentContainerConfigLeavesSlotUnsetUntilAct) {
+  proto::StartTaskRequest start_request;
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(start_request, start_future.GetCallback());
+
+  const auto& [task_id, start_response] = start_future.Get();
+  EXPECT_EQ(start_response.status(), proto::StartTaskResponse::STATUS_OK);
+
+  ActorTask* task = actor_service_->GetTask(task_id);
+  ASSERT_TRUE(task);
+  const auto& slot = task->GetExecutionEngine()
+                         .GetOriginGatingChecker()
+                         .task_policy_config_slot();
+  EXPECT_FALSE(slot.has_value());
+
+  proto::PerformActionsRequest act_request;
+  act_request.add_actions()->mutable_wait()->set_wait_time_ms(0);
+  optimization_guide::proto::Site* act_site =
+      act_request.mutable_agent_container_config()
+          ->add_location_rules()
+          ->mutable_location()
+          ->mutable_site();
+  act_site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  act_site->set_domain("example.com");
+
+  base::test::TestFuture<proto::PerformActionsResponse> act_future;
+  adapter_.Act(task_id, act_request, act_future.GetCallback());
+  EXPECT_EQ(act_future.Get().status(),
+            proto::PerformActionsResponse::STATUS_OK);
+
+  ASSERT_TRUE(slot.has_value());
+  EXPECT_EQ(slot.value(),
+            ConvertAgentContainerConfig(act_request.agent_container_config()));
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, StartTaskBindsHeadlessSurface) {

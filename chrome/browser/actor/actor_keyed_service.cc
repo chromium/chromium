@@ -673,12 +673,14 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
     base::WeakPtr<ActorTaskDelegate> delegate,
     actor::ui::ActorUiStateManagerInterface* ui_state_manager,
     std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-    AllowedSchemes allowed_schemes) {
+    AllowedSchemes allowed_schemes,
+    base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
+        agent_container_config) {
   CHECK(ui_state_manager);
   return CreateTaskImpl(ui::NewUiEventDispatcher(ui_state_manager), source_info,
                         policy_checker, std::move(options), std::move(delegate),
                         ui_state_manager, initial_invocation_source,
-                        allowed_schemes);
+                        allowed_schemes, agent_container_config);
 }
 
 TaskId ActorKeyedService::CreateTaskForTesting(
@@ -703,7 +705,9 @@ TaskId ActorKeyedService::CreateTaskImpl(
     base::WeakPtr<ActorTaskDelegate> delegate,
     actor::ui::ActorUiStateManagerInterface* ui_state_manager,
     std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-    AllowedSchemes allowed_schemes) {
+    AllowedSchemes allowed_schemes,
+    base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
+        agent_container_config) {
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask", {});
 
@@ -720,6 +724,10 @@ TaskId ActorKeyedService::CreateTaskImpl(
       std::move(ui_event_dispatcher), std::move(options), source_info,
       policy_checker, std::move(delegate), initial_invocation_source,
       allowed_schemes);
+
+  if (agent_container_config.has_value()) {
+    AssignAgentContainerConfig(*actor_task, agent_container_config.value());
+  }
 
   if (!initial_actor_surface.is_null()) {
     actor_task->AddActorSurface(initial_actor_surface,
@@ -995,30 +1003,36 @@ void ActorKeyedService::PerformActions(
   task->GetExecutionEngine().AddWritableMainframeOrigins(
       task_metadata.added_writable_mainframe_origins());
   if (task_metadata.agent_container_config().has_value()) {
-    JournalDetailsBuilder builder;
-    if (!task->GetExecutionEngine()
-             .GetOriginGatingChecker()
-             .task_policy_config_slot()
-             .has_value()) {
-      origin_gating::TaskPolicyConfig config = ConvertAgentContainerConfig(
-          task_metadata.agent_container_config().value());
-      builder.Add("status", "assigned")
-          .Add("active config", config.ToDebugValue());
-      task->GetExecutionEngine()
-          .GetOriginGatingChecker()
-          .task_policy_config_slot()
-          .Assign(std::move(config));
-    } else {
-      builder.Add("status", "ignored config");
-    }
-    GetJournal().Log(GURL(), task_id, "TaskPolicyConfigSlot::Assign",
-                     std::move(builder).Build());
+    AssignAgentContainerConfig(*task,
+                               task_metadata.agent_container_config().value());
   }
 
   task->Act(
       std::move(actions),
       base::BindOnce(&ActorKeyedService::OnActionsFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ActorKeyedService::AssignAgentContainerConfig(
+    ActorTask& task,
+    const optimization_guide::proto::AgentContainerConfig&
+        agent_container_config) {
+  JournalDetailsBuilder builder;
+  origin_gating::TaskPolicyConfigSlot& config_slot =
+      task.GetExecutionEngine()
+          .GetOriginGatingChecker()
+          .task_policy_config_slot();
+  if (!config_slot.has_value()) {
+    origin_gating::TaskPolicyConfig config =
+        ConvertAgentContainerConfig(agent_container_config);
+    builder.Add("status", "assigned")
+        .Add("active config", config.ToDebugValue());
+    config_slot.Assign(std::move(config));
+  } else {
+    builder.Add("status", "ignored config");
+  }
+  GetJournal().Log(GURL(), task.id(), "TaskPolicyConfigSlot::Assign",
+                   std::move(builder).Build());
 }
 
 void ActorKeyedService::OnActionsFinished(

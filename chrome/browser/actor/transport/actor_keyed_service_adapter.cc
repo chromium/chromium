@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
@@ -219,7 +220,12 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
                      /*id=*/std::nullopt),
       enterprise_policy_checker_, std::move(options),
       weak_ptr_factory_.GetWeakPtr(),
-      ui::ActorUiStateManager::Get(actor_service_->GetProfile()));
+      ui::ActorUiStateManager::Get(actor_service_->GetProfile()),
+      /*initial_invocation_source=*/std::nullopt,
+      ActorKeyedService::AllowedSchemes::kRequireHttpsOrHttp,
+      request.has_agent_container_config()
+          ? base::optional_ref(request.agent_container_config())
+          : std::nullopt);
 
   response.set_status(proto::StartTaskResponse::STATUS_OK);
   std::move(callback).Run(task_id, std::move(response));

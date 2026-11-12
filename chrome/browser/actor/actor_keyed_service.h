@@ -23,6 +23,7 @@
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -49,6 +50,10 @@ class Profile;
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace optimization_guide::proto {
+class AgentContainerConfig;
+}  // namespace optimization_guide::proto
 
 namespace actor {
 class AggregatedJournalFileSerializer;
@@ -143,7 +148,9 @@ class ActorKeyedService : public KeyedService,
       actor::ui::ActorUiStateManagerInterface* ui_state_manager,
       std::optional<glic::mojom::InvocationSource> initial_invocation_source =
           std::nullopt,
-      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp);
+      AllowedSchemes allowed_schemes = AllowedSchemes::kRequireHttpsOrHttp,
+      base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
+          agent_container_config = std::nullopt);
   TaskId CreateTaskForTesting(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
@@ -408,7 +415,14 @@ class ActorKeyedService : public KeyedService,
       base::WeakPtr<ActorTaskDelegate> delegate,
       actor::ui::ActorUiStateManagerInterface* ui_state_manager,
       std::optional<glic::mojom::InvocationSource> initial_invocation_source,
-      AllowedSchemes allowed_schemes);
+      AllowedSchemes allowed_schemes,
+      base::optional_ref<const optimization_guide::proto::AgentContainerConfig>
+          agent_container_config = std::nullopt);
+
+  void AssignAgentContainerConfig(
+      ActorTask& task,
+      const optimization_guide::proto::AgentContainerConfig&
+          agent_container_config);
 
   // The callback used for ExecutorEngine::Act.
   void OnActionsFinished(
