@@ -10,8 +10,16 @@
         <script>
             async_test(function(test)
             {
-                // Run garbage collection often.
-                setInterval(asyncGC, 0);
+                // Run garbage collection often, stopping cleanly before teardown.
+                var stopGC = false;
+                var gcLoop = (async function() {
+                    while (!stopGC) {
+                        await asyncGC();
+                    }
+                })();
+                test.add_cleanup(function() {
+                    stopGC = true;
+                });
 
                 var initDataType;
                 var initData;
@@ -25,7 +33,10 @@
                     return mediaKeySession.generateRequest(initDataType, initData);
                 }).then(function() {
                     return mediaKeySession.close();
-                }).then(function(result) {
+                }).then(function() {
+                    stopGC = true;
+                    return gcLoop;
+                }).then(function() {
                     test.done();
                 }).catch(function(error) {
                     forceTestFailureFromPromise(test, error);

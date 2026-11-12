@@ -21,6 +21,8 @@
                 var videoInitData = null;
                 var audioKeyProvided = false;
                 var videoKeyProvided = false;
+                var audioUpdatePromise = null;
+                var videoUpdatePromise = null;
 
                 // The 2 streams use different key ids and different keys.
                 var audioKeyId = '1234567890123456';
@@ -83,18 +85,18 @@
                     if (event.target == videoMediaKeySession) {
                         assert_equals(String.fromCharCode.apply(null, keyId), videoKeyId);
                         var jwkSet = stringToUint8Array(createJWKSet(createJWK(keyId, videoKey)));
-                        videoMediaKeySession.update(jwkSet).then(function(result) {
-                            videoKeyProvided = true;
-                        }).catch(function(error) {
+                        videoKeyProvided = true;
+                        videoUpdatePromise = videoMediaKeySession.update(jwkSet);
+                        videoUpdatePromise.catch(function(error) {
                             forceTestFailureFromPromise(test, error);
                         });
                     } else {
                         assert_equals(event.target, audioMediaKeySession);
                         assert_equals(String.fromCharCode.apply(null, keyId), audioKeyId);
                         var jwkSet = stringToUint8Array(createJWKSet(createJWK(keyId, audioKey)));
-                        audioMediaKeySession.update(jwkSet).then(function(result) {
-                            audioKeyProvided = true;
-                        }).catch(function(error) {
+                        audioKeyProvided = true;
+                        audioUpdatePromise = audioMediaKeySession.update(jwkSet);
+                        audioUpdatePromise.catch(function(error) {
                             forceTestFailureFromPromise(test, error);
                         });
                     }
@@ -117,7 +119,8 @@
                     if (event.target.currentTime < 0.2)
                         return;
 
-                    test.done();
+                    video.removeEventListener('timeupdate', onTimeUpdate, true);
+                    Promise.all([videoUpdatePromise, audioUpdatePromise]).then(test.step_func_done());
                 }
 
                 navigator.requestMediaKeySystemAccess('org.w3.clearkey', getConfigurationForFile(content)).then(function(access) {

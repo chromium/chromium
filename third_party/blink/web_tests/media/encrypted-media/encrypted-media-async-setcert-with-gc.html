@@ -8,11 +8,19 @@
     </head>
     <body>
         <script>
-            // Run garbage collection continuously.
-            setInterval(asyncGC, 0);
-
             promise_test(function(test)
             {
+                // Run garbage collection continuously, stopping cleanly before teardown.
+                var stopGC = false;
+                var gcLoop = (async function() {
+                    while (!stopGC) {
+                        await asyncGC();
+                    }
+                })();
+                test.add_cleanup(function() {
+                    stopGC = true;
+                });
+
                 return navigator.requestMediaKeySystemAccess('org.w3.clearkey', getSimpleConfiguration()).then(function(access) {
                     return access.createMediaKeys();
                 }).then(function(mediaKeys) {
@@ -20,6 +28,8 @@
                     return mediaKeys.setServerCertificate(cert);
                 }).then(function(result) {
                     assert_false(result);
+                    stopGC = true;
+                    return gcLoop;
                 });
             }, 'Test asynchronous setServerCertificate while running garbage collection.');
         </script>
