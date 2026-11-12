@@ -9160,6 +9160,21 @@
             ]
         }
     ],
+    "FuseboxPlusButtonIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261112",
+                    "enable_features": [
+                        "IPH_FuseboxPlusButtonHint"
+                    ]
+                }
+            ]
+        }
+    ],
     "GCMBlockingTaskRunnerUserVisible": [
         {
             "platforms": [
