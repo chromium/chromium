@@ -22,7 +22,8 @@ bool IsVerticalScrollEnabled(const views::ScrollView& scroll_view) {
 
 void TabDragScrollHandler::OnDraggedTabPositionUpdated(
     views::ScrollView& scroll_view,
-    const gfx::Rect& dragged_view_bounds_in_scroll_view) {
+    const gfx::Rect& dragged_view_bounds_in_scroll_view,
+    const gfx::Rect& scroll_bounds_in_scroll_view) {
   auto* host_view = scroll_view.contents();
 
   // TODO(crbug.com/476493398): Tune this value, potentially making it dynamic
@@ -34,10 +35,12 @@ void TabDragScrollHandler::OnDraggedTabPositionUpdated(
   if (IsHorizontalScrollEnabled(scroll_view)) {
     const bool is_dragging_to_right =
         visible_bounds.right() < host_view->width() &&
-        dragged_view_bounds_in_scroll_view.right() >= scroll_view.width();
+        dragged_view_bounds_in_scroll_view.right() >=
+            scroll_bounds_in_scroll_view.right();
 
     const bool is_dragging_to_left =
-        visible_bounds.x() > 0 && dragged_view_bounds_in_scroll_view.x() <= 0;
+        visible_bounds.x() > 0 && dragged_view_bounds_in_scroll_view.x() <=
+                                      scroll_bounds_in_scroll_view.x();
 
     if (is_dragging_to_right) {
       StartOrContinueScrolling(scroll_view, kScrollIncrement);
@@ -49,10 +52,12 @@ void TabDragScrollHandler::OnDraggedTabPositionUpdated(
   } else if (IsVerticalScrollEnabled(scroll_view)) {
     const bool is_dragging_to_bottom =
         visible_bounds.bottom() < host_view->height() &&
-        dragged_view_bounds_in_scroll_view.bottom() >= scroll_view.height();
+        dragged_view_bounds_in_scroll_view.bottom() >=
+            scroll_bounds_in_scroll_view.bottom();
 
     const bool is_dragging_to_top =
-        visible_bounds.y() > 0 && dragged_view_bounds_in_scroll_view.y() <= 0;
+        visible_bounds.y() > 0 && dragged_view_bounds_in_scroll_view.y() <=
+                                      scroll_bounds_in_scroll_view.y();
 
     if (is_dragging_to_bottom) {
       StartOrContinueScrolling(scroll_view, kScrollIncrement);

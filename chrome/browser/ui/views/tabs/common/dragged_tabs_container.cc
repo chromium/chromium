@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
 #include "content/public/browser/navigation_controller.h"
@@ -78,6 +79,15 @@ gfx::Vector2d GetSourceViewOffsetFromMouse(
                         source_slot_bounds.height())};
 
   return dragged_view_bounds_offset_from_bounds;
+}
+
+gfx::Rect GetScrollViewUnmaskedBounds(const views::ScrollView* scroll_view) {
+  CHECK(scroll_view);
+  if (const auto* tab_strip_view =
+          views::AsViewClass<TabStripView>(scroll_view->parent())) {
+    return tab_strip_view->GetScrollViewUnmaskedBounds(scroll_view);
+  }
+  return scroll_view->GetLocalBounds();
 }
 }  // namespace
 
@@ -145,9 +155,11 @@ void DraggedTabsContainer::ApplyUpdatesForDragPositionChange() {
   auto* scroll_view = GetScrollViewForContainer();
   CHECK(scroll_view);
   scroll_handler_.OnDraggedTabPositionUpdated(
-      *scroll_view, views::View::ConvertRectToTarget(
-                        base::to_address(host_view_), scroll_view,
-                        dragged_bounds_in_container));
+      *scroll_view,
+      views::View::ConvertRectToTarget(base::to_address(host_view_),
+                                       scroll_view,
+                                       dragged_bounds_in_container),
+      GetScrollViewUnmaskedBounds(scroll_view));
 
   UpdateDraggingViewTransforms(point_in_container);
 
@@ -604,7 +616,8 @@ gfx::Rect DraggedTabsContainer::GetDraggingViewsClampingBounds() const {
   const auto* scroll_view = GetScrollViewForContainer();
   CHECK(scroll_view);
   gfx::Rect clamping_bounds = views::View::ConvertRectToTarget(
-      scroll_view, base::to_address(host_view_), scroll_view->GetLocalBounds());
+      scroll_view, base::to_address(host_view_),
+      GetScrollViewUnmaskedBounds(scroll_view));
   if (drag_layout_ != DragLayout::kHorizontal) {
     clamping_bounds.set_width(
         clamping_bounds.width() -

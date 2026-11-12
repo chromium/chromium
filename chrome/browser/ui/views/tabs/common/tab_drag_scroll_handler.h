@@ -26,7 +26,8 @@ class TabDragScrollHandler {
   // or start scrolling, or update the rate.
   void OnDraggedTabPositionUpdated(
       views::ScrollView& scroll_view,
-      const gfx::Rect& dragged_view_bounds_in_scroll_view);
+      const gfx::Rect& dragged_view_bounds_in_scroll_view,
+      const gfx::Rect& scroll_bounds_in_scroll_view);
 
   // Stops scrolling, or does nothing if scrolling is not in progress.
   void StopScrolling(views::ScrollView& scroll_view);
