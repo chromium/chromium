@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/sync/test/test_sync_service.h"
@@ -156,6 +157,7 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
   raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
   base::HistogramTester histogram_tester_;
   user_manager::ScopedUserManager user_manager_;
+  AppServiceRegistry app_service_registry_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   apps::AppServiceTest app_service_test_;

@@ -13,6 +13,8 @@ namespace reporting {
 
 // Retrieves the app publisher id from the app registry cache using the
 // specified profile if one exists.
+// `profile` must be the Profile of a user session, for which the AppService is
+// available, i.e. the one MetricReportingManager starts app collectors for.
 std::optional<std::string> GetPublisherIdForApp(const std::string& app_id,
                                                 Profile* profile);
 
