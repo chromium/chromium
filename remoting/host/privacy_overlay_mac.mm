@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -191,6 +192,36 @@ bool IsRemoteInjectedEvent(NSEvent* event) {
   int64_t source_pid =
       CGEventGetIntegerValueField(cg_event, kCGEventSourceUnixProcessID);
   return source_pid == static_cast<int64_t>(getpid());
+}
+
+size_t FindScreenIndexForCocoaPoint(const std::vector<NSRect>& screen_frames,
+                                    NSPoint point) {
+  // `NSMouseInRect(..., /*flipped=*/NO)` handles Cocoa's bottom-left origin so
+  // cursor coordinates on the top row of a display (`y == NSMaxY(frame)`) match
+  // that display rather than falling through.
+  for (size_t i = 0; i < screen_frames.size(); ++i) {
+    if (NSMouseInRect(point, screen_frames[i], /*flipped=*/NO)) {
+      return i;
+    }
+  }
+
+  // Fall back to the nearest screen when `point` lies on an excluded boundary
+  // (`y == NSMinY` or `x == NSMaxX`) or in a gap between displays.
+  size_t nearest_index = 0;
+  CGFloat best_distance_sq = std::numeric_limits<CGFloat>::infinity();
+  for (size_t i = 0; i < screen_frames.size(); ++i) {
+    const NSRect& frame = screen_frames[i];
+    CGFloat clamped_x = std::clamp(point.x, NSMinX(frame), NSMaxX(frame));
+    CGFloat clamped_y = std::clamp(point.y, NSMinY(frame), NSMaxY(frame));
+    CGFloat dx = point.x - clamped_x;
+    CGFloat dy = point.y - clamped_y;
+    CGFloat distance_sq = dx * dx + dy * dy;
+    if (distance_sq < best_distance_sq) {
+      best_distance_sq = distance_sq;
+      nearest_index = i;
+    }
+  }
+  return nearest_index;
 }
 
 NSImage* LoadOverlayIcon() {
@@ -775,7 +806,7 @@ bool PrivacyOverlayMac::BeginOverlay() {
     return false;
   }
 
-  PositionDisconnectButton();
+  PositionDisconnectButton(NSEvent.mouseLocation);
   DeactivateDisconnectButton();
 
   NSAccessibilityPostNotificationWithUserInfo(
@@ -877,7 +908,7 @@ bool PrivacyOverlayMac::UpdateBackdrops() {
   return true;
 }
 
-void PrivacyOverlayMac::PositionDisconnectButton() {
+void PrivacyOverlayMac::PositionDisconnectButton(NSPoint cocoa_screen_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!button_window_) {
     return;
@@ -889,25 +920,29 @@ void PrivacyOverlayMac::PositionDisconnectButton() {
     return;
   }
 
-  const NSRect& screen_frame = screen_frames.front();
+  size_t screen_index =
+      FindScreenIndexForCocoaPoint(screen_frames, cocoa_screen_point);
+  const NSRect& screen_frame = screen_frames[screen_index];
   CGFloat screen_width = NSWidth(screen_frame);
   CGFloat screen_height = NSHeight(screen_frame);
   NSRect button_frame = button_window_.frame;
   CGFloat button_width = NSWidth(button_frame);
   CGFloat button_height = NSHeight(button_frame);
 
-  CGFloat min_flipped_button_top = (screen_height / 2.0) + kButtonTopOffset;
-  if (PrivacyOverlayBackdropWindow* backdrop_window =
-          backdrop_windows_.firstObject) {
-    PrivacyOverlayBackdropView* backdrop_view =
-        base::apple::ObjCCastStrict<PrivacyOverlayBackdropView>(
-            backdrop_window.contentView);
-    NSRect sharing_rect = [backdrop_view
-        sharingTextRectForBounds:NSMakeRect(0, 0, screen_width, screen_height)];
-    min_flipped_button_top = std::max(min_flipped_button_top,
-                                      NSMaxY(sharing_rect) + kVerticalSpacing);
-  }
-
+  // Measure the wrapped sharing text bounds directly from the current text and
+  // RTL state (independent of `backdrop_windows_`) so the floating Disconnect
+  // button is placed below multi-line text whenever vertical screen space
+  // permits. Clamp to `kVerticalSpacing` from the bottom edge so the button
+  // always remains fully on-screen (overlapping text only when a display is too
+  // short to fit both).
+  NSRect sharing_rect =
+      ComputeBackdropContentLayout(
+          NSMakeRect(0, 0, screen_width, screen_height), product_name_text_,
+          sharing_with_text_, NSColor.whiteColor, is_rtl_)
+          .sharing_rect;
+  CGFloat min_flipped_button_top =
+      std::max<CGFloat>((screen_height / 2.0) + kButtonTopOffset,
+                        NSMaxY(sharing_rect) + kVerticalSpacing);
   CGFloat max_flipped_button_top = std::max<CGFloat>(
       kVerticalSpacing, screen_height - button_height - kVerticalSpacing);
   CGFloat flipped_button_top =
@@ -917,17 +952,23 @@ void PrivacyOverlayMac::PositionDisconnectButton() {
       std::round(NSMinX(screen_frame) + (screen_width - button_width) / 2.0);
   CGFloat cocoa_y =
       std::round(NSMaxY(screen_frame) - flipped_button_top - button_height);
+
+  // Store expected origin in global Cocoa screen coordinates (matching
+  // `button_window_.frame.origin`, bottom-left origin of primary display) for
+  // `ShouldRepositionOnDisplacement()` when observing `NSWindowDidMove` (wired
+  // up in a follow-up CL).
+  SetExpectedPosition(static_cast<int>(cocoa_x), static_cast<int>(cocoa_y));
   [button_window_ setFrameOrigin:NSMakePoint(cocoa_x, cocoa_y)];
 }
 
-void PrivacyOverlayMac::ActivateDisconnectButton() {
+void PrivacyOverlayMac::ActivateDisconnectButton(NSPoint cocoa_screen_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!button_window_) {
     return;
   }
 
   const NSPoint old_origin = button_window_.frame.origin;
-  PositionDisconnectButton();
+  PositionDisconnectButton(cocoa_screen_point);
   if (!is_button_hidden_ &&
       NSEqualPoints(old_origin, button_window_.frame.origin)) {
     return;

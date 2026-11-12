@@ -85,7 +85,9 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
 
   bool is_rtl_for_testing() const { return is_rtl_; }
 
-  void ActivateDisconnectButtonForTesting() { ActivateDisconnectButton(); }
+  void ActivateDisconnectButtonForTesting(NSPoint cocoa_screen_point) {
+    ActivateDisconnectButton(cocoa_screen_point);
+  }
 
  private:
   // Initializes localized strings, per-display backdrop windows, and the
@@ -100,11 +102,14 @@ class PrivacyOverlayMac : public DisconnectWindowBase {
   bool UpdateBackdrops();
 
   // Positions `button_window_` horizontally centered and vertically below the
-  // wrapped sharing message on the primary display.
-  void PositionDisconnectButton();
+  // wrapped sharing message (when vertical screen space permits, clamping to
+  // stay on-screen) on the `NSScreen` containing or nearest to
+  // `cocoa_screen_point`.
+  void PositionDisconnectButton(NSPoint cocoa_screen_point);
 
-  // Shows and enables click-targeting on `button_window_`.
-  void ActivateDisconnectButton();
+  // Shows and enables click-targeting on `button_window_` on the display
+  // containing or nearest to `cocoa_screen_point`.
+  void ActivateDisconnectButton(NSPoint cocoa_screen_point);
 
   // Orders `button_window_` out (`orderOut:`) and marks it transparent and
   // click-through (`ignoresMouseEvents = YES`).

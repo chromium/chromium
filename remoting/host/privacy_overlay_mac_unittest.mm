@@ -70,6 +70,8 @@ constexpr CGFloat kGoogleBlueRed = 26.0 / 255.0;
 constexpr CGFloat kGoogleBlueGreen = 115.0 / 255.0;
 constexpr CGFloat kGoogleBlueBlue = 232.0 / 255.0;
 constexpr CGFloat kColorComponentTolerance = 0.04;
+// Matches `kVerticalSpacing` in `privacy_overlay_mac.mm`.
+constexpr CGFloat kVerticalMargin = 16.0;
 
 NSColor* GoogleBlueColor() {
   return [NSColor colorWithSRGBRed:kGoogleBlueRed
@@ -169,6 +171,13 @@ class PrivacyOverlayMacTest : public testing::Test {
 
   void DestroyOverlay() { overlay_.reset(); }
 
+  void ActivateDisconnectButtonOnPrimaryScreen() {
+    NSScreen* primary_screen = NSScreen.screens.firstObject;
+    ASSERT_NE(primary_screen, nil);
+    overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(
+        NSMidX(primary_screen.frame), NSMidY(primary_screen.frame)));
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::string client_jid_ = "user@domain/jid123";
@@ -229,7 +238,7 @@ TEST_F(PrivacyOverlayMacTest,
 TEST_F(PrivacyOverlayMacTest,
        DestroyingOverlayClosesBackdropWindowsWithoutDisconnectingSession) {
   StartOverlay();
-  overlay_->ActivateDisconnectButtonForTesting();
+  ActivateDisconnectButtonOnPrimaryScreen();
 
   NSArray<PrivacyOverlayBackdropWindow*>* backdrops =
       [overlay_->backdrop_windows_for_testing() copy];
@@ -751,7 +760,7 @@ TEST_F(PrivacyOverlayMacTest,
 TEST_F(PrivacyOverlayMacTest,
        LocalClickOnDisconnectButtonDisconnectsSessionAndClosesWindows) {
   StartOverlay();
-  overlay_->ActivateDisconnectButtonForTesting();
+  ActivateDisconnectButtonOnPrimaryScreen();
 
   PrivacyOverlayButtonWindow* button_window =
       overlay_->button_window_for_testing();
@@ -771,7 +780,7 @@ TEST_F(PrivacyOverlayMacTest,
 TEST_F(PrivacyOverlayMacTest,
        IgnoresRemoteInjectedMouseEventOnDisconnectButton) {
   StartOverlay();
-  overlay_->ActivateDisconnectButtonForTesting();
+  ActivateDisconnectButtonOnPrimaryScreen();
 
   PrivacyOverlayButtonWindow* button_window =
       overlay_->button_window_for_testing();
@@ -942,7 +951,7 @@ TEST_F(PrivacyOverlayMacTest,
   EXPECT_CALL(client_session_control_,
               DisconnectSession(protocol::ErrorCode::OK, _, _))
       .Times(1);
-  overlay_->ActivateDisconnectButtonForTesting();
+  ActivateDisconnectButtonOnPrimaryScreen();
 
   EXPECT_FALSE(button_window.isVisible);
   for (PrivacyOverlayBackdropWindow* backdrop in backdrops) {
@@ -974,18 +983,195 @@ TEST_F(PrivacyOverlayMacTest,
 
   // First activation transitions `is_button_hidden_` from true to false and
   // refreshes capture exclusion.
-  overlay_->ActivateDisconnectButtonForTesting();
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 450.0));
   EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
   EXPECT_EQ(button_exclusion_calls, 2);
 
   // Repeated activation while already visible at the same origin is a no-op.
-  overlay_->ActivateDisconnectButtonForTesting();
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 450.0));
   EXPECT_EQ(button_exclusion_calls, 2);
 
   // Changing the target origin refreshes capture exclusion even while visible.
   frames = {NSMakeRect(200.0, 100.0, 1440.0, 900.0)};
-  overlay_->ActivateDisconnectButtonForTesting();
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 450.0));
   EXPECT_EQ(button_exclusion_calls, 3);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       PositionsButtonWindowCenteredAndBelowBackdropSharingText) {
+  const NSRect kScreenFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kScreenFrame]() { return std::vector<NSRect>{kScreenFrame}; }));
+
+  StartOverlay();
+  overlay_->ActivateDisconnectButtonForTesting(
+      NSMakePoint(NSMidX(kScreenFrame), NSMidY(kScreenFrame)));
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_FALSE(button_window.ignoresMouseEvents);
+  EXPECT_DOUBLE_EQ(button_window.alphaValue, 1.0);
+
+  NSRect button_frame = button_window.frame;
+  EXPECT_NEAR(NSMidX(button_frame), NSMidX(kScreenFrame), 1.0);
+  EXPECT_GE(NSMinY(button_frame), NSMinY(kScreenFrame) + kVerticalMargin);
+
+  ASSERT_TRUE(overlay_->expected_x().has_value());
+  ASSERT_TRUE(overlay_->expected_y().has_value());
+  EXPECT_EQ(*overlay_->expected_x(),
+            static_cast<int>(std::lround(NSMinX(button_frame))));
+  EXPECT_EQ(*overlay_->expected_y(),
+            static_cast<int>(std::lround(NSMinY(button_frame))));
+
+  PrivacyOverlayBackdropView* backdrop_view =
+      base::apple::ObjCCastStrict<PrivacyOverlayBackdropView>(
+          overlay_->backdrop_windows_for_testing().firstObject.contentView);
+  ASSERT_NE(backdrop_view, nil);
+  NSRect sharing_rect =
+      [backdrop_view sharingTextRectForBounds:backdrop_view.bounds];
+  CGFloat sharing_bottom_in_cocoa = NSMaxY(kScreenFrame) - NSMaxY(sharing_rect);
+  EXPECT_LE(NSMaxY(button_frame), sharing_bottom_in_cocoa);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       PositionsButtonBelowMultiLineWrappedSharingTextWithoutOverlap) {
+  std::vector<NSRect> frames = {NSMakeRect(0.0, 0.0, 500.0, 900.0)};
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([&frames]() { return frames; }));
+
+  // Measure the baseline sharing-text height and button top for the default
+  // short message first.
+  const NSRect narrow_frame = frames[0];
+  StartOverlay();
+  overlay_->ActivateDisconnectButtonForTesting(
+      NSMakePoint(NSMidX(narrow_frame), NSMidY(narrow_frame)));
+  PrivacyOverlayBackdropView* baseline_view =
+      base::apple::ObjCCastStrict<PrivacyOverlayBackdropView>(
+          overlay_->backdrop_windows_for_testing().firstObject.contentView);
+  ASSERT_NE(baseline_view, nil);
+  const CGFloat baseline_sharing_height =
+      NSHeight([baseline_view sharingTextRectForBounds:baseline_view.bounds]);
+  const CGFloat baseline_button_max_y =
+      NSMaxY(overlay_->button_window_for_testing().frame);
+  DestroyOverlay();
+
+  // `FormatEmailForDisplay()` elides `client_jid_` to 36 characters, so
+  // override `IDS_MESSAGE_SHARED` with a multi-sentence string that wraps
+  // across enough lines on the 500pt display to exceed `kButtonTopOffset` and
+  // overflow a 240pt display.
+  ui::ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
+      IDS_MESSAGE_SHARED,
+      u"Your desktop is currently being shared in privacy mode with $1 while "
+      u"remote assistance is active on this machine. Local screen contents are "
+      u"hidden from people nearby, and moving the physical mouse or pressing a "
+      u"local key reveals the Stop Sharing button below this message so you "
+      u"can end the remote session at any time without exposing your screen.");
+  StartOverlay();
+
+  overlay_->ActivateDisconnectButtonForTesting(
+      NSMakePoint(NSMidX(narrow_frame), NSMidY(narrow_frame)));
+
+  PrivacyOverlayBackdropView* backdrop_view =
+      base::apple::ObjCCastStrict<PrivacyOverlayBackdropView>(
+          overlay_->backdrop_windows_for_testing().firstObject.contentView);
+  ASSERT_NE(backdrop_view, nil);
+  NSRect sharing_rect =
+      [backdrop_view sharingTextRectForBounds:backdrop_view.bounds];
+  ASSERT_GT(NSHeight(sharing_rect), baseline_sharing_height);
+  CGFloat sharing_bottom_in_cocoa = NSMaxY(narrow_frame) - NSMaxY(sharing_rect);
+
+  NSRect button_frame = overlay_->button_window_for_testing().frame;
+  EXPECT_LT(NSMaxY(button_frame), baseline_button_max_y);
+  EXPECT_NEAR(NSMaxY(button_frame), sharing_bottom_in_cocoa - kVerticalMargin,
+              1.0);
+  EXPECT_GE(NSMinY(button_frame), NSMinY(narrow_frame) + kVerticalMargin);
+
+  // On an extremely short display where wrapped text extends past the bottom,
+  // `max_flipped_button_top` wins so the button clamps to `kVerticalMargin`
+  // above the bottom edge (overlapping the wrapped text to stay on-screen).
+  const NSRect short_frame = NSMakeRect(0.0, 0.0, 500.0, 240.0);
+  frames = {short_frame};
+  overlay_->ActivateDisconnectButtonForTesting(
+      NSMakePoint(NSMidX(short_frame), NSMidY(short_frame)));
+  NSRect clamped_frame = overlay_->button_window_for_testing().frame;
+  EXPECT_DOUBLE_EQ(NSMinY(clamped_frame), kVerticalMargin);
+  NSRect short_sharing_rect = [backdrop_view
+      sharingTextRectForBounds:NSMakeRect(0.0, 0.0, NSWidth(short_frame),
+                                          NSHeight(short_frame))];
+  CGFloat short_sharing_bottom_in_cocoa =
+      NSMaxY(short_frame) - NSMaxY(short_sharing_rect);
+  EXPECT_GT(NSMaxY(clamped_frame), short_sharing_bottom_in_cocoa);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       PositionsButtonOnTargetDisplayIncludingTopEdgeAndNearestFallback) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  const NSRect kRightGapFrame = NSMakeRect(1600.0, -120.0, 1920.0, 1080.0);
+  // Touching vertical neighbors sharing `y == 900` and `y == 0` with
+  // `kPrimaryFrame`, offset horizontally so `NSMidX` distinguishes displays.
+  const NSRect kUpperFrame = NSMakeRect(200.0, 900.0, 1920.0, 1080.0);
+  const NSRect kBelowFrame = NSMakeRect(200.0, -900.0, 1920.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kPrimaryFrame, kRightGapFrame, kUpperFrame, kBelowFrame]() {
+            return std::vector<NSRect>{kPrimaryFrame, kRightGapFrame,
+                                       kUpperFrame, kBelowFrame};
+          }));
+
+  StartOverlay();
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+
+  // 1. Interior point on `kRightGapFrame` centers the button there and records
+  // global Cocoa coordinates.
+  overlay_->ActivateDisconnectButtonForTesting(
+      NSMakePoint(NSMidX(kRightGapFrame), NSMidY(kRightGapFrame)));
+  NSRect button_frame = button_window.frame;
+  EXPECT_NEAR(NSMidX(button_frame), NSMidX(kRightGapFrame), 1.0);
+  EXPECT_GE(NSMinY(button_frame), NSMinY(kRightGapFrame) + kVerticalMargin);
+  EXPECT_LE(NSMaxY(button_frame), NSMaxY(kRightGapFrame) - kVerticalMargin);
+  EXPECT_EQ(overlay_->expected_x(),
+            static_cast<int>(std::lround(NSMinX(button_frame))));
+  EXPECT_EQ(overlay_->expected_y(),
+            static_cast<int>(std::lround(NSMinY(button_frame))));
+
+  // 2. Shared boundary `y == 900` (`NSMaxY(kPrimaryFrame) ==
+  // NSMinY(kUpperFrame)`): start on `kUpperFrame`, then activate at `y == 900`.
+  // `NSMouseInRect(..., NO)` selects `kPrimaryFrame` (whereas `NSPointInRect`
+  // would select `kUpperFrame`).
+  overlay_->ActivateDisconnectButtonForTesting(
+      NSMakePoint(NSMidX(kUpperFrame), NSMidY(kUpperFrame)));
+  ASSERT_NEAR(NSMidX(button_window.frame), NSMidX(kUpperFrame), 1.0);
+
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 900.0));
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kPrimaryFrame), 1.0);
+  EXPECT_LE(NSMaxY(button_window.frame),
+            NSMaxY(kPrimaryFrame) - kVerticalMargin);
+
+  // 3. Shared boundary `y == 0` (`NSMaxY(kBelowFrame) ==
+  // NSMinY(kPrimaryFrame)`): `NSMouseInRect(..., NO)` rejects `kPrimaryFrame`
+  // (`y > NSMinY` is false) and selects the secondary `kBelowFrame` (`y <=
+  // NSMaxY` is true), whereas `NSPointInRect` would match `kPrimaryFrame`.
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(720.0, 0.0));
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kBelowFrame), 1.0);
+  EXPECT_LE(NSMaxY(button_window.frame), NSMaxY(kBelowFrame) - kVerticalMargin);
+
+  // 4. Points in the inter-display gap `[1440, 1600)` select the nearest
+  // display (`1460` -> `kPrimaryFrame`, `1580` -> `kRightGapFrame`), and a far
+  // off-screen point (`4000, -100`) selects `kRightGapFrame`.
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(1460.0, 450.0));
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kPrimaryFrame), 1.0);
+
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(1580.0, 450.0));
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kRightGapFrame), 1.0);
+
+  overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(4000.0, -100.0));
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kRightGapFrame), 1.0);
 }
 
 }  // namespace
