@@ -207,8 +207,7 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
     // Last chance for outstanding GPU timers to record metrics.
     CheckGpuTimers(RasterInterface());
   }
-  shared_image_provider_.reset();
-  resource_.reset();
+  ResetSharedImageBacking();
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
@@ -280,6 +279,15 @@ bool BaseRenderingContext2D::IsBackingAccelerated() const {
   return is_accelerated_;
 }
 
+void BaseRenderingContext2D::ResetSharedImageBacking() {
+  if (!shared_image_provider_) {
+    return;
+  }
+  shared_image_provider_.reset();
+  resource_.reset();
+  is_accelerated_ = false;
+}
+
 void BaseRenderingContext2D::ResetBacking() {
   if (HasBacking()) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
@@ -289,9 +297,7 @@ void BaseRenderingContext2D::ResetBacking() {
     CheckGpuTimers(RasterInterface());
   }
   ClearGpuTimers();
-  shared_image_provider_.reset();
-  resource_.reset();
-  is_accelerated_ = false;
+  ResetSharedImageBacking();
   surface_.reset();
   canvas_image_provider_.reset();
   cached_snapshot_.reset();
@@ -531,9 +537,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
 
     // An error might have occurred while clearing.
     if (IsGpuContextLost()) {
-      shared_image_provider_.reset();
-      resource_.reset();
-      is_accelerated_ = false;
+      ResetSharedImageBacking();
       canvas_image_provider_.reset();
       must_preserve_content_on_copy_on_write_ = true;
       current_resource_has_write_access_ = false;
@@ -545,8 +549,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
       return;
     }
   } else if (!resource_) {
-    shared_image_provider_.reset();
-    is_accelerated_ = false;
+    ResetSharedImageBacking();
     must_preserve_content_on_copy_on_write_ = true;
     current_resource_has_write_access_ = false;
     is_cleared_ = false;
@@ -560,9 +563,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
   if (raster_mode == RasterMode::kCPU) {
     CreateSoftwareSurface();
     if (!surface_) {
-      shared_image_provider_.reset();
-      resource_.reset();
-      is_accelerated_ = false;
+      ResetSharedImageBacking();
       must_preserve_content_on_copy_on_write_ = true;
       current_resource_has_write_access_ = false;
       is_cleared_ = false;
@@ -613,7 +614,7 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
       color_params_.GetGfxHdrMetadata());
   CreateSoftwareSurface();
   if (!surface_) {
-    shared_image_provider_.reset();
+    ResetSharedImageBacking();
     must_preserve_content_on_copy_on_write_ = true;
     is_cleared_ = false;
     return;

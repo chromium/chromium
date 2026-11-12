@@ -449,6 +449,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
 
+  void ResetSharedImageBacking();
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
   bool ShouldReplaceTargetBuffer();
