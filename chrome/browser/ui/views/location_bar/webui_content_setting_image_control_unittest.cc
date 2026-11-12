@@ -11,9 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -23,13 +28,37 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
 using ImageType = ContentSettingImageModel::ImageType;
+
+class FakeBubbleModel : public ContentSettingBubbleModel {
+ public:
+  FakeBubbleModel(Delegate* delegate, content::Page& page)
+      : ContentSettingBubbleModel(delegate, page) {}
+};
+
+class TestBrowserElements : public BrowserElements {
+ public:
+  DECLARE_SAFE_CAST_TARGET()
+  TestBrowserElements(BrowserWindowInterface& browser,
+                      ui::ElementContext context)
+      : BrowserElements(browser), context_(context) {}
+  ui::ElementContext GetContext() override { return context_; }
+
+ private:
+  const ui::ElementContext context_;
+};
+
+DEFINE_SAFE_CAST_TARGET(TestBrowserElements)
 
 class TestDelegate : public ContentSettingImageViewDelegate {
  public:
@@ -113,11 +142,50 @@ class WebUIContentSettingImageControlTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
+    if (web_contents_) {
+      webui::SetBrowserWindowInterface(web_contents_.get(), nullptr);
+    }
     control_.reset();
     delegate_.reset();
     web_contents_.reset();
     ChromeViewsTestBase::TearDown();
   }
+
+  struct DeferredAutoOpenTestContext {
+    raw_ptr<content::WebContents> web_contents = nullptr;
+    testing::NiceMock<MockBrowserWindowInterface> mock_browser;
+    std::unique_ptr<views::Widget> widget;
+    std::unique_ptr<TestBrowserElements> browser_elements;
+    raw_ptr<MockContentSettingImageModel> cookies_model = nullptr;
+
+    explicit DeferredAutoOpenTestContext(
+        WebUIContentSettingImageControlTest* fixture)
+        : web_contents(fixture->web_contents()),
+          widget(fixture->CreateTestWidget(
+              views::Widget::InitParams::CLIENT_OWNS_WIDGET)),
+          browser_elements(std::make_unique<TestBrowserElements>(
+              mock_browser,
+              views::ElementTrackerViews::GetContextForWidget(widget.get()))) {
+      webui::SetBrowserWindowInterface(web_contents, &mock_browser);
+
+      std::vector<std::unique_ptr<ContentSettingImageModel>> models;
+      auto cookies_model_ptr = std::make_unique<MockContentSettingImageModel>(
+          ImageType::kCookies, ContentSettingsType::COOKIES);
+      cookies_model = cookies_model_ptr.get();
+      cookies_model->set_visible(true);
+      cookies_model->set_should_auto_open_bubble(true);
+      models.push_back(std::move(cookies_model_ptr));
+
+      fixture->control_->InitForTesting(std::move(models));
+      fixture->SetUpMockBubbleModel(cookies_model);
+    }
+
+    ~DeferredAutoOpenTestContext() {
+      if (web_contents) {
+        webui::SetBrowserWindowInterface(web_contents, nullptr);
+      }
+    }
+  };
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
@@ -128,6 +196,20 @@ class WebUIContentSettingImageControlTest : public ChromeViewsTestBase {
   }
   void SetCurrentBubbleType(std::optional<ImageType> type) {
     control_->last_tracked_bubble_type_ = type;
+  }
+  std::optional<ImageType> pending_bubble_type() const {
+    return control_->pending_bubble_
+               ? std::make_optional(control_->pending_bubble_->type)
+               : std::nullopt;
+  }
+  void SetUpMockBubbleModel(MockContentSettingImageModel* model) {
+    EXPECT_CALL(*model, CreateBubbleModelImpl(
+                            delegate_->GetContentSettingBubbleModelDelegate(),
+                            testing::Ref(web_contents()->GetPrimaryPage())))
+        .WillRepeatedly([](ContentSettingBubbleModel::Delegate* delegate,
+                           content::Page& page) {
+          return std::make_unique<FakeBubbleModel>(delegate, page);
+        });
   }
 
  protected:
@@ -627,4 +709,70 @@ TEST_F(WebUIContentSettingImageControlTest, AutoCloseBubbleWhenHidden) {
   EXPECT_TRUE(widget->IsClosed());
   bubble_destroyed_waiter.Wait();
   EXPECT_FALSE(control_->IsBubbleShowing(1));
+}
+
+TEST_F(WebUIContentSettingImageControlTest,
+       AutoOpenBubble_DeferredUntilLocationBarElementShown) {
+  DeferredAutoOpenTestContext ctx(this);
+
+  // Process state: kLocationBarElementId is not yet shown, so bubble show is
+  // deferred.
+  auto state = control_->ProcessContentSettingState(web_contents());
+  EXPECT_EQ(1u, state.size());
+  EXPECT_TRUE(pending_bubble_type().has_value());
+  EXPECT_EQ(ImageType::kCookies, *pending_bubble_type());
+  EXPECT_FALSE(control_->IsBubbleShowing(0));
+
+  // Now show the location bar view with kLocationBarElementId.
+  auto* location_bar_view =
+      ctx.widget->SetContentsView(std::make_unique<views::View>());
+  location_bar_view->SetProperty(views::kElementIdentifierKey,
+                                 kLocationBarElementId);
+  ctx.widget->Show();
+
+  // Once shown, the deferred callback should have executed and opened the
+  // bubble.
+  EXPECT_FALSE(pending_bubble_type().has_value());
+  EXPECT_TRUE(control_->IsBubbleShowing(0));
+}
+
+TEST_F(WebUIContentSettingImageControlTest,
+       AutoOpenBubble_DeferredCanceledOnTabSwitch) {
+  DeferredAutoOpenTestContext ctx(this);
+
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_TRUE(pending_bubble_type().has_value());
+
+  // Switch to another WebContents which does not request auto-open.
+  ctx.cookies_model->set_should_auto_open_bubble(false);
+  std::unique_ptr<content::WebContents> other_web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  control_->ProcessContentSettingState(other_web_contents.get());
+  EXPECT_FALSE(pending_bubble_type().has_value());
+}
+
+TEST_F(WebUIContentSettingImageControlTest,
+       AutoOpenBubble_DeferredCanceledWhenIconHidden) {
+  DeferredAutoOpenTestContext ctx(this);
+
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_TRUE(pending_bubble_type().has_value());
+
+  // Hide the model.
+  ctx.cookies_model->set_visible(false);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_FALSE(pending_bubble_type().has_value());
+}
+
+TEST_F(WebUIContentSettingImageControlTest,
+       AutoOpenBubble_DeferredCanceledWhenAutoOpenBecomesFalse) {
+  DeferredAutoOpenTestContext ctx(this);
+
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_TRUE(pending_bubble_type().has_value());
+
+  // The model remains visible, but no longer requests auto-open.
+  ctx.cookies_model->set_should_auto_open_bubble(false);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_FALSE(pending_bubble_type().has_value());
 }

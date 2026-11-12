@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 
+#include <tuple>
+
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -22,6 +25,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/mojom/base/error.mojom.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -71,6 +75,20 @@ WebUIContentSettingImageControl::WebUIContentSettingImageControl(
     : setting_view_delegate_(setting_view_delegate) {}
 
 WebUIContentSettingImageControl::~WebUIContentSettingImageControl() = default;
+
+WebUIContentSettingImageControl::DeferredBubbleRequest::DeferredBubbleRequest(
+    toolbar_ui_api::mojom::ContentSettingImageType type,
+    base::WeakPtr<content::WebContents> web_contents,
+    base::CallbackListSubscription subscription)
+    : type(type),
+      web_contents(std::move(web_contents)),
+      subscription(std::move(subscription)) {}
+
+WebUIContentSettingImageControl::DeferredBubbleRequest::
+    ~DeferredBubbleRequest() = default;
+
+WebUIContentSettingImageControl::DeferredBubbleRequest::DeferredBubbleRequest(
+    DeferredBubbleRequest&&) = default;
 
 void WebUIContentSettingImageControl::Init(
     WebUIToolbarControlDelegate* webui_delegate) {
@@ -122,6 +140,10 @@ bool WebUIContentSettingImageControl::UpdatePermissionDashboard(
 std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>
 WebUIContentSettingImageControl::ProcessContentSettingState(
     content::WebContents* web_contents) {
+  if (pending_bubble_ && pending_bubble_->web_contents.get() != web_contents) {
+    pending_bubble_.reset();
+  }
+
   std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr> state;
   if (!web_contents) {
     return state;
@@ -162,6 +184,10 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
         auto result = ShowContentSettingsBubbleImpl(model->image_type());
         CHECK(result.has_value()) << result.error()->message;
         model->SetBubbleWasAutoOpened(web_contents);
+      } else if (pending_bubble_ &&
+                 pending_bubble_->type == model->image_type() &&
+                 pending_bubble_->web_contents.get() == web_contents) {
+        pending_bubble_.reset();
       }
       if (model->ShouldRunAnimation(web_contents)) {
         int string_id = model->explanatory_string_id();
@@ -187,8 +213,14 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
       }
 
       state.push_back(std::move(image_state));
-    } else if (last_tracked_bubble_type_ == model->image_type()) {
-      bubble_reopen_suppressor_.Close();
+    } else {
+      if (last_tracked_bubble_type_ == model->image_type()) {
+        bubble_reopen_suppressor_.Close();
+      }
+      if (pending_bubble_ && pending_bubble_->type == model->image_type() &&
+          pending_bubble_->web_contents.get() == web_contents) {
+        pending_bubble_.reset();
+      }
     }
   }
 
@@ -269,8 +301,21 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
   // TODO: crbug.com/500069767 - When we support multiple window types, change
   // this from hard-coded to something that get the right anchor for the
   // current window type.
-  views::BubbleAnchor anchor(
-      BrowserElements::From(browser)->GetElement(kLocationBarElementId));
+  ui::TrackedElement* const location_bar_element =
+      BrowserElements::From(browser)->GetElement(kLocationBarElementId);
+  if (!location_bar_element) {
+    pending_bubble_.emplace(
+        type, web_contents->GetWeakPtr(),
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            kLocationBarElementId, BrowserElements::From(browser)->GetContext(),
+            base::BindRepeating(&WebUIContentSettingImageControl::
+                                    OnDeferredLocationBarElementShownForBubble,
+                                weak_factory_.GetWeakPtr())));
+    return std::monostate();
+  }
+
+  pending_bubble_.reset();
+  views::BubbleAnchor anchor(location_bar_element);
 
   auto bubble_contents = std::make_unique<ContentSettingBubbleContents>(
       std::move(bubble_model), web_contents, anchor,
@@ -294,6 +339,25 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
   }
 
   return std::monostate();
+}
+
+void WebUIContentSettingImageControl::
+    OnDeferredLocationBarElementShownForBubble(ui::TrackedElement* element) {
+  if (!pending_bubble_.has_value()) {
+    return;
+  }
+  const ImageType type = pending_bubble_->type;
+  const content::WebContents* web_contents =
+      pending_bubble_->web_contents.get();
+  pending_bubble_.reset();
+
+  content::WebContents* current_web_contents =
+      setting_view_delegate_->GetContentSettingWebContents();
+  if (!current_web_contents || current_web_contents != web_contents) {
+    return;
+  }
+
+  std::ignore = ShowContentSettingsBubbleImpl(type);
 }
 
 bool WebUIContentSettingImageControl::TestPressed(size_t index) {
