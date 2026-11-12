@@ -251,7 +251,8 @@ public class UrlConstantResolverFactoryUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
-    public void testOriginalResolver_WebUiNtpEnabled_DseNotGoogle() {
+    @DisableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_3P_DSE})
+    public void testOriginalResolver_WebUiNtpEnabled_DseNotGoogle_3pDseDisabled() {
         DeviceInfo.setIsDesktopForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.IS_DSE_GOOGLE, false);

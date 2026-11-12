@@ -1524,7 +1524,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseWebUiBookmarksAndroid =
             newCachedFlag(USE_WEB_UI_BOOKMARKS_ANDROID, /* defaultValue= */ false);
-    public static final CachedFlag sUseWebUiNtp3PDSE = newCachedFlag(USE_WEB_UI_NTP_3P_DSE, false);
+    public static final CachedFlag sUseWebUiNtp3PDSE =
+            newCachedFlag(
+                    USE_WEB_UI_NTP_3P_DSE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ BuildConfig.IS_DESKTOP_ANDROID);
     public static final CachedFlag sUseWebUiNtpAndroid =
             newCachedFlag(USE_WEB_UI_NTP_ANDROID, BuildConfig.IS_DESKTOP_ANDROID);
     public static final CachedFlag sVirtualKeyboardResizesContentTransientOvershootFix =

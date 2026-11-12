@@ -20184,6 +20184,25 @@
             ]
         }
     ],
+    "UseWebUiNtp3PDSE": [
+        {
+            "platforms": [
+                "android_desktop"
+            ],
+            "form_factors": [
+                "desktop"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpEnableInstantApiAndroid",
+                        "UseWebUiNtp3PDSE"
+                    ]
+                }
+            ]
+        }
+    ],
     "UtfConversionAsciiFastPath": [
         {
             "platforms": [
