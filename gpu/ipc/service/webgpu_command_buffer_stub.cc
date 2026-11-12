@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -65,12 +64,6 @@ WebGPUCommandBufferStub::~WebGPUCommandBufferStub() {
 gpu::ContextResult WebGPUCommandBufferStub::Initialize(
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
-#if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/40513405): Implement this.
-  NOTIMPLEMENTED();
-  LOG(ERROR) << "ContextResult::kFatalFailure: no fuchsia support";
-  return gpu::ContextResult::kFatalFailure;
-#else
   TRACE_EVENT0("gpu", "WebGPUBufferStub::Initialize");
   UpdateActiveUrl();
 
@@ -135,7 +128,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
   manager->delegate()->DidCreateContextSuccessfully();
   initialized_ = true;
   return gpu::ContextResult::kSuccess;
-#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 base::WeakPtr<CommandBufferStub> WebGPUCommandBufferStub::AsWeakPtr() {

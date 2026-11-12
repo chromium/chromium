@@ -320,8 +320,6 @@ target(link_target_type, "gles2_sources") {
     "webgpu_cmd_validation.h",
     "webgpu_cmd_validation_autogen.h",
     "webgpu_cmd_validation_implementation_autogen.h",
-    "webgpu_decoder.cc",
-    "webgpu_decoder.h",
   ]
 
   if (use_dawn) {
@@ -347,6 +345,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dawn_image_backing.h",
       "shared_image/dawn_image_backing_factory.cc",
       "shared_image/dawn_image_backing_factory.h",
+      "webgpu_decoder.cc",
+      "webgpu_decoder.h",
       "webgpu_decoder_impl.cc",
       "webgpu_decoder_impl.h",
     ]

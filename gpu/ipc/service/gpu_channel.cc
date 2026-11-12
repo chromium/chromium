@@ -56,16 +56,20 @@
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/raster_command_buffer_stub.h"
-#include "gpu/ipc/service/webgpu_command_buffer_stub.h"
 #include "ipc/constants.mojom.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
+
+#if BUILDFLAG(USE_DAWN)
+#include "gpu/ipc/service/webgpu_command_buffer_stub.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/ipc/service/dcomp_texture_win.h"
@@ -1042,6 +1046,7 @@ void GpuChannel::CreateCommandBuffer(
           route_id);
       break;
     case mojom::ContextCreationAttribs::Tag::kWebgpu:
+#if BUILDFLAG(USE_DAWN)
       if (!gpu_channel_manager_->gpu_preferences().enable_webgpu) {
         DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU not enabled";
         return;
@@ -1051,6 +1056,10 @@ void GpuChannel::CreateCommandBuffer(
           this, *init_params, command_buffer_id, sequence_id, stream_id,
           route_id);
       break;
+#else
+      DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU requires Dawn";
+      return;
+#endif
   }
 
   stub->BindEndpoints(std::move(receiver), std::move(client), io_task_runner_);

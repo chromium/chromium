@@ -51,7 +51,6 @@
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/task_graph.h"
-#include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
@@ -59,6 +58,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
@@ -67,6 +67,10 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/webgpu_decoder.h"
+#endif
 
 namespace gpu {
 
@@ -150,9 +154,11 @@ int InProcessCommandBuffer::GetRasterDecoderIdForTest() const {
       ->DecoderIdForTest();
 }
 
+#if BUILDFLAG(USE_DAWN)
 webgpu::WebGPUDecoder* InProcessCommandBuffer::GetWebGPUDecoderForTest() const {
   return static_cast<webgpu::WebGPUDecoder*>(decoder_.get());
 }
+#endif
 
 gpu::SharedImageInterface* InProcessCommandBuffer::GetSharedImageInterface()
     const {
@@ -321,6 +327,7 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
 
   switch (params.attribs->which()) {
     case mojom::ContextCreationAttribs::Tag::kWebgpu: {
+#if BUILDFLAG(USE_DAWN)
       if (!task_executor_->gpu_preferences().enable_webgpu) {
         DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU not enabled";
         return gpu::ContextResult::kFatalFailure;
@@ -340,7 +347,12 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
       }
 
       decoder_ = std::move(webgpu_decoder);
-    } break;
+      break;
+#else
+      DLOG(ERROR) << "ContextResult::kFatalFailure: WebGPU requires Dawn";
+      return gpu::ContextResult::kFatalFailure;
+#endif
+    }
     case mojom::ContextCreationAttribs::Tag::kRaster: {
       // RasterDecoder uses the shared context.
       use_virtualized_gl_context_ = false;

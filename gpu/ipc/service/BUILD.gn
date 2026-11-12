@@ -45,8 +45,6 @@ component("service") {
     "raster_command_buffer_stub.h",
     "shared_image_stub.cc",
     "shared_image_stub.h",
-    "webgpu_command_buffer_stub.cc",
-    "webgpu_command_buffer_stub.h",
   ]
   defines = [ "GPU_IPC_SERVICE_IMPLEMENTATION" ]
   if (subpixel_font_rendering_disabled) {
@@ -167,6 +165,13 @@ component("service") {
   }
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/init" ]
+  }
+
+  if (use_dawn) {
+    sources += [
+      "webgpu_command_buffer_stub.cc",
+      "webgpu_command_buffer_stub.h",
+    ]
   }
 
   if (use_dawn || skia_use_dawn) {

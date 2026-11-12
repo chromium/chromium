@@ -48,6 +48,7 @@
 #include "gpu/ipc/service/context_url.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_preference.h"
 
@@ -164,7 +165,9 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
   gpu::ServiceTransferCache* GetTransferCacheForTest() const;
   int GetRasterDecoderIdForTest() const;
+#if BUILDFLAG(USE_DAWN)
   webgpu::WebGPUDecoder* GetWebGPUDecoderForTest() const;
+#endif
 
   CommandBufferTaskExecutor* service_for_testing() const {
     return task_executor_;

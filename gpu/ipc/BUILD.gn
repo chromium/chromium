@@ -38,6 +38,7 @@ component("gl_in_process_context") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl",
+    "//ui/gl:buildflags",
     "//ui/gl/init",
   ]
 
