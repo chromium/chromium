@@ -1224,10 +1224,6 @@ void AccessibilityManager::OnMonoAudioChanged() {
 
 void AccessibilityManager::SetDarkenScreen(bool darken) {
   AccessibilityController::Get()->SetDarkenScreen(darken);
-
-  if (screen_darken_observer_for_test_) {
-    screen_darken_observer_for_test_.Run();
-  }
 }
 
 void AccessibilityManager::SetCaretHighlightEnabled(bool enabled) {
@@ -2513,9 +2509,6 @@ void AccessibilityManager::SetCaretBounds(const gfx::Rect& bounds_in_screen) {
     return;
 
   AccessibilityController::Get()->SetCaretBounds(bounds_in_screen);
-
-  if (caret_bounds_observer_for_test_)
-    caret_bounds_observer_for_test_.Run(bounds_in_screen);
 }
 
 bool AccessibilityManager::GetStartupSoundEnabled() const {
@@ -2582,11 +2575,6 @@ void AccessibilityManager::SetBrailleControllerForTest(
   g_braille_controller_for_test = controller;
 }
 
-void AccessibilityManager::SetScreenDarkenObserverForTest(
-    base::RepeatingCallback<void()> observer) {
-  screen_darken_observer_for_test_ = observer;
-}
-
 void AccessibilityManager::SetOpenSettingsSubpageObserverForTest(
     base::RepeatingCallback<void()> observer) {
   open_settings_subpage_observer_for_test_ = observer;
@@ -2606,11 +2594,6 @@ void AccessibilityManager::SetHighlightsObserverForTest(
 void AccessibilityManager::SetSelectToSpeakStateObserverForTest(
     base::RepeatingCallback<void()> observer) {
   select_to_speak_state_observer_for_test_ = observer;
-}
-
-void AccessibilityManager::SetCaretBoundsObserverForTest(
-    base::RepeatingCallback<void(const gfx::Rect&)> observer) {
-  caret_bounds_observer_for_test_ = observer;
 }
 
 void AccessibilityManager::SetMagnifierBoundsObserverForTest(

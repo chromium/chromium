@@ -515,7 +515,6 @@ class AccessibilityManager
   void SetProfileForTest(Profile* profile);
   static void SetBrailleControllerForTest(
       extensions::api::braille_display_private::BrailleController* controller);
-  void SetScreenDarkenObserverForTest(base::RepeatingCallback<void()> observer);
   void SetOpenSettingsSubpageObserverForTest(
       base::RepeatingCallback<void()> observer);
   void SetFocusRingObserverForTest(base::RepeatingCallback<void()> observer);
@@ -523,8 +522,6 @@ class AccessibilityManager
   void SetHighlightsObserverForTest(base::RepeatingCallback<void()> observer);
   void SetSelectToSpeakStateObserverForTest(
       base::RepeatingCallback<void()> observer);
-  void SetCaretBoundsObserverForTest(
-      base::RepeatingCallback<void(const gfx::Rect&)> observer);
   void SetMagnifierBoundsObserverForTest(
       base::RepeatingCallback<void()> observer);
   void SetSwitchAccessKeysForTest(const std::set<int>& action_keys,
@@ -806,12 +803,9 @@ class AccessibilityManager
   bool dictation_triggered_by_user_ = false;
   bool ignore_dictation_locale_pref_change_ = false;
 
-  base::RepeatingCallback<void()> screen_darken_observer_for_test_;
   base::RepeatingCallback<void()> open_settings_subpage_observer_for_test_;
   base::RepeatingCallback<void()> highlights_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
-  base::RepeatingCallback<void(const gfx::Rect&)>
-      caret_bounds_observer_for_test_;
   base::RepeatingCallback<void()> magnifier_bounds_observer_for_test_;
   base::OnceClosure enhanced_network_tts_waiter_for_test_;
 
