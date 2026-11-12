@@ -1238,6 +1238,44 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_EditableFocusAfterHiddenCommitLocksControls() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertVisibilityConstraints(delegate, BrowserControlsState.BOTH);
+
+        delegate.onNodeAttributeUpdated(/* editable= */ true, /* password= */ true);
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
+
+        delegate.onNodeAttributeUpdated(/* editable= */ false, /* password= */ false);
+        assertVisibilityConstraints(delegate, BrowserControlsState.BOTH);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_DangerousContentAfterHiddenCommitLocksControls() {
+        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
+        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sourceUrl);
+
+        NavigationHandle navigation = startNavigation(destinationUrl);
+        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
+        assertVisibilityConstraints(delegate, BrowserControlsState.BOTH);
+
+        updateSecurityLevel(ConnectionSecurityLevel.DANGEROUS);
+        assertVisibilityConstraints(delegate, BrowserControlsState.SHOWN);
+
+        updateSecurityLevel(ConnectionSecurityLevel.NONE);
+        assertVisibilityConstraints(delegate, BrowserControlsState.BOTH);
+    }
+
+    @Test
     @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_OverlappingEligibleNavigationsCheckedAtEachCommit() {
