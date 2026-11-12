@@ -259,12 +259,9 @@ void InstallIsolatedWebApp(
   auto install_source = web_app::IsolatedWebAppInstallSource::FromShimlessRma(
       web_app::IwaSourceBundleProdModeWithFileOp(
           state->swbn_path, web_app::IwaSourceBundleProdFileOp::kCopy));
-  state->delegate->GetWebAppCommandScheduler(state->context)
-      ->InstallIsolatedWebApp(
-          url_info, install_source,
-          /*expected_version=*/std::nullopt, /*optional_keep_alive=*/nullptr,
-          /*optional_profile_keep_alive=*/nullptr,
-          base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
+  state->delegate->InstallIsolatedWebApp(
+      state->context, url_info, install_source,
+      base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));
 }
 
 void OnIsolatedWebAppRemoved(
@@ -305,11 +302,10 @@ void PrepareIsolatedWebApp(
   // It is safe to run uninstall job here since Shimless RMA is the only install
   // source for the third-party diagnostics IWA.
   // Note that the flow will be broken if there are multiple install sources.
-  state->delegate->GetWebAppCommandScheduler(state->context)
-      ->RemoveInstallManagementMaybeUninstall(
-          url_info.app_id(), web_app::WebAppManagement::Type::kIwaShimlessRma,
-          webapps::WebappUninstallSource::kUnknown,
-          base::BindOnce(&OnIsolatedWebAppRemoved, std::move(state)));
+  state->delegate->RemoveShimlessRmaKnownIwa(
+      state->context, url_info.app_id(),
+      webapps::WebappUninstallSource::kUnknown,
+      base::BindOnce(&OnIsolatedWebAppRemoved, std::move(state)));
 }
 
 void CheckExtensionIsReady(
@@ -499,13 +495,31 @@ DiagnosticsAppProfileHelperDelegate::GetServiceWorkerContextForExtensionId(
       extension_id, browser_context);
 }
 
-web_app::WebAppCommandScheduler*
-DiagnosticsAppProfileHelperDelegate::GetWebAppCommandScheduler(
-    content::BrowserContext* browser_context) {
+void DiagnosticsAppProfileHelperDelegate::InstallIsolatedWebApp(
+    content::BrowserContext* browser_context,
+    const web_app::IsolatedWebAppUrlInfo& url_info,
+    const web_app::IsolatedWebAppInstallSource& install_source,
+    InstallIsolatedWebAppCallback callback) {
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browser_context));
   CHECK(web_app_provider);
-  return &web_app_provider->scheduler();
+  web_app_provider->scheduler().InstallIsolatedWebApp(
+      url_info, install_source, /*expected_version=*/std::nullopt,
+      /*optional_keep_alive=*/nullptr, /*optional_profile_keep_alive=*/nullptr,
+      std::move(callback));
+}
+
+void DiagnosticsAppProfileHelperDelegate::RemoveShimlessRmaKnownIwa(
+    content::BrowserContext* browser_context,
+    const webapps::AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
+    base::OnceCallback<void(webapps::UninstallResultCode)> callback) {
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
+      Profile::FromBrowserContext(browser_context));
+  CHECK(web_app_provider);
+  web_app_provider->scheduler().RemoveInstallManagementMaybeUninstall(
+      app_id, web_app::WebAppManagement::Type::kIwaShimlessRma,
+      uninstall_source, std::move(callback));
 }
 
 const web_app::WebApp* DiagnosticsAppProfileHelperDelegate::GetWebAppByIdUnsafe(

@@ -29,16 +29,15 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
-#include "chrome/browser/web_applications/model/iwa_update_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
@@ -117,51 +116,10 @@ class FakeServiceWorkerContext : public content::FakeServiceWorkerContext {
   int64_t service_worker_check_retry_ = 2;
 };
 
-class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
- public:
-  using web_app::WebAppCommandScheduler::WebAppCommandScheduler;
-
-  void InstallIsolatedWebApp(
-      const web_app::IsolatedWebAppUrlInfo& url_info,
-      const web_app::IsolatedWebAppInstallSource& install_source,
-      const std::optional<web_app::IwaVersion>& expected_version,
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      web_app::WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
-      std::optional<web_app::IwaUpdateInfo> optional_update_info,
-      const base::Location& call_location) override {
-    EXPECT_EQ(install_source.install_surface(),
-              webapps::WebappInstallSource::IWA_SHIMLESS_RMA);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       web_app::InstallIsolatedWebAppCommandSuccess(
-                           url_info, *web_app::IwaVersion::Create("0"),
-                           web_app::IwaStorageOwnedBundle{
-                               "random_folder", /*dev_mode=*/false})));
-  }
-
-  void RemoveInstallManagementMaybeUninstall(
-      const webapps::AppId& app_id,
-      web_app::WebAppManagement::Type install_management,
-      webapps::WebappUninstallSource uninstall_source,
-      UninstallCallback callback,
-      const base::Location& location) override {
-    EXPECT_EQ(install_management,
-              web_app::WebAppManagement::Type::kIwaShimlessRma);
-    EXPECT_EQ(uninstall_source, webapps::WebappUninstallSource::kUnknown);
-
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  webapps::UninstallResultCode::kAppRemoved));
-  }
-};
-
 class FakeDiagnosticsAppProfileHelperDelegate
     : public DiagnosticsAppProfileHelperDelegate {
  public:
-  explicit FakeDiagnosticsAppProfileHelperDelegate(Profile* profile)
-      : web_app_command_scheduler_(*profile) {
+  FakeDiagnosticsAppProfileHelperDelegate() {
     web_app_ = web_app::test::CreateWebApp(
         GURL(base::StrCat({"isolated-app://", kDevIwaId})));
     web_app_->SetName("App Name");
@@ -176,9 +134,32 @@ class FakeDiagnosticsAppProfileHelperDelegate
     return &fake_service_worker_context_;
   }
 
-  web_app::WebAppCommandScheduler* GetWebAppCommandScheduler(
-      content::BrowserContext* browser_context) override {
-    return &web_app_command_scheduler_;
+  void InstallIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const web_app::IsolatedWebAppUrlInfo& url_info,
+      const web_app::IsolatedWebAppInstallSource& install_source,
+      InstallIsolatedWebAppCallback callback) override {
+    EXPECT_EQ(install_source.install_surface(),
+              webapps::WebappInstallSource::IWA_SHIMLESS_RMA);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       web_app::InstallIsolatedWebAppCommandSuccess(
+                           url_info, *web_app::IwaVersion::Create("0"),
+                           web_app::IwaStorageOwnedBundle{
+                               "random_folder", /*dev_mode=*/false})));
+  }
+
+  void RemoveShimlessRmaKnownIwa(
+      content::BrowserContext* browser_context,
+      const webapps::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      base::OnceCallback<void(webapps::UninstallResultCode)> callback)
+      override {
+    EXPECT_EQ(uninstall_source, webapps::WebappUninstallSource::kUnknown);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kAppRemoved));
   }
 
   const web_app::WebApp* GetWebAppByIdUnsafe(
@@ -195,7 +176,6 @@ class FakeDiagnosticsAppProfileHelperDelegate
 
  protected:
   FakeServiceWorkerContext fake_service_worker_context_;
-  FakeWebAppCommandScheduler web_app_command_scheduler_;
   std::unique_ptr<web_app::WebApp> web_app_;
 };
 
@@ -223,7 +203,7 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
     ::web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_);
 
     auto fake_diagnostics_app_profile_helper_delegate =
-        std::make_unique<FakeDiagnosticsAppProfileHelperDelegate>(profile_);
+        std::make_unique<FakeDiagnosticsAppProfileHelperDelegate>();
     fake_diagnostics_app_profile_helper_delegate_ =
         fake_diagnostics_app_profile_helper_delegate.get();
     chrome_shimless_rma_delegate_ = std::make_unique<ChromeShimlessRmaDelegate>(

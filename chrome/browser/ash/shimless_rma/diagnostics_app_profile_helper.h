@@ -7,6 +7,8 @@
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/types/expected.h"
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/common/extension_id.h"
 #include "url/origin.h"
@@ -16,9 +18,17 @@ class BrowserContext;
 class ServiceWorkerContext;
 }  // namespace content
 
+namespace webapps {
+enum class UninstallResultCode;
+enum class WebappUninstallSource;
+}  // namespace webapps
+
 namespace web_app {
+struct InstallIsolatedWebAppCommandError;
+struct InstallIsolatedWebAppCommandSuccess;
+class IsolatedWebAppInstallSource;
+class IsolatedWebAppUrlInfo;
 class WebApp;
-class WebAppCommandScheduler;
 }  // namespace web_app
 
 namespace ash::shimless_rma {
@@ -26,6 +36,10 @@ namespace ash::shimless_rma {
 // Delegate to replace operations which are hard to mocked in unit tests.
 class DiagnosticsAppProfileHelperDelegate {
  public:
+  using InstallIsolatedWebAppCallback = base::OnceCallback<void(
+      base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
+                     web_app::InstallIsolatedWebAppCommandError>)>;
+
   DiagnosticsAppProfileHelperDelegate();
   DiagnosticsAppProfileHelperDelegate(
       const DiagnosticsAppProfileHelperDelegate&) = delete;
@@ -35,8 +49,17 @@ class DiagnosticsAppProfileHelperDelegate {
       const extensions::ExtensionId& extension_id,
       content::BrowserContext* browser_context);
 
-  virtual web_app::WebAppCommandScheduler* GetWebAppCommandScheduler(
-      content::BrowserContext* browser_context);
+  virtual void InstallIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const web_app::IsolatedWebAppUrlInfo& url_info,
+      const web_app::IsolatedWebAppInstallSource& install_source,
+      InstallIsolatedWebAppCallback callback);
+
+  virtual void RemoveShimlessRmaKnownIwa(
+      content::BrowserContext* browser_context,
+      const webapps::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      base::OnceCallback<void(webapps::UninstallResultCode)> callback);
 
   virtual const web_app::WebApp* GetWebAppByIdUnsafe(
       const webapps::AppId& app_id,

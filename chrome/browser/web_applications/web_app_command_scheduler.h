@@ -272,7 +272,7 @@ class WebAppCommandScheduler {
   // Installs an Isolated Web App from the given `url_info` and
   // `install_source`. If `expected_version` is set, this command will refuse to
   // install the Isolated Web App if its version does not match.
-  virtual void InstallIsolatedWebApp(
+  void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppInstallSource& install_source,
       const std::optional<IwaVersion>& expected_version,
@@ -285,7 +285,7 @@ class WebAppCommandScheduler {
   // Finds and removes any Isolated Web App data directories on disk that are
   // no longer referenced by an installed app in the WebAppRegistrar. This can
   // happen if the browser crashes during IWA installation or uninstallation.
-  virtual void CleanupOrphanedIsolatedApps(
+  void CleanupOrphanedIsolatedApps(
       CleanupOrphanedIsolatedWebAppsCallback callback,
       const base::Location& call_location = FROM_HERE);
 
@@ -297,7 +297,7 @@ class WebAppCommandScheduler {
   // is safe to run even if the IWA is not installed or already updated. If a
   // dry-run of the update succeeds, then the `update_info` is persisted in the
   // `IsolationData::pending_update_info()` of the IWA in the Web App database.
-  virtual void PrepareAndStoreIsolatedWebAppUpdate(
+  void PrepareAndStoreIsolatedWebAppUpdate(
       const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo& update_info,
       const IsolatedWebAppUrlInfo& url_info,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
@@ -310,7 +310,7 @@ class WebAppCommandScheduler {
   // of whether the update succeeds or fails,
   // `IsolationData::pending_update_info` of the IWA in the Web App database
   // will be cleared.
-  virtual void ApplyPendingIsolatedWebAppUpdate(
+  void ApplyPendingIsolatedWebAppUpdate(
       const IsolatedWebAppUrlInfo& url_info,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -322,7 +322,7 @@ class WebAppCommandScheduler {
   // metadata with an already installed app (if one exists) to determine if the
   // bundle is a new install, an update, or outdated. It also checks if the app
   // is allowlisted to be installed by the user.
-  virtual void CheckIsolatedWebAppBundleUserInstallability(
+  void CheckIsolatedWebAppBundleUserInstallability(
       const SignedWebBundleMetadata& bundle_metadata,
       base::OnceCallback<void(IsolatedInstallabilityCheckResult,
                               std::optional<IwaVersion>)> callback,

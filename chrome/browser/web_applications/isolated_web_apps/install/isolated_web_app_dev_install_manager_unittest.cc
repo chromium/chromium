@@ -15,23 +15,28 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/model/iwa_update_info.h"
+#include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,23 +46,28 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 namespace {
 
 using base::test::ErrorIs;
-using base::test::HasValue;
 using base::test::ValueIs;
-using ::testing::_;
 using ::testing::Eq;
-using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::Optional;
 using ::testing::Property;
@@ -72,28 +82,6 @@ using MaybeInstallIsolatedWebAppCommandSuccess =
     IsolatedWebAppDevInstallManager::MaybeInstallIsolatedWebAppCommandSuccess;
 using MaybeIwaInstallSource =
     IsolatedWebAppDevInstallManager::MaybeIwaInstallSource;
-
-class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
- public:
-  using WebAppCommandScheduler::WebAppCommandScheduler;
-
-  void InstallIsolatedWebApp(
-      const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppInstallSource& install_source,
-      const std::optional<IwaVersion>& expected_version,
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
-      std::optional<IwaUpdateInfo> optional_update_info,
-      const base::Location& call_location) override {
-    // This test is only interested in IsolatedWebAppDevInstallManager
-    // behavior, so stub out the install command to avoid needing to
-    // configure it correctly.
-    std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
-        url_info, *IwaVersion::Create("0"),
-        IwaStorageUnownedBundle(base::FilePath())));
-  }
-};
 
 // Sets the current working directory to a location that contains a file.
 // The working directory is restored when the object is destroyed.
@@ -148,9 +136,37 @@ class IsolatedWebAppDevInstallManagerTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    fake_provider().SetScheduler(
-        std::make_unique<FakeWebAppCommandScheduler>(*profile()));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
+  }
+
+  void SetUpFakeProxyInstallPage() {
+    auto& web_contents_manager = static_cast<FakeWebContentsManager&>(
+        fake_provider().web_contents_manager());
+    web_contents_manager.TrackLoadUrlCalls(base::BindLambdaForTesting(
+        [&](content::NavigationController::LoadURLParams& load_url_params,
+            content::WebContents*, webapps::WebAppUrlLoader::UrlComparison) {
+          ASSERT_OK_AND_ASSIGN(auto url_info, IsolatedWebAppUrlInfo::Create(
+                                                  load_url_params.url));
+          GURL icon_url = url_info.origin().GetURL().Resolve("/icon.png");
+          auto& icon_state =
+              web_contents_manager.GetOrCreateIconState(icon_url);
+          icon_state.bitmaps = {CreateSquareIcon(256, SK_ColorBLUE)};
+
+          auto& page_state =
+              web_contents_manager.GetOrCreatePageState(load_url_params.url);
+          page_state.url_load_result =
+              webapps::WebAppUrlLoaderResult::kUrlLoaded;
+          page_state.error_code =
+              webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+          page_state.manifest_url = url_info.origin().GetURL().Resolve(
+              "/.well-known/manifest.webmanifest");
+          page_state.valid_manifest_for_web_app = true;
+          page_state.opt_manifest =
+              ManifestBuilder()
+                  .SetVersion("1.0.0")
+                  .AddIcon("/icon.png", gfx::Size(256, 256), "image/png")
+                  .ToBlinkManifest(url_info.origin());
+        }));
   }
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
@@ -207,13 +223,30 @@ TEST_F(IsolatedWebAppDevInstallManagerTest,
 
 TEST_F(IsolatedWebAppDevInstallManagerTest,
        InstallFromSecureRemoteProxySucceeds) {
+  SetUpFakeProxyInstallPage();
+  const GURL kProxyUrl("https://example.com");
+
   base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
   manager().InstallIsolatedWebAppFromDevModeProxy(
-      GURL("https://example.com"),
-      IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
+      kProxyUrl, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
       future.GetCallback());
 
-  EXPECT_THAT(future.Take(), HasValue());
+  ASSERT_OK_AND_ASSIGN(InstallIsolatedWebAppCommandSuccess result,
+                       future.Take());
+  EXPECT_EQ(result.installed_version, *IwaVersion::Create("1.0.0"));
+  EXPECT_THAT(
+      result.location.variant(),
+      VariantWith<IwaStorageProxy>(Property(
+          &IwaStorageProxy::proxy_url, Eq(url::Origin::Create(kProxyUrl)))));
+
+  const WebApp* web_app =
+      fake_provider().registrar_unsafe().GetAppById(result.url_info.app_id());
+  ASSERT_NE(web_app, nullptr);
+  EXPECT_EQ(web_app->isolation_data()->version(), *IwaVersion::Create("1.0.0"));
+  EXPECT_THAT(
+      web_app->isolation_data()->location().variant(),
+      VariantWith<IwaStorageProxy>(Property(
+          &IwaStorageProxy::proxy_url, Eq(url::Origin::Create(kProxyUrl)))));
 }
 
 TEST_F(IsolatedWebAppDevInstallManagerTest,
@@ -229,13 +262,30 @@ TEST_F(IsolatedWebAppDevInstallManagerTest,
 
 TEST_F(IsolatedWebAppDevInstallManagerTest,
        InstallFromHttpLocalhostProxySucceeds) {
+  SetUpFakeProxyInstallPage();
+  const GURL kProxyUrl("http://localhost:8080");
+
   base::test::TestFuture<MaybeInstallIsolatedWebAppCommandSuccess> future;
   manager().InstallIsolatedWebAppFromDevModeProxy(
-      GURL("http://localhost:8080"),
-      IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
+      kProxyUrl, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
       future.GetCallback());
 
-  EXPECT_THAT(future.Take(), HasValue());
+  ASSERT_OK_AND_ASSIGN(InstallIsolatedWebAppCommandSuccess result,
+                       future.Take());
+  EXPECT_EQ(result.installed_version, *IwaVersion::Create("1.0.0"));
+  EXPECT_THAT(
+      result.location.variant(),
+      VariantWith<IwaStorageProxy>(Property(
+          &IwaStorageProxy::proxy_url, Eq(url::Origin::Create(kProxyUrl)))));
+
+  const WebApp* web_app =
+      fake_provider().registrar_unsafe().GetAppById(result.url_info.app_id());
+  ASSERT_NE(web_app, nullptr);
+  EXPECT_EQ(web_app->isolation_data()->version(), *IwaVersion::Create("1.0.0"));
+  EXPECT_THAT(
+      web_app->isolation_data()->location().variant(),
+      VariantWith<IwaStorageProxy>(Property(
+          &IwaStorageProxy::proxy_url, Eq(url::Origin::Create(kProxyUrl)))));
 }
 
 TEST_F(IsolatedWebAppDevInstallManagerTest,
@@ -285,7 +335,9 @@ TEST_F(IsolatedWebAppDevInstallManagerTest,
 
 TEST_F(IsolatedWebAppDevInstallManagerTest, DownloadAndInstallSucceeds) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
-      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+      IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
+          .BuildBundle();
+  bundle->FakeInstallPageState(profile());
   profile_url_loader_factory().AddResponse("https://example.com",
                                            bundle->GetBundleData());
 
@@ -295,7 +347,18 @@ TEST_F(IsolatedWebAppDevInstallManagerTest, DownloadAndInstallSucceeds) {
       IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
       future.GetCallback());
 
-  EXPECT_THAT(future.Take(), HasValue());
+  ASSERT_OK_AND_ASSIGN(InstallIsolatedWebAppCommandSuccess result,
+                       future.Take());
+  EXPECT_EQ(result.url_info.web_bundle_id(), bundle->web_bundle_id());
+  EXPECT_EQ(result.installed_version, *IwaVersion::Create("1.0.0"));
+  EXPECT_THAT(result.location.variant(),
+              VariantWith<IwaStorageOwnedBundle>(
+                  Property(&IwaStorageOwnedBundle::dev_mode, Eq(true))));
+
+  const WebApp* web_app =
+      fake_provider().registrar_unsafe().GetAppById(result.url_info.app_id());
+  ASSERT_NE(web_app, nullptr);
+  EXPECT_EQ(web_app->isolation_data()->version(), *IwaVersion::Create("1.0.0"));
 }
 
 TEST_F(IsolatedWebAppDevInstallManagerTest, DownloadAndInstallFailsWrongUrl) {

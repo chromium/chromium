@@ -17,6 +17,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -57,6 +59,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -79,6 +82,7 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,19 +107,17 @@ using ::testing::Eq;
 using ::testing::ExplainMatchResult;
 using ::testing::Field;
 using ::testing::Ge;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Le;
 using ::testing::Ne;
-using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
-using ::testing::WithArg;
 
 constexpr char kInitialIwaVersion[] = "1.0.0";
 constexpr char kUpdateIwaVersion[] = "2.0.0";
@@ -126,69 +128,6 @@ UpdateChannel GetBetaChannel() {
 
 using UpdateDiscoveryTaskFuture = base::test::TestFuture<
     IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus>;
-
-class MockCommandScheduler : public WebAppCommandScheduler {
- public:
-  using WebAppCommandScheduler::WebAppCommandScheduler;
-
-  MOCK_METHOD(
-      void,
-      ApplyPendingIsolatedWebAppUpdate,
-      (const IsolatedWebAppUrlInfo& url_info,
-       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-       base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)>
-           callback,
-       const base::Location& call_location),
-      (override));
-
-  MOCK_METHOD(
-      void,
-      PrepareAndStoreIsolatedWebAppUpdate,
-      (const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo& update_info,
-       const IsolatedWebAppUrlInfo& url_info,
-       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-       PrepareAndStoreIsolatedWebAppUpdateCallback callback,
-       const base::Location& call_location),
-      (override));
-
-  void DelegateToRealImpl() {
-    ON_CALL(*this, ApplyPendingIsolatedWebAppUpdate)
-        .WillByDefault(
-            [this](
-                const IsolatedWebAppUrlInfo& url_info,
-                std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-                std::unique_ptr<ScopedProfileKeepAlive>
-                    optional_profile_keep_alive,
-                base::OnceCallback<void(
-                    base::expected<
-                        void, IsolatedWebAppApplyUpdateCommandError>)> callback,
-                const base::Location& call_location) {
-              return this
-                  ->WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
-                      url_info, std::move(optional_keep_alive),
-                      std::move(optional_profile_keep_alive),
-                      std::move(callback), call_location);
-            });
-    ON_CALL(*this, PrepareAndStoreIsolatedWebAppUpdate)
-        .WillByDefault(
-            [this](const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo&
-                       update_info,
-                   const IsolatedWebAppUrlInfo& url_info,
-                   std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-                   std::unique_ptr<ScopedProfileKeepAlive>
-                       optional_profile_keep_alive,
-                   PrepareAndStoreIsolatedWebAppUpdateCallback callback,
-                   const base::Location& call_location) {
-              return this
-                  ->WebAppCommandScheduler::PrepareAndStoreIsolatedWebAppUpdate(
-                      update_info, url_info, std::move(optional_keep_alive),
-                      std::move(optional_profile_keep_alive),
-                      std::move(callback), call_location);
-            });
-  }
-};
 
 class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
  public:
@@ -415,20 +354,11 @@ class IsolatedWebAppUpdateManagerUpdateTest
     IsolatedWebAppUpdateManagerTest::SetUp();
     update_manager().SetEnableAutomaticUpdatesForTesting(true);
 
-    auto command_scheduler =
-        std::make_unique<NiceMock<MockCommandScheduler>>(*profile());
-    command_scheduler->DelegateToRealImpl();
-    provider().SetScheduler(std::move(command_scheduler));
-
     SeedWebAppDatabase();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   virtual void SeedWebAppDatabase() {}
-
-  MockCommandScheduler& mock_command_scheduler() {
-    return static_cast<MockCommandScheduler&>(provider().scheduler());
-  }
 
   base::Value debug_log() { return update_manager().AsDebugValue(); }
 
@@ -1234,23 +1164,40 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   test_update_server().AddBundle(CreateIwa1Bundle("1.1.0"));
   test_update_server().AddBundle(CreateIwa2Bundle("2.2.0"));
 
-  // Wait for the first discovery task to be in progress.
-  base::test::TestFuture<web_package::SignedWebBundleId> future;
-  EXPECT_CALL(mock_command_scheduler(), PrepareAndStoreIsolatedWebAppUpdate)
-      .WillOnce(
-          WithArg<1>([&future](const IsolatedWebAppUrlInfo& url_info) -> void {
-            future.SetValue(url_info.web_bundle_id());
-          }))
-      .RetiresOnSaturation();
+  const GURL iwa1_update_url = test_update_server().GetBundleUrlForIwa(
+      GetIwa1WebBundleId(), *IwaVersion::Create("1.1.0"));
+  const GURL iwa2_update_url = test_update_server().GetBundleUrlForIwa(
+      GetIwa2WebBundleId(), *IwaVersion::Create("2.2.0"));
+
+  // Hold both update bundle responses so the first discovery task pauses
+  // mid-flight while the second task stays queued without starting.
+  url_loader_factory().EraseResponse(iwa1_update_url);
+  url_loader_factory().EraseResponse(iwa2_update_url);
+  base::test::TestFuture<GURL> started_bundle_request_future;
+  url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        if (!started_bundle_request_future.IsReady() &&
+            (request.url == iwa1_update_url ||
+             request.url == iwa2_update_url)) {
+          started_bundle_request_future.SetValue(request.url);
+        }
+      }));
 
   EXPECT_THAT(update_manager().DiscoverAndPrepareUpdatesNow(), Eq(2ul));
 
-  web_package::SignedWebBundleId iwa_to_keep = future.Take();
+  const GURL started_bundle_url = started_bundle_request_future.Take();
+  url_loader_factory().SetInterceptor(base::NullCallback());
 
-  // Uninstall the other IWA whose discovery task has not yet started.
+  web_package::SignedWebBundleId iwa_to_keep =
+      (started_bundle_url == iwa1_update_url) ? GetIwa1WebBundleId()
+                                              : GetIwa2WebBundleId();
   web_package::SignedWebBundleId iwa_to_uninstall =
       (iwa_to_keep == GetIwa1WebBundleId()) ? GetIwa2WebBundleId()
                                             : GetIwa1WebBundleId();
+
+  EXPECT_THAT(UpdateDiscoveryTasks(), SizeIs(2));
+
+  // Uninstall the other IWA whose discovery task has not yet started.
   test::RemoveForceInstalledIwaFromPolicy(profile()->GetPrefs(),
                                           iwa_to_uninstall);
 
@@ -1258,6 +1205,28 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   uninstall_observer.BeginListeningAndWait({GetAppId(iwa_to_uninstall)});
 
   AssertAppNotInstalled(iwa_to_uninstall);
+  EXPECT_THAT(UpdateDiscoveryTasks(),
+              UnorderedElementsAre(DictionaryHasValue(
+                  "app_id", base::Value(GetAppId(iwa_to_keep)))));
+  EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
+
+  // Unblock the started discovery task and verify only the kept IWA updates.
+  const bool keep_is_iwa1 = (iwa_to_keep == GetIwa1WebBundleId());
+  test_update_server().AddBundle(keep_is_iwa1 ? CreateIwa1Bundle("1.1.0")
+                                              : CreateIwa2Bundle("2.2.0"));
+  AssertInstallationFinish(iwa_to_keep);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  AssertAppInstalledAtVersion(
+      iwa_to_keep, *IwaVersion::Create(keep_is_iwa1 ? "1.1.0" : "2.2.0"));
+  EXPECT_THAT(UpdateDiscoveryTasks(), IsEmpty());
+  EXPECT_THAT(
+      UpdateDiscoveryLog(),
+      ElementsAre(AllOf(
+          DictionaryHasValue("app_id", base::Value(GetAppId(iwa_to_keep))),
+          DictionaryHasValue(
+              "result",
+              base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
@@ -1319,33 +1288,43 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                   DictionaryHasValue(
                       "app_id", base::Value(GetAppId(GetIwa2WebBundleId())))));
 
-  // Wait for the update apply task of either app 1 or app 2 to start.
-  base::test::TestFuture<IsolatedWebAppUrlInfo> future;
-  EXPECT_CALL(mock_command_scheduler(),
-              ApplyPendingIsolatedWebAppUpdate(_, _, _, _, _))
-      .WillOnce(WithArg<0>(Invoke(
-          &future, &base::test::TestFuture<IsolatedWebAppUrlInfo>::SetValue)));
+  // Schedule uninstallation of IWA 2 first so its exclusive `AllAppsLock`
+  // queues ahead of IWA 1's `IsolatedWebAppApplyUpdateCommand`. Closing both
+  // windows synchronously starts IWA 1's apply task (blocked on the lock) while
+  // leaving IWA 2's apply task queued and non-started.
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListening({GetAppId(GetIwa2WebBundleId())});
 
+  provider().scheduler().RemoveInstallManagementMaybeUninstall(
+      GetAppId(GetIwa2WebBundleId()), WebAppManagement::Type::kIwaPolicy,
+      webapps::WebappUninstallSource::kIwaEnterprisePolicy, base::DoNothing());
   fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 0);
   fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa2WebBundleId()), 0);
-  webapps::AppId iwa_to_keep = future.Take().app_id();
 
   EXPECT_THAT(UpdateApplyTasks(), SizeIs(2));  // two tasks should be queued
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());    // no task should have finished
 
-  // Uninstall the other IWA whose update apply task has not yet started.
-  web_package::SignedWebBundleId iwa_to_uninstall =
-      (iwa_to_keep == GetAppId(GetIwa1WebBundleId())) ? GetIwa2WebBundleId()
-                                                      : GetIwa1WebBundleId();
-
   test::RemoveForceInstalledIwaFromPolicy(profile()->GetPrefs(),
-                                          iwa_to_uninstall);
-  WebAppTestUninstallObserver uninstall_observer(profile());
-  uninstall_observer.BeginListeningAndWait({GetAppId(iwa_to_uninstall)});
+                                          GetIwa2WebBundleId());
+  EXPECT_EQ(uninstall_observer.Wait(), GetAppId(GetIwa2WebBundleId()));
 
-  EXPECT_THAT(UpdateApplyTasks(), UnorderedElementsAre(DictionaryHasValue(
-                                      "app_id", base::Value(iwa_to_keep))));
+  EXPECT_THAT(UpdateApplyTasks(),
+              UnorderedElementsAre(DictionaryHasValue(
+                  "app_id", base::Value(GetAppId(GetIwa1WebBundleId())))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
+
+  AssertInstallationFinish(GetIwa1WebBundleId());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
+                              *IwaVersion::Create("1.1.0"));
+  AssertAppNotInstalled(GetIwa2WebBundleId());
+  EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
+  EXPECT_THAT(UpdateApplyLog(),
+              ElementsAre(AllOf(
+                  DictionaryHasValue(
+                      "app_id", base::Value(GetAppId(GetIwa1WebBundleId()))),
+                  DictionaryHasValue("result", base::Value("Success")))));
 }
 
 class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
