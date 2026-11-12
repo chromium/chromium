@@ -733,6 +733,7 @@ public class SettingsFragmentRegistry {
      * point at may have been deleted. Callers must honour the redirect instead of instantiating a
      * page, since the pages themselves respond to missing arguments by crashing.
      *
+     * @param url The chrome://settings URL to resolve.
      * @param profile the profile the page would be shown for, checked against {@link
      *     RouteSpec#availableWhen}.
      */

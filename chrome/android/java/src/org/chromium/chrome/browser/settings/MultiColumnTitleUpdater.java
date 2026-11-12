@@ -123,9 +123,9 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
      * Search results} when search is going on.
      *
      * <p>Example: if search starts with the title text {@code Payment methods > Payment apps >
-     * Search results}, |mFirstVisibleTitleIndex| is set to 2 so that the displayed text will be
-     * just {@code Search results > ..} from that point on. Once search is over, the variable is set
-     * back to 0 and the displayed text becomes {@code Payment method > Payment apps} again.
+     * Search results}, {@code mFirstVisibleTitleIndex} is set to 2 so that the displayed text will
+     * be just {@code Search results > ..} from that point on. Once search is over, the variable is
+     * set back to 0 and the displayed text becomes {@code Payment method > Payment apps} again.
      */
     private int mFirstVisibleTitleIndex;
 

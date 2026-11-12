@@ -70,9 +70,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
         return inflater.cloneInContext(getContext());
     }
 
-    /**
-     * @return The profile associated with the current Settings screen.
-     */
+    /** Returns the profile associated with the current Settings screen. */
     public Profile getProfile() {
         assert mProfile != null : "Attempting to use the profile before initialization.";
         return mProfile;
@@ -107,23 +105,17 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
         return false;
     }
 
-    /**
-     * @return The launcher for help and feedback actions.
-     */
+    /** Returns the launcher for help and feedback actions. */
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
         return HelpAndFeedbackLauncherFactory.getForProfile(mProfile);
     }
 
-    /**
-     * @return The resource ID of the help string that is valid for the current policy.
-     */
+    /** Returns the resource ID of the help string that is valid for the current policy. */
     protected @StringRes int getHelpMenuStringRes() {
         return HelpAndFeedbackLauncher.getHelpMenuStringRes();
     }
 
-    /**
-     * @return The launcher for CCT.
-     */
+    /** Returns the launcher for CCT. */
     public SettingsCustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
     }

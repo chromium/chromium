@@ -246,12 +246,15 @@ public class SettingsSearchCoordinator
 
     /**
      * @param activity {@link SettingsActivity} object
+     * @param actionBar The settings toolbar that hosts the search box and Lens button.
      * @param useMultiColumnSupplier Supplier telling us whether the multi-column mode is on
      * @param multiColumnSettings {@link MultiColumnSettings} Fragment.
      * @param containmentHelper Helper for containment styling and preference highlighting.
      * @param profile User profile object.
      * @param updateFirstVisibleTitle Callback used to set the first visible one of the titles. See
      *     {@link MultiColumnSettings#mFirstVisibleTitleIndex}.
+     * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager} used when
+     *     opening search results.
      * @param shownInTab Whether settings is shown in a browser tab rather than standalone {@link
      *     SettingsActivity}.
      */

@@ -120,12 +120,12 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
                 });
     }
 
-    /** @return The preference fragment attached in {@link #launchPreference}. */
+    /** Returns the preference fragment attached in {@link #launchPreference}. */
     public PreferenceFragmentCompat getPreferenceFragment() {
         return mPreferenceFragment;
     }
 
-    /** @return The preference screen associated with the attached preference. */
+    /** Returns the preference screen associated with the attached preference. */
     public PreferenceScreen getPreferenceScreen() {
         return mPreferenceScreen;
     }

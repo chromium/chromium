@@ -106,9 +106,7 @@ public class SettingsTestRule<T extends Fragment>
         return (SettingsActivityInterface) getActivity();
     }
 
-    /**
-     * @return The fragment attached to the settings activity.
-     */
+    /** Returns the fragment attached to the settings activity. */
     @SuppressWarnings("unchecked") // Fragment type T is supplied by the test's parameterization.
     public T getFragment() {
         Assert.assertNotNull("#getFragment is called before activity launch.", getActivity());

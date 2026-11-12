@@ -91,7 +91,7 @@ public class SpinnerPreference extends Preference
         mSelectedIndex = selectedIndex;
     }
 
-    /** @return The currently selected option. */
+    /** Returns the currently selected option. */
     public @Nullable Object getSelectedOption() {
         if (mSpinner == null) {
             // Use the adapter directly if the view hasn't been created yet.

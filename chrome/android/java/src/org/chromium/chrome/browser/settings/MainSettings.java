@@ -805,6 +805,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
      * From search results, open a preference that is not handled via {@code android:fragment}
      * specified in the xml resource, therefore needs manual processing.
      *
+     * @param context The context used to launch the target activity.
+     * @param profile The profile for which settings are shown.
+     * @param key The key of the chosen preference.
+     * @param extras Additional arguments for the chosen preference.
+     * @param modalDialogManager The manager for showing modal dialogs.
      * @param shownInTab Whether settings is being shown in a browser tab.
      * @return Whether the flow should proceed and update the fragment state. For some preferences
      *     that open an external activity, the state should remain as is.
