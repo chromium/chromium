@@ -33,6 +33,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -54,6 +55,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  *       view.
  *   <li>An optional secondary text view that is shown next to the primary text view.
  *   <li>An optional remove icon at the end, intended for use with input chips.
+ *   <li>An optional end icon that can be swapped or removed (see {@link #setEndIcon}).
  *   <li>An optional boolean (solidColorChip) to remove the default chip border.
  *   <li>An optional boolean (allowMultipleLines) to avoid longer text strings to wrap to a second
  *       line.
@@ -89,6 +91,7 @@ public class ChipView extends LinearLayout {
     private final @Px int mChipCompactPadding;
 
     private @MonotonicNonNull ViewGroup mEndIconWrapper;
+    private @MonotonicNonNull AppCompatImageView mEndIcon;
     private @MonotonicNonNull LinearLayout mTextViewsWrapper;
     private @MonotonicNonNull AppCompatTextView mSecondaryText;
     private @Px int mMaxWidth = Integer.MAX_VALUE;
@@ -477,59 +480,60 @@ public class ChipView extends LinearLayout {
 
     /** Adds a remove icon (X button) at the trailing end of the chip next to the primary text. */
     public void addRemoveIcon() {
-        if (mEndIconWrapper != null) return;
-
-        AppCompatImageView endIcon = new AppCompatImageView(getContext());
-        endIcon.setId(R.id.chip_view_end_icon);
-        endIcon.setImageResource(R.drawable.btn_close);
-        ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
-
-        // Adding a wrapper view around the X icon to make the touch target larger, which would
-        // cover the start and end margin for the X icon, and full height of the chip.
-        mEndIconWrapper = new FrameLayout(getContext());
-        mEndIconWrapper.setId(R.id.chip_cancel_btn);
-
-        FrameLayout.LayoutParams layoutParams =
-                new FrameLayout.LayoutParams(mEndIconWidth, mEndIconHeight);
-        layoutParams.setMarginStart(mEndIconMarginStart);
-        layoutParams.setMarginEnd(mEndIconMarginEnd);
-        layoutParams.gravity = Gravity.CENTER_VERTICAL;
-        mEndIconWrapper.addView(endIcon, layoutParams);
-        addView(
-                mEndIconWrapper,
-                new LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        // Remove the end padding from the chip to make X icon touch target extend till the end of
-        // the chip.
-        this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+        setEndIcon(AppCompatResources.getDrawable(getContext(), R.drawable.btn_close));
+        assumeNonNull(mEndIconWrapper).setId(R.id.chip_cancel_btn);
     }
 
     /** Adds a dropdown icon at the trailing end of the chip next to the primary text. */
     public void addDropdownIcon() {
-        if (mEndIconWrapper != null) return;
+        setEndIcon(AppCompatResources.getDrawable(getContext(), R.drawable.mtrl_dropdown_arrow));
+    }
 
+    /**
+     * Sets or clears the icon at the trailing end of the chip next to the primary text. The icon is
+     * tinted with the primary text's color, and can be swapped or removed at any time. Clicks on
+     * the icon are handled by the chip.
+     *
+     * @param icon The icon to display, or null to remove the end icon.
+     */
+    public void setEndIcon(@Nullable Drawable icon) {
+        if (icon == null && mEndIcon == null) return;
+
+        AppCompatImageView endIcon = mEndIcon != null ? mEndIcon : createEndIcon();
+        ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
+        endIcon.setImageDrawable(icon);
+        updateChipAppearance();
+    }
+
+    /** Creates the trailing end icon and its wrapper, and adds them to the chip. */
+    @EnsuresNonNull({"mEndIcon", "mEndIconWrapper"})
+    private AppCompatImageView createEndIcon() {
+        assert mEndIconWrapper == null;
         AppCompatImageView endIcon = new AppCompatImageView(getContext());
         endIcon.setId(R.id.chip_view_end_icon);
-        endIcon.setImageResource(R.drawable.mtrl_dropdown_arrow);
-        ImageViewCompat.setImageTintList(endIcon, mPrimaryText.getTextColors());
+        mEndIcon = endIcon;
 
-        mEndIconWrapper = new FrameLayout(getContext());
+        // Adding a wrapper view around the icon to make the touch target larger, which would cover
+        // the start and end margin for the icon, and full height of the chip.
+        FrameLayout endIconWrapper = new FrameLayout(getContext());
+        mEndIconWrapper = endIconWrapper;
 
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(mEndIconWidth, mEndIconHeight);
         layoutParams.setMarginStart(mEndIconMarginStart);
         layoutParams.setMarginEnd(mEndIconMarginEnd);
         layoutParams.gravity = Gravity.CENTER_VERTICAL;
-        mEndIconWrapper.addView(endIcon, layoutParams);
+        endIconWrapper.addView(endIcon, layoutParams);
         addView(
-                mEndIconWrapper,
+                endIconWrapper,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        return endIcon;
+    }
 
-        // Remove the end padding from the chip to make X icon touch target extend till the end of
-        // the chip.
-        this.setPaddingRelative(getPaddingStart(), getPaddingTop(), 0, getPaddingBottom());
+    /** Returns whether the chip currently shows an icon at its trailing end. */
+    private boolean hasEndIcon() {
+        return mEndIcon != null && mEndIcon.getDrawable() != null;
     }
 
     /**
@@ -837,7 +841,7 @@ public class ChipView extends LinearLayout {
             updateEndIconVisibility(View.GONE);
         } else {
             updateTextVisibility(View.VISIBLE);
-            updateEndIconVisibility(View.VISIBLE);
+            updateEndIconVisibility(hasEndIcon() ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -886,7 +890,7 @@ public class ChipView extends LinearLayout {
             if (secondaryTextWidth > 0) textWidth += secondaryTextWidth + mTextStartPadding;
         }
         int endIconWidth = 0;
-        if (mEndIconWrapper != null) {
+        if (hasEndIcon()) {
             endIconWidth = mEndIconWidth + mEndIconMarginStart + mEndIconMarginEnd;
         }
         int expandedPadding = mChipStartPadding + getExpandedEndPadding();
@@ -903,12 +907,12 @@ public class ChipView extends LinearLayout {
     }
 
     /**
-     * In expanded mode, if an end icon wrapper is present (e.g. remove or dropdown button), the
+     * In expanded mode, if the chip shows an end icon (e.g. a remove or dropdown button), the
      * chip's end padding must be 0 so the icon wrapper's touch target extends all the way to the
      * end of the chip.
      */
     private @Px int getExpandedEndPadding() {
-        return mEndIconWrapper != null ? 0 : mChipEndPadding;
+        return hasEndIcon() ? 0 : mChipEndPadding;
     }
 
     /** Returns whether the chip is currently in compact mode. */

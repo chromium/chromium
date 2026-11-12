@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.junit.Before;
@@ -448,7 +450,50 @@ public final class ChipViewTest {
         assertEquals(expectedDelta, mTwoLineChipView.getCompactWidthDelta());
     }
 
+    @Test
+    public void setEndIcon_swapAndClear() {
+        mChipView.setEndIcon(getDrawable(R.drawable.btn_close));
+        ImageView endIcon = mChipView.findViewById(R.id.chip_view_end_icon);
+        assertEquals(R.drawable.btn_close, shadowOf(endIcon.getDrawable()).getCreatedFromResId());
+        assertEquals(0, mChipView.getPaddingEnd());
+
+        mChipView.setEndIcon(getDrawable(R.drawable.mtrl_dropdown_arrow));
+        assertEquals(
+                R.drawable.mtrl_dropdown_arrow,
+                shadowOf(endIcon.getDrawable()).getCreatedFromResId());
+
+        mChipView.setEndIcon(null);
+        assertNull(endIcon.getDrawable());
+        assertEquals(View.GONE, ((View) endIcon.getParent()).getVisibility());
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.chip_view_end_padding),
+                mChipView.getPaddingEnd());
+    }
+
+    @Test
+    public void compactWidthDelta_matchesMeasuredDelta_withClearedEndIcon() {
+        mChipView.setIconWithTint(
+                R.drawable.test_ic_arrow_downward_black_24dp, /* tintWithTextColor= */ false);
+        mChipView.setText("Primary text");
+        mChipView.setEndIcon(getDrawable(R.drawable.btn_close));
+        mChipView.setEndIcon(null);
+
+        mChipView.setIsCompact(true);
+        measureChip(mChipView);
+        int compactWidth = mChipView.getMeasuredWidth();
+
+        mChipView.setIsCompact(false);
+        measureChip(mChipView);
+        int expandedWidth = mChipView.getMeasuredWidth();
+
+        assertEquals(expandedWidth - compactWidth, mChipView.getCompactWidthDelta());
+    }
+
     private void measureChip(ChipView chip) {
         chip.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    }
+
+    private Drawable getDrawable(@DrawableRes int res) {
+        return AppCompatResources.getDrawable(mActivity, res);
     }
 }
