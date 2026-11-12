@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -74,41 +75,42 @@ const char kShutdownPath[] = "shutdown";
 
 // The commands are in the order as they ordered in the WebDriver BiDi
 // specification.
-base::flat_set<std::string> kKnownBidiSessionCommands = {
-    // session
-    "session.end",
-    "session.subscribe",
-    "session.unsubscribe",
-    // browsingContext
-    "browsingContext.activate",
-    "browsingContext.captureScreenshot",
-    "browsingContext.close",
-    "browsingContext.create",
-    "browsingContext.getTree",
-    "browsingContext.handleUserPropmpt",
-    "browsingContext.navigate",
-    "browsingContext.print",
-    "browsingContext.reload",
-    "browsingContext.setViewport",
-    // network
-    "network.addIntercept",
-    "network.continueRequest",
-    "network.continueResponse",
-    "network.continueWithAuth",
-    "network.failRequest",
-    "network.provideResponse",
-    "network.removeIntercept",
-    // script
-    "script.addPreloadScript",
-    "script.disown",
-    "script.callFunction",
-    "script.evaluate",
-    "script.getRealms",
-    "script.removePreloadScript",
-    // input
-    "input.performActions",
-    "input.releaseActions",
-};
+constexpr auto kKnownBidiSessionCommands =
+    base::MakeFixedFlatSet<std::string_view>({
+        // session
+        "session.end",
+        "session.subscribe",
+        "session.unsubscribe",
+        // browsingContext
+        "browsingContext.activate",
+        "browsingContext.captureScreenshot",
+        "browsingContext.close",
+        "browsingContext.create",
+        "browsingContext.getTree",
+        "browsingContext.handleUserPropmpt",
+        "browsingContext.navigate",
+        "browsingContext.print",
+        "browsingContext.reload",
+        "browsingContext.setViewport",
+        // network
+        "network.addIntercept",
+        "network.continueRequest",
+        "network.continueResponse",
+        "network.continueWithAuth",
+        "network.failRequest",
+        "network.provideResponse",
+        "network.removeIntercept",
+        // script
+        "script.addPreloadScript",
+        "script.disown",
+        "script.callFunction",
+        "script.evaluate",
+        "script.getRealms",
+        "script.removePreloadScript",
+        // input
+        "input.performActions",
+        "input.releaseActions",
+    });
 
 std::optional<base::Value> Clone(const std::optional<base::Value>& original) {
   if (!original.has_value()) {
