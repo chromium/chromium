@@ -41,6 +41,10 @@ public class UiAndroidFeatureList {
     public static final MutableFlagWithSafeDefault sBottomSheetRemeasureFix =
             newMutableFlagWithSafeDefault(UiAndroidFeatures.BOTTOM_SHEET_REMEASURE_FIX, true);
 
+    public static final MutableFlagWithSafeDefault sCheckLocalNetworkPermissionRevokedCompat =
+            newMutableFlagWithSafeDefault(
+                    UiAndroidFeatures.CHECK_LOCAL_NETWORK_PERMISSION_REVOKED_COMPAT, true);
+
     public static final MutableFlagWithSafeDefault sPointerLockMouseDensityCompensation =
             newMutableFlagWithSafeDefault(
                     UiAndroidFeatures.POINTER_LOCK_MOUSE_DENSITY_COMPENSATION, true);

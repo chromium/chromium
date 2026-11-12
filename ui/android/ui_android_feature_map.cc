@@ -26,6 +26,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kBottomSheetRemeasureFix,
     &ui::kCachedGestureNavMetrics,
     &ui::kCheckIntentCallerPermission,
+    &ui::kCheckLocalNetworkPermissionRevokedCompat,
     &ui::kClipboardConfusedDeputyDefenseText,
     &ui::kClipboardConfusedDeputyDefenseImages,
     &ui::kClipboardConfusedDeputyDefenseFiles,

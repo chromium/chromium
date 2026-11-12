@@ -54,6 +54,13 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCachedGestureNavMetrics);
 // access a URI before returning the result.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckIntentCallerPermission);
 
+// Kill switch for checking whether ACCESS_LOCAL_NETWORK is compat-revoked via
+// AppOpsManager on Android 17+ when targeting SDK < 37 (crbug.com/579403238).
+// TODO(https://crbug.com/583513077): Remove once targetSdkVersion 37 reaches
+// Stable.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
+    kCheckLocalNetworkPermissionRevokedCompat);
+
 // Controls defense against Confused Deputy clipboard URI exfiltration.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kClipboardConfusedDeputyDefenseText);
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kClipboardConfusedDeputyDefenseImages);
