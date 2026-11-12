@@ -576,10 +576,11 @@ PermissionsPolicy::CreateFlexibleForFencedFrame(
     const url::Origin& subframe_origin,
     const network::PermissionsPolicyFeatureList& features) {
   network::PermissionsPolicyFeaturesBitset inherited_policies;
-  for (const auto& [feature, default_value] : features) {
-    if (std::ranges::contains(network::kFencedFrameAllowedFeatures, feature) &&
-        InheritedValueForFeature(subframe_origin, parent_policy,
-                                 {feature, default_value}, container_policy)) {
+  for (const auto& feature : network::kFencedFrameAllowedFeatures) {
+    auto it = features.find(feature);
+    if (it != features.end() &&
+        InheritedValueForFeature(subframe_origin, parent_policy, *it,
+                                 container_policy)) {
       inherited_policies.Add(feature);
     }
   }

@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_TO_VECTOR_H_
 #define BASE_CONTAINERS_TO_VECTOR_H_
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <concepts>
 #include <functional>
