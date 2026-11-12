@@ -34,6 +34,7 @@ if (!is_android) {
       ":tab_strip_api",
       "controllers:unit_tests",
       "tab_strip_model_impl:unit_tests",
+      "testing:unit_tests",
       "//chrome/test:test_support",
     ]
   }

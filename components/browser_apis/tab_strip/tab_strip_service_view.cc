@@ -222,6 +222,10 @@ void TabStripServiceView::OnCollectionCreated(
   RebuildOrderedTabs();
 }
 
+void TabStripServiceView::OnTabStripServiceDestroyed() {
+  observation_.Reset();
+}
+
 Tab* TabStripServiceView::FindMutableTab(const NodeId& id) {
   mojom::Container* node = FindContainer(id);
   return (node && node->data && node->data->is_tab()) ? &node->data->get_tab()

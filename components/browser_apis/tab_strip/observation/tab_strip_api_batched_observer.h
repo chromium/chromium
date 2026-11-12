@@ -17,6 +17,10 @@ class TabStripApiBatchedObserver : public base::CheckedObserver {
   ~TabStripApiBatchedObserver() override = default;
 
   virtual void OnTabEvents(const std::vector<mojom::TabsEventPtr>& events) = 0;
+
+  // Invoked when the observed `TabStripService` is being destroyed so
+  // observers can detach their `ScopedObservation` cleanly.
+  virtual void OnTabStripServiceDestroyed() {}
 };
 
 }  // namespace tabs_api::observation

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 
+#include "base/check.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/browser_apis/tab_strip/adapters/platform_adapters_provider.h"
 #include "components/browser_apis/tab_strip/tab_strip_service_impl.h"
@@ -14,6 +15,17 @@ DEFINE_USER_DATA(TabStripServiceFeature);
 TabStripServiceFeature* TabStripServiceFeature::From(
     BrowserWindowInterface* browser) {
   return Get(browser->GetUnownedUserDataHost());
+}
+
+// static
+tabs_api::TabStripServiceView* TabStripServiceFeature::GetTabStripServiceView(
+    BrowserWindowInterface* browser) {
+  CHECK(browser);
+  auto* feature = From(browser);
+  CHECK(feature);
+  auto* view = feature->GetTabStripServiceView();
+  CHECK(view);
+  return view;
 }
 
 TabStripServiceFeature::TabStripServiceFeature(

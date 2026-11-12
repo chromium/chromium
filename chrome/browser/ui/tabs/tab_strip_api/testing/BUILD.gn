@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("testing") {
+  testonly = true
+
+  sources = [
+    "scoped_test_tab_strip.cc",
+    "scoped_test_tab_strip.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//components/browser_apis/tab_strip/testing",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/tabs/tab_strip_api:impl",
+    "//components/browser_apis/tab_strip:mojom",
+    "//components/browser_apis/tab_strip:service",
+    "//components/browser_apis/tab_strip/events",
+    "//components/browser_apis/tab_strip/types",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "scoped_test_tab_strip_unittest.cc" ]
+
+  deps = [
+    ":testing",
+    "//base/test:test_support",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/test:test_support",
+    "//components/browser_apis/tab_strip:service",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/unowned_user_data",
+    "//url",
+  ]
+}

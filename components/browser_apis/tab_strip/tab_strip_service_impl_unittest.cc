@@ -5,6 +5,7 @@
 #include "components/browser_apis/tab_strip/tab_strip_service_impl.h"
 
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -393,6 +394,40 @@ TEST_F(TabStripServiceImplTest, UpdateTabGroupPartial) {
   ASSERT_EQ(u"super duper group", updated_visuals->title());
   ASSERT_EQ(tab_groups::TabGroupColorId::kGrey, updated_visuals->color());
   ASSERT_FALSE(updated_visuals->is_collapsed());
+}
+
+TEST_F(TabStripServiceImplTest, NotifiesObserversOnServiceDestroyed) {
+  class ScopedServiceObserver : public observation::TabStripApiBatchedObserver {
+   public:
+    explicit ScopedServiceObserver(TabStripService* service) {
+      observation_.Observe(service);
+    }
+
+    void OnTabEvents(const std::vector<mojom::TabsEventPtr>& events) override {}
+
+    void OnTabStripServiceDestroyed() override {
+      destroyed_called_ = true;
+      observation_.Reset();
+    }
+
+    bool destroyed_called() const { return destroyed_called_; }
+    bool is_observing() const { return observation_.IsObserving(); }
+
+   private:
+    bool destroyed_called_ = false;
+    base::ScopedObservation<TabStripService,
+                            observation::TabStripApiBatchedObserver>
+        observation_{this};
+  };
+
+  ScopedServiceObserver observer(service_.get());
+  ASSERT_TRUE(observer.is_observing());
+  EXPECT_FALSE(observer.destroyed_called());
+
+  service_.reset();
+
+  EXPECT_TRUE(observer.destroyed_called());
+  EXPECT_FALSE(observer.is_observing());
 }
 
 }  // namespace

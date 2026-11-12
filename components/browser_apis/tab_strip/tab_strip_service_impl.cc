@@ -89,6 +89,9 @@ TabStripServiceImpl::TabStripServiceImpl(
 TabStripServiceImpl::~TabStripServiceImpl() {
   RemoveObserver(this);
   adapters_provider_->event_bridge().RemoveObserver(recorder_.get());
+  for (auto& observer : observers_) {
+    observer.OnTabStripServiceDestroyed();
+  }
 }
 
 TabStripModelAdapter& TabStripServiceImpl::tab_strip_model_adapter() {

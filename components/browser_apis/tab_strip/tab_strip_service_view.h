@@ -66,6 +66,7 @@ class TabStripServiceView : public observation::TabStripApiObserver {
       const mojom::OnDataChangedEventPtr& data_changed_event) override;
   void OnCollectionCreated(const mojom::OnCollectionCreatedEventPtr&
                                collection_created_event) override;
+  void OnTabStripServiceDestroyed() override;
 
  private:
   struct NodeEntry {

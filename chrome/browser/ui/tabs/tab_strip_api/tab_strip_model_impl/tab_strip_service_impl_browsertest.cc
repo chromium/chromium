@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -305,8 +306,10 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, SynchronousObserver) {
   ReallyVerySimpleSyncObserver observer;
-
-  tab_strip_service_->AddObserver(&observer);
+  base::ScopedObservation<tabs_api::TabStripService,
+                          tabs_api::observation::TabStripApiBatchedObserver>
+      observation(&observer);
+  observation.Observe(tab_strip_service_.get());
 
   ASSERT_EQ(0, observer.num_callbacks);
 
@@ -336,8 +339,10 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, PreventsReentrancy) {
   };
 
   ReallyBadObserver observer(tab_strip_service_.get());
-
-  tab_strip_service_->AddObserver(&observer);
+  base::ScopedObservation<tabs_api::TabStripService,
+                          tabs_api::observation::TabStripApiBatchedObserver>
+      observation(&observer);
+  observation.Observe(tab_strip_service_.get());
 
   // We have a really bad observer that will attempt to re-enter. Assert that
   // this is disallowed.

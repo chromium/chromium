@@ -38,6 +38,11 @@ class TabStripServiceFeature {
   // Returns the feature for `browser`, or null if it does not have one.
   static TabStripServiceFeature* From(BrowserWindowInterface* browser);
 
+  // Returns the `TabStripServiceView` for `browser`. Crashes if `browser` is
+  // null or does not have a `TabStripServiceFeature`.
+  static tabs_api::TabStripServiceView* GetTabStripServiceView(
+      BrowserWindowInterface* browser);
+
   void Accept(mojo::PendingReceiver<tabs_api::mojom::TabStripService> client);
 #if !BUILDFLAG(IS_ANDROID)
   void AcceptExperimental(
