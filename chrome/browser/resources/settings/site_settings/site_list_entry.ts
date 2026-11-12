@@ -12,7 +12,6 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import '../icons.html.js';
 import '../site_favicon.js';
 
-import {FocusRowMixinLit} from 'chrome://resources/cr_elements/focus_row_mixin_lit.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -35,7 +34,7 @@ export interface SiteListEntryElement {
 }
 
 const SiteListEntryElementBase =
-    FocusRowMixinLit(SiteSettingsMixinLit(I18nMixinLit(CrLitElement)));
+    SiteSettingsMixinLit(I18nMixinLit(CrLitElement));
 
 export class SiteListEntryElement extends SiteListEntryElementBase {
   static get is() {
@@ -123,15 +122,13 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
         this.allowNavigateToSiteDetail_ = false;
       }
     }
+  }
 
-    // TODO(crbug.com/393471368): Remove once <site-list> no longer renders this
-    // element inside a Polymer <iron-list>. The row height depends on whether
-    // a site description is shown, and <iron-list> only re-measures rows when
-    // it receives 'iron-resize'.
-    if (changedProperties.has('model') ||
-        changedProperties.has('cookiesExceptionType')) {
-      this.fire('iron-resize');
-    }
+  override focus() {
+    (this.shadowRoot.querySelector<HTMLElement>(
+         '#actionMenuButton, #resetSite') ??
+     this.shadowRoot.querySelector<HTMLElement>('.subpage-arrow'))
+        ?.focus();
   }
 
   /**

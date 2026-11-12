@@ -1,4 +1,4 @@
-    <div class="list-item" focus-row-container>
+    <div class="list-item">
       <div class="settings-row" role="row" aria-label="${this.getAriaLabel_()}">
         <div role="gridcell" class="settings-row"
             @click="${this.onOriginClick_}" id="originArea"
@@ -20,8 +20,7 @@
             <cr-icon-button class="subpage-arrow"
                 aria-label="${this.getViewButtonAriaLabel_()}"
                 aria-describedby="siteDescription"
-                aria-roledescription="$i18n{subpageArrowRoleDescription}"
-                focus-type="site-details" focus-row-control>
+                aria-roledescription="$i18n{subpageArrowRoleDescription}">
             </cr-icon-button>
             <div class="separator"></div>
           ` : ''}
@@ -30,8 +29,7 @@
           <div role="gridcell">
             <cr-policy-pref-indicator .pref="${this.getPolicyPref_()}"
                 @mouseenter="${this.onShowTooltipMouseenter_}"
-                @focus="${this.onShowTooltipFocus_}" focus-row-control
-                focus-type="policy">
+                @focus="${this.onShowTooltipFocus_}">
             </cr-policy-pref-indicator>
           </div>
         ` : ''}
@@ -40,7 +38,6 @@
             <cr-tooltip-icon id="incognitoTooltip"
                 icon-aria-label="$i18n{incognitoSiteExceptionDesc}"
                 icon-class="settings20:incognito-circle-filled"
-                focus-row-control focus-type="incognito"
                 @mouseenter="${this.onShowIncognitoTooltipMouseenter_}"
                 @focus="${this.onShowIncognitoTooltipFocus_}">
             </cr-tooltip-icon>
@@ -50,8 +47,7 @@
           <div role="gridcell">
             <cr-icon-button id="resetSite" class="icon-delete-gray"
                 @click="${this.onResetButtonClick_}"
-                aria-label="${this.getRemoveButtonAriaLabel_()}"
-                focus-row-control focus-type="reset">
+                aria-label="${this.getRemoveButtonAriaLabel_()}">
             </cr-icon-button>
           </div>
         ` : ''}
@@ -59,8 +55,7 @@
           <div role="gridcell">
             <cr-icon-button id="actionMenuButton" class="icon-more-vert"
                 @click="${this.onShowActionMenuClick_}"
-                title="${this.getActionMenuButtonLabel_()}" focus-row-control
-                focus-type="menu">
+                title="${this.getActionMenuButtonLabel_()}">
             </cr-icon-button>
           </div>
         ` : ''}

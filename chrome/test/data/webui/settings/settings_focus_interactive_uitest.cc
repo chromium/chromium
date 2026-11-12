@@ -92,6 +92,10 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ChooserExceptionListEntry) {
           "runMochaSuite('ChooserExceptionListEntryFocus')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SiteList) {
+  RunTest("settings/site_list_test.js", "runMochaSuite('SiteListFocus')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ZoomLevels) {
   RunTest("settings/zoom_levels_test.js", "runMochaSuite('ZoomLevelsFocus')");
 }

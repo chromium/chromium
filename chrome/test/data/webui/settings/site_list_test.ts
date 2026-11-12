@@ -10,7 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {AddSiteDialogElement, SettingsEditExceptionDialogElement, SiteException, SiteListElement} from 'chrome://settings/lazy_load.js';
 import {CookiesExceptionType, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, Router} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -132,7 +132,7 @@ let prefsMixedCookiesExceptionTypes2: SiteSettingsPref;
  * |settings| constants required.
  */
 /**
- * Flushes the Polymer <iron-list> in <site-list> and then waits for the Lit
+ * Flushes the Polymer <dom-repeat> in <site-list> and then waits for the Lit
  * <site-list-entry> children to finish their asynchronous render.
  */
 async function flushList(): Promise<void> {
@@ -650,14 +650,10 @@ suite('SiteListPopulatedWhileHidden', function() {
 
   /**
    * Waits for |count| site-list-entry elements to be rendered, then asserts
-   * that this actually happened. ResizeObserver delivery plus <iron-list>'s
-   * own rAF-debounced render take a few frames, so poll for a bounded number
-   * of frames rather than assuming an exact count.
+   * that this actually happened.
    */
   async function waitForEntryCount(count: number): Promise<void> {
-    for (let i = 0; i < 10 && getEntryCount() !== count; i++) {
-      await new Promise(resolve => requestAnimationFrame(resolve));
-    }
+    await flushList();
     assertEquals(count, getEntryCount());
   }
 
@@ -674,9 +670,9 @@ suite('SiteListPopulatedWhileHidden', function() {
     await browserProxy.whenCalled('getExceptionList');
     await flushTasks();
 
-    // The data has been fetched, but nothing is rendered while hidden.
+    // The data has been fetched, but nothing is shown while hidden.
     assertEquals(1, testElement.sites.length);
-    assertEquals(0, getEntryCount());
+    assertFalse(isChildVisible(testElement, 'site-list-entry'));
 
     // Showing the element must render the already-fetched exceptions, without
     // any further changes to the exception list.
@@ -695,10 +691,11 @@ suite('SiteListPopulatedWhileHidden', function() {
     await flushTasks();
 
     assertEquals(4, testElement.sites.length);
-    assertEquals(0, getEntryCount());
+    assertFalse(isChildVisible(testElement, 'site-list-entry'));
 
     container.style.display = '';
     await waitForEntryCount(4);
+    assertTrue(isChildVisible(testElement, 'site-list-entry'));
   });
 });
 
@@ -1617,6 +1614,11 @@ suite('SiteList', function() {
     assertEquals(
         testElement.$.listHeader, testElement.shadowRoot!.activeElement);
   });
+
+  test('Focusgroup attribute is set on list', function() {
+    assertEquals(
+        'listbox block', testElement.$.list.getAttribute('focusgroup'));
+  });
 });
 
 suite('SiteListSearchTests', function() {
@@ -1907,5 +1909,119 @@ suite('AddExceptionDialog', function() {
         await browserProxy.whenCalled('setCategoryPermissionForPattern');
     assertEquals(primaryPattern, expectedPattern);
     assertEquals(secondaryPattern, SITE_EXCEPTION_WILDCARD);
+  });
+});
+
+suite('SiteListFocus', function() {
+  let testElement: SiteListElement;
+  let browserProxy: TestSiteSettingsBrowserProxy;
+
+  function createNotificationPrefs(origins: string[]): SiteSettingsPref {
+    return createSiteSettingsPrefs([], [
+      createContentSettingTypeToValuePair(
+          ContentSettingsTypes.NOTIFICATIONS,
+          origins.map(
+              origin => createRawSiteException(origin, {embeddingOrigin: ''}))),
+    ]);
+  }
+
+  setup(function() {
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testElement = document.createElement('site-list');
+    testElement.searchFilter = '';
+    document.body.appendChild(testElement);
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('Focus restored when item is deleted', async function() {
+    browserProxy.setPrefs(createNotificationPrefs([
+      'https://foo.com:443',
+      'https://bar.com:443',
+      'https://baz.com:443',
+    ]));
+    testElement.cookiesExceptionType = CookiesExceptionType.COMBINED;
+    testElement.categorySubtype = ContentSetting.ALLOW;
+    testElement.category = ContentSettingsTypes.NOTIFICATIONS;
+    await browserProxy.whenCalled('getExceptionList');
+    await flushList();
+
+    // Case 1: Delete last item while focused.
+    let siteListEntries =
+        testElement.$.listContainer.querySelectorAll('site-list-entry');
+    assertEquals(3, siteListEntries.length);
+    let actionMenuButton =
+        siteListEntries[2]!.shadowRoot.querySelector<HTMLElement>(
+            '#actionMenuButton');
+    assertTrue(!!actionMenuButton);
+    actionMenuButton.focus();
+    assertEquals(siteListEntries[2], testElement.shadowRoot!.activeElement);
+    assertEquals(
+        actionMenuButton, siteListEntries[2]!.shadowRoot.activeElement);
+
+    browserProxy.resetResolver('getExceptionList');
+    browserProxy.setPrefs(createNotificationPrefs([
+      'https://foo.com:443',
+      'https://bar.com:443',
+    ]));
+    webUIListenerCallback(
+        'contentSettingSitePermissionChanged',
+        ContentSettingsTypes.NOTIFICATIONS);
+    await browserProxy.whenCalled('getExceptionList');
+    await flushList();
+
+    siteListEntries =
+        testElement.$.listContainer.querySelectorAll('site-list-entry');
+    assertEquals(2, siteListEntries.length);
+    assertEquals(siteListEntries[1], testElement.shadowRoot!.activeElement);
+    assertEquals(
+        siteListEntries[1]!.shadowRoot.querySelector('#actionMenuButton'),
+        siteListEntries[1]!.shadowRoot.activeElement);
+
+    // Case 2: Delete first item while focused.
+    actionMenuButton =
+        siteListEntries[0]!.shadowRoot.querySelector<HTMLElement>(
+            '#actionMenuButton');
+    assertTrue(!!actionMenuButton);
+    actionMenuButton.focus();
+    assertEquals(siteListEntries[0], testElement.shadowRoot!.activeElement);
+    assertEquals(
+        actionMenuButton, siteListEntries[0]!.shadowRoot.activeElement);
+
+    browserProxy.resetResolver('getExceptionList');
+    browserProxy.setPrefs(createNotificationPrefs([
+      'https://bar.com:443',
+    ]));
+    webUIListenerCallback(
+        'contentSettingSitePermissionChanged',
+        ContentSettingsTypes.NOTIFICATIONS);
+    await browserProxy.whenCalled('getExceptionList');
+    await flushList();
+
+    siteListEntries =
+        testElement.$.listContainer.querySelectorAll('site-list-entry');
+    assertEquals(1, siteListEntries.length);
+    assertEquals(siteListEntries[0], testElement.shadowRoot!.activeElement);
+    assertEquals(
+        siteListEntries[0]!.shadowRoot.querySelector('#actionMenuButton'),
+        siteListEntries[0]!.shadowRoot.activeElement);
+
+    // Case 3: Delete last remaining item while focused.
+    browserProxy.resetResolver('getExceptionList');
+    browserProxy.setPrefs(createNotificationPrefs([]));
+    webUIListenerCallback(
+        'contentSettingSitePermissionChanged',
+        ContentSettingsTypes.NOTIFICATIONS);
+    await browserProxy.whenCalled('getExceptionList');
+    await flushList();
+
+    siteListEntries =
+        testElement.$.listContainer.querySelectorAll('site-list-entry');
+    assertEquals(0, siteListEntries.length);
+    assertNull(testElement.shadowRoot!.activeElement);
   });
 });

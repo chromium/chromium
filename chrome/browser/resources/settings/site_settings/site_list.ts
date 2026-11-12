@@ -13,7 +13,6 @@ import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared.css.js';
 import './add_site_dialog.js';
 import './edit_exception_dialog.js';
@@ -26,14 +25,13 @@ import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import type {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, INVALID_CATEGORY_SUBTYPE, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {ListPropertyUpdateMixin} from './list_property_update_mixin.js';
 import {getTemplate} from './site_list.html.js';
+import type {SiteListEntryElement} from './site_list_entry.js';
 import type {RawSiteException, SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
@@ -42,15 +40,15 @@ export interface SiteListElement {
   $: {
     addSite: HTMLElement,
     category: HTMLElement,
-    list: IronListElement,
+    list: HTMLElement,
     listContainer: HTMLElement,
     listHeader: HTMLElement,
     tooltip: CrTooltipElement,
   };
 }
 
-const SiteListElementBase = TooltipMixin(ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+const SiteListElementBase = TooltipMixin(
+    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class SiteListElement extends SiteListElementBase {
   static get is() {
@@ -101,6 +99,7 @@ export class SiteListElement extends SiteListElementBase {
         value() {
           return [];
         },
+        observer: 'onSitesChanged_',
       },
 
       /**
@@ -155,8 +154,6 @@ export class SiteListElement extends SiteListElementBase {
        */
       showSessionOnlyAction_: Boolean,
 
-      lastFocused_: Object,
-      listBlurred_: Boolean,
       tooltipText_: String,
       searchFilter: String,
     };
@@ -179,8 +176,6 @@ export class SiteListElement extends SiteListElementBase {
   declare private showAllowAction_: boolean;
   declare private showBlockAction_: boolean;
   declare private showSessionOnlyAction_: boolean;
-  declare private lastFocused_: HTMLElement;
-  declare private listBlurred_: boolean;
   declare private tooltipText_: string;
   declare searchFilter: string;
   declare cookiesExceptionType: CookiesExceptionType;
@@ -188,17 +183,7 @@ export class SiteListElement extends SiteListElementBase {
   private activeDialogAnchor_: HTMLElement|null;
   private browserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
-
-  /**
-   * Observes |listContainer| so that the <iron-list> within it can be told to
-   * render once it actually has a layout box. See
-   * onListContainerResize_() for details.
-   */
-  private listContainerResizeObserver_: ResizeObserver =
-      new ResizeObserver(() => this.onListContainerResize_());
-
-  /** Whether |listContainer| currently has a layout box. */
-  private listContainerVisible_: boolean = false;
+  private restoreFocusAfterDomChange_: boolean = false;
 
   constructor() {
     super();
@@ -234,40 +219,27 @@ export class SiteListElement extends SiteListElementBase {
     this.browserProxy.updateIncognitoStatus();
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.listContainerResizeObserver_.observe(this.$.listContainer);
+  private onSitesChanged_(
+      newSites: SiteException[]|undefined,
+      oldSites: SiteException[]|undefined) {
+    if (newSites && oldSites && newSites.length < oldSites.length &&
+        this.$.list.matches(':focus-within')) {
+      this.restoreFocusAfterDomChange_ = true;
+    }
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.listContainerResizeObserver_.disconnect();
-    this.listContainerVisible_ = false;
-  }
-
-  /**
-   * <iron-list> refuses to render anything while it is not visible, and only
-   * retries when it receives an 'iron-resize' event, which nothing in Settings
-   * fires for this list. Meanwhile the exception list is fetched as soon as
-   * this element is created, which - because Settings views are stamped into a
-   * <cr-view-manager> view before that view is made visible - regularly
-   * happens while this element is still display:none. The result is a list
-   * that stays permanently empty until some unrelated event (e.g. the user
-   * adding an exception) causes another render.
-   *
-   * Detect the transition to having a layout box and notify the <iron-list>,
-   * so that exceptions loaded while hidden are rendered once shown.
-   */
-  private onListContainerResize_() {
-    const container = this.$.listContainer;
-    const visible = container.offsetWidth > 0 || container.offsetHeight > 0;
-    if (visible === this.listContainerVisible_) {
+  private onDomChange_() {
+    if (!this.restoreFocusAfterDomChange_) {
       return;
     }
+    this.restoreFocusAfterDomChange_ = false;
 
-    this.listContainerVisible_ = visible;
-    if (visible) {
-      this.$.list.notifyResize();
+    // Restore focus to the last element if the previous last element was
+    // deleted while it was focused.
+    if (!this.$.list.matches(':focus-within')) {
+      const toFocus = this.shadowRoot!.querySelector<SiteListEntryElement>(
+          'site-list-entry:last-of-type');
+      toFocus?.focus();
     }
   }
 
@@ -441,7 +413,7 @@ export class SiteListElement extends SiteListElementBase {
 
   /**
    * Need to use common tooltip since the tooltip in the entry is cut off from
-   * the iron-list.
+   * the list.
    */
   private onShowTooltip_(e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
@@ -495,7 +467,7 @@ export class SiteListElement extends SiteListElementBase {
                       })
                       .map(site => this.expandSiteException(site));
 
-    this.updateList('sites', x => x.origin, sites);
+    this.sites = sites;
   }
 
   /**

@@ -69,7 +69,7 @@ export class ChooserExceptionListEntryElement extends CrLitElement {
         if (!focused) {
           const toFocus = this.shadowRoot.querySelector<SiteListEntryElement>(
               'site-list-entry:last-of-type');
-          toFocus?.getFocusRow().getFirstFocusable('reset')?.focus();
+          toFocus?.focus();
         }
       }
     }
