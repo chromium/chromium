@@ -187,13 +187,11 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
     title_ = title.empty() ? String() : title;
   }
 
-  void AddedAdoptedToTreeScope(TreeScope& tree_scope);
-  void RemovedAdoptedFromTreeScope(TreeScope& tree_scope);
+  void AddedReferenceToTreeScope(TreeScope& tree_scope);
+  void RemovedReferenceFromTreeScope(TreeScope& tree_scope);
 
-  // True when this stylesheet is among the TreeScope's adopted style sheets.
-  //
-  // https://drafts.csswg.org/cssom/#dom-documentorshadowroot-adoptedstylesheets
-  bool IsAdoptedByTreeScope(const TreeScope& tree_scope);
+  // True when adoptedStyleSheets or a module link references this stylesheet.
+  bool IsReferencedByTreeScope(const TreeScope& tree_scope);
 
   // Associated document for constructed stylesheet. Always non-null for
   // constructed stylesheets, always null otherwise.
@@ -317,10 +315,10 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   Member<Node> owner_node_;
   WeakMember<Element> owner_parent_or_shadow_host_element_;
   Member<CSSRule> owner_rule_;
-  // Used for knowing which TreeScopes to invalidate when an adopted stylesheet
-  // is modified. The value is a count to keep track of the number of references
-  // to the same sheet in the adoptedStyleSheets array.
-  HeapHashMap<WeakMember<TreeScope>, size_t> adopted_tree_scopes_;
+  // TreeScopes to invalidate when this sheet is modified. Counts include every
+  // occurrence in adoptedStyleSheets and every module stylesheet link
+  // (`<link rel="stylesheet" import>`).
+  HeapHashMap<WeakMember<TreeScope>, size_t> referenced_tree_scopes_;
   // The Document this stylesheet was constructed for. Always non-null for
   // constructed stylesheets. Always null for other sheets.
   Member<Document> constructor_document_;

@@ -8,12 +8,12 @@
 
 <body>
 <script type="module">
-import {createLink, loadResult, appendAndWait} from "./module-stylesheet-fetch-helpers.js";
+import {createLink, loadResult, appendAndWait} from "./module-stylesheet-helpers.js";
 
 for (const type of [null, "", "text/css", "text/plain"]) {
   promise_test(async t => {
-    const link = createLink(t, "data:text/css,/* module */",
-        "data:text/plain,not-css");
+    const link = createLink(t, /*import=*/"data:text/css,/* module */",
+        /*href=*/"data:text/plain,not-css");
     if (type !== null) {
       link.type = type;
     }
@@ -25,8 +25,8 @@ for (const type of [null, "", "text/css", "text/plain"]) {
 
 for (const restoreImport of [false, true]) {
   promise_test(async t => {
-    const link = createLink(t, "unmapped-classification-specifier",
-        "data:text/css,/* classic */");
+    const link = createLink(t, /*import=*/"unmapped-classification-specifier",
+        /*href=*/"data:text/css,/* classic */");
     link.removeAttribute("import");
     if (restoreImport) {
       link.setAttribute("import", "unmapped-classification-specifier");
@@ -46,8 +46,8 @@ for (const restoreImport of [false, true]) {
 
 for (const restoreStylesheet of [false, true]) {
   promise_test(async t => {
-    const link = createLink(t, "unmapped-rel-specifier",
-        "module-stylesheet-blue.css?classification-preload");
+    const link = createLink(t, /*import=*/"unmapped-rel-specifier",
+        /*href=*/"module-stylesheet-blue.css?classification-preload");
     link.rel = "preload";
     link.as = "style";
     if (restoreStylesheet) {

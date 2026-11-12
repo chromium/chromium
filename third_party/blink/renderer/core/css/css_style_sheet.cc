@@ -264,10 +264,9 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
     document->GetStyleEngine().SetNeedsActiveStyleUpdate(
         ownerNode()->GetTreeScope());
     invalidate_matched_properties_cache = true;
-  } else if (!adopted_tree_scopes_.empty()) {
-    for (const auto& tree_scope : adopted_tree_scopes_.Keys()) {
-      // It is currently required that adopted sheets can not be moved between
-      // documents.
+  } else {
+    for (const auto& tree_scope : referenced_tree_scopes_.Keys()) {
+      // Constructed sheets cannot be moved between documents.
       DCHECK(tree_scope->GetDocument() == document);
       if (!tree_scope->RootNode().isConnected()) {
         continue;
@@ -360,25 +359,25 @@ bool CSSStyleSheet::MatchesMediaQueries(const MediaQueryEvaluator& evaluator) {
   return evaluator.Eval(*media_queries_, &media_query_result_flags_);
 }
 
-void CSSStyleSheet::AddedAdoptedToTreeScope(TreeScope& tree_scope) {
-  auto add_result = adopted_tree_scopes_.insert(&tree_scope, 1u);
+void CSSStyleSheet::AddedReferenceToTreeScope(TreeScope& tree_scope) {
+  auto add_result = referenced_tree_scopes_.insert(&tree_scope, 1u);
   if (!add_result.is_new_entry) {
     add_result.stored_value->value++;
   }
 }
 
-void CSSStyleSheet::RemovedAdoptedFromTreeScope(TreeScope& tree_scope) {
-  auto it = adopted_tree_scopes_.find(&tree_scope);
-  if (it != adopted_tree_scopes_.end()) {
+void CSSStyleSheet::RemovedReferenceFromTreeScope(TreeScope& tree_scope) {
+  auto it = referenced_tree_scopes_.find(&tree_scope);
+  if (it != referenced_tree_scopes_.end()) {
     CHECK_GT(it->value, 0u);
     if (--it->value == 0) {
-      adopted_tree_scopes_.erase(&tree_scope);
+      referenced_tree_scopes_.erase(&tree_scope);
     }
   }
 }
 
-bool CSSStyleSheet::IsAdoptedByTreeScope(const TreeScope& tree_scope) {
-  return adopted_tree_scopes_.Contains(const_cast<TreeScope*>(&tree_scope));
+bool CSSStyleSheet::IsReferencedByTreeScope(const TreeScope& tree_scope) {
+  return referenced_tree_scopes_.Contains(const_cast<TreeScope*>(&tree_scope));
 }
 
 bool CSSStyleSheet::HasViewportDependentMediaQueries() const {
@@ -768,7 +767,7 @@ void CSSStyleSheet::Trace(Visitor* visitor) const {
   visitor->Trace(media_cssom_wrapper_);
   visitor->Trace(child_rule_cssom_wrappers_);
   visitor->Trace(rule_list_cssom_wrapper_);
-  visitor->Trace(adopted_tree_scopes_);
+  visitor->Trace(referenced_tree_scopes_);
   visitor->Trace(constructor_document_);
   StyleSheet::Trace(visitor);
 }

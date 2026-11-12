@@ -76,13 +76,13 @@ TEST_F(CSSStyleSheetTest,
   shadow_a.SetAdoptedStyleSheetsForTesting(adopted_sheets);
   shadow_b.SetAdoptedStyleSheetsForTesting(adopted_sheets);
 
-  EXPECT_EQ(sheet->adopted_tree_scopes_.size(), 2u);
+  EXPECT_EQ(sheet->referenced_tree_scopes_.size(), 2u);
   EXPECT_EQ(shadow_a.AdoptedStyleSheets()->size(), 1u);
   EXPECT_EQ(shadow_b.AdoptedStyleSheets()->size(), 1u);
 
   host_a->remove();
   WebHeap::CollectAllGarbageForTesting();
-  EXPECT_EQ(sheet->adopted_tree_scopes_.size(), 1u);
+  EXPECT_EQ(sheet->referenced_tree_scopes_.size(), 1u);
   EXPECT_EQ(shadow_b.AdoptedStyleSheets()->size(), 1u);
 }
 

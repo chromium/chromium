@@ -7,7 +7,11 @@
 #include "base/check.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -15,10 +19,32 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
+#include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+CSSStyleSheet* GetModuleStyleSheet(ModuleScript* module_script) {
+  if (!module_script) {
+    return nullptr;
+  }
+  ScriptState* script_state = module_script->SettingsObject()->GetScriptState();
+  if (!script_state) {
+    return nullptr;
+  }
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Value> value =
+      static_cast<ValueWrapperSyntheticModuleScript*>(module_script)
+          ->GetExport(isolate);
+  return value.IsEmpty() ? nullptr
+                         : V8CSSStyleSheet::ToWrappable(isolate, value);
+}
+
+}  // namespace
 
 class LinkModuleImport::ModuleClient final : public SingleModuleClient {
  public:
@@ -59,12 +85,14 @@ void LinkModuleImport::Process(LinkLoadParameters::Reason reason) {
   // ShouldLoadLink() is false, and switch the resource type when needed.
   if (!owner_->IsModuleStyleSheetLink()) {
     CancelPendingRequest();
+    SetSheet(nullptr);
     resolved_url_ = KURL();
     loaded_ = false;
     return;
   }
 
   if (reason == LinkLoadParameters::Reason::kMediaChange) {
+    // TODO(448174611): Support media queries.
     return;
   }
 
@@ -130,10 +158,14 @@ void LinkModuleImport::Process(LinkLoadParameters::Reason reason) {
   modulator->FetchSingle(request, window->Fetcher(),
                          ModuleGraphLevel::kTopLevelModuleFetch,
                          ModuleScriptCustomFetchType::kNone, client);
+  CSSStyleSheet* sheet = GetModuleStyleSheet(
+      modulator->GetFetchedModuleScript(resolved_url_, ModuleType::kCSS));
+  SetSheet(sheet);
 }
 
 void LinkModuleImport::OwnerRemoved() {
   CancelPendingRequest();
+  SetSheet(nullptr);
   resolved_url_ = KURL();
   loaded_ = false;
 }
@@ -147,6 +179,7 @@ void LinkModuleImport::CancelPendingRequest() {
 
 void LinkModuleImport::ScheduleFailure() {
   CHECK(!pending_);
+  SetSheet(nullptr);
   auto* client = MakeGarbageCollected<ModuleClient>(this);
   pending_ = client;
   GetDocument()
@@ -155,17 +188,38 @@ void LinkModuleImport::ScheduleFailure() {
                                      WrapPersistent(client)));
 }
 
+void LinkModuleImport::SetSheet(CSSStyleSheet* sheet) {
+  TreeScope* new_scope =
+      sheet && owner_->isConnected() ? &owner_->GetTreeScope() : nullptr;
+  if (sheet_ == sheet && sheet_tree_scope_ == new_scope) {
+    return;
+  }
+  if (sheet_ && sheet_tree_scope_) {
+    sheet_->RemovedReferenceFromTreeScope(*sheet_tree_scope_);
+  }
+  sheet_ = sheet;
+  sheet_tree_scope_ = new_scope;
+  if (sheet_ && sheet_tree_scope_) {
+    sheet_->AddedReferenceToTreeScope(*sheet_tree_scope_);
+  }
+  GetDocument().GetStyleEngine().ModifiedStyleSheetCandidateNode(*owner_);
+}
+
 void LinkModuleImport::NotifyModuleLoadFinished(ModuleClient* client,
                                                 ModuleScript* module_script) {
   if (pending_ != client) {
     return;
   }
   pending_ = nullptr;
-  loaded_ = module_script && !module_script->HasParseError();
+  CSSStyleSheet* sheet = GetModuleStyleSheet(module_script);
+  loaded_ = sheet != nullptr;
+  SetSheet(sheet);
   owner_->ScheduleEvent();
 }
 
 void LinkModuleImport::Trace(Visitor* visitor) const {
+  visitor->Trace(sheet_);
+  visitor->Trace(sheet_tree_scope_);
   visitor->Trace(pending_);
   LinkResource::Trace(visitor);
 }

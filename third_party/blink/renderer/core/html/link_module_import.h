@@ -11,7 +11,9 @@
 
 namespace blink {
 
+class CSSStyleSheet;
 class ModuleScript;
+class TreeScope;
 
 // LinkResource for `<link rel="stylesheet" import="...">`.
 class LinkModuleImport final : public LinkResource {
@@ -25,6 +27,7 @@ class LinkModuleImport final : public LinkResource {
   bool HasLoaded() const override { return loaded_; }
   void Trace(Visitor*) const override;
 
+  CSSStyleSheet* Sheet() const override { return sheet_.Get(); }
   bool StyleSheetIsLoading() const override { return pending_ != nullptr; }
   const KURL& ResolvedURL() const { return resolved_url_; }
 
@@ -33,8 +36,11 @@ class LinkModuleImport final : public LinkResource {
 
   void CancelPendingRequest();
   void ScheduleFailure();
+  void SetSheet(CSSStyleSheet*);
   void NotifyModuleLoadFinished(ModuleClient*, ModuleScript*);
 
+  Member<CSSStyleSheet> sheet_;
+  Member<TreeScope> sheet_tree_scope_;
   Member<ModuleClient> pending_;
   KURL resolved_url_;
   bool loaded_ = false;

@@ -464,7 +464,7 @@ Element* ImplicitScopeTrigger(TreeScope& scope, CSSStyleSheet& sheet) {
   if (Element* owner_parent = sheet.OwnerParentOrShadowHostElement()) {
     return owner_parent;
   }
-  if (sheet.IsAdoptedByTreeScope(scope)) {
+  if (sheet.IsReferencedByTreeScope(scope)) {
     if (ShadowRoot* shadow_root = DynamicTo<ShadowRoot>(scope)) {
       return &shadow_root->host();
     }

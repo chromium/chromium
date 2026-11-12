@@ -8,12 +8,12 @@
 
 <body>
 <script type="module">
-import {createLink, loadResult} from "./module-stylesheet-fetch-helpers.js";
+import {createLink, loadResult} from "./module-stylesheet-helpers.js";
 
 promise_test(async t => {
   const windowlessDocument = document.implementation.createHTMLDocument();
   assert_equals(windowlessDocument.defaultView, null);
-  const link = createLink(t, "data:text/css,/* valid module */");
+  const link = createLink(t, /*import=*/"data:text/css,/* valid module */");
   const order = [];
   const result = new Promise(resolve => {
     for (const type of ["load", "error"]) {
@@ -42,7 +42,7 @@ for (const insertBeforeDetach of [false, true]) {
     document.body.append(frame);
     await ready;
     const childDocument = frame.contentDocument;
-    const link = createLink(t, "data:text/css,/* original */");
+    const link = createLink(t, /*import=*/"data:text/css,/* original */");
     const events = [];
     link.addEventListener("load", () => events.push("load"));
     link.addEventListener("error", () => events.push("error"));

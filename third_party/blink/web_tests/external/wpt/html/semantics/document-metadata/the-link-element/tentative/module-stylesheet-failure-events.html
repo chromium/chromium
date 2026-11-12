@@ -8,11 +8,11 @@
 
 <body>
 <script type="module">
-import {createLink, loadResult} from "./module-stylesheet-fetch-helpers.js";
+import {createLink, loadResult} from "./module-stylesheet-helpers.js";
 
 for (const specifier of ["", "unmapped-specifier", "https://[invalid]/"]) {
   promise_test(async t => {
-    const link = createLink(t, specifier);
+    const link = createLink(t, /*import=*/specifier);
     const order = [];
     const result = new Promise(resolve => {
       link.onload = () => {
@@ -33,7 +33,7 @@ for (const specifier of ["", "unmapped-specifier", "https://[invalid]/"]) {
   }, `Resolution failure for ${JSON.stringify(specifier)} fires asynchronously.`);
 
   promise_test(async t => {
-    const link = createLink(t, specifier);
+    const link = createLink(t, /*import=*/specifier);
     const events = [];
     link.onload = () => events.push("load");
     link.onerror = () => events.push("error");
@@ -50,7 +50,7 @@ for (const specifier of ["", "unmapped-specifier", "https://[invalid]/"]) {
       JSON.stringify(specifier)}.`);
 
   promise_test(async t => {
-    const link = createLink(t, specifier);
+    const link = createLink(t, /*import=*/specifier);
     const events = [];
     const loaded = new Promise(resolve => {
       link.onload = () => {

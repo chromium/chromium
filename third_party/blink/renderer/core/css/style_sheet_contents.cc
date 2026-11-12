@@ -608,7 +608,7 @@ CSSStyleSheet* StyleSheetContents::ClientInTreeScope(
     const TreeScope& tree_scope) const {
   auto is_in_tree_scope = [&](CSSStyleSheet* sheet,
                               const TreeScope& tree_scope) -> bool {
-    return sheet->IsAdoptedByTreeScope(tree_scope) ||
+    return sheet->IsReferencedByTreeScope(tree_scope) ||
            (sheet->ownerNode() != nullptr &&
             sheet->ownerNode()->GetTreeScope() == tree_scope);
   };

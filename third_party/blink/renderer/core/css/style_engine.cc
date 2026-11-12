@@ -499,7 +499,7 @@ void StyleEngine::AdoptedStyleSheetAdded(TreeScope& tree_scope,
   if (GetDocument().IsDetached()) {
     return;
   }
-  sheet->AddedAdoptedToTreeScope(tree_scope);
+  sheet->AddedReferenceToTreeScope(tree_scope);
   if (!tree_scope.RootNode().isConnected()) {
     return;
   }
@@ -515,7 +515,7 @@ void StyleEngine::AdoptedStyleSheetRemoved(TreeScope& tree_scope,
   if (GetDocument().IsDetached()) {
     return;
   }
-  sheet->RemovedAdoptedFromTreeScope(tree_scope);
+  sheet->RemovedReferenceFromTreeScope(tree_scope);
   if (!tree_scope.RootNode().isConnected()) {
     return;
   }
