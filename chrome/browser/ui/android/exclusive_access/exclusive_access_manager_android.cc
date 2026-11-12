@@ -75,6 +75,7 @@ void ExclusiveAccessManagerAndroid::ToggleBrowserFullscreenMode(
 
 bool ExclusiveAccessManagerAndroid::HasExclusiveAccess(JNIEnv* env) {
   return eam_.fullscreen_controller()->IsTabFullscreen() ||
+         eam_.fullscreen_controller()->IsFullscreenForBrowser() ||
          eam_.pointer_lock_controller()->IsPointerLocked() ||
          eam_.keyboard_lock_controller()->IsKeyboardLockActive();
 }
@@ -140,6 +141,18 @@ void ExclusiveAccessManagerAndroid::LostPointerLock(JNIEnv* env) {
 
 void ExclusiveAccessManagerAndroid::ExitExclusiveAccess(JNIEnv* env) {
   eam_.ExitExclusiveAccess();
+}
+
+void ExclusiveAccessManagerAndroid::ExitAllExclusiveAccess(JNIEnv* env) {
+  eam_.ExitExclusiveAccess();
+  // In nested fullscreen (tab fullscreen on top of browser immersive mode),
+  // the first ExitExclusiveAccess() call only pops tab fullscreen. When tearing
+  // down all fullscreen (e.g. when the activity is hidden or when restoring the
+  // window into desktop windowing mode), call again to also exit browser
+  // immersive mode.
+  if (eam_.fullscreen_controller()->IsFullscreenForBrowser()) {
+    eam_.ExitExclusiveAccess();
+  }
 }
 
 void ExclusiveAccessManagerAndroid::OnTabDeactivated(

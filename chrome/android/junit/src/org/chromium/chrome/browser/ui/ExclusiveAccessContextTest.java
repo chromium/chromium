@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.mock;
@@ -19,6 +21,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -28,8 +31,10 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager.FullscreenManagerDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.ExclusiveAccessManager.NativeExclusiveAccessManagerAndroid;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -141,13 +146,11 @@ public class ExclusiveAccessContextTest {
                 .onExitFullscreen(any());
     }
 
-    @Test
-    public void testToggleBrowserFullscreenMode() {
+    private ExclusiveAccessManager createInitializedExclusiveAccessManager(
+            JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr,
+            boolean initialPersistentFullscreenMode) {
         when(mFullscreenManager.getPersistentFullscreenModeSupplier())
-                .thenReturn(ObservableSuppliers.alwaysFalse());
-
-        JniUniquePtr<ExclusiveAccessManager.NativeExclusiveAccessManagerAndroid> nativePtr =
-                JniUniquePtr.createForTesting(456L);
+                .thenReturn(ObservableSuppliers.createNonNull(initialPersistentFullscreenMode));
         when(mExclusiveAccessManagerJni.init(
                         /* caller= */ any(),
                         /* windowAndroid= */ any(),
@@ -162,11 +165,20 @@ public class ExclusiveAccessContextTest {
                 new ExclusiveAccessManager(
                         /* fullscreenManager= */ mFullscreenManager,
                         /* desktopWindowStateManager= */ null);
-
         manager.initialize(
                 /* modelSelector= */ tabModelSelector,
                 /* windowAndroid= */ mWindowAndroid,
                 /* activityTabProvider= */ new ActivityTabProvider());
+        return manager;
+    }
+
+    @Test
+    public void testToggleBrowserFullscreenMode() {
+        JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr =
+                JniUniquePtr.createForTesting(456L);
+        ExclusiveAccessManager manager =
+                createInitializedExclusiveAccessManager(
+                        nativePtr, /* initialPersistentFullscreenMode= */ false);
 
         manager.toggleBrowserFullscreenMode(/* userInitiated= */ true);
 
@@ -176,6 +188,116 @@ public class ExclusiveAccessContextTest {
                                 "Should forward toggleBrowserFullscreenMode call to the JNI"
                                         + " bridge."))
                 .toggleBrowserFullscreenMode(/* self= */ nativePtr, /* userInitiated= */ true);
+        manager.destroy();
+    }
+
+    @Test
+    public void testExitExclusiveAccess_updatesStateFromHasExclusiveAccess() {
+        JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr =
+                JniUniquePtr.createForTesting(456L);
+        ExclusiveAccessManager manager =
+                createInitializedExclusiveAccessManager(
+                        nativePtr, /* initialPersistentFullscreenMode= */ true);
+
+        // Simulate exiting nested tab fullscreen while browser fullscreen remains active.
+        when(mExclusiveAccessManagerJni.hasExclusiveAccess(nativePtr)).thenReturn(true);
+        manager.exitExclusiveAccess();
+        assertTrue(
+                "Exclusive access state should remain true when browser fullscreen is still"
+                        + " active.",
+                manager.getExclusiveAccessStateSupplier().get());
+
+        // Simulate exiting browser fullscreen so no exclusive access remains.
+        when(mExclusiveAccessManagerJni.hasExclusiveAccess(nativePtr)).thenReturn(false);
+        manager.exitExclusiveAccess();
+        assertFalse(
+                "Exclusive access state should become false when all exclusive access modes exit.",
+                manager.getExclusiveAccessStateSupplier().get());
+
+        manager.destroy();
+    }
+
+    @Test
+    public void testPreHandleKeyboardEvent_updatesStateFromHasExclusiveAccess() {
+        JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr =
+                JniUniquePtr.createForTesting(456L);
+        ExclusiveAccessManager manager =
+                createInitializedExclusiveAccessManager(
+                        nativePtr, /* initialPersistentFullscreenMode= */ true);
+
+        long fakeKeyEvent = 789L;
+        when(mExclusiveAccessManagerJni.preHandleKeyboardEvent(nativePtr, fakeKeyEvent))
+                .thenReturn(true);
+
+        // Simulate Esc exiting nested tab fullscreen while browser fullscreen remains active.
+        when(mExclusiveAccessManagerJni.hasExclusiveAccess(nativePtr)).thenReturn(true);
+        assertTrue(manager.preHandleKeyboardEvent(fakeKeyEvent));
+        assertTrue(
+                "Exclusive access state should remain true when Esc only exits nested tab"
+                        + " fullscreen.",
+                manager.getExclusiveAccessStateSupplier().get());
+
+        // Simulate Esc exiting browser fullscreen so no exclusive access remains.
+        when(mExclusiveAccessManagerJni.hasExclusiveAccess(nativePtr)).thenReturn(false);
+        assertTrue(manager.preHandleKeyboardEvent(fakeKeyEvent));
+        assertFalse(
+                "Exclusive access state should become false when Esc exits the last exclusive"
+                        + " access mode.",
+                manager.getExclusiveAccessStateSupplier().get());
+
+        manager.destroy();
+    }
+
+    @Test
+    public void testOnDesktopWindowingModeChanged_exitsAllExclusiveAccess() {
+        JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr =
+                JniUniquePtr.createForTesting(456L);
+        ExclusiveAccessManager manager =
+                createInitializedExclusiveAccessManager(
+                        nativePtr, /* initialPersistentFullscreenMode= */ true);
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
+
+        manager.onDesktopWindowingModeChanged(/* isInDesktopWindow= */ true);
+
+        verify(
+                        mExclusiveAccessManagerJni,
+                        description(
+                                "Should exit all exclusive access layers when entering desktop"
+                                        + " windowing mode."))
+                .exitAllExclusiveAccess(nativePtr);
+        assertFalse(
+                "Exclusive access state should become false when entering desktop windowing mode.",
+                manager.getExclusiveAccessStateSupplier().get());
+
+        manager.destroy();
+    }
+
+    @Test
+    public void testFullscreenManagerDelegateOnExitFullscreenNull_exitsAllExclusiveAccess() {
+        JniUniquePtr<NativeExclusiveAccessManagerAndroid> nativePtr =
+                JniUniquePtr.createForTesting(456L);
+        ExclusiveAccessManager manager =
+                createInitializedExclusiveAccessManager(
+                        nativePtr, /* initialPersistentFullscreenMode= */ true);
+
+        ArgumentCaptor<FullscreenManagerDelegate> delegateCaptor =
+                ArgumentCaptor.forClass(FullscreenManagerDelegate.class);
+        verify(mFullscreenManager).setFullscreenManagerDelegate(delegateCaptor.capture());
+
+        // Simulate a screen lock to tear down all fullscreen.
+        delegateCaptor.getValue().onExitFullscreen(/* tab= */ null);
+
+        verify(
+                        mExclusiveAccessManagerJni,
+                        description(
+                                "Should exit all exclusive access layers when"
+                                        + " onExitFullscreen(null) is called."))
+                .exitAllExclusiveAccess(nativePtr);
+        assertFalse(
+                "Exclusive access state should become false when onExitFullscreen(null) is"
+                        + " called.",
+                manager.getExclusiveAccessStateSupplier().get());
+
         manager.destroy();
     }
 }
