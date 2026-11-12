@@ -49,6 +49,11 @@ ResultExpr XrProcessPolicy::EvaluateSyscall(int system_call_number) const {
     case __NR_get_robust_list:
 #endif
       return Allow();
+    // The NVIDIA driver queries the SCHED_RR priority range when creating
+    // worker threads.
+    case __NR_sched_get_priority_max:
+    case __NR_sched_get_priority_min:
+      return Allow();
 #if defined(__NR_kill)
     case __NR_kill: {
       // SteamVR probes its sibling processes for liveness with kill(pid, 0).

@@ -5,17 +5,79 @@
 #include "content/services/isolated_xr_device/xr_sandbox_hook_linux.h"
 
 #include <dlfcn.h>
+#include <fcntl.h>
 #include <gnu/libc-version.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace vr {
+
+TEST(XrSandboxHookLinuxTest, NixOsDriverProfilePermissions) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+  const auto profile = temp.GetPath().Append("run/opengl-driver");
+  const auto profile_store = temp.GetPath().Append("nix/store/profile");
+  const auto package = temp.GetPath().Append("nix/store/driver");
+  const auto library = package.Append("lib/libGLX_nvidia.so.1");
+  const auto manifest = package.Append("share/vulkan/icd.d/nvidia_icd.json");
+  ASSERT_TRUE(base::CreateDirectory(library.DirName()));
+  ASSERT_TRUE(base::CreateDirectory(manifest.DirName()));
+  ASSERT_TRUE(base::WriteFile(library, ""));
+  ASSERT_TRUE(base::WriteFile(manifest, "{}"));
+  ASSERT_TRUE(base::CreateDirectory(profile.DirName()));
+  ASSERT_TRUE(base::CreateDirectory(profile_store));
+  ASSERT_TRUE(base::CreateSymbolicLink(profile_store, profile));
+  ASSERT_TRUE(
+      base::CreateSymbolicLink(package.Append("lib"), profile.Append("lib")));
+  ASSERT_TRUE(base::CreateSymbolicLink(package.Append("share"),
+                                       profile.Append("share")));
+
+  const auto permissions = GetNixOsDriverFilePermissions(profile);
+  auto allows_open = [&permissions](const base::FilePath& path, int flags) {
+    return std::ranges::any_of(permissions, [&](const auto& permission) {
+      return permission.CheckOpen(path.value().c_str(), flags).first != nullptr;
+    });
+  };
+  EXPECT_TRUE(allows_open(profile.Append("lib/libGLX_nvidia.so.1"), O_RDONLY));
+  EXPECT_TRUE(allows_open(library, O_RDONLY));
+  EXPECT_TRUE(allows_open(manifest, O_RDONLY));
+  EXPECT_TRUE(allows_open(profile_store, O_RDONLY));
+  EXPECT_TRUE(allows_open(package, O_RDONLY));
+  EXPECT_FALSE(allows_open(library, O_RDWR));
+  EXPECT_FALSE(
+      allows_open(temp.GetPath().Append("nix/store/other/secret"), O_RDONLY));
+}
+
+TEST(XrSandboxHookLinuxTest, MissingNixOsDriverProfile) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+  EXPECT_TRUE(
+      GetNixOsDriverFilePermissions(temp.GetPath().Append("missing")).empty());
+}
+
+TEST(XrSandboxHookLinuxTest, NvidiaDriverPermissions) {
+  const auto permissions = GetNvidiaDriverFilePermissions();
+  auto allows_open = [&permissions](const char* path, int flags) {
+    return std::ranges::any_of(permissions, [&](const auto& permission) {
+      return permission.CheckOpen(path, flags).first != nullptr;
+    });
+  };
+  EXPECT_TRUE(allows_open("/sys/class/drm", O_RDONLY | O_DIRECTORY));
+  EXPECT_TRUE(allows_open("/dev/nvidiactl", O_RDWR));
+  EXPECT_TRUE(allows_open("/dev/nvidia0", O_RDWR));
+  EXPECT_TRUE(allows_open("/dev/nvidia-modeset", O_RDWR));
+  EXPECT_TRUE(allows_open("/proc/driver/nvidia/params", O_RDONLY));
+  EXPECT_FALSE(allows_open("/proc/driver/nvidia/params", O_WRONLY));
+  EXPECT_FALSE(allows_open("/dev/nvidia1", O_RDWR));
+}
 
 TEST(XrSandboxHookLinuxTest, ParseManifest) {
   std::optional<XrRuntimeManifest> manifest = ParseXrRuntimeManifest(R"({

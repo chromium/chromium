@@ -9,13 +9,16 @@
 #include <unistd.h>
 
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -64,6 +67,8 @@ constexpr const char* kLibrarySearchDirs[] = {
     "/lib",
     "/usr/local/lib",
 };
+
+constexpr char kNixOsDriverDir[] = "/run/opengl-driver";
 
 // Flatpak runtimes ship the GPU drivers, with their Vulkan ICD and layer
 // manifests, in the GL extension mounted here, and the runtime's Vulkan
@@ -381,6 +386,11 @@ std::vector<BrokerFilePermission> GetOpenXrFilePermissions(
   }
 #endif
 
+  auto nixos_permissions =
+      GetNixOsDriverFilePermissions(base::FilePath(kNixOsDriverDir));
+  permissions.insert(permissions.end(), nixos_permissions.begin(),
+                     nixos_permissions.end());
+
   // The runtime creates its own Vulkan instance here, so it needs the same GPU
   // access the GPU process has: the DRM nodes (read-write) plus the sysfs
   // entries the driver reads while enumerating physical devices.
@@ -395,6 +405,10 @@ std::vector<BrokerFilePermission> GetOpenXrFilePermissions(
   add_dir("/sys/class/drm");
   add_dir("/sys/devices");
   add_dir("/sys/bus/pci/devices");
+
+  auto nvidia_permissions = GetNvidiaDriverFilePermissions();
+  permissions.insert(permissions.end(), nvidia_permissions.begin(),
+                     nvidia_permissions.end());
 
   AddRuntimeSocketPermissions(permissions);
 
@@ -417,7 +431,78 @@ void PrewarmGraphicsLibraries(const std::string& runtime_library_path) {
   }
 }
 
+// Load dependencies from /nix/store before enabling seccomp.
+void PrewarmNixOsDriverLibraries() {
+  if (!base::DirectoryExists(base::FilePath(kNixOsDriverDir))) {
+    return;
+  }
+  constexpr int kFlags = RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE;
+  for (const char* soname : kRuntimeLoadedSonames) {
+    if (!dlopen(soname, kFlags | RTLD_NOLOAD)) {
+      dlopen(base::StringPrintf("%s/lib/%s", kNixOsDriverDir, soname).c_str(),
+             kFlags);
+    }
+  }
+}
+
 }  // namespace
+
+std::vector<BrokerFilePermission> GetNixOsDriverFilePermissions(
+    const base::FilePath& driver_dir) {
+  std::vector<BrokerFilePermission> permissions;
+  if (!driver_dir.IsAbsolute() || driver_dir.ReferencesParent() ||
+      !base::DirectoryExists(driver_dir)) {
+    return permissions;
+  }
+
+  // ICDs can name /nix/store libraries directly.
+  std::set<base::FilePath> directories{driver_dir};
+  base::FilePath resolved_profile = base::MakeAbsoluteFilePath(driver_dir);
+  if (!resolved_profile.empty()) {
+    directories.insert(resolved_profile);
+  }
+  base::FileEnumerator files(
+      driver_dir, true, base::FileEnumerator::FILES,
+      base::FilePath::StringType(),
+      base::FileEnumerator::FolderSearchPolicy::ALL,
+      base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
+  for (base::FilePath file = files.Next(); !file.empty(); file = files.Next()) {
+    base::FilePath resolved = base::MakeAbsoluteFilePath(file);
+    if (resolved.empty()) {
+      LOG(ERROR) << "Cannot resolve graphics driver file: " << file;
+      continue;
+    }
+    directories.insert(resolved.DirName());
+  }
+  if (files.GetError() != base::File::FILE_OK) {
+    LOG(ERROR) << "Cannot enumerate graphics driver profile: " << driver_dir
+               << ": " << base::File::ErrorToString(files.GetError());
+  }
+  std::set<base::FilePath> ancestors;
+  for (const auto& dir : directories) {
+    permissions.push_back(BrokerFilePermission::ReadOnlyRecursive(
+        dir.AsEndingWithSeparator().value()));
+    for (base::FilePath parent = dir; parent.value() != "/";
+         parent = parent.DirName()) {
+      ancestors.insert(parent);
+    }
+  }
+  for (const auto& dir : ancestors) {
+    permissions.push_back(BrokerFilePermission::ReadOnly(dir.value()));
+  }
+  return permissions;
+}
+
+std::vector<BrokerFilePermission> GetNvidiaDriverFilePermissions() {
+  // SteamVR lists DRM devices when it cannot match a GPU by UUID.
+  return {
+      BrokerFilePermission::ReadOnly("/sys/class/drm"),
+      BrokerFilePermission::ReadWrite("/dev/nvidiactl"),
+      BrokerFilePermission::ReadWrite("/dev/nvidia0"),
+      BrokerFilePermission::ReadWrite("/dev/nvidia-modeset"),
+      BrokerFilePermission::ReadOnly("/proc/driver/nvidia/params"),
+  };
+}
 
 std::optional<XrRuntimeManifest> ParseXrRuntimeManifest(std::string_view json) {
   std::optional<base::DictValue> root =
@@ -489,6 +574,7 @@ bool XrPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   // Pre-warm the runtime + graphics driver closure now that the broker has
   // forked, so the recursive system-library grants are unnecessary.
   PrewarmGraphicsLibraries(runtime_library_path);
+  PrewarmNixOsDriverLibraries();
   if (manifest) {
     AliasRuntimeLibraryForLoader(manifest_path, manifest->library_path);
   }
