@@ -62,6 +62,9 @@ class TtcBackend {
     virtual void OnUserTurnStateUpdate(UserTurnStateUpdate update) = 0;
     virtual void OnToolCall(const ToolRequest& tool_request,
                             ToolResponseCallback response_callback) = 0;
+    // Called with tool calls that the backend sent together. `tool_calls` is
+    // never empty.
+    virtual void OnToolCallBatch(std::vector<PendingToolCall> tool_calls) = 0;
     virtual void OnJournalEvent(const ServerJournalEvent& journal_event) = 0;
   };
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -90,6 +91,7 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void OnUserTurnStateUpdate(UserTurnStateUpdate update) override;
   void OnToolCall(const ToolRequest& tool_request,
                   ToolResponseCallback response_callback) override;
+  void OnToolCallBatch(std::vector<PendingToolCall> tool_calls) override;
   void OnJournalEvent(const ServerJournalEvent& journal_event) override;
 
   void DidChangePage(const GURL& url,

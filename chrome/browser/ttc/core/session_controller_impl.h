@@ -67,6 +67,7 @@ class SessionControllerImpl : public SessionController,
   void SetSessionId(const std::string& session_id) override;
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback tool_response_callback) override;
+  void ProcessToolCallBatch(std::vector<PendingToolCall> tool_calls) override;
   std::vector<ToolDefinition> GetToolDefinitions() override;
   void UserAudioLevelUpdate(float audio_level) override;
   void OnMicCaptureChanged(bool capturing) override;
@@ -112,6 +113,11 @@ class SessionControllerImpl : public SessionController,
   void OnPageContextFetched(const PageContextResult& result);
   void OnInactivityTimeout();
   void OnLockedOrSuspended(LockOrSuspendDetector::Reason reason);
+
+  // Notifies observers of the tool call completion and returns the response to
+  // forward it to the chained callback.
+  ToolResponse NotifyToolExecutionCompleted(const ToolRequest& tool_request,
+                                            ToolResponse response);
 
   // Passes the transcripts of the current exchange on to observers.
   void NotifyTranscriptsUpdated();

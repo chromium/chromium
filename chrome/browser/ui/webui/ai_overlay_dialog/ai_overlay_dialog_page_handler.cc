@@ -1127,6 +1127,13 @@ void AiOverlayDialogPageHandler::OnToolCall(
   send_error(base::StrCat({"Unknown tool: ", name}));
 }
 
+void AiOverlayDialogPageHandler::OnToolCallBatch(
+    std::vector<PendingToolCall> tool_calls) {
+  for (PendingToolCall& tool_call : tool_calls) {
+    OnToolCall(tool_call.request, std::move(tool_call.callback));
+  }
+}
+
 void AiOverlayDialogPageHandler::OnJournalEvent(
     const ServerJournalEvent& journal_event) {}
 

@@ -92,6 +92,7 @@ class ConversationImpl : public Conversation,
   void OnUserTurnStateUpdate(UserTurnStateUpdate update) override;
   void OnToolCall(const ToolRequest& tool_request,
                   ToolResponseCallback response_callback) override;
+  void OnToolCallBatch(std::vector<PendingToolCall> tool_calls) override;
   void OnJournalEvent(const ServerJournalEvent& journal_event) override;
 
   AudioController* audio_controller() { return audio_controller_.get(); }

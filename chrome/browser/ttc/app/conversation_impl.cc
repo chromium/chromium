@@ -208,6 +208,11 @@ void ConversationImpl::OnToolCall(const ToolRequest& tool_request,
                                        std::move(response_callback));
 }
 
+void ConversationImpl::OnToolCallBatch(
+    std::vector<PendingToolCall> tool_calls) {
+  session_controller_->ProcessToolCallBatch(std::move(tool_calls));
+}
+
 void ConversationImpl::OnJournalEvent(const ServerJournalEvent& journal_event) {
   session_controller_->GetJournal().HandleServerJournalEvent(journal_event);
 }

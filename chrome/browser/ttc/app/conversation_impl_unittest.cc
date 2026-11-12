@@ -79,6 +79,11 @@ class FakeSessionController : public SessionController {
     last_request_.arguments = tool_request.arguments.Clone();
     std::move(tool_response).Run(ToolResponse::Success());
   }
+  void ProcessToolCallBatch(std::vector<PendingToolCall> tool_calls) override {
+    for (PendingToolCall& tool_call : tool_calls) {
+      ProcessToolCall(tool_call.request, std::move(tool_call.callback));
+    }
+  }
   std::vector<ToolDefinition> GetToolDefinitions() override {
     std::vector<ToolDefinition> tools;
     for (const ToolDefinition& tool : tools_) {

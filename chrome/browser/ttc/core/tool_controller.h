@@ -52,23 +52,24 @@ class ToolController {
   void ProcessToolCall(const ToolRequest& tool_request,
                        ToolResponseCallback callback);
 
+  // Queues the calls in `tool_calls` to run in order, like consecutive
+  // `ProcessToolCall()` calls. If any tool call is still running or queued, the
+  // whole batch is rejected instead: each call is answered with a
+  // `kExecutorBusy` error without being run. `tool_calls` must not be empty.
+  void ProcessToolCallBatch(std::vector<PendingToolCall> tool_calls);
+
   // Returns the definitions of the tools this controller can execute, for
   // registration with the model backend.
   std::vector<ToolDefinition> GetToolDefinitions();
 
  private:
-  // A tool call that's running or waiting for earlier tool calls to finish.
-  struct ToolCallState {
-    ToolCallState(ToolRequest request, ToolResponseCallback callback);
-    ToolCallState(ToolCallState&&);
-    ToolCallState& operator=(ToolCallState&&);
-    ~ToolCallState();
-
-    ToolRequest request;
-    ToolResponseCallback callback;
-  };
-
   Profile* GetProfile();
+
+  // Whether no tool call is running or queued.
+  bool IsIdle() const;
+
+  // Adds `tool_call` to the back of `pending_tool_calls_`, without running it.
+  void EnqueueToolCall(PendingToolCall tool_call);
 
   // Moves the tool call at the front of `pending_tool_calls_`, which must not
   // be empty, into `in_flight_tool_call_` and runs it. No call may be in
@@ -82,7 +83,7 @@ class ToolController {
 
   // Called when the in-flight tool call finishes. Clears
   // `in_flight_tool_call_`, schedules the next queued tool call, if any, and
-  // replies to the finished call with `response`. Replying may destroy `this`.
+  // replies to the finished call with `response`.
   void OnToolCallDone(ToolResponse response);
 
   // Tool implementations. Please keep sorted, with a tool's completion
@@ -155,12 +156,12 @@ class ToolController {
   const raw_ref<SessionControllerImpl> session_controller_;
 
   // The tool call that's currently running, if any.
-  std::optional<ToolCallState> in_flight_tool_call_;
+  std::optional<PendingToolCall> in_flight_tool_call_;
 
   // Tool calls waiting to run, in the order they were received. If this is
   // non-empty and no call is in flight, the front call is about to run from a
   // posted task.
-  base::circular_deque<ToolCallState> pending_tool_calls_;
+  base::circular_deque<PendingToolCall> pending_tool_calls_;
 
   std::unique_ptr<page_content_annotations::PageContextFetcher>
       screenshot_fetcher_;

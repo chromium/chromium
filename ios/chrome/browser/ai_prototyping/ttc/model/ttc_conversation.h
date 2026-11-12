@@ -150,6 +150,7 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   void OnUserTurnStateUpdate(ttc::UserTurnStateUpdate update) override;
   void OnToolCall(const ttc::ToolRequest& tool_request,
                   ttc::ToolResponseCallback response_callback) override;
+  void OnToolCallBatch(std::vector<ttc::PendingToolCall> tool_calls) override;
   void OnJournalEvent(const ttc::ServerJournalEvent& journal_event) override;
 
  private:

@@ -68,6 +68,13 @@ class FakeObserver : public TtcBackend::Observer {
     last_tool_call_id_ = tool_request.call_id;
     tool_response_callback_ = std::move(response_callback);
   }
+  void OnToolCallBatch(std::vector<PendingToolCall> tool_calls) override {
+    std::vector<std::string>& batch = tool_call_batches_.emplace_back();
+    for (PendingToolCall& tool_call : tool_calls) {
+      batch.push_back(tool_call.request.call_id);
+      batched_tool_response_callbacks_.push_back(std::move(tool_call.callback));
+    }
+  }
   void OnJournalEvent(const ServerJournalEvent& journal_event) override {}
 
   int audio_output_count() const { return audio_output_count_; }
@@ -75,8 +82,17 @@ class FakeObserver : public TtcBackend::Observer {
   int64_t last_sequence_number() const { return last_sequence_number_; }
   std::optional<ErrorCode> last_error() const { return last_error_; }
   const std::string& last_tool_call_id() const { return last_tool_call_id_; }
+  // The call IDs of each batch passed to `OnToolCallBatch()`.
+  const std::vector<std::vector<std::string>>& tool_call_batches() const {
+    return tool_call_batches_;
+  }
   ToolResponseCallback TakeToolResponseCallback() {
     return std::move(tool_response_callback_);
+  }
+  // Returns the callback of the `index`th call passed to `OnToolCallBatch()`,
+  // counting across batches.
+  ToolResponseCallback TakeBatchedToolResponseCallback(size_t index) {
+    return std::move(batched_tool_response_callbacks_.at(index));
   }
   const std::vector<std::pair<ModelTurnStateUpdate, int64_t>>&
   model_turn_state_updates() const {
@@ -88,6 +104,8 @@ class FakeObserver : public TtcBackend::Observer {
 
  private:
   std::string last_tool_call_id_;
+  std::vector<std::vector<std::string>> tool_call_batches_;
+  std::vector<ToolResponseCallback> batched_tool_response_callbacks_;
   ToolResponseCallback tool_response_callback_;
   int audio_output_count_ = 0;
   std::vector<int16_t> last_samples_;
@@ -639,6 +657,62 @@ TEST_F(TtcMesClientTest, ToolResponseAfterCloseIsOnlyReportedAsDropped) {
   EXPECT_THAT(debug_sink_.tool_events,
               testing::ElementsAre("received:call-3:navigate:{}"));
   EXPECT_EQ(debug_sink_.dropped, 1);
+}
+
+optimization_guide::proto::TtcServerFrame MakeToolCallBatchFrame(
+    const std::vector<std::pair<std::string, std::string>>&
+        call_ids_and_arguments) {
+  optimization_guide::proto::TtcServerFrame frame;
+  auto* batch = frame.mutable_tool_call_batch();
+  for (const auto& [call_id, arguments_json] : call_ids_and_arguments) {
+    auto* tool_call = batch->add_tool_calls();
+    tool_call->set_name("navigate");
+    tool_call->set_call_id(call_id);
+    tool_call->set_arguments_json(arguments_json);
+  }
+  return frame;
+}
+
+// The calls in a batch are passed on together; running them is up to the
+// observer.
+TEST_F(TtcMesClientTest, ToolCallBatchIsPassedOnTogether) {
+  client().HandleServerFrame(MakeToolCallFrame("call-x", "{}"));
+  client().HandleServerFrame(
+      MakeToolCallBatchFrame({{"call-a", "{}"}, {"call-b", "{}"}}));
+  client().HandleServerFrame(MakeToolCallBatchFrame({{"call-c", "{}"}}));
+
+  EXPECT_THAT(observer_.tool_call_batches(),
+              testing::ElementsAre(testing::ElementsAre("call-a", "call-b"),
+                                   testing::ElementsAre("call-c")));
+  EXPECT_EQ(observer_.last_tool_call_id(), "call-x");
+  EXPECT_THAT(debug_sink_.tool_events,
+              testing::ElementsAre("received:call-x:navigate:{}",
+                                   "received:call-a:navigate:{}",
+                                   "received:call-b:navigate:{}",
+                                   "received:call-c:navigate:{}"));
+
+  // Each call in a batch is answered with its own call ID.
+  observer_.TakeBatchedToolResponseCallback(1).Run(ToolResponse::Success());
+  EXPECT_EQ(debug_sink_.tool_events.back(), "response:call-b");
+  observer_.TakeBatchedToolResponseCallback(0).Run(ToolResponse::Success());
+  EXPECT_EQ(debug_sink_.tool_events.back(), "response:call-a");
+}
+
+// A call in a batch with unparsable arguments is answered with an error and
+// left out; the rest of the batch is still passed on.
+TEST_F(TtcMesClientTest, ToolCallBatchAnswersInvalidJsonCall) {
+  client().HandleServerFrame(MakeToolCallBatchFrame(
+      {{"call-a", "{}"}, {"call-b", "{not json"}, {"call-c", "{}"}}));
+
+  EXPECT_THAT(observer_.tool_call_batches(),
+              testing::ElementsAre(testing::ElementsAre("call-a", "call-c")));
+  EXPECT_THAT(
+      debug_sink_.tool_events,
+      testing::ElementsAre("received:call-a:navigate:{}",
+                           "received:call-b:navigate:{not json",
+                           "received:call-c:navigate:{}", "response:call-b"));
+  EXPECT_THAT(debug_sink_.last_response_json,
+              testing::HasSubstr("Invalid JSON"));
 }
 
 TEST_F(TtcMesClientTest, DebugSinkGetsServerErrorDetails) {

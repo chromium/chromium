@@ -164,23 +164,26 @@ Profile* SessionControllerImpl::GetProfile() {
 void SessionControllerImpl::ProcessToolCall(
     const ToolRequest& tool_request,
     ToolResponseCallback tool_response_callback) {
-  std::string tool_name = tool_request.name;
-  base::DictValue tool_arguments = tool_request.arguments.Clone();
   tool_controller_.ProcessToolCall(
       tool_request,
-      base::BindOnce(
-          [](base::WeakPtr<SessionControllerImpl> self, std::string name,
-             base::DictValue args, ToolResponseCallback cb,
-             ToolResponse response) {
-            if (self) {
-              for (SessionController::Observer& observer : self->observers_) {
-                observer.OnToolExecutionCompleted(name, args, response.Ok());
-              }
-            }
-            std::move(cb).Run(std::move(response));
-          },
-          weak_ptr_factory_.GetWeakPtr(), std::move(tool_name),
-          std::move(tool_arguments), std::move(tool_response_callback)));
+      // Unretained is safe: `tool_controller_` is owned by `this` and only runs
+      // the callback while it's alive.
+      base::BindOnce(&SessionControllerImpl::NotifyToolExecutionCompleted,
+                     base::Unretained(this), tool_request.Clone())
+          .Then(std::move(tool_response_callback)));
+}
+
+void SessionControllerImpl::ProcessToolCallBatch(
+    std::vector<PendingToolCall> tool_calls) {
+  for (PendingToolCall& tool_call : tool_calls) {
+    // Unretained is safe: `tool_controller_` is owned by `this` and only runs
+    // the callback while it's alive.
+    tool_call.callback =
+        base::BindOnce(&SessionControllerImpl::NotifyToolExecutionCompleted,
+                       base::Unretained(this), tool_call.request.Clone())
+            .Then(std::move(tool_call.callback));
+  }
+  tool_controller_.ProcessToolCallBatch(std::move(tool_calls));
 }
 
 std::vector<ToolDefinition> SessionControllerImpl::GetToolDefinitions() {
@@ -281,6 +284,16 @@ void SessionControllerImpl::OnModelAudioEnvelopeReady(
   for (SessionController::Observer& observer : observers_) {
     observer.OnModelAudioEnvelopeReady(envelope);
   }
+}
+
+ToolResponse SessionControllerImpl::NotifyToolExecutionCompleted(
+    const ToolRequest& tool_request,
+    ToolResponse response) {
+  for (SessionController::Observer& observer : observers_) {
+    observer.OnToolExecutionCompleted(tool_request.name, tool_request.arguments,
+                                      response.Ok());
+  }
+  return response;
 }
 
 void SessionControllerImpl::NotifyTranscriptsUpdated() {

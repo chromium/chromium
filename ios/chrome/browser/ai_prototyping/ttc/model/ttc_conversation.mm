@@ -419,6 +419,14 @@ void TtcConversation::OnToolCall(const ttc::ToolRequest& tool_request,
   }
 }
 
+void TtcConversation::OnToolCallBatch(
+    std::vector<ttc::PendingToolCall> tool_calls) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (ttc::PendingToolCall& tool_call : tool_calls) {
+    OnToolCall(tool_call.request, std::move(tool_call.callback));
+  }
+}
+
 void TtcConversation::OnJournalEvent(
     const ttc::ServerJournalEvent& journal_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -12,7 +12,7 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/actor/public/mojom/actor_types.mojom-shared.h"
 
@@ -110,8 +110,8 @@ class ToolResponse {
   // corresponding actor error code. `message` must not be empty.
   static ToolResponse Error(std::string message);
 
-  ToolResponse(ToolResponse&&);
-  ToolResponse& operator=(ToolResponse&&);
+  ToolResponse(ToolResponse&&) noexcept;
+  ToolResponse& operator=(ToolResponse&&) noexcept;
   ~ToolResponse();
 
   ToolResponse(const ToolResponse&) = delete;
@@ -142,6 +142,17 @@ class ToolResponse {
 };
 
 using ToolResponseCallback = base::OnceCallback<void(ToolResponse)>;
+
+// A tool call to run, with the callback that receives its result.
+struct PendingToolCall {
+  PendingToolCall(ToolRequest request, ToolResponseCallback callback);
+  PendingToolCall(PendingToolCall&&) noexcept;
+  PendingToolCall& operator=(PendingToolCall&&) noexcept;
+  ~PendingToolCall();
+
+  ToolRequest request;
+  ToolResponseCallback callback;
+};
 
 }  // namespace ttc
 

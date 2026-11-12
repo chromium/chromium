@@ -30,6 +30,14 @@ ToolRequest ToolRequest::Clone() const {
       .name = name, .arguments = arguments.Clone(), .call_id = call_id};
 }
 
+PendingToolCall::PendingToolCall(ToolRequest request,
+                                 ToolResponseCallback callback)
+    : request(std::move(request)), callback(std::move(callback)) {}
+PendingToolCall::PendingToolCall(PendingToolCall&&) noexcept = default;
+PendingToolCall& PendingToolCall::operator=(PendingToolCall&&) noexcept =
+    default;
+PendingToolCall::~PendingToolCall() = default;
+
 ToolResponse::ToolResponse(std::variant<base::DictValue, ToolError> value,
                            std::optional<VisualContent> visual_content)
     : value_(std::move(value)), visual_content_(std::move(visual_content)) {
@@ -40,8 +48,8 @@ ToolResponse::ToolResponse(std::variant<base::DictValue, ToolError> value,
   }
 }
 
-ToolResponse::ToolResponse(ToolResponse&&) = default;
-ToolResponse& ToolResponse::operator=(ToolResponse&&) = default;
+ToolResponse::ToolResponse(ToolResponse&&) noexcept = default;
+ToolResponse& ToolResponse::operator=(ToolResponse&&) noexcept = default;
 ToolResponse::~ToolResponse() = default;
 
 // static

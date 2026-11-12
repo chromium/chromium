@@ -9,6 +9,7 @@
 
 #import <memory>
 #import <string>
+#import <vector>
 
 #import "base/containers/span.h"
 #import "base/test/task_environment.h"
@@ -73,6 +74,10 @@ class MockTtcBackendObserver : public ttc::TtcBackend::Observer {
   MOCK_METHOD(void,
               OnToolCall,
               (const ttc::ToolRequest&, ttc::ToolResponseCallback),
+              (override));
+  MOCK_METHOD(void,
+              OnToolCallBatch,
+              (std::vector<ttc::PendingToolCall>),
               (override));
   MOCK_METHOD(void,
               OnJournalEvent,

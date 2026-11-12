@@ -84,6 +84,13 @@ class TtcMesClient
       optimization_guide::OptimizationGuideModelStreamingResult result);
   void OnSetupTimeout();
   void HandleToolCall(const optimization_guide::proto::ToolCall& tool_call);
+  // Passes the calls in `batch` to the observer together. Calls that can't be
+  // converted are answered with an error and left out.
+  void HandleToolCallBatch(
+      const optimization_guide::proto::ToolCallBatch& batch);
+  // Returns a callback that sends the result of `tool_call` to the server.
+  ToolResponseCallback MakeToolResponseCallback(
+      const optimization_guide::proto::ToolCall& tool_call);
   void OnToolExecutionComplete(const std::string& call_id,
                                const std::string& tool_name,
                                ToolResponse response);

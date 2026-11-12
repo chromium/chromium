@@ -155,43 +155,60 @@ std::optional<actor::ScrollPageToolRequest::Direction> ParseScrollDirection(
 
 }  // namespace
 
-ToolController::ToolCallState::ToolCallState(ToolRequest request,
-                                             ToolResponseCallback callback)
-    : request(std::move(request)), callback(std::move(callback)) {}
-
-ToolController::ToolCallState::ToolCallState(ToolCallState&&) = default;
-
-ToolController::ToolCallState& ToolController::ToolCallState::operator=(
-    ToolCallState&&) = default;
-
-ToolController::ToolCallState::~ToolCallState() = default;
-
 ToolController::ToolController(SessionControllerImpl& session_controller)
     : session_controller_(session_controller) {}
 
 ToolController::~ToolController() = default;
+
+bool ToolController::IsIdle() const {
+  return !in_flight_tool_call_ && pending_tool_calls_.empty();
+}
 
 // The actor only runs one action at a time per task, so tool calls are run one
 // at a time in the order they're received: if a tool call is already
 // running, `tool_request` is queued until all earlier calls have finished.
 void ToolController::ProcessToolCall(const ToolRequest& tool_request,
                                      ToolResponseCallback callback) {
-  const bool must_wait =
-      in_flight_tool_call_.has_value() || !pending_tool_calls_.empty();
-  if (must_wait) {
+  if (IsIdle()) {
+    pending_tool_calls_.emplace_back(tool_request.Clone(), std::move(callback));
+    RunNextToolCall();
+    return;
+  }
+  EnqueueToolCall(PendingToolCall(tool_request.Clone(), std::move(callback)));
+}
+
+void ToolController::ProcessToolCallBatch(
+    std::vector<PendingToolCall> tool_calls) {
+  CHECK(!tool_calls.empty());
+  if (!IsIdle()) {
     session_controller_->GetJournal().Log(
-        "TtcToolCallQueued",
-        actor::JournalDetailsBuilder()
-            .Add("name", tool_request.name)
-            .Add("arguments",
-                 base::WriteJson(tool_request.arguments).value_or(""))
-            .Build());
+        "TtcToolCallBatchRejected",
+        actor::JournalDetailsBuilder().Add("size", tool_calls.size()).Build());
+    for (PendingToolCall& tool_call : tool_calls) {
+      std::move(tool_call.callback)
+          .Run(ToolResponse::Error(
+              actor::mojom::ActionResultCode::kExecutorBusy));
+    }
+    return;
   }
 
-  pending_tool_calls_.emplace_back(tool_request.Clone(), std::move(callback));
-  if (!must_wait) {
-    RunNextToolCall();
+  for (PendingToolCall& tool_call : tool_calls) {
+    EnqueueToolCall(std::move(tool_call));
   }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ToolController::RunNextToolCall,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void ToolController::EnqueueToolCall(PendingToolCall tool_call) {
+  session_controller_->GetJournal().Log(
+      "TtcToolCallQueued",
+      actor::JournalDetailsBuilder()
+          .Add("name", tool_call.request.name)
+          .Add("arguments",
+               base::WriteJson(tool_call.request.arguments).value_or(""))
+          .Build());
+  pending_tool_calls_.push_back(std::move(tool_call));
 }
 
 void ToolController::RunNextToolCall() {
@@ -206,7 +223,7 @@ void ToolController::RunNextToolCall() {
 
 void ToolController::OnToolCallDone(ToolResponse response) {
   CHECK(in_flight_tool_call_);
-  ToolCallState tool_call = std::move(*in_flight_tool_call_);
+  PendingToolCall tool_call = std::move(*in_flight_tool_call_);
   in_flight_tool_call_.reset();
 
   // Start the next tool call asynchronously rather than from within the
@@ -219,7 +236,6 @@ void ToolController::OnToolCallDone(ToolResponse response) {
                                   weak_factory_.GetWeakPtr()));
   }
 
-  // Replying may end the session and destroy `this`, so do it last.
   std::move(tool_call.callback).Run(std::move(response));
 }
 
