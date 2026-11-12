@@ -2380,8 +2380,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   // Closing all browsers ensures that the browser process is shutting down.
   CloseAllBrowsers();
 
-  utils::RunFunctionAndReturnError(func.get(), "[{\"interactive\": true}]",
-                                   profile());
+  std::string error = utils::RunFunctionAndReturnError(
+      func.get(), "[{\"interactive\": true}]", profile());
+  EXPECT_EQ(std::string(errors::kPageLoadFailure), error);
   // Check that the remote consent dialog is shown to ensure that the remote
   // consent flow fails.
   EXPECT_TRUE(func->scope_ui_shown());
