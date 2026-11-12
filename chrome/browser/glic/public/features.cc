@@ -302,9 +302,10 @@ BASE_FEATURE(kGlicHotkeyLocalScope,
 #endif
 );
 
-// Enables printing Glic (both Floaty and Side Panel) via the print keyboard
-// shortcut (Ctrl+P / Cmd+P) when focused.
-BASE_FEATURE(kGlicKeyboardPrint, base::FEATURE_DISABLED_BY_DEFAULT);
+// Default-enabled platforms: desktop only (print shortcut not enabled on
+// Android). Enables printing Glic (both Floaty and Side Panel) via the print
+// keyboard shortcut (Ctrl+P / Cmd+P) when focused.
+BASE_FEATURE(kGlicKeyboardPrint, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default-enabled platforms: all (paste eligibility guard for the Glic guest).
 BASE_FEATURE(kGlicPasteEligibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
