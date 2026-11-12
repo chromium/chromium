@@ -3,8 +3,9 @@ id: 2026-09-18-manifest-validating-type
 title: 'Design: Validating Web App Manifest Mojo Type'
 project: components/webapps
 author: dmurph@chromium.org, AI Assistant
-status: proposed
+status: implemented
 date: '2026-09-18'
+completion_date: '2026-11-10'
 bug: crbug.com/485890278
 ---
 
@@ -29,52 +30,51 @@ and sent over
 [blink::mojom::ManifestManager](/third_party/blink/public/mojom/manifest/manifest_manager.mojom)
 to the browser
 ([manifest_manager_host.cc](/content/browser/manifest/manifest_manager_host.cc)).
-In the browser, `blink.mojom.Manifest` is the generated
-`blink::mojom::ManifestPtr`: an open struct with public mutable fields, an
-"empty" default state that is not a real manifest, and no invariants. This
-causes four problems:
+Before this design, `blink.mojom.Manifest` mapped in the browser to the
+generated `blink::mojom::ManifestPtr`: an open struct with public mutable
+fields, an "empty" default state that was not a real manifest, and no
+invariants. This caused four problems:
 
-1. **Invalid manifest states are representable in browser code.** Nothing
-   guarantees that `start_url`, `id`, and `scope` are valid and same-origin, or
-   that handler URLs belong to the app's origin. Code in
+1. **Invalid manifest states were representable in browser code.** Nothing
+   guaranteed that `start_url`, `id`, and `scope` were valid and same-origin, or
+   that handler URLs belonged to the app's origin. Code in
    [components/webapps/](/components/webapps/) and
-   [chrome/browser/web_applications/](/chrome/browser/web_applications/) holds,
-   passes, and mutates manifests freely, and defensively checks for the "empty"
+   [chrome/browser/web_applications/](/chrome/browser/web_applications/) held,
+   passed, and mutated manifests freely, and defensively checked for the "empty"
    sentinel (~20 production `blink::IsEmptyManifest` call sites).
 
 2. **The manual hardening treadmill.** `MaybeGetBadMessageStringForManifest`
-   (~190 lines in `manifest_manager_host.cc`) is the only line of defense. It
-   has grown one CL at a time as gaps were found, over ~8 CLs (e.g.
-   `0b080cee89a1a` start_url / id / scope same-origin, `7cb6a9b01576b` icon URL
-   schemes, `f89efb408bbd1` control characters in file extensions). Because
-   validation is a procedure callers must remember to run, new paths skip it.
-   Two do today:
+   (~190 lines in `manifest_manager_host.cc`) was the only line of defense. It
+   grew one CL at a time as gaps were found, over ~8 CLs (e.g. `0b080cee89a1a`
+   start_url / id / scope same-origin, `7cb6a9b01576b` icon URL schemes,
+   `f89efb408bbd1` control characters in file extensions). Because validation
+   was a procedure callers had to remember to run, two paths skipped it:
 
-   - `RequestManifestDebugInfo` forwards the renderer's manifest to DevTools
+   - `RequestManifestDebugInfo` forwarded the renderer's manifest to DevTools
      with **no** browser-side validation.
-   - `ContentBrowserClient::MaybeOverrideManifest` mutates the manifest
+   - `ContentBrowserClient::MaybeOverrideManifest` mutated the manifest
      **after** validation (policy-provided `name` / `icons` in
      [web_app_policy_manager.cc](/chrome/browser/web_applications/policy/web_app_policy_manager.cc),
      a rewritten `id` in
      [chromeos_web_app_experiments.cc](/chrome/browser/web_applications/chromeos_web_app_experiments.cc)),
-     and the result is never re-checked.
+     and the result was never re-checked.
 
 3. **Inconsistent encapsulation.** `Manifest::LaunchHandler` and
-   `Manifest::DisplayOverride` are encapsulated classes with `StructTraits`.
-   Other sub-types (`ImageResource`, `ShortcutItem`, ...) are typemapped open
+   `Manifest::DisplayOverride` were encapsulated classes with `StructTraits`.
+   Other sub-types (`ImageResource`, `ShortcutItem`, ...) were typemapped open
    structs, and the top-level `Manifest` plus eight sub-types (`FileHandler`,
-   `ProtocolHandler`, `MigrateFrom`, ...) are not typemapped at all.
+   `ProtocolHandler`, `MigrateFrom`, ...) were not typemapped at all.
 
-4. **Testing is expensive.** Every validation rule is tested by injecting bad
+4. **Testing was expensive.** Every validation rule was tested by injecting bad
    messages into a full browser
    ([manifest_browsertest.cc](/content/browser/manifest/manifest_browsertest.cc)),
-   although most rules depend only on the manifest itself.
+   although most rules depended only on the manifest itself.
 
 ### Background
 
-[crbug.com/485890278](https://crbug.com/485890278) proposes typemapping the
+This design ([crbug.com/485890278](https://crbug.com/485890278)) typemaps the
 top-level `blink.mojom.Manifest` to a validating C++ class, following the
-pattern already used for sub-types in
+pattern used for sub-types in
 [manifest.h](/third_party/blink/public/common/manifest/manifest.h). Two facts
 shape the design:
 
@@ -83,13 +83,12 @@ shape the design:
   document URL, `id` = `start_url` without the fragment, `scope` = `id` without
   the filename; `ManifestManager::DefaultManifest()` in
   [manifest_manager.cc](/third_party/blink/renderer/modules/manifest/manifest_manager.cc)).
-  The renderer sends an "empty" value only when there is nothing to evaluate:
-  `kUnexpectedFailure` and `kNoManifestAllowed` (opaque origins, `about:`).
-  Those are errors, not manifests, as
-  `RequestManifestAndErrors => result<Manifest, RequestManifestError>` already
-  models.
-- **Almost every check can be phrased without the document.** Every current
-  check against the document origin runs after establishing
+  Prior to nullable responses, the renderer sent an "empty" value only when
+  there was nothing to evaluate: `kUnexpectedFailure` and `kNoManifestAllowed`
+  (opaque origins, `about:`). Those are errors, not manifests, as
+  `RequestManifestAndErrors => result<Manifest, RequestManifestError>` models.
+- **Almost every check can be phrased without the document.** Every host check
+  against the document origin ran after establishing
   `document_origin.IsSameOriginWith(start_url)`. Given that, comparing a field
   against the document origin is equivalent to comparing it against
   `start_url`'s origin, for every scheme (see the
@@ -117,9 +116,9 @@ shape the design:
 4. **Cover embedder overrides.** `MaybeOverrideManifest` produces a new manifest
    through `Builder`, so overrides (including enterprise-policy customizations)
    satisfy the same invariants.
-5. **Keep today's enforcement exactly.** Same accept/reject behavior for
+5. **Preserve prior enforcement exactly.** Same accept/reject behavior for
    legitimate renderers, and no new renderer-kill conditions. The one path that
-   gains validation, `RequestManifestDebugInfo` (DevTools), carries the same
+   gained validation, `RequestManifestDebugInfo` (DevTools), carries the same
    parser output as `RequestManifest`.
 6. **Fast unit tests.** Intrinsic rules are unit-tested through `Builder` and
    `mojo::test::SerializeAndDeserialize`. Browser tests cover only
@@ -198,7 +197,7 @@ ______________________________________________________________________
 
 #### Intrinsic invariants (manifest only)
 
-Implemented once in blink common (`manifest_invariants.h`) and run by both
+Implemented once in blink common (`manifest_invariants.{h,cc}`) and run by both
 `Read()` and `Builder::Build()`. They are private (`Read()` is a friend), so
 there is no public "validate" method to forget to call. A failure is a
 `ManifestInvariantError`, with one enumerator per sub-check of the rules below
@@ -206,25 +205,25 @@ there is no public "validate" method to forget to call. A failure is a
 keys, the enum is append-only, mirrored in `enums.xml`, and guarded by an
 IfThisThenThat block.
 
-With `O = url::Origin::Create(start_url)`, every current check in
-`MaybeGetBadMessageStringForManifest` maps to a new form that must match today's
-behavior exactly (Goal 5):
+With `O = url::Origin::Create(start_url)`, every check from
+`MaybeGetBadMessageStringForManifest` maps to an intrinsic rule with identical
+accept/reject behavior (Goal 5):
 
-| #   | Today (vs. `document_origin`)                                                                                                          | New intrinsic rule (vs. `start_url` / `O`)                                  |
-| :-- | :------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------- |
-| I1  | non-empty ⇒ `start_url`, `id`, `scope` valid                                                                                           | Always: `start_url`, `id`, `scope` valid (there is no empty state)          |
-| I2  | `start_url` same-origin with document (implies `O` non-opaque)                                                                         | `O` non-opaque (the document comparison moves to C3)                        |
-| I3  | `id`, `scope` same-origin with document                                                                                                | `id`, `scope` same-origin with `O`                                          |
-| I4  | `share_target.action` same-origin with document                                                                                        | same-origin with `O`                                                        |
-| I5  | `file_handlers[i].action` same-origin; MIME valid top-level; extensions non-empty, start with `.`, length > 1, no control/format chars | same, with the origin rule vs. `O`                                          |
-| I6  | `protocol_handlers[i].url` same-origin; scheme valid for level from `IsIsolatedAppScheme(document_origin.scheme())`                    | same-origin with `O`; level from `IsIsolatedAppScheme(O.scheme())`          |
-| I7  | `note_taking.new_note_url` **if valid**, same-origin with document                                                                     | **if valid**, same-origin with `O` (the parser sends an empty URL for `{}`) |
-| I8  | `lock_screen.start_url` **if valid**, same-origin with document                                                                        | **if valid**, same-origin with `O`                                          |
-| I9  | `migrate_from[i].id` valid and same-site with document; `install_url` (if set) valid, same-site with document, same-origin with `id`   | same, with same-site vs. `SchemefulSite(O)`                                 |
-| I10 | `migrate_to.id` valid and same-site; `install_url` valid, same-site, same-origin with `id`                                             | same, with same-site vs. `SchemefulSite(O)`                                 |
-| I11 | `shortcuts[i].url` valid; same-origin with `scope` and `path().starts_with(scope.path())`                                              | identical; keep the plain, non-segment-aware prefix match                   |
-| I12 | `scope_extensions[i].origin` not opaque and `https`                                                                                    | identical                                                                   |
-| I13 | `icons[i].src` valid; scheme is http, https, data, or `document_origin.scheme()`                                                       | scheme is http, https, data, or `O.scheme()`                                |
+| #   | Prior host check (vs. `document_origin`)                                                                                                                                 | Intrinsic rule (vs. `start_url` / `O`)                                                                         |
+| :-- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------- |
+| I1  | non-empty ⇒ `start_url`, `id`, `scope` valid                                                                                                                             | Always: `start_url`, `id`, `scope` valid (there is no empty state)                                             |
+| I2  | `start_url` same-origin with document (implies `O` non-opaque)                                                                                                           | `O` non-opaque (the document comparison moves to C3)                                                           |
+| I3  | `id`, `scope` same-origin with document                                                                                                                                  | `id`, `scope` same-origin with `O`                                                                             |
+| I4  | `share_target.action` same-origin with document                                                                                                                          | same-origin with `O`                                                                                           |
+| I5  | `file_handlers[i].action` same-origin; parameterless `type/subtype` MIME with valid top-level; extensions non-empty, start with `.`, length > 1, no control/format chars | same, with the origin rule vs. `O` and a standard IANA top-level MIME type (excluding `x-*` pseudo-MIME types) |
+| I6  | `protocol_handlers[i].url` same-origin; scheme valid for level from `IsIsolatedAppScheme(document_origin.scheme())`                                                      | same-origin with `O`; level from `IsIsolatedAppScheme(O.scheme())`                                             |
+| I7  | `note_taking.new_note_url` **if valid**, same-origin with document                                                                                                       | **if valid**, same-origin with `O` (the parser sends an empty URL for `{}`)                                    |
+| I8  | `lock_screen.start_url` **if valid**, same-origin with document                                                                                                          | **if valid**, same-origin with `O`                                                                             |
+| I9  | `migrate_from[i].id` valid and same-site with document; `install_url` (if set) valid, same-site with document, same-origin with `id`                                     | same, with same-site vs. `SchemefulSite(O)`                                                                    |
+| I10 | `migrate_to.id` valid and same-site; `install_url` valid, same-site, same-origin with `id`                                                                               | same, with same-site vs. `SchemefulSite(O)`                                                                    |
+| I11 | `shortcuts[i].url` valid; same-origin with `scope` and `path().starts_with(scope.path())`                                                                                | identical; keep the plain, non-segment-aware prefix match                                                      |
+| I12 | `scope_extensions[i].origin` not opaque and `https`                                                                                                                      | identical                                                                                                      |
+| I13 | `icons[i].src` valid; scheme is http, https, data, or `document_origin.scheme()`                                                                                         | scheme is http, https, data, or `O.scheme()`                                                                   |
 
 #### Contextual checks (need the document)
 
@@ -239,23 +238,23 @@ Performed only in `ManifestManagerHost`:
 | C4  | `ParseManifestFromString`: `manifest_url` equals the requested URL exactly                                                              | `ReportBadMessage`                                                          |
 | C5  | `RequestManifestAndErrors`: an error result must not carry `kSuccess` or `kNoManifestSpecified` (existing check)                        | `ReportBadMessage`; error coerced to `kUnexpectedFailure`                   |
 
-**Evaluation order.** Intrinsic checks now always run first, inside `Read()`,
-before any context is considered.
+**Evaluation order.** Intrinsic checks always run first, inside `Read()`, before
+any context is considered.
 
 - `RequestManifest` / `RequestManifestAndErrors`: intrinsic, then C1 (or C5 for
-  the error arm), C2, C3, then the override. Today: opaque-origin check, then C1
-  and the content checks, then the override.
+  the error arm), C2, C3, then the override. Previously, the host ran the
+  opaque-origin check first, then C1 and content checks, then the override.
 - `ParseManifestFromString`: C0 (before the IPC), intrinsic, C4, C3. C0 makes C2
-  impossible on this path, so it becomes a `CHECK`.
+  impossible on this path, so it is a `CHECK`.
 - `RequestManifestDebugInfo`: intrinsic only.
 
 #### Equivalence argument
 
 `url::Origin::IsSameOriginWith(const GURL&)` is exactly
-`!opaque() && *this == Origin::Create(url)`. So today's
+`!opaque() && *this == Origin::Create(url)`. So the prior
 `document_origin.IsSameOriginWith(start_url)` holds iff the document origin is
 non-opaque and equals `O`. Given that (C2 + C3), every rule stated against `O`,
-`SchemefulSite(O)`, or `O.scheme()` accepts and rejects exactly what today's
+`SchemefulSite(O)`, or `O.scheme()` accepts and rejects exactly what the prior
 rule stated against `document_origin` does. This includes `blob:` /
 `filesystem:` (inner origin on both sides), `isolated-app:` /
 `chrome-extension:` (standard schemes), `file:`, and embedder local schemes.
@@ -268,8 +267,8 @@ for over-long URLs, below). `RequestManifest*` is gated by
 `ParseManifestFromString` has no such gate: the browser supplies `document_url`,
 and the parser falls back to it for `start_url`. A `data:` or invalid
 `document_url` would make a benign renderer fail I1 / I2 (valid `start_url`,
-non-opaque `O`) and get killed. C0 rejects these inputs before the IPC; today
-they silently return an empty manifest. The same reasoning assumes Blink and
+non-opaque `O`) and get killed. C0 rejects these inputs before sending the IPC,
+replacing the prior empty-manifest return. The same reasoning assumes Blink and
 `//url` agree on scheme registration, which holds because embedder schemes are
 registered on both sides through `ContentClient`.
 
@@ -277,9 +276,9 @@ registered on both sides through `ContentClient`.
 > longer than `url::kMaxURLChars` (2 MiB) as an empty URL. `ManifestManager`
 > guards only `manifest_url`, `id`, `start_url`, and `scope`, and only on the
 > `RequestManifest*` path. Any other URL field over 2 MiB (e.g. a `data:` icon)
-> arrives empty and already kills the renderer today (`ImageResource` traits
-> reject an empty `src`). This design keeps that behavior; fixing it in the
-> parser is [Future Work](#9_future-work-technical-debt).
+> arrives empty and terminates the renderer (`ImageResource` traits reject an
+> empty `src`). This design keeps that behavior; fixing it in the parser is
+> [Future Work](#9_future-work-technical-debt).
 
 #### Failure reporting
 
@@ -296,9 +295,9 @@ registered on both sides through `ContentClient`.
   for policy values).
 - **Contextual failure:** `mojo::ReportBadMessage` with a **static** string.
   This keeps URLs out of crash keys, avoids allocating on error paths, and
-  groups crash reports cleanly. Today's two dynamic messages (`start_url` spec,
-  protocol handler security level) become static; triage uses the rule code and
-  file:line instead.
+  groups crash reports cleanly. The two formerly dynamic messages (`start_url`
+  spec and protocol handler security level) use static strings, and triage uses
+  the rule code and file:line instead.
 
 ______________________________________________________________________
 
@@ -306,9 +305,14 @@ ______________________________________________________________________
 
 #### `blink::Manifest`
 
-`blink::Manifest` already exists as a class that only holds the nested types. It
-gains a private data member and a const accessor for every field of
-`manifest.mojom`. Sketch:
+`blink::Manifest` wraps a non-null `scoped_refptr<const Data>`
+(`base::RefCountedThreadSafe`), where `Data` holds all 40 fields of
+`manifest.mojom` plus the cached `origin`. This keeps
+`sizeof(Manifest) == sizeof(void*)` with `O(1)` copy and move while preserving
+value semantics (`operator==` compares `Data` fields after a pointer fast path).
+Reference-returning accessors and `GetOrigin()` carry `LIFETIME_BOUND`
+([compiler_specific.h](/base/compiler_specific.h)) so Clang diagnoses dangling
+references to temporaries across the `Data` pointer indirection. Sketch:
 
 ```cpp
 namespace blink {
@@ -320,11 +324,13 @@ class BLINK_COMMON_EXPORT Manifest {
   // replace mojom::...Ptr: Screenshot, FileHandler, ProtocolHandler,
   // ScopeExtension, LockScreen, NoteTaking, MigrateFrom, MigrateTo. E.g.:
   struct BLINK_COMMON_EXPORT FileHandler {
+    using LaunchType = mojom::ManifestFileHandler_LaunchType;
     bool operator==(const FileHandler&) const = default;
+
     GURL action;
     std::u16string name;
     base::flat_map<std::u16string, std::vector<std::u16string>> accept;
-    mojom::ManifestFileHandler_LaunchType launch_type;
+    LaunchType launch_type = LaunchType::kSingleClient;
   };
 
   class BLINK_COMMON_EXPORT Builder;
@@ -334,38 +340,43 @@ class BLINK_COMMON_EXPORT Manifest {
   // `KURL::BaseAsString()` semantics, *not* `GURL::GetWithoutFilename()`,
   // which differs for e.g. `blob:` URLs). Returns std::nullopt for documents
   // that have no default manifest (invalid, opaque origin, `about:`), the same
-  // ones the renderer refuses via `CanFetchManifest`. If, once the migration
-  // is complete, only tests call this, rename it CreateDefaultForTesting().
+  // ones the renderer refuses via `CanFetchManifest`.
   static std::optional<Manifest> CreateDefault(const GURL& document_url);
+
+  // Computes the spec-defined default scope for `document_url` using
+  // `KURL::BaseAsString()` semantics.
+  static GURL GetDefaultScope(const GURL& document_url);
 
   // Only Mojo can construct an uninitialized instance
   // (`default_constructible = false`). There is no public default constructor
   // and no empty state.
   explicit Manifest(mojo::DefaultConstruct::Tag);
-  // Copyable and movable; has operator==.
+  // Copyable and movable (O(1) via scoped_refptr<const Data>); has operator==.
 
-  // Starts a Builder from this manifest (used for overrides).
+  // Starts a Builder initialized with all fields of this manifest.
   Builder ToBuilder() const;
 
   // url::Origin::Create(start_url()). Never opaque.
-  const url::Origin& GetOrigin() const;
+  const url::Origin& GetOrigin() const LIFETIME_BOUND;
 
   // One const accessor per mojom field, for example:
-  const GURL& start_url() const;   // Always valid.
-  const GURL& id() const;          // Always valid, same-origin with start_url.
-  const GURL& scope() const;       // Always valid, same-origin with start_url.
-  const std::optional<std::u16string>& name() const;
-  const std::vector<FileHandler>& file_handlers() const;
-  // uint32 ARGB, as on the wire (crbug.com/479448266 tracks SkColor).
-  std::optional<uint32_t> theme_color() const;
+  const GURL& start_url() const LIFETIME_BOUND;  // Always valid.
+  const GURL& id() const LIFETIME_BOUND;         // Always valid, same-origin.
+  const GURL& scope() const LIFETIME_BOUND;      // Always valid, same-origin.
+  const std::optional<std::u16string>& name() const LIFETIME_BOUND;
+  const std::vector<FileHandler>& file_handlers() const LIFETIME_BOUND;
+  std::optional<SkColor> theme_color() const;
   // ...
 
  private:
+  struct Data;  // RefCountedThreadSafe<Data>; holds all 40 fields + `origin`.
+
   friend struct mojo::StructTraits<mojom::ManifestDataView, Manifest>;
   friend class Builder;
-  // One member per field, plus `origin_`, a cache of GetOrigin(). It is set
-  // only in Build() / Read(), excluded from operator== (derived data), and
-  // recomputed by Build() rather than carried by ToBuilder().
+
+  std::optional<ManifestInvariantError> ValidateInvariants() const;
+
+  scoped_refptr<const Data> data_;
 };
 
 }  // namespace blink
@@ -377,18 +388,26 @@ class BLINK_COMMON_EXPORT Manifest {
 class BLINK_COMMON_EXPORT Manifest::Builder {
  public:
   Builder(GURL start_url, GURL id, GURL scope);
+  // Initializes `start_url`, defaulting `id` to `start_url.GetWithoutRef()`
+  // and `scope` to `Manifest::GetDefaultScope(start_url)`.
+  explicit Builder(GURL start_url);
 
   Builder& SetName(std::optional<std::u16string> name);
   Builder& SetIcons(std::vector<ImageResource> icons);
   // ... one setter per field ...
 
-  // Runs the intrinsic checks. The only way to get a Manifest outside Mojo.
-  base::expected<Manifest, ManifestInvariantError> Build() &&;
+  // Runs the intrinsic checks and consumes the builder's internal `Data`
+  // reference (subsequent calls CHECK). The primary way to construct a
+  // Manifest outside Mojo.
+  base::expected<Manifest, ManifestInvariantError> Build();
 
   // CHECKs that the intrinsic checks pass. Only for inputs that are valid by
   // construction (tests, code-built overrides such as the ChromeOS `id`
   // rewrite).
-  Manifest BuildChecked() &&;
+  Manifest BuildChecked();
+
+ private:
+  scoped_refptr<Data> data_;
 };
 ```
 
@@ -403,8 +422,8 @@ ______________________________________________________________________
 
 In
 [manifest_manager.mojom](/third_party/blink/public/mojom/manifest/manifest_manager.mojom),
-the two responses that use an empty manifest to mean "no manifest" become
-nullable:
+the two responses that previously used an empty manifest to mean "no manifest"
+are nullable:
 
 ```
 RequestManifest()
@@ -416,7 +435,7 @@ RequestManifestAndErrors() => result<Manifest, RequestManifestError>;
 ParseManifestFromString(...) => (Manifest? parsed_manifest);
 ```
 
-The renderer sends `null` exactly where it sends an empty manifest today
+The renderer sends `null` where it previously sent an empty manifest
 (`kUnexpectedFailure`, `kNoManifestAllowed`). The `?` on `RequestManifest` is
 transitional: `Page::GetManifest`, its only user, is being replaced by
 `PageManifestManager` ([crbug.com/452053908](https://crbug.com/452053908)),
@@ -444,14 +463,14 @@ Extend the **existing** manifest typemap block in
 
 #### Content public API
 
-| API                                                                                               | Today                                | New                                                                     |
+| API                                                                                               | Before                               | After                                                                   |
 | :------------------------------------------------------------------------------------------------ | :----------------------------------- | :---------------------------------------------------------------------- |
 | [`Page::GetManifestCallback`](/content/public/browser/page.h)                                     | `(result, const GURL&, ManifestPtr)` | `(result, const GURL&, std::optional<blink::Manifest>)` (until removed) |
 | [`PageManifestManager::ManifestResult`](/content/public/browser/page_manifest_manager.h)          | `expected<ManifestPtr, ErrorPtr>`    | `expected<blink::Manifest, ErrorPtr>`                                   |
 | `PageManifestManager::ParseManifestCallback`                                                      | `(ManifestPtr)` (empty on failure)   | `(std::optional<blink::Manifest>)`                                      |
 | [`ContentBrowserClient::MaybeOverrideManifest`](/content/public/browser/content_browser_client.h) | `void(RFH*, ManifestPtr&)`           | `std::optional<blink::Manifest>(RFH*, const blink::Manifest&)`          |
 
-#### Embedder overrides (`MaybeOverrideManifest`)
+#### Embedder overrides
 
 ```cpp
 // Returns std::nullopt if no override applies.
@@ -471,19 +490,15 @@ through the intrinsic checks.
   `start_url` by construction, so it uses `BuildChecked()`.
 - **Policy override** (`WebAppPolicyManager`, `name` and `icons` from
   `CustomManifestValues`):
-  - Only `name` is set today. The `icons` override has had no callers since
-    `75d339759c734` moved policy custom icons to install time
-    (`override_icon_url` → `CustomIconFetcher` → `trusted_icons`). As a side
-    effect, custom icons are no longer kept across manifest updates
-    ([crbug.com/568065357](https://crbug.com/568065357)). The design keeps the
-    icon override supported (as `ToBuilder().SetIcons(...)`) so a fix for that
-    bug can use it without changing the hook.
+  - `WebAppPolicyManager` populates `name` from `CustomManifestValues` and
+    retains `ToBuilder().SetIcons(...)` support for policy custom icons across
+    manifest updates ([crbug.com/568065357](https://crbug.com/568065357)).
   - Policy values are external input, so this step uses `Build()`. Custom icon
     URLs are already required to be https when the policy is read, which
     satisfies I13 (icon scheme). If `Build()` still fails, the policy override
-    is dropped: the manifest is delivered without it, and the failure is logged
-    and recorded in UMA. It never crashes or calls `ReportBadMessage`, because
-    the renderer did nothing wrong.
+    is dropped: the manifest is delivered without it, and UMA records the
+    failure. It never crashes or calls `ReportBadMessage`, because the renderer
+    did nothing wrong.
 - **Host invariant:** `ManifestManagerHost` CHECKs that an override does not
   change `GetOrigin()`; doing so is an embedder bug.
 
@@ -530,19 +545,17 @@ ManifestManagerHost::ValidateAndMaybeOverrideManifest(
 (guaranteed by C0), runs C3 against that origin, and returns `std::nullopt` on
 any failure. `MaybeGetBadMessageStringForManifest` is deleted.
 
-> **Note (result-code change for `Page::GetManifest` callers):** When C2 or C3
-> fails today, callers receive the renderer's original `result` (e.g.
-> `kSuccess`) with an empty manifest. Now they receive `kUnexpectedFailure` and
-> no manifest. Callers that branch on the result code (e.g.
-> `InstallableDataFetcher`) are audited as part of their migration.
+> **Note (result-code change for `Page::GetManifest` callers):** Previously,
+> when C2 or C3 failed, callers received the renderer's result (e.g. `kSuccess`)
+> with an empty manifest. `ValidateAndMaybeOverrideManifest` instead returns
+> `kUnexpectedFailure` and `std::nullopt`.
 
-**Browser-created empty manifests** also become `std::nullopt` or an error
+**Browser-created empty manifests** also became `std::nullopt` or an error
 result: `DispatchManifestNotFound` (pending callbacks on destruction or
 connection error), the `about:` early returns in `GetManifest` and
-`RequestManifestDebugInfo`, and the
-`WrapCallbackWithDefaultInvokeIfNotRun(..., ManifestPtr())` default in
-`ParseManifestFromString`. DevTools (`page_handler.cc`, `GotManifest`) handles a
-`std::nullopt` manifest.
+`RequestManifestDebugInfo`, and the `ParseManifestFromString` default
+(previously `WrapCallbackWithDefaultInvokeIfNotRun(..., ManifestPtr())`).
+DevTools (`page_handler.cc`, `GotManifest`) handles a `std::nullopt` manifest.
 
 ______________________________________________________________________
 
@@ -563,7 +576,7 @@ Move `MaybeGetBadMessageStringForManifest` into `manifest_util.h`.
 `ValidateContextFree()` / `ValidateAgainstDocument()` and reports descriptive
 `ReportBadMessage` strings.
 
-- **Pros:** Keeps today's explicit-error path and descriptive diagnostics.
+- **Pros:** Keeps the host's explicit-error path and descriptive diagnostics.
 - **Cons:** Unvalidated `blink::Manifest` instances exist in the browser (fresh
   out of `Read()`, the DevTools path, overrides), so the type guarantees
   nothing. It is the same treadmill wearing a class.
@@ -580,7 +593,7 @@ that only `ManifestManagerHost` / `Builder` can produce.
   don't need the document, so enforcing them in `Read()` gives almost the same
   guarantee with one type, and consumers with a document can check C3 in one
   line with `GetOrigin()`.
-- **Verdict:** Rejected for now; revisit if consumers need a type-level "checked
+- **Verdict:** Rejected. Revisit only if consumers need a type-level "checked
   against this document" guarantee.
 
 ### D. Send `document_origin` in the message so `Read()` can do everything
@@ -608,8 +621,8 @@ Migrate every `Page::GetManifest` caller to `PageManifestManager` and delete
 
 - **Pros:** No transitional `?`.
 - **Cons:** Puts a separate, larger migration on this project's critical path.
-- **Verdict:** Not required. The nullable response is small and self-contained;
-  if 452053908 lands first, skip it.
+- **Verdict:** Not required. Making the response nullable kept this project
+  independent of crbug.com/452053908.
 
 ______________________________________________________________________
 
@@ -617,11 +630,14 @@ ______________________________________________________________________
 
 ### Speed & Efficiency
 
-Neutral. The same checks run (well under 0.1 ms), inside `Read()` instead of
-right after it, off startup and render-blocking paths. Nested `StructPtr` heap
-allocations become inline values. The binary size added by the traits and
-`Builder` is partly offset by deleting the host validation and `IsEmptyManifest`
-plumbing.
+Neutral to positive. The same checks (< 0.1 ms) run inside `Read()` off startup
+and render-blocking paths. When `migrate_from` and `migrate_to` are absent,
+`ValidateInvariants()` skips `net::SchemefulSite` construction. Nested
+`StructPtr` heap allocations became inline values inside one shared immutable
+`RefCountedThreadSafe` `Data` payload. This keeps `sizeof(blink::Manifest)` at
+`sizeof(void*)` (8 bytes on 64-bit) instead of ~2.2 KiB inline, with `O(1)`
+copies and moves. Deleting the host validation and `IsEmptyManifest` plumbing
+partly offsets the binary size added by the traits and `Builder`.
 
 ### Security
 
@@ -643,34 +659,32 @@ plumbing.
   [Embedder overrides](#embedder-overrides) (`BuildChecked()` CHECKs for the
   ChromeOS rewrite; failed policy overrides are dropped).
 - **Simplicity:** One implementation of the invariants, shared by `Read()` and
-  `Builder`. Deletes ~190 lines of host validation and ~20 consumer emptiness
+  `Builder`. Deleted ~190 lines of host validation and ~20 consumer emptiness
   checks.
 
 ### Caveats & Risks
 
-1. **Different failure path for intrinsic violations.** Today a bad manifest
-   gets `ReportBadMessage` and the host still delivers an explicit error. Now a
-   failure in `Read()` closes the pipe and `OnConnectionError` runs: pending
-   `GetManifest` callbacks get `kUnexpectedFailure` and the host is deleted, but
-   `GetSpecifiedManifest` / `GetAllSpecifiedManifests` subscribers get no
-   notification. The renderer is killed either way, so the page goes away;
-   still, `OnConnectionError` should notify in-flight subscriptions with
-   `kUnexpectedFailure`, with tests.
+1. **Different failure path for intrinsic violations.** Previously, a bad
+   manifest received `ReportBadMessage` and the host still delivered an explicit
+   error. Because a failure in `Read()` closes the pipe rather than invoking the
+   response callback, `OnConnectionError` notifies pending `GetManifest`
+   callbacks and in-flight `GetSpecifiedManifest` / `GetAllSpecifiedManifests`
+   subscribers with `kUnexpectedFailure` before deleting the host.
 2. **Exact parity.** Paraphrasing a rule (e.g. making the shortcut scope check
    segment-aware, or dropping the `is_valid()` guard on `note_taking` /
-   `lock_screen`) kills benign renderers. The parity test (old and new checks
-   agree on every return path) must pass before
-   `MaybeGetBadMessageStringForManifest` is deleted.
-3. **Consumer churn.** About 147 non-renderer files reference
-   `blink::mojom::Manifest[Ptr]`. Consumers that use an empty manifest as a "not
-   fetched yet" sentinel (`InstallablePageData`, `SiteManifestMetricsTask`,
-   `MLInstallabilityPromoter`, `FakeInstallableManager`, ...) switch to
+   `lock_screen`) would kill benign renderers. A temporary parity test verified
+   agreement on every return path before `MaybeGetBadMessageStringForManifest`
+   was deleted.
+3. **Consumer churn.** About 147 non-renderer files referenced
+   `blink::mojom::Manifest[Ptr]`. Consumers that used an empty manifest as a
+   "not fetched yet" sentinel (`InstallablePageData`, `SiteManifestMetricsTask`,
+   `MLInstallabilityPromoter`, `FakeInstallableManager`, ...) switched to
    `std::optional<blink::Manifest>`.
-4. **Test construction of invalid manifests.** Browser tests that inject
-   internally inconsistent manifests through
+4. **Test construction of invalid manifests.** Browser tests that previously
+   injected internally inconsistent manifests through
    `ValidateAndMaybeOverrideManifestForTesting(ManifestPtr)` can't be written
-   with the new type. Those cases move to unit tests; browser tests keep only
-   contextual cases (a valid manifest for a different origin).
+   with `blink::Manifest`. Those cases live in unit tests; browser tests keep
+   only contextual cases (a valid manifest for a different origin).
 
 ______________________________________________________________________
 
@@ -679,8 +693,8 @@ ______________________________________________________________________
 - **Privacy:** N/A: no user data is collected or transmitted. Static bad-message
   strings slightly reduce URL data in crash reports.
 - **Enterprise:** No policy behavior changes. The `WebAppPolicyManager` `name` /
-  `icons` override moves to the value-returning hook and drops the override if
-  it fails validation; the unused `icons` part stays supported for
+  `icons` override uses the value-returning hook and drops the override if it
+  fails validation; the `icons` override stays supported for
   [crbug.com/568065357](https://crbug.com/568065357) (see
   [Embedder overrides](#embedder-overrides)).
 - **Accessibility:** N/A: no UI changes.
@@ -695,18 +709,18 @@ ______________________________________________________________________
   `ManifestInvariantError`), recorded on `Read()` failure, with a
   `.PolicyOverride` variant recorded when a policy override is dropped.
 - Existing: `WebApp.Manifest.ForOpaqueOrigin`,
-  `Stability.BadMessageTerminated.Content`. Watch for increases after the
-  typemap lands.
+  `Stability.BadMessageTerminated.Content`. Monitored alongside the typemap
+  rollout.
 
 ### Rollout & Finch
 
 The typemap and `StructTraits` are compile-time and can't be put behind a
-`base::Feature`. Safety comes from exact parity with today's rules (verified by
-the parity test), landing the checks host-side first with today's explicit-error
+`base::Feature`. Safety came from exact parity with prior rules (verified by the
+parity test), landing the checks host-side first with the prior explicit-error
 path and moving them into `Read()` last (see
-[§8](#8_detailed-implementation-breakdown)), and monitoring the metrics above.
-Any future **new** invariant goes behind a feature in report-only mode
-(`DumpWithoutCrashing` + UMA) before it is enforced.
+[Detailed Implementation Breakdown](#8_detailed-implementation-breakdown)), and
+monitoring the metrics above. Any future **new** invariant goes behind a feature
+in report-only mode (`DumpWithoutCrashing` + UMA) before it is enforced.
 
 ______________________________________________________________________
 
@@ -718,33 +732,39 @@ ______________________________________________________________________
   - For every row I1–I13: an input that violates it makes `Build()` return that
     exact `ManifestInvariantError`, and the boundary case passes (e.g. empty
     `note_taking.new_note_url`; shortcut `/app` vs. scope `/application` follows
-    today's prefix semantics; percent-encoding).
-  - `CreateDefault` matches the renderer's `ManifestManager::DefaultManifest()`
-    and passes all invariants for http, https, `file:`, `blob:`, `filesystem:`,
-    `isolated-app:`, `chrome-extension:`, Android `content:`, and a WebView
-    non-standard scheme; returns `std::nullopt` for invalid, `data:`, and
-    `about:` URLs. A Blink unit test checks the renderer side with the same URL
-    table.
-  - `m.ToBuilder().Build() == m`.
+    non-segment-aware prefix semantics; percent-encoding).
+  - `ManifestTest.CreateDefault` verifies `CreateDefault` passes all invariants
+    for `http:`, `https:`, `file:`, `blob:`, and `filesystem:` URLs and returns
+    `std::nullopt` for empty/invalid, `about:blank`, and `data:` URLs.
+    `ManifestManagerTest.DefaultManifestParity` verifies exact parity with the
+    renderer's `ManifestManager::DefaultManifest()` across `http:` and `https:`
+    URLs, including directory paths and `#section` fragments.
+  - `m.ToBuilder().BuildChecked() == m`.
 - **`manifest_mojom_traits_unittest.cc`:**
   - A manifest with **every** field populated survives `SerializeAndDeserialize`
     unchanged (catches missing fields).
   - An invalid generated `blink::mojom::Manifest` fails to deserialize into
     `blink::Manifest`.
 - **Parity test (temporary):** for inputs covering every return path of
-  `MaybeGetBadMessageStringForManifest`, the new checks accept or reject the
-  same inputs. Lands before the old function is deleted.
-- **`ManifestManagerHost` unit tests:** C0 (no IPC sent), C1–C5, the override
-  origin CHECK, override chaining (ChromeOS `id` rewrite then policy), a policy
-  override with `icons` populated, a policy override that fails `Build()` being
-  dropped (UMA, no crash, no bad message), and connection-error notification of
-  subscribers.
+  `MaybeGetBadMessageStringForManifest`, the intrinsic checks accepted or
+  rejected the same inputs. Verified before deleting
+  `MaybeGetBadMessageStringForManifest`.
+- **`web_app_policy_manager_unittest.cc`:** Policy overrides with `icons`
+  populated (`MaybeOverrideManifestWithIcons`) and invalid policy overrides that
+  fail `Build()` being dropped while recording
+  `WebApp.Manifest.InvariantViolation.PolicyOverride` (no crash or bad message).
 
-### Browser tests (`manifest_browsertest.cc`)
+### Browser tests
 
-A small end-to-end set: valid-but-cross-origin manifests trigger
-`ReportBadMessage` with the new static strings; default manifest delivery;
-opaque-origin race; `ParseManifestFromString` URL mismatch.
+- **`manifest_browsertest.cc`:** End-to-end wiring and host checks — C0 (no IPC
+  sent), C1–C5 (valid-but-cross-origin manifests triggering `ReportBadMessage`
+  with static strings, opaque-origin race, `ParseManifestFromString` URL
+  mismatch), default manifest delivery, the override origin CHECK, and
+  connection-error notification of subscribers.
+- **`chromeos_web_app_experiments_browsertest.cc`:** ChromeOS `id` rewrite via
+  `Manifest::ToBuilder()`.
+- **`web_app_policy_manager_browsertest.cc`:** Force-installed custom name and
+  icon policy overrides.
 
 ```bash
 tools/autotest.py -C out/Default third_party/blink/common/manifest/manifest_unittest.cc
@@ -756,17 +776,15 @@ ______________________________________________________________________
 
 ## 8. Detailed Implementation Breakdown
 
-Subsystems changed, in dependency order. The execution plan will split these
-into CLs.
+Subsystems changed, implemented in dependency order across staged CLs:
 
 1. **C0 (content).** Add the `ParseManifestFromString` `document_url`
-   precondition. No renderer-visible change today; it removes the renderer-kill
-   hazard before intrinsic checks move into `Read()`.
+   precondition. No renderer-visible change; it removed the renderer-kill hazard
+   before intrinsic checks moved into `Read()`.
 2. **Mojo nullability (renderer + browser).** `RequestManifest` and
    `RequestManifestDebugInfo` return `Manifest?`; the renderer sends null for
    `kUnexpectedFailure` / `kNoManifestAllowed`, and the browser maps null to its
-   current empty handling. Skipped if crbug.com/452053908 has removed
-   `RequestManifest`.
+   prior empty handling.
 3. **`blink::Manifest` type (blink common).** All fields, nested value types,
    `Builder`, `ToBuilder`, `CreateDefault`, the intrinsic invariants and
    `ManifestInvariantError`, plus temporary bridges
@@ -776,10 +794,11 @@ into CLs.
 4. **Content layer (internal).** `ManifestManagerHost` converts incoming
    manifests (including the `RequestManifestDebugInfo` response) with
    `ManifestFromMojom`; a failure calls `ReportBadMessage` with
-   `ToString(error)`, keeping today's explicit-error path. It then runs C1–C5.
-   Content public APIs stay Mojo-typed for now (the host calls
-   `ManifestToMojom()` at the boundary), so consumers don't change.
-   `MaybeGetBadMessageStringForManifest` is deleted once parity tests pass.
+   `ManifestInvariantErrorToString(error)`, keeping the host's explicit-error
+   path. It then runs C1–C5. Content public APIs remained Mojo-typed during
+   consumer migration (the host called `ManifestToMojom()` at the boundary), so
+   consumers didn't change. `MaybeGetBadMessageStringForManifest` was deleted
+   once parity tests passed.
 5. **Content public API, one API per change, with its consumers.**
    `MaybeOverrideManifest` (with explicit chaining and the ChromeOS and policy
    overrides), `PageManifestManager`, `Page::GetManifest` (2 production
@@ -793,13 +812,15 @@ into CLs.
 6. **Typemap.** Add the `cpp_typemaps` entries and the `StructTraits` (intrinsic
    checks move into `Read()`). Remove the bridges, have the host receive
    `blink::Manifest` directly, and make `OnConnectionError` notify in-flight
-   subscriptions. Update `components/webapps/AGENTS.md` and `CODE_STRUCTURE.md`.
+   subscriptions. Update `AGENTS.md` and `README.md` across
+   `components/webapps/`, `content/browser/manifest/`, and
+   `third_party/blink/public/common/manifest/`.
 
 ______________________________________________________________________
 
 ## 9. Future Work & Technical Debt
 
-- **Debt paid down:** Deletes `MaybeGetBadMessageStringForManifest`, the
+- **Debt paid down:** Deleted `MaybeGetBadMessageStringForManifest`, the
   empty-manifest sentinel, and most validation browser tests.
 - **`WebAppInstallInfo` invariants (near term, optional):** Share the
   intrinsic-invariant helpers with `WebAppInstallInfo` construction CHECKs, so
@@ -822,8 +843,64 @@ ______________________________________________________________________
   `Manifest?`.
 - **Encapsulate remaining open sub-structs** (`ImageResource`, `ShortcutItem`,
   `ShareTarget`, ...) so nested values are immutable too.
-- **Colors:** Migrate `theme_color` etc. to `skia.mojom.SkColor`
-  ([crbug.com/479448266](https://crbug.com/479448266)).
+
+______________________________________________________________________
+
+## 10. Implementation Retrospective
+
+The [crbug.com/485890278](https://crbug.com/485890278) work landed across the
+16-CL migration stack and post-cutover storage and fast-path refinements. Key
+architectural lessons from the implementation:
+
+1. **Intrinsic vs. contextual invariant split:** The split between intrinsic
+   invariants (`I1`–`I13` against `start_url`) and contextual host checks
+   (`C0`–`C5` in
+   [ManifestManagerHost](/content/browser/manifest/manifest_manager_host.cc))
+   held without exceptions. This model preserved exact behavioral parity across
+   `https:`, `blob:`, `filesystem:`, `isolated-app:`, `chrome-extension:`, and
+   `file:` origins with zero benign renderer kills. Routing DevTools
+   (`RequestManifestDebugInfo`) through Mojo traits and embedder overrides
+   (`MaybeOverrideManifest`) through `Manifest::Builder` closed both unvalidated
+   paths by construction.
+2. **Outward bridge rollout across ~150 files:** Temporary `ManifestFromMojom`
+   and `ManifestToMojom` bridges let 10 incremental CLs migrate
+   [content/](/content/browser/manifest/),
+   [components/webapps/](/components/webapps/),
+   [chrome/browser/web_applications/](/chrome/browser/web_applications/), and
+   [components/favicon/](/components/favicon/) one API boundary at a time. Once
+   all consumers used `blink::Manifest`, the final cutover activated 9 new Mojo
+   `cpp_typemaps` (`blink.mojom.Manifest` with `default_constructible = false`,
+   plus 8 nested value structs). Deleting `MaybeGetBadMessageStringForManifest`
+   removed ~190 lines of manual host checks and ~20 `IsEmptyManifest` sites.
+   Moving round-trip coverage from browser tests to unit-level
+   `SerializeAndDeserialize` tests also caught a pre-existing dangling
+   `std::u16string_view` bug in
+   [`ConvertAndTruncateOptionalString`](/third_party/blink/public/common/manifest/manifest_mojom_traits.h).
+3. **Reference-counted immutable storage and builder ergonomics:** Storing all
+   40 fields inline duplicated declarations between `Manifest` and `Builder` and
+   made `sizeof(blink::Manifest)` ~2.2 KiB across per-tab
+   `std::optional<Manifest>` caches. Moving fields into a private immutable
+   `RefCountedThreadSafe` `Data` struct shrank `Manifest` and `Builder` to
+   `sizeof(void*)` with `O(1)` copy and move. Value semantics remained intact,
+   and `LIFETIME_BOUND` annotations on reference getters let Clang catch
+   dangling temporaries across the `Data` pointer indirection. A single-argument
+   `Builder(GURL start_url)` constructor and non-ref-qualified `Build()` methods
+   removed test boilerplate after empty default manifests disappeared.
+4. **Symmetric lint guards and per-field mutation tests:** Keeping 40 fields
+   synchronized across Mojom, C++ storage, `StructTraits`, `operator==`, and
+   tests proved error-prone when mid-flight changes (`SkColor` in
+   [crbug.com/479448266](https://crbug.com/479448266)) landed. A symmetric 6-way
+   `LINT.IfChange` clique links
+   [manifest.mojom](/third_party/blink/public/mojom/manifest/manifest.mojom),
+   [manifest.h](/third_party/blink/public/common/manifest/manifest.h),
+   [manifest.cc](/third_party/blink/common/manifest/manifest.cc),
+   [manifest_mojom_traits.cc](/third_party/blink/common/manifest/manifest_mojom_traits.cc),
+   [manifest_unittest.cc](/third_party/blink/common/manifest/manifest_unittest.cc),
+   and
+   [manifest_mojom_traits_unittest.cc](/third_party/blink/common/manifest/manifest_mojom_traits_unittest.cc).
+   Combined with 40-field single-mutation inequality tests, these guards force
+   future schema additions to update serialization, equality, and unit tests
+   together.
 
 ______________________________________________________________________
 
@@ -844,7 +921,7 @@ manifest and are out of scope (Non-Goal 2); Future Work proposes sharing the
 invariants with `WebAppInstallInfo`.
 
 **Q: Could KURL vs. GURL canonicalization differences cause false positives?**
-Not beyond today. The same same-origin and prefix checks already run in both the
-parser (KURL / `SecurityOrigin`) and the browser (GURL / `url::Origin`, which
-re-parses KURL's canonical spec). The design keeps the browser-side semantics
-exactly, including the non-segment-aware shortcut prefix match (I11).
+No. Identical same-origin and prefix checks run in both the parser (KURL /
+`SecurityOrigin`) and the browser (GURL / `url::Origin`, which re-parses KURL's
+canonical spec). The design keeps the browser-side semantics exact, including
+the non-segment-aware shortcut prefix match (I11).

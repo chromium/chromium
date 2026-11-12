@@ -5,6 +5,7 @@ project: components/webapps
 author: dmurph@chromium.org, AI Assistant
 status: completed
 date: '2026-09-18'
+completion_date: '2026-11-10'
 design_doc: ../designs/2026-09-18-manifest-validating-type-design.md
 bug: crbug.com/485890278
 ---

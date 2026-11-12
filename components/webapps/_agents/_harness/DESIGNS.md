@@ -70,7 +70,10 @@ All new design documents must be placed in the project's `designs/` subdirectory
 lowercase letters, hyphens for separation, and be prefixed with their creation
 date (`YYYY-MM-DD`). They must follow the naming convention:
 `YYYY-MM-DD-feature-name-design.md` (e.g.,
-`2026-08-25-feature-flagging-design.md`).
+`2026-08-25-feature-flagging-design.md`). Keep the `id` and `date` frontmatter
+fields set to this creation date so filenames and cross-links remain stable.
+When `status` becomes `"implemented"`, add `completion_date: "YYYY-MM-DD"` to
+the frontmatter.
 
 ### Required Structure
 
@@ -94,6 +97,8 @@ bug: "crbug.com/1234567"
 **Agent Preamble:**
 > **CRITICAL:** Before reading this design or writing any code, you MUST read
 > the project's AGENTS.md (if it exists).
+> Keep `id` and `date` set to the creation date. When `status` becomes
+> `"implemented"`, add `completion_date: "YYYY-MM-DD"` to the frontmatter.
 
 **Execution Plans:**
 *   `plans/YYYY-MM-DD-feature-name-plan.md` (Optional: Link to plans once created)
@@ -227,4 +232,9 @@ targeted C++ class/interface sketches to document:
 *   Existing tech debt being addressed.
 *   New tech debt incurred (e.g., temporary flags) and plan to pay it down.
 *   Deferred work.
+
+## 10. Implementation Retrospective
+
+_(When `status` becomes `"implemented"`, summarize key architectural lessons
+and differences between the initial design and landed code.)_
 ```

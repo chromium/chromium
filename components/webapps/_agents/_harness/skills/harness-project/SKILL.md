@@ -122,7 +122,8 @@ Keep Gerrit reviews fast and prevent rebase regressions:
    `gclient sync -D` once on that base branch. Cascade-rebase children onto
    updated parents, re-verify builds and tests, and diff tip refactors against
    their parent CL to preserve earlier fixes.
-4. **Closeout:** Set Plan frontmatter to `status: completed` with
-   `Outcomes & Retrospective`, and Design frontmatter to `status: implemented`
-   with a proportional retrospective. Run
+4. **Closeout:** Set `completion_date` in the Plan and Design frontmatter and
+   keep `id` and `date` at the creation date. Set Plan `status: completed` with
+   `Outcomes & Retrospective`, and set Design `status: implemented` with a
+   proportional `Implementation Retrospective`. Run
    [harness-updater](../harness-updater/SKILL.md) to verify links and freshness.

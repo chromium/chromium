@@ -43,7 +43,9 @@ Place execution plans in the project's `plans/` subdirectory (for example,
 `path/to/project/_agents/plans/` or `_harness/plans/`). Name each file
 `YYYY-MM-DD-feature-name-plan.md` using lowercase letters and hyphens (for
 example, `2026-08-25-feature-refactor-plan.md`), and link back to the parent
-Design Document.
+Design Document. Keep the `id` and `date` frontmatter fields set to this
+creation date so filenames and cross-links remain stable. When `status` becomes
+`"completed"`, add `completion_date: "YYYY-MM-DD"` to the frontmatter.
 
 ### Required Structure
 
@@ -67,6 +69,8 @@ bug: "crbug.com/1234567"
 > each milestone. Pause for user confirmation between milestones on
 > standalone plans, or proceed autonomously when running under
 > `harness-project`.
+> Keep `id` and `date` set to the creation date. When `status` becomes
+> `"completed"`, add `completion_date: "YYYY-MM-DD"` to the frontmatter.
 -->
 
 ## 1. Purpose / Big Picture
