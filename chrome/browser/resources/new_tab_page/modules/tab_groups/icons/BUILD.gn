@@ -3,14 +3,12 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("../tab_groups.gni")
 
 generate_grd("build_grdp") {
   grd_prefix = "tab_groups"
   out_grd = "$target_gen_dir/resources.grdp"
-  input_files = [
-    "chrome_tab_groups_light.svg",
-    "chrome_tab_groups_dark.svg",
-  ]
+  input_files = tab_groups_icons_files
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "modules/tab_groups/icons"
 }

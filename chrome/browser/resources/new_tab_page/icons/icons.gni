@@ -1,0 +1,14 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+ntp_icons_files = [
+  "chevron.svg",
+  "drive_logo.svg",
+  "generic_globe.svg",
+  "info.svg",
+  "link.svg",
+  "link_old.svg",
+  "mic.svg",
+  "mic_old.svg",
+]

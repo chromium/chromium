@@ -16,3 +16,8 @@ tab_groups_css_files = [
   "modules/tab_groups/icon_container.css",
   "modules/tab_groups/module.css",
 ]
+
+tab_groups_icons_files = [
+  "chrome_tab_groups_light.svg",
+  "chrome_tab_groups_dark.svg",
+]

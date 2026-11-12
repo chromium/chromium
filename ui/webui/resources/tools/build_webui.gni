@@ -56,6 +56,7 @@ template("build_webui") {
     _in_folder_exceptions = [
       "//chrome/browser/resources/omnibox_internals/aim_eligibility_extension:build",
       "//chrome/browser/resources/contextual_tasks/extension:build",
+      "//chrome/browser/resources/new_tab_page_extension:build",
     ]
     _current_label = get_label_info(":$target_name", "label_no_toolchain")
     assert(
