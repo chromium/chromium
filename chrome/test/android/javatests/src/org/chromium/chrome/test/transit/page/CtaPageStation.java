@@ -149,7 +149,6 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Long presses the tab switcher button to open the action menu. */
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
-        recheckActiveConditions();
         return tabSwitcherButtonElement
                 .longPressTo()
                 .enterFacility(new TabSwitcherActionMenuFacility());
@@ -157,8 +156,6 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public PageAppMenuFacility<CtaPageStation> openGenericAppMenu() {
-        recheckActiveConditions();
-
         return menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
     }
 
@@ -198,14 +195,12 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
      * <p>With vertical tabs, use {@link VerticalTabsFacility#openTabSearchOverlay()}.
      */
     public TabSearchOverlayFacility<CtaPageStation> openTabSearchOverlay() {
-        recheckActiveConditions();
         assert ChromeFeatureList.sTabSearchForDesktop.isEnabled();
         return expectTabStrip().openTabSearchOverlay();
     }
 
     /** Opens the Tab Search overlay via keyboard shortcut (Alt+Shift+A). */
     public TabSearchOverlayFacility<CtaPageStation> openTabSearchOverlayViaShortcut() {
-        recheckActiveConditions();
         assert ChromeFeatureList.sTabSearchForDesktop.isEnabled();
         return runOnUiThreadTo(
                         () -> {

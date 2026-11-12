@@ -36,7 +36,6 @@ public class ReaderModeBottomSheetExpandedFacility extends BottomSheetFacility<C
 
     /** Collapse the bottom sheet back to peek state. */
     public ReaderModeBottomSheetPeekFacility collapse() {
-        recheckActiveConditions();
         return pressBackTo()
                 .exitFacilityAnd()
                 .enterFacility(new ReaderModeBottomSheetPeekFacility());

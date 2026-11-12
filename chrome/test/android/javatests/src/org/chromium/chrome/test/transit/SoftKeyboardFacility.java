@@ -41,9 +41,6 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
         if (softKeyboardElement.value()) {
             // Keyboard was expected to be shown
 
-            // If this fails, the keyboard was closed before, but not by this facility.
-            recheckActiveConditions();
-
             TripBuilder tripBuilder = runOnUiThreadTo(this::dismissKeyboard).withRetry();
 
             if (viewElementsToSettle.length > 0) {

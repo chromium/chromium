@@ -27,8 +27,7 @@ import java.util.function.Supplier;
 /**
  * A condition that needs to be fulfilled for a state transition to be considered done.
  *
- * <p>{@link ConditionWaiter} waits for multiple Conditions to be fulfilled. {@link
- * ConditionChecker} performs one-time checks for whether multiple Conditions are fulfilled.
+ * <p>{@link ConditionWaiter} waits for multiple Conditions to be fulfilled.
  */
 @NullMarked
 public abstract class Condition {

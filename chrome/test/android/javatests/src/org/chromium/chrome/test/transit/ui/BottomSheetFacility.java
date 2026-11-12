@@ -43,7 +43,6 @@ public abstract class BottomSheetFacility<HostStationT extends Station<ChromeTab
 
     /** Press the system backpress to dismiss the bottom sheet. */
     public void dismiss() {
-        recheckActiveConditions();
         pressBackTo().exitFacility();
     }
 }

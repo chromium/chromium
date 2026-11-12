@@ -104,8 +104,6 @@ public abstract class TabSwitcherStation extends HubBaseStation {
      * @return the {@link TabSwitcherAppMenuFacility} for the Hub.
      */
     public TabSwitcherAppMenuFacility openAppMenu() {
-        recheckActiveConditions();
-
         return menuButtonElement
                 .clickTo()
                 .enterFacility(new TabSwitcherAppMenuFacility<>(mIsIncognito));
@@ -183,8 +181,6 @@ public abstract class TabSwitcherStation extends HubBaseStation {
      */
     public <T extends CtaPageStation> T selectTabAtIndex(
             int index, BasePageStation.Builder<T> destinationBuilder) {
-        recheckActiveConditions();
-
         return selectTabAtCardIndexTo(index)
                 .arriveAt(
                         destinationBuilder

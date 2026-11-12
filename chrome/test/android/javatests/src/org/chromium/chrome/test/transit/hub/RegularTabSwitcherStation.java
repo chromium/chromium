@@ -69,8 +69,6 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
 
     /** Open a new tab using the New Tab action button. */
     public RegularNewTabPageStation openNewTab() {
-        recheckActiveConditions();
-
         return newTabButtonElement
                 .clickTo()
                 .arriveAt(RegularNewTabPageStation.newBuilder().initOpeningNewTab().build());

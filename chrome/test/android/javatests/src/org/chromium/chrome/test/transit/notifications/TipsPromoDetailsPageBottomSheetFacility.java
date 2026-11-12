@@ -64,7 +64,6 @@ public class TipsPromoDetailsPageBottomSheetFacility<
 
     /** Use the system backpress to navigate back to the main page. */
     public TipsPromoMainPageBottomSheetFacility<HostStationT> pressBack() {
-        recheckActiveConditions();
         return pressBackTo()
                 .exitFacilityAnd()
                 .enterFacility(new TipsPromoMainPageBottomSheetFacility<>());

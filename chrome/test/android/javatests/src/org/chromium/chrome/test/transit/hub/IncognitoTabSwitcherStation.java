@@ -60,8 +60,6 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
 
     /** Open a new tab using the New Tab action button. */
     public IncognitoNewTabPageStation openNewTab() {
-        recheckActiveConditions();
-
         return newTabButtonElement
                 .clickTo()
                 .arriveAt(IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build());

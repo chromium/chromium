@@ -110,8 +110,6 @@ public abstract class HubBaseStation
 
     private <T extends HubBaseStation> TripBuilder selectPaneTo(
             int paneId, Class<T> expectedDestination) {
-        recheckActiveConditions();
-
         T destinationStation =
                 expectedDestination.cast(
                         HubStationUtils.createHubStation(

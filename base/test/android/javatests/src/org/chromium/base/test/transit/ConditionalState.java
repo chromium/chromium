@@ -22,8 +22,6 @@ import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class representing a state with conditions for entering and exiting.
@@ -152,22 +150,6 @@ public abstract class ConditionalState {
                             "%s should have been in %s, but was %s",
                             this, phaseToString(expectedPhase), phaseToString(mLifecyclePhase)));
         }
-    }
-
-    /** Check the declared Elements still exist. */
-    public final void recheckActiveConditions() {
-        assertInPhase(Phase.ACTIVE);
-
-        List<Condition> enterConditions = new ArrayList<>();
-        Elements elements = getElements();
-        for (Element<?> element : elements.getElements()) {
-            Condition enterCondition = element.getEnterCondition();
-            if (enterCondition != null) {
-                enterConditions.add(enterCondition);
-            }
-        }
-
-        ConditionChecker.check(getName(), enterConditions);
     }
 
     /**
