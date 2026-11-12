@@ -103,8 +103,6 @@ void MaybeDismissNotification() {
     config.features_disabled.push_back(kIOSReactivationNotifications);
   }
 
-  config.features_disabled.push_back(kIOSOneTimeDefaultBrowserNotification);
-
   return config;
 }
 

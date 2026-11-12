@@ -122,21 +122,7 @@ bool TipsNotificationCriteria::CanSignIn(ProfileIOS* profile) {
 }
 
 bool TipsNotificationCriteria::ShouldSendDefaultBrowser() {
-  if (IsChromeLikelyDefaultBrowser()) {
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification)) {
-    // For kIOSOneTimeDefaultBrowserNotification, the logic simply checks if
-    // the user has not seen the promo in the last 14 days.
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(profile_);
-    bool would_trigger = tracker->WouldTriggerHelpUI(
-        feature_engagement::kIPHiOSOneTimeDefaultBrowserNotificationFeature);
-    if (would_trigger) {
-      return true;
-    }
-  }
-  return !DefaultBrowserPromoCanceled();
+  return !IsChromeLikelyDefaultBrowser() && !DefaultBrowserPromoCanceled();
 }
 
 bool TipsNotificationCriteria::ShouldSendWhatsNew() {
