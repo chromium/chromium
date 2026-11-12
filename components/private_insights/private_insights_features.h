@@ -29,6 +29,14 @@ BASE_DECLARE_FEATURE(kPrivateInsightsFeature);
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 BASE_DECLARE_FEATURE(kPrivateInsightsUploadTaskPipeline);
 
+// Enables the Storage Access population: when enabled (together with
+// `kPrivateInsightsFeature`), `StorageAccessLogEvent`s are queued and uploaded
+// to the population named by `kFcpPopulationNameStorageAccess`. When disabled
+// the population is not registered and `LogStorageAccessEvent()` is a no-op.
+// Rolled out independently of Contextual Cues.
+COMPONENT_EXPORT(PRIVATE_INSIGHTS)
+BASE_DECLARE_FEATURE(kPrivateInsightsStorageAccess);
+
 // The interval between periodic tasks run by PrivateInsightsService.
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval;
@@ -40,6 +48,9 @@ extern const base::FeatureParam<std::string> kFcpServerUri;
 
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<std::string> kFcpPopulationNameContextualCues;
+
+COMPONENT_EXPORT(PRIVATE_INSIGHTS)
+extern const base::FeatureParam<std::string> kFcpPopulationNameStorageAccess;
 
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<base::TimeDelta> kFcpConditionPollingPeriod;
@@ -76,6 +87,9 @@ extern const base::FeatureParam<base::TimeDelta> kFcpPermanentErrorsRetryDelay;
 
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<int> kMaxContextualCueEvents;
+
+COMPONENT_EXPORT(PRIVATE_INSIGHTS)
+extern const base::FeatureParam<int> kMaxStorageAccessEvents;
 
 }  // namespace private_insights
 

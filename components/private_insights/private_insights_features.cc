@@ -13,6 +13,8 @@ BASE_FEATURE(kPrivateInsightsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPrivateInsightsUploadTaskPipeline,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateInsightsStorageAccess, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval{
     &kPrivateInsightsFeature, "upload_interval", base::Minutes(30)};
 
@@ -22,6 +24,10 @@ const base::FeatureParam<std::string> kFcpServerUri{&kPrivateInsightsFeature,
 const base::FeatureParam<std::string> kFcpPopulationNameContextualCues{
     &kPrivateInsightsFeature, "fcp_population_name_contextual_cues",
     "private_insights/contextual_cues"};
+
+const base::FeatureParam<std::string> kFcpPopulationNameStorageAccess{
+    &kPrivateInsightsFeature, "fcp_population_name_storage_access",
+    "private_insights/storage_access"};
 
 const base::FeatureParam<base::TimeDelta> kFcpConditionPollingPeriod{
     &kPrivateInsightsFeature, "fcp_condition_polling_period",
@@ -60,8 +66,13 @@ const base::FeatureParam<base::TimeDelta> kFcpPermanentErrorsRetryDelay{
     &kPrivateInsightsFeature, "fcp_permanent_errors_retry_delay",
     base::Hours(4)};
 
-
 const base::FeatureParam<int> kMaxContextualCueEvents{
     &kPrivateInsightsFeature, "max_contextual_cue_events", 20};
+
+// Storage Access permission requests are more frequent than Contextual Cues,
+// so the queue is larger. Tune via `Requeuing.DroppedCount` /
+// `Logging.RemovedCount` once there is data.
+const base::FeatureParam<int> kMaxStorageAccessEvents{
+    &kPrivateInsightsFeature, "max_storage_access_events", 100};
 
 }  // namespace private_insights
