@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -412,9 +413,13 @@ bool IdentityDialogController::ShowVerifyingDialog(
     return false;
   }
   // Do not modify any member variables if the verifying dialog is not shown
-  // because the caller may have destroyed this object.
+  // or if showing it destroyed this object, e.g. because the dialog was
+  // dismissed right away.
+  base::WeakPtr<IdentityDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (account_view_->ShowVerifyingDialog(rp_data, idp_data, account,
-                                         sign_in_mode, rp_mode)) {
+                                         sign_in_mode, rp_mode) &&
+      weak_this) {
     DidInvokeShowUi();
     return true;
   }
