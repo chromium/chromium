@@ -188,6 +188,7 @@ cr-composebox-aim-button {
 }
 
 #contextEntrypoint::part(entrypoint-button) {
+  --cr-icon-button-margin-end: 0;
   --cr-icon-button-size: 36px;
 }
 
@@ -204,6 +205,7 @@ cr-composebox-aim-button {
 }
 
 #contextMenuContainer {
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end: 0;
   --omnibox-context-menu-container-margin-top: 0px;
   margin-inline-end: 96px;
   margin-top: var(--omnibox-context-menu-container-margin-top);
@@ -211,7 +213,7 @@ cr-composebox-aim-button {
 }
 
 cr-composebox-tool-chip {
-  padding-inline-start: 8px;
+  padding-inline-start: 4px;
 }
 
 .carousel-container-inner {
