@@ -74,7 +74,11 @@ GetBrowserDeviceIdentifier();
 // Returns the fully qualified domain name of the device.
 POLICY_EXPORT std::string GetDeviceFqdn();
 
-// Returns the name of the network the device is connected to.
+// Returns the name of the network the device is connected to. Always returns
+// an empty string on Windows 11 24H2+ to avoid hangs in synchronous WLAN API
+// queries.
+// TODO(crbug.com/585174438): Update this comment once the network name query is
+// made asynchronous on Windows.
 POLICY_EXPORT std::string GetNetworkName();
 
 #if BUILDFLAG(IS_WIN)
@@ -106,10 +110,11 @@ POLICY_EXPORT bool IsMachineLevelPolicyType(const std::string& policy_type);
 // Returns true if the given policy type is a user-level policy type.
 POLICY_EXPORT bool IsUserLevelPolicyType(const std::string& policy_type);
 
-// Returns a log prefix for the given policy type and settings entity id. This is
-// used for logging purposes only.
-POLICY_EXPORT std::string PolicyTypeLogPrefix(std::string_view policy_type,
-                                              std::string_view settings_entity_id);
+// Returns a log prefix for the given policy type and settings entity id. This
+// is used for logging purposes only.
+POLICY_EXPORT std::string PolicyTypeLogPrefix(
+    std::string_view policy_type,
+    std::string_view settings_entity_id);
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_UTIL_H_

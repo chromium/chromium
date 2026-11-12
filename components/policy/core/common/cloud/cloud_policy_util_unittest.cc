@@ -17,6 +17,10 @@
 #include "base/test/scoped_feature_list.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace policy {
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -77,5 +81,14 @@ TEST(CloudPolicyUtilTest, GetMachineNameAndroidFeatureDisabled) {
   EXPECT_TRUE(device_identifier->computer_name().empty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN)
+TEST(CloudPolicyUtilTest, GetNetworkNameEmptyOnWin11_24H2OrGreater) {
+  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
+    GTEST_SKIP() << "Only applies to Windows 11 24H2+.";
+  }
+  EXPECT_TRUE(GetNetworkName().empty());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace policy
