@@ -43,8 +43,9 @@ namespace private_insights {
 
 namespace {
 
-// Histogram name under `kPopulationHistogramPrefix`.
+// Histogram names under `kPopulationHistogramPrefix`.
 constexpr char kContextualCueEventsHistogramName[] = "ContextualCueEvents";
+constexpr char kStorageAccessEventsHistogramName[] = "StorageAccessEvents";
 
 PrivateInsightsService::FederatedComputationResult
 ParseFederatedComputationResult(
@@ -131,6 +132,14 @@ PrivateInsightsService::PrivateInsightsService(
             kMaxContextualCueEvents);
     contextual_cue_population_ = contextual_cue_population.get();
     RegisterPopulation(std::move(contextual_cue_population));
+  }
+  if (base::FeatureList::IsEnabled(kPrivateInsightsStorageAccess)) {
+    auto storage_access_population =
+        std::make_unique<TypedPopulation<events::StorageAccessLogEvent>>(
+            kStorageAccessEventsHistogramName, kFcpPopulationNameStorageAccess,
+            kMaxStorageAccessEvents);
+    storage_access_population_ = storage_access_population.get();
+    RegisterPopulation(std::move(storage_access_population));
   }
 
   base::FilePath private_insights_dir =
@@ -228,6 +237,14 @@ void PrivateInsightsService::LogContextualCueEvent(
     return;
   }
   contextual_cue_events_.Push(std::move(event), kMaxContextualCueEvents.Get());
+}
+
+void PrivateInsightsService::LogStorageAccessEvent(
+    events::StorageAccessLogEvent event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (storage_access_population_) {
+    storage_access_population_->LogEvent(std::move(event));
+  }
 }
 
 const PrivateInsightsService::ContextualCueEventQueue&

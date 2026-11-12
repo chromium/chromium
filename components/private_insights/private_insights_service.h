@@ -30,6 +30,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/private_insights/event_queue.h"
 #include "components/private_insights/events/contextual_cue_log_event.pb.h"
+#include "components/private_insights/events/storage_access_log_event.pb.h"
 #include "components/private_insights/populations/population.h"
 
 class PrefService;
@@ -145,6 +146,9 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
 
   virtual void LogContextualCueEvent(events::ContextualCueLogEvent event);
 
+  // Queues `event` for upload. No-op unless `kPrivateInsightsStorageAccess`.
+  virtual void LogStorageAccessEvent(events::StorageAccessLogEvent event);
+
  private:
   using ContextualCueEventQueue = EventQueue<events::ContextualCueLogEvent>;
 
@@ -259,6 +263,10 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
   raw_ptr<TypedPopulation<events::ContextualCueLogEvent>>
       contextual_cue_population_ GUARDED_BY_CONTEXT(sequence_checker_) =
           nullptr;
+  // Owned by `populations_`. Set iff `kPrivateInsightsStorageAccess`.
+  raw_ptr<TypedPopulation<events::StorageAccessLogEvent>>
+      storage_access_population_ GUARDED_BY_CONTEXT(sequence_checker_) =
+          nullptr;
 
   // Legacy Contextual Cues queue, used iff `contextual_cue_population_` is
   // null.
@@ -305,6 +313,12 @@ class COMPONENT_EXPORT(PRIVATE_INSIGHTS) PrivateInsightsService
                            StopEndsRoundInProgress);
   FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
                            ShutdownNotifiesEverySource);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           StorageAccessNotRegisteredWhenFlagDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           StorageAccessLogsAndUploads);
+  FRIEND_TEST_ALL_PREFIXES(PrivateInsightsServicePopulationsTest,
+                           StorageAccessAndContextualCuesUploadSeparately);
 };
 
 }  // namespace private_insights

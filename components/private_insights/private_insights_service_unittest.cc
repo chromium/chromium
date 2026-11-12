@@ -1015,4 +1015,105 @@ TEST_P(PrivateInsightsServicePopulationsTest, ShutdownNotifiesEverySource) {
       1);
 }
 
+TEST_P(PrivateInsightsServicePopulationsTest,
+       StorageAccessNotRegisteredWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPrivateInsightsStorageAccess);
+
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+
+  EXPECT_EQ(service.populations_.size(),
+            contextual_cues_registered() ? 1u : 0u);
+  EXPECT_EQ(service.storage_access_population_, nullptr);
+
+  // Logging is a silent no-op.
+  events::StorageAccessLogEvent event;
+  event.set_domain("example.com");
+  service.LogStorageAccessEvent(event);
+  EXPECT_TRUE(RunUploadRound(service).empty());
+  EXPECT_EQ(mock_run_federated_computation_call_count_, 0);
+}
+
+TEST_P(PrivateInsightsServicePopulationsTest, StorageAccessLogsAndUploads) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPrivateInsightsStorageAccess);
+
+  fcp::client::ExampleQueryResult captured_query_result;
+  PrivateInsightsService::SetRunFederatedComputationForTesting(
+      base::BindLambdaForTesting(
+          [&](const PrivateInsightsService::FederatedComputationParams& params)
+              -> PrivateInsightsService::FederatedComputationResult {
+            GetUploadedPopulationNames().push_back(params.population_name);
+            captured_query_result = params.task_env->result();
+            return {
+                .outcome = PrivateInsightsService::FederatedComputationOutcome::
+                    kSuccess,
+                .contributed_task_count = 1,
+            };
+          }));
+
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+
+  ASSERT_EQ(service.populations_.size(),
+            contextual_cues_registered() ? 2u : 1u);
+  ASSERT_NE(service.storage_access_population_, nullptr);
+
+  base::HistogramTester histogram_tester;
+  events::StorageAccessLogEvent event;
+  event.set_domain("example.com");
+  event.set_outcome(events::StorageAccessLogEvent::DENIED_BY_USER);
+  service.LogStorageAccessEvent(event);
+  EXPECT_EQ(service.storage_access_population_->pending_event_count(), 1u);
+  histogram_tester.ExpectUniqueSample(
+      "PrivateMetrics.PrivateInsights.StorageAccessEvents.Logging.QueuedCount",
+      1, 1);
+
+  // Contextual Cues (registered or legacy) is empty, so it is skipped.
+  EXPECT_EQ(RunUploadRound(service),
+            (std::vector<std::string>{kFcpPopulationNameStorageAccess.Get()}));
+  EXPECT_EQ(service.storage_access_population_->pending_event_count(), 0u);
+  EXPECT_TRUE(service.ContextualCueEventsForTesting().empty());
+
+  const auto& entry_bytes =
+      captured_query_result.vector_data().vectors().at("entry").bytes_values();
+  ASSERT_EQ(entry_bytes.value_size(), 1);
+  EXPECT_EQ(entry_bytes.value(0), event.SerializeAsString());
+}
+
+TEST_P(PrivateInsightsServicePopulationsTest,
+       StorageAccessAndContextualCuesUploadSeparately) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kPrivateInsightsStorageAccess);
+
+  TestingPrefServiceSimple local_state;
+  PrivateInsightsService service(&local_state, tmp_profile_dir_.GetPath(),
+                                 test_shared_url_loader_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(service.sequence_checker_);
+
+  events::ContextualCueLogEvent cue_event;
+  service.LogContextualCueEvent(cue_event);
+  events::StorageAccessLogEvent sa_event;
+  sa_event.set_domain("example.com");
+  service.LogStorageAccessEvent(sa_event);
+
+  // One round uploads both, one FCP call each, to their own Brella
+  // populations. A registered Contextual Cues goes first; the legacy queue
+  // goes last.
+  const std::string cc = kFcpPopulationNameContextualCues.Get();
+  const std::string sa = kFcpPopulationNameStorageAccess.Get();
+  const std::vector<std::string> expected =
+      contextual_cues_registered() ? std::vector<std::string>{cc, sa}
+                                   : std::vector<std::string>{sa, cc};
+  EXPECT_EQ(RunUploadRound(service), expected);
+  EXPECT_EQ(mock_run_federated_computation_call_count_, 2);
+  EXPECT_TRUE(service.ContextualCueEventsForTesting().empty());
+  EXPECT_EQ(service.storage_access_population_->pending_event_count(), 0u);
+}
+
 }  // namespace private_insights
