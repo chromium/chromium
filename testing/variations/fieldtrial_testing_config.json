@@ -8878,6 +8878,30 @@
             ]
         }
     ],
+    "FetchErrorCategoryLogging": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_v1",
+                    "params": {
+                        "category_param_name": "category",
+                        "category_prefix": "search-"
+                    },
+                    "enable_features": [
+                        "FetchErrorCategoryLogging"
+                    ]
+                }
+            ]
+        }
+    ],
     "FirstRunDesktopRevamp": [
         {
             "platforms": [
