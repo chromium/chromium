@@ -1337,7 +1337,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sGlicBackgroundTriggering =
-            newCachedFlag(GLIC_BACKGROUND_TRIGGERING, false);
+            newCachedFlag(GLIC_BACKGROUND_TRIGGERING, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sHistoryPaneAndroid =
             newCachedFlag(
                     HISTORY_PANE_ANDROID,
