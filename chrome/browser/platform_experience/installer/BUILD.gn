@@ -16,6 +16,8 @@ source_set("installer_win") {
     "//chrome/browser/platform_experience:delegated_tasks",
     "//chrome/common:constants",
     "//chrome/install_static:install_static_util",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:public_sources",
   ]
 }
 
@@ -27,9 +29,12 @@ source_set("unit_tests") {
     ":installer_win",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/platform_experience:delegated_tasks",
     "//chrome/common:constants",
     "//chrome/install_static/test:test_support",
     "//chrome/installer/util:constants",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:public_sources",
     "//chrome/updater/app/server/win:updater_legacy_idl",
     "//testing/gmock",
     "//testing/gtest",

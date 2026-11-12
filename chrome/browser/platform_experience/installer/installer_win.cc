@@ -4,18 +4,28 @@
 
 #include "chrome/browser/platform_experience/installer/installer_win.h"
 
+#include <algorithm>
+#include <string>
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/google/google_update_app_command.h"
 #include "chrome/browser/platform_experience/delegated_tasks/peh_launcher.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
+#include "chrome/updater/branded_constants.h"
 
 namespace {
 
@@ -25,23 +35,105 @@ platform_experience::InstallerLauncherDelegate*
 // Switch used to install platform_experience_helper
 constexpr char kPlatformExperienceHelperForceInstallSwitch[] = "force-install";
 
-// This function might block.
-// Returns true if the platform_experience_helper is installed.
-// Returns true if it can't determine whether it's installed or not.
-bool PlatformExperienceHelperMightBeInstalled() {
-  return !platform_experience::PehLauncher().GetBinaryPath().empty();
+using InstallState = platform_experience::PlatformExperienceHelperInstallState;
+using OtherScopeRegistration =
+    platform_experience::PlatformExperienceHelperOtherScopeRegistration;
+
+struct OmahaRegistration {
+  bool is_registered = false;
+  base::Version pv_version;
+};
+
+bool IsValidNonZeroVersion(const base::Version& version) {
+  if (!version.IsValid()) {
+    return false;
+  }
+  return std::ranges::any_of(version.components(),
+                             [](uint32_t component) { return component != 0; });
 }
 
-// This function might block.
-// Returns whether we should attempt installing the platform experience helper.
-bool ShouldInstallPlatformExperienceHelper() {
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    return false;
+OmahaRegistration ReadOmahaRegistration(HKEY root) {
+  const std::wstring clients_key_path = base::StrCat(
+      {L"Software\\Google\\Update\\Clients\\",
+       base::ASCIIToWide(updater::kPlatformExperienceHelperAppId)});
+  base::win::RegKey key;
+  std::wstring pv;
+  if (key.Open(root, clients_key_path.c_str(), KEY_READ | KEY_WOW64_32KEY) !=
+          ERROR_SUCCESS ||
+      key.ReadValue(L"pv", &pv) != ERROR_SUCCESS || pv.empty()) {
+    return {};
   }
-  if (base::IsManagedOrEnterpriseDevice()) {
-    return false;
+
+  OmahaRegistration registration;
+  registration.is_registered = true;
+  if (base::IsStringASCII(pv)) {
+    registration.pv_version = base::Version(base::WideToASCII(pv));
   }
-  return !PlatformExperienceHelperMightBeInstalled();
+  return registration;
+}
+
+InstallState ClassifyStateWithBinary(const OmahaRegistration& registration,
+                                     const base::Version& binary_version) {
+  if (!registration.is_registered) {
+    return InstallState::kBinaryNoRegistration;
+  }
+  if (!IsValidNonZeroVersion(registration.pv_version)) {
+    return InstallState::kBinaryRegisteredZeroVersion;
+  }
+  if (IsValidNonZeroVersion(binary_version) &&
+      registration.pv_version == binary_version) {
+    return InstallState::kHealthy;
+  }
+  return InstallState::kVersionMismatch;
+}
+
+InstallState ClassifyStateWithoutBinary(const OmahaRegistration& registration) {
+  if (!registration.is_registered) {
+    return InstallState::kNotInstalled;
+  }
+  if (!IsValidNonZeroVersion(registration.pv_version)) {
+    return InstallState::kRegisteredZeroVersion;
+  }
+  return InstallState::kRegisteredNoBinary;
+}
+
+InstallState ProbeCurrentScopeInstallState(
+    bool is_system_install,
+    platform_experience::PehLauncher& peh_launcher,
+    const base::FilePath& binary_path) {
+  const OmahaRegistration registration = ReadOmahaRegistration(
+      is_system_install ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER);
+  if (!binary_path.empty()) {
+    return ClassifyStateWithBinary(registration,
+                                   peh_launcher.GetBinaryVersion(binary_path));
+  }
+  return ClassifyStateWithoutBinary(registration);
+}
+
+OtherScopeRegistration ProbeOtherScopeRegistration(bool is_system_install) {
+  const OmahaRegistration registration = ReadOmahaRegistration(
+      is_system_install ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE);
+  if (!registration.is_registered) {
+    return OtherScopeRegistration::kNotRegistered;
+  }
+  return IsValidNonZeroVersion(registration.pv_version)
+             ? OtherScopeRegistration::kRegisteredWithVersion
+             : OtherScopeRegistration::kRegisteredZeroVersion;
+}
+
+void RecordInstallStateMetrics(bool is_system_install,
+                               platform_experience::PehLauncher& peh_launcher,
+                               const base::FilePath& binary_path) {
+  const std::string_view scope_suffix = is_system_install ? "System" : "User";
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Windows.PlatformExperienceHelper.InstallState.", scope_suffix}),
+      ProbeCurrentScopeInstallState(is_system_install, peh_launcher,
+                                    binary_path));
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Windows.PlatformExperienceHelper.OtherScopeRegistration.",
+                    scope_suffix}),
+      ProbeOtherScopeRegistration(is_system_install));
 }
 
 // Enum for tracking the launch status of the platform experience helper
@@ -118,13 +210,23 @@ void SetInstallerLauncherDelegateForTesting(  // IN-TEST
 }
 
 void MaybeInstallPlatformExperienceHelper() {
-  if (!ShouldInstallPlatformExperienceHelper()) {
+  if (base::win::GetVersion() < base::win::Version::WIN10 ||
+      base::IsManagedOrEnterpriseDevice()) {
+    return;
+  }
+
+  const bool is_system_install = install_static::IsSystemInstall();
+  PehLauncher peh_launcher;
+  const base::FilePath peh_binary_path = peh_launcher.GetBinaryPath();
+  RecordInstallStateMetrics(is_system_install, peh_launcher, peh_binary_path);
+
+  if (!peh_binary_path.empty()) {
     return;
   }
 
   InstallerLauncherDelegate* delegate = GetDelegate();
 
-  if (install_static::IsSystemInstall()) {
+  if (is_system_install) {
     auto command = delegate->GetUpdaterAppCommand(installer::kCmdInstallPEH);
     if (!command) {
       ReportSystemInstallerLaunchStatus(

@@ -18,6 +18,32 @@ struct LaunchOptions;
 
 namespace platform_experience {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PlatformExperienceHelperInstallState)
+enum class PlatformExperienceHelperInstallState {
+  kNotInstalled = 0,
+  kHealthy = 1,
+  kBinaryNoRegistration = 2,
+  kVersionMismatch = 3,
+  kRegisteredNoBinary = 4,
+  kRegisteredZeroVersion = 5,
+  kBinaryRegisteredZeroVersion = 6,
+  kMaxValue = kBinaryRegisteredZeroVersion,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:PlatformExperienceHelperInstallState)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PlatformExperienceHelperOtherScopeRegistration)
+enum class PlatformExperienceHelperOtherScopeRegistration {
+  kNotRegistered = 0,
+  kRegisteredZeroVersion = 1,
+  kRegisteredWithVersion = 2,
+  kMaxValue = kRegisteredWithVersion,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:PlatformExperienceHelperOtherScopeRegistration)
+
 // Delegate for controlling how the Platform Experience Helper installer is
 // launched.
 class InstallerLauncherDelegate {

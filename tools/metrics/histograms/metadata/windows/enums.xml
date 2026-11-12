@@ -2634,6 +2634,30 @@ the IOpenWithLauncher COM interface.
   <int value="1" label="PDH_CSTATUS_NEW_DATA"/>
 </enum>
 
+<!-- LINT.IfChange(PlatformExperienceHelperInstallState) -->
+
+<enum name="PlatformExperienceHelperInstallState">
+  <int value="0" label="NotInstalled"/>
+  <int value="1" label="Healthy"/>
+  <int value="2" label="BinaryNoRegistration"/>
+  <int value="3" label="VersionMismatch"/>
+  <int value="4" label="RegisteredNoBinary"/>
+  <int value="5" label="RegisteredZeroVersion"/>
+  <int value="6" label="BinaryRegisteredZeroVersion"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/platform_experience/installer/installer_win.h:PlatformExperienceHelperInstallState) -->
+
+<!-- LINT.IfChange(PlatformExperienceHelperOtherScopeRegistration) -->
+
+<enum name="PlatformExperienceHelperOtherScopeRegistration">
+  <int value="0" label="NotRegistered"/>
+  <int value="1" label="RegisteredZeroVersion"/>
+  <int value="2" label="RegisteredWithVersion"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/platform_experience/installer/installer_win.h:PlatformExperienceHelperOtherScopeRegistration) -->
+
 <enum name="ProcessNameHash">
   <summary>
     The hash of a lower case process name generated using metrics::HashName.

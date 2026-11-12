@@ -58,6 +58,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/platform_experience/delegated_tasks/delegated_task.h:DelegatedTaskType) -->
 
+<variants name="PlatformExperienceHelperInstallScope">
+  <variant name="System" summary="system-level"/>
+  <variant name="User" summary="user-level"/>
+</variants>
+
 <histogram name="Windows.AcLayersLoaded" enum="BooleanLoaded"
     expires_after="2026-05-04">
   <owner>ajgo@chromium.org</owner>
@@ -594,6 +599,37 @@ chromium-metrics-reviews@google.com.
     Records the outcome of attempting to launch the platform experience helper
     installer executable directly for user installs.
   </summary>
+</histogram>
+
+<histogram name="Windows.PlatformExperienceHelper.InstallState.{InstallScope}"
+    enum="PlatformExperienceHelperInstallState" expires_after="2027-05-02">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records the reconciled disk and Google Update (Omaha) registration state of
+    the Platform Experience Helper for {InstallScope} Chrome installs, before
+    any installation attempt is launched. Recorded once per browser session
+    shortly after startup on eligible non-managed Windows 10+ devices.
+  </summary>
+  <token key="InstallScope" variants="PlatformExperienceHelperInstallScope"/>
+</histogram>
+
+<histogram
+    name="Windows.PlatformExperienceHelper.OtherScopeRegistration.{InstallScope}"
+    enum="PlatformExperienceHelperOtherScopeRegistration"
+    expires_after="2027-05-02">
+  <owner>alsan@chromium.org</owner>
+  <owner>atharvmaan@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the Platform Experience Helper has a Google Update (Omaha)
+    Clients registration in the opposite install scope (HKLM for User installs,
+    HKCU for System installs) for {InstallScope} Chrome installs. Recorded once
+    per browser session shortly after startup on eligible non-managed Windows
+    10+ devices.
+  </summary>
+  <token key="InstallScope" variants="PlatformExperienceHelperInstallScope"/>
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
