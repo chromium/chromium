@@ -17,7 +17,6 @@
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/stream_transport/internal/features.h"
-#include "components/stream_transport/internal/proto/task_ingress.pb.h"
 #include "components/stream_transport/internal/proto/transport_messages.pb.h"
 #include "components/stream_transport/public/common.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -195,14 +194,15 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
 
   test_url_loader_factory_.AddResponse(kEndpoint, "OK", net::HTTP_OK);
 
-  browser_actuator::TaskIngressUpstreamPayload payload;
-  payload.mutable_start_task()->set_use_case(
-      browser_actuator::TASK_USE_CASE_AUTO_PASSWORD_CHANGE);
+  // `ControlCommand` is used as a schema-agnostic `MessageLite` stand-in here
+  // because stream_transport cannot depend on `task_ingress.proto`.
+  browser_actuator::ControlCommand command;
+  command.mutable_close_channel();
 
   base::test::TestFuture<bool, int> future;
   client.SendUpstreamMessage("session_1", /*client_sequence_number=*/1,
                              /*responding_to_sequence_number=*/std::nullopt,
-                             PayloadType::kTaskIngress, payload,
+                             PayloadType::kTaskIngress, command,
                              future.GetCallback());
 
   EXPECT_TRUE(future.Get<0>());
@@ -220,13 +220,13 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest,
       upstream.typed_payloads(0);
   EXPECT_EQ(browser_actuator::ACTUATOR_UPSTREAM_PAYLOAD_TYPE_TASK_INGRESS,
             typed_payload.payload_type());
-  EXPECT_EQ("type.googleapis.com/browser_actuator.TaskIngressUpstreamPayload",
+  EXPECT_EQ("type.googleapis.com/browser_actuator.ControlCommand",
             typed_payload.proto_payload().type_url());
-  EXPECT_EQ(payload.SerializeAsString(), typed_payload.proto_payload().value());
+  EXPECT_EQ(command.SerializeAsString(), typed_payload.proto_payload().value());
 
   histogram_tester.ExpectUniqueSample(
       "StreamTransport.Upstream.PayloadSize.TaskIngress",
-      payload.ByteSizeLong(), 1);
+      command.ByteSizeLong(), 1);
   histogram_tester.ExpectTotalCount(
       "StreamTransport.Upstream.UploadLatency.TaskIngress", 1);
   histogram_tester.ExpectUniqueSample("StreamTransport.Upstream.HttpStatus",

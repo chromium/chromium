@@ -39,7 +39,6 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/stream_transport/internal:features",
     "//components/stream_transport/internal/proto",
-    "//components/stream_transport/internal/proto:task_ingress_proto",
     "//components/stream_transport/public",
     "//net",
     "//net/traffic_annotation:test_support",

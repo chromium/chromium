@@ -199,8 +199,7 @@ it purely through `//components/stream_transport/public/proto_stream`
   serializers) for inspection in `chrome://browser-actuator-internals`.
 
 ### 7. Wire Protobuf Package (`proto/`)
-The `.proto` files in `internal/proto/` (`transport_messages.proto` and
-`task_ingress.proto`) intentionally retain `package browser_actuator;` so that
-wire `google.protobuf.Any.type_url` strings
-(`type.googleapis.com/browser_actuator.*`) remain wire-compatible with deployed
-server endpoints.
+The `.proto` file in `internal/proto/` (`transport_messages.proto`) intentionally
+retains `package browser_actuator;` so that wire `google.protobuf.Any.type_url`
+strings (`type.googleapis.com/browser_actuator.*`) remain wire-compatible with
+deployed server endpoints.

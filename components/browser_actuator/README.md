@@ -14,6 +14,10 @@ user's behalf. The `//chrome` integration (`KeyedService` factory and
 - `internal/`: Concrete implementation (`BrowserActuatorServiceImpl`) and its
   unit tests. Visibility is restricted to this component and the `//chrome`
   service factory.
+- `internal/proto/`: Wire protobufs (`task_ingress.proto`). Intentionally
+  retains `package browser_actuator;` so wire `google.protobuf.Any.type_url`
+  strings (`type.googleapis.com/browser_actuator.*`) remain wire-compatible
+  with deployed server endpoints.
 - `colocation/`: Colocation proof generation (`ColocationProofBuilder`,
   `ColocationTimeSource`) for proving device proximity.
 - `test_support/`: Mock implementation (`MockBrowserActuatorService`) for unit
