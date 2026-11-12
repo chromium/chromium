@@ -13424,7 +13424,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.EME.CdmMetrics">
-  <owner>frs@chromium.org</owner>
+  <owner>sangbaekpark@chromium.org</owner>
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -13690,7 +13690,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.EME.GetStatusForPolicy">
-  <owner>frs@chromium.org</owner>
+  <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Event recorded when the EME API GetStatusForPolicy promise is resolved.

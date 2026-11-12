@@ -4445,7 +4445,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.EME.HardwareSecure.AllowedForSite" enum="BooleanEnabled"
     expires_after="2027-09-22">
-  <owner>frs@chromium.org</owner>
+  <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Whether Media Foundation based CDM is enabled or disabled based on previous
