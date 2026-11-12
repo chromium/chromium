@@ -346,6 +346,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/web_applications/test:test_support_ui",
       "//chrome/browser/user_education",
       "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/browser/web_applications/isolated_web_apps",
     ]
   }
 

@@ -20,11 +20,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -81,11 +81,12 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
                         const base::FilePath& bundle_path,
                         const std::optional<IwaVersion>& expected_version) {
     base::test::TestFuture<InstallResult> future;
-    provider()->scheduler().InstallIsolatedWebApp(
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
-        GetInstallSource(bundle_path), expected_version,
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    IwaCommandScheduler::From(*provider())
+        .InstallIsolatedWebApp(
+            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
+            GetInstallSource(bundle_path), expected_version,
+            /*optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     return future.Take();
   }
 
@@ -94,22 +95,24 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
       const base::FilePath& update_bundle_path,
       const IwaVersion& update_version) {
     base::test::TestFuture<PrepareAndStoreUpdateResult> future;
-    provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
-        IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            GetUpdateSource(update_bundle_path), update_version),
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    IwaCommandScheduler::From(*provider())
+        .PrepareAndStoreIsolatedWebAppUpdate(
+            IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
+                GetUpdateSource(update_bundle_path), update_version),
+            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
+            /*optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     return future.Take();
   }
 
   IsolatedWebAppApplyUpdateCommandResult ApplyUpdate(
       const web_package::SignedWebBundleId& web_bundle_id) {
     base::test::TestFuture<IsolatedWebAppApplyUpdateCommandResult> future;
-    provider()->scheduler().ApplyPendingIsolatedWebAppUpdate(
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    IwaCommandScheduler::From(*provider())
+        .ApplyPendingIsolatedWebAppUpdate(
+            IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
+            /*optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     return future.Take();
   }
 

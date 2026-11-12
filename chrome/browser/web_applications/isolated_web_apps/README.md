@@ -74,13 +74,14 @@ profile-scoped lifecycle operations that depend on `Profile`,
   `InitializeIsolatedWebAppRuntime` (`runtime_init.{h,cc}`),
   `IsolatedWebAppThrottle` (`isolated_web_app_throttle.{h,cc}`),
   `IsolatedWebAppUserInstalledManager`
-  (`isolated_web_app_user_installed_manager.{h,cc}`),
-  `IwaPermissionsPolicyCache` (`iwa_permissions_policy_cache.{h,cc}`), and
-  `WebAppIsolationDelegateImpl` (`web_app_isolation_delegate_impl.{h,cc}`, which
-  owns all five per-profile IWA managers and attaches them to
-  `WebAppProvider::unowned_user_data_host()` for `<Manager>::From(provider)`
-  access).
-- **Trust & Metadata (`:web_applications`):** `IsolatedWebAppTrustChecker`
+  (`isolated_web_app_user_installed_manager.{h,cc}`), `IwaCommandScheduler`
+  (`iwa_command_scheduler.{h,cc}`), `IwaPermissionsPolicyCache`
+  (`iwa_permissions_policy_cache.{h,cc}`), and `WebAppIsolationDelegateImpl`
+  (`web_app_isolation_delegate_impl.{h,cc}`, which owns `IwaCommandScheduler`
+  and all five per-profile IWA managers and attaches them to
+  `WebAppProvider::unowned_user_data_host()` for
+  `IwaCommandScheduler::From(provider)` and `<Manager>::From(provider)` access).
+- **Trust & Metadata (`:isolated_web_apps`):** `IsolatedWebAppTrustChecker`
   (`isolated_web_app_trust_checker.{h,cc}`), `CheckTrustAndSignatures`
   (`trust_and_signature_verifier.{h,cc}`), and `SignedWebBundleMetadata`
   (`signed_web_bundle_metadata.{h,cc}`).

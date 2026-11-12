@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -70,10 +71,11 @@ void IsolatedWebAppUserInstalledManager::Install(
     return;
   }
 
-  provider_->scheduler().InstallIsolatedWebApp(
-      url_info, source, expected_version,
-      /*optional_keep_alive=*/nullptr,
-      /*optional_profile_keep_alive=*/nullptr, std::move(callback));
+  IwaCommandScheduler::From(*provider_)
+      .InstallIsolatedWebApp(url_info, source, expected_version,
+                             /*optional_keep_alive=*/nullptr,
+                             /*optional_profile_keep_alive=*/nullptr,
+                             std::move(callback));
 }
 
 void IsolatedWebAppUserInstalledManager::OnRuntimeDataChanged() {

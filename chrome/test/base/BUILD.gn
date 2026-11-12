@@ -602,7 +602,7 @@ source_set("chrome_unit_test_suite") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/publishers",
-      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/isolated_web_apps",
     ]
   }
   if (enable_extensions) {

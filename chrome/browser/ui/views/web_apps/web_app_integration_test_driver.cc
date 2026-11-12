@@ -109,6 +109,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
@@ -1666,14 +1667,15 @@ void WebAppIntegrationTestDriver::InstallIsolatedApp(Site site) {
     base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
                                           InstallIsolatedWebAppCommandError>>
         future;
-    provider()->scheduler().InstallIsolatedWebApp(
-        url_info,
-        IsolatedWebAppInstallSource::FromGraphicalInstaller(
-            IwaSourceBundleProdModeWithFileOp(
-                bundle_path, IwaSourceBundleProdFileOp::kCopy)),
-        *IwaVersion::Create("1.0.0"),
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    IwaCommandScheduler::From(*provider())
+        .InstallIsolatedWebApp(
+            url_info,
+            IsolatedWebAppInstallSource::FromGraphicalInstaller(
+                IwaSourceBundleProdModeWithFileOp(
+                    bundle_path, IwaSourceBundleProdFileOp::kCopy)),
+            *IwaVersion::Create("1.0.0"),
+            /*optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     auto install_result = future.Take();
     ASSERT_TRUE(install_result.has_value()) << install_result.error();
   }

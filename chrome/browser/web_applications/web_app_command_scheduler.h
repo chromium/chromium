@@ -11,10 +11,8 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/types/expected.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
-#include "chrome/browser/web_applications/model/iwa_update_info.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
@@ -22,7 +20,6 @@
 #include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
 #include "chrome/browser/web_applications/scheduler/install_migrate_to_app_result.h"
-#include "chrome/browser/web_applications/scheduler/isolated_web_app_apply_update_result.h"
 #include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/scheduler/navigate_and_trigger_install_dialog_result.h"
 #include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
@@ -34,14 +31,8 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
-#include "components/webapps/isolated_web_apps/types/iwa_version.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/scheduler/rewrite_diy_icons_result.h"
@@ -57,7 +48,6 @@ class Manifest;
 
 namespace content {
 class Page;
-class StoragePartitionConfig;
 class WebContents;
 }  // namespace content
 
@@ -75,45 +65,22 @@ class ScopedProfileKeepAlive;
 namespace web_app {
 
 class ComputedAppSizeWithOrigin;
-class IsolatedWebAppInstallSource;
-class IsolatedWebAppUrlInfo;
-class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo;
-class IsolationData;
-class SignedWebBundleMetadata;
 class WebApp;
 class WebAppProvider;
 enum class ApiApprovalState;
 enum class ApplyPendingManifestUpdateResult;
 enum class FallbackBehavior;
 enum class InstallableCheckResult;
-enum class IsolatedInstallabilityCheckResult;
 enum class LaunchOrReparentResult;
 enum class LaunchWebAppWindowSetting;
 enum class RunOnOsLoginMode;
 enum class ManifestSilentUpdateCheckResult;
 enum class NavigateAndTriggerInstallDialogCommandResult;
-struct CleanupOrphanedIsolatedWebAppsCommandError;
-struct CleanupOrphanedIsolatedWebAppsCommandSuccess;
 struct ExternalInstallOptions;
 struct ExternallyManagedAppManagerInstallResult;
-struct InstallIsolatedWebAppCommandError;
-struct InstallIsolatedWebAppCommandSuccess;
-struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
-struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess;
 struct SynchronizeOsOptions;
 struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
-
-#if BUILDFLAG(IS_CHROMEOS)
-class CleanupBundleCacheSuccess;
-class CleanupBundleCacheError;
-class CopyBundleToCacheSuccess;
-enum class CopyBundleToCacheError;
-class GetBundleCachePathSuccess;
-enum class GetBundleCachePathError;
-class RemoveObsoleteBundleVersionsError;
-class RemoveObsoleteBundleVersionsSuccess;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -131,12 +98,6 @@ class RemoveObsoleteBundleVersionsSuccess;
 //   scheduler class.
 class WebAppCommandScheduler {
  public:
-  using InstallIsolatedWebAppCallback = base::OnceCallback<void(
-      base::expected<InstallIsolatedWebAppCommandSuccess,
-                     InstallIsolatedWebAppCommandError>)>;
-  using CleanupOrphanedIsolatedWebAppsCallback = base::OnceCallback<void(
-      base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
-                     CleanupOrphanedIsolatedWebAppsCommandError>)>;
   using WebAppIconDiagnosticResultCallback =
       base::OnceCallback<void(std::optional<WebAppIconDiagnosticResult>)>;
   using WebInstallFromManifestCommandCallback =
@@ -267,116 +228,6 @@ class WebAppCommandScheduler {
       const GURL& origin_url,
       bool is_renderer_initiated,
       NavigateAndTriggerInstallDialogCommandCallback callback,
-      const base::Location& location = FROM_HERE);
-
-  // Installs an Isolated Web App from the given `url_info` and
-  // `install_source`. If `expected_version` is set, this command will refuse to
-  // install the Isolated Web App if its version does not match.
-  void InstallIsolatedWebApp(
-      const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppInstallSource& install_source,
-      const std::optional<IwaVersion>& expected_version,
-      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      InstallIsolatedWebAppCallback callback,
-      std::optional<IwaUpdateInfo> optional_update_info = std::nullopt,
-      const base::Location& call_location = FROM_HERE);
-
-  // Finds and removes any Isolated Web App data directories on disk that are
-  // no longer referenced by an installed app in the WebAppRegistrar. This can
-  // happen if the browser crashes during IWA installation or uninstallation.
-  void CleanupOrphanedIsolatedApps(
-      CleanupOrphanedIsolatedWebAppsCallback callback,
-      const base::Location& call_location = FROM_HERE);
-
-  using PrepareAndStoreIsolatedWebAppUpdateCallback = base::OnceCallback<void(
-      base::expected<IsolatedWebAppUpdatePrepareAndStoreCommandSuccess,
-                     IsolatedWebAppUpdatePrepareAndStoreCommandError>)>;
-  // Prepares an update for an Isolated Web App. `update_info` specifies the
-  // location of the update for the IWA referred to in `url_info`. This command
-  // is safe to run even if the IWA is not installed or already updated. If a
-  // dry-run of the update succeeds, then the `update_info` is persisted in the
-  // `IsolationData::pending_update_info()` of the IWA in the Web App database.
-  void PrepareAndStoreIsolatedWebAppUpdate(
-      const IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo& update_info,
-      const IsolatedWebAppUrlInfo& url_info,
-      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      PrepareAndStoreIsolatedWebAppUpdateCallback callback,
-      const base::Location& call_location = FROM_HERE);
-
-  // Applies a prepared pending update to an Isolated Web App. This command is
-  // safe to run even if the IWA is not installed or already updated. Regardless
-  // of whether the update succeeds or fails,
-  // `IsolationData::pending_update_info` of the IWA in the Web App database
-  // will be cleared.
-  void ApplyPendingIsolatedWebAppUpdate(
-      const IsolatedWebAppUrlInfo& url_info,
-      std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommandResult)> callback,
-      const base::Location& call_location = FROM_HERE);
-
-  // Checks if a Signed Web Bundle is a valid and an Isolated Web App that can
-  // be installed by the user. It compares the version from the bundle's
-  // metadata with an already installed app (if one exists) to determine if the
-  // bundle is a new install, an update, or outdated. It also checks if the app
-  // is allowlisted to be installed by the user.
-  void CheckIsolatedWebAppBundleUserInstallability(
-      const SignedWebBundleMetadata& bundle_metadata,
-      base::OnceCallback<void(IsolatedInstallabilityCheckResult,
-                              std::optional<IwaVersion>)> callback,
-      const base::Location& call_location = FROM_HERE);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Gets the path to an IWA bundle in the cache for a given `session_type`. If
-  // `version` is not provided, it returns the path to the newest cached
-  // version.
-  void GetIsolatedWebAppBundleCachePath(
-      const IsolatedWebAppUrlInfo& url_info,
-      const std::optional<IwaVersion>& version,
-      IwaCacheClient::SessionType session_type,
-      base::OnceCallback<void(
-          base::expected<GetBundleCachePathSuccess, GetBundleCachePathError>)>
-          callback,
-      const base::Location& call_location = FROM_HERE);
-
-  // Copies an IWA bundle file to the cache for a given `session_type`.
-  void CopyIsolatedWebAppBundleToCache(
-      const IsolatedWebAppUrlInfo& url_info,
-      IwaCacheClient::SessionType session_type,
-      base::OnceCallback<void(base::expected<CopyBundleToCacheSuccess,
-                                             CopyBundleToCacheError>)> callback,
-      const base::Location& call_location = FROM_HERE);
-
-  // Cleans all IWA cached bundles for a given `session_type` that are not in
-  // the `iwas_to_keep_in_cache` list.
-  void CleanupIsolatedWebAppBundleCache(
-      const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
-      IwaCacheClient::SessionType session_type,
-      base::OnceCallback<void(
-          base::expected<CleanupBundleCacheSuccess, CleanupBundleCacheError>)>
-          callback,
-      const base::Location& call_location = FROM_HERE);
-
-  void RemoveObsoleteIsolatedWebAppVersionsCache(
-      const IsolatedWebAppUrlInfo& url_info,
-      IwaCacheClient::SessionType session_type,
-      base::OnceCallback<
-          void(base::expected<RemoveObsoleteBundleVersionsSuccess,
-                              RemoveObsoleteBundleVersionsError>)> callback,
-      const base::Location& call_location = FROM_HERE);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Gets the StoragePartitionConfig for a <controlledframe> within the given
-  // Isolated Web App. If the partition is persistent (not `in_memory`), it is
-  // registered in the WebAppProvider.
-  void GetControlledFramePartition(
-      const IsolatedWebAppUrlInfo& url_info,
-      const std::string& partition_name,
-      bool in_memory,
-      base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
-          callback,
       const base::Location& location = FROM_HERE);
 
   // Decoupled post-install action to reparent or launch the app.

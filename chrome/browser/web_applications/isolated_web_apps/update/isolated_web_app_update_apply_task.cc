@@ -22,8 +22,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -50,7 +50,7 @@ IsolatedWebAppUpdateApplyTask::IsolatedWebAppUpdateApplyTask(
     IsolatedWebAppUrlInfo url_info,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-    WebAppCommandScheduler& command_scheduler,
+    IwaCommandScheduler& command_scheduler,
     Profile* profile)
     : url_info_(std::move(url_info)),
       optional_keep_alive_(std::move(optional_keep_alive)),

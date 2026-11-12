@@ -20,13 +20,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -104,12 +105,10 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
       const base::Location location = FROM_HERE) {
     base::test::TestFuture<std::optional<content::StoragePartitionConfig>>
         future;
-    provider().scheduler().ScheduleCallbackWithResult(
-        "GetControlledFramePartition", AppLockDescription(url_info.app_id()),
-        base::BindOnce(&GetControlledFramePartitionWithLock, profile(),
-                       url_info, partition_name, /*in_memory=*/false),
-        future.GetCallback(), /*arg_for_shutdown=*/
-        std::optional<content::StoragePartitionConfig>(std::nullopt), location);
+    IwaCommandScheduler::From(provider())
+        .GetControlledFramePartition(url_info, partition_name,
+                                     /*in_memory=*/false, future.GetCallback(),
+                                     location);
     return future.Get().value();
   }
 };

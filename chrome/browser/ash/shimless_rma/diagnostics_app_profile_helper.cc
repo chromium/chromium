@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -503,10 +504,12 @@ void DiagnosticsAppProfileHelperDelegate::InstallIsolatedWebApp(
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browser_context));
   CHECK(web_app_provider);
-  web_app_provider->scheduler().InstallIsolatedWebApp(
-      url_info, install_source, /*expected_version=*/std::nullopt,
-      /*optional_keep_alive=*/nullptr, /*optional_profile_keep_alive=*/nullptr,
-      std::move(callback));
+  web_app::IwaCommandScheduler::From(*web_app_provider)
+      .InstallIsolatedWebApp(url_info, install_source,
+                             /*expected_version=*/std::nullopt,
+                             /*optional_keep_alive=*/nullptr,
+                             /*optional_profile_keep_alive=*/nullptr,
+                             std::move(callback));
 }
 
 void DiagnosticsAppProfileHelperDelegate::RemoveShimlessRmaKnownIwa(

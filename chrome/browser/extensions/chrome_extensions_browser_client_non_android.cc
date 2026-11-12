@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
@@ -114,8 +114,9 @@ void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     auto* profile = Profile::FromBrowserContext(browser_context);
     auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
     CHECK(web_app_provider);
-    web_app_provider->scheduler().GetControlledFramePartition(
-        *url_info, partition_name, in_memory, std::move(callback));
+    web_app::IwaCommandScheduler::From(*web_app_provider)
+        .GetControlledFramePartition(*url_info, partition_name, in_memory,
+                                     std::move(callback));
     return;
   }
 

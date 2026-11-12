@@ -44,11 +44,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/ed25519_key_pair.h"
@@ -180,11 +180,12 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
   }
 
   base::test::TestFuture<InstallResult> future;
-  WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
-      url_info, install_source,
-      /*expected_version=*/std::nullopt,
-      /*optional_keep_alive=*/nullptr,
-      /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+  IwaCommandScheduler::From(*WebAppProvider::GetForWebApps(profile))
+      .InstallIsolatedWebApp(url_info, install_source,
+                             /*expected_version=*/std::nullopt,
+                             /*optional_keep_alive=*/nullptr,
+                             /*optional_profile_keep_alive=*/nullptr,
+                             future.GetCallback());
   CHECK(future.Wait());
 
   if (!future.Get().has_value()) {

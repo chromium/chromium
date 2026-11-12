@@ -24,9 +24,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/remove_obsolete_bundle_versions_cache_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -253,11 +253,12 @@ void IwaBundleCacheManager::MaybeRemoveManagedGuestSessionCache() {
     return;
   }
   // Delete all IWA cached bundles for Managed Guest Session (MGS).
-  provider_->scheduler().CleanupIsolatedWebAppBundleCache(
-      /*iwas_to_keep_in_cache=*/{}, SessionType::kManagedGuestSession,
-      base::BindOnce(
-          &IwaBundleCacheManager::OnMaybeRemoveManagedGuestSessionCache,
-          weak_ptr_factory_.GetWeakPtr()));
+  IwaCommandScheduler::From(*provider_)
+      .CleanupIsolatedWebAppBundleCache(
+          /*iwas_to_keep_in_cache=*/{}, SessionType::kManagedGuestSession,
+          base::BindOnce(
+              &IwaBundleCacheManager::OnMaybeRemoveManagedGuestSessionCache,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IwaBundleCacheManager::OnMaybeRemoveManagedGuestSessionCache(
@@ -296,11 +297,12 @@ void IwaBundleCacheManager::EvictUnnecessaryIwasFromKioskCache() {
     }
   }
 
-  provider_->scheduler().CleanupIsolatedWebAppBundleCache(
-      FilterAllowlistedIwas(std::move(iwas_to_keep)), SessionType::kKiosk,
-      base::BindOnce(
-          &IwaBundleCacheManager::OnEvictUnnecessaryIwasFromKioskCache,
-          weak_ptr_factory_.GetWeakPtr(), new_kiosk_iwas));
+  IwaCommandScheduler::From(*provider_)
+      .CleanupIsolatedWebAppBundleCache(
+          FilterAllowlistedIwas(std::move(iwas_to_keep)), SessionType::kKiosk,
+          base::BindOnce(
+              &IwaBundleCacheManager::OnEvictUnnecessaryIwasFromKioskCache,
+              weak_ptr_factory_.GetWeakPtr(), new_kiosk_iwas));
 }
 
 void IwaBundleCacheManager::OnEvictUnnecessaryIwasFromKioskCache(
@@ -323,11 +325,12 @@ void IwaBundleCacheManager::CleanupManagedGuestSessionOrphanedIwas() {
       FilterAllowlistedIwas(
           GetPolicyInstalledIwasForManagedGuestSession(*profile_));
 
-  provider_->scheduler().CleanupIsolatedWebAppBundleCache(
-      iwas_to_keep_in_cache, SessionType::kManagedGuestSession,
-      base::BindOnce(
-          &IwaBundleCacheManager::OnCleanupManagedGuestSessionOrphanedIwas,
-          weak_ptr_factory_.GetWeakPtr()));
+  IwaCommandScheduler::From(*provider_)
+      .CleanupIsolatedWebAppBundleCache(
+          iwas_to_keep_in_cache, SessionType::kManagedGuestSession,
+          base::BindOnce(
+              &IwaBundleCacheManager::OnCleanupManagedGuestSessionOrphanedIwas,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IwaBundleCacheManager::OnCleanupManagedGuestSessionOrphanedIwas(
@@ -345,10 +348,12 @@ void IwaBundleCacheManager::TriggerIwaUpdateCheck(const WebApp& iwa) {
 void IwaBundleCacheManager::RemoveObsoleteIwaVersionsCache(const WebApp& iwa) {
   auto url_info = *IsolatedWebAppUrlInfo::Create(iwa.start_url());
 
-  provider_->scheduler().RemoveObsoleteIsolatedWebAppVersionsCache(
-      url_info, IwaCacheClient::GetCurrentSessionType(),
-      base::BindOnce(&IwaBundleCacheManager::OnRemoveObsoleteIwaVersionsCache,
-                     weak_ptr_factory_.GetWeakPtr()));
+  IwaCommandScheduler::From(*provider_)
+      .RemoveObsoleteIsolatedWebAppVersionsCache(
+          url_info, IwaCacheClient::GetCurrentSessionType(),
+          base::BindOnce(
+              &IwaBundleCacheManager::OnRemoveObsoleteIwaVersionsCache,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IwaBundleCacheManager::OnRemoveObsoleteIwaVersionsCache(

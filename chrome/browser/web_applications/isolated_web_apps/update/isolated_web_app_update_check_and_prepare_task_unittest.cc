@@ -20,13 +20,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -128,7 +128,8 @@ class IsolatedWebAppUpdateCheckAndPrepareTaskTest : public WebAppTest {
     return Task(IwaUpdateCheckAndPrepareTaskParams(
                     update_manifest_url_, update_channel, allow_downgrades,
                     pinned_version, url_info, /*dev_mode=*/false),
-                fake_provider().scheduler(), fake_provider().registrar_unsafe(),
+                IwaCommandScheduler::From(fake_provider()),
+                fake_provider().registrar_unsafe(),
                 profile()->GetURLLoaderFactory(), *profile());
   }
 
@@ -674,7 +675,8 @@ TEST_F(IsolatedWebAppUpdateCheckAndPrepareTaskPrepareUpdateTest,
                 /*allow_downgrades=*/false,
                 /*pinned_version=*/std::nullopt, url_info, /*dev_mode=*/false,
                 /*update_manifest_check_only=*/true),
-            fake_provider().scheduler(), fake_provider().registrar_unsafe(),
+            IwaCommandScheduler::From(fake_provider()),
+            fake_provider().registrar_unsafe(),
             profile()->GetURLLoaderFactory(), *profile());
 
   base::test::TestFuture<Task::CompletionStatus> future;

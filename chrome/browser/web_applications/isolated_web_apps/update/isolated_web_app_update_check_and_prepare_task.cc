@@ -30,12 +30,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_rotation_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/version_change_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -153,7 +153,7 @@ std::string IsolatedWebAppUpdateCheckAndPrepareTask::ErrorToString(
 IsolatedWebAppUpdateCheckAndPrepareTask::
     IsolatedWebAppUpdateCheckAndPrepareTask(
         IwaUpdateCheckAndPrepareTaskParams task_params,
-        WebAppCommandScheduler& command_scheduler,
+        IwaCommandScheduler& command_scheduler,
         WebAppRegistrar& registrar,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         Profile& profile)

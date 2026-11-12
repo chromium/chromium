@@ -11,8 +11,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -115,13 +115,15 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppInvalidPermissionsPolicyBrowserTest,
         web_package::SignedWebBundleId::CreateForPublicKey(
             key_pair.public_key));
 
-    provider().scheduler().InstallIsolatedWebApp(
-        url_info,
-        IsolatedWebAppInstallSource::FromDevUi(IwaSourceBundleDevModeWithFileOp(
-            bundle_file.path(), IwaSourceBundleDevFileOp::kCopy)),
-        /*expected_version=*/std::nullopt,
-        /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    IwaCommandScheduler::From(provider())
+        .InstallIsolatedWebApp(
+            url_info,
+            IsolatedWebAppInstallSource::FromDevUi(
+                IwaSourceBundleDevModeWithFileOp(
+                    bundle_file.path(), IwaSourceBundleDevFileOp::kCopy)),
+            /*expected_version=*/std::nullopt,
+            /*optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
     auto result = future.Get();
     ASSERT_FALSE(result.has_value());

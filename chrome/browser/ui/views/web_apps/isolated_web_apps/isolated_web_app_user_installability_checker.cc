@@ -14,8 +14,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 
@@ -72,10 +72,11 @@ void InstallabilityChecker::OnLoadedMetadata(
     std::move(callback_).Run(BundleInvalid{metadata.error()});
     return;
   }
-  web_app_provider_->scheduler().CheckIsolatedWebAppBundleUserInstallability(
-      metadata.value(),
-      base::BindOnce(&InstallabilityChecker::OnInstallabilityChecked,
-                     weak_ptr_factory_.GetWeakPtr(), metadata.value()));
+  IwaCommandScheduler::From(*web_app_provider_)
+      .CheckIsolatedWebAppBundleUserInstallability(
+          metadata.value(),
+          base::BindOnce(&InstallabilityChecker::OnInstallabilityChecked,
+                         weak_ptr_factory_.GetWeakPtr(), metadata.value()));
 }
 
 void InstallabilityChecker::OnInstallabilityChecked(

@@ -29,13 +29,15 @@ storage, sync, and OS integration.
   migration) must go through the fakeable
   [`ExtensionsManager`](extensions_manager.h) abstraction. Never introduce
   direct `extensions/` dependencies into Web Apps.
-- **Isolated Web Apps Decoupling (crbug.com/529731980):** Isolated Web App
-  managers live in `//chrome/browser/web_applications/isolated_web_apps`, are
-  owned by `WebAppIsolationDelegateImpl`, register onto
+- **Isolated Web Apps Decoupling (crbug.com/529731980):** `IwaCommandScheduler`
+  and the Isolated Web App managers live in
+  `//chrome/browser/web_applications/isolated_web_apps`, are owned by
+  `WebAppIsolationDelegateImpl`, register onto
   `WebAppProvider::unowned_user_data_host()` via `ui::ScopedUnownedUserData`,
-  and are accessed via `<IwaManager>::From(provider)` rather than getters on
-  `WebAppProvider`. Core `:web_applications` code must interact with IWA
-  lifecycle hooks through
+  and are accessed via `IwaCommandScheduler::From(provider)` and
+  `<IwaManager>::From(provider)` rather than getters on `WebAppProvider` or
+  methods on `WebAppCommandScheduler`. Core `:web_applications` code must
+  interact with IWA lifecycle hooks through
   [`WebAppIsolationDelegate`](web_app_isolation_delegate.h) and never depend on
   `:isolated_web_apps`.
 

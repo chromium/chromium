@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -190,8 +191,7 @@ void IwaInstaller::Start() {
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
             install_options_.web_bundle_id());
 
-    WebAppProvider::GetForWebApps(profile_)
-        ->scheduler()
+    IwaCommandScheduler::From(*WebAppProvider::GetForWebApps(profile_))
         .GetIsolatedWebAppBundleCachePath(
             url_info, install_options_.pinned_version(),
             IwaCacheClient::GetCurrentSessionType(),
@@ -225,16 +225,17 @@ void IwaInstaller::InstallFromCache(const base::FilePath& cache_file,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           install_options_.web_bundle_id());
 
-  WebAppProvider::GetForWebApps(profile_)->scheduler().InstallIsolatedWebApp(
-      url_info,
-      GetIsolatedWebAppInstallSource(install_source_type_,
-                                     std::move(cache_file),
-                                     IwaSourceBundleProdFileOp::kCopy),
-      std::move(version),
-      /*optional_keep_alive=*/nullptr,
-      /*optional_profile_keep_alive=*/nullptr,
-      base::BindOnce(&IwaInstaller::OnIwaInstalledFromCache,
-                     weak_factory_.GetWeakPtr()));
+  IwaCommandScheduler::From(*WebAppProvider::GetForWebApps(profile_))
+      .InstallIsolatedWebApp(
+          url_info,
+          GetIsolatedWebAppInstallSource(install_source_type_,
+                                         std::move(cache_file),
+                                         IwaSourceBundleProdFileOp::kCopy),
+          std::move(version),
+          /*optional_keep_alive=*/nullptr,
+          /*optional_profile_keep_alive=*/nullptr,
+          base::BindOnce(&IwaInstaller::OnIwaInstalledFromCache,
+                         weak_factory_.GetWeakPtr()));
 }
 
 void IwaInstaller::OnIwaInstalledFromCache(
@@ -393,15 +394,16 @@ void IwaInstaller::RunInstallFromInternetCommand(IwaVersion expected_version) {
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           install_options_.web_bundle_id());
 
-  WebAppProvider::GetForWebApps(profile_)->scheduler().InstallIsolatedWebApp(
-      url_info,
-      GetIsolatedWebAppInstallSource(install_source_type_, bundle_.path(),
-                                     IwaSourceBundleProdFileOp::kMove),
-      expected_version,
-      /*optional_keep_alive=*/nullptr,
-      /*optional_profile_keep_alive=*/nullptr,
-      base::BindOnce(&IwaInstaller::OnIwaInstalledFromInternet,
-                     weak_factory_.GetWeakPtr(), expected_version));
+  IwaCommandScheduler::From(*WebAppProvider::GetForWebApps(profile_))
+      .InstallIsolatedWebApp(
+          url_info,
+          GetIsolatedWebAppInstallSource(install_source_type_, bundle_.path(),
+                                         IwaSourceBundleProdFileOp::kMove),
+          expected_version,
+          /*optional_keep_alive=*/nullptr,
+          /*optional_profile_keep_alive=*/nullptr,
+          base::BindOnce(&IwaInstaller::OnIwaInstalledFromInternet,
+                         weak_factory_.GetWeakPtr(), expected_version));
 }
 
 void IwaInstaller::OnIwaInstalledFromInternet(
@@ -426,8 +428,7 @@ void IwaInstaller::OnIwaInstalledFromInternet(
     IsolatedWebAppUrlInfo url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
             install_options_.web_bundle_id());
-    WebAppProvider::GetForWebApps(profile_)
-        ->scheduler()
+    IwaCommandScheduler::From(*WebAppProvider::GetForWebApps(profile_))
         .CopyIsolatedWebAppBundleToCache(
             url_info, IwaCacheClient::GetCurrentSessionType(),
             base::BindOnce(&IwaInstaller::OnBundleCopiedToCache,

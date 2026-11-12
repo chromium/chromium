@@ -50,6 +50,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
@@ -2000,7 +2001,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
                      CleanupOrphanedIsolatedWebAppsCommandError>>
       future;
-  provider().scheduler().CleanupOrphanedIsolatedApps(future.GetCallback());
+  IwaCommandScheduler::From(provider())
+      .CleanupOrphanedIsolatedApps(future.GetCallback());
   const bool command_successful =
       future
           .Get<base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,

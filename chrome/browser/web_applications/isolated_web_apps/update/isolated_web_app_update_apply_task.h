@@ -25,10 +25,10 @@ class ScopedProfileKeepAlive;
 
 namespace web_app {
 
-class WebAppCommandScheduler;
+class IwaCommandScheduler;
 
 // This task is responsible for applying a pending Isolated Web App update by
-// calling `WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate`.
+// calling `IwaCommandScheduler::ApplyPendingIsolatedWebAppUpdate`.
 class IsolatedWebAppUpdateApplyTask {
  public:
   using CompletionCallback =
@@ -38,7 +38,7 @@ class IsolatedWebAppUpdateApplyTask {
       IsolatedWebAppUrlInfo url_info,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      WebAppCommandScheduler& command_scheduler,
+      IwaCommandScheduler& command_scheduler,
       Profile* profile);
   ~IsolatedWebAppUpdateApplyTask();
 
@@ -71,7 +71,7 @@ class IsolatedWebAppUpdateApplyTask {
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
-  raw_ref<WebAppCommandScheduler> command_scheduler_;
+  raw_ref<IwaCommandScheduler> command_scheduler_;
   raw_ref<Profile> profile_;
 
   base::DictValue debug_log_;

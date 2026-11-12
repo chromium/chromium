@@ -15,12 +15,12 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_bundle_cache_path_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
@@ -96,8 +96,9 @@ class RemoveObsoleteBundleVersionsCacheCommandTest
       base::OnceCallback<void(RemoveObsoleteBundleVersionsResult)> callback) {
     auto url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
-    fake_provider().scheduler().RemoveObsoleteIsolatedWebAppVersionsCache(
-        url_info, GetSessionType(), std::move(callback));
+    IwaCommandScheduler::From(fake_provider())
+        .RemoveObsoleteIsolatedWebAppVersionsCache(url_info, GetSessionType(),
+                                                   std::move(callback));
   }
 
   std::unique_ptr<BundledIsolatedWebApp> CreateApp(const std::string& version) {

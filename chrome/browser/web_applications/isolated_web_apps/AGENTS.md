@@ -22,14 +22,15 @@ permissions, and `isolated-app://` navigation/URLLoader integration.
 
 ## Architectural & Locking Invariants
 
-- **Manager Ownership & Lookup (`UnownedUserDataHost`):** All five per-profile
-  IWA managers (`IsolatedWebAppDevInstallManager`,
-  `IsolatedWebAppPolicyManager`, `IsolatedWebAppUserInstalledManager`,
-  `IsolatedWebAppUpdateManager`, and ChromeOS `IwaBundleCacheManager`) are owned
-  by `WebAppIsolationDelegateImpl` in `:isolated_web_apps`, attach to
-  `WebAppProvider::unowned_user_data_host()` via `ui::ScopedUnownedUserData`,
-  and are accessed externally via `<Manager>::From(provider)` (never via getters
-  on `WebAppProvider`).
+- **Subsystem Ownership & Lookup (`UnownedUserDataHost`):**
+  `IwaCommandScheduler` and all five per-profile IWA managers
+  (`IsolatedWebAppDevInstallManager`, `IsolatedWebAppPolicyManager`,
+  `IsolatedWebAppUserInstalledManager`, `IsolatedWebAppUpdateManager`, and
+  ChromeOS `IwaBundleCacheManager`) are owned by `WebAppIsolationDelegateImpl`
+  in `:isolated_web_apps`, attach to `WebAppProvider::unowned_user_data_host()`
+  via `ui::ScopedUnownedUserData`, and are accessed externally via
+  `IwaCommandScheduler::From(provider)` and `<Manager>::From(provider)` (never
+  via getters on `WebAppProvider`).
 - **Two-Phase Atomic Updates:** After `IsolatedWebAppUpdateCheckAndPrepareTask`
   downloads a candidate bundle, IWA updates are split into
   `IsolatedWebAppUpdatePrepareAndStoreCommand` (copies/moves the bundle into

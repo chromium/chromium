@@ -25,7 +25,7 @@
 #include "net/base/net_errors.h"
 
 namespace web_app {
-class WebAppCommandScheduler;
+class IwaCommandScheduler;
 class WebAppRegistrar;
 
 class IwaUpdateCheckAndPrepareTaskParams {
@@ -86,7 +86,7 @@ class IsolatedWebAppUpdateCheckAndPrepareTask {
 
   IsolatedWebAppUpdateCheckAndPrepareTask(
       IwaUpdateCheckAndPrepareTaskParams task_params,
-      WebAppCommandScheduler& command_scheduler,
+      IwaCommandScheduler& command_scheduler,
       WebAppRegistrar& registrar,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile& profile);
@@ -153,7 +153,7 @@ class IsolatedWebAppUpdateCheckAndPrepareTask {
 
   const IwaUpdateCheckAndPrepareTaskParams task_params_;
 
-  raw_ref<WebAppCommandScheduler> command_scheduler_;
+  raw_ref<IwaCommandScheduler> command_scheduler_;
   raw_ref<WebAppRegistrar> registrar_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Set on Start:

@@ -14,11 +14,11 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -131,8 +131,9 @@ class CleanupBundleCacheCommandTest
   void ScheduleCommand(
       const std::vector<web_package::SignedWebBundleId>& iwas_to_keep_in_cache,
       Callback callback) {
-    fake_provider().scheduler().CleanupIsolatedWebAppBundleCache(
-        iwas_to_keep_in_cache, GetSessionType(), std::move(callback));
+    IwaCommandScheduler::From(fake_provider())
+        .CleanupIsolatedWebAppBundleCache(
+            iwas_to_keep_in_cache, GetSessionType(), std::move(callback));
   }
 
   void RestrictDirectoryPermission(const base::FilePath& dir) {

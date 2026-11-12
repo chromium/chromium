@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/locks/lock.h"
@@ -47,7 +48,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -196,12 +196,13 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
     base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,
                                           InstallIsolatedWebAppCommandError>>
         test_future;
-    fake_provider().scheduler().InstallIsolatedWebApp(
-        parameters.url_info,
-        parameters.install_source.value_or(
-            IsolatedWebAppInstallSource::FromDevUi(CreateDevProxySource())),
-        parameters.expected_version, /* optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, test_future.GetCallback());
+    IwaCommandScheduler::From(fake_provider())
+        .InstallIsolatedWebApp(
+            parameters.url_info,
+            parameters.install_source.value_or(
+                IsolatedWebAppInstallSource::FromDevUi(CreateDevProxySource())),
+            parameters.expected_version, /* optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr, test_future.GetCallback());
     return test_future.Take();
   }
 

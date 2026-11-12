@@ -893,6 +893,7 @@ source_set("test_support") {
     "//chrome/browser/ui/webui/web_app_internals",
     "//chrome/browser/web_applications:features",
     "//chrome/browser/web_applications/app_service",
+    "//chrome/browser/web_applications/isolated_web_apps",
     "//ui/events:test_support",
     "//ui/views:test_support",
   ]

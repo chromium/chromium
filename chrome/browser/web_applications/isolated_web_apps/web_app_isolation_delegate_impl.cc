@@ -42,6 +42,7 @@ WebAppIsolationDelegateImpl::~WebAppIsolationDelegateImpl() = default;
 void WebAppIsolationDelegateImpl::SetProvider(
     base::PassKey<WebAppProvider> pass_key,
     WebAppProvider& provider) {
+  command_scheduler_.SetProvider(pass_key, provider);
   dev_install_manager_.SetProvider(pass_key, provider);
   policy_manager_.SetProvider(pass_key, provider);
   user_installed_manager_.SetProvider(pass_key, provider);
@@ -120,6 +121,7 @@ WebAppIsolationDelegateImpl::WebAppIsolationDelegateImpl(
     Profile* profile,
     ui::UnownedUserDataHost& unowned_user_data_host)
     : profile_(*profile),
+      command_scheduler_(*profile_, unowned_user_data_host),
       dev_install_manager_(*profile_, unowned_user_data_host),
       policy_manager_(&*profile_, unowned_user_data_host),
       user_installed_manager_(unowned_user_data_host),

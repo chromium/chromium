@@ -32,9 +32,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/model/iwa_update_info.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
@@ -555,12 +555,14 @@ void IsolatedWebAppDevInstallManager::OnGetIsolatedWebAppUrlInfo(
     return;
   }
 
-  provider_->scheduler().InstallIsolatedWebApp(
-      url_info.value(), install_source, /*expected_version=*/std::nullopt,
-      std::move(keep_alive), std::move(optional_profile_keep_alive),
-      base::BindOnce(&IsolatedWebAppDevInstallManager::OnInstallIsolatedWebApp,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      std::move(optional_update_info), FROM_HERE);
+  IwaCommandScheduler::From(*provider_)
+      .InstallIsolatedWebApp(
+          url_info.value(), install_source, /*expected_version=*/std::nullopt,
+          std::move(keep_alive), std::move(optional_profile_keep_alive),
+          base::BindOnce(
+              &IsolatedWebAppDevInstallManager::OnInstallIsolatedWebApp,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          std::move(optional_update_info), FROM_HERE);
 }
 
 void IsolatedWebAppDevInstallManager::OnInstallIsolatedWebApp(

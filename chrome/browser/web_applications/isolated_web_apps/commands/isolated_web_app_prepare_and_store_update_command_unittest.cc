@@ -19,8 +19,10 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -28,7 +30,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -120,14 +121,15 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
       bool allow_downgrades = false) {
     base::test::TestFuture<IsolatedWebAppUpdatePrepareAndStoreCommandResult>
         future;
-    provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
-        IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            IwaSourceBundleWithModeAndFileOp(
-                update_bundle.path(),
-                IwaSourceBundleModeAndFileOp::kProdModeMove),
-            update_bundle.version(), allow_downgrades),
-        url_info, /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    IwaCommandScheduler::From(fake_provider())
+        .PrepareAndStoreIsolatedWebAppUpdate(
+            IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
+                IwaSourceBundleWithModeAndFileOp(
+                    update_bundle.path(),
+                    IwaSourceBundleModeAndFileOp::kProdModeMove),
+                update_bundle.version(), allow_downgrades),
+            url_info, /*optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
 
     return future.Take();
   }

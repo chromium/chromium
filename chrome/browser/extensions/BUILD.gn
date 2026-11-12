@@ -1877,6 +1877,7 @@ source_set("chrome_extensions_browser_client") {
     deps += [
       "//chrome/browser/custom_handlers",
       "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/isolated_web_apps",
       "//components/webapps/isolated_web_apps",
     ]
   }
@@ -2743,6 +2744,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/interstitials:browser_tests",
       "//chrome/browser/ui/webui/location_internals:browser_tests",
       "//chrome/browser/ui/webui/policy:browser_tests",
+      "//chrome/browser/web_applications/isolated_web_apps",
       "//components/keep_alive_registry",
       "//components/webapps/isolated_web_apps/test_support",
     ]

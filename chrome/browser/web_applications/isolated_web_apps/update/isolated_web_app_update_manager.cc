@@ -42,11 +42,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_rotation_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_check_and_prepare_task.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -127,14 +127,15 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
     auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
         &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
 
-    provider_->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
-        IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            location, /*expected_version=*/std::nullopt),
-        url_info, /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr,
-        base::BindOnce(&LocalDevModeUpdateDiscoverer::OnUpdatePrepared,
-                       weak_factory_.GetWeakPtr(), std::move(keep_alive),
-                       std::move(profile_keep_alive), std::move(callback)));
+    IwaCommandScheduler::From(*provider_)
+        .PrepareAndStoreIsolatedWebAppUpdate(
+            IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
+                location, /*expected_version=*/std::nullopt),
+            url_info, /*optional_keep_alive=*/nullptr,
+            /*optional_profile_keep_alive=*/nullptr,
+            base::BindOnce(&LocalDevModeUpdateDiscoverer::OnUpdatePrepared,
+                           weak_factory_.GetWeakPtr(), std::move(keep_alive),
+                           std::move(profile_keep_alive), std::move(callback)));
   }
 
  private:
@@ -367,7 +368,7 @@ void IsolatedWebAppUpdateManager::Start() {
             KeepAliveRestartOption::DISABLED),
         std::make_unique<ScopedProfileKeepAlive>(
             &*profile_, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate),
-        provider_->scheduler(), &*profile_));
+        IwaCommandScheduler::From(*provider_), &*profile_));
   }
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
@@ -497,7 +498,7 @@ void IsolatedWebAppUpdateManager::DiscoverAndPrepareUpdate(
       IwaUpdateCheckAndPrepareTaskParams(update_manifest_url, update_channel,
                                          allow_downgrades, pinned_version,
                                          url_info, dev_mode),
-      provider_->scheduler(), provider_->registrar_unsafe(),
+      IwaCommandScheduler::From(*provider_), provider_->registrar_unsafe(),
       profile_->GetURLLoaderFactory(), *profile_));
   task_queue_.MaybeStartNextTask();
 }
@@ -589,7 +590,7 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoverAndPrepareTask(
           update_options.update_manifest_url, update_options.update_channel,
           update_options.allow_downgrades, update_options.pinned_version,
           url_info, /*dev_mode=*/false, update_manifest_check_only),
-      provider_->scheduler(), provider_->registrar_unsafe(),
+      IwaCommandScheduler::From(*provider_), provider_->registrar_unsafe(),
       profile_->GetURLLoaderFactory(), *profile_));
   return true;
 }
@@ -693,7 +694,7 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
 
   task_queue_.Push(std::make_unique<IsolatedWebAppUpdateApplyTask>(
       url_info, std::move(keep_alive), std::move(profile_keep_alive),
-      provider_->scheduler(), &*profile_));
+      IwaCommandScheduler::From(*provider_), &*profile_));
   std::move(on_update_apply_task_created).Run();
   task_queue_.MaybeStartNextTask();
 }
