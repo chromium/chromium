@@ -13872,6 +13872,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.FindHotKey.Floaty">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Logged when the user presses the find keyboard shortcut (Ctrl+F / Cmd+F)
+    while the Glic floating window (Floaty) has focus. Only logged on desktop
+    platforms (Windows, Mac, Linux, and ChromeOS).
+  </description>
+</action>
+
+<action name="Glic.FindHotKey.SidePanel">
+  <owner>perrier@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Logged when the user presses the find keyboard shortcut (Ctrl+F / Cmd+F)
+    while the Glic side panel has focus. Only logged on desktop platforms
+    (Windows, Mac, Linux, and ChromeOS).
+  </description>
+</action>
+
 <action name="Glic.FocusHotKey">
   <owner>andreaxg@google.com</owner>
   <owner>erikchen@chromium.org</owner>

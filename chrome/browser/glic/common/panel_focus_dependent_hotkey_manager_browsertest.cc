@@ -111,6 +111,57 @@ IN_PROC_BROWSER_TEST_F(PanelFocusDependentHotkeyManagerBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(PanelFocusDependentHotkeyManagerBrowserTest,
+                       FindHotkeySidePanel) {
+  base::UserActionTester user_action_tester;
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_OK(FocusGlic(instance));
+
+  TriggerHotkey(LocalHotkeyManager::Command::kFind);
+  ASSERT_OK(RunUntilEqual<int>(
+      [&]() {
+        return user_action_tester.GetActionCount("Glic.FindHotKey.SidePanel");
+      },
+      1, "Glic.FindHotKey.SidePanel was not recorded"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("Glic.FindHotKey.Floaty"));
+
+  // When the active browser tab holds focus instead of Glic, pressing Find
+  // should not emit Glic find hotkey actions.
+  content::WebContents* tab_contents =
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(tab_contents);
+  tab_contents->Focus();
+  ASSERT_OK(RunUntilEqual<bool>(
+      [&]() {
+        return instance->GetActiveEmbedder() &&
+               instance->GetActiveEmbedder()->HasFocus();
+      },
+      false, "Timed out waiting for Glic to lose focus"));
+
+  TriggerHotkey(LocalHotkeyManager::Command::kFind);
+  ASSERT_TRUE(content::ExecJs(tab_contents, "true"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount("Glic.FindHotKey.SidePanel"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("Glic.FindHotKey.Floaty"));
+}
+
+IN_PROC_BROWSER_TEST_F(PanelFocusDependentHotkeyManagerBrowserTest,
+                       FindHotkeyFloaty) {
+  base::UserActionTester user_action_tester;
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
+                       OpenGlicForActiveTabAndDetach());
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_OK(FocusGlic(instance));
+
+  views::View* glic_view = instance->GetActiveEmbedderGlicViewForTesting();
+  ASSERT_TRUE(glic_view);
+  ASSERT_TRUE(glic_view->GetWidget());
+  EXPECT_FALSE(glic_view->GetWidget()->GetFocusManager()->ProcessAccelerator(
+      GetAccelerator(LocalHotkeyManager::Command::kFind)));
+  EXPECT_EQ(1, user_action_tester.GetActionCount("Glic.FindHotKey.Floaty"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount("Glic.FindHotKey.SidePanel"));
+}
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 class PanelFocusDependentPrintHotkeyBrowserTestBase : public GlicBrowserTest {
  protected:

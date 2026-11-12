@@ -64,6 +64,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     kPanelToggle,
     // Print the web client.
     kPrint,
+    // Find in the web client.
+    kFind,
   };
 
   class Panel {
@@ -77,6 +79,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual void Zoom(mojom::ZoomAction action, ZoomSource source) = 0;
     virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) {}
     virtual bool Print();
+    virtual bool Find();
     virtual BrowserWindowInterface* GetBrowserWindowInterface();
 #if !BUILDFLAG(IS_ANDROID)
     virtual bool HasSelectionOverlay() = 0;
@@ -107,6 +110,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
         return "kPanelToggle";
       case Command::kPrint:
         return "kPrint";
+      case Command::kFind:
+        return "kFind";
     }
   }
 

@@ -297,6 +297,11 @@ bool GlicSidePanelUi::Print() {
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
+bool GlicSidePanelUi::Find() {
+  base::RecordAction(base::UserMetricsAction("Glic.FindHotKey.SidePanel"));
+  return false;
+}
+
 bool GlicSidePanelUi::HasSelectionOverlay() {
   if (!tab_ || !tab_->IsActivated()) {
     return false;

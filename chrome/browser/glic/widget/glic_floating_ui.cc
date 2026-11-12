@@ -239,6 +239,11 @@ bool GlicFloatingUi::Print() {
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
+bool GlicFloatingUi::Find() {
+  base::RecordAction(base::UserMetricsAction("Glic.FindHotKey.Floaty"));
+  return false;
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 bool GlicFloatingUi::HasSelectionOverlay() {
   tabs::TabInterface* focused_tab =

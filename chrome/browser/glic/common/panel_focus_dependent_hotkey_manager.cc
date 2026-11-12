@@ -30,6 +30,7 @@ static constexpr std::array kSupportedCommands = {
 // evaluates unhandled accelerators twice per KeyEvent.
 #if !BUILDFLAG(IS_ANDROID)
     glic::LocalHotkeyManager::Command::kPrint,
+    glic::LocalHotkeyManager::Command::kFind,
 #endif
 };
 
@@ -96,6 +97,8 @@ bool PanelFocusDependentHotkeyManager::AcceleratorPressed(
 #if !BUILDFLAG(IS_ANDROID)
     case LocalHotkeyManager::Command::kPrint:
       return panel_->Print();
+    case LocalHotkeyManager::Command::kFind:
+      return panel_->Find();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     default:
