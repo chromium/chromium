@@ -62,8 +62,7 @@
   case a handler synchronously destroys the session, and that
   `ProtoStreamClient` defers `Disconnect()`/`Connect()` via `teardown_deferred_`
   while `notifying_observers_` is true.
-- [Check] Check that all histograms use the `Browser.Actuator.*` prefix (not
-  `BrowserActuator.*`).
+- [Check] Check that all histograms use the `StreamTransport.*` prefix.
 
 ## 4. Build & Test
 
