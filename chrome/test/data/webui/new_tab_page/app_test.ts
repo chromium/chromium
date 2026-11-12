@@ -4189,7 +4189,29 @@ suite('NewTabPageAppTest', () => {
     teardown(() => {
       document.body.style.margin = '';
       document.documentElement.style.removeProperty('--cr-animations-disabled');
+      document.documentElement.dir = '';
     });
+
+    function appendSlottedBackgroundImage(): HTMLIFrameElement {
+      const backgroundImage = document.createElement('iframe');
+      backgroundImage.id = 'backgroundImage';
+      backgroundImage.slot = 'backgroundImage';
+      app.appendChild(backgroundImage);
+      return backgroundImage;
+    }
+
+    // Returns the subpixel fixed-viewport rect. Avoids window.innerWidth/Height
+    // (integer-rounded, exceeding LAYOUT_TOLERANCE_PX under fractional
+    // devicePixelRatio on Android) and #content (100vh = large viewport height,
+    // which includes Android's top browser controls unlike position: fixed).
+    function getViewportRect(): DOMRect {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position: fixed; inset: 0; pointer-events: none;';
+      document.body.appendChild(probe);
+      const rect = probe.getBoundingClientRect();
+      probe.remove();
+      return rect;
+    }
 
     async function setThreadsRailEnabled(enabled: boolean) {
       // In hybrid mode, the browser only enables the rail with an
@@ -4389,6 +4411,173 @@ suite('NewTabPageAppTest', () => {
           rhsWrapper.getBoundingClientRect().width / 2,
           parseFloat(attributionStyle.maxWidth), LAYOUT_TOLERANCE_PX);
     });
+
+    test(
+        'background image fills the window when feature disabled', async () => {
+          await setThreadsRailEnabled(false);
+          const backgroundImage = appendSlottedBackgroundImage();
+          const container = $$<HTMLElement>(app, '#backgroundImageContainer');
+          assertTrue(!!container);
+
+          assertEquals(
+              $$(app, 'slot[name="backgroundImage"]'),
+              backgroundImage.assignedSlot);
+          const viewportRect = getViewportRect();
+          const containerRect = container.getBoundingClientRect();
+          assertNear(0, containerRect.left, LAYOUT_TOLERANCE_PX);
+          assertNear(0, containerRect.top, LAYOUT_TOLERANCE_PX);
+          assertNear(
+              viewportRect.width, containerRect.width, LAYOUT_TOLERANCE_PX);
+          assertNear(
+              viewportRect.height, containerRect.height, LAYOUT_TOLERANCE_PX);
+
+          const imageRect = backgroundImage.getBoundingClientRect();
+          assertNear(0, imageRect.left, LAYOUT_TOLERANCE_PX);
+          assertNear(0, imageRect.top, LAYOUT_TOLERANCE_PX);
+          assertNear(viewportRect.width, imageRect.width, LAYOUT_TOLERANCE_PX);
+          assertNear(
+              viewportRect.height, imageRect.height, LAYOUT_TOLERANCE_PX);
+        });
+
+    test('background image fills the RHS when feature enabled', async () => {
+      await setThreadsRailEnabled(true);
+      const backgroundImage = appendSlottedBackgroundImage();
+      const container = $$<HTMLElement>(app, '#backgroundImageContainer');
+      assertTrue(!!container);
+      const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+      assertTrue(!!rhsWrapper);
+      assertStyle(container, 'overflow', 'hidden');
+
+      const viewportRect = getViewportRect();
+      setLhsWidth(200);
+      let containerRect = container.getBoundingClientRect();
+      let imageRect = backgroundImage.getBoundingClientRect();
+      assertNear(200, containerRect.left, LAYOUT_TOLERANCE_PX);
+      assertNear(
+          rhsWrapper.getBoundingClientRect().width, containerRect.width,
+          LAYOUT_TOLERANCE_PX);
+      assertNear(
+          viewportRect.height, containerRect.height, LAYOUT_TOLERANCE_PX);
+      assertNear(viewportRect.width, imageRect.width, LAYOUT_TOLERANCE_PX);
+      assertNear(100, imageRect.left, LAYOUT_TOLERANCE_PX);
+
+      setLhsWidth(64);
+      containerRect = container.getBoundingClientRect();
+      imageRect = backgroundImage.getBoundingClientRect();
+      assertNear(64, containerRect.left, LAYOUT_TOLERANCE_PX);
+      assertNear(
+          rhsWrapper.getBoundingClientRect().width, containerRect.width,
+          LAYOUT_TOLERANCE_PX);
+      assertNear(viewportRect.width, imageRect.width, LAYOUT_TOLERANCE_PX);
+      assertNear(32, imageRect.left, LAYOUT_TOLERANCE_PX);
+    });
+
+    test(
+        'background image fills the RHS in RTL when feature enabled',
+        async () => {
+          document.documentElement.dir = 'rtl';
+          await setThreadsRailEnabled(true);
+          const backgroundImage = appendSlottedBackgroundImage();
+          const container = $$<HTMLElement>(app, '#backgroundImageContainer');
+          assertTrue(!!container);
+          const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+          assertTrue(!!rhsWrapper);
+
+          const viewportRect = getViewportRect();
+          setLhsWidth(200);
+          const containerRect = container.getBoundingClientRect();
+          const imageRect = backgroundImage.getBoundingClientRect();
+          assertNear(0, containerRect.left, LAYOUT_TOLERANCE_PX);
+          assertNear(
+              rhsWrapper.getBoundingClientRect().width, containerRect.width,
+              LAYOUT_TOLERANCE_PX);
+          assertNear(
+              viewportRect.width - 200, containerRect.right,
+              LAYOUT_TOLERANCE_PX);
+          assertNear(viewportRect.width, imageRect.width, LAYOUT_TOLERANCE_PX);
+          assertNear(-100, imageRect.left, LAYOUT_TOLERANCE_PX);
+        });
+
+    test(
+        'background image aligns to RHS edge for 3p theme positionX',
+        async () => {
+          await setThreadsRailEnabled(true);
+          const backgroundImage = appendSlottedBackgroundImage();
+          const viewportRect = getViewportRect();
+          setLhsWidth(200);
+
+          const theme = createTheme();
+          theme.backgroundImage = createBackgroundImage('https://img.png');
+          theme.backgroundImage.positionX = 'left';
+          callbackRouterRemote.setTheme(theme);
+          await callbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          let imageRect = backgroundImage.getBoundingClientRect();
+          assertNear(200, imageRect.left, LAYOUT_TOLERANCE_PX);
+          assertNear(viewportRect.width, imageRect.width, LAYOUT_TOLERANCE_PX);
+
+          theme.backgroundImage.positionX = 'right';
+          callbackRouterRemote.setTheme(theme);
+          await callbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          imageRect = backgroundImage.getBoundingClientRect();
+          assertNear(viewportRect.right, imageRect.right, LAYOUT_TOLERANCE_PX);
+          assertNear(viewportRect.width, imageRect.width, LAYOUT_TOLERANCE_PX);
+        });
+
+    test(
+        'background image stays fixed when RHS scrolls horizontally',
+        async () => {
+          await setThreadsRailEnabled(true);
+          const backgroundImage = appendSlottedBackgroundImage();
+          const container = $$<HTMLElement>(app, '#backgroundImageContainer');
+          assertTrue(!!container);
+          await setRhsWrapperWidth(100);
+
+          const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+          assertTrue(!!rhsWrapper);
+          const beforeContainerRect = container.getBoundingClientRect();
+          const beforeImageRect = backgroundImage.getBoundingClientRect();
+
+          rhsWrapper.scrollLeft = 10;
+          assertGT(rhsWrapper.scrollLeft, 0);
+
+          const afterContainerRect = container.getBoundingClientRect();
+          const afterImageRect = backgroundImage.getBoundingClientRect();
+          assertNear(
+              beforeContainerRect.left, afterContainerRect.left,
+              LAYOUT_TOLERANCE_PX);
+          assertNear(
+              beforeContainerRect.width, afterContainerRect.width,
+              LAYOUT_TOLERANCE_PX);
+          assertNear(
+              beforeImageRect.left, afterImageRect.left, LAYOUT_TOLERANCE_PX);
+          assertNear(
+              beforeImageRect.width, afterImageRect.width, LAYOUT_TOLERANCE_PX);
+        });
+
+    test(
+        'background image stays behind attribution when composebox opens',
+        async () => {
+          await setThreadsRailEnabled(true);
+          await showBackgroundImageAttribution();
+
+          const leftHandSide = $$(app, 'cr-left-hand-side');
+          assertTrue(!!leftHandSide);
+          leftHandSide.dispatchEvent(new CustomEvent('open-composebox'));
+          await microtasksFinished();
+
+          assertTrue(app.hasAttribute('show-composebox_'));
+          const container = $$(app, '#backgroundImageContainer');
+          const attribution = $$(app, '#backgroundImageAttribution');
+          assertTrue(!!container);
+          assertTrue(!!attribution);
+          assertTrue(
+              parseInt(getComputedStyle(container).zIndex, 10) <
+              parseInt(getComputedStyle(attribution).zIndex, 10));
+        });
 
     suite('Modules', () => {
       suiteSetup(() => {
