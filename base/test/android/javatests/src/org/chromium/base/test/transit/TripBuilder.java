@@ -411,6 +411,11 @@ public class TripBuilder {
                 mOriginStation.assertInPhase(Phase.ACTIVE);
                 mDestinationStation.requireToBeInSameTask(mOriginStation);
             }
+            for (Facility<?> facility : mDestinationStation.getDefaultFacilities()) {
+                if (!mFacilitiesToEnter.contains(facility)) {
+                    mFacilitiesToEnter.add(facility);
+                }
+            }
             for (Facility<?> facility : mFacilitiesToEnter) {
                 mDestinationStation.registerFacility(facility);
             }

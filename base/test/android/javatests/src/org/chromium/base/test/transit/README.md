@@ -377,6 +377,11 @@ As with `Stations`, concrete, app-specific implementations of Facility should be
 created in the Transit Layer declaring **Elements** and **transition
 methods**.
 
+A Station can declare **default Facilities** with `declareDefaultFacility()`.
+They are entered together with the Station in every transition to it, so UI
+that is usually present (e.g. a toolbar) can be modelled as a Facility and
+exited on its own when it goes away.
+
 [**`Facility`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Facility&ss=chromium
 
 ### State

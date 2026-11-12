@@ -41,6 +41,7 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
     // All facilities that have ever been entered. Exited ones remain so that the history is can
     // be queried.
     private final List<Facility<?>> mFacilities = new ArrayList<>();
+    private final List<Facility<?>> mDefaultFacilities = new ArrayList<>();
     private final String mName;
     private final @Nullable Class<HostActivityT> mActivityClass;
 
@@ -92,6 +93,23 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
     void registerFacility(Facility<?> facility) {
         facility.setHostStation(this);
         mFacilities.add(facility);
+    }
+
+    /**
+     * Declare a Facility that is entered together with this Station in every Trip to it.
+     *
+     * <p>Call before the Station is transitioned to, e.g. in its constructor. Passing the same
+     * Facility to {@link TripBuilder#arriveAt(Station, Facility[])} as well is fine; it is entered
+     * once.
+     */
+    protected <FacilityT extends Facility<?>> FacilityT declareDefaultFacility(FacilityT facility) {
+        assertInPhase(Phase.NEW);
+        mDefaultFacilities.add(facility);
+        return facility;
+    }
+
+    List<Facility<?>> getDefaultFacilities() {
+        return mDefaultFacilities;
     }
 
     @Override
