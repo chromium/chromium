@@ -53,6 +53,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -293,8 +294,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleServerTimingRequest(
   response->set_code(net::HTTP_OK);
   response->set_content_type("text/html");
   response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-  response->AddCustomHeader("Access-Control-Expose-Headers",
-                            "Server-Timing, Timing-Allow-Origin");
+  response->AddCustomHeader("Access-Control-Expose-Headers", "Server-Timing");
   response->AddCustomHeader("Server-Timing", "db;dur=53");
   if (request.relative_url == "/server_timing_test_tao") {
     response->AddCustomHeader("Timing-Allow-Origin", "*");
@@ -1072,6 +1072,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                        CorsResponseHeaderFilteringOnNavigation) {
   StartServerAndNavigateToSetup();
   const char kPageUrl[] = "/service_worker/in-scope";
+  const char kExposedPageUrl[] = "/service_worker/in-scope?exposed";
   const char kWorkerUrl[] = "/service_worker/worker_script";
 
   net::EmbeddedTestServer cross_origin_server;
@@ -1079,7 +1080,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   cross_origin_server.RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url != "/api") {
+        if (request.relative_url != "/api" &&
+            request.relative_url != "/api-exposed") {
           return nullptr;
         }
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -1087,13 +1089,24 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
         response->set_content_type("text/html");
         response->AddCustomHeader("Access-Control-Allow-Origin", "*");
         response->AddCustomHeader("Server-Timing", "metric;desc=description");
-        response->set_content("<title>Controlled</title>");
+        response->AddCustomHeader("Content-Security-Policy-Report-Only",
+                                  "img-src 'none'");
+        if (request.relative_url == "/api-exposed") {
+          response->AddCustomHeader("Access-Control-Expose-Headers",
+                                    "Content-Security-Policy-Report-Only");
+          response->set_content(
+              "<body><title>Controlled Exposed</title></body>");
+        } else {
+          response->set_content("<body><title>Controlled</title></body>");
+        }
         return response;
       }));
   ASSERT_TRUE(cross_origin_server.Start());
 
   const std::string cross_origin_url =
       cross_origin_server.GetURL("/api").spec();
+  const std::string cross_origin_exposed_url =
+      cross_origin_server.GetURL("/api-exposed").spec();
 
   net::EmbeddedTestServer server;
   server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
@@ -1109,10 +1122,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
         response->set_content(base::StringPrintf(
             "self.addEventListener('fetch', e => {\n"
             "  if (e.request.mode === 'navigate') {\n"
-            "    e.respondWith(fetch('%s', {mode: 'cors'}));\n"
+            "    const target = e.request.url.endsWith('?exposed') ? '%s' : "
+            "'%s';\n"
+            "    e.respondWith(fetch(target, {mode: 'cors'}));\n"
             "  }\n"
             "});",
-            cross_origin_url.c_str()));
+            cross_origin_exposed_url.c_str(), cross_origin_url.c_str()));
         return response;
       }));
   ASSERT_TRUE(server.Start());
@@ -1129,14 +1144,68 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                      blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   observer.Wait();
 
-  const std::u16string title = u"Controlled";
-  TitleWatcher title_watcher(shell()->web_contents(), title);
-  EXPECT_TRUE(NavigateToURL(shell(), server.GetURL(kPageUrl)));
-  EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
+  {
+    const std::u16string title = u"Controlled";
+    TitleWatcher title_watcher(shell()->web_contents(), title);
+    ASSERT_TRUE(NavigateToURL(shell(), server.GetURL(kPageUrl)));
+    EXPECT_EQ(title, title_watcher.WaitAndGetTitle());
 
-  EXPECT_EQ(0, EvalJs(shell(),
-                      "performance.getEntriesByType('navigation')[0]"
-                      ".serverTiming.length;"));
+    EXPECT_EQ(0, EvalJs(shell(),
+                        "performance.getEntriesByType('navigation')[0]"
+                        ".serverTiming.length;"));
+
+    // Unexposed Content-Security-Policy-Report-Only header must not be applied
+    // to the navigated document.
+    auto* rfh = static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame());
+    ASSERT_TRUE(rfh->policy_container_host());
+    EXPECT_TRUE(rfh->policy_container_host()
+                    ->policies()
+                    .content_security_policies.empty());
+    EXPECT_EQ("error", EvalJs(shell(), R"(
+      new Promise(resolve => {
+        document.addEventListener('securitypolicyviolation',
+                                  e => resolve('violation:' + e.originalPolicy),
+                                  {once: true});
+        const img = document.createElement('img');
+        img.onload = () => resolve('loaded');
+        img.onerror = () => resolve('error');
+        img.src = '/nonexistent.png';
+        document.body.appendChild(img);
+      })
+    )"));
+  }
+
+  {
+    const std::u16string exposed_title = u"Controlled Exposed";
+    TitleWatcher title_watcher(shell()->web_contents(), exposed_title);
+    ASSERT_TRUE(NavigateToURL(shell(), server.GetURL(kExposedPageUrl)));
+    EXPECT_EQ(exposed_title, title_watcher.WaitAndGetTitle());
+
+    // Explicitly exposed Content-Security-Policy-Report-Only header should be
+    // applied to the navigated document.
+    auto* rfh = static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetPrimaryMainFrame());
+    ASSERT_TRUE(rfh->policy_container_host());
+    const auto& policies =
+        rfh->policy_container_host()->policies().content_security_policies;
+    ASSERT_EQ(1u, policies.size());
+    EXPECT_EQ(network::mojom::ContentSecurityPolicyType::kReport,
+              policies[0]->header->type);
+    EXPECT_EQ("img-src 'none'", policies[0]->header->header_value);
+    EXPECT_EQ("violation:img-src 'none'", EvalJs(shell(), R"(
+      new Promise(resolve => {
+        document.addEventListener('securitypolicyviolation',
+                                  e => resolve('violation:' + e.originalPolicy),
+                                  {once: true});
+        const img = document.createElement('img');
+        img.onload = () => setTimeout(() => resolve('loaded'), 0);
+        img.onerror = () => setTimeout(() => resolve('no-violation'), 0);
+        img.src = '/nonexistent.png';
+        document.body.appendChild(img);
+      })
+    )"));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,

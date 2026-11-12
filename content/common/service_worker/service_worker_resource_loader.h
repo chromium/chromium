@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-forward.h"
+#include "url/origin.h"
 
 namespace net {
 struct RedirectInfo;
@@ -103,6 +104,15 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
       network::mojom::RequestMode request_mode,
       network::mojom::RedirectMode redirect_mode,
       const blink::mojom::FetchAPIResponsePtr& response);
+
+  // Evaluates the Timing-Allow-Origin check
+  // (https://fetch.spec.whatwg.org/#concept-tao-check) for |initiator| against
+  // |response|'s internal response headers (falling back to
+  // |response.parsed_headers->timing_allow_origin| when raw headers are not
+  // populated).
+  static bool PassesTimingAllowOriginCheck(
+      const blink::mojom::FetchAPIResponse& response,
+      const url::Origin& initiator);
 
   // Validates the response from the static router's cache source and records
   // the result to UMA. Returns true if the response is valid.

@@ -277,13 +277,24 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
 
 mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
     const KURL& request_url) {
+  return PopulateFetchAPIResponseInternal(request_url, /*parse_headers=*/true);
+}
+
+mojom::blink::FetchAPIResponsePtr
+FetchResponseData::PopulateFetchAPIResponseInternal(const KURL& request_url,
+                                                    bool parse_headers) {
   if (internal_response_) {
     mojom::blink::FetchAPIResponsePtr response =
-        internal_response_->PopulateFetchAPIResponse(request_url);
+        internal_response_->PopulateFetchAPIResponseInternal(
+            request_url, /*parse_headers=*/type_ != Type::kCors);
     response->response_type = type_;
     response->response_source = response_source_;
     response->cors_exposed_header_names =
         HeaderSetToVector(cors_exposed_header_names_);
+    if (type_ == Type::kCors && parse_headers) {
+      response->parsed_headers = ParseHeaders(
+          HeaderList()->GetAsRawString(status_, status_message_), request_url);
+    }
     return response;
   }
   mojom::blink::FetchAPIResponsePtr response =
@@ -308,8 +319,10 @@ mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
   response->timing_allow_passed = TimingAllowPassed();
   for (const auto& header : HeaderList()->List())
     response->headers.insert(header.first, header.second);
-  response->parsed_headers = ParseHeaders(
-      HeaderList()->GetAsRawString(status_, status_message_), request_url);
+  if (parse_headers) {
+    response->parsed_headers = ParseHeaders(
+        HeaderList()->GetAsRawString(status_, status_message_), request_url);
+  }
   if (auth_challenge_info_) {
     response->auth_challenge_info = *auth_challenge_info_;
   }

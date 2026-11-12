@@ -164,6 +164,10 @@ class CORE_EXPORT FetchResponseData final
   void Trace(Visitor*) const;
 
  private:
+  mojom::blink::FetchAPIResponsePtr PopulateFetchAPIResponseInternal(
+      const KURL& request_url,
+      bool parse_headers);
+
   network::mojom::FetchResponseType type_;
   int64_t padding_;
   network::mojom::FetchResponseSource response_source_;

@@ -291,11 +291,19 @@ class FakeControllerServiceWorker
 
   void SetTimingAllowOrigin(const std::string& tao_string) {
     parsed_headers_ = network::mojom::ParsedHeaders::New();
-    parsed_headers_->timing_allow_origin =
-        network::ParseTimingAllowOrigin(tao_string);
+    if (response_type_ == network::mojom::FetchResponseType::kCors) {
+      extra_headers_ = {{"Timing-Allow-Origin", tao_string}};
+    } else {
+      extra_headers_.clear();
+      parsed_headers_->timing_allow_origin =
+          network::ParseTimingAllowOrigin(tao_string);
+    }
   }
 
-  void ResetTimingAllowOrigin() { parsed_headers_.reset(); }
+  void ResetTimingAllowOrigin() {
+    extra_headers_.clear();
+    parsed_headers_.reset();
+  }
 
   void SetTimingAllowPassed(bool passed) { timing_allow_passed_ = passed; }
   void ResetTimingAllowPassed() { timing_allow_passed_ = true; }
@@ -320,17 +328,21 @@ class FakeControllerServiceWorker
     timing->respond_with_settled_time = base::TimeTicks::Now();
 
     switch (response_mode_) {
-      case ResponseMode::kDefault:
-        response_callback->OnResponse(
-            OkResponse(nullptr /* blob_body */, response_source_,
-                       response_time_, cache_storage_cache_name_,
-                       response_type_,
-                       parsed_headers_ ? parsed_headers_->Clone() : nullptr,
-                       timing_allow_passed_),
-            std::move(timing), /*errors=*/nullptr);
+      case ResponseMode::kDefault: {
+        auto response = OkResponse(
+            nullptr /* blob_body */, response_source_, response_time_,
+            cache_storage_cache_name_, response_type_,
+            parsed_headers_ ? parsed_headers_->Clone() : nullptr,
+            timing_allow_passed_);
+        for (const auto& pair : extra_headers_) {
+          response->headers.emplace(pair.first, pair.second);
+        }
+        response_callback->OnResponse(std::move(response), std::move(timing),
+                                      /*errors=*/nullptr);
         std::move(callback).Run(
             blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
+      }
       case ResponseMode::kAbort:
         std::move(callback).Run(
             blink::mojom::ServiceWorkerEventStatus::ABORTED);

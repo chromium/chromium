@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
@@ -16,6 +17,7 @@
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
@@ -67,6 +69,23 @@ bool ServiceWorkerResourceLoader::IsValidServiceWorkerResponse(
   }
 
   return true;
+}
+
+// static
+bool ServiceWorkerResourceLoader::PassesTimingAllowOriginCheck(
+    const blink::mojom::FetchAPIResponse& response,
+    const url::Origin& initiator) {
+  for (const auto& [name, value] : response.headers) {
+    if (base::EqualsCaseInsensitiveASCII(name, "Timing-Allow-Origin")) {
+      return network::TimingAllowOriginCheck(
+          network::ParseTimingAllowOrigin(value), initiator);
+    }
+  }
+  if (response.parsed_headers) {
+    return network::TimingAllowOriginCheck(
+        response.parsed_headers->timing_allow_origin, initiator);
+  }
+  return false;
 }
 
 bool ServiceWorkerResourceLoader::IsValidStaticRouterResponse(

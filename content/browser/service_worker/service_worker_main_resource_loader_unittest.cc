@@ -2493,9 +2493,15 @@ TEST_P(ServiceWorkerMainResourceLoaderTimingAllowTest, CheckTimingAllowPassed) {
   response->response_type = test_case.response_type;
   response->timing_allow_passed = test_case.response_timing_allow_passed;
   if (test_case.timing_allow_origin) {
-    response->parsed_headers = network::mojom::ParsedHeaders::New();
-    response->parsed_headers->timing_allow_origin =
-        network::ParseTimingAllowOrigin(*test_case.timing_allow_origin);
+    if (test_case.response_type == network::mojom::FetchResponseType::kCors) {
+      response->headers.insert(
+          {"Timing-Allow-Origin", *test_case.timing_allow_origin});
+      response->parsed_headers = network::mojom::ParsedHeaders::New();
+    } else {
+      response->parsed_headers = network::mojom::ParsedHeaders::New();
+      response->parsed_headers->timing_allow_origin =
+          network::ParseTimingAllowOrigin(*test_case.timing_allow_origin);
+    }
   }
 
   service_worker_->FinishRespondWithCustomResponse(std::move(response));

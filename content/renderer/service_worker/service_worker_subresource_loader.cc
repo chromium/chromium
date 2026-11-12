@@ -958,10 +958,8 @@ void ServiceWorkerSubresourceLoader::StartResponse(
     response_head_->timing_allow_passed = response->timing_allow_passed;
   } else if (response->timing_allow_passed &&
              resource_request_.request_initiator &&
-             response_head_->parsed_headers &&
-             network::TimingAllowOriginCheck(
-                 response_head_->parsed_headers->timing_allow_origin,
-                 *resource_request_.request_initiator)) {
+             PassesTimingAllowOriginCheck(
+                 *response, *resource_request_.request_initiator)) {
     response_head_->timing_allow_passed = true;
   }
 

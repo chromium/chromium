@@ -1386,10 +1386,8 @@ void ServiceWorkerMainResourceLoader::StartResponse(
              network::mojom::FetchResponseType::kBasic ||
          response_head_->response_type ==
              network::mojom::FetchResponseType::kDefault)) ||
-       (response_head_->parsed_headers &&
-        network::TimingAllowOriginCheck(
-            response_head_->parsed_headers->timing_allow_origin,
-            *resource_request_.request_initiator)))) {
+       PassesTimingAllowOriginCheck(*response,
+                                    *resource_request_.request_initiator))) {
     response_head_->timing_allow_passed = true;
   }
 

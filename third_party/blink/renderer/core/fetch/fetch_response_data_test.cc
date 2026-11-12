@@ -292,6 +292,49 @@ TEST_F(FetchResponseDataTest, ContentSecurityPolicy) {
             network::mojom::ContentSecurityPolicyType::kReport);
 }
 
+TEST_F(FetchResponseDataTest, ContentSecurityPolicyCorsFiltered) {
+  FetchResponseData* internal_response = CreateInternalResponse();
+  internal_response->HeaderList()->Append("content-security-policy",
+                                          "frame-ancestors 'none'");
+  internal_response->HeaderList()->Append("content-security-policy-report-only",
+                                          "img-src 'none'");
+
+  // Unexposed CSP headers should not be included in parsed_headers for a
+  // CORS-filtered response, while internal headers remain populated.
+  FetchResponseData* unexposed_cors_response =
+      internal_response->CreateCorsFilteredResponse(HTTPHeaderSet());
+  mojom::blink::FetchAPIResponsePtr unexposed_api_response =
+      unexposed_cors_response->PopulateFetchAPIResponse(
+          KURL("https://www.example.org"));
+  CheckHeaders(*unexposed_api_response);
+  EXPECT_EQ("frame-ancestors 'none'",
+            unexposed_api_response->headers.at("content-security-policy"));
+  EXPECT_EQ("img-src 'none'", unexposed_api_response->headers.at(
+                                  "content-security-policy-report-only"));
+  ASSERT_TRUE(unexposed_api_response->parsed_headers);
+  EXPECT_TRUE(
+      unexposed_api_response->parsed_headers->content_security_policy.empty());
+
+  // Explicitly CORS-exposed CSP headers should be included in parsed_headers.
+  FetchResponseData* exposed_cors_response =
+      internal_response->CreateCorsFilteredResponse(
+          {"content-security-policy", "content-security-policy-report-only"});
+  mojom::blink::FetchAPIResponsePtr exposed_api_response =
+      exposed_cors_response->PopulateFetchAPIResponse(
+          KURL("https://www.example.org"));
+  CheckHeaders(*exposed_api_response);
+  ASSERT_TRUE(exposed_api_response->parsed_headers);
+  const auto& exposed_csp =
+      exposed_api_response->parsed_headers->content_security_policy;
+  ASSERT_EQ(exposed_csp.size(), 2U);
+  EXPECT_EQ(exposed_csp[0]->header->type,
+            network::mojom::ContentSecurityPolicyType::kEnforce);
+  EXPECT_EQ(exposed_csp[0]->header->header_value, "frame-ancestors 'none'");
+  EXPECT_EQ(exposed_csp[1]->header->type,
+            network::mojom::ContentSecurityPolicyType::kReport);
+  EXPECT_EQ(exposed_csp[1]->header->header_value, "img-src 'none'");
+}
+
 TEST_F(FetchResponseDataTest, AuthChallengeInfo) {
   FetchResponseData* internal_response = CreateInternalResponse();
   net::AuthChallengeInfo auth_challenge_info;
