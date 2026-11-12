@@ -7,10 +7,13 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "base/memory/scoped_refptr.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
+#include "skia/ext/rgba_to_yuva.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "ui/gfx/geometry/rect.h"
@@ -215,25 +218,31 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> WrapAsI420VideoFrame(
 MEDIA_EXPORT VideoPixelFormat
 VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque);
 
-// Get the SkColorType for various formats and planes. This will CHECK if there
-// is no suitable SkColorType.
-MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
-                                             size_t plane);
+struct MEDIA_EXPORT VideoPixelFormatSkInfo {
+  SkYUVAInfo::PlaneConfig yuva_plane_config = SkYUVAInfo::PlaneConfig::kUnknown;
+  SkYUVAInfo::Subsampling yuva_subsampling = SkYUVAInfo::Subsampling::kUnknown;
+  std::array<SkColorType, SkYUVAInfo::kMaxPlanes> plane_color_types = {
+      kUnknown_SkColorType,
+      kUnknown_SkColorType,
+      kUnknown_SkColorType,
+      kUnknown_SkColorType,
+  };
+  std::array<SkAlphaType, SkYUVAInfo::kMaxPlanes> plane_alpha_types = {
+      kUnknown_SkAlphaType,
+      kUnknown_SkAlphaType,
+      kUnknown_SkAlphaType,
+      kUnknown_SkAlphaType,
+  };
+  // The number of significant bits per channel (e.g. 8, 10, 12, or 16), or 0
+  // if the format is not supported.
+  size_t bit_depth = 0;
 
-// This is the same as the above but will return kUnknown_SkColorType on
-// failure.
-MEDIA_EXPORT SkColorType SkColorTypeForPlaneNoCheck(VideoPixelFormat format,
-                                                    size_t plane);
+  skia::YUVBitAlignment bit_alignment = skia::YUVBitAlignment::kExact;
+};
 
-// The SkYUVAInfo::PlaneConfig for a VideoPixelFormat. This will return
-// SkYUVAInfo::PlaneConfig::kUnknown on failure.
-MEDIA_EXPORT SkYUVAInfo::PlaneConfig SkYUVAPlaneConfigForFormat(
-    VideoPixelFormat format);
-
-// The SkYUVAInfo::Subsampling for a VideoPixelFormat. This will return
-// SkYUVAInfo::Subsampling::kUnknown on failure.
-MEDIA_EXPORT SkYUVAInfo::Subsampling SkYUVASubsamplingForFormat(
-    VideoPixelFormat format);
+// Get the Skia plane configuration, subsampling, and per-plane color and alpha
+// types for a VideoPixelFormat.
+MEDIA_EXPORT VideoPixelFormatSkInfo GetSkInfoForFormat(VideoPixelFormat format);
 
 // Backs a VideoFrame with a SkImage. The created frame takes a ref on the
 // provided SkImage to make this operation zero copy. Only works with CPU

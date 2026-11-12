@@ -1466,18 +1466,17 @@ namespace {
 // Return an SkPixmap of `size` for the visible data of `plane` of `frame`.
 std::optional<SkPixmap> GetVisiblePlaneSkPixmap(
     const VideoFrame& frame,
+    const VideoPixelFormatSkInfo& sk_info,
     size_t plane,
     const SkISize& size,
     sk_sp<SkColorSpace> color_space) {
-  const auto color_type = SkColorTypeForPlaneNoCheck(frame.format(), plane);
-  if (color_type == kUnknown_SkColorType) {
+  if (sk_info.plane_color_types[plane] == kUnknown_SkColorType) {
     return std::nullopt;
   }
-  const auto alpha_type = SkColorTypeIsAlwaysOpaque(color_type)
-                              ? kOpaque_SkAlphaType
-                              : kUnpremul_SkAlphaType;
   auto pixmap = skia::MakeSkPixmap(
-      SkImageInfo::Make(size, color_type, alpha_type, std::move(color_space)),
+      SkImageInfo::Make(size, sk_info.plane_color_types[plane],
+                        sk_info.plane_alpha_types[plane],
+                        std::move(color_space)),
       frame.GetVisiblePlaneData(plane), frame.stride(plane));
   if (!pixmap || !pixmap->addr()) {
     return std::nullopt;
@@ -1491,14 +1490,13 @@ SkYUVAPixmaps VideoFrame::GetVisibleSkYUVAPixmaps() const {
   if (!HasDirectCpuAccess()) {
     return {};
   }
-  const auto plane_config = SkYUVAPlaneConfigForFormat(format());
-  const auto subsampling = SkYUVASubsamplingForFormat(format());
-  if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown ||
-      subsampling == SkYUVAInfo::Subsampling::kUnknown) {
+  const auto sk_info = GetSkInfoForFormat(format());
+  if (sk_info.yuva_plane_config == SkYUVAInfo::PlaneConfig::kUnknown ||
+      sk_info.yuva_subsampling == SkYUVAInfo::Subsampling::kUnknown) {
     return {};
   }
   SkYUVColorSpace yuv_color_space = kRec601_Limited_SkYUVColorSpace;
-  if (!ColorSpace().ToSkYUVColorSpace(static_cast<int>(BitDepth()),
+  if (!ColorSpace().ToSkYUVColorSpace(static_cast<int>(sk_info.bit_depth),
                                       &yuv_color_space)) {
     // Guess that the matrix is SkYUVColorSpace is Rec601 rather than
     // failing. This matches the default behavior of the historical use
@@ -1508,7 +1506,7 @@ SkYUVAPixmaps VideoFrame::GetVisibleSkYUVAPixmaps() const {
   }
   const SkYUVAInfo yuva_info(
       SkISize::Make(visible_rect_.width(), visible_rect_.height()),
-      plane_config, subsampling, yuv_color_space);
+      sk_info.yuva_plane_config, sk_info.yuva_subsampling, yuv_color_space);
   if (!yuva_info.isValid() ||
       static_cast<size_t>(yuva_info.numPlanes()) != NumPlanes(format())) {
     return {};
@@ -1520,7 +1518,7 @@ SkYUVAPixmaps VideoFrame::GetVisibleSkYUVAPixmaps() const {
   std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> planes;
   for (int p = 0; p < yuva_info.numPlanes(); ++p) {
     const auto plane =
-        GetVisiblePlaneSkPixmap(*this, p, plane_sizes[p], color_space);
+        GetVisiblePlaneSkPixmap(*this, sk_info, p, plane_sizes[p], color_space);
     if (!plane) {
       return {};
     }
@@ -1530,13 +1528,13 @@ SkYUVAPixmaps VideoFrame::GetVisibleSkYUVAPixmaps() const {
 }
 
 std::optional<SkPixmap> VideoFrame::GetVisibleRGBPlanePixmap() const {
+  const auto sk_info = GetSkInfoForFormat(format());
   if (!HasDirectCpuAccess() || NumPlanes(format()) != 1 ||
-      SkYUVAPlaneConfigForFormat(format()) !=
-          SkYUVAInfo::PlaneConfig::kUnknown) {
+      sk_info.yuva_plane_config != SkYUVAInfo::PlaneConfig::kUnknown) {
     return std::nullopt;
   }
   return GetVisiblePlaneSkPixmap(
-      *this, Plane::kARGB,
+      *this, sk_info, Plane::kARGB,
       SkISize::Make(visible_rect_.width(), visible_rect_.height()),
       ColorSpace().GetAsFullRangeRGB().ToSkColorSpace());
 }

@@ -630,4 +630,77 @@ TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
         memset(dst_frame->writable_data(plane), 1, dst_frame->stride(plane)));
 }
 
+TEST_F(VideoUtilTest, GetSkInfoForFormat) {
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_I420);
+    EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kY_U_V);
+    EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::k420);
+    EXPECT_EQ(info.plane_color_types[0], kR8_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[1], kR8_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[2], kR8_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[3], kUnknown_SkColorType);
+    EXPECT_EQ(info.plane_alpha_types[0], kOpaque_SkAlphaType);
+    EXPECT_EQ(info.plane_alpha_types[1], kOpaque_SkAlphaType);
+    EXPECT_EQ(info.plane_alpha_types[2], kOpaque_SkAlphaType);
+    EXPECT_EQ(info.plane_alpha_types[3], kUnknown_SkAlphaType);
+    EXPECT_EQ(info.bit_depth, 8u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kExact);
+  }
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_YUV420P10);
+    EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kY_U_V);
+    EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::k420);
+    EXPECT_EQ(info.plane_color_types[0], kR16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[1], kR16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[2], kR16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[3], kUnknown_SkColorType);
+    EXPECT_EQ(info.bit_depth, 10u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kLSB);
+  }
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_YUV420P12);
+    EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kY_U_V);
+    EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::k420);
+    EXPECT_EQ(info.plane_color_types[0], kR16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[1], kR16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[2], kR16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[3], kUnknown_SkColorType);
+    EXPECT_EQ(info.bit_depth, 12u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kLSB);
+  }
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_P010LE);
+    EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kY_UV);
+    EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::k420);
+    EXPECT_EQ(info.plane_color_types[0], kR16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[1], kR16G16_unorm_SkColorType);
+    EXPECT_EQ(info.plane_color_types[2], kUnknown_SkColorType);
+    EXPECT_EQ(info.bit_depth, 10u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kMSB);
+  }
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_XRGB);
+    EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kUnknown);
+    EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::kUnknown);
+    EXPECT_EQ(info.plane_color_types[0], kBGRA_8888_SkColorType);
+    EXPECT_EQ(info.plane_alpha_types[0], kOpaque_SkAlphaType);
+    EXPECT_EQ(info.bit_depth, 8u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kExact);
+  }
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_ARGB);
+    EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kUnknown);
+    EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::kUnknown);
+    EXPECT_EQ(info.plane_color_types[0], kBGRA_8888_SkColorType);
+    EXPECT_EQ(info.plane_alpha_types[0], kUnpremul_SkAlphaType);
+    EXPECT_EQ(info.bit_depth, 8u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kExact);
+  }
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_UNKNOWN);
+    EXPECT_EQ(info.bit_depth, 0u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kExact);
+  }
+}
+
 }  // namespace media

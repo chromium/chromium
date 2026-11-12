@@ -745,12 +745,10 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
     return false;
   }
 
-  bool has_alpha = !IsOpaque(format);
-  auto sk_color_type = SkColorTypeForPlane(format, src_plane);
-  auto sk_alpha_type = has_alpha ? kUnpremul_SkAlphaType : kOpaque_SkAlphaType;
-
+  const auto sk_info = GetSkInfoForFormat(format);
   auto info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
-                                sk_color_type, sk_alpha_type);
+                                sk_info.plane_color_types[src_plane],
+                                sk_info.plane_alpha_types[src_plane]);
 
   // Perform readback passing the appropriate `src_plane` for the mailbox.
   auto mailbox = src_frame.shared_image()->mailbox();
@@ -777,57 +775,6 @@ bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
   return result;
 }
 
-// Media pixel format enums have names opposite to their byte order.
-// That's why PIXEL_FORMAT_ABGR corresponds to kRGBA_8888_SkColorType
-// and so on.
-SkColorType SkColorTypeForPlaneNoCheck(VideoPixelFormat format, size_t plane) {
-  switch (format) {
-    case PIXEL_FORMAT_I420:
-    case PIXEL_FORMAT_I420A:
-    case PIXEL_FORMAT_I422:
-    case PIXEL_FORMAT_I444:
-      return kR8_unorm_SkColorType;
-    case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_NV16:
-    case PIXEL_FORMAT_NV24:
-      return plane == VideoFrame::Plane::kY ? kR8_unorm_SkColorType
-                                            : kR8G8_unorm_SkColorType;
-    case PIXEL_FORMAT_NV12A:
-      return plane == VideoFrame::Plane::kY ||
-                     plane == VideoFrame::Plane::kATriPlanar
-                 ? kR8_unorm_SkColorType
-                 : kR8G8_unorm_SkColorType;
-    case PIXEL_FORMAT_P010LE:
-    case PIXEL_FORMAT_P210LE:
-    case PIXEL_FORMAT_P410LE:
-      return plane == VideoFrame::Plane::kY ? kR16_unorm_SkColorType
-                                            : kR16G16_unorm_SkColorType;
-    case PIXEL_FORMAT_XBGR:
-    case PIXEL_FORMAT_ABGR:
-      return kRGBA_8888_SkColorType;
-    case PIXEL_FORMAT_XRGB:
-    case PIXEL_FORMAT_ARGB:
-      return kBGRA_8888_SkColorType;
-    case PIXEL_FORMAT_RGBAF16:
-      return kRGBA_F16_SkColorType;
-    case PIXEL_FORMAT_Y410:
-      return kRGBA_1010102_SkColorType;
-    case PIXEL_FORMAT_Y210:
-      // SkYUVAInfo::PlaneConfig::kYUYV reads Y210 as one 4-channel 16-bit
-      // texel per 2x1 pixel pair at half width, matching the aliased
-      // R16G16B16A16 view of the D3D texture.
-      return kR16G16B16A16_unorm_SkColorType;
-    default:
-      return kUnknown_SkColorType;
-  }
-}
-
-SkColorType SkColorTypeForPlane(VideoPixelFormat format, size_t plane) {
-  const auto result = SkColorTypeForPlaneNoCheck(format, plane);
-  CHECK_NE(result, kUnknown_SkColorType);
-  return result;
-}
-
 VideoPixelFormat VideoPixelFormatFromSkColorType(SkColorType sk_color_type,
                                                  bool is_opaque) {
   switch (sk_color_type) {
@@ -842,72 +789,156 @@ VideoPixelFormat VideoPixelFormatFromSkColorType(SkColorType sk_color_type,
   }
 }
 
-SkYUVAInfo::PlaneConfig SkYUVAPlaneConfigForFormat(VideoPixelFormat format) {
+// Media pixel format enums have names opposite to their byte order.
+// That's why PIXEL_FORMAT_ABGR corresponds to kRGBA_8888_SkColorType
+// and so on.
+VideoPixelFormatSkInfo GetSkInfoForFormat(VideoPixelFormat format) {
+  static_assert(VideoFrame::kMaxPlanes == SkYUVAInfo::kMaxPlanes);
+  VideoPixelFormatSkInfo result;
   switch (format) {
     case PIXEL_FORMAT_UYVY:
     case PIXEL_FORMAT_YUY2:
-    case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_BGRA:
-    case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_RGB24:
     case PIXEL_FORMAT_MJPEG:
     case PIXEL_FORMAT_Y16:
-    case PIXEL_FORMAT_ABGR:
-    case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
-    case PIXEL_FORMAT_RGBAF16:
     case PIXEL_FORMAT_UNKNOWN:
-      return SkYUVAInfo::PlaneConfig::kUnknown;
+      return result;
+    case PIXEL_FORMAT_XBGR:
+      result.plane_color_types = {kRGBA_8888_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType};
+      break;
+    case PIXEL_FORMAT_ABGR:
+      result.plane_color_types = {kRGBA_8888_SkColorType};
+      result.plane_alpha_types = {kUnpremul_SkAlphaType};
+      break;
+    case PIXEL_FORMAT_XRGB:
+      result.plane_color_types = {kBGRA_8888_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType};
+      break;
+    case PIXEL_FORMAT_ARGB:
+      result.plane_color_types = {kBGRA_8888_SkColorType};
+      result.plane_alpha_types = {kUnpremul_SkAlphaType};
+      break;
+    case PIXEL_FORMAT_RGBAF16:
+      result.plane_color_types = {kRGBA_F16_SkColorType};
+      result.plane_alpha_types = {kUnpremul_SkAlphaType};
+      break;
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_U_V;
+      result.plane_color_types = {kR8_unorm_SkColorType, kR8_unorm_SkColorType,
+                                  kR8_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType,
+                                  kOpaque_SkAlphaType};
+      break;
+    case PIXEL_FORMAT_YV12:
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_V_U;
+      result.plane_color_types = {kR8_unorm_SkColorType, kR8_unorm_SkColorType,
+                                  kR8_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType,
+                                  kOpaque_SkAlphaType};
+      break;
     case PIXEL_FORMAT_YUV420P10:
     case PIXEL_FORMAT_YUV422P10:
     case PIXEL_FORMAT_YUV444P10:
     case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
-      return SkYUVAInfo::PlaneConfig::kY_U_V;
-    case PIXEL_FORMAT_YV12:
-      return SkYUVAInfo::PlaneConfig::kY_V_U;
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_U_V;
+      result.plane_color_types = {kR16_unorm_SkColorType,
+                                  kR16_unorm_SkColorType,
+                                  kR16_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType,
+                                  kOpaque_SkAlphaType};
+      result.bit_alignment = skia::YUVBitAlignment::kLSB;
+      break;
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_I422A:
     case PIXEL_FORMAT_I444A:
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_U_V_A;
+      result.plane_color_types = {kR8_unorm_SkColorType, kR8_unorm_SkColorType,
+                                  kR8_unorm_SkColorType, kR8_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType,
+                                  kOpaque_SkAlphaType, kOpaque_SkAlphaType};
+      break;
     case PIXEL_FORMAT_YUV420AP10:
     case PIXEL_FORMAT_YUV422AP10:
     case PIXEL_FORMAT_YUV444AP10:
-      return SkYUVAInfo::PlaneConfig::kY_U_V_A;
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_U_V_A;
+      result.plane_color_types = {
+          kR16_unorm_SkColorType, kR16_unorm_SkColorType,
+          kR16_unorm_SkColorType, kR16_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType,
+                                  kOpaque_SkAlphaType, kOpaque_SkAlphaType};
+      result.bit_alignment = skia::YUVBitAlignment::kLSB;
+      break;
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV16:
-    case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_NV24:
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_UV;
+      result.plane_color_types = {kR8_unorm_SkColorType,
+                                  kR8G8_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType};
+      break;
+    case PIXEL_FORMAT_NV21:
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_VU;
+      result.plane_color_types = {kR8_unorm_SkColorType,
+                                  kR8G8_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType};
+      break;
     case PIXEL_FORMAT_P010LE:
     case PIXEL_FORMAT_P210LE:
     case PIXEL_FORMAT_P410LE:
-      return SkYUVAInfo::PlaneConfig::kY_UV;
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_UV;
+      result.plane_color_types = {kR16_unorm_SkColorType,
+                                  kR16G16_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType};
+      result.bit_alignment = skia::YUVBitAlignment::kMSB;
+      break;
     case PIXEL_FORMAT_NV12A:
-      return SkYUVAInfo::PlaneConfig::kY_UV_A;
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kY_UV_A;
+      result.plane_color_types = {kR8_unorm_SkColorType,
+                                  kR8G8_unorm_SkColorType,
+                                  kR8_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType, kOpaque_SkAlphaType,
+                                  kOpaque_SkAlphaType};
+      break;
     case PIXEL_FORMAT_Y410:
-      return SkYUVAInfo::PlaneConfig::kUYVA;
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kUYVA;
+      result.plane_color_types = {kRGBA_1010102_SkColorType};
+      result.plane_alpha_types = {kUnpremul_SkAlphaType};
+      break;
     case PIXEL_FORMAT_Y210:
-      // Y210's Y0-U-Y1-V 16-bit words read as one 4-channel texel per 2x1
-      // pixel pair at half width.
-      return SkYUVAInfo::PlaneConfig::kYUYV;
+      // SkYUVAInfo::PlaneConfig::kYUYV reads Y210 as one 4-channel 16-bit
+      // texel per 2x1 pixel pair at half width, matching the aliased
+      // R16G16B16A16 view of the D3D texture.
+      result.yuva_plane_config = SkYUVAInfo::PlaneConfig::kYUYV;
+      result.plane_color_types = {kR16G16B16A16_unorm_SkColorType};
+      result.plane_alpha_types = {kOpaque_SkAlphaType};
+      result.bit_alignment = skia::YUVBitAlignment::kMSB;
+      break;
   }
-}
 
-SkYUVAInfo::Subsampling SkYUVASubsamplingForFormat(VideoPixelFormat format) {
+  result.bit_depth = BitDepth(format);
   switch (VideoPixelFormatToChromaSampling(format)) {
     case VideoChromaSampling::k420:
-      return SkYUVAInfo::Subsampling::k420;
+      result.yuva_subsampling = SkYUVAInfo::Subsampling::k420;
+      break;
     case VideoChromaSampling::k422:
-      return SkYUVAInfo::Subsampling::k422;
+      result.yuva_subsampling = SkYUVAInfo::Subsampling::k422;
+      break;
     case VideoChromaSampling::k444:
-      return SkYUVAInfo::Subsampling::k444;
+      result.yuva_subsampling = SkYUVAInfo::Subsampling::k444;
+      break;
     default:
-      return SkYUVAInfo::Subsampling::kUnknown;
+      result.yuva_subsampling = SkYUVAInfo::Subsampling::kUnknown;
+      break;
   }
+  return result;
 }
 
 scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,

@@ -342,9 +342,10 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   if (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB ||
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR ||
       format == PIXEL_FORMAT_RGBAF16) {
+    const auto sk_info = GetSkInfoForFormat(format);
     const auto src_info = SkImageInfo::Make(
-        width, rows, SkColorTypeForPlane(format, VideoFrame::Plane::kARGB),
-        media::IsOpaque(format) ? kOpaque_SkAlphaType : kUnpremul_SkAlphaType);
+        width, rows, sk_info.plane_color_types[VideoFrame::Plane::kARGB],
+        sk_info.plane_alpha_types[VideoFrame::Plane::kARGB]);
     const base::span<const uint8_t> src_data =
         plane_meta[VideoFrame::Plane::kARGB].data;
     const size_t src_stride = plane_meta[VideoFrame::Plane::kARGB].stride;

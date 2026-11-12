@@ -1301,10 +1301,10 @@ bool VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
     return true;
   }
 
+  const auto sk_info = media::GetSkInfoForFormat(dest_layout.Format());
   SkImageInfo dst_image_info = SkImageInfo::Make(
       src_rect.width(), src_rect.height(),
-      media::SkColorTypeForPlane(dest_layout.Format(),
-                                 media::VideoFrame::Plane::kARGB),
+      sk_info.plane_color_types[media::VideoFrame::Plane::kARGB],
       kUnpremul_SkAlphaType, sk_color_space);
 
   const wtf_size_t plane = 0;

@@ -1328,6 +1328,7 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm->rowBytes(),
               static_cast<size_t>(frame->stride(VideoFrame::Plane::kARGB)));
     EXPECT_EQ(pm->colorType(), kRGBA_8888_SkColorType);
+    EXPECT_EQ(pm->alphaType(), kUnpremul_SkAlphaType);
 
     const std::optional<SkPixmap> writable_pm =
         frame->GetWritableVisibleRGBPlanePixmap();
@@ -1335,6 +1336,20 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(writable_pm->writable_addr(),
               frame->GetWritableVisibleData(VideoFrame::Plane::kARGB));
     EXPECT_EQ(writable_pm->info(), pm->info());
+  }
+
+  {
+    auto frame =
+        VideoFrame::CreateFrame(PIXEL_FORMAT_XBGR, kCodedSize, kVisibleRect,
+                                kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(frame);
+
+    EXPECT_FALSE(frame->GetVisibleSkYUVAPixmaps().isValid());
+
+    const std::optional<SkPixmap> pm = frame->GetVisibleRGBPlanePixmap();
+    ASSERT_TRUE(pm);
+    EXPECT_EQ(pm->colorType(), kRGBA_8888_SkColorType);
+    EXPECT_EQ(pm->alphaType(), kOpaque_SkAlphaType);
   }
 
   for (const gfx::Rect& visible_rect : {kVisibleRect, gfx::Rect(kCodedSize)}) {
@@ -1398,6 +1413,22 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
     EXPECT_EQ(pm.colorType(), kR16G16B16A16_unorm_SkColorType);
     EXPECT_LE(pm.computeByteSize(),
               frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB).size());
+  }
+
+  for (const VideoPixelFormat format :
+       {PIXEL_FORMAT_YV12, PIXEL_FORMAT_I422, PIXEL_FORMAT_I444,
+        PIXEL_FORMAT_I422A, PIXEL_FORMAT_I444A, PIXEL_FORMAT_YUV420P10,
+        PIXEL_FORMAT_YUV422P10, PIXEL_FORMAT_YUV444P10, PIXEL_FORMAT_YUV420P12,
+        PIXEL_FORMAT_YUV422P12, PIXEL_FORMAT_YUV444P12, PIXEL_FORMAT_YUV420AP10,
+        PIXEL_FORMAT_YUV422AP10, PIXEL_FORMAT_YUV444AP10, PIXEL_FORMAT_P010LE,
+        PIXEL_FORMAT_P210LE, PIXEL_FORMAT_P410LE}) {
+    SCOPED_TRACE(VideoPixelFormatToString(format));
+    auto frame = VideoFrame::CreateFrame(format, kCodedSize, kVisibleRect,
+                                         kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(frame);
+    SkYUVAPixmaps yuva_pixmaps = frame->GetVisibleSkYUVAPixmaps();
+    EXPECT_TRUE(yuva_pixmaps.isValid());
+    EXPECT_FALSE(frame->GetVisibleRGBPlanePixmap());
   }
 
   {

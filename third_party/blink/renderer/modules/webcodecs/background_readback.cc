@@ -283,12 +283,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
     ReadbackToFrameDoneCallback result_cb) {
   DCHECK(CanUseRgbReadback(*txt_frame));
 
-  const auto format = media::VideoPixelFormatFromSkColorType(
-      SkColorTypeForPlane(txt_frame->format(), media::VideoFrame::Plane::kARGB),
-      media::IsOpaque(txt_frame->format()));
-
   auto result = result_frame_pool_.CreateFrame(
-      format, txt_frame->coded_size(), txt_frame->visible_rect(),
+      txt_frame->format(), txt_frame->coded_size(), txt_frame->visible_rect(),
       txt_frame->natural_size(), txt_frame->timestamp());
 
   auto* ri = GetSharedGpuRasterInterface();

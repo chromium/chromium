@@ -17,6 +17,24 @@
 
 namespace skia {
 
+// Describes how an N-bit unsigned integer sample x in [0, 2^N - 1] is stored
+// and sampled as a normalized float in [0, 1].
+enum class YUVBitAlignment {
+  // All bits of the storage channel are significant (e.g. 8-bit in unorm8,
+  // 10-bit in 1010102, 16-bit in unorm16), so sampling yields x / (2^N - 1)
+  // directly (e.g. x / 1023).
+  kExact,
+
+  // Stored in the high N bits of a 16-bit unorm word with zeros in the low
+  // 16 - N bits (e.g. P010), so sampling yields (x << (16 - N)) / 65535
+  // (e.g. (x << 6) / 65535).
+  kMSB,
+
+  // Stored in the low N bits of a 16-bit unorm word with zeros in the high
+  // 16 - N bits (e.g. YUV420P10), so sampling yields x / 65535.
+  kLSB,
+};
+
 // Copy `src_image` from RGBA to the YUVA planes specified in `dst_surfaces`,
 // using the color space and plane configuration information specified in
 // `dst_yuva_info`. `dst_yuva_info` describes the entire destination image - the
