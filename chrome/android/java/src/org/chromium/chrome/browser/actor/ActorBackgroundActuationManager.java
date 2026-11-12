@@ -7,14 +7,11 @@ package org.chromium.chrome.browser.actor;
 import android.app.Activity;
 import android.text.TextUtils;
 import android.util.ArrayMap;
-import android.util.DisplayMetrics;
-import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
@@ -26,26 +23,21 @@ import org.chromium.chrome.browser.actor.background_tabs.BackgroundSession;
 import org.chromium.chrome.browser.actor.background_tabs.OffscreenRenderingManager;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,8 +60,7 @@ public class ActorBackgroundActuationManager {
 
     // List of active background sessions.
     private final List<BackgroundSession> mBackgroundSessions = new ArrayList<>();
-    // Map of triggering message ID to pending tab undergoing initial about:blank load.
-    private final Map<String, Tab> mPendingActuationTabs = new ArrayMap<>();
+    private final OffscreenTabProvisioner mTabProvisioner = new OffscreenTabProvisioner();
     // Set of tab IDs originally provisioned via FCM background triggering.
     private final Set<Integer> mFcmInitiatedTabIds = new HashSet<>();
 
@@ -125,7 +116,7 @@ public class ActorBackgroundActuationManager {
                 glicTriggerMessageId);
         ThreadUtils.assertOnUiThread();
 
-        setupBackgroundTab(
+        mTabProvisioner.setupBackgroundTab(
                 profile,
                 glicTriggerMessageId,
                 (tab) -> {
@@ -145,7 +136,7 @@ public class ActorBackgroundActuationManager {
                         notifySetupFailed(profile, glicTriggerMessageId);
                         return;
                     }
-                    mPendingActuationTabs.remove(glicTriggerMessageId);
+                    mTabProvisioner.releasePendingTab(glicTriggerMessageId);
                     mFcmInitiatedTabIds.add(tab.getId());
                     tab.addObserver(
                             new TabObserver() {
@@ -177,9 +168,9 @@ public class ActorBackgroundActuationManager {
     public void provisionBackgroundTabForTask(
             Profile profile, int taskId, Callback<@Nullable Tab> callback) {
         ThreadUtils.assertOnUiThread();
-        Tab tab = createOffscreenTab(profile);
+        Tab tab = mTabProvisioner.createOffscreenTab(profile);
 
-        loadBlankThenCallback(
+        mTabProvisioner.loadBlankThenCallback(
                 tab,
                 (preparedTab) -> {
                     if (preparedTab == null) {
@@ -223,7 +214,7 @@ public class ActorBackgroundActuationManager {
 
         List<BackgroundSession> detachedSessions =
                 ActorTabStateHelper.detachActiveBackgroundSessions(
-                        selector, windowId, this::startOffscreenRendering);
+                        selector, windowId, mTabProvisioner::startOffscreenRendering);
         if (detachedSessions.isEmpty()) {
             return;
         }
@@ -300,10 +291,7 @@ public class ActorBackgroundActuationManager {
      */
     public void cleanupContext(String glicTriggerMessageId) {
         ThreadUtils.assertOnUiThread();
-        Tab pendingTab = mPendingActuationTabs.remove(glicTriggerMessageId);
-        if (pendingTab != null) {
-            OffscreenRenderingManager.getInstance().stopOffscreenRendering(pendingTab);
-            pendingTab.destroy();
+        if (mTabProvisioner.cancelPendingTab(glicTriggerMessageId)) {
             return;
         }
 
@@ -429,13 +417,7 @@ public class ActorBackgroundActuationManager {
     /** Destroys all active background sessions. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
-        for (Tab pendingTab : mPendingActuationTabs.values()) {
-            if (pendingTab != null) {
-                OffscreenRenderingManager.getInstance().stopOffscreenRendering(pendingTab);
-                pendingTab.destroy();
-            }
-        }
-        mPendingActuationTabs.clear();
+        mTabProvisioner.destroyPendingTabs();
         mFcmInitiatedTabIds.clear();
 
         restoreWarmSessions();
@@ -713,109 +695,6 @@ public class ActorBackgroundActuationManager {
             }
         }
         return null;
-    }
-
-    private Tab createOffscreenTab(Profile profile) {
-        WindowAndroid window = OffscreenRenderingManager.getInstance().getOffscreenWindow();
-        // TODO(crbug.com/548875143): Persist TabState to disk whenever the background tab's
-        // URL/navigation updates so that on-disk state remains continuously accurate.
-        Tab tab =
-                TabBuilder.createLiveTab(profile, true)
-                        .setWindow(window)
-                        .setLaunchType(TabLaunchType.FROM_CHROME_UI)
-                        .setDelegateFactory(new ActorTabDelegateFactory())
-                        .build();
-        startOffscreenRendering(tab);
-        return tab;
-    }
-
-    private void startOffscreenRendering(Tab tab) {
-        View compositorView =
-                CompositorViewHolderSupplier.getValueOrNullFrom(tab.getWindowAndroid());
-
-        int width;
-        int height;
-        if (compositorView != null
-                && compositorView.getWidth() > 0
-                && compositorView.getHeight() > 0) {
-            width = compositorView.getWidth();
-            height = compositorView.getHeight();
-        } else {
-            // Fallback to display metrics might behave incorrectly for floating window or
-            // split screen mode, but is sufficient for this use case.
-            DisplayMetrics displayMetrics =
-                    ContextUtils.getApplicationContext().getResources().getDisplayMetrics();
-            width = displayMetrics.widthPixels;
-            height = displayMetrics.heightPixels;
-        }
-
-        OffscreenRenderingManager.getInstance().startOffscreenRendering(tab, width, height);
-    }
-
-    private void setupBackgroundTab(
-            Profile profile, String glicTriggerMessageId, Callback<@Nullable Tab> callback) {
-        ThreadUtils.assertOnUiThread();
-        Log.d(TAG, "Provisioning offscreen tab for message: %s", glicTriggerMessageId);
-        Tab tab = createOffscreenTab(profile);
-        mPendingActuationTabs.put(glicTriggerMessageId, tab);
-
-        loadBlankThenCallback(
-                tab,
-                (preparedTab) -> {
-                    if (!mPendingActuationTabs.containsKey(glicTriggerMessageId)) {
-                        return;
-                    }
-                    callback.onResult(preparedTab);
-                });
-    }
-
-    private void loadBlankThenCallback(Tab tab, Callback<@Nullable Tab> callback) {
-        ThreadUtils.assertOnUiThread();
-        TabObserver observer =
-                new TabObserver() {
-                    private boolean mInitialLoadFinished;
-
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        Log.d(TAG, "Actor: Offscreen page load finished: %s", url.getSpec());
-                        if (!mInitialLoadFinished) {
-                            mInitialLoadFinished = true;
-                            callback.onResult(tab);
-                            tab.removeObserver(this);
-                        }
-                    }
-
-                    @Override
-                    public void onPageLoadFailed(Tab tab, int errorCode) {
-                        Log.d(TAG, "Actor: Offscreen page load failed, error: %d", errorCode);
-                        if (!mInitialLoadFinished) {
-                            mInitialLoadFinished = true;
-                            callback.onResult(null);
-                            tab.removeObserver(this);
-                        }
-                    }
-
-                    @Override
-                    public void onCrash(Tab tab) {
-                        Log.d(TAG, "Actor: Offscreen tab crashed");
-                        if (!mInitialLoadFinished) {
-                            mInitialLoadFinished = true;
-                            callback.onResult(null);
-                            tab.removeObserver(this);
-                        }
-                    }
-
-                    @Override
-                    public void onDestroyed(Tab tab) {
-                        if (!mInitialLoadFinished) {
-                            mInitialLoadFinished = true;
-                            callback.onResult(null);
-                        }
-                        tab.removeObserver(this);
-                    }
-                };
-        tab.addObserver(observer);
-        tab.loadUrl(new LoadUrlParams("about:blank"));
     }
 
     private void notifySetupFailed(Profile profile, String glicTriggerMessageId) {
