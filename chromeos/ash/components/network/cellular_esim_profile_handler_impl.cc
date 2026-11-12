@@ -310,10 +310,8 @@ bool CellularESimProfileHandlerImpl::CellularDeviceExists() const {
 void CellularESimProfileHandlerImpl::ResetESimProfileCache() {
   DCHECK(device_prefs_);
 
-  device_prefs_->Set(prefs::kESimProfiles,
-                     base::Value(base::Value::Type::LIST));
-  device_prefs_->Set(prefs::kESimRefreshedEuiccs,
-                     base::Value(base::Value::Type::LIST));
+  device_prefs_->SetList(prefs::kESimProfiles, base::ListValue());
+  device_prefs_->SetList(prefs::kESimRefreshedEuiccs, base::ListValue());
 
   NET_LOG(EVENT) << "Resetting eSIM profile cache";
   OnHermesPropertiesUpdated();
