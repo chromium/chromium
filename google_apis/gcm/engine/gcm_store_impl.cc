@@ -4,13 +4,11 @@
 
 #include "google_apis/gcm/engine/gcm_store_impl.h"
 
-#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -335,15 +333,6 @@ void GCMStoreImpl::Backend::Load(StoreOpenMode open_mode,
       instance_id_token_count++;
     else
       gcm_registration_count++;
-  }
-
-  // Only record histograms if GCM had already been set up for this device.
-  if (result->device_android_id != 0 && result->device_security_token != 0) {
-    std::optional<int64_t> file_size = base::GetFileSize(path_);
-    if (file_size.has_value()) {
-      UMA_HISTOGRAM_COUNTS_1M("GCM.StoreSizeKB",
-                              static_cast<int>(file_size.value() / 1024));
-    }
   }
 
   DVLOG(1) << "Succeeded in loading "
