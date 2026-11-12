@@ -483,7 +483,8 @@ class CORE_EXPORT LocalFrame final
   String SelectedTextForClipboard() const;
   void TextSelectionChanged(const String& selection_text,
                             uint32_t offset,
-                            const gfx::Range& range) const;
+                            const gfx::Range& range,
+                            bool has_selection) const;
 
   PositionWithAffinityTemplate<EditingAlgorithm<NodeTraversal>>
   PositionForPoint(const PhysicalOffset& frame_point);

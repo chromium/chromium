@@ -16,7 +16,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -390,6 +392,138 @@ IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest,
 
     clipboard_monitor->RemoveObserver(&event_counter);
   }
+}
+
+// Regression test for crbug.com/326503108: selecting across unselectable table
+// cells and replaced elements should populate ClipboardBuffer::kSelection with
+// the same filtered text as ClipboardBuffer::kCopyPaste.
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest,
+                       SelectionClipboardSkipsUnselectableTableCells) {
+  if (!ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    GTEST_SKIP() << "Selection clipboard is not supported on this platform.";
+  }
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(),
+      GURL("data:text/html,<table>"
+           "<tr><td style='user-select:none'><button>+</button>left1</td>"
+           "<td>right1</td></tr>"
+           "<tr><td style='user-select:none'>left2</td>"
+           "<td>right2</td></tr></table>")));
+  shell()->web_contents()->Focus();
+
+  auto* clipboard_monitor = ui::ClipboardMonitor::GetInstance();
+  {
+    ClipboardEventsCounter event_counter(/*wait_for_this_many_events=*/1);
+    clipboard_monitor->AddObserver(&event_counter);
+    shell()->web_contents()->SelectAll();
+    ASSERT_TRUE(event_counter.WaitUntlReceived());
+    clipboard_monitor->RemoveObserver(&event_counter);
+  }
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string selection_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kSelection, /*data_dst=*/nullptr);
+  EXPECT_EQ(u"right1\nright2", selection_text);
+
+  {
+    // WriteSelectionToClipboard writes both HTML and plain text.
+    ClipboardEventsCounter event_counter(/*wait_for_this_many_events=*/1);
+    clipboard_monitor->AddObserver(&event_counter);
+    shell()->web_contents()->Copy();
+    ASSERT_TRUE(event_counter.WaitUntlReceived());
+    clipboard_monitor->RemoveObserver(&event_counter);
+  }
+
+  std::u16string copy_text = ui::clipboard_test_util::ReadText(
+      clipboard, ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr);
+  EXPECT_EQ(copy_text, selection_text);
+}
+
+namespace {
+
+class TextSelectionWaiter : public WebContentsObserver {
+ public:
+  TextSelectionWaiter(WebContents* web_contents, RenderFrameHost* target_rfh)
+      : WebContentsObserver(web_contents), target_rfh_(target_rfh) {}
+
+  std::u16string Wait() { return future_.Take(); }
+
+  void OnTextSelectionChanged(RenderFrameHost* render_frame_host,
+                              std::u16string_view selected_text) override {
+    if (render_frame_host == target_rfh_ && !future_.IsReady()) {
+      future_.SetValue(std::u16string(selected_text));
+    }
+  }
+
+ private:
+  raw_ptr<RenderFrameHost> target_rfh_;
+  base::test::TestFuture<std::u16string> future_;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/326503108: selecting only an image without alt
+// text in a focused iframe yields empty plain text, but RenderFrameHost must
+// still report HasSelection() == true (e.g. for printing::GetFrameToPrint()).
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest,
+                       ImageSelectionWithoutAltReportsHasSelection) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GURL("data:text/html,<p>Main frame</p>"
+                    "<iframe id='subframe' width='100' height='100' srcdoc=\""
+                    "<body style='margin:0'><img width='50' height='50' "
+                    "src='data:image/gif;base64,"
+                    "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'>"
+                    "</body>\"></iframe>")));
+
+  RenderFrameHost* main_rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* subframe_rfh = ChildFrameAt(main_rfh, 0);
+  ASSERT_TRUE(subframe_rfh);
+
+  // Focus the iframe with script rather than a click: whether a click inside
+  // the iframe places a caret (and so syncs the selection) depends on where it
+  // lands.
+  {
+    FrameFocusedObserver focus_observer(subframe_rfh);
+    ASSERT_TRUE(ExecJs(subframe_rfh, "window.focus();"));
+    focus_observer.Wait();
+  }
+  ASSERT_EQ(subframe_rfh, shell()->web_contents()->GetFocusedFrame());
+  EXPECT_FALSE(subframe_rfh->HasSelection());
+
+  WebContents* web_contents = shell()->web_contents();
+  auto select_all = [&]() {
+    TextSelectionWaiter waiter(web_contents, subframe_rfh);
+    web_contents->SelectAll();
+    EXPECT_EQ(u"", waiter.Wait());
+  };
+
+  select_all();
+  EXPECT_TRUE(subframe_rfh->HasSelection());
+  EXPECT_FALSE(main_rfh->HasSelection());
+
+  // Shrink the selection to a caret before the image. The renderer's last
+  // synced state (offset 0, empty range, empty text) then matches the
+  // image-only selection, so only `has_selection` tells them apart.
+  {
+    TextSelectionWaiter waiter(web_contents, subframe_rfh);
+    web_contents->AdjustSelectionByCharacterOffset(
+        /*start_adjust=*/0, /*end_adjust=*/-1, /*show_selection_menu=*/false);
+    EXPECT_EQ(u"", waiter.Wait());
+  }
+  EXPECT_FALSE(subframe_rfh->HasSelection());
+
+  select_all();
+  EXPECT_TRUE(subframe_rfh->HasSelection());
+  EXPECT_FALSE(main_rfh->HasSelection());
+
+  {
+    TextSelectionWaiter waiter(web_contents, subframe_rfh);
+    web_contents->CollapseSelection();
+    EXPECT_EQ(u"", waiter.Wait());
+  }
+  EXPECT_FALSE(subframe_rfh->HasSelection());
 }
 
 }  // namespace content

@@ -573,8 +573,17 @@ interface LocalFrameHost {
   // Notification that the text selection has changed.
   // Note: The second parameter is the character based offset of the
   // std::u16string text in the document.
-  TextSelectionChanged(
-      mojo_base.mojom.BigString16 text, uint32 offset, gfx.mojom.Range range);
+  // `has_selection` is true when the frame has a non-collapsed selection
+  // (`WebLocalFrame::HasSelection()`), i.e. a range selection in the DOM or
+  // active `EditContext`, or a selection in a plugin. This cannot be inferred
+  // from `text` or `range`: selecting only non-textual content (such as an
+  // `<img>` without `alt` text) can produce an empty `text` and `range` while
+  // `has_selection` is true, whereas a collapsed caret in a non-empty editable
+  // element sends non-empty surrounding `text` while `has_selection` is false.
+  TextSelectionChanged(mojo_base.mojom.BigString16 text,
+                       uint32 offset,
+                       gfx.mojom.Range range,
+                       bool has_selection);
 
   // Show a popup menu using native controls on Mac or Android.
   // The popup menu is hidden when the mojo channel is closed.

@@ -6318,6 +6318,44 @@ TEST_F(WebFrameTest, SelectRange) {
               selection_string == "Some offscreen test text for testing");
 }
 
+// Regression test for crbug.com/326503108: SelectionAsText() should match
+// clipboard plain-text serialization by skipping unselectable content and not
+// emitting U+FFFC object replacement characters.
+TEST_F(WebFrameTest,
+       SelectionAsTextSkipsUnselectableContentAndReplacedObjects) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
+  frame_test_helpers::LoadHTMLString(
+      frame,
+      "<table>"
+      "<tr><td style='user-select: none;'><button>+</button>dont select me</td>"
+      "<td>select me</td></tr>"
+      "<tr><td style='user-select: none;'>left2</td><td>right2</td></tr>"
+      "</table>",
+      ToKURL("about:blank"));
+
+  frame->ExecuteCommand(WebString("SelectAll"));
+  EXPECT_TRUE(frame->HasSelection());
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ("select me\r\nright2", SelectionAsString(frame));
+#else
+  EXPECT_EQ("select me\nright2", SelectionAsString(frame));
+#endif
+
+  // Selecting only an image without alt text produces an empty plain-text
+  // string while still reporting an active range selection.
+  frame_test_helpers::LoadHTMLString(
+      frame,
+      "<img src='data:image/gif;base64,"
+      "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'>",
+      ToKURL("about:blank"));
+  EXPECT_FALSE(frame->HasSelection());
+  frame->ExecuteCommand(WebString("SelectAll"));
+  EXPECT_TRUE(frame->HasSelection());
+  EXPECT_EQ("", SelectionAsString(frame));
+}
+
 TEST_F(WebFrameTest, SelectRangeDefaultHandleVisibility) {
   RegisterMockedHttpURLLoad("select_range_basic.html");
 

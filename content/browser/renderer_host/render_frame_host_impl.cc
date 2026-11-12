@@ -10115,8 +10115,9 @@ void RenderFrameHostImpl::FocusedElementChanged(
 
 void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
                                                uint32_t offset,
-                                               const gfx::Range& range) {
-  has_selection_ = !text.empty();
+                                               const gfx::Range& range,
+                                               bool has_selection) {
+  has_selection_ = has_selection;
   GetRenderWidgetHost()->SelectionChanged(text, offset, range);
 
   // The `text` parameter contains the surrounding text of the selection, and

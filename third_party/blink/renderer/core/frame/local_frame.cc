@@ -1956,8 +1956,10 @@ String LocalFrame::SelectedTextForClipboard() const {
 
 void LocalFrame::TextSelectionChanged(const String& selection_text,
                                       uint32_t offset,
-                                      const gfx::Range& range) const {
-  GetLocalFrameHostRemote().TextSelectionChanged(selection_text, offset, range);
+                                      const gfx::Range& range,
+                                      bool has_selection) const {
+  GetLocalFrameHostRemote().TextSelectionChanged(selection_text, offset, range,
+                                                 has_selection);
 }
 
 PositionWithAffinity LocalFrame::PositionForPoint(

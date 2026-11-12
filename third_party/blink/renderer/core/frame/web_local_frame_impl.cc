@@ -1535,6 +1535,10 @@ bool WebLocalFrameImpl::HasSelection() const {
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetFrame()->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
+  if (EditContext* edit_context =
+          GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+    return edit_context->selectionStart() != edit_context->selectionEnd();
+  }
   return GetFrame()->Selection().ComputeVisibleSelectionInDomTree().IsRange();
 }
 
@@ -1569,8 +1573,7 @@ WebString WebLocalFrameImpl::SelectionAsText() const {
         edit_context->selectionStart(),
         edit_context->selectionEnd() - edit_context->selectionStart());
   } else {
-    text = GetFrame()->Selection().SelectedText(
-        TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
+    text = GetFrame()->Selection().SelectedTextForClipboard();
   }
 #if BUILDFLAG(IS_WIN)
   text = NormalizeLineEndingsToCrLf(text);
@@ -1597,7 +1600,8 @@ WebString WebLocalFrameImpl::SelectionAsMarkup() const {
 void WebLocalFrameImpl::TextSelectionChanged(const WebString& selection_text,
                                              uint32_t offset,
                                              const gfx::Range& range) {
-  GetFrame()->TextSelectionChanged(selection_text, offset, range);
+  GetFrame()->TextSelectionChanged(selection_text, offset, range,
+                                   HasSelection());
 }
 
 bool WebLocalFrameImpl::SelectAroundCaret(

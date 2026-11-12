@@ -1301,6 +1301,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // Range over the document corresponding to the actual selected text (which
   // could correspond to a substring of |selection_text_|; see above).
   gfx::Range selection_range_;
+  bool has_selection_ = false;
 
   // Implements getUserMedia() and related functionality.
   std::unique_ptr<blink::WebMediaStreamDeviceObserver>

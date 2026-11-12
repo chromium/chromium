@@ -6319,6 +6319,8 @@ void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
     }
   }
 
+  const bool has_selection = frame_->HasSelection();
+
   // TODO(dglazkov): Investigate if and why this would be happening,
   // and resolve this. We shouldn't be carrying selection text here.
   // http://crbug.com/632920.
@@ -6327,10 +6329,11 @@ void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {
   // because it will cause us to continually claim the X clipboard.
   if (force_sync == blink::SyncCondition::kForced ||
       selection_text_offset_ != offset || selection_range_ != range ||
-      selection_text_ != text) {
+      selection_text_ != text || has_selection_ != has_selection) {
     selection_text_ = text;
     selection_text_offset_ = offset;
     selection_range_ = range;
+    has_selection_ = has_selection;
     SetSelectedText(text, offset, range);
   }
   GetLocalRootWebFrameWidget()->UpdateSelectionBounds();
