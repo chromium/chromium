@@ -804,6 +804,14 @@ void PageLoadTracker::FrameSizeChanged(
   }
 }
 
+void PageLoadTracker::OnFrameVisibilityChanged(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::FrameVisibility visibility) {
+  for (const auto& observer : observers_) {
+    observer->OnFrameVisibilityChanged(render_frame_host, visibility);
+  }
+}
+
 void PageLoadTracker::OnCookiesRead(
     const GURL& url,
     const GURL& first_party_url,

@@ -1906,6 +1906,47 @@ chromium-metrics-reviews@google.com.
   <token key="CaptchaProvider" variants="CaptchaProvider"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.CaptchaFrameLoadVisible"
+    enum="CaptchaFrameAgentContext" expires_after="2027-10-20">
+  <owner>ryankalla@google.com</owner>
+  <owner>potassium-anti-fraud-team@google.com</owner>
+  <summary>
+    Records when a sub-frame is loaded from a known CAPTCHA provider and is
+    shown to the user (rendered in the viewport, not display:none, and with a
+    frame area of at least 25 pixels). Recorded at most once per CAPTCHA
+    sub-frame navigation.
+
+    CAPTCHA frames are determined by matching the frame's src url against a list
+    of known CAPTCHA frame url patterns. The list of known CAPTCHA url patterns
+    is served via the component updater.
+
+    This histogram is split by whether an AI agent was active on the tab at the
+    time the frame became visible. AI agent activity is determined by
+    ActorKeyedService::IsActiveOnTab(), which is used by the Glic Agent.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Clients.CaptchaFrameLoadVisible.{CaptchaProvider}"
+    enum="CaptchaFrameAgentContext" expires_after="2027-10-20">
+  <owner>ryankalla@google.com</owner>
+  <owner>potassium-anti-fraud-team@google.com</owner>
+  <summary>
+    Records when a sub-frame is loaded from {CaptchaProvider} and is shown to
+    the user (rendered in the viewport, not display:none, and with a frame area
+    of at least 25 pixels). Recorded at most once per CAPTCHA sub-frame
+    navigation.
+
+    CAPTCHA frames are determined by matching the frame's src url against a list
+    of known CAPTCHA frame url patterns. The list of known CAPTCHA url patterns
+    is served via the component updater.
+
+    This histogram is split by whether an AI agent was active on the tab at the
+    time the frame became visible. AI agent activity is determined by
+    ActorKeyedService::IsActiveOnTab(), which is used by the Glic Agent.
+  </summary>
+  <token key="CaptchaProvider" variants="CaptchaProvider"/>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.DocWrite.Block.{PageLoadClientsDocWriteTimingMetric}"
     units="ms" expires_after="2027-04-25">

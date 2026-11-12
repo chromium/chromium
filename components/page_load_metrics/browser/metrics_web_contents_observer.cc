@@ -531,6 +531,14 @@ void MetricsWebContentsObserver::FrameSizeChanged(
   }
 }
 
+void MetricsWebContentsObserver::OnFrameVisibilityChanged(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::FrameVisibility visibility) {
+  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
+    tracker->OnFrameVisibilityChanged(render_frame_host, visibility);
+  }
+}
+
 void MetricsWebContentsObserver::OnCookiesAccessed(
     content::NavigationHandle* navigation,
     const content::CookieAccessDetails& details) {

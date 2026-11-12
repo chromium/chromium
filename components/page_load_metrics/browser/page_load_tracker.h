@@ -351,6 +351,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                                 bool is_display_none);
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size);
+  void OnFrameVisibilityChanged(content::RenderFrameHost* render_frame_host,
+                                blink::mojom::FrameVisibility visibility);
 
   void OnCookiesRead(
       const GURL& url,

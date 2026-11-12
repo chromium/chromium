@@ -162,6 +162,9 @@ class PageLoadMetricsForwardObserver final
                                 bool is_display_none) override;
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override;
+  void OnFrameVisibilityChanged(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::FrameVisibility visibility) override;
   void OnRenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override;
   void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;

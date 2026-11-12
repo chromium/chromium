@@ -591,6 +591,11 @@ class PageLoadMetricsObserverInterface {
   virtual void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                                 const gfx::Size& frame_size) = 0;
 
+  // Called when a frame's visibility inside the viewport changes.
+  virtual void OnFrameVisibilityChanged(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::FrameVisibility visibility) = 0;
+
   // OnRenderFrameDeleted is called when RenderFrameHost for a frame is deleted.
   // OnSubFrameDeleted is called when FrameTreeNode for a subframe is deleted.
   // The differences are:

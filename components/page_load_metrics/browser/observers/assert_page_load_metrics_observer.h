@@ -206,6 +206,9 @@ class AssertPageLoadMetricsObserver final
                                 bool is_display_none) override {}
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override {}
+  void OnFrameVisibilityChanged(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::FrameVisibility visibility) override {}
   void OnCookiesRead(
       const GURL& url,
       const GURL& first_party_url,

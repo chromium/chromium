@@ -5,7 +5,14 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CAPTCHA_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CAPTCHA_METRICS_OBSERVER_H_
 
+#include <map>
+#include <optional>
+
+#include "chrome/browser/page_load_metrics/observers/captcha_provider_manager.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "content/public/browser/frame_tree_node_id.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 // Records metrics about captcha challenges shown on a page.
@@ -45,9 +52,33 @@ class CaptchaMetricsObserver
       content::NavigationHandle* navigation_handle) override;
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
+  void FrameDisplayStateChanged(content::RenderFrameHost* render_frame_host,
+                                bool is_display_none) override;
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override;
+  void OnFrameVisibilityChanged(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::FrameVisibility visibility) override;
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
 
  private:
+  struct SubFrameData {
+    std::optional<page_load_metrics::CaptchaProvider> captcha_provider;
+    bool is_display_none = false;
+    std::optional<gfx::Size> frame_size;
+    // Defaults to kRenderedInViewport to match RenderFrameHostImpl::visibility_
+    // and CrossProcessFrameConnector::SetView(), which only forwards
+    // OnVisibilityChanged() on view attachment when visibility !=
+    // kRenderedInViewport.
+    blink::mojom::FrameVisibility visibility =
+        blink::mojom::FrameVisibility::kRenderedInViewport;
+    bool recorded_visible = false;
+  };
+
+  void MaybeRecordCaptchaFrameLoadVisible(SubFrameData& subframe_data);
   bool IsInPrerendering() const;
+
+  std::map<content::FrameTreeNodeId, SubFrameData> subframe_data_;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CAPTCHA_METRICS_OBSERVER_H_

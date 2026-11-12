@@ -405,6 +405,15 @@ void PageLoadMetricsForwardObserver::FrameSizeChanged(
   parent_observer_->FrameSizeChanged(render_frame_host, frame_size);
 }
 
+void PageLoadMetricsForwardObserver::OnFrameVisibilityChanged(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::FrameVisibility visibility) {
+  if (!parent_observer_) {
+    return;
+  }
+  parent_observer_->OnFrameVisibilityChanged(render_frame_host, visibility);
+}
+
 // OnRenderFrameDeleted and OnSubFrameDeleted are handled at PageLoadTracker to
 // forward events as sub-frames deletion regardless of each observer's policy.
 void PageLoadMetricsForwardObserver::OnRenderFrameDeleted(

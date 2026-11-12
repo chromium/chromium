@@ -4,22 +4,50 @@
 
 #include "chrome/browser/page_load_metrics/observers/captcha_metrics_observer.h"
 
+#include <limits>
+#include <string>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/page_load_metrics/observers/captcha_provider_manager.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 
 using page_load_metrics::CaptchaProviderManager;
 using CaptchaFrameAgentContext =
     CaptchaMetricsObserver::CaptchaFrameAgentContext;
 
 namespace {
+
+// Minimum area in pixels for a frame to be considered visible. This threshold
+// filters out tiny (e.g. 0x0 or 1x1) background/invisible CAPTCHA frames.
+constexpr int kMinimumVisibleFrameArea = 25;
+
+gfx::Size GetUnscaledFrameSize(content::WebContents* web_contents,
+                               const gfx::Size& raw_frame_size) {
+  float device_scale_factor = 1.0f;
+  if (content::RenderWidgetHostView* view =
+          web_contents->GetRenderWidgetHostView()) {
+    device_scale_factor = view->GetDeviceScaleFactor();
+  }
+  double zoom_factor = blink::ZoomLevelToZoomFactor(
+      content::HostZoomMap::GetZoomLevel(web_contents));
+  if (device_scale_factor <= 0.0 || zoom_factor <= 0.0) {
+    return raw_frame_size;
+  }
+
+  float scale_factor =
+      1.0f / (device_scale_factor * static_cast<float>(zoom_factor));
+  return gfx::ScaleToRoundedSize(raw_frame_size, scale_factor);
+}
 
 bool IsDevToolsAgentAttached(content::WebContents* web_contents) {
   auto devtools_host = content::DevToolsAgentHost::GetForTab(web_contents);
@@ -99,6 +127,16 @@ void CaptchaMetricsObserver::OnDidFinishSubFrameNavigation(
   std::optional<page_load_metrics::CaptchaProvider> captcha_provider =
       CaptchaProviderManager::GetInstance()->GetCaptchaProviderForUrl(
           navigation_handle->GetURL());
+  SubFrameData& subframe_data =
+      subframe_data_[navigation_handle->GetFrameTreeNodeId()];
+  subframe_data.captcha_provider = captcha_provider;
+  subframe_data.recorded_visible = false;
+  if (content::RenderFrameHost* render_frame_host =
+          navigation_handle->GetRenderFrameHost()) {
+    subframe_data.is_display_none = render_frame_host->IsFrameDisplayNone();
+    subframe_data.frame_size = render_frame_host->GetFrameSize();
+  }
+
   if (captcha_provider.has_value()) {
     const CaptchaFrameAgentContext agent_context =
         GetCaptchaFrameAgentContext(GetDelegate().GetWebContents());
@@ -114,6 +152,8 @@ void CaptchaMetricsObserver::OnDidFinishSubFrameNavigation(
         .SetAgentContext(static_cast<int64_t>(agent_context))
         .SetCaptchaProvider(static_cast<int64_t>(captcha_provider.value()))
         .Record(ukm::UkmRecorder::Get());
+
+    MaybeRecordCaptchaFrameLoadVisible(subframe_data);
   }
 }
 
@@ -143,6 +183,84 @@ void CaptchaMetricsObserver::FrameReceivedUserActivation(
         .SetCaptchaProvider(static_cast<int64_t>(captcha_provider.value()))
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+void CaptchaMetricsObserver::FrameDisplayStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    bool is_display_none) {
+  if (IsInPrerendering() || !render_frame_host ||
+      !render_frame_host->GetParentOrOuterDocument()) {
+    return;
+  }
+
+  SubFrameData& subframe_data =
+      subframe_data_[render_frame_host->GetFrameTreeNodeId()];
+  subframe_data.is_display_none = is_display_none;
+  MaybeRecordCaptchaFrameLoadVisible(subframe_data);
+}
+
+void CaptchaMetricsObserver::FrameSizeChanged(
+    content::RenderFrameHost* render_frame_host,
+    const gfx::Size& frame_size) {
+  if (IsInPrerendering() || !render_frame_host ||
+      !render_frame_host->GetParentOrOuterDocument()) {
+    return;
+  }
+
+  SubFrameData& subframe_data =
+      subframe_data_[render_frame_host->GetFrameTreeNodeId()];
+  subframe_data.frame_size = frame_size;
+  MaybeRecordCaptchaFrameLoadVisible(subframe_data);
+}
+
+void CaptchaMetricsObserver::OnFrameVisibilityChanged(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::FrameVisibility visibility) {
+  if (IsInPrerendering() || !render_frame_host ||
+      !render_frame_host->GetParentOrOuterDocument()) {
+    return;
+  }
+
+  SubFrameData& subframe_data =
+      subframe_data_[render_frame_host->GetFrameTreeNodeId()];
+  subframe_data.visibility = visibility;
+  MaybeRecordCaptchaFrameLoadVisible(subframe_data);
+}
+
+void CaptchaMetricsObserver::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
+  subframe_data_.erase(frame_tree_node_id);
+}
+
+void CaptchaMetricsObserver::MaybeRecordCaptchaFrameLoadVisible(
+    SubFrameData& subframe_data) {
+  if (IsInPrerendering() || subframe_data.recorded_visible ||
+      !subframe_data.captcha_provider.has_value() ||
+      subframe_data.is_display_none ||
+      subframe_data.visibility !=
+          blink::mojom::FrameVisibility::kRenderedInViewport ||
+      !subframe_data.frame_size.has_value()) {
+    return;
+  }
+
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  gfx::Size unscaled_frame_size =
+      GetUnscaledFrameSize(web_contents, *subframe_data.frame_size);
+  if (unscaled_frame_size.GetCheckedArea().ValueOrDefault(
+          std::numeric_limits<int>::max()) < kMinimumVisibleFrameArea) {
+    return;
+  }
+
+  subframe_data.recorded_visible = true;
+  const CaptchaFrameAgentContext agent_context =
+      GetCaptchaFrameAgentContext(web_contents);
+  std::string base_histogram_name = "PageLoad.Clients.CaptchaFrameLoadVisible";
+  base::UmaHistogramEnumeration(base_histogram_name, agent_context);
+  std::string provider_specific_histogram_name =
+      base_histogram_name +
+      GetCaptchaProviderHistogramName(subframe_data.captcha_provider.value());
+  base::UmaHistogramEnumeration(provider_specific_histogram_name,
+                                agent_context);
 }
 
 bool CaptchaMetricsObserver::IsInPrerendering() const {
