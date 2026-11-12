@@ -493,8 +493,10 @@ void MediaInterfaceProxy::CreateFlingingRenderer(
   if (!flinging_renderer)
     return;
 
-  media::MojoRendererService::Create(nullptr, std::move(flinging_renderer),
-                                     std::move(receiver));
+  flinging_renderers_.Add(
+      std::make_unique<media::MojoRendererService>(
+          /*mojo_cdm_service_context=*/nullptr, std::move(flinging_renderer)),
+      std::move(receiver));
 }
 
 #endif

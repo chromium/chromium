@@ -23,6 +23,7 @@
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/decryptor.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/renderer.mojom.h"
 #include "media/mojo/services/media_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -163,6 +164,12 @@ class CONTENT_EXPORT MediaInterfaceProxy final
 #endif  // BUILDFLAG(IS_WIN)
 
   mojo::UniqueReceiverSet<media::mojom::FrameInterfaceFactory> frame_factories_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Browser-hosted FlingingRenderers created by CreateFlingingRenderer(),
+  // scoped to the lifetime of the document.
+  mojo::UniqueReceiverSet<media::mojom::Renderer> flinging_renderers_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // InterfacePtr to the remote InterfaceFactory implementation in the Media
   // Service hosted in the process specified by the "mojo_media_host" gn
