@@ -16,6 +16,7 @@
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
+#import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "components/remote_cocoa/app_shim/window_move_loop.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +24,7 @@
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
@@ -134,6 +136,10 @@ class DummyNativeWidgetNSWindowHost
   DummyNativeWidgetNSWindowHost() = default;
   ~DummyNativeWidgetNSWindowHost() override = default;
 
+  const gfx::Rect& last_window_bounds_in_screen_dips() const {
+    return last_window_bounds_in_screen_dips_;
+  }
+
  private:
   void OnVisibilityChanged(bool visible) override {}
   void OnSpaceActivationChanged(bool is_space_active) override {}
@@ -148,7 +154,9 @@ class DummyNativeWidgetNSWindowHost
   void OnGestureEvent(std::unique_ptr<ui::Event> event) override {}
   void OnWindowGeometryChanged(
       const gfx::Rect& window_bounds_in_screen_dips,
-      const gfx::Rect& content_bounds_in_screen_dips) override {}
+      const gfx::Rect& content_bounds_in_screen_dips) override {
+    last_window_bounds_in_screen_dips_ = window_bounds_in_screen_dips;
+  }
   void OnWindowWillMove() override {}
   void OnWindowDidEndMove() override {}
   void OnWindowWillStartLiveResize() override {}
@@ -228,6 +236,10 @@ class DummyNativeWidgetNSWindowHost
       GetShouldShowWindowTitleCallback callback) override {
     std::move(callback).Run(false);
   }
+  bool GetShouldShowWindowTitle(bool* show_title) override {
+    *show_title = false;
+    return true;
+  }
   void GetCanWindowBecomeKey(GetCanWindowBecomeKeyCallback callback) override {
     std::move(callback).Run(false);
   }
@@ -271,6 +283,8 @@ class DummyNativeWidgetNSWindowHost
                          HandleAcceleratorCallback callback) override {
     std::move(callback).Run(false);
   }
+
+  gfx::Rect last_window_bounds_in_screen_dips_;
 };
 
 class DummyNativeWidgetNSWindowHostHelper
@@ -296,6 +310,24 @@ class DummyNativeWidgetNSWindowHostHelper
 };
 
 }  // namespace
+
+@interface TestLiveResizeNSWindow : NativeWidgetMacNSWindow
+@property(nonatomic, assign) BOOL mockInLiveResize;
+@property(nonatomic, assign) NSWindowLiveResizeEdges mockLiveResizeEdges;
+@end
+
+@implementation TestLiveResizeNSWindow
+@synthesize mockInLiveResize = _mockInLiveResize;
+@synthesize mockLiveResizeEdges = _mockLiveResizeEdges;
+
+- (BOOL)inLiveResize {
+  return _mockInLiveResize;
+}
+
+- (NSWindowLiveResizeEdges)liveResizeEdges {
+  return _mockLiveResizeEdges;
+}
+@end
 
 // Tests that AppKit frame adjustments (such as clamping window position to
 // screen boundaries) are suppressed when a window move loop is active, allowing
@@ -613,6 +645,226 @@ TEST(NativeWidgetMacNSWindowTest, SetBoundsUpdatesMoveLoopBaseFrame) {
                      [window frame]));
 
     bridge->EndMoveLoop();
+    [window close];
+  }
+}
+
+// Tests that, when kAsyncLiveResize is enabled, normal edge resizing rejects
+// synchronous resize, updates the host bounds with the opposite edge anchored,
+// and accepts normal resize when not in live resize.
+TEST(NativeWidgetMacNSWindowTest, AsyncLiveResizeNormalEdge) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncLiveResize);
+
+  display::ScopedNativeScreen screen;
+  @autoreleasepool {
+    TestLiveResizeNSWindow* window = [[TestLiveResizeNSWindow alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    DummyNativeWidgetNSWindowHost dummy_host;
+    DummyNativeWidgetNSWindowHostHelper dummy_helper;
+    auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+        10, &dummy_host, &dummy_helper, nullptr);
+    bridge->SetWindow(window);
+
+    const NSRect initial_frame = NSMakeRect(100, 100, 400, 300);
+    [window setFrame:initial_frame display:NO];
+
+    id<NSWindowDelegate> delegate = [window delegate];
+    ASSERT_TRUE(delegate);
+
+    // Verify dragging from the bottom-right resizes with the top-left corner as
+    // the anchor.
+    window.mockInLiveResize = YES;
+    window.mockLiveResizeEdges =
+        NSWindowLiveResizeEdgesBottom | NSWindowLiveResizeEdgesRight;
+
+    NSSize target_size = NSMakeSize(440, 360);
+    NSSize returned_size = [delegate windowWillResize:window
+                                               toSize:target_size];
+
+    // Synchronous resize is rejected in live resize mode by returning a size
+    // other than target_size.
+    EXPECT_TRUE(NSEqualSizes(returned_size, initial_frame.size));
+
+    // Bottom edge moves origin.y down by height_delta (60), origin.x unchanged.
+    NSRect expected_bottom_right_frame = NSMakeRect(100, 40, 440, 360);
+    EXPECT_TRUE(NSEqualRects(
+        gfx::ScreenRectToNSRect(dummy_host.last_window_bounds_in_screen_dips()),
+        expected_bottom_right_frame));
+
+    [window close];
+  }
+
+  @autoreleasepool {
+    TestLiveResizeNSWindow* window = [[TestLiveResizeNSWindow alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    DummyNativeWidgetNSWindowHost dummy_host;
+    DummyNativeWidgetNSWindowHostHelper dummy_helper;
+    auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+        11, &dummy_host, &dummy_helper, nullptr);
+    bridge->SetWindow(window);
+
+    const NSRect initial_frame = NSMakeRect(100, 100, 400, 300);
+    [window setFrame:initial_frame display:NO];
+
+    id<NSWindowDelegate> delegate = [window delegate];
+    ASSERT_TRUE(delegate);
+
+    // Verify dragging from the left edge resizes with the right edge anchored
+    // (shifting origin.x by full width delta, origin.y unchanged).
+    window.mockInLiveResize = YES;
+    window.mockLiveResizeEdges = NSWindowLiveResizeEdgesLeft;
+
+    NSSize target_size = NSMakeSize(440, 300);
+    NSSize returned_size = [delegate windowWillResize:window
+                                               toSize:target_size];
+
+    EXPECT_TRUE(NSEqualSizes(returned_size, initial_frame.size));
+
+    NSRect expected_left_frame = NSMakeRect(60, 100, 440, 300);
+    EXPECT_TRUE(NSEqualRects(
+        gfx::ScreenRectToNSRect(dummy_host.last_window_bounds_in_screen_dips()),
+        expected_left_frame));
+
+    // Verify that when not in live resize, windowWillResize returns target
+    // size.
+    window.mockInLiveResize = NO;
+    returned_size = [delegate windowWillResize:window
+                                        toSize:NSMakeSize(500, 420)];
+    EXPECT_TRUE(NSEqualSizes(returned_size, NSMakeSize(500, 420)));
+
+    [window close];
+  }
+}
+
+// Tests that, when kAsyncLiveResize is enabled, resizing the window while
+// holding the Option key (dragging a corner or edge) preserves the window's
+// center by adjusting the origin by half the size delta along the active axes.
+TEST(NativeWidgetMacNSWindowTest, AsyncLiveResizeOptionKeyCenterResize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAsyncLiveResize);
+
+  display::ScopedNativeScreen screen;
+
+  auto test_option_resize = [](uint64_t bridge_id,
+                               NSWindowLiveResizeEdges edges,
+                               NSSize target_size, NSRect expected_frame,
+                               float center_tolerance = 0.0f) {
+    @autoreleasepool {
+      TestLiveResizeNSWindow* window = [[TestLiveResizeNSWindow alloc]
+          initWithContentRect:ui::kWindowSizeDeterminedLater
+                    styleMask:NSWindowStyleMaskBorderless
+                      backing:NSBackingStoreBuffered
+                        defer:NO];
+
+      DummyNativeWidgetNSWindowHost dummy_host;
+      DummyNativeWidgetNSWindowHostHelper dummy_helper;
+      auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+          bridge_id, &dummy_host, &dummy_helper, nullptr);
+      bridge->SetWindow(window);
+
+      const NSRect initial_frame = NSMakeRect(100, 100, 400, 300);
+      [window setFrame:initial_frame display:NO];
+
+      id<NSWindowDelegate> delegate = [window delegate];
+      ASSERT_TRUE(delegate);
+
+      const NSPoint initial_center =
+          NSMakePoint(NSMidX(initial_frame), NSMidY(initial_frame));
+
+      window.mockInLiveResize = YES;
+      window.mockLiveResizeEdges = edges;
+      NSSize returned_size = [delegate windowWillResize:window
+                                                 toSize:target_size];
+
+      // Synchronous resize is rejected in live resize mode.
+      EXPECT_TRUE(NSEqualSizes(returned_size, initial_frame.size));
+      EXPECT_TRUE(
+          NSEqualRects(gfx::ScreenRectToNSRect(
+                           dummy_host.last_window_bounds_in_screen_dips()),
+                       expected_frame));
+
+      NSPoint new_center =
+          NSMakePoint(NSMidX(expected_frame), NSMidY(expected_frame));
+      EXPECT_NEAR(initial_center.x, new_center.x, center_tolerance);
+      EXPECT_NEAR(initial_center.y, new_center.y, center_tolerance);
+
+      [window close];
+    }
+  };
+
+  // Verify corner expanding with Option key held down (both axes active).
+  // Deltas relative to initial_frame: width +80, height +100.
+  // Divisors are 2.0. origin.x shifts by -40, origin.y shifts by -50.
+  test_option_resize(21, NSWindowLiveResizeEdgesAll, NSMakeSize(480, 400),
+                     NSMakeRect(60, 50, 480, 400));
+
+  // Verify corner contracting with Option key held down (both axes active).
+  // Deltas relative to initial_frame: width -40, height -40.
+  // Divisors are 2.0. origin.x shifts by +20, origin.y shifts by +20.
+  test_option_resize(22, NSWindowLiveResizeEdgesAll, NSMakeSize(360, 260),
+                     NSMakeRect(120, 120, 360, 260));
+
+  // Verify vertical edge resizing with Option key held down.
+  // Height delta (+60) is divided by 2.0, shifting origin.y by -30.
+  // Horizontal axis is unchanged.
+  test_option_resize(23, NSWindowLiveResizeEdgesVertical, NSMakeSize(400, 360),
+                     NSMakeRect(100, 70, 400, 360));
+
+  // Verify horizontal edge resizing with Option key held down.
+  // Width delta (+40) is divided by 2.0, shifting origin.x by -20.
+  // Vertical axis is unchanged.
+  test_option_resize(24, NSWindowLiveResizeEdgesHorizontal,
+                     NSMakeSize(440, 300), NSMakeRect(80, 100, 440, 300));
+
+  // Verify odd-pixel delta rounding with Option key held down.
+  // Width delta (+41) with divisor 2.0 rounds to 21, shifting origin.x by -21.
+  // Height delta (+61) with divisor 2.0 rounds to 31, shifting origin.y by -31.
+  test_option_resize(25, NSWindowLiveResizeEdgesAll, NSMakeSize(441, 361),
+                     NSMakeRect(79, 69, 441, 361), 0.5f);
+}
+
+// Tests that, when kAsyncLiveResize is disabled, windowWillResize does not
+// intercept the resize even during live resize.
+TEST(NativeWidgetMacNSWindowTest, AsyncLiveResizeDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAsyncLiveResize);
+
+  display::ScopedNativeScreen screen;
+  @autoreleasepool {
+    TestLiveResizeNSWindow* window = [[TestLiveResizeNSWindow alloc]
+        initWithContentRect:ui::kWindowSizeDeterminedLater
+                  styleMask:NSWindowStyleMaskBorderless
+                    backing:NSBackingStoreBuffered
+                      defer:NO];
+
+    DummyNativeWidgetNSWindowHost dummy_host;
+    DummyNativeWidgetNSWindowHostHelper dummy_helper;
+    auto bridge = std::make_unique<remote_cocoa::NativeWidgetNSWindowBridge>(
+        12, &dummy_host, &dummy_helper, nullptr);
+    bridge->SetWindow(window);
+
+    id<NSWindowDelegate> delegate = [window delegate];
+    ASSERT_TRUE(delegate);
+
+    window.mockInLiveResize = YES;
+    window.mockLiveResizeEdges = NSWindowLiveResizeEdgesAll;
+
+    NSSize target_size = NSMakeSize(500, 400);
+    NSSize returned_size = [delegate windowWillResize:window
+                                               toSize:target_size];
+
+    // When the feature is disabled, the target size is used.
+    EXPECT_TRUE(NSEqualSizes(returned_size, target_size));
+
     [window close];
   }
 }

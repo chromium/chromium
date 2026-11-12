@@ -16,6 +16,23 @@ namespace remote_cocoa {
 class NativeWidgetNSWindowBridge;
 }  // namespace remote_cocoa
 
+// Models the bitmask returned by AppKit's private SPI
+// -[NSWindow liveResizeEdges], which identifies the active window edges during
+// a user live-resize event.
+typedef NS_OPTIONS(NSUInteger, NSWindowLiveResizeEdges) {
+  NSWindowLiveResizeEdgesNone = 0,
+  NSWindowLiveResizeEdgesLeft = 1 << 0,
+  NSWindowLiveResizeEdgesBottom = 1 << 1,
+  NSWindowLiveResizeEdgesRight = 1 << 2,
+  NSWindowLiveResizeEdgesTop = 1 << 3,
+  NSWindowLiveResizeEdgesHorizontal = NSWindowLiveResizeEdgesLeft |
+                                      NSWindowLiveResizeEdgesRight,
+  NSWindowLiveResizeEdgesVertical = NSWindowLiveResizeEdgesBottom |
+                                    NSWindowLiveResizeEdgesTop,
+  NSWindowLiveResizeEdgesAll = NSWindowLiveResizeEdgesHorizontal |
+                               NSWindowLiveResizeEdgesVertical,
+};
+
 // The delegate set on the NSWindow when a
 // remote_cocoa::NativeWidgetNSWindowBridge is initialized.
 REMOTE_COCOA_APP_SHIM_EXPORT
