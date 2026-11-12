@@ -1083,6 +1083,7 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:guava_java",
       "//third_party/android_deps:kotlin_stdlib_java",
     ]
   }
