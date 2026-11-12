@@ -7,12 +7,12 @@
 #include <algorithm>
 
 #include "ash/system/extended_updates/extended_updates_metrics.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/browser/web_ui.h"
@@ -25,10 +25,12 @@ ExtendedUpdatesPageHandler::ExtendedUpdatesPageHandler(
     mojo::PendingRemote<ash::extended_updates::mojom::Page> page,
     mojo::PendingReceiver<ash::extended_updates::mojom::PageHandler> receiver,
     content::WebUI* web_ui,
+    apps::AppService* app_service,
     base::OnceClosure close_dialog_callback)
     : page_(std::move(page)),
       receiver_(this, std::move(receiver)),
       web_ui_(web_ui),
+      app_service_(CHECK_DEREF(app_service)),
       close_dialog_callback_(std::move(close_dialog_callback)) {}
 
 ExtendedUpdatesPageHandler::~ExtendedUpdatesPageHandler() = default;
@@ -55,9 +57,8 @@ void ExtendedUpdatesPageHandler::CloseDialog() {
 void ExtendedUpdatesPageHandler::GetInstalledAndroidApps(
     GetInstalledAndroidAppsCallback callback) {
   std::vector<mojom::AppPtr> apps;
-  apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_))
-      ->AppRegistryCache()
-      .ForEachApp([&apps](const apps::AppUpdate& update) {
+  app_service_->AppRegistryCache().ForEachApp(
+      [&apps](const apps::AppUpdate& update) {
         bool is_arc_type = (update.AppType() == apps::AppType::kArc);
         bool is_ready = (update.Readiness() == apps::Readiness::kReady);
         bool is_pre_installed =

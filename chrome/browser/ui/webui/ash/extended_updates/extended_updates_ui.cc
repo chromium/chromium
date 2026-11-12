@@ -18,6 +18,9 @@
 #include "chrome/grit/extended_updates_resources.h"
 #include "chrome/grit/extended_updates_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app_service_registry.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -95,8 +98,13 @@ void ExtendedUpdatesUI::CreatePageHandler(
     mojo::PendingRemote<ash::extended_updates::mojom::Page> page,
     mojo::PendingReceiver<ash::extended_updates::mojom::PageHandler> receiver) {
   CHECK(page, base::NotFatalUntil::M162);
+  // The dialog only opens for the device owner, so the Profile has an
+  // AccountId, and the AppService of that user is registered.
+  const AccountId& account_id =
+      CHECK_DEREF(AnnotatedAccountId::Get(Profile::FromWebUI(web_ui())));
   page_handler_ = std::make_unique<ExtendedUpdatesPageHandler>(
       std::move(page), std::move(receiver), web_ui(),
+      apps::AppServiceRegistry::Get()->Find(account_id),
       base::BindOnce(&ExtendedUpdatesUI::CloseDialog, base::Unretained(this),
                      base::ListValue()));
 }
