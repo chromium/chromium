@@ -188,6 +188,10 @@ class GL_EXPORT DCLayerTree {
   // to get the corresponding HMONITOR.
   IDXGIOutput* current_output() const { return current_output_.Get(); }
 
+  EXPERIMENTAL_IDCompositionDevice7* dcomp_device7() const {
+    return dcomp_device_7_.Get();
+  }
+
   bool SupportsDelegatedInk();
 
   void SetDelegatedInkTrailStartPoint(
@@ -302,6 +306,13 @@ class GL_EXPORT DCLayerTree {
         below_visual_ = below_layer ? below_layer->container_visual() : nullptr;
       }
 
+      // Returns `background_color_content_` if it's compatible with
+      // `new_background_color`. Else, returns an `IDCompositionColorBrush` set
+      // to `new_background_color`. This reuses the existing brush if possible.
+      Microsoft::WRL::ComPtr<IUnknown> GetOrCreateBackgroundColorContent(
+          EXPERIMENTAL_IDCompositionDevice7* dcomp_device,
+          SkColor4f new_background_color) const;
+
      private:
 #if DCHECK_IS_ON()
       friend class VisualTree;
@@ -345,13 +356,11 @@ class GL_EXPORT DCLayerTree {
       gfx::RectF content_rect_;
 
       // The content for the background color fill to be placed at a leaf of
-      // the visual subtree. Since |SolidColorSurfacePool::GetSolidColorContent|
-      // returns content that is opaque, |background_color_visual_|'s opacity
-      // will be set to |background_color_.fA|. Must be present if
-      // |background_color_| is non-transparent. Must be re-updated from
-      // |SolidColorSurfacePool::GetSolidColorContent| every frame it is
-      // present. Either an IDCompositionSurface (D3D11 path) or an
-      // IDCompositionTexture (D3D12 path).
+      // the visual subtree. The content is opaque, so
+      // |background_color_visual_|'s opacity is set to |background_color_.fA|.
+      // Must be present if |background_color_| is non-transparent and updated
+      // every frame. Either a pooled IDCompositionSurface (D3D11 path) or
+      // IDCompositionTexture (D3D12 path), or an IDCompositionColorBrush.
       Microsoft::WRL::ComPtr<IUnknown> background_color_content_;
 
       // The color of |background_color_content_|.
@@ -483,7 +492,7 @@ class GL_EXPORT DCLayerTree {
   // If using D3D12 comp textures, submit pending fills and prepare for commit.
   // No-op otherwise.
   base::expected<void, CommitError> PrepareD3D12CompTexturesForCommit(
-      SolidColorPoolBase& solid_color_content_provider);
+      SolidColorPoolBase* solid_color_content_provider);
 
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_auto_hdr_;
@@ -502,13 +511,15 @@ class GL_EXPORT DCLayerTree {
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
   // IDCompositionDevice6 enables support for D3D12 composition textures.
   Microsoft::WRL::ComPtr<EXPERIMENTAL_IDCompositionDevice6> dcomp_device_6_;
+  // IDCompositionDevice7 enables support for relative layout and brushes.
+  Microsoft::WRL::ComPtr<EXPERIMENTAL_IDCompositionDevice7> dcomp_device_7_;
   // A d3d12 command queue from Dawn that is used to present composition
   // textures prior to DComp commit.
   Microsoft::WRL::ComPtr<ID3D12CommandQueue> d3d12_command_queue_;
 
   // Resource pool that produces DComp content (`IDCompositionSurface` or
-  // `IDCompositionTexture`) for solid color overlays. This is needed since
-  // there is no way to procedurally fill a DComp visual.
+  // `IDCompositionTexture`) for solid color overlays when DComp brushes are
+  // not enabled. Null when using DComp brushes.
   std::unique_ptr<SolidColorPoolBase> solid_color_content_provider_;
 
   // Store the largest video processor for SDR and HDR content

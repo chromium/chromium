@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "third_party/microsoft_dxheaders/src/include/experimental-composition/experimental-dcomp.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1415,7 +1416,15 @@ base::expected<void, CommitError> SwapChainPresenter::PresentDCOMPSurface(
   }
 
   pending_dcomp_surface_rect_in_window_ = mapped_rect;
-  content_size_ = mapped_rect.size();
+
+  if (layer_tree_->dcomp_device7()) {
+    // Report the quad size so that the DCLayerTree's content-to-quad transform
+    // is identity so the video will not be doubly scaled when placed in a
+    // `IDCompositionSurfaceBrush` below.
+    content_size_ = params.quad_rect.size();
+  } else {
+    content_size_ = mapped_rect.size();
+  }
 
   // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
   // without knowledge of output size; reset |content_| so it's not added to the
@@ -1445,7 +1454,16 @@ base::expected<void, CommitError> SwapChainPresenter::PresentDCOMPSurface(
           CommitError::Reason::kPresentToSwapChainCreateSurfaceFromHandle, hr});
     }
 
-    content_ = dcomp_surface.Get();
+    if (auto* dcomp_device7 = layer_tree_->dcomp_device7()) {
+      // A DComp surface brush scales its contents to its container. This lets
+      // us avoid jank when the internal MF swap chain asynchronously resizes.
+      Microsoft::WRL::ComPtr<IDCompositionSurfaceBrush> surface_brush;
+      CHECK_EQ(S_OK, dcomp_device7->CreateSurfaceBrush(&surface_brush));
+      CHECK_EQ(S_OK, surface_brush->SetSurface(dcomp_surface.Get()));
+      content_ = std::move(surface_brush);
+    } else {
+      content_ = dcomp_surface.Get();
+    }
     // Don't take ownership of handle as the DCOMPSurfaceProxy instance owns it.
     dcomp_surface_handle_ = surface_handle;
   }

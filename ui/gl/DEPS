@@ -67,4 +67,7 @@ specific_include_rules = {
   "hdr_metadata_helper_win_unittest.cc": [
     "+media/base/win/d3d11_mocks.h",
   ],
+  "swap_chain_presenter.cc": [
+    "+third_party/microsoft_dxheaders/src/include/experimental-composition/experimental-dcomp.h"
+  ],
 }

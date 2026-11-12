@@ -52,6 +52,7 @@
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
@@ -1300,6 +1301,77 @@ INSTANTIATE_TEST_SUITE_P(,
                          DCompPresenterTest::GetValues(),
                          &DCompPresenterTest::GetParamName);
 
+class DCompPresenterColorBrushTest : public DCompPresenterTestBase<> {
+ public:
+  DCompPresenterColorBrushTest() { EnableFeature(features::kDCompBrushes); }
+
+ protected:
+  void SetUp() override {
+    DCompPresenterTestBase<>::SetUp();
+    if (!ShouldUseDirectCompositionBrushes()) {
+      GTEST_SKIP() << "DComp brushes are not supported";
+    }
+  }
+};
+
+TEST_P(DCompPresenterColorBrushTest, BackgroundColorBrushesDontUsePool) {
+  const gfx::Size window_size(100, 100);
+  ASSERT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  const DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
+  const std::vector<SkColor4f> colors = {
+      SkColors::kRed, SkColors::kRed, SkColors::kGreen, SkColors::kTransparent};
+  std::vector<Microsoft::WRL::ComPtr<IUnknown>> first_frame_contents(
+      colors.size());
+
+  for (int frame = 0; frame < 2; ++frame) {
+    base::flat_set<IUnknown*> contents;
+    for (size_t i = 0; i < colors.size(); ++i) {
+      DCLayerOverlayParams params;
+      params.quad_rect = gfx::Rect(window_size);
+      params.background_color = colors[i];
+      params.z_order = i + 1;
+      params.layer_id = gfx::OverlayLayerId::MakeForTesting(i);
+      ScheduleOverlay(std::move(params));
+    }
+    ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
+    EXPECT_EQ(0u, layer_tree->GetNumEntriesInSolidColorPoolForTesting());
+
+    for (size_t i = 0; i < colors.size(); ++i) {
+      IUnknown* content = layer_tree->GetBackgroundColorContentForTesting(
+          gfx::OverlayLayerId::MakeForTesting(i));
+      if (frame == 0) {
+        first_frame_contents[i] = content;
+      } else {
+        // We expect the second frame to reuse each background color contents
+        // for each color.
+        EXPECT_EQ(content, first_frame_contents[i].Get());
+      }
+      if (colors[i].fA == 0.0f) {
+        EXPECT_EQ(content, nullptr);
+        continue;
+      }
+      ASSERT_NE(content, nullptr);
+
+      Microsoft::WRL::ComPtr<IDCompositionColorBrush> brush;
+      EXPECT_HRESULT_SUCCEEDED(content->QueryInterface(IID_PPV_ARGS(&brush)));
+
+      contents.insert(content);
+    }
+    // We expect a unique background content for each non-transparent solid
+    // color overlay. The two red overlays should have their own color brushes.
+    EXPECT_EQ(contents.size(), 3u);
+  }
+
+  ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
+  EXPECT_EQ(0u, layer_tree->GetNumEntriesInSolidColorPoolForTesting());
+  EXPECT_EQ(0u, layer_tree->GetDcompLayerCountForTesting());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DCompPresenterColorBrushTest,
+                         DCompPresenterColorBrushTest::GetValues(),
+                         &DCompPresenterColorBrushTest::GetParamName);
+
 class DCompPresenterMFLargeOnscreenSizeTest : public DCompPresenterTest {
  protected:
   void RunTest(const gfx::Size& monitor_size,
@@ -2379,9 +2451,17 @@ TEST_P(DCompPresenterPixelTest,
   }
 }
 
+class DCompPresenterSolidColorPoolPixelTest
+    : public DCompPresenterPixelTestBase<> {
+ public:
+  DCompPresenterSolidColorPoolPixelTest() {
+    DisableFeature(features::kDCompBrushes);
+  }
+};
+
 // Check that the surface backing solid color overlays is reused across frames.
 // This can happen e.g. with a solid color draw quad animating its color.
-TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
+TEST_P(DCompPresenterSolidColorPoolPixelTest, BackgroundColorSurfaceReuse) {
   const gfx::Size window_size(100, 100);
   EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
 
@@ -2423,6 +2503,11 @@ TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
            "frames";
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DCompPresenterSolidColorPoolPixelTest,
+                         DCompPresenterSolidColorPoolPixelTest::GetValues(),
+                         &DCompPresenterSolidColorPoolPixelTest::GetParamName);
 
 class DCompPresenterFullScreenOptimizationPixelTest
     : public DCompPresenterPixelTestBase<> {
