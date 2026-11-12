@@ -489,14 +489,12 @@ ExtensionFunction::ResponseAction WindowsGetAllFunction::Run() {
       extractor.populate_tabs() ? WindowController::kPopulateTabs
                                 : WindowController::kDontPopulateTabs;
   for (WindowController* controller : *WindowControllerList::GetInstance()) {
-    if (!controller->GetBrowserWindowInterface() ||
-        !windows_util::CanOperateOnWindow(this, controller,
+    if (!windows_util::CanOperateOnWindow(this, controller,
                                           extractor.type_filters())) {
       continue;
     }
-    window_list.Append(ExtensionTabUtil::CreateWindowValueForExtension(
-        *controller->GetBrowserWindowInterface(), extension(),
-        populate_tab_behavior, source_context_type()));
+    window_list.Append(controller->CreateWindowValueForExtension(
+        extension(), populate_tab_behavior, source_context_type()));
   }
 
   return RespondNow(WithArguments(std::move(window_list)));

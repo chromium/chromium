@@ -82,8 +82,7 @@ bool CanOperateOnWindow(const ExtensionFunction* function,
 
   // TODO(crbug.com/41367902): Remove this.
   bool allow_dev_tools_windows = !!filter;
-  if (function->extension() &&
-      !controller->IsVisibleToTabsAPIForExtension(function->extension(),
+  if (!controller->IsVisibleToTabsAPIForExtension(function->extension(),
                                                   allow_dev_tools_windows)) {
     return false;
   }

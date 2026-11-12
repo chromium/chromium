@@ -5791,4 +5791,49 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsInitiatorKillswitchTest,
   }
 }
 
+// Verifies that WindowsGetAllFunction includes standalone WindowControllers
+// that have no BrowserWindowInterface.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       WindowsGetAll_IncludesStandaloneWindowController) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("WindowsGetAllStandaloneTest").Build();
+  auto function = base::MakeRefCounted<WindowsGetAllFunction>();
+  function->set_extension(extension.get());
+  base::ListValue windows =
+      utils::ToList(utils::RunFunctionAndReturnSingleResult(
+          function.get(), R"([{"populate": true}])", profile()));
+
+  const base::DictValue* found_window = nullptr;
+  for (const base::Value& window_val : windows) {
+    const base::DictValue& dict = window_val.GetDict();
+    if (dict.FindInt("id") == standalone_window_id.id()) {
+      found_window = &dict;
+      break;
+    }
+  }
+  ASSERT_NE(nullptr, found_window);
+  EXPECT_EQ("popup", *found_window->FindString("type"));
+  EXPECT_EQ(true, found_window->FindBool("alwaysOnTop"));
+  const base::ListValue* tabs =
+      found_window->FindList(ExtensionTabUtil::kTabsKey);
+  ASSERT_NE(nullptr, tabs);
+  ASSERT_EQ(1u, tabs->size());
+  EXPECT_EQ(tab_id, (*tabs)[0].GetDict().FindInt("id"));
+}
+
 }  // namespace extensions

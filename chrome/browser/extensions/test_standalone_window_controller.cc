@@ -4,8 +4,12 @@
 
 #include "chrome/browser/extensions/test_standalone_window_controller.h"
 
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "ui/base/base_window.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace extensions {
 
@@ -59,13 +63,43 @@ base::DictValue TestStandaloneWindowController::CreateWindowValueForExtension(
     const Extension* extension,
     PopulateTabBehavior populate_tab_behavior,
     mojom::ContextType context) const {
-  return base::DictValue();
+  const gfx::Rect bounds =
+      window() ? (window()->IsMinimized() ? window()->GetRestoredBounds()
+                                          : window()->GetBounds())
+               : gfx::Rect();
+  base::DictValue dict;
+  dict.Set("id", GetWindowId());
+  dict.Set("focused", window() ? window()->IsActive() : false);
+  dict.Set("top", bounds.y());
+  dict.Set("left", bounds.x());
+  dict.Set("width", bounds.width());
+  dict.Set("height", bounds.height());
+  dict.Set("type", GetWindowTypeText());
+  dict.Set("state",
+           window() && window()->IsMinimized() ? "minimized" : "normal");
+  dict.Set("incognito", profile()->IsOffTheRecord());
+  dict.Set("alwaysOnTop", window() ? window()->GetZOrderLevel() ==
+                                         ui::ZOrderLevel::kFloatingWindow
+                                   : true);
+  if (populate_tab_behavior == kPopulateTabs) {
+    dict.Set(ExtensionTabUtil::kTabsKey, CreateTabList(extension, context));
+  }
+  return dict;
 }
 
 base::ListValue TestStandaloneWindowController::CreateTabList(
     const Extension* extension,
     mojom::ContextType context) const {
-  return base::ListValue();
+  base::ListValue list;
+  if (web_contents_) {
+    list.Append(ExtensionTabUtil::CreateTabObject(
+                    web_contents_,
+                    ExtensionTabUtil::GetScrubTabBehavior(extension, context,
+                                                          web_contents_),
+                    extension, nullptr, 0)
+                    .ToValue());
+  }
+  return list;
 }
 
 bool TestStandaloneWindowController::OpenOptionsPage(const Extension* extension,
