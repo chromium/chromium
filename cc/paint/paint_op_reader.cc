@@ -176,6 +176,13 @@ bool PaintOpReader::ReadAndValidateOpHeader(uint8_t* type,
   if (*type > static_cast<uint8_t>(PaintOpType::kLastPaintOpType)) {
     return false;
   }
+  // DrawTextBlobOp and DrawTextSlugsOp are never serialized: they are
+  // serialized as DrawSlugOp(s) instead, and their Deserialize() functions are
+  // NOTREACHED(). Reject them here so that untrusted input cannot reach them.
+  if (*type == static_cast<uint8_t>(PaintOpType::kDrawTextBlob) ||
+      *type == static_cast<uint8_t>(PaintOpType::kDrawTextSlugs)) {
+    return false;
+  }
   return true;
 }
 

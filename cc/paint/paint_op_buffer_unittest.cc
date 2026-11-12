@@ -3086,6 +3086,17 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   EXPECT_FALSE(PaintOp::Deserialize(input_span.first(bytes_written), output,
                                     &bytes_read,
                                     options_provider.deserialize_options()));
+
+  // Types which are never serialized fail to deserialize, rather than reaching
+  // their NOTREACHED() Deserialize() functions.
+  for (PaintOpType type :
+       {PaintOpType::kDrawTextBlob, PaintOpType::kDrawTextSlugs}) {
+    PaintOpWriter::WriteHeaderForTesting(input, static_cast<uint8_t>(type),
+                                         serialized_size);
+    EXPECT_FALSE(PaintOp::Deserialize(input_span.first(bytes_written), output,
+                                      &bytes_read,
+                                      options_provider.deserialize_options()));
+  }
 }
 
 // Test that deserializing invalid paint ops fails silently. Skia release
