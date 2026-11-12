@@ -9,11 +9,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host_android.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/test_support/glic_test_tab_added_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/browser_created_waiter.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -220,10 +222,14 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
   // being created and wait for it to navigate to our URL.
   content::TestNavigationObserver nav_observer(target_url);
   nav_observer.StartWatchingNewWebContents();
+  BrowserCreatedWaiter popup_waiter;
+  glic::GlicTestTabAddedWaiter tab_added_waiter(GetProfile());
 
   host->OpenLinkInNewTab(target_url);
 
-  // 2. Wait for the navigation to finish.
+  // 2. Wait for the popup window, its tab and its navigation.
+  popup_waiter.Wait();
+  tab_added_waiter.Wait();
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   EXPECT_EQ(target_url, nav_observer.last_navigation_url());

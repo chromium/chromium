@@ -451,6 +451,7 @@ if (is_android) {
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/test:test_support_jni_headers",
       "//chrome/test:test_support_ui_android",
+      "//chrome/test/base:browser_test_waiters",
       "//components/browser_apis/tab_strip:service",
       "//components/feed:feature_list",
       "//net:test_support",

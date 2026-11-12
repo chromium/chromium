@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/test/base/browser_created_waiter.h"
 #include "components/browser_apis/tab_strip/tab_strip_service_view.h"
 #include "components/browser_apis/tab_strip/types/tab.h"
 #include "components/feed/feed_feature_list.h"
@@ -143,6 +144,7 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
           ui::PAGE_TRANSITION_LINK);
 
   base::test::TestFuture<GURL> future;
+  BrowserCreatedWaiter window_waiter;
   content::WebContents* result = window->OpenURL(
       params,
       base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
@@ -155,6 +157,7 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
   // Callback should eventually be called with a valid handle.
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(url, future.Get());
+  ASSERT_TRUE(window_waiter.Wait());
 }
 
 // Case 3: Asynchronous return, null return, callback not called.
@@ -285,6 +288,7 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupAllowed) {
   params.source_render_frame_id = source_rfh->GetRoutingID();
 
   base::test::TestFuture<GURL> future;
+  BrowserCreatedWaiter window_waiter;
   content::WebContents* result = window->OpenURL(
       params,
       base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
@@ -299,6 +303,7 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupAllowed) {
   // Callback should eventually be called.
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(url, future.Get());
+  ASSERT_TRUE(window_waiter.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/base_switches.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/android_buildflags.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -25,6 +28,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/test/base/browser_created_waiter.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -32,6 +36,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -86,14 +91,22 @@ class NavigationUIDataObserver : public content::WebContentsObserver {
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
     last_navigation_ui_data_ = handle->GetNavigationUIData();
+    if (last_navigation_ui_data_) {
+      last_bookmark_id_ =
+          static_cast<ChromeNavigationUIData*>(last_navigation_ui_data_.get())
+              ->bookmark_id();
+    }
   }
 
   content::NavigationUIData* last_navigation_ui_data() {
     return last_navigation_ui_data_;
   }
 
+  std::optional<int64_t> last_bookmark_id() { return last_bookmark_id_; }
+
  private:
   raw_ptr<content::NavigationUIData> last_navigation_ui_data_ = nullptr;
+  std::optional<int64_t> last_bookmark_id_;
 };
 
 }  // namespace
@@ -786,12 +799,13 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
   Navigate(&params, future.GetCallback());
-  base::WeakPtr<content::NavigationHandle> handle = future.Get();
-  ASSERT_TRUE(handle);
-  ASSERT_TRUE(handle->GetWebContents());
 
-  // Observe the navigation in the new tab's WebContents.
-  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  // The new tab starts loading before the new window is ready, so the page may
+  // finish loading before the callback runs.
+  content::WebContents* new_contents = params.navigated_or_inserted_contents;
+  ASSERT_TRUE(new_contents);
+  content::TestNavigationObserver navigation_observer(new_contents);
+  ASSERT_TRUE(future.Wait());
   navigation_observer.Wait();
 
   // Verify a new window was created and the navigation occurred in it.
@@ -806,7 +820,11 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   ASSERT_TRUE(new_tab);
   EXPECT_NE(params.browser, browser_window_);
   EXPECT_EQ(params.browser, new_window);
-  EXPECT_EQ(url2, new_tab->GetContents()->GetLastCommittedURL());
+  EXPECT_EQ(new_contents, new_tab->GetContents());
+  EXPECT_EQ(url2, new_contents->GetLastCommittedURL());
+  // The new window's tab is created for the navigation, so there is no initial
+  // NTP to go back to.
+  EXPECT_FALSE(new_contents->GetController().CanGoBack());
 
   // Verify the original window is unchanged.
   EXPECT_EQ(1, tab_list_->GetTabCount());
@@ -824,12 +842,13 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Async_Disposition_NewPopup) {
 
   base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
   Navigate(&params, future.GetCallback());
-  base::WeakPtr<content::NavigationHandle> handle = future.Get();
-  ASSERT_TRUE(handle);
-  ASSERT_TRUE(handle->GetWebContents());
 
-  // Observe the navigation in the new tab's WebContents.
-  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  // The new tab starts loading before the new window is ready, so the page may
+  // finish loading before the callback runs.
+  content::WebContents* new_contents = params.navigated_or_inserted_contents;
+  ASSERT_TRUE(new_contents);
+  content::TestNavigationObserver navigation_observer(new_contents);
+  ASSERT_TRUE(future.Wait());
   navigation_observer.Wait();
 
   // Verify a new window was created and the navigation occurred in it.
@@ -865,12 +884,13 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
   Navigate(&params, future.GetCallback());
-  base::WeakPtr<content::NavigationHandle> handle = future.Get();
-  ASSERT_TRUE(handle);
-  ASSERT_TRUE(handle->GetWebContents());
 
-  // Observe the navigation in the new tab's WebContents.
-  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  // The new tab starts loading before the new window is ready, so the page may
+  // finish loading before the callback runs.
+  content::WebContents* new_contents = params.navigated_or_inserted_contents;
+  ASSERT_TRUE(new_contents);
+  content::TestNavigationObserver navigation_observer(new_contents);
+  ASSERT_TRUE(future.Wait());
   navigation_observer.Wait();
 
   // Verify a new window was created and the navigation occurred in it.
@@ -986,12 +1006,13 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
   Navigate(&params, future.GetCallback());
-  base::WeakPtr<content::NavigationHandle> handle = future.Get();
-  ASSERT_TRUE(handle);
-  ASSERT_TRUE(handle->GetWebContents());
 
-  // Observe the navigation in the new tab's WebContents.
-  content::TestNavigationObserver navigation_observer(handle->GetWebContents());
+  // The new tab starts loading before the new window is ready, so the page may
+  // finish loading before the callback runs.
+  content::WebContents* new_contents = params.navigated_or_inserted_contents;
+  ASSERT_TRUE(new_contents);
+  content::TestNavigationObserver navigation_observer(new_contents);
+  ASSERT_TRUE(future.Wait());
   navigation_observer.Wait();
 
   // Verify a new incognito window was created and the navigation occurred in
@@ -1883,6 +1904,38 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, AttachNavigationUIData) {
   EXPECT_TRUE(ui_data_observer.last_navigation_ui_data());
 }
 
+// The bookmark bar sets the bookmark ID from the OpenURL() callback, so for a
+// new window the callback must run before the navigation finishes.
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       OpenURL_NewWindow_CallbackCanSetNavigationData) {
+  const GURL url = embedded_test_server()->GetURL("/title2.html");
+  constexpr int64_t kBookmarkId = 42;
+  content::WebContents* new_contents = nullptr;
+  std::unique_ptr<NavigationUIDataObserver> ui_data_observer;
+  BrowserCreatedWaiter window_waiter;
+  browser_window_->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, ui::mojom::WindowOpenDisposition::kNewWindow,
+          ui::PAGE_TRANSITION_AUTO_BOOKMARK),
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        new_contents = handle.GetWebContents();
+        ui_data_observer =
+            std::make_unique<NavigationUIDataObserver>(new_contents);
+        if (auto* ui_data = static_cast<ChromeNavigationUIData*>(
+                handle.GetNavigationUIData())) {
+          ui_data->set_bookmark_id(kBookmarkId);
+        }
+      }));
+
+  // The callback runs as soon as the navigation starts.
+  ASSERT_TRUE(new_contents);
+  content::TestNavigationObserver navigation_observer(new_contents);
+  navigation_observer.Wait();
+  ASSERT_TRUE(window_waiter.Wait());
+
+  EXPECT_EQ(kBookmarkId, ui_data_observer->last_bookmark_id());
+}
+
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest, Disposition_IgnoreAction) {
   const GURL url1 = StartAtURL("/title1.html");
 
@@ -2084,9 +2137,10 @@ IN_PROC_BROWSER_TEST_F(
 
   base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
   Navigate(&params, future.GetCallback());
-  base::WeakPtr<content::NavigationHandle> handle = future.Get();
-  ASSERT_TRUE(handle);
-  content::TestNavigationObserver observer(handle->GetWebContents());
+  content::WebContents* new_contents = params.navigated_or_inserted_contents;
+  ASSERT_TRUE(new_contents);
+  content::TestNavigationObserver observer(new_contents);
+  ASSERT_TRUE(future.Wait());
   observer.Wait();
 
   // Verify a new incognito normal window was created.
@@ -2261,9 +2315,10 @@ IN_PROC_BROWSER_TEST_F(
 
   base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
   Navigate(&params, future.GetCallback());
-  base::WeakPtr<content::NavigationHandle> handle = future.Get();
-  ASSERT_TRUE(handle);
-  content::TestNavigationObserver observer(handle->GetWebContents());
+  content::WebContents* new_contents = params.navigated_or_inserted_contents;
+  ASSERT_TRUE(new_contents);
+  content::TestNavigationObserver observer(new_contents);
+  ASSERT_TRUE(future.Wait());
   observer.Wait();
 
   // Verify a new normal window was created.
@@ -2346,23 +2401,19 @@ class NavigateAndroidUserAgentOverrideBrowserTest
   // Navigates using the given NavigateParams and returns the last committed
   // NavigationEntry.
   content::NavigationEntry* NavigateAndWait(NavigateParams* params) {
+    // Watch all WebContents before navigating, since a new window's page may
+    // finish loading before the callback runs.
+    content::TestNavigationObserver observer(params->url);
+    observer.WatchExistingWebContents();
+    observer.StartWatchingNewWebContents();
+
     base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
     Navigate(params, future.GetCallback());
-
-    base::WeakPtr<content::NavigationHandle> handle = future.Get();
-    EXPECT_TRUE(handle);
-    if (!handle) {
-      return nullptr;
-    }
-    content::WebContents* contents = handle->GetWebContents();
-    EXPECT_TRUE(contents);
-    if (!contents) {
-      return nullptr;
-    }
-
-    content::TestNavigationObserver observer(contents);
+    EXPECT_TRUE(future.Wait());
     observer.Wait();
 
+    content::WebContents* contents = params->navigated_or_inserted_contents;
+    EXPECT_TRUE(contents);
     return contents ? contents->GetController().GetLastCommittedEntry()
                     : nullptr;
   }
@@ -2482,9 +2533,10 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidMixedProfileBrowserTest,
 
   base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
   Navigate(&params, future.GetCallback());
-  base::WeakPtr<content::NavigationHandle> handle = future.Get();
-  ASSERT_TRUE(handle);
-  ASSERT_TRUE(handle->GetWebContents());
+  // The page starts loading before the new window is ready, so the callback
+  // runs without a handle once the window is ready.
+  ASSERT_TRUE(future.Wait());
+  ASSERT_TRUE(params.navigated_or_inserted_contents);
 
   navigation_observer.Wait();
 

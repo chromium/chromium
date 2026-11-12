@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -42,6 +43,7 @@ class BrowserWindowInterface;
 class Profile;
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 struct OpenURLParams;
@@ -306,6 +308,16 @@ struct NavigateParams {
   // ping-pong issue. They will still be allowed to load locally like a normal
   // navigation.
   bool navigation_initiated_from_sync = false;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Called with the navigation's handle as soon as the navigation starts, while
+  // callers can still change it (e.g. its NavigationUIData). Unlike the
+  // asynchronous Navigate() callback, this doesn't wait for a new window to be
+  // ready, by which time the navigation may have finished. Not called if no
+  // navigation starts.
+  base::OnceCallback<void(content::NavigationHandle&)>
+      navigation_handle_callback;
 #endif
 
   // If true, opening a new window for this navigation can trigger session

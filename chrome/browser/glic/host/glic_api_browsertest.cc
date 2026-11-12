@@ -86,6 +86,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/browser_created_waiter.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -4053,7 +4054,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
   content::TestNavigationObserver observer(GURL("https://www.chromium.org"));
   observer.WatchExistingWebContents();
   observer.StartWatchingNewWebContents();
+  BrowserCreatedWaiter popup_waiter;
   ExecuteJsTest();
+  BrowserWindowInterface* popup = popup_waiter.Wait();
+  ASSERT_TRUE(popup);
+  EXPECT_EQ(popup->GetType(), BrowserWindowInterface::TYPE_POPUP);
   observer.Wait();
   EXPECT_EQ(GetPopupCount(), 1);
 }

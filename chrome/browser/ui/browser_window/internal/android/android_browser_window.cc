@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_deref.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -163,34 +164,21 @@ content::WebContents* AndroidBrowserWindow::OpenURL(
   }
 
   NavigateParams* params_ptr = popup_delegate->nav_params();
+  // Navigate() runs the callback once the navigation starts. For a new window,
+  // that's before the window is ready.
+  params_ptr->navigation_handle_callback =
+      std::move(navigation_handle_callback);
 
   // Try to handle the request synchronously first.
   base::WeakPtr<content::NavigationHandle> handle = Navigate(params_ptr);
-  // If navigation started synchronously, run the callback and return the
-  // WebContents.
+  // If navigation started synchronously, return the WebContents.
   if (handle) {
-    if (navigation_handle_callback) {
-      std::move(navigation_handle_callback).Run(*handle);
-    }
     return handle->GetWebContents();
   }
 
-  // Else, run asynchronously and return nullptr.
-  Navigate(
-      params_ptr,
-      base::BindOnce(
-          [](std::unique_ptr<ChromePopupNavigationDelegate> owned_delegate,
-             base::OnceCallback<void(content::NavigationHandle&)> callback,
-             base::WeakPtr<content::NavigationHandle> handle) {
-            // Check if the handle is valid and dereference it to match the
-            // signature expected by OpenURL's callback
-            // (NavigationHandle&).
-            if (handle && callback) {
-              std::move(callback).Run(*handle);
-            }
-            // If handle is null, callback is never called.
-          },
-          std::move(popup_delegate), std::move(navigation_handle_callback)));
+  // Else, run asynchronously and return nullptr. `popup_delegate` owns the
+  // params, so keep it alive until the navigation is done.
+  Navigate(params_ptr, base::DoNothingWithBoundArgs(std::move(popup_delegate)));
 
   return nullptr;
 }

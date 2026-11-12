@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 
 #include "base/feature_list.h"
+#include "base/memory/ref_counted.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/tab_android.h"
@@ -251,11 +252,80 @@ bool AdjustNavigateParams(NavigateParams* params) {
   return true;
 }
 
+// Starts loading `params->url` in `contents`, then runs
+// `params->navigation_handle_callback`.
+base::WeakPtr<content::NavigationHandle> StartNavigation(
+    content::WebContents* contents,
+    NavigateParams* params) {
+  base::WeakPtr<content::NavigationHandle> handle =
+      contents->GetController().LoadURLWithParams(
+          LoadURLParamsFromNavigateParams(contents, params));
+  if (handle && params->navigation_handle_callback) {
+    std::move(params->navigation_handle_callback).Run(*handle);
+  }
+  return handle;
+}
+
+using NavigateCallback =
+    base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>;
+
+void GetTabAndPerformNavigationAsync(NavigateParams* params,
+                                     NavigateCallback callback,
+                                     BrowserWindowInterface* bwi);
+
+// Runs once the window created by CreateBrowserWindowAndNavigate() is ready, or
+// with a null `bwi` if it couldn't be created.
+void OnBrowserWindowCreated(
+    NavigateParams* params,
+    NavigateCallback callback,
+    scoped_refptr<
+        base::RefCountedData<base::WeakPtr<content::NavigationHandle>>> handle,
+    BrowserWindowInterface* bwi) {
+  if (bwi) {
+    params->browser = bwi;
+  } else {
+    params->navigated_or_inserted_contents = nullptr;
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), handle->data));
+}
+
+// Creates a window for `params` and starts loading the page in a new tab while
+// the window opens. If `params` has contents to insert, uses those instead.
+void CreateBrowserWindowAndNavigate(NavigateParams* params,
+                                    BrowserWindowCreateParams create_params,
+                                    NavigateCallback callback) {
+  create_params.web_contents = std::move(params->contents_to_insert);
+  if (create_params.web_contents) {
+    CreateBrowserWindow(std::move(create_params),
+                        base::BindOnce(&GetTabAndPerformNavigationAsync, params,
+                                       std::move(callback)));
+    return;
+  }
+
+  create_params.web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(&create_params.profile.get()));
+  base::WeakPtr<content::WebContents> web_contents =
+      create_params.web_contents->GetWeakPtr();
+  auto handle = base::MakeRefCounted<
+      base::RefCountedData<base::WeakPtr<content::NavigationHandle>>>();
+  CreateBrowserWindow(std::move(create_params),
+                      base::BindOnce(&OnBrowserWindowCreated, params,
+                                     std::move(callback), handle));
+
+  // Before returning, CreateBrowserWindow() has either wrapped `web_contents`
+  // in a tab, so tab helpers see the navigation, or destroyed it because the
+  // window can't be created.
+  if (content::WebContents* raw_web_contents = web_contents.get()) {
+    params->navigated_or_inserted_contents = raw_web_contents;
+    handle->data = StartNavigation(raw_web_contents, params);
+  }
+}
+
 // Helper to create/locate windows.
 // If params->contents_to_insert is non-null, std::move() will be called on it.
-void GetOrCreateBrowserWindowForDisposition(
-    NavigateParams* params,
-    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
+void GetOrCreateBrowserWindowForDisposition(NavigateParams* params,
+                                            NavigateCallback callback) {
   Profile* profile = params->initiating_profile;
   switch (params->disposition) {
     case ui::mojom::WindowOpenDisposition::kOffTheRecord:
@@ -264,19 +334,19 @@ void GetOrCreateBrowserWindowForDisposition(
       profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
       [[fallthrough]];
     case ui::mojom::WindowOpenDisposition::kNewWindow: {
-      BrowserWindowCreateParams create_params(*profile, params->user_gesture);
-      create_params.web_contents = std::move(params->contents_to_insert);
-      CreateBrowserWindow(std::move(create_params), std::move(callback));
+      CreateBrowserWindowAndNavigate(
+          params, BrowserWindowCreateParams(*profile, params->user_gesture),
+          std::move(callback));
       break;
     }
     case ui::mojom::WindowOpenDisposition::kNewPopup: {
       BrowserWindowCreateParams create_params(
           BrowserWindowInterface::Type::TYPE_POPUP, *profile,
           params->user_gesture);
-      create_params.web_contents = std::move(params->contents_to_insert);
       create_params.initial_bounds = params->window_features.bounds;
       create_params.is_trusted_source = params->trusted_source;
-      CreateBrowserWindow(std::move(create_params), std::move(callback));
+      CreateBrowserWindowAndNavigate(params, std::move(create_params),
+                                     std::move(callback));
       break;
     }
     case ui::mojom::WindowOpenDisposition::kSwitchToTab: {
@@ -291,13 +361,15 @@ void GetOrCreateBrowserWindowForDisposition(
       [[fallthrough]];
     case ui::mojom::WindowOpenDisposition::kCurrentTab: {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), params->browser));
+          FROM_HERE, base::BindOnce(&GetTabAndPerformNavigationAsync, params,
+                                    std::move(callback), params->browser));
       break;
     }
     default:
       NOTIMPLEMENTED();
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), nullptr));
+          FROM_HERE, base::BindOnce(&GetTabAndPerformNavigationAsync, params,
+                                    std::move(callback), nullptr));
   }
 }
 
@@ -511,11 +583,7 @@ base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
   }
 
   // Perform navigation.
-  content::NavigationController::LoadURLParams load_url_params =
-      LoadURLParamsFromNavigateParams(params->navigated_or_inserted_contents,
-                                      params);
-  return params->navigated_or_inserted_contents->GetController()
-      .LoadURLWithParams(load_url_params);
+  return StartNavigation(params->navigated_or_inserted_contents, params);
 }
 
 void GetTabAndPerformNavigationAsync(
@@ -561,7 +629,5 @@ void Navigate(NavigateParams* params,
     return;
   }
 
-  GetOrCreateBrowserWindowForDisposition(
-      params, base::BindOnce(&GetTabAndPerformNavigationAsync, params,
-                             std::move(callback)));
+  GetOrCreateBrowserWindowForDisposition(params, std::move(callback));
 }
