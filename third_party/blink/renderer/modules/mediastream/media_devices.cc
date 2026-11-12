@@ -776,12 +776,6 @@ ScriptPromise<MediaStream> MediaDevices::getDisplayMedia(
       network::mojom::PermissionsPolicyFeature::kDisplayCapture,
       ReportOptions::kReportOnFailure);
 
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult",
-      capture_allowed_by_permissions_policy
-          ? DisplayCapturePolicyResult::kAllowed
-          : DisplayCapturePolicyResult::kDisallowed);
-
   if (!capture_allowed_by_permissions_policy) {
     resolver->RecordAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotAllowedError,

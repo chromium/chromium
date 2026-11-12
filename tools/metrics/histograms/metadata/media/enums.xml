@@ -894,11 +894,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/views/widget/desktop_aura/desktop_window_tree_host_win.h:DisplayAffinityResult) -->
 
-<enum name="DisplayCapturePolicyResult">
-  <int value="0" label="kDisallowed"/>
-  <int value="1" label="kAllowed"/>
-</enum>
-
 <enum name="DocumentPictureInPictureCloseReason">
   <int value="0" label="Other"/>
   <int value="1" label="Back to Tab"/>

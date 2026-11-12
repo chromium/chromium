@@ -8072,16 +8072,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult"
-    enum="DisplayCapturePolicyResult" expires_after="2024-03-17">
-  <owner>eladalon@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <summary>
-    Records whether the display-capture permission policy allows/disallows this
-    call to getDisplayMedia.
-  </summary>
-</histogram>
-
 <histogram name="Media.Ui.GetDisplayMedia.HasScreenRecordingPermission"
     enum="Boolean" expires_after="2027-09-25">
   <owner>tovep@chromium.org</owner>
