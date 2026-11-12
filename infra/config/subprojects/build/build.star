@@ -494,8 +494,6 @@ def developer_build_perf_builder(description_html, **kwargs):
         description_html = description_html + "<br>Build stats are shown in <a href=\"http://shortn/_wiYV1BraSr\">http://shortn/_wiYV1BraSr</a>." +
                            "<br>This is also used to compare build performance between w/ and w/o clang modules.",
         executable = "recipe:chrome_build/build_perf_developer",
-        # developer build usually interactive and not-batch build.
-        siso_disable_batch_mode = True,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         shadow_siso_project = None,
         properties = props,
