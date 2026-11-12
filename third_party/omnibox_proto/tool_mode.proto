@@ -43,7 +43,7 @@ enum ToolMode {
   // Prompt suggestion for asset generation.
   TOOL_MODE_AIM_GEN_PROMPT = 10;
 
-  // Below tools are not used.
+  // Used for PTM project.
   TOOL_MODE_GEMINI_PRO = 3;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolMode, //components/omnibox/common/omnibox_metrics_utils.cc:ToolMode, //tools/metrics/histograms/metadata/omnibox/histograms.xml:OmniboxToolMode)
