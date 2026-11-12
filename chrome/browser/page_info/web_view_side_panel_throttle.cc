@@ -12,23 +12,27 @@
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/url_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 const char kWebViewSidePanelWebContentsUserDataKey[] =
     "web_view_side_panel_web_contents_user_data";
 
 namespace {
 
+bool IsAllowedRedirectUrl(const GURL& url) {
+  return url.SchemeIs(url::kHttpsScheme) &&
+         google_util::IsGoogleDomainUrl(
+             url, google_util::ALLOW_SUBDOMAIN,
+             google_util::DISALLOW_NON_STANDARD_PORTS);
+}
+
 bool CanNavigateInPanel(content::NavigationHandle* handle,
-                        const GURL& observed_url,
                         const GURL& next_url) {
-  // Server redirects of the observed_url URL are allowed to stay in the
-  // SidePanel.
-  const GURL& original_url = handle->GetRedirectChain().front();
-  if (handle->WasServerRedirect() && original_url == observed_url &&
-      google_util::IsGoogleAssociatedDomainUrl(next_url)) {
+  // Server redirects to a Google domain are allowed to stay in the SidePanel.
+  if (handle->WasServerRedirect() && IsAllowedRedirectUrl(next_url)) {
     return true;
   }
   // Same URL navigations are allowed to stay in the SidePanel.
@@ -58,13 +62,11 @@ void MaybeCreateAndAddWebViewSidePanelThrottle(
           kWebViewSidePanelWebContentsUserDataKey)) {
     return;
   }
-  const GURL& observed_url = handle.GetURL();
   registry.AddThrottle(
       std::make_unique<navigation_interception::InterceptNavigationThrottle>(
           registry,
           base::BindRepeating(
-              [](const GURL& observed_url, content::NavigationHandle* handle,
-                 bool should_run_async,
+              [](content::NavigationHandle* handle, bool should_run_async,
                  navigation_interception::InterceptNavigationThrottle::
                      ResultCallback result_callback) {
                 CHECK_CURRENTLY_ON(content::BrowserThread::UI,
@@ -80,7 +82,7 @@ void MaybeCreateAndAddWebViewSidePanelThrottle(
                   return;
                 }
                 const GURL& next_url = handle->GetURL();
-                if (CanNavigateInPanel(handle, observed_url, next_url)) {
+                if (CanNavigateInPanel(handle, next_url)) {
                   std::move(result_callback).Run(false);
                   return;
                 }
@@ -104,7 +106,6 @@ void MaybeCreateAndAddWebViewSidePanelThrottle(
                 params.initiator_base_url = handle->GetInitiatorBaseUrl();
                 data->delegate()->OpenUrlInBrowser(params);
                 std::move(result_callback).Run(true);
-              },
-              observed_url),
+              }),
           navigation_interception::SynchronyMode::kSync, std::nullopt));
 }

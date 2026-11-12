@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
@@ -20,11 +21,13 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/google/core/common/google_switches.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,10 +46,19 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUp() override {
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.SetCertHostnames(
+        {"a.test", "b.test", "c.test", "127.0.0.1", "www.google.com",
+         "customerreviews.google.com", "attacker.storage.googleapis.com",
+         "attacker.googleusercontent.com"});
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
+    InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -84,6 +96,25 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
     return SidePanelUI::From(browser())->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kAboutThisSite));
   }
+
+  content::WebContents* ShowAboutThisSiteSidePanelAndGetWebContents(
+      const GURL& url) {
+    RegisterAboutThisSiteSidePanel(web_contents(), url);
+    auto* entry = GetAboutThisSiteEntryForActiveTab();
+    if (!entry) {
+      return nullptr;
+    }
+    entry->CacheView(entry->GetContent());
+    auto* side_panel_view =
+        static_cast<WebViewSidePanelView*>(entry->CachedView().get());
+    if (!side_panel_view) {
+      return nullptr;
+    }
+    ShowAboutThisSiteSidePanel(web_contents(), url);
+    return side_panel_view->web_contents();
+  }
+
+  net::EmbeddedTestServer& https_server() { return https_server_; }
 
   base::test::ScopedFeatureList feature_list_;
 
@@ -326,6 +357,84 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
   SidePanelUI::From(browser())->Close();
   EXPECT_FALSE(IsAboutThisSiteSidePanelShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
+                       AllowsRedirectToGoogleDomainInPanel) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+
+  GURL target_url =
+      https_server().GetURL("customerreviews.google.com", "/title2.html?q=1");
+  GURL redirect_url = https_server().GetURL(
+      "www.google.com", "/server-redirect?" + target_url.spec());
+  GURL expected_url = net::AppendOrReplaceQueryParameter(
+      target_url, page_info::AboutThisSiteRenderModeParameterName,
+      page_info::AboutThisSiteRenderModeParameterValue);
+
+  content::WebContents* side_panel_contents =
+      ShowAboutThisSiteSidePanelAndGetWebContents(redirect_url);
+  EXPECT_TRUE(IsAboutThisSiteSidePanelShowing());
+  ASSERT_TRUE(side_panel_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(side_panel_contents));
+
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 1);
+  EXPECT_EQ(side_panel_contents->GetLastCommittedURL(), expected_url);
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
+                       BlocksRedirectToNonGoogleDomainInPanel) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+
+  for (const char* untrusted_host :
+       {"attacker.storage.googleapis.com", "attacker.googleusercontent.com",
+        "b.test"}) {
+    GURL target_url = https_server().GetURL(untrusted_host, "/title2.html?q=1");
+    GURL redirect_url = https_server().GetURL(
+        "www.google.com", "/server-redirect?" + target_url.spec());
+    GURL expected_url = net::AppendOrReplaceQueryParameter(
+        target_url, page_info::AboutThisSiteRenderModeParameterName,
+        page_info::AboutThisSiteRenderModeParameterValue);
+
+    int initial_tab_count = browser()->GetTabStripModel()->count();
+    ui_test_utils::TabAddedWaiter tab_waiter(browser());
+    ShowAboutThisSiteSidePanel(web_contents(), redirect_url);
+    content::WebContents* new_tab = tab_waiter.Wait();
+    EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+    EXPECT_EQ(browser()->GetTabStripModel()->count(), initial_tab_count + 1);
+    EXPECT_EQ(new_tab->GetLastCommittedURL(), expected_url);
+
+    // Switch back to the original tab for the next iteration.
+    browser()->GetTabStripModel()->ActivateTabAt(0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
+                       BlocksPushStateRedirectToNonGoogleDomainInPanel) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+
+  GURL panel_url = https_server().GetURL("www.google.com", "/title1.html");
+  content::WebContents* side_panel_contents =
+      ShowAboutThisSiteSidePanelAndGetWebContents(panel_url);
+  EXPECT_TRUE(IsAboutThisSiteSidePanelShowing());
+  ASSERT_TRUE(side_panel_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(side_panel_contents));
+
+  GURL target_url = https_server().GetURL("attacker.storage.googleapis.com",
+                                          "/title2.html");
+  std::string redirect_path = "/server-redirect?" + target_url.spec();
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  ASSERT_TRUE(content::ExecJs(
+      side_panel_contents,
+      content::JsReplace(
+          "history.pushState({}, '', $1); location.href = location.href;",
+          redirect_path)));
+  content::WebContents* new_tab = tab_waiter.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
+  EXPECT_EQ(new_tab->GetLastCommittedURL(), target_url);
 }
 
 // TODO(crbug.com/40222735): Cover additional AboutThisSite side panel behavior.

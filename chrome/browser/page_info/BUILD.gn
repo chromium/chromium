@@ -73,7 +73,10 @@ source_set("impl") {
     ]
   } else {
     sources += [ "web_view_side_panel_throttle.cc" ]
-    deps += [ "//components/navigation_interception" ]
+    deps += [
+      "//components/google/core/common",
+      "//components/navigation_interception",
+    ]
   }
 }
 
