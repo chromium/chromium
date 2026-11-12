@@ -1305,6 +1305,127 @@ TEST_P(CanvasRenderingContext2DTest, DrawImage_Clipped) {
                                       PaintOpIs<DrawImageRectOp>())));
 }
 
+// Tests that an `{alpha: false}` canvas source returns `IsOpaque() == false`
+// while it has open layers, and returns `true` again once the layer is closed.
+TEST_P(CanvasRenderingContext2DTest, OpenLayerOpaqueCanvasIsNotOpaque) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  static constexpr int kCanvasSize = 10;
+
+  auto* src_canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+  src_canvas->SetSize(gfx::Size(kCanvasSize, kCanvasSize));
+  CanvasContextCreationAttributesCore opaque_attrs;
+  opaque_attrs.alpha = false;
+  src_canvas->GetCanvasRenderingContext(GetExecutionContext(), String("2d"),
+                                        opaque_attrs);
+  auto* src_context =
+      static_cast<CanvasRenderingContext2D*>(src_canvas->RenderingContext());
+  ASSERT_NE(src_context, nullptr);
+  ASSERT_TRUE(src_context->InitializeBacking());
+  EXPECT_TRUE(src_canvas->IsOpaque());
+
+  NonThrowableExceptionState no_exception;
+  src_context->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+  EXPECT_FALSE(src_canvas->IsOpaque());
+  src_context->endLayer(no_exception);
+  EXPECT_TRUE(src_canvas->IsOpaque());
+}
+
+// Tests that an `{alpha: false}` canvas source without a backing or hibernated
+// snapshot returns `IsOpaque() == false`, preventing `drawImage` from
+// discarding prior draw ops via the overdraw optimization, and returns `true`
+// once its backing is initialized.
+TEST_P(CanvasRenderingContext2DTest,
+       DrawImage_UnbackedOpaqueCanvasDoesNotOverdraw) {
+  static constexpr int kCanvasSize = 10;
+  static constexpr int kFillRectCoord = 3;
+  static constexpr int kFillRectSize = 1;
+  CreateContext();
+  CanvasElement().SetSize(gfx::Size(kCanvasSize, kCanvasSize));
+
+  auto* src_canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+  src_canvas->SetSize(gfx::Size(kCanvasSize, kCanvasSize));
+  CanvasContextCreationAttributesCore opaque_attrs;
+  opaque_attrs.alpha = false;
+  src_canvas->GetCanvasRenderingContext(GetExecutionContext(), String("2d"),
+                                        opaque_attrs);
+  auto* src_context =
+      static_cast<CanvasRenderingContext2D*>(src_canvas->RenderingContext());
+  ASSERT_NE(src_context, nullptr);
+  ASSERT_FALSE(src_context->HasBacking());
+  EXPECT_FALSE(src_canvas->IsOpaque());
+
+  Context2D()->fillRect(kFillRectCoord, kFillRectCoord, kFillRectSize,
+                        kFillRectSize);
+  Context2D()->drawImage(src_canvas, 0, 0, kCanvasSize, kCanvasSize, 0, 0,
+                         kCanvasSize, kCanvasSize, ASSERT_NO_EXCEPTION);
+  EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
+              Optional(RecordedOpsAre(PaintOpIs<DrawRectOp>(),
+                                      PaintOpIs<DrawImageRectOp>())));
+
+  ASSERT_TRUE(src_context->InitializeBacking());
+  EXPECT_TRUE(src_canvas->IsOpaque());
+}
+
+// Tests that an `{alpha: false}` canvas source returns `IsOpaque() == false`
+// when its context is lost, preventing `drawImage` from discarding prior draw
+// ops via the overdraw optimization.
+TEST_P(CanvasRenderingContext2DTest,
+       DrawImage_LostOpaqueCanvasDoesNotOverdraw) {
+  static constexpr int kCanvasSize = 10;
+  CreateContext();
+  CanvasElement().SetSize(gfx::Size(kCanvasSize, kCanvasSize));
+
+  auto* src_canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
+  src_canvas->SetSize(gfx::Size(kCanvasSize, kCanvasSize));
+  CanvasContextCreationAttributesCore opaque_attrs;
+  opaque_attrs.alpha = false;
+  src_canvas->GetCanvasRenderingContext(GetExecutionContext(), String("2d"),
+                                        opaque_attrs);
+  auto* src_context =
+      static_cast<CanvasRenderingContext2D*>(src_canvas->RenderingContext());
+  ASSERT_NE(src_context, nullptr);
+  ASSERT_TRUE(src_context->InitializeBacking());
+  EXPECT_TRUE(src_canvas->IsOpaque());
+
+  src_context->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+  EXPECT_FALSE(src_canvas->IsOpaque());
+
+  Context2D()->fillRect(3, 3, 1, 1);
+  Context2D()->drawImage(src_canvas, 0, 0, kCanvasSize, kCanvasSize, 0, 0,
+                         kCanvasSize, kCanvasSize, ASSERT_NO_EXCEPTION);
+  EXPECT_THAT(Context2D()->FlushCanvas(FlushReason::kOther),
+              Optional(RecordedOpsAre(PaintOpIs<DrawRectOp>(),
+                                      PaintOpIs<DrawImageRectOp>())));
+}
+
+// Tests that the `cc::TextureLayer` created for an `{alpha: false}` accelerated
+// 2D canvas marks `contents_opaque()` as `true` even when the backing is
+// initialized after context creation (for example, after resizing from empty).
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       OpaqueCanvasCcLayerIsOpaqueAfterDeferredBackingInit) {
+  static constexpr int kCanvasWidth = 300;
+  static constexpr int kCanvasHeight = 150;
+  CanvasElement().SetSize(gfx::Size());
+  CanvasContextCreationAttributesCore opaque_attrs;
+  opaque_attrs.alpha = false;
+  CanvasElement().GetCanvasRenderingContext(GetExecutionContext(), String("2d"),
+                                            opaque_attrs);
+  auto* context = static_cast<CanvasRenderingContext2D*>(
+      CanvasElement().RenderingContext());
+  ASSERT_NE(context, nullptr);
+  ASSERT_FALSE(context->IsOpaque());
+
+  CanvasElement().SetSize(gfx::Size(kCanvasWidth, kCanvasHeight));
+  ASSERT_TRUE(context->InitializeBacking());
+  ASSERT_TRUE(context->IsComposited());
+
+  cc::TextureLayer* layer =
+      CanvasElement().GetOrCreateCcLayerForCanvas2DIfNeeded();
+  ASSERT_NE(layer, nullptr);
+  EXPECT_TRUE(layer->contents_opaque());
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
   CreateContext();
   CanvasElement().SetSize(gfx::Size(10, 10));

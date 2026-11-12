@@ -622,6 +622,9 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
 }
 
 bool OffscreenCanvas::IsOpaque() const {
+  if (!IsPaintable() || ContextHasOpenLayers(context_)) {
+    return false;
+  }
   return RenderingContext() && RenderingContext()->IsOpaque();
 }
 

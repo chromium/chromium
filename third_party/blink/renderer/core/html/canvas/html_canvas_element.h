@@ -481,7 +481,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   scoped_refptr<cc::TextureLayer> cc_layer_;
 
-  bool is_opaque_ = false;
   bool is_displayed_ = false;
   unsigned frames_since_last_commit_ = 0;
   std::unique_ptr<SharedContextRateLimiter> rate_limiter_;

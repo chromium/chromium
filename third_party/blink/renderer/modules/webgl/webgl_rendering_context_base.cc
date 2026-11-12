@@ -6127,7 +6127,18 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
 }
 
 bool WebGLRenderingContextBase::IsOpaque() const {
-  return !CreationAttributes().alpha;
+  if (CreationAttributes().alpha) {
+    return false;
+  }
+  if (isContextLost() || !GetDrawingBuffer()) {
+    return false;
+  }
+  const CanvasRenderingContextHost* host = Host();
+  if (!host || drawingBufferWidth() != host->Size().width() ||
+      drawingBufferHeight() != host->Size().height()) {
+    return false;
+  }
+  return true;
 }
 
 SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {

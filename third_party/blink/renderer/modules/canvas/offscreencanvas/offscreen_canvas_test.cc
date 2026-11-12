@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
@@ -85,6 +86,7 @@ class OffscreenCanvasTest : public ::testing::Test,
   void TearDown() override;
 
   OffscreenCanvas& offscreen_canvas() const { return *offscreen_canvas_; }
+  BaseRenderingContext2D* Context() const { return context_.Get(); }
   CanvasResourceDispatcher* Dispatcher() const {
     return offscreen_canvas_->GetOrCreateResourceDispatcher();
   }
@@ -268,6 +270,9 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
               CreateCompositorFrameSink_(viz::FrameSinkId(kClientId, kSinkId)));
   offscreen_canvas().DidDraw();
   platform->RunUntilIdle();
+  // `PushFrame()` below bypasses `GetResourceForPushFrame()`, so initialize
+  // the 2D backing explicitly just as a real draw/frame flush would.
+  ASSERT_TRUE(Context()->InitializeBacking());
 
   const bool context_alpha = GetParam().alpha;
 

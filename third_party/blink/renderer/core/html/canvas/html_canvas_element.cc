@@ -626,12 +626,6 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   if (!IsRenderingContext2D())
     SetNeedsCompositingUpdate();
 
-  is_opaque_ = IsOpaque();
-  if (cc_layer_) {
-    cc_layer_->SetContentsOpaque(is_opaque_);
-    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
-  }
-
   return context_.Get();
 }
 
@@ -1800,8 +1794,9 @@ cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerForCanvas2DIfNeeded() {
     InitializeLayerWithCSSProperties(cc_layer_.get());
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);
-    cc_layer_->SetContentsOpaque(is_opaque_);
-    cc_layer_->SetBlendBackgroundColor(!is_opaque_);
+    const bool is_opaque = context_->IsOpaque();
+    cc_layer_->SetContentsOpaque(is_opaque);
+    cc_layer_->SetBlendBackgroundColor(!is_opaque);
   }
   return cc_layer_.get();
 }
@@ -2108,6 +2103,9 @@ void HTMLCanvasElement::SetOffscreenCanvasResource(
 }
 
 bool HTMLCanvasElement::IsOpaque() const {
+  if (!IsPaintable() || ContextHasOpenLayers(context_)) {
+    return false;
+  }
   return RenderingContext() && RenderingContext()->IsOpaque();
 }
 

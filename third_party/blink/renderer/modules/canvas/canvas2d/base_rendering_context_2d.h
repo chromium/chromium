@@ -307,7 +307,8 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   // Implementing methods from CanvasRenderingContext
   bool IsOpaque() const final {
-    return color_params_.GetAlphaType() == kOpaque_SkAlphaType;
+    return !isContextLost() && (IsBackingValid() || IsHibernating()) &&
+           color_params_.GetAlphaType() == kOpaque_SkAlphaType;
   }
   bool IsPaintable() const override;
   bool Is2DCanvasAccelerated() const override;

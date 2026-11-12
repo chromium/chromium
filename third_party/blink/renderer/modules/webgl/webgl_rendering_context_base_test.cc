@@ -541,4 +541,53 @@ TEST_F(WebGLRenderingContextBaseTest,
   worker_thread->WaitForShutdownForTesting();
 }
 
+// Tests that `WebGLRenderingContextBase::IsOpaque()` and
+// `HTMLCanvasElement::IsOpaque()` return false when the drawing buffer is
+// clamped below the canvas size.
+TEST_F(WebGLRenderingContextBaseTest, ClampedOpaqueWebGLCanvasIsNotOpaque) {
+  static constexpr int kUnclampedSize = 100;
+  static constexpr int kClampedWidth = 2048;
+
+  CanvasContextCreationAttributesCore attrs;
+  attrs.alpha = false;
+  WebGLRenderingContextBase* gl_ctx = CreateWebGLContext(attrs);
+  ASSERT_NE(gl_ctx, nullptr);
+
+  EXPECT_EQ(gl_ctx->drawingBufferWidth(), kUnclampedSize);
+  EXPECT_EQ(gl_ctx->drawingBufferHeight(), kUnclampedSize);
+  EXPECT_TRUE(gl_ctx->IsOpaque());
+  EXPECT_TRUE(canvas_->IsOpaque());
+
+  // Resize beyond `GL_MAX_TEXTURE_SIZE` (1024 in `GLES2InterfaceForTests`) so
+  // the drawing buffer width is clamped below the canvas width.
+  canvas_->SetSize(gfx::Size(kClampedWidth, kUnclampedSize));
+  EXPECT_LT(gl_ctx->drawingBufferWidth(), kClampedWidth);
+  EXPECT_FALSE(gl_ctx->IsOpaque());
+  EXPECT_FALSE(canvas_->IsOpaque());
+
+  // Restoring to an unclamped size restores opacity.
+  canvas_->SetSize(gfx::Size(kUnclampedSize, kUnclampedSize));
+  EXPECT_EQ(gl_ctx->drawingBufferWidth(), kUnclampedSize);
+  EXPECT_TRUE(gl_ctx->IsOpaque());
+  EXPECT_TRUE(canvas_->IsOpaque());
+}
+
+// Tests that `WebGLRenderingContextBase::IsOpaque()` and
+// `HTMLCanvasElement::IsOpaque()` return false when the context is lost.
+TEST_F(WebGLRenderingContextBaseTest, LostOpaqueWebGLCanvasIsNotOpaque) {
+  CanvasContextCreationAttributesCore attrs;
+  attrs.alpha = false;
+  WebGLRenderingContextBase* gl_ctx = CreateWebGLContext(attrs);
+  ASSERT_NE(gl_ctx, nullptr);
+
+  EXPECT_TRUE(gl_ctx->IsOpaque());
+  EXPECT_TRUE(canvas_->IsOpaque());
+
+  gl_ctx->ForceLostContext(WebGLRenderingContextBase::kRealLostContext,
+                           WebGLRenderingContextBase::kAuto);
+  EXPECT_TRUE(gl_ctx->isContextLost());
+  EXPECT_FALSE(gl_ctx->IsOpaque());
+  EXPECT_FALSE(canvas_->IsOpaque());
+}
+
 }  // namespace blink
