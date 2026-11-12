@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSiteDataElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
@@ -205,10 +204,7 @@ suite('SiteDataTest', function() {
     ]);
     page.searchTerm = 'foo';
     siteSettingsBrowserProxy.setPrefs(exceptionPrefs);
-    while (siteSettingsBrowserProxy.getCallCount('getExceptionList') < 3) {
-      await flushTasks();
-    }
-    flush();
+    await microtasksFinished();
 
     const exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
@@ -218,7 +214,7 @@ suite('SiteDataTest', function() {
     }
 
     page.searchTerm = 'unrelated.com';
-    flush();
+    await microtasksFinished();
 
     for (const list of exceptionLists) {
       assertFalse(isChildVisible(list, 'site-list-entry'));

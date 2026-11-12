@@ -157,7 +157,7 @@ export enum JavascriptOptimizerSetting {
 /**
  * An invalid subtype value.
  */
-export const INVALID_CATEGORY_SUBTYPE: string = '';
+export const INVALID_CATEGORY_SUBTYPE: '' = '';
 
 /**
  * Contains the possible record action types.

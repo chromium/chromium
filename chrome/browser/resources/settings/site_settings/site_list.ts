@@ -9,108 +9,98 @@
  */
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import '/shared/settings/controls/cr_policy_pref_indicator.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import '../settings_shared.css.js';
+import '../focus_list_container.js';
 import './add_site_dialog.js';
 import './edit_exception_dialog.js';
 import './site_list_entry.js';
 
-import {WebUiListenerMixin} from '/shared/settings/web_ui_listener_mixin.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import type {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {TooltipMixin} from '../tooltip_mixin.js';
+import type {SettingsFocusListContainerElement} from '../focus_list_container.js';
+import {TooltipMixinLit} from '../tooltip_mixin_lit.js';
 
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, INVALID_CATEGORY_SUBTYPE, SITE_EXCEPTION_WILDCARD} from './constants.js';
-import {getTemplate} from './site_list.html.js';
-import type {SiteListEntryElement} from './site_list_entry.js';
+import {getCss} from './site_list.css.js';
+import {getHtml} from './site_list.html.js';
 import type {RawSiteException, SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
 
 export interface SiteListElement {
   $: {
+    actionMenu: CrActionMenuElement,
     addSite: HTMLElement,
     category: HTMLElement,
-    list: HTMLElement,
+    list: SettingsFocusListContainerElement,
     listContainer: HTMLElement,
     listHeader: HTMLElement,
+    systemPermissionWarningText: HTMLElement,
     tooltip: CrTooltipElement,
   };
 }
 
-const SiteListElementBase = TooltipMixin(
-    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+const SiteListElementBase = TooltipMixinLit(
+    SiteSettingsMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement))));
 
 export class SiteListElement extends SiteListElementBase {
   static get is() {
     return 'site-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Some content types (like Location) do not allow the user to manually
        * edit the exception list from within Settings.
        */
-      readOnlyList: {
-        type: Boolean,
-        value: false,
-      },
+      readOnlyList: {type: Boolean},
 
-      categoryHeader: String,
+      categoryHeader: {type: String},
 
       /**
        * Optional warning message to be displayed bellow the category header.
        */
-      systemPermissionWarningKey_: {
-        type: String,
-        value: null,
-        observer: 'attachSystemPermissionSettingsLinkClick_',
-      },
+      systemPermissionWarningKey_: {type: String},
 
       /**
        * The site serving as the model for the currently open action menu.
        */
-      actionMenuSite_: Object,
+      actionMenuSite_: {type: Object},
 
       /**
        * Whether the "edit exception" dialog should be shown.
        */
-      showEditExceptionDialog_: Boolean,
+      showEditExceptionDialog_: {type: Boolean},
 
       /**
        * Array of sites to display in the widget.
        */
-      sites: {
-        type: Array,
-        value() {
-          return [];
-        },
-        observer: 'onSitesChanged_',
-      },
+      sites: {type: Array},
 
       /**
        * The type of category this widget is displaying data for. Normally
        * either 'allow' or 'block', representing which sites are allowed or
        * blocked respectively.
        */
-      categorySubtype: {
-        type: String,
-        value: INVALID_CATEGORY_SUBTYPE,
-      },
+      categorySubtype: {type: String},
 
       /**
        * Filters cookies exceptions based on the type (CookiesExceptionType):
@@ -123,82 +113,69 @@ export class SiteListElement extends SiteListElementBase {
        * - COMBINED: Doesn't apply any filters, will show exceptions with both
        * pattern types.
        */
-      cookiesExceptionType: String,
+      cookiesExceptionType: {type: String},
 
-      hasIncognito_: Boolean,
-
-      /**
-       * Whether to show the Add button next to the header.
-       */
-      showAddSiteButton_: {
-        type: Boolean,
-        computed: 'computeShowAddSiteButton_(readOnlyList, category, ' +
-            'categorySubtype)',
-      },
-
-      showAddSiteDialog_: Boolean,
+      hasIncognito_: {type: Boolean},
+      showAddSiteDialog_: {type: Boolean},
 
       /**
        * Whether to show the Allow action in the action menu.
        */
-      showAllowAction_: Boolean,
+      showAllowAction_: {type: Boolean},
 
       /**
        * Whether to show the Block action in the action menu.
        */
-      showBlockAction_: Boolean,
+      showBlockAction_: {type: Boolean},
 
       /**
        * Whether to show the 'Clear on exit' action in the action
        * menu.
        */
-      showSessionOnlyAction_: Boolean,
+      showSessionOnlyAction_: {type: Boolean},
 
-      tooltipText_: String,
-      searchFilter: String,
+      tooltipText_: {type: String},
+      searchFilter: {type: String},
+
+      /** |sites| filtered by |searchFilter|, as displayed in the list. */
+      filteredSites_: {type: Array},
     };
   }
 
-  static get observers() {
-    return ['configureWidget_(category, categorySubtype)'];
-  }
+  accessor readOnlyList: boolean = false;
+  accessor categoryHeader: string = '';
+  private accessor systemPermissionWarningKey_: string|null = null;
+  protected accessor actionMenuSite_: SiteException|null = null;
+  protected accessor showEditExceptionDialog_: boolean = false;
+  accessor sites: SiteException[] = [];
+  accessor categorySubtype: ContentSetting|typeof INVALID_CATEGORY_SUBTYPE =
+      INVALID_CATEGORY_SUBTYPE;
+  accessor cookiesExceptionType: CookiesExceptionType|undefined = undefined;
+  protected accessor hasIncognito_: boolean = false;
+  protected accessor showAddSiteDialog_: boolean = false;
+  protected accessor showAllowAction_: boolean = false;
+  protected accessor showBlockAction_: boolean = false;
+  private accessor showSessionOnlyAction_: boolean = false;
+  protected accessor tooltipText_: string = '';
+  accessor searchFilter: string = '';
+  protected accessor filteredSites_: SiteException[] = [];
 
-  declare readOnlyList: boolean;
-  declare categoryHeader: string;
-  declare private systemPermissionWarningKey_: string|null;
-  declare private actionMenuSite_: SiteException|null;
-  declare private showEditExceptionDialog_: boolean;
-  declare sites: SiteException[];
-  declare categorySubtype: ContentSetting;
-  declare private hasIncognito_: boolean;
-  declare private showAddSiteButton_: boolean;
-  declare private showAddSiteDialog_: boolean;
-  declare private showAllowAction_: boolean;
-  declare private showBlockAction_: boolean;
-  declare private showSessionOnlyAction_: boolean;
-  declare private tooltipText_: string;
-  declare searchFilter: string;
-  declare cookiesExceptionType: CookiesExceptionType;
-
-  private activeDialogAnchor_: HTMLElement|null;
+  /**
+   * The element to return focus to, when the currently active dialog is
+   * closed.
+   */
+  private activeDialogAnchor_: HTMLElement|null = null;
   private browserProxy_: SiteSettingsBrowserProxy =
       SiteSettingsBrowserProxyImpl.getInstance();
-  private restoreFocusAfterDomChange_: boolean = false;
 
   constructor() {
     super();
 
     this.updateCategoryWarning_();
-
-    /**
-     * The element to return focus to, when the currently active dialog is
-     * closed.
-     */
-    this.activeDialogAnchor_ = null;
   }
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'contentSettingSitePermissionChanged',
@@ -214,32 +191,39 @@ export class SiteListElement extends SiteListElementBase {
             this.onIncognitoStatusChanged_(hasIncognito));
     this.addWebUiListener(
         'osGlobalPermissionChanged', (messages: ContentSettingsTypes[]) => {
-          this.setCategoryWarning_(messages.includes(this.category));
+          this.setCategoryWarning_(
+              !!this.category && messages.includes(this.category));
         });
     this.browserProxy.updateIncognitoStatus();
   }
 
-  private onSitesChanged_(
-      newSites: SiteException[]|undefined,
-      oldSites: SiteException[]|undefined) {
-    if (newSites && oldSites && newSites.length < oldSites.length &&
-        this.$.list.matches(':focus-within')) {
-      this.restoreFocusAfterDomChange_ = true;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('category') ||
+        changedProperties.has('categorySubtype') ||
+        changedProperties.has('cookiesExceptionType')) {
+      this.configureWidget_();
+    }
+
+    if (changedProperties.has('sites') ||
+        changedProperties.has('searchFilter')) {
+      this.filteredSites_ = this.getFilteredSites_();
     }
   }
 
-  private onDomChange_() {
-    if (!this.restoreFocusAfterDomChange_) {
-      return;
-    }
-    this.restoreFocusAfterDomChange_ = false;
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
-    // Restore focus to the last element if the previous last element was
-    // deleted while it was focused.
-    if (!this.$.list.matches(':focus-within')) {
-      const toFocus = this.shadowRoot!.querySelector<SiteListEntryElement>(
-          'site-list-entry:last-of-type');
-      toFocus?.focus();
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('systemPermissionWarningKey_')) {
+      // Set imperatively rather than via a template binding, so that
+      // unrelated re-renders do not replace the <a> element (and the click
+      // listener attached to it below).
+      this.$.systemPermissionWarningText.innerHTML =
+          this.getSystemPermissionWarning_();
+      this.attachSystemPermissionSettingsLinkClick_();
     }
   }
 
@@ -250,7 +234,8 @@ export class SiteListElement extends SiteListElementBase {
   private updateCategoryWarning_() {
     this.browserProxy.getSystemDeniedPermissions().then(
         (messages: ContentSettingsTypes[]) => {
-          this.setCategoryWarning_(messages.includes(this.category));
+          this.setCategoryWarning_(
+              !!this.category && messages.includes(this.category));
         });
   }
 
@@ -258,25 +243,29 @@ export class SiteListElement extends SiteListElementBase {
    * Sets the category warning when the OS permission for this category changed.
    */
   private setCategoryWarning_(categoryBlocked: boolean) {
-    this.set(
-        'systemPermissionWarningKey_', ((category: ContentSettingsTypes) => {
-          // We return null as warningKey in case the category is not one of
-          // the listed, as the warning in case of an OS level block is
-          // supported only for camera, microphone and location permissions.
-          if (!categoryBlocked) {
-            return null;
-          }
-          switch (category) {
-            case ContentSettingsTypes.CAMERA:
-              return 'siteSettingsContentCameraBlockedByOs';
-            case ContentSettingsTypes.MIC:
-              return 'siteSettingsContentMicBlockedByOs';
-            case ContentSettingsTypes.GEOLOCATION:
-              return 'siteSettingsContentLocationBlockedByOs';
-            default:
-              return null;
-          }
-        })(this.category));
+    // The warning key is null in case the category is not one of the listed,
+    // as the warning in case of an OS level block is supported only for
+    // camera, microphone and location permissions.
+    if (!categoryBlocked || !this.category) {
+      this.systemPermissionWarningKey_ = null;
+      return;
+    }
+    switch (this.category) {
+      case ContentSettingsTypes.CAMERA:
+        this.systemPermissionWarningKey_ =
+            'siteSettingsContentCameraBlockedByOs';
+        break;
+      case ContentSettingsTypes.MIC:
+        this.systemPermissionWarningKey_ = 'siteSettingsContentMicBlockedByOs';
+        break;
+      case ContentSettingsTypes.GEOLOCATION:
+        this.systemPermissionWarningKey_ =
+            'siteSettingsContentLocationBlockedByOs';
+        break;
+      default:
+        this.systemPermissionWarningKey_ = null;
+        break;
+    }
   }
 
   /**
@@ -309,33 +298,34 @@ export class SiteListElement extends SiteListElementBase {
   }
 
   /**
-   * Configures the action menu, visibility of the widget and shows the list.
+   * Configures the action menu and shows the list.
    */
   private configureWidget_() {
-    if (this.category === undefined) {
+    if (!this.category || this.categorySubtype === INVALID_CATEGORY_SUBTYPE) {
       return;
     }
 
     this.setUpActionMenu_();
     this.populateList_();
+  }
 
+  protected shouldHideCategory_(): boolean {
     // The Session permissions are only for cookies.
-    if (this.categorySubtype === ContentSetting.SESSION_ONLY) {
-      this.$.category.hidden = this.category !== ContentSettingsTypes.COOKIES;
-    }
+    return this.categorySubtype === ContentSetting.SESSION_ONLY &&
+        this.category !== ContentSettingsTypes.COOKIES;
   }
 
   /** Whether there are any site exceptions added for this content setting. */
-  private hasSites_(): boolean {
+  protected hasSites_(): boolean {
     return this.sites.length > 0;
   }
 
   /** Whether the header warning should be shown. */
-  private showHeaderWarning_(): boolean {
+  protected shouldShowHeaderWarning_(): boolean {
     return this.hasSites_() && (this.systemPermissionWarningKey_ !== null);
   }
 
-  /** The text of the warning. Null if the warning is not to be shown. */
+  /** The text of the warning. Empty if the warning is not to be shown. */
   private getSystemPermissionWarning_(): TrustedHTML {
     const sanitizeOptions: SanitizeInnerHtmlOpts = {tags: ['a'], attrs: ['id']};
     if (this.systemPermissionWarningKey_ !== null) {
@@ -349,7 +339,7 @@ export class SiteListElement extends SiteListElementBase {
   private onSystemPermissionSettingsLinkClick_(event: MouseEvent) {
     // Prevents navigation to href='#'.
     event.preventDefault();
-    if (this.category !== null) {
+    if (this.category) {
       this.browserProxy.openSystemPermissionSettings(this.category);
     }
   }
@@ -358,8 +348,8 @@ export class SiteListElement extends SiteListElementBase {
   private attachSystemPermissionSettingsLinkClick_(): void {
     const elementId = 'openSystemSettingsLink';
     const element: HTMLElement|null|undefined =
-        this.shadowRoot?.querySelector(`#${elementId}`);
-    if (element !== null && element !== undefined) {
+        this.shadowRoot.querySelector(`#${elementId}`);
+    if (element) {
       element.addEventListener('click', (me: MouseEvent) => {
         this.onSystemPermissionSettingsLinkClick_(me);
       });
@@ -387,26 +377,27 @@ export class SiteListElement extends SiteListElementBase {
    * Whether the Add Site button is shown in the header for the current category
    * and category subtype.
    */
-  private computeShowAddSiteButton_(): boolean {
+  protected shouldShowAddSiteButton_(): boolean {
     return !(
         this.readOnlyList ||
         (this.category === ContentSettingsTypes.FILE_SYSTEM_WRITE &&
          this.categorySubtype === ContentSetting.ALLOW));
   }
 
-  private showNoSearchResults_(): boolean {
-    return this.sites.length > 0 && this.getFilteredSites_().length === 0;
+  protected shouldShowNoSearchResults_(): boolean {
+    return this.sites.length > 0 && this.filteredSites_.length === 0;
   }
 
   /**
    * A handler for the Add Site button.
    */
-  private onAddSiteClick_() {
+  protected onAddSiteClick_() {
     assert(!this.readOnlyList);
+    assert(this.categorySubtype !== INVALID_CATEGORY_SUBTYPE);
     this.showAddSiteDialog_ = true;
   }
 
-  private onAddSiteDialogClosed_() {
+  protected onAddSiteDialogClose_() {
     this.showAddSiteDialog_ = false;
     focusWithoutInk(this.$.addSite);
   }
@@ -415,8 +406,10 @@ export class SiteListElement extends SiteListElementBase {
    * Need to use common tooltip since the tooltip in the entry is cut off from
    * the list.
    */
-  private onShowTooltip_(e: CustomEvent<{target: HTMLElement, text: string}>) {
+  protected async onShowTooltip_(
+      e: CustomEvent<{target: HTMLElement, text: string}>) {
     this.tooltipText_ = e.detail.text;
+    await this.updateComplete;
     // cr-tooltip normally determines the target from the |for| property,
     // which is a selector. Here cr-tooltip is being reused by multiple
     // potential targets.
@@ -427,6 +420,9 @@ export class SiteListElement extends SiteListElementBase {
    * Populate the sites list for display.
    */
   private populateList_() {
+    if (!this.category) {
+      return;
+    }
     this.browserProxy_.getExceptionList(this.category).then(exceptionList => {
       this.processExceptions_(exceptionList);
       this.closeActionMenu_();
@@ -446,7 +442,7 @@ export class SiteListElement extends SiteListElementBase {
                         if (this.category !== ContentSettingsTypes.COOKIES) {
                           return true;
                         }
-                        assert(this.cookiesExceptionType !== undefined);
+                        assert(this.cookiesExceptionType);
                         switch (this.cookiesExceptionType) {
                           case CookiesExceptionType.THIRD_PARTY:
                             return site.origin === SITE_EXCEPTION_WILDCARD;
@@ -485,7 +481,7 @@ export class SiteListElement extends SiteListElementBase {
    * @return Whether to show the "Session Only" menu item for the currently
    *     active site.
    */
-  private showSessionOnlyActionForSite_(): boolean {
+  protected shouldShowSessionOnlyActionForSite_(): boolean {
     // It makes no sense to show "clear on exit" for exceptions that only apply
     // to incognito. It gives the impression that they might under some
     // circumstances not be cleared on exit, which isn't true.
@@ -498,12 +494,13 @@ export class SiteListElement extends SiteListElementBase {
 
   private setContentSettingForActionMenuSite_(contentSetting: ContentSetting) {
     assert(this.actionMenuSite_);
+    assert(this.category);
     this.browserProxy.setCategoryPermissionForPattern(
         this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
         this.category, contentSetting, this.actionMenuSite_.incognito);
   }
 
-  private onAllowClick_() {
+  protected onAllowClick_() {
     // Removing the last visible item should focus the list's header.
     const shouldMoveFocus = this.hasOneFilteredSite_();
     this.setContentSettingForActionMenuSite_(ContentSetting.ALLOW);
@@ -513,7 +510,7 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  private onBlockClick_() {
+  protected onBlockClick_() {
     // Removing the last visible item should focus the list's header.
     const shouldMoveFocus = this.hasOneFilteredSite_();
     this.setContentSettingForActionMenuSite_(ContentSetting.BLOCK);
@@ -523,19 +520,19 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  private onSessionOnlyClick_() {
+  protected onSessionOnlyClick_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.SESSION_ONLY);
     this.closeActionMenu_();
   }
 
-  private onEditClick_() {
+  protected onEditClick_() {
     // Close action menu without resetting |this.actionMenuSite_| since it is
     // bound to the dialog.
-    this.shadowRoot!.querySelector('cr-action-menu')!.close();
+    this.$.actionMenu.close();
     this.showEditExceptionDialog_ = true;
   }
 
-  private onEditExceptionDialogClosed_() {
+  protected onEditExceptionDialogClose_() {
     this.showEditExceptionDialog_ = false;
     this.actionMenuSite_ = null;
     if (this.activeDialogAnchor_) {
@@ -544,10 +541,11 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  private onResetClick_() {
+  protected onResetClick_() {
     // Removing the last visible item should focus the list's header.
     const shouldMoveFocus = this.hasOneFilteredSite_();
     assert(this.actionMenuSite_);
+    assert(this.category);
     this.browserProxy.resetCategoryPermissionForPattern(
         this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,
         this.category, this.actionMenuSite_.incognito);
@@ -557,15 +555,14 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  private onShowActionMenu_(
+  protected onShowActionMenu_(
       e: CustomEvent<{anchor: HTMLElement, model: SiteException}>) {
     this.activeDialogAnchor_ = e.detail.anchor;
     this.actionMenuSite_ = e.detail.model;
-    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
-        this.activeDialogAnchor_);
+    this.$.actionMenu.showAt(this.activeDialogAnchor_);
   }
 
-  private onResetEntry_() {
+  protected onSiteListEntryResetClick_() {
     // Removing the last visible item should focus the list's header.
     if (this.hasOneFilteredSite_()) {
       this.$.listHeader.focus();
@@ -575,9 +572,8 @@ export class SiteListElement extends SiteListElementBase {
   private closeActionMenu_() {
     this.actionMenuSite_ = null;
     this.activeDialogAnchor_ = null;
-    const actionMenu = this.shadowRoot!.querySelector('cr-action-menu')!;
-    if (actionMenu.open) {
-      actionMenu.close();
+    if (this.$.actionMenu.open) {
+      this.$.actionMenu.close();
     }
   }
 
@@ -595,11 +591,11 @@ export class SiteListElement extends SiteListElementBase {
             propName => site[propName].toLowerCase().includes(searchFilter)));
   }
 
-  private hasOneFilteredSite_(): boolean {
-    return this.getFilteredSites_().length === 1;
+  protected hasOneFilteredSite_(): boolean {
+    return this.filteredSites_.length === 1;
   }
 
-  private getAddButtonLabel_(): string {
+  protected getAddButtonLabel_(): string {
     if (this.categorySubtype === ContentSetting.ALLOW) {
       return this.i18n('siteDataPageAddSiteToAllowListLabel');
     } else if (this.categorySubtype === ContentSetting.BLOCK) {
