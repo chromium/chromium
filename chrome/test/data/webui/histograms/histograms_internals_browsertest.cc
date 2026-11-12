@@ -47,7 +47,14 @@ IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest,
   RunTestCase("RefreshHistograms");
 }
 
-IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest, NoDummyHistograms) {
+// TODO(crbug.com/544088944): Flaky (times out) on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NoDummyHistograms DISABLED_NoDummyHistograms
+#else
+#define MAYBE_NoDummyHistograms NoDummyHistograms
+#endif
+IN_PROC_BROWSER_TEST_F(HistogramsInternalsUIBrowserTest,
+                       MAYBE_NoDummyHistograms) {
   RunTestCase("NoDummyHistograms");
 }
 
