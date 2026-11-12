@@ -665,7 +665,7 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
     }
 
     // Populate `reason_to_source_map_`.
-    std::string nrr_report_str = blink::scheduler::FeatureToShortString(k);
+    std::string nrr_report_str(blink::scheduler::FeatureToShortString(k));
     for (auto& details : map[k]) {
       if (details->source) {
         CHECK_GT(details->source->line_number, 0U);

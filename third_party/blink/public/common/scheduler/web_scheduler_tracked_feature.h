@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "base/containers/enum_set.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -26,15 +26,15 @@ using WebSchedulerTrackedFeatures =
 
 BLINK_COMMON_EXPORT const char* FeatureToHumanReadableString(
     WebSchedulerTrackedFeature feature);
-BLINK_COMMON_EXPORT std::string FeatureToShortString(
+BLINK_COMMON_EXPORT std::string_view FeatureToShortString(
     WebSchedulerTrackedFeature feature);
 
 BLINK_COMMON_EXPORT std::optional<WebSchedulerTrackedFeature> StringToFeature(
-    const std::string& str);
+    std::string_view str);
 // Returns true if there was previously a feature by this name.
 // It is not comprehensive, just enough to cover what was used in finch,
 // in order to stop warnings at startup. See https://crbug.com/1363846.
-BLINK_COMMON_EXPORT bool IsRemovedFeature(const std::string& feature);
+BLINK_COMMON_EXPORT bool IsRemovedFeature(std::string_view feature);
 
 // Sticky features can't be unregistered and remain active for the rest of the
 // lifetime of the page.

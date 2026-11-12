@@ -5,9 +5,11 @@
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 #include <atomic>
-#include <map>
+#include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -19,7 +21,7 @@ namespace {
 std::atomic_bool disable_align_wake_ups{false};
 
 struct FeatureNames {
-  std::string short_name;
+  std::string_view short_name;
   const char* human_readable;
 };
 
@@ -160,25 +162,22 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
   return {};
 }
 
-std::map<std::string, WebSchedulerTrackedFeature> MakeShortNameToFeature() {
-  std::map<std::string, WebSchedulerTrackedFeature> short_name_to_feature;
+base::flat_map<std::string_view, WebSchedulerTrackedFeature>
+MakeShortNameToFeature() {
+  std::vector<std::pair<std::string_view, WebSchedulerTrackedFeature>>
+      short_name_to_feature;
+  short_name_to_feature.reserve(
+      static_cast<size_t>(WebSchedulerTrackedFeature::kMaxValue) + 1);
   for (int i = 0; i <= static_cast<int>(WebSchedulerTrackedFeature::kMaxValue);
        i++) {
     WebSchedulerTrackedFeature feature =
         static_cast<WebSchedulerTrackedFeature>(i);
     FeatureNames strs = FeatureToNames(feature);
     if (strs.short_name.size())
-      short_name_to_feature[strs.short_name] = feature;
+      short_name_to_feature.emplace_back(strs.short_name, feature);
   }
-  return short_name_to_feature;
-}
-
-const std::map<std::string, WebSchedulerTrackedFeature>&
-ShortStringToFeatureMap() {
-  static const base::NoDestructor<
-      std::map<std::string, WebSchedulerTrackedFeature>>
-      short_name_to_feature(MakeShortNameToFeature());
-  return *short_name_to_feature;
+  return base::flat_map<std::string_view, WebSchedulerTrackedFeature>(
+      std::move(short_name_to_feature));
 }
 
 }  // namespace
@@ -187,21 +186,23 @@ const char* FeatureToHumanReadableString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).human_readable;
 }
 
-std::string FeatureToShortString(WebSchedulerTrackedFeature feature) {
+std::string_view FeatureToShortString(WebSchedulerTrackedFeature feature) {
   return FeatureToNames(feature).short_name;
 }
 
 std::optional<WebSchedulerTrackedFeature> StringToFeature(
-    const std::string& str) {
-  auto map = ShortStringToFeatureMap();
-  auto it = map.find(str);
-  if (it == map.end()) {
+    std::string_view str) {
+  static const base::NoDestructor<
+      base::flat_map<std::string_view, WebSchedulerTrackedFeature>>
+      kShortNameToFeature(MakeShortNameToFeature());
+  auto it = kShortNameToFeature->find(str);
+  if (it == kShortNameToFeature->end()) {
     return std::nullopt;
   }
   return it->second;
 }
 
-bool IsRemovedFeature(const std::string& feature) {
+bool IsRemovedFeature(std::string_view feature) {
   // This is an incomplete list. It only contains features that were
   // BFCache-enabled via finch. It does not contain all those that were removed.
   // This function is simple, not efficient because it is called once during
