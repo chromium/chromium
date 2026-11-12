@@ -711,12 +711,19 @@ void AppShimManager::OnNotificationAction(
 }
 
 void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
+  chrome::mojom::AppShim::SetBadgeLabelCallback callback =
+      profile_state->badge.has_value() &&
+              web_app::UseNotificationAttributionForWebAppShims()
+          ? base::BindOnce(&AppShimManager::OnBadgeUpdated,
+                           weak_factory_.GetWeakPtr())
+          : base::DoNothing();
   if (profile_state->single_profile_host &&
       profile_state->single_profile_host->GetAppShim()) {
-    profile_state->single_profile_host->GetAppShim()->SetBadgeLabel(
+    profile_state->single_profile_host->SetBadgeLabel(
         profile_state->badge
             ? badging::GetBadgeString(profile_state->badge.value())
-            : "");
+            : "",
+        std::move(callback));
   } else if (profile_state->app_state->multi_profile_host &&
              profile_state->app_state->multi_profile_host->GetAppShim()) {
     std::optional<badging::BadgeManager::BadgeValue> combined_badge;
@@ -734,9 +741,15 @@ void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
         }
       }
     }
-    profile_state->app_state->multi_profile_host->GetAppShim()->SetBadgeLabel(
-        combined_badge ? badging::GetBadgeString(combined_badge.value()) : "");
+    profile_state->app_state->multi_profile_host->SetBadgeLabel(
+        combined_badge ? badging::GetBadgeString(combined_badge.value()) : "",
+        std::move(callback));
   }
+}
+
+void AppShimManager::OnBadgeUpdated(chrome::mojom::AppShimBadgeResult result) {
+  base::UmaHistogramEnumeration(
+      "Notifications.Permissions.AppShim.BadgeUpdateResult", result);
 }
 
 AppShimHost* AppShimManager::GetHostForRemoteCocoaBrowser(

@@ -90,6 +90,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/finds/core/finds_metrics.h:FindsOptInTriggerReason) -->
 
+<!-- LINT.IfChange(MacAppShimBadgeOSStatus) -->
+
+<enum name="MacAppShimBadgeOSStatus">
+  <int value="1" label="NotDetermined"/>
+  <int value="2" label="PromptPending"/>
+  <int value="3" label="Denied"/>
+  <int value="4" label="Granted"/>
+  <int value="5" label="GrantedBadgeDisabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/app_shim/app_shim_controller.h:MacAppShimBadgeOSStatus) -->
+
+<!-- LINT.IfChange(MacAppShimBadgeResult) -->
+
+<enum name="MacAppShimBadgeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="BlockedByOSPermission"/>
+  <int value="2" label="NoPermissionService"/>
+  <int value="3" label="NoResponse"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/common/mac/app_shim.mojom:AppShimBadgeResult) -->
+
 <!-- LINT.IfChange(MacAppShimNotificationPermissionStatus) -->
 
 <enum name="MacAppShimNotificationPermissionStatus">

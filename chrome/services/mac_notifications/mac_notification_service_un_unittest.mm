@@ -2270,4 +2270,67 @@ TEST_F(MacNotificationServiceUNTest,
   EXPECT_FALSE(status.IsReady());
 }
 
+TEST_F(MacNotificationServiceUNTest,
+       PermissionStateChangedCallback_SynchronizeWithCallback) {
+  ResetService();
+
+  UNAuthorizationStatus current_status = UNAuthorizationStatusDenied;
+  auto& status_ref = current_status;
+  UNNotificationSetting current_badge_setting = UNNotificationSettingDisabled;
+  auto& badge_setting_ref = current_badge_setting;
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([settings authorizationStatus]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)(&status_ref)];
+  });
+  OCMStub([settings badgeSetting]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)(&badge_setting_ref)];
+  });
+  id mock_notification_center = CreateMockNotificationCenter(settings);
+
+  MockNotificationActionHandler mock_handler;
+  mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
+      &mock_handler};
+
+  base::test::TestFuture<mojom::PermissionStatus> changed_status;
+  auto service = std::make_unique<MacNotificationServiceUN>(
+      handler_receiver.BindNewPipeAndPassRemote(),
+      changed_status.GetRepeatingCallback(), mock_notification_center);
+  EXPECT_EQ(changed_status.Take(), mojom::PermissionStatus::kDenied);
+
+  // Calling `SynchronizePermissionStatus` with a callback when the status has
+  // not changed invokes the one-shot callback without firing
+  // `permission_status_changed_callback_`. Additionally, multiple calls while
+  // a synchronization check is already in flight coalesce and all receive the
+  // resolved status.
+  base::test::TestFuture<mojom::PermissionStatus, bool> sync_callback1;
+  base::test::TestFuture<mojom::PermissionStatus, bool> sync_callback2;
+  service->SynchronizePermissionStatus(sync_callback1.GetCallback());
+  service->SynchronizePermissionStatus(sync_callback2.GetCallback());
+  EXPECT_EQ(sync_callback1.Get<0>(), mojom::PermissionStatus::kDenied);
+  EXPECT_FALSE(sync_callback1.Get<1>());
+  EXPECT_EQ(sync_callback2.Get<0>(), mojom::PermissionStatus::kDenied);
+  EXPECT_FALSE(sync_callback2.Get<1>());
+  EXPECT_FALSE(changed_status.IsReady());
+
+  // When the OS status changes, both `permission_status_changed_callback_` and
+  // the one-shot callback are invoked with the new status and badge setting.
+  current_status = UNAuthorizationStatusAuthorized;
+  current_badge_setting = UNNotificationSettingEnabled;
+  base::test::TestFuture<mojom::PermissionStatus, bool> sync_callback3;
+  service->SynchronizePermissionStatus(sync_callback3.GetCallback());
+  EXPECT_EQ(sync_callback3.Get<0>(), mojom::PermissionStatus::kGranted);
+  EXPECT_TRUE(sync_callback3.Get<1>());
+  EXPECT_EQ(changed_status.Take(), mojom::PermissionStatus::kGranted);
+
+  // Disabling the per-app badge setting while overall permission remains
+  // granted reports `badge_enabled = false` without firing
+  // `permission_status_changed_callback_`.
+  current_badge_setting = UNNotificationSettingDisabled;
+  base::test::TestFuture<mojom::PermissionStatus, bool> sync_callback4;
+  service->SynchronizePermissionStatus(sync_callback4.GetCallback());
+  EXPECT_EQ(sync_callback4.Get<0>(), mojom::PermissionStatus::kGranted);
+  EXPECT_FALSE(sync_callback4.Get<1>());
+  EXPECT_FALSE(changed_status.IsReady());
+}
+
 }  // namespace mac_notifications
