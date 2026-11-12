@@ -743,6 +743,7 @@ void ContextHubService::EmbedderMetadataUpdated(
   // stored embeddings before recomputing them below.
   memory_bank_pending_annotation_update_ids_.clear();
   memory_bank_embedding_jobs_.clear();
+  memory_bank_query_embedding_job_.reset();
   context_hub_backend_->SetMemoryBankEmbeddingsVersion(
       embedder_metadata_.model_version,
       base::BindOnce(&ContextHubService::OnMemoryBankEmbeddingsVersionSet,
@@ -756,6 +757,7 @@ void ContextHubService::OnMemoryBankEmbeddingsVersionSet(bool success) {
     embedder_metadata_ = passage_embeddings::EmbedderMetadata(0, 0, 0);
     memory_bank_pending_annotation_update_ids_.clear();
     memory_bank_embedding_jobs_.clear();
+    memory_bank_query_embedding_job_.reset();
     return;
   }
   context_hub_backend_->GetMemoryBankEntryIdsWithoutEmbeddings(base::BindOnce(
@@ -1623,6 +1625,50 @@ void ContextHubService::GetAllMemoryBankTags(
 void ContextHubService::GetAllMemoryBankCollections(
     MemoryBank::GetStringsCallback callback) const {
   memory_bank_->GetAllCollections(std::move(callback));
+}
+
+void ContextHubService::SearchMemoryBankEntries(
+    std::string query,
+    MemoryBank::GetEntriesCallback callback) {
+  // Drop any in-flight query job first so a newer search (including a blank
+  // one) always supersedes the previous query and causes its callback to
+  // receive no results in `OnMemoryBankQueryEmbeddingComputed()`.
+  memory_bank_query_embedding_job_.reset();
+  if (!embedder_ || !context_hub_backend_ || !embedder_metadata_.IsValid() ||
+      base::TrimWhitespaceASCII(query, base::TRIM_ALL).empty()) {
+    std::move(callback).Run({});
+    return;
+  }
+  memory_bank_query_embedding_job_ = embedder_->ComputePassagesEmbeddings(
+      passage_embeddings::PassagePriority::kUserInitiated, {std::move(query)},
+      base::BindOnce(&ContextHubService::OnMemoryBankQueryEmbeddingComputed,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ContextHubService::OnMemoryBankQueryEmbeddingComputed(
+    MemoryBank::GetEntriesCallback callback,
+    std::vector<std::string> query_passages,
+    std::vector<passage_embeddings::Embedding> query_embeddings,
+    uint64_t job_id,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  // Ignore queries that were superseded by a newer query or computed by a
+  // previous model version (`EmbedderMetadataUpdated()` drops the job), since
+  // their embeddings would not be comparable with the stored ones.
+  if (!memory_bank_query_embedding_job_ ||
+      memory_bank_query_embedding_job_->id() != job_id) {
+    std::move(callback).Run({});
+    return;
+  }
+  memory_bank_query_embedding_job_.reset();
+  if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess ||
+      query_embeddings.size() != 1u) {
+    std::move(callback).Run({});
+    return;
+  }
+  context_hub_backend_->SearchMemoryBankEntriesByEmbedding(
+      std::move(query_embeddings.front()),
+      features::kMemoryBankSearchScoreThreshold.Get(),
+      features::kMaxMemoryBankSearchResults.Get(), std::move(callback));
 }
 
 void ContextHubService::GetTabGroups(GetTabGroupsCallback callback) const {

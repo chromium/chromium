@@ -668,6 +668,24 @@ void ContextHubPageHandler::GetAllMemoryBankEntries(
       std::move(callback)));
 }
 
+void ContextHubPageHandler::SearchMemoryBankEntries(
+    const std::string& query,
+    SearchMemoryBankEntriesCallback callback) {
+  auto* service = ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  service->SearchMemoryBankEntries(
+      query, base::BindOnce(
+                 [](SearchMemoryBankEntriesCallback callback,
+                    std::vector<context_hub::MemoryBankEntry> entries) {
+                   std::move(callback).Run(entries);
+                 },
+                 std::move(callback)));
+}
+
 void ContextHubPageHandler::DeleteMemoryBankEntries(
     const std::vector<int64_t>& ids,
     DeleteMemoryBankEntriesCallback callback) {

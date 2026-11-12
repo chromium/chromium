@@ -361,6 +361,10 @@ class ContextHubService : public KeyedService,
   // Returns all unique collections from the memory bank.
   void GetAllMemoryBankCollections(
       MemoryBank::GetStringsCallback callback) const;
+  // Returns memory bank entries semantically related to `query`, ordered by
+  // descending relevance and capped at `features::kMaxMemoryBankSearchResults`.
+  void SearchMemoryBankEntries(std::string query,
+                               MemoryBank::GetEntriesCallback callback);
 
   using GetTabGroupsCallback =
       base::OnceCallback<void(std::vector<TabGroupEntry>)>;
@@ -472,6 +476,14 @@ class ContextHubService : public KeyedService,
       int64_t entry_id,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,
+      uint64_t job_id,
+      passage_embeddings::ComputeEmbeddingsStatus status);
+
+  // Handles the embedder's response for a `SearchMemoryBankEntries()` query.
+  void OnMemoryBankQueryEmbeddingComputed(
+      MemoryBank::GetEntriesCallback callback,
+      std::vector<std::string> query_passages,
+      std::vector<passage_embeddings::Embedding> query_embeddings,
       uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
@@ -675,6 +687,12 @@ class ContextHubService : public KeyedService,
   // `context_hub_backend_` since completed jobs write to it.
   base::flat_map<int64_t, passage_embeddings::Embedder::Job>
       memory_bank_embedding_jobs_;
+
+  // In-flight embedding job for the most recent `SearchMemoryBankEntries()`
+  // query. Replacing it cancels the previous query's job if it has not started
+  // yet.
+  std::optional<passage_embeddings::Embedder::Job>
+      memory_bank_query_embedding_job_;
 
   // Reference counts of in-flight `GetMemoryBankEntriesByIds()` lookups
   // triggered by `OnMemoryBankEntryUpdated()`, keyed by entry ID. Erased when

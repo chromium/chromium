@@ -634,6 +634,12 @@ interface PageHandler {
   // Returns all entries currently stored in the memory bank.
   GetAllMemoryBankEntries() => (array<MemoryBankEntry> entries);
 
+  // Returns memory bank entries semantically related to `query`, ordered by
+  // descending relevance. Returns no entries if semantic search is
+  // unavailable (e.g. the embeddings model is not loaded yet), or if a newer
+  // search supersedes this one.
+  SearchMemoryBankEntries(string query) => (array<MemoryBankEntry> entries);
+
   // Deletes entries from the memory bank.
   DeleteMemoryBankEntries(array<int64> ids) => ();
 

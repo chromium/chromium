@@ -2210,7 +2210,97 @@ TEST_F(ContextHubServiceEmbeddingsTest,
       passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
   EXPECT_FALSE(store_embeddings_future_.IsReady());
 }
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SearchMemoryBankEntries_ReturnsMatchingEntry) {
+  CreateDatabaseService();
+  const int64_t id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com"), "Title",
+      "The highlighted text"));
+  ASSERT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
+
+  // The test embedder maps every passage to the same embedding, so the query
+  // scores 1.0 against the stored entry.
+  base::test::TestFuture<std::vector<MemoryBankEntry>> search_future;
+  database_service_->SearchMemoryBankEntries("highlighted",
+                                             search_future.GetCallback());
+  EXPECT_THAT(search_future.Get(),
+              ElementsAre(Field(&MemoryBankEntry::id, id)));
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SearchMemoryBankEntries_ScoreThresholdFiltersResults) {
+  // Similarity scores never exceed 1.0, so this threshold filters everything.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kMemoryBanks, {{"MemoryBankSearchScoreThreshold", "1.1"}});
+  CreateDatabaseService();
+  const int64_t id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com"), "Title",
+      "The highlighted text"));
+  ASSERT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> search_future;
+  database_service_->SearchMemoryBankEntries("highlighted",
+                                             search_future.GetCallback());
+  EXPECT_THAT(search_future.Get(), IsEmpty());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SearchMemoryBankEntries_ReturnsNothingWithoutEmbedderMetadata) {
+  CreateDatabaseService(/*with_embedder_metadata=*/false);
+  SaveEntry(MemoryBankEntry(MemoryBankType::kTextSelection,
+                            GURL("https://example.com"), "Title",
+                            "The highlighted text"));
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> search_future;
+  database_service_->SearchMemoryBankEntries("highlighted",
+                                             search_future.GetCallback());
+  EXPECT_THAT(search_future.Get(), IsEmpty());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SearchMemoryBankEntries_BlankQueryReturnsNothing) {
+  CreateDatabaseService();
+  const int64_t id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com"), "Title",
+      "The highlighted text"));
+  ASSERT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> search_future;
+  database_service_->SearchMemoryBankEntries("  ", search_future.GetCallback());
+  EXPECT_THAT(search_future.Get(), IsEmpty());
+}
+
+TEST_F(ContextHubServiceEmbeddingsTest,
+       SearchMemoryBankEntries_NewerQuerySupersedesPrevious) {
+  CreateDatabaseService();
+  const int64_t id = SaveEntry(MemoryBankEntry(
+      MemoryBankType::kTextSelection, GURL("https://example.com"), "Title",
+      "The highlighted text"));
+  ASSERT_EQ(std::make_tuple(id, size_t{3}), store_embeddings_future_.Take());
+
+  // Start a second search before the first query's embedding is computed.
+  base::test::TestFuture<std::vector<MemoryBankEntry>> first_search_future;
+  base::test::TestFuture<std::vector<MemoryBankEntry>> second_search_future;
+  database_service_->SearchMemoryBankEntries("high",
+                                             first_search_future.GetCallback());
+  database_service_->SearchMemoryBankEntries(
+      "highlighted", second_search_future.GetCallback());
+
+  EXPECT_THAT(first_search_future.Get(), IsEmpty());
+  EXPECT_THAT(second_search_future.Get(),
+              ElementsAre(Field(&MemoryBankEntry::id, id)));
+}
 #endif
+
+TEST_F(ContextHubServiceTest,
+       SearchMemoryBankEntries_ReturnsNothingWithoutBackend) {
+  // `service_` has neither a database backend nor an embedder.
+  base::test::TestFuture<std::vector<MemoryBankEntry>> search_future;
+  service_.SearchMemoryBankEntries("highlighted", search_future.GetCallback());
+  EXPECT_THAT(search_future.Get(), IsEmpty());
+}
 
 TEST_F(ContextHubServiceTest,
        SaveMemoryBankEntry_TabNotFoundFallbackWhenSyncFlagEnabled) {

@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
@@ -27,17 +28,23 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
+#include "chrome/browser/context_hub/auto_todos/in_memory_auto_todos_store.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/features.h"
+#include "chrome/browser/context_hub/memory_bank/database_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_chat_types.h"
 #include "chrome/browser/context_hub/prefs.h"
+#include "chrome/browser/context_hub/storage/context_hub_backend_impl.h"
+#include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
@@ -57,6 +64,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
@@ -96,7 +104,6 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"        // nogncheck
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"    // nogncheck
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"  // nogncheck
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"  // nogncheck
 #include "chrome/test/base/testing_browser_process.h"
@@ -277,6 +284,25 @@ class ContextHubPageHandlerTest : public testing::Test {
             }));
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
         browser_context, base::BindRepeating(&BuildMockHistoryService));
+    ContextHubServiceFactory::GetInstance()->SetTestingFactory(
+        browser_context,
+        base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto backend = std::make_unique<ContextHubBackendImpl>(
+              profile->GetPath().Append(FILE_PATH_LITERAL("ContextHub.db")));
+          auto memory_bank = std::make_unique<DatabaseMemoryBank>(*backend);
+          return std::make_unique<ContextHubService>(
+              profile, IdentityManagerFactory::GetForProfile(profile),
+              PersonalContextServiceFactory::GetForProfile(profile),
+              OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+              tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile),
+              page_content_annotations::PageContentExtractionServiceFactory::
+                  GetForProfile(profile),
+              &embedder_, &embedder_metadata_provider_, std::move(memory_bank),
+              std::make_unique<InMemoryTabGroupStore>(), std::move(backend),
+              std::make_unique<InMemoryAutoTodosStore>());
+        }));
   }
 
   void SetUp() override {
@@ -362,6 +388,10 @@ class ContextHubPageHandlerTest : public testing::Test {
   struct EnsureFactories {
     EnsureFactories() { ContextHubServiceFactory::GetInstance(); }
   } ensure_factories_;
+  // Declared before `profile_` so they outlive any `ContextHubService` bound
+  // to `profile_`.
+  passage_embeddings::TestEmbedder embedder_;
+  passage_embeddings::TestEmbedderMetadataProvider embedder_metadata_provider_;
   TestingProfile profile_;
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockTabProvider> mock_tab_provider_ = nullptr;
@@ -1757,6 +1787,38 @@ TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankEntries_Success) {
   EXPECT_FALSE(image_entry->selected_text.has_value());
   EXPECT_EQ(image_entry->image_url, GURL("https://example.com/photo.png"));
   EXPECT_FALSE(image_entry->timestamp.is_null());
+}
+
+TEST_F(ContextHubPageHandlerTest, SearchMemoryBankEntries_Empty) {
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&> future;
+  handler_->SearchMemoryBankEntries("query", future.GetCallback());
+
+  std::vector<MemoryBankEntry> result = future.Take();
+  EXPECT_TRUE(result.empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, SearchMemoryBankEntries_Success) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<bool> save_selection_future;
+  service->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTextSelection,
+                      GURL("https://example.com/select"), "Selection Title",
+                      "Selected Text Detail"),
+      save_selection_future.GetCallback());
+  ASSERT_TRUE(save_selection_future.Wait());
+
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&> future;
+  handler_->SearchMemoryBankEntries("Selected", future.GetCallback());
+
+  std::vector<MemoryBankEntry> result = future.Take();
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result[0].type, MemoryBankType::kTextSelection);
+  EXPECT_EQ(result[0].url, GURL("https://example.com/select"));
+  EXPECT_EQ(result[0].tab_title, "Selection Title");
+  EXPECT_EQ(result[0].selected_text, "Selected Text Detail");
 }
 
 TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {

@@ -200,6 +200,7 @@ source_set("unit_tests") {
     "//components/favicon_base",
     "//components/history/core/browser",
     "//components/history/core/test",
+    "//components/passage_embeddings/core:test_support",
     "//components/personal_context/core:test_support",
     "//components/personal_context/proto:personal_context_proto",
     "//components/saved_tab_groups/test_support",

@@ -122,6 +122,9 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
       GetSaveToMemoryBankContextCallback callback) override;
   void GetAllMemoryBankEntries(
       GetAllMemoryBankEntriesCallback callback) override;
+  void SearchMemoryBankEntries(
+      const std::string& query,
+      SearchMemoryBankEntriesCallback callback) override;
   void DeleteMemoryBankEntries(
       const std::vector<int64_t>& ids,
       DeleteMemoryBankEntriesCallback callback) override;
