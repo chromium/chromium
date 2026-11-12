@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_event_observer_test_api.h"
@@ -33,9 +35,12 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
@@ -50,7 +55,25 @@ namespace {
 
 constexpr char kOnboardingBackfillVersion[] = "0.0.0.0";
 
-}
+// Counts OnLocaleChanged() notifications dispatched to Ash UI components.
+class TestLocaleChangeObserver : public LocaleChangeObserver {
+ public:
+  TestLocaleChangeObserver() {
+    LocaleUpdateController::Get()->AddObserver(this);
+  }
+  ~TestLocaleChangeObserver() override {
+    LocaleUpdateController::Get()->RemoveObserver(this);
+  }
+
+  void OnLocaleChanged() override { ++locale_changed_count_; }
+
+  int locale_changed_count() const { return locale_changed_count_; }
+
+ private:
+  int locale_changed_count_ = 0;
+};
+
+}  // namespace
 
 class BrowserLoginTest : public LoginManagerTest {
  public:
@@ -127,6 +150,76 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
   EXPECT_TRUE(config.handwriting);
   EXPECT_TRUE(config.spell_check);
   EXPECT_TRUE(config.voice_input);
+}
+
+// Sets up a login screen in "en-US" and a user whose profile locale is also
+// "en-US".
+IN_PROC_BROWSER_TEST_F(BrowserLoginTest, PRE_LocaleNotUpdatedWhenUnchanged) {
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      test::kTestEmail, GaiaId(test::kTestGaiaId));
+  RegisterUser(account_id);
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
+  LoginUser(account_id);
+
+  // LoginManagerTest skips Gaia AccountInfoFetcher and Sync, which normally
+  // populate kApplicationLocale on a real device, so set it explicitly. Also
+  // mark it as accepted to suppress the locale-change confirmation dialog.
+  PrefService* prefs =
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUserAndModify(account_id))
+          .GetProfilePrefs();
+  ASSERT_TRUE(prefs);
+  prefs->SetString(language::prefs::kApplicationLocale, "en-US");
+  prefs->SetString(ash::prefs::kApplicationLocaleAccepted, "en-US");
+}
+
+// Verifies that when a returning user logs in with the same UI locale as the
+// login screen ("en-US" -> "en-US"), Ash is not notified to reload UI strings.
+IN_PROC_BROWSER_TEST_F(BrowserLoginTest, LocaleNotUpdatedWhenUnchanged) {
+  // Login screen starts in "en-US".
+  EXPECT_EQ("en-US", g_browser_process->GetApplicationLocale());
+
+  TestLocaleChangeObserver observer;
+  LoginUser(AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                           GaiaId(test::kTestGaiaId)));
+  EXPECT_EQ("en-US", g_browser_process->GetApplicationLocale());
+  EXPECT_EQ(0, observer.locale_changed_count());
+}
+
+// Sets up a login screen in "en-US" and a user whose UI locale is "fr".
+IN_PROC_BROWSER_TEST_F(BrowserLoginTest, PRE_LocaleUpdatedWhenChanged) {
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      test::kTestEmail, GaiaId(test::kTestGaiaId));
+  RegisterUser(account_id);
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
+  LoginUser(account_id);
+
+  // Write the profile prefs directly instead of calling ChangeAppLocale(),
+  // which would also update kOwnerLocale in local_state and switch the login
+  // screen to "fr" on the next boot.
+  PrefService* prefs =
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUserAndModify(account_id))
+          .GetProfilePrefs();
+  ASSERT_TRUE(prefs);
+  prefs->SetString(language::prefs::kApplicationLocale, "fr");
+  prefs->SetString(ash::prefs::kApplicationLocaleAccepted, "fr");
+}
+
+// Verifies that when the user's UI locale ("fr") differs from the login
+// screen's locale ("en-US"), logging in switches the UI locale to "fr" and
+// notifies Ash once to reload UI strings.
+IN_PROC_BROWSER_TEST_F(BrowserLoginTest, LocaleUpdatedWhenChanged) {
+  // Login screen starts in "en-US".
+  EXPECT_EQ("en-US", g_browser_process->GetApplicationLocale());
+
+  TestLocaleChangeObserver observer;
+  LoginUser(AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                           GaiaId(test::kTestGaiaId)));
+  EXPECT_EQ("fr", g_browser_process->GetApplicationLocale());
+  EXPECT_EQ(1, observer.locale_changed_count());
 }
 
 class OnboardingTest : public LoginManagerTest {

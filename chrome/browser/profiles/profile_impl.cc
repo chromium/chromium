@@ -1598,17 +1598,24 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
     }
     case APP_LOCALE_CHANGED_VIA_LOGIN:
     case APP_LOCALE_CHANGED_VIA_PUBLIC_SESSION_LOGIN: {
+      if (!locale_change_guard_) {
+        locale_change_guard_ = std::make_unique<ash::LocaleChangeGuard>(
+            local_state,
+            g_browser_process->GetFeatures()->application_locale_storage(),
+            this);
+      }
+      // If the user's UI locale (new_locale) differs from the login screen's
+      // locale (cur_locale), mark it so LocaleChangeGuard notifies Ash to
+      // reload UI strings on session start; otherwise Ash UI is already in that
+      // locale.
+      const std::string cur_locale = g_browser_process->GetApplicationLocale();
+      if (!LocaleNotChanged(cur_locale, new_locale)) {
+        locale_change_guard_->MarkLocaleChangedDuringLogin();
+      }
+
       if (!pref_locale.empty()) {
         CHECK(LocaleNotChanged(pref_locale, new_locale),
               base::NotFatalUntil::M162);
-
-        if (!locale_change_guard_) {
-          locale_change_guard_ = std::make_unique<ash::LocaleChangeGuard>(
-              local_state,
-              g_browser_process->GetFeatures()->application_locale_storage(),
-              this);
-        }
-        locale_change_guard_->set_locale_changed_during_login(true);
 
         std::string accepted_locale =
             GetPrefs()->GetString(ash::prefs::kApplicationLocaleAccepted);
@@ -1621,13 +1628,11 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
                                 new_locale);
         } else {
           // Back up locale of login screen.
-          std::string cur_locale = g_browser_process->GetApplicationLocale();
           GetPrefs()->SetString(ash::prefs::kApplicationLocaleBackup,
                                 cur_locale);
           locale_change_guard_->PrepareChangingLocale(cur_locale, new_locale);
         }
       } else {
-        std::string cur_locale = g_browser_process->GetApplicationLocale();
         std::string backup_locale =
             GetPrefs()->GetString(ash::prefs::kApplicationLocaleBackup);
         // Profile synchronization takes time and is not completed at that
