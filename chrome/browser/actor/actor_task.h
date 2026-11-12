@@ -369,6 +369,11 @@ class ActorTask : public base::SupportsUserData {
 
   const std::string& step_progress() const { return step_progress_; }
   void SetStepProgress(std::string step_progress);
+  // Sends UiEventDispatcher::ActRequested, which tells ActorUiStateManager
+  // that a client requested an act. Call this before validating the request,
+  // so that requests that fail before Act() also reach ActorUiStateManager.
+  // This method does not change the task state.
+  void OnActRequested();
 
  private:
   class ActorControlledTabState : public content::WebContentsObserver {

@@ -54,6 +54,9 @@ constexpr absl::Overload UiEventToDebugStringFn{
           e.target.transform(&gfx::Point::ToString).value_or("null"),
           DebugString(e.target_source));
     },
+    [](const TaskActRequested& e) -> std::string {
+      return absl::StrFormat("TaskActRequested[task_id=%d]", e.task_id.value());
+    },
 };
 }  // namespace
 

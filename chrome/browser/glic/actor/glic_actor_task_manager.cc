@@ -328,6 +328,14 @@ void GlicActorClientSession::PerformActions(
     PerformActionsCallback callback) {
   LogApiRequestCount(GlicHostApiRequestId::kPerformActions);
   instance_metrics().OnPerformActions();
+  // Report the act request to ActorUiStateManager before any check below can
+  // return early. ActorUiStateManager applies each step progress text to at
+  // most one act request, so a request that fails before ActorTask::Act()
+  // still uses up its text.
+  if (actor::ActorTask* task =
+          actor_keyed_service().GetTask(current_task_id_)) {
+    task->OnActRequested();
+  }
   optimization_guide::proto::Actions actions;
   if (!actions.ParseFromArray(actions_proto.data(), actions_proto.size())) {
     // TODO(bokan): include the base64 proto in the error

@@ -203,10 +203,18 @@ class ActorUiStateManager : public ActorUiStateManagerInterface,
   const raw_ref<ActorKeyedService> actor_service_;
 
 #if !BUILDFLAG(IS_ANDROID)
+  struct StepProgressEntry {
+    std::string text;
+    // True after a TaskActRequested event has used `text`. UpdateCursorChip()
+    // drops the entry on the next TaskActRequested if no new text arrived,
+    // except while an act is in progress (kActing or kWaitingOnUser).
+    bool consumed = false;
+  };
+
   std::unique_ptr<actor::ActorTabStripTrackerDesktop> tab_strip_tracker_;
 
   // Latest step progress per task. Shown in the cursor chip while acting.
-  absl::flat_hash_map<TaskId, std::string> step_progress_;
+  absl::flat_hash_map<TaskId, StepProgressEntry> step_progress_;
 #endif
 
   base::RepeatingCallbackList<void(TaskId)>

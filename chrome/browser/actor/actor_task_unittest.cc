@@ -344,6 +344,15 @@ TEST_F(ActorTaskTest, SetStepProgressSendsEveryUpdateToUi) {
   task_->SetStepProgress("");
 }
 
+TEST_F(ActorTaskTest, OnActRequestedSendsSyncChangeToUi) {
+  using ActRequested = ui::UiEventDispatcher::ActRequested;
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
+              OnActorTaskSyncChange(VariantWith<ActRequested>(
+                  Field(&ActRequested::task_id, Eq(task_->id())))))
+      .Times(1);
+  task_->OnActRequested();
+}
+
 TEST_F(ActorTaskTest, SetStepProgressUpdatesStateBeforeUiEvent) {
   using UpdateTaskStepProgress = ui::UiEventDispatcher::UpdateTaskStepProgress;
   EXPECT_CALL(*mock_ui_event_dispatcher_,

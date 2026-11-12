@@ -221,6 +221,9 @@ constexpr absl::Overload ActorTaskSyncChangeFn{
       return EventSequence<SyncUiEvent>{
           TaskStepProgressUpdated(c.task_id, c.step_progress)};
     },
+    [](const UiEventDispatcher::ActRequested& c) {
+      return EventSequence<SyncUiEvent>{TaskActRequested(c.task_id)};
+    },
 };
 
 template <absl::Overload V>
@@ -305,6 +308,10 @@ struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
               return absl::StrFormat(
                   "UpdateTaskStepProgress task_id=%d step_progress=%s",
                   c.task_id.GetUnsafeValue(), c.step_progress);
+            },
+            [](const UiEventDispatcher::ActRequested& c) {
+              return absl::StrFormat("ActRequested task_id=%d",
+                                     c.task_id.GetUnsafeValue());
             }};
         return std::visit(DebugFn, change);
       };

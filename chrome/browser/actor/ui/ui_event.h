@@ -85,6 +85,17 @@ struct TaskStepProgressUpdated {
   ~TaskStepProgressUpdated();
 };
 
+// STATUS: Dispatched when a client requests an act on an ActorTask, before the
+// request is validated. The request can still fail before the task reaches
+// kActing.
+struct TaskActRequested {
+  actor::TaskId task_id;
+
+  explicit TaskActRequested(actor::TaskId);
+  TaskActRequested(const TaskActRequested&);
+  ~TaskActRequested();
+};
+
 // STATUS: Dispatched when a tab is added to ActorTask.
 struct StartingToActOnTab {
   tabs::TabInterface::Handle tab_handle;
@@ -144,7 +155,8 @@ using SyncUiEvent = std::variant<StartTask,
                                  StopTask,
                                  TaskStateChanged,
                                  TaskStepProgressUpdated,
-                                 StoppedActingOnTab>;
+                                 StoppedActingOnTab,
+                                 TaskActRequested>;
 
 using UiEvent = std::variant<StartTask,
                              StopTask,
@@ -153,7 +165,8 @@ using UiEvent = std::variant<StartTask,
                              TaskStateChanged,
                              TaskStepProgressUpdated,
                              MouseClick,
-                             MouseMove>;
+                             MouseMove,
+                             TaskActRequested>;
 
 }  // namespace actor::ui
 

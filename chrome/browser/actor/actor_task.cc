@@ -1122,6 +1122,11 @@ void ActorTask::SetStepProgress(std::string step_progress) {
   }
 }
 
+void ActorTask::OnActRequested() {
+  ui_event_dispatcher_->OnActorTaskSyncChange(
+      ui::UiEventDispatcher::ActRequested{.task_id = id_});
+}
+
 // static
 ActorTask::State ActorTask::GetTaskStateFromStoppedReason(
     StoppedReason stopped_reason) {

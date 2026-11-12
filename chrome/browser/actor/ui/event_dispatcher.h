@@ -61,9 +61,19 @@ class UiEventDispatcher {
     TaskId task_id;
     std::string step_progress;
   };
+
+  // ActorTask::OnActRequested() sends ActRequested when a client requests an
+  // act, before the request is validated. The request can still fail before
+  // the task reaches kActing.
+  struct ActRequested {
+    TaskId task_id;
+  };
   // TODO(crbug.com/425784083): Add tab changes from ActorTask.
-  using ActorTaskSyncChange = std::
-      variant<ChangeTaskState, StopTask, RemoveTab, UpdateTaskStepProgress>;
+  using ActorTaskSyncChange = std::variant<ChangeTaskState,
+                                           StopTask,
+                                           RemoveTab,
+                                           UpdateTaskStepProgress,
+                                           ActRequested>;
 
   virtual ~UiEventDispatcher() = default;
 

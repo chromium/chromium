@@ -2,12 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -27,6 +36,7 @@ using ::optimization_guide::proto::ActionsResult;
 using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::ScrollAction;
 using ::optimization_guide::proto::TabObservation;
+using ::testing::ElementsAre;
 
 class GlicActorActionExecutionFunctionalBrowserTest
     : public GlicActorFunctionalBrowserTestBase {
@@ -504,6 +514,71 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 
   EXPECT_EQ(initial_url, web_contents()->GetURL());
   EXPECT_EQ(ActorTask::State::kCreated, victim_task->GetState());
+}
+
+class GlicActorCursorChipFunctionalBrowserTest
+    : public GlicActorFunctionalBrowserTestBase {
+ public:
+  GlicActorCursorChipFunctionalBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kGlicActorUiMagicCursorChip);
+  }
+  ~GlicActorCursorChipFunctionalBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// GlicActorClientSession::PerformActions() notifies the UI before it validates
+// the request, so an act request that fails before kActing still uses up its
+// step progress text. The next act that sends no new text shows no chip text.
+IN_PROC_BROWSER_TEST_F(GlicActorCursorChipFunctionalBrowserTest,
+                       FailedActDoesNotLeakStepProgressToNextAct) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  ::actor::ui::ActorUiTabControllerInterface* tab_controller =
+      ::actor::ui::ActorUiTabControllerInterface::From(active_tab());
+  ASSERT_TRUE(tab_controller);
+
+  // ActorTask::SetState() sends the UI event before it runs this callback, so
+  // the chip text already follows the display rules for kActing.
+  std::vector<std::string> chip_text_on_acting;
+  base::CallbackListSubscription subscription =
+      actor_keyed_service()->AddTaskStateChangedCallback(
+          base::BindLambdaForTesting([&](ActorTask& task) {
+            if (task.id() == task_id &&
+                task.GetState() == ActorTask::State::kActing) {
+              chip_text_on_acting.push_back(
+                  tab_controller->GetCursorChipText());
+            }
+          }));
+
+  const tabs::TabHandle tab = active_tab()->GetHandle();
+  auto url = [&](std::string_view query) {
+    return embedded_https_test_server()
+        .GetURL("example.com", base::StrCat({"/actor/blank.html?", query}))
+        .spec();
+  };
+
+  // Act 1 sends step text and reaches kActing.
+  UpdateActorTaskStepProgress(task_id, "Opening page");
+  EXPECT_THAT(PerformActions(::actor::MakeNavigate(tab, url("act1"), task_id)),
+              ValueIs(HasResultCode(::actor::mojom::ActionResultCode::kOk)));
+
+  // Act 2 sends step text, but its request fails the task ID check before
+  // kActing.
+  UpdateActorTaskStepProgress(task_id, "Stale text");
+  EXPECT_THAT(
+      PerformActions(::actor::MakeNavigate(tab, url("act2"),
+                                           TaskId(task_id.value() + 999))),
+      ValueIs(HasResultCode(::actor::mojom::ActionResultCode::kTaskWentAway)));
+
+  // Act 3 sends no step text and reaches kActing.
+  EXPECT_THAT(PerformActions(::actor::MakeNavigate(tab, url("act3"), task_id)),
+              ValueIs(HasResultCode(::actor::mojom::ActionResultCode::kOk)));
+
+  EXPECT_THAT(chip_text_on_acting, ElementsAre("Opening page", ""));
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
 }
 
 }  // namespace

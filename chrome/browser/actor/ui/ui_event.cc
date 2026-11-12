@@ -45,6 +45,10 @@ TaskStepProgressUpdated::TaskStepProgressUpdated(TaskStepProgressUpdated&&) =
     default;
 TaskStepProgressUpdated::~TaskStepProgressUpdated() = default;
 
+TaskActRequested::TaskActRequested(actor::TaskId id) : task_id(id) {}
+TaskActRequested::~TaskActRequested() = default;
+TaskActRequested::TaskActRequested(const TaskActRequested&) = default;
+
 StartingToActOnTab::StartingToActOnTab(tabs::TabInterface::Handle th,
                                        actor::TaskId id)
     : tab_handle(th), task_id(id) {}

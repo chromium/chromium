@@ -54,6 +54,13 @@ TEST_F(UiEventDebugStringTest, TaskStepProgressUpdated) {
             "shoes]");
 }
 
+TEST_F(UiEventDebugStringTest, TaskActRequested) {
+  EXPECT_EQ(DebugString(SyncUiEvent(TaskActRequested(TaskId(123)))),
+            "TaskActRequested[task_id=123]");
+  EXPECT_EQ(DebugString(UiEvent(TaskActRequested(TaskId(123)))),
+            "TaskActRequested[task_id=123]");
+}
+
 TEST_F(UiEventDebugStringTest, StartingToActOnTab) {
   EXPECT_EQ(DebugString(UiEvent(StartingToActOnTab(Handle(), TaskId(123)))),
             "StartingToActOnTab[task_id=123, tab=5555]");

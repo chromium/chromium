@@ -819,6 +819,116 @@ TEST_F(ActorUiStateManagerCursorChipTest,
   EXPECT_EQ(chip_text(), "");
 }
 
+TEST_F(ActorUiStateManagerCursorChipTest,
+       ActFailsBeforeActing_NextActWithoutLabelDoesNotShowStaleText) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+
+  // Act 1 completes normally.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 1 step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Act 1 step");
+  SetTaskState(task_id, ActorTask::State::kReflecting);
+  ASSERT_EQ(chip_text(), "");
+
+  // Act 2 sends step text, but its request fails before kActing.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 2 failed step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+
+  // Act 3 sends no step text and reaches kActing.
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  // The text of the failed act 2 must not show.
+  EXPECT_EQ(chip_text(), "");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest,
+       ActFailsBeforeActing_NextActWithNewLabelShowsNewText) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+
+  // Act 1 sends step text, but its request fails before kActing.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 1 failed step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+
+  // Act 2 sends new step text and reaches kActing.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 2 new step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "Act 2 new step");
+}
+
+TEST_F(ActorUiStateManagerCursorChipTest,
+       ActFailsBeforeActing_RetryWithSameLabelShowsLabel) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+
+  // Act 1 sends step text, but its request fails before kActing.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 1 step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+
+  // The client retries act 1 with the same step text. TaskStepProgressUpdated
+  // marks the text as unused again, so the retry shows it.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 1 step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "Act 1 step");
+}
+
+// ActorTask::Act() rejects an act request in kWaitingOnUser. The rejected
+// request must not drop the text of the act that waits for the user.
+TEST_F(ActorUiStateManagerCursorChipTest,
+       WaitingOnUser_RejectedActRequestKeepsText) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+
+  // Act 1 sends step text and starts acting.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 1 step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Act 1 step");
+
+  // Act 1 waits for the user, and a request without step text arrives.
+  SetTaskState(task_id, ActorTask::State::kWaitingOnUser);
+  ASSERT_EQ(chip_text(), "");
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+
+  // Act 1 resumes and shows its text again.
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "Act 1 step");
+}
+
+// A request that arrives while act 1 is acting must not drop the text of
+// act 1. Act 1 shows the text again when it returns to kActing after it waits
+// for the user.
+TEST_F(ActorUiStateManagerCursorChipTest, Acting_ExtraActRequestKeepsText) {
+  TaskId task_id = actor_keyed_service()->CreateTaskForTesting();
+  AddTabToTask(task_id);
+
+  // Act 1 sends step text and starts acting.
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStepProgressUpdated(task_id, "Act 1 step"));
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+  SetTaskState(task_id, ActorTask::State::kActing);
+  ASSERT_EQ(chip_text(), "Act 1 step");
+
+  // A request without step text arrives while act 1 is acting.
+  actor_ui_state_manager()->OnUiEvent(TaskActRequested(task_id));
+
+  // Act 1 waits for the user, then resumes and shows its text again.
+  SetTaskState(task_id, ActorTask::State::kWaitingOnUser);
+  SetTaskState(task_id, ActorTask::State::kActing);
+  EXPECT_EQ(chip_text(), "Act 1 step");
+}
+
 TEST_F(ActorUiStateManagerTest, CursorChip_FlagDisabled_DoesNotUpdateChip) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kGlicActorUiMagicCursorChip);

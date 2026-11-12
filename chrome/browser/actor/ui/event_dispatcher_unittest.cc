@@ -432,6 +432,15 @@ TEST_F(EventDispatcherTest, SyncActor_UpdateTaskStepProgress) {
       .task_id = TaskId(867), .step_progress = "Searching for shoes"});
 }
 
+TEST_F(EventDispatcherTest, SyncActor_ActRequested) {
+  EXPECT_CALL(*mock_state_manager_,
+              OnUiEvent(VariantWith<TaskActRequested>(
+                  Field(&TaskActRequested::task_id, TaskId(867)))))
+      .Times(1);
+  dispatcher_->OnActorTaskSyncChange(
+      UiEventDispatcher::ActRequested{.task_id = TaskId(867)});
+}
+
 TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {
   EXPECT_CALL(*mock_state_manager_,
               OnUiEvent(VariantWith<StartingToActOnTab>(_), _))

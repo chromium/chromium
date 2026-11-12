@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -395,6 +397,9 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
           },
           [](const TaskStepProgressUpdated&) {
             // Handled by UpdateCursorChip() on desktop.
+          },
+          [](const TaskActRequested&) {
+            // Handled by UpdateCursorChip() on desktop.
           }},
       event);
 #if !BUILDFLAG(IS_ANDROID)
@@ -601,6 +606,30 @@ void ActorUiStateManager::UpdateCursorChip(const SyncUiEvent& event) {
   std::visit(
       absl::Overload{
           [](const StartTask&) {},
+          [this](const TaskActRequested& e) {
+            using enum ActorTask::State;
+            // The client sends the step text right before the PerformActions
+            // call that uses it. The first act request after new text marks
+            // the text as used. A second request without new text drops the
+            // text, so a failed act cannot show its text on the next act.
+            // While an act is in progress (kActing or kWaitingOnUser), the
+            // text belongs to that act, so a request in these states leaves
+            // the text alone. The act then shows the text again when it
+            // returns from kWaitingOnUser to kActing, even if ActorTask::Act()
+            // rejected a request while the act waited.
+            const std::optional<ActorTask::State> state =
+                GetActorTaskState(e.task_id);
+            if (state == kActing || state == kWaitingOnUser) {
+              return;
+            }
+            auto it = step_progress_.find(e.task_id);
+            if (it == step_progress_.end()) {
+              return;
+            }
+            if (std::exchange(it->second.consumed, true)) {
+              step_progress_.erase(it);
+            }
+          },
           [this](const TaskStateChanged& e) {
             using enum ActorTask::State;
             // Keep the text while waiting on the user so it shows again on
@@ -608,14 +637,12 @@ void ActorUiStateManager::UpdateCursorChip(const SyncUiEvent& event) {
             // for an act right before its PerformActions call.
             // An interrupt with user control reaches the UI as
             // kPausedByActor, so it drops the text like a pause.
-            // TODO(b/573229718): Drop the text when an act fails before
-            // kActing. Otherwise the next act without new text shows it.
             if (e.state != kActing && e.state != kWaitingOnUser) {
               step_progress_.erase(e.task_id);
             }
             auto it = step_progress_.find(e.task_id);
             const bool show = e.state == kActing && it != step_progress_.end();
-            SetCursorChipForTask(e.task_id, show ? it->second : "");
+            SetCursorChipForTask(e.task_id, show ? it->second.text : "");
           },
           [this](const StopTask& e) {
             // ActorTask::Stop() removes every tab first, and
@@ -633,7 +660,8 @@ void ActorUiStateManager::UpdateCursorChip(const SyncUiEvent& event) {
             }
           },
           [this](const TaskStepProgressUpdated& e) {
-            step_progress_[e.task_id] = e.step_progress;
+            step_progress_[e.task_id] = {.text = e.step_progress,
+                                         .consumed = false};
             if (GetActorTaskState(e.task_id) == ActorTask::State::kActing) {
               SetCursorChipForTask(e.task_id, e.step_progress);
             }
