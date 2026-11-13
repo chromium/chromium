@@ -17,10 +17,14 @@
 #include "base/thread_annotations.h"
 #include "components/sync/protocol/agile_encryption_keys.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
+#include "components/sync/protocol/tab_context_container_access_token.pb.h"
+#include "components/sync_tab_context/container_id.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
+
+class GaiaId;
 
 namespace sync_tab_context {
 
@@ -56,7 +60,17 @@ class FakeEphemeralKeyServer {
       std::string_view serialized_access_token,
       const sync_pb::EncryptedData& encrypted_content) const;
 
+  // Decrypts `serialized_access_token` (which must have been encrypted with an
+  // ephemeral key previously issued by this server) and returns true iff its
+  // payload matches both `expected_gaia_id` and `expected_container_id`.
+  bool VerifyAssociatedContainer(
+      std::string_view serialized_access_token,
+      const GaiaId& expected_gaia_id,
+      const ContainerId& expected_container_id) const;
+
  private:
+  std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+  DecryptTokenPayload(std::string_view serialized_access_token) const;
   const GURL server_url_;
   std::atomic<std::optional<net::HttpStatusCode>> http_error_to_return_;
 

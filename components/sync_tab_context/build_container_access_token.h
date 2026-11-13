@@ -8,7 +8,10 @@
 #include <optional>
 #include <string>
 
+#include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
+
+class GaiaId;
 
 namespace syncer {
 class AgileSymmetricKeySet;
@@ -16,11 +19,14 @@ class AgileSymmetricKeySet;
 
 namespace sync_tab_context {
 
-// Builds a serialized `sync_pb::TabContextContainerAccessToken` by encrypting
-// `container_key_set` with `ephemeral_key_result.ephemeral_key`. Returns
-// `std::nullopt` if encryption fails.
+// Builds a serialized `sync_pb::TabContextContainerAccessToken` by encrypting a
+// `Payload` containing `container_key_set`, `gaia_id`, and `container_id` with
+// `ephemeral_key_result.ephemeral_key`. `gaia_id` must be non-empty and
+// `container_id` must be valid. Returns `std::nullopt` if encryption fails.
 std::optional<std::string> BuildContainerAccessToken(
     const syncer::AgileSymmetricKeySet& container_key_set,
+    const GaiaId& gaia_id,
+    const ContainerId& container_id,
     EphemeralKeyFetcher::Result ephemeral_key_result);
 
 }  // namespace sync_tab_context

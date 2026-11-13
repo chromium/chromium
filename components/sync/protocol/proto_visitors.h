@@ -1671,6 +1671,8 @@ VISIT_PROTO_FIELDS(const google::protobuf::Timestamp& proto) {
 VISIT_PROTO_FIELDS(
     const sync_pb::TabContextContainerAccessToken::Payload& proto) {
   VISIT(container_key);
+  VISIT(obfuscated_gaia_id);
+  VISIT(container_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::TabContextContainerAccessToken& proto) {

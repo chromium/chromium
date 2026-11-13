@@ -85,6 +85,7 @@ static_library("test_support") {
 
   deps = [
     "//components/sync/model/crypto",
+    "//google_apis",
     "//third_party/zlib/google:compression_utils",
   ]
 }
@@ -111,6 +112,8 @@ source_set("unit_tests") {
     "//components/sync/model",
     "//components/sync/protocol",
     "//components/sync/service",
+    "//google_apis",
+    "//google_apis:test_support",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",

@@ -21,13 +21,16 @@
 #include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync_tab_context/build_container_access_token.h"
 #include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
 #include "components/sync_tab_context/upload_outcome.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/backoff_entry.h"
 
 namespace sync_tab_context {
@@ -107,6 +110,7 @@ PendingEphemeralContainer::PendingEphemeralContainer(
       key_set_(CreateRandomKeySet()),
       backoff_entry_(&kBackoffPolicy) {
   CHECK(container_id_.value().is_valid());
+  CHECK(!item_bridge_->change_processor()->TrackedGaiaId().empty());
   CHECK(key_set_);
   CHECK_GT(key_set_->size(), 0u);
 }
@@ -162,9 +166,16 @@ void PendingEphemeralContainer::StartFetchAttempt() {
 void PendingEphemeralContainer::OnEphemeralKeyFetched(
     std::optional<EphemeralKeyFetcher::Result> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const GaiaId gaia_id = item_bridge_->change_processor()->TrackedGaiaId();
+  if (gaia_id.empty()) {
+    FailAndNotifyAll();
+    return;
+  }
+
   std::optional<std::string> access_token;
   if (result.has_value() && result->ephemeral_key) {
-    access_token = BuildContainerAccessToken(*key_set_, std::move(*result));
+    access_token = BuildContainerAccessToken(*key_set_, gaia_id, container_id_,
+                                             std::move(*result));
   }
 
   if (!access_token.has_value()) {

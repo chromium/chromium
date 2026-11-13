@@ -25,6 +25,7 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_tab_context/container_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace sync_tab_context {
 
@@ -175,6 +176,11 @@ TabContextContainerSyncBridge::GetStoredPreMintedAccessTokenForContainer(
 bool TabContextContainerSyncBridge::IsTrackingMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return change_processor()->IsTrackingMetadata();
+}
+
+GaiaId TabContextContainerSyncBridge::TrackedGaiaId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return change_processor()->TrackedGaiaId();
 }
 
 std::unique_ptr<syncer::MetadataChangeList>

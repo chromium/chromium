@@ -4,6 +4,11 @@
 
 #include "components/sync_tab_context/fake_ephemeral_key_server.h"
 
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -12,10 +17,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
 #include "components/sync/protocol/tab_context_container_access_token.pb.h"
+#include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/proto/ephemeral_key_service.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_request_headers.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -109,6 +117,62 @@ void FakeEphemeralKeyServer::SetHttpErrorToReturn(
 std::optional<std::string> FakeEphemeralKeyServer::DecryptContent(
     std::string_view serialized_access_token,
     const sync_pb::EncryptedData& encrypted_content) const {
+  const std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+      payload = DecryptTokenPayload(serialized_access_token);
+  if (!payload.has_value()) {
+    return std::nullopt;
+  }
+
+  const std::unique_ptr<syncer::AgileSymmetricKeySet> container_key_set =
+      syncer::AgileSymmetricKeySet::FromProto(payload->container_key());
+  if (!container_key_set) {
+    return std::nullopt;
+  }
+
+  const std::optional<std::vector<uint8_t>> decrypted_content_bytes =
+      container_key_set->Decrypt(encrypted_content);
+  if (!decrypted_content_bytes.has_value()) {
+    return std::nullopt;
+  }
+
+  sync_pb::TabContextItemContent item_content;
+  if (!item_content.ParseFromArray(decrypted_content_bytes->data(),
+                                   decrypted_content_bytes->size())) {
+    return std::nullopt;
+  }
+
+  switch (item_content.content_case()) {
+    case sync_pb::TabContextItemContent::kRawData:
+      return item_content.raw_data();
+    case sync_pb::TabContextItemContent::kGzipCompressedData: {
+      std::string uncompressed_data;
+      if (!compression::GzipUncompress(item_content.gzip_compressed_data(),
+                                       &uncompressed_data)) {
+        return std::nullopt;
+      }
+      return uncompressed_data;
+    }
+    case sync_pb::TabContextItemContent::CONTENT_NOT_SET:
+      return std::nullopt;
+  }
+  return std::nullopt;
+}
+
+bool FakeEphemeralKeyServer::VerifyAssociatedContainer(
+    std::string_view serialized_access_token,
+    const GaiaId& expected_gaia_id,
+    const ContainerId& expected_container_id) const {
+  const std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+      payload = DecryptTokenPayload(serialized_access_token);
+  return payload.has_value() &&
+         GaiaId(payload->obfuscated_gaia_id()) == expected_gaia_id &&
+         payload->container_id() ==
+             expected_container_id.value().AsLowercaseString();
+}
+
+std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+FakeEphemeralKeyServer::DecryptTokenPayload(
+    std::string_view serialized_access_token) const {
   sync_pb::TabContextContainerAccessToken token_proto;
   if (!token_proto.ParseFromString(serialized_access_token)) {
     return std::nullopt;
@@ -145,40 +209,7 @@ std::optional<std::string> FakeEphemeralKeyServer::DecryptContent(
                               decrypted_payload_bytes->size())) {
     return std::nullopt;
   }
-
-  const std::unique_ptr<syncer::AgileSymmetricKeySet> container_key_set =
-      syncer::AgileSymmetricKeySet::FromProto(payload.container_key());
-  if (!container_key_set) {
-    return std::nullopt;
-  }
-
-  const std::optional<std::vector<uint8_t>> decrypted_content_bytes =
-      container_key_set->Decrypt(encrypted_content);
-  if (!decrypted_content_bytes.has_value()) {
-    return std::nullopt;
-  }
-
-  sync_pb::TabContextItemContent item_content;
-  if (!item_content.ParseFromArray(decrypted_content_bytes->data(),
-                                   decrypted_content_bytes->size())) {
-    return std::nullopt;
-  }
-
-  switch (item_content.content_case()) {
-    case sync_pb::TabContextItemContent::kRawData:
-      return item_content.raw_data();
-    case sync_pb::TabContextItemContent::kGzipCompressedData: {
-      std::string uncompressed_data;
-      if (!compression::GzipUncompress(item_content.gzip_compressed_data(),
-                                       &uncompressed_data)) {
-        return std::nullopt;
-      }
-      return uncompressed_data;
-    }
-    case sync_pb::TabContextItemContent::CONTENT_NOT_SET:
-      return std::nullopt;
-  }
-  return std::nullopt;
+  return payload;
 }
 
 }  // namespace sync_tab_context

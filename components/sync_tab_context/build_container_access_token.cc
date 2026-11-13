@@ -12,9 +12,12 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/tab_context_container_access_token.pb.h"
+#include "components/sync_tab_context/container_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace sync_tab_context {
 
@@ -35,11 +38,17 @@ google::protobuf::Timestamp TimeToGoogleTimestampProto(base::Time time) {
 
 std::optional<std::string> BuildContainerAccessToken(
     const syncer::AgileSymmetricKeySet& container_key_set,
+    const GaiaId& gaia_id,
+    const ContainerId& container_id,
     EphemeralKeyFetcher::Result ephemeral_key_result) {
+  CHECK(!gaia_id.empty());
+  CHECK(container_id.value().is_valid());
   CHECK(ephemeral_key_result.ephemeral_key);
 
   sync_pb::TabContextContainerAccessToken::Payload payload;
   *payload.mutable_container_key() = container_key_set.ToProto();
+  payload.set_obfuscated_gaia_id(gaia_id.ToString());
+  payload.set_container_id(container_id.value().AsLowercaseString());
 
   const std::string payload_bytes = payload.SerializeAsString();
   const std::optional<sync_pb::EncryptedData> encrypted_payload =

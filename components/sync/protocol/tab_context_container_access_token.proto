@@ -20,6 +20,9 @@ message TabContextContainerAccessToken {
   // using the ephemeral key identified by `name`.
   message Payload {
     optional AgileSymmetricKeySet container_key = 1;
+    optional string obfuscated_gaia_id = 2;
+    // Lowercase string representation of a base::Uuid.
+    optional string container_id = 3;
   }
 
   optional string name = 1;

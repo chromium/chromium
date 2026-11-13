@@ -27,6 +27,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/uuid.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -44,9 +45,12 @@
 #include "components/sync/protocol/tab_context_container_access_token.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_worker.h"
+#include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_sync_client.h"
 #include "components/sync_tab_context/upload_outcome.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_id_literal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -55,6 +59,8 @@ namespace sync_tab_context {
 namespace {
 
 using ::testing::NotNull;
+
+constexpr GaiaIdLiteral kTestGaiaId("test_obfuscated_gaia_id");
 
 // Fake implementation of `EphemeralKeyFetcher` for testing. Generates a random
 // `AgileSymmetricKeySet` and an auto-incremented server token ID for each
@@ -88,40 +94,53 @@ class FakeEphemeralKeyFetcher : public EphemeralKeyFetcher {
     }
   }
 
+  // Decrypts the `Payload` from `serialized_access_token` using the previously
+  // issued ephemeral key set corresponding to the token's name. Returns
+  // `std::nullopt` on failure.
+  std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+  DecryptPayload(std::string_view serialized_access_token) const {
+    sync_pb::TabContextContainerAccessToken token_proto;
+    if (!token_proto.ParseFromString(serialized_access_token)) {
+      return std::nullopt;
+    }
+    const sync_pb::AgileSymmetricKeySet* issued_key_set =
+        base::FindOrNull(issued_key_sets_, token_proto.name());
+    if (!issued_key_set) {
+      return std::nullopt;
+    }
+    std::unique_ptr<syncer::AgileSymmetricKeySet> ephemeral_key_set =
+        syncer::AgileSymmetricKeySet::FromProto(*issued_key_set);
+    if (!ephemeral_key_set) {
+      return std::nullopt;
+    }
+    sync_pb::EncryptedData encrypted_payload;
+    if (!encrypted_payload.ParseFromString(token_proto.encrypted_payload())) {
+      return std::nullopt;
+    }
+    std::optional<std::vector<uint8_t>> decrypted_payload_bytes =
+        ephemeral_key_set->Decrypt(encrypted_payload);
+    if (!decrypted_payload_bytes.has_value()) {
+      return std::nullopt;
+    }
+    sync_pb::TabContextContainerAccessToken::Payload payload;
+    if (!payload.ParseFromArray(decrypted_payload_bytes->data(),
+                                decrypted_payload_bytes->size())) {
+      return std::nullopt;
+    }
+    return payload;
+  }
+
   // Decrypts the container key set from `serialized_access_token` using the
   // previously issued ephemeral key set corresponding to the token's name.
   // Returns nullptr on failure.
   std::unique_ptr<syncer::AgileSymmetricKeySet> DecryptContainerKeySet(
       std::string_view serialized_access_token) const {
-    sync_pb::TabContextContainerAccessToken token_proto;
-    if (!token_proto.ParseFromString(serialized_access_token)) {
+    const std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+        payload = DecryptPayload(serialized_access_token);
+    if (!payload.has_value()) {
       return nullptr;
     }
-    const sync_pb::AgileSymmetricKeySet* issued_key_set =
-        base::FindOrNull(issued_key_sets_, token_proto.name());
-    if (!issued_key_set) {
-      return nullptr;
-    }
-    std::unique_ptr<syncer::AgileSymmetricKeySet> ephemeral_key_set =
-        syncer::AgileSymmetricKeySet::FromProto(*issued_key_set);
-    if (!ephemeral_key_set) {
-      return nullptr;
-    }
-    sync_pb::EncryptedData encrypted_payload;
-    if (!encrypted_payload.ParseFromString(token_proto.encrypted_payload())) {
-      return nullptr;
-    }
-    std::optional<std::vector<uint8_t>> decrypted_payload_bytes =
-        ephemeral_key_set->Decrypt(encrypted_payload);
-    if (!decrypted_payload_bytes.has_value()) {
-      return nullptr;
-    }
-    sync_pb::TabContextContainerAccessToken::Payload payload;
-    if (!payload.ParseFromArray(decrypted_payload_bytes->data(),
-                                decrypted_payload_bytes->size())) {
-      return nullptr;
-    }
-    return syncer::AgileSymmetricKeySet::FromProto(payload.container_key());
+    return syncer::AgileSymmetricKeySet::FromProto(payload->container_key());
   }
 
   // Simulates server-side decryption: extracts the container key set from
@@ -190,6 +209,8 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
     data_type_state.set_initial_sync_state(
         sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     data_type_state.set_cache_guid("test_cache_guid");
+    data_type_state.set_authenticated_obfuscated_gaia_id(
+        kTestGaiaId.ToString());
     data_type_state.mutable_progress_marker()->set_data_type_id(
         syncer::GetSpecificsFieldNumberFromDataType(
             syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER));
@@ -224,6 +245,7 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
     syncer::DataTypeActivationRequest request;
     request.error_handler = base::DoNothing();
     request.cache_guid = "test_cache_guid";
+    request.authenticated_gaia_id = kTestGaiaId;
 
     service_->GetSyncControllerDelegateForContainer()->OnSyncStarting(
         request, container_future_.GetCallback());
@@ -327,7 +349,13 @@ TEST_F(TabContextSyncServiceImplTest,
   EXPECT_TRUE(token_proto.has_expire_time());
   EXPECT_EQ(token_proto.expire_time().seconds(), 1234567890);
 
-  // Verify container key set can be decrypted from the access token.
+  // Verify payload fields and container key set can be decrypted from the
+  // access token.
+  const std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+      payload = fake_fetcher_->DecryptPayload(*token_string);
+  ASSERT_TRUE(payload.has_value());
+  EXPECT_EQ(payload->obfuscated_gaia_id(), kTestGaiaId.ToString());
+  EXPECT_EQ(payload->container_id(), container_id->value().AsLowercaseString());
   EXPECT_THAT(fake_fetcher_->DecryptContainerKeySet(*token_string), NotNull());
 }
 
@@ -473,6 +501,11 @@ TEST_F(TabContextSyncServiceImplTest,
       GetContainerAccessToken(*container_id);
   ASSERT_TRUE(token_string.has_value());
   EXPECT_EQ(*token_string, container_specifics.container_access_token());
+  const std::optional<sync_pb::TabContextContainerAccessToken::Payload>
+      payload = fake_fetcher_->DecryptPayload(*token_string);
+  ASSERT_TRUE(payload.has_value());
+  EXPECT_EQ(payload->obfuscated_gaia_id(), kTestGaiaId.ToString());
+  EXPECT_EQ(payload->container_id(), container_id->value().AsLowercaseString());
 
   // `UploadPageContext()` encrypts with the locally stored key set and can be
   // decrypted using the container access token.

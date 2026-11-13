@@ -28,6 +28,7 @@
 #include "base/uuid.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
 #include "components/sync_tab_context/build_container_access_token.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
@@ -36,6 +37,7 @@
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
 #include "components/sync_tab_context/tab_context_sync_client.h"
 #include "components/sync_tab_context/upload_outcome.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace sync_tab_context {
@@ -148,7 +150,8 @@ std::optional<ContainerId> TabContextSyncServiceImpl::CreateContainer() {
       syncer::PassphraseType::kTrustedVaultPassphrase) {
     return std::nullopt;
   }
-  if (!container_bridge_->IsTrackingMetadata()) {
+  if (!container_bridge_->IsTrackingMetadata() ||
+      container_bridge_->TrackedGaiaId().empty()) {
     return std::nullopt;
   }
 
@@ -172,7 +175,9 @@ TabContextSyncServiceImpl::CreateContainerPossiblyUnencryptedEphemeral() {
   if (*passphrase_type == syncer::PassphraseType::kTrustedVaultPassphrase) {
     return CreateContainer();
   }
-  if (!container_bridge_->IsTrackingMetadata()) {
+  if (!container_bridge_->IsTrackingMetadata() ||
+      container_bridge_->TrackedGaiaId().empty() ||
+      item_bridge_->change_processor()->TrackedGaiaId().empty()) {
     return std::nullopt;
   }
 
@@ -327,8 +332,14 @@ void TabContextSyncServiceImpl::OnEphemeralKeyFetchedForAccessToken(
     return;
   }
 
-  std::move(cb).Run(
-      BuildContainerAccessToken(*container_key_set, std::move(*result)));
+  const GaiaId gaia_id = container_bridge_->TrackedGaiaId();
+  if (gaia_id.empty()) {
+    std::move(cb).Run(std::nullopt);
+    return;
+  }
+
+  std::move(cb).Run(BuildContainerAccessToken(
+      *container_key_set, gaia_id, container_id, std::move(*result)));
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>

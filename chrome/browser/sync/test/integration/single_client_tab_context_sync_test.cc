@@ -44,6 +44,7 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -249,6 +250,15 @@ IN_PROC_BROWSER_TEST_P(SingleClientTabContextSyncTest,
   EXPECT_EQ(GetEphemeralKeyServer()->DecryptContent(
                 *access_token, server_item_specifics.encrypted_content()),
             kPageContext);
+  const GaiaId expected_gaia_id =
+      GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount);
+  EXPECT_TRUE(GetEphemeralKeyServer()->VerifyAssociatedContainer(
+      *access_token, expected_gaia_id, *container_id));
+  EXPECT_FALSE(GetEphemeralKeyServer()->VerifyAssociatedContainer(
+      *access_token, GaiaId("other_gaia_id"), *container_id));
+  EXPECT_FALSE(GetEphemeralKeyServer()->VerifyAssociatedContainer(
+      *access_token, expected_gaia_id,
+      sync_tab_context::ContainerId(base::Uuid::GenerateRandomV4())));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientTabContextSyncTest,
@@ -286,6 +296,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientTabContextSyncTest,
   EXPECT_EQ(GetEphemeralKeyServer()->DecryptContent(
                 *access_token, server_item_specifics.encrypted_content()),
             kPageContext);
+  EXPECT_TRUE(GetEphemeralKeyServer()->VerifyAssociatedContainer(
+      *access_token,
+      GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount),
+      remote_container_id));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientTabContextSyncTest,
@@ -343,6 +357,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetEphemeralKeyServer()->DecryptContent(
                 *access_token, server_item_specifics.encrypted_content()),
             kPageContext);
+  EXPECT_TRUE(GetEphemeralKeyServer()->VerifyAssociatedContainer(
+      *access_token,
+      GetClient(0)->GetGaiaIdForAccount(SyncTestAccount::kDefaultAccount),
+      *container_id));
 }
 
 IN_PROC_BROWSER_TEST_P(

@@ -20,6 +20,8 @@
 #include "components/sync_tab_context/container_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
+class GaiaId;
+
 namespace syncer {
 class AgileSymmetricKeySet;
 class DataBatch;
@@ -62,6 +64,10 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
   // Returns true if the change processor is tracking metadata (i.e., local data
   // has loaded and sync is ready).
   bool IsTrackingMetadata() const;
+
+  // Returns the Gaia ID for which metadata is being tracked, or empty if not
+  // tracking metadata.
+  GaiaId TrackedGaiaId() const;
 
   // syncer::DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()

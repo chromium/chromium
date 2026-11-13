@@ -12,14 +12,25 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/tab_context_container_access_token.pb.h"
+#include "components/sync_tab_context/container_id.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_id_literal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_tab_context {
 namespace {
+
+constexpr GaiaIdLiteral kTestGaiaId("test_obfuscated_gaia_id");
+constexpr char kTestContainerUuid[] = "12345678-1234-4123-8123-123456789abc";
+
+ContainerId CreateTestContainerId() {
+  return ContainerId(base::Uuid::ParseLowercase(kTestContainerUuid));
+}
 
 std::unique_ptr<syncer::AgileSymmetricKeySet> CreateTestKeySet() {
   std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
@@ -28,8 +39,7 @@ std::unique_ptr<syncer::AgileSymmetricKeySet> CreateTestKeySet() {
   return key_set;
 }
 
-TEST(BuildContainerAccessTokenTest,
-     ShouldBuildAccessTokenAndEncryptContainerKeySet) {
+TEST(BuildContainerAccessTokenTest, ShouldBuildAccessTokenAndEncryptPayload) {
   std::unique_ptr<syncer::AgileSymmetricKeySet> container_key_set =
       CreateTestKeySet();
   std::unique_ptr<syncer::AgileSymmetricKeySet> ephemeral_key =
@@ -47,7 +57,8 @@ TEST(BuildContainerAccessTokenTest,
   ephemeral_key_result.expire_time = kExpireTime;
 
   const std::optional<std::string> serialized_token = BuildContainerAccessToken(
-      *container_key_set, std::move(ephemeral_key_result));
+      *container_key_set, kTestGaiaId, CreateTestContainerId(),
+      std::move(ephemeral_key_result));
   ASSERT_TRUE(serialized_token.has_value());
 
   sync_pb::TabContextContainerAccessToken token_proto;
@@ -68,6 +79,8 @@ TEST(BuildContainerAccessTokenTest,
                                      decrypted_payload_bytes->size()));
   EXPECT_EQ(payload.container_key().SerializeAsString(),
             container_key_set->ToProto().SerializeAsString());
+  EXPECT_EQ(payload.obfuscated_gaia_id(), kTestGaiaId.ToString());
+  EXPECT_EQ(payload.container_id(), kTestContainerUuid);
 }
 
 TEST(BuildContainerAccessTokenTest, ShouldOmitExpireTimeWhenNull) {
@@ -82,7 +95,8 @@ TEST(BuildContainerAccessTokenTest, ShouldOmitExpireTimeWhenNull) {
   ephemeral_key_result.expire_time = base::Time();
 
   const std::optional<std::string> serialized_token = BuildContainerAccessToken(
-      *container_key_set, std::move(ephemeral_key_result));
+      *container_key_set, kTestGaiaId, CreateTestContainerId(),
+      std::move(ephemeral_key_result));
   ASSERT_TRUE(serialized_token.has_value());
 
   sync_pb::TabContextContainerAccessToken token_proto;
@@ -100,7 +114,8 @@ TEST(BuildContainerAccessTokenTest, ShouldReturnNulloptWhenEncryptionFails) {
   ephemeral_key_result.ephemeral_key =
       syncer::AgileSymmetricKeySet::CreateEmpty();
 
-  EXPECT_EQ(BuildContainerAccessToken(*container_key_set,
+  EXPECT_EQ(BuildContainerAccessToken(*container_key_set, kTestGaiaId,
+                                      CreateTestContainerId(),
                                       std::move(ephemeral_key_result)),
             std::nullopt);
 }

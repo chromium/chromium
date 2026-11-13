@@ -4,6 +4,7 @@
 
 #include "components/sync_tab_context/pending_ephemeral_container.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <queue>
@@ -29,6 +30,8 @@
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
 #include "components/sync_tab_context/upload_outcome.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_id_literal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,6 +46,8 @@ using ::testing::Not;
 using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::Return;
+
+constexpr GaiaIdLiteral kTestGaiaId("test_obfuscated_gaia_id");
 
 class ManualEphemeralKeyFetcher : public EphemeralKeyFetcher {
  public:
@@ -87,6 +92,8 @@ class PendingEphemeralContainerTest : public ::testing::Test {
   PendingEphemeralContainerTest() {
     ON_CALL(mock_item_processor_, IsTrackingMetadata)
         .WillByDefault(Return(true));
+    ON_CALL(mock_item_processor_, TrackedGaiaId)
+        .WillByDefault(Return(kTestGaiaId));
     item_bridge_ = std::make_unique<TabContextItemSyncBridge>(
         mock_item_processor_.CreateForwardingProcessor());
   }
@@ -282,6 +289,35 @@ TEST_F(PendingEphemeralContainerTest,
   // Fail the 5th (final) attempt.
   ASSERT_EQ(fetcher_.NumPendingFetches(), 1u);
   fetcher_.RespondWithFailure();
+}
+
+TEST_F(PendingEphemeralContainerTest,
+       ShouldFailImmediatelyWhenTrackedGaiaIdBecomesEmptyDuringFetch) {
+  const ContainerId container_id(base::Uuid::GenerateRandomV4());
+  base::MockCallback<PendingEphemeralContainer::CompletionCallback>
+      completion_callback;
+  base::MockCallback<PendingEphemeralContainer::UploadCallback> upload_callback;
+  base::MockCallback<PendingEphemeralContainer::AccessTokenCallback>
+      token_callback;
+
+  auto pending_container = std::make_unique<PendingEphemeralContainer>(
+      container_id, &fetcher_, item_bridge_.get());
+  pending_container->Start(completion_callback.Get());
+  pending_container->QueueUploadItem("entry_1", sync_pb::EncryptedData(),
+                                     upload_callback.Get());
+  pending_container->QueueGetContainerAccessToken(token_callback.Get());
+
+  ON_CALL(mock_item_processor_, TrackedGaiaId).WillByDefault(Return(GaiaId()));
+
+  {
+    InSequence s;
+    EXPECT_CALL(completion_callback, Run(Eq(std::nullopt)));
+    EXPECT_CALL(upload_callback, Run(UploadOutcome::kFailed));
+    EXPECT_CALL(token_callback, Run(Eq(std::nullopt)));
+  }
+
+  ASSERT_EQ(fetcher_.NumPendingFetches(), 1u);
+  fetcher_.RespondWithSuccess("ephemeral_key_1");
 }
 
 TEST_F(PendingEphemeralContainerTest,
