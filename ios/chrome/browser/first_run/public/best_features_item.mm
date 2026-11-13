@@ -40,6 +40,9 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
 }
 
 // Returns the color provider for the Price Tracking animation.
+// TODO(crbug.com/585553993): The callers pass an alpha byte in
+// `gradient_grouped_primary_background_color`, which `UIColorFromRGB` ignores.
+// Pass the alpha explicitly.
 NSDictionary<NSString*, UIColor*>* PriceTrackingColorProvider(
     int gradient_grouped_primary_background_color) {
   return @{

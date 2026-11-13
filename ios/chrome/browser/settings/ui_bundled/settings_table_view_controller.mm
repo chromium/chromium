@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/catalogs/ui/button_catalog_view_controller.h"
+#import "ios/chrome/browser/catalogs/ui/lottie_catalog_view_controller.h"
 #import "ios/chrome/browser/catalogs/ui/table_cell_catalog_view_controller.h"
 #import "ios/chrome/browser/catalogs/ui/view_catalog_view_controller.h"
 #import "ios/chrome/browser/catalogs/ui/view_controller_catalog_view_controller.h"
@@ -725,6 +726,8 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
     [model addItem:[self viewCatalogDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+    [model addItem:[self lottieCatalogDetailItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
   }
 
   if (experimental_flags::ShouldShowBackendPromoDebugTools()) {
@@ -1337,6 +1340,15 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
           accessibilityIdentifier:nil];
 }
 
+- (TableViewDetailIconItem*)lottieCatalogDetailItem {
+  return [self detailItemWithType:SettingsItemTypeLottieCatalog
+                             text:@"Lottie Catalog"
+                       detailText:nil
+                           symbol:SettingsRootSymbol(SymbolCart)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:nil];
+}
+
 #pragma mark Item Constructors
 
 - (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
@@ -1593,6 +1605,11 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
       [self.navigationController
           pushViewController:[[ViewCatalogViewController alloc]
                                  initWithBrowser:_browser]
+                    animated:YES];
+      break;
+    case SettingsItemTypeLottieCatalog:
+      [self.navigationController
+          pushViewController:[[LottieCatalogViewController alloc] init]
                     animated:YES];
       break;
     case SettingsItemTypeBWGSettings:

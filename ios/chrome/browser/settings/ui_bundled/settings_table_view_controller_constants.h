@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeButtonCatalog,
   SettingsItemTypeViewControllerCatalog,
   SettingsItemTypeViewCatalog,
+  SettingsItemTypeLottieCatalog,
   SettingsItemTypeArticlesForYou,
   SettingsItemTypeManagedArticlesForYou,
   SettingsItemTypeSafetyCheck,
