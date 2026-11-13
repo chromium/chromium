@@ -3226,6 +3226,144 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(mediator.currentUIInputState.sharedTabs.count, 1U);
 }
 
+// Tests that when a background attached tab commits a cross-document
+// navigation to a new URL in Cobrowse mode, its stale page is removed and
+// notifies `OnTabClosedOrNavigated` without auto-attaching its new URL, while
+// the active tab stays attached.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       BackgroundAttachedTabNavigationRemovesStaleItemWithoutAutoAttaching) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session));
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::FakeWebState* active_tab =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_tab);
+  const GURL tab_a_url("https://www.example.com/a1");
+  active_tab->SetVisibleURL(tab_a_url);
+  active_tab->SetTitle(u"Tab A1");
+  active_tab->SetContentIsHTML(true);
+  active_tab->SetContentsMimeType("text/html");
+
+  web::FakeWebState* background_tab = InsertBackgroundWebState();
+  ASSERT_TRUE(background_tab);
+  web::WebStateID background_id = background_tab->GetUniqueIdentifier();
+  const GURL tab_b1_url("https://www.example.com/b1");
+  const GURL tab_b2_url("https://www.example.com/b2");
+  background_tab->SetVisibleURL(tab_b1_url);
+  background_tab->SetTitle(u"Tab B1");
+  background_tab->SetContentIsHTML(true);
+  background_tab->SetContentsMimeType("text/html");
+
+  // Attach active Tab A (`A1`) and background Tab B (`B1`).
+  [mediator createInputItemForWebState:active_tab
+                                source:ComposeboxInputItemSource::kCurrentTab];
+  base::UnguessableToken active_server_token = base::UnguessableToken::Create();
+  consumer.items[0].serverToken = active_server_token;
+  consumer.items[0].isAutoAdded = NO;
+  [mediator setState:ComposeboxInputItemState::kLoaded
+              onItem:consumer.items[0]];
+
+  [mediator createInputItemForWebState:background_tab
+                                source:ComposeboxInputItemSource::kTabPicker];
+  consumer.items[1].serverToken = base::UnguessableToken::Create();
+  consumer.items[1].isAutoAdded = NO;
+  [mediator setState:ComposeboxInputItemState::kLoaded
+              onItem:consumer.items[1]];
+
+  [mediator setOmniboxFocused:YES];
+  ASSERT_EQ(consumer.items.count, 2U);
+  ASSERT_EQ(mediator.currentUIInputState.sharedTabs.count, 2U);
+
+  EXPECT_CALL(*raw_mock_session,
+              OnTabClosedOrNavigated(background_id.ToSessionID(),
+                                     std::optional<GURL>(tab_b2_url),
+                                     std::optional<std::string>("Tab B2")))
+      .Times(1);
+  EXPECT_CALL(*raw_mock_session, DeleteFile(testing::_)).Times(0);
+
+  // Background Tab B commits a cross-document navigation to `B2`.
+  background_tab->SetVisibleURL(tab_b2_url);
+  background_tab->SetTitle(u"Tab B2");
+  web::FakeNavigationContext nav_context;
+  nav_context.SetHasCommitted(true);
+  nav_context.SetIsSameDocument(false);
+  background_tab->OnNavigationFinished(&nav_context);
+  background_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  // `B1` is removed, `B2` is not auto-attached, and `A1` remains.
+  ASSERT_EQ(consumer.items.count, 1U);
+  EXPECT_EQ(consumer.items[0].tabURL, tab_a_url);
+  EXPECT_EQ(consumer.items[0].serverToken, active_server_token);
+  ASSERT_EQ(mediator.currentUIInputState.sharedTabs.count, 1U);
+  EXPECT_EQ(mediator.currentUIInputState.sharedTabs[0].URL, tab_a_url);
+}
+
+// Tests that an unrelated background tab finishing page load does not churn the
+// active tab's auto-added item while the omnibox is focused.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       BackgroundTabFinishLoadingDoesNotChurnActiveAutoAddedTab) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  StubPageContextExtraction();
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session));
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::FakeWebState* active_tab =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_tab);
+  PrepareForAutoAttachment(active_tab);
+
+  web::FakeWebState* background_tab = InsertBackgroundWebState();
+  ASSERT_TRUE(background_tab);
+  PrepareForAutoAttachment(background_tab);
+
+  [mediator setOmniboxFocused:YES];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ASSERT_TRUE(consumer.items[0].isAutoAdded);
+  base::UnguessableToken active_item_identifier = consumer.items[0].identifier;
+
+  // Unrelated background tab finishes loading; active tab's auto-added item
+  // must not be removed and re-created with a new identifier.
+  background_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  ASSERT_EQ(consumer.items.count, 1U);
+  EXPECT_TRUE(consumer.items[0].isAutoAdded);
+  EXPECT_EQ(consumer.items[0].identifier, active_item_identifier);
+}
+
 // Tests that `didCreateSearchURL:` in AIM mode with the active tab attached
 // transfers the `ContextualSearchSessionHandle` and attached tab items into
 // `CobrowseBrowserAgent`'s `CobrowseContext`.
