@@ -11,6 +11,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "content/browser/preloading/prefetch/mock_prefetch_service_delegate.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -221,9 +222,10 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresIfExempt) {
                                BrowsingContextGroupSwapType::kProactiveSwap));
 }
 
-#ifndef NDEBUG
-// TODO(http://crbug.com/404944178): This test is flaky on debug builds.
+// TODO(http://crbug.com/404944178): This test is flaky on debug builds and on
+// Fuchsia.
 // https://ci.chromium.org/ui/test/chromium/ninja%3A%2F%2Fcontent%2Ftest%3Acontent_browsertests%2FContaminationDelayBrowserTest.IgnoresIfExempt_BrowserInitiated
+#if BUILDFLAG(IS_FUCHSIA) || !defined(NDEBUG)
 #define MAYBE_IgnoresIfExempt_BrowserInitiated \
   DISABLED_IgnoresIfExempt_BrowserInitiated
 #else
