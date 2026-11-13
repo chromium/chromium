@@ -119,7 +119,7 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
   virtual void DoShowBubble() = 0;
 
   // Updates page action visibility.
-  virtual void UpdatePageActionIcon();
+  void UpdatePageActionIcon();
 
   // Subclasses can override this method to provide custom page action
   // visibility logic.

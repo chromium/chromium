@@ -14,12 +14,9 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/promo_code_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
@@ -29,12 +26,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
-#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/page_action/page_action_controller.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
@@ -233,29 +225,6 @@ void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
   UpdatePageActionIcon();
   HideBubble(/*initiated_by_bubble_manager=*/false);
   bubble_shown_timestamp_ = std::nullopt;
-}
-
-// TODO(crbug.com/546252995, crbug.com/582209796): Remove this override.
-void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
-  // Page action icons do not exist for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  AutofillBubbleControllerBase::UpdatePageActionIcon();
-
-  if (web_contents()->IsBeingDestroyed()) {
-    return;
-  }
-  // The tab has no browser window while it is being detached, e.g. when it is
-  // closed.
-  BrowserWindowInterface* const browser =
-      tab_interface_->GetBrowserWindowInterface();
-  if (!browser) {
-    return;
-  }
-  actions::ActionItem* const action = actions::ActionManager::Get().FindAction(
-      kActionOffersAndRewardsForPage,
-      BrowserActions::From(browser)->root_action_item());
-  action->SetEnabled(ShouldShowPageAction());
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl);

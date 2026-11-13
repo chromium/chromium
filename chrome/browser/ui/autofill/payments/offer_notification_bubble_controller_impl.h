@@ -82,8 +82,6 @@ class OfferNotificationBubbleControllerImpl
   // AutofillBubbleControllerBase:
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DoShowBubble() override;
-  // TODO(crbug.com/546252995, crbug.com/582209796): Remove this override.
-  void UpdatePageActionIcon() override;
 #if !BUILDFLAG(IS_ANDROID)
   bool ShouldShowPageAction() override;
 #endif  //! BUILDFLAG(IS_ANDROID)

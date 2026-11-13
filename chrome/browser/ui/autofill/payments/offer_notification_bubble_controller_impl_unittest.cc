@@ -32,6 +32,8 @@ namespace autofill {
 
 namespace {
 
+using ::testing::Return;
+
 class TestOfferNotificationBubbleControllerImpl
     : public OfferNotificationBubbleControllerImpl {
  public:
@@ -45,8 +47,6 @@ class TestOfferNotificationBubbleControllerImpl
   explicit TestOfferNotificationBubbleControllerImpl(
       content::WebContents* web_contents)
       : OfferNotificationBubbleControllerImpl(web_contents) {}
-
-  void UpdatePageActionIcon() override {}
 
  private:
   // Overrides to bypass the IsWebContentsActive check.
@@ -239,33 +239,14 @@ TEST_F(OfferNotificationBubbleControllerImplTest, BubbleClosed_LogsResult) {
                                     3);
 }
 
-namespace {
-
-// Unlike `TestOfferNotificationBubbleControllerImpl`, keeps the real
-// `UpdatePageActionIcon()`.
-class OfferNotificationBubbleControllerImplWithPageActionIcon
-    : public OfferNotificationBubbleControllerImpl {
- public:
-  explicit OfferNotificationBubbleControllerImplWithPageActionIcon(
-      content::WebContents* web_contents)
-      : OfferNotificationBubbleControllerImpl(web_contents) {}
-};
-
-}  // namespace
-
 // Tests that updating the page action icon does not crash while the tab has no
 // browser window, which is the case while it is being detached on close.
 TEST_F(OfferNotificationBubbleControllerImplTest,
        UpdatePageActionIcon_NoBrowserWindow_DoesNotCrash) {
-  web_contents()->SetUserData(
-      OfferNotificationBubbleControllerImpl::UserDataKey(),
-      std::make_unique<OfferNotificationBubbleControllerImplWithPageActionIcon>(
-          web_contents()));
   ON_CALL(mock_tab(), GetBrowserWindowInterface())
-      .WillByDefault(testing::Return(nullptr));
+      .WillByDefault(Return(nullptr));
 
-  OfferNotificationBubbleControllerImpl::FromWebContents(web_contents())
-      ->DismissNotification();
+  controller()->DismissNotification();
 }
 
 }  // namespace autofill
