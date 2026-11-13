@@ -32,6 +32,7 @@ namespace {
 using testing::NiceMock;
 
 constexpr size_t kMaxPendingRecordings = 100;
+constexpr int kDefaultMaxPendingCommands = 10000;
 constexpr base::TimeDelta kMaxTimeBetweenSubmits = base::Milliseconds(500);
 
 class MockGpuProcessShmCount : public GpuProcessShmCount {
@@ -72,7 +73,8 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
 
   bool is_thread_safe() const { return GetParam(); }
 
-  void InitializeGraphiteDawn() {
+  void InitializeGraphiteDawn(
+      int max_pending_commands = kDefaultMaxPendingCommands) {
     dawnProcSetProcs(&dawn::native::GetProcs());
 
     wgpu::InstanceDescriptor instance_desc = {};
@@ -118,7 +120,7 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
         skgpu::graphite::ContextFactory::MakeDawn(backend_context,
                                                   context_options),
         &use_shader_cache_shm_count_, is_thread_safe(), kMaxPendingRecordings,
-        kMaxTimeBetweenSubmits, &delegate_);
+        max_pending_commands, kMaxTimeBetweenSubmits, &delegate_);
   }
 
   void InsertEmptyRecording(skgpu::graphite::Recorder* recorder) {
@@ -412,6 +414,58 @@ TEST_P(GraphiteSharedContextTest, MaxPendingRecordings) {
 
     EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
   }
+}
+
+// Inserting a recording with fewer commands than the max doesn't force a
+// submit.
+TEST_P(GraphiteSharedContextTest, LowPendingCommands) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  auto surface = SkSurfaces::RenderTarget(recorder.get(), ii);
+  ASSERT_TRUE(surface);
+
+  SkPaint paint;
+  paint.setColor(SK_ColorRED);
+  surface->getCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 2, 2), paint);
+
+  auto recording = recorder->snap();
+  ASSERT_TRUE(recording);
+
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+  EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
+}
+
+// Inserting a recording that causes the number of pending commands to reach the
+// max forces a submit.
+TEST_P(GraphiteSharedContextTest, MaxPendingCommands) {
+  InitializeGraphiteDawn(/*max_pending_commands=*/1);
+
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  auto ii = SkImageInfo::Make(64, 64, kN32_SkColorType, kPremul_SkAlphaType);
+  auto surface = SkSurfaces::RenderTarget(recorder.get(), ii);
+  ASSERT_TRUE(surface);
+
+  SkPaint paint;
+  paint.setColor(SK_ColorRED);
+  surface->getCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 2, 2), paint);
+
+  auto recording = recorder->snap();
+  ASSERT_TRUE(recording);
+
+  // Expect a flush when the number of pending commands reaches the max, even
+  // with only 1 recording inserted.
+  EXPECT_CALL(delegate_, FlushBackend()).Times(1);
+
+  skgpu::graphite::InsertRecordingInfo info = {};
+  info.fRecording = recording.get();
+  EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
 }
 
 // Inserting a recording once the max time between submits has passed forces a

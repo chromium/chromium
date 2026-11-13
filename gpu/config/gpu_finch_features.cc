@@ -77,6 +77,11 @@ void InitSkiaGraphiteFeatureParams(const base::Feature* feature) {
           feature, "max_pending_recordings",
           g_skia_graphite_feature_params.max_pending_recordings)
           .Get();
+  g_skia_graphite_feature_params.max_pending_commands =
+      base::FeatureParam<int>(
+          feature, "max_pending_commands",
+          g_skia_graphite_feature_params.max_pending_commands)
+          .Get();
   g_skia_graphite_feature_params.max_time_between_submits =
       base::FeatureParam<base::TimeDelta>(
           feature, "max_time_between_submits",

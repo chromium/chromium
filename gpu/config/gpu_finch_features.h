@@ -99,6 +99,9 @@ struct GPU_CONFIG_EXPORT SkiaGraphiteFeatureParams {
   // Maximum number of pending recordings before submitting to the GPU.
   int max_pending_recordings = 100;
 
+  // Maximum number of pending commands before submitting to the GPU.
+  int max_pending_commands = 500000;
+
   // Maximum time since the last submit before a newly inserted recording
   // forces a submit to the GPU.
   base::TimeDelta max_time_between_submits = base::Milliseconds(500);
@@ -159,6 +162,9 @@ inline bool SkiaGraphiteDawnEnableAutoMap() {
 }
 inline int SkiaGraphiteMaxPendingRecordings() {
   return GetSkiaGraphiteFeatureParams().max_pending_recordings;
+}
+inline int SkiaGraphiteMaxPendingCommands() {
+  return GetSkiaGraphiteFeatureParams().max_pending_commands;
 }
 inline base::TimeDelta SkiaGraphiteMaxTimeBetweenSubmits() {
   return GetSkiaGraphiteFeatureParams().max_time_between_submits;
