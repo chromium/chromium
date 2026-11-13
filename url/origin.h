@@ -23,6 +23,7 @@
 #include "build/buildflag.h"
 #include "build/robolectric_buildflags.h"
 #include "net/base/cronet_buildflags.h"
+#include "third_party/crubit/support/annotations.h"
 #include "url/scheme_host_port.h"
 
 #if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)) && \
@@ -135,7 +136,11 @@ class OriginDataView;
 //     if (this.IsSameOriginWith(that)) {
 //       // Amazingness goes here.
 //     }
-class COMPONENT_EXPORT(URL) Origin {
+//
+// SAFETY: `CRUBIT_UNSAFE_BITWISE_RELOCATABLE` (see its doc comment for the
+// safety requirements) is okay, because all fields are bitwise-relocatable,
+// and the move constructor and the destructor are defaulted.
+class CRUBIT_UNSAFE_BITWISE_RELOCATABLE COMPONENT_EXPORT(URL) Origin {
  public:
   // Creates an opaque Origin with a nonce that is different from all previously
   // existing origins.
@@ -388,7 +393,12 @@ class COMPONENT_EXPORT(URL) Origin {
   //
   // TODO(nick): Should this optimization move into UnguessableToken, once it no
   // longer treats the Null case specially?
-  class COMPONENT_EXPORT(URL) Nonce {
+  //
+  // SAFETY: `CRUBIT_UNSAFE_BITWISE_RELOCATABLE` (see its doc comment for the
+  // safety requirements) is okay, because `token_` is bitwise-relocatable, the
+  // move constructor doesn't depend on the address of `this`, and the
+  // destructor is trivial (this is checked in `origin_unittest.cc`).
+  class CRUBIT_UNSAFE_BITWISE_RELOCATABLE COMPONENT_EXPORT(URL) Nonce {
    public:
     // Creates a nonce to hold a newly-generated UnguessableToken. The actual
     // token value will be generated lazily.

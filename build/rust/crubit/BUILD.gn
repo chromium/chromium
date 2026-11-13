@@ -17,6 +17,22 @@ group("crubit") {
   ]
 }
 
+# C++ annotations from `third_party/crubit/support/annotations.h` (e.g.
+# `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`).  Unlike `:crubit` above, this target is
+# header-only and doesn't depend on Rust, so foundational C++ libraries
+# (e.g. `//base` or `//url`) can use it.
+group("annotations") {
+  # `all_dependent_configs` (rather than `public_configs`) are needed, because
+  # headers that use the annotations (e.g. `//url/gurl.h`) may be included
+  # (indirectly) by targets that don't have a chain of `public_deps` to this
+  # target.
+  all_dependent_configs = [
+    ":public_config",
+    "$crubit_src_dir:config",
+  ]
+  public_deps = [ "$crubit_src_dir/support:annotations" ]
+}
+
 config("public_config") {
   visibility = [ ":*" ]
 

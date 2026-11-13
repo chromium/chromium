@@ -8,37 +8,25 @@ chromium::import! {
     "//url:url_rs_api" as url;
 }
 
-use ctor::{Assign, Ctor, CtorNew, Emplace};
 use rust_gtest_interop::prelude::*;
-use std::convert::Infallible;
-use std::pin::Pin;
 use url::{Origin, GURL};
 
 /// Returns a `GURL` by value.
 ///
-/// `GURL` is not Rust-movable (Rust can't move it with `memcpy`, because it
-/// has a non-trivial move constructor).  Therefore the result is a `Ctor` -
-/// a lazy constructor that the caller runs in place (e.g. with `Box::emplace`
-/// or `ctor::emplace!`).
-//
-// TODO(b/559065915#comment9): Make `GURL` Rust-movable when Crubit supports
-// this.  Today, its `std::string` field prevents this.
-fn gurl_ctor(spec: &str) -> impl Ctor<Output = GURL, Error = Infallible> + use<'_> {
-    GURL::ctor_new(cpp_std::string_view::from(spec))
+/// `GURL` is Rust-movable (because it is annotated with
+/// `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`), so it can be returned and passed by
+/// value like any other Rust value.
+fn new_gurl(spec: &str) -> GURL {
+    GURL::from(cpp_std::string_view::from(spec))
 }
 
-fn new_gurl(spec: &str) -> Pin<Box<GURL>> {
-    Box::emplace(gurl_ctor(spec))
-}
-
-/// Takes a `GURL` by value (e.g. `ctor::mov!(some_gurl)` or `gurl_ctor(...)`).
-fn host_of(url: impl Ctor<Output = GURL, Error = Infallible>) -> String {
-    let url = ctor::emplace!(url);
+/// Takes a `GURL` by value.
+fn host_of(url: GURL) -> String {
     to_str(url.host()).to_string()
 }
 
-fn new_origin(spec: &str) -> Pin<Box<Origin>> {
-    Box::emplace(Origin::Create(&new_gurl(spec)))
+fn new_origin(spec: &str) -> Origin {
+    Origin::Create(&new_gurl(spec))
 }
 
 /// Compile-time check that `T` implements `Eq` and `Ord`.
@@ -90,31 +78,40 @@ fn test_gurl_eq_and_ord() {
     expect_eq!(hosts, ["a.com", "b.com", "c.com"]);
 }
 
-#[gtest(UrlRsApiTest, GurlMove)]
-fn test_gurl_move() {
-    // A `GURL` returned by value is constructed in place in a new binding.
-    let mut a = ctor::emplace!(gurl_ctor("https://a.com/"));
-    expect_eq!(to_str(a.host()), "a.com");
+#[gtest(UrlRsApiTest, GurlRustMove)]
+fn test_gurl_rust_move() {
+    // `GURL` stores the spec in a `std::string`.  Short strings are stored
+    // inline (in the `GURL` object), and long strings are stored on the heap.
+    let short_spec = "https://a.com/";
+    let long_spec = format!("https://example.com/{}", "x".repeat(100));
 
-    // `ctor::mov!` (the Rust equivalent of `std::move`) moves the `GURL` into a
-    // new binding.  This calls the C++ move constructor, and `a` stays a valid,
-    // moved-from `GURL`.
-    let mut b = ctor::emplace!(GURL::ctor_new(ctor::mov!(a)));
-    expect_eq!(to_str(b.host()), "a.com");
-    expect_false!(a.is_valid());
+    // Rust moves `GURL`s with `memcpy` - e.g. when moving into a new binding,
+    // into a function argument, into a `Box`, or when a `Vec` grows.
+    let a = new_gurl(short_spec);
+    let b = a;
+    expect_eq!(host_of(b), "a.com");
+    let boxed = Box::new(new_gurl(&long_spec));
+    expect_eq!(boxed.to_string(), long_spec);
+    let mut urls = Vec::new();
+    for _ in 0..100 {
+        urls.push(new_gurl(short_spec));
+        urls.push(new_gurl(&long_spec));
+    }
+    for pair in urls.chunks(2) {
+        expect_eq!(pair[0].to_string(), short_spec);
+        expect_eq!(pair[1].to_string(), long_spec);
+    }
 
-    // `ctor::mov!` also moves the `GURL` into a function argument.
-    expect_eq!(host_of(ctor::mov!(b)), "a.com");
-    expect_false!(b.is_valid());
-
-    // A `GURL` returned by value can be passed directly to such a function.
-    expect_eq!(host_of(gurl_ctor("https://c.com/")), "c.com");
-
-    // `assign` + `ctor::mov!` calls the C++ move assignment operator.
-    let mut d = new_gurl("https://d.com/");
-    a.as_mut().assign(ctor::mov!(d));
-    expect_eq!(to_str(a.host()), "d.com");
-    expect_false!(d.is_valid());
+    // `filesystem:` URLs own an inner `GURL` (and an inner `url::Parsed`) on
+    // the heap.
+    let mut fs_url = new_gurl("filesystem:https://example.com/temporary/foo");
+    let fs_url2 = std::mem::take(&mut fs_url);
+    expect_false!(fs_url.is_valid());
+    expect_true!(fs_url2.is_valid());
+    expect_true!(fs_url2.SchemeIsFileSystem());
+    expect_eq!(fs_url2.to_string(), "filesystem:https://example.com/temporary/foo");
+    // For `filesystem:` URLs, `DomainIs` checks the inner `GURL`.
+    expect_true!(fs_url2.DomainIs(cpp_std::string_view::from("example.com")));
 }
 
 #[gtest(UrlRsApiTest, OriginFromGurl)]
@@ -122,7 +119,7 @@ fn test_origin_from_gurl() {
     // `GURL` goes from Rust to C++ (by reference), and `Origin` goes from C++
     // to Rust (by value).
     let url = new_gurl("https://example.com:8080/path");
-    let origin = Box::emplace(Origin::Create(&url));
+    let origin = Origin::Create(&url);
     expect_false!(origin.opaque());
     expect_eq!(origin.port(), 8080);
     expect_true!(origin.DomainIs(cpp_std::string_view::from("example.com")));
@@ -130,7 +127,7 @@ fn test_origin_from_gurl() {
 
     // `Origin` goes from Rust to C++ (by reference), and `GURL` goes from C++
     // to Rust (by value).
-    let origin_url = Box::emplace(origin.GetURL());
+    let origin_url = origin.GetURL();
     expect_eq!(to_str(origin_url.host()), "example.com");
     expect_eq!(to_str(origin_url.path()), "/");
 }
@@ -151,9 +148,25 @@ fn test_origin_eq_and_ord() {
     let opaque1 = new_origin("data:text/plain,hello");
     let opaque2 = new_origin("data:text/plain,hello");
     expect_true!(opaque1.opaque());
-    let opaque1_copy = Box::emplace(Origin::ctor_new(&*opaque1));
+    let opaque1_copy = opaque1.clone();
     expect_true!(opaque1 == opaque1_copy);
     expect_true!(opaque1 != opaque2);
     expect_eq!(opaque1.cmp(&opaque1_copy), std::cmp::Ordering::Equal);
     expect_ne!(opaque1.cmp(&opaque2), std::cmp::Ordering::Equal);
+}
+
+#[gtest(UrlRsApiTest, OriginRustMove)]
+fn test_origin_rust_move() {
+    // Rust moves `Origin`s with `memcpy`.  This keeps the identity (i.e. the
+    // nonce) of opaque origins - also when the nonce is not yet initialized
+    // (`Origin::Nonce` initializes it lazily, e.g. when copying the `Origin`).
+    let opaque = new_origin("data:text/plain,hello");
+    let mut origins = vec![opaque, new_origin("https://example.com/")];
+    origins.reserve(100);
+    let opaque_copy = origins[0].clone();
+    origins.reserve(1000);
+    expect_true!(origins[0] == opaque_copy);
+    expect_true!(origins[0].opaque());
+    expect_false!(origins[1].opaque());
+    expect_true!(origins[1].DomainIs(cpp_std::string_view::from("example.com")));
 }

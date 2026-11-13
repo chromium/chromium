@@ -8,6 +8,7 @@
 
 #include <array>
 #include <string_view>
+#include <type_traits>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,6 +49,12 @@ namespace {
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
+
+// `GURL` and `Parsed` are annotated with `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`,
+// which relies on `Component` being bitwise-relocatable (e.g. trivially
+// copyable).  Crubit checks this only when generating Rust bindings, so the
+// assertion below also checks this in regular builds.
+static_assert(std::is_trivially_copyable_v<Component>);
 
 // Used for regular URL parse cases.
 struct URLParseCase {

@@ -794,6 +794,8 @@ std::ostream& operator<<(std::ostream& os, const Component& component) {
 
 Parsed::Parsed() = default;
 
+// This type is marked `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`; see class
+// header for invariants the copy constructor must follow.
 Parsed::Parsed(const Parsed& other)
     : scheme(other.scheme),
       username(other.username),
@@ -829,6 +831,8 @@ Parsed& Parsed::operator=(const Parsed& other) {
   return *this;
 }
 
+// This type is marked `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`; see class
+// header for invariants the destructor must follow.
 Parsed::~Parsed() {
   delete inner_parsed_;
 }

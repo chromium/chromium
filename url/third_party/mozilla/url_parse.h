@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/crubit/support/annotations.h"
 
 namespace url {
 
@@ -168,7 +169,13 @@ COMPONENT_EXPORT(URL) Component MakeRange(size_t begin, size_t end);
 //    else
 //      ParsePathURL(url, url_len, &parsed);
 //
-struct COMPONENT_EXPORT(URL) Parsed {
+// SAFETY: `CRUBIT_UNSAFE_BITWISE_RELOCATABLE` (see its doc comment for the
+// safety requirements) is okay, because all fields are bitwise-relocatable
+// (e.g. `Component` stores offsets, rather than pointers), and copying (which
+// is also used for moving) + destroying the source doesn't depend on the
+// address of `this` (`inner_parsed_` is owned and doesn't point back to
+// `this`).
+struct CRUBIT_UNSAFE_BITWISE_RELOCATABLE COMPONENT_EXPORT(URL) Parsed {
   // Identifies different components.
   enum ComponentType {
     SCHEME,

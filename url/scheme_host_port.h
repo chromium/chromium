@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "third_party/crubit/support/annotations.h"
 
 class GURL;
 
@@ -74,7 +75,11 @@ struct Parsed;
 //
 //     GURL url("https://example.com/");
 //     tuple == url::SchemeHostPort(url); // true
-class COMPONENT_EXPORT(URL) SchemeHostPort {
+//
+// SAFETY: `CRUBIT_UNSAFE_BITWISE_RELOCATABLE` (see its doc comment for the
+// safety requirements) is okay, because all fields are bitwise-relocatable,
+// and the move constructor and the destructor are defaulted.
+class CRUBIT_UNSAFE_BITWISE_RELOCATABLE COMPONENT_EXPORT(URL) SchemeHostPort {
  public:
   // Creates an invalid (scheme, host, port) tuple, which represents an invalid
   // or non-standard URL.
@@ -111,6 +116,9 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
   // Copyable and movable.
   SchemeHostPort(const SchemeHostPort&) = default;
   SchemeHostPort& operator=(const SchemeHostPort&) = default;
+
+  // This type is marked `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`; see class
+  // header for invariants the move constructor must follow.
   SchemeHostPort(SchemeHostPort&&) noexcept = default;
   SchemeHostPort& operator=(SchemeHostPort&&) noexcept = default;
 
@@ -171,8 +179,8 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
  private:
   // Note: `port_` is declared first to control the sort order.
   uint16_t port_ = 0;
-  std::string scheme_;
-  std::string host_;
+  CRUBIT_BITWISE_RELOCATABLE_STD_STRING_ONLY_ON_LIBCXX std::string scheme_;
+  CRUBIT_BITWISE_RELOCATABLE_STD_STRING_ONLY_ON_LIBCXX std::string host_;
 };
 
 COMPONENT_EXPORT(URL)

@@ -75,8 +75,14 @@ Origin Origin::Resolve(const GURL& url, const Origin& base_origin) {
 
 Origin::Origin(const Origin&) = default;
 Origin& Origin::operator=(const Origin&) = default;
+
+// This type is marked `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`; see class
+// header for invariants the move constructor must follow.
 Origin::Origin(Origin&&) noexcept = default;
 Origin& Origin::operator=(Origin&&) noexcept = default;
+
+// This type is marked `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`; see class
+// header for invariants the destructor must follow.
 Origin::~Origin() = default;
 
 // static
@@ -446,6 +452,9 @@ Origin::Nonce& Origin::Nonce::operator=(const Origin::Nonce& other) {
 }
 
 // Moving a nonce does NOT trigger lazy-generation of the token.
+//
+// This type is marked `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`; see class
+// header for invariants the move constructor must follow.
 Origin::Nonce::Nonce(Origin::Nonce&& other) noexcept : token_(other.token_) {
   other.token_ = base::UnguessableToken();  // Reset |other|.
 }

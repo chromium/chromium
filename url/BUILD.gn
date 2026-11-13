@@ -70,6 +70,7 @@ component("url") {
   public_deps = [
     "//base",
     "//build:robolectric_buildflags",
+    "//build/rust/crubit:annotations",
     "//net:cronet_buildflags",
   ]
 
@@ -499,7 +500,6 @@ if (enable_rust_api_from_cpp) {
     deps = [
       ":url_rs_api",
       "//build/rust/crubit:cpp_std",
-      "//build/rust/crubit:ctor",
       "//testing/rust_gtest_interop",
     ]
   }

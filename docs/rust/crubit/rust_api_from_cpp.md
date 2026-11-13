@@ -243,16 +243,37 @@ movable.  For more details please see the following sections of the Crubit book:
 * ["Rust-movable classes"](https://crubit.rs/cpp/classes_and_structs.html#rust_movable)
   (generic introduction)
 * ["Making types Rust-movable"](https://crubit.rs/cpp/cookbook#rust_movable)
-  (tips for making a C++ object Rust-movable).  Some extra notes about
-  `TRIVIAL_ABI`:
-    - Note that in Chromium `TRIVIAL_ABI` from `base/compiler_specific.h`
-      should be used instead of the equivalent Abseil macro.
-    - Note that Crubit docs and
+  (tips for making a C++ object Rust-movable).
+    - In Chromium `TRIVIAL_ABI` from `base/compiler_specific.h`
+      should be used instead of the equivalent Abseil macro that is mentioned
+      in Crubit docs.
+    - Crubit docs and
       [Clang docs](https://clang.llvm.org/docs/AttributeReference.html#trivial-abi:~:text=objects%20that%20contain%20pointers%20to%20themselves%20or%20otherwise%20depend%20on%20their%20address%20(or%20the%20address%20or%20their%20subobjects)
-      point out that misusing `TRIVIAL_ABI` can lead to
+      point out that misusing `TRIVIAL_ABI` and
+      `CRUBIT_UNSAFE_BITWISE_RELOCATABLE` can lead to
       Undefined Behavior (UB) - e.g. when the attribute is applied to
       objects that are not
       [bitwise-relocatable (as defined by Crubit)](https://github.com/google/crubit/blob/4fd627869b9e9becbf4c041f7a511102c2db4ce1/docs/design/bitwise_relocatable.md?plain=1#L35-L52).
+      [A separate technical note](https://docs.google.com/document/d/1Bw3j_2JI4MeF8xDPb8pkQX2_6hNhCmqfragmENwLy8k/edit?usp=sharing)
+      discusses safety guardrails that are being added to Chromium to prevent
+      misuse (and justification why the remaining risk is small and acceptable).
+    - It is okay to annotate `std::string` fields in Chromium with
+      `CRUBIT_BITWISE_RELOCATABLE_STD_STRING_ONLY_ON_LIBCXX`.  In particular,
+      `docs/toolchain_support.md`
+      [says](https://source.chromium.org/chromium/chromium/src/+/main:docs/toolchain_support.md;l=12-20;drc=beb265c95efca57a10dd9c107239e4394226e559):
+      that Chromium supports "a single [...] STL implementation (`libc++`)"
+      and relies on "trivially-relocatable `std::string` implementation".
+    - Quick cheat sheet / decision tree:
+        - Smart pointers: Use `TRIVIAL_ABI` (ABI of passing values via registers
+          makes sense for pointers and potentially for other small types;  this
+          also helps with performance of `std::vector<TSmartPointer>`).
+        - Value types (likely to be passed by value and/or stored as local
+          variables): consider marking them as
+          `CRUBIT_UNSAFE_BITWISE_RELOCATABLE` if feasible and safe. See
+          https://crrev.com/c/8758812 for an example of how `GURL` and
+          `url::Origin` were made Rust-movable.
+        - Other C++ types - don't make them Rust movable unless
+          Rust ergonomics or the overhead of heap-allocation are unacceptable.
 * `ctor` crate documentation (support for in-place construction and mutation of
   Rust types like ones that were originally defined in C++):
     - ["Quick guide"](https://crubit.rs/types/non_rust_movable/intro_short.html)

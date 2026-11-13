@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/trace_event/base_tracing_forward.h"
+#include "third_party/crubit/support/annotations.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_constants.h"
@@ -46,7 +47,12 @@
 // WARNING: While there is no length limit on GURLs, the Mojo serialization
 // code will replace any very long URL with an invalid GURL.
 // See url::mojom::kMaxURLChars for more details.
-class COMPONENT_EXPORT(URL) GURL {
+//
+// SAFETY: `CRUBIT_UNSAFE_BITWISE_RELOCATABLE` (see its doc comment for the
+// safety requirements) is okay, because all fields are bitwise-relocatable,
+// and the move constructor and the destructor don't depend on the address of
+// `this` (e.g. `parsed_` stores offsets into `spec_`, rather than pointers).
+class CRUBIT_UNSAFE_BITWISE_RELOCATABLE COMPONENT_EXPORT(URL) GURL {
  public:
   using Replacements = url::Replacements<char>;
   using ReplacementsW = url::Replacements<char16_t>;
@@ -484,7 +490,7 @@ class COMPONENT_EXPORT(URL) GURL {
   bool SchemeIsHTTPOrHTTPSInternal() const;
 
   // The actual text of the URL, in canonical ASCII form.
-  std::string spec_;
+  CRUBIT_BITWISE_RELOCATABLE_STD_STRING_ONLY_ON_LIBCXX std::string spec_;
 
   // Set when the given URL is valid. Otherwise, we may still have a spec and
   // components, but they may not identify valid resources (for example, an

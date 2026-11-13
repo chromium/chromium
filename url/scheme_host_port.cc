@@ -204,6 +204,8 @@ SchemeHostPort::SchemeHostPort(const GURL& url) {
   port_ = port;
 }
 
+// This type is marked `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`; see class
+// header for invariants the destructor must follow.
 SchemeHostPort::~SchemeHostPort() = default;
 
 bool SchemeHostPort::IsValid() const {

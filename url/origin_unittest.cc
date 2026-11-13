@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <type_traits>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -72,6 +74,10 @@ class OriginTest : public ::testing::Test {
   Origin::Nonce CreateNonce(base::UnguessableToken nonce) {
     return Origin::Nonce(nonce);
   }
+
+  // `Origin::Nonce` is annotated with `CRUBIT_UNSAFE_BITWISE_RELOCATABLE`,
+  // which relies on its (implicitly declared) destructor staying trivial.
+  static_assert(std::is_trivially_destructible_v<Origin::Nonce>);
 
   const base::UnguessableToken* GetNonce(const Origin& origin) {
     return origin.GetNonceForSerialization();
