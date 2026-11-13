@@ -6134,20 +6134,20 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
 void RenderFrameHostManager::NotifyPrepareForInnerDelegateAttachComplete(
     bool success) {
   CHECK(is_attaching_inner_delegate());
-  ChildProcessId process_id =
-      success ? render_frame_host_->GetProcess()->GetID() : ChildProcessId();
-  int32_t routing_id =
-      success ? render_frame_host_->GetRoutingID() : IPC::mojom::kRoutingIdNone;
+  GlobalRenderFrameHostToken frame_token;
+  if (success) {
+    frame_token = render_frame_host_->GetGlobalFrameToken();
+  }
   // Invoking the callback asynchronously to meet the APIs promise.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](RenderFrameHost::PrepareForInnerWebContentsAttachCallback callback,
-             ChildProcessId process_id, int32_t routing_id) {
+             const GlobalRenderFrameHostToken& frame_token) {
             std::move(callback).Run(
-                RenderFrameHostImpl::FromID(process_id, routing_id));
+                RenderFrameHostImpl::FromFrameToken(frame_token));
           },
-          std::move(attach_inner_delegate_callback_), process_id, routing_id));
+          std::move(attach_inner_delegate_callback_), frame_token));
 }
 
 NavigationControllerImpl& RenderFrameHostManager::GetNavigationController() {
