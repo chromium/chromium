@@ -75,6 +75,10 @@ export class OrganizerPanelAppElement extends CrLitElement {
   private verticalTabsEnabledChangedListenerId_: number|null = null;
   private inTrayViewChangedListenerId_: number|null = null;
   private hasRecordedSearch_: boolean = false;
+  private hasBeenHidden_: boolean = false;
+  // Generation identifier used to associate showUI() callbacks with the current
+  // show/hide cycle.
+  private loadGeneration_: number = 0;
   private onKeydown_: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
     if (e.key === 'Tab') {
       const path = e.composedPath();
@@ -107,10 +111,15 @@ export class OrganizerPanelAppElement extends CrLitElement {
   };
   private onVisibilityChange_: () => void = () => {
     if (document.visibilityState === 'hidden') {
+      this.hasBeenHidden_ = true;
+      this.loadGeneration_++;
       this.$.searchField.setValue('');
       this.searchQuery_ = '';
       this.hasRecordedSearch_ = false;
       this.$.list.scrollTop = 0;
+    } else if (document.visibilityState === 'visible' && this.hasBeenHidden_) {
+      this.hasBeenHidden_ = false;
+      this.notifyShowUiWhenReady_(() => this.$.list.reloadSections());
     }
   };
 
@@ -151,17 +160,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    this.notifyShowUi_();
-  }
-
-  private async notifyShowUi_() {
-    try {
-      await this.$.list.waitForInitialLoad();
-    } finally {
-      if (this.isConnected) {
-        this.browserProxy_.handler.showUI();
-      }
-    }
+    this.notifyShowUiWhenReady_(() => this.$.list.waitForSectionsLoaded());
   }
 
   private getCloseButton_(): HTMLElement|null {
@@ -170,6 +169,17 @@ export class OrganizerPanelAppElement extends CrLitElement {
       return null;
     }
     return button;
+  }
+
+  private async notifyShowUiWhenReady_(waitForLoad: () => Promise<void>) {
+    const generation = ++this.loadGeneration_;
+    try {
+      await waitForLoad();
+    } finally {
+      if (generation === this.loadGeneration_ && this.isConnected) {
+        this.browserProxy_.handler.showUI();
+      }
+    }
   }
 
   protected onCloseButtonClick_() {

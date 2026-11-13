@@ -674,7 +674,28 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals(1, metrics.count('OrganizerPanel.OpenCrossDeviceTab'));
   });
 
-  test('records StartSearch user action at most once per session', () => {
+  async function withVisibilityState(
+      fn: (setVisibility: (state: DocumentVisibilityState) => void) =>
+          Promise<void>| void) {
+    const originalDescriptor =
+        Object.getOwnPropertyDescriptor(document, 'visibilityState');
+    try {
+      await fn((state: DocumentVisibilityState) => {
+        Object.defineProperty(
+            document, 'visibilityState',
+            {value: state, configurable: true, writable: true});
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+    } finally {
+      if (originalDescriptor) {
+        Object.defineProperty(document, 'visibilityState', originalDescriptor);
+      } else {
+        Reflect.deleteProperty(document, 'visibilityState');
+      }
+    }
+  }
+
+  test('records StartSearch user action at most once per session', async () => {
     // Empty search does not record StartSearch.
     app.$.searchField.setValue('');
     assertEquals(0, metrics.count('OrganizerPanel.StartSearch'));
@@ -692,16 +713,14 @@ suite('OrganizerPanelAppTest', () => {
 
     // Hiding the panel starts a new session, so searching again records
     // StartSearch once more.
-    Object.defineProperty(
-        document, 'visibilityState', {value: 'hidden', writable: true});
-    document.dispatchEvent(new Event('visibilitychange'));
-    Object.defineProperty(
-        document, 'visibilityState', {value: 'visible', writable: true});
-    document.dispatchEvent(new Event('visibilitychange'));
-    assertEquals(1, metrics.count('OrganizerPanel.StartSearch'));
+    await withVisibilityState(setVisibility => {
+      setVisibility('hidden');
+      setVisibility('visible');
+      assertEquals(1, metrics.count('OrganizerPanel.StartSearch'));
 
-    app.$.searchField.setValue('d');
-    assertEquals(2, metrics.count('OrganizerPanel.StartSearch'));
+      app.$.searchField.setValue('d');
+      assertEquals(2, metrics.count('OrganizerPanel.StartSearch'));
+    });
   });
 
   test('calls showUI once initial section load finishes', async () => {
@@ -739,4 +758,74 @@ suite('OrganizerPanelAppTest', () => {
     await microtasksFinished();
     assertEquals(1, mockOrganizerPanelHandler.getCallCount('showUI'));
   });
+
+  test('calls showUI when reshown section data finishes loading', async () => {
+    mockOrganizerPanelHandler.reset();
+    mockOrganizerPanelHandler.setPromiseResolveFor(
+        'getSectionState', {state: {expanded: false, showAll: false}});
+    mockTabGroupsHandler.resetResolver('getTabGroups');
+    const tabGroupsResolver = new PromiseResolver<{tabGroups: TabGroup[]}>();
+    mockTabGroupsHandler.setResultFor(
+        'getTabGroups', tabGroupsResolver.promise);
+
+    await withVisibilityState(async setVisibility => {
+      setVisibility('hidden');
+      setVisibility('visible');
+      await microtasksFinished();
+
+      // Still waiting on getTabGroups to resolve before notifying.
+      assertEquals(1, mockTabGroupsHandler.getCallCount('getTabGroups'));
+      assertEquals(0, mockOrganizerPanelHandler.getCallCount('showUI'));
+
+      tabGroupsResolver.resolve({tabGroups: []});
+      await microtasksFinished();
+
+      assertEquals(1, mockOrganizerPanelHandler.getCallCount('showUI'));
+    });
+  });
+
+  test(
+      'ignores stale load completion if hidden before sections finish',
+      async () => {
+        mockOrganizerPanelHandler.reset();
+        mockOrganizerPanelHandler.setPromiseResolveFor(
+            'getSectionState', {state: {expanded: false, showAll: false}});
+        const staleResolver = new PromiseResolver<{tabGroups: TabGroup[]}>();
+        mockTabGroupsHandler.setResultFor(
+            'getTabGroups', staleResolver.promise);
+
+        await withVisibilityState(async setVisibility => {
+          setVisibility('hidden');
+          setVisibility('visible');
+          await microtasksFinished();
+          assertEquals(0, mockOrganizerPanelHandler.getCallCount('showUI'));
+
+          setVisibility('hidden');
+          staleResolver.resolve({tabGroups: []});
+          await microtasksFinished();
+          assertEquals(0, mockOrganizerPanelHandler.getCallCount('showUI'));
+
+          // A subsequent reshow still calls showUI once the fresh load
+          // settles.
+          mockTabGroupsHandler.setResultFor(
+              'getTabGroups', Promise.resolve({tabGroups: []}));
+          setVisibility('visible');
+          await microtasksFinished();
+          assertEquals(1, mockOrganizerPanelHandler.getCallCount('showUI'));
+        });
+      });
+
+  test(
+      'does not reload sections on visible if never hidden first', async () => {
+        mockOrganizerPanelHandler.reset();
+        mockTabGroupsHandler.resetResolver('getTabGroups');
+
+        await withVisibilityState(async setVisibility => {
+          setVisibility('visible');
+          await microtasksFinished();
+
+          assertEquals(0, mockTabGroupsHandler.getCallCount('getTabGroups'));
+          assertEquals(0, mockOrganizerPanelHandler.getCallCount('showUI'));
+        });
+      });
 });

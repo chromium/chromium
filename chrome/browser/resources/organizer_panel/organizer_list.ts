@@ -84,16 +84,23 @@ export class OrganizerListElement extends CrLitElement {
     }
   }
 
-  async waitForInitialLoad(): Promise<void> {
-    await this.updateComplete;
-    await Promise.allSettled(
-        this.getSections_().map(section => section.waitForInitialLoad()));
-    await this.updateComplete;
-  }
-
   private getSections_(): OrganizerListSectionElement[] {
     return Array.from(
         this.shadowRoot.querySelectorAll('organizer-list-section'));
+  }
+
+  async waitForSectionsLoaded(): Promise<void> {
+    await this.updateComplete;
+    await Promise.allSettled(
+        this.getSections_().map(section => section.waitForLoadComplete()));
+    await this.updateComplete;
+  }
+
+  async reloadSections(): Promise<void> {
+    await this.updateComplete;
+    await Promise.allSettled(
+        this.getSections_().map(section => section.reload()));
+    await this.updateComplete;
   }
 
   getVisibleSections(): OrganizerListSectionElement[] {

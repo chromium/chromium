@@ -81,7 +81,10 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private sectionStateChangedListenerId_: number|null = null;
   private reducedMotionQuery_: MediaQueryList|null = null;
   private windowShownTimestamp_: number = performance.now();
-  private initialLoadPromise_: Promise<unknown>|null = null;
+  private loadPromise_: Promise<unknown> = Promise.resolve();
+  // Generation identifier used to associate async reload results with the
+  // current show/hide cycle.
+  private loadGeneration_: number = 0;
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   accessor expanded: boolean = true;
@@ -128,17 +131,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
             ],
       };
 
-  // The panel WebUI will remain loaded but invisible when the panel is closed.
-  // While invisible, the WebUI will not receive update events from the browser,
-  // so all sections need to refetch their data upon visibility change.
-  private onVisibilityChange_: () => void = () => {
-    if (document.visibilityState === 'visible') {
-      this.windowShownTimestamp_ = performance.now();
-      this.updateItems_();
-      this.updateSectionState_();
-    }
-  };
-
   private onReducedMotionChange_: () => void = () => {
     assert(this.reducedMotionQuery_ !== null);
     this.prefersReducedMotion_ = this.reducedMotionQuery_.matches;
@@ -146,7 +138,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   override connectedCallback() {
     super.connectedCallback();
-    document.addEventListener('visibilitychange', this.onVisibilityChange_);
     this.reducedMotionQuery_ =
         window.matchMedia('(prefers-reduced-motion: reduce)');
     this.prefersReducedMotion_ = this.reducedMotionQuery_.matches;
@@ -161,7 +152,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener('visibilitychange', this.onVisibilityChange_);
     assert(this.reducedMotionQuery_ !== null);
     this.reducedMotionQuery_.removeEventListener(
         'change', this.onReducedMotionChange_);
@@ -177,10 +167,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
 
     if (changedProperties.has('delegate')) {
       this.delegate?.init(this);
-      this.initialLoadPromise_ = Promise.allSettled([
-        this.updateItems_(),
-        this.updateSectionState_(),
-      ]);
+      this.loadSection_();
     }
 
     if (changedProperties.has('searchQuery') ||
@@ -198,28 +185,49 @@ export class OrganizerListSectionElement extends CrLitElement implements
     this.items = items;
   }
 
-  async waitForInitialLoad(): Promise<void> {
+  async waitForLoadComplete(): Promise<void> {
     await this.updateComplete;
-    await this.initialLoadPromise_;
+    await this.loadPromise_;
     await this.updateComplete;
   }
 
-  private async updateItems_() {
-    if (!this.delegate) {
+  // Called by the parent list when the panel becomes visible to reset the
+  // action-timing baseline and reload stale section data.
+  reload(): Promise<void> {
+    this.windowShownTimestamp_ = performance.now();
+    this.loadSection_();
+    return this.waitForLoadComplete();
+  }
+
+  private loadSection_(): void {
+    const generation = ++this.loadGeneration_;
+    this.loadPromise_ = Promise.allSettled([
+      this.updateItems_(generation),
+      this.updateSectionState_(generation),
+    ]);
+  }
+
+  private async updateItems_(generation: number) {
+    const delegate = this.delegate;
+    if (!delegate) {
       this.items = [];
       return;
     }
-    this.items = await this.delegate.getItems();
-  }
-
-  private async updateSectionState_() {
-    if (!this.delegate) {
+    const items = await delegate.getItems();
+    if (this.delegate !== delegate || generation !== this.loadGeneration_) {
       return;
     }
+    this.items = items;
+  }
+
+  private async updateSectionState_(generation: number) {
     const delegate = this.delegate;
+    if (!delegate) {
+      return;
+    }
     const {state} =
         await this.browserProxy_.handler.getSectionState(delegate.getId());
-    if (this.delegate !== delegate) {
+    if (this.delegate !== delegate || generation !== this.loadGeneration_) {
       return;
     }
     // Disable the transition when the expanded state is loaded from prefs.
