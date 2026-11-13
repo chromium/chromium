@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_fre.h"
@@ -21,9 +22,13 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "url/gurl.h"
 
 namespace glic {
 namespace {
@@ -55,6 +60,43 @@ IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest, testGeicSignInTab) {
 IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest, testGeicAuthTab) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
+}
+
+// crbug.com/582296507: GE auth flows that used `window.open()` never completed
+// in the side panel, since the guest gets no handle to the opened tab:
+// `MaybeHandleGlicWindowCreation()` opens it in a new tab or popup instead.
+// Pins that contract alongside the `openAuthTab()` replacement.
+IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest,
+                       testGeicWindowOpenReturnsNullButAuthTabIsTracked) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  TabListInterface* tab_list = GetTabListInterface();
+  ASSERT_EQ(tab_list->GetTabCount(), 1);
+
+  // `window.open()` returns null to the guest, but still opens a tab.
+  ExecuteJsTest();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return tab_list->GetTabCount() == 2; }));
+  tabs::TabInterface* window_open_tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(window_open_tab);
+  EXPECT_EQ(window_open_tab->GetContents()->GetVisibleURL(),
+            GURL("https://www.chromium.org"));
+  const tabs::TabHandle window_open_handle = window_open_tab->GetHandle();
+
+  // `openAuthTab()` opens a separate tab that Chrome tracks.
+  ContinueJsTest();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return tab_list->GetTabCount() == 3; }));
+  tabs::TabInterface* auth_tab = tab_list->GetActiveTab();
+  ASSERT_TRUE(auth_tab);
+  EXPECT_NE(auth_tab->GetHandle(), window_open_handle);
+  EXPECT_EQ(auth_tab->GetContents()->GetVisibleURL(),
+            GURL("https://accounts.google.com/signin"));
+
+  // `closeAuthTab()` closes only the tracked tab, not the `window.open()` tab.
+  ContinueJsTest();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return tab_list->GetTabCount() == 2; }));
+  EXPECT_NE(tab_list->GetIndexOfTab(window_open_handle), -1);
 }
 
 // GEiC doesn't use the Chrome primary account: the GE web app handles sign-in,

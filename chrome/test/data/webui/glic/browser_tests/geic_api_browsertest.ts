@@ -130,6 +130,34 @@ class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
         (await geic.closeAuthTab({purpose})).result,
         CloseAuthTabResult.NO_AUTH_TAB);
   }
+
+  // `window.open()` from the GEiC guest opens a plain tab that the web client
+  // can't reach: it returns no window handle, so a popup-based auth flow can't
+  // observe or close it. Auth flows must use `openAuthTab()`, whose tab Chrome
+  // tracks and can close on the client's behalf.
+  async testGeicWindowOpenReturnsNullButAuthTabIsTracked() {
+    const popup = window.open('https://www.chromium.org', '_blank');
+    assertTrue(popup === null, 'window.open() should return null');
+    // Let the browser check that `window.open()` still opened an untracked
+    // tab.
+    await this.advanceToNextStep();
+
+    const geic = this.geic;
+    assertDefined(geic.openAuthTab);
+    assertDefined(geic.closeAuthTab);
+    const purpose = AuthTabPurpose.SIGN_IN;
+    assertEquals(
+        (await geic.openAuthTab(
+             {purpose, url: 'https://accounts.google.com/signin'}))
+            .result,
+        OpenAuthTabResult.SUCCESS);
+    // Let the browser check that the auth tab opened.
+    await this.advanceToNextStep();
+
+    assertEquals(
+        (await geic.closeAuthTab({purpose})).result,
+        CloseAuthTabResult.CLOSED_ACTIVE);
+  }
 }
 
 testMain([
