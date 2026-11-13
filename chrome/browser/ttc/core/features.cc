@@ -14,4 +14,6 @@ BASE_FEATURE(kTtcHotlClickConfirmation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTtcGetPointer, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTtcScreenshotAsVisualContent, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace ttc

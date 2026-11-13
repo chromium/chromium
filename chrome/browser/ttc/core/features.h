@@ -85,6 +85,13 @@ inline constexpr base::FeatureParam<base::TimeDelta> kTtcGetPointerIdleLimit{
 inline constexpr base::FeatureParam<int> kTtcGetPointerMaxResults{
     &kTtcGetPointer, "max_results", 1};
 
+// Sends the get_screenshot image to the model as visual content, i.e. as image
+// bytes next to the tool result, instead of as base64 text inside the result.
+// Requires a server that forwards tool response images to the model.
+// TODO(crbug.com/571268295): Once every server does, turn this on, then remove
+// the feature and the base64 path in ToolController::OnGetScreenshotFetched().
+BASE_DECLARE_FEATURE(kTtcScreenshotAsVisualContent);
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_

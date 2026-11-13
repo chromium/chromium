@@ -821,10 +821,22 @@ void ToolController::OnGetScreenshotFetched(
   }
 
   base::DictValue result_dict;
+  result_dict.Set("mime_type", screenshot_result.mime_type);
+  if (base::FeatureList::IsEnabled(kTtcScreenshotAsVisualContent)) {
+    // The model sees the image itself, so the result only describes it.
+    result_dict.Set("width", screenshot_result.dimensions.width());
+    result_dict.Set("height", screenshot_result.dimensions.height());
+    std::move(callback).Run(ToolResponse::Success(
+        std::move(result_dict),
+        VisualContent{
+            .image_data = std::move(screenshot_result.screenshot_data),
+            .mime_type = std::move(screenshot_result.mime_type)}));
+    return;
+  }
+
   result_dict.Set(
       "image_b64",
       base::Base64Encode(std::move(screenshot_result.screenshot_data)));
-  result_dict.Set("mime_type", screenshot_result.mime_type);
   std::move(callback).Run(ToolResponse::Success(std::move(result_dict)));
 }
 

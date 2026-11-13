@@ -2324,6 +2324,53 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshot) {
   EXPECT_GT(bitmap.height(), 0);
 }
 
+class ToolControllerScreenshotAsVisualContentBrowserTest
+    : public ToolControllerBrowserTest {
+ public:
+  ToolControllerScreenshotAsVisualContentBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(kTtcScreenshotAsVisualContent);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToolControllerScreenshotAsVisualContentBrowserTest,
+                       GetScreenshot) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+  content::WaitForCopyableViewInWebContents(web_contents());
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "get_screenshot";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_TRUE(response.Ok());
+
+  ASSERT_TRUE(response.visual_content());
+  EXPECT_EQ(response.visual_content()->mime_type, "image/jpeg");
+  SkBitmap bitmap =
+      gfx::JPEGCodec::Decode(response.visual_content()->image_data);
+  ASSERT_FALSE(bitmap.isNull());
+  EXPECT_GT(bitmap.width(), 0);
+  EXPECT_GT(bitmap.height(), 0);
+
+  // The image travels next to the result rather than as text inside it, so
+  // the result only describes it.
+  EXPECT_EQ(response.GetResult(), base::DictValue()
+                                      .Set("mime_type", "image/jpeg")
+                                      .Set("width", bitmap.width())
+                                      .Set("height", bitmap.height()));
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetScreenshotDisallowedUrl) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
