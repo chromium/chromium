@@ -47,7 +47,11 @@ SVGPathSegType ParseSegmentType(const String& type) {
   return MapLetterToSegmentType(type[0]);
 }
 
-// Checks the type is known and the values have the right arity and are finite.
+bool IsValidArcFlagValue(float value) {
+  return value == 0.0f || value == 1.0f;
+}
+
+// Checks the type is known and the values are valid for that segment type.
 bool ValidateSegment(SVGPathSegType type, const Vector<float>& values) {
   if (type == kPathSegUnknown) {
     return false;
@@ -55,8 +59,14 @@ bool ValidateSegment(SVGPathSegType type, const Vector<float>& values) {
   if (values.size() != kPathSegmentArgumentCount[type]) {
     return false;
   }
-  return std::ranges::all_of(values,
-                             [](float value) { return std::isfinite(value); });
+  if (!std::ranges::all_of(values,
+                           [](float value) { return std::isfinite(value); })) {
+    return false;
+  }
+  if (type == kPathSegArcAbs || type == kPathSegArcRel) {
+    return IsValidArcFlagValue(values[3]) && IsValidArcFlagValue(values[4]);
+  }
+  return true;
 }
 
 // Fills a PathSegmentData from a pre-validated type/values pair.
@@ -102,9 +112,8 @@ PathSegmentData BuildSegment(SVGPathSegType type, const Vector<float>& values) {
     case kPathSegArcRel:
       segment.point1 = {values[0], values[1]};
       segment.point2.set_x(values[2]);
-      // Flags use ECMAScript ToBoolean: 0 is false, any other value is true.
-      segment.arc_large = values[3] != 0.0f;
-      segment.arc_sweep = values[4] != 0.0f;
+      segment.arc_large = values[3] == 1.0f;
+      segment.arc_sweep = values[4] == 1.0f;
       segment.target_point = {values[5], values[6]};
       break;
     case kPathSegUnknown:
