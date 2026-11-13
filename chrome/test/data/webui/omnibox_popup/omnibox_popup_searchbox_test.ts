@@ -8711,5 +8711,60 @@ suite('OmniboxPopupSearchboxTest', function() {
 
       await assertDropdownStaysBounded();
     });
+
+    test('FocusRingIsInsetWhenUnboundedSupported', async () => {
+      const splitShadows = (boxShadow: string) =>
+          boxShadow.split(/,(?![^(]*\))/);
+
+      searchbox.style.setProperty('--cr-focus-outline-color', 'rgb(0, 0, 255)');
+      searchbox.dropdownIsVisible = false;
+      searchbox.$.input.inputElement.focus();
+      await microtasksFinished();
+
+      const unboundedShadow = getComputedStyle(wrapper).boxShadow;
+      const unboundedShadows = splitShadows(unboundedShadow);
+      assertEquals(1, unboundedShadows.length, unboundedShadow);
+      assertTrue(unboundedShadows[0]!.includes('inset'), unboundedShadow);
+      assertTrue(unboundedShadows[0]!.includes('2px'), unboundedShadow);
+
+      // Logical focus without DOM focus also uses the 2px inset ring.
+      searchbox.$.input.inputElement.blur();
+      searchbox.isLogicallyFocused_ = true;
+      await microtasksFinished();
+      const logicalShadow = getComputedStyle(wrapper).boxShadow;
+      const logicalShadows = splitShadows(logicalShadow);
+      assertEquals(1, logicalShadows.length, logicalShadow);
+      assertTrue(logicalShadows[0]!.includes('inset'), logicalShadow);
+      assertTrue(logicalShadows[0]!.includes('2px'), logicalShadow);
+      searchbox.isLogicallyFocused_ = false;
+      searchbox.$.input.inputElement.focus();
+      await microtasksFinished();
+
+      // Compose button focus must still clear the focus ring box-shadow.
+      searchbox.$.composeButton.setAttribute('has-virtual-focus', '');
+      await microtasksFinished();
+      assertEquals('none', getComputedStyle(wrapper).boxShadow);
+      searchbox.$.composeButton.removeAttribute('has-virtual-focus');
+      await microtasksFinished();
+
+      // Without unbounded support, the focus ring keeps its outset component.
+      searchbox.remove();
+      loadTimeData.overrideValues({useUnbounded: false});
+      await createSearchbox();
+      searchbox.style.setProperty('--cr-focus-outline-color', 'rgb(0, 0, 255)');
+      searchbox.dropdownIsVisible = false;
+      searchbox.$.input.inputElement.focus();
+      await microtasksFinished();
+
+      const boundedShadow = getComputedStyle(wrapper).boxShadow;
+      const boundedShadows = splitShadows(boundedShadow);
+      assertEquals(2, boundedShadows.length, boundedShadow);
+      assertTrue(
+          boundedShadows.some(s => !s.includes('inset')),
+          `Expected outset shadow in: ${boundedShadow}`);
+      assertTrue(
+          boundedShadows.some(s => s.includes('inset')),
+          `Expected inset shadow in: ${boundedShadow}`);
+    });
   });
 });
