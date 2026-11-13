@@ -24,6 +24,11 @@ void DisassociatePopupOnMac(gfx::NativeWindow native_window);
 // Activates the browser window and ensures macOS switches spaces to Chrome.
 void ActivateBrowserWindowOnMac(BrowserWindowInterface* bwi);
 
+// Activates Chrome without bringing all browser windows forward and orders the
+// OmniboxEverywhere popup window key and front so macOS CharacterPalette.app
+// (Emoji & Symbols) attaches to the popup without resigning key window status.
+void ActivatePopupForEmojiPanelOnMac(gfx::NativeWindow native_window);
+
 // Returns true when the active AppKit event is a non-control left mouse down so
 // WebUI elements inside `-webkit-app-region: drag` containers still receive
 // hover and non-drag events on macOS.
