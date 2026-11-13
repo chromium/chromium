@@ -1513,7 +1513,6 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
         async () => {
           await mountApp();
           const {innerComposebox} = parts;
-          innerComposebox.shouldShowGhostFiles = true;
           await innerComposebox.updateComplete;
 
           let resolveAddTabContext!: (token: UnguessableToken) => void;

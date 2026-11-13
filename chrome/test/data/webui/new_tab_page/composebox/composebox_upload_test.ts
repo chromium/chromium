@@ -1594,34 +1594,8 @@ suite('NewTabPageComposeboxUploadToolModeTest', () => {
 suite('NewTabPageComposeboxUploadContextTest', () => {
   const testProxy = testSupport.setupComposeboxTest();
 
-  test('when flag enabled, adds tab context of ghost file', async () => {
-    testSupport.createComposeboxElement(testProxy);
-    testProxy.element.shouldShowGhostFiles = true;
-
-    await testSupport.addTab(testProxy);
-
-    await testProxy.element.updateComplete;
-    await microtasksFinished();
-
-    assertEquals(
-        1, testProxy.element.attachedContext.size, 'Tab should be added');
-
-    const bad_token = testSupport.FAKE_TOKEN_STRING_2;
-    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        bad_token,
-        ContextUploadStatus.kUploadSuccessful,
-        null,
-    );
-    await testProxy.element.updateComplete;
-    await microtasksFinished();
-    assertEquals(
-        2, testProxy.element.attachedContext.size,
-        'Ghost file should be added');
-  });
-
   test('does not add tab context of ghost file', async () => {
     testSupport.createComposeboxElement(testProxy);
-    testProxy.element.shouldShowGhostFiles = false;
 
     await testSupport.addTab(testProxy);
     await testProxy.element.updateComplete;

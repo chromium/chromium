@@ -1008,6 +1008,168 @@ suite('OmniboxComposeboxTest', () => {
         assertFalse(omniboxComposebox.addedTabsIds.has(103));
       });
 
+  test(
+      'statuses in flight for a tab the page deleted do not create a ghost',
+      async () => {
+        const testToken = '12345678901234567890123456789105';
+        testProxy.handler.setPromiseResolveFor('addTabContext', testToken);
+
+        await omniboxComposebox.addTabContextHandleCallback({
+          tabId: 105,
+          title: 'Tab 105',
+          url: 'https://tab105.com',
+          delayUpload: false,
+          origin: TabAttachmentSource.kOther,
+        });
+        await omniboxComposebox.updateComplete;
+        assertEquals(1, omniboxComposebox.attachedContext.size);
+
+        // The page deletes the tab locally while the upload is still in flight
+        // in the browser.
+        omniboxComposebox.deleteFile(testToken, /*fromUserAction=*/ false);
+        assertEquals(0, omniboxComposebox.attachedContext.size);
+
+        // Statuses posted before `deleteContext` reaches the handler arrive on
+        // the page pipe.
+        for (const status
+                 of [ContextUploadStatus.kProcessing,
+                     ContextUploadStatus.kUploadStarted,
+                     ContextUploadStatus.kUploadSuccessful]) {
+          testProxy.page.onContextualInputStatusChanged(
+              testToken, status, null);
+        }
+        await testProxy.page.$.flushForTesting();
+        await omniboxComposebox.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(0, omniboxComposebox.attachedContext.size);
+        assertFalse(omniboxComposebox.showFileCarousel);
+      });
+
+  test(
+      'statuses in flight after clearAllInputs do not create a ghost when ' +
+          'switching to tool mode',
+      async () => {
+        const testToken = '12345678901234567890123456789106';
+        testProxy.handler.setPromiseResolveFor('addTabContext', testToken);
+
+        await omniboxComposebox.addTabContextHandleCallback({
+          tabId: 106,
+          title: 'Tab 106',
+          url: 'https://tab106.com',
+          delayUpload: false,
+          origin: TabAttachmentSource.kAutoAdded,
+        });
+        await omniboxComposebox.updateComplete;
+        assertEquals(1, omniboxComposebox.attachedContext.size);
+
+        // Simulates AimAppElement.clearPopup_() -> resetSession() when the
+        // popup closes/reopens to select Canvas or Create Images while the tab
+        // upload is still in flight in ComposeboxQueryController.
+        omniboxComposebox.clearAllInputs(
+            /*querySubmitted=*/ false,
+            /*shouldBlockAutoSuggestedTabs=*/ false);
+        assertEquals(0, omniboxComposebox.attachedContext.size);
+
+        // Switch to Canvas tool mode, which only allows images.
+        testProxy.page.onInputStateChanged({
+          ...createDefaultInputState(),
+          activeTool: ToolMode.kCanvas,
+          allowedInputTypes: [InputType.kLensImage],
+        });
+        await testProxy.page.$.flushForTesting();
+
+        // Late statuses from the orphaned tab upload arrive on the page pipe.
+        for (const status
+                 of [ContextUploadStatus.kProcessingSuggestSignalsReady,
+                     ContextUploadStatus.kUploadStarted,
+                     ContextUploadStatus.kUploadSuccessful]) {
+          testProxy.page.onContextualInputStatusChanged(
+              testToken, status, null);
+        }
+        await testProxy.page.$.flushForTesting();
+        await omniboxComposebox.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(0, omniboxComposebox.attachedContext.size);
+        assertFalse(omniboxComposebox.showFileCarousel);
+      });
+
+  test(
+      'early upload status before addSearchContext hydrates file status',
+      async () => {
+        const testToken = '12345678901234567890123456789107';
+        testProxy.page.onContextualInputStatusChanged(
+            testToken, ContextUploadStatus.kProcessing, null);
+        await testProxy.page.$.flushForTesting();
+        await omniboxComposebox.updateComplete;
+
+        // No placeholder chip is added before addSearchContext arrives.
+        assertEquals(0, omniboxComposebox.attachedContext.size);
+
+        omniboxComposebox.addSearchContext({
+          input: '',
+          attachments: [{
+            fileAttachment: {
+              uuid: testToken,
+              name: 'photo.png',
+              mimeType: 'image/png',
+              imageDataUrl: 'data:image/png;base64,abc',
+              thumbnailUrl: null,
+              errorType: null,
+              iconUrl: null,
+            },
+          }],
+          toolMode: 0,
+          modelMode: 0,
+        });
+        await microtasksFinished();
+
+        assertEquals(1, omniboxComposebox.attachedContext.size);
+        assertEquals(
+            ContextUploadStatus.kUploadStarted,
+            omniboxComposebox.attachedContext.get(testToken)?.status);
+      });
+
+  test(
+      'early upload failure before addSearchContext does not attach the file',
+      async () => {
+        omniboxComposebox.i18n = (key: string) => key;
+        const testToken = '12345678901234567890123456789108';
+        for (const status
+                 of [ContextUploadStatus.kProcessing,
+                     ContextUploadStatus.kUploadFailed]) {
+          testProxy.page.onContextualInputStatusChanged(
+              testToken, status, null);
+        }
+        await testProxy.page.$.flushForTesting();
+        await omniboxComposebox.updateComplete;
+
+        omniboxComposebox.addSearchContext({
+          input: '',
+          attachments: [{
+            fileAttachment: {
+              uuid: testToken,
+              name: 'doc.pdf',
+              mimeType: 'application/pdf',
+              imageDataUrl: null,
+              thumbnailUrl: null,
+              errorType: null,
+              iconUrl: null,
+            },
+          }],
+          toolMode: 0,
+          modelMode: 0,
+        });
+        await microtasksFinished();
+
+        assertEquals(0, omniboxComposebox.attachedContext.size);
+        assertTrue(omniboxComposebox.fileUploadsComplete);
+        assertEquals(
+            'composeboxFileUploadFailed', omniboxComposebox.errorMessage);
+        assertEquals(1, testProxy.handler.getCallCount('deleteContext'));
+      });
+
   test('addTabContextHandleCallback failure sets errorMessage', async () => {
     testProxy.handler.setPromiseRejectFor(
         'addTabContext',
