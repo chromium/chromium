@@ -92,9 +92,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
       isAutomatedPasswordChangeVisible_: {type: Boolean},
       hasPasswordsToExport_: {type: Boolean},
-      // <if expr="is_win or is_macosx">
       hasPasskeys_: {type: Boolean},
-      // </if>
       credentialsEnableServicePref_: {type: Object},
 
       /** The visibility state of the trusted vault banner. */
@@ -123,9 +121,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       boolean = loadTimeData.getBoolean(
           'biometricAuthenticationForFillingToggleVisible');
   // </if>
-  // <if expr="is_win or is_macosx">
   protected accessor hasPasskeys_: boolean = false;
-  // </if>
   protected accessor credentialsEnableServicePref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   protected accessor hasPasswordsToExport_: boolean = false;
