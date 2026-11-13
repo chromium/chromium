@@ -237,6 +237,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.Counterfactual.EmptyWindowTabWouldHaveBeenLost"
+    enum="BooleanHit" expires_after="2027-11-09">
+  <owner>dljames@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <summary>
+    Recorded when a tab is added to a window that had no tabs the last time the
+    session file was rewritten from scratch. Before the fix for
+    https://crbug.com/582855753, such windows were left out of that rewrite, so
+    the new tab would not have been saved until the next full rewrite and would
+    have been lost if the browser exited first. Recorded at most once per window
+    per rewrite.
+  </summary>
+</histogram>
+
 <histogram name="Session.Counterfactual.RebuildWouldHaveDroppedTabs"
     enum="Boolean" expires_after="2027-11-09">
   <owner>dljames@chromium.org</owner>

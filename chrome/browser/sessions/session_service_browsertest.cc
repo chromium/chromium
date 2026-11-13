@@ -257,14 +257,23 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest, EmptyWindowSaved) {
+  base::HistogramTester histogram_tester;
   BrowserWindowInterface* empty_browser = CreateBrowserWindow(
       BrowserWindowCreateParams(browser()->GetProfile(), true));
 
   ASSERT_EQ(0, empty_browser->GetTabStripModel()->count());
   service()->ResetFromCurrentBrowsers();
 
+  // A window that already had tabs at the rebuild is not counted.
+  std::ignore = AddTabAtIndexToBrowser(browser(), -1, GURL(url::kAboutBlankURL),
+                                       ui::PAGE_TRANSITION_TYPED);
+  histogram_tester.ExpectTotalCount(
+      "Session.Counterfactual.EmptyWindowTabWouldHaveBeenLost", 0);
+
   std::ignore = AddTabAtIndexToBrowser(
       empty_browser, -1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED);
+  histogram_tester.ExpectUniqueSample(
+      "Session.Counterfactual.EmptyWindowTabWouldHaveBeenLost", true, 1);
 
   sessions::CommandStorageManager* command_storage_manager =
       SessionServiceTestHelper(service()).command_storage_manager();
