@@ -204,6 +204,13 @@ TabSearchPageHandler::TabSearchPageHandler(
               base::BindRepeating(&ShouldTrackBrowser, profile_)),
           base::BindRepeating(&TabSearchPageHandler::OnTabEvents,
                               base::Unretained(this)))) {
+  if (sessions::TabRestoreService* tab_restore_service =
+          TabRestoreServiceFactory::GetForProfile(profile_)) {
+    for (const auto& entry : tab_restore_service->entries()) {
+      existing_tab_restore_ids_.insert(entry->id);
+    }
+    tab_restore_service_observation_.Observe(tab_restore_service);
+  }
   if (IsWebContentsVisible()) {
     bubble_showing_ = true;
   }
@@ -528,6 +535,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
                            profile_data->recently_closed_split_views,
                            tab_group_ids, profile_data->tab_groups,
                            tab_dedup_keys);
+  recently_closed_tab_restore_ids_.clear();
   profile_data->recently_closed_section_expanded =
       profile_->GetPrefs()->GetBoolean(
           tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
@@ -942,31 +950,48 @@ void TabSearchPageHandler::OnTabEvents(
   }
 }
 
+void TabSearchPageHandler::TabRestoreServiceChanged(
+    sessions::TabRestoreService* service) {
+  std::set<SessionID> current_ids;
+  const auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_ui_->GetWebContents());
+  const bool should_record = IsWebContentsVisible() &&
+                             !(preload_state && preload_state->pending_request);
+
+  for (const auto& entry : service->entries()) {
+    current_ids.insert(entry->id);
+    if (should_record && entry->type == sessions::tab_restore::Type::TAB &&
+        !entry->original_id.is_valid() &&
+        !existing_tab_restore_ids_.contains(entry->id)) {
+      recently_closed_tab_restore_ids_.insert(entry->id);
+    }
+  }
+  existing_tab_restore_ids_ = std::move(current_ids);
+}
+
+void TabSearchPageHandler::TabRestoreServiceDestroyed(
+    sessions::TabRestoreService* service) {
+  tab_restore_service_observation_.Reset();
+}
+
 void TabSearchPageHandler::OnNodesRemoved(
     const tabs_api::mojom::OnNodesClosedEventPtr& event) {
   std::vector<int> tab_ids;
-  std::set<SessionID> tab_restore_ids;
 
   for (const auto& node_id : event->node_ids) {
     if (node_id.Type() == tabs_api::NodeId::Type::kContent) {
       int32_t tab_id;
       if (base::StringToInt(node_id.Id(), &tab_id)) {
         tab_ids.push_back(tab_id);
-        std::optional<int32_t> session_id =
-            tabs::SessionMappedTabHandleFactory::GetInstance()
-                .GetSessionIdForHandle(tab_id);
-        if (session_id.has_value()) {
-          tab_restore_ids.insert(
-              SessionID::FromSerializedValue(session_id.value()));
-        }
       }
     } else if (node_id.Type() == tabs_api::NodeId::Type::kCollection) {
       OnSplitTabRemoved();
     }
   }
 
-  if (!tab_ids.empty() || !tab_restore_ids.empty()) {
-    OnTabsRemoved(std::move(tab_ids), std::move(tab_restore_ids));
+  if (!tab_ids.empty()) {
+    OnTabsRemoved(std::move(tab_ids),
+                  std::exchange(recently_closed_tab_restore_ids_, {}));
   }
 }
 
@@ -1053,8 +1078,11 @@ void TabSearchPageHandler::NotifyTabsChanged() {
 }
 
 void TabSearchPageHandler::OnVisibilityChanged(content::Visibility visibility) {
-  if (bubble_showing_ && visibility == content::Visibility::HIDDEN) {
-    LogCloseMetrics();
+  if (visibility == content::Visibility::HIDDEN) {
+    recently_closed_tab_restore_ids_.clear();
+    if (bubble_showing_) {
+      LogCloseMetrics();
+    }
   }
 }
 

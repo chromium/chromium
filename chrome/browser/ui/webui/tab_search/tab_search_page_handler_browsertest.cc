@@ -1041,10 +1041,23 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, CloseTab) {
   const int tab_id =
       browser2()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(
+      page_,
+      TabsRemoved(Truly(
+          [this, tab_id](const tab_search::mojom::TabsRemovedInfoPtr& info) {
+            if (info->tab_ids.size() != 1u || info->tab_ids[0] != tab_id ||
+                info->recently_closed_tabs.size() != 1u) {
+              return false;
+            }
+            ExpectRecentlyClosedTab(info->recently_closed_tabs[0].get(),
+                                    this->tab_url2_.spec(), kTabName2);
+            return true;
+          })))
+      .Times(1);
   handler()->CloseTab(tab_id);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return browser2()->tab_strip_model()->count() == 1; }));
+  page_.receiver_.FlushForTesting();
   ASSERT_EQ(2, browser1()->tab_strip_model()->count());
   ASSERT_EQ(1, browser2()->tab_strip_model()->count());
 }
