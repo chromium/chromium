@@ -74,7 +74,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_prefs/user_prefs.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -152,18 +151,9 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
         std::make_unique<OmniboxAutofillDelegate>(&client_.get());
   }
 #endif
-  if (AutofillOfferManager* offer_manager = GetAutofillOfferManager()) {
+  if (GetAutofillOfferManager()) {
     offer_notification_handler_ =
-        std::make_unique<OfferNotificationHandler>(offer_manager);
-  }
-  // Only needed to update the offer notification, which is otherwise not
-  // shown.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableWalletDirectOffers) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableWalletDirectOffersNotificationBubble)) {
-    payments_data_manager_observation_.Observe(
-        &client_->GetPersonalDataManager().payments_data_manager());
+        std::make_unique<OfferNotificationHandler>(client_.get());
   }
 }
 
@@ -958,12 +948,6 @@ void ChromePaymentsAutofillClient::DismissOfferNotification() {
 #endif
 }
 
-bool ChromePaymentsAutofillClient::IsTabVisibleForOfferNotification() const {
-  // An occluded tab counts as not visible: the user cannot see a notification
-  // shown on it either.
-  return web_contents()->GetVisibility() == content::Visibility::VISIBLE;
-}
-
 bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillPaymentMethodDelegate> delegate,
     base::span<const Suggestion> suggestions) {
@@ -1404,52 +1388,6 @@ void ChromePaymentsAutofillClient::
       std::move(touch_to_fill_payment_method_controller);
 }
 #endif  // #if BUILDFLAG(IS_ANDROID)
-
-void ChromePaymentsAutofillClient::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->IsInPrimaryMainFrame()) {
-    return;
-  }
-  if (offer_notification_handler_) {
-    offer_notification_handler_->UpdateOfferNotificationVisibility(*client_);
-  }
-}
-
-void ChromePaymentsAutofillClient::OnVisibilityChanged(
-    content::Visibility visibility) {
-  // Offer notifications are not set up for hidden tabs, so that they cannot
-  // consume the once-per-offer automatic show. Re-evaluate the offer
-  // notification once the tab becomes visible.
-  if (visibility != content::Visibility::VISIBLE) {
-    return;
-  }
-  if (offer_notification_handler_) {
-    offer_notification_handler_->UpdateOfferNotificationVisibility(*client_);
-  }
-}
-
-void ChromePaymentsAutofillClient::OnPaymentsDataChanged() {
-  // The offers are per profile, but the offer notification is per tab, so each
-  // tab re-evaluates it for its current page.
-  // TODO(crbug.com/546252995): Move this observation as well as the navigation
-  // and visibility handling into `OfferNotificationHandler`.
-#if !BUILDFLAG(IS_ANDROID)
-  // This is sent for any change to the payments data, e.g. to cards or to
-  // offers for other sites. Leave a showing bubble alone, since re-evaluating
-  // would collapse it to its icon.
-  if (OfferNotificationBubbleControllerImpl* controller =
-          OfferNotificationBubbleControllerImpl::FromWebContents(
-              web_contents());
-      controller && controller->IsShowingBubble()) {
-    return;
-  }
-#endif
-  if (offer_notification_handler_) {
-    offer_notification_handler_->UpdateOfferNotificationVisibility(*client_);
-  }
-}
 
 std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {
   signin::IdentityManager* identity_manager = client_->GetIdentityManager();
