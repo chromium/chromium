@@ -27,6 +27,8 @@ ports; do not supply `--host-resolver-rules`. The examples show these fields.
 
 ## Run configuration
 
+- `benchmark_name`: Required benchmark identifier. Use `loadline2-phone` for
+  LLP2 touch-triggered navigation.
 - `actions_file`: Crossbench-style JSON or HJSON containing `pages`, named
   `blocks`, and action arrays. Paths are relative to the runner JSON, or start
   with `//` for the Chromium source root.
@@ -55,6 +57,7 @@ defaults.
 | `wait` | `duration` | — | Pause for the given duration. |
 | `tap` | `position: {"x": ..., "y": ...}` | — | Inject an Android touch at display pixel coordinates. |
 | `js` | `script` | `output` (none), `timeout="5s"` | Execute a JavaScript function body through CDP. Use `return` and `output` to store its result. |
+| `touch_navigation` | `script` | `timeout="5s"` | Run the JavaScript navigation script in response to an Android touch event. |
 | `wait_for_condition` | `condition` | `failure_condition` (none), `timeout="10s"`, `poll_interval_ms=100`, `command_timeout_ms=5000` | Poll a JavaScript body until it returns `true`; fail if the optional failure body returns `true`. |
 | `trace_processor` | `input`, `query_file`, `output` | `timeout="120s"` | Run a SQL query on a completed trace and store one CSV result table. Cells remain strings. |
 | `process_llp2_trace` | `input`, `query_file`, `version`, `output` | `timeout="120s"` | Query a completed trace and calculate LLP2 phone page metrics and the total score. `version` accepts `2` or `2.x`, such as `2.5.0`. |

@@ -1,4 +1,5 @@
 {
+  "benchmark_name": "jetstream",
   "benchmark_version": "3.0",
   "actions_file": "jetstream3_actions.hjson",
   "browser": {

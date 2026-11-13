@@ -59,7 +59,8 @@ final class ActionFactory implements AutoCloseable {
     Plan parse(JSONObject definition) throws Exception {
         List<Step> actions = new ArrayList<>();
         List<Step> afterPages = new ArrayList<>();
-        List<Step> pages = parsePages(definition.getJSONArray("pages"));
+        List<Step> pages =
+                parsePages(definition.getJSONArray("pages"), text(definition, "benchmark_name"));
         configureProbe(definition, actions, afterPages);
         List<Step> processing =
                 parseActions(definition.getJSONArray("output_processing"), "output_processing");
@@ -72,7 +73,7 @@ final class ActionFactory implements AutoCloseable {
         return new Plan(actions, prepareReplay(definition));
     }
 
-    private List<Step> parsePages(JSONArray definitions) throws Exception {
+    private List<Step> parsePages(JSONArray definitions, String benchmarkName) throws Exception {
         List<Step> actions = new ArrayList<>();
         if (definitions.length() == 0) {
             throw new IllegalArgumentException("pages must not be empty");
@@ -86,10 +87,16 @@ final class ActionFactory implements AutoCloseable {
                 JSONObject block = blocks.getJSONObject(blockIndex);
                 String blockName = text(block, "name");
                 String location = pageLocation + ".blocks[" + blockIndex + "] (" + blockName + ")";
-                if (blockName.equals("load")) {
-                    actions.add(new Step(new Tap(mAutomation, mDeadline, 0, 0), location + ".tap"));
+                JSONArray blockActions = block.getJSONArray("actions");
+                if (benchmarkName.equals("loadline2-phone")
+                        && blockName.equals("load")
+                        && blockActions.length() > 0) {
+                    JSONObject firstAction = blockActions.getJSONObject(0);
+                    if (firstAction.optString("action").equals("js")) {
+                        firstAction.put("action", "touch_navigation");
+                    }
                 }
-                actions.addAll(parseActions(block.getJSONArray("actions"), location + ".actions"));
+                actions.addAll(parseActions(blockActions, location + ".actions"));
             }
         }
         return actions;
@@ -222,6 +229,15 @@ final class ActionFactory implements AutoCloseable {
                                 mDeadline,
                                 text(action, "script"),
                                 output,
+                                durationMillis(action, "timeout", CdpSocket.COMMAND_TIMEOUT_MS, 1));
+                break;
+            case "touch_navigation":
+                result =
+                        new TouchNavigation(
+                                mAutomation,
+                                mCdpSocket,
+                                mDeadline,
+                                text(action, "script"),
                                 durationMillis(action, "timeout", CdpSocket.COMMAND_TIMEOUT_MS, 1));
                 break;
             case "wait_for_condition":

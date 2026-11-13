@@ -37,6 +37,7 @@ android_library("wpr_benchmark_runner_java") {
     "src/org/chromium/wpr_benchmark_runner/StartProbe.java",
     "src/org/chromium/wpr_benchmark_runner/StopProbe.java",
     "src/org/chromium/wpr_benchmark_runner/Tap.java",
+    "src/org/chromium/wpr_benchmark_runner/TouchNavigation.java",
     "src/org/chromium/wpr_benchmark_runner/TraceProcessor.java",
     "src/org/chromium/wpr_benchmark_runner/Wait.java",
     "src/org/chromium/wpr_benchmark_runner/WaitForCondition.java",

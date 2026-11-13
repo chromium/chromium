@@ -132,6 +132,9 @@ def load_benchmark(root, config_path):
   source = _source(root, root, config_path)
   native_libraries = {}
   definition = json.loads(source.read_text(encoding="utf-8"))
+  benchmark_name = definition.get("benchmark_name")
+  if not isinstance(benchmark_name, str) or not benchmark_name.strip():
+    raise ValueError("benchmark_name must be a nonempty string")
   actions_file = _source(root, source.parent, definition.pop("actions_file"))
   definition["pages"] = _load_pages(actions_file)
   definition.setdefault("output_processing", [])

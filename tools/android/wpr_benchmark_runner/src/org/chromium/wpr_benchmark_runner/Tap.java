@@ -19,12 +19,18 @@ final class Tap implements Action {
     private final Deadline mDeadline;
     private final float mX;
     private final float mY;
+    private final long mDurationMillis;
 
     Tap(UiAutomation automation, Deadline deadline, float x, float y) {
+        this(automation, deadline, x, y, 10);
+    }
+
+    Tap(UiAutomation automation, Deadline deadline, float x, float y, long durationMillis) {
         mAutomation = automation;
         mDeadline = deadline;
         mX = x;
         mY = y;
+        mDurationMillis = durationMillis;
     }
 
     @Override
@@ -36,7 +42,7 @@ final class Tap implements Action {
         }
         boolean released;
         try {
-            Thread.sleep(10);
+            Thread.sleep(mDurationMillis);
         } finally {
             released = inject(MotionEvent.ACTION_UP, downTime, mX, mY);
         }
