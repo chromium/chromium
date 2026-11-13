@@ -16,6 +16,7 @@
 #include "base/numerics/angle_conversions.h"
 #include "cc/trees/layer_tree_host.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_solid_color.h"
 #include "ui/compositor/layer_test_api.h"
@@ -78,7 +79,7 @@ void PrintLayerHierarchyImp(const Layer* layer,
       break;
   }
 
-  if (layer->fills_bounds_opaquely()) {
+  if (!layer->AsNotDrawn() && layer->fills_bounds_opaquely()) {
     *out << " opaque";
   }
 
