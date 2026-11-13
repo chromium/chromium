@@ -47,5 +47,6 @@ schema:
 supported_on:
 - chrome.*:133-
 - chrome_os:133-
+- android:160-
 tags: []
 type: dict
