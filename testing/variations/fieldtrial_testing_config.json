@@ -1131,6 +1131,25 @@
             ]
         }
     ],
+    "AndroidWebViewPreconnectManagerDirectFastPath": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWith25ms_20261109_BETA",
+                    "params": {
+                        "QuicPreconnectInitialRttParam": "25ms"
+                    },
+                    "enable_features": [
+                        "PreconnectManagerDirectFastPath",
+                        "QuicPreconnectInitialRtt"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidWindowManagementWebApi": [
         {
             "platforms": [
@@ -16066,7 +16085,6 @@
             "platforms": [
                 "android",
                 "android_desktop",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
