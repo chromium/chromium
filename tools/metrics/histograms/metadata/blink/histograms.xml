@@ -4522,23 +4522,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.OffscreenCanvas.TransferControlToOffscreen"
-    enum="BooleanSuccess" expires_after="2025-04-01">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>Records a call to transfer a canvas offscreen.</summary>
-</histogram>
-
-<histogram name="Blink.OffscreenCanvas.Transferred" enum="Boolean"
-    expires_after="2025-04-01">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Records when an offscreen canvas has been transferred from the main thread
-    to a worker.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Paint.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-03-14">
   <owner>pdr@chromium.org</owner>

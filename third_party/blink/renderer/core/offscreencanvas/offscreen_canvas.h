@@ -94,7 +94,6 @@ class CORE_EXPORT OffscreenCanvas final
                             ExceptionState&);
 
   void SetSize(gfx::Size);
-  void RecordTransfer();
 
   static OffscreenCanvas* FromPlaceholderId(ExecutionContext* context,
                                             DOMNodeId canvas_id);

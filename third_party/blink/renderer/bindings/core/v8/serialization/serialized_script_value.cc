@@ -409,7 +409,6 @@ void SerializedScriptValue::TransferOffscreenCanvas(
     }
     visited.insert(offscreen_canvases[i].Get());
     offscreen_canvases[i].Get()->SetNeutered();
-    offscreen_canvases[i].Get()->RecordTransfer();
   }
 }
 

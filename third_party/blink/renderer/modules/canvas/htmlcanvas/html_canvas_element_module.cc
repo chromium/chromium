@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_context_creation_attributes_module.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -63,8 +62,6 @@ OffscreenCanvas* HTMLCanvasElementModule::transferControlToOffscreen(
     offscreen_canvas = TransferControlToOffscreenInternal(script_state, canvas);
   }
 
-  base::UmaHistogramBoolean("Blink.OffscreenCanvas.TransferControlToOffscreen",
-                            !!offscreen_canvas);
   return offscreen_canvas;
 }
 

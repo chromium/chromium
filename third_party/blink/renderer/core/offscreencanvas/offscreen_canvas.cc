@@ -344,10 +344,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   }
 }
 
-void OffscreenCanvas::RecordTransfer() {
-  UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.Transferred", true);
-}
-
 void OffscreenCanvas::SetNeutered() {
   DCHECK(!context_);
   is_neutered_ = true;
