@@ -1525,6 +1525,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHNtpFuseboxAnimationFeature.name == feature->name) {
+    // A config for the NTP Fusebox animation that animates the (+) button and
+    // cycles the search box hint text.
+    // Triggers up to 5 times lifetime without blocking, being blocked by, or
+    // impacting other IPH features. Once-per-session gating is enforced
+    // client-side in SearchBoxMediator so other IPHs do not suppress it.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.trigger =
+        EventConfig("ntp_fusebox_animation_triggered", Comparator(LESS_THAN, 5),
+                    /*window=*/k10YearsInDays, /*storage=*/k10YearsInDays);
+    config.used = EventConfig("ntp_fusebox_animation_used", kAlwaysTrue,
+                              /*window=*/0, /*storage=*/0);
+    return config;
+  }
+
   if (kIPHNewTabPageThemeCustomizationFeature.name == feature->name) {
     // Allows an IPH for the theme customization entry point.
     // Once per kNewTabPageCustomizationV2IphDisplayIntervalDays days.

@@ -624,6 +624,9 @@ BASE_FEATURE(kIPHNewTabPageThemeCustomizationFeature,
 BASE_FEATURE(kIPHNewTabPageThemeCustomizationMagicStackFeature,
              "IPH_NewTabPageThemeCustomizationMagicStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHNtpFuseboxAnimationFeature,
+             "IPH_NtpFuseboxAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPageInfoFeature,
              "IPH_PageInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);

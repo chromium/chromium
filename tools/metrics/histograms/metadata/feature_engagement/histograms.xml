@@ -590,6 +590,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
   <variant name="IPH_NotificationPermissionPromo"
       summary="OS notification permission prompt on Android"/>
+  <variant name="IPH_NtpFuseboxAnimation"
+      summary="the NTP Fusebox (+) button and cycling hint text animation"/>
   <variant name="IPH_OmniboxAskGLensIcon"
       summary="the Lens icon in the omnibox popup"/>
   <variant name="IPH_OmniboxEverywhereLensPromo"
