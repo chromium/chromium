@@ -2218,7 +2218,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      */
     public void initializeCoBrowseViewFactory() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()
-                || GlicUtils.isSidePanelFormFactor(mActivity)) {
+                || GlicUtils.isSidePanelFormFactor(mActivity)
+                || ContextualTasksUtils.isContextualTasksUiEnabled()) {
             ContextMenuPopulatorFactory contextMenuPopulatorFactory =
                     new ChromeContextMenuPopulatorFactory(
                             /* itemDelegate= */ null,

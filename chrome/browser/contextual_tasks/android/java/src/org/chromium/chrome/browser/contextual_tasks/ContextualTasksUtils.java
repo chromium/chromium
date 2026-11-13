@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.contextual_tasks;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureList;
+import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** Utility methods for Contextual Tasks. */
@@ -57,10 +62,77 @@ public final class ContextualTasksUtils {
         return ContextualTasksUtilsJni.get().isAllowSignedOutUserInDesktopAndroidEnabled();
     }
 
+    /**
+     * Returns whether the "Ask Google" contextual search entry points should be shown for the given
+     * {@link Tab}.
+     *
+     * @param tab The current {@link Tab}, or null if unavailable.
+     */
+    public static boolean shouldShowAskGoogleEntryPoints(@Nullable Tab tab) {
+        // Cached flag check avoids the JNI hop when the feature is off.
+        if (!ChromeFeatureList.sContextualTasksEntryPoints.isEnabled()) return false;
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
+        return webContents != null
+                && ContextualTasksUtilsJni.get().shouldShowAskGoogleEntryPoints(webContents);
+    }
+
+    /**
+     * Returns whether a specific "Ask Google" contextual search surface entry point should be shown
+     * for the given {@link Tab}.
+     *
+     * @param tab The current {@link Tab}, or null if unavailable.
+     * @param surfaceParam The per-surface {@link MutableBooleanParamWithSafeDefault} parameter.
+     */
+    public static boolean shouldShowAskGoogleEntryPoint(
+            @Nullable Tab tab, MutableBooleanParamWithSafeDefault surfaceParam) {
+        return surfaceParam.getValue() && shouldShowAskGoogleEntryPoints(tab);
+    }
+
+    /**
+     * Opens the Contextual Tasks side panel for the given {@link Tab}.
+     *
+     * @param tab The current {@link Tab}.
+     * @param invocationSource The {@link LensOverlayInvocationSource} identifying the caller.
+     */
+    public static void openAskGoogleAboutThisPage(
+            @Nullable Tab tab, @LensOverlayInvocationSource int invocationSource) {
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
+        if (webContents == null) return;
+        ContextualTasksUtilsJni.get().openAskGoogleAboutThisPage(webContents, invocationSource);
+    }
+
+    /**
+     * Toggles the Contextual Tasks side panel for the given {@link Tab}: closes the panel if it is
+     * currently open for a contextual task, otherwise opens it via {@link
+     * #openAskGoogleAboutThisPage}.
+     *
+     * @param tab The current {@link Tab}.
+     * @param invocationSource The {@link LensOverlayInvocationSource} identifying the caller.
+     */
+    public static void toggleAskGoogleSidePanel(
+            @Nullable Tab tab, @LensOverlayInvocationSource int invocationSource) {
+        WebContents webContents = tab != null ? tab.getWebContents() : null;
+        if (webContents == null) return;
+        ContextualTasksUtilsJni.get().toggleAskGoogleSidePanel(webContents, invocationSource);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isContextualTasksUiEnabled();
 
         boolean isAllowSignedOutUserInDesktopAndroidEnabled();
+
+        boolean shouldShowAskGoogleEntryPoints(
+                @JniType("content::WebContents*") WebContents webContents);
+
+        void openAskGoogleAboutThisPage(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("lens::LensOverlayInvocationSource") @LensOverlayInvocationSource
+                        int invocationSource);
+
+        void toggleAskGoogleSidePanel(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("lens::LensOverlayInvocationSource") @LensOverlayInvocationSource
+                        int invocationSource);
     }
 }

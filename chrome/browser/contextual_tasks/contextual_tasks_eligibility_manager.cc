@@ -154,7 +154,8 @@ bool ContextualTasksEligibilityManager::IsSidePanelAvailable() const {
     return true;
   }
 
-  return lens::features::IsLensSidePanelUnificationAllowSignedOut();
+  return lens::features::IsLensSidePanelUnificationAllowSignedOut() ||
+         IsAllowSignedOutUserInDesktopAndroidEnabled();
 }
 
 base::CallbackListSubscription

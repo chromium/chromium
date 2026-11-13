@@ -161,7 +161,6 @@ source_set("impl") {
   if (is_android) {
     sources += [
       "android/contextual_tasks_bridge.cc",
-      "android/contextual_tasks_bridge.h",
       "android/contextual_tasks_ui_service_delegate_android.cc",
       "android/contextual_tasks_ui_service_delegate_android.h",
       "android/contextual_tasks_utils_android.cc",
@@ -243,6 +242,7 @@ source_set("impl") {
       ":jni_headers",
       ":utils_jni_headers",
       "//chrome/browser/ui/webui:webui_util",
+      "//components/browser_ui/util/android",
       "//ui/android",
     ]
   } else {
@@ -285,6 +285,7 @@ source_set("ui") {
 
   if (is_android) {
     sources += [
+      "android/contextual_tasks_bridge.h",
       "android/contextual_tasks_panel_host_android.h",
       "android/contextual_tasks_panel_host_desktop_android.h",
       "android/contextual_tasks_toast.h",
@@ -1155,10 +1156,14 @@ if (is_android) {
     srcjar_deps = [ ":utils_jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java" ]
     deps = [
+      "//base:base_java",
       "//base:build_info_java",
       "//base:features_java",
       "//chrome/browser/flags:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/ui/android/lens:java",
       "//components/embedder_support/android:util_java",
+      "//content/public/android:content_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
@@ -1241,6 +1246,7 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/lens:java",
       "//chrome/browser/ui/android/omnibox:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/ui/messages/android:java",
