@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -77,6 +77,7 @@ public class OfflinePageDownloadBridge {
             final @JniType("std::string") String url,
             final long offlineId,
             final int location,
+            final @JniType("Profile*") Profile profile,
             final boolean isIncognito,
             final boolean openInCct) {
         OfflinePageUtils.getLoadUrlParamsForOpeningOfflineVersion(
@@ -96,7 +97,7 @@ public class OfflinePageDownloadBridge {
                         openItemInNewTab(params, isIncognito);
                     }
                 },
-                ProfileManager.getLastUsedRegularProfile());
+                profile);
     }
 
     /**

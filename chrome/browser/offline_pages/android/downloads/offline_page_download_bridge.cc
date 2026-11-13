@@ -98,7 +98,7 @@ void OnShareInfoRetrieved(std::unique_ptr<OfflinePageShareHelper>,
 
 class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
  public:
-  explicit DownloadUIAdapterDelegate(OfflinePageModel* model);
+  DownloadUIAdapterDelegate(OfflinePageModel* model, Profile* profile);
 
   // DownloadUIAdapter::Delegate
   bool IsVisibleInUI(const ClientId& client_id) override;
@@ -113,10 +113,12 @@ class DownloadUIAdapterDelegate : public DownloadUIAdapter::Delegate {
  private:
   // Not owned, cached service pointer.
   raw_ptr<OfflinePageModel> model_;
+  raw_ptr<Profile> profile_;
 };
 
-DownloadUIAdapterDelegate::DownloadUIAdapterDelegate(OfflinePageModel* model)
-    : model_(model) {}
+DownloadUIAdapterDelegate::DownloadUIAdapterDelegate(OfflinePageModel* model,
+                                                     Profile* profile)
+    : model_(model), profile_(profile) {}
 
 bool DownloadUIAdapterDelegate::IsVisibleInUI(const ClientId& client_id) {
   const std::string& name_space = client_id.name_space;
@@ -133,7 +135,7 @@ void DownloadUIAdapterDelegate::OpenItem(
   JNIEnv* env = AttachCurrentThread();
   Java_OfflinePageDownloadBridge_openItem(
       env, item.url.spec(), offline_id,
-      static_cast<int>(open_params.launch_location),
+      static_cast<int>(open_params.launch_location), profile_,
       open_params.open_in_incognito,
       offline_pages::ShouldOfflinePagesInDownloadHomeOpenInCct());
 }
@@ -284,11 +286,12 @@ void InitializeBackendOnProfileCreated(Profile* profile) {
     offline_items_collection::OfflineContentAggregator* aggregator =
         OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
     CHECK(aggregator, base::NotFatalUntil::M161);
-    adapter = new DownloadUIAdapter(
-        aggregator, offline_page_model, request_coordinator,
-        std::make_unique<VisualsDecoderImpl>(
-            std::make_unique<ImageDecoderImpl>()),
-        std::make_unique<DownloadUIAdapterDelegate>(offline_page_model));
+    adapter = new DownloadUIAdapter(aggregator, offline_page_model,
+                                    request_coordinator,
+                                    std::make_unique<VisualsDecoderImpl>(
+                                        std::make_unique<ImageDecoderImpl>()),
+                                    std::make_unique<DownloadUIAdapterDelegate>(
+                                        offline_page_model, profile));
     DownloadUIAdapter::AttachToOfflinePageModel(base::WrapUnique(adapter),
                                                 offline_page_model);
   }
