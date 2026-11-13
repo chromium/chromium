@@ -16,8 +16,10 @@
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/test_completion_callback.h"
 #include "net/disk_cache/disk_cache.h"
@@ -28,8 +30,10 @@
 #include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
 namespace content {
@@ -1748,6 +1752,145 @@ TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
                     /*expected_registration_id_cache_size=*/3);
   EXPECT_EQ(std::set<blink::StorageKey>({kKeyA, kKeyB}),
             registration_scope_cache_keys());
+}
+
+// Verifies that real stored service worker registrations always take priority
+// over synthetic registrations even when `registration_scope_cache_` or
+// `registration_id_cache_` is cold, while preserving the zero-IPC fast path for
+// origins or scopes without matching real registrations (crbug.com/582423396).
+TEST_F(ServiceWorkerScopeAndRegistrationCacheTest,
+       RealRegistrationPrioritizedOverSyntheticResponse) {
+  class SyntheticResponseBrowserClient : public TestContentBrowserClient {
+   public:
+    bool IsServiceWorkerSyntheticResponseAllowed(BrowserContext*,
+                                                 const GURL& url) override {
+      return url.GetPath().starts_with("/target");
+    }
+  };
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kServiceWorkerSyntheticResponse);
+  SyntheticResponseBrowserClient test_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&test_browser_client);
+  base::ScopedClosureRunner restore_client(base::BindLambdaForTesting(
+      [&]() { SetBrowserClientForTesting(old_browser_client); }));
+
+  registry().WaitForRegistrationsInitializedForTest();
+
+  auto find_for_navigation = [&](const GURL& url, const blink::StorageKey& key,
+                                 size_t expected_inflight_delta)
+      -> scoped_refptr<ServiceWorkerRegistration> {
+    const size_t initial_inflight = inflight_call_count();
+    scoped_refptr<ServiceWorkerRegistration> result;
+    base::RunLoop loop;
+    registry().FindRegistrationForClientUrl(
+        ServiceWorkerRegistry::Purpose::kNavigation, url, key,
+        base::BindLambdaForTesting(
+            [&](blink::ServiceWorkerStatusCode status,
+                scoped_refptr<ServiceWorkerRegistration> found) {
+              EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+              result = std::move(found);
+              loop.Quit();
+            }));
+    EXPECT_EQ(initial_inflight + expected_inflight_delta,
+              inflight_call_count());
+    loop.Run();
+    return result;
+  };
+
+  // 1. Origin with zero stored registrations takes the synchronous zero-IPC
+  // synthetic registration path without populating scope/id caches.
+  const GURL kNoSwUrl("https://no-sw.example.com/target/page?q=1");
+  const blink::StorageKey kNoSwKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kNoSwUrl));
+  scoped_refptr<ServiceWorkerRegistration> no_sw_found =
+      find_for_navigation(kNoSwUrl, kNoSwKey, /*expected_inflight_delta=*/0u);
+  ASSERT_TRUE(no_sw_found);
+  EXPECT_LE(no_sw_found->id(),
+            blink::mojom::kSyntheticResponseServiceWorkerRegistrationId);
+  EXPECT_TRUE(registration_scope_cache().empty());
+  EXPECT_TRUE(registration_id_cache().empty());
+
+  // 2. Origin with a stored real registration on a non-matching scope
+  // (`/other/`): first lookup on `/target/page` queries storage once to
+  // populate `registration_scope_cache_` and falls back to a synthetic
+  // registration without poisoning `registration_id_cache_`; the second lookup
+  // skips Mojo via `no_registration`.
+  const GURL kScript("https://www.example.com/script.js");
+  const GURL kOtherScope("https://www.example.com/other/");
+  const GURL kMatchingScope("https://www.example.com/target");
+  const GURL kEligibleUrl1("https://www.example.com/target/page?q=1");
+  const GURL kEligibleUrl2("https://www.example.com/target/page?q=2");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kEligibleUrl1));
+
+  scoped_refptr<ServiceWorkerRegistration> other_registration =
+      RegisterServiceWorker(kOtherScope, kScript, /*resource_id=*/1,
+                            /*expected_registration_scope_cache_size=*/0,
+                            /*expected_registration_id_cache_size=*/0);
+  ASSERT_TRUE(other_registration);
+
+  scoped_refptr<ServiceWorkerRegistration> cold_fallback =
+      find_for_navigation(kEligibleUrl1, kKey, /*expected_inflight_delta=*/1u);
+  ASSERT_TRUE(cold_fallback);
+  EXPECT_LE(cold_fallback->id(),
+            blink::mojom::kSyntheticResponseServiceWorkerRegistrationId);
+  ASSERT_NE(registration_scope_cache().Peek(kKey),
+            registration_scope_cache().end());
+  EXPECT_EQ(std::set<GURL>({kOtherScope}),
+            registration_scope_cache().Peek(kKey)->second);
+  EXPECT_TRUE(registration_id_cache().empty());
+
+  scoped_refptr<ServiceWorkerRegistration> warm_fallback =
+      find_for_navigation(kEligibleUrl2, kKey, /*expected_inflight_delta=*/0u);
+  ASSERT_TRUE(warm_fallback);
+  EXPECT_LE(warm_fallback->id(),
+            blink::mojom::kSyntheticResponseServiceWorkerRegistrationId);
+  EXPECT_EQ(std::set<GURL>({kOtherScope}),
+            registration_scope_cache().Peek(kKey)->second);
+  EXPECT_TRUE(registration_id_cache().empty());
+
+  // 3. Register a real service worker whose scope covers `kEligibleUrl1`.
+  // Both when `registration_scope_cache_` is cold and when `matched_scope` hits
+  // while `registration_id_cache_` misses, lookup must return the real
+  // registration rather than a synthetic one.
+  scoped_refptr<ServiceWorkerRegistration> matching_registration =
+      RegisterServiceWorker(kMatchingScope, kScript, /*resource_id=*/2,
+                            /*expected_registration_scope_cache_size=*/0,
+                            /*expected_registration_id_cache_size=*/0);
+  const int64_t real_registration_id = matching_registration->id();
+  ASSERT_GE(real_registration_id, 0);
+
+  CheckRegistration(kEligibleUrl1, blink::ServiceWorkerStatusCode::kOk,
+                    matching_registration,
+                    /*expected_inflight_call_count=*/1,
+                    /*expected_registration_scope_cache_size=*/1,
+                    /*expected_registration_id_cache_size=*/1);
+  EXPECT_EQ(real_registration_id,
+            registration_id_cache().Peek({kMatchingScope, kKey})->second);
+
+  // Evict `registration_id_cache_` while keeping `registration_scope_cache_`
+  // warm (`matched_scope` hit, id-cache miss).
+  registration_id_cache().Clear();
+  CheckRegistration(kEligibleUrl1, blink::ServiceWorkerStatusCode::kOk,
+                    matching_registration,
+                    /*expected_inflight_call_count=*/1,
+                    /*expected_registration_scope_cache_size=*/1,
+                    /*expected_registration_id_cache_size=*/1);
+  EXPECT_EQ(real_registration_id,
+            registration_id_cache().Peek({kMatchingScope, kKey})->second);
+
+  // 4. Simulate a cold restart before `registrations_initialized_` completes;
+  // lookup must still query storage and return the stored real registration.
+  other_registration.reset();
+  matching_registration.reset();
+  SimulateRestart();
+  scoped_refptr<ServiceWorkerRegistration> restart_found =
+      find_for_navigation(kEligibleUrl1, kKey, /*expected_inflight_delta=*/1u);
+  ASSERT_TRUE(restart_found);
+  EXPECT_EQ(real_registration_id, restart_found->id());
 }
 
 // Tests that fields of ServiceWorkerRegistrationInfo are filled correctly.

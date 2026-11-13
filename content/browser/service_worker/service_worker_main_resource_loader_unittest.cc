@@ -32,6 +32,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_registration.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
@@ -2288,15 +2289,37 @@ TEST_F(ServiceWorkerMainResourceLoaderTest,
       "ServiceWorker.StaticRouter.MainResource.ValidResponse", false, 1);
 }
 
-TEST_F(ServiceWorkerMainResourceLoaderTest, SearchPrefetchHitInSyntheticResponse) {
+TEST_F(ServiceWorkerMainResourceLoaderTest,
+       SearchPrefetchHitInSyntheticResponse) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kServiceWorkerSyntheticResponse,
       {{"bypass_subresource", "true"}});
 
+  SetupStoragePartition();
+  registry().WaitForRegistrationsInitializedForTest();
+
   MockSearchPrefetchContentBrowserClient mock_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&mock_browser_client);
+  base::ScopedClosureRunner restore_client(base::BindLambdaForTesting(
+      [&]() { SetBrowserClientForTesting(old_browser_client); }));
+
+  const GURL kSyntheticUrl("https://synthetic.example.com/page");
+  base::RunLoop loop;
+  registry().FindRegistrationForClientUrl(
+      ServiceWorkerRegistry::Purpose::kNavigation, kSyntheticUrl,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kSyntheticUrl)),
+      base::BindLambdaForTesting(
+          [&](blink::ServiceWorkerStatusCode status,
+              scoped_refptr<ServiceWorkerRegistration> found) {
+            ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+            registration_ = std::move(found);
+            version_ = registration_->active_version();
+            loop.Quit();
+          }));
+  loop.Run();
+  ASSERT_TRUE(version_);
 
   bool handler_called = false;
   mock_browser_client.set_handler(base::BindLambdaForTesting(
@@ -2307,6 +2330,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, SearchPrefetchHitInSyntheticResponse
       }));
 
   std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  request->url = kSyntheticUrl;
   SetUpTestWebContentsAndNavigation(request->url);
   request->is_outermost_main_frame = true;
 
@@ -2316,8 +2340,81 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, SearchPrefetchHitInSyntheticResponse
   EXPECT_EQ(service_worker_client()->fetch_handler_bypass_option(),
             blink::mojom::ServiceWorkerFetchHandlerBypassOption::
                 kSyntheticResponse);
+}
 
-  SetBrowserClientForTesting(old_browser_client);
+// Verifies that a real (non-synthetic) service worker version bypasses
+// `MaybeStartSyntheticNetworkRequest()` before embedder preload interception or
+// dry-run handling, dispatching fetch events and evaluating static router
+// network rules without marking responses as synthetic (crbug.com/582423396).
+TEST_F(ServiceWorkerMainResourceLoaderTest,
+       RealServiceWorkerIgnoresSyntheticResponse) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kServiceWorkerSyntheticResponse);
+  ServiceWorkerSyntheticResponseManager::SetDryRunMode(true);
+
+  SetupStoragePartition();
+
+  MockSearchPrefetchContentBrowserClient mock_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&mock_browser_client);
+  base::ScopedClosureRunner cleanup(base::BindLambdaForTesting([&]() {
+    ServiceWorkerSyntheticResponseManager::SetDryRunMode(false);
+    SetBrowserClientForTesting(old_browser_client);
+  }));
+
+  bool preload_handler_called = false;
+  mock_browser_client.set_handler(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request,
+          mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
+          mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+        preload_handler_called = true;
+      }));
+
+  // 1. Outermost main-frame navigation dispatches to the real worker's fetch
+  // handler without invoking the synthetic preload interceptor or caching a
+  // synthetic response head.
+  std::unique_ptr<network::ResourceRequest> first_request = CreateRequest();
+  SetUpTestWebContentsAndNavigation(first_request->url);
+  first_request->is_outermost_main_frame = true;
+  StartRequest(std::move(first_request));
+  client_.RunUntilComplete();
+
+  EXPECT_FALSE(preload_handler_called);
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  EXPECT_TRUE(client_.response_head()->was_fetched_via_service_worker);
+  EXPECT_FALSE(client_.response_head()->from_synthetic_response);
+  EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+  histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,
+                                      blink::ServiceWorkerStatusCode::kOk, 1);
+
+  // 2. With a static router `kNetwork` rule in dry-run mode, fallback proceeds
+  // through the static router with `is_synthetic_response_dry_run_mode` unset.
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork);
+  loader_remote_.reset();
+  network::TestURLLoaderClient second_client;
+  std::unique_ptr<network::ResourceRequest> second_request = CreateRequest();
+  second_request->is_outermost_main_frame = true;
+  loader_ = std::make_unique<ServiceWorkerMainResourceLoader>(
+      base::BindOnce(&ServiceWorkerMainResourceLoaderTest::Fallback,
+                     base::Unretained(this)),
+      /*fetch_event_client_id=*/"", service_worker_client()->AsWeakPtr(),
+      /*find_registration_start_time=*/base::TimeTicks::Now());
+  loader_->StartRequest(loader_remote_.BindNewPipeAndPassReceiver(),
+                        /*request_id=*/0, /*options=*/0, *second_request,
+                        second_client.CreateRemote(),
+                        net::MutableNetworkTrafficAnnotationTag());
+  RunUntilFallbackCallback();
+
+  EXPECT_TRUE(did_call_fallback_callback_);
+  EXPECT_FALSE(response_head_update_params_.is_synthetic_response_dry_run_mode);
+  EXPECT_FALSE(preload_handler_called);
+  histogram_tester.ExpectTotalCount(
+      "ServiceWorker.SyntheticResponse.Eligibility", 0);
+  histogram_tester.ExpectTotalCount(
+      "ServiceWorker.SyntheticResponse.HasSearchPrefetchCache", 0);
 }
 
 // Tests that when the Service Worker fetch handler responds faster than the
