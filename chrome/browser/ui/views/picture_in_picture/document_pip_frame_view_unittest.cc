@@ -1493,7 +1493,8 @@ TEST_F(DocumentPipFrameViewTest, LinuxClassicFrameWithShadow) {
       ChromeLayoutProvider::Get()->GetShadowElevationMetric(
           views::Emphasis::kMaximum));
   const gfx::Insets border = views::GetRestoredFrameBorderInsetsLinux(
-      /*showing_shadow=*/true, gfx::Insets(4), shadows, gfx::Insets(10));
+      /*showing_shadow=*/true, /*tiled=*/false, gfx::Insets(4), shadows,
+      gfx::Insets(10));
   EXPECT_EQ(border, frame->RestoredMirroredFrameBorderInsets());
   EXPECT_EQ(border, frame->GetInputInsets());
   const gfx::Rect client = frame->GetBoundsForClientView();

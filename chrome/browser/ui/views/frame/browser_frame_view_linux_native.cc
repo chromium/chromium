@@ -67,9 +67,18 @@ float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
 
 void BrowserFrameViewLinuxNative::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
-  layout_->GetFrameProvider()->PaintWindowFrame(
-      canvas, GetLocalBounds(), GetTopAreaHeight(), ShouldPaintAsActive(),
-      GetInputInsets());
+  auto* frame_provider = layout_->GetFrameProvider();
+  gfx::Rect bounds = GetLocalBounds();
+  int top_area_height = GetTopAreaHeight();
+  if (IsTiled()) {
+    // Tiled windows have no border insets, so paint the frame border outside
+    // of the view to have the headerbar fill the whole width of the window.
+    const gfx::Insets frame_thickness = frame_provider->GetFrameThicknessDip();
+    bounds.Inset(-frame_thickness);
+    top_area_height += frame_thickness.top();
+  }
+  frame_provider->PaintWindowFrame(canvas, bounds, top_area_height,
+                                   ShouldPaintAsActive(), GetInputInsets());
 }
 
 void BrowserFrameViewLinuxNative::MaybeUpdateCachedFrameButtonImages() {

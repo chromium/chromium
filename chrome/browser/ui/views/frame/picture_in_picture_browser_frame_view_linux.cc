@@ -217,8 +217,8 @@ gfx::Insets PictureInPictureBrowserFrameViewLinux::RestoredFrameBorderInsets()
   }
 
   return views::GetRestoredFrameBorderInsetsLinux(
-      ShouldDrawFrameShadow(), gfx::Insets(kFrameBorderThickness),
-      GetShadowValues(),
+      ShouldDrawFrameShadow(), browser_widget()->tiled(),
+      gfx::Insets(kFrameBorderThickness), GetShadowValues(),
       PictureInPictureBrowserFrameView::ResizeBorderInsets());
 }
 

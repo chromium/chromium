@@ -73,8 +73,13 @@ VIEWS_EXPORT void PaintRestoredFrameBorderLinux(
 
 // Get the insets from the native window edge to the client view when the window
 // is restored for frame views on Linux that use client-side decorations.
+// Tiled windows get no insets, so the window geometry starts at the surface
+// origin. Otherwise, the transparent border of `resize_border` DIPs may be a
+// fractional number of pixels at fractional scales, which the compositor cannot
+// align to its tiles.
 VIEWS_EXPORT gfx::Insets GetRestoredFrameBorderInsetsLinux(
     bool showing_shadow,
+    bool tiled,
     const gfx::Insets& default_border,
     const gfx::ShadowValues& shadow_values,
     const gfx::Insets& resize_border);

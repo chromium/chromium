@@ -44,14 +44,14 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
 #endif
   int WebAppButtonHeight() const override { return 0; }
 
-  bool tiled_;
+  bool tiled_ = false;
 };
 
 }  // namespace
 
 using BrowserFrameViewLayoutLinuxTest = ChromeViewsTestBase;
 
-// Tests that frame border insets are set to zero for the tiled edges.
+// Tests that frame border insets are set to zero when the window is tiled.
 TEST_F(BrowserFrameViewLayoutLinuxTest, FrameInsets) {
   BrowserFrameViewLayoutLinux layout;
   TestLayoutDelegate delegate;
@@ -62,10 +62,10 @@ TEST_F(BrowserFrameViewLayoutLinuxTest, FrameInsets) {
     delegate.tiled_ = tiled;
     const auto normal_insets = layout.RestoredMirroredFrameBorderInsets();
     if (tiled) {
-      EXPECT_EQ(normal_insets.left(), input_insets.left());
-      EXPECT_EQ(normal_insets.right(), input_insets.right());
-      EXPECT_EQ(normal_insets.top(), input_insets.top());
-      EXPECT_EQ(normal_insets.bottom(), input_insets.bottom());
+      // Tiled windows have no transparent border, so the window geometry is
+      // aligned to the surface's pixel grid at fractional scales.
+      EXPECT_TRUE(normal_insets.IsEmpty());
+      EXPECT_TRUE(layout.GetInputInsets().IsEmpty());
     } else {
       EXPECT_GE(normal_insets.left(), input_insets.left());
       EXPECT_GE(normal_insets.right(), input_insets.right());

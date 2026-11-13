@@ -162,7 +162,7 @@ gfx::Insets DocumentPipFrameViewLinux::FrameBorderInsets() const {
                   : window_frame_provider_->GetFrameThicknessDip();
   }
   return views::GetRestoredFrameBorderInsetsLinux(
-      supports_client_frame_shadow_, gfx::Insets(kFrameBorderThickness),
+      supports_client_frame_shadow_, tiled_, gfx::Insets(kFrameBorderThickness),
       GetShadowValues(), DocumentPipFrameView::ResizeBorderInsets());
 }
 

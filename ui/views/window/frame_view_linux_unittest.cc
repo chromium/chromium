@@ -295,8 +295,8 @@ TEST_F(FrameViewLinuxTest, FrameGeometryRestored) {
   EXPECT_EQ(0.0f, clip.radii(SkRRect::kLowerLeft_Corner).x());
 }
 
-// Tests frame geometry when tiled: no rounded corners, no shadows,
-// border still present for resize handles.
+// Tests frame geometry when tiled: no rounded corners, no shadows and no
+// border, so the window geometry starts at the surface origin.
 TEST_F(FrameViewLinuxTest, FrameGeometryTiled) {
   frame_view()->SetTiled(true);
 
@@ -306,13 +306,10 @@ TEST_F(FrameViewLinuxTest, FrameGeometryTiled) {
   EXPECT_TRUE(frame_view()->GetCornerRadii().IsEmpty());
   EXPECT_TRUE(frame_view()->GetShadowValues(true).empty());
 
-  // Border insets use resize-border sizing (not the thin no-shadow border),
-  // so the compositor can hide them on tiled edges via decoration insets.
-  gfx::Insets border = frame_view()->GetFrameBorderInsets();
-  EXPECT_FALSE(border.IsEmpty());
-  EXPECT_EQ(border.left(), border.right());
-  EXPECT_EQ(border.left(), border.bottom());
-  EXPECT_EQ(border.left(), border.top());
+  // No border insets: a transparent border may be a fractional number of
+  // pixels at fractional scales, which leaves gaps between tiled windows.
+  EXPECT_TRUE(frame_view()->GetFrameBorderInsets().IsEmpty());
+  EXPECT_TRUE(frame_view()->GetInputInsets().IsEmpty());
 
   // Untiling restores shadow values and corner radius.
   frame_view()->SetTiled(false);

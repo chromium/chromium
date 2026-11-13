@@ -35,8 +35,9 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredMirroredFrameBorderInsets()
 }
 
 gfx::Insets BrowserFrameViewLayoutLinux::GetInputInsets() const {
+  // Tiled windows have no border insets, so there is no resize band either.
   bool showing_shadow = delegate_->ShouldDrawRestoredFrameShadow() &&
-                        !delegate_->IsFrameCondensed();
+                        !delegate_->IsFrameCondensed() && !delegate_->IsTiled();
   return gfx::Insets(showing_shadow ? kResizeBorder : 0);
 }
 
@@ -57,15 +58,11 @@ gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
         OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets());
   }
 
-#if BUILDFLAG(IS_LINUX)
   const bool tiled = delegate_->IsTiled();
-#else
-  const bool tiled = false;
-#endif
   auto shadow_values =
       tiled ? gfx::ShadowValues() : view_->GetShadowValues(true);
   return views::GetRestoredFrameBorderInsetsLinux(
-      delegate_->ShouldDrawRestoredFrameShadow(),
+      delegate_->ShouldDrawRestoredFrameShadow(), tiled,
       OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets(), shadow_values,
       gfx::Insets(kResizeBorder));
 }

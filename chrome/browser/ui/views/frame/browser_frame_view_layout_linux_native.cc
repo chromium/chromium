@@ -50,13 +50,14 @@ gfx::Insets BrowserFrameViewLayoutLinuxNative::RestoredFrameBorderInsets()
   // between window geometry and bounds for the restored state, which may be
   // computed while the window is still maximized (e.g. when the compositor
   // unmaximizes the window).
-#if BUILDFLAG(IS_LINUX)
-  const bool tiled = delegate_->IsTiled();
-#else
-  const bool tiled = false;
-#endif
-  gfx::Insets insets = frame_provider_getter_.Run(tiled, /*maximized=*/false)
-                           ->GetFrameThicknessDip();
+  // Like BrowserFrameViewLayoutLinux, tiled windows have no border insets so
+  // that the window geometry stays aligned to the pixel grid.
+  if (delegate_->IsTiled()) {
+    return gfx::Insets();
+  }
+  gfx::Insets insets =
+      frame_provider_getter_.Run(/*tiled=*/false, /*maximized=*/false)
+          ->GetFrameThicknessDip();
   insets.SetToMax(GetRestoredInputInsets());
   return insets;
 }
