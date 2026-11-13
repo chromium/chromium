@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/system/statistics_provider_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,7 +17,8 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
@@ -233,11 +235,13 @@ std::optional<std::string> GetCrossystemValue(
 
 // Move entries from `parsed_pairs` whose keys are in `allowed_keys` into
 // `machine_info`, preserving any existing values in `machine_info`.
+// `allowed_keys` must be sorted.
 void AddAllowedStatistics(NameValuePairsParser::NameValueMap parsed_pairs,
-                          const base::flat_set<std::string_view>& allowed_keys,
+                          base::span<const std::string_view> allowed_keys,
                           NameValuePairsParser::NameValueMap& machine_info) {
+  DCHECK(std::ranges::is_sorted(allowed_keys));
   for (auto& [key, value] : parsed_pairs) {
-    if (!allowed_keys.contains(key)) {
+    if (!std::ranges::binary_search(allowed_keys, key)) {
       VLOG(1) << "Ignoring unexpected statistic key: " << key;
       continue;
     }
@@ -782,16 +786,17 @@ void StatisticsProviderImpl::LoadMachineInfoFile() {
   // - all parameters used in calls to GetMachineStatistic
   // - all keys written by
   //   src/platform2/login_manager/init/scripts/write-machine-info
-  const base::flat_set<std::string_view> kMachineInfoKeys = {
-      kCustomizationIdKey,
-      kFirmwareWriteProtectCurrentKey,
-      kFlexIdKey,
-      kFlexProductNameKey,
-      kFlexProductVersionKey,
-      kFlexSysVendorKey,
-      kRlzBrandCodeKey,
-      kSerialNumberKey,
-  };
+  static constexpr auto kMachineInfoKeys =
+      base::MakeFixedFlatSet<std::string_view>({
+          kCustomizationIdKey,
+          kFirmwareWriteProtectCurrentKey,
+          kFlexIdKey,
+          kFlexProductNameKey,
+          kFlexProductVersionKey,
+          kFlexSysVendorKey,
+          kRlzBrandCodeKey,
+          kSerialNumberKey,
+      });
 
   // The machine-info file is generated only for OOBE and enterprise enrollment
   // and may not be present. See login-manager/init/machine-info.conf.
@@ -843,7 +848,7 @@ void StatisticsProviderImpl::LoadVpd() {
   //   kKeyboardMechanicalLayoutKey ("keyboard_mechanical_layout") is populated
   //   from cros-regions.json, but none of these four are dumped by
   //   dump_filtered_vpd.
-  const base::flat_set<std::string_view> kVpdKeys = {
+  static constexpr auto kVpdKeys = base::MakeFixedFlatSet<std::string_view>({
       kActivateDateKey,         kAttestedDeviceIdKey,
       kBlockDevModeKey,         kCheckEnrollmentKey,
       kCustomizationIdKey,      kDisplayProfilesKey,
@@ -854,7 +859,7 @@ void StatisticsProviderImpl::LoadVpd() {
       kOffersGroupCodeKey,      kRegionKey,
       kRlzBrandCodeKey,         kRlzEmbargoEndDateKey,
       kSerialNumberKey,         kShouldSendRlzPingKey,
-  };
+  });
   AddAllowedStatistics(std::move(parsed_pairs), kVpdKeys, machine_info_);
 
   switch (exit_code) {
