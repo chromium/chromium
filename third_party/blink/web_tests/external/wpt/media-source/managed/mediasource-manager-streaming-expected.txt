@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] startstreaming fires once a ManagedMediaSource with no data is attached
-  assert_implements: ManagedMediaSource is supported undefined
-[FAIL] endstreaming fires once all data is buffered, and startstreaming once it is removed
-  assert_implements: ManagedMediaSource is supported undefined
-Harness: the test ran to completion.
-

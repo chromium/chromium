@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Send data on a WebSocket before connection is opened - INVALID_STATE_ERR is returned
-  CreateWebSocket is not defined
-Harness: the test ran to completion.
-

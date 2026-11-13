@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Traversing back to an entry created by a javascript: URL navigation doesn't restore the replaced document's nested history
-  assert_equals: the child frame loads its src, not the replaced document's nested history expected "?initial" but got "?navigated"
-Harness: the test ran to completion.
-

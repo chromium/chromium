@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] A parser-inserted flag must not skip internal resource link processing on insertion
-  assert_implements: rel=expect must be supported undefined
-Harness: the test ran to completion.
-

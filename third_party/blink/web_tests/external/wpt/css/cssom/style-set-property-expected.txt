@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] set toString() returning whitespace for div.style.setProperty custom property
-  assert_equals: expected " " but got ""
-Harness: the test ran to completion.
-

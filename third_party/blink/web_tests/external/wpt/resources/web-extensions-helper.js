@@ -19,17 +19,10 @@ globalThis.runTestsWithWebExtension = function(extensionPath) {
 
   function onTestFinishedListener(data) {
     test.step(() => {
-      if (data.result !== true) {
-        let description = data.assertionDescription;
-        // On some platforms, data.message already includes the description.
-        if (data.message) {
-          description = data.message.startsWith(description)
-            ? data.message
-            : `${description}: ${data.message}`;
-        }
-
-        throw new AssertionError(description);
-      }
+      let description = data.message ?
+          `${data.assertionDescription}. ${data.message}` :
+          data.assertionDescription;
+      assert_true(data.result, description);
     });
 
     test.done();

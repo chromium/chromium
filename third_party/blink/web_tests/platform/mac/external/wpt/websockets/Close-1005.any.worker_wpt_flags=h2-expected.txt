@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught NetworkError: Failed to execute 'importScripts' on 'WorkerGlobalScope': The script at 'http://web-platform.test:8001/websockets/constants.sub.js' failed to load.
+[FAIL] Create WebSocket - Close the Connection - close(1005) - see '7.1.5.  The WebSocket Connection Close Code' in http://www.ietf.org/rfc/rfc6455.txt
+  assert_unreached: close event should not fire Reached unreachable code
 Harness: the test ran to completion.
 

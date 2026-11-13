@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] XRGPUBinding.getSubImage() throws InvalidStateError for a destroyed layer
-  promise_test: Unhandled rejection with value: object "NotSupportedError: The specified session configuration is not supported."
-[FAIL] XRGPUBinding.getViewSubImage() throws InvalidStateError for a destroyed layer
-  promise_test: Unhandled rejection with value: object "NotSupportedError: The specified session configuration is not supported."
-[FAIL] A session keeps rendering with a new WebGPU projection layer after the old one is destroyed
-  promise_test: Unhandled rejection with value: object "NotSupportedError: The specified session configuration is not supported."
-Harness: the test ran to completion.
-

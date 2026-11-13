@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Prevent local scheme documents from loading within a COEP: require-corp iframe if they inherit COEP: none
-  assert_true: No report matched for test "data" expected true got false
-Harness: the test ran to completion.
-

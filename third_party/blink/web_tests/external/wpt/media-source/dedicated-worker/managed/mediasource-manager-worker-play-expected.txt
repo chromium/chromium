@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] ManagedMediaSource constructed in a dedicated worker fires startstreaming and bufferedchange, and plays
-  assert_implements: ManagedMediaSource is supported undefined
-Harness: the test ran to completion.
-

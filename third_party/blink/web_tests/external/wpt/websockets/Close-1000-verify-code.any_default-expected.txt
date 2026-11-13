@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: CreateWebSocket is not defined
-[NOTRUN] Create WebSocket - Close the Connection - close(1000, reason) - event.code == 1000 and event.reason = 'Clean Close'
-Harness: the test ran to completion.
-

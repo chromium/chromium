@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] entries() and currentEntry should be set in a new javascript: URL window
-  assert_equals: expected 1 but got 0
-Harness: the test ran to completion.
-

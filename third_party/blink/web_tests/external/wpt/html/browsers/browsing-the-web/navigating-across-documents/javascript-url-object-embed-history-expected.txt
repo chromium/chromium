@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] A javascript: URL navigation in the document an <embed> loaded for its element replaces its session history entry
-  assert_equals: navigating away from a javascript: URL document isn't a replace expected 4 but got 3
-Harness: the test ran to completion.
-

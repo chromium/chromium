@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Upgrade after adoption with global registry
-  assert_equals: reported exceptions expected 1 but got 0
-[FAIL] Upgrade after adoption with global registry (customElements of target not accessed before)
-  assert_equals: reported exceptions expected 1 but got 0
-Harness: the test ran to completion.
-

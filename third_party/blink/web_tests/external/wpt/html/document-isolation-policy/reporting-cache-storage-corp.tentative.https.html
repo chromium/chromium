@@ -54,7 +54,9 @@ async function runRemoteContextTest(uuid, expected_count, check, context_url, re
           resolve();
 
         const observer = new ReportingObserver((rs) => {
-          reports_received.push(...rs);
+          for (const r of rs) {
+            reports_received.push(r.toJSON());
+          }
           if (count <= reports_received.length)
             resolve();
         });

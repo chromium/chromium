@@ -3,7 +3,9 @@ async function run({script, port, expected_count = 0}) {
   let resolveEveryReport;
   const receivedEveryReport = new Promise(r => resolveEveryReport = r);
   const observer = new ReportingObserver((rs) => {
-    reports.push(...rs);
+    for (const r of rs) {
+      reports.push(r.toJSON());
+    }
     if (expected_count > 0 && reports.length >= expected_count) {
       resolveEveryReport();
     }
@@ -19,7 +21,9 @@ async function run({script, port, expected_count = 0}) {
     await receivedEveryReport;
   } else {
     // No reports are expected: collect anything already queued.
-    reports.push(...observer.takeRecords());
+    for (const r of observer.takeRecords()) {
+      reports.push(r.toJSON());
+    }
   }
   observer.disconnect();
   port.postMessage(reports);

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] opening an insecure WebSocket in a secure context should fail
-  CreateInsecureWebSocket is not defined
+  Failed to construct 'WebSocket': An insecure WebSocket connection may not be initiated from a page loaded over HTTPS.
 Harness: the test ran to completion.
 

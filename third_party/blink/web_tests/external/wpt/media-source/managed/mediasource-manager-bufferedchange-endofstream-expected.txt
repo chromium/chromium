@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] endOfStream() that changes buffered fires bufferedchange
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'unequalTrackEnds')"
-[FAIL] endOfStream() that does not change buffered does not fire bufferedchange
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'audioOnly')"
-Harness: the test ran to completion.
-

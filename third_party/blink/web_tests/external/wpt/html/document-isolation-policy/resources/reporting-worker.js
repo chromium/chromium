@@ -1,7 +1,7 @@
 function run({script, port}) {
   const observer = new ReportingObserver((rs) => {
       for (const r of rs) {
-        port.postMessage(r);
+        port.postMessage(r.toJSON());
       }
   });
   observer.observe();

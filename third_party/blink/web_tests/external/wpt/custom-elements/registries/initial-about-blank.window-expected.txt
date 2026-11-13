@@ -1,9 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] Each navigable document has its own registry
   assert_not_equals: The replacement document must get a new registry got disallowed value object "[object CustomElementRegistry]"
-[FAIL] The initial about:blank document keeps its registry when its window is reused
-  assert_not_equals: window's registry got disallowed value object "[object CustomElementRegistry]"
-[FAIL] define() on the initial about:blank document's registry after its window is reused upgrades nothing
-  assert_false: element in the new document expected false got true
 Harness: the test ran to completion.
 

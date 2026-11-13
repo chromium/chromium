@@ -75,7 +75,9 @@ async function observeReports(global, expected_count) {
       resolve();
 
     const observer = new global.ReportingObserver((rs) => {
-      reports.push(...rs);
+      for (const r of rs) {
+        reports.push(r.toJSON());
+      }
       if (expected_count <= reports.length)
         resolve();
     });

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] An observer whose report queue takeRecords() emptied isn't invoked
-  assert_array_equals: the second observer's callback isn't invoked lengths differ, expected array ["first: 1", "third: 1"] length 2, got ["first: 1", "second: 0", "third: 1"] length 3
-Harness: the test ran to completion.
-
