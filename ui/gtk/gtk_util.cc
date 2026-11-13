@@ -38,6 +38,7 @@
 #include "ui/gtk/gtk_types.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
+#include "ui/gtk/nav_button_provider_gtk.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
@@ -765,11 +766,13 @@ base::ScopedClosureRunner PrependIconThemeSearchPathForTesting(
   gint n_elements = 0;
   gtk_icon_theme_get_search_path(theme, &search_path, &n_elements);
   gtk_icon_theme_prepend_search_path(theme, path.value().c_str());
+  NavButtonProviderGtk::ClearIconCacheForTesting();  // IN-TEST
   return base::ScopedClosureRunner(base::BindOnce(
       [](GtkIconTheme* theme, gchar** search_path, gint n_elements) {
         gtk_icon_theme_set_search_path(
             theme, const_cast<const gchar**>(search_path), n_elements);
         g_strfreev(search_path);
+        NavButtonProviderGtk::ClearIconCacheForTesting();  // IN-TEST
       },
       theme, search_path, n_elements));
 }

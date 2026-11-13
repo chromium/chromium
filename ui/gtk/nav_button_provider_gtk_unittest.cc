@@ -16,10 +16,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
@@ -168,7 +170,10 @@ TEST(NavButtonProviderGtkTest, PrefetchDoesNotChangeOutput) {
   std::vector<ProviderOutput> expected;
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kGtkPrefetchNavButtonIcons);
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kGtkPrefetchNavButtonIcons,
+                               kGtkCacheNavButtonIcons});
     for (const auto& p : params) {
       expected.push_back(
           RedrawAndCollect(p.top_area_height, p.maximized, p.active));
@@ -191,12 +196,22 @@ TEST(NavButtonProviderGtkTest, PrefetchDoesNotChangeOutput) {
                   .width());
   }
 
-  base::test::ScopedFeatureList feature_list(kGtkPrefetchNavButtonIcons);
-  for (size_t i = 0; i < params.size(); ++i) {
-    SCOPED_TRACE(i);
-    ExpectSameOutput(expected[i],
-                     RedrawAndCollect(params[i].top_area_height,
-                                      params[i].maximized, params[i].active));
+  for (const auto& [enabled, disabled] :
+       std::vector<std::pair<std::vector<base::test::FeatureRef>,
+                             std::vector<base::test::FeatureRef>>>{
+           {{kGtkCacheNavButtonIcons}, {kGtkPrefetchNavButtonIcons}},
+           {{kGtkPrefetchNavButtonIcons, kGtkCacheNavButtonIcons}, {}},
+           {{kGtkPrefetchNavButtonIcons}, {kGtkCacheNavButtonIcons}},
+       }) {
+    NavButtonProviderGtk::ClearIconCacheForTesting();
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(enabled, disabled);
+    for (size_t i = 0; i < params.size(); ++i) {
+      SCOPED_TRACE(i);
+      ExpectSameOutput(expected[i],
+                       RedrawAndCollect(params[i].top_area_height,
+                                        params[i].maximized, params[i].active));
+    }
   }
 }
 
@@ -330,6 +345,136 @@ TEST(NavButtonProviderGtkTest, RoundingDoesNotExceedTopAreaHeight) {
     EXPECT_EQ(bitmap.height(), 21);
     EXPECT_LE(margin.top() + bitmap.height(), kTopAreaHeight);
   }
+}
+
+TEST(NavButtonProviderGtkTest,
+     CachesIconsAcrossProvidersAndInvalidatesOnThemeChange) {
+  if (GtkCheckVersion(4)) {
+    return;
+  }
+  NavButtonProviderGtk::ClearIconCacheForTesting();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kGtkPrefetchNavButtonIcons, kGtkCacheNavButtonIcons}, {});
+  GtkSettings* settings = GetDefaultGtkSettings();
+  gchar* orig_theme = nullptr;
+  gchar* orig_icon = nullptr;
+  g_object_get(settings, "gtk-theme-name", &orig_theme, "gtk-icon-theme-name",
+               &orig_icon, nullptr);
+  base::ScopedClosureRunner restore_settings(base::BindOnce(
+      [](GtkSettings* s, gchar* theme, gchar* icon) {
+        NavButtonProviderGtk::WaitForPrefetchForTesting();
+        g_object_set(s, "gtk-theme-name", theme, "gtk-icon-theme-name", icon,
+                     nullptr);
+        g_free(theme);
+        g_free(icon);
+      },
+      settings, orig_theme, orig_icon));
+
+  g_object_set(settings, "gtk-theme-name", "Adwaita", "gtk-icon-theme-name",
+               "Adwaita", nullptr);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  ASSERT_NO_FATAL_FAILURE(WriteTestIconTheme(temp_dir.GetPath()));
+  const base::FilePath close_svg =
+      temp_dir.GetPath()
+          .AppendASCII("Adwaita")
+          .AppendASCII("fixed")
+          .AppendASCII("window-close-symbolic.svg");
+  constexpr std::string_view kFullSvg =
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\">"
+      "<rect x=\"0\" y=\"0\" width=\"32\" height=\"32\" class=\"fg\" "
+      "fill=\"#bebebe\"/></svg>";
+  constexpr std::string_view kEmptySvg =
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\"/>";
+  ASSERT_TRUE(base::WriteFile(close_svg, kFullSvg));
+  base::ScopedClosureRunner restore_search_path =
+      PrependIconThemeSearchPathForTesting(temp_dir.GetPath());
+  constexpr char kCss[] =
+      "headerbar, headerbar.titlebar, headerbar button.titlebutton,"
+      "headerbar button.titlebutton image {"
+      "  background: rgb(20, 20, 20);"
+      "  padding: 0;"
+      "  margin: 0;"
+      "  border: none;"
+      "  box-shadow: none;"
+      "}"
+      "headerbar button.titlebutton {"
+      "  min-width: 32px;"
+      "  min-height: 32px;"
+      "  color: rgb(220, 40, 40);"
+      "}"
+      "headerbar button.titlebutton:backdrop {"
+      "  color: rgba(40, 200, 80, 0.6);"
+      "}"
+      "headerbar button.titlebutton:hover {"
+      "  color: rgb(40, 120, 240);"
+      "}";
+  base::ScopedClosureRunner remove_css = AddGlobalCssForTesting(kCss);
+
+  // Warm the cache via prefetch + active rasterization while `kFullSvg` is on
+  // disk, then replace `close_svg` with `kEmptySvg` without firing icon-theme
+  // invalidation so subsequent hits prove no disk SVG decode occurred.
+  NavButtonProviderGtk provider1(ui::FrameType::kBrowser);
+  NavButtonProviderGtk::WaitForPrefetchForTesting();
+  provider1.RedrawImages(/*top_area_height=*/40, /*maximized=*/false,
+                         /*active=*/true);
+  SkBitmap active_close =
+      provider1.GetImage(DisplayType::kClose, ButtonState::kNormal)
+          .GetRepresentation(1.0f)
+          .GetBitmap();
+  EXPECT_NEAR(SkColorGetR(active_close.getColor(16, 16)), 220, 1);
+  EXPECT_NEAR(SkColorGetG(active_close.getColor(16, 16)), 40, 1);
+
+  ASSERT_TRUE(base::WriteFile(close_svg, kEmptySvg));
+
+  // A second provider in `:backdrop` and `:hover` states reuses and tints the
+  // cached mask (including translucent `alpha < 1` `:backdrop` composited over
+  // `rgb(20, 20, 20)` -> `rgb(32, 128, 56)`) without re-decoding from disk.
+  NavButtonProviderGtk provider2(ui::FrameType::kBrowser);
+  NavButtonProviderGtk::WaitForPrefetchForTesting();
+  provider2.RedrawImages(/*top_area_height=*/40, /*maximized=*/false,
+                         /*active=*/false);
+  SkBitmap backdrop_close =
+      provider2.GetImage(DisplayType::kClose, ButtonState::kNormal)
+          .GetRepresentation(1.0f)
+          .GetBitmap();
+  EXPECT_NEAR(SkColorGetR(backdrop_close.getColor(16, 16)), 32, 2);
+  EXPECT_NEAR(SkColorGetG(backdrop_close.getColor(16, 16)), 128, 2);
+  EXPECT_NEAR(SkColorGetB(backdrop_close.getColor(16, 16)), 56, 2);
+
+  SkBitmap hover_close =
+      provider2.GetImage(DisplayType::kClose, ButtonState::kHovered)
+          .GetRepresentation(1.0f)
+          .GetBitmap();
+  EXPECT_NEAR(SkColorGetB(hover_close.getColor(16, 16)), 240, 1);
+
+  // Theme / icon-theme changes invalidate `NavButtonCache`, forcing a reload of
+  // `kEmptySvg` (so the center pixel renders only the `rgb(20, 20, 20)` bg).
+  g_object_set(settings, "gtk-icon-theme-name", "hicolor", nullptr);
+  g_object_set(settings, "gtk-icon-theme-name", "Adwaita", nullptr);
+  provider1.RedrawImages(/*top_area_height=*/40, /*maximized=*/false,
+                         /*active=*/true);
+  SkBitmap reloaded_close =
+      provider1.GetImage(DisplayType::kClose, ButtonState::kNormal)
+          .GetRepresentation(1.0f)
+          .GetBitmap();
+  EXPECT_NEAR(SkColorGetR(reloaded_close.getColor(16, 16)), 20, 1);
+  EXPECT_NEAR(SkColorGetG(reloaded_close.getColor(16, 16)), 20, 1);
+
+  // Rewrite `kFullSvg` on disk. Opening a new browser window after a runtime
+  // theme change must preserve entries already cached under the current theme.
+  ASSERT_TRUE(base::WriteFile(close_svg, kFullSvg));
+  NavButtonProviderGtk provider3(ui::FrameType::kBrowser);
+  NavButtonProviderGtk::WaitForPrefetchForTesting();
+  provider3.RedrawImages(/*top_area_height=*/40, /*maximized=*/false,
+                         /*active=*/true);
+  SkBitmap post_switch_close =
+      provider3.GetImage(DisplayType::kClose, ButtonState::kNormal)
+          .GetRepresentation(1.0f)
+          .GetBitmap();
+  EXPECT_NEAR(SkColorGetR(post_switch_close.getColor(16, 16)), 20, 1);
 }
 
 }  // namespace

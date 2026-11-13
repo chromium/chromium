@@ -27,12 +27,17 @@ namespace gtk {
 // off the UI thread.
 COMPONENT_EXPORT(GTK) BASE_DECLARE_FEATURE(kGtkPrefetchNavButtonIcons);
 
+// On GTK3, caches decoded symbolic caption-button icon masks across
+// `NavButtonProviderGtk` instances and button states.
+COMPONENT_EXPORT(GTK) BASE_DECLARE_FEATURE(kGtkCacheNavButtonIcons);
+
 class COMPONENT_EXPORT(GTK) NavButtonProviderGtk
     : public ui::NavButtonProvider {
  public:
   explicit NavButtonProviderGtk(ui::FrameType frame_type);
   ~NavButtonProviderGtk() override;
 
+  static void ClearIconCacheForTesting();
   static void WaitForPrefetchForTesting();
 
   // ui::NavButtonProvider:

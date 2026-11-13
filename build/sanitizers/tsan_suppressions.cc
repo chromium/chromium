@@ -15,11 +15,12 @@
 // See http://dev.chromium.org/developers/testing/threadsanitizer-tsan-v2
 // for the instructions on writing suppressions.
 char kTSanDefaultSuppressions[] =
-    // False positives in libdbus.so, libdconfsettings.so, libflashplayer.so,
-    // libgdk_pixbuf.so, libgio.so, libglib.so, libglycin.so, libgobject.so,
-    // libfontconfig.so.1 and swrast_dri.so.
+    // False positives in libcairo.so, libdbus.so, libdconfsettings.so,
+    // libflashplayer.so, libgdk_pixbuf.so, libgio.so, libglib.so, libglycin.so,
+    // libgobject.so, librsvg-2.so, libfontconfig.so.1 and swrast_dri.so.
     // Since we don't instrument them, we cannot reason about the
     // synchronization in them.
+    "race:libcairo*.so\n"
     "race:libdbus*.so\n"
     "deadlock:libdbus*.so\n"
     "race:libdconfsettings*.so\n"
@@ -29,6 +30,7 @@ char kTSanDefaultSuppressions[] =
     "race:libglib*.so\n"
     "race:libglycin*.so\n"
     "race:libgobject*.so\n"
+    "race:librsvg*.so\n"
     "race:libfontconfig.so.1\n"
     "race:swrast_dri.so\n"
 

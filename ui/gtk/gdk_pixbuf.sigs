@@ -1,4 +1,6 @@
 GdkPixbuf* gdk_pixbuf_new(GdkColorspace colorspace, gboolean has_alpha, int bits_per_sample, int width, int height);
+gboolean gdk_pixbuf_get_has_alpha(const GdkPixbuf* pixbuf);
+int gdk_pixbuf_get_bits_per_sample(const GdkPixbuf* pixbuf);
 guchar* gdk_pixbuf_get_pixels(const GdkPixbuf* pixbuf);
 int gdk_pixbuf_get_rowstride(const GdkPixbuf* pixbuf);
 int gdk_pixbuf_get_width(const GdkPixbuf* pixbuf);
