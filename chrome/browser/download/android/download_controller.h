@@ -64,7 +64,8 @@ class DownloadController : public DownloadControllerBase {
   static void CloseTabIfEmpty(content::WebContents* web_contents,
                               download::DownloadItem* download);
 
-  // Schedules the removal of a download item on the UI thread.
+  // Schedules the removal of a download item asynchronously on the current
+  // thread.
   static void ScheduleRemoveDownloadItem(download::DownloadItem* download);
 
   // Callback when user permission prompt finishes. Args: whether file access
@@ -108,7 +109,7 @@ class DownloadController : public DownloadControllerBase {
                             const DownloadInfo& info);
 
   // Get profile key from download item.
-  ProfileKey* GetProfileKey(download::DownloadItem* download_item);
+  static ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
   // Callback after we prompt the user to enable app verification.
   void EnableVerifyAppsDone(safe_browsing::VerifyAppsEnabledResult result);

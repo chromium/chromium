@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #include "chrome/browser/android/profile_key_util.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/insecure_download_blocking.h"
+#include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/offline_pages/android/offline_page_bridge.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
@@ -51,6 +53,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
+#include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
@@ -97,38 +100,49 @@ namespace {
 // Guards download_controller_
 base::LazyInstance<base::Lock>::DestructorAtExit g_download_controller_lock_;
 
-// Helper class for retrieving a DownloadManager.
-class DownloadManagerGetter : public DownloadManager::Observer {
+// Helper class for retrieving a SimpleDownloadManagerCoordinator.
+class DownloadCoordinatorGetter
+    : public download::SimpleDownloadManagerCoordinator::Observer {
  public:
-  explicit DownloadManagerGetter(DownloadManager* manager) : manager_(manager) {
-    manager_->AddObserver(this);
-  }
-
-  DownloadManagerGetter(const DownloadManagerGetter&) = delete;
-  DownloadManagerGetter& operator=(const DownloadManagerGetter&) = delete;
-
-  ~DownloadManagerGetter() override {
-    if (manager_) {
-      manager_->RemoveObserver(this);
+  explicit DownloadCoordinatorGetter(
+      download::SimpleDownloadManagerCoordinator* coordinator)
+      : coordinator_(coordinator) {
+    if (coordinator_) {
+      coordinator_->AddObserver(this);
     }
   }
 
-  void ManagerGoingDown(DownloadManager* manager) override {
-    manager_ = nullptr;
+  DownloadCoordinatorGetter(const DownloadCoordinatorGetter&) = delete;
+  DownloadCoordinatorGetter& operator=(const DownloadCoordinatorGetter&) =
+      delete;
+
+  ~DownloadCoordinatorGetter() override {
+    if (coordinator_) {
+      coordinator_->RemoveObserver(this);
+    }
   }
 
-  DownloadManager* manager() { return manager_; }
+  void OnManagerGoingDown(
+      download::SimpleDownloadManagerCoordinator* coordinator) override {
+    CHECK(coordinator_ == coordinator);
+    coordinator_->RemoveObserver(this);
+    coordinator_ = nullptr;
+  }
+
+  download::SimpleDownloadManagerCoordinator* coordinator() {
+    return coordinator_;
+  }
 
  private:
-  raw_ptr<DownloadManager> manager_;
+  raw_ptr<download::SimpleDownloadManagerCoordinator> coordinator_;
 };
 
-void RemoveDownloadItem(std::unique_ptr<DownloadManagerGetter> getter,
+void RemoveDownloadItem(std::unique_ptr<DownloadCoordinatorGetter> getter,
                         const std::string& guid) {
-  if (!getter->manager()) {
+  if (!getter->coordinator()) {
     return;
   }
-  DownloadItem* item = getter->manager()->GetDownloadByGuid(guid);
+  DownloadItem* item = getter->coordinator()->GetDownloadByGuid(guid);
   if (item) {
     item->Remove();
   }
@@ -225,12 +239,15 @@ ui::WindowAndroid* GetCurrentWindow(const Profile* profile) {
 // static
 void DownloadController::ScheduleRemoveDownloadItem(
     download::DownloadItem* item) {
-  auto download_manager_getter = std::make_unique<DownloadManagerGetter>(
-      content::DownloadItemUtils::GetBrowserContext(item)
-          ->GetDownloadManager());
-  content::GetUIThreadTaskRunner({})->PostTask(
+  ProfileKey* profile_key = GetProfileKey(item);
+  if (!profile_key) {
+    return;
+  }
+  auto coordinator_getter = std::make_unique<DownloadCoordinatorGetter>(
+      SimpleDownloadManagerCoordinatorFactory::GetForKey(profile_key));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&RemoveDownloadItem, std::move(download_manager_getter),
+      base::BindOnce(&RemoveDownloadItem, std::move(coordinator_getter),
                      item->GetGuid()));
 }
 
