@@ -28,6 +28,7 @@ const char kAXMultiAutoCompleteTextViewClassname[] =
     "android.widget.MultiAutoCompleteTextView";
 const char kAXNavigationViewClassname[] =
     "com.google.android.material.navigation.NavigationView";
+const char kAXNoteClassname[] = "android.accessibility.role.Note";
 const char kAXPagerClassname[] = "android.support.v4.view.ViewPager";
 const char kAXProgressBarClassname[] = "android.widget.ProgressBar";
 const char kAXRadioButtonClassname[] = "android.widget.RadioButton";

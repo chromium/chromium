@@ -5350,6 +5350,12 @@ inline constexpr char kAccessibilityHandleOccludingViewsDescription[] =
     "When enabled, handle occluding views belonging to overlayed "
     "browser's UI.";
 
+inline constexpr char kAccessibilityMapToNewClassNamesName[] =
+    "Accessibility Map To New Android classNames";
+inline constexpr char kAccessibilityMapToNewClassNamesDescription[] =
+    "When enabled, controls will be mapped to their new Android className "
+    "strings";
+
 inline constexpr char kAccessibilityPopulateSupplementalDescriptionApiName[] =
     "Accessibility populate supplemental description";
 inline constexpr char

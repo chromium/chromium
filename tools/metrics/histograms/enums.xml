@@ -10704,6 +10704,7 @@ from previous Chrome versions.
   <int value="-1298067767" label="CalendarModelDebugMode:disabled"/>
   <int value="-1297664593" label="SafetyHubMagicStack:enabled"/>
   <int value="-1297627303" label="UnthrottleAsyncTouchMoves:disabled"/>
+  <int value="-1297260657" label="AccessibilityMapToNewClassNames:enabled"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
   <int value="-1295518976" label="EnableAiSubscriptionAvatarRing:enabled"/>
   <int value="-1295310553"
@@ -19634,6 +19635,7 @@ from previous Chrome versions.
   <int value="1355458262" label="WebIdentityMDocs:enabled"/>
   <int value="1355656242"
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:disabled"/>
+  <int value="1355859712" label="AccessibilityMapToNewClassNames:disabled"/>
   <int value="1355923367" label="CrOSContainer:disabled"/>
   <int value="1356161410" label="VizHitTestSurfaceLayer:enabled"/>
   <int value="1357722794" label="TextClassifierTimeout:enabled"/>

@@ -69,6 +69,10 @@ AX_BASE_EXPORT bool IsAccessibilityHandleOccludingViewsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityLabeledBy);
 AX_BASE_EXPORT bool IsAccessibilityLabeledByEnabled();
 
+// When enabled, uses new Android API className mappings for roles.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMapToNewClassNames);
+AX_BASE_EXPORT bool IsAccessibilityMapToNewClassNamesEnabled();
+
 // Expose the accessibility tree for views via an AXTree of AXNodes.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTreeForViews);
 AX_BASE_EXPORT bool IsAccessibilityTreeForViewsEnabled();

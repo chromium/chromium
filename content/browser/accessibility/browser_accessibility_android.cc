@@ -1733,6 +1733,14 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidRoleDescription() const {
     case ax::mojom::Role::kVideo:
       // Default is no special role description.
       return GetLocalizedString(IDS_AX_MEDIA_VIDEO_ELEMENT);
+
+    // TODO(b/581440709): All roles with a new className mapping should be added
+    // below (to fallthrough). This ensures that ATs will not rely on
+    // roleDescription to populate role.
+    case ax::mojom::Role::kNote:
+      return features::IsAccessibilityMapToNewClassNamesEnabled()
+                 ? std::u16string()
+                 : GetLocalizedStringForRoleDescription();
     default:
       return GetLocalizedStringForRoleDescription();
   }

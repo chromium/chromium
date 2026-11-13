@@ -3441,6 +3441,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-accessibility-map-to-new-class-names",
+    "owners": ["kyraseevers@chromium.org", "//ui/accessibility/OWNERS"],
+    "expiry_milestone": 177
+  },
+  {
     "name": "enable-accessibility-on-screen-mode",
     "owners": [
       "lucasradaelli@google.com",

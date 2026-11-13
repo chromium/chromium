@@ -830,8 +830,16 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
     public void test_ariaNote() {
         performAriaTest("aria-note.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES)
+    public void test_ariaNote_newClass() {
+        performAriaTest("aria-note.html", "aria-note-new-class-feature");
     }
 
     @Test

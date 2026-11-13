@@ -2177,6 +2177,7 @@ data/accessibility/aria/aria-note-expected-auralinux.txt
 data/accessibility/aria/aria-note-expected-blink.txt
 data/accessibility/aria/aria-note-expected-mac.txt
 data/accessibility/aria/aria-note-expected-win.txt
+data/accessibility/aria/aria-note-new-class-feature-expected-android-external.txt
 data/accessibility/aria/aria-note.html
 data/accessibility/aria/aria-option-complex-children-expected-android-assist-data.txt
 data/accessibility/aria/aria-option-complex-children-expected-android-external.txt

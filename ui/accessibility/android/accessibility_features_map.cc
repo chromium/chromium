@@ -17,6 +17,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityAndroidMath,
     &features::kAccessibilityHandleOccludingViews,
+    &features::kAccessibilityMapToNewClassNames,
     &features::kAccessibilityTextFormatting,
     &features::kReadAloudNative,
     &features::kReadAloudServerSynthesizer,

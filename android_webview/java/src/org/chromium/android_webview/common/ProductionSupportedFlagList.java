@@ -1584,6 +1584,9 @@ public final class ProductionSupportedFlagList {
                 "Decodes brotli with the Rust brotli-decompressor crate instead of the C brotli"
                         + " library. This covers the br content encoding (also with a shared"
                         + " dictionary) and TLS certificate compression."),
+        Flag.baseFeature(
+                AccessibilityFeatures.ACCESSIBILITY_MAP_TO_NEW_CLASS_NAMES,
+                "When enabled, maps Android a11y controls to their new className strings."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

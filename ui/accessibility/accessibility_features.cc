@@ -68,6 +68,13 @@ bool IsAccessibilityLabeledByEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityLabeledBy);
 }
 
+BASE_FEATURE(kAccessibilityMapToNewClassNames,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityMapToNewClassNamesEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityMapToNewClassNames);
+}
+
 BASE_FEATURE(kAccessibilityTreeForViews, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityTreeForViewsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityTreeForViews);

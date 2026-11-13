@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -464,6 +465,10 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
       NOTREACHED();
     case ax::mojom::Role::kSearch:
       return kAXSearchViewClassname;
+    case ax::mojom::Role::kNote:
+      return features::IsAccessibilityMapToNewClassNamesEnabled()
+                 ? kAXNoteClassname
+                 : kAXViewClassname;
     default:
       return kAXViewClassname;
   }
