@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -20,8 +22,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -76,6 +80,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private @Nullable NonNullObservableSupplier<StatusIconResource> mAiModeButtonIconSupplier;
     private @Nullable Callback<@Nullable AiModeButtonUiConfig> mAiModeButtonConfigObserver;
     private @Nullable Callback<StatusIconResource> mAiModeButtonIconObserver;
+    private @Nullable OnSharedPreferenceChangeListener mAiModeTileIndexPrefListener;
 
     public TileGroupDelegateImpl(
             Context context,
@@ -205,6 +210,22 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
             assumeNonNull(mAiModeButtonIconSupplier).addSyncObserver(mAiModeButtonIconObserver);
         }
 
+        if (NewTabPageUtils.isAiModeTileInsideMvt() && mAiModeTileIndexPrefListener == null) {
+            // The AI Mode tile's position and hidden state live in a Java preference rather than
+            // in native MostVisitedSites data, so a change made on another NTP (e.g. the other
+            // half of a split screen) never arrives via onSiteSuggestionsAvailable(). Listens for
+            // the preference directly so every live TileGroup re-evaluates the AI Mode tile.
+            mAiModeTileIndexPrefListener =
+                    (unusedPrefs, key) -> {
+                        if (mIsDestroyed) return;
+                        if (!ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX.equals(key)) return;
+
+                        observer.onAiModeTileIndexChanged();
+                    };
+            ContextUtils.getAppSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(mAiModeTileIndexPrefListener);
+        }
+
         mMostVisitedSites.setObserver(observer, maxResults);
     }
 
@@ -285,6 +306,11 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         if (mAiModeButtonIconObserver != null) {
             assumeNonNull(mAiModeButtonIconSupplier).removeObserver(mAiModeButtonIconObserver);
             mAiModeButtonIconObserver = null;
+        }
+        if (mAiModeTileIndexPrefListener != null) {
+            ContextUtils.getAppSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(mAiModeTileIndexPrefListener);
+            mAiModeTileIndexPrefListener = null;
         }
 
         dismissAllSnackbars();
