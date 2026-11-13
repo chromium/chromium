@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_tasks/search_journey_tab_feature.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -29,6 +28,15 @@ namespace contextual_tasks {
 namespace {
 
 constexpr int kIconSize = 16;
+
+// The Google search spark icon, used for both the anchored message and the
+// collapsed omnibox chip.
+ui::ImageModel GetSearchSparkIcon() {
+  return ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                            ? omnibox::kSearchSparkIcon
+                                            : omnibox::kSearchSparkOldIcon,
+                                        ui::kColorSysOnSurface, kIconSize);
+}
 
 }  // namespace
 
@@ -107,18 +115,11 @@ void AbaSearchJourneyCueTarget::OnEditPrompt(
 }
 
 ui::ImageModel AbaSearchJourneyCueTarget::GetAnchoredMessageIcon() const {
-  return ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                            ? omnibox::kSearchSparkIcon
-                                            : omnibox::kSearchSparkOldIcon,
-                                        ui::kColorSysOnSurface, kIconSize);
+  return GetSearchSparkIcon();
 }
 
 ui::ImageModel AbaSearchJourneyCueTarget::GetOmniboxChipIcon() const {
-  // `kDockToLeftOldIcon` is the old version of `kDockToRightIcon`; their names
-  // are mirrored.
-  return ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kDockToRightIcon : kDockToLeftOldIcon,
-      ui::kColorSysOnSurface, kIconSize);
+  return GetSearchSparkIcon();
 }
 
 contextual_cueing::CueActionData
