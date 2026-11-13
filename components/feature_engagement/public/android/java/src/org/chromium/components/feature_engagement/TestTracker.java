@@ -43,8 +43,15 @@ public class TestTracker implements Tracker {
     }
 
     @Override
+    @Deprecated
     public boolean wouldTriggerHelpUi(String feature) {
         return false;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean wouldTriggerHelpUi(String feature, FeatureProperties featureProperties) {
+        return wouldTriggerHelpUi(feature);
     }
 
     @Override

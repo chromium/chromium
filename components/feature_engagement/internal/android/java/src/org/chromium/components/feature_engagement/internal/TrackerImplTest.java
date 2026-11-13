@@ -127,20 +127,142 @@ public class TrackerImplTest {
     }
 
     @Test
+    public void testWouldTriggerHelpUi_failsOwnRules_doesNotRecordMetrics() {
+        when(mTrackerJniMock.wouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE)).thenReturn(false);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG);
+
+        assertFalse(mTracker.wouldTriggerHelpUi(TEST_FEATURE, props));
+        verify(mTrackerJniMock, never()).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+    }
+
+    @Test
     public void testWouldTriggerHelpUi_blockedByEnterprisePolicy() {
         mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG);
 
-        assertFalse(mTracker.wouldTriggerHelpUi(TEST_FEATURE));
-        verify(mTrackerJniMock, never()).wouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("InProductHelp.ShouldTriggerHelpUI." + TEST_FEATURE)
+                        .expectNoRecords("InProductHelp.ShouldTriggerHelpUI")
+                        .build();
+
+        assertFalse(mTracker.wouldTriggerHelpUi(TEST_FEATURE, props));
+
+        watcher.assertExpected();
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.ShouldTriggerHelpUI." + TEST_FEATURE));
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.ShouldTriggerHelpUIResult.NotTriggered." + TEST_FEATURE));
+        verify(mTrackerJniMock, never()).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
     }
 
     @Test
     public void testWouldTriggerHelpUi_bypassEnterprisePolicy_allowlistedFeature() {
         String allowlistedFeature = FeatureConstants.NOTIFICATION_PERMISSION_PROMO_FEATURE;
         mTracker.setEnterprisePolicyBlocksPromotionsSupplier(() -> true);
+        FeatureProperties props = new FeatureProperties(UiFormat.DIALOG);
 
-        assertTrue(mTracker.wouldTriggerHelpUi(allowlistedFeature));
+        assertTrue(mTracker.wouldTriggerHelpUi(allowlistedFeature, props));
         verify(mTrackerJniMock).wouldTriggerHelpUi(NATIVE_PTR, allowlistedFeature);
+        verify(mTrackerJniMock, never()).shouldTriggerHelpUi(NATIVE_PTR, allowlistedFeature);
+    }
+
+    @Test
+    public void testWouldTriggerHelpUi_blockedByCooldownGroup_doesNotRecordMetrics() {
+        when(mTrackerJniMock.wouldTriggerHelpUi(
+                        NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP))
+                .thenReturn(false);
+
+        FeatureProperties props = new FeatureProperties(UiFormat.BOTTOM_SHEET);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("InProductHelp.ShouldTriggerHelpUI." + TEST_FEATURE)
+                        .expectNoRecords("InProductHelp.ShouldTriggerHelpUI")
+                        .build();
+
+        assertFalse(mTracker.wouldTriggerHelpUi(TEST_FEATURE, props));
+
+        watcher.assertExpected();
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.CooldownGroupActive."
+                                + FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP));
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.ShouldTriggerHelpUI." + TEST_FEATURE));
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.ShouldTriggerHelpUIResult.NotTriggered." + TEST_FEATURE));
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.ShouldTriggerHelpUIResult.BlockedByCooldownGroup."
+                                + TEST_FEATURE));
+        verify(mTrackerJniMock, never()).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+    }
+
+    @Test
+    public void testWouldTriggerHelpUi_bypassCooldownGroup_doesNotRecordMetricsOrTriggerCooldown() {
+        String allowlistedFeature = FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE;
+        when(mTrackerJniMock.wouldTriggerHelpUi(
+                        NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP))
+                .thenReturn(false);
+
+        FeatureProperties props = new FeatureProperties(UiFormat.BOTTOM_SHEET);
+
+        assertTrue(mTracker.wouldTriggerHelpUi(allowlistedFeature, props));
+
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.CooldownGroupActive."
+                                + FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP));
+        assertEquals(
+                0,
+                mUserActionTester.getActionCount(
+                        "InProductHelp.ShouldTriggerHelpUIResult.BypassedCooldownGroup."
+                                + allowlistedFeature));
+        verify(mTrackerJniMock, never())
+                .shouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never())
+                .notifyEvent(NATIVE_PTR, EventConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP_TRIGGER);
+        verify(mTrackerJniMock, never()).shouldTriggerHelpUi(NATIVE_PTR, allowlistedFeature);
+    }
+
+    @Test
+    public void testWouldTriggerHelpUi_passesChecks_doesNotTriggerCooldownOrFeature() {
+        FeatureProperties props = new FeatureProperties(UiFormat.BLUE_BUBBLE);
+
+        assertTrue(mTracker.wouldTriggerHelpUi(TEST_FEATURE, props));
+
+        verify(mTrackerJniMock)
+                .wouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never())
+                .shouldTriggerHelpUi(NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never())
+                .dismissed(NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP);
+        verify(mTrackerJniMock, never()).shouldTriggerHelpUi(NATIVE_PTR, TEST_FEATURE);
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void testDeprecatedWouldTriggerHelpUi_skipsCooldownChecks() {
+        when(mTrackerJniMock.wouldTriggerHelpUi(
+                        NATIVE_PTR, FeatureConstants.INTERRUPTIVE_IPH_COOLDOWN_GROUP))
+                .thenReturn(false);
+        when(mTrackerJniMock.wouldTriggerHelpUi(
+                        NATIVE_PTR, FeatureConstants.BLUE_BUBBLE_COOLDOWN_GROUP))
+                .thenReturn(false);
+
+        assertTrue(mTracker.wouldTriggerHelpUi(TEST_FEATURE));
     }
 
     @Test
