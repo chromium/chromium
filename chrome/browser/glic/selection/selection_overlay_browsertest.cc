@@ -1848,8 +1848,11 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
 
 }  // namespace
 
+// TODO(crbug.com/585296342): Fails on M159 after the cherry-pick of
+// crrev.com/c/8778467: the overlay records kAbandonedOrError instead of
+// kSpatialSelectionCompleted. Passes on main.
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
-                       HandoffDismissesOverlay) {
+                       DISABLED_HandoffDismissesOverlay) {
   // The panel stays closed: a page session started with the panel open is
   // handed to the panel and then outlives a hand-off.
   base::HistogramTester histogram_tester;

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -869,6 +870,24 @@ OmniboxPopupFullPresenter::CreateWebUIContent(
       location_bar(), controller(), std::move(contents));
 }
 
+void OmniboxPopupFullPresenter::OnWebUIContentsAdopted() {
+  // The page may have painted in its previous window, which told only that
+  // window's delegate.
+  if (CompletedFirstVisuallyNonEmptyPaint()) {
+    delegate().OnPopupFirstVisuallyNonEmptyPaint();
+  }
+  // Posted so that the focus hand-off to WebUI that this triggers doesn't run
+  // inside the `Show()` or focus change that adopted the page.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OmniboxPopupFullPresenter::NotifyPopupHandlerReadyIfBound,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void OmniboxPopupFullPresenter::OnWebUIContentsReleased() {
+  delegate().OnPopupWebUIContentsReleased();
+}
+
 void OmniboxPopupFullPresenter::WidgetDestroyed() {
   event_monitor_.reset();
   forward_events_timer_.Stop();
@@ -892,6 +911,13 @@ void OmniboxPopupFullPresenter::StopForwardingEvents() {
             views::AsViewClass<FullWebUIOmniboxFrame>(GetResultsFrame())) {
       results_frame->SetForwardMouseEvents(false);
     }
+  }
+}
+
+void OmniboxPopupFullPresenter::NotifyPopupHandlerReadyIfBound() {
+  OmniboxPopupView* popup_view = controller()->edit_model()->popup_view();
+  if (popup_view && popup_view->IsPopupHandlerReady()) {
+    popup_view->OnPopupHandlerReady();
   }
 }
 

@@ -102,6 +102,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void OnWidgetPresentedChanged(bool presented) override;
   std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
       std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
+  void OnWebUIContentsAdopted() override;
+  void OnWebUIContentsReleased() override;
 
   // Transparent margin around the popup content reserved for the drop shadow:
   // the full shadow insets when the dropdown is expanded, or the same insets
@@ -126,6 +128,11 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void StopForwardingEvents();
+
+  // Tells this window's popup view that the adopted page's handler is ready,
+  // if the page bound it in its previous window. Otherwise
+  // `OmniboxPopupUI::CreatePageHandler()` tells it once the page binds it.
+  void NotifyPopupHandlerReadyIfBound();
 
   // views::FocusChangeListener:
   // Blurs the omnibox when another view in the browser window takes focus

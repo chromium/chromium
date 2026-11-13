@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -231,4 +232,38 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFullPresenterMoveBrowserTest,
           OmniboxPopupPresenterBase::CreationReason::kShow);
   ASSERT_TRUE(new_content);
   EXPECT_NE(new_content->GetWrappedWebContents(), contents);
+}
+
+// Adopting a loaded full popup routes focus in the new window to WebUI, and
+// releasing it lets the old window's native omnibox take focus again.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFullPresenterMoveBrowserTest,
+                       MovingFullPopupMovesWebUIFocus) {
+  content::WebContents* contents = GetPopupContents(browser());
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(content::WaitForLoadStop(contents));
+  OmniboxPopupUI* popup_ui =
+      contents->GetWebUI()->GetController()->GetAs<OmniboxPopupUI>();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return popup_ui->omnibox_handler() && popup_ui->popup_handler();
+  }));
+  BrowserWindowInterface* other_browser =
+      CreateBrowser(browser()->GetProfile());
+  GetPresenter(browser())->Hide();
+  GetPresenter(other_browser)->Hide();
+  ASSERT_TRUE(GetPresenter(other_browser)->ReleaseWebUIContents());
+  EXPECT_FALSE(GetLocationBar(other_browser)->IsFullWebUiOmniboxReady());
+  EXPECT_FALSE(GetLocationBar(other_browser)->IsFocusable());
+  EXPECT_TRUE(GetLocationBar(other_browser)->omnibox_view()->IsFocusable());
+
+  MovePopup(browser(), other_browser);
+
+  LocationBarView* other_location_bar = GetLocationBar(other_browser);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return other_location_bar->IsFullWebUiOmniboxReady(); }));
+  EXPECT_TRUE(other_location_bar->IsFocusable());
+  EXPECT_FALSE(other_location_bar->omnibox_view()->IsFocusable());
+  LocationBarView* location_bar = GetLocationBar(browser());
+  EXPECT_FALSE(location_bar->IsFullWebUiOmniboxReady());
+  EXPECT_FALSE(location_bar->IsFocusable());
+  EXPECT_TRUE(location_bar->omnibox_view()->IsFocusable());
 }

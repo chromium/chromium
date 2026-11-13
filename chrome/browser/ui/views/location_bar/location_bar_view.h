@@ -264,6 +264,7 @@ class LocationBarView
   OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
   OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
   void OnPopupFirstVisuallyNonEmptyPaint() override;
+  void OnPopupWebUIContentsReleased() override;
   views::View* GetLocationBarFocusRestoreView() override;
   bool is_full_webui_omnibox() const override;
 

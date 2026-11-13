@@ -393,8 +393,8 @@ void LocationBarView::Init() {
           /*omnibox_view=*/omnibox_view_,
           /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
           /*presenter_delegate=*/*this,
-          base::BindOnce(&LocationBarView::OnFullWebUiOmniboxReady,
-                         weak_factory_.GetWeakPtr()));
+          base::BindRepeating(&LocationBarView::OnFullWebUiOmniboxReady,
+                              weak_factory_.GetWeakPtr()));
     }
 
     if (is_full_webui_omnibox_) {
@@ -1261,6 +1261,23 @@ OmniboxPopupAimPresenter* LocationBarView::GetOmniboxPopupAimPresenter() const {
 
 void LocationBarView::OnPopupFirstVisuallyNonEmptyPaint() {
   // The focus ring reads its predicate only when refreshed.
+  if (auto* focus_ring = views::FocusRing::Get(this)) {
+    focus_ring->Refresh();
+  }
+}
+
+void LocationBarView::OnPopupWebUIContentsReleased() {
+  if (!is_full_webui_omnibox_) {
+    return;
+  }
+  // The full popup's page moved to another window or was dropped. As before
+  // WebUI first became ready, `omnibox_view_` takes focus until this window
+  // has a ready page again, which runs `OnFullWebUiOmniboxReady()`.
+  if (auto* focus_manager = GetFocusManager();
+      focus_manager && focus_manager->GetStoredFocusView() == this) {
+    focus_manager->SetStoredFocusView(omnibox_view_.get());
+  }
+  UpdateFocusBehavior(is_toolbar_visible_);
   if (auto* focus_ring = views::FocusRing::Get(this)) {
     focus_ring->Refresh();
   }

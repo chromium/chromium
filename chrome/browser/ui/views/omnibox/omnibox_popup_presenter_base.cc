@@ -540,6 +540,7 @@ OmniboxPopupPresenterBase::ReleaseWebUIContents() {
       content->ReleaseContentsWrapper();
   omnibox_popup_webui_content_ = nullptr;
   content->parent()->RemoveChildViewT(content);
+  OnWebUIContentsReleased();
   return contents;
 }
 
@@ -565,6 +566,7 @@ OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::AdoptWebUIContents(
   CHECK(content);
   SetWebUIContent(std::move(content));
   content_taken_from_other_window_ = true;
+  OnWebUIContentsAdopted();
   return GetWebUIContent();
 }
 

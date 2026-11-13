@@ -28,6 +28,10 @@ class OmniboxPopupPresenterDelegate {
   // Called when the popup's `CompletedFirstVisuallyNonEmptyPaint()` changes.
   virtual void OnPopupFirstVisuallyNonEmptyPaint() {}
 
+  // Called when the popup gave its loaded page to another browser window, or
+  // dropped it, so this window has no page until it creates or takes one.
+  virtual void OnPopupWebUIContentsReleased() {}
+
   // This returns the view that will be given focus when the focus is given
   // back to the location bar.
   virtual views::View* GetLocationBarFocusRestoreView() = 0;

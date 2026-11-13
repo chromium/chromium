@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -71,7 +72,7 @@ OmniboxPopupViewFullWebUI::OmniboxPopupViewFullWebUI(
     OmniboxController* controller,
     LocationBar* location_bar,
     OmniboxPopupPresenterDelegate& presenter_delegate,
-    base::OnceClosure on_ready_callback)
+    base::RepeatingClosure on_ready_callback)
     : OmniboxPopupViewWebUI(
           omnibox_view,
           controller,
@@ -550,7 +551,7 @@ bool OmniboxPopupViewFullWebUI::RequestWebUIContextMenu(
 
 void OmniboxPopupViewFullWebUI::OnPopupHandlerReady() {
   if (on_ready_callback_) {
-    std::move(on_ready_callback_).Run();
+    on_ready_callback_.Run();
   }
 }
 
