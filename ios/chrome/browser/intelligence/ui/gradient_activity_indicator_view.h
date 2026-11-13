@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_GRADIENT_ACTIVITY_INDICATOR_VIEW_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_GRADIENT_ACTIVITY_INDICATOR_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_UI_GRADIENT_ACTIVITY_INDICATOR_VIEW_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_UI_GRADIENT_ACTIVITY_INDICATOR_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,7 +12,7 @@
 @interface GradientActivityIndicatorView : UIView
 
 // The ordered colors rendered along the circular conic gradient.
-// Defaults to a palette of Gemini-themed colors.
+// Defaults to a multi-color brand palette.
 @property(nonatomic, copy) NSArray<UIColor*>* gradientColors;
 
 // Starts the circular gradient animation.
@@ -23,4 +23,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UI_GRADIENT_ACTIVITY_INDICATOR_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_UI_GRADIENT_ACTIVITY_INDICATOR_VIEW_H_

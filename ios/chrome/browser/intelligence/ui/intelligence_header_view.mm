@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
-#import "ios/chrome/browser/intelligence/actor/ui/gradient_activity_indicator_view.h"
+#import "ios/chrome/browser/intelligence/ui/gradient_activity_indicator_view.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -15,12 +15,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
-
-using intelligence::actor::kSpacingLarge;
-using intelligence::actor::kSpacingMedium;
-using intelligence::actor::kSpacingSmall;
-using intelligence::actor::kSpacingTiny;
-using intelligence::actor::kTimelineGutterWidth;
 
 // Layout dimensions.
 const CGFloat kInnerContentSize = 32.0;
@@ -33,8 +27,9 @@ const CGFloat kButtonShadowRadius = 6.0;
 const CGFloat kButtonShadowOpacity = 0.16f;
 const CGFloat kButtonShadowOffset = 2.0;
 
-// TODO(crbug.com/552996431): Centralize Gemini logo in a shared symbol helper.
-UIImage* DefaultGeminiLogo() {
+// TODO(crbug.com/552996431): Centralize default leading logo in a shared symbol
+// helper.
+UIImage* DefaultLeadingLogo() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return SymbolWithPointSize(SymbolGeminiBrandedLogo, kLogoSize);
 #else
@@ -45,7 +40,7 @@ UIImage* DefaultGeminiLogo() {
 // Wires `button` to `item`'s action or menu and accessibility properties. The
 // action is added as a target rather than passed to the button initializer,
 // since the latter would override the configuration's image and title.
-void ConfigureButtonForItem(UIButton* button, ActuationHeaderItem* item) {
+void ConfigureButtonForItem(UIButton* button, IntelligenceHeaderItem* item) {
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.accessibilityLabel = item.title;
   button.accessibilityIdentifier = item.accessibilityIdentifier;
@@ -60,7 +55,7 @@ void ConfigureButtonForItem(UIButton* button, ActuationHeaderItem* item) {
 
 // Creates an icon button styled by `buttonConfig` and wired to `item`.
 UIButton* CreateIconButton(UIButtonConfiguration* buttonConfig,
-                           ActuationHeaderItem* item) {
+                           IntelligenceHeaderItem* item) {
   buttonConfig.image = item.icon;
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
                                          primaryAction:nil];
@@ -70,7 +65,7 @@ UIButton* CreateIconButton(UIButtonConfiguration* buttonConfig,
 }
 
 // Creates a standalone white circular icon button with a drop shadow.
-UIButton* CreateCircularButton(ActuationHeaderItem* item) {
+UIButton* CreateCircularButton(IntelligenceHeaderItem* item) {
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration filledButtonConfiguration];
   buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
@@ -92,7 +87,7 @@ UIButton* CreateCircularButton(ActuationHeaderItem* item) {
 // Creates a blue capsule button displaying `item.title`. Its height matches the
 // icon buttons so all accessories stay vertically aligned; its width hugs the
 // title.
-UIButton* CreateCallToActionButton(ActuationHeaderItem* item) {
+UIButton* CreateCallToActionButton(IntelligenceHeaderItem* item) {
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration filledButtonConfiguration];
   buttonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
@@ -100,8 +95,8 @@ UIButton* CreateCallToActionButton(ActuationHeaderItem* item) {
   buttonConfig.baseBackgroundColor = [UIColor colorNamed:kBlueColor];
   buttonConfig.title = item.title;
   buttonConfig.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  buttonConfig.contentInsets =
-      NSDirectionalEdgeInsetsMake(0.0, kSpacingMedium, 0.0, kSpacingMedium);
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(
+      0.0, kIntelligenceSpacingMedium, 0.0, kIntelligenceSpacingMedium);
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfig
                                          primaryAction:nil];
   UIFont* titleFont = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
@@ -114,20 +109,20 @@ UIButton* CreateCallToActionButton(ActuationHeaderItem* item) {
 }
 
 // Creates a standalone button rendered according to `item.style`.
-UIButton* CreateStandaloneButton(ActuationHeaderItem* item) {
+UIButton* CreateStandaloneButton(IntelligenceHeaderItem* item) {
   switch (item.style) {
-    case ActuationHeaderItemStyleIcon:
+    case IntelligenceHeaderItemStyle::kIcon:
       return CreateCircularButton(item);
-    case ActuationHeaderItemStyleCallToAction:
+    case IntelligenceHeaderItemStyle::kCallToAction:
       return CreateCallToActionButton(item);
   }
 }
 
 // Creates a gray capsule grouping one borderless icon button per item. Its
 // height matches the circular buttons so both styles stay vertically aligned.
-UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
+UIView* CreateGroupedCapsule(NSArray<IntelligenceHeaderItem*>* items) {
   UIStackView* capsule = [[UIStackView alloc] init];
-  for (ActuationHeaderItem* item in items) {
+  for (IntelligenceHeaderItem* item in items) {
     UIButtonConfiguration* buttonConfig =
         [UIButtonConfiguration plainButtonConfiguration];
     buttonConfig.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -136,8 +131,8 @@ UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
   }
   capsule.backgroundColor = [UIColor colorNamed:kGrey100Color];
   capsule.layer.cornerRadius = kInnerContentSize / 2.0;
-  capsule.directionalLayoutMargins =
-      NSDirectionalEdgeInsetsMake(0.0, kSpacingTiny, 0.0, kSpacingTiny);
+  capsule.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      0.0, kIntelligenceSpacingTiny, 0.0, kIntelligenceSpacingTiny);
   capsule.layoutMarginsRelativeArrangement = YES;
   return capsule;
 }
@@ -145,12 +140,12 @@ UIView* CreateGroupedCapsule(NSArray<ActuationHeaderItem*>* items) {
 // Returns whether `items` should be rendered as a grouped capsule. Grouping
 // only applies to two or more icon items; any other combination is rendered as
 // standalone buttons in the given order.
-bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
+bool ShouldGroupItems(NSArray<IntelligenceHeaderItem*>* items) {
   if (items.count < 2) {
     return false;
   }
-  for (ActuationHeaderItem* item in items) {
-    if (item.style != ActuationHeaderItemStyleIcon) {
+  for (IntelligenceHeaderItem* item in items) {
+    if (item.style != IntelligenceHeaderItemStyle::kIcon) {
       return false;
     }
   }
@@ -159,7 +154,7 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
 
 }  // namespace
 
-@implementation ActuationHeaderView {
+@implementation IntelligenceHeaderView {
   UIView* _iconContainer;
   UIImageView* _imageView;
   GradientActivityIndicatorView* _activityIndicator;
@@ -177,8 +172,8 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _actuating = NO;
-    _density = ActuationHeaderDensityRegular;
+    _loading = NO;
+    _density = IntelligenceHeaderDensity::kRegular;
 
     [self setupSubviews];
     [self setupConstraints];
@@ -189,7 +184,7 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
 - (void)reset {
   self.title = nil;
   self.subtitle = nil;
-  self.actuating = NO;
+  self.loading = NO;
   self.primaryItem = nil;
   self.secondaryItems = nil;
 }
@@ -209,19 +204,19 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   // interpolation of subtitle visibility during detent changes.
 }
 
-- (void)setActuating:(BOOL)actuating {
-  if (_actuating == actuating) {
+- (void)setLoading:(BOOL)loading {
+  if (_loading == loading) {
     return;
   }
-  _actuating = actuating;
-  if (_actuating) {
+  _loading = loading;
+  if (_loading) {
     [_activityIndicator startAnimating];
   } else {
     [_activityIndicator stopAnimating];
   }
 }
 
-- (void)setDensity:(ActuationHeaderDensity)density {
+- (void)setDensity:(IntelligenceHeaderDensity)density {
   if (_density == density) {
     return;
   }
@@ -229,12 +224,12 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   [self updateContentMargins];
 }
 
-- (void)setPrimaryItem:(ActuationHeaderItem*)primaryItem {
+- (void)setPrimaryItem:(IntelligenceHeaderItem*)primaryItem {
   _primaryItem = primaryItem;
   [self updateAccessoryStack];
 }
 
-- (void)setSecondaryItems:(NSArray<ActuationHeaderItem*>*)secondaryItems {
+- (void)setSecondaryItems:(NSArray<IntelligenceHeaderItem*>*)secondaryItems {
   _secondaryItems = [secondaryItems copy];
   [self updateAccessoryStack];
 }
@@ -246,7 +241,7 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   _iconContainer = [[UIView alloc] init];
   _iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
-  _imageView = [[UIImageView alloc] initWithImage:DefaultGeminiLogo()];
+  _imageView = [[UIImageView alloc] initWithImage:DefaultLeadingLogo()];
   _imageView.contentMode = UIViewContentModeScaleAspectFit;
   _imageView.translatesAutoresizingMaskIntoConstraints = NO;
   [_iconContainer addSubview:_imageView];
@@ -271,14 +266,14 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
       initWithArrangedSubviews:@[ _titleLabel, _subtitleLabel ]];
   _textStackView.axis = UILayoutConstraintAxisVertical;
   _textStackView.alignment = UIStackViewAlignmentLeading;
-  _textStackView.spacing = kSpacingTiny;
+  _textStackView.spacing = kIntelligenceSpacingTiny;
   [_textStackView
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
   _accessoryStackView = [[UIStackView alloc] init];
   _accessoryStackView.alignment = UIStackViewAlignmentCenter;
-  _accessoryStackView.spacing = kSpacingSmall;
+  _accessoryStackView.spacing = kIntelligenceSpacingSmall;
   [_accessoryStackView
       setContentHuggingPriority:UILayoutPriorityRequired
                         forAxis:UILayoutConstraintAxisHorizontal];
@@ -293,7 +288,8 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   _contentStackView.axis = UILayoutConstraintAxisHorizontal;
   _contentStackView.alignment = UIStackViewAlignmentCenter;
   _contentStackView.spacing = 0.0;
-  [_contentStackView setCustomSpacing:kSpacingSmall afterView:_textStackView];
+  [_contentStackView setCustomSpacing:kIntelligenceSpacingSmall
+                            afterView:_textStackView];
   _contentStackView.layoutMarginsRelativeArrangement = YES;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:_contentStackView];
@@ -305,7 +301,8 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
   AddSameConstraints(_contentStackView, self);
   [self.heightAnchor constraintGreaterThanOrEqualToConstant:kHeaderMinHeight]
       .active = YES;
-  [_iconContainer.widthAnchor constraintEqualToConstant:kTimelineGutterWidth]
+  [_iconContainer.widthAnchor
+      constraintEqualToConstant:kIntelligenceHeaderLeadingIconContainerWidth]
       .active = YES;
   AddSameCenterConstraints(_imageView, _iconContainer);
   AddSquareConstraints(_imageView, kLogoSize);
@@ -316,10 +313,11 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
 // Applies the content margins matching `density`. The vertical margins are
 // kept equal so that the content stays vertically centered.
 - (void)updateContentMargins {
-  CGFloat vertical =
-      _density == ActuationHeaderDensityRegular ? kSpacingSmall : kSpacingTiny;
-  _contentStackView.directionalLayoutMargins =
-      NSDirectionalEdgeInsetsMake(vertical, 0.0, vertical, kSpacingLarge);
+  CGFloat vertical = _density == IntelligenceHeaderDensity::kRegular
+                         ? kIntelligenceSpacingSmall
+                         : kIntelligenceSpacingTiny;
+  _contentStackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
+      vertical, 0.0, vertical, kIntelligenceSpacingLarge);
 }
 
 // Rebuilds the accessory buttons stack in deterministic order:
@@ -334,7 +332,7 @@ bool ShouldGroupItems(NSArray<ActuationHeaderItem*>* items) {
     [_accessoryStackView
         addArrangedSubview:CreateGroupedCapsule(_secondaryItems)];
   } else {
-    for (ActuationHeaderItem* item in _secondaryItems) {
+    for (IntelligenceHeaderItem* item in _secondaryItems) {
       [_accessoryStackView addArrangedSubview:CreateStandaloneButton(item)];
     }
   }

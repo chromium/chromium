@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -112,7 +112,7 @@ TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
   [consumer() updateWorklogWithItem:item chip:nil animated:NO];
   [consumer() reset];
 
-  ActuationHeaderView* header_view = FindViewById<ActuationHeaderView>(
+  IntelligenceHeaderView* header_view = FindViewById<IntelligenceHeaderView>(
       view_controller_.view, kActuationHeaderAccessibilityIdentifier);
   ASSERT_NE(header_view, nil);
   EXPECT_EQ(header_view.title, nil);
@@ -126,7 +126,7 @@ TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
 // Tests that the header displays the content variant matching the display
 // mode, whether the variants or the display mode change.
 TEST_F(ActuationWorklogViewControllerTest, TestHeaderContentVariants) {
-  ActuationHeaderView* header_view = FindViewById<ActuationHeaderView>(
+  IntelligenceHeaderView* header_view = FindViewById<IntelligenceHeaderView>(
       view_controller_.view, kActuationHeaderAccessibilityIdentifier);
   ASSERT_NE(header_view, nil);
 

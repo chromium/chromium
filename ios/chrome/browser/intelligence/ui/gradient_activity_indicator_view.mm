@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/actor/ui/gradient_activity_indicator_view.h"
+#import "ios/chrome/browser/intelligence/ui/gradient_activity_indicator_view.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -61,18 +61,8 @@ NSArray<UIColor*>* DefaultGradientColors() {
 
     [self registerForTraitChanges:@[ [UITraitUserInterfaceStyle class] ]
                        withAction:@selector(updateLayerColors)];
-
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(handleWillEnterForeground)
-               name:UIApplicationWillEnterForegroundNotification
-             object:nil];
   }
   return self;
-}
-
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Public
@@ -218,6 +208,7 @@ NSArray<UIColor*>* DefaultGradientColors() {
   _gradientRotationAnimation.toValue = @(2.0 * M_PI);
   _gradientRotationAnimation.duration = kCycleDuration;
   _gradientRotationAnimation.repeatCount = HUGE_VALF;
+  _gradientRotationAnimation.removedOnCompletion = NO;
 
   // Variable-speed arc stretch and rotation.
   NSMutableArray<NSNumber*>* keyTimes = [NSMutableArray array];
@@ -252,16 +243,7 @@ NSArray<UIColor*>* DefaultGradientColors() {
   _strokeGroupAnimation.animations = @[ strokeEnd, maskRotation ];
   _strokeGroupAnimation.duration = kCycleDuration;
   _strokeGroupAnimation.repeatCount = HUGE_VALF;
-}
-
-// Restores animations removed upon backgrounding.
-- (void)handleWillEnterForeground {
-  if (!_animating) {
-    return;
-  }
-  [_gradientLayer addAnimation:_gradientRotationAnimation
-                        forKey:kGradientRotationKey];
-  [_maskLayer addAnimation:_strokeGroupAnimation forKey:kStrokeGroupKey];
+  _strokeGroupAnimation.removedOnCompletion = NO;
 }
 
 @end

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actuation_header_view_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_intelligence_header_view_controller.h"
 
 #import <iterator>
 
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -67,8 +67,8 @@ UISegmentedControl* SegmentedControl(NSArray<NSString*>* items) {
 }
 
 // Returns an icon item displaying `symbol`.
-ActuationHeaderItem* IconItem(Symbol symbol, NSString* title) {
-  return [ActuationHeaderItem
+IntelligenceHeaderItem* IconItem(Symbol symbol, NSString* title) {
+  return [IntelligenceHeaderItem
                  itemWithIcon:SymbolWithPointSize(symbol, kIconPointSize)
                         title:title
       accessibilityIdentifier:nil
@@ -76,10 +76,10 @@ ActuationHeaderItem* IconItem(Symbol symbol, NSString* title) {
 }
 
 // Returns a call-to-action item displaying `title`.
-ActuationHeaderItem* CallToActionItem(NSString* title) {
-  return [ActuationHeaderItem callToActionWithTitle:title
-                            accessibilityIdentifier:nil
-                                             action:NoOpAction()];
+IntelligenceHeaderItem* CallToActionItem(NSString* title) {
+  return [IntelligenceHeaderItem callToActionWithTitle:title
+                               accessibilityIdentifier:nil
+                                                action:NoOpAction()];
 }
 
 }  // namespace
@@ -97,16 +97,16 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
 
 @end
 
-@implementation AIPrototypingActuationHeaderViewController {
+@implementation AIPrototypingIntelligenceHeaderViewController {
   UIScrollView* _scrollView;
   UIStackView* _mainStack;
 
-  ActuationHeaderView* _headerView;
+  IntelligenceHeaderView* _headerView;
 
   UITextField* _titleField;
   UITextField* _subtitleField;
   UITextField* _callToActionTitleField;
-  UISwitch* _actuatingSwitch;
+  UISwitch* _loadingSwitch;
   UISegmentedControl* _primarySegment;
   UIStepper* _secondaryCountStepper;
   UILabel* _secondaryCountLabel;
@@ -117,7 +117,7 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.title = @"Actuation Header";
+  self.title = @"Intelligence Header";
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
   _scrollView = [[UIScrollView alloc] init];
@@ -158,7 +158,7 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
   showcaseBox.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   [_mainStack addArrangedSubview:showcaseBox];
 
-  _headerView = [[ActuationHeaderView alloc] initWithFrame:CGRectZero];
+  _headerView = [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   [showcaseBox addSubview:_headerView];
   AddSameConstraintsWithInset(_headerView, showcaseBox, kControlSpacing);
@@ -179,10 +179,10 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
   _callToActionTitleField = TextField(kDefaultCallToActionTitle);
   [self addControl:_callToActionTitleField titled:@"Call-to-action title"];
 
-  _actuatingSwitch = [[UISwitch alloc] init];
-  [self addRowWithLabel:Label(@"Actuating", UIFontTextStyleBody,
-                              kTextPrimaryColor)
-                control:_actuatingSwitch];
+  _loadingSwitch = [[UISwitch alloc] init];
+  [self
+      addRowWithLabel:Label(@"Loading", UIFontTextStyleBody, kTextPrimaryColor)
+              control:_loadingSwitch];
 
   _primarySegment = SegmentedControl(@[ @"None", @"Icon", @"CTA" ]);
   _primarySegment.selectedSegmentIndex = kPrimarySegmentNone;
@@ -211,7 +211,7 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
 
   // Any control missing here would not refresh `_headerView`.
   NSArray<UIControl*>* controls = @[
-    _titleField, _subtitleField, _callToActionTitleField, _actuatingSwitch,
+    _titleField, _subtitleField, _callToActionTitleField, _loadingSwitch,
     _primarySegment, _secondaryCountStepper
   ];
   for (UIControl* control in
@@ -227,7 +227,7 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
 - (void)updateHeader {
   _headerView.title = _titleField.text;
   _headerView.subtitle = _subtitleField.text;
-  _headerView.actuating = _actuatingSwitch.on;
+  _headerView.loading = _loadingSwitch.on;
 
   NSUInteger count = static_cast<NSUInteger>(_secondaryCountStepper.value);
   _secondaryCountLabel.text =
@@ -236,7 +236,7 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
   const Symbol icons[] = {SymbolCart, SymbolSearch, SymbolCalendar};
   NSString* callToActionTitle = _callToActionTitleField.text;
   NSUInteger callToActionCount = 0;
-  NSMutableArray<ActuationHeaderItem*>* items = [NSMutableArray array];
+  NSMutableArray<IntelligenceHeaderItem*>* items = [NSMutableArray array];
   for (NSUInteger index = 0; index < _secondaryStyleSegments.count; ++index) {
     UISegmentedControl* segment = _secondaryStyleSegments[index];
     segment.hidden = index >= count;
@@ -263,7 +263,7 @@ ActuationHeaderItem* CallToActionItem(NSString* title) {
 }
 
 // Returns the primary item matching `_primarySegment`, or nil for none.
-- (ActuationHeaderItem*)selectedPrimaryItem {
+- (IntelligenceHeaderItem*)selectedPrimaryItem {
   switch (_primarySegment.selectedSegmentIndex) {
     case kPrimarySegmentIcon:
       return IconItem(SymbolXMark, @"Close");

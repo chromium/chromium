@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_intervention_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_suggestions_presenter.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_compact_view.h"
@@ -14,6 +13,8 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_item.h"
+#import "ios/chrome/browser/intelligence/ui/intelligence_header_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -30,11 +31,11 @@ NSString* const kHeaderSizingPlaceholderText = @"Placeholder";
 // Returns the header density for `mode`. The minimized header is condensed so
 // that a title and a subtitle fit in about the same height as a title-only
 // header.
-ActuationHeaderDensity HeaderDensityForDisplayMode(
+IntelligenceHeaderDensity HeaderDensityForDisplayMode(
     ActuationWorklogDisplayMode mode) {
   return mode == ActuationWorklogDisplayModeMinimized
-             ? ActuationHeaderDensityCondensed
-             : ActuationHeaderDensityRegular;
+             ? IntelligenceHeaderDensity::kCondensed
+             : IntelligenceHeaderDensity::kRegular;
 }
 
 }  // namespace
@@ -48,7 +49,10 @@ using intelligence::actor::kSpacingLarge;
 
 @implementation ActuationWorklogViewController {
   // Header view that sits right above the worklog.
-  ActuationHeaderView* _headerView;
+  // TODO(crbug.com/583897274): Move ownership of `_headerView` to
+  // `GeminiContainerViewController` so a single persistent header instance is
+  // shared across container states.
+  IntelligenceHeaderView* _headerView;
   // Current step layout. Visible in `ActuationWorklogDisplayModeCompact`.
   ActuationWorklogCompactView* _compactView;
   // Timeline view embedded inside a scrollview to support vertical growth as
@@ -64,7 +68,7 @@ using intelligence::actor::kSpacingLarge;
   // Mode-specific header content applied to `_headerView`.
   ActuationHeaderContentVariants* _headerContentVariants;
   // Offscreen header for content-independent height calculation.
-  ActuationHeaderView* _sizingHeaderView;
+  IntelligenceHeaderView* _sizingHeaderView;
   // Intervention displayed by `_interventionView`, if any.
   ActuationInterventionData* _intervention;
 
@@ -132,7 +136,7 @@ using intelligence::actor::kSpacingLarge;
     return;
   }
   _actuationActive = active;
-  _headerView.actuating = active;
+  _headerView.loading = active;
   [self updateVisibility];
 }
 
@@ -214,12 +218,12 @@ using intelligence::actor::kSpacingLarge;
 }
 
 // Creates the close button accessory for `_headerView`.
-- (ActuationHeaderItem*)createCloseItem {
+- (IntelligenceHeaderItem*)createCloseItem {
   __weak __typeof(self) weakSelf = self;
   UIAction* closeAction = [UIAction actionWithHandler:^(UIAction*) {
     [weakSelf stopActuationButtonTapped];
   }];
-  return [ActuationHeaderItem
+  return [IntelligenceHeaderItem
                  itemWithIcon:SymbolWithPointSize(SymbolXMark,
                                                   kCloseButtonPointSize)
                         title:l10n_util::GetNSString(IDS_CLOSE)
@@ -229,9 +233,9 @@ using intelligence::actor::kSpacingLarge;
 
 // Creates the view hierarchy.
 - (void)setupSubviews {
-  _headerView = [[ActuationHeaderView alloc] initWithFrame:CGRectZero];
+  _headerView = [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   _headerView.accessibilityIdentifier = kActuationHeaderAccessibilityIdentifier;
-  _headerView.actuating = _actuationActive;
+  _headerView.loading = _actuationActive;
   _headerView.primaryItem = [self createCloseItem];
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_headerView];
@@ -328,7 +332,8 @@ using intelligence::actor::kSpacingLarge;
 // without clippping in the minimized display mode.
 - (CGFloat)headerHeightForDisplayMode:(ActuationWorklogDisplayMode)mode {
   if (!_sizingHeaderView) {
-    _sizingHeaderView = [[ActuationHeaderView alloc] initWithFrame:CGRectZero];
+    _sizingHeaderView =
+        [[IntelligenceHeaderView alloc] initWithFrame:CGRectZero];
   }
   ActuationHeaderContent* content =
       [_headerContentVariants contentForDisplayMode:mode];

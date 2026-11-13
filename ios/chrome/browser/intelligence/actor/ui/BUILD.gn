@@ -15,8 +15,6 @@ source_set("ui") {
     "actor_overlay_view_controller.mm",
     "actor_tool_chip_view.h",
     "actor_tool_chip_view.mm",
-    "actuation_header_view.h",
-    "actuation_header_view.mm",
     "actuation_intervention_view.h",
     "actuation_intervention_view.mm",
     "actuation_suggestions_presenter.h",
@@ -42,12 +40,11 @@ source_set("ui") {
     "actuation_worklog_view_data.mm",
     "actuation_worklog_view_data_builders.h",
     "actuation_worklog_view_data_builders.mm",
-    "gradient_activity_indicator_view.h",
-    "gradient_activity_indicator_view.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/ui:constants",
   ]
   deps = [
     "//base",
@@ -55,8 +52,8 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/ui",
     "//ios/chrome/browser/shared/coordinator/scene/state",
-    "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/elements/gradient",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -85,6 +82,7 @@ source_set("unit_tests") {
     ":ui",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_bar/ui:constants",
+    "//ios/chrome/browser/intelligence/ui",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/coordinator/scene/state:test_support",
