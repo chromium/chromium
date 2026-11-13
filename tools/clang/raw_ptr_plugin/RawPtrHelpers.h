@@ -5,6 +5,9 @@
 #ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_RAWPTRHELPERS_H_
 #define TOOLS_CLANG_RAW_PTR_PLUGIN_RAWPTRHELPERS_H_
 
+#include <string>
+#include <vector>
+
 #include "RawPtrCastingUnsafeChecker.h"
 #include "StackAllocatedChecker.h"
 #include "Util.h"
@@ -225,6 +228,55 @@ AST_MATCHER(clang::CXXRecordDecl, isAnonymousStructOrUnion) {
 AST_MATCHER(clang::Decl, isObjCSynthesize) {
   const auto* ivar_decl = clang::dyn_cast<clang::ObjCIvarDecl>(&Node);
   return ivar_decl && ivar_decl->getSynthesize();
+}
+
+// The pointer types listed in `excluded_pointer_types` (see
+// `RawPtrContainerConfig`), by their fully-qualified names.
+class ExcludedPointerTypeSet {
+ public:
+  explicit ExcludedPointerTypeSet(
+      const std::vector<std::string>& qualified_names);
+
+  ExcludedPointerTypeSet(const ExcludedPointerTypeSet&) = delete;
+  ExcludedPointerTypeSet& operator=(const ExcludedPointerTypeSet&) = delete;
+
+  bool empty() const { return qualified_names_.empty(); }
+
+  // Returns true if `type`, as spelled in the source, is a listed typedef. Only
+  // the outermost name is compared, e.g. `HANDLE` for `HANDLE`, not `void*`;
+  // so a type must be listed under every alias it is used with.
+  bool Contains(clang::QualType type) const;
+
+ private:
+  llvm::StringSet<> qualified_names_;
+};
+
+// Matches a field whose type, as written in the source, is a template
+// specialization with a type template argument listed in `ExcludedTypes`, e.g.
+// `std::vector<HANDLE>` or `std::tuple<HANDLE, T*>`.
+//
+// The canonical type based matchers strip the typedef sugar, which is needed
+// to tell `std::vector<HANDLE>` apart from `std::vector<void*>`. Typedefs of
+// the container (e.g. `using HandleList = std::vector<HANDLE>;`) are looked
+// through, but only the outermost written specialization is inspected, e.g.
+// `flat_set<HANDLE>` for `base::flat_set<HANDLE>`; alias templates aren't
+// expanded.
+AST_MATCHER_P(clang::FieldDecl,
+              hasExcludedPointerTemplateArgument,
+              const ExcludedPointerTypeSet*,
+              ExcludedTypes) {
+  if (ExcludedTypes->empty()) {
+    return false;
+  }
+  const auto* tst = Node.getType()->getAs<clang::TemplateSpecializationType>();
+  if (!tst) {
+    return false;
+  }
+  return llvm::any_of(tst->template_arguments(),
+                      [&](const clang::TemplateArgument& arg) {
+                        return arg.getKind() == clang::TemplateArgument::Type &&
+                               ExcludedTypes->Contains(arg.getAsType());
+                      });
 }
 
 // Matches field declarations that do not explicitly appear in the source

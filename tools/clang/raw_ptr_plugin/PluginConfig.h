@@ -20,6 +20,7 @@ struct RawPtrContainerConfig {
   bool enabled = false;
   std::vector<std::string> included_container_types;
   std::vector<std::string> excluded_container_types;
+  std::vector<std::string> excluded_pointer_types;
 };
 
 // Helper structure for parsing YAML, allowing us to distinguish between
@@ -29,6 +30,7 @@ struct ParsedRawPtrContainerConfig {
   std::optional<bool> override_defaults;
   std::optional<std::vector<std::string>> included_container_types;
   std::optional<std::vector<std::string>> excluded_container_types;
+  std::optional<std::vector<std::string>> excluded_pointer_types;
 };
 
 struct ParsedRawPtrPluginConfig {
@@ -89,6 +91,7 @@ struct RawPtrPluginConfig {
     if (p_container.override_defaults.value_or(false)) {
       container_config.included_container_types.clear();
       container_config.excluded_container_types.clear();
+      container_config.excluded_pointer_types.clear();
     }
 
     // Reuse range-based merge helper
@@ -107,6 +110,8 @@ struct RawPtrPluginConfig {
                 p_container.included_container_types);
     dedup_merge(container_config.excluded_container_types,
                 p_container.excluded_container_types);
+    dedup_merge(container_config.excluded_pointer_types,
+                p_container.excluded_pointer_types);
 
     // 4. Exclusions take precedence over inclusions
     // If it's excluded, it shouldn't co-exist as an included type.
@@ -134,6 +139,7 @@ struct MappingTraits<raw_ptr_plugin::ParsedRawPtrContainerConfig> {
     io.mapOptional("override_defaults", config.override_defaults);
     io.mapOptional("included_types", config.included_container_types);
     io.mapOptional("excluded_types", config.excluded_container_types);
+    io.mapOptional("excluded_pointer_types", config.excluded_pointer_types);
   }
 };
 

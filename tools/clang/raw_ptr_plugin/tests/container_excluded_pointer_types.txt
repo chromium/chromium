@@ -1,0 +1,31 @@
+container_excluded_pointer_types.cpp:84:24: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<HMODULE> modules;
+  ~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+container_excluded_pointer_types.cpp:85:23: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<HLOCAL> locals;
+  ~~~~~~~~~~~~~~~~~~~~^~~~~~
+container_excluded_pointer_types.cpp:86:24: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<HWND__*> hwnd_ptrs;
+  ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+container_excluded_pointer_types.cpp:87:22: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<void*> void_ptrs;
+  ~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+container_excluded_pointer_types.cpp:88:23: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<LPVOID> lpvoids;
+  ~~~~~~~~~~~~~~~~~~~~^~~~~~~
+container_excluded_pointer_types.cpp:89:24: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<VkFence> fences;
+  ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+container_excluded_pointer_types.cpp:90:30: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<other::Handle> other_handles;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+container_excluded_pointer_types.cpp:91:27: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<SomeClass*> some_class_ptrs;
+  ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+container_excluded_pointer_types.cpp:92:29: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<SomeClassPtr> some_class_alias_ptrs;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+container_excluded_pointer_types.cpp:93:24: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  PtrVector<SomeClass> alias_template_ptrs;
+  ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+10 errors generated.

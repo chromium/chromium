@@ -193,6 +193,23 @@ PtrAndRefTypeLocExclusions() {
   return anyOf(isSpellingInSystemHeader(), isInThirdPartyLocation());
 }
 
+ExcludedPointerTypeSet::ExcludedPointerTypeSet(
+    const std::vector<std::string>& qualified_names)
+    : qualified_names_(llvm::from_range, qualified_names) {}
+
+bool ExcludedPointerTypeSet::Contains(clang::QualType type) const {
+  if (type.isNull() || empty()) {
+    return false;
+  }
+  // Compare the name used in the source, e.g. `HANDLE` rather than `void*`.
+  const auto* typedef_type = type->getAs<clang::TypedefType>();
+  if (!typedef_type) {
+    return false;
+  }
+  return qualified_names_.contains(
+      typedef_type->getDecl()->getQualifiedNameAsString());
+}
+
 // Unsupported pointer types =========
 // Example:
 //   struct MyStruct {
