@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_desktop.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_desktop.h"
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_util.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_util.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
+#include "chrome/browser/safe_browsing/client_side_detection/chrome_client_side_detection_host_delegate.h"
 
 #include "base/barrier_closure.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,8 +11,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
-#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_factory.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/client_side_detection/client_side_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory.h"
 #include "chrome/browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service.h"
 #include "chrome/browser/safe_browsing/gemini_antiscam_protection/gemini_antiscam_protection_service_factory.h"
 #include "chrome/browser/safe_browsing/interstitials/user_interaction_observer.h"

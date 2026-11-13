@@ -6,7 +6,7 @@
 
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
+#include "chrome/browser/safe_browsing/client_side_detection/chrome_client_side_detection_service_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/features.h"

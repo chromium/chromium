@@ -201,14 +201,14 @@ static_library("safe_browsing") {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
     public += [
-      "chrome_client_side_detection_host_delegate.h",
-      "chrome_client_side_detection_service_delegate.h",
       "chrome_safe_browsing_local_state_delegate.h",
       "chrome_safe_browsing_tab_observer_delegate.h",
       "chrome_user_population_helper.h",
-      "client_side_detection_intelligent_scan_delegate_factory.h",
-      "client_side_detection_intelligent_scan_delegate_util.h",
-      "client_side_detection_service_factory.h",
+      "client_side_detection/chrome_client_side_detection_host_delegate.h",
+      "client_side_detection/chrome_client_side_detection_service_delegate.h",
+      "client_side_detection/client_side_detection_service_factory.h",
+      "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory.h",
+      "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_util.h",
       "cloud_content_scanning/file_analysis_request.h",
       "db/chrome_sb_protocol_config_provider.h",
       "db/v5_get_hash_protocol_manager_factory.h",
@@ -260,14 +260,14 @@ static_library("safe_browsing") {
       "triggers/trigger_creator.h",
     ]
     sources += [
-      "chrome_client_side_detection_host_delegate.cc",
-      "chrome_client_side_detection_service_delegate.cc",
       "chrome_safe_browsing_local_state_delegate.cc",
       "chrome_safe_browsing_tab_observer_delegate.cc",
       "chrome_user_population_helper.cc",
-      "client_side_detection_intelligent_scan_delegate_factory.cc",
-      "client_side_detection_intelligent_scan_delegate_util.cc",
-      "client_side_detection_service_factory.cc",
+      "client_side_detection/chrome_client_side_detection_host_delegate.cc",
+      "client_side_detection/chrome_client_side_detection_service_delegate.cc",
+      "client_side_detection/client_side_detection_service_factory.cc",
+      "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory.cc",
+      "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_util.cc",
       "cloud_content_scanning/file_analysis_request.cc",
       "db/chrome_sb_protocol_config_provider.cc",
       "db/v5_get_hash_protocol_manager_factory.cc",
@@ -321,20 +321,20 @@ static_library("safe_browsing") {
     if (is_android) {
       public += [
         "android/chrome_safe_browsing_hats_delegate_android.h",
-        "android/client_side_detection_intelligent_scan_delegate_android.h",
+        "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_android.h",
       ]
       sources += [
         "android/chrome_safe_browsing_hats_delegate_android.cc",
-        "android/client_side_detection_intelligent_scan_delegate_android.cc",
+        "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_android.cc",
       ]
     } else {
       public += [
         "chrome_safe_browsing_hats_delegate_desktop.h",
-        "client_side_detection_intelligent_scan_delegate_desktop.h",
+        "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_desktop.h",
       ]
       sources += [
         "chrome_safe_browsing_hats_delegate_desktop.cc",
-        "client_side_detection_intelligent_scan_delegate_desktop.cc",
+        "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_desktop.cc",
       ]
     }
     deps += [
@@ -804,7 +804,7 @@ source_set("unit_tests") {
   if (safe_browsing_mode != 0) {
     sources += [
       "chrome_user_population_helper_unittest.cc",
-      "client_side_detection_host_unittest.cc",
+      "client_side_detection/client_side_detection_host_unittest.cc",
       "download_protection/download_item_metadata_unittest.cc",
       "download_protection/download_protection_service_unittest.cc",
       "download_protection/download_protection_unittest_util.cc",
@@ -914,10 +914,10 @@ source_set("unit_tests") {
     sources += [
       "advanced_protection/advanced_protection_status_manager_desktop_unittest.cc",
       "chrome_safe_browsing_hats_delegate_desktop_unittest.cc",
-      "client_side_detection_intelligent_scan_delegate_desktop_unittest.cc",
-      "client_side_detection_intelligent_scan_delegate_factory_unittest.cc",
-      "client_side_detection_service_factory_unittest.cc",
-      "client_side_detection_service_unittest.cc",
+      "client_side_detection/client_side_detection_service_factory_unittest.cc",
+      "client_side_detection/client_side_detection_service_unittest.cc",
+      "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_desktop_unittest.cc",
+      "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory_unittest.cc",
       "cloud_content_scanning/file_analysis_request_unittest.cc",
       "download_protection/download_feedback_service_unittest.cc",
       "download_protection/download_feedback_unittest.cc",
@@ -1041,9 +1041,9 @@ source_set("unit_tests") {
   if (safe_browsing_mode == 2 && is_android) {
     sources += [
       "android/chrome_safe_browsing_hats_delegate_android_unittest.cc",
-      "android/client_side_detection_intelligent_scan_delegate_android_unittest.cc",
       "android/password_protection/password_reuse_controller_android_unittest.cc",
       "android/suspicious_site_controller_android_unittest.cc",
+      "client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_android_unittest.cc",
       "download_protection/rate_limiting_key_manager_unittest.cc",
       "settings/safe_browsing_pref_change_handler_android_unittest.cc",
       "tailored_security/chrome_tailored_security_service_android_unittest.cc",
@@ -1275,7 +1275,7 @@ if (safe_browsing_mode != 0) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
-      "client_side_detection_service_browsertest.cc",
+      "client_side_detection/client_side_detection_service_browsertest.cc",
       "interstitials/safe_browsing_blocking_page_platform_test.cc",
     ]
 
@@ -1403,8 +1403,8 @@ source_set("browser_tests") {
 
   if (safe_browsing_mode == 1) {
     sources += [
-      "chrome_client_side_detection_host_delegate_browsertest.cc",
-      "client_side_detection_host_browsertest.cc",
+      "client_side_detection/chrome_client_side_detection_host_delegate_browsertest.cc",
+      "client_side_detection/client_side_detection_host_browsertest.cc",
       "db/sb_embedded_test_server_browsertest.cc",
       "db/v5_local_database_browsertest.cc",
       "hashprefix_realtime/ohttp_key_service_browsertest.cc",

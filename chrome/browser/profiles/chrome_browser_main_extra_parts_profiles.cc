@@ -637,8 +637,8 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_factory.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/client_side_detection/client_side_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/db/v5_get_hash_protocol_manager_factory.h"
 #include "chrome/browser/safe_browsing/db/v5_search_hashes_cache_factory.h"

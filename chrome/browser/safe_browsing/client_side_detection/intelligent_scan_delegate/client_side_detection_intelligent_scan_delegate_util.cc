@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_util.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_util.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"

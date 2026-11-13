@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_factory.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_factory.h"
 
 #include "build/buildflag.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -14,9 +14,9 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/safe_browsing/core/browser/client_side_detection/intelligent_scan_delegate/intelligent_scan_delegate.h"
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_android.h"
 #else
-#include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_desktop.h"
+#include "chrome/browser/safe_browsing/client_side_detection/intelligent_scan_delegate/client_side_detection_intelligent_scan_delegate_desktop.h"
 #endif
 
 namespace safe_browsing {

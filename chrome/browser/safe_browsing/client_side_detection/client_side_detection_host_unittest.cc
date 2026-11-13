@@ -29,7 +29,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
+#include "chrome/browser/safe_browsing/client_side_detection/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/interstitials/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/interstitials/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
+#include "chrome/browser/safe_browsing/client_side_detection/client_side_detection_service_factory.h"
 
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
