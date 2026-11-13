@@ -19565,12 +19565,26 @@
             "platforms": [
                 "android",
                 "android_desktop",
-                "android_webview",
                 "chromeos",
                 "fuchsia",
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThreeDSecureTelemetry"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ThreeDSecureTelemetryForAndroidWebView": [
+        {
+            "platforms": [
+                "android_webview"
             ],
             "experiments": [
                 {
