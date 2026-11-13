@@ -69,6 +69,8 @@ class LorgnetteScannerManager : public KeyedService {
 
   ~LorgnetteScannerManager() override = default;
 
+  // If zeroconf_scanner_detector is null, a default detector is created
+  // lazily on the first network scanner discovery request.
   static std::unique_ptr<LorgnetteScannerManager> Create(
       std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector,
       const user_manager::User& user);

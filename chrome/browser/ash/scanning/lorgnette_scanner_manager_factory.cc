@@ -50,7 +50,7 @@ LorgnetteScannerManagerFactory::BuildServiceInstanceForBrowserContext(
   // fallback; for regular profiles it delegates to BrowserContextHelper.
   const user_manager::User& user =
       CHECK_DEREF(ProfileHelper::Get()->GetUserByProfile(profile));
-  return LorgnetteScannerManager::Create(ZeroconfScannerDetector::Create(),
+  return LorgnetteScannerManager::Create(/*zeroconf_scanner_detector=*/nullptr,
                                          user);
 }
 

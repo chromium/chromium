@@ -207,13 +207,13 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   LorgnetteScannerManagerImpl(
       std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector,
       const user_manager::User& user)
-      : zeroconf_scanner_detector_(std::move(zeroconf_scanner_detector)) {
-    zeroconf_scanner_detector_->RegisterScannersDetectedCallback(
-        base::BindRepeating(&LorgnetteScannerManagerImpl::OnScannersDetected,
-                            weak_ptr_factory_.GetWeakPtr()));
-    OnScannersDetected(zeroconf_scanner_detector_->GetScanners());
-    lorgnette_notification_controller_ =
-        std::make_unique<LorgnetteNotificationController>(user);
+      : zeroconf_scanner_detector_(std::move(zeroconf_scanner_detector)),
+        lorgnette_notification_controller_(
+            std::make_unique<LorgnetteNotificationController>(user)) {
+    // zeroconf_scanner_detector_ is passed only in tests.
+    if (zeroconf_scanner_detector_) {
+      InitZeroconfScannerDetector();
+    }
   }
 
   ~LorgnetteScannerManagerImpl() override = default;
@@ -224,6 +224,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // LorgnetteScannerManager:
   void GetScannerNames(GetScannerNamesCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    EnsureZeroconfScannerDetector();
     GetLorgnetteManagerClient()->ListScanners(
         kListScannersDiscoveryClientId,
         /*local_only=*/false,
@@ -238,6 +239,9 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
                           SecureScannerFilter secure_only,
                           GetScannerInfoListCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    if (local_only == LocalScannerFilter::kIncludeNetworkScanners) {
+      EnsureZeroconfScannerDetector();
+    }
     GetLorgnetteManagerClient()->ListScanners(
         client_id, (local_only == LocalScannerFilter::kLocalScannersOnly),
         /*preferred_only=*/false,
@@ -433,6 +437,24 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   // can point to different devices over time.
   using ScannerId = std::pair<std::string, std::string>;
   using TokenToScannerId = std::map<std::string, std::optional<ScannerId>>;
+
+  // Lazily creates and starts the mDNS scanner detector on the first network
+  // scanner discovery request so user login does not start mDNS listeners when
+  // scanning is never used.
+  void EnsureZeroconfScannerDetector() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    if (!zeroconf_scanner_detector_) {
+      zeroconf_scanner_detector_ = ZeroconfScannerDetector::Create();
+      InitZeroconfScannerDetector();
+    }
+  }
+
+  void InitZeroconfScannerDetector() {
+    zeroconf_scanner_detector_->RegisterScannersDetectedCallback(
+        base::BindRepeating(&LorgnetteScannerManagerImpl::OnScannersDetected,
+                            weak_ptr_factory_.GetWeakPtr()));
+    OnScannersDetected(zeroconf_scanner_detector_->GetScanners());
+  }
 
   // Called when scanners are detected by a ZeroconfScannerDetector.
   void OnScannersDetected(std::vector<Scanner> scanners) {
@@ -1050,7 +1072,8 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     }
   }
 
-  // Used to detect zeroconf scanners.
+  // Used to detect zeroconf scanners. Created lazily on the first network
+  // scanner discovery request when not injected in the constructor.
   std::unique_ptr<ZeroconfScannerDetector> zeroconf_scanner_detector_;
 
   // The deduplicated zeroconf scanners reported by the
