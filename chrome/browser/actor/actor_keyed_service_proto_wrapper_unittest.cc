@@ -104,6 +104,26 @@ TEST_F(ActorKeyedServiceProtoWrapperTest,
 }
 
 TEST_F(ActorKeyedServiceProtoWrapperTest,
+       CollectObservationsRejectsUnknownAndObservesActiveTask) {
+  base::test::TestFuture<optimization_guide::proto::ActionsResult>
+      unknown_future;
+  wrapper_.CollectObservations(TaskId(9999),
+                               /*skip_async_observation_information=*/false,
+                               unknown_future.GetCallback());
+  EXPECT_EQ(unknown_future.Get().action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+
+  TaskId task_id = CreateTask();
+  base::test::TestFuture<optimization_guide::proto::ActionsResult>
+      active_future;
+  wrapper_.CollectObservations(task_id,
+                               /*skip_async_observation_information=*/false,
+                               active_future.GetCallback());
+  EXPECT_EQ(active_future.Get().action_result(),
+            static_cast<int32_t>(mojom::ActionResultCode::kOk));
+}
+
+TEST_F(ActorKeyedServiceProtoWrapperTest,
        BuildActionsResultPopulatesObservationsAndLatencies) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   mojom::ActionResultPtr ok_result =

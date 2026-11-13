@@ -68,6 +68,13 @@ class ActorKeyedServiceAdapterTest : public testing::Test {
         std::move(result), observation_config);
   }
 
+  static proto::ResumeTaskResponse BuildResumeTaskResponse(
+      optimization_guide::proto::ActionsResult result,
+      const proto::ObservationConfig* observation_config) {
+    return ActorKeyedServiceAdapter::BuildResumeTaskResponse(
+        std::move(result), observation_config);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   // Lets ActorKeyedService::CreateHeadlessActorSurface() create a WebContents
@@ -458,6 +465,108 @@ TEST_F(ActorKeyedServiceAdapterTest,
   EXPECT_FALSE(second_pause_future.Get());
   EXPECT_EQ(actor_service_->GetTask(task_id)->GetState(),
             ActorTask::State::kPausedByUser);
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       ResumeTaskResumesPausedTaskClearsTakeoverResultAndObservesSurface) {
+  ScopedHeadlessActorSurface headless =
+      actor_service_->CreateHeadlessActorSurface();
+  const ActorSurfaceHandle actor_surface_handle =
+      headless.actor_surface_handle();
+
+  proto::StartTaskRequest start_request;
+  proto::TargetSurface* target = start_request.add_target_surfaces();
+  target->set_tab_id(actor_surface_handle.raw_value());
+  target->set_execution_mode(proto::TargetSurface::HEADLESS);
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(start_request, start_future.GetCallback());
+  TaskId task_id = std::get<0>(start_future.Get());
+
+  proto::PauseTaskRequest pause_request;
+  pause_request.set_reason(proto::PauseTaskRequest::USER_REQUESTED);
+  base::test::TestFuture<bool> pause_future;
+  adapter_.PauseTask(task_id, pause_request, pause_future.GetCallback());
+  ASSERT_TRUE(pause_future.Get());
+
+  ActorTask* task = actor_service_->GetTask(task_id);
+  ASSERT_TRUE(task);
+  task->GetExecutionEngine().set_user_take_over_result(
+      mojom::ActionResultCode::kOk);
+  ASSERT_TRUE(task->GetExecutionEngine().user_take_over_result().has_value());
+
+  proto::ResumeTaskRequest resume_request;
+  resume_request.mutable_observation_config()->set_level(
+      proto::ObservationConfig::OBSERVATION_LEVEL_STATUS_ONLY);
+  base::test::TestFuture<proto::ResumeTaskResponse> resume_future;
+  adapter_.ResumeTask(task_id, resume_request, resume_future.GetCallback());
+
+  const proto::ResumeTaskResponse& response = resume_future.Get();
+  EXPECT_EQ(response.status(), proto::ResumeTaskResponse::STATUS_OK);
+  EXPECT_EQ(task->GetState(), ActorTask::State::kReflecting);
+  EXPECT_FALSE(task->GetExecutionEngine().user_take_over_result().has_value());
+  ASSERT_EQ(response.observations_size(), 1);
+  EXPECT_EQ(response.observations(0).tab_id(),
+            actor_surface_handle.raw_value());
+}
+
+TEST_F(ActorKeyedServiceAdapterTest, ResumeTaskFailsForUnknownOrUnpausedTask) {
+  base::test::TestFuture<proto::ResumeTaskResponse> unknown_future;
+  adapter_.ResumeTask(TaskId(9999), proto::ResumeTaskRequest(),
+                      unknown_future.GetCallback());
+  EXPECT_EQ(unknown_future.Get().status(),
+            proto::ResumeTaskResponse::STATUS_FAILED);
+
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(proto::StartTaskRequest(), start_future.GetCallback());
+  TaskId task_id = std::get<0>(start_future.Get());
+
+  base::test::TestFuture<proto::ResumeTaskResponse> unpaused_future;
+  adapter_.ResumeTask(task_id, proto::ResumeTaskRequest(),
+                      unpaused_future.GetCallback());
+  EXPECT_EQ(unpaused_future.Get().status(),
+            proto::ResumeTaskResponse::STATUS_FAILED);
+}
+
+TEST_F(ActorKeyedServiceAdapterTest,
+       BuildResumeTaskResponseMapsStatusAndObservations) {
+  optimization_guide::proto::ActionsResult failed_result;
+  failed_result.set_action_result(
+      static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+  proto::ResumeTaskResponse failed_response =
+      BuildResumeTaskResponse(failed_result, nullptr);
+  EXPECT_EQ(failed_response.status(), proto::ResumeTaskResponse::STATUS_FAILED);
+  EXPECT_TRUE(failed_response.observations().empty());
+
+  optimization_guide::proto::ActionsResult ok_result;
+  ok_result.set_action_result(
+      static_cast<int32_t>(mojom::ActionResultCode::kOk));
+  optimization_guide::proto::TabObservation* tab_obs = ok_result.add_tabs();
+  tab_obs->set_id(15);
+  tab_obs->set_result(
+      optimization_guide::proto::TabObservation::TAB_OBSERVATION_OK);
+  tab_obs->set_screenshot("png_bytes");
+  tab_obs->set_screenshot_mime_type("image/png");
+  tab_obs->mutable_annotated_page_content()->mutable_main_frame_data()->set_url(
+      "https://example.com/resumed");
+
+  proto::ResumeTaskResponse full_response =
+      BuildResumeTaskResponse(ok_result, nullptr);
+  EXPECT_EQ(full_response.status(), proto::ResumeTaskResponse::STATUS_OK);
+  ASSERT_EQ(full_response.observations_size(), 1);
+  EXPECT_EQ(full_response.observations(0).tab_id(), 15);
+  EXPECT_EQ(full_response.observations(0).current_url(),
+            "https://example.com/resumed");
+  EXPECT_EQ(full_response.observations(0).screenshot_data().inline_data(),
+            "png_bytes");
+  EXPECT_TRUE(
+      full_response.observations(0).has_inline_annotated_page_content());
+
+  proto::ObservationConfig none_config;
+  none_config.set_level(proto::ObservationConfig::OBSERVATION_LEVEL_NONE);
+  proto::ResumeTaskResponse none_response =
+      BuildResumeTaskResponse(ok_result, &none_config);
+  EXPECT_EQ(none_response.status(), proto::ResumeTaskResponse::STATUS_OK);
+  EXPECT_TRUE(none_response.observations().empty());
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, ActRejectsUnknownTask) {

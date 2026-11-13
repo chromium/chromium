@@ -12,6 +12,8 @@ namespace chrome::aix::autobrowse::proto {
 class PauseTaskRequest;
 class PerformActionsRequest;
 class PerformActionsResponse;
+class ResumeTaskRequest;
+class ResumeTaskResponse;
 class StartTaskRequest;
 class StartTaskResponse;
 class StopTaskRequest;
@@ -46,6 +48,12 @@ class ActuationDelegate {
   virtual void PauseTask(TaskId task_id,
                          const proto::PauseTaskRequest& request,
                          PauseTaskCallback callback) = 0;
+
+  using ResumeTaskCallback =
+      base::OnceCallback<void(proto::ResumeTaskResponse)>;
+  virtual void ResumeTask(TaskId task_id,
+                          const proto::ResumeTaskRequest& request,
+                          ResumeTaskCallback callback) = 0;
 
   using ActCallback = base::OnceCallback<void(proto::PerformActionsResponse)>;
   virtual void Act(TaskId task_id,

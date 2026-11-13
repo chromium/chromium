@@ -43,6 +43,12 @@ class ActorKeyedServiceProtoWrapper {
   void PerformActions(const optimization_guide::proto::Actions& actions,
                       PerformActionsCallback callback);
 
+  // Collects tab and window observations for `task_id` without executing any
+  // actions.
+  void CollectObservations(TaskId task_id,
+                           bool skip_async_observation_information,
+                           PerformActionsCallback callback);
+
  private:
   friend class ActorKeyedServiceProtoWrapperTest;
 
@@ -61,6 +67,18 @@ class ActorKeyedServiceProtoWrapper {
           screenshot_collection_options,
       std::vector<ActionResultWithLatencyInfo> action_results,
       TabObservationStrategy observation_strategy);
+
+  void StartTabObservation(
+      PerformActionsCallback callback,
+      TaskId task_id,
+      base::TimeTicks start_time,
+      bool skip_async_observation_information,
+      std::optional<page_content_annotations::ScreenshotOptions::
+                        ScreenshotCollectionOptions>
+          screenshot_collection_options,
+      std::vector<ActionResultWithLatencyInfo> action_results,
+      TabObservationStrategy observation_strategy,
+      mojom::ActionResultCode result_code);
 
   void OnTabObservationComplete(
       PerformActionsCallback callback,

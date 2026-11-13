@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -184,6 +185,62 @@ bool ShouldIncludePageContent(
   }
 }
 
+void PopulateBrowserObservations(
+    google::protobuf::RepeatedPtrField<
+        optimization_guide::proto::TabObservation>& tabs,
+    const proto::ObservationConfig* observation_config,
+    google::protobuf::RepeatedPtrField<proto::BrowserObservation>*
+        out_observations) {
+  proto::ObservationConfig::ObservationLevel level =
+      proto::ObservationConfig::OBSERVATION_LEVEL_FULL;
+  if (observation_config) {
+    level = observation_config->level();
+  }
+  if (!ShouldIncludeObservations(level)) {
+    return;
+  }
+
+  for (optimization_guide::proto::TabObservation& tab_obs : tabs) {
+    proto::BrowserObservation* browser_obs = out_observations->Add();
+    browser_obs->set_tab_id(tab_obs.id());
+    if (tab_obs.has_annotated_page_content() &&
+        tab_obs.annotated_page_content().has_main_frame_data()) {
+      browser_obs->set_current_url(
+          tab_obs.annotated_page_content().main_frame_data().url());
+    }
+    browser_obs->set_status(ToBrowserObservationStatus(tab_obs.result()));
+    if (browser_obs->status() != proto::BrowserObservation::STATUS_OBSERVED) {
+      continue;
+    }
+
+    if (ShouldIncludeScreenshot(level)) {
+      if (tab_obs.has_screenshot() && !tab_obs.screenshot().empty()) {
+        proto::BinaryData* screenshot_data =
+            browser_obs->mutable_screenshot_data();
+        screenshot_data->set_inline_data(
+            std::move(*tab_obs.mutable_screenshot()));
+        if (tab_obs.has_screenshot_mime_type()) {
+          screenshot_data->set_mime_type(
+              std::move(*tab_obs.mutable_screenshot_mime_type()));
+        }
+      } else {
+        browser_obs->mutable_screenshot_error()->set_code(
+            ToScreenshotErrorCode(tab_obs));
+      }
+    }
+
+    if (ShouldIncludePageContent(level)) {
+      if (tab_obs.has_annotated_page_content()) {
+        *browser_obs->mutable_inline_annotated_page_content() =
+            std::move(*tab_obs.mutable_annotated_page_content());
+      } else {
+        browser_obs->mutable_page_content_error()->set_code(
+            ToPageContentErrorCode(tab_obs));
+      }
+    }
+  }
+}
+
 }  // namespace
 
 ActorKeyedServiceAdapter::ActorKeyedServiceAdapter(
@@ -268,6 +325,40 @@ void ActorKeyedServiceAdapter::PauseTask(TaskId task_id,
   std::move(callback).Run(true);
 }
 
+void ActorKeyedServiceAdapter::ResumeTask(
+    TaskId task_id,
+    const proto::ResumeTaskRequest& request,
+    ResumeTaskCallback callback) {
+  ActorTask* task = actor_service_->GetTask(task_id);
+  if (!task || !task->IsUnderUserControl()) {
+    proto::ResumeTaskResponse response;
+    response.set_status(proto::ResumeTaskResponse::STATUS_FAILED);
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  task->Resume();
+  task->GetExecutionEngine().set_user_take_over_result(std::nullopt);
+
+  std::optional<proto::ObservationConfig> observation_config;
+  if (request.has_observation_config()) {
+    observation_config = request.observation_config();
+  }
+  const bool skip_async_observation_collection =
+      observation_config &&
+      ShouldSkipAsyncObservationCollection(observation_config->level());
+  actor_keyed_service_proto_wrapper_.CollectObservations(
+      task_id, skip_async_observation_collection,
+      base::BindOnce(
+          [](std::optional<proto::ObservationConfig> observation_config,
+             ResumeTaskCallback callback,
+             optimization_guide::proto::ActionsResult result) {
+            std::move(callback).Run(BuildResumeTaskResponse(
+                std::move(result), base::OptionalToPtr(observation_config)));
+          },
+          std::move(observation_config), std::move(callback)));
+}
+
 void ActorKeyedServiceAdapter::Act(TaskId task_id,
                                    const proto::PerformActionsRequest& request,
                                    ActCallback callback) {
@@ -325,54 +416,24 @@ ActorKeyedServiceAdapter::BuildPerformActionsResponse(
     response.add_extra_information(std::move(info));
   }
 
-  proto::ObservationConfig::ObservationLevel level =
-      proto::ObservationConfig::OBSERVATION_LEVEL_FULL;
-  if (observation_config) {
-    level = observation_config->level();
+  PopulateBrowserObservations(*result.mutable_tabs(), observation_config,
+                              response.mutable_observations());
+  return response;
+}
+
+// static
+proto::ResumeTaskResponse ActorKeyedServiceAdapter::BuildResumeTaskResponse(
+    optimization_guide::proto::ActionsResult result,
+    const proto::ObservationConfig* observation_config) {
+  proto::ResumeTaskResponse response;
+  if (result.action_result() !=
+      static_cast<int32_t>(mojom::ActionResultCode::kOk)) {
+    response.set_status(proto::ResumeTaskResponse::STATUS_FAILED);
+    return response;
   }
-  if (ShouldIncludeObservations(level)) {
-    for (optimization_guide::proto::TabObservation& tab_obs :
-         *result.mutable_tabs()) {
-      proto::BrowserObservation* browser_obs = response.add_observations();
-      browser_obs->set_tab_id(tab_obs.id());
-      if (tab_obs.has_annotated_page_content() &&
-          tab_obs.annotated_page_content().has_main_frame_data()) {
-        browser_obs->set_current_url(
-            tab_obs.annotated_page_content().main_frame_data().url());
-      }
-      browser_obs->set_status(ToBrowserObservationStatus(tab_obs.result()));
-      if (browser_obs->status() != proto::BrowserObservation::STATUS_OBSERVED) {
-        continue;
-      }
-
-      if (ShouldIncludeScreenshot(level)) {
-        if (tab_obs.has_screenshot() && !tab_obs.screenshot().empty()) {
-          proto::BinaryData* screenshot_data =
-              browser_obs->mutable_screenshot_data();
-          screenshot_data->set_inline_data(
-              std::move(*tab_obs.mutable_screenshot()));
-          if (tab_obs.has_screenshot_mime_type()) {
-            screenshot_data->set_mime_type(
-                std::move(*tab_obs.mutable_screenshot_mime_type()));
-          }
-        } else {
-          browser_obs->mutable_screenshot_error()->set_code(
-              ToScreenshotErrorCode(tab_obs));
-        }
-      }
-
-      if (ShouldIncludePageContent(level)) {
-        if (tab_obs.has_annotated_page_content()) {
-          *browser_obs->mutable_inline_annotated_page_content() =
-              std::move(*tab_obs.mutable_annotated_page_content());
-        } else {
-          browser_obs->mutable_page_content_error()->set_code(
-              ToPageContentErrorCode(tab_obs));
-        }
-      }
-    }
-  }
-
+  response.set_status(proto::ResumeTaskResponse::STATUS_OK);
+  PopulateBrowserObservations(*result.mutable_tabs(), observation_config,
+                              response.mutable_observations());
   return response;
 }
 

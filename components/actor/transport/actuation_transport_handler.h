@@ -70,6 +70,13 @@ class ActuationTransportHandler : public stream_transport::TransportHandler {
                            const std::string& task_id_str,
                            bool success);
 
+  void HandleResumeTask(const std::string& request_id,
+                        const std::string& task_id_str,
+                        const proto::ResumeTaskRequest& request);
+  void OnResumeTaskComplete(const std::string& request_id,
+                            const std::string& task_id_str,
+                            proto::ResumeTaskResponse response);
+
   void HandlePerformActions(const std::string& request_id,
                             const std::string& task_id_str,
                             const proto::PerformActionsRequest& request);

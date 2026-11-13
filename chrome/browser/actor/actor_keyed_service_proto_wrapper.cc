@@ -73,6 +73,23 @@ void ActorKeyedServiceProtoWrapper::PerformActions(
                      GetScreenshotCollectionOptions(actions)));
 }
 
+void ActorKeyedServiceProtoWrapper::CollectObservations(
+    TaskId task_id,
+    bool skip_async_observation_information,
+    PerformActionsCallback callback) {
+  if (!actor_service_->GetTask(task_id)) {
+    std::move(callback).Run(BuildErrorActionsResult(
+        mojom::ActionResultCode::kTaskWentAway, std::nullopt));
+    return;
+  }
+
+  StartTabObservation(std::move(callback), task_id, base::TimeTicks::Now(),
+                      skip_async_observation_information,
+                      /*screenshot_collection_options=*/std::nullopt,
+                      /*action_results=*/{}, TabObservationStrategy(),
+                      mojom::ActionResultCode::kOk);
+}
+
 void ActorKeyedServiceProtoWrapper::OnPerformActionsFinished(
     PerformActionsCallback callback,
     TaskId task_id,
@@ -106,6 +123,24 @@ void ActorKeyedServiceProtoWrapper::OnPerformActionsFinished(
     return;
   }
 
+  StartTabObservation(std::move(callback), task_id, start_time,
+                      skip_async_observation_information,
+                      std::move(screenshot_collection_options),
+                      std::move(action_results),
+                      std::move(observation_strategy), result_code);
+}
+
+void ActorKeyedServiceProtoWrapper::StartTabObservation(
+    PerformActionsCallback callback,
+    TaskId task_id,
+    base::TimeTicks start_time,
+    bool skip_async_observation_information,
+    std::optional<page_content_annotations::ScreenshotOptions::
+                      ScreenshotCollectionOptions>
+        screenshot_collection_options,
+    std::vector<ActionResultWithLatencyInfo> action_results,
+    TabObservationStrategy observation_strategy,
+    mojom::ActionResultCode result_code) {
   auto journal_entry = actor_service_->GetJournal().CreatePendingAsyncEntry(
       GURL(), task_id, MakeBrowserTrackUUID(task_id),
       "TabObservationController",

@@ -92,6 +92,14 @@ class FakeActuationDelegate : public ActuationDelegate {
     pending_pause_callback_ = std::move(callback);
   }
 
+  void ResumeTask(TaskId task_id,
+                  const proto::ResumeTaskRequest& request,
+                  ResumeTaskCallback callback) override {
+    last_resume_task_id_ = task_id;
+    last_resume_request_ = request;
+    pending_resume_callback_ = std::move(callback);
+  }
+
   void Act(TaskId task_id,
            const proto::PerformActionsRequest& request,
            ActCallback callback) override {
@@ -128,6 +136,16 @@ class FakeActuationDelegate : public ActuationDelegate {
     return std::move(pending_pause_callback_);
   }
 
+  const std::optional<TaskId>& last_resume_task_id() const {
+    return last_resume_task_id_;
+  }
+  const std::optional<proto::ResumeTaskRequest>& last_resume_request() const {
+    return last_resume_request_;
+  }
+  ResumeTaskCallback TakeResumeCallback() {
+    return std::move(pending_resume_callback_);
+  }
+
   const std::optional<TaskId>& last_act_task_id() const {
     return last_act_task_id_;
   }
@@ -149,6 +167,10 @@ class FakeActuationDelegate : public ActuationDelegate {
   std::optional<TaskId> last_pause_task_id_;
   std::optional<proto::PauseTaskRequest> last_pause_request_;
   PauseTaskCallback pending_pause_callback_;
+
+  std::optional<TaskId> last_resume_task_id_;
+  std::optional<proto::ResumeTaskRequest> last_resume_request_;
+  ResumeTaskCallback pending_resume_callback_;
 
   std::optional<TaskId> last_act_task_id_;
   std::optional<proto::PerformActionsRequest> last_perform_actions_request_;
@@ -924,6 +946,82 @@ TEST_F(ActuationTransportHandlerTest,
   ASSERT_TRUE(session_.sent_messages()[1].has_pause_task());
   EXPECT_EQ(session_.sent_messages()[1].pause_task().status(),
             proto::PauseTaskResponse::STATUS_FAILED);
+}
+
+TEST_F(ActuationTransportHandlerTest,
+       ResumeTaskForwardsOwnedTaskAndSendsResponse) {
+  StartSessionTask(7, "server-task-7");
+
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("server-task-7");
+  downstream.set_request_id("req_resume_1");
+  downstream.mutable_resume_task()->mutable_observation_config()->set_level(
+      proto::ObservationConfig::OBSERVATION_LEVEL_FULL);
+
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  ASSERT_TRUE(delegate_->last_resume_task_id().has_value());
+  EXPECT_EQ(*delegate_->last_resume_task_id(), TaskId(7));
+  ASSERT_TRUE(delegate_->last_resume_request().has_value());
+  EXPECT_EQ(delegate_->last_resume_request()->observation_config().level(),
+            proto::ObservationConfig::OBSERVATION_LEVEL_FULL);
+
+  proto::ResumeTaskResponse resume_response;
+  resume_response.set_status(proto::ResumeTaskResponse::STATUS_OK);
+  resume_response.add_observations()->set_tab_id(42);
+  delegate_->TakeResumeCallback().Run(std::move(resume_response));
+
+  ASSERT_EQ(session_.sent_messages().size(), 2u);
+  const auto& upstream = session_.sent_messages()[1];
+  EXPECT_EQ(upstream.task_id(), "server-task-7");
+  EXPECT_EQ(upstream.request_id(), "req_resume_1");
+  ASSERT_TRUE(upstream.has_resume_task());
+  EXPECT_EQ(upstream.resume_task().status(),
+            proto::ResumeTaskResponse::STATUS_OK);
+  ASSERT_EQ(upstream.resume_task().observations_size(), 1);
+  EXPECT_EQ(upstream.resume_task().observations(0).tab_id(), 42);
+}
+
+TEST_F(ActuationTransportHandlerTest,
+       ResumeTaskRejectsUnownedOrPendingStartTask) {
+  proto::ServerToBrowserPayload unowned;
+  unowned.set_task_id("server-task-unowned");
+  unowned.set_request_id("req_resume_unowned");
+  unowned.mutable_resume_task();
+
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      unowned.SerializeAsString());
+
+  EXPECT_FALSE(delegate_->last_resume_task_id().has_value());
+  ASSERT_EQ(session_.sent_messages().size(), 1u);
+  EXPECT_EQ(session_.sent_messages()[0].task_id(), "server-task-unowned");
+  EXPECT_EQ(session_.sent_messages()[0].request_id(), "req_resume_unowned");
+  ASSERT_TRUE(session_.sent_messages()[0].has_resume_task());
+  EXPECT_EQ(session_.sent_messages()[0].resume_task().status(),
+            proto::ResumeTaskResponse::STATUS_FAILED);
+
+  proto::ServerToBrowserPayload start_msg;
+  start_msg.set_task_id("server-task-pending");
+  start_msg.set_request_id("req_start_1");
+  start_msg.mutable_start_task();
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      start_msg.SerializeAsString());
+
+  proto::ServerToBrowserPayload pending_resume;
+  pending_resume.set_task_id("server-task-pending");
+  pending_resume.set_request_id("req_resume_pending");
+  pending_resume.mutable_resume_task();
+  handler_->OnMessage(stream_transport::PayloadType::kActuation,
+                      pending_resume.SerializeAsString());
+
+  EXPECT_FALSE(delegate_->last_resume_task_id().has_value());
+  ASSERT_EQ(session_.sent_messages().size(), 2u);
+  EXPECT_EQ(session_.sent_messages()[1].task_id(), "server-task-pending");
+  EXPECT_EQ(session_.sent_messages()[1].request_id(), "req_resume_pending");
+  ASSERT_TRUE(session_.sent_messages()[1].has_resume_task());
+  EXPECT_EQ(session_.sent_messages()[1].resume_task().status(),
+            proto::ResumeTaskResponse::STATUS_FAILED);
 }
 
 TEST_F(ActuationTransportHandlerTest,

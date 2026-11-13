@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
@@ -87,8 +86,8 @@ void ActuationTransportHandler::OnMessage(
                       message.pause_task());
       break;
     case proto::ServerToBrowserPayload::kResumeTask:
-      // TODO(crbug.com/574548405): Route resume task payloads.
-      NOTIMPLEMENTED();
+      HandleResumeTask(message.request_id(), message.task_id(),
+                       message.resume_task());
       break;
     case proto::ServerToBrowserPayload::PAYLOAD_NOT_SET:
       break;
@@ -247,6 +246,35 @@ void ActuationTransportHandler::OnPauseTaskComplete(
   upstream.mutable_pause_task()->set_status(
       success ? proto::PauseTaskResponse::STATUS_OK
               : proto::PauseTaskResponse::STATUS_FAILED);
+  std::ignore =
+      SendUpstreamMessage(stream_transport::PayloadType::kActuation, upstream);
+}
+
+void ActuationTransportHandler::HandleResumeTask(
+    const std::string& request_id,
+    const std::string& task_id_str,
+    const proto::ResumeTaskRequest& request) {
+  auto it = active_tasks_.find(task_id_str);
+  if (it == active_tasks_.end()) {
+    proto::ResumeTaskResponse response;
+    response.set_status(proto::ResumeTaskResponse::STATUS_FAILED);
+    OnResumeTaskComplete(request_id, task_id_str, std::move(response));
+    return;
+  }
+  delegate_->ResumeTask(
+      it->second, request,
+      base::BindOnce(&ActuationTransportHandler::OnResumeTaskComplete,
+                     weak_ptr_factory_.GetWeakPtr(), request_id, task_id_str));
+}
+
+void ActuationTransportHandler::OnResumeTaskComplete(
+    const std::string& request_id,
+    const std::string& task_id_str,
+    proto::ResumeTaskResponse response) {
+  proto::BrowserToServerPayload upstream;
+  upstream.set_task_id(task_id_str);
+  upstream.set_request_id(request_id);
+  *upstream.mutable_resume_task() = std::move(response);
   std::ignore =
       SendUpstreamMessage(stream_transport::PayloadType::kActuation, upstream);
 }
