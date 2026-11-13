@@ -206,11 +206,26 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
       auto options = mojom::TabContextOptions::New();
       options->annotated_page_content = true;
 
-      FocusedTabData data =
-          GetHost()->GetSharingManagerInternal().GetFocusedTabData();
-      CHECK(data.focus());
+      GlicSharingManagerInternal* sharing_manager =
+          &GetHost()->GetSharingManagerInternal();
+      tabs::TabInterface* focused_tab =
+          sharing_manager->GetFocusedTabData().focus();
+      if (!focused_tab) {
+        base::RunLoop focus_run_loop(
+            base::RunLoop::Type::kNestableTasksAllowed);
+        auto subscription = sharing_manager->AddFocusedTabChangedCallback(
+            base::BindLambdaForTesting([&focus_run_loop, &focused_tab](
+                                           const FocusedTabData& tab_data) {
+              if (tab_data.focus()) {
+                focused_tab = tab_data.focus();
+                focus_run_loop.Quit();
+              }
+            }));
+        focus_run_loop.Run();
+      }
+      CHECK(focused_tab);
       FetchPageContext(
-          data.focus(), *options,
+          focused_tab, *options,
           base::BindLambdaForTesting(
               [&](base::expected<
                   glic::mojom::GetContextResultPtr,
@@ -747,13 +762,15 @@ class MAYBE_GlicAnnotationManagerWithFloatingWindowInLiveModeUiTest
     TrackFloatingGlicInstance();
   }
 
-  InteractiveGlicTest::MultiStep OpenGlicFloatingWindowInLiveMode() {
+  InteractiveGlicTest::MultiStep OpenGlicFloatingWindowInLiveMode(
+      std::optional<ui::ElementIdentifier> web_contents_id = kActiveTabId) {
     return Steps(OpenGlicFloatingWindow(), Do([&]() {
                    // This is to switch to using GlicFocusedTabManager (which is
                    // used by default with GlicMultiInstance disabled).
                    GetGlicInstanceImpl()->OnInteractionModeChange(
                        mojom::WebClientMode::kAudio);
-                 }));
+                 }),
+                 WaitUntilGlicFocusedTabIs(web_contents_id));
   }
 };
 
