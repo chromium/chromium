@@ -38,25 +38,19 @@ public final class MediaImage {
         mSizes = sizes;
     }
 
-    /**
-     * @return The URL of this MediaImage.
-     */
+    /** Returns the URL of this MediaImage. */
     @CalledByNative
     public @JniType("GURL") GURL getSrc() {
         return mSrc;
     }
 
-    /**
-     * @return The MIME type of this MediaImage.
-     */
+    /** Returns the MIME type of this MediaImage. */
     @CalledByNative
     public @JniType("std::u16string") String getType() {
         return mType;
     }
 
-    /**
-     * @return The hinted sizes of this MediaImage.
-     */
+    /** Returns the hinted sizes of this MediaImage. */
     public List<Rect> getSizes() {
         return mSizes;
     }
@@ -100,8 +94,8 @@ public final class MediaImage {
     }
 
     /**
-     * @return The hash code of this {@link MediaImage}. The method uses the same algorithm in
-     * {@link java.util.List} for combinine hash values.
+     * Returns the hash code of this {@link MediaImage}. The method uses the same algorithm in
+     * {@link java.util.List} for combining hash values.
      */
     @Override
     public int hashCode() {

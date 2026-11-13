@@ -110,8 +110,8 @@ public final class MediaMetadata {
     }
 
     /**
-     * @return The hash code of this {@link MediaMetadata}. The method uses the same algorithm in
-     *     {@link java.util.List} for combining hash values.
+     * Returns the hash code of this {@link MediaMetadata}. The method uses the same algorithm in
+     * {@link java.util.List} for combining hash values.
      */
     @Override
     public int hashCode() {

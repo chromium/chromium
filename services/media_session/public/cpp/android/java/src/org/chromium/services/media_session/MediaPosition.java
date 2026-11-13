@@ -36,30 +36,22 @@ public final class MediaPosition {
         mLastUpdatedTime = lastUpdatedTime;
     }
 
-    /**
-     * @return The duration of the media in ms.
-     */
+    /** Returns the duration of the media in ms. */
     public long getDuration() {
         return mDuration;
     }
 
-    /**
-     * @return The position of the media in ms.
-     */
+    /** Returns the position of the media in ms. */
     public long getPosition() {
         return mPosition;
     }
 
-    /**
-     * @return The playback rate of the media as a coefficient.
-     */
+    /** Returns the playback rate of the media as a coefficient. */
     public float getPlaybackRate() {
         return mPlaybackRate;
     }
 
-    /**
-     * @return The time the position was last updated in ms relative to the boot time.
-     */
+    /** Returns the time the position was last updated in ms relative to the boot time. */
     public long getLastUpdatedTime() {
         return mLastUpdatedTime;
     }
