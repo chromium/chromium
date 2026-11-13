@@ -1916,7 +1916,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type of FedCM desktop UI sheet that is being displayed when the
     user manually closes it. Records when the user closes this dialog, so at
-    most once per API call that results in UI being shown.
+    most once per API call that results in UI being shown. Only recorded for the
+    bubble dialog, so not recorded once the modal dialog replaces the bubble in
+    passive mode.
   </summary>
 </histogram>
 

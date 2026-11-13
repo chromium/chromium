@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <variant>
@@ -13,12 +14,15 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
@@ -48,6 +52,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/metrics.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -323,6 +328,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
 
   blink::mojom::RpContext GetRpContext() { return rp_context_; }
   size_t num_dialogs_{0u};
+  // The type of the most recently created dialog, if any.
+  std::optional<DialogType> created_dialog_type_;
 
   bool can_fit_in_web_contents_{true};
   bool dialog_position_updated_{false};
@@ -348,6 +355,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
     } else {
       *out_dialog_type = FedCmAccountSelectionView::DialogType::BUBBLE;
     }
+    created_dialog_type_ = *out_dialog_type;
     parked_dialog_view_ = std::make_unique<TestAccountSelectionView>(this);
     return static_cast<AccountSelectionViewBase*>(
         views::AsViewClass<TestAccountSelectionView>(
@@ -368,17 +376,19 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
     params_ = std::move(params);
     widget->Show();
     widget->SetVisible(true);
-    dialog_managed_ = true;
+    managed_widget_ = widget->GetWeakPtr();
   }
 
   void UpdateDialogVisibility(bool requested_visibility) override {
-    if (dialog_managed_) {
-      GetDialogWidget()->SetVisible(requested_visibility);
+    if (views::Widget* widget = GetDialogWidget(); IsDialogManaged(widget)) {
+      widget->SetVisible(requested_visibility);
     }
   }
 
+  // Like `TabDialogManager`, only manages the widget passed to `ShowDialog()`,
+  // not a widget that replaced it.
   bool IsDialogManaged(views::Widget* widget) override {
-    return dialog_managed_;
+    return widget && managed_widget_.get() == widget;
   }
 
   // We also need to simulate some of the TabDialogManager behaviors.
@@ -406,7 +416,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   std::unique_ptr<TestAccountWidgetDelegate> account_widget_delegate_;
   blink::mojom::RpContext rp_context_;
   raw_ptr<FedCmAccountSelectionViewDesktopTest> test_;
-  bool dialog_managed_ = false;
+  // The widget passed to `ShowDialog()`, if it still exists.
+  base::WeakPtr<views::Widget> managed_widget_;
 };
 
 // Stub AccountSelectionView::Delegate.
@@ -724,10 +735,10 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return controller;
   }
 
-  ui::MouseEvent CreateMouseEvent() {
+  ui::MouseEvent CreateMouseEvent(
+      base::TimeTicks timestamp = base::TimeTicks()) {
     return ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                          gfx::Point(), base::TimeTicks(),
-                          ui::EF_LEFT_MOUSE_BUTTON, 0);
+                          gfx::Point(), timestamp, ui::EF_LEFT_MOUSE_BUTTON, 0);
   }
 
   void TabWillEnterBackground(TestFedCmAccountSelectionView* view) {
@@ -3391,6 +3402,29 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionAfterResize) {
   EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], delayed_event));
 }
 
+// Tests that closing the bubble stops the tab from accepting mouse events while
+// the window is inactive, also when the flow continues, e.g. when the user
+// closes the bubble while verifying.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       CloseBubbleStopsAcceptingMouseEventsWhileWindowInactive) {
+  tabs::InactiveWindowMouseEventController inactive_window_controller(
+      *tab_interface_);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+  ASSERT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_TRUE(
+      inactive_window_controller.ShouldAcceptMouseEventsWhileWindowInactive());
+
+  controller->OnCloseButtonClicked(CreateMouseEvent());
+  RunPostedTasks();
+  EXPECT_FALSE(controller->GetDialogWidget());
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
+  EXPECT_FALSE(
+      inactive_window_controller.ShouldAcceptMouseEventsWhileWindowInactive());
+}
+
 // Tests for showing FedCM accounts in the ambient bubble, which is controlled
 // by the fedcm-ambient-bubble flag.
 class FedCmAccountSelectionViewAmbientBubbleTest
@@ -4129,6 +4163,204 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
   EXPECT_TRUE(controller->GetDialogWidget());
   EXPECT_FALSE(delegate_->GetDismissReason());
   EXPECT_FALSE(HasAmbientRequest());
+}
+
+// Tests flows with `kFedCmIdpLinks` enabled. In passive mode with a single
+// identity provider, an account that needs permission then requests it through
+// the modal dialog instead of the bubble. When the modal replaces the bubble,
+// it gets a real input protector instead of the test's mock one. The real one
+// always rejects events with a null time stamp, so clicks on the modal use the
+// current time.
+class FedCmAccountSelectionViewDesktopIdpLinksTest
+    : public FedCmAccountSelectionViewDesktopTest {
+ protected:
+  // Advances past the protection window of the modal's input protector.
+  void FastForwardPastInputProtection() {
+    task_environment()->FastForwardBy(views::GetDoubleClickInterval());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kFedCmIdpLinks};
+};
+
+// Tests that continuing with a new account on the single account bubble
+// replaces it with a modal showing the request permission dialog, that the
+// modal ignores a click right after it is shown, and that continuing on the
+// modal shows the verifying sheet.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       SingleAccountSignUpShowsModal) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::BUBBLE,
+            controller->created_dialog_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId1));
+  // The flow continues in the modal, so the account isn't selected yet, the
+  // request isn't dismissed, and the delegate isn't notified again that the
+  // accounts were displayed.
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+
+  // The modal has its own input protector, so a click right after it is shown,
+  // e.g. the second click of a double click on the bubble, is ignored.
+  EXPECT_FALSE(controller->OnAccountSelected(
+      accounts_[0], CreateMouseEvent(base::TimeTicks::Now())));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+
+  FastForwardPastInputProtection();
+  EXPECT_TRUE(controller->OnAccountSelected(
+      accounts_[0], CreateMouseEvent(base::TimeTicks::Now())));
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId1));
+  EXPECT_EQ(delegate_->GetSelectedAccountId(), kAccountId1);
+}
+
+// Tests that selecting a new account on the multiple account bubble shows the
+// modal request permission dialog directly, that clicking back shows the modal
+// account chooser, and that selecting an account there shows the request
+// permission dialog in the same modal.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       MultipleAccountsSignUpShowsModal) {
+  accounts_ = CreateAccounts(
+      {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}},
+      idp_data_);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[1], CreateMouseEvent()));
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId2));
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
+  EXPECT_EQ(delegate_->GetAccountsDisplayedCount(), 1);
+
+  controller->OnBackButtonClicked();
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
+
+  FastForwardPastInputProtection();
+  EXPECT_TRUE(controller->OnAccountSelected(
+      accounts_[0], CreateMouseEvent(base::TimeTicks::Now())));
+  EXPECT_EQ(2u, controller->num_dialogs_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId1));
+  EXPECT_FALSE(delegate_->GetSelectedAccountId());
+}
+
+// Tests that selecting a returning account on the bubble still shows the
+// verifying sheet in the bubble.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       ReturningAccountDoesNotShowModal) {
+  accounts_ = {CreateAccount(idp_data_,
+                             /*idp_claimed_login_state=*/LoginState::kSignIn,
+                             /*browser_trusted_login_state=*/
+                             LoginState::kSignIn)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+  EXPECT_EQ(1u, controller->num_dialogs_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::BUBBLE,
+            controller->created_dialog_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            controller->GetTestView()->sheet_type_);
+}
+
+// Tests that with multiple identity providers, selecting a new account on the
+// bubble keeps the existing flow: the bubble asks for permission itself.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       MultipleIdpsSignUpStaysInBubble) {
+  std::vector<IdentityProviderDataPtr> idp_list = {
+      CreateIdentityProviderData(), CreateIdentityProviderData()};
+  std::vector<IdentityRequestAccountPtr> accounts = {
+      CreateAccount(idp_list[0]),
+      CreateAccount(idp_list[1],
+                    /*idp_claimed_login_state=*/LoginState::kSignUp,
+                    /*browser_trusted_login_state=*/LoginState::kSignUp,
+                    kAccountId2)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp(idp_list, accounts, blink::mojom::RpMode::kPassive);
+  EXPECT_FALSE(controller->ShouldSwitchToModalForPermission(*accounts[1]));
+
+  EXPECT_TRUE(controller->OnAccountSelected(accounts[1], CreateMouseEvent()));
+  EXPECT_EQ(1u, controller->num_dialogs_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::BUBBLE,
+            controller->created_dialog_type_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId2));
+}
+
+// Tests that in active mode, selecting a new account shows the request
+// permission dialog in the same modal.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       ActiveModeSignUpStaysInModal) {
+  accounts_ = CreateAccounts(
+      {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}},
+      idp_data_);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, blink::mojom::RpMode::kActive);
+  ASSERT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+  EXPECT_EQ(1u, controller->num_dialogs_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_THAT(controller->GetTestView()->account_ids_,
+              testing::ElementsAre(kAccountId1));
+}
+
+// Tests that showing the failure dialog after the bubble was replaced with a
+// modal recreates a bubble, since the modal doesn't support the failure dialog.
+TEST_F(FedCmAccountSelectionViewDesktopIdpLinksTest,
+       FailureDialogAfterModalShowsBubble) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  EXPECT_TRUE(controller->OnAccountSelected(accounts_[0], CreateMouseEvent()));
+  ASSERT_EQ(FedCmAccountSelectionView::DialogType::MODAL,
+            controller->created_dialog_type_);
+
+  controller->ShowFailureDialog(
+      GetRpData(), kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode::kPassive, content::IdentityProviderMetadata());
+  EXPECT_EQ(3u, controller->num_dialogs_);
+  EXPECT_EQ(FedCmAccountSelectionView::DialogType::BUBBLE,
+            controller->created_dialog_type_);
+  EXPECT_TRUE(controller->IsDialogWidgetVisible());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kFailure,
+            controller->GetTestView()->sheet_type_);
+  EXPECT_FALSE(delegate_->GetDismissReason().has_value());
 }
 
 }  // namespace webid

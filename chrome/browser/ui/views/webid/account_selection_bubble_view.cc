@@ -620,8 +620,10 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   views::MdTextButton* button_ptr = button.get();
   row->AddChildView(std::move(button));
 
-  // Do not add disclosure text if fields is empty.
-  if (account->fields.empty()) {
+  // Do not add disclosure text if `fields` is empty, or if permission is
+  // requested through the modal dialog instead.
+  if (account->fields.empty() ||
+      owner_->ShouldSwitchToModalForPermission(*account)) {
     return std::make_pair(std::move(row), button_ptr);
   }
 

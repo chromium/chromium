@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
@@ -613,6 +614,25 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   TestSingleAccount(kTitleSignIn,
                     /*expected_icon_visibility=*/true,
                     /*has_display_identifier=*/true);
+}
+
+// Tests that with `kFedCmIdpLinks`, the single account bubble for a new account
+// doesn't show disclosure text, since permission is requested through the modal
+// dialog instead.
+TEST_F(AccountSelectionBubbleViewTest, SingleAccountSignUpWithIdpLinks) {
+  base::test::ScopedFeatureList feature_list(features::kFedCmIdpLinks);
+  CreateAndShowSingleAccountPicker(/*has_display_identifier=*/true,
+                                   LoginState::kSignUp);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  ASSERT_EQ(children.size(), 3u);
+  views::View* single_account_chooser = children[2];
+  // Order: Account row, "Continue as" button.
+  ASSERT_EQ(single_account_chooser->children().size(), 2u);
+  views::View* account_row = single_account_chooser->children()[0];
+  CheckNonHoverableAccountRow(account_row, kAccountSuffix,
+                              /*has_display_identifier=*/true);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {

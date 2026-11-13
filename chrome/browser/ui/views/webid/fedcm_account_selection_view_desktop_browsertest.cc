@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/run_until.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -37,7 +39,9 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/events/event.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/views_switches.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -725,6 +729,60 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientBubbleBrowserTest,
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_TRUE(account_selection_view_->IsDialogWidgetVisible());
+}
+
+class FedCmIdpLinksBrowserTest : public FedCmBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FedCmBrowserTest::SetUpCommandLine(command_line);
+    // Lets the test select an account right after a dialog is shown.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
+
+  void TearDownOnMainThread() override {
+    Reset();
+    FedCmBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kFedCmIdpLinks};
+};
+
+// Tests that selecting an account that requires disclosure text in the bubble
+// replaces the bubble with the modal dialog on the request permission sheet.
+IN_PROC_BROWSER_TEST_F(FedCmIdpLinksBrowserTest,
+                       SelectingNewAccountInBubbleShowsModalDialog) {
+  content::WebContents* web_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  ShowAccounts(browser(), /*requires_disclosure=*/true);
+  base::test::TestFuture<void> account_selected;
+  delegate_->SetAccountSelectedCallback(account_selected.GetCallback());
+  ASSERT_TRUE(account_selection_view_->IsDialogWidgetVisible());
+  EXPECT_FALSE(web_contents->ShouldIgnoreInputEventsForTesting());
+
+  const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), base::TimeTicks::Now(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
+  EXPECT_TRUE(account_selection_view_->OnAccountSelected(accounts_[0], event));
+  EXPECT_TRUE(account_selection_view_->IsDialogWidgetVisible());
+  // Unlike the bubble dialog, the modal dialog disables input to the page.
+  EXPECT_TRUE(web_contents->ShouldIgnoreInputEventsForTesting());
+  // The flow continues in the modal dialog, so the account isn't selected yet.
+  EXPECT_FALSE(account_selected.IsReady());
+
+  // Run the tasks posted while the modal dialog was shown, e.g. the one that
+  // announces the disclosure text to screen readers.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(account_selection_view_->IsDialogWidgetVisible());
+
+  // The modal dialog is on the request permission sheet, so continuing there
+  // selects the account.
+  EXPECT_TRUE(account_selection_view_->OnAccountSelected(accounts_[0], event));
+  EXPECT_TRUE(account_selected.IsReady());
 }
 
 class FedCmAccountSelectionViewPopupTest : public PopupTestBase,

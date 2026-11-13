@@ -56,9 +56,10 @@ BASE_FEATURE(kFastFaviconDisplay, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables showing the identity provider's account management page, privacy
 // policy and terms of service links in the FedCM modal permission dialog on
-// desktop. The links are shown in the disclosure container, so this also
-// enables the container UI, as if `kFedCmPermissionUiWithContainer` were
-// enabled.
+// desktop. In passive mode with a single identity provider, an account that
+// needs permission then requests it through the modal dialog instead of the
+// bubble. The links are shown in the disclosure container, so this also enables
+// the container UI, as if `kFedCmPermissionUiWithContainer` were enabled.
 BASE_FEATURE(kFedCmIdpLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the request permission UI with a container for the disclosure text
