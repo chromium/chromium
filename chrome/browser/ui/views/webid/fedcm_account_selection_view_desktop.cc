@@ -10,9 +10,11 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -819,6 +821,27 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
     modal_loading_dialog_state_ = webid::LoadingDialogResult::kCancel;
   }
 
+  views::Widget* widget = GetDialogWidget();
+  if (!widget) {
+    OnUserClosedDialog(views::Widget::ClosedReason::kCloseButtonClicked);
+    return;
+  }
+
+  // Close the dialog in a separate task. The button can be pressed while a
+  // dialog view is still running, and closing synchronously would destroy
+  // that view while it runs.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FedCmAccountSelectionView::CloseDialogForCloseButton,
+                     weak_ptr_factory_.GetWeakPtr(), widget->GetWeakPtr()));
+}
+
+void FedCmAccountSelectionView::CloseDialogForCloseButton(
+    base::WeakPtr<views::Widget> closing_widget) {
+  // Do nothing if the dialog was closed or replaced since the click.
+  if (!closing_widget || closing_widget.get() != GetDialogWidget()) {
+    return;
+  }
   OnUserClosedDialog(views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
