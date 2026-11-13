@@ -506,9 +506,18 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"onDeviceAiEnabledLabel",
        IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL},
+      {"onDeviceAiSectionTitle", IDS_SETTINGS_ON_DEVICE_AI_SECTION_TITLE},
       {"onDeviceAiRowSubLabel", IDS_SETTINGS_ON_DEVICE_AI_ROW_SUB_LABEL},
       {"onDeviceAiCapabilitiesLabel",
        IDS_SETTINGS_ON_DEVICE_AI_CAPABILITIES_LABEL},
+      {"onDeviceAiWhenOnFeatures", IDS_SETTINGS_ON_DEVICE_AI_WHEN_ON_FEATURES},
+      {"onDeviceAiWhenOnAutoUpdates",
+       IDS_SETTINGS_ON_DEVICE_AI_WHEN_ON_AUTO_UPDATES},
+      {"onDeviceAiConsiderWhenOff",
+       IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_WHEN_OFF},
+      {"onDeviceAiConsiderStorage", IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_STORAGE},
+      {"onDeviceAiConsiderSitePrivacy",
+       IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_SITE_PRIVACY},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -551,6 +560,12 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       "onDeviceAiEnabledSubLabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL,
+          chrome::kOnDeviceAiLearnMoreUrl,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  html_source->AddString(
+      "onDeviceAiCapabilitiesSubLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_ON_DEVICE_AI_CAPABILITIES_SUB_LABEL,
           chrome::kOnDeviceAiLearnMoreUrl,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 #endif

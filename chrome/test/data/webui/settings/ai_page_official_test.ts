@@ -62,6 +62,13 @@ suite('settings ai page official', function() {
     return aiPage.shadowRoot.querySelector<CrLinkRowElement>('#onDeviceAiRow');
   }
 
+  function getOnDeviceAiSectionTitle(): string {
+    const element = queryOnDeviceAiRow() || getOnDeviceAiToggle();
+    const section = element.closest('settings-section');
+    assertTrue(!!section);
+    return section.pageTitle;
+  }
+
   test('show onDeviceAi toggle', async function() {
     await microtasksFinished();
 
@@ -69,6 +76,9 @@ suite('settings ai page official', function() {
     assertTrue(isVisible(toggle));
     assertTrue(toggle.checked);
     assertNull(queryOnDeviceAiRow());
+    assertEquals(
+        loadTimeData.getString('onDeviceAiEnabledLabel'),
+        getOnDeviceAiSectionTitle());
 
     // Disable the setting.
     testBrowserProxy.setGetOnDeviceAiEnabledResponse({
@@ -109,6 +119,9 @@ suite('settings ai page official', function() {
         const row = queryOnDeviceAiRow();
         assertTrue(!!row);
         assertTrue(isVisible(row));
+        assertEquals(
+            loadTimeData.getString('onDeviceAiSectionTitle'),
+            getOnDeviceAiSectionTitle());
 
         row.click();
         assertEquals(

@@ -3688,6 +3688,16 @@
     <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL" desc="Label for the toggle that allows or prevents chrome to download on device GenAI models to local disk.">
       On-device AI
     </message>
+    <!-- TODO(crbug.com/573643364): Make these translatable when finalized. -->
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_SECTION_TITLE" translateable="false" desc="Title of the card in Settings > AI page that contains the On-device AI entry point row, shown when the On-device AI settings subpage is available.">
+      On your device
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_WHEN_ON_FEATURES" translateable="false" desc="Bullet point in the 'When on' column of the On-device AI settings subpage. Lists example features that on-device AI helps with.">
+      Helps you summarize, proofread, caption, and more
+    </message>
+    <message name="IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_SITE_PRIVACY" translateable="false" desc="Bullet point in the 'Things to consider' column of the On-device AI settings subpage. Explains that sites have their own privacy policies.">
+      Sites have their own privacy policies
+    </message>
 
     <message name="IDS_PAGE_NOT_AVAILABLE_FOR_GUEST_HEADING" desc="This is the heading for the page not available for guest.">
       <ph name="PAGE_NAME">$1<ex>Bookmarks</ex></ph> is not available to Guest users.

@@ -487,9 +487,21 @@
   </message>
   <!-- TODO(crbug.com/573643364): Make these translatable when finalized. -->
   <message name="IDS_SETTINGS_ON_DEVICE_AI_ROW_SUB_LABEL" translateable="false" desc="Sublabel for the On-device AI entry point row in Settings > AI page.">
-    To power features like scam detection, Chromium can use AI models that run directly on your device
+    Manage AI that Chromium and sites use for features like writing help and more
   </message>
   <message name="IDS_SETTINGS_ON_DEVICE_AI_CAPABILITIES_LABEL" translateable="false" desc="Label for the global toggle in the On-device AI settings subpage.">
-    On-device AI capabilities in Chromium
+    Use on-device AI
+  </message>
+  <message name="IDS_SETTINGS_ON_DEVICE_AI_CAPABILITIES_SUB_LABEL" translateable="false" desc="Sublabel for the global toggle in the On-device AI settings subpage. Describes what on-device AI is used for and links to a learn more page.">
+    Sites and Chromium can use AI that runs directly on your device for features like summaries, proofreading, captions, and more. This is separate from Gemini in Chromium. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank" aria-description="$2"&gt;</ph>Learn more about on-device AI<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_ON_DEVICE_AI_WHEN_ON_AUTO_UPDATES" translateable="false" desc="Bullet point in the 'When on' column of the On-device AI settings subpage. Explains that Chrome manages model downloads and updates.">
+    Chromium downloads and updates these AI models automatically
+  </message>
+  <message name="IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_WHEN_OFF" translateable="false" desc="Bullet point in the 'Things to consider' column of the On-device AI settings subpage. Explains what happens when the setting is off.">
+    When off, Chromium removes on-device AI models and won't download them again. Some site features might not work
+  </message>
+  <message name="IDS_SETTINGS_ON_DEVICE_AI_CONSIDER_STORAGE" translateable="false" desc="Bullet point in the 'Things to consider' column of the On-device AI settings subpage. Explains device storage usage and automatic cleanup of unused models.">
+    Uses device storage. Chromium removes unused AI models after 45 days or when storage is low
   </message>
 </grit-part>

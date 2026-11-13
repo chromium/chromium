@@ -69,11 +69,12 @@ export function getHtml(this: SettingsAiPageElement) {
   </div>
 </settings-section>
 <if expr="_google_chrome">
-<settings-section page-title="$i18n{onDeviceAiEnabledLabel}"
+<settings-section page-title="${this.getOnDeviceAiSectionTitle_()}"
     show-send-feedback-button
     @send-feedback="${this.onOnDeviceAiSendFeedback_}">
   ${this.showOnDeviceAiAdvancedSettings_ ? html`
     <cr-link-row id="onDeviceAiRow" class="hr"
+        start-icon="settings20:screensaver-auto"
         label="$i18n{onDeviceAiEnabledLabel}"
         sub-label="$i18n{onDeviceAiRowSubLabel}"
         role-description="$i18n{subpageArrowRoleDescription}"

@@ -241,6 +241,14 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   }
 
   // <if expr="_google_chrome">
+  protected getOnDeviceAiSectionTitle_(): string {
+    // When the subpage is available, the row inside the card is already
+    // labeled "On-device AI", so use a different title for the card itself.
+    return loadTimeData.getString(
+        this.showOnDeviceAiAdvancedSettings_ ? 'onDeviceAiSectionTitle' :
+                                               'onDeviceAiEnabledLabel');
+  }
+
   protected onOnDeviceAiRowClick_() {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().ON_DEVICE_AI);

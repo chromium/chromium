@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
+import '../icons.html.js';
 import '../settings_page/settings_subpage.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
@@ -12,6 +14,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {getCss as getSettingsColumnedSectionCss} from '../settings_columned_section_lit.css.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
@@ -37,7 +40,10 @@ export class SettingsOnDeviceAiPageElement extends
   }
 
   static override get styles() {
-    return getSettingsSharedCss();
+    return [
+      getSettingsSharedCss(),
+      getSettingsColumnedSectionCss(),
+    ];
   }
 
   override render() {
