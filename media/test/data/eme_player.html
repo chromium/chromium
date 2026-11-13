@@ -244,7 +244,11 @@
             return play(player.video, testConfig.playCount);
           }).catch(function(error) {
               Utils.timeLog(error);
-              Utils.failTest('Unable to play video.');
+              // When a CDM crash is expected, the video error handler verifies
+              // session closure and sets the expected result title.
+              if (!player || player.testConfig.keySystem != CRASH_TEST_KEYSYSTEM) {
+                Utils.failTest('Unable to play video.');
+              }
           });
     }
   </script>
