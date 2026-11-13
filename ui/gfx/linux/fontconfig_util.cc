@@ -8,13 +8,11 @@
 
 #include "base/check_op.h"
 #include "base/environment.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/gfx/switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/check_deref.h"
@@ -210,7 +208,6 @@ bool GetFontConfigPropertyAsBool(FcPattern* pattern, const char* property) {
 }  // namespace
 
 void InitializeGlobalFontConfigAsync() {
-  CHECK(base::FeatureList::IsEnabled(features::kAsyncFontconfigInitialization));
   if (base::ThreadPoolInstance::Get()) {
     base::ThreadPool::PostTask(
         FROM_HERE,

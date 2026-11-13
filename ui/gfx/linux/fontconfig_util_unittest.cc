@@ -7,9 +7,7 @@
 #include <dlfcn.h>
 #include <fontconfig/fontconfig.h>
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/switches.h"
 
 namespace gfx {
 
@@ -141,8 +139,6 @@ TEST(FontConfigUtilTest, GetFontRenderParamsFromFcPatternWithValues) {
 }
 
 TEST(FontConfigUtilTest, InitializeGlobalFontConfigAsync) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAsyncFontconfigInitialization);
   InitializeGlobalFontConfigAsync();
   EXPECT_NE(GetGlobalFontConfig(), nullptr);
 }
