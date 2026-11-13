@@ -440,6 +440,7 @@ enum BadMessageReason {
   RFH_DEVICE_BOUND_SESSION_JS_API_NOT_AVAILABLE = 410,
   RFHI_BEGIN_NAVIGATION_DISALLOWED_QUALIFIER = 411,
   RFHI_WEBMCP_INVALID_TOOL_CONTINUATION = 412,
+  BIBI_BIND_WEBOTP_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY = 413,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

@@ -10,7 +10,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/sms/sms_fetcher_impl.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/sms/test/mock_sms_web_contents_delegate.h"
@@ -27,10 +29,12 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
 
@@ -1205,6 +1209,61 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordOutcomeWithSameOriginFrame) {
   ExpectOutcomeWithCrossOriginUKM(
       blink::WebOTPServiceOutcome::kBackendNotAvailable,
       /* is_cross_origin_frame */ false);
+}
+
+// Verifies that the browser rejects a WebOTPService request from a frame where
+// the "otp-credentials" Permissions Policy is disabled, e.g. when a compromised
+// renderer skips the renderer-side check.
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
+                       BindWebOTPServiceBlockedByPermissionsPolicy) {
+  GURL main_url(
+      https_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+  // The policy is not delegated to cross-origin iframes by default.
+  ASSERT_FALSE(child_rfh->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kOTPCredentials));
+
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(child_rfh->GetProcess());
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  child_rfh->browser_interface_broker_receiver_for_testing()
+      .internal_state()
+      ->impl()
+      ->GetInterface(service.BindNewPipeAndPassReceiver());
+
+  ASSERT_FALSE(child_rfh->DocumentUsedWebOTP());
+  EXPECT_EQ(bad_message::BIBI_BIND_WEBOTP_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY,
+            kill_waiter.Wait());
+}
+
+// Verifies that a cross-origin iframe can still bind WebOTPService when the
+// embedder delegates the "otp-credentials" Permissions Policy to it.
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
+                       BindWebOTPServiceAllowedByPermissionsPolicy) {
+  GURL main_url(https_server_.GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b{allow-otp-credentials})"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+  ASSERT_TRUE(child_rfh->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kOTPCredentials));
+
+  mojo::Remote<blink::mojom::WebOTPService> service;
+  child_rfh->browser_interface_broker_receiver_for_testing()
+      .internal_state()
+      ->impl()
+      ->GetInterface(service.BindNewPipeAndPassReceiver());
+
+  EXPECT_TRUE(child_rfh->DocumentUsedWebOTP());
+  service.FlushForTesting();
+  EXPECT_TRUE(service.is_connected());
 }
 
 class MockSmsPrerenderingWebContentsDelegate : public WebContentsDelegate {

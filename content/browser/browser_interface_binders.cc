@@ -970,6 +970,24 @@ void BindPictureInPictureService(
   PictureInPictureServiceImpl::Create(host, std::move(receiver));
 }
 
+void BindWebOTPService(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
+  // Blink checks the "otp-credentials" Permissions Policy before requesting
+  // WebOTPService, but a compromised renderer can skip that check.
+  if (!host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kOTPCredentials)) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_WEBOTP_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
+  RenderFrameHostImpl::From(host)->BindWebOTPServiceReceiver(
+      std::move(receiver));
+}
+
 template <auto Method, typename Interface>
 void BindRenderFrameHostImpl(RenderFrameHost* host,
                              mojo::PendingReceiver<Interface> receiver)
@@ -1538,9 +1556,7 @@ void PopulateBinderMapWithContext(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::GetWebAuthenticationService>);
   if (base::FeatureList::IsEnabled(features::kWebOTP)) {
-    map->Add<blink::mojom::WebOTPService>(
-        &BindRenderFrameHostImpl<
-            &RenderFrameHostImpl::BindWebOTPServiceReceiver>);
+    map->Add<blink::mojom::WebOTPService>(&BindWebOTPService);
   }
   map->Add<blink::mojom::DigitalIdentityRequest>(
       &BindRenderFrameHostImpl<
