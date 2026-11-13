@@ -49,9 +49,6 @@ BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
 // Default nudge allow/deny decision for unspecified hint.
 BASE_DECLARE_FEATURE(kEnableNudgeForUnspecifiedHint);
 
-// A kill switch for additional metrics added to ComposeTextUsageLogger.
-BASE_DECLARE_FEATURE(kEnableAdditionalTextMetrics);
-
 // Enables or disables the Happiness Tracking System for Compose acceptance.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeAcceptance);
 

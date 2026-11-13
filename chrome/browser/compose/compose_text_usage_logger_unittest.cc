@@ -25,7 +25,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -222,33 +221,6 @@ TEST_F(ComposeTextUsageLoggerTest, TextFieldEntry_62) {
                       {"IsAutofillFieldType", 0},
                       {"TypedCharacterCount", 32},
                       {"TypedWordCount", 16},
-                  })));
-}
-
-// Same as TextFieldEntry, but kEnableAdditionalTextMetrics is disabled, to
-// provide some coverage of the kill switch in the off position.
-TEST_F(ComposeTextUsageLoggerTest, TestEnableAdditionalTextMetricsIsOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kEnableAdditionalTextMetrics);
-
-  FormData form_data = CreateForm(FormControlType::kInputText);
-  test_api(*autofill_manager())
-      .AddSeenFormStructure(
-          std::make_unique<autofill::FormStructure>(form_data));
-
-  SimulateTyping(form_data, form_data.fields()[0].global_id(), u"Some text");
-
-  DeleteContents();
-
-  EXPECT_THAT(LoggedTextUsage(),
-              testing::ElementsAre(ukm::TestUkmRecorder::HumanReadableUkmEntry(
-                  ukm_source_id_,
-                  {
-                      {"AutofillFormControlType",
-                       static_cast<int64_t>(FormControlType::kInputText)},
-                      {"IsAutofillFieldType", 0},
-                      {"TypedCharacterCount", 8},
-                      {"TypedWordCount", 2},
                   })));
 }
 

@@ -45,8 +45,6 @@ BASE_FEATURE(kEnableNudgeForUnspecifiedHint,
              "ComposeEnableNudgeForUnspecifiedHint",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableAdditionalTextMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHappinessTrackingSurveysForComposeAcceptance,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
