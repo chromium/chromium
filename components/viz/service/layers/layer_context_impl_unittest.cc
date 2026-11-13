@@ -13,7 +13,9 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "cc/base/features.h"
 #include "cc/layers/mirror_layer_impl.h"
 #include "cc/layers/nine_patch_layer_impl.h"
 #include "cc/layers/nine_patch_thumb_scrollbar_layer_impl.h"
@@ -5000,6 +5002,44 @@ TEST_F(LayerContextImplTest, SetUnboundedFrameSinkIdRequiresBrowserClientId) {
                                          kDefaultLocalSurfaceId);
   layer_context.FlushForTesting();
   EXPECT_FALSE(layer_context.is_connected());
+}
+
+// Verifies that an unbounded surface isn't bound to a FrameSinkId that already
+// has a live CompositorFrameSinkSupport, since that support belongs to another
+// client, and that binding is retried once that support is gone.
+TEST_F(LayerContextImplTest, SetUnboundedFrameSinkIdDoesNotBindLiveSupport) {
+  base::test::ScopedFeatureList feature_list(features::kTreesInViz);
+  auto settings = mojom::LayerContextSettings::New();
+  settings->draw_mode_is_gpu = true;
+  settings->enable_unbounded_element = true;
+  RecreateLayerContextImplWithSettings(std::move(settings));
+
+  const FrameSinkId kUnboundedFrameSinkId(kBrowserClientId, 2);
+  frame_sink_manager_.RegisterFrameSinkHierarchy(kDefaultFrameSinkId,
+                                                 kUnboundedFrameSinkId);
+  auto other_support = std::make_unique<CompositorFrameSinkSupport>(
+      /*client=*/nullptr, &frame_sink_manager_, kUnboundedFrameSinkId,
+      /*is_root=*/false);
+
+  mojom::LayerContext& layer_context = *layer_context_impl_;
+  layer_context.SetUnboundedFrameSinkId(kUnboundedFrameSinkId,
+                                        kDefaultLocalSurfaceId);
+  EXPECT_EQ(frame_sink_manager_.GetFrameSinkForId(kUnboundedFrameSinkId),
+            other_support.get());
+  EXPECT_EQ(other_support->resource_return_delegate(), nullptr);
+
+  // Once the other support is gone, the next display tree update binds the
+  // unbounded surface to a support that the LayerContextImpl creates.
+  other_support.reset();
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTree(CreateDefaultUpdate())
+                  .has_value());
+  CompositorFrameSinkSupport* support =
+      frame_sink_manager_.GetFrameSinkForId(kUnboundedFrameSinkId);
+  ASSERT_TRUE(support);
+  EXPECT_EQ(support->resource_return_delegate(), layer_context_impl_.get());
+
+  frame_sink_manager_.UnregisterFrameSinkHierarchy(kDefaultFrameSinkId,
+                                                   kUnboundedFrameSinkId);
 }
 
 }  // namespace

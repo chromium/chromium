@@ -2639,29 +2639,30 @@ void LayerContextImpl::TryBindUnboundedFrameSink() {
           pending_unbounded_frame_sink_id_)) {
     return;
   }
+  // When TreesInViz is enabled, the browser process does not create a
+  // CompositorFrameSink via IPC for unbounded elements, so the
+  // CompositorFrameSinkSupport is created below instead.
+  CompositorFrameSinkSupport* existing_frame_sink =
+      compositor_sink_->frame_sink_manager()->GetFrameSinkForId(
+          pending_unbounded_frame_sink_id_);
+  if (existing_frame_sink && existing_frame_sink != unbounded_support_.get()) {
+    // A live support for the ID that wasn't created here belongs to another
+    // client, so don't bind to it. The ID stays pending, so binding is retried
+    // once that support is gone.
+    return;
+  }
   if (bound_unbounded_frame_sink_id_.is_valid()) {
     ResetBoundUnboundedFrameSink();
     host_impl_->DismissUnboundedFrameSink();
   }
-  CompositorFrameSinkSupport* support =
-      compositor_sink_->frame_sink_manager()->GetFrameSinkForId(
-          pending_unbounded_frame_sink_id_);
-  if (!support) {
-    // When TreesInViz is enabled, the browser process does not create a
-    // CompositorFrameSink via IPC for unbounded elements. Auto-instantiate an
-    // internal CompositorFrameSinkSupport here so Viz can composite and
-    // render the unbounded element's surface.
-    CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
-    unbounded_support_ = std::make_unique<CompositorFrameSinkSupport>(
-        /*client=*/nullptr, compositor_sink_->frame_sink_manager(),
-        pending_unbounded_frame_sink_id_, /*is_root=*/false);
-    support = unbounded_support_.get();
-  }
-  DCHECK(!support->resource_return_delegate());
-  support->set_resource_return_delegate(this);
+  CHECK(base::FeatureList::IsEnabled(features::kTreesInViz));
+  unbounded_support_ = std::make_unique<CompositorFrameSinkSupport>(
+      /*client=*/nullptr, compositor_sink_->frame_sink_manager(),
+      pending_unbounded_frame_sink_id_, /*is_root=*/false);
+  unbounded_support_->set_resource_return_delegate(this);
   bound_unbounded_frame_sink_id_ = pending_unbounded_frame_sink_id_;
   auto direct_sink = std::make_unique<DirectLayerTreeFrameSink>(
-      support->GetWeakPtr(), pending_unbounded_local_surface_id_);
+      unbounded_support_->GetWeakPtr(), pending_unbounded_local_surface_id_);
   host_impl_->SetUnboundedFrameSink(std::move(direct_sink),
                                     pending_unbounded_local_surface_id_);
   pending_unbounded_frame_sink_id_ = FrameSinkId();
