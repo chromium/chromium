@@ -3911,20 +3911,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.LCPP.PrefetchFontCount" units="count"
-    expires_after="2025-09-07">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Counts the number of font URLs to be prefetched using the LCPP prediction.
-
-    This metric is emitted when predicted font URLs are appended to the
-    PreconnectPrediction structure for prefetching.
-  </summary>
-</histogram>
-
 <histogram name="Blink.LCPP.PrefetchSubresource.Count.SameSiteRatio" units="%"
     expires_after="2025-08-10">
   <owner>yoichio@chromium.org</owner>

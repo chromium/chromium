@@ -1491,13 +1491,10 @@ void LcppDataMap::GetPreconnectAndPrefetchRequest(
       features::kLoadingPredictorPrefetchSubresourceType.Get() ==
           features::PrefetchSubresourceType::kAll;
   if (kLCPPFontURLPredictorEnabled && kLoadingPredictorPrefetchEnabled) {
-    size_t count = 0;
     for (const GURL& font_url : PredictFetchedFontUrls(*lcpp_stat)) {
       prediction.prefetch_requests.emplace_back(
           font_url, network::mojom::RequestDestination::kFont);
-      ++count;
     }
-    base::UmaHistogramCounts1000("Blink.LCPP.PrefetchFontCount", count);
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource)) {
