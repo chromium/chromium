@@ -353,6 +353,28 @@ TEST_F(OmniboxEditModelTest, RevertUneditedText) {
   EXPECT_EQ(u"example.com", view()->GetText());
   EXPECT_FALSE(model()->user_input_in_progress());
 
+  // Temporary text without user input (e.g. previewing a zero-prefix
+  // suggestion) reverts back to permanent display text even when user_text()
+  // matches GetPermanentDisplayText().
+  location_bar_model()->set_url(GURL("chrome://newtab/"));
+  location_bar_model()->set_url_for_display(u"");
+  EXPECT_TRUE(model()->ResetDisplayTexts());
+  model()->Revert();
+  model()->OnPopupDataChanged(u"temporary zps text",
+                              /*is_temporary_text=*/true, std::u16string(),
+                              std::u16string(), std::u16string(),
+                              KeywordState::kNone, std::u16string(), {});
+  EXPECT_TRUE(model()->has_temporary_text());
+  EXPECT_EQ(u"temporary zps text", view()->GetText());
+  model()->RevertUneditedText();
+  EXPECT_FALSE(model()->has_temporary_text());
+  EXPECT_EQ(u"", view()->GetText());
+
+  location_bar_model()->set_url(GURL("https://www.example.com/"));
+  location_bar_model()->set_url_for_display(u"example.com");
+  EXPECT_TRUE(model()->ResetDisplayTexts());
+  model()->Revert();
+
   // User text matching the permanent display text or full URL reverts.
   model()->SetUserText(u"example.com");
   EXPECT_TRUE(model()->user_input_in_progress());
