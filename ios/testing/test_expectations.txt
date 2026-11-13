@@ -478,7 +478,7 @@ crbug.com/565792499 PasswordControllerEGTest/testLoginEventReported [ Pass Failu
 crbug.com/565749273 [ iOS26 iPad Device ] GeminiCopresenceTestCase/testConversationPersistenceOnSignOut [ Pass Failure ]
 crbug.com/565749273 GeminiCopresenceTestCase/testOpenAppsActivityFromToolbar [ Pass Failure ]
 crbug.com/565749273 GeminiEntrypointTestCase/testFloatyInputButtonTogglesBetweenLiveAndSend [ Failure ]
-crbug.com/565749273 [ iOS26 iOS27 iPad Simulator ] GeminiFirstRunEGTest/testFREConsentGrantsAndStartsFloaty [ Pass Failure ]
+crbug.com/565749273 [ iOS26 iOS27 iPad ] GeminiFirstRunEGTest/testFREConsentGrantsAndStartsFloaty [ Pass Failure ]
 crbug.com/565749273 [ iOS18 iOS27 iPad Simulator ] GeminiFirstRunEGTest/testLightweightFREConsentGrantsAndStartsFloaty [ Pass Failure ]
 crbug.com/565749273 [ iOS27 iPad Simulator ] GeminiFirstRunEGTest/testVisualRichFREConsentGrantsAndStartsFloaty [ Pass Failure ]
 crbug.com/565749273 [ Device ] GeminiLiveAIHubTestCase/testStopButtonHiddenOnTabGrid [ Failure ]
@@ -614,3 +614,4 @@ crbug.com/576674495 [ iOS26 iPhone Device ] AssistantAIMTestCase/testCobrowseHid
 crbug.com/441013259 [ iOS26 iPhone Device ] PasswordSharingTestCase/testPasswordPickerSwipeToDismissFlow [ Pass Failure ]
 crbug.com/441013259 [ iOS26 iPhone Device ] PasswordSharingTestCase/testTappingFamilyPickerIneligibleRecipientInfoPopup [ Pass Failure ]
 crbug.com/579165092 [ iOS26 iPhone Device ] OtpInputDialogEgtest/testOtpInputDialogContent [ Pass Failure ]
+crbug.com/584668880 GeminiContainerTestCase/testSwipeDownWithConversationMinimizesContainer [ Pass Failure ]
