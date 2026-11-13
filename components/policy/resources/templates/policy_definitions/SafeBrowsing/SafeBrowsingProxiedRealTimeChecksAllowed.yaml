@@ -1,17 +1,16 @@
 caption: Allow Safe Browsing Proxied Real Time Checks
 default: true
 desc: |-
-  This controls whether Safe Browsing's standard protection mode is allowed to
-  send partial hashes of URLs to Google through a proxy via Oblivious HTTP
-  in order to determine whether they are safe to visit.
+  This controls whether Safe Browsing is allowed to send partial hashes of URLs
+  to Google through a proxy via Oblivious HTTP in order to determine whether
+  they are safe to visit.
 
   The proxy allows browsers to upload partial hashes of URLs to Google
   without them being linked to the user's IP address. The policy also allows
   browsers to upload the partial hashes of URLs with higher frequency for
   better Safe Browsing protection quality.
 
-  This policy will be ignored if Safe Browsing is disabled or set to enhanced
-  protection mode.
+  This policy will be ignored if Safe Browsing is disabled.
 
   Setting the policy to Enabled or leaving it unset allows the
   higher-protection proxied lookups.

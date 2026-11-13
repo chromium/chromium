@@ -100,8 +100,9 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
   policy {
     cookies_allowed: NO
     setting:
-      "Users can disable this feature by unselecting 'Standard protection' "
-      "in Chromium settings under Security. The feature is enabled by default."
+      "Users can disable Safe Browsing by checking 'No protection' in Chromium "
+      "settings under Security > Safe Browsing. The feature is enabled by "
+      "default."
     chrome_policy {
       SafeBrowsingProtectionLevel {
         policy_options {mode: MANDATORY}
@@ -116,8 +117,8 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     }
   }
   comments:
-      "SafeBrowsingProtectionLevel value of 0 or 2 disables fetching this "
-      "OHTTP key. A value of 1 enables the feature. The feature is enabled by "
+      "SafeBrowsingProtectionLevel value of 0 disables fetching this OHTTP "
+      "key. A value of 1 or 2 enables the feature. The feature is enabled by "
       "default."
   )");
 
