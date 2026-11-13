@@ -3733,20 +3733,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.LCPP.CrossSiteFontUrls" units="count"
-    expires_after="2025-08-10">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Counts the number of the reported font URLs in the cross site.
-
-    This metric is emitted when predicted font URLs are appended to the
-    PreconnectPrediction structure for prefetching.
-  </summary>
-</histogram>
-
 <histogram name="Blink.LCPP.LCPElementLocatorSize" units="bytes"
     expires_after="2026-02-22">
   <owner>kouhei@chromium.org</owner>
@@ -4063,22 +4049,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Blink.LCPP.RecordedFontCount" units="count"
-    expires_after="2025-08-10">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Measures the number of web fonts that was fetched in the page and recorded
-    to the LCPP database.
-
-    This metric is emitted for every page load when it is about to emit
-    &quot;onload&quot; event. Unlike Blink.LCPP.ReportedFontCount, this metric
-    counts the number of fonts after filitering with the max fonts per site.
-  </summary>
-</histogram>
-
 <histogram name="Blink.LCPP.RecordedFontUrlHitCountForPagesWithFonts"
     units="count" expires_after="2025-10-01">
   <owner>yyanagisawa@chromium.org</owner>
@@ -4234,34 +4204,6 @@ chromium-metrics-reviews@google.com.
 
     This metric is emitted for every page load when it is about to emit
     &quot;onload&quot; event.
-  </summary>
-</histogram>
-
-<histogram name="Blink.LCPP.SameSiteFontUrlRatio" units="%"
-    expires_after="2025-08-10">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Ratio of the same site font URLs in the all reported font URLs.
-
-    This metric is emitted when predicted font URLs are appended to the
-    PreconnectPrediction structure for prefetching.
-  </summary>
-</histogram>
-
-<histogram name="Blink.LCPP.SameSiteFontUrls" units="count"
-    expires_after="2025-08-10">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Counts the number of the reported font URLs in the same site.
-
-    This metric is emitted when predicted font URLs are appended to the
-    PreconnectPrediction structure for prefetching.
   </summary>
 </histogram>
 

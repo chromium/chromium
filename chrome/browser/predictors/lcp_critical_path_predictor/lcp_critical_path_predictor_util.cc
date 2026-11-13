@@ -533,9 +533,6 @@ bool RecordFetchedFontUrlsHistogram(int sliding_window_size,
   *stat.mutable_fetched_font_url_stat() =
       updater.ToLcppStringFrequencyStatData();
 
-  base::UmaHistogramCounts10000(
-      "Blink.LCPP.RecordedFontCount",
-      base::checked_cast<int>(fetched_font_urls.size()));
   base::UmaHistogramCounts10000("Blink.LCPP.RecordedFontUrlsMaxLength",
                                 base::checked_cast<int>(max_url_length));
   base::UmaHistogramCounts10000("Blink.LCPP.RecordedFontUrlMatchCount",
@@ -1058,19 +1055,6 @@ bool UpdateLcppStatWithLcppDataInputs(const LcppDataInputs& inputs,
         "Blink.LCPP.RecordedFontUrlReenterPercentInRecordedFonts",
         base::checked_cast<int>(100 * inputs.font_url_reenter_count /
                                 inputs.font_urls.size()));
-    base::UmaHistogramCounts10000(
-        "Blink.LCPP.CrossSiteFontUrls",
-        base::checked_cast<int>(inputs.cross_site_font_url_count));
-    base::UmaHistogramCounts10000(
-        "Blink.LCPP.SameSiteFontUrls",
-        base::checked_cast<int>(inputs.same_site_font_url_count));
-    CHECK_GT(inputs.same_site_font_url_count + inputs.cross_site_font_url_count,
-             0UL);
-    base::UmaHistogramPercentage(
-        "Blink.LCPP.SameSiteFontUrlRatio",
-        base::checked_cast<int>(100 * inputs.same_site_font_url_count /
-                                (inputs.same_site_font_url_count +
-                                 inputs.cross_site_font_url_count)));
   }
   return data_updated;
 }
