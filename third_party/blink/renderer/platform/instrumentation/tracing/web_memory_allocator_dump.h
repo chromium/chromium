@@ -42,7 +42,7 @@ class PLATFORM_EXPORT WebMemoryAllocatorDump final {
   //       Currently supported values are "bytes" and "objects".
   //   value: the value of the attribute.
   void AddScalar(const char* name, const char* units, uint64_t value);
-  void AddString(const char* name, const char* units, const String& value);
+  void AddString(const char* name, const char* units, const StringView& value);
 
   // |guid| is an optional global dump identifier, unique across all processes
   // within the scope of a global dump. It is only required when using the

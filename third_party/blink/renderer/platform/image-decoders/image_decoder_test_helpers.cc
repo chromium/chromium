@@ -22,7 +22,7 @@ Vector<char> ReadFile(StringView file_name) {
   StringBuilder file_path;
   file_path.Append(test::BlinkWebTestsDir());
   file_path.Append(file_name);
-  std::optional<Vector<char>> data = test::ReadFromFile(file_path.ToString());
+  std::optional<Vector<char>> data = test::ReadFromFile(file_path);
   CHECK(data && data->size());
   return *data;
 }
@@ -40,7 +40,7 @@ Vector<char> ReadFile(const char* dir, const char* file_name) {
   }
   file_path.Append('/');
   file_path.Append(file_name);
-  std::optional<Vector<char>> data = test::ReadFromFile(file_path.ToString());
+  std::optional<Vector<char>> data = test::ReadFromFile(file_path);
   CHECK(data && data->size());
   return *data;
 }

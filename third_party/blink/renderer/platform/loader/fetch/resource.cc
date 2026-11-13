@@ -1109,7 +1109,7 @@ void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
                            kMaxResourceClientToShowInMemoryInfra);
       builder.Append(" more");
     }
-    dump->AddString("ResourceClient", "", builder.ToString());
+    dump->AddString("ResourceClient", "", builder);
   }
 
   const String overhead_name = StrCat({dump_name, "/metadata"});

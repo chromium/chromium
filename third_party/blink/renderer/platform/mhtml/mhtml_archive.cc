@@ -316,7 +316,7 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
 
   // We use Utf8() below instead of Ascii() as Ascii() replaces CRLFs with ??
   // (we still only have put ASCII characters in it).
-  DCHECK(string_builder.ToString().ContainsOnlyAsciiOrEmpty());
+  DCHECK(StringView(string_builder).ContainsOnlyAsciiOrEmpty());
   std::string utf8_string = string_builder.Utf8();
 
   output_buffer.append_range(utf8_string);

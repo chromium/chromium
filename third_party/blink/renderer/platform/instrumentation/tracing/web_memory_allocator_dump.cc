@@ -22,7 +22,7 @@ void WebMemoryAllocatorDump::AddScalar(const char* name,
 
 void WebMemoryAllocatorDump::AddString(const char* name,
                                        const char* units,
-                                       const String& value) {
+                                       const StringView& value) {
   memory_allocator_dump_->AddString(name, units, value.Utf8());
 }
 

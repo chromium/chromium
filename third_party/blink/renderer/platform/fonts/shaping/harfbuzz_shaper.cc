@@ -181,7 +181,7 @@ void CheckShapeResultRange(const ShapeResult* result,
   log.Append(", result=");
   result->ToString(&log);
 
-  NOTREACHED() << log.ToString();
+  NOTREACHED() << StringView(log);
 }
 #endif
 

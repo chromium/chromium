@@ -53,7 +53,7 @@ TEST(JSONValuesTest, ArrayIterator) {
     ASSERT_TRUE(entry.AsString(&str));
     result.Append(str);
   }
-  EXPECT_EQ(result.ToString(), "PASS");
+  EXPECT_EQ(StringView(result), "PASS");
 }
 
 TEST(JSONValuesTest, EmptyArrayIterator) {

@@ -199,7 +199,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   for (const auto& span : *buffer) {
     data.Append(base::as_bytes(span));
   }
-  EXPECT_EQ(data.ToString(), "hello");
+  EXPECT_EQ(StringView(data), "hello");
 }
 
 TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
@@ -223,7 +223,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   for (const auto& span : *buffer) {
     data.Append(base::as_bytes(span));
   }
-  EXPECT_EQ(data.ToString(), "Hello World!");
+  EXPECT_EQ(StringView(data), "Hello World!");
 }
 
 // Helper class which stores a BytesConsumer passed by RawResource and reads the
@@ -325,7 +325,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
   for (const auto& span : *buffer) {
     data.Append(base::as_bytes(span));
   }
-  EXPECT_EQ(data.ToString(), "Hello World!");
+  EXPECT_EQ(StringView(data), "Hello World!");
 }
 
 TEST_F(ResourceLoaderTest, LoadDataURL_SyncEmptyData) {
@@ -386,7 +386,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   for (const auto& span : *buffer) {
     data.Append(base::as_bytes(span));
   }
-  EXPECT_EQ(data.ToString(), "Hello World!");
+  EXPECT_EQ(StringView(data), "Hello World!");
 }
 
 TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {

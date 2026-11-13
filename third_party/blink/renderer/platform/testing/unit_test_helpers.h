@@ -101,7 +101,7 @@ base::FilePath HyphenationDictionaryDir();
 
 // Reads the file at the given path and returns its data.
 // Returns nullopt if the file does not exist or couldn't be read.
-std::optional<Vector<char>> ReadFromFile(const String& path);
+std::optional<Vector<char>> ReadFromFile(const StringView& path);
 
 class LineReader {
   DISALLOW_NEW();

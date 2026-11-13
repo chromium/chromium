@@ -122,8 +122,8 @@ base::FilePath HyphenationDictionaryDir() {
   return exe_dir.AppendASCII("gen/hyphen-data");
 }
 
-std::optional<Vector<char>> ReadFromFile(const String& path) {
-  base::FilePath file_path = blink::StringToFilePath(path);
+std::optional<Vector<char>> ReadFromFile(const StringView& path) {
+  base::FilePath file_path = blink::StringViewToFilePath(path);
   std::string buffer;
   if (!base::ReadFileToString(file_path, &buffer)) {
     return std::nullopt;

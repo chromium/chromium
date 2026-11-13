@@ -329,7 +329,7 @@ inline bool MaybeBidiRtl(UChar32 ch) {
          !IsInRange(ch, 0x20000, 0x323AF);
 }
 
-inline bool MaybeBidiRtl(const String& text) {
+inline bool MaybeBidiRtl(const StringView& text) {
   return !text.Is8Bit() && !text.IsAllSpecialCharacters<[](UChar c) {
     return !MaybeBidiRtlUtf16(c);
   }>();

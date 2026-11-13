@@ -402,8 +402,7 @@ TEST_F(ImageFrameGeneratorTest, ClearingPartiallyDecodedFrame) {
   file_path.Append(test::BlinkWebTestsDir());
   file_path.Append(
       "/images/resources/png-animated-three-independent-frames.png");
-  std::optional<Vector<char>> full_data_vec =
-      test::ReadFromFile(file_path.ToString());
+  std::optional<Vector<char>> full_data_vec = test::ReadFromFile(file_path);
   ASSERT_TRUE(full_data_vec);
   base::span<const uint8_t> full_data = base::as_byte_span(*full_data_vec);
   SkISize size(50, 50);

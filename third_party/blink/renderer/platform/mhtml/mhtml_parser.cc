@@ -486,7 +486,7 @@ KURL MHTMLParser::ConvertContentIDToURI(const String& content_id) {
   StringBuilder uri_builder;
   uri_builder.Append("cid:");
   uri_builder.Append(content_id, 1, content_id.length() - 2);
-  return KURL(NullUrl(), uri_builder.ToString());
+  return KURL(NullUrl(), uri_builder);
 }
 
 }  // namespace blink

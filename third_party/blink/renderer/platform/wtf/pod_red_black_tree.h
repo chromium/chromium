@@ -632,7 +632,7 @@ class PodRedBlackTree {
       builder.Append(blink::ValueToString<T>::GetString(node->Data()));
       builder.Append((node->GetColor() == kBlack) ? " (black)" : " (red)");
     }
-    DLOG(ERROR) << builder.ToString();
+    DLOG(ERROR) << StringView(builder);
     if (node) {
       DumpFromNode(node->Left(), indentation + 2);
       DumpFromNode(node->Right(), indentation + 2);
