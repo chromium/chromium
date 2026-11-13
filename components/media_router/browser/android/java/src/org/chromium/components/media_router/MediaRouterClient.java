@@ -23,7 +23,8 @@ public abstract class MediaRouterClient {
 
     /**
      * Sets the singleton client instance.
-     * @param client the {@link Client} provided by the given embedder.
+     *
+     * @param mediaRouterClient the {@link Client} provided by the given embedder.
      */
     public static void setInstance(MediaRouterClient mediaRouterClient) {
         sInstance = mediaRouterClient;

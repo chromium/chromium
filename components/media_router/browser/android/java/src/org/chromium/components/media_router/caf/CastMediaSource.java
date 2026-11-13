@@ -119,29 +119,28 @@ public class CastMediaSource implements MediaSource {
         }
     }
 
-    /** @return the Cast application id corresponding to the source. */
+    /** Returns the Cast application id corresponding to the source. */
     @Override
     public String getApplicationId() {
         return mApplicationId;
     }
 
-    /** @return the client id if passed in the source id. Can be null. */
+    /** Returns the client id if passed in the source id. Can be null. */
     public @Nullable String getClientId() {
         return mClientId;
     }
 
-    /** @return the auto join policy which must be one of the AUTOJOIN constants defined above. */
+    /** Returns the auto join policy which must be one of the AUTOJOIN constants defined above. */
     public String getAutoJoinPolicy() {
         return mAutoJoinPolicy;
     }
 
-    /** @return the id identifying the media source */
     @Override
     public String getSourceId() {
         return mSourceId;
     }
 
-    /** @return application capabilities */
+    /** Returns application capabilities. */
     public String @Nullable [] getCapabilities() {
         return mCapabilities == null ? null : Arrays.copyOf(mCapabilities, mCapabilities.length);
     }
@@ -220,12 +219,12 @@ public class CastMediaSource implements MediaSource {
     }
 
     /**
-     * @deprecated Legacy Cast Presentation URLs are deprecated in favor of cast: URLs.
-     *     TODO(crbug.com/40536148): remove this method when we drop support for legacy URLs. Helper
-     *     method to create a MediaSource object from a legacy (https:) presentation URL.
      * @param sourceId the source id for the Cast media source.
      * @return an initialized media source if the uri is a valid https presentation URL, null
      *     otherwise.
+     * @deprecated Legacy Cast Presentation URLs are deprecated in favor of cast: URLs.
+     *     TODO(crbug.com/40536148): remove this method when we drop support for legacy URLs. Helper
+     *     method to create a MediaSource object from a legacy (https:) presentation URL.
      */
     @Deprecated
     private static @Nullable CastMediaSource fromLegacyUrl(String sourceId) {

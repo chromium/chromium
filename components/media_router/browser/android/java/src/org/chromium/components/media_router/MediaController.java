@@ -25,8 +25,8 @@ public interface MediaController {
     void pause();
 
     /**
-     * Mutes the media if |mute| is true, and unmutes it if false. Is a no-op if not supported by
-     * the media.
+     * Mutes the media if {@code mute} is true, and unmutes it if false. Is a no-op if not supported
+     * by the media.
      */
     void setMute(boolean mute);
 
@@ -38,8 +38,8 @@ public interface MediaController {
     void setVolume(double volume);
 
     /**
-     * Sets the current playback position. |position| must be less than or equal to the duration of
-     * the media. Is a no-op if the media doesn't support seeking.
+     * Sets the current playback position. {@code position} must be less than or equal to the
+     * duration of the media. Is a no-op if the media doesn't support seeking.
      */
     void seek(long position);
 }

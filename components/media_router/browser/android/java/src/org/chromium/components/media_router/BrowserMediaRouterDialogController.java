@@ -188,9 +188,7 @@ public class BrowserMediaRouterDialogController implements MediaRouteDialogDeleg
         closeDialog();
     }
 
-    /**
-     * @return if any media route dialog is currently open.
-     */
+    /** Returns true if any media route dialog is currently open, false otherwise. */
     @CalledByNative
     public boolean isShowingDialog() {
         return mPendingPermissionCallback != null

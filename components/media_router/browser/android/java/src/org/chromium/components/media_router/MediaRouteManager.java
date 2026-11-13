@@ -22,11 +22,12 @@ public interface MediaRouteManager {
     void addMediaRouteProvider(MediaRouteProvider provider);
 
     /**
-     * Called when the sinks found by the media route provider for
-     * the particular |sourceUrn| have changed.
+     * Called when the sinks found by the media route provider for the particular {@code sourceUrn}
+     * have changed.
+     *
      * @param sourceId The id of the source (presentation URL) that the sinks are received for.
      * @param provider The {@link MediaRouteProvider} that found the sinks.
-     * @param sinks The list of {@link MediaSink}s
+     * @param sinks The list of {@link MediaSink}s.
      */
     void onSinksReceived(String sourceId, MediaRouteProvider provider, List<MediaSink> sinks);
 

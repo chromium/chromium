@@ -28,17 +28,17 @@ public class MediaSink {
         mName = name;
     }
 
-    /** @return The unique identifier of the sink. */
+    /** Returns the unique identifier of the sink. */
     public String getId() {
         return mId;
     }
 
-    /** @return The user friendly name of the sink. */
+    /** Returns the user friendly name of the sink. */
     public String getName() {
         return mName;
     }
 
-    /** @return The valid URN representing the sink. */
+    /** Returns the valid URN representing the sink. */
     public String getUrn() {
         return CAST_SINK_URN_PREFIX + getId();
     }

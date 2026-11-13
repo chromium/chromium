@@ -101,9 +101,8 @@ public class MediaStatusBridge {
     }
 
     /**
-     * Current volume of the media, with 1 being the highest and 0 being the
-     * lowest/no sound. When |is_muted| is true, there should be no sound
-     * regardless of |volume|.
+     * Current volume of the media, with 1 being the highest and 0 being the lowest/no sound. When
+     * {@link #isMuted()} is true, there should be no sound regardless of {@link #volume()}.
      */
     @CalledByNative
     public double volume() {
@@ -122,7 +121,7 @@ public class MediaStatusBridge {
         return info.getStreamDuration();
     }
 
-    /** Current playback position, in ms. Must be less than or equal to |duration|. */
+    /** Current playback position, in ms. Must be less than or equal to {@code duration}. */
     @CalledByNative
     public long currentTime() {
         return mStatus.getStreamPosition();

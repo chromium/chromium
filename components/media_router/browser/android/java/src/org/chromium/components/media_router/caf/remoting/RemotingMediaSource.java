@@ -121,19 +121,21 @@ public class RemotingMediaSource implements MediaSource {
         return sApplicationId;
     }
 
-    /** @return the Cast application id corresponding to the source. Can be overridden downstream. */
+    /**
+     * Returns the Cast application id corresponding to the source. Can be overridden downstream.
+     */
     @Override
     public String getApplicationId() {
         return applicationId();
     }
 
-    /** @return the id identifying the media source */
+    /** Returns the id identifying the media source */
     @Override
     public String getSourceId() {
         return mSourceId;
     }
 
-    /** @return the media URL to fling to the Cast device. */
+    /** Returns the media URL to fling to the Cast device. */
     public String getMediaUrl() {
         return mMediaUrl;
     }

@@ -282,10 +282,11 @@ public class BrowserMediaRouter implements MediaRouteManager {
     }
 
     /**
-     * Starts background monitoring for available media sinks compatible with the given |sourceUrn|
-     * if the device is in a state that allows it.
+     * Starts background monitoring for available media sinks compatible with the given {@code
+     * sourceUrn} if the device is in a state that allows it.
      *
      * @param sourceId a URL to use for filtering of the available media sinks
+     * @param origin the origin of the frame requesting the sinks.
      * @return whether the monitoring started (ie. was allowed).
      */
     @CalledByNative
@@ -304,7 +305,8 @@ public class BrowserMediaRouter implements MediaRouteManager {
     }
 
     /**
-     * Stops background monitoring for available media sinks compatible with the given |sourceUrn|
+     * Stops background monitoring for available media sinks compatible with the given {@code
+     * sourceUrn}.
      *
      * @param sourceId a URL passed to {@link #startObservingMediaSinks(String)} before.
      */
@@ -400,7 +402,6 @@ public class BrowserMediaRouter implements MediaRouteManager {
      * failure.
      *
      * @param sourceId the id of the {@link MediaSource} to route to the sink.
-     * @param sinkId the id of the {@link MediaSink} to route the source to.
      * @param presentationId the id of the presentation to be used by the page.
      * @param origin the origin of the frame requesting a new route.
      * @param webContents the {@link WebContents} that owns the frame that requested the route.
@@ -476,7 +477,7 @@ public class BrowserMediaRouter implements MediaRouteManager {
      * Gets a media controller to be used by native.
      *
      * @param routeId The route ID tied to the CastSession for which we want a media controller.
-     * @return A MediaControllerBridge if it can be obtained from |routeId|, null otherwise.
+     * @return A MediaControllerBridge if it can be obtained from {@code routeId}, null otherwise.
      */
     @CalledByNative
     public @Nullable FlingingControllerBridge getFlingingControllerBridge(

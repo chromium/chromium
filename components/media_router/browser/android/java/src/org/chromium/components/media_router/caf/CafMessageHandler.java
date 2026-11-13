@@ -107,8 +107,9 @@ public class CafMessageHandler {
     /**
      * Initializes a new {@link CafMessageHandler} instance.
      *
-     * @param session The {@link CastSession} for communicating with the Cast SDK.
-     * @param provider The {@link CafMediaRouteProvider} for communicating with the page.
+     * @param provider the {@link CafMediaRouteProvider} for communicating with the page.
+     * @param sessionController the {@link CastSessionController} for communicating with the Cast
+     *     SDK.
      */
     public CafMessageHandler(
             CafMediaRouteProvider provider, CastSessionController sessionController) {
@@ -140,10 +141,7 @@ public class CafMessageHandler {
         return mStopRequests;
     }
 
-    /**
-     * Set the session when a session is started, and notify all clients that are not connected.
-     * @param session The newly created session.
-     */
+    /** Set the session when a session is started, and notify all clients that are not connected. */
     public void onSessionStarted() {
         for (ClientRecord client : mRouteProvider.getClientIdToRecords().values()) {
             if (!client.isConnected) continue;
@@ -161,6 +159,7 @@ public class CafMessageHandler {
     /**
      * Handle a message sent from client.
      *
+     * @param message the message sent from the client.
      * @return whether the message has been handled successfully
      */
     public boolean handleMessageFromClient(String message) {
@@ -271,7 +270,8 @@ public class CafMessageHandler {
     /**
      * Handles messages related to the cast session, i.e. messages happening on a established
      * connection. All these messages are sent from the page to the Cast SDK.
-     * @param message The JSONObject message to be handled.
+     *
+     * @param message the JSONObject message to be handled.
      */
     private boolean handleSessionMessageFromClient(JSONObject message) throws JSONException {
         String messageType = message.getString("type");
@@ -469,8 +469,9 @@ public class CafMessageHandler {
     /**
      * Forwards the messages from the Cast device to the clients, and perform proper actions if it
      * is media message.
-     * @param namespace The application specific namespace this message belongs to.
-     * @param message The message within the namespace that's being sent by the receiver
+     *
+     * @param namespace the application specific namespace this message belongs to.
+     * @param message the message within the namespace that's being sent by the receiver
      */
     public void onMessageReceived(String namespace, String message) {
         RequestRecord request = null;
@@ -493,10 +494,11 @@ public class CafMessageHandler {
     }
 
     /**
-     * Forwards the media message to the page via the media router.
-     * The MEDIA_STATUS message needs to be sent to all the clients.
-     * @param message The media that's being send by the receiver.
-     * @param request The information about the client and the sequence number to respond with.
+     * Forwards the media message to the page via the media router. The MEDIA_STATUS message needs
+     * to be sent to all the clients.
+     *
+     * @param message the media that's being send by the receiver.
+     * @param request the information about the client and the sequence number to respond with.
      */
     @VisibleForTesting
     void onMediaMessage(String message, @Nullable RequestRecord request) {
@@ -516,9 +518,10 @@ public class CafMessageHandler {
 
     /**
      * Forwards the application specific message to the page via the media router.
-     * @param message The message within the namespace that's being sent by the receiver.
-     * @param namespace The application specific namespace this message belongs to.
-     * @param request The information about the client and the sequence number to respond with.
+     *
+     * @param message the message within the namespace that's being sent by the receiver.
+     * @param namespace the application specific namespace this message belongs to.
+     * @param request the information about the client and the sequence number to respond with.
      */
     @VisibleForTesting
     void onAppMessage(String message, String namespace, @Nullable RequestRecord request) {
@@ -583,8 +586,9 @@ public class CafMessageHandler {
 
     /**
      * Broadcasts the message to all clients.
-     * @param type    The type of the message.
-     * @param message The message to broadcast.
+     *
+     * @param type the type of the message.
+     * @param message the message to broadcast.
      */
     public void broadcastClientMessage(String type, String message) {
         for (String clientId : mRouteProvider.getClientIdToRecords().keySet()) {
@@ -623,10 +627,11 @@ public class CafMessageHandler {
 
     /**
      * Sends a message to a specific client.
-     * @param clientId The id of the receiving client.
-     * @param type     The type of the message.
-     * @param message  The message to be sent.
-     * @param sequenceNumber The sequence number for matching requesting and responding messages.
+     *
+     * @param clientId the id of the receiving client.
+     * @param type the type of the message.
+     * @param message the message to be sent.
+     * @param sequenceNumber the sequence number for matching requesting and responding messages.
      */
     public void sendEnclosedMessageToClient(
             String clientId, String type, @Nullable String message, int sequenceNumber) {
@@ -665,7 +670,7 @@ public class CafMessageHandler {
         return json.toString();
     }
 
-    /** @return A message containing the information of the {@link CastSession}. */
+    /** Returns a message containing the information of the {@link CastSession}. */
     public String buildSessionMessage() {
         if (!mSessionController.isConnected()) return "{}";
         assumeNonNull(mSessionController.getSession());
@@ -810,8 +815,10 @@ public class CafMessageHandler {
 
     /**
      * Notifies a client that an app message has been sent.
-     * @param clientId The client id the message is sent from.
-     * @param sequenceNumber The sequence number of the message.
+     *
+     * @param result the {@link Status} of sending the app message.
+     * @param clientId the client id the message is sent from.
+     * @param sequenceNumber the sequence number of the message.
      */
     void onSendAppMessageResult(Status result, String clientId, int sequenceNumber) {
         if (!result.isSuccess()) {

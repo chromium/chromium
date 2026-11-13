@@ -57,8 +57,8 @@ public abstract class CafBaseMediaRouteProvider
     }
 
     /**
-     * @return A MediaSource object constructed from |sourceId|, or null if the derived class does
-     *     not support the source.
+     * Returns a {@link MediaSource} object constructed from {@code sourceId}, or null if the
+     * derived class does not support the source.
      */
     protected abstract @Nullable MediaSource getSourceFromId(String sourceId);
 
@@ -401,7 +401,7 @@ public abstract class CafBaseMediaRouteProvider
         mManager.onRouteCreated(route.id, route.sinkId, nativeRequestId, this, wasLaunched);
     }
 
-    /** Updates the media source for the route identified by @param routeId */
+    /** Updates the media source for the route identified by {@code routeId} */
     public void updateRouteMediaSource(String routeId, String sourceId) {
         assumeNonNull(mRoutes.get(routeId)).setSourceId(sourceId);
         mManager.onRouteMediaSourceUpdated(routeId, sourceId);
@@ -411,6 +411,7 @@ public abstract class CafBaseMediaRouteProvider
      * Removes a route for bookkeeping and notify the reason. This should be called whenever a route
      * is closed.
      *
+     * @param routeId the id of the route to remove.
      * @param error the reason for the route close, {@code null} indicates no error.
      */
     protected void removeRoute(String routeId, @Nullable String error) {

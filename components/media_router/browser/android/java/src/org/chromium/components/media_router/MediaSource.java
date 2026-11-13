@@ -20,13 +20,9 @@ public interface MediaSource {
      */
     @Nullable MediaRouteSelector buildRouteSelector();
 
-    /**
-     * @return the Cast application id corresponding to the source.
-     */
+    /** Returns the Cast application id corresponding to the source. */
     String getApplicationId();
 
-    /**
-     * @return the id identifying the media source
-     */
+    /** Returns the id identifying the media source */
     String getSourceId();
 }
