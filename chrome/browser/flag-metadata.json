@@ -9839,7 +9839,7 @@
   {
     "name": "use-fullscreen-insets-api",
     "owners": [ "clhager@google.com"],
-    "expiry_milestone": 140
+    "expiry_milestone": 165
   },
   {
     "name": "use-fullscreen-insets-api-on-automotive",
