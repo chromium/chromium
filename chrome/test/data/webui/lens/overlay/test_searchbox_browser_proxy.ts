@@ -55,6 +55,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'openHotkeySettings',
       'openLensSearch',
       'openPopupSelection',
+      'openPopupSelectionWithDisposition',
       'openProfilePicker',
       'queryAutocomplete',
       'recordModelSelectionAction',
@@ -288,9 +289,17 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   openPopupSelection(
       resultSequenceId: number, selection: OmniboxPopupSelection,
+      modifiers: ActionModifiers) {
+    this.methodCalled(
+        'openPopupSelection', {resultSequenceId, selection, modifiers});
+  }
+
+  openPopupSelectionWithDisposition(
+      resultSequenceId: number, selection: OmniboxPopupSelection,
       disposition: WindowOpenDisposition) {
     this.methodCalled(
-        'openPopupSelection', {resultSequenceId, selection, disposition});
+        'openPopupSelectionWithDisposition',
+        {resultSequenceId, selection, disposition});
   }
 
   getDriveDisclaimerStatus() {

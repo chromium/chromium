@@ -287,7 +287,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
     if (this.isContextEntrypointVirtualFocused()) {
       this.getContextualEntrypointButton_()?.showContextMenu();
     } else if (selectionIsNativelySupported(this.selection)) {
-      this.searchboxBrowserProxy_.handler.openPopupSelection(
+      this.searchboxBrowserProxy_.handler.openPopupSelectionWithDisposition(
           this.result_?.sequenceId || 0, this.selection, disposition);
     } else {
       assertNotReached(

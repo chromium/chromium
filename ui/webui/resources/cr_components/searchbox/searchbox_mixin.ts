@@ -408,7 +408,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       const match = matchIndex >= 0 && this.result?.matches ?
           this.result.matches[matchIndex] :
           null;
-      this.pageHandler().openPopupSelection(
+      this.pageHandler().openPopupSelectionWithDisposition(
           this.result?.sequenceId ?? 0, {
             line: matchIndex,
             state: SelectionLineState.kCtrlEnter,
@@ -795,11 +795,13 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         // URL (because keyword chips don't have an associated URL since they're
         // generally not navigable).
         if (this.getInputElement().getInputValue().trim()) {
-          // TODO(b/582480164): Pass modifier keys to let cc handler compute the
-          //   disposition instead of hardcoding 1 (i.e. `kCurrentTab`).
           this.pageHandler().openPopupSelection(
-              this.result!.sequenceId, this.selection,
-              /*disposition=*/ 1);
+              this.result!.sequenceId, this.selection, {
+                altKey: e.altKey,
+                ctrlKey: e.ctrlKey,
+                metaKey: e.metaKey,
+                shiftKey: e.shiftKey,
+              });
           return true;
         }
         this.getInputElement().focus();
