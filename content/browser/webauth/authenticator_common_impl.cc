@@ -1575,6 +1575,12 @@ void AuthenticatorCommonImpl::GetCredential(
     blink::mojom::GetCredentialOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment_options,
     GetCredentialCallback callback) {
+  if (options->mediation == Mediation::AMBIENT &&
+      !base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin)) {
+    // If the kill switch is active, fall back to standard conditional mediation
+    // so that sites using conditional UI with login forms are not broken.
+    options->mediation = Mediation::CONDITIONAL;
+  }
   if (options->mediation == Mediation::CONDITIONAL) {
     base::RecordAction(
         base::UserMetricsAction("WebAuthn.GetAssertion.Conditional.Start"));

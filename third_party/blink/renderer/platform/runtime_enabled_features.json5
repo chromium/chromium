@@ -7576,13 +7576,22 @@
       name: "WebAuthAuthenticatorAttachment",
       status: "test",
     },
-    // Prototyping https://github.com/w3c/webauthn/issues/2144
+    // Enables non-autofill ambient sign-in UI for conditional credential
+    // requests (uiMode: "passive"). See
+    // https://github.com/w3c/webauthn/issues/2144.
+    // When removing the Origin Trial or enabling by default, update the entry
+    // in content/child/runtime_features.cc from kSetOnlyIfOverridden to
+    // kDefault.
+    // LINT.IfChange(WebAuthenticationAmbient)
     {
       name: "WebAuthenticationAmbient",
       status: "experimental",
+      origin_trial_feature_name: "WebAuthenticationAmbient",
+      origin_trial_os: ["win", "mac", "linux", "chromeos"],
       base_feature: "none",
       public: true,
     },
+    // LINT.ThenChange(//content/child/runtime_features.cc:WebAuthenticationAmbient)
     // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptions-attestationformats
     {
       name: "WebAuthenticationAttestationFormats",

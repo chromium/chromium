@@ -88,10 +88,11 @@ BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,
 BASE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled by default for the Origin Trial. Do not remove until the Origin Trial
+// expires.
 BASE_FEATURE(kWebAuthnAmbientSignin,
              "WebAuthenticationAmbientSignin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Experiment flag. Enabled by default in M159. Removed when no longer needed.
 BASE_FEATURE(kWebAuthnAmbientChipOnlyTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
