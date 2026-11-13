@@ -83,6 +83,7 @@ aom_unit_test_encoder_sources = [
   "//third_party/libaom/source/libaom/test/hadamard_test.cc",
   "//third_party/libaom/source/libaom/test/horver_correlation_test.cc",
   "//third_party/libaom/source/libaom/test/i420_video_source.h",
+  "//third_party/libaom/source/libaom/test/intra_hog_test.cc",
   "//third_party/libaom/source/libaom/test/loopfilter_control_test.cc",
   "//third_party/libaom/source/libaom/test/masked_sad_test.cc",
   "//third_party/libaom/source/libaom/test/masked_variance_test.cc",

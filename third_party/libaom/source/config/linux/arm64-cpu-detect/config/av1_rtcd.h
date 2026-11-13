@@ -403,9 +403,15 @@ void av1_inv_txfm_add_c(const tran_low_t *dqcoeff, uint8_t *dst, int stride, con
 void av1_inv_txfm_add_neon(const tran_low_t *dqcoeff, uint8_t *dst, int stride, const TxfmParam *txfm_param);
 #define av1_inv_txfm_add av1_inv_txfm_add_neon
 
+void av1_lowbd_compute_gradient_info_sb_c(struct macroblock *const x, BLOCK_SIZE sb_size, PLANE_TYPE plane);
+#define av1_lowbd_compute_gradient_info_sb av1_lowbd_compute_gradient_info_sb_c
+
 void av1_lowbd_fwd_txfm_c(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 void av1_lowbd_fwd_txfm_neon(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 #define av1_lowbd_fwd_txfm av1_lowbd_fwd_txfm_neon
+
+void av1_lowbd_generate_hog_c(const uint8_t *src, int stride, int rows, int cols, float *hist);
+#define av1_lowbd_generate_hog av1_lowbd_generate_hog_c
 
 void av1_nn_fast_softmax_16_c(const float *input_nodes, float *output);
 #define av1_nn_fast_softmax_16 av1_nn_fast_softmax_16_c

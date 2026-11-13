@@ -395,10 +395,18 @@ void av1_inv_txfm_add_ssse3(const tran_low_t *dqcoeff, uint8_t *dst, int stride,
 void av1_inv_txfm_add_avx2(const tran_low_t *dqcoeff, uint8_t *dst, int stride, const TxfmParam *txfm_param);
 RTCD_EXTERN void (*av1_inv_txfm_add)(const tran_low_t *dqcoeff, uint8_t *dst, int stride, const TxfmParam *txfm_param);
 
+void av1_lowbd_compute_gradient_info_sb_c(struct macroblock *const x, BLOCK_SIZE sb_size, PLANE_TYPE plane);
+void av1_lowbd_compute_gradient_info_sb_sse2(struct macroblock *const x, BLOCK_SIZE sb_size, PLANE_TYPE plane);
+#define av1_lowbd_compute_gradient_info_sb av1_lowbd_compute_gradient_info_sb_sse2
+
 void av1_lowbd_fwd_txfm_c(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 void av1_lowbd_fwd_txfm_sse4_1(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 void av1_lowbd_fwd_txfm_avx2(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
 RTCD_EXTERN void (*av1_lowbd_fwd_txfm)(const int16_t *src_diff, tran_low_t *coeff, int diff_stride, TxfmParam *txfm_param);
+
+void av1_lowbd_generate_hog_c(const uint8_t *src, int stride, int rows, int cols, float *hist);
+void av1_lowbd_generate_hog_sse2(const uint8_t *src, int stride, int rows, int cols, float *hist);
+#define av1_lowbd_generate_hog av1_lowbd_generate_hog_sse2
 
 void av1_nn_fast_softmax_16_c(const float *input_nodes, float *output);
 void av1_nn_fast_softmax_16_sse3(const float *input_nodes, float *output);
