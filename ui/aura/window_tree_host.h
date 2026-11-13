@@ -27,6 +27,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_source.h"
 #include "ui/events/platform_event.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -238,6 +239,12 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // area). When the bounds are inset, this returns a non-zero origin with a
   // size smaller than GetBoundsInPixels().
   virtual gfx::Rect GetBoundsInAcceleratedWidgetPixelCoordinates();
+
+  // Returns the insets, in DIP, of the parts of the window that the window
+  // manager does not treat as part of the window, such as client-drawn shadows
+  // and resize borders advertised in _GTK_FRAME_EXTENTS on Linux X11. Window
+  // bounds exposed to web content exclude them.
+  virtual gfx::Insets GetInvisibleFrameInsetsInDIP() const;
 
   // Sets the OS capture to the root window.
   virtual void SetCapture() = 0;

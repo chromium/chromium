@@ -169,6 +169,11 @@ void BrowserNativeWidgetAuraLinux::TabDraggingKindChanged(
   host_->TabDraggingKindChanged(tab_drag_kind);
 }
 
+gfx::Insets BrowserNativeWidgetAuraLinux::GetInvisibleFrameInsets(
+    bool restored) const {
+  return host_ ? host_->GetInvisibleFrameInsets(restored) : gfx::Insets();
+}
+
 void BrowserNativeWidgetAuraLinux::ClientDestroyedWidget() {
   use_custom_frame_pref_.Destroy();
   BrowserNativeWidgetAura::ClientDestroyedWidget();

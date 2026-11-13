@@ -1743,12 +1743,18 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
     return;
   }
 
+  // `bounds` excludes the invisible frame insets, but the widget's bounds
+  // include them.
+  gfx::Rect widget_bounds = bounds;
+  widget_bounds.Inset(
+      -browser_widget_->GetInvisibleFrameInsets(/*restored=*/true));
+
   // If the BrowserFrameView has been created, give it a chance to handle the
   // BrowserWidget's bounds change.
   if (auto* const frame_view = GetFrameView()) {
-    frame_view->SetFrameBounds(bounds);
+    frame_view->SetFrameBounds(widget_bounds);
   } else {
-    browser_widget_->SetBounds(bounds);
+    browser_widget_->SetBounds(widget_bounds);
   }
 }
 
@@ -2210,6 +2216,7 @@ gfx::Rect BrowserView::GetRestoredBounds() const {
   gfx::Rect bounds;
   ui::mojom::WindowShowState state = ui::mojom::WindowShowState::kDefault;
   browser_widget_->GetWindowPlacement(&bounds, &state);
+  bounds.Inset(browser_widget_->GetInvisibleFrameInsets(/*restored=*/true));
   return bounds;
 }
 
@@ -2221,7 +2228,9 @@ ui::mojom::WindowShowState BrowserView::GetRestoredState() const {
 }
 
 gfx::Rect BrowserView::GetBounds() const {
-  return browser_widget_->GetWindowBoundsInScreen();
+  gfx::Rect bounds = browser_widget_->GetWindowBoundsInScreen();
+  bounds.Inset(browser_widget_->GetInvisibleFrameInsets(/*restored=*/false));
+  return bounds;
 }
 
 gfx::Size BrowserView::GetContentsSize() const {
@@ -4136,8 +4145,12 @@ void BrowserView::SaveWindowPlacement(const gfx::Rect& bounds,
                                       ui::mojom::WindowShowState show_state) {
   CHECK(ShouldSaveWindowPlacement(), base::NotFatalUntil::M162);
 
-  WidgetDelegate::SaveWindowPlacement(bounds, show_state);
+  // The saved bounds are window bounds, which exclude the invisible frame
+  // insets, so they round-trip through GetSavedWindowPlacement().
   gfx::Rect saved_bounds = bounds;
+  saved_bounds.Inset(
+      browser_widget_->GetInvisibleFrameInsets(/*restored=*/true));
+  WidgetDelegate::SaveWindowPlacement(saved_bounds, show_state);
   if (chrome::SavedBoundsAreContentBounds(browser_.get())) {
     // Invert the transformation done in GetSavedWindowPlacement().
     gfx::Size client_size = GetFrameView()->GetBoundsForClientView().size();
@@ -4154,6 +4167,10 @@ bool BrowserView::GetSavedWindowPlacement(
     gfx::Rect* bounds,
     ui::mojom::WindowShowState* show_state) const {
   chrome::GetSavedWindowBoundsAndShowState(browser_.get(), bounds, show_state);
+  // The saved bounds are window bounds. Convert them to widget bounds, which
+  // include the invisible frame insets.
+  const gfx::Insets invisible_frame_insets =
+      browser_widget_->GetInvisibleFrameInsets(/*restored=*/true);
   // TODO(crbug.com/40092782): Generalize this code for app and non-app popups?
   if (chrome::SavedBoundsAreContentBounds(browser_.get()) &&
       browser_->GetType() == BrowserWindowInterface::Type::TYPE_POPUP) {
@@ -4175,6 +4192,10 @@ bool BrowserView::GetSavedWindowPlacement(
     gfx::Rect rect =
         browser_widget_->non_client_view()->GetWindowBoundsForClientBounds(
             *bounds);
+    // GetWindowBoundsForClientBounds() returns widget bounds, which include
+    // the invisible frame insets, but the code below and the conversion after
+    // this block work with window bounds.
+    rect.Inset(invisible_frame_insets);
     rect.set_origin(bounds->origin());
 
     // Set a default popup origin if the x/y coordinates are 0 and the original
@@ -4196,6 +4217,7 @@ bool BrowserView::GetSavedWindowPlacement(
     *bounds = rect;
     *show_state = ui::mojom::WindowShowState::kNormal;
   }
+  bounds->Inset(-invisible_frame_insets);
 
   // We return true because we can _always_ locate reasonable bounds using the
   // WindowSizer, and we don't want to trigger the Window's built-in "size to
@@ -5769,7 +5791,19 @@ void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
               if (view && view->browser_widget()) {
                 // Adjust restored bounds to be on-screen, in case the original
                 // screen was disconnected or repositioned during fullscreen.
-                view->browser_widget()->SetBoundsConstrained(bounds);
+                // `bounds` excludes the invisible frame insets, so constrain
+                // it before converting it to widget bounds.
+                gfx::Rect widget_bounds = bounds;
+                const gfx::Rect work_area = display::Screen::Get()
+                                                ->GetDisplayMatching(bounds)
+                                                .work_area();
+                if (!work_area.IsEmpty()) {
+                  widget_bounds.AdjustToFit(work_area);
+                }
+                widget_bounds.Inset(
+                    -view->browser_widget()->GetInvisibleFrameInsets(
+                        /*restored=*/true));
+                view->browser_widget()->SetBounds(widget_bounds);
                 if (maximize) {
                   view->Maximize();
                 }
@@ -5783,8 +5817,7 @@ void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
       if (was_maximized) {
         Restore();
       }
-      SetBounds({display.work_area().origin(),
-                 browser_widget_->GetWindowBoundsInScreen().size()});
+      SetBounds({display.work_area().origin(), GetBounds().size()});
     }
   }
   browser_widget_->SetFullscreen(fullscreen);

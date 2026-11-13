@@ -1084,6 +1084,7 @@ source_set("web_contents_close_handler") {
 
 source_set("browser_native_widget") {
   public = [ "browser_native_widget.h" ]
+  sources = [ "browser_native_widget.cc" ]
   public_deps = [
     "//build:buildflag_header_h",
     "//content/public/browser",
@@ -2644,6 +2645,7 @@ if (is_linux) {
       "//build/config/linux/dbus:buildflags",
       "//ui/base/mojom:ui_base_types",
       "//ui/linux:linux_ui",
+      "//ui/platform_window",
       "//ui/views",
     ]
     if (use_dbus) {

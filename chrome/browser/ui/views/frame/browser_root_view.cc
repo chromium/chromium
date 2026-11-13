@@ -408,7 +408,12 @@ void BrowserRootView::OnMouseExited(const ui::MouseEvent& event) {
 
 gfx::Size BrowserRootView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return browser_view_->GetRestoredBounds().size();
+  // The root view fills the widget, which includes the invisible frame insets
+  // that BrowserView::GetRestoredBounds() excludes.
+  gfx::Rect bounds = browser_view_->GetRestoredBounds();
+  bounds.Inset(-browser_view_->browser_widget()->GetInvisibleFrameInsets(
+      /*restored=*/true));
+  return bounds.size();
 }
 
 void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {

@@ -5,18 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_WIDGET_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_WIDGET_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include <optional>
-#endif
 
 class BrowserFrameView;
 class BrowserRootView;
@@ -132,6 +131,21 @@ class BrowserWidget : public views::Widget,
   void SetTabDragKind(TabDragKind tab_drag_kind);
   TabDragKind tab_drag_kind() const { return tab_drag_kind_; }
 
+  // Returns the insets of the parts of the widget that the platform does not
+  // treat as part of the window, e.g. client-drawn shadows and resize borders
+  // on Linux X11. Window bounds exposed through BrowserWindow exclude them. If
+  // `restored` is true, returns the insets for the restored window state.
+  gfx::Insets GetInvisibleFrameInsets(bool restored) const;
+
+  // Overrides the insets that the platform reports for the normal window state
+  // (Linux only). Insets for other states are derived from them as usual.
+  void SetInvisibleFrameInsetsForTesting(std::optional<gfx::Insets> insets) {
+    invisible_frame_insets_for_testing_ = insets;
+  }
+  const std::optional<gfx::Insets>& invisible_frame_insets_override() const {
+    return invisible_frame_insets_for_testing_;
+  }
+
  protected:
   // views::Widget:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
@@ -162,6 +176,8 @@ class BrowserWidget : public views::Widget,
   bool IsEnterpriseIsolatedModeBrowser() const;
 
   raw_ptr<BrowserNativeWidget> browser_native_widget_;
+
+  std::optional<gfx::Insets> invisible_frame_insets_for_testing_;
 
   // A weak reference to the root view associated with the window. We save a
   // copy as a BrowserRootView to avoid evil casting later, when we need to call

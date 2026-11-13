@@ -9,6 +9,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
@@ -71,6 +72,11 @@ class BrowserNativeWidget {
 
   // Called when the tab drag kind for this frame changes.
   virtual void TabDraggingKindChanged(TabDragKind tab_drag_kind) {}
+
+  // Returns the insets of the parts of the widget that the platform does not
+  // treat as part of the window, e.g. client-drawn shadows on Linux X11. If
+  // `restored` is true, returns the insets for the restored window state.
+  virtual gfx::Insets GetInvisibleFrameInsets(bool restored) const;
 
 #if BUILDFLAG(IS_MAC)
   // Causes the screen reader to announce |text| against the remote window. If

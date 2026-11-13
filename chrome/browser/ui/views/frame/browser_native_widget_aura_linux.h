@@ -41,6 +41,7 @@ class BrowserNativeWidgetAuraLinux : public BrowserNativeWidgetAura {
   views::Widget::InitParams GetWidgetParams(
       views::Widget::InitParams::Ownership ownership) override;
   void TabDraggingKindChanged(TabDragKind tab_drag_kind) override;
+  gfx::Insets GetInvisibleFrameInsets(bool restored) const override;
   void ClientDestroyedWidget() override;
 
  private:

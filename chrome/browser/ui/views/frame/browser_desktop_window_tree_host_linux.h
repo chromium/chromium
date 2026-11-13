@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LINUX_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/linux/device_scale_factor_observer.h"
+#include "ui/platform_window/platform_window_delegate.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 #if BUILDFLAG(USE_DBUS)
@@ -56,8 +60,17 @@ class BrowserDesktopWindowTreeHostLinux
   // setting is enabled, or when the window is maximized/fullscreen.
   bool SupportsClientFrameShadow() const;
 
+  // Returns the insets of the parts of the window (client-drawn shadows and
+  // resize borders) that the window manager does not treat as part of the
+  // window. If `restored` is true, returns the insets for the normal (restored)
+  // window state rather than the current state.
+  gfx::Insets GetInvisibleFrameInsets(bool restored) const;
+
   // views::DesktopWindowTreeHostLinux:
   void UpdateFrameHints() override;
+
+  // aura::WindowTreeHost:
+  gfx::Insets GetInvisibleFrameInsetsInDIP() const override;
 
  private:
   // DesktopWindowTreeHostPlatform:
@@ -93,9 +106,24 @@ class BrowserDesktopWindowTreeHostLinux
   // views::OnDeviceScaleFactorChanged:
   void OnDeviceScaleFactorChanged() override;
 
+  // Returns the invisible frame insets for the normal window state, i.e. the
+  // insets that are published as _GTK_FRAME_EXTENTS while the window is in
+  // that state.
+  gfx::Insets GetNormalStateInvisibleFrameInsets() const;
+
   raw_ptr<BrowserView> browser_view_ = nullptr;
   raw_ptr<BrowserWidget> browser_widget_ = nullptr;
   raw_ptr<BrowserNativeWidgetAuraLinux> native_widget_ = nullptr;
+
+  // The window state before the window was minimized.
+  ui::PlatformWindowState state_before_minimized_ =
+      ui::PlatformWindowState::kNormal;
+
+  // The normal state invisible frame insets when the window last left the
+  // normal state. The restored bounds of a maximized or fullscreen window are
+  // the bounds from before it left the normal state, so they include these
+  // insets.
+  std::optional<gfx::Insets> restored_invisible_frame_insets_;
 
 #if BUILDFLAG(USE_DBUS)
   // Each browser frame maintains its own menu bar object because the lower

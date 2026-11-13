@@ -523,8 +523,11 @@ class TabDragController : public views::WidgetObserver,
       BrowserWindowInterface* browser);
 
   // Creates and returns a new BrowserWindowInterface to handle the drag.
+  // `initial_widget_size` is the size of the new browser's widget, which
+  // includes the invisible frame insets (see
+  // BrowserWidget::GetInvisibleFrameInsets()).
   BrowserWindowInterface* CreateBrowserForDrag(TabDragContext* source,
-                                               gfx::Size initial_size);
+                                               gfx::Size initial_widget_size);
 
   // Returns the location of the cursor. This is either the location of the
   // mouse or the location of the current touch point.

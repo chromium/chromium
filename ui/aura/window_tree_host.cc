@@ -356,6 +356,10 @@ gfx::Rect WindowTreeHost::GetBoundsInAcceleratedWidgetPixelCoordinates() {
   return gfx::Rect(GetBoundsInPixels().size());
 }
 
+gfx::Insets WindowTreeHost::GetInvisibleFrameInsetsInDIP() const {
+  return gfx::Insets();
+}
+
 std::unique_ptr<ScopedKeyboardHook> WindowTreeHost::CaptureSystemKeyEvents(
     std::optional<base::flat_set<ui::DomCode>> dom_codes) {
   // TODO(joedow): Remove the simple hook class/logic once this flag is removed.

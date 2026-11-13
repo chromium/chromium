@@ -152,6 +152,37 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
          views::Widget::IsWindowCompositingSupported();
 }
 
+gfx::Insets BrowserDesktopWindowTreeHostLinux::GetInvisibleFrameInsets(
+    bool restored) const {
+  auto state = platform_window()->GetPlatformWindowState();
+  // Minimized windows keep the geometry of the state they were minimized
+  // from.
+  if (state == ui::PlatformWindowState::kMinimized) {
+    state = state_before_minimized_;
+  }
+  if (state != ui::PlatformWindowState::kMaximized &&
+      state != ui::PlatformWindowState::kFullScreen) {
+    return GetNormalStateInvisibleFrameInsets();
+  }
+  // Maximized and fullscreen windows have no invisible frame insets.
+  if (!restored) {
+    return gfx::Insets();
+  }
+  // The restored bounds are the bounds from before the window was maximized or
+  // made fullscreen, so use the insets from that time. The insets cannot be
+  // calculated now: the frame layout depends on the tiled state, which X11
+  // window managers also set for maximized windows.
+  return restored_invisible_frame_insets_.value_or(
+      GetNormalStateInvisibleFrameInsets());
+}
+
+gfx::Insets BrowserDesktopWindowTreeHostLinux::GetInvisibleFrameInsetsInDIP()
+    const {
+  return browser_widget_
+             ? browser_widget_->GetInvisibleFrameInsets(/*restored=*/false)
+             : gfx::Insets();
+}
+
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   if (!browser_widget_) {
     return;
@@ -279,9 +310,38 @@ gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
                     : gfx::Insets();
 }
 
+gfx::Insets
+BrowserDesktopWindowTreeHostLinux::GetNormalStateInvisibleFrameInsets() const {
+  if (browser_widget_ && browser_widget_->invisible_frame_insets_override()) {
+    return *browser_widget_->invisible_frame_insets_override();
+  }
+  // On X11, the frame insets are published as _GTK_FRAME_EXTENTS, and window
+  // managers that support it position and size the window by the area inside
+  // them. Wayland compositors cannot be asked for a toplevel position, so
+  // nothing is translated there.
+  if (!GetX11Extension() || !platform_window()->CanSetDecorationInsets()) {
+    return gfx::Insets();
+  }
+  return CalculateInsetsInDIP(ui::PlatformWindowState::kNormal);
+}
+
 void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
     ui::PlatformWindowState old_state,
     ui::PlatformWindowState new_state) {
+  if (new_state == ui::PlatformWindowState::kMinimized &&
+      old_state != ui::PlatformWindowState::kMinimized) {
+    state_before_minimized_ = old_state;
+  }
+  const auto is_normal = [](ui::PlatformWindowState state) {
+    return state == ui::PlatformWindowState::kNormal ||
+           state == ui::PlatformWindowState::kUnknown;
+  };
+  // The tiled state, which affects the insets, is not updated yet, so this
+  // gets the insets that were published in the normal state.
+  if (is_normal(old_state) && !is_normal(new_state)) {
+    restored_invisible_frame_insets_ = GetNormalStateInvisibleFrameInsets();
+  }
+
   if (!browser_view_) {
     return;
   }

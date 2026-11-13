@@ -1358,6 +1358,13 @@ void RenderWidgetHostViewAura::TransformPointToRootSurface(gfx::PointF* point) {
 gfx::Rect RenderWidgetHostViewAura::GetBoundsInScreen() {
   aura::Window* top_level = window_->GetToplevelWindow();
   gfx::Rect bounds(top_level->GetBoundsInScreen());
+  // Exclude the parts of the window that the window manager does not treat as
+  // part of the window (e.g. client-drawn shadows), consistent with
+  // GetBoundsInScreenWithoutTransform(). window.moveTo() and window.resizeTo()
+  // combine these bounds with the requested origin or size.
+  if (const aura::WindowTreeHost* host = top_level->GetHost()) {
+    bounds.Inset(host->GetInvisibleFrameInsetsInDIP());
+  }
 
 #if BUILDFLAG(IS_WIN)
   // TODO(zturner,iyengar): This will break when we remove the legacy hwnd, so a
@@ -1414,7 +1421,14 @@ gfx::Rect RenderWidgetHostViewAura::GetBoundsInScreenWithoutTransform() {
 
   aura::Window* top_level = window_->GetToplevelWindow();
   CHECK(top_level);
-  return top_level->GetBoundsInScreenWithoutTransform();
+  gfx::Rect bounds = top_level->GetBoundsInScreenWithoutTransform();
+  // Exclude the parts of the window that the window manager does not treat as
+  // part of the window (e.g. client-drawn shadows), so that window.screenX,
+  // window.outerWidth etc. match the visible window.
+  if (const aura::WindowTreeHost* host = top_level->GetHost()) {
+    bounds.Inset(host->GetInvisibleFrameInsetsInDIP());
+  }
+  return bounds;
 }
 
 void RenderWidgetHostViewAura::WheelEventAck(
