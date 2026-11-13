@@ -15,10 +15,20 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
+#include "cc/paint/paint_cache.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_buffer_serializer.h"
+#include "gpu/command_buffer/client/client_font_manager.h"
+#include "gpu/command_buffer/client/client_test_helper.h"
+#include "gpu/command_buffer/common/buffer.h"
+#include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/raster_cmd_format.h"
@@ -33,11 +43,18 @@
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/config/gpu_preferences.h"
+#include "skia/ext/font_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
@@ -272,7 +289,8 @@ class RasterDecoderOOPTest : public testing::Test, public DecoderClient {
   void HandleReturnData(base::span<const uint8_t> data) override {}
 
   std::unique_ptr<RasterDecoder> CreateDecoder() {
-    command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
+    command_buffer_service_ =
+        std::make_unique<testing::NiceMock<MockClientCommandBuffer>>();
     auto decoder = RasterDecoder::Create(
         this, command_buffer_service_.get(), &outputter_, gpu_feature_info_,
         GpuPreferences(), /*memory_tracker=*/nullptr, &shared_image_manager_,
@@ -357,7 +375,7 @@ class RasterDecoderOOPTest : public testing::Test, public DecoderClient {
  protected:
   GpuFeatureInfo gpu_feature_info_;
   gles2::TraceOutputter outputter_;
-  std::unique_ptr<FakeCommandBufferServiceBase> command_buffer_service_;
+  std::unique_ptr<MockClientCommandBuffer> command_buffer_service_;
   MemoryTypeTracker memory_tracker_;
   scoped_refptr<SharedContextState> context_state_;
   gpu::Mailbox client_texture_mailbox_;
@@ -1239,6 +1257,99 @@ TEST_F(RasterDecoderOOPTest, MakeCurrentAndDestroyWithGrContextTypeNone) {
   EXPECT_TRUE(decoder->MakeCurrent());
   EXPECT_TRUE(none_context_state->IsCurrent(nullptr));
   decoder->Destroy(/*have_context=*/true);
+}
+
+namespace {
+
+class TestFontBufferClient : public ClientFontManager::Client {
+ public:
+  explicit TestFontBufferClient(base::span<uint8_t> buffer) : buffer_(buffer) {}
+  base::span<uint8_t> MapFontBuffer(uint32_t size) override {
+    mapped_size_ = size;
+    return base::span(buffer_).first(size);
+  }
+  uint32_t TakeMappedSize() { return std::exchange(mapped_size_, 0u); }
+
+ private:
+  base::raw_span<uint8_t> buffer_;
+  uint32_t mapped_size_ = 0u;
+};
+
+}  // namespace
+
+TEST_F(RasterDecoderOOPTest, DeserializesFontsWhenBeginRasterFails) {
+  absl::Cleanup purge_fonts = [] { SkGraphics::PurgeFontCache(); };
+  int32_t raster_shm_id = 0;
+  int32_t font_shm_id = 0;
+  auto raster_buf = command_buffer_service_->CreateTransferBufferHelper(
+      16384, &raster_shm_id);
+  auto font_buf =
+      command_buffer_service_->CreateTransferBufferHelper(16384, &font_shm_id);
+  TestFontBufferClient font_client(font_buf->as_byte_span());
+  ClientFontManager font_manager(&font_client, command_buffer_service_.get());
+  cc::ClientPaintCache paint_cache(std::numeric_limits<size_t>::max());
+  SkFont font(skia::DefaultTypeface(), 16.0f);
+
+  auto serialize_tile = [&](const char* text) {
+    cc::PaintOpBuffer ops;
+    ops.push<cc::DrawTextBlobOp>(SkTextBlob::MakeFromString(text, font), 2.0f,
+                                 20.0f, cc::PaintFlags());
+    const Capabilities caps = decoder_->GetCapabilities();
+    cc::PaintOp::SerializeOptions options;
+    options.paint_cache = &paint_cache;
+    options.strike_server = font_manager.strike_server();
+    options.color_space = SkColorSpace::MakeSRGB();
+    options.context_supports_distance_field_text =
+        caps.context_supports_distance_field_text;
+    options.max_texture_size = caps.max_texture_size;
+    cc::SimpleBufferSerializer serializer(raster_buf->as_byte_span(), options);
+    serializer.Serialize(ops);
+    font_manager.Serialize();
+    return std::pair{static_cast<uint32_t>(serializer.written()),
+                     font_client.TakeMappedSize()};
+  };
+  auto run_tile = [&](const Mailbox& mailbox, GLint expected_begin_err,
+                      uint32_t raster_size, uint32_t font_size,
+                      GLint expected_raster_err) {
+    auto& begin = *GetImmediateAs<cmds::BeginRasterCHROMIUMImmediate>();
+    begin.Init(0, 0, 0, 1, /*needs_clear=*/true, 0, kNoMSAA, false, 1.0f,
+               mailbox.name);
+    EXPECT_EQ(error::kNoError,
+              ExecuteImmediateCmd(begin, sizeof(mailbox.name)));
+    EXPECT_EQ(expected_begin_err, GetGLError());
+
+    cmds::RasterCHROMIUM raster;
+    raster.Init(raster_shm_id, 0, raster_size, font_shm_id, 0, font_size);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(decoder_.get(), raster));
+    EXPECT_EQ(expected_raster_err, GetGLError());
+
+    cmds::EndRasterCHROMIUM end;
+    end.Init();
+    EXPECT_EQ(error::kNoError, ExecuteCmd(decoder_.get(), end));
+    EXPECT_EQ(expected_raster_err, GetGLError());
+  };
+
+  int32_t handle_shm_id =
+      command_buffer_service_->GetNextFreeTransferBufferId();
+  auto [raster_size1, font_size1] = serialize_tile("A");
+  ASSERT_GT(font_size1, 0u);
+  ServiceDiscardableHandle handle(
+      command_buffer_service_->GetTransferBuffer(handle_shm_id), 0,
+      handle_shm_id);
+  EXPECT_TRUE(handle.IsLockedForTesting());
+
+  // Tile 1 fails BeginRasterCHROMIUM (`!sk_surface_`); its font delta must
+  // still be deserialized and unlocked so Tile 2's glyph delta succeeds.
+  run_tile(Mailbox::Generate(), GL_INVALID_VALUE, raster_size1, font_size1,
+           GL_INVALID_OPERATION);
+  EXPECT_FALSE(handle.IsLockedForTesting());
+
+  auto [raster_size2, font_size2] = serialize_tile("B");
+  ASSERT_GT(font_size2, 0u);
+  Mailbox valid_mailbox =
+      CreateMailbox(viz::SinglePlaneFormat::kRGBA_8888, 32, 32, false);
+  run_tile(valid_mailbox, GL_NO_ERROR, raster_size2, font_size2, GL_NO_ERROR);
+  EXPECT_FALSE(handle.IsLockedForTesting());
 }
 
 }  // namespace raster

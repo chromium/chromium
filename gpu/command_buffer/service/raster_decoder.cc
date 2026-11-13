@@ -99,6 +99,7 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/progress_reporter.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/drm_modifiers_filter_vulkan.h"
@@ -2862,6 +2863,48 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   TRACE_EVENT1("gpu", "RasterDecoderImpl::DoRasterCHROMIUM", "raster_id",
                ++raster_chromium_id_);
 
+  gl::ScopedProgressReporter report_progress(
+      shared_context_state_->progress_reporter());
+
+  std::vector<SkDiscardableHandleId> new_locked_handles;
+  if (font_shm_size > 0) {
+    // ClientFontManager::Serialize() irreversibly marks typefaces, strike
+    // metrics, and glyphs as sent in SkStrikeServer, so the font buffer must be
+    // deserialized even when BeginRasterCHROMIUM failed (`!sk_surface_`) or the
+    // paint buffer is rejected.
+    TRACE_EVENT0("gpu",
+                 "RasterDecoderImpl::DoRasterCHROMIUM::DeserializeFonts");
+    auto font_buffer_opt = GetSharedMemoryAsSpan<volatile uint8_t>(
+        font_shm_id, font_shm_offset, font_shm_size);
+    if (font_buffer_opt.value_or({}).empty()) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
+                         "Can not read font buffer.");
+      return;
+    }
+    base::span<volatile uint8_t> font_buffer = *font_buffer_opt;
+
+    if (!font_manager_->Deserialize(font_buffer, &new_locked_handles)) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
+                         "Invalid font buffer.");
+      return;
+    }
+  }
+
+  // If we return early before transferring `new_locked_handles` to
+  // `locked_handles_` (where `DoEndRasterCHROMIUM` unlocks them after flushing
+  // `sk_surface_`), unlock them immediately so their shared memory refcounts
+  // stay balanced and `locked_handles_` remains empty when `!sk_surface_`.
+  absl::Cleanup unlock_new_handles = [&] {
+    if (new_locked_handles.empty()) {
+      return;
+    }
+    if (!font_manager_->Unlock(new_locked_handles)) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
+                         "Invalid font discardable handle.");
+    }
+    SkGraphics::PurgePinnedFontCache();
+  };
+
   if (!sk_surface_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glRasterCHROMIUM",
                        "RasterCHROMIUM without BeginRasterCHROMIUM");
@@ -2884,6 +2927,10 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
     return;
   }
 
+  locked_handles_.insert(locked_handles_.end(), new_locked_handles.begin(),
+                         new_locked_handles.end());
+  std::move(unlock_new_handles).Cancel();
+
   cc::PlaybackParams playback_params(nullptr, SkM44());
   playback_params.destination_hdr_headroom = sk_surface_hdr_headroom_;
   TransferCacheDeserializeHelperImpl impl(raster_decoder_id_, transfer_cache());
@@ -2899,31 +2946,7 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
   alignas(cc::PaintOpBuffer::kPaintOpAlign)
       uint8_t data[cc::kLargestPaintOpAlignedSize];
 
-  gl::ScopedProgressReporter report_progress(
-      shared_context_state_->progress_reporter());
-
   TRACE_EVENT0("gpu", "RasterDecoderImpl::DoRasterCHROMIUM::Deserializing");
-
-  if (font_shm_size > 0) {
-    // Deserialize fonts before raster.
-    auto font_buffer_opt = GetSharedMemoryAsSpan<volatile uint8_t>(
-        font_shm_id, font_shm_offset, font_shm_size);
-    if (font_buffer_opt.value_or({}).empty()) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
-                         "Can not read font buffer.");
-      return;
-    }
-    base::span<volatile uint8_t> font_buffer = *font_buffer_opt;
-
-    std::vector<SkDiscardableHandleId> new_locked_handles;
-    if (!font_manager_->Deserialize(font_buffer, &new_locked_handles)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glRasterCHROMIUM",
-                         "Invalid font buffer.");
-      return;
-    }
-    locked_handles_.insert(locked_handles_.end(), new_locked_handles.begin(),
-                           new_locked_handles.end());
-  }
 
   const bool exclude_from_safety_checks =
       base::FeatureList::IsEnabled(kExcludeOopRasterizationFromSafetyChecks);
