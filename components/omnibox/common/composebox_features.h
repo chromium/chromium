@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_
 #define COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_
 
+#include <cstdint>
+#include <string>
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -28,13 +32,15 @@ BASE_DECLARE_FEATURE(kContextManagementInOmnibox);
 // If enabled, the impressions of the context menu animation will be capped.
 BASE_DECLARE_FEATURE(kContextMenuAnimationLimiting);
 
-// If enabled, skills are enabled in the composebox/searchbox for Contextual Tasks.
+// If enabled, skills are enabled in the composebox/searchbox for Contextual
+// Tasks.
 BASE_DECLARE_FEATURE(kComposeboxSkillsContextualTasks);
 
 // If enabled, skills are enabled in the composebox/searchbox for NTP.
 BASE_DECLARE_FEATURE(kComposeboxSkillsNtp);
 
-// If enabled, skills are enabled in the composebox/searchbox for Omnibox Everywhere.
+// If enabled, skills are enabled in the composebox/searchbox for Omnibox
+// Everywhere.
 BASE_DECLARE_FEATURE(kComposeboxSkillsOmniboxEverywhere);
 
 // If enabled, skills are enabled in the composebox/searchbox for Omnibox Popup.
@@ -85,7 +91,8 @@ bool IsDynamicAimFulfillmentEnabledForOmnibox();
 // dropdown and restores page interaction while keeping the Composebox open.
 BASE_DECLARE_FEATURE(kComposeboxRealboxOutsideClick);
 
-// If enabled, suggest requests for multifile inputs will include the cinpts CGI param.
+// If enabled, suggest requests for multifile inputs will include the cinpts CGI
+// param.
 BASE_DECLARE_FEATURE(kSuggestRequestSendsMultifileCgiParam);
 
 // If enabled, unselects the active suggestion match when Tab navigation moves
@@ -95,6 +102,36 @@ BASE_DECLARE_FEATURE(kComposeboxUnselectMatchOnTabExit);
 // If enabled, personalizes the composebox placeholder hint text with the user's
 // given name when browser and AIM identities match.
 BASE_DECLARE_FEATURE(kComposeboxPersonalizedHintText);
+
+// If enabled, enforces a separate maximum file size limit (default 20 MiB) on
+// image uploads in the Composebox.
+BASE_DECLARE_FEATURE(kComposeboxImageFileSizeLimit);
+
+// Maximum file size in bytes for image uploads when
+// `kComposeboxImageFileSizeLimit` is enabled (defaults to 20 MiB).
+extern const base::FeatureParam<int> kComposeboxImageMaxSizeBytes;
+
+// If true, `kComposeboxImageMaxSizeBytes` applies to all image uploads (Option
+// B). If false, it applies only to HEIC/HEIF (`image/heic`, `image/heif`)
+// uploads while other image types fall back to the general attachment size
+// limit (Option A).
+extern const base::FeatureParam<bool> kComposeboxLimitAllImages;
+
+// Returns whether `mime_type` is a HEIC/HEIF image MIME type (`image/heic` or
+// `image/heif`, case-insensitive).
+bool IsComposeboxHeifMimeType(std::string_view mime_type);
+
+// Returns whether the image-specific file size limit should be applied for a
+// file with `mime_type` (or when `is_image` is true).
+bool ShouldUseComposeboxImageFileSizeLimit(std::string_view mime_type,
+                                           bool is_image = false);
+
+// Returns the effective maximum allowed file size in bytes for a file with
+// `mime_type` (or when `is_image` is true), given `max_attachment_size` for
+// general attachments.
+uint64_t GetComposeboxMaxFileSizeBytes(std::string_view mime_type,
+                                       bool is_image,
+                                       uint64_t max_attachment_size);
 
 // Parameter determining the daily limit for the context menu animation.
 extern const base::FeatureParam<int> kContextMenuAnimationDailyLimit;

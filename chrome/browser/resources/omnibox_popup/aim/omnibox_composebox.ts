@@ -17,7 +17,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
 import '/strings.m.js';
 
-import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabs, mapUploadErrorToProcessFilesError, ProcessFilesError, SingleTabType, SubmitButtonIconType} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabs, ProcessFilesError, SingleTabType, SubmitButtonIconType} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -545,8 +545,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
     const errorType = fileAttachment.errorType ?? null;
     if (errorType) {
-      const processFilesError = mapUploadErrorToProcessFilesError(
-          errorType as ContextUploadErrorType);
+      const processFilesError = this.getProcessFilesErrorForUploadError(
+          errorType as ContextUploadErrorType,
+          {name: fileAttachment.name, type: fileAttachment.mimeType});
       if (processFilesError !== ProcessFilesError.NONE) {
         this.handleProcessFilesError(processFilesError);
         if (!super.deleteFile(fileAttachment.uuid)) {

@@ -1231,8 +1231,9 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
   }
 
   uint64_t file_size = file_bytes.size();
-  uint64_t max_file_size =
-      composebox_config.attachment_upload().max_size_bytes();
+  uint64_t max_file_size = omnibox::GetComposeboxMaxFileSizeBytes(
+      mime_type, input_type == omnibox::INPUT_TYPE_LENS_IMAGE,
+      composebox_config.attachment_upload().max_size_bytes());
   if (file_size == 0 || file_size > max_file_size) {
     auto error_type = file_size == 0
                           ? contextual_search::ContextUploadErrorType::
@@ -1657,9 +1658,8 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
   // Binds the controller's close callback to OnCancel to ensure that if the
   // user closes the widget (e.g. by pressing Escape), the entire session
   // is cleanly reset and all C++ and WebUI state is torn down.
-  drive_picker_controller_->set_on_close_callback(
-      base::BindOnce(&ContextualSearchboxHandler::OnCancel,
-                     weak_ptr_factory_.GetWeakPtr()));
+  drive_picker_controller_->set_on_close_callback(base::BindOnce(
+      &ContextualSearchboxHandler::OnCancel, weak_ptr_factory_.GetWeakPtr()));
 
   if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
     ShowDrivePicker(
@@ -1979,8 +1979,7 @@ void ContextualSearchboxHandler::ClearFiles(
   if (auto* contextual_session_handle = GetContextualSessionHandle()) {
     // Clears files if `query_submitted`=true, and if
     // `omnibox::kContextManagementInComposebox` is enabled.
-    contextual_session_handle->ClearFiles(
-        query_submitted);
+    contextual_session_handle->ClearFiles(query_submitted);
     for (const auto& token :
          contextual_session_handle->GetActiveSubmittedContextTokens()) {
       submitted_tokens.insert(token);
@@ -2326,9 +2325,10 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     search_url_request_info->aim_entry_point = aim_entry_point;
     search_url_request_info->is_voice_search = is_voice_search;
 
-    // Do not keep tabs in composebox's 'future context to use' since this searchbox handler
-    // will be destroyed when this query is submitted and AIM/cobrowsing opens via
-    // `CreateSearchUrl`. Tabs are passed to cobrowse composebox through web contents instead.
+    // Do not keep tabs in composebox's 'future context to use' since this
+    // searchbox handler will be destroyed when this query is submitted and
+    // AIM/cobrowsing opens via `CreateSearchUrl`. Tabs are passed to cobrowse
+    // composebox through web contents instead.
     contextual_session_handle->CreateSearchUrl(
         std::move(search_url_request_info),
         base::BindOnce(

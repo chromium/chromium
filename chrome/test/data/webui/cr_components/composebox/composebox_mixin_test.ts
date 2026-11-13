@@ -5,7 +5,7 @@
 import 'chrome://webui-test/strings.m.js';
 import './test_composebox_mixin.js';
 
-import {ComposeboxFile, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, isValidTabId} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, isValidTabId, ProcessFilesError} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
@@ -3515,4 +3515,120 @@ suite('ComposeboxMixinTest', () => {
         await microtasksFinished();
         assertEquals(1, element.selectedMatchIndex);
       });
+
+  test('enforces 20 MiB image limit while keeping 100 MiB for PDFs', () => {
+    const miB = 1024 * 1024;
+    element.maxFileSize = 100 * miB;
+    element.maxImageFileSize = 20 * miB;
+    element.limitAllImages = true;
+    element.imageFileTypes = ['image/png', 'image/heic', 'image/heif'];
+    element.attachmentFileTypes = ['application/pdf'];
+
+    // 25 MiB HEIC and PNG exceed the 20 MiB image cap.
+    assertEquals(
+        ProcessFilesError.IMAGE_TOO_LARGE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/heic', 25 * miB, 0, 0));
+    assertEquals(
+        ProcessFilesError.IMAGE_TOO_LARGE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/png', 25 * miB, 0, 0));
+
+    // 20 MiB HEIC and PNG are allowed.
+    assertEquals(
+        ProcessFilesError.NONE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/heic', 20 * miB, 0, 0));
+    assertEquals(
+        ProcessFilesError.NONE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/png', 20 * miB, 0, 0));
+
+    // 25 MiB PDF is allowed (under 100 MiB attachment limit), while 105 MiB
+    // PDF fails with FILE_TOO_LARGE.
+    assertEquals(
+        ProcessFilesError.NONE,
+        element.getValidationError(
+            InputType.kLensFile, 'application/pdf', 25 * miB, 0, 0));
+    assertEquals(
+        ProcessFilesError.FILE_TOO_LARGE,
+        element.getValidationError(
+            InputType.kLensFile, 'application/pdf', 105 * miB, 0, 0));
+
+    // Unsupported image/* MIME types (e.g. image/gif mapped to kLensFile)
+    // also map to IMAGE_TOO_LARGE so browser-side and frontend errors
+    // match.
+    assertEquals(
+        ProcessFilesError.IMAGE_TOO_LARGE,
+        element.getProcessFilesErrorForUploadError(
+            ContextUploadErrorType.kBrowserProcessingFileTooLargeError,
+            {name: 'anim.gif', type: 'image/gif'}));
+
+    // Error message formatting shows 20 MB for IMAGE_TOO_LARGE and 100 MB
+    // for FILE_TOO_LARGE.
+    element.handleProcessFilesError(ProcessFilesError.IMAGE_TOO_LARGE);
+    assertTrue(element.errorMessage.includes('20'));
+    element.handleProcessFilesError(ProcessFilesError.FILE_TOO_LARGE);
+    assertTrue(element.errorMessage.includes('100'));
+
+    // Upload status validation errors (e.g. OmniboxEverywhereUI) also
+    // populate the 20 MB / 100 MB limit placeholder.
+    const imgToken = 'oversized-img' as unknown as UnguessableToken;
+    element.attachedContext.set(
+        imgToken,
+        ComposeboxFile.createFromFile(
+            imgToken, {name: 'photo.png', type: 'image/png'}));
+    const imgStatusResult = element.updateFileStatus(
+        imgToken, ContextUploadStatus.kValidationFailed,
+        ContextUploadErrorType.kBrowserProcessingFileTooLargeError);
+    assertTrue(!!imgStatusResult.errorMessage?.includes('20'));
+
+    const pdfToken = 'oversized-pdf' as unknown as UnguessableToken;
+    element.attachedContext.set(
+        pdfToken,
+        ComposeboxFile.createFromFile(
+            pdfToken, {name: 'doc.pdf', type: 'application/pdf'}));
+    const pdfStatusResult = element.updateFileStatus(
+        pdfToken, ContextUploadStatus.kValidationFailed,
+        ContextUploadErrorType.kBrowserProcessingFileTooLargeError);
+    assertTrue(!!pdfStatusResult.errorMessage?.includes('100'));
+  });
+
+  test('limitAllImages=false fallback caps only HEIC/HEIF at 20 MiB', () => {
+    const miB = 1024 * 1024;
+    element.maxFileSize = 100 * miB;
+    element.maxImageFileSize = 20 * miB;
+    element.limitAllImages = false;
+    element.imageFileTypes = ['image/png', 'image/heic', 'image/heif'];
+    element.attachmentFileTypes = ['application/pdf'];
+
+    // 25 MiB HEIC/HEIF fails with IMAGE_TOO_LARGE.
+    assertEquals(
+        ProcessFilesError.IMAGE_TOO_LARGE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/heic', 25 * miB, 0, 0));
+    assertEquals(
+        ProcessFilesError.IMAGE_TOO_LARGE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/heif', 25 * miB, 0, 0));
+
+    // 25 MiB PNG is allowed when limitAllImages is false, and only fails
+    // above 100 MiB with FILE_TOO_LARGE.
+    assertEquals(
+        ProcessFilesError.NONE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/png', 25 * miB, 0, 0));
+    assertEquals(
+        ProcessFilesError.FILE_TOO_LARGE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/png', 105 * miB, 0, 0));
+
+    // When the feature flag is off (maxImageFileSize = 0), 25 MiB HEIC falls
+    // back to the 100 MiB general attachment limit.
+    element.maxImageFileSize = 0;
+    assertEquals(
+        ProcessFilesError.NONE,
+        element.getValidationError(
+            InputType.kLensImage, 'image/heic', 25 * miB, 0, 0));
+  });
 });

@@ -24,7 +24,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {ComposeboxFile, mapUploadErrorToProcessFilesError, ProcessFilesError, recordContextAdditionMethod} from './common.js';
+import {ComposeboxFile, ProcessFilesError, recordContextAdditionMethod} from './common.js';
 import type {TabUpload} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
@@ -358,8 +358,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
     const errorType = fileAttachment.errorType ?? null;
     if (errorType) {
-      const processFilesError = mapUploadErrorToProcessFilesError(
-          errorType as ContextUploadErrorType);
+      const processFilesError = this.getProcessFilesErrorForUploadError(
+          errorType as ContextUploadErrorType,
+          {name: fileAttachment.name, type: fileAttachment.mimeType});
       if (processFilesError !== ProcessFilesError.NONE) {
         this.handleProcessFilesError(processFilesError);
         this.deleteFileContext(fileAttachment.uuid);
