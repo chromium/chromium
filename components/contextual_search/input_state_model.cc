@@ -19,6 +19,7 @@
 #include "components/contextual_search/input_state_model_routing.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/contextual_input.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -357,11 +358,9 @@ void InputStateModel::PopulateConfig(const SearchboxConfig& config) {
     } else {
       state_.model_section_config.reset();
     }
-    if (mutable_config.has_hint_text()) {
-      state_.hint_text = mutable_config.hint_text();
-    } else {
-      state_.hint_text.clear();
-    }
+    default_hint_text_ = mutable_config.hint_text();
+    personalized_hint_text_ = mutable_config.personalized_hint_text();
+    UpdateHintText();
     state_.max_inputs_by_type.clear();
     for (const auto& rule : rule_set_.input_type_rules()) {
       if (rule.has_input_type() && rule.has_max_instance()) {
@@ -383,6 +382,7 @@ void InputStateModel::SetIdentityState(
   browser_identity_matches_aim_identity_ =
       browser_identity_matches_aim_identity;
 
+  UpdateHintText();
   RebuildAllowedInputTypes();
   UpdateDisabledState();
   NotifySubscribers();
@@ -422,6 +422,8 @@ InputStateModel::InputStateModel(
       is_signed_in_(new_input_state_model.is_signed_in_),
       browser_identity_matches_aim_identity_(
           new_input_state_model.browser_identity_matches_aim_identity_),
+      default_hint_text_(new_input_state_model.default_hint_text_),
+      personalized_hint_text_(new_input_state_model.personalized_hint_text_),
       current_url_(new_input_state_model.current_url_) {
   if (session_handle_) {
     session_handle_->set_current_url(current_url_);
@@ -990,6 +992,17 @@ void InputStateModel::RecomputeRouting() {
     aim_mode_active_ = true;
   }
   state_.active_model = decision.model;
+}
+
+void InputStateModel::UpdateHintText() {
+  if (base::FeatureList::IsEnabled(omnibox::kComposeboxPersonalizedHintText) &&
+      !is_off_the_record_ && is_signed_in_ &&
+      browser_identity_matches_aim_identity_ &&
+      !personalized_hint_text_.empty()) {
+    state_.hint_text = personalized_hint_text_;
+    return;
+  }
+  state_.hint_text = default_hint_text_;
 }
 
 void InputStateModel::RebuildAllowedInputTypes() {
