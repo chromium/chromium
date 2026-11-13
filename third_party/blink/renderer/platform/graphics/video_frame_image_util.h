@@ -16,7 +16,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/shared_image_pool.h"
 #include "media/base/video_transformation.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -72,7 +71,7 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
 
   static void OnResourceReleased(
       base::WeakPtr<VideoFrameAcceleratedSnapshotPool> pool,
-      scoped_refptr<CanvasResourceSharedImage> resource,
+      scoped_refptr<gpu::ClientImage> resource,
       const gpu::SyncToken& sync_token,
       bool is_lost);
 
@@ -81,14 +80,14 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
 
   void EnsureResourceReadyForDraw();
   bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
+  scoped_refptr<gpu::ClientImage> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;
 
   const CanvasSnapshotInfo info_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
-  scoped_refptr<CanvasResourceSharedImage> resource_;
+  std::unique_ptr<gpu::SharedImagePool<gpu::ClientImage>> image_pool_;
+  scoped_refptr<gpu::ClientImage> resource_;
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
   bool is_cleared_ = false;

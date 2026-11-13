@@ -26,6 +26,7 @@
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -254,7 +255,7 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
               ? std::make_optional(kUnusedResourceExpirationTime)
               : std::nullopt;
 
-      image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+      image_pool_ = gpu::SharedImagePool<gpu::ClientImage>::Create(
           image_info, sii, "CanvasResourceRaster", kMaxRecycledCanvasResources,
           expiration_time);
     }
@@ -278,11 +279,13 @@ void VideoFrameAcceleratedSnapshotPool::OnContextLost() {
 // static
 void VideoFrameAcceleratedSnapshotPool::OnResourceReleased(
     base::WeakPtr<VideoFrameAcceleratedSnapshotPool> pool,
-    scoped_refptr<CanvasResourceSharedImage> resource,
+    scoped_refptr<gpu::ClientImage> resource,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
   CHECK(!is_lost);
-  resource->WaitSyncToken(sync_token);
+  if (sync_token.HasData()) {
+    resource->SetReleaseSyncToken(sync_token);
+  }
   if (resource->HasOneRef() && pool && pool->image_pool_) {
     pool->image_pool_->ReleaseImage(std::move(resource));
   }
@@ -302,7 +305,7 @@ bool VideoFrameAcceleratedSnapshotPool::IsValid() const {
          raster_interface->GetGraphicsResetStatusKHR() == GL_NO_ERROR;
 }
 
-scoped_refptr<CanvasResourceSharedImage>
+scoped_refptr<gpu::ClientImage>
 VideoFrameAcceleratedSnapshotPool::NewOrRecycledResource() {
   if (!image_pool_) {
     return nullptr;
@@ -313,10 +316,6 @@ VideoFrameAcceleratedSnapshotPool::NewOrRecycledResource() {
     return nullptr;
   }
 
-  if (!resource->IsInitialized()) {
-    resource->Initialize(/*client=*/nullptr, context_provider_wrapper_,
-                         info_.hdr_metadata, /*is_accelerated=*/true);
-  }
   DCHECK(resource->HasOneRef());
   return resource;
 }
@@ -386,7 +385,7 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
         cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper_);
 
     gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
-        resource_->GetSharedImage(), resource_->acquire_sync_token(),
+        resource_->GetSharedImage(), resource_->GetSyncToken(),
         recorder.ReleaseMainRecording(), &image_provider, needs_clear);
     resource_->SetReleaseSyncToken(sync_token);
 
@@ -407,7 +406,7 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
 
   scoped_refptr<StaticBitmapImage> snapshot =
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          resource_->GetSharedImage(), resource_->sync_token(),
+          resource_->GetSharedImage(), resource_->GetSyncToken(),
           info_.alpha_type, info_.hdr_metadata, context_provider_wrapper_,
           base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
