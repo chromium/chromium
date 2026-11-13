@@ -70,7 +70,11 @@ class TabStripFlatEdgeButtonActionViewInterface
 };
 }  // namespace
 
-TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
+TabStripFlatEdgeButton::TabStripFlatEdgeButton()
+    : foreground_frame_active_color_id_(
+          kColorTabSearchButtonCRForegroundFrameActive),
+      foreground_frame_inactive_color_id_(
+          kColorTabSearchButtonCRForegroundFrameInactive) {
   ConfigureInkDrop(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
                 gfx::Insets(), GetButtonCornerRadii()));
@@ -289,10 +293,28 @@ void TabStripFlatEdgeButton::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
 }
 
+void TabStripFlatEdgeButton::SetForegroundFrameActiveColorId(
+    ui::ColorId color_id) {
+  if (foreground_frame_active_color_id_ == color_id) {
+    return;
+  }
+  foreground_frame_active_color_id_ = color_id;
+  OnThemeChanged();
+}
+
+void TabStripFlatEdgeButton::SetForegroundFrameInactiveColorId(
+    ui::ColorId color_id) {
+  if (foreground_frame_inactive_color_id_ == color_id) {
+    return;
+  }
+  foreground_frame_inactive_color_id_ = color_id;
+  OnThemeChanged();
+}
+
 ui::ColorId TabStripFlatEdgeButton::GetForegroundColor() const {
   return GetWidget() && GetWidget()->ShouldPaintAsActive()
-             ? kColorTabSearchButtonCRForegroundFrameActive
-             : kColorTabSearchButtonCRForegroundFrameInactive;
+             ? foreground_frame_active_color_id_
+             : foreground_frame_inactive_color_id_;
 }
 
 ui::ColorId TabStripFlatEdgeButton::GetBackgroundColor() const {

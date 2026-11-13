@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -147,4 +148,21 @@ TEST_F(TabStripFlatEdgeButtonTest, PaintTransparentDefaultAndSetter) {
   EXPECT_TRUE(button_->paint_transparent_for_testing());
   button_->SetPaintTransparent(false);
   EXPECT_FALSE(button_->paint_transparent_for_testing());
+}
+
+TEST_F(TabStripFlatEdgeButtonTest, ForegroundFrameColorIds) {
+  EXPECT_EQ(button_->foreground_frame_active_color_id_for_testing(),
+            kColorTabSearchButtonCRForegroundFrameActive);
+  EXPECT_EQ(button_->foreground_frame_inactive_color_id_for_testing(),
+            kColorTabSearchButtonCRForegroundFrameInactive);
+
+  button_->SetForegroundFrameActiveColorId(
+      kColorTabForegroundInactiveFrameActive);
+  EXPECT_EQ(button_->foreground_frame_active_color_id_for_testing(),
+            kColorTabForegroundInactiveFrameActive);
+
+  button_->SetForegroundFrameInactiveColorId(
+      kColorNewTabButtonCRForegroundFrameInactive);
+  EXPECT_EQ(button_->foreground_frame_inactive_color_id_for_testing(),
+            kColorNewTabButtonCRForegroundFrameInactive);
 }

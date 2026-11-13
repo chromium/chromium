@@ -44,6 +44,9 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   void SetIconOpacity(float opacity);
   void SetPaintTransparent(bool paint_transparent);
 
+  void SetForegroundFrameActiveColorId(ui::ColorId color_id);
+  void SetForegroundFrameInactiveColorId(ui::ColorId color_id);
+
   void SetExpansionFactor(float factor);
   float GetExpansionFactor() const { return expansion_factor_; }
 
@@ -66,6 +69,12 @@ class TabStripFlatEdgeButton : public views::LabelButton,
     return GetButtonCornerRadii();
   }
   bool paint_transparent_for_testing() const { return paint_transparent_; }
+  ui::ColorId foreground_frame_active_color_id_for_testing() const {
+    return foreground_frame_active_color_id_;
+  }
+  ui::ColorId foreground_frame_inactive_color_id_for_testing() const {
+    return foreground_frame_inactive_color_id_;
+  }
 
  private:
   // views::View:
@@ -95,6 +104,8 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   FlatEdge flat_edge_ = FlatEdge::kNone;
   std::optional<float> corner_radius_;
   bool paint_transparent_ = false;
+  ui::ColorId foreground_frame_active_color_id_;
+  ui::ColorId foreground_frame_inactive_color_id_;
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::RepeatingClosureList will_invoke_action_callback_list_;

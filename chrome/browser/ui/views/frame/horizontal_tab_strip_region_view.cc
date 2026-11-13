@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -759,6 +760,10 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
         TabStripControlButton::kIconSize,
         TabStripControlButton::kButtonSize.width() / 2.0f);
     new_tab_button->SetPaintTransparent(true);
+    new_tab_button->SetForegroundFrameActiveColorId(
+        kColorTabForegroundInactiveFrameActive);
+    new_tab_button->SetForegroundFrameInactiveColorId(
+        kColorNewTabButtonCRForegroundFrameInactive);
     new_tab_button_pressed_subscription_ =
         new_tab_button->RegisterWillInvokeActionCallback(base::BindRepeating(
             &HorizontalTabStripRegionViewNew::RecordNewTabButtonPressed,
