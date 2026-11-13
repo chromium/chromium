@@ -134,7 +134,7 @@ void FakePasswordStoreBackend::NotifyAboutError() {
       error_type = PasswordStoreBackendErrorType::kKeyRetrievalRequired;
       break;
     case ActionableError::kInactionableTemporaryError:
-      error_type = PasswordStoreBackendErrorType::kUncategorized;
+      error_type = PasswordStoreBackendErrorType::kCancelled;
       break;
   }
   remote_form_changes_received_.Run(

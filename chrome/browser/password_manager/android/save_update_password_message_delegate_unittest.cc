@@ -3215,3 +3215,106 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
           kTabDestroyed,
       1);
 }
+
+// Tests that when an in-flight `GetAllLoginsAsync()` task is cancelled due to a
+// password sync state change or a temporary store error occurs (both mapping to
+// `ActionableError::kInactionableTemporaryError`), the reprompt is not
+// dismissed and the password is saved once the vault error resolves.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       TemporaryOrCancelledStoreErrorDoesNotDismissRepromptAndSavesOnResolve) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+  base::HistogramTester histogram_tester;
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  MockPasswordFormManagerForUI* raw_form_manager = form_manager.get();
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  base::OnceClosure recovery_callback;
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _))
+      .WillOnce([&recovery_callback](
+                    content::WebContents*,
+                    trusted_vault::TrustedVaultUserActionTriggerForUMA,
+                    base::OnceClosure callback) {
+        recovery_callback = std::move(callback);
+      });
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  // While in `kWaitingForTrustedVault` (before the recovery activity callback
+  // runs), simulate a cancelled in-flight `GetAllLoginsAsync()` notifying
+  // `kInactionableTemporaryError` while `account_store_->GetError()` remains
+  // `kTrustedVaultKeyNeeded`. It must not abort the flow.
+  static_cast<password_manager::PasswordStoreInterface::Observer*>(delegate())
+      ->OnErrorStateChanged(
+          account_store_.get(),
+          password_manager::ActionableError::kInactionableTemporaryError);
+
+  // Simulate key retrieval activity finishing while the store's cached error is
+  // still `kTrustedVaultKeyNeeded` so the reprompt is shown.
+  EXPECT_CALL(*message_dispatcher_bridge(),
+              EnqueueMessage(_, _, _, messages::MessagePriority::kUrgent))
+      .WillOnce(Return(true));
+  std::move(recovery_callback).Run();
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  // Simulate a cancelled request / temporary error (`kCancelled` ->
+  // `kInactionableTemporaryError`) via `FakePasswordStoreBackend` while in
+  // `kRepromptShowing`. It must not dismiss the reprompt or log
+  // `kNewStoreError`.
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::kCancelled));
+  account_store_->NotifyAboutError();
+  {
+    base::RunLoop temp_error_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, temp_error_loop.QuitClosure());
+    temp_error_loop.Run();
+  }
+
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_FALSE(is_password_saved());
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kNewStoreError,
+      0);
+
+  // Now the subsequent store refresh succeeds and clears the error.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  ExpectDismissMessageCall();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([&run_loop, this]() {
+    RecordPasswordSaved();
+    run_loop.Quit();
+  });
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce(Return(true));
+  account_store_->NotifyAboutError();
+  run_loop.Run();
+
+  EXPECT_TRUE(is_password_saved());
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kSavedSuccessfully,
+      1);
+
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}

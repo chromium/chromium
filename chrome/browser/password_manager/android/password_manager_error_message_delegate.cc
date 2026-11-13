@@ -43,6 +43,7 @@ std::string GetErrorMessageName(PasswordStoreBackendErrorType error_type) {
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
     case PasswordStoreBackendErrorType::kNeedsPassphrase:
+    case PasswordStoreBackendErrorType::kCancelled:
       // Other error types aren't supported.
       NOTREACHED();
   }
@@ -160,6 +161,7 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
     case PasswordStoreBackendErrorType::kNeedsPassphrase:
+    case PasswordStoreBackendErrorType::kCancelled:
       // Other error types aren't supported.
       NOTREACHED();
   }
@@ -187,6 +189,7 @@ bool PasswordManagerErrorMessageDelegate::ShouldShowErrorUI(
     case PasswordStoreBackendErrorType::kNeedsPassphrase:
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
+    case PasswordStoreBackendErrorType::kCancelled:
       // Other error types aren't supported.
       NOTREACHED();
   }
@@ -254,6 +257,7 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
     case PasswordStoreBackendErrorType::kNeedsPassphrase:
+    case PasswordStoreBackendErrorType::kCancelled:
       // Other error types aren't supported.
       NOTREACHED();
   }

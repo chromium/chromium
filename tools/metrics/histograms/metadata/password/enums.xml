@@ -1745,6 +1745,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="EmptySecurityDomain"/>
   <int value="8" label="IrretrievableSecurityDomain"/>
   <int value="9" label="NeedsPassphrase"/>
+  <int value="10" label="Cancelled"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">

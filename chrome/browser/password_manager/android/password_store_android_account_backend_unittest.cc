@@ -891,7 +891,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   DisableSyncFeature();
   sync_service()->FireStateChanged();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized};
+      PasswordStoreBackendErrorType::kCancelled};
   EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
 
@@ -1009,7 +1009,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   sync_service()->Shutdown();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized};
+      PasswordStoreBackendErrorType::kCancelled};
   EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
 
@@ -1270,7 +1270,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   DisableSyncFeature();
   sync_service()->FireStateChanged();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized};
+      PasswordStoreBackendErrorType::kCancelled};
   EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
@@ -1299,7 +1299,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   sync_service()->Shutdown();
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized};
+      PasswordStoreBackendErrorType::kCancelled};
   EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
@@ -1664,6 +1664,244 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   DisableSyncFeature();
   RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       RefreshTriggeredWhenGetAllLoginsCancelledByTrustedVaultErrorResolution) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      remote_changes_callback;
+  backend().InitBackend(
+      /*remote_form_changes_received=*/remote_changes_callback.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+      /*completion=*/base::DoNothing());
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  // Resolving the trusted vault key requirement while password sync is enabled
+  // cancels the in-flight `GetAllLoginsAsync()` job and triggers a store
+  // refresh via `remote_form_changes_received`.
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kCancelled};
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
+  EXPECT_CALL(remote_changes_callback, Run(ValueIs(Eq(std::nullopt))));
+  sync_service()->FireStateChanged();
+  RunUntilIdle();
+}
+
+TEST_F(
+    PasswordStoreAndroidAccountBackendTest,
+    RefreshTriggeredWhenScheduledGetAllLoginsRetryCancelledBySyncStateChange) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      remote_changes_callback;
+  backend().InitBackend(
+      /*remote_form_changes_received=*/remote_changes_callback.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+      /*completion=*/base::DoNothing());
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  // Fail with a retriable error so a delayed retry is scheduled.
+  consumer().OnError(kJobId, CreateNetworkError());
+  RunUntilIdle();
+
+  // Resolving the trusted vault key requirement cancels the scheduled
+  // `GetAllLoginsAsync()` retry and triggers a store refresh.
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kCancelled};
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
+  EXPECT_CALL(remote_changes_callback, Run(ValueIs(Eq(std::nullopt))));
+  sync_service()->FireStateChanged();
+  RunUntilIdle();
+
+  // The cancelled delayed retry must not run.
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       RefreshTriggeredWhenTrustedVaultErrorResolvedWithoutPendingJob) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      remote_changes_callback;
+  backend().InitBackend(
+      /*remote_form_changes_received=*/remote_changes_callback.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+      /*completion=*/base::DoNothing());
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  AndroidBackendError key_retrieval_error{
+      AndroidBackendErrorType::kExternalError};
+  key_retrieval_error.api_error_code =
+      static_cast<int>(AndroidBackendAPIErrorCode::kKeyRetrievalRequired);
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kKeyRetrievalRequired};
+  expected_error.android_backend_api_error = key_retrieval_error.api_error_code;
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
+  consumer().OnError(kJobId, std::move(key_retrieval_error));
+  RunUntilIdle();
+  EXPECT_EQ(backend().GetError(), ActionableError::kTrustedVaultKeyNeeded);
+
+  // Resolving the trusted vault key requirement when the backend is in
+  // `kTrustedVaultKeyNeeded` error state (even with no in-flight job) triggers
+  // a store refresh via `remote_form_changes_received`.
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  EXPECT_CALL(remote_changes_callback, Run(ValueIs(Eq(std::nullopt))));
+  sync_service()->FireStateChanged();
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       NoRefreshTriggeredWhenTrustedVaultKeyRemainsRequired) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      remote_changes_callback;
+  backend().InitBackend(
+      /*remote_form_changes_received=*/remote_changes_callback.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+      /*completion=*/base::DoNothing());
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  AndroidBackendError key_retrieval_error{
+      AndroidBackendErrorType::kExternalError};
+  key_retrieval_error.api_error_code =
+      static_cast<int>(AndroidBackendAPIErrorCode::kKeyRetrievalRequired);
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kKeyRetrievalRequired};
+  expected_error.android_backend_api_error = key_retrieval_error.api_error_code;
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
+  consumer().OnError(kJobId, std::move(key_retrieval_error));
+  RunUntilIdle();
+  EXPECT_EQ(backend().GetError(), ActionableError::kTrustedVaultKeyNeeded);
+
+  // Queue an in-flight `GetAllLoginsAsync()` job while `last_error()` is also
+  // `kTrustedVaultKeyNeeded`. Transitioning `IsTrustedVaultKeyRequired()` to
+  // true cancels the pending job with `kCancelled` and must not trigger a store
+  // refresh while a trusted vault key remains required.
+  base::MockCallback<LoginsOrErrorReply> pending_reply;
+  constexpr JobId kPendingJobId{1338};
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kPendingJobId));
+  backend().GetAllLoginsAsync(pending_reply.Get());
+
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+  EXPECT_CALL(pending_reply, Run(ErrorIs(PasswordStoreBackendError(
+                                 PasswordStoreBackendErrorType::kCancelled))));
+  EXPECT_CALL(remote_changes_callback, Run).Times(0);
+  sync_service()->FireStateChanged();
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       NoRefreshTriggeredWhenSyncDisabledCancelsGetAllLogins) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      remote_changes_callback;
+  backend().InitBackend(
+      /*remote_form_changes_received=*/remote_changes_callback.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+      /*completion=*/base::DoNothing());
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+
+  // Disabling password sync cancels the in-flight `GetAllLoginsAsync()` job
+  // but must not trigger a store refresh.
+  DisableSyncFeature();
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kCancelled};
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
+  EXPECT_CALL(remote_changes_callback, Run).Times(0);
+  sync_service()->FireStateChanged();
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       NoRefreshTriggeredWhenNonGetAllLoginsJobCancelled) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      remote_changes_callback;
+  backend().InitBackend(
+      /*remote_form_changes_received=*/remote_changes_callback.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+      /*completion=*/base::DoNothing());
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_autofillable_reply;
+  EXPECT_CALL(*bridge_helper(), GetAutofillableLogins).WillOnce(Return(kJobId));
+  backend().GetAutofillableLoginsAsync(mock_autofillable_reply.Get());
+
+  // `RemoveLoginsCreatedBetweenAsync()` internally invokes `GetAllLogins()`
+  // with `kRemoveLoginsCreatedBetweenAsync`, which must not trigger a refresh.
+  constexpr JobId kRemoveJobId{1338};
+  base::MockCallback<PasswordChangesOrErrorReply> mock_remove_reply;
+  EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kRemoveJobId));
+  backend().RemoveLoginsCreatedBetweenAsync(
+      FROM_HERE, base::Time::FromTimeT(1000), base::Time::FromTimeT(2000),
+      mock_remove_reply.Get());
+
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kCancelled};
+  EXPECT_CALL(mock_autofillable_reply, Run(ErrorIs(expected_error)));
+  EXPECT_CALL(mock_remove_reply, Run(ErrorIs(expected_error)));
+  EXPECT_CALL(remote_changes_callback, Run).Times(0);
+  sync_service()->FireStateChanged();
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidAccountBackendTest,
+       NoRefreshTriggeredWhenScheduledNonGetAllLoginsRetryCancelled) {
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      remote_changes_callback;
+  backend().InitBackend(
+      /*remote_form_changes_received=*/remote_changes_callback.Get(),
+      /*sync_enabled_or_disabled_cb=*/base::NullCallback(),
+      /*completion=*/base::DoNothing());
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(true);
+  EnableSyncForTestAccount();
+  backend().OnSyncServiceInitialized(sync_service());
+
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), GetAutofillableLogins).WillOnce(Return(kJobId));
+  backend().GetAutofillableLoginsAsync(mock_reply.Get());
+
+  consumer().OnError(kJobId, CreateNetworkError());
+  RunUntilIdle();
+
+  sync_service()->GetUserSettings()->SetTrustedVaultKeyRequired(false);
+  PasswordStoreBackendError expected_error{
+      PasswordStoreBackendErrorType::kCancelled};
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
+  EXPECT_CALL(remote_changes_callback, Run).Times(0);
+  sync_service()->FireStateChanged();
+  RunUntilIdle();
+
+  EXPECT_CALL(*bridge_helper(), GetAutofillableLogins).Times(0);
+  task_environment_.FastForwardUntilNoTasksRemain();
 }
 
 // Test suite to verify what pairs of (error, operation) cause saving to be

@@ -152,5 +152,35 @@ TEST(PasswordStoreUtilTest, NoError) {
             GetActionableErrorFromPasswordStores(nullptr, nullptr));
 }
 
+TEST(PasswordStoreUtilTest, BackendErrorToActionableError) {
+  EXPECT_EQ(ActionableError::kInactionable,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kUncategorized));
+  EXPECT_EQ(
+      ActionableError::kInactionableTemporaryError,
+      BackendErrorToActionableError(PasswordStoreBackendErrorType::kCancelled));
+  EXPECT_EQ(ActionableError::kSignInNeeded,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kAuthErrorResolvable));
+  EXPECT_EQ(ActionableError::kSignInNeeded,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kAuthErrorUnresolvable));
+  EXPECT_EQ(ActionableError::kTrustedVaultKeyNeeded,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kKeyRetrievalRequired));
+  EXPECT_EQ(ActionableError::kTrustedVaultKeyNeeded,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kEmptySecurityDomain));
+  EXPECT_EQ(ActionableError::kTrustedVaultKeyNeeded,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kIrretrievableSecurityDomain));
+  EXPECT_EQ(ActionableError::kKeychainError,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kKeychainError));
+  EXPECT_EQ(ActionableError::kNeedsPassphrase,
+            BackendErrorToActionableError(
+                PasswordStoreBackendErrorType::kNeedsPassphrase));
+}
+
 }  // namespace
 }  // namespace password_manager

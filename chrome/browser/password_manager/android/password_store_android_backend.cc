@@ -669,6 +669,30 @@ void PasswordStoreAndroidBackend::ClearAllTasksAndReplyWithReason(
   scheduled_retries_.clear();
 }
 
+bool PasswordStoreAndroidBackend::HasPendingOperation(
+    PasswordStoreOperation operation) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  for (const auto& [id, job_reply] : request_for_job_) {
+    if (job_reply.GetOperation() == operation) {
+      return true;
+    }
+  }
+  for (const auto& [id, retry_wrapper] : scheduled_retries_) {
+    if (retry_wrapper->operation() == operation) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void PasswordStoreAndroidBackend::TriggerStoreRefresh() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  if (stored_passwords_changed_) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(stored_passwords_changed_, std::nullopt));
+  }
+}
+
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     LoginsOrErrorReply callback,
     PasswordStoreBackendMetricsRecorder metrics_recorder,
@@ -711,7 +735,7 @@ base::TimeDelta PasswordStoreAndroidBackend::JobReturnHandler::GetDelay() {
 }
 
 PasswordStoreOperation
-PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
+PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() const {
   return operation_;
 }
 

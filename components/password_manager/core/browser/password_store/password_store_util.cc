@@ -52,6 +52,8 @@ ActionableError BackendErrorToActionableError(
   switch (error) {
     case PasswordStoreBackendErrorType::kUncategorized:
       return ActionableError::kInactionable;
+    case PasswordStoreBackendErrorType::kCancelled:
+      return ActionableError::kInactionableTemporaryError;
     case PasswordStoreBackendErrorType::kAuthErrorResolvable:
     case PasswordStoreBackendErrorType::kAuthErrorUnresolvable:
       return ActionableError::kSignInNeeded;

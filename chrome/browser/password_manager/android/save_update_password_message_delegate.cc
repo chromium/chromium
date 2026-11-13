@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
@@ -50,6 +51,11 @@ using password_manager::PasswordString;
 
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;
+
+bool IsUnrecoverableStoreError(password_manager::ActionableError error) {
+  return !password_manager::IsAbleToSavePasswords(error) &&
+         error != password_manager::ActionableError::kTrustedVaultKeyNeeded;
+}
 
 }  // namespace
 
@@ -780,12 +786,13 @@ void SaveUpdatePasswordMessageDelegate::OnErrorStateChanged(
     return;
   }
 
+  // Ignore transient store errors and request cancellations (which map to
+  // `kInactionableTemporaryError`) while waiting for trusted vault key
+  // recovery.
   if (changed_error == password_manager::ActionableError::kNoError &&
       !IsSavingBlockedByTrustedVaultError()) {
     SaveAfterTrustedVaultResolution();
-  } else if (changed_error != password_manager::ActionableError::kNoError &&
-             changed_error !=
-                 password_manager::ActionableError::kTrustedVaultKeyNeeded) {
+  } else if (IsUnrecoverableStoreError(changed_error)) {
     password_manager::metrics_util::LogSaveWithTrustedVaultErrorOutcome(
         password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
             kNewStoreError);

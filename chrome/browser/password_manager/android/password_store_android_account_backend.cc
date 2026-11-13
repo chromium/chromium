@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager {
 
@@ -254,19 +255,37 @@ void PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged() {
         FROM_HERE, sync_enabled_or_disabled_cb_);
   }
 
+  const bool had_pending_get_all_logins =
+      HasPendingOperation(PasswordStoreOperation::kGetAllLoginsAsync);
+
   // Reply with a recoverable error, because this isn't a persistent issue,
-  // only a transient state
+  // only a transient state.
   ClearAllTasksAndReplyWithReason(
       AndroidBackendError(
           AndroidBackendErrorType::kCancelledPwdSyncStateChanged),
-      PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized));
+      PasswordStoreBackendError(PasswordStoreBackendErrorType::kCancelled));
+
+  // If password sync is enabled and trusted vault keys are not required,
+  // trigger a store refresh when either an in-flight `kGetAllLoginsAsync`
+  // operation (from a store refresh or `PasswordStore::GetAllLogins`) was
+  // cancelled by the sync state change, or a previously cached trusted vault
+  // key error was just resolved. This is only reached on password-sync or
+  // trusted-vault state transitions, and ensures `PasswordStore` re-fetches
+  // all logins and updates observers' actionable error state.
+  if (sync_service_ &&
+      password_manager::sync_util::HasChosenToSyncPasswords(sync_service_) &&
+      !sync_service_->GetUserSettings()->IsTrustedVaultKeyRequired() &&
+      (had_pending_get_all_logins ||
+       last_error() == ActionableError::kTrustedVaultKeyNeeded)) {
+    TriggerStoreRefresh();
+  }
 }
 
 void PasswordStoreAndroidAccountBackend::SyncShutdown() {
   ClearAllTasksAndReplyWithReason(
       AndroidBackendError(
           AndroidBackendErrorType::kCancelledPwdSyncStateChanged),
-      PasswordStoreBackendError(PasswordStoreBackendErrorType::kUncategorized));
+      PasswordStoreBackendError(PasswordStoreBackendErrorType::kCancelled));
   sync_service_ = nullptr;
 }
 

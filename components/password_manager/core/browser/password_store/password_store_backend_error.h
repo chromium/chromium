@@ -42,8 +42,10 @@ enum class PasswordStoreBackendErrorType {
   kIrretrievableSecurityDomain = 8,
   // Indicates that the passphrase is required to continue with e.g. saving.
   kNeedsPassphrase = 9,
+  // The operation was cancelled (e.g., due to a sync state change or shutdown).
+  kCancelled = 10,
 
-  kMaxValue = kNeedsPassphrase,
+  kMaxValue = kCancelled,
 };
 
 struct PasswordStoreBackendError {

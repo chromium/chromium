@@ -146,6 +146,14 @@ class PasswordStoreAndroidBackend
       const AndroidBackendError& reason,
       const PasswordStoreBackendError& reply_error);
 
+  // Returns true if there is an in-flight job or scheduled retry for
+  // `operation`.
+  bool HasPendingOperation(PasswordStoreOperation operation) const;
+
+  // Requests the owning `PasswordStore` to refresh all logins via
+  // `stored_passwords_changed_`.
+  void TriggerStoreRefresh();
+
   ActionableError last_error() { return last_error_; }
 
   PasswordStoreAndroidBackendBridgeHelper* bridge_helper() {
@@ -205,7 +213,7 @@ class PasswordStoreAndroidBackend
     base::TimeDelta GetElapsedTimeSinceStart() const;
 
     base::TimeDelta GetDelay();
-    PasswordStoreOperation GetOperation();
+    PasswordStoreOperation GetOperation() const;
 
    private:
     std::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
@@ -237,6 +245,7 @@ class PasswordStoreAndroidBackend
 
     void Run();
     LoginsOrErrorReply GetReplyCallbackAndCancel();
+    PasswordStoreOperation operation() const { return operation_; }
 
    private:
     base::OnceCallback<
