@@ -293,6 +293,9 @@ void BaseRenderingContext2D::ResetSharedImageBacking() {
   resource_recycling_enabled_ = true;
   num_inflight_resources_ = 0;
   max_inflight_resources_ = 0;
+  must_preserve_content_on_copy_on_write_ = true;
+  current_resource_has_write_access_ = false;
+  is_cleared_ = false;
 }
 
 void BaseRenderingContext2D::ClearUnusedResources() {
@@ -355,9 +358,6 @@ void BaseRenderingContext2D::ResetBacking() {
   canvas_image_provider_.reset();
   cached_snapshot_.reset();
   cached_content_id_ = cc::PaintImage::kInvalidContentId;
-  must_preserve_content_on_copy_on_write_ = true;
-  current_resource_has_write_access_ = false;
-  is_cleared_ = false;
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
     context_provider_wrapper_.reset();
@@ -589,9 +589,6 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     if (IsGpuContextLost()) {
       ResetSharedImageBacking();
       canvas_image_provider_.reset();
-      must_preserve_content_on_copy_on_write_ = true;
-      current_resource_has_write_access_ = false;
-      is_cleared_ = false;
       if (context_provider_wrapper_) {
         context_provider_wrapper_->RemoveObserver(this);
         context_provider_wrapper_.reset();
@@ -600,9 +597,6 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     }
   } else if (!resource_) {
     ResetSharedImageBacking();
-    must_preserve_content_on_copy_on_write_ = true;
-    current_resource_has_write_access_ = false;
-    is_cleared_ = false;
     if (context_provider_wrapper_) {
       context_provider_wrapper_->RemoveObserver(this);
       context_provider_wrapper_.reset();
@@ -614,9 +608,6 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     CreateSoftwareSurface();
     if (!surface_) {
       ResetSharedImageBacking();
-      must_preserve_content_on_copy_on_write_ = true;
-      current_resource_has_write_access_ = false;
-      is_cleared_ = false;
       if (context_provider_wrapper_) {
         context_provider_wrapper_->RemoveObserver(this);
         context_provider_wrapper_.reset();
@@ -662,8 +653,6 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
   CreateSoftwareSurface();
   if (!surface_) {
     ResetSharedImageBacking();
-    must_preserve_content_on_copy_on_write_ = true;
-    is_cleared_ = false;
     return;
   }
 
