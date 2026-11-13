@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 
+#import <utility>
+
 #import "base/time/time.h"
-#import "components/infobars/core/infobar.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/credential_provider/model/ios_credential_provider_infobar_delegate.h"
-#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -53,13 +53,6 @@ void CredentialProviderBrowserAgent::DisplayInfoBar(
     return;
   }
 
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state);
-
-  if (!infobar_manager) {
-    return;
-  }
-
   // Here, we are observing the user's passkey model, so we need the original
   // profile to get the user's identity.
   signin::IdentityManager* identity_manager =
@@ -75,9 +68,8 @@ void CredentialProviderBrowserAgent::DisplayInfoBar(
   id<SettingsCommands> settings_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SettingsCommands);
 
-  infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(IOSCredentialProviderInfoBarDelegate::Create(
-          std::move(account.email), passkey, settings_handler)));
+  IOSCredentialProviderInfoBarDelegate::DisplayForWebState(
+      web_state, std::move(account.email), passkey, settings_handler);
 }
 
 void CredentialProviderBrowserAgent::RemoveObservers() {

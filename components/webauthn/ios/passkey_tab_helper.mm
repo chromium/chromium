@@ -63,20 +63,6 @@ std::string GetDomainAndRegistryOrHost(std::string_view host) {
   return domain.empty() ? std::string(host) : domain;
 }
 
-class [[maybe_unused, nodiscard]] ScopedAllowPasskeyCreationInfobar {
- public:
-  ScopedAllowPasskeyCreationInfobar(IOSPasskeyClient* client)
-      : client_(client) {
-    client_->AllowPasskeyCreationInfobar(true);
-  }
-  ~ScopedAllowPasskeyCreationInfobar() {
-    client_->AllowPasskeyCreationInfobar(false);
-  }
-
- private:
-  raw_ptr<IOSPasskeyClient> client_;
-};
-
 // Converts an std::string to a byte vector.
 std::vector<uint8_t> ToByteVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
@@ -756,10 +742,9 @@ PasskeyTabHelper::GetFilteredPasskeys(
 
 void PasskeyTabHelper::AddNewPasskey(
     sync_pb::WebauthnCredentialSpecifics& passkey) {
-  ScopedAllowPasskeyCreationInfobar scopedAllowPasskeyCreationInfobar(
-      client_.get());
   CHECK(passkey_model_utils::IsGpmPasskeyValid(passkey));
   passkey_model_->CreatePasskey(passkey);
+  client_->ShowPasskeyCreationInfobar(passkey);
 }
 
 std::optional<AssertionRequestParams>

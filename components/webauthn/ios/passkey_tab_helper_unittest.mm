@@ -10,6 +10,7 @@
 #import "base/base64.h"
 #import "base/containers/span.h"
 #import "base/rand_util.h"
+#import "base/run_loop.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_view_util.h"
 #import "base/strings/utf_string_conversions.h"
@@ -26,6 +27,7 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/core/browser/passkey_change_quota_tracker.h"
@@ -69,6 +71,9 @@ namespace {
 
 constexpr char kCredentialId[] = "credential_id";
 constexpr char kCredentialId2[] = "credential_id_2";
+constexpr char kUsername[] = "user@example.com";
+constexpr char16_t kUsername16[] = u"user@example.com";
+constexpr char kUserDisplayName[] = "User";
 constexpr char kWellKnownURL[] = "https://example.com/.well-known/webauthn";
 constexpr char kOriginURL[] = "https://example.com";
 constexpr char kInsecureOriginURL[] = "http://example.com";
@@ -1160,6 +1165,51 @@ TEST_F(PasskeyTabHelperTest, ConditionalCreateUpgradePrefDisabled) {
   EXPECT_FALSE(client_->DidFetchTrustedVaultKeys());
 }
 
+// Tests that a successful conditional create automatic passkey upgrade shows
+// the passkey creation infobar without triggering `OnPasskeyCreated()`.
+TEST_F(PasskeyTabHelperTest,
+       ConditionalCreateUpgradeShowsInfobarWithoutOnPasskeyCreated) {
+  passkey_tab_helper()->RecordPasswordLogin(
+      kUsername, url::Origin::Create(GURL(kOriginURL)));
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+
+  password_manager::PasswordForm form;
+  form.username_value = kUsername16;
+  form.url = GURL(kOriginURL);
+  form.date_last_used = base::Time::Now();
+  base::test::TestFuture<void> add_login_future;
+  test_password_store_->AddLogin(password_manager::FromPasswordForm(form),
+                                 add_login_future.GetCallback());
+  ASSERT_TRUE(add_login_future.Wait());
+
+  IOSPasskeyClient::RequestInfo request_info(web::kMainFakeFrameId,
+                                             kFakeRequestId);
+  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
+  std::vector<uint8_t> challenge;
+  PasskeyRequestParams request_params(
+      std::move(request_info), std::move(rp_entity), std::move(challenge),
+      device::UserVerificationRequirement::kPreferred,
+      PasskeyRequestParams::RequestType::kConditionalCreate,
+      PasskeyExtensionData());
+  device::PublicKeyCredentialUserEntity user_entity({1, 2, 3}, kUsername,
+                                                    kUserDisplayName);
+  RegistrationRequestParams params(std::move(request_params),
+                                   std::move(user_entity),
+                                   /*exclude_credentials=*/{});
+
+  passkey_tab_helper()->HandleCreateRequestedEvent(std::move(params));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return client_->DidShowPasskeyCreationInfobar(); }));
+  EXPECT_EQ(1u, client_->show_passkey_creation_infobar_count());
+  ASSERT_TRUE(client_->last_infobar_passkey());
+  EXPECT_EQ(kRpId, client_->last_infobar_passkey()->rp_id());
+  EXPECT_EQ(kUsername, client_->last_infobar_passkey()->user_name());
+  EXPECT_FALSE(client_->DidShowCreationBottomSheet());
+  EXPECT_FALSE(client_->DidOnPasskeyCreated());
+}
+
 // Tests that a conditional create request in off-the-record mode defers to the
 // renderer without showing the incognito interstitial, fetching keys, or
 // triggering remote validation.
@@ -1287,6 +1337,10 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationFromCrossOriginIframe) {
   passkey_tab_helper()->StartPasskeyCreation(kFakeRequestId,
                                              /*did_complete_uv=*/false);
   EXPECT_TRUE(client_->DidFetchTrustedVaultKeys());
+  ASSERT_TRUE(client_->DidShowPasskeyCreationInfobar());
+  EXPECT_EQ(1u, client_->show_passkey_creation_infobar_count());
+  ASSERT_TRUE(client_->last_infobar_passkey());
+  EXPECT_EQ(kRpId, client_->last_infobar_passkey()->rp_id());
   EXPECT_TRUE(client_->DidOnPasskeyCreated());
 
   // Verify that ResolveAttestationRequest was called on the subframe with the
