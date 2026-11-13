@@ -40,6 +40,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
@@ -100,6 +101,13 @@ class NewTabPageHandler
   NewTabPageHandler& operator=(const NewTabPageHandler&) = delete;
 
   ~NewTabPageHandler() override;
+
+  // Returns the element identifiers that New Tab Page help bubbles can anchor
+  // to. Hosts register these with the page's TrackedElementHandler.
+  static std::vector<ui::ElementIdentifier> GetTrackedElementIds();
+
+  // Returns whether `profile`'s primary account is managed.
+  static bool IsManagedProfile(Profile* profile);
 
   // Histograms being recorded when a module is dismissed.
   static const char kModuleDismissedHistogram[];

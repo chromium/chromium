@@ -11,6 +11,7 @@
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
+#include "chrome/browser/ui/webui/new_tab_page/core/ntp_load_time_data.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/tile_type.h"
@@ -231,7 +232,7 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_ExpandedLhsUrlParameters) {
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   ScopedBrowserLocale scoped_locale("he");
 
-  base::DictValue load_time_data = NewTabPageUI::GetLoadTimeData(
+  base::DictValue load_time_data = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
 
   const std::string* url_str = load_time_data.FindString("expandedLhsUrl");
@@ -270,7 +271,7 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
   // branded builds.
   ON_CALL(*mock_aim_service, GetLhsRailConfig())
       .WillByDefault(testing::Return(nullptr));
-  base::DictValue load_time_data_empty = NewTabPageUI::GetLoadTimeData(
+  base::DictValue load_time_data_empty = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
   EXPECT_EQ(load_time_data_empty.FindDict("lhsRailConfig"), nullptr);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -336,7 +337,7 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
   ON_CALL(*mock_aim_service, GetLhsRailConfig())
       .WillByDefault(testing::Return(&lhs_config));
 
-  base::DictValue load_time_data = NewTabPageUI::GetLoadTimeData(
+  base::DictValue load_time_data = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
   const base::DictValue* lhs_rail_dict =
       load_time_data.FindDict("lhsRailConfig");
@@ -376,7 +377,7 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
   // 3. When the user is not AIM eligible, lhsRailConfig is not serialized.
   ON_CALL(*mock_aim_service, IsAimEligible())
       .WillByDefault(testing::Return(false));
-  base::DictValue load_time_data_ineligible = NewTabPageUI::GetLoadTimeData(
+  base::DictValue load_time_data_ineligible = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
   EXPECT_EQ(load_time_data_ineligible.FindDict("lhsRailConfig"), nullptr);
 }
@@ -402,7 +403,7 @@ TEST_F(NewTabPageUITest,
   // returns nullptr.
   ON_CALL(*mock_aim_service, GetLhsRailConfig())
       .WillByDefault(testing::Return(nullptr));
-  base::DictValue load_time_data_null_config = NewTabPageUI::GetLoadTimeData(
+  base::DictValue load_time_data_null_config = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
   EXPECT_FALSE(
       load_time_data_null_config.FindBool("enableThreadsRail").value_or(true));
@@ -415,7 +416,7 @@ TEST_F(NewTabPageUITest,
   item->set_name("AI Mode history");
   ON_CALL(*mock_aim_service, GetLhsRailConfig())
       .WillByDefault(testing::Return(&lhs_config));
-  base::DictValue load_time_data_with_config = NewTabPageUI::GetLoadTimeData(
+  base::DictValue load_time_data_with_config = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(
@@ -431,7 +432,7 @@ TEST_F(NewTabPageUITest,
   // non-null config is cached.
   ON_CALL(*mock_aim_service, IsAimEligible())
       .WillByDefault(testing::Return(false));
-  base::DictValue load_time_data_ineligible = NewTabPageUI::GetLoadTimeData(
+  base::DictValue load_time_data_ineligible = ntp::BuildLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
   EXPECT_FALSE(
       load_time_data_ineligible.FindBool("enableThreadsRail").value_or(true));
