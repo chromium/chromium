@@ -16,7 +16,9 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -153,7 +155,10 @@ public class KeyboardAccessoryIphUtils {
             Runnable dismissCallback) {
         if (tracker == null) return null;
         if (!tracker.isInitialized()) return null;
-        if (!tracker.shouldTriggerHelpUi(feature)) return null; // This call records the IPH intent.
+        FeatureProperties featureProperties = new FeatureProperties(UiFormat.BLUE_BUBBLE);
+        if (!tracker.shouldTriggerHelpUi(feature, featureProperties)) {
+            return null; // This call records the IPH intent.
+        }
         int maxWidthPx =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.keyboard_accessory_iph_bubble_max_width);
