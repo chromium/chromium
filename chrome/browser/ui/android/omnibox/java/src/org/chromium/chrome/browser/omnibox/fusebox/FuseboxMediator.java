@@ -1174,7 +1174,7 @@ class FuseboxMediator implements BackPressHandler {
                 .setType(PopupButtonType.TOOL)
                 .setOnClicked(this::onDynamicButtonClicked)
                 .setText(mContext.getString(R.string.ai_mode_entrypoint_label))
-                .setSubtext(getToolSubtext(ToolMode.TOOL_MODE_UNSPECIFIED))
+                .setSubtext(getToolSubtext(ToolMode.TOOL_MODE_UNSPECIFIED, /* menuTooltip= */ null))
                 .setIconId(IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE)
                 .setEnabled(true)
                 .setSelected(selected)
@@ -1182,10 +1182,18 @@ class FuseboxMediator implements BackPressHandler {
                 .build();
     }
 
+    /**
+     * Returns the subtext to display for {@code toolMode}, preferring {@code menuTooltip} for
+     * eligible tools and falling back to client-defined strings.
+     */
     @VisibleForTesting
-    String getToolSubtext(@ToolMode int toolMode) {
+    String getToolSubtext(@ToolMode int toolMode, @Nullable String menuTooltip) {
         if (!OmniboxFeatures.hasAccordion()) {
             return "";
+        }
+
+        if (canUseMenuTooltipAsSubtext(toolMode) && !TextUtils.isEmpty(menuTooltip)) {
+            return menuTooltip;
         }
 
         @StringRes
@@ -1198,6 +1206,24 @@ class FuseboxMediator implements BackPressHandler {
                     default -> Resources.ID_NULL;
                 };
         return resId != Resources.ID_NULL ? mResourceProvider.getString(resId) : "";
+    }
+
+    /** Returns whether the server menu tooltip of {@code toolMode} can be shown as its subtext. */
+    private static boolean canUseMenuTooltipAsSubtext(@ToolMode int toolMode) {
+        return switch (toolMode) {
+            // The menu tooltips of these tools hold longer desktop hover descriptions rather than
+            // short mobile subtexts. Keep their client strings until ToolConfig adds a dedicated
+            // subtext field.
+            case ToolMode.TOOL_MODE_UNSPECIFIED,
+                    ToolMode.TOOL_MODE_DEEP_SEARCH,
+                    ToolMode.TOOL_MODE_CANVAS,
+                    ToolMode.TOOL_MODE_IMAGE_GEN,
+                    ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD ->
+                    false;
+            // Other tools, including future launches, use the server menu tooltip by default so
+            // their subtexts can be configured without client changes.
+            default -> true;
+        };
     }
 
     private void launchCamera() {
@@ -1629,7 +1655,7 @@ class FuseboxMediator implements BackPressHandler {
                                 .setType(PopupButtonType.TOOL)
                                 .setOnClicked(this::onDynamicButtonClicked)
                                 .setText(label)
-                                .setSubtext(getToolSubtext(toolMode))
+                                .setSubtext(getToolSubtext(toolMode, tooltip))
                                 .setIconId(iconId)
                                 .setEnabled(enabled)
                                 .setSelected(selected)
