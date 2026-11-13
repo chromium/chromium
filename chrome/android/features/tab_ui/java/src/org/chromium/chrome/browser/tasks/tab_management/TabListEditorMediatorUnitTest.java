@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -227,6 +229,16 @@ public final class TabListEditorMediatorUnitTest {
         mMediator.selectTabs(itemIds);
         verify(mSelectionDelegate).setSelectedItems(itemIds);
         verify(mResetHandler).resetWithListOfTabs(anyList(), eq(null), eq(null), eq(true));
+    }
+
+    @Test
+    public void testShow_ClearsPreviousSelection() {
+        mMediator.show(new ArrayList<>(), new ArrayList<>(), /* recyclerViewPosition= */ null);
+
+        InOrder inOrder = inOrder(mSelectionDelegate, mResetHandler);
+        inOrder.verify(mSelectionDelegate).clearSelection();
+        inOrder.verify(mResetHandler)
+                .resetWithListOfTabs(anyList(), anyList(), eq(null), eq(false));
     }
 
     @Test

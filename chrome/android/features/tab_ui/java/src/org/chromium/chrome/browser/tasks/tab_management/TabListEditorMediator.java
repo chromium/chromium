@@ -347,6 +347,7 @@ class TabListEditorMediator
         mVisibleTabs.addAll(tabs);
         mVisibleTabGroups.clear();
         mVisibleTabGroups.addAll(tabGroupSyncIds);
+        mSelectionDelegate.clearSelection();
 
         mResetHandler.resetWithListOfTabs(
                 tabs, tabGroupSyncIds, recyclerViewPosition, /* quickMode= */ false);
