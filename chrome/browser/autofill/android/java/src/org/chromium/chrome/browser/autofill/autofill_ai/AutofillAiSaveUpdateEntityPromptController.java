@@ -16,7 +16,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.autofill.autofill_ai.EntityInstance;
 
 /** JNI wrapper for C++ AutofillAiSaveUpdateEntityPromptController. */
 @JNINamespace("autofill")
@@ -74,14 +73,6 @@ final class AutofillAiSaveUpdateEntityPromptController {
         }
     }
 
-    public void onUserEdited(EntityInstance entityInstance) {
-        if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
-            AutofillAiSaveUpdateEntityPromptControllerJni.get()
-                    .onUserEdited(
-                            mNativeAutofillAiSaveUpdateEntityPromptController, entityInstance);
-        }
-    }
-
     public void onUserDeclined() {
         if (mNativeAutofillAiSaveUpdateEntityPromptController != null) {
             AutofillAiSaveUpdateEntityPromptControllerJni.get()
@@ -96,10 +87,6 @@ final class AutofillAiSaveUpdateEntityPromptController {
         void onPromptDismissed(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
 
         void onUserAccepted(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
-
-        void onUserEdited(
-                JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self,
-                @JniType("autofill::EntityInstanceAndroid") EntityInstance entityInstance);
 
         void onUserDeclined(JniPtr<NativeAutofillAiSaveUpdateEntityPromptController> self);
     }

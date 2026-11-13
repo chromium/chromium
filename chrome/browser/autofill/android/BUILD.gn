@@ -254,7 +254,6 @@ android_resources("java_resources") {
     "java/res/drawable/personal_recommendations.xml",
     "java/res/drawable/store_locally_tooltip_background.xml",
     "java/res/layout/autofill_ai_attribute_info.xml",
-    "java/res/layout/autofill_ai_attribute_info_with_edit_button.xml",
     "java/res/layout/autofill_ai_attribution_header_item.xml",
     "java/res/layout/autofill_ai_attribution_verification_sheet.xml",
     "java/res/layout/autofill_ai_preference.xml",

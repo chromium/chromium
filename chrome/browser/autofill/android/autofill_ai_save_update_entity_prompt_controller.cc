@@ -19,7 +19,6 @@
 #include "base/types/optional_util.h"
 #include "chrome/browser/autofill/android/autofill_ai_save_update_entity_prompt_view.h"
 #include "chrome/browser/autofill/android/autofill_fallback_surface_launcher.h"
-#include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
@@ -155,11 +154,6 @@ bool AutofillAiSaveUpdateEntityPromptController::
       /*is_save_prompt=*/!IsUpdatePrompt(), entity_instance_);
 }
 
-const EntityInstance&
-AutofillAiSaveUpdateEntityPromptController::entity_instance() const {
-  return entity_instance_;
-}
-
 base::android::ScopedJavaLocalRef<jobject>
 AutofillAiSaveUpdateEntityPromptController::GetJavaObject() const {
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
@@ -185,16 +179,6 @@ void AutofillAiSaveUpdateEntityPromptController::OnUserAccepted(JNIEnv* env) {
   RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
-void AutofillAiSaveUpdateEntityPromptController::OnUserEdited(
-    JNIEnv* env,
-    const EntityInstanceAndroid& edited_entity_android) {
-  had_user_interaction_ = true;
-  EntityInstance edited_entity =
-      edited_entity_android.ToEntityInstance(entity_instance_);
-  RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kEditAccepted,
-                          std::move(edited_entity));
-}
-
 void AutofillAiSaveUpdateEntityPromptController::OnUserDeclined(JNIEnv* env) {
   had_user_interaction_ = true;
   RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult::kCancelled);
@@ -207,11 +191,10 @@ void AutofillAiSaveUpdateEntityPromptController::OnPromptDismissed(
 }
 
 void AutofillAiSaveUpdateEntityPromptController::RunPromptClosedCallback(
-    AutofillClient::AutofillAiBubbleResult result,
-    std::optional<EntityInstance> edited_entity_instance) {
+    AutofillClient::AutofillAiBubbleResult result) {
   if (prompt_result_callback_) {
     std::move(prompt_result_callback_)
-        .Run(result, std::move(edited_entity_instance),
+        .Run(result, /*edited_entity=*/std::nullopt,
              DidUserExplicitlyAcceptedImportPrompt(result)
                  ? ui_context_
                  : AutofillClient::EntityImportUIContext{});

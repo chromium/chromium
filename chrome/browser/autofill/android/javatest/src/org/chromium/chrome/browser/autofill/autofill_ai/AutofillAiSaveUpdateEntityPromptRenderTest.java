@@ -28,21 +28,13 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.autofill.autofill_ai.EntityAttributeUpdateType;
-import org.chromium.components.autofill.autofill_ai.EntityInstance;
-import org.chromium.components.autofill.autofill_ai.RecordType;
-import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
@@ -56,10 +48,7 @@ import java.util.List;
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({
-    ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT,
-    ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
-})
+@EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
 public class AutofillAiSaveUpdateEntityPromptRenderTest {
     private static final long NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER = 100L;
 
@@ -74,23 +63,15 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(4)
-                    .setDescription("Update Wallet entity prompt subtitle notice string")
+                    .setRevision(5)
+                    .setDescription("Remove edit button from entity save/update prompt")
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutofillAiSaveUpdateEntityPromptController.Natives mPromptControllerJni;
-    @Mock private Profile mProfile;
-    @Mock private IdentityManager mIdentityManager;
-    @Mock private PersonalDataManager mPersonalDataManager;
 
-    private final EntityInstance mEntity =
-            new EntityInstance.Builder(TestUtils.getVehicleEntityType())
-                    .setGuid("")
-                    .setRecordType(RecordType.LOCAL)
-                    .build();
     private AutofillAiSaveUpdateEntityPromptController mPromptController;
     private AutofillAiSaveUpdateEntityPrompt mPrompt;
 
@@ -103,9 +84,6 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
     public void setUp() throws Exception {
         mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
-
-        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
-        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
 
         mPromptController =
                 AutofillAiSaveUpdateEntityPromptController.create(
@@ -141,9 +119,7 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     new AutofillAiSaveUpdateEntityPrompt(
                                             mPromptController,
                                             mActivityTestRule.getActivity().getModalDialogManager(),
-                                            mActivityTestRule.getActivity(),
-                                            mProfile,
-                                            mEntity);
+                                            mActivityTestRule.getActivity());
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -195,9 +171,7 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     new AutofillAiSaveUpdateEntityPrompt(
                                             mPromptController,
                                             mActivityTestRule.getActivity().getModalDialogManager(),
-                                            mActivityTestRule.getActivity(),
-                                            mProfile,
-                                            mEntity);
+                                            mActivityTestRule.getActivity());
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -254,9 +228,7 @@ public class AutofillAiSaveUpdateEntityPromptRenderTest {
                                     new AutofillAiSaveUpdateEntityPrompt(
                                             mPromptController,
                                             mActivityTestRule.getActivity().getModalDialogManager(),
-                                            mActivityTestRule.getActivity(),
-                                            mProfile,
-                                            mEntity);
+                                            mActivityTestRule.getActivity());
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",

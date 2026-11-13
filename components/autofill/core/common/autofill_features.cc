@@ -175,13 +175,6 @@ DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiAvailableByDefault);
 // If enabled, AutofillAi entities will be deduped on every major milestone.
 DEFINE_FEATURE_WITH_MOBILE_COUNTRY_RESTRICTION(kAutofillAiDedupeEntities);
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, the entity save/update prompt displays an edit button that
-// opens the entity editor on click.
-BASE_FEATURE(kAutofillAiEditEntitiesFromSaveUpdatePrompt,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
 // Note that this feature can be modified as follows (all assuming that
 // `kAutofillAiIgnoreGeoIp` is enabled):

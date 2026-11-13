@@ -127,7 +127,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 // FEATURE_EXPORT_LIST_START
 // go/keep-sorted start
     &autofill::features::kAutofillAiAvailableByDefault,
-    &autofill::features::kAutofillAiEditEntitiesFromSaveUpdatePrompt,
     &autofill::features::kAutofillAiLimitSuggestionWidth,
     &autofill::features::kAutofillAiOnlineModelToggleNewTitle,
     &autofill::features::kAutofillAiReauthRequired,

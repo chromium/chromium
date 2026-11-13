@@ -13,7 +13,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -64,24 +63,18 @@ class AutofillAiSaveUpdateEntityPromptController {
   const LegalMessageLines& GetPublicPassesNotice() const;
   bool IsEligibleForWalletPassDisclosure() const;
 
-  const EntityInstance& entity_instance() const;
-
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   // Called by AutofillAiSaveUpdateEntityPromptController.java
   void OnWalletLinkClicked(JNIEnv* env);
   void OnUserAccepted(JNIEnv* env);
-  void OnUserEdited(JNIEnv* env,
-                    const EntityInstanceAndroid& edited_entity_instance);
   void OnUserDeclined(JNIEnv* env);
   // Called whenever the prompt is dismissed (e.g. because the user already
-  // accepted/declined/edited the entity (after OnUserAccepted/Declined/Edited
-  // is called) or it was closed without interaction).
+  // accepted/declined the entity (after OnUserAccepted/Declined is called) or
+  // it was closed without interaction).
   void OnPromptDismissed(JNIEnv* env);
 
  private:
-  void RunPromptClosedCallback(
-      AutofillClient::AutofillAiBubbleResult result,
-      std::optional<EntityInstance> edited_entity_instance = std::nullopt);
+  void RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult result);
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AutofillAiSaveUpdateEntityPromptView> prompt_view_;
@@ -90,7 +83,7 @@ class AutofillAiSaveUpdateEntityPromptController {
   const LegalMessageLines public_passes_notice_;
   const std::string app_locale_;
   AutofillClient::EntityImportUIContext ui_context_;
-  // If the user explicitly accepted/dismissed/edited the entity.
+  // If the user explicitly accepted/dismissed the entity.
   bool had_user_interaction_ = false;
   // The callback to run when the user takes action on the prompt.
   AutofillClient::EntityImportPromptResultCallback prompt_result_callback_;
