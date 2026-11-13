@@ -172,6 +172,11 @@ dictionary IgnoreAdditionalPropertiesType {
   DOMString x;
 };
 
+[preserveNull]
+dictionary PreserveNullType {
+  boolean x;
+};
+
 // Enum description.
 enum EnumType {
   // Comment1.

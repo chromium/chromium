@@ -600,6 +600,11 @@ class WebIdlSchemaTest(unittest.TestCase):
       ]
     )
 
+  def testPreservesNullOnType(self):
+    self.assertTrue(
+      getType(self.idl_basics, 'PreserveNullType')['preserveNull']
+    )
+
   # Tests that a schema that references a custom type that has not been defined
   # causes an error to be thrown.
   # TODO(crbug.com/450443604): This will likely have to change when adding

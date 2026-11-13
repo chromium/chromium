@@ -823,6 +823,8 @@ class Dictionary:
     AddCommonExtendedAttributeProperties(self.node, result)
     if HasExtendedAttribute(self.node, 'ignoreAdditionalProperties'):
       result['ignoreAdditionalProperties'] = True
+    if HasExtendedAttribute(self.node, 'preserveNull'):
+      result['preserveNull'] = True
 
     return result
 
