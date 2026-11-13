@@ -162,18 +162,18 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   protected accessor username_: string = '';
   protected accessor password_: string = '';
   protected accessor note_: string = '';
+  private accessor domainInfo_: DomainInfo|null = null;
   private accessor usernamesBySignonRealm_: Map<string, Set<string>> =
       new Map();
   protected accessor websiteErrorMessage_: string|null = null;
   protected accessor usernameErrorMessage_: string|null = null;
-  protected accessor canAddPassword_: boolean = false;
   protected accessor isPasswordInvalid_: boolean = false;
-  private accessor domainInfo_: DomainInfo|null = null;
+  protected accessor canAddPassword_: boolean = false;
+
   protected readonly storeOptionAccountValue_: string =
       chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
   protected readonly storeOptionDeviceValue_: string =
       chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
-
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
 
@@ -317,7 +317,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     this.isPasswordInvalid_ = this.password_.length === 0;
   }
 
-  protected onPasswordBlur_() {
+  protected onPasswordInputBlur_() {
     this.onPasswordInput_();
   }
 
@@ -357,7 +357,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return true;
   }
 
-  protected onAddClick_() {
+  protected onAddButtonClick_() {
     assert(this.computeCanAddPassword_());
     assert(this.domainInfo_);
     recordAddCredentialInteraction(
@@ -390,7 +390,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         '';
   }
 
-  protected onViewExistingPasswordClick_(e: Event) {
+  protected onViewExistingPasswordLinkClick_(e: Event) {
     recordAddCredentialInteraction(
         AddCredentialFromSettingsUserInteractions.DUPLICATE_CREDENTIAL_VIEWED);
     e.preventDefault();
