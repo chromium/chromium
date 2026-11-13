@@ -1573,6 +1573,10 @@ public final class ProductionSupportedFlagList {
                 NetFeatures.CLEAR_BROKEN_ALTERNATIVE_SERVICES_ON_DEFAULT_NETWORK_CHANGE,
                 "When enabled, clears all broken and recently-broken alternative services when"
                         + " the default network changes."),
+        Flag.baseFeature(
+                BlinkFeatures.PROCESS_HTML_DATA_IMMEDIATELY,
+                "Parses HTML data as soon as it arrives instead of posting a task. Has no"
+                        + " effect unless the feature params are set."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
