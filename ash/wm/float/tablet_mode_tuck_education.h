@@ -5,6 +5,8 @@
 #ifndef ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
 #define ASH_WM_FLOAT_TABLET_MODE_TUCK_EDUCATION_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +14,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -55,7 +57,7 @@ class ASH_EXPORT TabletModeTuckEducation : public aura::WindowObserver {
   static void SetOverrideClockForTesting(base::Clock* test_clock);
 
   // The widget that contains the `RoundedLabel`.
-  views::UniqueWidgetPtr nudge_widget_;
+  std::unique_ptr<views::Widget> nudge_widget_;
 
   // The floated window that `nudge_widget_` is a child of. Guaranteed to be
   // alive for the lifetime of `this` since the owner of `this` observes

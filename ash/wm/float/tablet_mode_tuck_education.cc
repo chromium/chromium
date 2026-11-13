@@ -73,7 +73,7 @@ base::Time GetTime() {
 
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.name = "TuckEducationNudgeWidget";
   params.accept_events = false;
@@ -247,8 +247,8 @@ void TabletModeTuckEducation::DismissNudge() {
 
   if (nudge_widget_ && !nudge_widget_->IsClosed()) {
     nudge_widget_->GetLayer()->GetAnimator()->AbortAllAnimations();
-    nudge_widget_->CloseNow();
   }
+  nudge_widget_.reset();
 }
 
 // static

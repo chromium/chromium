@@ -46,6 +46,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "chromeos/ui/base/app_types.h"
@@ -2244,8 +2245,10 @@ TEST_F(TabletWindowFloatTest, BasicTuckNudge) {
   // the test will fail.
   widget_waiter.WaitIfNeededAndGet();
 
-  // Nudge should dismiss properly after animations end.
-  EXPECT_TRUE(window->children().empty());
+  // Nudge should dismiss properly after animations end. Its window is destroyed
+  // in a posted task after the nudge widget is closed.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return window->children().empty(); }));
 
   // TODO(hewer): Add a callback to check that the nudge has properly dismissed
   // after the bounce animations and timer have ended.
