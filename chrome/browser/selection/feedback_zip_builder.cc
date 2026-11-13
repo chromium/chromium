@@ -272,13 +272,12 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
     base::FilePath target_zip_path,
     std::string metadata_json,
     State state) {
-  if (target_zip_path.empty() ||
-      !base::CreateDirectory(target_zip_path.DirName())) {
+  if (target_zip_path.empty()) {
     return std::nullopt;
   }
 
   base::ScopedTempDir temp_dir;
-  if (!temp_dir.CreateUniqueTempDir()) {
+  if (!temp_dir.CreateUniqueTempDirUnderPath(target_zip_path.DirName())) {
     return std::nullopt;
   }
 
