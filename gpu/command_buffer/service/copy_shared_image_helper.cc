@@ -663,10 +663,13 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
 
   // We don't need to insert a recording since asyncRescaleAndReadPixels is a
   // context operation that inserts its own recording internally.
-  if (!graphite_shared_context->asyncRescaleAndReadPixelsAndSubmit(
-          sk_image.get(), dst_info, RectToSkIRect(src_rect),
-          SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-          base::BindOnce(&OnReadPixelsDone), &context)) {
+  const bool submitted = graphite_shared_context->RunLockedAndSubmitSync([&] {
+    graphite_shared_context->asyncRescaleAndReadPixels(
+        sk_image.get(), dst_info, RectToSkIRect(src_rect),
+        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+        base::BindOnce(&OnReadPixelsDone), &context);
+  });
+  if (!submitted) {
     return false;
   }
 
@@ -878,18 +881,18 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixelsYUV(
   // ensures it completes synchronously.
   YUVReadbackResult yuv_result;
   bool is_context_lost = false;
-  if (shared_context_state_->graphite_shared_context()) {
+  if (auto* graphite_shared_context =
+          shared_context_state_->graphite_shared_context()) {
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
-    shared_context_state_->graphite_shared_context()
-        ->asyncRescaleAndReadPixelsYUV420AndSubmit(
-            sk_image.get(), yuv_cs, sk_image->refColorSpace(), src_rect,
-            dst_size, SkImage::RescaleGamma::kSrc,
-            SkImage::RescaleMode::kRepeatedLinear,
-            base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
+    graphite_shared_context->RunLockedAndSubmitSync([&] {
+      graphite_shared_context->asyncRescaleAndReadPixelsYUV420(
+          sk_image.get(), yuv_cs, sk_image->refColorSpace(), src_rect, dst_size,
+          SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+          base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
+    });
     is_context_lost =
-        !yuv_result.finished &&
-        shared_context_state_->graphite_shared_context()->IsContextLost();
+        !yuv_result.finished && graphite_shared_context->IsContextLost();
   } else {
     CHECK(shared_context_state_->gr_context());
     sk_image->asyncRescaleAndReadPixelsYUV420(

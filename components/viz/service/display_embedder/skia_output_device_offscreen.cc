@@ -225,11 +225,13 @@ void SkiaOutputDeviceOffscreen::ReadbackForTesting(
     context_state_->FlushGraphiteRecorder();
     // asyncRescaleAndReadPixels is a context operation that inserts its own
     // recording internally.
-    graphite_shared_context->asyncRescaleAndReadPixelsAndSubmit(
-        sk_surface_.get(), sk_surface_->imageInfo(),
-        SkIRect::MakeSize(sk_surface_->imageInfo().dimensions()),
-        SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-        base::BindOnce(&ReadPixelsContext::OnReadPixelsDone), &context);
+    graphite_shared_context->RunLockedAndSubmitSync([&] {
+      graphite_shared_context->asyncRescaleAndReadPixels(
+          sk_surface_.get(), sk_surface_->imageInfo(),
+          SkIRect::MakeSize(sk_surface_->imageInfo().dimensions()),
+          SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+          base::BindOnce(&ReadPixelsContext::OnReadPixelsDone), &context);
+    });
   } else {
     CHECK(context_state_->gr_context());
     sk_surface_->asyncRescaleAndReadPixels(

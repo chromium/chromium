@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -117,6 +118,19 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   bool hasUnfinishedGpuWork() const;
 
+  // Runs `do_work_fn` with the context locked and then submits with
+  // SyncToCpu::kYes under the same lock. `do_work_fn` issues readbacks with
+  // the asyncRescaleAndReadPixels*() methods below (the lock is recursive, so
+  // they can be called while it is held). Holding the lock across the
+  // readbacks and the submit guarantees that their callbacks have run on the
+  // calling thread when this returns (unless the context is lost), so the
+  // results can be used synchronously afterwards. Returns the result of the
+  // submit.
+  bool RunLockedAndSubmitSync(base::FunctionRef<void()> do_work_fn);
+
+  // Asynchronous readbacks. The callback runs on the calling thread once the
+  // read has finished, which needs a submit; use RunLockedAndSubmitSync() to
+  // wait for it synchronously.
   void asyncRescaleAndReadPixels(const SkImage* src,
                                  const SkImageInfo& dstImageInfo,
                                  const SkIRect& srcRect,
@@ -131,22 +145,6 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                  SkImage::RescaleMode rescaleMode,
                                  SkImageReadPixelsCallback callback,
                                  SkImage::ReadPixelsContext context);
-
-  bool asyncRescaleAndReadPixelsAndSubmit(const SkImage* src,
-                                          const SkImageInfo& dstImageInfo,
-                                          const SkIRect& srcRect,
-                                          SkImage::RescaleGamma rescaleGamma,
-                                          SkImage::RescaleMode rescaleMode,
-                                          SkImageReadPixelsCallback callback,
-                                          SkImage::ReadPixelsContext context);
-  bool asyncRescaleAndReadPixelsAndSubmit(const SkSurface* src,
-                                          const SkImageInfo& dstImageInfo,
-                                          const SkIRect& srcRect,
-                                          SkImage::RescaleGamma rescaleGamma,
-                                          SkImage::RescaleMode rescaleMode,
-                                          SkImageReadPixelsCallback callback,
-                                          SkImage::ReadPixelsContext context);
-
   void asyncRescaleAndReadPixelsYUV420(const SkImage* src,
                                        SkYUVColorSpace yuvColorSpace,
                                        sk_sp<SkColorSpace> dstColorSpace,
@@ -165,28 +163,6 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                        SkImage::RescaleMode rescaleMode,
                                        SkImageReadPixelsCallback callback,
                                        SkImage::ReadPixelsContext context);
-
-  bool asyncRescaleAndReadPixelsYUV420AndSubmit(
-      const SkImage* src,
-      SkYUVColorSpace yuvColorSpace,
-      sk_sp<SkColorSpace> dstColorSpace,
-      const SkIRect& srcRect,
-      const SkISize& dstSize,
-      SkImage::RescaleGamma rescaleGamma,
-      SkImage::RescaleMode rescaleMode,
-      SkImageReadPixelsCallback callback,
-      SkImage::ReadPixelsContext context);
-  bool asyncRescaleAndReadPixelsYUV420AndSubmit(
-      const SkSurface* src,
-      SkYUVColorSpace yuvColorSpace,
-      sk_sp<SkColorSpace> dstColorSpace,
-      const SkIRect& srcRect,
-      const SkISize& dstSize,
-      SkImage::RescaleGamma rescaleGamma,
-      SkImage::RescaleMode rescaleMode,
-      SkImageReadPixelsCallback callback,
-      SkImage::ReadPixelsContext context);
-
   void asyncRescaleAndReadPixelsYUVA420(const SkImage* src,
                                         SkYUVColorSpace yuvColorSpace,
                                         sk_sp<SkColorSpace> dstColorSpace,
@@ -205,27 +181,6 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
                                         SkImage::RescaleMode rescaleMode,
                                         SkImageReadPixelsCallback callback,
                                         SkImage::ReadPixelsContext context);
-
-  bool asyncRescaleAndReadPixelsYUVA420AndSubmit(
-      const SkImage* src,
-      SkYUVColorSpace yuvColorSpace,
-      sk_sp<SkColorSpace> dstColorSpace,
-      const SkIRect& srcRect,
-      const SkISize& dstSize,
-      SkImage::RescaleGamma rescaleGamma,
-      SkImage::RescaleMode rescaleMode,
-      SkImageReadPixelsCallback callback,
-      SkImage::ReadPixelsContext context);
-  bool asyncRescaleAndReadPixelsYUVA420AndSubmit(
-      const SkSurface* src,
-      SkYUVColorSpace yuvColorSpace,
-      sk_sp<SkColorSpace> dstColorSpace,
-      const SkIRect& srcRect,
-      const SkISize& dstSize,
-      SkImage::RescaleGamma rescaleGamma,
-      SkImage::RescaleMode rescaleMode,
-      SkImageReadPixelsCallback callback,
-      SkImage::ReadPixelsContext context);
 
   void checkAsyncWorkCompletion();
 

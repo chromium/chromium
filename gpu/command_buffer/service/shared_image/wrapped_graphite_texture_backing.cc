@@ -311,6 +311,7 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
   }
 
   std::vector<ReadPixelsContext> contexts(format().NumberOfPlanes());
+  std::vector<sk_sp<SkImage>> sk_images(format().NumberOfPlanes());
   for (int i = 0; i < format().NumberOfPlanes(); i++) {
     const auto color_type = viz::ToClosestSkColorType(format(), i);
 
@@ -328,25 +329,32 @@ bool WrappedGraphiteTextureBacking::ReadbackToMemory(
       src_color_space = color_space().ToSkColorSpace();
     }
 
-    sk_sp<SkImage> sk_image =
+    sk_images[i] =
         SkImages::WrapTexture(context_state->gpu_main_graphite_recorder(),
                               texture_holders_[i]->texture(), color_type,
                               kOpaque_SkAlphaType, std::move(src_color_space));
-    if (!sk_image) {
+    if (!sk_images[i]) {
       return false;
     }
-    const gfx::Size plane_size = format().GetPlaneSize(i, size());
-    const SkIRect src_rect =
-        SkIRect::MakeWH(plane_size.width(), plane_size.height());
-    if (!context_state->graphite_shared_context()
-             ->asyncRescaleAndReadPixelsAndSubmit(
-                 sk_image.get(), pixmaps[i].info(), src_rect,
-                 SkImage::RescaleGamma::kSrc,
-                 SkImage::RescaleMode::kRepeatedLinear,
-                 base::BindOnce(&OnReadPixelsDone), &contexts[i])) {
-      LOG(ERROR) << "Graphite context submit() failed";
-      return false;
+  }
+
+  // Read all planes with one submit.
+  GraphiteSharedContext* graphite_shared_context =
+      context_state->graphite_shared_context();
+  const bool submitted = graphite_shared_context->RunLockedAndSubmitSync([&] {
+    for (int i = 0; i < format().NumberOfPlanes(); i++) {
+      const gfx::Size plane_size = format().GetPlaneSize(i, size());
+      const SkIRect src_rect =
+          SkIRect::MakeWH(plane_size.width(), plane_size.height());
+      graphite_shared_context->asyncRescaleAndReadPixels(
+          sk_images[i].get(), pixmaps[i].info(), src_rect,
+          SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
+          base::BindOnce(&OnReadPixelsDone), &contexts[i]);
     }
+  });
+  if (!submitted) {
+    LOG(ERROR) << "Graphite context submit() failed";
+    return false;
   }
 
   for (int i = 0; i < format().NumberOfPlanes(); i++) {

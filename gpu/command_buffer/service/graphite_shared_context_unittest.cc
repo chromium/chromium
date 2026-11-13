@@ -524,17 +524,21 @@ TEST_P(GraphiteSharedContextTest, ReadPixelsContextLost) {
 
   // When context is not lost, the callback should be invoked.
   EXPECT_CALL(delegate_, IsContextLost()).WillOnce(testing::Return(false));
-  EXPECT_TRUE(graphite_shared_context_->asyncRescaleAndReadPixelsAndSubmit(
-      surface.get(), ii, SkIRect::MakeWH(64, 64), SkImage::RescaleGamma::kSrc,
-      SkImage::RescaleMode::kNearest, readback_future.GetCallback(), nullptr));
+  EXPECT_TRUE(graphite_shared_context_->RunLockedAndSubmitSync([&] {
+    graphite_shared_context_->asyncRescaleAndReadPixels(
+        surface.get(), ii, SkIRect::MakeWH(64, 64), SkImage::RescaleGamma::kSrc,
+        SkImage::RescaleMode::kNearest, readback_future.GetCallback(), nullptr);
+  }));
   EXPECT_TRUE(readback_future.IsReady());
 
   // When context is lost, the callback should not be invoked.
   readback_future.Clear();
   EXPECT_CALL(delegate_, IsContextLost()).WillOnce(testing::Return(true));
-  EXPECT_TRUE(graphite_shared_context_->asyncRescaleAndReadPixelsAndSubmit(
-      surface.get(), ii, SkIRect::MakeWH(64, 64), SkImage::RescaleGamma::kSrc,
-      SkImage::RescaleMode::kNearest, readback_future.GetCallback(), nullptr));
+  EXPECT_TRUE(graphite_shared_context_->RunLockedAndSubmitSync([&] {
+    graphite_shared_context_->asyncRescaleAndReadPixels(
+        surface.get(), ii, SkIRect::MakeWH(64, 64), SkImage::RescaleGamma::kSrc,
+        SkImage::RescaleMode::kNearest, readback_future.GetCallback(), nullptr);
+  }));
   EXPECT_FALSE(readback_future.IsReady());
 }
 
