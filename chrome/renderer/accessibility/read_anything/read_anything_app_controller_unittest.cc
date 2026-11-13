@@ -3001,6 +3001,8 @@ TEST_F(ReadAnythingAppControllerTest, OnSendFeedback_ForwardsToPageHandler) {
 
 TEST_F(ReadAnythingAppControllerTest,
        OnSendFeedback_DoesNotForwardWhenFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kReadAnythingSendFeedback);
   EXPECT_CALL(page_handler_, OnSendFeedback()).Times(0);
   controller().OnSendFeedback();
 }

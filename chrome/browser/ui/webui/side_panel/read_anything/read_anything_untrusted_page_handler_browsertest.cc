@@ -2765,7 +2765,16 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+class ReadAnythingUntrustedPageHandlerSendFeedbackDisabledTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerSendFeedbackDisabledTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{features::kReadAnythingSendFeedback}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackDisabledTest,
                        OnSendFeedback_ReportsBadMessageWhenFlagDisabled) {
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
