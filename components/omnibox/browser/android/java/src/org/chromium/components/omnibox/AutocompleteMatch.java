@@ -4,6 +4,7 @@
 
 package org.chromium.components.omnibox;
 
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -107,6 +108,8 @@ public class AutocompleteMatch {
     private @Nullable SuggestTemplateInfo mSuggestTemplate;
     private final @DocumentType int mDocumentType;
     private final boolean mIsExtensionMatch;
+    private final String mVectorIconName;
+    private final String mBookmarkVectorIconName;
 
     public AutocompleteMatch(
             int nativeType,
@@ -141,7 +144,9 @@ public class AutocompleteMatch {
             @Nullable String associatedKeyword,
             byte @Nullable [] serializedSuggestTemplate,
             @DocumentType int documentType,
-            boolean isExtensionMatch) {
+            boolean isExtensionMatch,
+            String vectorIconName,
+            String bookmarkVectorIconName) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -196,6 +201,8 @@ public class AutocompleteMatch {
 
         mDocumentType = documentType;
         mIsExtensionMatch = isExtensionMatch;
+        mVectorIconName = vectorIconName;
+        mBookmarkVectorIconName = bookmarkVectorIconName;
         updatePostContentType(postContentType);
     }
 
@@ -244,7 +251,9 @@ public class AutocompleteMatch {
             @JniType("std::u16string") String associatedKeyword,
             byte[] serializedSuggestTemplate,
             @JniType("AutocompleteMatch::DocumentType") @DocumentType int documentType,
-            boolean isExtensionMatch) {
+            boolean isExtensionMatch,
+            @JniType("std::string") String vectorIconName,
+            @JniType("std::string") String bookmarkVectorIconName) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -292,7 +301,9 @@ public class AutocompleteMatch {
                         TextUtils.isEmpty(associatedKeyword) ? null : associatedKeyword,
                         serializedSuggestTemplate,
                         documentType,
-                        isExtensionMatch);
+                        isExtensionMatch,
+                        vectorIconName,
+                        bookmarkVectorIconName);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -638,6 +649,30 @@ public class AutocompleteMatch {
         AutocompleteMatchJni.get().updateWithClipboardContent(mNativeMatch, callback);
     }
 
+    /**
+     * Returns the name of the native vector icon associated with this match, suitable as a cache
+     * key, or an empty string if no vector icon is available.
+     *
+     * @param isBookmark Whether the match destination is bookmarked.
+     */
+    public String getVectorIconName(boolean isBookmark) {
+        return isBookmark ? mBookmarkVectorIconName : mVectorIconName;
+    }
+
+    /**
+     * Returns the native vector icon associated with this match, rasterized to a square bitmap, or
+     * {@code null} when the native counterpart is gone or no vector icon is available.
+     *
+     * @param isBookmark Whether the match destination is bookmarked.
+     * @param sizeDip Edge length of the requested icon, in device independent pixels.
+     * @param scale Display density the icon should be rasterized at.
+     */
+    public @Nullable Bitmap getVectorIconBitmap(boolean isBookmark, int sizeDip, float scale) {
+        if (mNativeMatch == 0) return null;
+        return AutocompleteMatchJni.get()
+                .getVectorIconBitmap(mNativeMatch, isBookmark, sizeDip, scale);
+    }
+
     /** Serialize suggestion to a protocol buffer message. */
     public AutocompleteMatchProto serialize() {
         var builder = AutocompleteMatchProto.newBuilder();
@@ -738,7 +773,9 @@ public class AutocompleteMatch {
                 /* associatedKeyword= */ null,
                 /* serializedSuggestTemplate= */ null,
                 DocumentType.NONE,
-                /* isExtensionMatch= */ false);
+                /* isExtensionMatch= */ false,
+                /* vectorIconName= */ "",
+                /* bookmarkVectorIconName= */ "");
     }
 
     @Override
@@ -772,5 +809,9 @@ public class AutocompleteMatch {
     @NativeMethods
     interface Natives {
         void updateWithClipboardContent(long nativeAutocompleteMatch, Runnable callback);
+
+        @JniType("SkBitmap")
+        @Nullable Bitmap getVectorIconBitmap(
+                long nativeAutocompleteMatch, boolean isBookmark, int sizeDip, float scale);
     }
 }
