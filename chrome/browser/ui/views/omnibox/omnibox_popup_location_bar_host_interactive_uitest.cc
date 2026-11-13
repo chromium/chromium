@@ -729,6 +729,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
 // reactivates the browser window there.
 IN_PROC_BROWSER_TEST_F(OmniboxPopupLocationBarHostTest,
                        ClickingPageToReactivateDoesNotRefocus) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/584371333): Closing `other_widget_` reactivates the browser
+  // window before the click on Wayland, which refocuses the omnibox.
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "The compositor reactivates the window before the click.";
+  }
+#endif
   NavigateTo("/title1.html");
   FocusAndWaitForPopup();
   ASSERT_TRUE(ActivateBrowserWindow());
