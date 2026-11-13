@@ -3693,33 +3693,6 @@
             ]
         }
     ],
-    "BrokenAlternativeServiceDelays": [
-        {
-            "platforms": [
-                "android",
-                "android_desktop",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Initial1s_Max5m_20260804",
-                    "params": {
-                        "InitialDelayForBrokenAlternativeServiceParam": "1s",
-                        "MaxDelayForBrokenAlternativeServiceParam": "5m"
-                    },
-                    "enable_features": [
-                        "InitialDelayForBrokenAlternativeService",
-                        "MaxDelayForBrokenAlternativeService"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowserDynamicCodeDisabled": [
         {
             "platforms": [

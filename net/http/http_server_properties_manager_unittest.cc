@@ -216,8 +216,10 @@ class HttpServerPropertiesManagerTest : public testing::Test,
 
  protected:
   HttpServerPropertiesManagerTest()
-      : WithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+                            /*disabled_features=*/
+                            {features::kInitialDelayForBrokenAlternativeService,
+                             features::kMaxDelayForBrokenAlternativeService}) {}
 
   void SetUp() override {
     one_day_from_now_ = base::Time::Now() + base::Days(1);

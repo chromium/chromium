@@ -12,6 +12,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
@@ -30,7 +31,12 @@ class BrokenAlternativeServicesTest
       public ::testing::Test {
  public:
   BrokenAlternativeServicesTest()
-      : test_task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
+      : feature_list_(
+            /*enabled_features=*/{},
+            /*disabled_features=*/
+            {features::kInitialDelayForBrokenAlternativeService,
+             features::kMaxDelayForBrokenAlternativeService}),
+        test_task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
         test_task_runner_context_(test_task_runner_),
         broken_services_clock_(test_task_runner_->GetMockTickClock()),
         broken_services_(50, this, broken_services_clock_) {
@@ -53,6 +59,10 @@ class BrokenAlternativeServicesTest
 
   void TestExponentialBackoff(base::TimeDelta initial_delay,
                               bool exponential_backoff_on_initial_delay);
+
+  // Keep legacy 300s/2d unit tests running with the delay features disabled
+  // until Cronet also launches and the flags are cleaned up.
+  base::test::ScopedFeatureList feature_list_;
 
   // All tests will run inside the scope of |test_task_runner_context_|, which
   // means any task posted to the main message loop will run on
@@ -1211,6 +1221,69 @@ TEST_F(BrokenAlternativeServicesTest, MaxDelayFinchFlag) {
   EXPECT_TRUE(broken_services.IsBroken(alternative_service, &expiration));
   EXPECT_EQ(broken_services_clock_->NowTicks() + base::Seconds(100),
             expiration);
+}
+
+// Unlike `BrokenAlternativeServicesTest`, this fixture does not override
+// `features::kInitialDelayForBrokenAlternativeService` and
+// `features::kMaxDelayForBrokenAlternativeService`, so that tests exercise the
+// configuration which ships by default.
+class BrokenAlternativeServicesDefaultFeatureStateTest
+    : public BrokenAlternativeServices::Delegate,
+      public ::testing::Test {
+ public:
+  BrokenAlternativeServicesDefaultFeatureStateTest()
+      : test_task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
+        test_task_runner_context_(test_task_runner_),
+        broken_services_(50, this, test_task_runner_->GetMockTickClock()) {}
+
+  // BrokenAlternativeServices::Delegate implementation
+  void OnExpireBrokenAlternativeService(
+      const AlternativeService& expired_alternative_service,
+      const NetworkAnonymizationKey& network_anonymization_key) override {}
+
+ protected:
+  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
+  base::TestMockTimeTaskRunner::ScopedContext test_task_runner_context_;
+  BrokenAlternativeServices broken_services_;
+};
+
+TEST_F(BrokenAlternativeServicesDefaultFeatureStateTest, ExponentialBackoff) {
+#if BUILDFLAG(CRONET_BUILD)
+  // Both features are disabled by default in Cronet.
+  constexpr base::TimeDelta kExpectedInitialDelay = base::Seconds(300);
+  constexpr base::TimeDelta kExpectedMaxDelay = base::Days(2);
+#else   // BUILDFLAG(CRONET_BUILD)
+  constexpr base::TimeDelta kExpectedInitialDelay = base::Seconds(10);
+  constexpr base::TimeDelta kExpectedMaxDelay = base::Minutes(30);
+#endif  // BUILDFLAG(CRONET_BUILD)
+
+  const BrokenAlternativeService alternative_service(
+      AlternativeService(NextProto::kProtoQUIC, "foo", 443),
+      NetworkAnonymizationKey(), true /* use_network_anonymization_key */);
+
+  // The delay starts at the initial delay and doubles every time the
+  // alternative service is marked broken again, until it reaches the max delay.
+  base::TimeDelta expected_delay = kExpectedInitialDelay;
+  while (expected_delay < kExpectedMaxDelay) {
+    SCOPED_TRACE(expected_delay);
+    broken_services_.MarkBroken(alternative_service);
+    test_task_runner_->FastForwardBy(expected_delay - base::Seconds(1));
+    EXPECT_TRUE(broken_services_.IsBroken(alternative_service));
+    test_task_runner_->FastForwardBy(base::Seconds(1));
+    EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
+    expected_delay *= 2;
+  }
+
+  // The max delay has been reached, subsequent delays should not increase
+  // further.
+  for (int i = 0; i < 3; ++i) {
+    SCOPED_TRACE(i);
+    broken_services_.MarkBroken(alternative_service);
+    test_task_runner_->FastForwardBy(kExpectedMaxDelay - base::Seconds(1));
+    EXPECT_TRUE(broken_services_.IsBroken(alternative_service));
+    test_task_runner_->FastForwardBy(base::Seconds(1));
+    EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
+  }
 }
 
 }  // namespace

@@ -1150,21 +1150,31 @@ BASE_FEATURE(kPartitionWebSocketEndpointLocksByNetworkAnonymizationKey,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInitialDelayForBrokenAlternativeService,
+#if BUILDFLAG(CRONET_BUILD)
+             // Cronet is running its own experiment and will launch separately.
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else   // BUILDFLAG(CRONET_BUILD)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(CRONET_BUILD)
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kInitialDelayForBrokenAlternativeServiceParam,
                    &kInitialDelayForBrokenAlternativeService,
-                   base::Seconds(300));
+                   base::Seconds(10));
 
 BASE_FEATURE(kPersistBrokenAlternativeServices,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMaxDelayForBrokenAlternativeService,
+#if BUILDFLAG(CRONET_BUILD)
+             // Cronet is running its own experiment and will launch separately.
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else   // BUILDFLAG(CRONET_BUILD)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(CRONET_BUILD)
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kMaxDelayForBrokenAlternativeServiceParam,
                    &kMaxDelayForBrokenAlternativeService,
-                   base::Days(2));
+                   base::Minutes(30));
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kEnableWindowsTcpLoopbackFastFail,

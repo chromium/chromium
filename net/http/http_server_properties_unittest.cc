@@ -87,14 +87,15 @@ HttpServerProperties::ServerInfoMapKey CreateSimpleKey(
 
 class HttpServerPropertiesTest : public TestWithTaskEnvironment {
  protected:
-  // The kPartitionConnectionsByNetworkIsolationKey feature must be disabled
-  // before `impl_` is constructed, as the HttpServerProperties constructor
-  // queries the feature.
+  // The features must be disabled before `impl_` is constructed, as the
+  // HttpServerProperties constructor queries the features.
   HttpServerPropertiesTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME,
             /*disabled_features=*/
-            {features::kPartitionConnectionsByNetworkIsolationKey}),
+            {features::kPartitionConnectionsByNetworkIsolationKey,
+             features::kInitialDelayForBrokenAlternativeService,
+             features::kMaxDelayForBrokenAlternativeService}),
         test_tick_clock_(GetMockTickClock()),
         impl_(/*pref_delegate=*/nullptr,
               /*net_log=*/nullptr,

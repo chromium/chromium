@@ -19,10 +19,16 @@ namespace net {
 
 namespace {
 
-// Default broken alternative services, which is used when
-// exponential_backoff_on_initial_delay is false.
+// Initial delay for broken alternative services, used when
+// features::kInitialDelayForBrokenAlternativeService is disabled. It is also
+// the upper bound for any configured initial delay, and the base of the
+// exponential backoff when exponential_backoff_on_initial_delay is false.
 constexpr base::TimeDelta kDefaultBrokenAlternativeProtocolDelay =
     base::Seconds(300);
+// Maximum delay for broken alternative services, used when
+// features::kMaxDelayForBrokenAlternativeService is disabled.
+constexpr base::TimeDelta kDefaultMaxBrokenAlternativeProtocolDelay =
+    base::Days(2);
 // Subsequent failures result in exponential (base 2) backoff.
 // Given the shortest broken delay is 1s, limit binary shift to limit delay to
 // approximately 2 days.
@@ -92,8 +98,14 @@ BrokenAlternativeServices::BrokenAlternativeServices(
       recently_broken_alternative_services_(
           max_recently_broken_alternative_service_entries),
       initial_delay_(
-          features::kInitialDelayForBrokenAlternativeServiceParam.Get()),
-      max_delay_(features::kMaxDelayForBrokenAlternativeServiceParam.Get()) {
+          base::FeatureList::IsEnabled(
+              features::kInitialDelayForBrokenAlternativeService)
+              ? features::kInitialDelayForBrokenAlternativeServiceParam.Get()
+              : kDefaultBrokenAlternativeProtocolDelay),
+      max_delay_(base::FeatureList::IsEnabled(
+                     features::kMaxDelayForBrokenAlternativeService)
+                     ? features::kMaxDelayForBrokenAlternativeServiceParam.Get()
+                     : kDefaultMaxBrokenAlternativeProtocolDelay) {
   DCHECK(delegate_);
   DCHECK(clock_);
 }
