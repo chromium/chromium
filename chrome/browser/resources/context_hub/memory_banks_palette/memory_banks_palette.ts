@@ -123,7 +123,7 @@ export class MemoryBanksPaletteElement extends CrLitElement {
   accessor toastIsError: boolean = false;
   protected accessor activePanel: 'palette'|'settings' = 'palette';
   protected accessor currentShortcutDisplayText: string = '';
-  protected accessor isShortcutLoaded: boolean = false;
+  private accessor isShortcutLoaded: boolean = false;
   protected accessor suggestedShortcutAccelerator: string = '';
   protected accessor suggestedShortcutDisplayText: string = '';
 

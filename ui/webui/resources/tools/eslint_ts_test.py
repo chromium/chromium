@@ -1631,6 +1631,121 @@ class EslintTsTest(unittest.TestCase):
         e in str(context.exception), f'Found unexpected error: {e}'
       )
 
+  def testWebUiEslintPlugin_LitMemberVisibility(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+        [
+          "with_webui_plugin_lit_member_visibility_violations.ts",
+          "with_webui_plugin_lit_member_visibility_violations.html.ts",
+          "with_webui_plugin_lit_member_visibility_violations_sub.html.ts",
+          "with_webui_plugin_lit_member_visibility_violations_no_template_file.ts",
+        ]
+      )
+
+    _EXPECTED_STRING = "@webui-eslint/lit-member-visibility"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+    self.assertNotIn(
+      "@webui-eslint/lit-reactive-properties", str(context.exception)
+    )
+    self.assertNotIn(
+      "@webui-eslint/lit-property-accessor", str(context.exception)
+    )
+
+    _UNNECESSARY_PROTECTED_PROPERTY_ERROR = "Property '%(propertyName)s' in class '%(className)s' is marked 'protected' but is not referenced in the HTML template. Mark it as 'private' instead"
+
+    class_name = 'WithWebuiPluginLitMemberVisibilityViolationsElement'
+    inline_class_name = 'InlineTemplateDummyTestElement'
+    no_template_class_name = 'NoTemplateDummyTestElement'
+
+    errors = [
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'unusedProtectedAccessor_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'unusedProtectedProp_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'unusedProtectedInlineAccessor_',
+        'className': inline_class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'unusedProtectedNoTemplateProp_',
+        'className': no_template_class_name,
+      },
+    ]
+    for e in errors:
+      self.assertTrue(
+        e in str(context.exception), f"Didn't find expected error: {e}"
+      )
+
+    non_errors = [
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'usedProtectedAccessor_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'usedInSubTemplateAccessor_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'usedProtectedProp_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'usedInNestedExpr_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'reflectedProtectedAccessor_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'privateAccessor_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'publicAccessor',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'baseProtectedProp_',
+        'className': class_name,
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'unusedBaseProp_',
+        'className': 'BaseDummyElement',
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'mixinProp_',
+        'className': 'DummyMixin',
+      },
+      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
+      % {
+        'propertyName': 'usedProtectedInlineAccessor_',
+        'className': inline_class_name,
+      },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+        e in str(context.exception), f'Found unexpected error: {e}'
+      )
+
 
 if __name__ == "__main__":
   unittest.main()
