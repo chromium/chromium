@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Settings-specific strings (included from generated_resources.grd). -->
 <grit-part>
-<if expr="is_chromeos">
-  <!-- About (OS Settings) -->
-  <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
-    Restart
-  </message>
-
-  <!-- A11y (OS Settings) -->
-  <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
-    Manage accessibility features
-  </message>
-</if>
 </grit-part>

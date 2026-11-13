@@ -6,17 +6,8 @@
   </message>
   <if expr="not is_android">
     <!-- Shared across multiple pages -->
-    <message name="IDS_SETTINGS_CONTINUE" desc="Label for 'Continue' buttons.">
-      Continue
-    </message>
     <message name="IDS_SETTINGS_GOT_IT" desc="Label for the button to acknowledge the information in a dialog and dismiss it.">
       Got it
-    </message>
-    <message name="IDS_SETTINGS_MORE_ACTIONS" desc="Tooltip text (shows on hover or for screenreaders) for a button that shows a menu with more actions when clicked or tapped">
-      More actions
-    </message>
-    <message name="IDS_SETTINGS_MORE_ACTIONS_BUTTON_ARIA_LABEL" desc="Aria (accessibility) label for a button that shows a menu with more actions when clicked or tapped">
-      More actions for <ph name="BUTTON_TITLE">$1</ph>
     </message>
     <message name="IDS_SETTINGS_SEND_FEEDBACK_ROLE_DESCRIPTION" desc="Accessibility role description for the send feedback button at the top right of a settings section. Spoken by screen readers when focusing the button but not visually rendered.">
       Send feedback button
@@ -59,15 +50,7 @@
     <message name="IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_SYSTEM_REQUIREMENTS" desc="The accessibility label for a 'Learn more' link next to an error message about how the user's operating system is not supported.">
       Learn more about system requirements
     </message>
-    <if expr="not is_chromeos">
-      <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH" desc="The label for the relaunch button that relaunches the browser once update is complete">
-        Relaunch
-      </message>
-    </if>
     <if expr="_google_chrome">
-      <message name="IDS_SETTINGS_ABOUT_PAGE_REPORT_AN_ISSUE" desc="Text of the button which allows the user to report an issue with Chrome.">
-        Report an issue
-      </message>
       <message name="IDS_SETTINGS_ABOUT_PAGE_PRIVACY_POLICY" desc="Text of the button which allows the user to open the privacy policy.">
         Privacy policy
       </message>
@@ -93,41 +76,8 @@
     </if>
 
     <!-- Accessibility Page -->
-    <message name="IDS_SETTINGS_ACCESSIBILITY" desc="Name of the settings page which displays accessibility preferences.">
-      Accessibility
-    </message>
-    <message name="IDS_SETTINGS_ACCESSIBILITY_WEB_STORE" desc="Text for an external link explaining that additional accessibility features are found on the Chrome Web Store.">
-      Open Chrome Web Store
-    </message>
     <message name="IDS_SETTINGS_MORE_FEATURES_LINK" desc="Link which opens page where users can install extensions which provide additional accessibility features.">
       Add accessibility features
-    </message>
-    <message name="IDS_SETTINGS_MORE_FEATURES_LINK_DESCRIPTION" desc="Description for the link about additional accessibility features.">
-      Enable accessibility features
-    </message>
-    <message name="IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_TITLE" desc="Description for screen reader image labels feature.">
-      Get image descriptions from Google
-    </message>
-    <message name="IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_SUBTITLE" desc="Subtitle for screen reader image labels feature.">
-      If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.
-    </message>
-    <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_COMPLETE" desc="Success message when it has downloaded main node annotation files.">
-      Main node annotation files downloaded
-    </message>
-    <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_ERROR" desc="Generic error message when it fails to download main node annotation files.">
-      Can't download main node annotation files. Try again later.
-    </message>
-    <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_PROGRESS" desc="Download progress indicator after main node annotation is enabled. The user needs to download certain files for the feature to work.">
-      Downloading main node annotation files… <ph name="PERCENT">$1<ex>17</ex></ph>%
-    </message>
-    <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOADING" desc="Generic message when it has started downloading main node annotation files.">
-      Downloading main node annotation files
-    </message>
-    <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_TITLE" desc="Description for screen reader main node annotations feature.">
-      Annotate main node
-    </message>
-    <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE" desc="Subtitle for screen reader main node annotation feature.">
-      Identify the main landmark in web pages for assistive technology
     </message>
     <message name="IDS_SETTINGS_AX_TREE_FIXING_TITLE" desc="Description for screen reader tree fixing feature." translateable = "false">
       AXTree Fixing
@@ -135,55 +85,6 @@
     <message name="IDS_SETTINGS_AX_TREE_FIXING_SUBTITLE" desc="Subtitle for screen reader tree fixing feature." translateable = "false">
       Fix the AXTree
     </message>
-    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE" desc="Name of the setting to enable Live Caption feature.">
-      Live Caption
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_TITLE" desc="Name of the setting to enable Live Translate feature.">
-      Live Translate
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_SUBTITLE" desc="Description text for Live Translate feature.">
-      Automatically translates live captions. Captions are sent to Google for translation.
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE" desc="Description text for Live Caption feature. When audio or video is playing, the user will see captions on the screen.">
-      Automatically creates captions for supported languages. Audio never leaves your device.
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
-      Downloading speech recognition files... <ph name="PERCENT">$1<ex>17</ex></ph>%
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE" desc="Success message when Live Caption files have completed downloading.">
-      Speech files downloaded
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR" desc="Generic error message when Live Caption files can’t be downloaded.">
-      Can't download speech files. Try again later.
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR_REBOOT_REQUIRED" desc="Error message shown when a OS reboot is required to install the Live Caption files.">
-      Can't install speech files. Your device needs to be updated. Restart your device and try again.
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_MASK_OFFENSIVE_WORDS_TITLE" desc="Name of the setting to hide profanity (offensive words) for the Live Caption feature.">
-      Hide profanity
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_SPEECH_RECOGNITION_SMALL_EXPERT_MODEL_SECTION_TITLE" desc="Title for Small expert model section.">
-      Small expert model
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_SPEECH_RECOGNITION_SMALL_EXPERT_MODEL_SECTION_SUBTITLE" desc="Subtitle describing Small expert model feature.">
-      On-device model
-    </message>
-    <message name="IDS_SETTINGS_CAPTIONS_SPEECH_RECOGNITION_SMALL_EXPERT_MODEL_DELETE_BUTTON" desc="Button label to delete Small expert model component package.">
-      Delete model
-    </message>
-    <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE" desc="Name of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
-      Navigate pages with a text cursor
-    </message>
-    <if expr="not is_chromeos">
-      <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE" desc="Subtitle of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
-        To turn caret browsing on or off, use the shortcut F7
-      </message>
-    </if>
-    <if expr="is_chromeos">
-      <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_SUBTITLE" desc="Subtitle of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
-        To turn caret browsing on or off, use the shortcut Ctrl+Search+7
-      </message>
-    </if>
     <if expr="not is_chromeos">
       <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the focused object to make it easier to see.">
         Show a quick highlight on the focused object
@@ -422,45 +323,8 @@
     </if>
 
     <!-- Common -->
-    <message name="IDS_SETTINGS_ADVANCED" desc="Name of the settings page which displays advanced preferences.">
-      Advanced
-    </message>
-    <message name="IDS_SETTINGS_BASIC" desc="Name of the settings page which displays advanced preferences.">
-      Basic
-    </message>
-    <message name="IDS_SETTINGS_MENU_BUTTON_LABEL" desc="Tooltips for the sidebar menu button.">
-      Main menu
-    </message>
-    <message name="IDS_SETTINGS_MENU_EXTENSIONS_LINK_TOOLTIP" desc="Explanation that the extensions page will open in a new tab">
-      Opens in a new tab
-    </message>
-    <message name="IDS_SETTINGS_SEARCH_PROMPT" desc="Label for input field to search within settings.">
-      Search settings
-    </message>
     <message name="IDS_SETTINGS_SEARCH_NO_RESULTS_HELP" desc="Help text for a search that has no results.">
       Go to <ph name="BEGIN_LINK_CHROMIUM">&lt;a target="_blank" href="$1"&gt;</ph>Google Chrome help<ph name="END_LINK_CHROMIUM">&lt;/a&gt;</ph> if you can't find what you're looking for
-    </message>
-    <message name="IDS_SETTINGS_SETTINGS" desc="The settings page title.">
-      Settings
-    </message>
-    <message name="IDS_SETTINGS_ALT_PAGE_TITLE" desc="The settings page title for the about page.">
-      Settings - <ph name="SECTION_TITLE">$1<ex>About Chromium</ex></ph>
-    </message>
-    <message name="IDS_SETTINGS_SUBPAGE_BUTTON" desc="Accessibility description for a button navigating the user from a settings page to one of the settings subpages.">
-      Subpage button
-    </message>
-    <if expr="not is_chromeos">
-      <message name="IDS_SETTINGS_RESTART" desc="Text for a button that will restart Chrome.">
-        Relaunch
-      </message>
-    </if>
-    <if expr="is_chromeos">
-      <message name="IDS_SETTINGS_RESTART" desc="Text for a button that will restart ChromeOS.">
-        Restart
-      </message>
-    </if>
-    <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION" desc="Label text of an indicator that a setting's value is being controlled by an extension.">
-      <ph name="NAME">$1<ex>Adblocker plusplus</ex></ph> is controlling this setting
     </message>
    <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION_TITLE" desc="Title of the disclaimer that a setting's value is being controlled by an extension.">
      An extension is controlling this setting
@@ -471,35 +335,14 @@
     <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_MANAGE_OPTION" desc="Text of the disclaimer that a setting's value is being controlled by an extension. `See details` link goes to the Details > Extension Options link; either `chrome://extensions/?options=ID ` or `chrome-extension://ID/options.html`">
       The "<ph name="NAME">$1<ex>Adblocker plusplus</ex></ph>" extension was added by your organization's policy and is controlling this setting. <ph name="BEGIN_LINK">&lt;a href="#" id="manageLink" aria-description="$2"&gt;</ph>See details<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
-    <message name="IDS_SETTINGS_CLEAR" desc="Label used on a menu item or button to delete an item.">
-      Delete
-    </message>
-    <message name="IDS_SETTINGS_CUSTOM" desc="Label for a custom option in a dropdown menu.">
-      Custom
-    </message>
-    <message name="IDS_SETTINGS_DELETE" desc="Label used on a menu item or button to delete an item.">
-      Delete
-    </message>
-    <message name="IDS_SETTINGS_EDIT" desc="Label used on a menu item or button, used in different contexts to edit an item.">
-      Edit
-    </message>
     <message name="IDS_SETTINGS_NOT_VALID" desc="Text indicating that an input is not valid.">
       Not valid
-    </message>
-    <message name="IDS_SETTINGS_NOT_VALID_WEB_ADDRESS" desc="Text indicating that the Web address entered by the user is invalid." >
-      Not a valid web address
-    </message>
-    <message name="IDS_SETTINGS_NOT_VALID_WEB_ADDRESS_FOR_CONTENT_TYPE" desc="Text indicating that the content setting can't take effect because the setting is limited to secure origins." >
-      Origin must be secure
     </message>
     <message name="IDS_SETTINGS_INPUT_MAX_LENGTH_DESCRIPTION" desc="Descriptive text read by screen readers indicating that an input has a maximum character limit." >
       Maximum length <ph name="MAX">$1<ex>20</ex></ph> characters
     </message>
     <message name="IDS_SETTINGS_RETRY" desc="The label text of the retry button because there is an error.">
       Retry
-    </message>
-    <message name="IDS_SETTINGS_SLIDER_MIN_MAX_ARIA_ROLE_DESCRIPTION" desc="A label to be read aloud by screen readers when a user focuses on a slider. A settings slider generally has a minimum value, a maximum value, and a fixed range of values in between. This label gives the user context for what the minimum and maximum values represent for that particular slider.">
-      Slider: <ph name="MIN_LABEL">$1<ex>Slowest</ex></ph> to <ph name="MAX_LABEL">$2<ex>Fastest</ex></ph>
     </message>
 
     <!-- Autofill Page -->
@@ -1268,27 +1111,6 @@
         Preferred languages
       </message>
     </if>
-    <message name="IDS_SETTINGS_LANGUAGE_SEARCH" desc="Placeholder/label for the text input field that allows a user to filter languages.">
-      Search languages
-    </message>
-    <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_TO_TOP" desc="Label for the menu item that moves the language up to the top of the list of languages.">
-      Move to the top
-    </message>
-    <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_UP" desc="Label for the menu item that moves the language up in the list of languages.">
-      Move up
-    </message>
-    <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_DOWN" desc="Label for the menu item that moves the language down in the list of languages.">
-      Move down
-    </message>
-    <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_REMOVE" desc="Label for the menu item to remove a language from the list of enabled languages.">
-      Remove
-    </message>
-    <message name="IDS_SETTINGS_LANGUAGES_LANGUAGES_ADD" desc="Button under the list of enabled languages which opens a dialog that lets the user enable additional languages.">
-      Add languages
-    </message>
-    <message name="IDS_SETTINGS_LANGUAGES_MANAGE_LANGUAGES_TITLE" desc="Name of the settings dialog which allows enabling additional languages.">
-      Add languages
-    </message>
     <message name="IDS_SETTINGS_LANGUAGES_NO_LANGUAGES_ADDED" desc="Placeholder for language list settings when no languages have been added, on the Manage Languages page.">
       No languages added
     </message>
@@ -1884,42 +1706,6 @@
       Manage HTTPS/SSL certificates on your device
     </message>
 
-    <message name="IDS_SETTINGS_MANAGE" desc="Text displayed on a button, which when clicked opens the Extensions subpage for managing an extension">
-      Manage
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options">
-      Use secure DNS
-    </message>
-    <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in auto-upgrade mode">
-      OS default (when available)
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL" desc="Accessibility label for the dropdown menu containing secure resolvers">
-      Provider options
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Label for the select menu that allows a secure resolver to be selected">
-      Select DNS provider
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY" desc="Text that displays a link to the privacy policy of the resolver selected from a dropdown menu">
-      See this provider's <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>privacy policy<ph name="END_LINK">&lt;/a&gt;</ph>
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT" desc="Substring of the secure DNS setting when secure DNS is disabled due to detection of a managed environment">
-      This setting is disabled on managed browsers
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL" desc="Substring of the secure DNS setting when secure DNS is disabled due to detection of OS-level parental controls">
-      This setting is disabled because parental controls are on
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION" desc="Text of the select option that is used for a custom secure DNS provider">
-      Add custom DNS service provider
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER" desc="Placeholder text for a textbox where users can enter a custom secure DNS provider">
-      Enter custom DNS query URL
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR" desc="Error text for an incorrectly formatted entry for the custom secure DNS provider">
-      Enter a correctly formatted URL
-    </message>
-    <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_CONNECTION_ERROR" desc="Error text for a custom secure DNS provider entry to which a probe connection fails">
-      Please verify that this is a valid provider or try again later
-    </message>
     <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_OPTIMIZATION_LINK_TITLE" desc="Title for the link row to the V8 security settings.">
       Manage JavaScript optimization &amp; security
     </message>
@@ -1990,9 +1776,6 @@
     <!-- Reset Settings Page -->
     <message name="IDS_SETTINGS_RESET_PROMPT_TITLE" desc="Title for a prompt that gives an explanation of what would be resetted by 'Reset and clean up' section of Chrome Settings. " meaning="Chrome Cleanup feature. Try to use the same translation for 'Reset' in 'Reset and cleanup' string.">
       Reset settings?
-    </message>
-    <message name="IDS_SETTINGS_RESET" desc="Title for an item in the 'Reset and clean up' section of Chrome Settings. If the user clicks this option, browser settings will be returned to their default values, after a confirmation by the user." meaning="Chrome Cleanup feature. Try to use the same translation for 'Reset' in 'Reset and cleanup' string.">
-      Reset settings
     </message>
     <message name="IDS_SETTINGS_RESET_ALL_SETTINGS" desc="Text of the button on the General settings page that opens a dialog to reset browser settings back to their default values.">
       Reset all settings
@@ -3717,18 +3500,6 @@
     <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button in the Sign out of Chrome dialog that toggles showing the profile stats. Only visible by screen reader software.">
       Show profile stats
     </message>
-    <message name="IDS_SETTINGS_ENCRYPT_WITH_SYNC_PASSPHRASE_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with a user-provided password.">
-      Encrypt synced data with your own <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>sync passphrase<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>. Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
-    </message>
-    <message name="IDS_SETTINGS_PASSPHRASE_EXPLANATION_TEXT" desc="Message shown when explicit passphrase is selected.">
-      Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>reset sync<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-    </message>
-    <message name="IDS_SETTINGS_PASSPHRASE_RESET_HINT_ENCRYPTION" desc="Informs user how to change their encryption setting.">
-      To change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>reset sync<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> to remove your sync passphrase
-    </message>
-    <message name="IDS_SETTINGS_PASSPHRASE_RECOVER" desc="Message about how to recover from a lost passphrase.">
-      If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>reset sync<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-    </message>
     <!-- TODO(crbug.com/570417844): Remove translateable="false" once the strings are finalized. -->
     <message name="IDS_SETTINGS_DEVICE_TAB_VISIBILITY_TITLE" translateable="false" desc="Title of the Device tab visibility setting row and subpage in Chrome Settings.">
       Device tab visibility
@@ -3849,21 +3620,6 @@
     <message name="IDS_SETTINGS_FONT_SIZE_LABEL" desc="Label for the font size dropdown menu in settings.">
       Font size
     </message>
-    <message name="IDS_SETTINGS_VERY_SMALL_FONT" desc="The very small choice in the font size dropdown menu in settings.">
-      Very small
-    </message>
-    <message name="IDS_SETTINGS_SMALL_FONT" desc="The small choice in the font size dropdown menu in settings.">
-      Small
-    </message>
-    <message name="IDS_SETTINGS_MEDIUM_FONT" desc="The medium choice in the font size dropdown menu in settings.">
-      Medium (Recommended)
-    </message>
-    <message name="IDS_SETTINGS_LARGE_FONT" desc="The large choice in the font size dropdown menu in settings.">
-      Large
-    </message>
-    <message name="IDS_SETTINGS_VERY_LARGE_FONT" desc="The very large choice in the font size dropdown menu in settings.">
-      Very large
-    </message>
     <message name="IDS_SETTINGS_CUSTOMIZE_FONTS" desc="Label for the customize fonts button in settings.">
       Customize fonts
     </message>
@@ -3893,9 +3649,6 @@
     </message>
     <message name="IDS_SETTINGS_HUGE_FONT_SIZE" desc="The large end of the minimum font size slider in settings.">
       Huge
-    </message>
-    <message name="IDS_SETTINGS_QUICK_BROWN_FOX" desc="Example text to see a font style and size sample.  The quick brown fox sentence is a playful way to show all 26 English letters.  Any example text will do.  There is no need to translate this exactly.">
-      The quick brown fox jumps over the lazy dog
     </message>
 
     <!-- System Page -->
