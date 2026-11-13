@@ -27,6 +27,10 @@
 
 class Profile;
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace glic {
 
 class GlicInstance;
@@ -79,11 +83,11 @@ class GlicActivityManager : private GlicInstanceObserver {
     return activities_;
   }
 
-  // Returns tracked activities visible for the given active tab context, sorted
-  // in canonical display priority order.
+  // Returns tracked activities visible for `active_tab`'s context (or without
+  // active-tab filtering when `active_tab` is null), sorted in canonical
+  // display priority order.
   std::vector<const GlicActivityItem*> GetSortedActivities(
-      const std::optional<std::string>& active_tab_conv_id = std::nullopt,
-      bool is_active_tab_showing = false) const;
+      const tabs::TabInterface* active_tab) const;
 
   // Called by UI controllers (e.g., GlicActivityListBubbleController)
   // immediately before rendering the activity list bubble so tab-dependent
@@ -161,7 +165,12 @@ class GlicActivityManager : private GlicInstanceObserver {
     std::optional<std::string> preview_snippet;
   };
 
-  void UpdateTaskNudge(bool show_bubble = false);
+  void ResetInstanceActivityToIdle(const GlicInstance& instance);
+  bool OnConversationActivityStateChangedImpl(
+      const std::string& conversation_id,
+      GlicConversationActivityUpdate update);
+  bool MarkActivitySeenImpl(const GlicActivityKey& key);
+  bool UpdateTaskNudge(bool show_bubble, bool force_notify);
   raw_ptr<Profile> profile_;
 
   base::CallbackListSubscription instance_created_subscription_;

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/common/glic_tab_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -63,7 +64,7 @@ void GlicNudgeControllerImpl::UpdateNudgeLabel(
     std::optional<std::string> prompt_suggestion,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeActivityCallback callback) {
-  tabs::TabInterface* active_tab = GetTabList()->GetActiveTab();
+  tabs::TabInterface* active_tab = GetActiveTab(browser_window_interface_);
   if (!active_tab || active_tab->GetContents() != web_contents) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

@@ -106,6 +106,12 @@ constexpr base::MemoryConsumerTraits kGlicInstanceCoordinatorTraits(
     base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
 }  // namespace
 
+// static
+GlicInstanceCoordinator* GlicInstanceCoordinator::Get(Profile* profile) {
+  auto* glic_service = GlicKeyedService::Get(profile);
+  return glic_service ? &glic_service->instance_coordinator() : nullptr;
+}
+
 GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
@@ -386,6 +392,17 @@ bool GlicInstanceCoordinatorImpl::IsAnyPanelShowing() const {
 bool GlicInstanceCoordinatorImpl::IsConversationPresent(
     const std::string& conversation_id) const {
   return !!GetInstanceImplForConversationId(conversation_id);
+}
+
+bool GlicInstanceCoordinatorImpl::IsConversationPanelShowingForTab(
+    const std::string& conversation_id,
+    const tabs::TabInterface* tab) const {
+  if (const GlicInstanceImpl* instance =
+          GetInstanceImplForConversationId(conversation_id)) {
+    return instance->IsActiveEmbedder(FloatingEmbedderKey{}) ||
+           (tab && instance->IsShowingInSidePanel(*tab));
+  }
+  return false;
 }
 
 GlicInstanceCoordinator::ActivateTabResult

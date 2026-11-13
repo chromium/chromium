@@ -31,7 +31,7 @@ namespace {
 // is true on official builds.
 constexpr int kFirstTitleId = IDS_GLIC_TASK_WAITING_FOR_CONSENT_TITLE;
 constexpr int kFirstDescriptionId = IDS_GLIC_TASK_WAITING_FOR_CONSENT_SUBTITLE;
-constexpr int kSecondTitleId = IDS_GLIC_ACTIVITY_TITLE_GEMINI;
+constexpr int kSecondTitleId = IDS_GLIC_ACTIVITY_NEW_CHAT;
 constexpr int kSecondDescriptionId = IDS_GLIC_ACTIVITY_WORKING;
 
 }  // namespace

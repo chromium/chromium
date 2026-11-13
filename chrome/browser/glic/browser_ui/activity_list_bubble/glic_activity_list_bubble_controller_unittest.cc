@@ -648,15 +648,20 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
   fake_actor_service->PauseTaskForTesting(id_1, /*from_actor=*/true);
   activity_manager->OnTabAddedToTask(id_1);
 
-  actor::TaskId id_2 = fake_actor_service->CreateTaskForTesting();
+  actor::TaskId id_2 =
+      fake_actor_service->CreateExperimentalTriggeringTaskWithTitleForTesting(
+          "");
   activity_manager->OnTabAddedToTask(id_2);
 
   auto rows = controller_->CreateRowViewModels();
   ASSERT_EQ(2u, rows.size());
   EXPECT_EQ(id_1, rows[0].task_id);
+  EXPECT_EQ(u"Test Task", rows[0].title);
   EXPECT_TRUE(rows[0].needs_review);
   EXPECT_FALSE(rows[0].has_been_seen);
   EXPECT_EQ(id_2, rows[1].task_id);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_UNTITLED_TASK),
+            rows[1].title);
   EXPECT_FALSE(rows[1].needs_review);
 
   // Clicking the row marks the activity as seen in GlicActivityManager.
@@ -723,6 +728,10 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
   ASSERT_TRUE(manager);
 
   manager->OnConversationActivityStateChanged(
+      "conv_idle", {.state = GlicActivityState::kIdle,
+                    .title = "Background Chat",
+                    .is_currently_visible = true});
+  manager->OnConversationActivityStateChanged(
       "conv_seen", {.state = GlicActivityState::kCompleted,
                     .title = "Seen Topic",
                     .preview_snippet = "Old snippet",
@@ -735,7 +744,7 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
       "conv_working", {.state = GlicActivityState::kInProgress, .title = ""});
 
   auto rows = controller_->CreateRowViewModels();
-  ASSERT_EQ(3u, rows.size());
+  ASSERT_EQ(4u, rows.size());
 
   // Priority 1: Unseen completed response.
   EXPECT_EQ("conv_test_123", rows[0].conversation_id);
@@ -745,29 +754,46 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
   EXPECT_FALSE(rows[0].has_been_seen);
   EXPECT_EQ(ui::kColorSysPrimary, rows[0].icon_and_subtitle_color);
 
-  // Priority 2: Conversation in progress (with default Gemini title fallback).
+  // Priority 2: Conversation in progress (with New chat placeholder fallback).
   EXPECT_EQ("conv_working", rows[1].conversation_id);
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_TITLE_GEMINI),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_NEW_CHAT),
             rows[1].title);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_WORKING),
             rows[1].subtitle);
   EXPECT_FALSE(rows[1].has_been_seen);
 
-  // Priority 4: Seen completed conversation.
-  EXPECT_EQ("conv_seen", rows[2].conversation_id);
-  EXPECT_EQ(u"Seen Topic", rows[2].title);
+  // Priority 4: Idle and seen conversations (tie-broken by conversation ID).
+  EXPECT_EQ("conv_idle", rows[2].conversation_id);
+  EXPECT_EQ(u"Background Chat", rows[2].title);
   EXPECT_EQ(u"", rows[2].subtitle);
   EXPECT_TRUE(rows[2].has_been_seen);
   EXPECT_EQ(ui::kColorMenuIcon, rows[2].icon_and_subtitle_color);
 
-  // Clicking a conversation row marks it as seen and invokes `GlicKeyedService`
-  // with `mojom::InvocationSource::kActivityListBubble`.
+  EXPECT_EQ("conv_seen", rows[3].conversation_id);
+  EXPECT_EQ(u"Seen Topic", rows[3].title);
+  EXPECT_EQ(u"", rows[3].subtitle);
+  EXPECT_TRUE(rows[3].has_been_seen);
+  EXPECT_EQ(ui::kColorMenuIcon, rows[3].icon_and_subtitle_color);
+
+  // Clicking a conversation row marks it as seen, activates the conversation's
+  // bound tab/window, and invokes `GlicKeyedService` with
+  // `mojom::InvocationSource::kActivityListBubble`.
+  EXPECT_CALL(mock_glic_keyed_service_->mock_coordinator(),
+              ActivateTabWithConversation("conv_test_123"));
   EXPECT_CALL(*mock_glic_keyed_service_, Invoke(testing::_))
-      .WillOnce([](GlicInvokeOptions options) {
-        EXPECT_EQ(options.GetInvocationSource(),
-                  mojom::InvocationSource::kActivityListBubble);
-        return nullptr;
-      });
+      .WillOnce(
+          [this](GlicInvokeOptions options) -> base::WeakPtr<GlicInstance> {
+            EXPECT_EQ(options.GetInvocationSource(),
+                      mojom::InvocationSource::kActivityListBubble);
+            const auto* last_active_or_new =
+                std::get_if<LastActiveOrNew>(&options.target.surface);
+            EXPECT_NE(last_active_or_new, nullptr);
+            if (last_active_or_new) {
+              EXPECT_EQ(last_active_or_new->window,
+                        browser_window_interface_.get());
+            }
+            return nullptr;
+          });
   ASSERT_TRUE(rows[0].on_clicked);
   rows[0].on_clicked.Run();
 

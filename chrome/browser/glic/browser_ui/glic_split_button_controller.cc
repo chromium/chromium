@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/common/glic_tab_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -179,10 +180,7 @@ void GlicSplitButtonController::OnGlicButtonClicked() {
 
   const bool is_panel_showing =
       glic_service_->IsPanelShowingForBrowser(*browser_);
-  tabs::TabInterface* active_tab = nullptr;
-  if (auto* tab_list = TabListInterface::From(browser_)) {
-    active_tab = tab_list->GetActiveTab();
-  }
+  tabs::TabInterface* active_tab = GetActiveTab(browser_);
   if (!is_panel_showing && is_showing_nudge && prompt_suggestion &&
       !prompt_suggestion->empty() && active_tab &&
       GlicEnabling::IsEnabledForProfile(browser_->GetProfile())) {
@@ -290,8 +288,12 @@ GlicSplitButtonUiState GlicSplitButtonController::ComputeSplitButtonUiState()
           IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL, std::max<size_t>(1, count));
       break;
     case GlicActivityNudgeState::Text::kResponseReady:
+      state.secondary_action = GlicSplitButtonUiState::SecondaryAction::kText;
+      state.secondary_label =
+          l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_RESPONSE_READY);
+      break;
     case GlicActivityNudgeState::Text::kDefault:
-      if (!activity_manager.activities().empty()) {
+      if (HasSecondaryActivities()) {
         state.secondary_action =
             GlicSplitButtonUiState::SecondaryAction::kChevron;
       }
@@ -301,9 +303,22 @@ GlicSplitButtonUiState GlicSplitButtonController::ComputeSplitButtonUiState()
   return state;
 }
 
+bool GlicSplitButtonController::HasSecondaryActivities() const {
+  return !glic_service_->activity_manager()
+              .GetSortedActivities(GetActiveTab(browser_))
+              .empty();
+}
+
 void GlicSplitButtonController::OnActiveTabChanged(TabListInterface& tab_list,
                                                    tabs::TabInterface* tab) {
   UpdateSplitButtonState();
+  if (current_ui_state_.secondary_action ==
+      GlicSplitButtonUiState::SecondaryAction::kNone) {
+    CloseBubble();
+  } else if (activity_list_bubble_controller_ &&
+             activity_list_bubble_controller_->IsBubbleShowing()) {
+    ShowBubble();
+  }
 }
 
 void GlicSplitButtonController::OnTabListDestroyed(TabListInterface& tab_list) {

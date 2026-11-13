@@ -212,7 +212,11 @@ IN_PROC_BROWSER_TEST_F(
       },
       1));
   EXPECT_FALSE(activity_manager().HasUnseenOrInProgressActivities());
-  EXPECT_TRUE(activity_manager().activities().empty());
+  const GlicActivityKey key{GlicActivityType::kConversationResponse,
+                            "conv_stop"};
+  auto it = activity_manager().activities().find(key);
+  ASSERT_NE(it, activity_manager().activities().end());
+  EXPECT_EQ(it->second.state, GlicActivityState::kIdle);
 
   // Error/system stop transitions the background activity to kFailed.
   ASSERT_TRUE(NotifyUserInputSubmittedInClient(instance));
@@ -236,9 +240,7 @@ IN_PROC_BROWSER_TEST_F(
       },
       2));
 
-  const GlicActivityKey key{GlicActivityType::kConversationResponse,
-                            "conv_stop"};
-  auto it = activity_manager().activities().find(key);
+  it = activity_manager().activities().find(key);
   ASSERT_NE(it, activity_manager().activities().end());
   EXPECT_EQ(it->second.state, GlicActivityState::kFailed);
   EXPECT_EQ(activity_manager().GetNumUnseenActivities(), 1u);
@@ -262,14 +264,19 @@ IN_PROC_BROWSER_TEST_F(GlicActivityManagerBrowserTest,
       true));
 
   // Reloading the guest disconnects the prior WebClientHandler Mojo pipe and
-  // triggers GlicInstanceObserver::OnInstanceWebClientCleared. Wait for the
-  // reloaded client to finish reconnecting so GuestView teardown is clean.
+  // triggers GlicInstanceObserver::OnInstanceWebClientCleared, resetting the
+  // live conversation back to kIdle. Wait for the reloaded client to finish
+  // reconnecting so GuestView teardown is clean.
   ASSERT_TRUE(content::ExecJs(instance->host().web_client_contents(),
                               "window.location.reload();"));
   ASSERT_OK(RunUntilEqual(
       [&]() { return activity_manager().HasUnseenOrInProgressActivities(); },
       false));
-  EXPECT_TRUE(activity_manager().activities().empty());
+  const GlicActivityKey key{GlicActivityType::kConversationResponse,
+                            "conv_abort"};
+  auto it = activity_manager().activities().find(key);
+  ASSERT_NE(it, activity_manager().activities().end());
+  EXPECT_EQ(it->second.state, GlicActivityState::kIdle);
   ASSERT_OK(WaitForGlicClient(instance));
 }
 

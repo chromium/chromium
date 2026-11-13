@@ -18218,8 +18218,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Glic Activity Hub Strings -->
-    <message name="IDS_GLIC_ACTIVITY_TITLE_GEMINI" desc="Default title shown in the Glic Activity Hub for a Gemini conversation.">
-      Gemini
+    <message name="IDS_GLIC_ACTIVITY_NEW_CHAT" desc="Placeholder title for a conversation row in the Gemini in Chrome Activity Hub bubble when the conversation does not have a title yet. Noun phrase.">
+      New chat
+    </message>
+    <message name="IDS_GLIC_ACTIVITY_UNTITLED_TASK" desc="Placeholder title for an automated task row in the Gemini in Chrome Activity Hub bubble when the task does not have a title. Noun phrase.">
+      Untitled task
     </message>
     <message name="IDS_GLIC_ACTIVITY_WORKING" desc="Status text shown in the Glic Activity Hub when Gemini is generating a response or performing a task.">
       Working…

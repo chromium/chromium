@@ -50,6 +50,8 @@ class GlicInstanceCoordinator {
     kNoBoundTabs,
     kTabNotInWindow,
   };
+  static GlicInstanceCoordinator* Get(Profile* profile);
+
   GlicInstanceCoordinator(const GlicInstanceCoordinator&) = delete;
   GlicInstanceCoordinator& operator=(const GlicInstanceCoordinator&) = delete;
   GlicInstanceCoordinator() = default;
@@ -58,6 +60,13 @@ class GlicInstanceCoordinator {
   virtual bool IsAnyPanelShowing() const = 0;
   virtual bool IsConversationPresent(
       const std::string& conversation_id) const = 0;
+  // Returns whether a Glic panel for `conversation_id` is currently visible
+  // when viewing `tab`—either in `tab`'s side panel (as opposed to another
+  // tab's or window's side panel) or in the global floating panel. If `tab` is
+  // null, only checks the floating panel.
+  virtual bool IsConversationPanelShowingForTab(
+      const std::string& conversation_id,
+      const tabs::TabInterface* tab) const = 0;
   virtual ActivateTabResult ActivateTabWithConversation(
       const std::string& conversation_id) = 0;
   virtual GlicInstance* GetInstanceForConversationId(

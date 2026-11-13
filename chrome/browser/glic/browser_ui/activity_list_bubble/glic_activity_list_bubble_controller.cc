@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_row_view_model.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
+#include "chrome/browser/glic/common/glic_tab_util.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -179,7 +180,9 @@ GlicActivityRowViewModel CreateActorTaskActivityRow(
 #endif
   model.icon_and_subtitle_color =
       GetRowColor(item.is_enabled, !item.has_been_seen, model.needs_review);
-  model.title = item.title;
+  model.title = item.title.empty()
+                    ? l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_UNTITLED_TASK)
+                    : item.title;
   model.subtitle = item.subtitle;
   if (item.task_id.has_value() && on_task_clicked) {
     model.on_clicked = base::BindRepeating(on_task_clicked, *item.task_id);
@@ -205,6 +208,8 @@ std::u16string GetConversationRowSubtitle(const GlicActivityItem& item) {
       return l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_NEEDS_INPUT);
     case GlicActivityState::kFailed:
       return l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_ERROR);
+    case GlicActivityState::kIdle:
+      return u"";
   }
 }
 
@@ -221,7 +226,7 @@ GlicActivityRowViewModel CreateConversationActivityRow(
   model.icon_and_subtitle_color =
       !item.has_been_seen ? ui::kColorSysPrimary : ui::kColorMenuIcon;
   model.title = item.title.empty()
-                    ? l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_TITLE_GEMINI)
+                    ? l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_NEW_CHAT)
                     : item.title;
   model.subtitle = GetConversationRowSubtitle(item);
   if (on_conversation_clicked) {
@@ -229,7 +234,6 @@ GlicActivityRowViewModel CreateConversationActivityRow(
   }
   return model;
 }
-
 }  // namespace
 
 DEFINE_USER_DATA(GlicActivityListBubbleController);
@@ -309,6 +313,8 @@ GlicActivityListBubbleController::GetActorTaskRowViewModels(
         ShouldShowConsentOverride(task_state.value(), has_tab,
                                   task_interrupt_reason)
             ? l10n_util::GetStringUTF16(IDS_GLIC_TASK_WAITING_FOR_CONSENT_TITLE)
+        : task_title->empty()
+            ? l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_UNTITLED_TASK)
             : base::UTF8ToUTF16(task_title.value());
 
     model.subtitle = GetRowSubtitle(task_state.value(), has_tab, feature_mode,
@@ -367,23 +373,6 @@ GlicActivityListBubbleController::CreateRowViewModelsImpl() {
   }
   activity_manager->RefreshActivities();
 
-  std::optional<std::string> active_tab_conv_id;
-  bool is_active_tab_showing = false;
-  if (tabs::TabInterface* active_tab =
-          TabListInterface::From(browser_)
-              ? TabListInterface::From(browser_)->GetActiveTab()
-              : nullptr;
-      active_tab) {
-    if (auto* glic_service = GlicKeyedService::Get(profile)) {
-      if (auto* instance =
-              glic_service->instance_coordinator().GetInstanceForTab(
-                  active_tab)) {
-        active_tab_conv_id = instance->conversation_id();
-        is_active_tab_showing = instance->IsShowing();
-      }
-    }
-  }
-
   auto on_task_clicked =
       base::BindRepeating(&GlicActivityListBubbleController::OnTaskRowClicked,
                           weak_ptr_factory_.GetWeakPtr());
@@ -392,8 +381,7 @@ GlicActivityListBubbleController::CreateRowViewModelsImpl() {
       weak_ptr_factory_.GetWeakPtr());
 
   std::vector<const GlicActivityItem*> sorted_items =
-      activity_manager->GetSortedActivities(active_tab_conv_id,
-                                            is_active_tab_showing);
+      activity_manager->GetSortedActivities(GetActiveTab(browser_));
   std::vector<GlicActivityRowViewModel> rows;
   rows.reserve(sorted_items.size());
   for (const auto* item_ptr : sorted_items) {
@@ -621,9 +609,11 @@ void GlicActivityListBubbleController::OnConversationRowClicked(
     GlicActivityKey key{GlicActivityType::kConversationResponse,
                         conversation_id};
     glic_service->activity_manager().MarkActivitySeen(key);
+    glic_service->instance_coordinator().ActivateTabWithConversation(
+        conversation_id);
     Target target;
     target.conversation = ConversationId(conversation_id);
-    target.surface = LastActiveOrNew{};
+    target.surface = LastActiveOrNew{browser_};
     GlicInvokeOptions options(std::move(target),
                               mojom::InvocationSource::kActivityListBubble);
     glic_service->Invoke(std::move(options));

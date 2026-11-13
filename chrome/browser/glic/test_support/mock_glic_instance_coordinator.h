@@ -23,6 +23,10 @@ class MockGlicInstanceCoordinator
               IsConversationPresent,
               (const std::string&),
               (const, override));
+  MOCK_METHOD(bool,
+              IsConversationPanelShowingForTab,
+              (const std::string&, const tabs::TabInterface*),
+              (const, override));
   MOCK_METHOD(GlicInstanceCoordinator::ActivateTabResult,
               ActivateTabWithConversation,
               (const std::string&),

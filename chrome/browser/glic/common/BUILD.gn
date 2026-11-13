@@ -9,10 +9,13 @@ source_set("common") {
     "glic_navigation.h",
     "glic_tab_observer.cc",
     "glic_tab_observer.h",
+    "glic_tab_util.cc",
+    "glic_tab_util.h",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
     "//components/tabs:public",

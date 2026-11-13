@@ -133,6 +133,9 @@ class GlicInstanceCoordinatorImpl
 
   bool IsAnyPanelShowing() const override;
   bool IsConversationPresent(const std::string& conversation_id) const override;
+  bool IsConversationPanelShowingForTab(
+      const std::string& conversation_id,
+      const tabs::TabInterface* tab) const override;
   GlicInstanceCoordinator::ActivateTabResult ActivateTabWithConversation(
       const std::string& conversation_id) override;
   // GlicInstanceCoordinator implementation

@@ -33,6 +33,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -43,11 +44,13 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -101,6 +104,10 @@ class MockGlicKeyedServiceForButtonController : public MockGlicKeyedService {
     return *window_controller_;
   }
 
+  TestingGlicInstanceCoordinator& instance_coordinator_mock() {
+    return *window_controller_;
+  }
+
   // For these tests, pretend only one browser can show the panel at a time.
   void SimulatePanelShownForBrowser(BrowserWindowInterface* bwi) {
     browser_with_open_panel_ = bwi;
@@ -122,7 +129,10 @@ class MockGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
     last_ui_state_ = state;
   }
   bool GetIsShowingGlicNudge() override { return is_showing_nudge_; }
-  void ShowActivityListBubble() override { is_bubble_showing_ = true; }
+  void ShowActivityListBubble() override {
+    is_bubble_showing_ = true;
+    ++show_bubble_count_;
+  }
   void CloseActivityListBubble() override { is_bubble_showing_ = false; }
   bool IsActivityListBubbleShowing() override { return is_bubble_showing_; }
 
@@ -130,6 +140,7 @@ class MockGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
   bool show_state() const { return show_state_; }
   bool panel_open() const { return panel_open_; }
   bool is_bubble_showing() const { return is_bubble_showing_; }
+  int show_bubble_count() const { return show_bubble_count_; }
   const std::optional<GlicSplitButtonUiState>& last_ui_state() const {
     return last_ui_state_;
   }
@@ -139,6 +150,7 @@ class MockGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
   bool panel_open_ = false;
   bool is_showing_nudge_ = false;
   bool is_bubble_showing_ = false;
+  int show_bubble_count_ = 0;
   std::optional<GlicSplitButtonUiState> last_ui_state_;
 };
 
@@ -214,6 +226,13 @@ class GlicSplitButtonControllerTest : public testing::Test {
     ON_CALL(*mock_browser_window_interface_, IsActive())
         .WillByDefault(testing::Return(true));
 
+    mock_tab_list_ =
+        std::make_unique<testing::NiceMock<MockTabListInterface>>();
+    tab_list_registration_ =
+        std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+            mock_browser_window_interface_->GetUnownedUserDataHost(),
+            *mock_tab_list_);
+
     histograms_ = std::make_unique<base::HistogramTester>();
 
     glic_split_button_controller_ = std::make_unique<GlicSplitButtonController>(
@@ -235,6 +254,8 @@ class GlicSplitButtonControllerTest : public testing::Test {
 
   void TearDown() override {
     glic_split_button_controller_.reset();
+    tab_list_registration_.reset();
+    mock_tab_list_.reset();
     mock_browser_window_interface_.reset();
 
     mock_glic_service_ = nullptr;
@@ -271,6 +292,7 @@ class GlicSplitButtonControllerTest : public testing::Test {
   BrowserWindowInterface* browser_window_interface() {
     return mock_browser_window_interface_.get();
   }
+  MockTabListInterface* tab_list() { return mock_tab_list_.get(); }
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -296,6 +318,9 @@ class GlicSplitButtonControllerTest : public testing::Test {
   std::unique_ptr<actor::ActorKeyedServiceFake> actor_keyed_service_;
   raw_ptr<MockGlicKeyedServiceForButtonController> mock_glic_service_ = nullptr;
   std::unique_ptr<GlicSplitButtonController> glic_split_button_controller_;
+  std::unique_ptr<MockTabListInterface> mock_tab_list_;
+  std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
+      tab_list_registration_;
   std::unique_ptr<MockBrowserWindowInterface> mock_browser_window_interface_;
 };
 
@@ -563,6 +588,92 @@ TEST_F(GlicSplitButtonControllerTest,
 
   EXPECT_FALSE(legacy_tab_strip_delegate.last_ui_state().has_value());
   EXPECT_FALSE(legacy_toolbar_delegate.last_ui_state().has_value());
+}
+
+TEST_F(GlicSplitButtonControllerTest,
+       SplitButtonUiStateResponseReadyShowsTextPill) {
+  glic_keyed_service()->activity_manager().OnConversationActivityStateChanged(
+      "conv-1", {.state = GlicActivityState::kCompleted});
+
+  ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kText);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_label,
+            l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_RESPONSE_READY));
+}
+
+TEST_F(GlicSplitButtonControllerTest,
+       SplitButtonUiStateBackgroundInstancesShowChevron) {
+  auto& activity_manager = glic_keyed_service()->activity_manager();
+
+  ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kNone);
+
+  // When an idle registered conversation exists off the active tab, the chevron
+  // appears.
+  activity_manager.OnConversationActivityStateChanged(
+      "conv-1",
+      {.state = GlicActivityState::kIdle, .is_currently_visible = true});
+
+  ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kChevron);
+
+  // Destroying the conversation hides the chevron again.
+  activity_manager.OnConversationDestroyed("conv-1");
+
+  ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kNone);
+}
+
+TEST_F(GlicSplitButtonControllerTest,
+       ActiveTabChangedClosesOrRefreshesOpenBubble) {
+  auto& activity_manager = glic_keyed_service()->activity_manager();
+  auto& coordinator = glic_keyed_service()->instance_coordinator_mock();
+
+  tabs::MockTabInterface tab_1;
+  tabs::MockTabInterface tab_2;
+  tabs::MockTabInterface tab_3;
+
+  // conv-1 is showing on tab_1 only; tab_2 and tab_3 have no panel showing.
+  ON_CALL(coordinator, IsConversationPanelShowingForTab("conv-1", &tab_1))
+      .WillByDefault(testing::Return(true));
+  ON_CALL(coordinator, IsConversationPanelShowingForTab("conv-1", &tab_2))
+      .WillByDefault(testing::Return(false));
+  ON_CALL(coordinator, IsConversationPanelShowingForTab("conv-1", &tab_3))
+      .WillByDefault(testing::Return(false));
+
+  ON_CALL(*tab_list(), GetActiveTab()).WillByDefault(testing::Return(&tab_2));
+  activity_manager.OnConversationActivityStateChanged(
+      "conv-1",
+      {.state = GlicActivityState::kIdle, .is_currently_visible = true});
+  ASSERT_TRUE(tab_strip_controller_delegate()->last_ui_state().has_value());
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kChevron);
+
+  // Open the activity list bubble on tab_2.
+  controller()->OnSecondaryButtonClicked();
+  EXPECT_TRUE(tab_strip_controller_delegate()->is_bubble_showing());
+  EXPECT_EQ(tab_strip_controller_delegate()->show_bubble_count(), 1);
+
+  // Switching to tab_3 keeps secondary_action as kChevron and refreshes the
+  // open bubble for the new active tab.
+  ON_CALL(*tab_list(), GetActiveTab()).WillByDefault(testing::Return(&tab_3));
+  controller()->OnActiveTabChanged(*tab_list(), &tab_3);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kChevron);
+  EXPECT_TRUE(tab_strip_controller_delegate()->is_bubble_showing());
+  EXPECT_EQ(tab_strip_controller_delegate()->show_bubble_count(), 2);
+
+  // Switching to tab_1 (where conv-1's side panel is already showing) leaves no
+  // secondary activities, hiding the chevron and closing the open bubble.
+  ON_CALL(*tab_list(), GetActiveTab()).WillByDefault(testing::Return(&tab_1));
+  controller()->OnActiveTabChanged(*tab_list(), &tab_1);
+  EXPECT_EQ(tab_strip_controller_delegate()->last_ui_state()->secondary_action,
+            GlicSplitButtonUiState::SecondaryAction::kNone);
+  EXPECT_FALSE(tab_strip_controller_delegate()->is_bubble_showing());
 }
 
 }  // namespace glic

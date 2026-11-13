@@ -31,6 +31,7 @@ enum class GlicActivityState {
   kPaused,          // Paused by user
   kCompleted,       // Finished, response ready
   kFailed,          // Error
+  kIdle,            // Registered conversation with no active/unseen turn
 };
 
 // Expresses the degree of user interruption requested for an activity update.
@@ -52,7 +53,7 @@ enum class ActivityInterruptionLevel {
 // Parameters for updating a conversation activity's state and metadata.
 struct GlicConversationActivityUpdate {
   GlicActivityState state;
-  std::string_view title = "";
+  std::optional<std::string_view> title = std::nullopt;
   std::optional<std::string_view> preview_snippet = std::nullopt;
   bool is_currently_visible = false;
 };

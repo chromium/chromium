@@ -88,6 +88,7 @@ class GlicSplitButtonController : public TabListInterfaceObserver {
  private:
   void InitActivityHub();
   GlicSplitButtonUiState ComputeSplitButtonUiState() const;
+  bool HasSecondaryActivities() const;
   bool IsToolbarButton() const;
   mojom::InvocationSource GetInvocationSource(
       GlicSplitButtonDelegate& delegate) const;

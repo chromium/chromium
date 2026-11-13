@@ -200,6 +200,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool IsHibernated() const override;
 
   bool HasActiveEmbedder() const override;
+  bool IsShowingInSidePanel(const tabs::TabInterface& tab) const;
   bool IsDetached();
   bool IsActuating() const override;
   bool HasLiveSurface() const override;

@@ -463,6 +463,17 @@ bool GlicInstanceImpl::HasActiveEmbedder() const {
   return active_embedder_key_.has_value();
 }
 
+bool GlicInstanceImpl::IsShowingInSidePanel(
+    const tabs::TabInterface& tab) const {
+  EmbedderKey key = SidePanelEmbedderKey(const_cast<tabs::TabInterface&>(tab));
+  if (IsActiveEmbedder(key)) {
+    return true;
+  }
+  auto it = embedders_.find(key);
+  return it != embedders_.end() && it->second.embedder &&
+         it->second.embedder->IsShowing();
+}
+
 bool GlicInstanceImpl::IsDetached() {
   return GetPanelState()->kind == mojom::PanelStateKind::kDetached;
 }

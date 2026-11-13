@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -131,7 +132,7 @@ void GlicActivityManager::OnInstanceActivityStateChanged(
   instance_state.preview_snippet = std::move(preview_snippet);
 
   std::optional<std::string> conv_id = instance.conversation_id();
-  if (!conv_id || conv_id->empty()) {
+  if (!conv_id) {
     return;
   }
   OnConversationActivityStateChanged(
@@ -146,40 +147,50 @@ void GlicActivityManager::OnInstanceActivityStateChanged(
 
 void GlicActivityManager::OnInstanceVisibilityChanged(
     const GlicInstance& instance) {
+  std::optional<std::string> conv_id = instance.conversation_id();
   auto it = instance_activity_states_.find(instance.id());
   if (instance.IsShowing()) {
     if (it != instance_activity_states_.end() &&
         it->second.state != GlicActivityState::kInProgress) {
       instance_activity_states_.erase(it);
     }
-    if (auto conv_id = instance.conversation_id()) {
-      MarkActivitySeen(
-          GlicActivityKey{GlicActivityType::kConversationResponse, *conv_id});
+    if (conv_id) {
+      const GlicActivityKey key{GlicActivityType::kConversationResponse,
+                                *conv_id};
+      if (!MarkActivitySeenImpl(key)) {
+        UpdateTaskNudge(/*show_bubble=*/false, /*force_notify=*/true);
+      }
     }
     return;
   }
 
-  if (it == instance_activity_states_.end() ||
-      it->second.state != GlicActivityState::kInProgress) {
-    return;
+  if (conv_id) {
+    bool notified = false;
+    if (it != instance_activity_states_.end() &&
+        it->second.state == GlicActivityState::kInProgress) {
+      notified = OnConversationActivityStateChangedImpl(
+          *conv_id, {.state = it->second.state,
+                     .title = instance.conversation_title(),
+                     .preview_snippet = it->second.preview_snippet});
+    }
+    if (!notified) {
+      UpdateTaskNudge(/*show_bubble=*/false, /*force_notify=*/true);
+    }
   }
-  std::optional<std::string> conv_id = instance.conversation_id();
-  if (!conv_id || conv_id->empty()) {
-    return;
-  }
-  OnConversationActivityStateChanged(
-      *conv_id, {.state = it->second.state,
-                 .title = instance.conversation_title(),
-                 .preview_snippet = it->second.preview_snippet});
 }
 
 void GlicActivityManager::OnInstanceConversationRegistered(
     const GlicInstance& instance) {
   std::optional<std::string> conv_id = instance.conversation_id();
-  if (!conv_id || conv_id->empty()) {
+  if (!conv_id) {
     return;
   }
   std::string title = instance.conversation_title();
+  GlicActivityKey key{GlicActivityType::kConversationResponse, *conv_id};
+  if (activities_.contains(key)) {
+    OnConversationTitleUpdated(*conv_id, title);
+    return;
+  }
   auto it = instance_activity_states_.find(instance.id());
   if (it != instance_activity_states_.end()) {
     OnConversationActivityStateChanged(
@@ -193,9 +204,10 @@ void GlicActivityManager::OnInstanceConversationRegistered(
     }
     return;
   }
-  if (!title.empty()) {
-    OnConversationTitleUpdated(*conv_id, title);
-  }
+  OnConversationActivityStateChanged(*conv_id,
+                                     {.state = GlicActivityState::kIdle,
+                                      .title = title,
+                                      .is_currently_visible = true});
 }
 
 void GlicActivityManager::OnInstanceResponseStarted(
@@ -213,7 +225,7 @@ void GlicActivityManager::OnInstanceResponseStopped(
                                      std::nullopt);
       break;
     case mojom::ResponseStopCause::kUser:
-      ClearInstanceActivity(instance);
+      ResetInstanceActivityToIdle(instance);
       break;
     case mojom::ResponseStopCause::kOther:
       OnInstanceActivityStateChanged(instance, GlicActivityState::kFailed,
@@ -224,13 +236,26 @@ void GlicActivityManager::OnInstanceResponseStopped(
 
 void GlicActivityManager::OnInstanceWebClientCleared(
     const GlicInstance& instance) {
-  ClearInstanceActivity(instance);
+  ResetInstanceActivityToIdle(instance);
 }
 
 void GlicActivityManager::OnInstanceTabAddedToTask(
     const GlicInstance& /*instance*/,
     actor::TaskId task_id) {
   OnTabAddedToTask(task_id);
+}
+
+void GlicActivityManager::ResetInstanceActivityToIdle(
+    const GlicInstance& instance) {
+  instance_activity_states_.erase(instance.id());
+  std::optional<std::string> conv_id = instance.conversation_id();
+  if (!conv_id) {
+    return;
+  }
+  OnConversationActivityStateChanged(*conv_id,
+                                     {.state = GlicActivityState::kIdle,
+                                      .title = instance.conversation_title(),
+                                      .is_currently_visible = true});
 }
 
 void GlicActivityManager::ClearInstanceActivity(const GlicInstance& instance) {
@@ -251,43 +276,62 @@ void GlicActivityManager::OnInstanceCreated(GlicInstanceImpl* instance) {
   if (!instance_observations_.IsObservingSource(instance)) {
     instance_observations_.AddObservation(instance);
   }
+  if (instance->conversation_id().has_value()) {
+    OnInstanceConversationRegistered(*instance);
+  }
 }
 
 void GlicActivityManager::OnConversationActivityStateChanged(
     const std::string& conversation_id,
     GlicConversationActivityUpdate update) {
+  OnConversationActivityStateChangedImpl(conversation_id, std::move(update));
+}
+
+bool GlicActivityManager::OnConversationActivityStateChangedImpl(
+    const std::string& conversation_id,
+    GlicConversationActivityUpdate update) {
   if (conversation_id.empty()) {
-    return;
+    return false;
   }
   GlicActivityKey key{GlicActivityType::kConversationResponse, conversation_id};
 
   auto [it, inserted] = activities_.try_emplace(key, key, update.state);
   auto& item = it->second;
+  const GlicActivityState prev_state = item.state;
+  const bool prev_has_been_seen = item.has_been_seen;
   item.state = update.state;
   item.timestamp = base::Time::Now();
-  if (!update.title.empty()) {
-    item.title = base::UTF8ToUTF16(update.title);
+  if (update.title.has_value()) {
+    item.title = base::UTF8ToUTF16(*update.title);
   }
   if (update.preview_snippet.has_value()) {
     item.subtitle = base::UTF8ToUTF16(*update.preview_snippet);
   } else if (update.state == GlicActivityState::kInProgress ||
              update.state == GlicActivityState::kCompleted ||
-             update.state == GlicActivityState::kFailed) {
+             update.state == GlicActivityState::kFailed ||
+             update.state == GlicActivityState::kIdle) {
     item.subtitle.clear();
   }
 
-  item.has_been_seen = update.is_currently_visible;
-  if (!update.is_currently_visible &&
+  item.has_been_seen =
+      update.is_currently_visible || update.state == GlicActivityState::kIdle;
+  if (!item.has_been_seen &&
       (update.state == GlicActivityState::kNeedsAttention ||
        update.state == GlicActivityState::kCompleted ||
        update.state == GlicActivityState::kFailed)) {
     activity_alert_callback_list_.Notify(
         ActivityInterruptionLevel::kPassiveNudge);
+  } else {
+    activity_alert_callback_list_.Notify(ActivityInterruptionLevel::kSilent);
   }
 
   PopulateActivityItemDetails(item);
 
-  UpdateTaskNudge();
+  const bool visibility_affecting_change =
+      inserted || prev_state != item.state ||
+      prev_has_been_seen != item.has_been_seen;
+  return UpdateTaskNudge(/*show_bubble=*/false,
+                         /*force_notify=*/visibility_affecting_change);
 }
 
 void GlicActivityManager::OnConversationTitleUpdated(
@@ -304,8 +348,10 @@ void GlicActivityManager::OnConversationTitleUpdated(
 void GlicActivityManager::OnConversationDestroyed(
     const std::string& conversation_id) {
   GlicActivityKey key{GlicActivityType::kConversationResponse, conversation_id};
-  activities_.erase(key);
-  UpdateTaskNudge();
+  if (activities_.erase(key) > 0) {
+    activity_alert_callback_list_.Notify(ActivityInterruptionLevel::kSilent);
+  }
+  UpdateTaskNudge(/*show_bubble=*/false, /*force_notify=*/false);
 }
 
 void GlicActivityManager::RefreshActivities() {
@@ -315,16 +361,15 @@ void GlicActivityManager::RefreshActivities() {
 }
 
 std::vector<const GlicActivityItem*> GlicActivityManager::GetSortedActivities(
-    const std::optional<std::string>& active_tab_conv_id,
-    bool is_active_tab_showing) const {
+    const tabs::TabInterface* active_tab) const {
+  const auto* instance_coordinator = GlicInstanceCoordinator::Get(profile_);
   std::vector<const GlicActivityItem*> sorted_items;
   sorted_items.reserve(activities_.size());
   for (const auto& [key, item] : activities_) {
     if (item.type() == GlicActivityType::kConversationResponse &&
-        active_tab_conv_id.has_value() && key.id == *active_tab_conv_id &&
-        (is_active_tab_showing ||
-         (item.has_been_seen &&
-          item.state != GlicActivityState::kInProgress))) {
+        instance_coordinator &&
+        instance_coordinator->IsConversationPanelShowingForTab(key.id,
+                                                               active_tab)) {
       continue;
     }
     sorted_items.push_back(&item);
@@ -419,13 +464,17 @@ GlicActivityManager::RegisterActivityAlertCallback(
 }
 
 void GlicActivityManager::MarkActivitySeen(const GlicActivityKey& key) {
+  MarkActivitySeenImpl(key);
+}
+
+bool GlicActivityManager::MarkActivitySeenImpl(const GlicActivityKey& key) {
   auto it = activities_.find(key);
   if (it == activities_.end()) {
-    return;
+    return false;
   }
-  it->second.has_been_seen = true;
+  const bool was_unseen = !std::exchange(it->second.has_been_seen, true);
   PopulateActivityItemDetails(it->second);
-  UpdateTaskNudge();
+  return UpdateTaskNudge(/*show_bubble=*/false, /*force_notify=*/was_unseen);
 }
 
 void GlicActivityManager::MarkActivitySeen(actor::TaskId task_id) {
@@ -437,18 +486,21 @@ void GlicActivityManager::OnTabAddedToTask(actor::TaskId task_id) {
   OnActorTaskStateUpdate(task_id);
 }
 
-void GlicActivityManager::UpdateTaskNudge(bool show_bubble) {
+bool GlicActivityManager::UpdateTaskNudge(bool show_bubble, bool force_notify) {
   GlicActivityNudgeState old_state = current_activity_nudge_state_;
   current_activity_nudge_state_ = GetCurrentActivityNudgeState();
 
-  bool state_changed = (old_state != current_activity_nudge_state_);
-  bool size_changed = (last_notified_activity_count_ != activities_.size());
+  const bool state_changed = (old_state != current_activity_nudge_state_);
+  const bool size_changed =
+      (last_notified_activity_count_ != activities_.size());
 
-  if (state_changed || show_bubble || size_changed) {
+  if (state_changed || show_bubble || size_changed || force_notify) {
     last_notified_activity_count_ = activities_.size();
     activity_nudge_state_change_callback_list_.Notify(
         show_bubble, current_activity_nudge_state_);
+    return true;
   }
+  return false;
 }
 
 void GlicActivityManager::Shutdown() {
@@ -478,7 +530,7 @@ void GlicActivityManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
 #if !BUILDFLAG(IS_ANDROID)
     GlicActorTaskNotificationHandler::Close(profile_, task_id);
 #endif
-    UpdateTaskNudge();
+    UpdateTaskNudge(/*show_bubble=*/false, /*force_notify=*/false);
     return;
   }
 
@@ -565,7 +617,7 @@ void GlicActivityManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
   const bool show_bubble =
       actor_state_changed && requires_processing &&
       ShouldShowBubble(state.value(), duration, feature_mode);
-  UpdateTaskNudge(show_bubble);
+  UpdateTaskNudge(show_bubble, /*force_notify=*/false);
 }
 
 void GlicActivityManager::PopulateActivityItemDetails(GlicActivityItem& item) {
@@ -676,7 +728,7 @@ void GlicActivityManager::OnActorTaskRemoved(actor::TaskId task_id) {
 #if !BUILDFLAG(IS_ANDROID)
   GlicActorTaskNotificationHandler::Close(profile_, task_id);
 #endif
-  UpdateTaskNudge();
+  UpdateTaskNudge(/*show_bubble=*/false, /*force_notify=*/false);
 }
 
 // static
