@@ -4139,6 +4139,24 @@
             ]
         }
     ],
+    "CastStreaming60fps": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261113",
+                    "enable_features": [
+                        "CastStreaming60fps"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastStreamingGradualBandwidthBackoff": [
         {
             "platforms": [
