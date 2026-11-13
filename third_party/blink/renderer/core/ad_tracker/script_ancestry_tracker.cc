@@ -156,17 +156,23 @@ void ScriptAncestryTracker::DidCreateAsyncTask(
     probe::AsyncTaskContext* task_context,
     LazyStackTrace& stack_trace) {
   DCHECK(task_context);
-  v8::Isolate* isolate = GetIsolate();
-  if (isolate && !isolate->GetCurrentContext().IsEmpty()) {
-    // TODO(jkarlin): Restrict the kNodeAppendChild monkeypatch exception
-    // specifically to script element creation tasks (e.g., PendingScript) by
-    // passing the async task name/type to DidCreateAsyncTask.
-    // Note: We do this check separately from GetMarkedScriptInStack because we
-    // don't want to count it against the 1-call-per-sync-stack budget in case
-    // downstream callers want to call GetMarkedScriptInStack.
-    if (WasApiCalledByNonAttributedScript(
-            isolate, MonkeyPatchableApi::kNodeAppendChild, stack_trace)) {
-      return;
+  if (script_metadata_.empty() && !HasMarkedFrames()) {
+    return;
+  }
+
+  if (!script_metadata_.empty()) {
+    v8::Isolate* isolate = GetIsolate();
+    if (isolate && !isolate->GetCurrentContext().IsEmpty()) {
+      // TODO(jkarlin): Restrict the kNodeAppendChild monkeypatch exception
+      // specifically to script element creation tasks (e.g., PendingScript) by
+      // passing the async task name/type to DidCreateAsyncTask.
+      // Note: We do this check separately from GetMarkedScriptInStack because
+      // we don't want to count it against the 1-call-per-sync-stack budget in
+      // case downstream callers want to call GetMarkedScriptInStack.
+      if (WasApiCalledByNonAttributedScript(
+              isolate, MonkeyPatchableApi::kNodeAppendChild, stack_trace)) {
+        return;
+      }
     }
   }
 
