@@ -3156,28 +3156,11 @@ bool ChildProcessSecurityPolicyImpl::CanCommitMaybeOpaqueNewOrigin(
     }
   }
 
-  // Record the duration of KeepAlive requests to include in the crash keys.
-  std::string keep_alive_durations;
-  std::string shutdown_delay_ref_count;
-  std::string process_rfh_count;
-  if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
-    keep_alive_durations = process->GetKeepAliveDurations();
-    shutdown_delay_ref_count =
-        base::NumberToString(process->GetShutdownDelayRefCount());
-    process_rfh_count =
-        base::NumberToString(process->GetRenderFrameHostCount());
-  }
-
   // Returning false here will often result in a renderer kill.  Set some crash
   // keys that will help understand the circumstances of that kill.
-  // TODO(crbug.com/476412562): Find a way to scope these keys so that they do
-  // not appear in later unrelated crash reports.
-  LogCanAccessDataForOriginCrashKeys(
-      expected_process_lock.ToString(),
-      GetKilledProcessOriginLock(process_state),
-      url.DeprecatedGetOriginAsURL().spec(), failure_reason,
-      keep_alive_durations, shutdown_delay_ref_count, process_rfh_count,
-      GetCommittedOriginsForCrashKey(process_state), "can_commit_new_origin");
+  LogOriginAccessFailureCrashKeys(child_id, process_state, url,
+                                  expected_process_lock.ToString(),
+                                  failure_reason, "can_commit_new_origin");
   if (failure_reason == "no_security_state") {
     // For the time being, log a crash report in this case with the crash keys
     // above, to help diagnose any unknown causes.
@@ -3195,9 +3178,6 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     AccessType access_type) {
-  // TODO(crbug.com/522872468): Move the blocks duplicated between
-  // CanAccessMaybeOpaqueOrigin() and CanCommitMaybeOpaqueNewOrigin() into
-  // helper functions.
   base::AutoLock lock(lock_);
 
   const ProcessState* process_state =
@@ -3238,37 +3218,16 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     }
   }
 
-  // Record the duration of KeepAlive requests to include in the crash keys.
-  std::string keep_alive_durations;
-  std::string shutdown_delay_ref_count;
-  std::string process_rfh_count;
-  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
-      keep_alive_durations = process->GetKeepAliveDurations();
-      shutdown_delay_ref_count =
-          base::NumberToString(process->GetShutdownDelayRefCount());
-      process_rfh_count =
-          base::NumberToString(process->GetRenderFrameHostCount());
-    }
-  } else {
-    keep_alive_durations = "no durations available: on IO thread.";
-  }
-
   // Returning false here will often result in a renderer kill.  Set some crash
   // keys that will help understand the circumstances of that kill.
   // Note: Unlike CanCommitMaybeOpaqueNewOrigin(), this function does not
   // compute an expected ProcessLock; pass "{  no-site-info }" (matching
   // ProcessLock().ToString()) to preserve continuity with existing crash
   // queries.
-  // TODO(crbug.com/476412562): Find a way to scope these keys so that they do
-  // not appear in later unrelated crash reports.
-  LogCanAccessDataForOriginCrashKeys(
-      /*expected_process_lock=*/"{  no-site-info }",
-      GetKilledProcessOriginLock(process_state),
-      url.DeprecatedGetOriginAsURL().spec(), failure_reason,
-      keep_alive_durations, shutdown_delay_ref_count, process_rfh_count,
-      GetCommittedOriginsForCrashKey(process_state),
-      AccessTypeToString(access_type));
+  LogOriginAccessFailureCrashKeys(child_id, process_state, url,
+                                  /*expected_process_lock=*/"{  no-site-info }",
+                                  failure_reason,
+                                  AccessTypeToString(access_type));
   if (failure_reason == "no_security_state") {
     // For the time being, log a crash report in this case with the crash keys
     // above, to help diagnose any unknown causes.
@@ -4618,6 +4577,39 @@ std::string ChildProcessSecurityPolicyImpl::GetCommittedOriginsForCrashKey(
     return "(no security state)";
   }
   return process_state->GetCommittedOriginsAsStringForDebugging();
+}
+
+// static
+void ChildProcessSecurityPolicyImpl::LogOriginAccessFailureCrashKeys(
+    ChildProcessId child_id,
+    const ProcessState* process_state,
+    const GURL& url,
+    const std::string& expected_process_lock,
+    const std::string& failure_reason,
+    const std::string& access_type) {
+  // Record the duration of KeepAlive requests to include in the crash keys.
+  std::string keep_alive_durations;
+  std::string shutdown_delay_ref_count;
+  std::string process_rfh_count;
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
+    if (auto* process = RenderProcessHostImpl::FromID(child_id)) {
+      keep_alive_durations = process->GetKeepAliveDurations();
+      shutdown_delay_ref_count =
+          base::NumberToString(process->GetShutdownDelayRefCount());
+      process_rfh_count =
+          base::NumberToString(process->GetRenderFrameHostCount());
+    }
+  } else {
+    keep_alive_durations = "no durations available: on IO thread.";
+  }
+
+  // TODO(crbug.com/476412562): Find a way to scope these keys so that they do
+  // not appear in later unrelated crash reports.
+  LogCanAccessDataForOriginCrashKeys(
+      expected_process_lock, GetKilledProcessOriginLock(process_state),
+      url.DeprecatedGetOriginAsURL().spec(), failure_reason,
+      keep_alive_durations, shutdown_delay_ref_count, process_rfh_count,
+      GetCommittedOriginsForCrashKey(process_state), access_type);
 }
 
 void ChildProcessSecurityPolicyImpl::LogKilledProcessOriginLock(int child_id) {

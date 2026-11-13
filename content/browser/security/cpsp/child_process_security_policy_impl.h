@@ -1243,6 +1243,16 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   static std::string GetCommittedOriginsForCrashKey(
       const ProcessState* process_state);
 
+  // Populates the crash keys recorded when `CanCommitMaybeOpaqueNewOrigin()` or
+  // `CanAccessMaybeOpaqueOrigin()` denies access.
+  static void LogOriginAccessFailureCrashKeys(
+      ChildProcessId child_id,
+      const ProcessState* process_state,
+      const GURL& url,
+      const std::string& expected_process_lock,
+      const std::string& failure_reason,
+      const std::string& access_type);
+
   // Helper for CanCommitMaybeOpaqueNewOrigin, to perform two security checks:
   //  - Jail check: a process locked to a particular site shouldn't access data
   //    belonging to other sites.
