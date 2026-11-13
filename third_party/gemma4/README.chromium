@@ -1,0 +1,22 @@
+Name: Gemma 4
+Short Name: gemma4
+URL: https://deepmind.google/models/gemma/
+Version: N/A
+Date: 2026-11-12
+Update Mechanism: Manual (https://crbug.com/539677168)
+License: Apache-2.0
+License File: LICENSE
+Shipped: yes
+Security Critical: no
+License Android Compatible: yes
+CPEPrefix: unknown
+
+Description:
+Gemma 4 open-weights models, downloaded and updated externally via Component
+Updater for Built-in AI APIs. Metadata and license are kept in this directory
+for chrome://credits attribution. License text is copied from
+https://ai.google.dev/gemma/docs/gemma_4_license (which redirected to
+https://ai.google.dev/gemma/apache_2 at the time of snapshot).
+
+Local Modifications:
+None
