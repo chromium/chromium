@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -251,6 +252,15 @@ void PinnedToolbarActionsModel::MaybeMigrateExistingPinnedStates() {
       !pref_service_->GetBoolean(prefs::kTtcAutoPinnedMigration)) {
     UpdatePinnedState(kActionTtcToolbar, true);
     pref_service_->SetBoolean(prefs::kTtcAutoPinnedMigration, true);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kGlicSmartSelectionToolbarButton) &&
+      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox) &&
+      !pref_service_->GetBoolean(
+          prefs::kGlicSmartSelectionAutoPinnedMigration)) {
+    UpdatePinnedState(kActionGlicSmartSelectionToolbar, true);
+    pref_service_->SetBoolean(prefs::kGlicSmartSelectionAutoPinnedMigration,
+                              true);
   }
 }
 

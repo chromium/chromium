@@ -39,6 +39,7 @@ source_set("impl") {
     ]
     deps = [
       "//chrome/browser:primitives",
+      "//chrome/browser/glic/public:features",
       "//chrome/browser/translate",
       "//chrome/browser/ttc/core:features",
       "//chrome/browser/ui:browser_actions",
@@ -61,6 +62,7 @@ if (!is_android) {
     sources = [ "pinned_toolbar_actions_model_browsertest.cc" ]
     deps = [
       ":pinned_toolbar",
+      "//chrome/browser/glic/public:features",
       "//chrome/browser/ttc/core:features",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",

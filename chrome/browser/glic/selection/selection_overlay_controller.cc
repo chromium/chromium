@@ -37,13 +37,17 @@
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/selection/features.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -64,6 +68,7 @@
 #include "content/public/browser/web_ui.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "ui/actions/actions.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -366,6 +371,11 @@ void SelectionOverlayController::ObserveActiveTabChanges() {
 void SelectionOverlayController::OnActiveTabChanged(
     BrowserWindowInterface* window) {
   UpdateForTabVisibility();
+  tabs::TabInterface* const active_tab = window->GetActiveTabInterface();
+  SelectionOverlayController* const active_controller =
+      active_tab ? FromTabWebContents(active_tab->GetContents()) : nullptr;
+  UpdateToolbarButtonHighlight(active_controller &&
+                               active_controller->IsOverlayShowing());
 }
 
 void SelectionOverlayController::ObserveSidePanelState() {
@@ -1143,6 +1153,38 @@ GURL SelectionOverlayController::GetInitialURL() {
   return GURL(chrome::kChromeUIGlicSelectionOverlayURL);
 }
 
+void SelectionOverlayController::UpdateToolbarButtonHighlight(bool is_showing) {
+  // The tab has no window while it is being detached.
+  BrowserWindowInterface* const bwi = tab_->GetBrowserWindowInterface();
+  if (!bwi) {
+    return;
+  }
+  // The overlay can open (e.g. via hotkey) while the toolbar action is not
+  // registered, and the pinned container CHECKs that the action exists.
+  BrowserActions* const browser_actions = BrowserActions::From(bwi);
+  if (!browser_actions || !actions::ActionManager::Get().FindAction(
+                              kActionGlicSmartSelectionToolbar,
+                              browser_actions->root_action_item())) {
+    return;
+  }
+  BrowserWindow* const browser_window = BrowserWindow::FromBrowser(bwi);
+  if (PinnedToolbarActions* const pinned_actions =
+          browser_window ? browser_window->GetPinnedToolbarActions()
+                         : nullptr) {
+    pinned_actions->UpdateActionState(kActionGlicSmartSelectionToolbar,
+                                      is_showing);
+  }
+}
+
+void SelectionOverlayController::NotifyIsOverlayShowing(bool is_showing) {
+  // Only the active tab owns the window-level toolbar button state; an
+  // inactive split-view pane must not overwrite it.
+  if (!tab_->IsActivated()) {
+    return;
+  }
+  UpdateToolbarButtonHighlight(is_showing);
+}
+
 int SelectionOverlayController::GetToolResourceId() {
   return IDS_GLIC_SELECTION_OVERLAY_RENDERER_LABEL;
 }
@@ -1730,7 +1772,8 @@ void SelectionOverlayController::Reset() {
     const bool cancelled_by_user =
         session_->close_reason == CloseReason::kCloseButton ||
         session_->close_reason == CloseReason::kEscapeKeyPress ||
-        session_->close_reason == CloseReason::kBackgroundClick;
+        session_->close_reason == CloseReason::kBackgroundClick ||
+        session_->close_reason == CloseReason::kToolbarButton;
     session_->metrics_logger->RecordSessionEnd(cancelled_by_user);
   }
   session_ = std::make_unique<Session>(this);

@@ -34,6 +34,11 @@ inline constexpr char kPinnedCastMigrationComplete[] =
 inline constexpr char kTtcAutoPinnedMigration[] =
     "toolbar.ttc_auto_pinned_migration";
 
+// Indicates whether the Smart Selection toolbar button has been auto-pinned
+// for existing profiles.
+inline constexpr char kGlicSmartSelectionAutoPinnedMigration[] =
+    "toolbar.glic_smart_selection_auto_pinned_migration";
+
 }  // namespace prefs
 
 namespace toolbar {

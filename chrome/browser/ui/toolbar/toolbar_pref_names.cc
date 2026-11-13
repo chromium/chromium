@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -31,6 +32,17 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kGlicSmartSelectionToolbarButton) &&
+      base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPromptBox)) {
+    const std::optional<std::string>& smart_selection_action =
+        actions::ActionIdMap::ActionIdToString(
+            kActionGlicSmartSelectionToolbar);
+    if (smart_selection_action.has_value()) {
+      default_pinned_actions.Append(smart_selection_action.value());
+    }
+  }
+
   registry->RegisterListPref(prefs::kPinnedActions,
                              std::move(default_pinned_actions),
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -45,6 +57,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kTtcAutoPinnedMigration, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kGlicSmartSelectionAutoPinnedMigration, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

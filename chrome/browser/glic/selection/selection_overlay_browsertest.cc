@@ -39,11 +39,16 @@
 #include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -62,6 +67,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_controller.h"
@@ -85,6 +91,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -2901,6 +2908,59 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayShakeTriggerBrowserTest,
                mojom::InvocationSource::kCaptureRegionHotkey) == 1;
   }));
   EXPECT_TRUE(GlicSidePanelCoordinator::IsShowing(tab));
+}
+
+// The toolbar button is pinned by default, highlighted only while the active
+// tab's overlay is showing (including split views), and closes it when clicked.
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       ToolbarActionPinnedAndToggles) {
+  tabs::TabInterface* other_tab = CreateAndActivateTab(GetSimpleTestUrl());
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  TabStripModel* const tab_strip_model =
+      tab->GetBrowserWindowInterface()->GetTabStripModel();
+  const int other_index = tab_strip_model->GetIndexOfTab(other_tab);
+  tab_strip_model->AddToNewSplit(
+      {other_index}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+  ASSERT_TRUE(controller);
+  actions::ActionItem* const action = actions::ActionManager::Get().FindAction(
+      kActionGlicSmartSelectionToolbar,
+      BrowserActions::From(tab->GetBrowserWindowInterface())
+          ->root_action_item());
+  ASSERT_TRUE(action);
+  PinnedToolbarActions* const pinned_actions =
+      BrowserWindow::FromBrowser(tab->GetBrowserWindowInterface())
+          ->GetPinnedToolbarActions();
+  ASSERT_TRUE(pinned_actions);
+  EXPECT_TRUE(pinned_actions->IsActionPinned(kActionGlicSmartSelectionToolbar));
+
+  action->InvokeAction();
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timeout waiting for overlay to reach kOverlay"));
+  EXPECT_TRUE(
+      pinned_actions->IsActionHighlighted(kActionGlicSmartSelectionToolbar));
+
+  // Focusing the other split pane leaves the overlay visible, but clears the
+  // window button highlight until focus returns to the overlay's pane.
+  tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(other_tab));
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOverlay);
+  EXPECT_FALSE(
+      pinned_actions->IsActionHighlighted(kActionGlicSmartSelectionToolbar));
+
+  tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(tab));
+  EXPECT_TRUE(
+      pinned_actions->IsActionHighlighted(kActionGlicSmartSelectionToolbar));
+
+  action->InvokeAction();
+  ASSERT_OK(RunUntilEqual([controller]() { return controller->state(); },
+                          SelectionOverlayController::State::kOff,
+                          "Timeout waiting for overlay to close"));
+  EXPECT_FALSE(
+      pinned_actions->IsActionHighlighted(kActionGlicSmartSelectionToolbar));
 }
 
 }  // namespace glic

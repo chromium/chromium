@@ -68,6 +68,7 @@ class SelectionOverlayController
     kCloseButton,
     kEscapeKeyPress,
     kBackgroundClick,
+    kToolbarButton,
   };
 
   SelectionOverlayController(tabs::TabInterface* tab,
@@ -171,6 +172,7 @@ class SelectionOverlayController
   // This is the same event that drives `OnFocusedTabChanged()`, but it also
   // fires when no Glic instance is active.
   void OnActiveTabChanged(BrowserWindowInterface* window);
+  void UpdateToolbarButtonHighlight(bool is_showing);
   void UpdateForTabVisibility();
   void ObserveActiveTabChanges();
   // Subscribes to the Glic side panel state for `tab_` for the length of the
@@ -214,7 +216,7 @@ class SelectionOverlayController
   void NotifyOverlayClosing() override;
   bool IsResultsSidePanelShowing() override;
   GURL GetInitialURL() override;
-  void NotifyIsOverlayShowing(bool is_showing) override {}
+  void NotifyIsOverlayShowing(bool is_showing) override;
   int GetToolResourceId() override;
   ui::ElementIdentifier GetViewContainerId() const override;
   SidePanelType GetSidePanelType() override;

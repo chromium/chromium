@@ -76,6 +76,7 @@ source_set("toolbar") {
       "//ui/menus",
     ]
     deps += [
+      "//chrome/browser/glic/public:features",
       "//chrome/browser/ttc/core:features",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",

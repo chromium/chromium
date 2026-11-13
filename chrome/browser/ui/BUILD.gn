@@ -320,6 +320,7 @@ if (!is_android) {
       "//chrome/browser/glic",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/glic/selection",
       "//chrome/browser/history_clusters",
       "//chrome/browser/indigo",
       "//chrome/browser/indigo/resources:indigo_strings",

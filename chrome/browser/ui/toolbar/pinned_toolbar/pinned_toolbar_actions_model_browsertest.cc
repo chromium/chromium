@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -413,6 +414,31 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelWithTtcDisabledBrowserTest,
   EXPECT_FALSE(model()->Contains(kActionTtcToolbar));
   EXPECT_FALSE(browser()->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kTtcAutoPinnedMigration));
+}
+
+class PinnedToolbarActionsModelWithSmartSelectionBrowserTest
+    : public PinnedToolbarActionsModelBrowserTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      /*enabled_features=*/{features::kGlicSmartSelectionToolbarButton,
+                            features::kGlicSelectionOverlayPromptBox},
+      /*disabled_features=*/{}};
+};
+
+IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelWithSmartSelectionBrowserTest,
+                       MigrateActionForExistingProfile) {
+  model()->UpdatePinnedState(kActionGlicSmartSelectionToolbar, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kGlicSmartSelectionAutoPinnedMigration, false);
+  EXPECT_FALSE(model()->Contains(kActionGlicSmartSelectionToolbar));
+
+  model()->MaybeMigrateExistingPinnedStates();
+  EXPECT_TRUE(model()->Contains(kActionGlicSmartSelectionToolbar));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kGlicSmartSelectionAutoPinnedMigration));
+
+  model()->UpdatePinnedState(kActionGlicSmartSelectionToolbar, false);
+  model()->MaybeMigrateExistingPinnedStates();
+  EXPECT_FALSE(model()->Contains(kActionGlicSmartSelectionToolbar));
 }
 
 // TODO(dljames): Write tests for guest and incognito mode profile that check

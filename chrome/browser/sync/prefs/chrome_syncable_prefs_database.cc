@@ -451,6 +451,7 @@ enum {
   kExtensionsPinnedByDefault = 100385,
   kAudioFocusEnforcementEnabled = 100386,
   kTtcAutoPinnedMigration = 100387,
+  kGlicSmartSelectionAutoPinnedMigration = 100388,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -700,6 +701,11 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {prefs::kTtcAutoPinnedMigration,
      {syncable_prefs_ids::kTtcAutoPinnedMigration, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone,
+      sync_preferences::WriteBehavior::kWriteToBoth}},
+    {prefs::kGlicSmartSelectionAutoPinnedMigration,
+     {syncable_prefs_ids::kGlicSmartSelectionAutoPinnedMigration,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone,
       sync_preferences::WriteBehavior::kWriteToBoth}},
 #endif  // BUILDFLAG(IS_ANDROID)

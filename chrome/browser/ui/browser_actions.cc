@@ -42,6 +42,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/selection_overlay_invocation_helper.h"
 #include "chrome/browser/history_clusters/history_clusters_side_panel_utils.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -2632,6 +2633,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                      actions::ActionInvocationContext context) {
                     if (tabs::TabInterface* tab =
                             bwi->GetActiveTabInterface()) {
+                      // A second click closes the overlay it opened.
+                      if (auto* controller = glic::SelectionOverlayController::
+                              FromTabWebContents(tab->GetContents());
+                          controller && controller->IsOverlayShowing()) {
+                        controller->Close(glic::SelectionOverlayController::
+                                              CloseReason::kToolbarButton);
+                        return;
+                      }
                       glic::InvokeSelectionOverlay(
                           *tab, selection::EntryPoint::kToolbarButton);
                     }
