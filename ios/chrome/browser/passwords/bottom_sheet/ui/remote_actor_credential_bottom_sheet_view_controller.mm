@@ -41,9 +41,11 @@ constexpr char16_t kEndLinkTag[] = u"END_LINK";
 // Point size of the icons displayed in the header badges.
 constexpr CGFloat kHeaderIconPointSize = 30.0;
 
+// Side length of the header badges.
+constexpr CGFloat kHeaderBadgeSize = 60.0;
+
 // Creates a rounded square badge view containing `image`.
 UIView* CreateIconBadgeView(UIImage* image) {
-  static constexpr CGFloat kHeaderBadgeSize = 60.0;
   static constexpr CGFloat kHeaderBadgeCornerRadius = 15.0;
   static constexpr CGFloat kHeaderBadgeShadowRadius = 6.0;
   static constexpr CGFloat kHeaderBadgeShadowOffsetY = 2.0;
@@ -77,8 +79,15 @@ UIView* CreateIconBadgeView(UIImage* image) {
 // Creates the header illustration above the title showing the Gemini badge and
 // the Google Password Manager key badge.
 UIView* CreateAboveTitleView() {
-  static constexpr CGFloat kHeaderBadgeContainerWidth = 105.0;
-  static constexpr CGFloat kHeaderBadgeContainerHeight = 95.0;
+  // Offset of the password manager badge from the Gemini badge on both axes,
+  // making it overlap the Gemini badge's bottom trailing corner.
+  static constexpr CGFloat kHeaderBadgeOffset = 40.0;
+  // Extra space between the badges and the title.
+  static constexpr CGFloat kHeaderBottomPadding = 12.0;
+  static constexpr CGFloat kHeaderBadgeContainerWidth =
+      kHeaderBadgeSize + kHeaderBadgeOffset;
+  static constexpr CGFloat kHeaderBadgeContainerHeight =
+      kHeaderBadgeSize + kHeaderBadgeOffset + kHeaderBottomPadding;
 
   UIView* container_view = [[UIView alloc] init];
   container_view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -98,8 +107,11 @@ UIView* CreateAboveTitleView() {
                                                 kHeaderBadgeContainerHeight));
   AddSameConstraintsToSides(gemini_badge, container_view,
                             LayoutSides::kTop | LayoutSides::kLeading);
-  AddSameConstraintsToSides(password_manager_badge, container_view,
-                            LayoutSides::kBottom | LayoutSides::kTrailing);
+  AddSameConstraintsToSidesWithInsets(
+      password_manager_badge, gemini_badge,
+      LayoutSides::kTop | LayoutSides::kLeading,
+      NSDirectionalEdgeInsetsMake(kHeaderBadgeOffset, kHeaderBadgeOffset, 0,
+                                  0));
 
   return container_view;
 }
@@ -368,6 +380,10 @@ std::u16string GetActorName() {
 - (void)customizeSubtitle:(UITextView*)subtitle {
   [super customizeSubtitle:subtitle];
   _subtitleTextView = subtitle;
+  // Removes the default top inset to keep the subtitle close to the title.
+  UIEdgeInsets insets = subtitle.textContainerInset;
+  insets.top = 0;
+  subtitle.textContainerInset = insets;
   // The no saved passwords subtitle has no link.
   if (_noPasswordsFound) {
     return;
