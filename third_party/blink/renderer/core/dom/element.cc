@@ -4972,6 +4972,14 @@ void Element::AttachLayoutTree(AttachContext& context) {
       overscroll_area_context.next_sibling = nullptr;
       overscroll_area_context.next_sibling_valid = true;
       AttachLayoutTree(overscroll_area_context);
+
+      if (!GetLayoutBox()) {
+        // We failed to create a box. Although we try to force overscrollarea
+        // elements to be position:absolute, as an attempt to create an
+        // out-of-flow positioned box, that won't work if it's a BR element, for
+        // instance.
+        DetachLayoutTree(/*performing_reattach=*/false);
+      }
       return;
     }
   }

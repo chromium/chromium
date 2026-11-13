@@ -1183,6 +1183,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // because the fullscreen.css doesn't apply any style to them.
     //
     // Similarly, overscroll areas must be out of flow positioned with a box.
+    // Note that overriding `position` like this isn't guaranteed to create an
+    // out-of-flow positioned box. If it's a BR element, for instance, that is
+    // not going to happen.
     if (is_in_top_layer || builder.StyleType() == kPseudoIdBackdrop ||
         (element && element->IsValidOverscrollArea())) {
       if (!builder.HasOutOfFlowPosition()) {

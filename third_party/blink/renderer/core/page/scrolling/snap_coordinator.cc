@@ -339,6 +339,9 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
   if (const LayoutBox* box = snap_area.GetLayoutBox()) {
     box->QuadsInAncestor(quads, &snap_container, mapping_mode);
   } else {
+    // It should either be LayoutBox, or no LayoutObject at all.
+    CHECK(!snap_area.GetLayoutObject());
+
     // Since there's no layout object associated, this has to be a snap area for
     // a ::column pseudo-element.
     const auto& column_pseudo = To<ColumnPseudoElement>(snap_area);
