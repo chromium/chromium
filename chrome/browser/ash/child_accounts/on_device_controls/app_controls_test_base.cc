@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/chrome_switches.h"
+#include "base/command_line.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -22,6 +24,9 @@ AppControlsTestBase::AppControlsTestBase() = default;
 AppControlsTestBase::~AppControlsTestBase() = default;
 
 void AppControlsTestBase::SetUp() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::chrome_switches::kDisableDefaultApps);
+
   arc_app_test_.PreProfileSetUp();
   profile_ = std::make_unique<TestingProfile>();
 

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/chrome_switches.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -99,6 +100,9 @@ class AppServiceWrapperTest : public ::testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::chrome_switches::kDisableDefaultApps);
+
     arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
     tested_wrapper_ = std::make_unique<AppServiceWrapper>(profile_.get());

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -35,7 +34,6 @@
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "components/webapps/common/default_apps_for_testing.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pending_extension_manager.h"
@@ -104,11 +102,10 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
               data_dir().Append("external_app"));
     }
 
-    // Default apps are disabled by the `FakeWebAppProvider` of the
-    // `TestingProfile`, but need to be enabled for some `ExternalProvider`s to
-    // be created.
-    base::AutoReset<bool> enable_default_apps =
-        webapps::EnableDefaultAppsForTesting();
+    // This switch is set when creating a TestingProfile, but needs to be
+    // removed for some ExternalProviders to be created.
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kDisableDefaultApps);
 
     ProviderCollection providers;
     ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),

@@ -6,12 +6,10 @@
 
 #include <algorithm>
 #include <memory>
-#include <optional>
 #include <set>
 #include <string_view>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -49,10 +47,10 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/webapps/common/default_apps_for_testing.h"
 #include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
@@ -156,10 +154,9 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     test::ConfigDirAutoReset config_reset =
         test::SetPreinstalledWebAppConfigDirForTesting(config_dir);
 
-    // The `FakeWebAppProvider` disables default apps.
-    std::optional<base::AutoReset<bool>> enable_default_apps;
     if (!disable_default_apps) {
-      enable_default_apps.emplace(webapps::EnableDefaultAppsForTesting());
+      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+          switches::kDisableDefaultApps);
     }
 
     std::vector<ExternalInstallOptions> result;
@@ -602,17 +599,30 @@ TEST_F(PreinstalledWebAppManagerTest, ExtraWebAppsNoMatchingDirectory) {
   EXPECT_EQ(0u, app_infos.size());
   ExpectHistograms(/*enabled=*/0, /*disabled=*/0, /*errors=*/0);
 }
-
-TEST_F(PreinstalledWebAppManagerTest, LoadConfigsWhileDisabled) {
-  set_profile(CreateProfileAndLogin());
-  EXPECT_EQ(LoadApps(kGoodJsonTestDir, /*disable_default_apps=*/true).size(),
-            0u);
-}
 #else
 // No app is expected for non-ChromeOS builds.
 TEST_F(PreinstalledWebAppManagerTest, NoApp) {
   set_profile(CreateProfile());
   EXPECT_TRUE(LoadApps(kUserTypesTestDir).empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+class DisabledPreinstalledWebAppManagerTest
+    : public PreinstalledWebAppManagerTest {
+ public:
+  DisabledPreinstalledWebAppManagerTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kDisableDefaultApps);
+  }
+};
+
+TEST_F(DisabledPreinstalledWebAppManagerTest, LoadConfigsWhileDisabled) {
+  set_profile(CreateProfileAndLogin());
+  EXPECT_EQ(LoadApps(kGoodJsonTestDir,
+                     /*disable_default_apps=*/true)
+                .size(),
+            0u);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
