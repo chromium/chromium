@@ -43,7 +43,7 @@ class AwClientHintsControllerDelegate
  public:
   // The supplied PrefService should be the PrefService tied to the
   // AwBrowserContext (profile), not the browser-wide local_state. Note that
-  // this is not comparible to the PrefService used by
+  // this is not comparable to the PrefService used by
   // client_hints::ClientHints::ClientHints() - these PrefServices are used for
   // different purposes.
   explicit AwClientHintsControllerDelegate(PrefService* context_pref_service);
