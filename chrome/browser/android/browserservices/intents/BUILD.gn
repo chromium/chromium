@@ -63,6 +63,7 @@ robolectric_library("junit") {
     "//chrome/android/webapk/test:junit_test_support",
     "//chrome/browser/android/intents:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/util:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/widget/android:java",
     "//components/webapk/android/libs/common:java",

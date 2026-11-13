@@ -261,8 +261,7 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return The URL that should be used from this intent. Must be called only after native has
-     *     loaded.
+     * @return The URL that should be used from this intent.
      */
     public abstract @Nullable String getUrlToLoad();
 

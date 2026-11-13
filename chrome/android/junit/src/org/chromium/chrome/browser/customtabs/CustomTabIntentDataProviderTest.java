@@ -2568,6 +2568,13 @@ public class CustomTabIntentDataProviderTest {
                         3,
                         new Intent("menu_2"),
                         IntentUtils.getPendingIntentMutabilityFlag(true));
+        CustomContentAction customAction =
+                new CustomContentAction.Builder(
+                                9,
+                                "Custom Action",
+                                menuPi1,
+                                CustomTabsIntent.CONTENT_TARGET_TYPE_LINK)
+                        .build();
 
         Intent intent =
                 new CustomTabsIntent.Builder()
@@ -2577,9 +2584,11 @@ public class CustomTabIntentDataProviderTest {
                                 iconFittingToolbar, "action", actionPi, /* shouldTint= */ true)
                         .addMenuItem("Menu 1", menuPi1)
                         .addMenuItem("Menu 2", menuPi2)
+                        .addCustomContentAction(customAction)
                         .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
                         .build()
                         .intent;
+        intent.setData(Uri.parse("https://www.example.com/cct"));
         setIsTrustedCustomTab(intent);
         intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
         intent.putExtra(
@@ -2589,6 +2598,18 @@ public class CustomTabIntentDataProviderTest {
         intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED, true);
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_BACKGROUND_COLOR, 0xFF123456);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_TRANSLUCENT_BACKGROUND, 0x99112233);
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_TWA_DISCLOSURE_UI,
+                BrowserServicesIntentDataProvider.TwaDisclosureUi.V1_INFOBAR);
+        intent.putExtra(
+                CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION,
+                CustomTabsIntent.CLOSE_BUTTON_POSITION_END);
+        intent.putExtra(CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, true);
+        intent.putExtra(
+                CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION,
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_ANDROID_BROWSER_HELPER_VERSION, 77);
 
         CustomTabIntentDataProvider originalProvider =
                 new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
@@ -2685,6 +2706,47 @@ public class CustomTabIntentDataProviderTest {
                 ButtonType.CCT_OPEN_IN_BROWSER_BUTTON,
                 restoredLight.getCustomButtonsOnToolbar().get(1).getType());
         assertTrue(restoredHolder.mCustomButtonParams.get(0) instanceof CustomButtonParamsImpl);
+        assertEquals("https://www.example.com/cct", restoredLight.getUrlToLoad());
+        assertEquals(
+                originalProvider.getTranslucentBackgroundColor(mContext),
+                restoredLight.getTranslucentBackgroundColor(mContext));
+        assertEquals(
+                BrowserServicesIntentDataProvider.TwaDisclosureUi.V1_INFOBAR,
+                restoredLight.getTwaDisclosureUi());
+        assertEquals(
+                CustomTabsIntent.CLOSE_BUTTON_POSITION_END, restoredLight.getCloseButtonPosition());
+        assertTrue(restoredLight.showSideSheetMaximizeButton());
+        assertEquals(
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START,
+                restoredLight.getSideSheetPosition());
+        assertEquals(1, restoredLight.getCustomContentActions().size());
+        assertEquals(9, restoredLight.getCustomContentActions().get(0).getId());
+        assertEquals(77, restoredLight.getAndroidBrowserHelperVersion());
+
+        // Verify regular/popup CCT fields masked by ephemeral mode above.
+        Intent popupIntent = new CustomTabsIntent.Builder().build().intent;
+        setIsTrustedCustomTab(popupIntent);
+        popupIntent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.POPUP);
+        popupIntent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, "com.example.identity");
+        popupIntent.putExtra(
+                EXTRA_REQUESTED_WINDOW_FEATURES, new WindowFeatures(1, 2, 300, 400).toBundle());
+        CustomTabIntentDataProvider popupProvider =
+                new CustomTabIntentDataProvider(popupIntent, mContext, COLOR_SCHEME_LIGHT);
+        Parcel popupParcel = Parcel.obtain();
+        CustomTabIntentDataHolder restoredPopupHolder;
+        try {
+            popupProvider.getCustomTabIntentDataHolder().writeToParcel(popupParcel, 0);
+            popupParcel.setDataPosition(0);
+            restoredPopupHolder = CustomTabIntentDataHolder.CREATOR.createFromParcel(popupParcel);
+        } finally {
+            popupParcel.recycle();
+        }
+        CustomTabIntentDataProvider restoredPopup =
+                new CustomTabIntentDataProvider(
+                        new Intent(), mContext, COLOR_SCHEME_LIGHT, restoredPopupHolder);
+        assertEquals("com.example.identity", restoredPopup.getClientPackageNameIdentitySharing());
+        assertEquals(
+                new WindowFeatures(1, 2, 300, 400), restoredPopup.getRequestedWindowFeatures());
     }
 
     @Test
@@ -2804,8 +2866,14 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void testReconstructIncognitoFromSavedDataHolder() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        setIsTrustedCustomTab(intent);
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        intent.setData(Uri.parse("https://www.example.com/incognito"));
+        IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
+                intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READ_LATER);
+        intent.setPackage(mContext.getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.POPUP);
+        intent.putExtra(
+                EXTRA_REQUESTED_WINDOW_FEATURES, new WindowFeatures(5, 10, 200, 300).toBundle());
         intent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
         intent.putExtra(CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, true);
@@ -2839,5 +2907,11 @@ public class CustomTabIntentDataProviderTest {
         assertTrue(originalProvider.shouldShowShareMenuItem());
         assertTrue(restoredProvider.shouldShowShareMenuItem());
         assertTrue(restoredHolder.mDefaultShareMenuItem);
+        assertEquals("https://www.example.com/incognito", restoredProvider.getUrlToLoad());
+        assertEquals(
+                BrowserServicesIntentDataProvider.IncognitoCctCallerId.READ_LATER,
+                restoredProvider.getFeatureIdForMetricsCollection());
+        assertEquals(
+                new WindowFeatures(5, 10, 200, 300), restoredProvider.getRequestedWindowFeatures());
     }
 }

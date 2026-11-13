@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.customtabs;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl.EXTRA_REQUESTED_WINDOW_FEATURES;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_ENTER_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_EXIT_ANIMATION_RESOURCE;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BUNDLE_PACKAGE_NAME;
@@ -18,7 +17,6 @@ import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -54,8 +52,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final ColorProvider mColorProvider;
     private final Drawable mCloseButtonIcon;
 
-    private final @Nullable String mUrlToLoad;
-
     /** Constructs a {@link IncognitoCustomTabIntentDataProvider}. */
     public IncognitoCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
         this(intent, context, colorScheme, /* dataHolder= */ null);
@@ -69,7 +65,6 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             @Nullable CustomTabIntentDataHolder dataHolder) {
         assert intent != null;
         mIntent = intent;
-        mUrlToLoad = IntentHandler.getUrlFromIntent(intent);
 
         if (dataHolder != null) {
             mDataHolder = dataHolder;
@@ -103,6 +98,16 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             builder.setDefaultShareMenuItem(
                     IntentUtils.safeGetBooleanExtra(
                             intent, CustomTabsIntent.EXTRA_DEFAULT_SHARE_MENU_ITEM, false));
+            builder.setUrlToLoad(IntentHandler.getUrlFromIntent(intent));
+            builder.setRequestedWindowFeatures(
+                    CustomTabIntentDataProvider.extractRequestedWindowFeatures(intent, uiType));
+            if (IntentUtils.safeHasExtra(intent, IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID)) {
+                builder.setIncognitoCctCallerId(
+                        IntentUtils.safeGetIntExtra(
+                                intent,
+                                IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID,
+                                IncognitoCctCallerId.OTHER_CHROME_FEATURES));
+            }
 
             mDataHolder = builder.build();
         }
@@ -180,17 +185,16 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public @IncognitoCctCallerId int getFeatureIdForMetricsCollection() {
-        if (isIntentFromChrome(mIntent)) {
-            assert mIntent.hasExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID)
+        if (mDataHolder.mIsOpenedByChrome) {
+            assert mDataHolder.mIncognitoCctCallerId != null
                     : "Intent coming from Chrome features should add the extra "
                             + "IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID.";
 
             @IncognitoCctCallerId
             int incognitoCctChromeClientId =
-                    IntentUtils.safeGetIntExtra(
-                            mIntent,
-                            IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID,
-                            IncognitoCctCallerId.OTHER_CHROME_FEATURES);
+                    mDataHolder.mIncognitoCctCallerId != null
+                            ? mDataHolder.mIncognitoCctCallerId
+                            : IncognitoCctCallerId.OTHER_CHROME_FEATURES;
 
             boolean isValidEntry =
                     (incognitoCctChromeClientId > IncognitoCctCallerId.OTHER_CHROME_FEATURES
@@ -275,7 +279,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public @Nullable String getUrlToLoad() {
-        return mUrlToLoad;
+        return mDataHolder.mUrlToLoad;
     }
 
     @Override
@@ -342,12 +346,9 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         if (getUiType() != CustomTabsUiType.POPUP) {
             return null;
         }
-        final Bundle bundle =
-                IntentUtils.safeGetBundleExtra(getIntent(), EXTRA_REQUESTED_WINDOW_FEATURES);
-        if (bundle == null) {
-            return new WindowFeatures();
-        }
-        return new WindowFeatures(bundle);
+        return mDataHolder.mRequestedWindowFeatures != null
+                ? mDataHolder.mRequestedWindowFeatures
+                : new WindowFeatures();
     }
 
     @Override

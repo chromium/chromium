@@ -259,6 +259,7 @@ public class AuthTabIntentDataProviderUnitTest {
         assertEquals(
                 originalProvider.getColorProvider().getToolbarColor(),
                 restoredProvider.getColorProvider().getToolbarColor());
+        assertEquals(originalProvider.getUrlToLoad(), restoredProvider.getUrlToLoad());
     }
 
     @Test

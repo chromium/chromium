@@ -43,8 +43,6 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
     private final ColorProvider mColorProvider;
     private final Drawable mCloseButtonIcon;
 
-    private @Nullable String mUrlToLoad;
-
     public static boolean isAuthTabIntent(Intent intent) {
         return IntentUtils.safeGetBooleanExtra(intent, AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, false);
     }
@@ -118,6 +116,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
             builder.setDarkAuthTabColorSchemeParams(
                     AuthTabColorProvider.getColorSchemeParams(
                             intent, CustomTabsIntent.COLOR_SCHEME_DARK));
+            builder.setUrlToLoad(IntentHandler.getUrlFromIntent(intent));
 
             mDataHolder = builder.build();
         }
@@ -166,10 +165,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
 
     @Override
     public @Nullable String getUrlToLoad() {
-        if (mUrlToLoad == null) {
-            mUrlToLoad = IntentHandler.getUrlFromIntent(mIntent);
-        }
-        return mUrlToLoad;
+        return mDataHolder.mUrlToLoad;
     }
 
     @Override

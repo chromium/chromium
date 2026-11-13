@@ -60,6 +60,7 @@ import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.ActivityHeightResizeBehavior;
 import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetDecorationType;
+import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetPosition;
 import androidx.browser.customtabs.CustomTabsIntent.ActivitySideSheetRoundedCornersPosition;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
 import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
@@ -233,7 +234,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int BUTTON_STATE_DEFAULT = CustomTabsIntent.SHARE_STATE_DEFAULT;
     }
 
-    private static final String EXTRA_TWA_DISCLOSURE_UI =
+    static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
 
     private static final int DEFAULT_BREAKPOINT_DP = 840;
@@ -345,7 +346,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final ColorProvider mColorProvider;
 
     private @Nullable Set<Origin> mAllTrustedWebActivityOrigins;
-    private @Nullable String mUrlToLoad;
 
     private List<CustomButtonParams> mCustomButtonParams;
     private @Nullable Drawable mCloseButtonIcon;
@@ -475,10 +475,26 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
     }
 
+    private static @Nullable Integer getTranslucentBackgroundColorFromIntent(Intent intent) {
+        try {
+            Bundle extras = intent.getExtras();
+            if (extras != null
+                    && extras.get(EXTRA_TRANSLUCENT_BACKGROUND) instanceof Integer color) {
+                return color;
+            }
+        } catch (Throwable t) {
+            // Catches un-parceling exceptions.
+        }
+        return null;
+    }
+
     @Override
     public @ColorInt int getTranslucentBackgroundColor(Context context) {
         int defValue = SemanticColorUtils.getDefaultBgColor(context);
-        int bg = IntentUtils.safeGetIntExtra(mIntent, EXTRA_TRANSLUCENT_BACKGROUND, defValue);
+        int bg =
+                mDataHolder.mTranslucentBackgroundColor != null
+                        ? mDataHolder.mTranslucentBackgroundColor
+                        : defValue;
         if (bg == defValue) return defValue;
 
         // We limit the transparency to 30%-50% == 50%-70% (128-180) alpha
@@ -595,9 +611,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                             intent,
                             TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
             builder.setTwaAdditionalOrigins(twaAdditionalOrigins);
-
-            // Do not fill in `mAllTrustedWebActivityOrigins` yet, because we cannot
-            // `getUrlToLoad()` until native is loaded.
 
             builder.setTwaDisplayMode(resolveTwaDisplayMode());
             builder.setTwaDisplayOverrideMode(resolveTwaDisplayOverrideMode());
@@ -769,6 +782,27 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                     IntentUtils.safeGetBooleanExtra(
                             intent, EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED, false));
             builder.setMenuEntries(extractMenuEntries(intent));
+            builder.setUrlToLoad(resolveUrlToLoad(intent, uiType, mediaViewerUrl));
+            builder.setTranslucentBackgroundColor(getTranslucentBackgroundColorFromIntent(intent));
+            builder.setClientPackageNameIdentitySharing(
+                    IntentUtils.safeGetStringExtra(
+                            intent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE));
+            builder.setTwaDisclosureUi(getTwaDisclosureUiFromIntent(intent));
+            builder.setCloseButtonPosition(
+                    isCloseButtonEnabled
+                            ? IntentUtils.safeGetIntExtra(
+                                    intent,
+                                    EXTRA_CLOSE_BUTTON_POSITION,
+                                    CLOSE_BUTTON_POSITION_DEFAULT)
+                            : CLOSE_BUTTON_POSITION_DEFAULT);
+            builder.setShowSideSheetMaximizeButton(
+                    IntentUtils.safeGetBooleanExtra(
+                            intent, EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, false));
+            builder.setSideSheetPosition(getActivitySideSheetPositionFromIntent(intent));
+            builder.setCustomContentActions(extractCustomContentActions(intent));
+            builder.setAndroidBrowserHelperVersion(
+                    IntentUtils.safeGetIntExtra(intent, EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0));
+            builder.setRequestedWindowFeatures(extractRequestedWindowFeatures(intent, uiType));
 
             mDataHolder = builder.build();
         }
@@ -1151,18 +1185,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
     }
 
-    private @Nullable String resolveUrlToLoad(Intent intent) {
+    private static @Nullable String resolveUrlToLoad(
+            Intent intent, @CustomTabsUiType int uiType, @Nullable String mediaViewerUrl) {
         String url = IntentHandler.getUrlFromIntent(intent);
 
         // Intents fired for media viewers have an additional file:// URI passed along so that the
         // tab can display the actual filename to the user when it is loaded.
-        if (isMediaViewer()) {
-            String mediaViewerUrl = getMediaViewerUrl();
-            if (!TextUtils.isEmpty(mediaViewerUrl)) {
-                Uri mediaViewerUri = Uri.parse(mediaViewerUrl);
-                if (UrlConstants.FILE_SCHEME.equals(mediaViewerUri.getScheme())) {
-                    url = mediaViewerUrl;
-                }
+        if (uiType == CustomTabsUiType.MEDIA_VIEWER && !TextUtils.isEmpty(mediaViewerUrl)) {
+            Uri mediaViewerUri = Uri.parse(mediaViewerUrl);
+            if (UrlConstants.FILE_SCHEME.equals(mediaViewerUri.getScheme())) {
+                url = mediaViewerUrl;
             }
         }
         return url;
@@ -1486,7 +1518,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public @Nullable String getClientPackageNameIdentitySharing() {
         if (isOffTheRecord()) return null;
-        return IntentUtils.safeGetStringExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
+        return mDataHolder.mClientPackageNameIdentitySharing;
     }
 
     @Override
@@ -1511,10 +1543,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Nullable String getUrlToLoad() {
-        if (mUrlToLoad == null) {
-            mUrlToLoad = resolveUrlToLoad(getIntent());
-        }
-        return mUrlToLoad;
+        return mDataHolder.mUrlToLoad;
     }
 
     @Override
@@ -1661,7 +1690,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Nullable Set<Origin> getAllTrustedWebActivityOrigins() {
-        // Lazily compute this, since `getUrlToLoad()` requires native to be loaded.
         if (mAllTrustedWebActivityOrigins != null) {
             return mAllTrustedWebActivityOrigins;
         }
@@ -1745,10 +1773,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
     }
 
-    @TwaDisclosureUi
-    @Override
-    public int getTwaDisclosureUi() {
-        int version = mIntent.getIntExtra(EXTRA_TWA_DISCLOSURE_UI, TwaDisclosureUi.DEFAULT);
+    private static @TwaDisclosureUi int getTwaDisclosureUiFromIntent(Intent intent) {
+        int version =
+                IntentUtils.safeGetIntExtra(
+                        intent, EXTRA_TWA_DISCLOSURE_UI, TwaDisclosureUi.DEFAULT);
 
         if (version != TwaDisclosureUi.V1_INFOBAR
                 && version != TwaDisclosureUi.V2_NOTIFICATION_OR_SNACKBAR) {
@@ -1756,6 +1784,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
 
         return version;
+    }
+
+    @TwaDisclosureUi
+    @Override
+    public int getTwaDisclosureUi() {
+        return mDataHolder.mTwaDisclosureUi;
     }
 
     @ActivitySideSheetDecorationType
@@ -1816,8 +1850,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public @CloseButtonPosition int getCloseButtonPosition() {
         if (!isCloseButtonEnabled()) return CLOSE_BUTTON_POSITION_DEFAULT;
-        return IntentUtils.safeGetIntExtra(
-                mIntent, EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_DEFAULT);
+        return mDataHolder.mCloseButtonPosition;
     }
 
     @Override
@@ -1844,8 +1877,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public boolean showSideSheetMaximizeButton() {
-        return IntentUtils.safeGetBooleanExtra(
-                mIntent, EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, false);
+        return mDataHolder.mShowSideSheetMaximizeButton;
     }
 
     @Override
@@ -1853,12 +1885,17 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
     }
 
-    @Override
-    public int getSideSheetPosition() {
-        int position = CustomTabsIntent.getActivitySideSheetPosition(mIntent);
+    private static @ActivitySideSheetPosition int getActivitySideSheetPositionFromIntent(
+            Intent intent) {
+        int position = CustomTabsIntent.getActivitySideSheetPosition(intent);
         return position == ACTIVITY_SIDE_SHEET_POSITION_DEFAULT
                 ? ACTIVITY_SIDE_SHEET_POSITION_END
                 : position;
+    }
+
+    @Override
+    public int getSideSheetPosition() {
+        return mDataHolder.mSideSheetPosition;
     }
 
     @Override
@@ -1927,9 +1964,17 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mDataHolder.mShareState;
     }
 
+    private static List<CustomContentAction> extractCustomContentActions(Intent intent) {
+        try {
+            return CustomTabsIntent.getCustomContentActions(intent);
+        } catch (Throwable t) {
+            return List.of();
+        }
+    }
+
     @Override
     public List<CustomContentAction> getCustomContentActions() {
-        return CustomTabsIntent.getCustomContentActions(mIntent);
+        return mDataHolder.mCustomContentActions;
     }
 
     @Override
@@ -2015,7 +2060,20 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getAndroidBrowserHelperVersion() {
-        return IntentUtils.safeGetIntExtra(getIntent(), EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0);
+        return mDataHolder.mAndroidBrowserHelperVersion;
+    }
+
+    static @Nullable WindowFeatures extractRequestedWindowFeatures(
+            Intent intent, @CustomTabsUiType int uiType) {
+        if (uiType != CustomTabsUiType.POPUP) {
+            return null;
+        }
+        final Bundle bundle =
+                IntentUtils.safeGetBundleExtra(intent, EXTRA_REQUESTED_WINDOW_FEATURES);
+        if (bundle == null) {
+            return new WindowFeatures();
+        }
+        return new WindowFeatures(bundle);
     }
 
     @Override
@@ -2023,12 +2081,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (getUiType() != CustomTabsUiType.POPUP) {
             return null;
         }
-        final Bundle bundle =
-                IntentUtils.safeGetBundleExtra(getIntent(), EXTRA_REQUESTED_WINDOW_FEATURES);
-        if (bundle == null) {
-            return new WindowFeatures();
-        }
-        return new WindowFeatures(bundle);
+        return mDataHolder.mRequestedWindowFeatures != null
+                ? mDataHolder.mRequestedWindowFeatures
+                : new WindowFeatures();
     }
 
     @Override

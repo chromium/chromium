@@ -28,6 +28,7 @@ import android.widget.RemoteViews;
 
 import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
+import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.trusted.ScreenOrientation;
@@ -40,11 +41,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.IncognitoCctCallerId;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
+import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.List;
@@ -134,6 +138,18 @@ public class CustomTabIntentDataHolderUnitTest {
         assertFalse(restored.mDefaultShareMenuItem);
         assertFalse(restored.mOpenInBrowserButtonAllowed);
         assertTrue(restored.mMenuEntries.isEmpty());
+        assertNull(restored.mUrlToLoad);
+        assertNull(restored.mTranslucentBackgroundColor);
+        assertNull(restored.mClientPackageNameIdentitySharing);
+        assertEquals(TwaDisclosureUi.DEFAULT, restored.mTwaDisclosureUi);
+        assertEquals(CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT, restored.mCloseButtonPosition);
+        assertFalse(restored.mShowSideSheetMaximizeButton);
+        assertEquals(
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END, restored.mSideSheetPosition);
+        assertTrue(restored.mCustomContentActions.isEmpty());
+        assertEquals(0, restored.mAndroidBrowserHelperVersion);
+        assertNull(restored.mRequestedWindowFeatures);
+        assertNull(restored.mIncognitoCctCallerId);
         assertSame(
                 restored.mLightColorSchemeParams,
                 restored.getColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_LIGHT));
@@ -291,6 +307,24 @@ public class CustomTabIntentDataHolderUnitTest {
                                 List.of(
                                         Pair.create("Menu 1", menuPi),
                                         Pair.create("Menu 2", menuPi2)))
+                        .setUrlToLoad("https://example.com/load")
+                        .setTranslucentBackgroundColor(0x99112233)
+                        .setClientPackageNameIdentitySharing("com.example.identity")
+                        .setTwaDisclosureUi(TwaDisclosureUi.V2_NOTIFICATION_OR_SNACKBAR)
+                        .setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END)
+                        .setShowSideSheetMaximizeButton(true)
+                        .setSideSheetPosition(CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START)
+                        .setCustomContentActions(
+                                List.of(
+                                        new CustomContentAction.Builder(
+                                                        11,
+                                                        "Pin Image",
+                                                        menuPi,
+                                                        CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE)
+                                                .build()))
+                        .setAndroidBrowserHelperVersion(42)
+                        .setRequestedWindowFeatures(new WindowFeatures(10, 20, 300, 400))
+                        .setIncognitoCctCallerId(IncognitoCctCallerId.DOWNLOAD_HOME)
                         .build();
 
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
@@ -417,6 +451,26 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(menuPi, restored.mMenuEntries.get(0).second);
         assertEquals("Menu 2", restored.mMenuEntries.get(1).first);
         assertEquals(menuPi2, restored.mMenuEntries.get(1).second);
+        assertEquals("https://example.com/load", restored.mUrlToLoad);
+        assertEquals(Integer.valueOf(0x99112233), restored.mTranslucentBackgroundColor);
+        assertEquals("com.example.identity", restored.mClientPackageNameIdentitySharing);
+        assertEquals(TwaDisclosureUi.V2_NOTIFICATION_OR_SNACKBAR, restored.mTwaDisclosureUi);
+        assertEquals(CustomTabsIntent.CLOSE_BUTTON_POSITION_END, restored.mCloseButtonPosition);
+        assertTrue(restored.mShowSideSheetMaximizeButton);
+        assertEquals(
+                CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_START, restored.mSideSheetPosition);
+        assertEquals(1, restored.mCustomContentActions.size());
+        assertEquals(11, restored.mCustomContentActions.get(0).getId());
+        assertEquals("Pin Image", restored.mCustomContentActions.get(0).getLabel());
+        assertEquals(menuPi, restored.mCustomContentActions.get(0).getPendingIntent());
+        assertEquals(
+                CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE,
+                restored.mCustomContentActions.get(0).getTargetType());
+        assertEquals(42, restored.mAndroidBrowserHelperVersion);
+        assertEquals(new WindowFeatures(10, 20, 300, 400), restored.mRequestedWindowFeatures);
+        assertEquals(
+                Integer.valueOf(IncognitoCctCallerId.DOWNLOAD_HOME),
+                restored.mIncognitoCctCallerId);
     }
 
     @Test
