@@ -359,13 +359,15 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
   // work correctly.
   // TODO(crbug.com/40107157): This function should return true for Incognito
   // CCTs.
-  for (const TabModel* model : TabModelList::models()) {
+  bool is_off_the_record = false;
+  TabModelList::ForEachAll([&is_off_the_record](TabModel* model) {
     if (model->IsOffTheRecord()) {
-      return true;
+      is_off_the_record = true;
+      return false;  // Stop iterating.
     }
-  }
-
-  return false;
+    return true;
+  });
+  return is_off_the_record;
 #else
   return ::IsOffTheRecordSessionActive();
 #endif

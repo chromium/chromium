@@ -7,22 +7,26 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/tabs/public/tab_interface.h"
 
 PageLoadMetricsProvider::PageLoadMetricsProvider() = default;
 
 PageLoadMetricsProvider::~PageLoadMetricsProvider() = default;
 
 void PageLoadMetricsProvider::OnAppEnterBackground() {
-  for (const TabModel* model : TabModelList::models()) {
-    for (int tab_index = 0; tab_index < model->GetTabCount(); ++tab_index) {
-      content::WebContents* web_contents = model->GetWebContentsAt(tab_index);
-      if (!web_contents)
+  TabModelList::ForEachAll([](TabModel* model) {
+    for (tabs::TabInterface* tab : model->GetAllTabs()) {
+      content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+      if (!web_contents) {
         continue;
+      }
       page_load_metrics::MetricsWebContentsObserver* observer =
           page_load_metrics::MetricsWebContentsObserver::FromWebContents(
               web_contents);
-      if (observer)
+      if (observer) {
         observer->FlushMetricsOnAppEnterBackground();
+      }
     }
-  }
+    return true;
+  });
 }
