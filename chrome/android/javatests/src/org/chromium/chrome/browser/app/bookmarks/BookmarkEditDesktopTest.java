@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -53,7 +52,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG})
-@DisabledTest(message = "https://crbug.com/562626182")
 @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462590301
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class BookmarkEditDesktopTest {
