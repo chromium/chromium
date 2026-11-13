@@ -4525,7 +4525,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.MediaFoundationCdm.ActivateCdmFactory"
+<histogram name="Media.EME.MediaFoundationCdm.ActivateCdmFactoryResult"
     enum="Hresult" expires_after="2027-09-22">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
