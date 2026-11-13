@@ -204,11 +204,6 @@ class OtpCoordinatorTest
       public WithTestAutofillClientDriverManager<CoordinatorTestAutofillClient,
                                                  TestAutofillDriver> {
  protected:
-  OtpCoordinatorTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillShowGmailOtpSuggestions);
-  }
-
   void SetUp() override {
     InitAutofillClient();
     prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(),
@@ -314,9 +309,10 @@ class OtpCoordinatorTest
         OneTimeTokenType::kGmail, code, *arrival, sender, email_time));
   }
 
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillShowGmailOtpSuggestions};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   raw_ptr<one_time_tokens::FakeSmsOtpService> sms_otp_service_ = nullptr;
   raw_ptr<FakeOtpPhishGuardDelegate> phish_guard_delegate_ = nullptr;
