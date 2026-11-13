@@ -2222,6 +2222,11 @@
       status: "stable",
     },
     {
+      // crbug.com/537526308
+      name: "CssSizeShrinkContent",
+      status: "test",
+    },
+    {
       // https://drafts.csswg.org/cssom-1/#dom-cssstylesheetinit-baseurl
       name: "CSSStyleSheetInitBaseURL",
       status: "experimental",

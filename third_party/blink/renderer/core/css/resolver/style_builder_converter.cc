@@ -2160,6 +2160,8 @@ Length StyleBuilderConverter::ConvertLengthSizing(StyleResolverState& state,
     case CSSValueID::kWebkitFitContent:
     case CSSValueID::kFitContent:
       return Length::FitContent();
+    case CSSValueID::kShrinkContent:
+      return Length::ShrinkContent();
     case CSSValueID::kContent:
       return Length::Content();
     case CSSValueID::kAuto:

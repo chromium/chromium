@@ -3111,6 +3111,10 @@ bool Flex::ParseShorthand(bool important,
                 stream.Peek().Id())) {
           flex_basis = css_parsing_utils::ConsumeIdent(stream);
         }
+        if (RuntimeEnabledFeatures::CssSizeShrinkContentEnabled() &&
+            stream.Peek().Id() == CSSValueID::kShrinkContent) {
+          flex_basis = css_parsing_utils::ConsumeIdent(stream);
+        }
 
         if (!flex_basis) {
           local_context.SetUnresolvedProperty(

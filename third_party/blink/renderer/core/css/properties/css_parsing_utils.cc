@@ -8242,6 +8242,10 @@ bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
     }
     return true;
   }
+  if (RuntimeEnabledFeatures::CssSizeShrinkContentEnabled() &&
+      id == CSSValueID::kShrinkContent) {
+    return true;
+  }
   return false;
 }
 

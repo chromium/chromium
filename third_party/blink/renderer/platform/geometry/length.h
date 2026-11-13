@@ -97,6 +97,7 @@ class Length;
 PLATFORM_EXPORT extern const Length& g_auto_length;
 PLATFORM_EXPORT extern const Length& g_stretch_length;
 PLATFORM_EXPORT extern const Length& g_fit_content_length;
+PLATFORM_EXPORT extern const Length& g_shrink_content_length;
 PLATFORM_EXPORT extern const Length& g_max_content_length;
 PLATFORM_EXPORT extern const Length& g_min_content_length;
 PLATFORM_EXPORT extern const Length& g_min_intrinsic_length;
@@ -121,9 +122,10 @@ class PLATFORM_EXPORT Length {
     kMinIntrinsic,
     kStretch,
     kFitContent,
+    kShrinkContent,
     kCalculated,
     kFlex,
-    kNone,    // only valid for max-width, max-height, or contain-intrinsic-size
+    kNone,  // only valid for max-width, max-height, or contain-intrinsic-size
     kContent,      // only valid for flex-basis
     kOverlapJoin,  // only valid for gap decoration inset properties
   };
@@ -221,6 +223,7 @@ class PLATFORM_EXPORT Length {
   static const Length& Auto() { return g_auto_length; }
   static const Length& Stretch() { return g_stretch_length; }
   static const Length& FitContent() { return g_fit_content_length; }
+  static const Length& ShrinkContent() { return g_shrink_content_length; }
   static const Length& MaxContent() { return g_max_content_length; }
   static const Length& MinContent() { return g_min_content_length; }
   static const Length& MinIntrinsic() { return g_min_intrinsic_length; }
@@ -304,6 +307,7 @@ class PLATFORM_EXPORT Length {
   bool HasMaxContent() const;
   bool HasMinIntrinsic() const { return IsMinIntrinsic(); }
   bool HasFitContent() const;
+  bool HasShrinkContent() const { return IsShrinkContent(); }
 
   // CanConvertToCalculation() is true for any Lengths that are a fixed length,
   // a percent, or a calc() expression.  Note that this *includes* calc-size()
@@ -339,6 +343,7 @@ class PLATFORM_EXPORT Length {
   bool IsMinIntrinsic() const { return GetType() == kMinIntrinsic; }
   bool IsStretch() const { return GetType() == kStretch; }
   bool IsFitContent() const { return GetType() == kFitContent; }
+  bool IsShrinkContent() const { return GetType() == kShrinkContent; }
   bool IsPercent() const { return GetType() == kPercent; }
   bool IsOverlapJoin() const { return GetType() == kOverlapJoin; }
   // MayHavePercentDependence should be used to decide whether to optimize

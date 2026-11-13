@@ -48,6 +48,7 @@ float FloatValueForLength(const Length& length,
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
     case Length::kFitContent:
+    case Length::kShrinkContent:
     case Length::kContent:
     case Length::kFlex:
     case Length::kNone:
@@ -76,6 +77,7 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
     case Length::kFitContent:
+    case Length::kShrinkContent:
     case Length::kContent:
     case Length::kFlex:
     case Length::kNone:
@@ -100,6 +102,7 @@ LayoutUnit ValueForLength(const Length& length,
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
     case Length::kFitContent:
+    case Length::kShrinkContent:
     case Length::kContent:
     case Length::kFlex:
     case Length::kNone:

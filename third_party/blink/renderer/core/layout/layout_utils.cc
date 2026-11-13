@@ -34,7 +34,8 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
 
   bool is_unspecified =
       (length.HasAuto() && type != LengthResolveType::kMinSize) ||
-      length.HasFitContent() || length.HasStretch();
+      length.HasFitContent() || length.HasShrinkContent() ||
+      length.HasStretch();
 
   // Percentage inline margins will affect the size if the size is unspecified
   // (auto and similar).

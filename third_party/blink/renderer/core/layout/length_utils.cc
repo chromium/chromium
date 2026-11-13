@@ -114,6 +114,7 @@ LayoutUnit ResolveInlineLengthInternal(
       return min_max_sizes_func(SizeType::kContent).sizes.min_size;
     case Length::kMinIntrinsic:
       return min_max_sizes_func(SizeType::kIntrinsic).sizes.min_size;
+    case Length::kShrinkContent:
     case Length::kFitContent: {
       const LayoutUnit available_size =
           override_available_size == kIndefiniteSize
@@ -250,6 +251,7 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kMinContent:
     case Length::kMaxContent:
     case Length::kMinIntrinsic:
+    case Length::kShrinkContent:
     case Length::kFitContent: {
       const LayoutUnit intrinsic_size = block_size_func(
           length.IsMinIntrinsic() ? SizeType::kIntrinsic : SizeType::kContent);
@@ -437,6 +439,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
   // If fit-content is present we need to resolve the min/max sizes twice, once
   // assuming its min-content, and max-content. See:
   // https://github.com/w3c/csswg-drafts/issues/10721
+  // TODO(crbug.com/537526308): Check if shrink-content needs this too.
   if (style.LogicalMinWidth().HasFitContent() ||
       style.LogicalMaxWidth().HasFitContent()) {
     const MinMaxSizes min_sizes = ComputeMinMaxInlineSizes(

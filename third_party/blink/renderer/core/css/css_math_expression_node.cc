@@ -4620,7 +4620,8 @@ class CSSMathExpressionNodeParser {
 
     CSSValueID id = stream.Peek().Id();
     bool basis_is_any = id == CSSValueID::kAny;
-    if (id != CSSValueID::kInvalid &&
+    // TODO(crbug.com/537526308): Support 'shrink-content' in calc-size().
+    if (id != CSSValueID::kInvalid && id != CSSValueID::kShrinkContent &&
         (id == CSSValueID::kAny ||
          (id == CSSValueID::kAuto &&
           parsing_flags_.Has(Flag::AllowAutoInCalcSize)) ||

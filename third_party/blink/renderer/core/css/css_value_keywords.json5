@@ -789,6 +789,7 @@
     "min-content",
     "max-content",
     "fit-content",
+    "shrink-content",
 
     // frame-sizing
     // "auto",

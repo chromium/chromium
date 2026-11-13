@@ -3682,6 +3682,9 @@
       converter: "ConvertLengthSizing",
       typedom_types: ["Keyword", "Length", "Percentage"],
       keywords: ["auto", "fit-content", "min-content", "max-content", "content"],
+      runtime_enabled_keywords: {
+        CssSizeShrinkContent: ["shrink-content"],
+      },
       valid_for_permission_element: true,
       invalidate: ["layout", "paint"],
       percentages_depend_on_used_value: true,
@@ -4023,6 +4026,9 @@
       field_group: "box",
       field_template: "<length>",
       keywords: ["auto", "fit-content", "min-content", "max-content"],
+      runtime_enabled_keywords: {
+        CssSizeShrinkContent: ["shrink-content"],
+      },
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
@@ -4682,6 +4688,9 @@
       affected_by_zoom: true,
       percentages_depend_on_used_value: true,
       keywords: ["auto", "min-content", "max-content", "fit-content", "stretch"],
+      runtime_enabled_keywords: {
+        CssSizeShrinkContent: ["shrink-content"],
+      },
     },
     {
       name: "min-width",
@@ -4706,6 +4715,9 @@
       affected_by_zoom: true,
       percentages_depend_on_used_value: true,
       keywords: ["auto", "min-content", "max-content", "fit-content", "stretch"],
+      runtime_enabled_keywords: {
+        CssSizeShrinkContent: ["shrink-content"],
+      },
     },
     {
       name: "mix-blend-mode",
@@ -8348,6 +8360,9 @@
       field_group: "box",
       field_template: "<length>",
       keywords: ["auto", "fit-content", "min-content", "max-content"],
+      runtime_enabled_keywords: {
+        CssSizeShrinkContent: ["shrink-content"],
+      },
       default_value: "Length()",
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthSizing",
@@ -8481,6 +8496,9 @@
       valid_for_page_context: true,
       percentages_depend_on_used_value: true,
       keywords: ["auto", "min-content", "max-content", "fit-content", "stretch"],
+      runtime_enabled_keywords: {
+        CssSizeShrinkContent: ["shrink-content"],
+      },
     },
     {
       name: "min-block-size",
@@ -8495,6 +8513,9 @@
       valid_for_page_context: true,
       percentages_depend_on_used_value: true,
       keywords: ["auto", "min-content", "max-content", "fit-content", "stretch"],
+      runtime_enabled_keywords: {
+        CssSizeShrinkContent: ["shrink-content"],
+      },
     },
     {
       name: "max-inline-size",

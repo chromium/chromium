@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS Sizing Test: parsing shrink-content</title>
+<link rel="help" href="https://github.com/explainers-by-googlers/css-shrink-to-fit">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<style>
+  #target {
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div id="target"></div>
+<script>
+const properties = [
+  "width",
+  "height",
+  "min-width",
+  "min-height",
+  "max-width",
+  "max-height",
+  "inline-size",
+  "block-size",
+  "min-inline-size",
+  "min-block-size",
+  "max-inline-size",
+  "max-block-size",
+  "flex-basis",
+];
+
+for (const property of properties) {
+  test_valid_value(property, "shrink-content");
+  test_computed_value(property, "shrink-content");
+  test_invalid_value(property, "shrink-content(100px)");
+}
+
+test_valid_value("flex", "1 0 shrink-content");
+test_computed_value("flex", "1 0 shrink-content");
+</script>
+</body>
+</html>

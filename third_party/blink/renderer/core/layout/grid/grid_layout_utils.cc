@@ -662,6 +662,7 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
   switch (main_length.GetType()) {
     case Length::kAuto:
     case Length::kFitContent:
+    case Length::kShrinkContent:
     case Length::kStretch:
     case Length::kPercent:
     case Length::kCalculated: {

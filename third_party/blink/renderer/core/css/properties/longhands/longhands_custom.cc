@@ -4395,6 +4395,10 @@ const CSSValue* FlexBasis::ParseSingleValue(
           CSSValueID::kStretch>(stream.Peek().Id())) {
     return css_parsing_utils::ConsumeIdent(stream);
   }
+  if (RuntimeEnabledFeatures::CssSizeShrinkContentEnabled() &&
+      stream.Peek().Id() == CSSValueID::kShrinkContent) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
 
   return css_parsing_utils::ConsumeLengthOrPercent(
       stream, context, local_context,
