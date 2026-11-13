@@ -7714,6 +7714,12 @@ inline constexpr char kEnableTouchpadsInDiagnosticsAppDescription[] =
     "Shows touchpad cards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
 
+inline constexpr char kEnableTouchscreenCalibrationName[] =
+    "Enable/disable touchscreen calibration option in material design settings";
+inline constexpr char kEnableTouchscreenCalibrationDescription[] =
+    "If enabled, the user can calibrate the touch screen displays in "
+    "chrome://settings/display.";
+
 inline constexpr char kEnableVariableRefreshRateName[] =
     "Enable Variable Refresh Rate";
 inline constexpr char kEnableVariableRefreshRateDescription[] =
@@ -8004,12 +8010,6 @@ inline constexpr char kTilingWindowResizeName[] =
     "CrOS Labs - Tiling Window Resize";
 inline constexpr char kTilingWindowResizeDescription[] =
     "Enables tile-like resizing of windows.";
-
-inline constexpr char kTouchscreenCalibrationName[] =
-    "Enable/disable touchscreen calibration option in material design settings";
-inline constexpr char kTouchscreenCalibrationDescription[] =
-    "If enabled, the user can calibrate the touch screen displays in "
-    "chrome://settings/display.";
 
 inline constexpr char kTouchscreenMappingName[] =
     "Enable/disable touchscreen mapping option in material design settings";

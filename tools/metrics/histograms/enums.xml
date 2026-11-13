@@ -13715,6 +13715,7 @@ from previous Chrome versions.
       label="CCTOpenInBrowserButtonIfAllowedByEmbedder:disabled"/>
   <int value="-408769228" label="ArcGraphicBuffersVisualizationTool:disabled"/>
   <int value="-408180142" label="PassExplicitSyncPassphraseToGmsCore:disabled"/>
+  <int value="-407665197" label="EnableTouchscreenCalibration:disabled"/>
   <int value="-406850932" label="EnableEmojiContextMenu:enabled"/>
   <int value="-406475702"
       label="webview-disable-apps-package-names-allowlist-component"/>
@@ -15820,6 +15821,7 @@ from previous Chrome versions.
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
   <int value="224065816" label="SuppressToolbarCaptures:enabled"/>
   <int value="224221928" label="AutocorrectByDefault:disabled"/>
+  <int value="224234997" label="EnableTouchscreenCalibration:enabled"/>
   <int value="224269251" label="EnableComposeSelectionNudge:disabled"/>
   <int value="224381468"
       label="AddEduAccountFromAccountSettingsForSupervisedUsers:enabled"/>
