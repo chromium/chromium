@@ -23,7 +23,7 @@ dictionary StreamInfo {
 };
 
 // Persisted options for a MIME handler registered for one MIME type.
-dictionary MimeHandlerOptions {
+[preserveNull] dictionary MimeHandlerOptions {
   // Whether this handler is enabled. Defaults to the manifest entry's
   // `enabled` value.
   boolean enabled;
@@ -53,7 +53,11 @@ interface MimeHandler {
   // incognito follow the values set outside incognito.
   // |mimeType|: The MIME type to configure. It must be a MIME type the
   // extension handles through mime_types_handler.
-  // |options|: The options to change.
+  // |options|: The options to change. A member set to null forgets the value
+  // the extension set, so the manifest entry's value applies again. In split
+  // incognito mode, it forgets only the value of the profile the call is made
+  // from. After such a call from incognito, incognito follows the value set
+  // outside incognito again.
   // |Returns|: Promise resolved when the configuration has been set.
   static Promise<undefined> setMimeHandlerOptions(DOMString mimeType,
                                                   MimeHandlerOptions options);

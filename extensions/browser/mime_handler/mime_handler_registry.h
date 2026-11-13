@@ -130,6 +130,22 @@ class MimeHandlerRegistry : public KeyedService,
                               bool can_embed,
                               content::BrowserContext* context);
 
+  // Forgets the enabled state set for (`extension_id`, `mime_type`), so the
+  // manifest entry's value applies again. A split mode extension keeps a
+  // separate state for incognito, and only the state of the profile that
+  // `context` belongs to is forgotten. After a reset from incognito, incognito
+  // uses the regular profile's state again. Requires `extension_id` to be an
+  // enabled extension that handles `mime_type`.
+  void ResetEnabledForMimeType(const ExtensionId& extension_id,
+                               const std::string& mime_type,
+                               content::BrowserContext* context);
+
+  // Forgets the can_embed state set for (`extension_id`, `mime_type`), with the
+  // same rules as ResetEnabledForMimeType().
+  void ResetCanEmbedForMimeType(const ExtensionId& extension_id,
+                                const std::string& mime_type,
+                                content::BrowserContext* context);
+
   // BrowserContextLifetimeObserver:
   void OnRelatedOffTheRecordBrowserContextDestroyed(
       content::BrowserContext& off_the_record_context) override;
@@ -161,6 +177,11 @@ class MimeHandlerRegistry : public KeyedService,
       const ExtensionId& extension_id,
       const std::string& mime_type) const;
 
+  // CHECKs that `extension_id` is an enabled extension that handles
+  // `mime_type`.
+  void ValidateHandlerOfMimeType(const ExtensionId& extension_id,
+                                 const std::string& mime_type) const;
+
   // Returns the handlers in `handlers` that are enabled for `mime_type` in
   // `context`, in the same order.
   std::vector<ExtensionId> EnabledHandlers(
@@ -187,6 +208,14 @@ class MimeHandlerRegistry : public KeyedService,
                    std::string_view key,
                    bool value,
                    content::BrowserContext* context);
+
+  // Removes the value stored under `key` for (`extension_id`, `mime_type`),
+  // keeping the other options of that MIME type. Uses the same storage as
+  // StoreOption().
+  void RemoveOption(const ExtensionId& extension_id,
+                    const std::string& mime_type,
+                    std::string_view key,
+                    content::BrowserContext* context);
 
   // Sorts `handlers` in descending precedence order. See
   // `RegisterExtension` for the precedence rules.

@@ -607,6 +607,146 @@ TEST_F(MimeHandlerRegistryTest, UpdateForgetsOptionsOfUndeclaredMimeTypes) {
   }
 }
 
+// A reset should forget the option the extension set, so the manifest entry
+// decides it again, and keep the other option. A later version that changes
+// the manifest entry should get its new values too.
+TEST_F(MimeHandlerRegistryTest, ResetLetsManifestDecideOptions) {
+  // The manifest entry disables the handler and allows embedded loads, the
+  // opposite of the options set below.
+  auto first_version = CreateMimeHandlerExtension(
+      "PDF Handler", kPdfMimeType, kViewerUrl,
+      base::DictValue().Set("enabled", false).Set("can_embed", true));
+  const ExtensionId extension_id = first_version->id();
+  auto is_enabled = [&] {
+    return registry()->IsEnabledForMimeType(extension_id, kPdfMimeType,
+                                            browser_context());
+  };
+  auto can_embed = [&] {
+    return registry()->CanEmbedForMimeType(extension_id, kPdfMimeType,
+                                           browser_context());
+  };
+  LoadExtension(first_version.get());
+  registry()->SetEnabledForMimeType(extension_id, kPdfMimeType, true,
+                                    browser_context());
+  registry()->SetCanEmbedForMimeType(extension_id, kPdfMimeType, false,
+                                     browser_context());
+
+  registry()->ResetEnabledForMimeType(extension_id, kPdfMimeType,
+                                      browser_context());
+  EXPECT_FALSE(is_enabled());
+  EXPECT_FALSE(can_embed());
+
+  registry()->ResetCanEmbedForMimeType(extension_id, kPdfMimeType,
+                                       browser_context());
+  EXPECT_FALSE(is_enabled());
+  EXPECT_TRUE(can_embed());
+
+  // The later version has the same name, and so the same ID. It flips both
+  // values in the manifest entry.
+  auto later_version = CreateMimeHandlerExtension(
+      "PDF Handler", kPdfMimeType, kViewerUrl,
+      base::DictValue().Set("enabled", true).Set("can_embed", false));
+  UpdateExtension(later_version.get());
+  EXPECT_TRUE(is_enabled());
+  EXPECT_FALSE(can_embed());
+}
+
+// A reset should forget the option of one MIME type and keep it for the other
+// types. The MIME type that is reset contains a '.', which should count as
+// part of the type and not as a path separator in the stored options.
+TEST_F(MimeHandlerRegistryTest, ResetKeepsOptionsOfOtherMimeTypes) {
+  constexpr char kExcelMimeType[] = "application/vnd.ms-excel";
+  // QuickOffice is allowlisted, so it can handle MIME types other than PDF.
+  auto ext = ExtensionBuilder("QuickOffice")
+                 .SetID(extension_misc::kQuickOfficeExtensionId)
+                 .SetManifestKey(
+                     "mime_types_handler",
+                     base::DictValue()
+                         .Set(kPdfMimeType,
+                              base::DictValue().Set("handler_url", kViewerUrl))
+                         .Set(kExcelMimeType,
+                              base::DictValue().Set("handler_url", kViewerUrl)))
+                 .Build();
+  LoadExtension(ext.get());
+  // The manifest entries leave both types enabled. After both are disabled, a
+  // reset should turn its type back on.
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                    browser_context());
+  registry()->SetEnabledForMimeType(ext->id(), kExcelMimeType, false,
+                                    browser_context());
+
+  registry()->ResetEnabledForMimeType(ext->id(), kExcelMimeType,
+                                      browser_context());
+
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kExcelMimeType,
+                                               browser_context()));
+  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                browser_context()));
+}
+
+// A reset should forget only the options of the profile it is made from. A
+// split mode extension keeps separate options for incognito, and after a reset
+// from incognito, incognito should follow the regular profile again. A spanning
+// mode extension shares the regular profile's options.
+TEST_F(MimeHandlerRegistryTest, ResetForgetsOptionsOfCallingProfile) {
+  struct {
+    const char* name;
+    scoped_refptr<const Extension> extension;
+    bool can_embed_set_from_incognito;
+    bool reset_from_incognito;
+    bool expected_can_embed_in_regular;
+    bool expected_can_embed_in_incognito;
+  } kTestCases[] = {
+      // Incognito differs from regular, so following regular again is visible.
+      {.name = "Split, reset from incognito",
+       .extension = CreateSplitModePdfHandlerExtension(),
+       .can_embed_set_from_incognito = false,
+       .reset_from_incognito = true,
+       .expected_can_embed_in_regular = true,
+       .expected_can_embed_in_incognito = true},
+      {.name = "Split, reset from regular",
+       .extension = CreateSplitModePdfHandlerExtension(),
+       .can_embed_set_from_incognito = true,
+       .reset_from_incognito = false,
+       .expected_can_embed_in_regular = false,
+       .expected_can_embed_in_incognito = true},
+      {.name = "Spanning, reset from incognito",
+       .extension =
+           CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl),
+       .can_embed_set_from_incognito = true,
+       .reset_from_incognito = true,
+       .expected_can_embed_in_regular = false,
+       .expected_can_embed_in_incognito = false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    const Extension* ext = test_case.extension.get();
+    LoadExtension(ext);
+    // The manifest entry does not allow embedded loads. After the regular
+    // profile allows them, a reset there should turn them back off.
+    registry()->SetCanEmbedForMimeType(ext->id(), kPdfMimeType, true,
+                                       browser_context());
+    registry()->SetCanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                       test_case.can_embed_set_from_incognito,
+                                       incognito_context());
+
+    registry()->ResetCanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                         test_case.reset_from_incognito
+                                             ? incognito_context()
+                                             : browser_context());
+
+    EXPECT_EQ(test_case.expected_can_embed_in_regular,
+              registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                              browser_context()));
+    EXPECT_EQ(test_case.expected_can_embed_in_incognito,
+              registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                              incognito_context()));
+
+    UnloadExtension(ext);
+  }
+}
+
 // For a split mode extension, options set from incognito should change only
 // incognito. They should not be saved in the prefs. For a spanning mode
 // extension, they should change the regular profile too and be saved.

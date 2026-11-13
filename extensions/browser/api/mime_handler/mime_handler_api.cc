@@ -6,12 +6,14 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
@@ -38,6 +40,20 @@ struct ResolvedStream {
 
 constexpr char kUnhandledMimeTypeError[] =
     "This extension does not handle MIME type '*'.";
+
+// Removes `key` from `options` and returns true if its value is null. A null
+// member asks to restore the manifest value, which the generated
+// MimeHandlerOptions cannot represent.
+// TODO(crbug.com/584808448): Remove once the generated types support nullable
+// members.
+bool TakeNullOption(base::DictValue& options, std::string_view key) {
+  const base::Value* value = options.Find(key);
+  if (!value || !value->is_none()) {
+    return false;
+  }
+  options.Remove(key);
+  return true;
+}
 
 bool ExtensionHandlesMimeType(const Extension& extension,
                               const std::string& mime_type) {
@@ -159,6 +175,11 @@ MimeHandlerSetMimeHandlerOptionsFunction::
 
 ExtensionFunction::ResponseAction
 MimeHandlerSetMimeHandlerOptionsFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(args().size() == 2 && args()[1].is_dict());
+  base::DictValue& raw_options = GetMutableArgs()[1].GetDict();
+  const bool reset_enabled = TakeNullOption(raw_options, "enabled");
+  const bool reset_can_embed = TakeNullOption(raw_options, "canEmbed");
+
   auto params =
       api::mime_handler::SetMimeHandlerOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -172,11 +193,17 @@ MimeHandlerSetMimeHandlerOptionsFunction::Run() {
   }
 
   MimeHandlerRegistry* registry = MimeHandlerRegistry::Get(browser_context());
-  if (enabled.has_value()) {
+  if (reset_enabled) {
+    registry->ResetEnabledForMimeType(extension_id(), params->mime_type,
+                                      browser_context());
+  } else if (enabled.has_value()) {
     registry->SetEnabledForMimeType(extension_id(), params->mime_type,
                                     enabled.value(), browser_context());
   }
-  if (can_embed.has_value()) {
+  if (reset_can_embed) {
+    registry->ResetCanEmbedForMimeType(extension_id(), params->mime_type,
+                                       browser_context());
+  } else if (can_embed.has_value()) {
     registry->SetCanEmbedForMimeType(extension_id(), params->mime_type,
                                      can_embed.value(), browser_context());
   }

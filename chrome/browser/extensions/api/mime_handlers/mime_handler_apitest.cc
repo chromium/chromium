@@ -25,6 +25,10 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerApiTest,
   ASSERT_TRUE(RunExtensionTest("mime_handler_options")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(MimeHandlerApiTest, NullOptionsRestoreManifestValues) {
+  ASSERT_TRUE(RunExtensionTest("mime_handler_options_reset")) << message_;
+}
+
 // Tests that an extension that declares `mime_types_handler`, but whose ID is
 // not in `kMIMETypeHandlersAllowlist`
 // (extensions/common/manifest_handlers/mime_types_handler.cc), gets the public

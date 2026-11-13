@@ -467,6 +467,14 @@ TEST_F(MimeHandlerApiTest,
   EXPECT_EQ(kUnhandledPngMimeTypeError,
             RunFunctionAndReturnError(get_unhandled_function.get(),
                                       R"(["image/png"])"));
+
+  // A null member resets an option instead of setting it, and should also be
+  // refused for a MIME type the extension does not handle.
+  auto reset_unhandled_function =
+      base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
+  EXPECT_EQ(kUnhandledPngMimeTypeError,
+            RunFunctionAndReturnError(reset_unhandled_function.get(),
+                                      R"(["image/png", {"enabled": null}])"));
 }
 
 // A generic handler cannot handle image/png, so this manifest parses to no
