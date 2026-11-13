@@ -22,7 +22,7 @@ implementation, and chain review. Keep planning and audits separate from edits:
 2. **Implement:** Delegate milestone coding, builds, and tests to a
    write-enabled subagent, or the primary agent if none is available.
 3. **Audit:** Run `chromium_design_reviewer` on Designs and Plans, and
-   `chromium_code_reviewer` on diffs and the stack. Route findings back to the
+   `code_reviewer` on diffs and the stack. Route findings back to the
    implementer rather than editing inside a reviewer.
 
 ## Phase 1: Collaborative Design & Human Gate
@@ -67,9 +67,8 @@ Execute dependent milestones serially so each builds on a verified parent:
    then run `git cl presubmit -u --force`.
 4. **Escalate Stalls:** If an implementer stalls twice on the same obstacle, try
    a stronger model or take over directly.
-5. **Code Review:** Run `chromium_code_reviewer` on the committed `HEAD` diff
-   against the Design and Plan, routing fixes back to the implementer until
-   approved.
+5. **Code Review:** Run `code_reviewer` on the committed `HEAD` diff against the
+   Design and Plan, routing fixes back to the implementer until approved.
 6. **Update Plan:** Update checkboxes, `Surprises & Discoveries`, and
    `Decision Log` after each milestone.
 
@@ -79,8 +78,8 @@ Phase 4 instead of improvising.
 ## Phase 4: Outer Loop: Big-Picture Chain Review
 
 Trigger this audit when all milestones finish or when a milestone hits a
-structural snag. Run `chromium_code_reviewer` at the chain tip to inspect
-`git log` and `git diff` across stacked branches (optionally paired with
+structural snag. Run `code_reviewer` at the chain tip to inspect `git log` and
+`git diff` across stacked branches (optionally paired with
 `chromium_design_reviewer`):
 
 1. **Design Fit:** Does the Design hold against code reality, edge cases, memory

@@ -28,6 +28,7 @@ subagent: true
 rules:
   - ../skills/webapps-dev/SKILL.md
   - ../../AGENTS.md
+  - //internal/agents/rules/internal_instructions.md
 ---
 
 # WebApps Agent

@@ -1,7 +1,10 @@
 {
   "entries": [
     {
-      "path": "components/webapps/_agents/_harness/skills/general-code-review"
+      "path": "agents/skills/code-review"
+    },
+    {
+      "path": "agents/skills/security-review"
     },
     {
       "path": "components/webapps/_agents/_harness/skills/harness-doc-writer"

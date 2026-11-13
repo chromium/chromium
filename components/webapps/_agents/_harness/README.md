@@ -27,8 +27,12 @@ The harness provides shared:
   ([harness-project](skills/harness-project/SKILL.md))
 - Doc writing skill ([harness-doc-writer](skills/harness-doc-writer/SKILL.md))
   and design reviewing agent
-- Code reviewing agent and review workflow skill
-  ([general-code-review](skills/general-code-review/SKILL.md))
+- Shared code review agents
+  ([`code_reviewer.md`](/agents/agents/code_reviewer.md) and
+  [`security_reviewer.md`](/agents/agents/security_reviewer.md)) and skills
+  ([`code-review`](/agents/skills/code-review/SKILL.md) and
+  [`security-review`](/agents/skills/security-review/SKILL.md)), registered in
+  `_harness/agents.json` and `_harness/skills.json`
 - Project harness bootstrap
   ([harness-bootstrap](skills/harness-bootstrap/SKILL.md)) and updater
   ([harness-updater](skills/harness-updater/SKILL.md)) skills
@@ -50,13 +54,11 @@ _harness/
 ├── DESIGNS.md                # Standard design doc template
 ├── PLANS.md                  # Standard execution plan template
 ├── REVIEWS.md                # Review spec & critique dimensions
-├── agents.json               # Manifest registering harness personas
+├── agents.json               # Manifest registering harness and shared personas
 ├── agents/                   # Reusable review personas (Markdown)
-│   ├── chromium_code_reviewer.md # Owners code reviewer (read-only by default)
 │   └── chromium_design_reviewer.md # Skeptical Architect reviewer
-├── skills.json               # Manifest registering harness skills
+├── skills.json               # Manifest registering harness and shared skills
 ├── skills/                   # Reusable harness skills
-│   ├── general-code-review/  # Owners code review workflow (used by reviewer)
 │   ├── harness-bootstrap/    # Project harness skeleton scaffolder
 │   ├── harness-doc-writer/   # Design/Plan authoring & review loop
 │   ├── harness-project/      # Design -> Plan -> Stack -> Chain Review

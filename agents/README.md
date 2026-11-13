@@ -11,6 +11,12 @@ Googler-only docs: http://go/chrome-coding-with-ai-agents
 
 ## Directory Structure
 
+### Agents
+
+Reusable agent and subagent definitions. See [`//agents/agents/README.md`].
+
+[`//agents/agents/README.md`]: /agents/agents/README.md
+
 ### Prompts
 
 Shared `GEMINI.md` prompts. See [`//agents/prompts/README.md`].

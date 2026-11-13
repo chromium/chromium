@@ -14,6 +14,8 @@ tools:
   - read_url_content
   - send_message
 inheritMcp: true
+rules:
+  - //internal/agents/rules/internal_instructions.md
 ---
 
 # Core Mandates

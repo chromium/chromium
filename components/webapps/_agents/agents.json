@@ -1,11 +1,15 @@
 {
-  "inherits":[{"path":"internal/agents/teams/webapps/agents/agents.json"}],
+  "inherits": [
+    {
+      "path": "internal/agents/teams/webapps/agents/agents.json"
+    },
+    {
+      "path": "components/webapps/_agents/_harness/agents.json"
+    }
+  ],
   "entries": [
     {
       "path": "components/webapps/_agents/agents"
-    },
-    {
-      "path": "components/webapps/_agents/_harness/agents"
     }
   ]
 }
