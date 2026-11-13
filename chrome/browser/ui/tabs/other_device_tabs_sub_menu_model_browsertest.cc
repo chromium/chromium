@@ -427,18 +427,19 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
-                       AppMenuRowShownWhenSignInPending) {
+                       AppMenuRowHiddenWhenSignInPending) {
   SetUpSignedInWithTabSync();
   RegisterDevices({1});
   EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
 
   signin::SetInvalidRefreshTokenForPrimaryAccount(
       IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
-  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+  EXPECT_EQ(0u, CreateModel()->GetItemCount());
 }
 
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
-                       AppMenuRowShownWhenSyncPaused) {
+                       AppMenuRowHiddenWhenSyncPaused) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->GetProfile()),
       "test@gmail.com", signin::ConsentLevel::kSync);
@@ -448,7 +449,8 @@ IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest,
 
   signin::SetInvalidRefreshTokenForPrimaryAccount(
       IdentityManagerFactory::GetForProfile(browser()->GetProfile()));
-  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/true));
+  EXPECT_TRUE(VerifyAppMenuRowVisible(browser(), /*expected_visible=*/false));
+  EXPECT_EQ(0u, CreateModel()->GetItemCount());
 }
 
 IN_PROC_BROWSER_TEST_F(OtherDeviceTabsSubMenuModelTest, EmptyWhenNotEligible) {

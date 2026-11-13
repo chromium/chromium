@@ -1336,7 +1336,8 @@ TEST_F(ActionAppMenuManagerTest,
   EXPECT_TRUE(other_device_tabs->GetActionItem()->GetVisible());
 }
 
-TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuShownWhenSignInPending) {
+TEST_F(ActionAppMenuManagerTest,
+       OtherDeviceTabsSubmenuHiddenWhenSignInPending) {
   base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
   signin::IdentityManager* identity_manager = SignIn();
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
@@ -1349,13 +1350,11 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuShownWhenSignInPending) {
   ASSERT_NE(root, nullptr);
   actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
   ASSERT_NE(your_chrome_section, nullptr);
-  actions::BaseAction* other_device_tabs =
-      FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
-  ASSERT_NE(other_device_tabs, nullptr);
-  EXPECT_TRUE(other_device_tabs->GetActionItem()->GetVisible());
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu),
+            nullptr);
 }
 
-TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuShownWhenSyncPaused) {
+TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuHiddenWhenSyncPaused) {
   base::test::ScopedFeatureList feature_list(syncer::kCrossDeviceTabsInAppMenu);
   signin::IdentityManager* identity_manager =
       SignIn(signin::ConsentLevel::kSync);
@@ -1369,10 +1368,8 @@ TEST_F(ActionAppMenuManagerTest, OtherDeviceTabsSubmenuShownWhenSyncPaused) {
   ASSERT_NE(root, nullptr);
   actions::ActionItem* your_chrome_section = GetYourChromeSection(root);
   ASSERT_NE(your_chrome_section, nullptr);
-  actions::BaseAction* other_device_tabs =
-      FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu);
-  ASSERT_NE(other_device_tabs, nullptr);
-  EXPECT_TRUE(other_device_tabs->GetActionItem()->GetVisible());
+  EXPECT_EQ(FindBaseAction(your_chrome_section, kActionOtherDeviceTabsSubmenu),
+            nullptr);
 }
 
 }  // namespace

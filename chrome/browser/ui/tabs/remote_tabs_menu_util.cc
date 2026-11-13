@@ -115,12 +115,13 @@ bool ShouldShowOtherDeviceTabsMenuItem(Profile* profile) {
       IdentityManagerFactory::GetForProfile(profile))) {
     case signin_util::SignedInState::kSignedOut:
     case signin_util::SignedInState::kWebOnlySignedIn:
-      // Hide when no primary account is signed in to Chrome.
+    case signin_util::SignedInState::kSignInPending:
+    case signin_util::SignedInState::kSyncPaused:
+      // Hide when no primary account is signed in to Chrome, sign-in is
+      // pending, or sync is paused.
       return false;
     case signin_util::SignedInState::kSignedIn:
-    case signin_util::SignedInState::kSignInPending:
     case signin_util::SignedInState::kSyncing:
-    case signin_util::SignedInState::kSyncPaused:
       break;
   }
 

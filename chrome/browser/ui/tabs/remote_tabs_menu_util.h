@@ -38,9 +38,9 @@ bool ShouldShowTabsFromOtherDevices(Profile* profile);
 
 // Returns true if the "Other device tabs" app menu entry should be shown for
 // `profile`. Returns false when the feature is disabled, `profile` is null or
-// off-the-record, browser history saving is disabled, the user is signed out
-// or web-only signed in, or sync / tabs / history sync is unavailable or
-// disallowed by policy.
+// off-the-record, browser history saving is disabled, the user is signed out,
+// web-only signed in, in sign-in pending state, or sync-paused, or sync /
+// tabs / history sync is unavailable or disallowed by policy.
 bool ShouldShowOtherDeviceTabsMenuItem(Profile* profile);
 
 // Returns the menu icon representing a device of `form_factor`.
