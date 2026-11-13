@@ -564,6 +564,12 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     std::string crl = BuildCrl(crl_issuer->GetSubject(), crl_issuer->GetKey(),
                                revoked_serials, signature_algorithm);
     std::string crl_path = MakeRandomPath(".crl");
+    return ServeCrl(test_server, crl, crl_path);
+  }
+
+  GURL ServeCrl(EmbeddedTestServer* test_server,
+                const std::string& crl,
+                const std::string& crl_path) {
     test_server->RegisterRequestHandler(
         base::BindRepeating(&test_server::HandlePrefixedRequest, crl_path,
                             base::BindRepeating(ServeResponse, HTTP_OK,
@@ -731,6 +737,10 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
 
 class CertVerifyProcBuiltinMtcTest : public CertVerifyProcBuiltinTest {
  public:
+  CertVerifyProcBuiltinMtcTest() {
+    feature_list_.InitAndEnableFeature(features::kVerifyMTCs);
+  }
+
   std::shared_ptr<const bssl::MTCAnchor> CreateMTCAnchor(
       base::span<const uint8_t> ca_id,
       bssl::SignatureAlgorithm ca_signature_algorithm,
@@ -754,6 +764,9 @@ class CertVerifyProcBuiltinMtcTest : public CertVerifyProcBuiltinTest {
     return signer;
   }
 #endif
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
@@ -808,6 +821,22 @@ TEST_F(CertVerifyProcBuiltinMtcTest, SimpleSignaturelessMtcSuccess) {
         mtc_anchor->AsCert()->cert_buffer(),
         verify_result.verified_cert->cert_buffers()[1].get()));
     EXPECT_FALSE(verify_result.is_issued_by_known_root);
+  }
+
+  {
+    // Verification should fail if the base::Feature is disabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kVerifyMTCs, false);
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
   }
 
   SetMockIsKnownRoot(false);
@@ -995,6 +1024,22 @@ TEST_F(CertVerifyProcBuiltinMtcTest, StandaloneMtcVerification) {
         mtc_anchor->AsCert()->cert_buffer(),
         verify_result.verified_cert->cert_buffers()[1].get()));
     EXPECT_FALSE(verify_result.is_issued_by_known_root);
+  }
+
+  {
+    // Verification should fail if the base::Feature is disabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(features::kVerifyMTCs, false);
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
   }
 
   // Standalone MTC verification fails if the MTCAnchor in the trust store has
@@ -1786,6 +1831,127 @@ TEST_F(CertVerifyProcBuiltinMtcTest, MtcRevocation) {
       int error = callback.WaitForResult();
       EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
     }
+  }
+}
+
+// Tests that VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS fails verification of
+// an MTC from a locally-trusted anchor if the MTC has no revocation mechanism,
+// the same as for a certificate from a traditional CA.
+TEST_F(CertVerifyProcBuiltinMtcTest,
+       MtcRevocationCheckingRequiredLocalAnchors) {
+  constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+  constexpr uint16_t kLogNumber = 1;
+  net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
+  std::unique_ptr<net::CertBuilder> mtc_leaf =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf);
+  mtc_log.AdvanceLandmark();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  bssl::TrustStoreInMemory trust_store;
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(CreateMTCAnchor(
+      kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
+      x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
+      mtc_log.GetPerLogLandmarkSubtreeHashes())));
+  AddTrustStore(&trust_store);
+
+  auto leaf_der = mtc_log.CreateSignaturelessCertificate(leaf_index);
+  ASSERT_TRUE(leaf_der);
+  scoped_refptr<X509Certificate> chain =
+      X509Certificate::CreateFromBytes(*leaf_der);
+  ASSERT_TRUE(chain);
+
+  struct {
+    bool is_known_mtc_anchor;
+    int flags;
+    int expected_error;
+  } kTests[] = {
+      {false, 0, OK},
+      {false, CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS,
+       ERR_CERT_NO_REVOCATION_MECHANISM},
+      {true, CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS, OK},
+  };
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(testing::Message()
+                 << "is_known_mtc_anchor=" << test.is_known_mtc_anchor
+                 << " flags=" << test.flags);
+    SetMockIsKnownMtcAnchor(test.is_known_mtc_anchor);
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", test.flags, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(test.expected_error));
+  }
+}
+
+// Tests that an MTC's revocation status is checked with a CRL issued by the MTC
+// CA, the same as for a certificate from a traditional CA.
+TEST_F(CertVerifyProcBuiltinMtcTest, MtcCrlRevocation) {
+  constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+  constexpr uint16_t kLogNumber = 1;
+
+  for (bool revoked : {false, true}) {
+    SCOPED_TRACE(revoked);
+    InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+    EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
+    ASSERT_TRUE(test_server.InitializeAndListen());
+    std::string crl_path = MakeRandomPath(".crl");
+
+    net::MtcLogBuilder mtc_log(CreateLogBuilder(kMtcCaId, kLogNumber));
+    std::unique_ptr<net::CertBuilder> mtc_leaf =
+        std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+    mtc_leaf->SetCrlDistributionPointUrl(test_server.GetURL(crl_path));
+    uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf);
+    mtc_log.AdvanceLandmark();
+    // The MTC's serial number is its log number and index in the log.
+    const uint64_t leaf_serial = (uint64_t{kLogNumber} << 48) | leaf_index;
+
+    // The MTC CA signs the CRL with its CA cosigner key.
+    auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
+    auto mtc_anchor = CreateMTCAnchor(
+        kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
+        x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
+        mtc_log.GetPerLogLandmarkSubtreeHashes());
+    ASSERT_TRUE(mtc_anchor);
+    bssl::TrustStoreInMemory trust_store;
+    ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+    AddTrustStore(&trust_store);
+
+    std::string crl = BuildCrl(
+        std::string(
+            base::as_string_view(mtc_anchor->AsCert()->tbs().subject_tlv)),
+        ca_key.key(), {revoked ? leaf_serial : leaf_serial + 1});
+    ServeCrl(&test_server, crl, crl_path);
+    test_server.StartAcceptingConnections();
+
+    auto leaf_der = mtc_log.CreateSignaturelessCertificate(leaf_index);
+    ASSERT_TRUE(leaf_der);
+    scoped_refptr<X509Certificate> chain =
+        X509Certificate::CreateFromBytes(*leaf_der);
+    ASSERT_TRUE(chain);
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    if (revoked) {
+      EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+      EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REVOKED);
+    } else {
+      EXPECT_THAT(error, IsOk());
+    }
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
   }
 }
 

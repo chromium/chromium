@@ -557,6 +557,17 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
                        [&] { return NetLogPathBuilderResultPath(*path); });
   }
 
+  bool IsSignatureAlgorithmAcceptable(
+      bssl::SignatureAlgorithm signature_algorithm,
+      bssl::CertErrors* errors) override {
+    if (signature_algorithm == bssl::SignatureAlgorithm::kMtcProof &&
+        !base::FeatureList::IsEnabled(features::kVerifyMTCs)) {
+      return false;
+    }
+    return bssl::SimplePathBuilderDelegate::IsSignatureAlgorithmAcceptable(
+        signature_algorithm, errors);
+  }
+
   bool IsCosignatureVerificationResultAcceptable(
       const bssl::MTCAnchor* mtc_anchor,
       std::vector<std::vector<uint8_t>> valid_additional_cosigners) override {
@@ -667,16 +678,12 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         break;
     }
 
-    if (path->trust_anchor.MTCAnchor()) {
+    const bool is_mtc = path->trust_anchor.MTCAnchor() != nullptr;
+    if (is_mtc) {
       // Check MTC revocation and policies from SignerSet configuration.
       // (Note that cosigner policy is checked separately by
       // IsCosignatureVerificationResultAcceptable when necessary.)
       CheckMTCRevocationAndPolicy(path, delegate_data);
-
-      // MTCs don't use traditional revocation checks or certificate
-      // transparency. Return now, any checks past this point are for
-      // traditional certs only.
-      return;
     }
 
     if (policy.check_revocation) {
@@ -692,6 +699,11 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
         current_time_, net_fetcher_, /*delegate=*/this, &path->errors,
         &delegate_data->stapled_ocsp_verify_result);
 
+    // MTCs don't use traditional certificate transparency.
+    if (is_mtc) {
+      return;
+    }
+
     CheckCertificateTransparency(path, cert_for_ct_verify.get(), delegate_data);
   }
 
@@ -699,11 +711,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       bssl::CertPathBuilderResultPath* path,
       const PathBuilderDelegateDataImpl* delegate_data) {
     // Revocation information for MTCs is distributed in the PKI Metadata
-    // Fastpush component, which is part of the Chrome Root Store. This method
-    // should never be reached in the non-CRS case since we also would not have
-    // any MTC anchors configured. If we ever support non-CRS MTC anchors, we
-    // may need to pull the revocation information definitions out of CRS code
-    // into a place that can be shared by both.
+    // Fastpush component, which is part of the Chrome Root Store.
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     const bssl::MTCAnchor* mtc_anchor = path->trust_anchor.MTCAnchor().get();
     const TrustStoreChrome::MtcAnchorExtraData* mtc_anchor_data =
