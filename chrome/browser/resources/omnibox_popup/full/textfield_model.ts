@@ -500,6 +500,29 @@ export class TextfieldModel {
     this.insertText(c, /*mergeable=*/ true);
   }
 
+  // Deletes the selected text and inserts `newText` at `position`, an index in
+  // the text that remains after the deletion, as a single edit, e.g. for a drag
+  // and drop that moves text within the textfield. Moves the cursor to the end
+  // of the inserted text. Mirrors
+  // `TextfieldModel::DeletePrimarySelectionAndInsertTextAt()`.
+  deletePrimarySelectionAndInsertTextAt(newText: string, position: number):
+      void {
+    const selStart = Math.min(this.selection_.start, this.selection_.end);
+    const selEnd = Math.max(this.selection_.start, this.selection_.end);
+    const oldText = this.text_;
+    const newPos = position + newText.length;
+    this.addOrMergeEdit(new ReplaceEdit(
+        MergeType.DO_NOT_MERGE, [oldText.substring(selStart, selEnd)],
+        [selStart], {...this.selection_}, /*deleteBackward=*/ false, newPos,
+        newText, position));
+
+    const remainingText =
+        oldText.substring(0, selStart) + oldText.substring(selEnd);
+    this.text_ = remainingText.substring(0, position) + newText +
+        remainingText.substring(position);
+    this.selection_ = {start: newPos, end: newPos};
+  }
+
   // Deletes the first character after the current cursor position (as if, the
   // the user has pressed delete key in the textfield). Returns true if
   // the deletion is successful.

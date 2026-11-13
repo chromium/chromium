@@ -7097,6 +7097,249 @@ suite('OmniboxPopupSearchboxTest', function() {
    });
  });
 
+ // Dragging the selected text, like in the native omnibox: dragging it out
+ // closes the dropdown, and dropping it back into the input moves or copies it
+ // there.
+ suite('DragSelectedText', () => {
+   let input: HTMLInputElement|HTMLTextAreaElement;
+
+   setup(async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: 'helloworld',
+       isFocused: true,
+       selection: {start: 0, end: 5},
+     }));
+     await microtasksFinished();
+     input = searchbox.getInputElement().inputElement;
+     input.focus();
+     assertEquals('helloworld', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(5, input.selectionEnd);
+     testProxy.handler.reset();
+   });
+
+   function dispatchDragEvent(
+       type: string, init: DragEventInit = {}): DragEvent {
+     const rect = input.getBoundingClientRect();
+     const event = new DragEvent(type, {
+       clientX: rect.left + rect.width / 2,
+       clientY: rect.top + rect.height / 2,
+       bubbles: true,
+       cancelable: true,
+       composed: true,
+       dataTransfer: new DataTransfer(),
+       ...init,
+     });
+     input.dispatchEvent(event);
+     return event;
+   }
+
+   // Returns a client X coordinate over the input at which a drop lands at
+   // `offset` of the current input text.
+   function clientXForOffset(offset: number): number {
+     const rect = input.getBoundingClientRect();
+     const y = rect.top + rect.height / 2;
+     for (let x = Math.ceil(rect.left); x < rect.right; x++) {
+       const position = document.caretPositionFromPoint(
+           x, y, {shadowRoots: [input.getRootNode() as ShadowRoot]});
+       if (position?.offsetNode === input && position.offset === offset) {
+         return x;
+       }
+     }
+     assertNotReached(`No client X found for offset ${offset}`);
+   }
+
+   // Drops the dragged text past the end of the text, where any small layout
+   // shift still lands, unlike a character boundary.
+   function dropPastEnd(init: DragEventInit = {}): DragEvent {
+     const endX = clientXForOffset(input.value.length);
+     const rect = input.getBoundingClientRect();
+     return dispatchDragEvent(
+         'drop', {clientX: Math.round((endX + rect.right) / 2), ...init});
+   }
+
+   async function undo() {
+     input.dispatchEvent(new InputEvent('beforeinput', {
+       inputType: 'historyUndo',
+       bubbles: true,
+       cancelable: true,
+       composed: true,
+     }));
+     await microtasksFinished();
+   }
+
+   async function redo() {
+     input.dispatchEvent(new InputEvent('beforeinput', {
+       inputType: 'historyRedo',
+       bubbles: true,
+       cancelable: true,
+       composed: true,
+     }));
+     await microtasksFinished();
+   }
+
+   test('DragStartClosesDropdown', async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: 'helloworld',
+       isFocused: true,
+       selection: {start: 0, end: 5},
+       matchesUpdate: MatchesUpdate.kQueryZps,
+     }));
+     await microtasksFinished();
+     testProxy.page.autocompleteResultChanged(
+         createAutocompleteResultForTesting({
+           queryId: searchbox.activeQueryId,
+           sequenceId: 1,
+           input: 'helloworld',
+           matches: [createSearchMatchForTesting()],
+         }));
+     await microtasksFinished();
+     assertTrue(searchbox.dropdownIsVisible);
+     testProxy.handler.reset();
+
+     dispatchDragEvent('dragstart');
+     await microtasksFinished();
+
+     // Like the native omnibox, the dropdown closes so that it doesn't cover
+     // drop targets.
+     assertFalse(searchbox.dropdownIsVisible);
+     assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+     assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
+     // The text and the selection are unchanged.
+     assertEquals('helloworld', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(5, input.selectionEnd);
+   });
+
+   test('DropOnSelfMovesText', async () => {
+     dispatchDragEvent('dragstart');
+     const drop = dropPastEnd();
+     dispatchDragEvent('dragend');
+     await microtasksFinished();
+
+     // Like the native omnibox, the text moves to where it's dropped, with the
+     // caret after it rather than the dropped text selected.
+     assertTrue(drop.defaultPrevented);
+     assertEquals('worldhello', input.value);
+     assertEquals(10, input.selectionStart);
+     assertEquals(10, input.selectionEnd);
+     // The moved text is user input. Like the native omnibox, inline
+     // autocompletion is allowed, since the caret is at the end.
+     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+     const [, , queryText, preventInlineAutocomplete, cursorPosition] =
+         testProxy.handler.getArgs('queryAutocomplete')[0];
+     assertEquals('worldhello', queryText);
+     assertFalse(preventInlineAutocomplete);
+     assertEquals(10, cursorPosition);
+
+     // The move is a single edit.
+     await undo();
+     assertEquals('helloworld', input.value);
+     assertEquals(0, input.selectionStart);
+     assertEquals(5, input.selectionEnd);
+     await redo();
+     assertEquals('worldhello', input.value);
+     assertEquals(10, input.selectionStart);
+     assertEquals(10, input.selectionEnd);
+   });
+
+   test('DropOnSelfBeforeDraggedTextMovesText', async () => {
+     input.setSelectionRange(5, 10);
+     dispatchDragEvent('dragstart');
+     const drop = dispatchDragEvent('drop', {clientX: clientXForOffset(0)});
+     dispatchDragEvent('dragend');
+     await microtasksFinished();
+
+     assertTrue(drop.defaultPrevented);
+     assertEquals('worldhello', input.value);
+     assertEquals(5, input.selectionStart);
+     assertEquals(5, input.selectionEnd);
+     // Inline autocompletion is prevented, since the caret isn't at the end.
+     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+     const [, , queryText, preventInlineAutocomplete, cursorPosition] =
+         testProxy.handler.getArgs('queryAutocomplete')[0];
+     assertEquals('worldhello', queryText);
+     assertTrue(preventInlineAutocomplete);
+     assertEquals(5, cursorPosition);
+   });
+
+   test('DropOnSelfWithCopyModifierCopiesText', async () => {
+     dispatchDragEvent('dragstart');
+     const drop = dropPastEnd(isMac ? {altKey: true} : {ctrlKey: true});
+     dispatchDragEvent('dragend');
+     await microtasksFinished();
+
+     assertTrue(drop.defaultPrevented);
+     assertEquals('helloworldhello', input.value);
+     assertEquals(15, input.selectionStart);
+     assertEquals(15, input.selectionEnd);
+
+     await undo();
+     assertEquals('helloworld', input.value);
+   });
+
+   test('DropOnSelfAtDraggedTextLeavesIt', async () => {
+     dispatchDragEvent('dragstart');
+     const drop = dispatchDragEvent('drop', {clientX: clientXForOffset(5)});
+     dispatchDragEvent('dragend');
+     await microtasksFinished();
+
+     // Like Views, the text stays where it is, with the caret after it.
+     assertTrue(drop.defaultPrevented);
+     assertEquals('helloworld', input.value);
+     assertEquals(5, input.selectionStart);
+     assertEquals(5, input.selectionEnd);
+     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+   });
+
+   test('LeavesDropOfOtherTextToBlink', async () => {
+     // A drop of text dragged from elsewhere, or a drop after the drag of the
+     // input's text ended.
+     const otherDrop = dropPastEnd();
+     dispatchDragEvent('dragstart');
+     dispatchDragEvent('dragend');
+     const lateDrop = dropPastEnd();
+     await microtasksFinished();
+
+     assertFalse(otherDrop.defaultPrevented);
+     assertFalse(lateDrop.defaultPrevented);
+     assertEquals('helloworld', input.value);
+     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+   });
+
+   // Blink selects the drop point before it inserts dropped text, but only
+   // dispatches `selectionchange` later. The insertion is still recorded where
+   // it happens.
+   test('BlinkHandledDropKeepsEditHistory', async () => {
+     input.setSelectionRange(10, 10);
+     document.dispatchEvent(new Event('selectionchange'));
+     await microtasksFinished();
+
+     input.setSelectionRange(5, 5);
+     input.dispatchEvent(new InputEvent('beforeinput', {
+       inputType: 'insertFromDrop',
+       bubbles: true,
+       cancelable: true,
+       composed: true,
+     }));
+     input.value = 'hellofooworld';
+     input.setSelectionRange(5, 8);
+     input.dispatchEvent(new InputEvent('input', {
+       inputType: 'insertFromDrop',
+       bubbles: true,
+       composed: true,
+     }));
+     await microtasksFinished();
+
+     await undo();
+     assertEquals('helloworld', input.value);
+     await redo();
+     assertEquals('hellofooworld', input.value);
+     assertEquals(8, input.selectionStart);
+     assertEquals(8, input.selectionEnd);
+   });
+ });
+
  test('KeydownDuringMouseDown_CancelsSelectAll', async () => {
    callbackRouter.setInputState(createDefaultOmniboxInputState({
      text: 'https://example.com',

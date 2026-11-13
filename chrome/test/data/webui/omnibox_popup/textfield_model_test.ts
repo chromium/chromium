@@ -183,6 +183,41 @@ suite('TextfieldModelTest', function() {
     assertEquals(6, model.selection.end);
   });
 
+  // Like a drag and drop that moves the selected text.
+  test('DeletePrimarySelectionAndInsertTextAtUndoRedo', () => {
+    model.setText('helloworld', 0);
+    model.selectRange({start: 0, end: 5});
+    model.clearEditHistory();
+    model.deletePrimarySelectionAndInsertTextAt('hello', 5);
+
+    assertEquals(1, model.length);
+    assertEquals('worldhello', model.text);
+    assertEquals(10, model.selection.start);
+    assertEquals(10, model.selection.end);
+
+    assertTrue(!!model.undo());
+    assertEquals('helloworld', model.text);
+    assertEquals(0, model.selection.start);
+    assertEquals(5, model.selection.end);
+
+    assertTrue(!!model.redo());
+    assertEquals('worldhello', model.text);
+    assertEquals(10, model.selection.start);
+    assertEquals(10, model.selection.end);
+
+    // The insertion can also precede the deletion.
+    model.selectRange({start: 5, end: 10});
+    model.deletePrimarySelectionAndInsertTextAt('hello', 0);
+    assertEquals('helloworld', model.text);
+    assertEquals(5, model.selection.start);
+    assertEquals(5, model.selection.end);
+
+    assertTrue(!!model.undo());
+    assertEquals('worldhello', model.text);
+    assertEquals(5, model.selection.start);
+    assertEquals(10, model.selection.end);
+  });
+
   test('ReplaceEditMergeWithInserts', () => {
     model.setText('world', 0);
     model.selectRange({start: 0, end: 5});
