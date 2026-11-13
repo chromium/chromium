@@ -7905,7 +7905,12 @@
     },
     {
       name: "WebSpeechTimestamps",
-      status: "experimental",
+      status: {
+        "Win": "stable",
+        "Mac": "stable",
+        "Linux": "stable",
+        "default": "",
+      },
     },
     {
       name: "WebSpeechUnspokenPunctuation",
