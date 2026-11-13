@@ -1530,6 +1530,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Error"/>
 </enum>
 
+<!-- LINT.IfChange(WebGPUSupport) -->
+
 <enum name="WebGPUSupport">
   <int value="0" label="None"/>
   <int value="1" label="Core None, Compat Blocklisted"/>
@@ -1539,6 +1541,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Core Blocklisted, Compat Supported"/>
   <int value="6" label="Core Supported"/>
 </enum>
+
+<!-- LINT.ThenChange(//gpu/config/gpu_info_collector.cc:WebGPUSupport) -->
 
 <!-- LINT.IfChange(WindowServerEventPumpResult) -->
 

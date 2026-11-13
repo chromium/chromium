@@ -14,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -64,6 +65,9 @@
 #include "third_party/dawn/include/dawn/native/OpenGLBackend.h"  // nogncheck
 #include "third_party/dawn/include/dawn/webgpu.h"                // nogncheck
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"            // nogncheck
+#if BUILDFLAG(IS_WIN)
+#include "third_party/dawn/include/dawn/native/D3DBackend.h"  // nogncheck
+#endif
 #endif
 
 namespace {
@@ -312,22 +316,12 @@ void GetDawnTogglesForSkiaGraphite(
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
-void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
+void ReportWebGPUAdapterMetrics(
+    base::span<dawn::native::Adapter> core_adapters) {
   WGPULimits max_limits{};
   wgpu::AdapterType adapter_type = wgpu::AdapterType::Unknown;
 
-  wgpu::RequestAdapterOptions adapter_options = {};
-  // Search for the backend used for core WebGPU.
-#if BUILDFLAG(IS_WIN)
-  adapter_options.backendType = wgpu::BackendType::D3D12;
-#elif BUILDFLAG(IS_MAC)
-  adapter_options.backendType = wgpu::BackendType::Metal;
-#else
-  adapter_options.backendType = wgpu::BackendType::Vulkan;
-#endif
-
-  for (dawn::native::Adapter& nativeAdapter :
-       instance->EnumerateAdapters(&adapter_options)) {
+  for (dawn::native::Adapter& nativeAdapter : core_adapters) {
     nativeAdapter.SetUseTieredLimits(false);
     wgpu::Adapter adapter = wgpu::Adapter(nativeAdapter.Get());
     wgpu::AdapterInfo info;
@@ -366,18 +360,16 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
   }
 }
 
-void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
+void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
+                                const wgpu::ChainedStruct* chained_toggles) {
   static BASE_FEATURE(kCollectWebGPUSupportMetrics,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-                      base::FEATURE_DISABLED_BY_DEFAULT);
-#else
                       base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
   if (!base::FeatureList::IsEnabled(kCollectWebGPUSupportMetrics)) {
     return;
   }
   // Note: These enum values should not change and should match those in
-  // //tools/metrics/histograms/enums.xml
+  // //tools/metrics/histograms/metadata/gpu/enums.xml
+  // LINT.IfChange(WebGPUSupport)
   enum class WebGPUSupport {
     kNone = 0,
     kCoreNone_CompatBlocklisted = 1,
@@ -388,6 +380,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
     kCoreSupported = 6,
     kMaxValue = kCoreSupported,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:WebGPUSupport)
 
   bool has_core_blocklisted_adapter = false;
   bool has_core_adapter = false;
@@ -395,6 +388,21 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   bool has_compat_adapter = false;
 
   wgpu::RequestAdapterOptions adapter_options = {};
+  adapter_options.nextInChain = chained_toggles;
+#if BUILDFLAG(IS_WIN)
+  // Only probe the GPU that Chrome is already using. Enumerating all D3D12
+  // adapters wakes sleeping secondary GPUs on hybrid laptops and can hang the
+  // GPU process at startup (https://crbug.com/40073612).
+  dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid = {};
+  if (!gpu::GetActiveAdapterLuid(&adapter_options_luid.adapterLUID)) {
+    UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", WebGPUSupport::kNone);
+    ReportWebGPUAdapterMetrics({});
+    return;
+  }
+  adapter_options_luid.nextInChain = adapter_options.nextInChain;
+  adapter_options.nextInChain = &adapter_options_luid;
+#endif
+
   // Search for the backend used for core WebGPU.
 #if BUILDFLAG(IS_WIN)
   adapter_options.backendType = wgpu::BackendType::D3D12;
@@ -404,8 +412,9 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   adapter_options.backendType = wgpu::BackendType::Vulkan;
 #endif
   // Check core adapters.
-  for (const dawn::native::Adapter& native_adapter :
-       instance->EnumerateAdapters(&adapter_options)) {
+  std::vector<dawn::native::Adapter> core_adapters =
+      instance->EnumerateAdapters(&adapter_options);
+  for (const dawn::native::Adapter& native_adapter : core_adapters) {
     wgpu::Adapter adapter(native_adapter.Get());
     wgpu::AdapterInfo info = {};
     adapter.GetInfo(&info);
@@ -424,38 +433,41 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   }
 
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  // Check for compat adapters on GLES.
-  adapter_options.backendType = wgpu::BackendType::OpenGLES;
-  adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
+  // Core backends always take precedence in WebGPUSupport, so only probe
+  // OpenGLES compatibility mode when no usable Core adapter was found.
+  if (!has_core_adapter) {
+    adapter_options.backendType = wgpu::BackendType::OpenGLES;
+    adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
-  dawn::native::opengl::RequestAdapterOptionsGetGLProc
-      adapter_options_get_gl_proc = {};
-  adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
-  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  if (gl_display) {
-    adapter_options_get_gl_proc.display = gl_display->GetDisplay();
-  } else {
-    adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
-  }
-  adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
-  adapter_options.nextInChain = &adapter_options_get_gl_proc;
+    dawn::native::opengl::RequestAdapterOptionsGetGLProc
+        adapter_options_get_gl_proc = {};
+    adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
+    gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+    if (gl_display) {
+      adapter_options_get_gl_proc.display = gl_display->GetDisplay();
+    } else {
+      adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+    }
+    adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
+    adapter_options.nextInChain = &adapter_options_get_gl_proc;
 
-  for (const dawn::native::Adapter& native_adapter :
-       instance->EnumerateAdapters(&adapter_options)) {
-    wgpu::Adapter adapter(native_adapter.Get());
-    wgpu::AdapterInfo info = {};
-    adapter.GetInfo(&info);
+    for (const dawn::native::Adapter& native_adapter :
+         instance->EnumerateAdapters(&adapter_options)) {
+      wgpu::Adapter adapter(native_adapter.Get());
+      wgpu::AdapterInfo info = {};
+      adapter.GetInfo(&info);
 
-    switch (info.adapterType) {
-      case wgpu::AdapterType::CPU:
-        // Skip CPU adapters.
-        break;
-      default:
-        if (gpu::IsWebGPUAdapterBlocklisted(adapter).blocked) {
-          has_compat_blocklisted_adapter = true;
-        } else {
-          has_compat_adapter = true;
-        }
+      switch (info.adapterType) {
+        case wgpu::AdapterType::CPU:
+          // Skip CPU adapters.
+          break;
+        default:
+          if (gpu::IsWebGPUAdapterBlocklisted(adapter).blocked) {
+            has_compat_blocklisted_adapter = true;
+          } else {
+            has_compat_adapter = true;
+          }
+      }
     }
   }
 #endif
@@ -482,7 +494,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   }
 
   UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", tier);
-  ReportWebGPUAdapterMetrics(instance);
+  ReportWebGPUAdapterMetrics(core_adapters);
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
@@ -953,8 +965,32 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
 
   auto instance = std::make_unique<dawn::native::Instance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
+
+#if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  EGLDisplay display = gl_display ? gl_display->GetDisplay() : EGL_NO_DISPLAY;
+  EGLSurface drawSurface = nullptr;
+  EGLSurface readSurface = nullptr;
+  EGLContext context = nullptr;
+  if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+    drawSurface = eglGetCurrentSurface(EGL_DRAW);
+    readSurface = eglGetCurrentSurface(EGL_READ);
+    context = eglGetCurrentContext();
+  }
+
+  // Dawn WebGPU API calls, such as `adapter.CreateDevice()` or OpenGLES adapter
+  // discovery in `ReportWebGPUSupportMetrics`, may change the `EGLContext`.
+  // Restore the context on return from this function (including the
+  // `collect_metrics` early return below, see https://crbug.com/355661612).
+  absl::Cleanup on_return = [display, drawSurface, readSurface, context] {
+    if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
+      eglMakeCurrent(display, drawSurface, readSurface, context);
+    }
+  };
+#endif
+
   if (collect_metrics) {
-    ReportWebGPUSupportMetrics(instance.get());
+    ReportWebGPUSupportMetrics(instance.get(), &dawn_toggles);
     return;
   }
 
@@ -966,27 +1002,9 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
   adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
-  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  EGLDisplay display = gl_display ? gl_display->GetDisplay() : EGL_NO_DISPLAY;
   adapter_options_get_gl_proc.display = display;
   adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
   adapter_options.nextInChain = &adapter_options_get_gl_proc;
-  EGLSurface drawSurface = nullptr;
-  EGLSurface readSurface = nullptr;
-  EGLContext context = nullptr;
-  if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
-    drawSurface = eglGetCurrentSurface(EGL_DRAW);
-    readSurface = eglGetCurrentSurface(EGL_READ);
-    context = eglGetCurrentContext();
-  }
-
-  // Dawn WebGPU API calls, such as adapter.CreateDevice(), may change the
-  // EGLContext. Restore the context on return from this function.
-  absl::Cleanup on_return = [display, drawSurface, readSurface, context] {
-    if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
-      eglMakeCurrent(display, drawSurface, readSurface, context);
-    }
-  };
 #endif
 
   // Compatibility feature level is only relevant for backends that cannot
