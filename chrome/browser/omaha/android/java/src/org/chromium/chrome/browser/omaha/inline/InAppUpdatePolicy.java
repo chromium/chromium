@@ -85,6 +85,10 @@ public final class InAppUpdatePolicy {
     @VisibleForTesting
     static final String PREF_KEY_DOWNLOADED = ChromePreferenceKeys.IN_APP_UPDATE_DOWNLOADED;
 
+    @VisibleForTesting
+    static final String PREF_KEY_RESTART_TASK_SCHEDULED =
+            ChromePreferenceKeys.IN_APP_UPDATE_RESTART_TASK_SCHEDULED;
+
     @VisibleForTesting static final String PARAM_DISCOVERY_BACKOFF_HOURS = "prompt_backoff_hours";
 
     @VisibleForTesting
@@ -344,11 +348,24 @@ public final class InAppUpdatePolicy {
         ChromeSharedPreferences.getInstance().writeBoolean(PREF_KEY_DOWNLOADED, downloaded);
     }
 
+    /** Returns whether a background restart task is currently scheduled. */
+    static boolean isRestartTaskScheduled() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(PREF_KEY_RESTART_TASK_SCHEDULED, false);
+    }
+
+    /** Sets whether a background restart task is currently scheduled. */
+    static void setRestartTaskScheduled(boolean scheduled) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(PREF_KEY_RESTART_TASK_SCHEDULED, scheduled);
+    }
+
     static void resetForTesting() {
         ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_DISCOVERY_BACKOFF);
         ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_RESTART_BACKOFF);
         ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_FAILURE_BACKOFF);
         ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_DOWNLOADED);
+        ChromeSharedPreferences.getInstance().removeKey(PREF_KEY_RESTART_TASK_SCHEDULED);
     }
 
     private static boolean isBrandedOfficialBuild() {

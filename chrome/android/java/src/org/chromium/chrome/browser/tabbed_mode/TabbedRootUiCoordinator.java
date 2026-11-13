@@ -170,6 +170,7 @@ import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorContro
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
+import org.chromium.chrome.browser.omaha.inline.InAppUpdateRestartScheduler;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -1322,6 +1323,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)) {
             scheduleInAppUpdateDeferredStartup();
+        } else if (InAppUpdateRestartScheduler.hasPendingCleanup()) {
+            DeferredStartupHandler.getInstance()
+                    .addDeferredTask(InAppUpdateRestartScheduler::onFeatureDisabled);
         }
 
         mAdvancedProtectionCoordinator =
@@ -2065,6 +2069,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         DeferredStartupHandler.getInstance()
                 .addDeferredTask(
                         () -> {
+                            InAppUpdateRestartScheduler.getInstance().start();
                             InAppUpdateController controller = getOrCreateInAppUpdateController();
                             if (controller != null) {
                                 Log.i(

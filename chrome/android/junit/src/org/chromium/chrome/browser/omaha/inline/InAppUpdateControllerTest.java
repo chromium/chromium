@@ -86,6 +86,7 @@ public class InAppUpdateControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private InAppUpdateRestartScheduler mMockRestartScheduler;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     @Captor private ArgumentCaptor<OnSuccessListener<AppUpdateInfo>> mUpdateInfoSuccessCaptor;
 
@@ -106,6 +107,7 @@ public class InAppUpdateControllerTest {
 
         mFakeAppUpdateManager = new FakeAppUpdateManager(mActivity);
         InAppUpdateController.setAppUpdateManagerForTesting(mFakeAppUpdateManager);
+        InAppUpdateRestartScheduler.setInstanceForTesting(mMockRestartScheduler);
     }
 
     @After
@@ -356,6 +358,7 @@ public class InAppUpdateControllerTest {
         controller.checkAndStartUpdateFlow();
         ShadowLooper.idleMainLooper();
 
+        verify(mMockRestartScheduler).start();
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         assertEquals(
                 Snackbar.UMA_IN_APP_UPDATE_RESTART,
@@ -451,6 +454,7 @@ public class InAppUpdateControllerTest {
 
         watcher.assertExpected();
         assertNull(controller.getInstallListenerForTesting());
+        verify(mMockRestartScheduler).start();
 
         // Verify restart backoff is cleared and restart snackbar is displayed.
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mActivity));
@@ -730,6 +734,7 @@ public class InAppUpdateControllerTest {
         ShadowLooper.idleMainLooper();
 
         watcher.assertExpected();
+        verify(mMockRestartScheduler).start();
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -1884,6 +1889,7 @@ public class InAppUpdateControllerTest {
 
         assertNull(controller.getRestartSnackbarControllerForTesting());
         verify(mSnackbarManager).dismissSnackbars(eq(restartController));
+        verify(mMockRestartScheduler).cancelTask();
         verify(mockManager).completeUpdate();
     }
 
@@ -1919,6 +1925,7 @@ public class InAppUpdateControllerTest {
 
         verify(mSnackbarManager, never()).showSnackbar(any());
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
+        verify(mMockRestartScheduler).start();
     }
 
     @Test
@@ -1932,6 +1939,7 @@ public class InAppUpdateControllerTest {
 
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
         assertNull(controller.getRestartSnackbarControllerForTesting());
+        verify(mMockRestartScheduler).start();
     }
 
     @Test
@@ -1946,6 +1954,7 @@ public class InAppUpdateControllerTest {
 
         verify(mSnackbarManager, never()).showSnackbar(any());
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
+        verify(mMockRestartScheduler).start();
     }
 
     @Test
@@ -1967,6 +1976,30 @@ public class InAppUpdateControllerTest {
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
         assertFalse(fallbackCalled.get());
         assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testRestartSnackbarAction_cancelsSchedulerTaskOnlyWhenNotDestroyed() {
+        setupUpdateDownloaded();
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar snackbar = mSnackbarCaptor.getValue();
+
+        // Active activity -> cancels task.
+        snackbar.getController().onAction(null);
+        ShadowLooper.idleMainLooper();
+        verify(mMockRestartScheduler, times(1)).cancelTask();
+
+        // Destroyed activity -> does not cancel task.
+        controller.destroy();
+        snackbar.getController().onAction(null);
+        ShadowLooper.idleMainLooper();
+        verify(mMockRestartScheduler, times(1)).cancelTask();
     }
 
     @Test

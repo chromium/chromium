@@ -28,6 +28,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateController.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateInstaller.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicy.java",
+    "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateRestartScheduler.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateRestartTask.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarController.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarEvent.java",

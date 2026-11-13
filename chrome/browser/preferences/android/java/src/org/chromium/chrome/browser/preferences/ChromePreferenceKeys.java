@@ -529,6 +529,10 @@ public final class ChromePreferenceKeys {
     public static final String IN_APP_UPDATE_RESTART_BACKOFF_TIMESTAMP =
             "Chrome.InAppUpdate.RestartBackoffTimestamp";
 
+    /** Whether a background task is currently scheduled to install a downloaded in-app update. */
+    public static final String IN_APP_UPDATE_RESTART_TASK_SCHEDULED =
+            "Chrome.InAppUpdate.RestartTaskScheduled";
+
     /** Whether Google is set as Chrome's default search engine. Default value is false. */
     public static final String IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE =
             "Chrome.GoogleBottomBar.IsDefaultSearchEngineGoogle";
@@ -1304,6 +1308,7 @@ public final class ChromePreferenceKeys {
                 IN_APP_UPDATE_DOWNLOADED,
                 IN_APP_UPDATE_FAILURE_BACKOFF_TIMESTAMP,
                 IN_APP_UPDATE_RESTART_BACKOFF_TIMESTAMP,
+                IN_APP_UPDATE_RESTART_TASK_SCHEDULED,
                 IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,
                 IS_LAST_VISITED_TAB_SRP,
                 IS_DSE_GOOGLE,

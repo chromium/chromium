@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
+import org.chromium.chrome.browser.omaha.inline.InAppUpdateRestartScheduler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reader_mode.ReaderModeBottomSheetManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -242,6 +243,9 @@ public class TabbedRootUiCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
     public void
             testInAppUpdate_initObserversAndScheduleDeferredStartup_registersObserversAndAddsDeferredTask() {
+        InAppUpdateRestartScheduler mockScheduler = mock(InAppUpdateRestartScheduler.class);
+        InAppUpdateRestartScheduler.setInstanceForTesting(mockScheduler);
+
         mCoordinator.scheduleInAppUpdateDeferredStartup();
 
         assertNotNull(mCoordinator.getActivityResultObserverForTesting());
@@ -249,7 +253,11 @@ public class TabbedRootUiCoordinatorUnitTest {
         verify(mActivityLifecycleDispatcher)
                 .register(mCoordinator.getActivityResultObserverForTesting());
         verify(mActivityLifecycleDispatcher).register(mCoordinator.getResumeObserverForTesting());
-        verify(mDeferredStartupHandler).addDeferredTask(any());
+        verify(mDeferredStartupHandler).addDeferredTask(mRunnableCaptor.capture());
+
+        // Deferred task execution starts scheduler.
+        mRunnableCaptor.getValue().run();
+        verify(mockScheduler).start();
 
         // Verify idempotency: a second call does not queue another deferred task.
         clearInvocations(mDeferredStartupHandler);

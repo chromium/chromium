@@ -69,6 +69,7 @@ public class InAppUpdateRestartTask implements BackgroundTask {
     @Override
     public boolean onStartTask(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
+        InAppUpdateRestartScheduler.onTaskStarted();
         Log.i(TAG, "InAppUpdateRestartTask.onStartTask");
 
         if (!checkPreconditions()) {
@@ -200,7 +201,8 @@ public class InAppUpdateRestartTask implements BackgroundTask {
         return true;
     }
 
-    private static void recordEvent(@InAppUpdateBackgroundRestartEvent int event) {
+    /** Records to {@link #HISTOGRAM_EVENT}; shared with {@link InAppUpdateRestartScheduler}. */
+    static void recordEvent(@InAppUpdateBackgroundRestartEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_EVENT, event, InAppUpdateBackgroundRestartEvent.COUNT);
     }

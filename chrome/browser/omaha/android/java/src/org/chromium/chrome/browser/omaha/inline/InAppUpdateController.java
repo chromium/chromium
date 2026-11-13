@@ -395,6 +395,7 @@ public class InAppUpdateController {
                             // Case 2: Update already downloaded and staged on disk. Check restart
                             // throttle (asymmetric: discovery backoff does not suppress restart).
                             if (rawInstallStatus == InstallStatus.DOWNLOADED) {
+                                InAppUpdateRestartScheduler.getInstance().start();
                                 if (InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
                                     showRestartSnackbar();
                                 }
@@ -560,6 +561,7 @@ public class InAppUpdateController {
                             if (isDestroyedFinishingOrChangingConfigurations()) {
                                 return;
                             }
+                            InAppUpdateRestartScheduler.getInstance().cancelTask();
                             AppUpdateManager manager = getOrCreateAppUpdateManager();
                             InAppUpdateInstaller.completeUpdate(manager)
                                     .addOnFailureListener(
@@ -668,6 +670,7 @@ public class InAppUpdateController {
                             // unthrottled prompt to relaunch.
                             InAppUpdatePolicy.clearRestartBackoff();
                             InAppUpdatePolicy.setUpdateDownloaded(true);
+                            InAppUpdateRestartScheduler.getInstance().start();
                             showRestartSnackbar();
                             unregisterInstallListener();
                         } else if (status == InstallStatus.FAILED) {
@@ -846,6 +849,7 @@ public class InAppUpdateController {
                                     || status == InstallStatus.PENDING) {
                                 registerInstallListener();
                             } else if (status == InstallStatus.DOWNLOADED) {
+                                InAppUpdateRestartScheduler.getInstance().start();
                                 if (InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
                                     showRestartSnackbar();
                                 }
@@ -909,6 +913,7 @@ public class InAppUpdateController {
                                     mRestartSnackbarController.dismiss();
                                     mRestartSnackbarController = null;
                                 }
+                                InAppUpdateRestartScheduler.getInstance().cancelTask();
                                 Log.i(
                                         TAG,
                                         "onMenuItemClicked: Update already downloaded ->"

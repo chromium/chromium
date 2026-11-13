@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTa
 import org.chromium.chrome.browser.notifications.scheduler.NotificationSchedulerTask;
 import org.chromium.chrome.browser.offlinepages.OfflineBackgroundTask;
 import org.chromium.chrome.browser.omaha.OmahaService;
+import org.chromium.chrome.browser.omaha.inline.InAppUpdateRestartTask;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFetchTask;
 import org.chromium.chrome.browser.services.gcm.GCMNativeBackgroundTask;
 import org.chromium.chrome.browser.webapps.WebApkUpdateTask;
@@ -67,6 +68,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
         switch (taskId) {
             case TaskIds.OMAHA_JOB_ID:
                 return new OmahaService();
+            case TaskIds.IN_APP_UPDATE_RESTART_JOB_ID:
+                return new InAppUpdateRestartTask();
             case TaskIds.GCM_BACKGROUND_TASK_JOB_ID:
                 return new GCMNativeBackgroundTask();
             case TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID:
