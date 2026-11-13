@@ -280,7 +280,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
     // Subcapture target changed during the capture process.
     kSubCaptureTargetChanged,
     // Oracle rejected the capture.  See VideoCaptureOracle::CompleteCapture.
-    kOracleRejectedFrame
+    kOracleRejectedFrame,
+    // Empty content rect could not be letterboxed on the CPU.
+    kCannotLetterboxEmptyContent
   };
 
   // One instance is created for each capture. It wraps the `media::VideoFrame`

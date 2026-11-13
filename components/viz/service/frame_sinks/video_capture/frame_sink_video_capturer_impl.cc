@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
-#include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -32,6 +31,8 @@
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "components/viz/service/frame_sinks/video_capture/mappable_shared_image_video_frame_pool.h"
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
@@ -88,12 +89,13 @@ constexpr gfx::Rect kMaxRect = gfx::Rect(0,
 // format. When user wants ARGB result, it requests a CopyOutputRequest with
 // ResultFormat::RGBA which gives RGBA/BGRA results depends on platform and
 // where the result is stored (buffer format preference).
-// Currently, kPreferMappableSharedImage + ARGB will request BGRA as pixel
-// format, but kDefault + ARGB will be platform dependent because
-// CopyOutputRequest will use kN32_SkColorType (RGBA on Android, BGRA elsewhere)
-// mostly, and use kRGBA_8888_SkColorType on iOS. This is also documented in the
-// mojom comments (https://crrev.com/c/5418235) about SetFormat, indicating the
-// ARGB format may produce RGBA/BGRA frames depends on platform.
+// Currently, kPreferMappableSharedImage / kPreferSharedImageWithNativeHandle +
+// ARGB will request BGRA as pixel format, but kDefault + ARGB will be platform
+// dependent because CopyOutputRequest will use kN32_SkColorType (RGBA on
+// Android, BGRA elsewhere) mostly, and use kRGBA_8888_SkColorType on iOS. This
+// is also documented in the mojom comments (https://crrev.com/c/5418235) about
+// SetFormat, indicating the ARGB format may produce RGBA/BGRA frames depends on
+// platform.
 
 // Get the frame pool for the specific format. We need context_provider if the
 // format is NV12 or ARGB (when buffer_format_preference is kNativeTexture).
@@ -309,9 +311,10 @@ void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format) {
       // Don't tolerate changing to NV12 mid-capture:
       CHECK(format != media::PIXEL_FORMAT_NV12);
 
-      // If we have started with kPreferMappableSharedImage, we set it to
-      // kDefault as currently we probably only doing mid-capture change due to
-      // crash downgrade, and we should not try using mappable SI anymore.
+      // If we have started with kPreferMappableSharedImage or
+      // kPreferSharedImageWithNativeHandle, we set it to kDefault as currently
+      // we probably only doing mid-capture change due to crash downgrade, and
+      // we should not try using SharedImage anymore.
       // TODO: We may move buffer_format_preference from Start to SetFormat.
       buffer_format_preference_ = mojom::BufferFormatPreference::kDefault;
 
@@ -452,6 +455,25 @@ void FrameSinkVideoCapturerImpl::Start(
   // Clear any marked frame if the capturer was restarted.
   MarkFrame(nullptr);
 
+  const bool uses_shared_image_pool =
+      buffer_format_preference_ ==
+          mojom::BufferFormatPreference::kPreferMappableSharedImage ||
+      buffer_format_preference_ ==
+          mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle;
+
+  // If we should start capture for NV12 format, we can only hand out mappable
+  // SharedImages so the caller must tolerate them:
+  CHECK(pixel_format_ != media::PIXEL_FORMAT_NV12 || uses_shared_image_pool);
+
+  // Only support RGBAF16 with SharedImage pool
+  CHECK(pixel_format_ != media::PIXEL_FORMAT_RGBAF16 || uses_shared_image_pool);
+
+  // If we are using ARGB or RGBAF16 format with SharedImage pool, we must have
+  // the pool context.
+  CHECK((pixel_format_ != media::PIXEL_FORMAT_ARGB &&
+         pixel_format_ != media::PIXEL_FORMAT_RGBAF16) ||
+        !uses_shared_image_pool || gmb_video_frame_pool_context_provider_);
+
   frame_pool_ = GetVideoFramePoolForFormat(
       pixel_format_, kFramePoolCapacity, buffer_format_preference_,
       gmb_video_frame_pool_context_provider_);
@@ -460,24 +482,6 @@ void FrameSinkVideoCapturerImpl::Start(
                     perfetto::Track::FromPointer(this), "pixel_format_",
                     pixel_format_, "buffer_format_preference_",
                     buffer_format_preference_);
-
-  // If we should start capture for NV12 format, we can only hand out mappable
-  // SharedImages so the caller must tolerate them:
-  CHECK(pixel_format_ != media::PIXEL_FORMAT_NV12 ||
-        buffer_format_preference_ ==
-            mojom::BufferFormatPreference::kPreferMappableSharedImage);
-
-  // Only support RGBAF16 with kPreferMappableSharedImage
-  CHECK(pixel_format_ != media::PIXEL_FORMAT_RGBAF16 ||
-        buffer_format_preference_ ==
-            mojom::BufferFormatPreference::kPreferMappableSharedImage);
-
-  // If we are using ARGB format with mappable SI, we must have the pool context
-  CHECK((pixel_format_ != media::PIXEL_FORMAT_ARGB &&
-         pixel_format_ != media::PIXEL_FORMAT_RGBAF16) ||
-        buffer_format_preference_ !=
-            mojom::BufferFormatPreference::kPreferMappableSharedImage ||
-        gmb_video_frame_pool_context_provider_);
 
   video_capture_started_ = true;
 
@@ -1097,15 +1101,25 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   CHECK(frame->HasOneRef());
 
   // Extreme edge-case: If somehow the source size is so tiny that the content
-  // region becomes empty, just deliver a frame filled with black.
+  // region becomes empty, just deliver a frame filled with black. If the frame
+  // cannot be letterboxed on the CPU (e.g. non-CPU-mappable SCANOUT buffers on
+  // Linux or RGBAF16, which LetterboxVideoFrame() does not support), drop the
+  // frame rather than delivering stale pool pixels.
   if (content_rect.IsEmpty()) {
-    media::LetterboxVideoFrame(frame.get(), gfx::Rect());
-
-    dirty_rect_ = gfx::Rect();
+    const bool can_letterbox_on_cpu =
+        pixel_format_ != media::PIXEL_FORMAT_RGBAF16 &&
+        (!frame->HasMappableSharedImage() ||
+         frame->shared_image()->usage().Has(gpu::SHARED_IMAGE_USAGE_CPU_READ));
     FrameCapture frame_capture(
         capture_frame_number, oracle_frame_number, content_version_,
         gfx::Rect(), *region_properties, std::move(frame), capture_begin_time);
-    frame_capture.CaptureSucceeded();
+    if (can_letterbox_on_cpu) {
+      media::LetterboxVideoFrame(frame_capture.frame.get(), gfx::Rect());
+      dirty_rect_ = gfx::Rect();
+      frame_capture.CaptureSucceeded();
+    } else {
+      frame_capture.CaptureFailed(CaptureResult::kCannotLetterboxEmptyContent);
+    }
     OnFrameReadyForDelivery(frame_capture);
     return;
   }
@@ -1170,17 +1184,11 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // TODO(crbug.com/346799708): The condition to check `pixel_format_` shouldn't
   // be necessary but video capture is started with I420+mappable SI in tests.
   // That still captures software I420 frames and not textures.
-  const bool prefer_mappable_shared_image =
-      buffer_format_preference_ ==
-      mojom::BufferFormatPreference::kPreferMappableSharedImage;
-#if BUILDFLAG(IS_LINUX)
   const bool prefer_shared_image =
-      prefer_mappable_shared_image ||
+      buffer_format_preference_ ==
+          mojom::BufferFormatPreference::kPreferMappableSharedImage ||
       buffer_format_preference_ ==
           mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle;
-#else
-  const bool prefer_shared_image = prefer_mappable_shared_image;
-#endif
   const bool should_capture_texture_results =
       prefer_shared_image && (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
                               pixel_format_ == media::PIXEL_FORMAT_ARGB ||
@@ -1415,16 +1423,11 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
         frame_capture.CaptureFailed(CaptureResult::kARGBReadbackFailed);
       }
     } else {
-#if BUILDFLAG(IS_LINUX)
       CHECK(buffer_format_preference_ ==
                 mojom::BufferFormatPreference::kPreferMappableSharedImage ||
             buffer_format_preference_ ==
                 mojom::BufferFormatPreference::
                     kPreferSharedImageWithNativeHandle);
-#else
-      CHECK_EQ(buffer_format_preference_,
-               mojom::BufferFormatPreference::kPreferMappableSharedImage);
-#endif
       // MappableSI ARGB results are written to the existing pool texture.
       if (result->IsEmpty()) {
         frame_capture.CaptureFailed(
