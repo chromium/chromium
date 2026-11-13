@@ -76,6 +76,15 @@ class MediaFoundationRendererIntegrationTest
   MediaFoundationRendererIntegrationTest& operator=(
       const MediaFoundationRendererIntegrationTest&) = delete;
 
+  void SetUp() override {
+    // MediaFoundation playback requires at least Windows 10 RS3 (see
+    // SupportMediaFoundationClearPlayback() in mf_feature_checks.cc).
+    if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+      GTEST_SKIP()
+          << "MediaFoundationRenderer requires Windows 10 RS3 or later.";
+    }
+  }
+
  private:
   std::unique_ptr<Renderer> CreateMediaFoundationRenderer(
       std::optional<RendererType> /*renderer_type*/) {

@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/windows_version.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -111,6 +112,15 @@ class MediaFoundationRendererTest : public testing::Test {
   }
 
   ~MediaFoundationRendererTest() override { mf_renderer_.reset(); }
+
+  void SetUp() override {
+    // MediaFoundation playback requires at least Windows 10 RS3 (see
+    // SupportMediaFoundationClearPlayback() in mf_feature_checks.cc).
+    if (base::win::GetVersion() < base::win::Version::WIN10_RS3) {
+      GTEST_SKIP()
+          << "MediaFoundationRenderer requires Windows 10 RS3 or later.";
+    }
+  }
 
   void AddStream(DemuxerStream::Type type, bool encrypted) {
     streams_.push_back(CreateMockDemuxerStream(type, encrypted));
