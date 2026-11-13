@@ -45,6 +45,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -95,6 +96,9 @@ class BottomSheetCoordinator
 
     /** The model managing presentation properties of the bottom sheet. */
     private final PropertyModel mModel;
+
+    private @Nullable WindowInsetObserver mWindowInsetObserver;
+    private final Rect mPreviousVisibleViewportRect = new Rect();
 
     /** The view that contains the sheet. */
     private ViewGroup mSheetContainer;
@@ -204,6 +208,12 @@ class BottomSheetCoordinator
     /** Called when the activity containing the {@link BottomSheetCoordinator} is destroyed. */
     void destroy() {
         mIsDestroyed = true;
+        if (mInsetObserver != null) {
+            if (mWindowInsetObserver != null) {
+                mInsetObserver.removeObserver(mWindowInsetObserver);
+                mWindowInsetObserver = null;
+            }
+        }
         if (mWindowInsetsAnimationListener != null) {
             mInsetObserver.removeWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
             mWindowInsetsAnimationListener = null;
@@ -313,6 +323,16 @@ class BottomSheetCoordinator
                     }
                 };
         mInsetObserver.addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
+        mWindowInsetObserver =
+                new WindowInsetObserver() {
+                    @Override
+                    public void onInsetChanged() {
+                        BottomSheetCoordinator.this.onInsetChanged();
+                    }
+                };
+        mInsetObserver.addObserver(mWindowInsetObserver);
+        updateViewport();
+        mPreviousVisibleViewportRect.set(mMediator.getVisibleViewportRect());
 
         // Listen to height changes on the toolbar.
         mMediator.setToolbarSizeChangedCallback(
@@ -326,8 +346,19 @@ class BottomSheetCoordinator
     }
 
     private void onInsetChanged() {
+        if (getCurrentSheetContent() == null) {
+            return;
+        }
         invalidateContentDesiredHeight();
         updateContentContainerHeight();
+        if (isSheetOpen()) {
+            mMediator.setSheetTranslationY(
+                    mMediator.calculateSheetTranslationY(
+                            mCurrentOffsetPx, getOffsetFromBrowserControls()));
+        }
+        if (!mView.isLayoutRequested()) {
+            mPreviousVisibleViewportRect.set(mMediator.getVisibleViewportRect());
+        }
     }
 
     @VisibleForTesting
@@ -389,10 +420,14 @@ class BottomSheetCoordinator
 
     private boolean updateViewportAndBottomInset(@Px int previousHeight) {
         updateViewport();
+        Rect visibleViewportRect = mMediator.getVisibleViewportRect();
+        boolean viewportChanged = !mPreviousVisibleViewportRect.equals(visibleViewportRect);
+        mPreviousVisibleViewportRect.set(visibleViewportRect);
         @Px int e2eBottomInset = getEdgeToEdgeBottomInset();
         boolean insetOrHeightChanged =
                 previousHeight != mMediator.getSheetContainerHeight()
-                        || mPreviousBottomInset != e2eBottomInset;
+                        || mPreviousBottomInset != e2eBottomInset
+                        || viewportChanged;
         mPreviousBottomInset = e2eBottomInset;
         if (insetOrHeightChanged) {
             invalidateContentDesiredHeight();
@@ -1299,6 +1334,7 @@ class BottomSheetCoordinator
         updateContentContainerHeight();
         // Update the color before notify the observers, as some might read the sheet bg color.
         updateBackgroundColor();
+        mPreviousVisibleViewportRect.set(mMediator.getVisibleViewportRect());
         mMediator.notifySheetContentChanged(content);
     }
 
@@ -1529,7 +1565,7 @@ class BottomSheetCoordinator
     }
 
     Rect getVisibleViewportRectForTesting() {
-        return mMediator.getVisibleViewportRectForTesting();
+        return mMediator.getVisibleViewportRect();
     }
 
     /** Ends settle animations until none is left, including ones started while ending another. */

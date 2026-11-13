@@ -828,6 +828,121 @@ public class BottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testKeyboardPromoBanner_DynamicHeightChange_UpdatesContentContainerHeight() {
+        setupBottomSheetForKeyboardTest();
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 200);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        // Initial keyboard open state with 100px bottom inset (viewport = 100).
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 100));
+        mBottomSheet.setSheetOffsetFromBottom(100.0f, StateChangeReason.NONE);
+        assertEquals(100, contentContainer.getLayoutParams().height);
+
+        ArgumentCaptor<InsetObserver.WindowInsetObserver> captor =
+                ArgumentCaptor.forClass(InsetObserver.WindowInsetObserver.class);
+        verify(mInsetObserver).addObserver(captor.capture());
+        InsetObserver.WindowInsetObserver insetObserver = captor.getValue();
+
+        // Gboard shows a promo banner while already open (e.g. handwriting promo),
+        // bottom inset increases to 140 (viewport shrinks to 60) without an animation.
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 140));
+        insetObserver.onInsetChanged();
+
+        // Content container height is reduced to 60 so the input field is not obscured.
+        assertEquals(60, contentContainer.getLayoutParams().height);
+
+        // On banner dismissal, bottom inset returns to 100.
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 100));
+        insetObserver.onInsetChanged();
+
+        // Content container height expands back to 100.
+        assertEquals(100, contentContainer.getLayoutParams().height);
+    }
+
+    @Test
+    public void testOnInsetChanged_WithoutContent_SafelyEarlyReturns() {
+        assertNull(mBottomSheet.getCurrentSheetContent());
+
+        ArgumentCaptor<InsetObserver.WindowInsetObserver> captor =
+                ArgumentCaptor.forClass(InsetObserver.WindowInsetObserver.class);
+        verify(mInsetObserver).addObserver(captor.capture());
+        InsetObserver.WindowInsetObserver insetObserver = captor.getValue();
+
+        // Simulate an inset update when no content is showing.
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 300))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        // Trigger onInsetChanged without any content attached; should safely early-return
+        // without throwing or modifying sheet state.
+        insetObserver.onInsetChanged();
+        assertNull(mBottomSheet.getCurrentSheetContent());
+        assertFalse(mBottomSheet.isSheetOpen());
+        assertEquals(0f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testDestroy_RemovesWindowInsetObserver() {
+        verify(mInsetObserver).addObserver(any());
+
+        mBottomSheet.destroy();
+
+        verify(mInsetObserver).removeObserver(any());
+    }
+
+    @Test
+    public void testUpdateViewportAndBottomInset_DetectsPromoBannerChangeOnLayout() {
+        setupBottomSheetForKeyboardTest();
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 200);
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 0));
+
+        ViewUtils.requestLayout(
+                mSheetContainer,
+                "BottomSheetCoordinatorUnitTest"
+                        + ".testUpdateViewportAndBottomInset_DetectsPromoBannerChangeOnLayout");
+        measureAndLayoutContainer(SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        int initialViewportHeight = mBottomSheet.getVisibleViewportRectForTesting().height();
+        assertEquals(200, initialViewportHeight);
+
+        // Move sheet offset slightly away from HALF resting state (100px).
+        mBottomSheet.setSheetOffsetFromBottom(120.0f, StateChangeReason.NONE);
+        assertEquals(120.0f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+
+        // Layout pass without inset changes does not trigger resettleSheetOnContainerChange().
+        ViewUtils.requestLayout(
+                mSheetContainer,
+                "BottomSheetCoordinatorUnitTest"
+                        + ".testUpdateViewportAndBottomInset_DetectsPromoBannerChangeOnLayout");
+        measureAndLayoutContainer(SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+        assertEquals(120.0f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+
+        // Gboard displays an auxiliary promo/feature banner while keyboard is open.
+        // Bottom inset increases by 24px (bottom inset = 24px).
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 24));
+
+        ViewUtils.requestLayout(
+                mSheetContainer,
+                "BottomSheetCoordinatorUnitTest"
+                        + ".testUpdateViewportAndBottomInset_DetectsPromoBannerChangeOnLayout");
+        measureAndLayoutContainer(SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        // Viewport height in coordinator shrinks by 24px to reflect the promo banner.
+        assertEquals(
+                initialViewportHeight - 24,
+                mBottomSheet.getVisibleViewportRectForTesting().height());
+        // resettleSheetOnContainerChange() is triggered by insetOrHeightChanged,
+        // resettling the sheet back to HALF state resting offset (100px).
+        assertEquals(100.0f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+    }
+
+    @Test
     public void testRevertStateOnKeyboardHiding() {
         setupBottomSheetForKeyboardTest();
         InsetObserver.WindowInsetsAnimationListener listener =

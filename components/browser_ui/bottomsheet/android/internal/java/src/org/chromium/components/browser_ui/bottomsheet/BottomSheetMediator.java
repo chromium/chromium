@@ -909,8 +909,12 @@ class BottomSheetMediator implements TouchHandler {
                 decorHeight - bottomInset);
     }
 
-    Rect getVisibleViewportRectForTesting() {
+    Rect getVisibleViewportRect() {
         return mVisibleViewportRect;
+    }
+
+    Rect getVisibleViewportRectForTesting() {
+        return getVisibleViewportRect();
     }
 
     /**
