@@ -3731,6 +3731,8 @@
     <variant value="13">GUEST_ORIGIN_BLOCKED</variant>
     <variant value="14">GUEST_API_NOT_ALLOWED</variant>
     <variant value="15">PENDING_PROVIDER_CHANGE</variant>
+    <variant value="16">GUEST_HTTP_CLIENT_ERROR</variant>
+    <variant value="17">GUEST_HTTP_SERVER_ERROR</variant>
   </enum>
 
   <enum name="GlicEmbedderType">

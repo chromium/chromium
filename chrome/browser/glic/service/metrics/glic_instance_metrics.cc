@@ -192,6 +192,10 @@ ToStructuredReason(ClientLoadErrorReason reason) {
       return Reason::GUEST_API_NOT_ALLOWED;
     case ClientLoadErrorReason::kPendingProviderChange:
       return Reason::PENDING_PROVIDER_CHANGE;
+    case ClientLoadErrorReason::kGuestHttpClientError:
+      return Reason::GUEST_HTTP_CLIENT_ERROR;
+    case ClientLoadErrorReason::kGuestHttpServerError:
+      return Reason::GUEST_HTTP_SERVER_ERROR;
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)

@@ -4,13 +4,19 @@
 
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -35,6 +41,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/profile_metrics_service.h"
+#include "components/metrics/structured/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -47,6 +54,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+#include "components/metrics/structured/event.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
+#endif
 
 namespace glic {
 namespace {
@@ -3646,5 +3659,92 @@ TEST_F(GlicInstanceMetricsTest,
                                       1);
   histogram_tester_.ExpectTotalCount("Glic.Fre.AcceptToChatActionable", 2);
 }
+
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+namespace {
+
+class ScopedStructuredEventCapture
+    : public metrics::structured::StructuredMetricsClient::RecordingDelegate {
+ public:
+  ScopedStructuredEventCapture() {
+    metrics::structured::StructuredMetricsClient::Get()->SetDelegate(this);
+  }
+  ~ScopedStructuredEventCapture() override {
+    metrics::structured::StructuredMetricsClient::Get()->UnsetDelegate();
+  }
+
+  bool IsReadyToRecord() const override { return true; }
+  void RecordEvent(metrics::structured::Event&& event) override {
+    events_.push_back(std::move(event));
+  }
+
+  std::vector<const metrics::structured::Event*> GetEvents(
+      std::string_view event_name) const {
+    std::vector<const metrics::structured::Event*> result;
+    for (const metrics::structured::Event& event : events_) {
+      if (event.project_name() == "Glic" && event.event_name() == event_name) {
+        result.push_back(&event);
+      }
+    }
+    return result;
+  }
+
+ private:
+  std::vector<metrics::structured::Event> events_;
+};
+
+std::optional<int64_t> GetIntMetric(const metrics::structured::Event& event,
+                                    std::string_view metric_name) {
+  auto it = event.metric_values().find(std::string(metric_name));
+  if (it == event.metric_values().end()) {
+    return std::nullopt;
+  }
+  const base::Value& value = it->second.value;
+  if (value.is_int()) {
+    return value.GetInt();
+  }
+  int64_t result;
+  if (value.is_string() && base::StringToInt64(value.GetString(), &result)) {
+    return result;
+  }
+  return std::nullopt;
+}
+
+}  // namespace
+
+TEST_F(GlicInstanceMetricsTest,
+       OnClientLoadErrorRecordsStructuredReasonsAndInvocationId) {
+  using StructuredReason =
+      metrics::structured::events::v2::glic::GlicClientLoadErrorReason;
+  static constexpr struct {
+    ClientLoadErrorReason reason;
+    StructuredReason structured_reason;
+  } kCases[] = {
+      {ClientLoadErrorReason::kOffline, StructuredReason::OFFLINE},
+      {ClientLoadErrorReason::kGuestLoadFailed,
+       StructuredReason::GUEST_LOAD_FAILED},
+      {ClientLoadErrorReason::kGuestHttpClientError,
+       StructuredReason::GUEST_HTTP_CLIENT_ERROR},
+      {ClientLoadErrorReason::kGuestHttpServerError,
+       StructuredReason::GUEST_HTTP_SERVER_ERROR},
+  };
+
+  constexpr uint64_t kInvocationId = 42;
+  metrics_.SetActiveInvocationId(kInvocationId);
+
+  for (const auto& c : kCases) {
+    SCOPED_TRACE(static_cast<int>(c.reason));
+    ScopedStructuredEventCapture capture;
+    metrics_.OnClientLoadError(c.reason);
+    auto events = capture.GetEvents("ClientLoadError");
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(GetIntMetric(*events[0], "Reason"),
+              static_cast<int>(c.structured_reason));
+    EXPECT_EQ(GetIntMetric(*events[0], "InvocationId"),
+              static_cast<int64_t>(kInvocationId));
+  }
+}
+
+#endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 }  // namespace glic

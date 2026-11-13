@@ -351,10 +351,24 @@ export class GlicAppController implements WebviewDelegate {
           }
         }
         break;
+      case GuestPageType.kOffline:
+        this.setErrorState(
+            WebUiErrorReason.LOAD_ERROR, ClientLoadErrorReason.kOffline);
+        break;
       case GuestPageType.kLoadError:
         this.setErrorState(
             WebUiErrorReason.LOAD_ERROR,
             ClientLoadErrorReason.kGuestLoadFailed);
+        break;
+      case GuestPageType.kHttpClientError:
+        this.setErrorState(
+            WebUiErrorReason.LOAD_ERROR,
+            ClientLoadErrorReason.kGuestHttpClientError);
+        break;
+      case GuestPageType.kHttpServerError:
+        this.setErrorState(
+            WebUiErrorReason.LOAD_ERROR,
+            ClientLoadErrorReason.kGuestHttpServerError);
         break;
       case GuestPageType.kOriginBlocked:
         this.setErrorState(

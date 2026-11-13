@@ -84,12 +84,21 @@ enum GuestPageType {
   kRegular = 0,
   kLogin = 1,
   kGuestError = 2,
+  // The navigation committed a network error page other than
+  // net::ERR_INTERNET_DISCONNECTED.
   kLoadError = 3,
   kDisabledByAdmin = 4,
   kSecurityInterstitial = 5,
   // The navigation was cancelled because its origin is not an allowed guest
   // origin (GlicGuestNavigationThrottle, or the PWC navigation policy).
   kOriginBlocked = 6,
+  // The navigation committed an error page with
+  // net::ERR_INTERNET_DISCONNECTED.
+  kOffline = 7,
+  // The navigation committed an HTTP 4xx response.
+  kHttpClientError = 8,
+  // The navigation committed an HTTP 5xx response.
+  kHttpServerError = 9,
 };
 
 // Functions provided by the WebUI page.
@@ -237,6 +246,8 @@ enum ClientLoadErrorReason {
   [MinVersion=1] kGuestOriginBlocked = 13,
   [MinVersion=1] kGuestApiNotAllowed = 14,
   [MinVersion=2] kPendingProviderChange = 15,
+  [MinVersion=3] kGuestHttpClientError = 16,
+  [MinVersion=3] kGuestHttpServerError = 17,
 };
 
 // The result of `PrepareForClient()`.

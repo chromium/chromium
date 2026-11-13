@@ -280,6 +280,20 @@ suite('WebviewLoadCommitTest', () => {
     assertEquals(false, lastCommittedIsApiAllowed);
   });
 
+  test('offline and HTTP error page types are forwarded', () => {
+    for (const pageType
+             of [GuestPageType.kOffline,
+                 GuestPageType.kLoadError,
+                 GuestPageType.kHttpClientError,
+                 GuestPageType.kHttpServerError,
+    ]) {
+      controller.onGuestNavigated(
+          'https://cat.fun/party', true, pageType, true);
+      assertEquals(pageType, lastCommittedPageType);
+      assertEquals(true, lastCommittedIsApiAllowed);
+    }
+  });
+
   test('authorized regular page committed reports regular', () => {
     controller.onGuestNavigated(
         'https://cat.fun/party', true, GuestPageType.kRegular, false);

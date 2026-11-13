@@ -99,6 +99,10 @@ ClientLoadErrorReason ToClientLoadErrorReason(
       return ClientLoadErrorReason::kGuestApiNotAllowed;
     case mojom::ClientLoadErrorReason::kPendingProviderChange:
       return ClientLoadErrorReason::kPendingProviderChange;
+    case mojom::ClientLoadErrorReason::kGuestHttpClientError:
+      return ClientLoadErrorReason::kGuestHttpClientError;
+    case mojom::ClientLoadErrorReason::kGuestHttpServerError:
+      return ClientLoadErrorReason::kGuestHttpServerError;
   }
 }
 // LINT.ThenChange(//chrome/browser/glic/glic_enums.h:ClientLoadErrorReason)

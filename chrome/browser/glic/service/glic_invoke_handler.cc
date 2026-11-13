@@ -156,6 +156,10 @@ std::string_view ClientLoadErrorReasonToDiagnosticString(
       return "GUEST_API_NOT_ALLOWED";
     case ClientLoadErrorReason::kPendingProviderChange:
       return "PENDING_PROVIDER_CHANGE";
+    case ClientLoadErrorReason::kGuestHttpClientError:
+      return "GUEST_HTTP_CLIENT_ERROR";
+    case ClientLoadErrorReason::kGuestHttpServerError:
+      return "GUEST_HTTP_SERVER_ERROR";
   }
   NOTREACHED();
 }

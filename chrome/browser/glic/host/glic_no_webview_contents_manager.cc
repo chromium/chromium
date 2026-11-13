@@ -1006,10 +1006,25 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
       SetErrorState(mojom::ErrorPanelType::kDisabledByAdminWithLink,
                     ClientLoadErrorReason::kDisabledByAdmin);
       break;
+    case mojom::GuestPageType::kOffline:
+      guest_state_.Set(GuestState::kLoading);
+      SetErrorState(mojom::ErrorPanelType::kError,
+                    ClientLoadErrorReason::kOffline);
+      break;
     case mojom::GuestPageType::kLoadError:
       guest_state_.Set(GuestState::kLoading);
       SetErrorState(mojom::ErrorPanelType::kError,
                     ClientLoadErrorReason::kGuestLoadFailed);
+      break;
+    case mojom::GuestPageType::kHttpClientError:
+      guest_state_.Set(GuestState::kLoading);
+      SetErrorState(mojom::ErrorPanelType::kError,
+                    ClientLoadErrorReason::kGuestHttpClientError);
+      break;
+    case mojom::GuestPageType::kHttpServerError:
+      guest_state_.Set(GuestState::kLoading);
+      SetErrorState(mojom::ErrorPanelType::kError,
+                    ClientLoadErrorReason::kGuestHttpServerError);
       break;
     case mojom::GuestPageType::kOriginBlocked:
       guest_state_.Set(GuestState::kLoading);

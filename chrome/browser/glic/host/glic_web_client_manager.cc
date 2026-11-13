@@ -30,6 +30,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -544,16 +545,23 @@ void GlicWebClientManager::DidFinishNavigation(
         interstitial_helper->IsInterstitialCommittedForFrame(
             navigation_handle->GetFrameTreeNodeId());
   }
-  bool is_error_page =
-      navigation_handle->IsErrorPage() ||
-      (navigation_handle->GetResponseHeaders() &&
-       navigation_handle->GetResponseHeaders()->response_code() >= 400);
+  const int http_response_code =
+      navigation_handle->GetResponseHeaders()
+          ? navigation_handle->GetResponseHeaders()->response_code()
+          : 0;
   mojom::GuestPageType page_type =
       GetGuestPageType(guest_main_frame->GetLastCommittedURL());
   if (is_security_interstitial) {
     page_type = mojom::GuestPageType::kSecurityInterstitial;
-  } else if (is_error_page) {
-    page_type = mojom::GuestPageType::kLoadError;
+  } else if (http_response_code >= 500) {
+    page_type = mojom::GuestPageType::kHttpServerError;
+  } else if (http_response_code >= 400) {
+    page_type = mojom::GuestPageType::kHttpClientError;
+  } else if (navigation_handle->IsErrorPage()) {
+    page_type =
+        navigation_handle->GetNetErrorCode() == net::ERR_INTERNET_DISCONNECTED
+            ? mojom::GuestPageType::kOffline
+            : mojom::GuestPageType::kLoadError;
   }
   last_committed_page_type_ = page_type;
   last_committed_is_api_allowed_ = is_api_allowed;
