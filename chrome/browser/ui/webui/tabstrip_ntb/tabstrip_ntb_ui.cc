@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
@@ -113,6 +114,7 @@ TabStripNtbUI::TabStripNtbUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,
                                /*enable_chrome_send=*/false,
                                /*enable_chrome_histograms=*/true) {
+  TRACE_EVENT("ui", "TabStripNtbUI::TabStripNtbUI");
   Profile* profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
@@ -174,6 +176,7 @@ void TabStripNtbUI::BindPage(
 void TabStripNtbUI::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin) {
+  TRACE_EVENT("ui", "TabStripNtbUI::PopulateLocalResourceLoaderConfig");
   auto* theme_colors_manager = ThemeColorsSourceManagerFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
   // Without a manager the stylesheet is still fetched over the network.

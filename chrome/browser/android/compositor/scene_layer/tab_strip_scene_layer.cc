@@ -471,6 +471,7 @@ void TabStripSceneLayer::UpdateNtbWebUi(TabStripNtbWebUiHost* host,
   }
 
   if (webui_layer->parent() != ntb_webui_container_.get()) {
+    TRACE_EVENT_INSTANT("ui", "TabStripNtbWebUi.AttachedToScene");
     ntb_webui_container_->RemoveAllChildren();
     ntb_webui_container_->AddChild(webui_layer);
   }

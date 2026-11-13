@@ -113,6 +113,7 @@ TabStripNtbWebUiHost::~TabStripNtbWebUiHost() {
 }
 
 void TabStripNtbWebUiHost::SetTabModel(TabModel* tab_model) {
+  TRACE_EVENT("ui", "TabStripNtbWebUiHost::SetTabModel");
   CHECK(tab_model);
   CHECK(!tab_model_);
   if (!web_contents_) {
@@ -149,6 +150,7 @@ void TabStripNtbWebUiHost::OnTabModelRemoved(TabModel* tab_model) {
 }
 
 void TabStripNtbWebUiHost::StartLoad() {
+  TRACE_EVENT("ui", "TabStripNtbWebUiHost::StartLoad");
   if (!web_contents_) {
     return;
   }
@@ -243,7 +245,11 @@ void TabStripNtbWebUiHost::PrimaryMainFrameRenderProcessGone(
   last_crash_time_ = now;
   base::OnceCallback callback = base::BindOnce(&TabStripNtbWebUiHost::StartLoad,
                                                weak_ptr_factory_.GetWeakPtr());
-  if (++crash_count_ <= kMaxCrashRecoveryTimes) {
+  const bool delay_reload = ++crash_count_ > kMaxCrashRecoveryTimes;
+  TRACE_EVENT_INSTANT("ui", "TabStripNtbWebUi.RenderProcessGone", "status",
+                      static_cast<int>(status), "crash_count", crash_count_,
+                      "delay_reload", delay_reload);
+  if (!delay_reload) {
     // PostTask avoids re-entering RenderProcessHostImpl::ProcessDied().
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
