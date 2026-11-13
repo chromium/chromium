@@ -53,6 +53,10 @@ class StatusIndicatorProperties {
     static final PropertyModel.WritableIntPropertyKey CURRENT_VISIBLE_HEIGHT =
             new PropertyModel.WritableIntPropertyKey();
 
+    /** Top offset of the status indicator from the top of the screen. */
+    static final PropertyModel.WritableIntPropertyKey TOP_OFFSET =
+            new PropertyModel.WritableIntPropertyKey();
+
     /** Whether the view is obscured. */
     static final PropertyModel.WritableBooleanPropertyKey IS_OBSCURED =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -68,6 +72,7 @@ class StatusIndicatorProperties {
                 TEXT_COLOR,
                 ICON_TINT,
                 CURRENT_VISIBLE_HEIGHT,
+                TOP_OFFSET,
                 IS_OBSCURED
             };
 }

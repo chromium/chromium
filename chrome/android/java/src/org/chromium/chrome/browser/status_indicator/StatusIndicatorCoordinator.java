@@ -102,6 +102,7 @@ public class StatusIndicatorCoordinator implements TopControlLayer {
         mSceneLayer = new StatusIndicatorSceneLayer(browserControlsStateProvider);
         mMediator =
                 new StatusIndicatorMediator(
+                        topControlsStacker,
                         browserControlsStateProvider,
                         tabObscuringHandler,
                         statusBarColorWithoutStatusIndicatorSupplier,

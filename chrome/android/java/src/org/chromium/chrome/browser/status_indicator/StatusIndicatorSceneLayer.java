@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.graphics.RectF;
 
+import androidx.annotation.Px;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniPtr;
 import org.jni_zero.JniRawPtr;
@@ -43,11 +45,13 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private boolean mIsVisible;
+    private @Px int mTopOffset;
 
     /**
      * Build a composited status view layer.
+     *
      * @param browserControlsStateProvider {@link BrowserControlsStateProvider} to access browser
-     *                                     controls offsets.
+     *     controls offsets.
      */
     StatusIndicatorSceneLayer(BrowserControlsStateProvider browserControlsStateProvider) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -62,7 +66,17 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
     }
 
     /**
+     * Set the top offset of the scene layer.
+     *
+     * @param topOffset Top offset in pixels.
+     */
+    public void setTopOffset(@Px int topOffset) {
+        mTopOffset = topOffset;
+    }
+
+    /**
      * Set the resource ID.
+     *
      * @param id Resource view ID.
      */
     public void setResourceId(int id) {
@@ -93,10 +107,17 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
-        final int offset = mBrowserControlsStateProvider.getTopControlsMinHeightOffset();
+        final int visibleHeight =
+                Math.max(
+                        0,
+                        mBrowserControlsStateProvider.getTopControlsMinHeightOffset() - mTopOffset);
         StatusIndicatorSceneLayerJni.get()
                 .updateStatusIndicatorLayer(
-                        assumeNonNull(mNativePtr), resourceManager, mResourceId, offset);
+                        assumeNonNull(mNativePtr),
+                        resourceManager,
+                        mResourceId,
+                        mTopOffset,
+                        visibleHeight);
 
         return this;
     }
@@ -120,6 +141,7 @@ class StatusIndicatorSceneLayer extends SceneOverlayLayer implements SceneOverla
                 JniPtr<NativeStatusIndicatorSceneLayer> self,
                 ResourceManager resourceManager,
                 int viewResourceId,
-                int offset);
+                int topOffset,
+                int visibleHeight);
     }
 }

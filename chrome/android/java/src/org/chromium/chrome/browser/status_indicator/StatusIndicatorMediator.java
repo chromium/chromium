@@ -19,7 +19,10 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,6 +40,7 @@ class StatusIndicatorMediator
     private static final int UPDATE_COLOR_TRANSITION_DURATION_MS = 400;
 
     private PropertyModel mModel;
+    private final TopControlsStacker mTopControlsStacker;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final HashSet<StatusIndicatorCoordinator.StatusIndicatorObserver> mObservers =
             new HashSet<>();
@@ -61,6 +65,7 @@ class StatusIndicatorMediator
     /**
      * Constructs the status indicator mediator.
      *
+     * @param topControlsStacker The {@link TopControlsStacker} to query top control offsets.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to listen to for
      *     the changes in controls offsets.
      * @param tabObscuringHandler Delegate object handling obscuring views.
@@ -71,10 +76,12 @@ class StatusIndicatorMediator
      *     cc::BCOM instance, e.g. tab switcher.
      */
     StatusIndicatorMediator(
+            TopControlsStacker topControlsStacker,
             BrowserControlsStateProvider browserControlsStateProvider,
             TabObscuringHandler tabObscuringHandler,
             Supplier<Integer> statusBarWithoutIndicatorColorSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls) {
+        mTopControlsStacker = topControlsStacker;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabObscuringHandler = tabObscuringHandler;
         mStatusBarWithoutIndicatorColorSupplier = statusBarWithoutIndicatorColorSupplier;
@@ -460,17 +467,25 @@ class StatusIndicatorMediator
     }
 
     private void onOffsetChanged(int topControlsMinHeightOffset) {
-        final boolean indicatorVisible = topControlsMinHeightOffset > 0;
+        int offsetToTop =
+                Math.max(
+                        0,
+                        mTopControlsStacker.getHeightFromLayerToTop(
+                                TopControlType.STATUS_INDICATOR));
+        assert offsetToTop == 0 || EdgeToEdgeUtils.isTopEdgeToEdgeEnabled();
+        int indicatorVisibleHeight = Math.max(0, topControlsMinHeightOffset - offsetToTop);
+        final boolean indicatorVisible = indicatorVisibleHeight > 0;
         // Composited view should be visible if we have a positive top min-height offset (or current
         // min-height) and we're running the animations in native.
         mModel.set(
                 StatusIndicatorProperties.COMPOSITED_VIEW_VISIBLE,
                 indicatorVisible && mCanAnimateNativeBrowserControls.get());
 
-        mModel.set(StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT, topControlsMinHeightOffset);
+        mModel.set(StatusIndicatorProperties.TOP_OFFSET, offsetToTop);
+        mModel.set(StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT, indicatorVisibleHeight);
 
         final boolean isCompletelyShown =
-                indicatorVisible && topControlsMinHeightOffset == mIndicatorHeight;
+                indicatorVisible && indicatorVisibleHeight == mIndicatorHeight;
         // If we're running the animations in native, the Android view should only be visible when
         // the indicator is fully shown. Otherwise, the Android view will be visible if it's within
         // screen boundaries.
@@ -478,7 +493,9 @@ class StatusIndicatorMediator
                 StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY,
                 mIsHiding && (mCanAnimateNativeBrowserControls.get() || !indicatorVisible)
                         ? View.GONE
-                        : (isCompletelyShown || !mCanAnimateNativeBrowserControls.get()
+                        : (isCompletelyShown
+                                        || (indicatorVisible
+                                                && !mCanAnimateNativeBrowserControls.get())
                                 ? View.VISIBLE
                                 : View.INVISIBLE));
 

@@ -172,6 +172,21 @@ public class StatusIndicatorViewBinderTest {
         assertEquals("Wrong text alpha.", 1.f, mStatusTextView.getAlpha(), MathUtils.EPSILON);
     }
 
+    @Test
+    public void testTopOffsetAndVisibleHeight() {
+        mContainer.layout(0, 0, 100, 40);
+        mModel.set(StatusIndicatorProperties.TOP_OFFSET, 30);
+        mModel.set(StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT, 25);
+
+        assertEquals(30, mSceneLayer.mTopOffset);
+        assertEquals(15f, mContainer.getTranslationY(), MathUtils.EPSILON);
+
+        // Updating TOP_OFFSET alone (e.g. fullscreen enter/exit) updates both scene layer and view.
+        mModel.set(StatusIndicatorProperties.TOP_OFFSET, 0);
+        assertEquals(0, mSceneLayer.mTopOffset);
+        assertEquals(-15f, mContainer.getTranslationY(), MathUtils.EPSILON);
+    }
+
     private boolean areRestOfCompoundDrawablesNull() {
         final Drawable[] drawables = mStatusTextView.getCompoundDrawablesRelative();
         for (int i = 1; i < drawables.length; i++) {
@@ -185,8 +200,15 @@ public class StatusIndicatorViewBinderTest {
 
     /** Mock {@link StatusIndicatorSceneLayer} class to avoid native initialization. */
     private static class MockStatusIndicatorSceneLayer extends StatusIndicatorSceneLayer {
+        int mTopOffset;
+
         MockStatusIndicatorSceneLayer() {
             super(null);
+        }
+
+        @Override
+        public void setTopOffset(int topOffset) {
+            mTopOffset = topOffset;
         }
 
         @Override

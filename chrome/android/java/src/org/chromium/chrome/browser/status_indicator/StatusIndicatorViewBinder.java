@@ -69,10 +69,10 @@ class StatusIndicatorViewBinder {
                     ColorStateList.valueOf(model.get(StatusIndicatorProperties.ICON_TINT));
             text.setDrawableTintColor(tint);
         } else if (StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT == propertyKey) {
-            final float yOffset =
-                    model.get(StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT)
-                            - view.javaViewRoot.getHeight();
-            view.javaViewRoot.setTranslationY(yOffset);
+            updateJavaViewTranslation(model, view);
+        } else if (StatusIndicatorProperties.TOP_OFFSET == propertyKey) {
+            updateJavaViewTranslation(model, view);
+            view.sceneLayer.setTopOffset(model.get(StatusIndicatorProperties.TOP_OFFSET));
         } else if (StatusIndicatorProperties.IS_OBSCURED == propertyKey) {
             view.javaViewRoot.setImportantForAccessibility(
                     model.get(StatusIndicatorProperties.IS_OBSCURED)
@@ -81,5 +81,13 @@ class StatusIndicatorViewBinder {
         } else {
             assert false : "Unhandled property detected in StatusIndicatorViewBinder!";
         }
+    }
+
+    private static void updateJavaViewTranslation(PropertyModel model, ViewHolder view) {
+        final float yOffset =
+                model.get(StatusIndicatorProperties.TOP_OFFSET)
+                        + model.get(StatusIndicatorProperties.CURRENT_VISIBLE_HEIGHT)
+                        - view.javaViewRoot.getHeight();
+        view.javaViewRoot.setTranslationY(yOffset);
     }
 }

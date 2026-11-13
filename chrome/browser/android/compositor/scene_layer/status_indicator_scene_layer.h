@@ -34,7 +34,8 @@ class StatusIndicatorSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jresource_manager,
       int32_t view_resource_id,
-      int32_t y_offset);
+      int32_t top_offset,
+      int32_t visible_height);
 
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);
