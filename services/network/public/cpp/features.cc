@@ -188,20 +188,6 @@ BASE_FEATURE(kDisallowInterventionInCorsSafelistedHeaders,
 // and continue the handshake without sending one if requested.
 BASE_FEATURE(kOmitCorsClientCert, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables support for the `Variants` response header and reduce
-// accept-language. https://github.com/Tanych/accept-language
-BASE_FEATURE(kReduceAcceptLanguage, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kReduceAcceptLanguageCacheDuration,
-                   &kReduceAcceptLanguage,
-                   "reduce-accept-language-cache-duration",
-                   base::Days(30));
-
-// Enables support for the `Variants` response header and reduce
-// Accept-Language HTTP header only.
-BASE_FEATURE(kReduceAcceptLanguageHTTP, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Local Network Access checks.
 // Blocks local network requests without user permission to prevent exploitation
 // of vulnerable local devices.

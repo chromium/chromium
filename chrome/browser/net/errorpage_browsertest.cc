@@ -1111,13 +1111,7 @@ class ErrorPageForIDNTest : public InProcessBrowserTest {
   static constexpr char kHostnameJsUtf8[] =
       "\xD0\xBF\xD1\x80\xD0\xB5\xD0\xB7\xD0\xB8\xD0\xB4\xD0\xB5\xD0\xBD\xD1\x82"
       "\x2E\xD1\x80\xD1\x84";
-  ErrorPageForIDNTest() {
-    // TODO(crbug.com/334954143) This test clears the AcceptLanguage Prefs which
-    // causes Accept-Language to not work correctly. Fix the tests when turning
-    // on the reduce accept-language feature.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {network::features::kReduceAcceptLanguage});
-  }
+  ErrorPageForIDNTest() = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -1125,9 +1119,6 @@ class ErrorPageForIDNTest : public InProcessBrowserTest {
     browser()->GetProfile()->GetPrefs()->SetString(
         language::prefs::kAcceptLanguages, std::string());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Make sure error page shows correct unicode for IDN.

@@ -573,14 +573,6 @@ const char kProcessType[]                   = "type";
 // child processes at launch. See https://crbug.com/40850085.
 const char kPseudonymizationSaltHandle[] = "pseudonymization-salt-handle";
 
-// Reduce the accept-language for HTTP header and JS navigator.languages, and
-// only most preferred language: https://github.com/Tanych/accept-language.
-const char kReduceAcceptLanguage[] = "reduce-accept-language";
-
-// Reduce the accept-language for HTTP header, and only send most preferred
-// language in the request header: https://github.com/Tanych/accept-language.
-const char kReduceAcceptLanguageHTTP[] = "reduce-accept-language-http";
-
 // Reduce the minor version number in the User-Agent string. This flag
 // implements phase 4 of User-Agent reduction:
 // https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html.

@@ -120,16 +120,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        std::cref(blink::features::kReduceUserAgentMinorVersion),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
-      // Override for --reduce-accept-language.
-      {switches::kReduceAcceptLanguage,
-       std::cref(network::features::kReduceAcceptLanguage),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-
-      // Override for --reduce-accept-language-http.
-      {switches::kReduceAcceptLanguageHTTP,
-       std::cref(network::features::kReduceAcceptLanguageHTTP),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-
       // Override for --privacy-sandbox-ads-apis. See also chrome layer
       // overrides.
       {switches::kEnablePrivacySandboxAdsApis,

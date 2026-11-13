@@ -89,13 +89,7 @@ void RetryForHistogramUntilCountReached(
 // https://httpwg.org/specs/rfc7231.html#header.content-language
 class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  RecordLanguagesMetricsBrowserTest() {
-    // TODO(crbug.com/334954143) This tests is used to verify the metrics before
-    // we launch ReduceAcceptLanguage. Fix the tests when turning on the reduce
-    // accept-language feature.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {network::features::kReduceAcceptLanguage});
-  }
+  RecordLanguagesMetricsBrowserTest() = default;
 
   static constexpr const char kOriginUrl[] = "https://127.0.0.1:44444";
   static constexpr const char kLanguageHistogramName[] =
@@ -280,7 +274,6 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
   std::set<GURL> expected_request_urls_;
   RecordLanguageMetricTestOptions test_options_;
   std::unique_ptr<language::LanguagePrefs> language_prefs_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 constexpr const char RecordLanguagesMetricsBrowserTest::kOriginUrl[];

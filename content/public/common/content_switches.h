@@ -164,8 +164,6 @@ CONTENT_EXPORT extern const char kProcessPerSite[];
 CONTENT_EXPORT extern const char kProcessPerTab[];
 CONTENT_EXPORT extern const char kProcessType[];
 CONTENT_EXPORT extern const char kPseudonymizationSaltHandle[];
-CONTENT_EXPORT extern const char kReduceAcceptLanguage[];
-CONTENT_EXPORT extern const char kReduceAcceptLanguageHTTP[];
 CONTENT_EXPORT extern const char kReduceUserAgentMinorVersion[];
 CONTENT_EXPORT extern const char kRemoteDebuggingPipe[];
 CONTENT_EXPORT extern const char kRemoteDebuggingPort[];

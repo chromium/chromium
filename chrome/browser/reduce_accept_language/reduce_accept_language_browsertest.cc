@@ -33,7 +33,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/origin.h"
@@ -44,10 +43,8 @@ using ::content::URLLoaderInterceptor;
 
 struct ReduceAcceptLanguageTestOptions {
   std::optional<std::string> content_language_in_parent;
-  std::optional<std::string> avail_language_in_parent;
   std::optional<std::string> vary_in_parent;
   std::optional<std::string> content_language_in_child;
-  std::optional<std::string> avail_language_in_child;
   std::optional<std::string> vary_in_child;
 };
 
@@ -216,11 +213,6 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
           &headers, {"Content-Language: ",
                      test_options_.content_language_in_parent.value(), "\r\n"});
     }
-    if (test_options_.avail_language_in_parent) {
-      base::StrAppend(&headers,
-                      {"Avail-Language: ",
-                       test_options_.avail_language_in_parent.value(), "\r\n"});
-    }
     if (test_options_.vary_in_parent) {
       base::StrAppend(&headers,
                       {"Vary: ", test_options_.vary_in_parent.value(), "\n"});
@@ -234,11 +226,6 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       base::StrAppend(
           &headers, {"Content-Language: ",
                      test_options_.content_language_in_child.value(), "\r\n"});
-    }
-    if (test_options_.avail_language_in_child) {
-      base::StrAppend(&headers,
-                      {"Avail-Language: ",
-                       test_options_.avail_language_in_child.value(), "\r\n"});
     }
     if (test_options_.vary_in_child) {
       base::StrAppend(&headers,
@@ -264,13 +251,11 @@ class ReduceAcceptLanguageCountBrowserTest
       scoped_feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/{{language::kReduceAcceptLanguageCount,
                                  {{language::kMaxAcceptLanguage.name, "5"}}}},
-          /*disabled_features=*/{network::features::kReduceAcceptLanguage,
-                                 network::features::kReduceAcceptLanguageHTTP});
+          /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{language::kReduceAcceptLanguageCount},
-          /*disabled_features=*/{network::features::kReduceAcceptLanguage,
-                                 network::features::kReduceAcceptLanguageHTTP});
+          /*disabled_features=*/{});
     }
   }
 
@@ -299,7 +284,6 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
   base::HistogramTester histograms;
 
   SetTestOptions({.content_language_in_parent = "en",
-                  .avail_language_in_parent = "en, en-US",
                   .vary_in_parent = "accept-language"},
                  {SameOriginRequestUrl()});
   SetPrefsAcceptLanguage(base::SplitString(
@@ -327,10 +311,8 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
   base::HistogramTester histograms;
 
   SetTestOptions({.content_language_in_parent = "es",
-                  .avail_language_in_parent = "es, en-US",
                   .vary_in_parent = "accept-language",
                   .content_language_in_child = "es",
-                  .avail_language_in_child = "es, en-US",
                   .vary_in_child = "accept-language"},
                  {SameOriginIframeUrl(), SimpleRequestUrl()});
 
