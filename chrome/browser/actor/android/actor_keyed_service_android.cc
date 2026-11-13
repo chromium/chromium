@@ -55,16 +55,7 @@ ScopedJavaLocalRef<jobject> JNI_ActorKeyedServiceFactory_GetForProfile(
     return nullptr;
   }
 
-  ActorKeyedServiceAndroid* bridge = static_cast<ActorKeyedServiceAndroid*>(
-      service->GetUserData(kActorKeyedServiceBridgeKey));
-  if (!bridge) {
-    service->SetUserData(kActorKeyedServiceBridgeKey,
-                         std::make_unique<ActorKeyedServiceAndroid>(service));
-    bridge = static_cast<ActorKeyedServiceAndroid*>(
-        service->GetUserData(kActorKeyedServiceBridgeKey));
-  }
-
-  return bridge->GetJavaObject();
+  return ActorKeyedServiceAndroid::Get(service)->GetJavaObject();
 }
 
 ActorKeyedServiceAndroid::ActorKeyedServiceAndroid(ActorKeyedService* service)
