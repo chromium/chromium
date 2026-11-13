@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/hats/survey_config_android.h"
 #include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/window_android.h"
 

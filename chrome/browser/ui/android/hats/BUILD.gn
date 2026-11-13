@@ -106,7 +106,6 @@ source_set("hats") {
   sources = [
     "hats_service_android.h",
     "survey_client_android.h",
-    "survey_config_android.h",
     "survey_ui_delegate_android.h",
   ]
 
