@@ -18,6 +18,7 @@
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_util.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -113,6 +114,15 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       "DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad",
       "script_url", script_url);
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+
+  // `DocumentService` remains bound when the document enters the back/forward
+  // cache, so the ancestor document may have become inactive after this
+  // factory was created. Disallow starting a new worker while inactive.
+  if (render_frame_host().IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCreateDedicatedWorker)) {
+    return;
+  }
+
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   // This function is known to be heap allocation heavy and performance

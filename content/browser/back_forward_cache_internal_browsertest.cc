@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <tuple>
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -18,11 +22,16 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/dedicated_worker_creator.h"
+#include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -44,10 +53,17 @@
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/echo.test-mojom.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/expectation_handler.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -2123,6 +2139,164 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   web_contents()->SetDelegate(old_delegate);
+}
+
+namespace {
+
+// Records the token of a dedicated worker created by `expected_creator` when
+// enumerating existing workers via `DedicatedWorkerService`.
+class DedicatedWorkerTokenFinder : public DedicatedWorkerService::Observer {
+ public:
+  explicit DedicatedWorkerTokenFinder(DedicatedWorkerCreator expected_creator)
+      : expected_creator_(expected_creator) {}
+  DedicatedWorkerTokenFinder(const DedicatedWorkerTokenFinder&) = delete;
+  DedicatedWorkerTokenFinder& operator=(const DedicatedWorkerTokenFinder&) =
+      delete;
+  ~DedicatedWorkerTokenFinder() override = default;
+
+  // DedicatedWorkerService::Observer:
+  void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
+                       ChildProcessId worker_process_id,
+                       const url::Origin& security_origin,
+                       DedicatedWorkerCreator creator) override {
+    if (creator == expected_creator_) {
+      token_ = worker_token;
+    }
+  }
+  void OnBeforeWorkerDestroyed(const blink::DedicatedWorkerToken& worker_token,
+                               DedicatedWorkerCreator creator) override {}
+  void OnFinalResponseURLDetermined(
+      const blink::DedicatedWorkerToken& worker_token,
+      const GURL& url) override {}
+
+  const std::optional<blink::DedicatedWorkerToken>& token() const {
+    return token_;
+  }
+
+ private:
+  const DedicatedWorkerCreator expected_creator_;
+  std::optional<blink::DedicatedWorkerToken> token_;
+};
+
+}  // namespace
+
+// Verifies that requesting a DedicatedWorkerHostFactory for a document in the
+// back/forward cache disallows activation and evicts the cached page.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DedicatedWorkerHostFactoryDisallowedInBackForwardCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Requesting a factory on the cached frame should evict it from the
+  // back/forward cache.
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+  rfh_a->CreateDedicatedWorkerHostFactory(factory.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                    {DisallowActivationReasonId::kCreateDedicatedWorker},
+                    FROM_HERE);
+}
+
+// Verifies that calling CreateWorkerHostAndStartScriptLoad on an existing
+// DedicatedWorkerHostFactory after its document enters the back/forward cache
+// disallows activation and evicts the cached page.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    CreateWorkerHostAndStartScriptLoadDisallowedInBackForwardCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // Bind the factory while the document is still active, before it enters the
+  // back/forward cache.
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+  rfh_a->CreateDedicatedWorkerHostFactory(factory.BindNewPipeAndPassReceiver());
+  factory.FlushForTesting();
+  ASSERT_TRUE(factory.is_connected());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
+      client_remote;
+  std::ignore = client_remote.InitWithNewPipeAndPassReceiver();
+
+  auto fetch_client_settings_object =
+      blink::mojom::FetchClientSettingsObject::New();
+  fetch_client_settings_object->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  fetch_client_settings_object->insecure_requests_policy =
+      blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade;
+  fetch_client_settings_object->outgoing_referrer = url_a;
+
+  GURL worker_url = embedded_test_server()->GetURL("a.com", "/worker.js");
+  factory->CreateWorkerHostAndStartScriptLoad(
+      blink::DedicatedWorkerToken(), worker_url,
+      network::mojom::CredentialsMode::kSameOrigin,
+      std::move(fetch_client_settings_object),
+      /*blob_url_token=*/mojo::NullRemote(), std::move(client_remote));
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                    {DisallowActivationReasonId::kCreateDedicatedWorker},
+                    FROM_HERE);
+}
+
+// Verifies that requesting a nested DedicatedWorkerHostFactory for a document
+// in the back/forward cache disallows activation and evicts the cached page.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    NestedDedicatedWorkerHostFactoryDisallowedInBackForwardCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_dedicated_worker.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  ASSERT_EQ(42, EvalJs(current_frame_host(), "window.receivedMessagePromise"));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Scope `worker_host` so no dangling pointer remains on the stack once
+  // evicting `rfh_a` destroys the worker.
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> nested_factory;
+  {
+    auto* storage_partition =
+        static_cast<StoragePartitionImpl*>(rfh_a->GetStoragePartition());
+    DedicatedWorkerServiceImpl* service =
+        storage_partition->GetDedicatedWorkerService();
+
+    DedicatedWorkerTokenFinder finder(rfh_a->GetGlobalId());
+    service->EnumerateDedicatedWorkers(&finder);
+    ASSERT_TRUE(finder.token().has_value());
+
+    DedicatedWorkerHost* worker_host =
+        service->GetDedicatedWorkerHostFromToken(*finder.token());
+    ASSERT_TRUE(worker_host);
+    worker_host->CreateNestedDedicatedWorker(
+        nested_factory.BindNewPipeAndPassReceiver());
+  }
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                    {DisallowActivationReasonId::kCreateDedicatedWorker},
+                    FROM_HERE);
 }
 
 // Test scenarios where the "BackForwardCache" content flag is enabled but

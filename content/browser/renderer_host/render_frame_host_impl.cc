@@ -15544,6 +15544,14 @@ void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
     return;
   }
 
+  // Existing dedicated workers are paused when entering the back/forward
+  // cache. Disallow creating new workers while inactive so an unpaused worker
+  // cannot be initialized for a cached or pending-deletion document.
+  if (IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCreateDedicatedWorker)) {
+    return;
+  }
+
   // Allocate the worker in the same process as the creator.
   ChildProcessId worker_process_id = GetProcess()->GetID();
 

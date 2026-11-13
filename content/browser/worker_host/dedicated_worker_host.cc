@@ -45,6 +45,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -915,6 +916,14 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
   if (!ancestor_render_frame_host) {
     // The ancestor frame may have already been closed. In that case, the worker
     // will soon be terminated too, so abort the connection.
+    return;
+  }
+
+  // Disallow creating a nested worker if the ancestor document has become
+  // inactive (e.g. entered the back/forward cache), as a newly created worker
+  // would not be paused.
+  if (ancestor_render_frame_host->IsInactiveAndDisallowActivation(
+          DisallowActivationReasonId::kCreateDedicatedWorker)) {
     return;
   }
 
