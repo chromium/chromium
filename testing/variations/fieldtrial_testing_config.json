@@ -11488,6 +11488,21 @@
             ]
         }
     ],
+    "IOSLensOnIPad": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableLensOnIPad"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSLensTripleCameraWith90Zoom": [
         {
             "platforms": [
