@@ -6,7 +6,7 @@ severity: should_fix
 citations:
   - path: ios/best_practices.md
     heading: UI and Assets Best Practices
-    quote: 'Localize every user-visible string: Load user-visible text (labels, buttons, alerts, and accessibility labels) from string resources with `l10n_util::GetNSString(IDS_...)` or `l10n_util::GetNSStringF(...)` from [`//ui/base/l10n/l10n_util_mac.h`](/ui/base/l10n/l10n_util_mac.h); never hardcode user-visible `NSString` literals.'
+    quote: '**Localize every user-visible string:** Load user-visible text (labels, buttons, alerts, and accessibility labels) from string resources with `l10n_util::GetNSString(IDS_...)` or `l10n_util::GetNSStringF(...)` from [`//ui/base/l10n/l10n_util_mac.h`](/ui/base/l10n/l10n_util_mac.h); never hardcode user-visible `NSString` literals.'
 ---
 
 **Rule.** Set user-visible text (`text`, `title`, `placeholder`,

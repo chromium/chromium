@@ -1,10 +1,9 @@
 # iOS Code Review Knowledge Base
 
-> **Temporary location.** This copy of the knowledge base lives under
-> `//ios/chrome/browser/intelligence/` for end-to-end testing of the review
-> integration. Its canonical home is `//ios/agents/knowledge_base/`
-> (crbug.com/576358854); once that has landed, this directory and the `mixins:`
-> lines that point here are removed.
+> **Frozen — do not land new rules here.** Land new rules in
+> [`//ios/agents/knowledge_base/`](/ios/agents/knowledge_base/README.md) instead
+> (crbug.com/576358854). Once migration completes, this directory and the
+> `mixins:` lines that point here will be removed.
 
 This directory holds the knowledge base (KB) of code review rules for `//ios`.
 Each rule is a short Markdown file that an automated reviewer evaluates against
@@ -37,12 +36,15 @@ rule's scope.
 
 ## Opting a directory in
 
-The KB is **import-only**: nothing under `//ios` is reviewed automatically. A
-directory that opts in to automated review lists this file as a mixin next to
-its `agentic_review` block:
+The KB is **import-only**: nothing under `//ios` is reviewed automatically.
+While rules are migrating to
+[`//ios/agents/knowledge_base/`](/ios/agents/knowledge_base/README.md), a
+directory that opts in to automated review lists both `COMMON_METADATA` mixins
+next to its `agentic_review` block:
 
 ```
 # //ios/chrome/browser/<feature>/DIR_METADATA
+mixins: "//ios/agents/knowledge_base/COMMON_METADATA"
 mixins: "//ios/chrome/browser/intelligence/kb/COMMON_METADATA"
 
 agentic_review {}
@@ -102,12 +104,5 @@ Conventions that every rule follows:
 
 ## Adding or changing a rule
 
-1. Check that the documentation supports the rule; if the guidance is missing
-   from the docs, land it there first.
-2. Add `<chrome|general>/<slug>.md` in the format above and reference it from a
-   `capability_groups` entry in `COMMON_METADATA` whose `path_expression`
-   matches only the files the rule can apply to (for example
-   `ios/(?:.*/)?[^/]*_egtest\.mm` for EarlGrey rules).
-3. Keep the rule consistent with its neighbours: grep `rules/` for the topic and
-   fold the new guidance into an existing rule when it only adds a sentence; two
-   rules that fire on the same line confuse authors.
+This directory is frozen. Do not land new rules here; land them in
+[`//ios/agents/knowledge_base/`](/ios/agents/knowledge_base/README.md) instead.

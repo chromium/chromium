@@ -9,7 +9,7 @@ citations:
     quote: Never pass model objects to the UI layer.
   - path: ios/best_practices.md
     heading: Architecture Pattern Best Practices
-    quote: 'View Controllers and Views (`ui/`): Manage layout and user interaction with zero model-layer imports.'
+    quote: '**View Controllers and Views (`ui/`):** Manage layout and user interaction with zero model-layer imports.'
 ---
 
 **Rule.** View controllers and views in `//ios/chrome/browser` must not receive

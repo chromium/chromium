@@ -1,5 +1,6 @@
 agentic_review {}
 
-# TODO(crbug.com/576358854): Import //ios/agents/knowledge_base/COMMON_METADATA instead
-# once the knowledge base has fully landed there.
+# TODO(crbug.com/576358854): Remove //ios/chrome/browser/intelligence/kb/COMMON_METADATA
+# once the knowledge base has fully landed in //ios/agents/knowledge_base/.
+mixins: "//ios/agents/knowledge_base/COMMON_METADATA"
 mixins: "//ios/chrome/browser/intelligence/kb/COMMON_METADATA"

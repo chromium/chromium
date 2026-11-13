@@ -6,10 +6,10 @@ severity: should_fix
 citations:
   - path: ios/best_practices.md
     heading: Testing Best Practices
-    quote: 'Unit tests (`*_unittest.mm`): Required for mediators and model classes (tab helpers, browser agents, services), and recommended for view controllers with non-trivial state or layout logic.'
+    quote: '**Unit tests (`*_unittest.mm`):** Required for mediators and model classes (tab helpers, browser agents, services), and recommended for view controllers with non-trivial state or layout logic.'
   - path: ios/best_practices.md
     heading: Testing Best Practices
-    quote: 'Start bug fixes with a regression test: When fixing a bug in a mediator or model class, first write a unit test that reproduces the bug and fails, then write the fix that makes it pass.'
+    quote: '**Start bug fixes with a regression test:** When fixing a bug in a mediator or model class, first write a unit test that reproduces the bug and fails, then write the fix that makes it pass.'
 ---
 
 **Rule.** When a CL introduces a new mediator, browser agent, tab helper, or

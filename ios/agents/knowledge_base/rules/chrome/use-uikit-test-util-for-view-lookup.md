@@ -6,7 +6,7 @@ severity: nit
 citations:
   - path: ios/best_practices.md
     heading: Testing Best Practices
-    quote: 'Use shared view lookup helpers in unit tests: To find views in a hierarchy, use the `chrome_test_util` helpers in [`//ios/chrome/test/app/uikit_test_util.h`](/ios/chrome/test/app/uikit_test_util.h) (`FindViewById()`, `FindViewByClass()`, `FindViewsByClass()`, `FindLabelWithText()`, `FindViewWithPredicate()`) instead of writing local recursive subview searches.'
+    quote: '**Use shared view lookup helpers in unit tests:** To find views in a hierarchy, use the `chrome_test_util` helpers in [`//ios/chrome/test/app/uikit_test_util.h`](/ios/chrome/test/app/uikit_test_util.h) (`FindViewById()`, `FindViewByClass()`, `FindViewsByClass()`, `FindLabelWithText()`, `FindViewWithPredicate()`) instead of writing local recursive subview searches.'
 ---
 
 **Rule.** In `//ios/chrome` unit tests that inspect a `UIView` hierarchy, find

@@ -6,7 +6,7 @@ severity: should_fix
 citations:
   - path: ios/best_practices.md
     heading: UI and Assets Best Practices
-    quote: "Expose state through accessibility traits: Make sure every interactive element has an `accessibilityLabel`; set it explicitly only where UIKit cannot derive it from visible text (icon-only buttons and custom controls). Express state with system traits (for example `UIAccessibilityTraitSelected`, `UIAccessibilityTraitNotEnabled`, or `UIAccessibilityTraitButton`) instead of encoding it in `accessibilityLabel` or `accessibilityValue` strings such as \"selected\", so VoiceOver announces it in the user's language and consistently with system controls."
+    quote: "**Expose state through accessibility traits:** Make sure every interactive element has an `accessibilityLabel`; set it explicitly only where UIKit cannot derive it from visible text (icon-only buttons and custom controls). Express state with system traits (for example `UIAccessibilityTraitSelected`, `UIAccessibilityTraitNotEnabled`, or `UIAccessibilityTraitButton`) instead of encoding it in `accessibilityLabel` or `accessibilityValue` strings such as \"selected\", so VoiceOver announces it in the user's language and consistently with system controls."
 ---
 
 **Rule.** Make sure every interactive element in `//ios` UI has an
