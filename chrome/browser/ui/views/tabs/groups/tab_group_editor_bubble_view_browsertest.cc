@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
+#include "chrome/browser/ui/views/tabs/groups/ephemeral_tab_group_promotion_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -93,16 +94,31 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
     browser()->GetTabStripModel()->OpenTabGroupEditor(group_.value());
   }
 
+  // Returns the widget for the bubble opened by OpenTabGroupEditor(): the
+  // editor bubble for regular groups, or the promotion bubble for ephemeral
+  // groups.
   static views::Widget* WaitForAndGetEditorBubbleWidget() {
-    auto bubble_view =
-        views::ElementTrackerViews::GetInstance()
-            ->GetAllMatchingViewsInAnyContext(
-                TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId);
-    if (bubble_view.empty()) {
+    auto find_open_widget = [](ui::ElementIdentifier id) -> views::Widget* {
+      for (views::View* view : views::ElementTrackerViews::GetInstance()
+                                   ->GetAllMatchingViewsInAnyContext(id)) {
+        if (views::Widget* widget = view->GetWidget();
+            widget && !widget->IsClosed()) {
+          return widget;
+        }
+      }
+      return nullptr;
+    };
+
+    views::Widget* widget =
+        find_open_widget(TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId);
+    if (!widget) {
+      widget = find_open_widget(EphemeralTabGroupPromotionBubbleView::
+                                    kEphemeralTabGroupPromotionBubbleViewId);
+    }
+    if (!widget) {
       return nullptr;
     }
 
-    views::Widget* const widget = bubble_view[0]->GetWidget();
     views::test::WidgetVisibleWaiter(widget).Wait();
     return widget;
   }
@@ -824,196 +840,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   EXPECT_TRUE(window_bounds.Contains(bubble_view->GetBubbleBounds()));
 
   widget->CloseNow();
-}
-
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       EphemeralGroup_ShowsOnlyNameColorAndButtons) {
-  tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->EnterFocusMode({0});
-  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
-
-  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
-  ASSERT_NE(nullptr, editor_bubble);
-
-  auto* bubble_delegate =
-      editor_bubble->widget_delegate()->AsBubbleDialogDelegate();
-  EXPECT_EQ(bubble_delegate->buttons(),
-            static_cast<int>(ui::mojom::DialogButton::kNone));
-
-  views::View* contents_view = bubble_delegate->GetContentsView();
-  ASSERT_EQ(contents_view->children().size(), 4u);
-
-  auto* title_label =
-      views::AsViewClass<views::Label>(contents_view->children()[0]);
-  ASSERT_NE(nullptr, title_label);
-  EXPECT_EQ(
-      title_label->GetText(),
-      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_TO_GROUP));
-
-  views::View* button_row = contents_view->children()[3];
-  ASSERT_EQ(button_row->children().size(), 2u);
-  auto* cancel_button =
-      views::AsViewClass<views::LabelButton>(button_row->children()[0]);
-  auto* create_button =
-      views::AsViewClass<views::LabelButton>(button_row->children()[1]);
-  ASSERT_NE(nullptr, cancel_button);
-  ASSERT_NE(nullptr, create_button);
-  EXPECT_EQ(cancel_button->GetText(), l10n_util::GetStringUTF16(IDS_CANCEL));
-  EXPECT_EQ(
-      create_button->GetText(),
-      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CREATE_GROUP));
-
-  EXPECT_EQ(
-      contents_view->GetViewByID(
-          TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
-      nullptr);
-  EXPECT_EQ(contents_view->GetViewByID(
-                TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_UNGROUP),
-            nullptr);
-  EXPECT_EQ(contents_view->GetViewByID(
-                TabGroupEditorBubbleView::TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP),
-            nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       EphemeralGroup_CancelDiscardsChanges) {
-  tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->EnterFocusMode({0});
-  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
-
-  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
-  ASSERT_NE(nullptr, editor_bubble);
-
-  auto* title_field = views::AsViewClass<views::Textfield>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kTabGroupEditorBubbleId,
-          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
-  ASSERT_NE(nullptr, title_field);
-
-  title_field->InsertOrReplaceText(u"Ephemeral Title");
-  // Changes should be deferred until Create is clicked.
-  EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
-            u"");
-
-  views::View* contents_view = editor_bubble->widget_delegate()
-                                   ->AsBubbleDialogDelegate()
-                                   ->GetContentsView();
-  ASSERT_EQ(contents_view->children().size(), 4u);
-  views::View* button_row = contents_view->children()[3];
-  ASSERT_EQ(button_row->children().size(), 2u);
-  views::Button* cancel_button =
-      views::Button::AsButton(button_row->children()[0]);
-  ASSERT_NE(nullptr, cancel_button);
-
-  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
-                                gfx::PointF(), base::TimeTicks(), 0, 0);
-  views::test::ButtonTestApi(cancel_button).NotifyClick(released_event);
-
-  EXPECT_TRUE(
-      browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
-  EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
-            u"");
-}
-
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       EphemeralGroup_CreatePromotesGroupAndAppliesChanges) {
-  tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->EnterFocusMode({0});
-  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
-
-  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
-  ASSERT_NE(nullptr, editor_bubble);
-
-  auto* title_field = views::AsViewClass<views::Textfield>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kTabGroupEditorBubbleId,
-          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
-  ASSERT_NE(nullptr, title_field);
-
-  title_field->InsertOrReplaceText(u"Promoted Title");
-
-  class PromotionTitleObserver : public TabStripModelObserver {
-   public:
-    explicit PromotionTitleObserver(TabGroupModel* model) : model_(model) {}
-    void OnTabGroupPromoted(const tab_groups::TabGroupId& group_id) override {
-      title_at_promotion =
-          model_->GetTabGroup(group_id)->visual_data()->title();
-    }
-    raw_ptr<TabGroupModel> model_;
-    std::optional<std::u16string> title_at_promotion;
-  } observer(group_model());
-  browser()->GetTabStripModel()->AddObserver(&observer);
-
-  views::View* contents_view = editor_bubble->widget_delegate()
-                                   ->AsBubbleDialogDelegate()
-                                   ->GetContentsView();
-  ASSERT_EQ(contents_view->children().size(), 4u);
-  views::View* button_row = contents_view->children()[3];
-  ASSERT_EQ(button_row->children().size(), 2u);
-  views::Button* create_button =
-      views::Button::AsButton(button_row->children()[1]);
-  ASSERT_NE(nullptr, create_button);
-
-  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
-                                gfx::PointF(), base::TimeTicks(), 0, 0);
-  views::test::ButtonTestApi(create_button).NotifyClick(released_event);
-
-  browser()->GetTabStripModel()->RemoveObserver(&observer);
-
-  EXPECT_FALSE(
-      browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
-  EXPECT_EQ(observer.title_at_promotion, u"Promoted Title");
-  EXPECT_EQ(group_model()->GetTabGroup(ephemeral_group)->visual_data()->title(),
-            u"Promoted Title");
-}
-
-// The editor bubble metrics must be recorded exactly once when an ephemeral
-// group is promoted.
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       EphemeralGroup_CreateRecordsBubbleMetricsOnce) {
-  base::HistogramTester histogram_tester;
-  base::UserActionTester user_action_tester;
-
-  tab_groups::TabGroupId ephemeral_group =
-      browser()->GetTabStripModel()->EnterFocusMode({0});
-  browser()->GetTabStripModel()->OpenTabGroupEditor(ephemeral_group);
-
-  views::Widget* editor_bubble = WaitForAndGetEditorBubbleWidget();
-  ASSERT_NE(nullptr, editor_bubble);
-
-  auto* title_field = views::AsViewClass<views::Textfield>(
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kTabGroupEditorBubbleId,
-          views::ElementTrackerViews::GetContextForWidget(editor_bubble)));
-  ASSERT_NE(nullptr, title_field);
-  title_field->InsertOrReplaceText(u"Promoted Title");
-
-  views::View* contents_view = editor_bubble->widget_delegate()
-                                   ->AsBubbleDialogDelegate()
-                                   ->GetContentsView();
-  ASSERT_EQ(contents_view->children().size(), 4u);
-  views::View* button_row = contents_view->children()[3];
-  ASSERT_EQ(button_row->children().size(), 2u);
-  views::Button* create_button =
-      views::Button::AsButton(button_row->children()[1]);
-  ASSERT_NE(nullptr, create_button);
-
-  base::WeakPtr<views::Widget> weak_widget = editor_bubble->GetWeakPtr();
-  ui::MouseEvent released_event(ui::EventType::kMouseReleased, gfx::PointF(),
-                                gfx::PointF(), base::TimeTicks(), 0, 0);
-  views::test::ButtonTestApi(create_button).NotifyClick(released_event);
-  EXPECT_TRUE(base::test::RunUntil([&]() { return !weak_widget; }));
-
-  EXPECT_FALSE(
-      browser()->GetTabStripModel()->IsEphemeralTabGroup(ephemeral_group));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "TabGroups_TabGroupBubble_NameChanged"));
-  histogram_tester.ExpectBucketCount(
-      "TabGroups.ContextMenu.EditorBubble.Action",
-      tab_groups::saved_tab_groups::metrics::TabGroupEditorBubbleAction::
-          kNameChanged,
-      1);
-  histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,

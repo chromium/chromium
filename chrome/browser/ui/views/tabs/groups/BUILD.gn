@@ -11,6 +11,7 @@ source_set("groups") {
   public = [
     "avatar_container_view.h",
     "color_picker_view.h",
+    "ephemeral_tab_group_promotion_bubble_view.h",
     "manage_sharing_row.h",
     "recent_activity_bubble_dialog_view.h",
     "tab_group_accessibility.h",
@@ -46,6 +47,7 @@ source_set("impl") {
   sources = [
     "avatar_container_view.cc",
     "color_picker_view.cc",
+    "ephemeral_tab_group_promotion_bubble_view.cc",
     "manage_sharing_row.cc",
     "recent_activity_bubble_dialog_view.cc",
     "tab_group_accessibility.cc",
@@ -126,6 +128,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "ephemeral_tab_group_promotion_bubble_view_browsertest.cc",
     "recent_activity_bubble_dialog_view_browsertest.cc",
     "tab_group_editor_bubble_view_browsertest.cc",
   ]

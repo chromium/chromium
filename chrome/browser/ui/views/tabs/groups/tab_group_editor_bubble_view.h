@@ -100,7 +100,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   void UpdateGroup();
-  void UpdateGroupVisuals();
   std::u16string GetTextForCloseButton() const;
 
   // Returns whether the user has the appropriate profile and the
@@ -113,14 +112,10 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   bool IsGroupSaved() const;
   bool IsGroupShared() const;
-  bool IsEphemeralTabGroup() const;
   bool ShouldShowSavedFooter() const;
   // Returns true if the user created the group. Returns false in cases where
   // the user was invited to join the group.
   bool OwnsGroup() const;
-
-  void OnEphemeralGroupPromoted();
-  void CancelEphemeralGroup();
 
   // When certain settings change, the menu items need to be updated, this
   // method destroys the children of the view, and then recreates them in the
@@ -130,8 +125,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   std::unique_ptr<views::Separator> BuildSeparator();
   std::unique_ptr<ColorPickerView> BuildColorPicker();
-  std::unique_ptr<views::Label> BuildEphemeralGroupTitle();
-  std::unique_ptr<views::View> BuildEphemeralGroupButtons();
   std::unique_ptr<views::LabelButton> BuildNewTabInGroupButton();
   std::unique_ptr<views::LabelButton> BuildHomeButton();
   std::unique_ptr<views::LabelButton> BuildAskGeminiButton();
