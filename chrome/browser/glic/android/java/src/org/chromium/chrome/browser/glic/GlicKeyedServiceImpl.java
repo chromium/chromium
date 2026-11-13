@@ -206,9 +206,8 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         return false;
     }
 
-    @Override
     @CalledByNative
-    public boolean isBottomBarEnabled() {
+    boolean isBottomBarEnabled() {
         return BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
     }
 

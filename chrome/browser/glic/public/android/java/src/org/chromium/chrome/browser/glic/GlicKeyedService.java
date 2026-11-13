@@ -273,13 +273,6 @@ public interface GlicKeyedService {
     void setExperimentalTriggeringEnabled(boolean enabled);
 
     /**
-     * Checks if the bottom bar is enabled.
-     *
-     * @return true if the bottom bar is enabled.
-     */
-    boolean isBottomBarEnabled();
-
-    /**
      * Shares (pins) the given tabs with a Glic conversation, invoked from the tab strip context
      * menu.
      *
