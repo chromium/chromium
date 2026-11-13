@@ -87,6 +87,13 @@
       'use-ios-simulator-cache',
     ],
   },
+  'WIN10_NVIDIA_GTX_1660': {
+    'identifier': 'NVIDIA GeForce GTX 1660',
+    'mixins': [
+      'nvidia_geforce_gtx_1660',
+      'win10',
+    ],
+  },
   'WIN_HIGH_PERF_AMD': {
     'identifier': 'AMD RX 5500 XT or RX 9070 XT',
     'mixins': [

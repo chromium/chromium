@@ -1062,7 +1062,9 @@ targets.legacy_matrix_compound_suite(
             variants = [
                 "WIN_HIGH_PERF_AMD",
                 "INTEL_UHD_630_OR_770",
-                "WIN_HIGH_PERF_NVIDIA",
+                # TODO(crbug.com/585311789): Switch back to WIN_HIGH_PERF_NVIDIA
+                # once WebNN LayerNorm+ReLU fusion passes on Win11 RTX 4070/5070.
+                "WIN10_NVIDIA_GTX_1660",
             ],
         ),
     },

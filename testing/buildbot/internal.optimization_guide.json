@@ -4790,19 +4790,18 @@
         },
         "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "module_scheme": "gtest",
-        "name": "optimization_guide_gpu_unittests NVIDIA GTX 1660 or RTX 4070 or RTX 5070",
+        "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "10de:2184|10de:2783|10de:2f04",
-            "os": "Windows",
+            "gpu": "10de:2184",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "NVIDIA GTX 1660 or RTX 4070 or RTX 5070"
+        "variant_id": "NVIDIA GeForce GTX 1660"
       },
       {
         "args": [
@@ -4864,19 +4863,18 @@
         },
         "module_name": "//services:services_unittests",
         "module_scheme": "gtest",
-        "name": "optimization_guide_services_unittests NVIDIA GTX 1660 or RTX 4070 or RTX 5070",
+        "name": "optimization_guide_services_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "10de:2184|10de:2783|10de:2f04",
-            "os": "Windows",
+            "gpu": "10de:2184",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
-        "variant_id": "NVIDIA GTX 1660 or RTX 4070 or RTX 5070"
+        "variant_id": "NVIDIA GeForce GTX 1660"
       },
       {
         "merge": {
@@ -5141,19 +5139,18 @@
         },
         "module_name": "//components/optimization_guide/internal:optimization_guide_gpu_unittests",
         "module_scheme": "gtest",
-        "name": "optimization_guide_gpu_unittests NVIDIA GTX 1660 or RTX 4070 or RTX 5070",
+        "name": "optimization_guide_gpu_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "10de:2184|10de:2783|10de:2f04",
-            "os": "Windows",
+            "gpu": "10de:2184",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "optimization_guide_gpu_unittests",
         "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_gpu_unittests/",
-        "variant_id": "NVIDIA GTX 1660 or RTX 4070 or RTX 5070"
+        "variant_id": "NVIDIA GeForce GTX 1660"
       },
       {
         "args": [
@@ -5215,19 +5212,18 @@
         },
         "module_name": "//services:services_unittests",
         "module_scheme": "gtest",
-        "name": "optimization_guide_services_unittests NVIDIA GTX 1660 or RTX 4070 or RTX 5070",
+        "name": "optimization_guide_services_unittests NVIDIA GeForce GTX 1660",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
-            "gpu": "10de:2184|10de:2783|10de:2f04",
-            "os": "Windows",
+            "gpu": "10de:2184",
+            "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
-        "variant_id": "NVIDIA GTX 1660 or RTX 4070 or RTX 5070"
+        "variant_id": "NVIDIA GeForce GTX 1660"
       },
       {
         "merge": {

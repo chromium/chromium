@@ -387,6 +387,7 @@ chromium_luci.configure_targets(
             "SIM_IPHONE_14_18_5": True,
             "WIN_HIGH_PERF_AMD": True,
             "WIN_HIGH_PERF_NVIDIA": True,
+            "WIN10_NVIDIA_GTX_1660": True,
         },
     ),
     autoshard_exceptions_file = "//autoshard_exceptions.json",

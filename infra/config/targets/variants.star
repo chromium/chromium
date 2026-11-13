@@ -748,3 +748,12 @@ targets.variant(
         "win_high_perf_nvidia_gpu",
     ],
 )
+
+targets.variant(
+    name = "WIN10_NVIDIA_GTX_1660",
+    identifier = "NVIDIA GeForce GTX 1660",
+    mixins = [
+        "nvidia_geforce_gtx_1660",
+        "win10",
+    ],
+)
