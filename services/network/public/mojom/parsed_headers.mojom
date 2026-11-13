@@ -133,27 +133,6 @@ struct ParsedHeaders {
   // https://mnot.github.io/I-D/draft-nottingham-http-availability-hints.html#name-cookie
   array<string>? cookie_indices;
 
-  // The parsed Avail-Language response header.
-  //
-  // The Avail-Language response header field is the availability hint for
-  // content negotiation using the Accept-Language request header field defined
-  // in https://www.rfc-editor.org/rfc/rfc9110#section-12.5.4. The default
-  // language, if provided, will be put in the first language.
-  //
-  // If Structured Header parsing fails or a member's value does have the
-  // structure outlined as defined, the client MUST treat the representation as
-  // having no Avail-Language header field.
-  //
-  // It will only be populated when the kReduceAcceptLanguage feature is
-  // enabled.
-  //
-  // For more information, see:
-  // https://mnot.github.io/I-D/draft-nottingham-http-availability-hints.html#section-5.3.
-  array<string>? avail_language;
-
-  // The parsed value of the Content-Language header.
-  array<string>? content_language;
-
   // The parsed value of the No-Vary-Search header including parse error
   // indicator. Null if not present or if No-Vary-Search header represents
   // the default URL search variance.

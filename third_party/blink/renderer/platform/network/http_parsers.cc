@@ -417,12 +417,6 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
       in->cookie_indices.has_value()
           ? std::make_optional(ConvertToBlink(in->cookie_indices.value()))
           : std::nullopt,
-      in->avail_language.has_value()
-          ? std::make_optional(ConvertToBlink(in->avail_language.value()))
-          : std::nullopt,
-      in->content_language.has_value()
-          ? std::make_optional(ConvertToBlink(in->content_language.value()))
-          : std::nullopt,
       ConvertToBlink(in->no_vary_search_with_parse_error),
       in->allow_cross_origin_event_reporting,
       /*declarative_performance_observer_policy=*/nullptr,

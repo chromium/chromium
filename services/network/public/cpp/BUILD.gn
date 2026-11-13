@@ -57,8 +57,6 @@ component("cpp") {
   output_name = "network_cpp"
 
   sources = [
-    "avail_language_header_parser.cc",
-    "avail_language_header_parser.h",
     "basic_data_buffer_factory.cc",
     "basic_data_buffer_factory.h",
     "connection_allowlist_metrics.h",
@@ -768,7 +766,6 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "avail_language_header_parser_unittest.cc",
     "basic_data_buffer_factory_unittest.cc",
     "client_hints_unittest.cc",
     "connection_allowlist_unittest.cc",
@@ -955,13 +952,5 @@ fuzzer_test("client_hints_fuzzer") {
     ":cpp",
     "//base",
     "//base:i18n",
-  ]
-}
-
-fuzzer_test("avail_language_header_fuzzer") {
-  sources = [ "avail_language_header_fuzzer.cc" ]
-  deps = [
-    ":cpp",
-    "//services/network/public/mojom:url_loader_base",
   ]
 }

@@ -16,11 +16,9 @@
 #include "net/http/http_response_headers.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/url_request/clear_site_data.h"
-#include "services/network/public/cpp/avail_language_header_parser.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/connection_allowlist_parser.h"
-#include "services/network/public/cpp/content_language_parser.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy_parser.h"
 #include "services/network/public/cpp/cross_origin_opener_policy_parser.h"
@@ -146,20 +144,6 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
 
   if (base::FeatureList::IsEnabled(network::features::kCookieIndicesHeader)) {
     parsed_headers->cookie_indices = net::ParseCookieIndices(*headers);
-  }
-
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
-      base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageHTTP)) {
-    if (std::optional<std::string> avail_language =
-            headers->GetNormalizedHeader("Avail-Language")) {
-      parsed_headers->avail_language = ParseAvailLanguage(*avail_language);
-    }
-    if (std::optional<std::string> content_language =
-            headers->GetNormalizedHeader("Content-Language")) {
-      parsed_headers->content_language =
-          ParseContentLanguages(*content_language);
-    }
   }
 
   // The code here only parses the No-Vary-Search header if it is present.
