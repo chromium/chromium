@@ -47,7 +47,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -74,7 +73,6 @@ public class ShareSheetCoordinator
     private final @Nullable PrintingDelegate mPrintingDelegate;
     private final boolean mIsIncognito;
     private final BottomSheetObserver mBottomSheetObserver;
-    private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
     private final Profile mProfile;
 
@@ -125,7 +123,6 @@ public class ShareSheetCoordinator
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Supplier<@Nullable Tab> tabProvider,
             @Nullable PrintingDelegate printingDelegate,
-            LargeIconBridge iconBridge,
             boolean isIncognito,
             Tracker featureEngagementTracker,
             Profile profile,
@@ -163,7 +160,6 @@ public class ShareSheetCoordinator
                     }
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
-        mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
         mProfile = profile;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
@@ -216,7 +212,10 @@ public class ShareSheetCoordinator
             mShareParams = mShareSheetLinkToggleCoordinator.getDefaultShareParams();
         }
         @Nullable Activity activity = params.getWindow().getActivity().get();
-        if (activity == null) return;
+        if (activity == null) {
+            destroy();
+            return;
+        }
         finishInitializationWithActivity(activity, params, shareStartTime);
     }
 
@@ -231,7 +230,7 @@ public class ShareSheetCoordinator
             }
         }
 
-        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, mIconBridge, this, params);
+        mBottomSheet = new ShareSheetBottomSheetContent(mActivity, this, params, mProfile);
 
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = mBottomSheet.getLinkGenerationState();

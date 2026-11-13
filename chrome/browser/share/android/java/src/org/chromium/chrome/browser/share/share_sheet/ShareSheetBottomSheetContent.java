@@ -25,6 +25,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
@@ -87,10 +89,19 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
      * Creates a ShareSheetBottomSheetContent (custom share sheet) opened from the given activity.
      *
      * @param activity The containing {@link Activity}.
-     * @param iconBridge The {@link LargeIconBridge} to generate the icon in the preview.
      * @param shareSheetCoordinator The Coordinator that instantiated this BottomSheetContent.
      * @param params The {@link ShareParams} for the current share.
+     * @param profile The {@link Profile} used to fetch favicons for the preview.
      */
+    ShareSheetBottomSheetContent(
+            Activity activity,
+            ShareSheetCoordinator shareSheetCoordinator,
+            ShareParams params,
+            Profile profile) {
+        this(activity, new LargeIconBridge(profile), shareSheetCoordinator, params);
+    }
+
+    @VisibleForTesting
     ShareSheetBottomSheetContent(
             Activity activity,
             LargeIconBridge iconBridge,
@@ -607,6 +618,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         if (mToast != null) {
             mToast.cancel();
         }
+        mIconBridge.destroy();
         mShareSheetCoordinator.destroy();
     }
 

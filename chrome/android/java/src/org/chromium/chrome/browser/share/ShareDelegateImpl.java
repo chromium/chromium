@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -400,7 +399,6 @@ public class ShareDelegateImpl implements ShareDelegate {
                                     lifecycleDispatcher,
                                     tabProvider,
                                     printingDelegate,
-                                    new LargeIconBridge(profile),
                                     isIncognito,
                                     TrackerFactory.getTrackerForProfile(profile),
                                     profile,

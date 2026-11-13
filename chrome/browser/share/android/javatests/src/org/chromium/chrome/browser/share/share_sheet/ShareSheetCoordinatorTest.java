@@ -128,7 +128,6 @@ public final class ShareSheetCoordinatorTest {
                         mLifecycleDispatcher,
                         mTabProvider,
                         null,
-                        null,
                         false,
                         null,
                         mProfile,
