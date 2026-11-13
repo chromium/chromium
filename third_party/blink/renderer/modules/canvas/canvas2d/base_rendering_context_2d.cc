@@ -1639,11 +1639,9 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
       return image_data;
     }
 
-    SkPixmap image_data_pixmap = image_data->GetSkPixmap();
     const bool read_pixels_successful =
         snapshot->PaintImageForCurrentFrame().readPixels(
-            image_data_pixmap.info(), image_data_pixmap.writable_addr(),
-            image_data_pixmap.rowBytes(), sx, sy);
+            image_data->GetSkPixmap(), sx, sy);
     if (!read_pixels_successful) {
       SkIRect bounds =
           snapshot->PaintImageForCurrentFrame().GetSkImageInfo().bounds();

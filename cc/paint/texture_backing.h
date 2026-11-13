@@ -9,6 +9,7 @@
 #include "cc/paint/paint_export.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace gpu {
 struct Mailbox;
@@ -46,12 +47,9 @@ class CC_PAINT_EXPORT TextureBacking : public SkRefCnt {
   // pixel data is required in software.
   virtual sk_sp<SkImage> GetSkImageViaReadback() = 0;
 
-  // Read texture's pixels into caller owned |dstPixels|.
-  virtual bool readPixels(const SkImageInfo& dst_info,
-                          void* dst_pixels,
-                          size_t dst_row_bytes,
-                          int src_x,
-                          int src_y) = 0;
+  // Read texture's pixels, starting at (`src_x`, `src_y`), into the caller
+  // owned memory referenced by `dst_pixmap`.
+  virtual bool readPixels(const SkPixmap& dst_pixmap, int src_x, int src_y) = 0;
 };
 
 }  // namespace cc

@@ -42,11 +42,7 @@ class MailboxTextureBacking : public TextureBacking {
   void Bind(scoped_refptr<cc::TextureBackingContext>) override;
   void Unbind() override;
   sk_sp<SkImage> GetSkImageViaReadback() override;
-  bool readPixels(const SkImageInfo& dst_info,
-                  void* dst_pixels,
-                  size_t dst_row_bytes,
-                  int src_x,
-                  int src_y) override;
+  bool readPixels(const SkPixmap& dst_pixmap, int src_x, int src_y) override;
 
  private:
   scoped_refptr<gpu::ClientSharedImage> shared_image_;

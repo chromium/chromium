@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/external_image_utils.h"
 
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -633,10 +634,11 @@ bool CopyStaticImageBitmapToWGPUTexture(
 
     SkImageInfo copy_rect_info = source_image_info.makeWH(
         image_source_copy_rect.width(), image_source_copy_rect.height());
-    bool success = paint_image.readPixels(
-        copy_rect_info, dest_pixels.data(), wgpu_bytes_per_row,
-        image_source_copy_rect.x(), image_source_copy_rect.y());
-    if (!success) {
+    const auto dest_pixmap =
+        skia::MakeSkPixmap(copy_rect_info, dest_pixels, wgpu_bytes_per_row);
+    if (!dest_pixmap ||
+        !paint_image.readPixels(*dest_pixmap, image_source_copy_rect.x(),
+                                image_source_copy_rect.y())) {
       return false;
     }
 

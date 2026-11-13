@@ -357,11 +357,7 @@ class FakeTextureBacking : public cc::TextureBacking {
   void Bind(scoped_refptr<cc::TextureBackingContext>) override {}
   void Unbind() override {}
   sk_sp<SkImage> GetSkImageViaReadback() override { return image_; }
-  bool readPixels(const SkImageInfo& dstInfo,
-                  void* dstPixels,
-                  size_t dstRowBytes,
-                  int srcX,
-                  int srcY) override {
+  bool readPixels(const SkPixmap& dst_pixmap, int src_x, int src_y) override {
     return false;
   }
 

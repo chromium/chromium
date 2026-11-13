@@ -896,29 +896,24 @@ class VideoTextureBacking : public cc::TextureBacking {
 
   sk_sp<SkImage> GetSkImageViaReadback() override {
     CHECK(sequence_checker_.CalledOnValidSequence());
-    sk_sp<SkData> image_pixels =
-        SkData::MakeUninitialized(sk_image_info_.computeMinByteSize());
-    if (!readPixels(sk_image_info_, image_pixels->writable_data(),
-                    sk_image_info_.minRowBytes(), 0, 0)) {
+    SkBitmap bitmap;
+    if (!bitmap.tryAllocPixels(sk_image_info_) ||
+        !readPixels(bitmap.pixmap(), 0, 0)) {
       DLOG(ERROR) << "VideoTextureBacking::GetSkImageViaReadback failed.";
       return nullptr;
     }
-    return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
-                                    sk_image_info_.minRowBytes());
+    bitmap.setImmutable(); // To ensure the SkImage create a copy of the pixels
+    return SkImages::RasterFromBitmap(bitmap);
   }
 
-  bool readPixels(const SkImageInfo& dst_info,
-                  void* dst_pixels,
-                  size_t dst_row_bytes,
-                  int src_x,
-                  int src_y) override {
+  bool readPixels(const SkPixmap& dst_pixmap, int src_x, int src_y) override {
     CHECK(sequence_checker_.CalledOnValidSequence());
     CHECK(raster_context_provider_);
     gpu::raster::RasterInterface* ri =
         raster_context_provider_->RasterInterface();
-    return ri->ReadbackImagePixels(
-        shared_image_->mailbox(), shared_image_->size(), src_x, src_y,
-        /*plane_index=*/0, SkPixmap(dst_info, dst_pixels, dst_row_bytes));
+    return ri->ReadbackImagePixels(shared_image_->mailbox(),
+                                   shared_image_->size(), src_x, src_y,
+                                   /*plane_index=*/0, dst_pixmap);
   }
 
   const gpu::SyncToken& sync_token() {

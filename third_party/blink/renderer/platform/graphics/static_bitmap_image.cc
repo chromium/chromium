@@ -6,6 +6,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
@@ -59,9 +60,10 @@ Vector<uint8_t> StaticBitmapImage::CopyImageData(const SkImageInfo& info,
     return {};
   }
   Vector<uint8_t> dst_buffer(byte_length);
+  const SkPixmap dst_pixmap =
+      skia::MakeSkPixmap(info, dst_buffer, info.minRowBytes()).value();
 
-  bool read_pixels_successful =
-      paint_image.readPixels(info, dst_buffer.data(), info.minRowBytes(), 0, 0);
+  bool read_pixels_successful = paint_image.readPixels(dst_pixmap, 0, 0);
   DCHECK(read_pixels_successful);
   if (!read_pixels_successful)
     return {};
@@ -71,8 +73,7 @@ Vector<uint8_t> StaticBitmapImage::CopyImageData(const SkImageInfo& info,
     paint_image = Image::ResizeAndOrientImage(paint_image, Orientation(),
                                               gfx::Vector2dF(1, 1), 1,
                                               kInterpolationNone);
-    read_pixels_successful = paint_image.readPixels(info, dst_buffer.data(),
-                                                    info.minRowBytes(), 0, 0);
+    read_pixels_successful = paint_image.readPixels(dst_pixmap, 0, 0);
     DCHECK(read_pixels_successful);
     if (!read_pixels_successful)
       return {};

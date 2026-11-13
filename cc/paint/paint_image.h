@@ -292,12 +292,8 @@ class CC_PAINT_EXPORT PaintImage {
   // the SkImage.
   sk_sp<SkImage> GetSwSkImage() const;
 
-  // Reads this image's pixels into caller-owned |dst_pixels|
-  bool readPixels(const SkImageInfo& dst_info,
-                  void* dst_pixels,
-                  size_t dst_row_bytes,
-                  int src_x,
-                  int src_y) const;
+  // Reads this image's pixels into caller-owned `dst_pixmap`.
+  bool readPixels(const SkPixmap& dst_pixmap, int src_x, int src_y) const;
 
   // Returned mailbox must not outlive this PaintImage.
   gpu::Mailbox GetMailbox() const;

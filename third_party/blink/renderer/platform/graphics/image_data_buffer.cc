@@ -85,8 +85,7 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
 
     sk_sp<SkData> data = SkData::MakeUninitialized(size);
     pixmap_ = {info, data->writable_data(), info.minRowBytes()};
-    if (!paint_image.readPixels(info, pixmap_.writable_addr(), row_bytes, 0,
-                                0)) {
+    if (!paint_image.readPixels(pixmap_, 0, 0)) {
       pixmap_.reset();
       return;
     }

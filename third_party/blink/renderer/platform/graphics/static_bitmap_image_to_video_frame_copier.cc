@@ -157,12 +157,11 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsSync(
   SkImageInfo image_info = SkImageInfo::MakeN32(
       image_size.width(), image_size.height(),
       is_opaque ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
-  if (!paint_image.readPixels(
-          image_info,
-          temp_argb_frame->GetWritableVisibleData(
-              media::VideoFrame::Plane::kARGB),
-          temp_argb_frame->stride(media::VideoFrame::Plane::kARGB), 0 /*srcX*/,
-          0 /*srcY*/)) {
+  const SkPixmap pixmap(
+      image_info,
+      temp_argb_frame->GetWritableVisibleData(media::VideoFrame::Plane::kARGB),
+      temp_argb_frame->stride(media::VideoFrame::Plane::kARGB));
+  if (!paint_image.readPixels(pixmap, 0 /*srcX*/, 0 /*srcY*/)) {
     DLOG(ERROR) << "Couldn't read pixels from PaintImage";
     return;
   }

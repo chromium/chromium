@@ -191,9 +191,8 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyUsingPixmap(
       NOTREACHED();
     }
     if (!source_rect_valid.isEmpty()) {
-      if (!source_paint_image.readPixels(
-              pm_valid.info(), pm_valid.writable_addr(), pm_valid.rowBytes(),
-              source_rect_valid.x(), source_rect_valid.y())) {
+      if (!source_paint_image.readPixels(pm_valid, source_rect_valid.x(),
+                                         source_rect_valid.y())) {
         return nullptr;
       }
     }

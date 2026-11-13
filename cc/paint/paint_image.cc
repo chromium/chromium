@@ -150,28 +150,24 @@ sk_sp<SkImage> PaintImage::GetAcceleratedSkImage() const {
   return cached_sk_image_;
 }
 
-bool PaintImage::readPixels(const SkImageInfo& dst_info,
-                            void* dst_pixels,
-                            size_t dst_row_bytes,
+bool PaintImage::readPixels(const SkPixmap& dst_pixmap,
                             int src_x,
                             int src_y) const {
   if (texture_backing_) {
-    auto dst_info_adjusted = dst_info;
+    SkPixmap dst_pixmap_adjusted = dst_pixmap;
     if (reinterpret_as_srgb_) {
-      // To reinterpret the read pixels as sRGB, set `dst_info_adjusted`'s
+      // To reinterpret the read pixels as sRGB, set `dst_pixmap_adjusted`'s
       // color space to match the texture's space. This only works when the
       // caller expects sRGB pixels.
-      CHECK(!dst_info.colorSpace() ||
-            SkColorSpace::Equals(dst_info.colorSpace(),
+      CHECK(!dst_pixmap.colorSpace() ||
+            SkColorSpace::Equals(dst_pixmap.colorSpace(),
                                  SkColorSpace::MakeSRGB().get()));
-      dst_info_adjusted = dst_info.makeColorSpace(
+      dst_pixmap_adjusted.setColorSpace(
           texture_backing_->GetSkImageInfo().refColorSpace());
     }
-    return texture_backing_->readPixels(dst_info_adjusted, dst_pixels,
-                                        dst_row_bytes, src_x, src_y);
+    return texture_backing_->readPixels(dst_pixmap_adjusted, src_x, src_y);
   } else if (cached_sk_image_) {
-    return cached_sk_image_->readPixels(dst_info, dst_pixels, dst_row_bytes,
-                                        src_x, src_y);
+    return cached_sk_image_->readPixels(dst_pixmap, src_x, src_y);
   }
   return false;
 }
