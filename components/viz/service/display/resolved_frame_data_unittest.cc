@@ -342,10 +342,38 @@ TEST_F(ResolvedFrameDataTest, ReusePreviousRootPassId) {
                                    prev_root_pass_id);
 
   resolved_frame.UpdateForAggregation(render_pass_id_generator_);
-
   EXPECT_EQ(resolved_frame.GetRootRenderPassData().remapped_id(),
             prev_root_pass_id);
+  resolved_frame.ResetAfterAggregation();
 
+  // Submitting another frame with the same root pass ID should continue to use
+  // `prev_root_pass_id`.
+  SubmitCompositorFrame(MakeSimpleFrame());
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+  EXPECT_EQ(resolved_frame.GetRootRenderPassData().remapped_id(),
+            prev_root_pass_id);
+  resolved_frame.ResetAfterAggregation();
+
+  // Submitting a frame where the original root pass ID becomes a non-root pass
+  // and a new root pass ID is introduced should not assign `prev_root_pass_id`
+  // a second time.
+  auto frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{1}, kOutputRect)
+                  .AddSolidColorQuad(kOutputRect, SkColors::kRed))
+          .AddRenderPass(
+              RenderPassBuilder(CompositorRenderPassId{2}, kOutputRect)
+                  .AddRenderPassQuad(kOutputRect, CompositorRenderPassId{1}))
+          .Build();
+  SubmitCompositorFrame(std::move(frame));
+  resolved_frame.UpdateForAggregation(render_pass_id_generator_);
+  ASSERT_TRUE(resolved_frame.is_valid());
+  EXPECT_NE(resolved_frame.GetRenderPassDataById(CompositorRenderPassId{1})
+                .remapped_id(),
+            prev_root_pass_id);
+  EXPECT_EQ(resolved_frame.GetRootRenderPassData().remapped_id(),
+            prev_root_pass_id);
   resolved_frame.ResetAfterAggregation();
 }
 

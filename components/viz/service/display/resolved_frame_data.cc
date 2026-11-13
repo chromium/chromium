@@ -226,6 +226,12 @@ void ResolvedFrameData::UpdateActiveFrame(
       } else {
         remapped_id = render_pass_id_generator.GenerateNextId();
       }
+    } else if (!is_root && remapped_id == prev_root_pass_id_) {
+      // The CompositorRenderPassId from last frames root render pass was reused
+      // for a non-root render pass this frame. Keep using `prev_root_pass_id_`
+      // for the root, to avoid unnecessary backing reallocations, and assign a
+      // new id to this render pass.
+      remapped_id = render_pass_id_generator.GenerateNextId();
     }
     fixed.remapped_id = remapped_id;
     fixed.is_root = is_root;
