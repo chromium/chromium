@@ -4,6 +4,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -1165,6 +1166,33 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
 
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
+}
+
+// Regression test for crbug.com/575088540: synchronously closing the panel
+// from inside `Show()` while the client is not ready destroys the running
+// show-only `GlicInvokeHandler` (and `ShowInstanceTask`) before `Show()`
+// returns to `ShowInstanceTask::Start()`.
+IN_PROC_BROWSER_TEST_F(GlicInvokeNeverReadyClientBrowserTest,
+                       SynchronousCloseDuringShowCancelsInvokeWithoutUaf) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::CallbackListSubscription show_hide_subscription =
+      coordinator().AddGlobalShowHideCallback(base::BindLambdaForTesting([&]() {
+        if (GlicInstanceImpl* instance = GetInstanceForTab(tab);
+            instance && instance->IsShowing()) {
+          instance->DidCloseFor(SidePanelEmbedderKey(*tab),
+                                EmbedderCloseReason::kExplicitlyClosed);
+        }
+      }));
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kPanelClosed);
 }
 
 // Backgrounding the panel (e.g. switching tabs) is not a close: the
