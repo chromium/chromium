@@ -521,11 +521,11 @@ public class NotificationPlatformBridge {
     }
 
     /**
-     * Returns the PendingIntent for completing |action| on the notification identified by the data
-     * in the other parameters.
+     * Returns the PendingIntent for completing {@code action} on the notification identified by the
+     * data in the other parameters.
      *
      * <p>All parameters set here should also be set in {@link
-     * NotificationJobService#getJobExtrasFromIntent(Intent)}.
+     * NotificationJobServiceImpl#getJobExtrasFromIntent(Intent)}.
      *
      * @param attributes Attributes identifying the notification and its source.
      * @param action The action this pending intent will represent.
@@ -693,6 +693,8 @@ public class NotificationPlatformBridge {
      * Displays a notification with the given details.
      *
      * @param notificationId The id of the notification.
+     * @param notificationType The type of the notification, such as a web persistent or web
+     *     non-persistent notification.
      * @param origin Full text of the origin, including the protocol, owning this notification.
      * @param scopeUrl The scope of the service worker registered by the site where the notification
      *     comes from.
@@ -1351,8 +1353,8 @@ public class NotificationPlatformBridge {
     }
 
     /**
-     * Creates the ticker text for a notification having |title| and |body|. The notification's
-     * title will be printed in bold, followed by the text of the body.
+     * Creates the ticker text for a notification having {@code title} and {@code body}. The
+     * notification's title will be printed in bold, followed by the text of the body.
      *
      * @param title Title of the notification.
      * @param body Textual contents of the notification.

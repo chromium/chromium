@@ -216,8 +216,8 @@ public class NotificationServiceImpl extends SplitCompatIntentService.Impl {
     }
 
     /**
-     * Initializes Chrome and starts the browser process if it's not running as of yet, and dispatch
-     * |intent| to the NotificationPlatformBridge once this is done.
+     * Initializes Chrome and starts the browser process if it's not running as of yet, and
+     * dispatches {@code intent} to the NotificationPlatformBridge once this is done.
      *
      * @param intent The intent containing the notification's information.
      */

@@ -79,12 +79,13 @@ public class NotificationSuspender {
     }
 
     /**
-     * Stores resources for all notifications from a given origin back into the native
+     * Stores resources for all notifications from the given origins back into the native
      * NotificationDatabase.
      *
-     * <p>This allows re-displaying these notification later.
+     * <p>This allows re-displaying these notifications later.
      *
-     * @param callback The origins for which all notification resources to store.
+     * @param origins The origins for which all notification resources are to be stored.
+     * @param callback The callback to be invoked with the IDs of the stored notifications.
      */
     public void storeNotificationResourcesFromOrigins(
             List<Uri> origins, Callback<List<String>> callback) {
