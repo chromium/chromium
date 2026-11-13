@@ -865,7 +865,12 @@ bool DirectRenderer::CanSkipRenderPass(
         !render_pass->copy_requests.empty()) {
       return false;
     }
-    return IsRenderPassResourceAllocated(render_pass->id);
+    // Reuse the backing only if the drawn rect matches the `output_rect`.
+    // This is similar to handling within ComputeScissorRectForRenderPass, and
+    // avoids awkward situations where `output_rect` is larger than
+    // drawn rect.
+    return GetRenderPassBackingDrawnRect(render_pass->id) ==
+           render_pass->output_rect;
   }
 
   return false;
