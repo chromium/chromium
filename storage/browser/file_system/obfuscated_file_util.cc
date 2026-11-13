@@ -127,7 +127,15 @@ DatabaseKey::DatabaseKey(const blink::StorageKey& storage_key,
                          const std::optional<BucketLocator>& bucket,
                          const std::string& type) {
   storage_key_ = storage_key;
-  bucket_ = bucket;
+  // The directory of a first-party default bucket only depends on the
+  // StorageKey (see GetDirectoryForBucketAndType()), so don't include the
+  // bucket ID in the key either. Otherwise, different IDs for the same default
+  // bucket (e.g. from before and after it was deleted and recreated) would
+  // result in multiple SandboxDirectoryDatabases for the same directory.
+  bucket_ = (bucket.has_value() && bucket->is_default &&
+             storage_key.IsFirstPartyContext())
+                ? BucketLocator::ForDefaultBucket(storage_key)
+                : bucket;
   type_ = type;
 }
 
