@@ -12,13 +12,21 @@
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/enterprise/watermark/watermark_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/data_protection/utils.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/enterprise/connectors/reporting/extension_actor_tracker.h"
+#include "components/enterprise/connectors/core/features.h"
+#endif
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 #include "components/enterprise/watermarking/content/watermark_text_container.h"
@@ -248,6 +256,19 @@ void DataProtectionNavigationController::
 
 void DataProtectionNavigationController::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Update the extension actor before the lookup below reads it.
+  if (base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseExtensionActorAttribution)) {
+    if (auto* tracker =
+            enterprise_connectors::ExtensionActorTracker::FromWebContents(
+                web_contents())) {
+      tracker->DidStartNavigation(navigation_handle);
+    }
+  }
+#endif
+
   auto navigation_observer = enterprise_data_protection::
       DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
           this, tab_interface_->GetProfile(), navigation_handle,
