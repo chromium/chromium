@@ -4,8 +4,14 @@
 
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
+#include <memory>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -20,12 +26,17 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
+#include "net/base/mock_network_change_notifier.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/page_transition_types.h"
 
 namespace autofill {
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 
@@ -287,5 +298,97 @@ IN_PROC_BROWSER_TEST_F(AddressBubblesControllerBrowserTest,
       /*user_has_any_profile_saved=*/{},
       /*callback=*/base::DoNothing());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+namespace {
+
+std::unique_ptr<KeyedService> BuildSignedOutTestSyncService(
+    content::BrowserContext* context) {
+  auto sync_service = std::make_unique<NiceMock<syncer::TestSyncService>>();
+  sync_service->SetSignedOut();
+  return sync_service;
+}
+
+}  // namespace
+
+class AddressBubblesControllerSignInPromoBrowserTest
+    : public AddressBubblesControllerBrowserTest {
+ public:
+  AddressBubblesControllerSignInPromoBrowserTest() = default;
+  AddressBubblesControllerSignInPromoBrowserTest(
+      const AddressBubblesControllerSignInPromoBrowserTest&) = delete;
+  AddressBubblesControllerSignInPromoBrowserTest& operator=(
+      const AddressBubblesControllerSignInPromoBrowserTest&) = delete;
+  ~AddressBubblesControllerSignInPromoBrowserTest() override = default;
+
+  // AddressBubblesControllerBrowserTest:
+  void SetUpOnMainThread() override {
+    AddressBubblesControllerBrowserTest::SetUpOnMainThread();
+    mock_network_change_notifier_ =
+        std::make_unique<net::test::ScopedMockNetworkChangeNotifier>();
+  }
+
+  void TearDownOnMainThread() override {
+    mock_network_change_notifier_.reset();
+    AddressBubblesControllerBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  // AddressBubblesControllerBrowserTest:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AddressBubblesControllerBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildSignedOutTestSyncService));
+  }
+
+ private:
+  std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>
+      mock_network_change_notifier_;
+};
+
+// Tests that closing the sign-in promo via `HideBubble()` does not clobber a
+// subsequent bubble when the sign-in promo widget finishes closing
+// asynchronously.
+IN_PROC_BROWSER_TEST_F(
+    AddressBubblesControllerSignInPromoBrowserTest,
+    SignInPromoAsyncWidgetCloseDoesNotClobberSubsequentBubble) {
+  AutofillProfile profile = test::GetFullProfile();
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/false, base::DoNothing());
+  AutofillBubbleBase* const first_save_bubble_view =
+      tab_controller()->GetBubbleView();
+  ASSERT_TRUE(first_save_bubble_view);
+
+  tab_controller()->OnUserDecision(
+      AutofillClient::AddressPromptUserDecision::kAccepted, profile);
+  AutofillBubbleBase* const sign_in_promo_view =
+      tab_controller()->GetBubbleView();
+  ASSERT_TRUE(sign_in_promo_view);
+  ASSERT_NE(sign_in_promo_view, first_save_bubble_view);
+  ASSERT_TRUE(tab_controller()->IsShowingBubble());
+
+  tab_controller()->HideBubble(/*initiated_by_bubble_manager=*/false);
+  EXPECT_FALSE(tab_controller()->IsShowingBubble());
+  EXPECT_FALSE(tab_controller()->IsBubbleActive());
+
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/false, base::DoNothing());
+  AutofillBubbleBase* const second_save_bubble_view =
+      tab_controller()->GetBubbleView();
+  ASSERT_TRUE(second_save_bubble_view);
+  ASSERT_NE(second_save_bubble_view, sign_in_promo_view);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(tab_controller()->IsShowingBubble());
+  EXPECT_TRUE(tab_controller()->IsBubbleActive());
+  EXPECT_EQ(tab_controller()->GetBubbleView(), second_save_bubble_view);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace autofill

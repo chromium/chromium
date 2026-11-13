@@ -6,7 +6,9 @@
 
 #include <concepts>
 #include <memory>
+#include <utility>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
@@ -177,18 +179,11 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowAddressSignInPromo(
     content::WebContents* web_contents,
-    const AutofillProfile& autofill_profile) {
-  views::BubbleAnchor anchor = toolbar_button_provider_->GetBubbleAnchor(
-      kActionShowAddressesBubbleOrPage);
-  AddressSignInPromoView* bubble =
-      new AddressSignInPromoView(anchor, web_contents, autofill_profile);
-  if (!bubble_anchor_util::IsHighlightable(anchor)) {
-    bubble->SetHighlightedElement(kAutofillAddressPageActionElementId);
-  }
-
-  views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->ShowForReason(LocationBarBubbleDelegateView::AUTOMATIC);
-  return bubble;
+    const AutofillProfile& autofill_profile,
+    base::OnceClosure on_bubble_closed_callback) {
+  return ShowAddressProfileBubble<AddressSignInPromoView>(
+      toolbar_button_provider_, /*is_user_gesture=*/false, web_contents,
+      autofill_profile, std::move(on_bubble_closed_callback));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

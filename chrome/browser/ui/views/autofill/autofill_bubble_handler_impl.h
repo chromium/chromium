@@ -69,7 +69,8 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowAddressSignInPromo(
       content::WebContents* web_contents,
-      const AutofillProfile& autofill_profile) override;
+      const AutofillProfile& autofill_profile,
+      base::OnceClosure on_bubble_closed_callback) override;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowUpdateAddressProfileBubble(
       content::WebContents* web_contents,

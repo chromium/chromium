@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -61,7 +62,8 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowAddressSignInPromo(
       content::WebContents* web_contents,
-      const AutofillProfile& autofill_profile) override;
+      const AutofillProfile& autofill_profile,
+      base::OnceClosure on_bubble_closed_callback) override;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,

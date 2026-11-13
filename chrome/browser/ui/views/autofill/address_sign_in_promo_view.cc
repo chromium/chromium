@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -21,8 +25,10 @@ namespace autofill {
 AddressSignInPromoView::AddressSignInPromoView(
     views::BubbleAnchor anchor,
     content::WebContents* web_contents,
-    const AutofillProfile& autofill_profile)
-    : AddressBubbleBaseView(anchor, web_contents) {
+    const AutofillProfile& autofill_profile,
+    base::OnceClosure on_bubble_closed_callback)
+    : AddressBubbleBaseView(anchor, web_contents),
+      on_bubble_closed_callback_(std::move(on_bubble_closed_callback)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_ADDRESS);
   SetShowCloseButton(true);
@@ -58,16 +64,24 @@ void AddressSignInPromoView::AddedToWidget() {
 }
 
 void AddressSignInPromoView::Hide() {
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  CloseBubble();
+
+  // `WindowClosing()` runs asynchronously after the close task posted by
+  // `CloseBubble()` completes, so notify the controller synchronously here to
+  // clear its reference immediately without invoking the callback twice.
+  if (on_bubble_closed_callback_) {
+    std::move(on_bubble_closed_callback_).Run();
+  }
 }
 
 void AddressSignInPromoView::WindowClosing() {
-  if (!web_contents()) {
-    return;
+  if (on_bubble_closed_callback_) {
+    std::move(on_bubble_closed_callback_).Run();
   }
-
-  AddressBubblesController::FromWebContents(web_contents())->OnBubbleClosed();
 }
+
+BEGIN_METADATA(AddressSignInPromoView)
+END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AddressSignInPromoView,
                                       kBubbleFrameViewId);

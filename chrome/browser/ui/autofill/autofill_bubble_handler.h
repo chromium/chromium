@@ -83,12 +83,13 @@ class AutofillBubbleHandler {
       bool is_user_gesture) = 0;
 
   // Opens a promo bubble after an address save or update, offering to move the
-  // address to account store if the user signs in through the bubble. This move
-  // will be performed by the `move_address_callback`.
+  // address to account store if the user signs in through the bubble. Invokes
+  // `on_bubble_closed_callback` once when the bubble closes.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   virtual AutofillBubbleBase* ShowAddressSignInPromo(
       content::WebContents* web_contents,
-      const AutofillProfile& autofill_profile) = 0;
+      const AutofillProfile& autofill_profile,
+      base::OnceClosure on_bubble_closed_callback) = 0;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Opens an update address bubble. The bubble's lifecycle is controlled by its

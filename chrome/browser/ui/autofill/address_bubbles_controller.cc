@@ -7,14 +7,15 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
-#include "bubble_controller_base.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_address_bubble_controller.h"
@@ -79,13 +81,18 @@ AutofillBubbleBase* ShowUpdateBubble(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-AutofillBubbleBase* ShowSignInPromo(content::WebContents* web_contents,
-                                    const AutofillProfile& autofill_profile) {
+AutofillBubbleBase* ShowSignInPromo(
+    content::WebContents* web_contents,
+    const AutofillProfile& autofill_profile,
+    base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
   // TODO(crbug.com/381390420): Expose the `AutofillBubbleHandler` in
   // `BrowserWindowInterface` and use that instead.
   return BrowserWindow::FindBrowserWindowWithWebContents(web_contents)
       ->GetAutofillBubbleHandler()
-      ->ShowAddressSignInPromo(web_contents, autofill_profile);
+      ->ShowAddressSignInPromo(
+          web_contents, autofill_profile,
+          base::BindOnce(&AddressBubbleControllerDelegate::OnBubbleClosed,
+                         std::move(delegate)));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -339,7 +346,8 @@ void AddressBubblesController::MaybeShowSignInPromo(
   HideBubble(/*initiated_by_bubble_manager=*/false);
 
   // Open the bubble with the sign in promo.
-  SetBubbleView(*ShowSignInPromo(web_contents(), autofill_profile.value()));
+  SetBubbleView(
+      *ShowSignInPromo(web_contents(), autofill_profile.value(), GetWeakPtr()));
   CHECK(bubble_view());
   is_showing_sign_in_promo_ = true;
   UpdatePageActionIcon();

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_SIGN_IN_PROMO_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_ADDRESS_SIGN_IN_PROMO_VIEW_H_
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace autofill {
 
@@ -14,12 +16,15 @@ class AutofillProfile;
 // This is the sign in promo view that is shown after a user accepted the
 // address save/update bubble without being signed into Chrome.
 class AddressSignInPromoView : public AddressBubbleBaseView {
+  METADATA_HEADER(AddressSignInPromoView, AddressBubbleBaseView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleFrameViewId);
 
-  explicit AddressSignInPromoView(views::BubbleAnchor anchor,
-                                  content::WebContents* web_contents,
-                                  const AutofillProfile& autofill_profile);
+  AddressSignInPromoView(views::BubbleAnchor anchor,
+                         content::WebContents* web_contents,
+                         const AutofillProfile& autofill_profile,
+                         base::OnceClosure on_bubble_closed_callback);
 
   AddressSignInPromoView(const AddressSignInPromoView&) = delete;
   AddressSignInPromoView& operator=(const AddressSignInPromoView&) = delete;
@@ -33,6 +38,9 @@ class AddressSignInPromoView : public AddressBubbleBaseView {
 
   // views::WidgetDelegate:
   void WindowClosing() override;
+
+ private:
+  base::OnceClosure on_bubble_closed_callback_;
 };
 
 }  // namespace autofill

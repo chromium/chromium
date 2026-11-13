@@ -158,6 +158,7 @@ if (enable_dice_support) {
     sources = [ "address_sign_in_promo_view.cc" ]
     public_deps = [
       ":address_bubble_base_view",
+      "//base",
       "//chrome/browser/ui/autofill",
       "//ui/base/metadata",
     ]
@@ -165,6 +166,7 @@ if (enable_dice_support) {
       "//chrome/browser:resources",
       "//chrome/browser/signin",
       "//chrome/browser/ui/signin",
+      "//components/autofill/core/browser",
       "//components/signin/public/base",
       "//components/strings:components_strings",
       "//ui/base",
