@@ -4,6 +4,7 @@
 
 #include "base/trace_event/malloc_dump_provider.h"
 
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -665,6 +666,60 @@ TEST(MallocDumpProviderTest, SysMallocObjectsOwnSysMallocInBackgroundDumps) {
 }
 
 #endif  // defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO)
+
+#if defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+
+// mallinfo2() fields are size_t, so values above 2 GiB are valid.
+TEST(MallocDumpProviderTest, MallinfoTotalsFromSizeTKeepValuesAbove2GiB) {
+  constexpr size_t kGigabyte = size_t{1} << 30;
+  const internal::MallinfoTotals totals = internal::MallinfoTotalsFromSizeT(
+      /*arena=*/kGigabyte, /*hblkhd=*/kGigabyte + 4096,
+      /*uordblks=*/kGigabyte);
+
+  EXPECT_EQ(totals.held_size, 2 * kGigabyte + 4096);
+  EXPECT_EQ(totals.allocated_size, kGigabyte);
+}
+
+#endif  // defined(MALLOC_DUMP_PROVIDER_REPORTS_MALLINFO) ||
+        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+// Adding two int fields must not overflow int.
+TEST(MallocDumpProviderTest, MallinfoTotalsFromIntWidenBeforeAdding) {
+  constexpr int kIntMax = std::numeric_limits<int>::max();
+  const internal::MallinfoTotals totals = internal::MallinfoTotalsFromInt(
+      /*arena=*/kIntMax, /*hblkhd=*/kIntMax, /*uordblks=*/kIntMax);
+
+  EXPECT_EQ(totals.held_size, 2 * size_t{kIntMax});
+  EXPECT_EQ(totals.allocated_size, size_t{kIntMax});
+}
+
+// glibc truncates a 3 GiB counter to a negative int; it reads back as 3 GiB.
+TEST(MallocDumpProviderTest,
+     MallinfoTotalsFromIntReadNegativeFieldsAsUnsigned) {
+  constexpr size_t k3GiB = size_t{3} << 30;
+  constexpr int kTruncated3GiB = static_cast<int>(uint32_t{3} << 30);
+  static_assert(kTruncated3GiB < 0);
+
+  internal::MallinfoTotals totals = internal::MallinfoTotalsFromInt(
+      /*arena=*/kTruncated3GiB, /*hblkhd=*/4096, /*uordblks=*/2048);
+  EXPECT_EQ(totals.held_size, k3GiB + 4096);
+  EXPECT_EQ(totals.allocated_size, 2048u);
+
+  totals = internal::MallinfoTotalsFromInt(
+      /*arena=*/4096, /*hblkhd=*/kTruncated3GiB, /*uordblks=*/2048);
+  EXPECT_EQ(totals.held_size, k3GiB + 4096);
+  EXPECT_EQ(totals.allocated_size, 2048u);
+
+  totals = internal::MallinfoTotalsFromInt(
+      /*arena=*/4096, /*hblkhd=*/4096, /*uordblks=*/kTruncated3GiB);
+  EXPECT_EQ(totals.held_size, 8192u);
+  EXPECT_EQ(totals.allocated_size, k3GiB);
+}
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

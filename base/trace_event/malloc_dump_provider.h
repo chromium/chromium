@@ -5,6 +5,8 @@
 #ifndef BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 #define BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 
+#include <stddef.h>
+
 #include "base/allocator/buildflags.h"
 #include "base/base_export.h"
 #include "base/functional/callback.h"
@@ -191,6 +193,35 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
 };
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
+
+#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)) || \
+    (!PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
+     !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)) ||                       \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+namespace internal {
+
+// Totals derived from mallinfo(3).
+struct MallinfoTotals {
+  size_t held_size = 0;
+  size_t allocated_size = 0;
+};
+
+// For mallinfo2(), and bionic's mallinfo(), whose fields are size_t.
+BASE_EXPORT MallinfoTotals MallinfoTotalsFromSizeT(size_t arena,
+                                                   size_t hblkhd,
+                                                   size_t uordblks);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// For glibc's legacy mallinfo(), which truncates its size_t counters into int
+// fields. Reading them as unsigned recovers values up to 4 GiB; larger ones
+// still wrap, undetectably.
+BASE_EXPORT MallinfoTotals MallinfoTotalsFromInt(int arena,
+                                                 int hblkhd,
+                                                 int uordblks);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace internal
+#endif
 
 #if BUILDFLAG(IS_WIN)
 namespace internal {

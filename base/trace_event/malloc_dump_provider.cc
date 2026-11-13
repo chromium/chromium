@@ -16,7 +16,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
@@ -381,13 +381,17 @@ void ReportMallinfoStats(ProcessMemoryDump* pmd,
 #if !defined(MALLINFO2_FOUND_IN_LIBC)
   struct mallinfo info = mallinfo();
 #endif
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    !defined(MALLINFO2_FOUND_IN_LIBC)
+  const internal::MallinfoTotals totals =
+      internal::MallinfoTotalsFromInt(info.arena, info.hblkhd, info.uordblks);
+#else
+  const internal::MallinfoTotals totals =
+      internal::MallinfoTotalsFromSizeT(info.arena, info.hblkhd, info.uordblks);
+#endif
 #undef MALLINFO2_FOUND_IN_LIBC
-  // In case of Android's jemalloc |arena| is 0 and the outer pages size is
-  // reported by |hblkhd|. In case of dlmalloc the total is given by
-  // |arena| + |hblkhd|. For more details see link: http://goo.gl/fMR8lF.
-  const size_t held_size = checked_cast<size_t>(info.arena + info.hblkhd);
-  // Total allocated space is given by |uordblks|.
-  const size_t total_allocated_size = checked_cast<size_t>(info.uordblks);
+  const size_t held_size = totals.held_size;
+  const size_t total_allocated_size = totals.allocated_size;
   *total_virtual_size += held_size;
   // mallinfo(3) has no resident figure, and the held bytes include pages the
   // allocator has already released with madvise(), so only the live objects
@@ -513,6 +517,36 @@ void ReportExtremeLightweightDetectorQuarantineStats(
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace
+
+#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_ANDROID)) || \
+    (!PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !BUILDFLAG(IS_WIN) &&    \
+     !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)) ||                       \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+namespace internal {
+
+MallinfoTotals MallinfoTotalsFromSizeT(size_t arena,
+                                       size_t hblkhd,
+                                       size_t uordblks) {
+  MallinfoTotals totals;
+  // In case of Android's jemalloc |arena| is 0 and the outer pages size is
+  // reported by |hblkhd|. In case of dlmalloc the total is given by
+  // |arena| + |hblkhd|. For more details see link: http://goo.gl/fMR8lF.
+  totals.held_size = ClampAdd(arena, hblkhd);
+  // Total allocated space is given by |uordblks|.
+  totals.allocated_size = uordblks;
+  return totals;
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+MallinfoTotals MallinfoTotalsFromInt(int arena, int hblkhd, int uordblks) {
+  return MallinfoTotalsFromSizeT(static_cast<unsigned int>(arena),
+                                 static_cast<unsigned int>(hblkhd),
+                                 static_cast<unsigned int>(uordblks));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+}  // namespace internal
+#endif
 
 #if BUILDFLAG(IS_WIN)
 namespace internal {
