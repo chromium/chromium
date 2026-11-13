@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -322,16 +323,20 @@ class ActorTaskTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
     tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
+    profile_context_resolver_ =
+        std::make_unique<ProfileContextResolver>(profile_.get());
 
     task_ = std::make_unique<ActorTask>(
         ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
-        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
+        tool_factory_.get(), profile_context_resolver_.get(),
+        BrowserListFactory::GetForProfile(profile_.get()),
         /*policy_checker=*/nullptr, base::DoNothing());
   }
 
   void TearDown() override {
     task_.reset();
+    profile_context_resolver_.reset();
     tool_factory_.reset();
     journal_.reset();
     profile_.reset();
@@ -391,6 +396,7 @@ class ActorTaskTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<AggregatedJournal> journal_;
   std::unique_ptr<ActorToolFactory> tool_factory_;
+  std::unique_ptr<ProfileContextResolver> profile_context_resolver_;
   std::unique_ptr<ActorTask> task_;
 };
 
@@ -1360,6 +1366,7 @@ TEST_F(ActorTaskTest, KeepRenderProcessAliveFollowsControlState) {
   auto scoped_task = std::make_unique<ActorTask>(
       ActorTaskId(42), "Scoped Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      profile_context_resolver_.get(),
       BrowserListFactory::GetForProfile(profile_.get()),
       /*policy_checker=*/nullptr, base::DoNothing());
   scoped_task->Act({}, "update", base::DoNothing());
@@ -1554,6 +1561,7 @@ TEST_F(ActorTaskBackgroundingTest, DestructorFinalizesBackgroundTask) {
   auto task = std::make_unique<ActorTask>(
       ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      profile_context_resolver_.get(),
       BrowserListFactory::GetForProfile(profile_.get()),
       /*policy_checker=*/nullptr, base::DoNothing());
   task->background_worker()->SetContext(context);
@@ -1698,6 +1706,7 @@ TEST_F(ActorTaskTest,
   auto task = std::make_unique<ActorTask>(
       ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      profile_context_resolver_.get(),
       BrowserListFactory::GetForProfile(profile_.get()),
       /*policy_checker=*/nullptr, base::DoNothing());
 
@@ -2321,6 +2330,7 @@ TEST_F(ActorTaskTest, TtcTaskSourceKeepsTabHelperInactive) {
       ActorTaskId(42), "TTC Task",
       TaskSourceInfo(TaskSourceInfo::Client::kTtc, /*id=*/std::nullopt),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      profile_context_resolver_.get(),
       BrowserListFactory::GetForProfile(profile_.get()),
       /*policy_checker=*/nullptr, base::DoNothing());
 

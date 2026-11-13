@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/intelligence/actor/test/fake_actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
@@ -195,6 +196,7 @@ class MockActorTask : public ActorTask {
                 bool allow_incognito_web_states,
                 AggregatedJournal* journal,
                 ActorToolFactory* tool_factory,
+                const ProfileContextResolver* profile_context_resolver,
                 BrowserList* browser_list,
                 base::OnceClosure on_stopped,
                 bool* stop_called)
@@ -204,6 +206,7 @@ class MockActorTask : public ActorTask {
                   allow_incognito_web_states,
                   journal,
                   tool_factory,
+                  profile_context_resolver,
                   browser_list,
                   /*policy_checker=*/nullptr,
                   std::move(on_stopped)),
@@ -338,6 +341,11 @@ class ActorServiceTest : public PlatformTest {
 
   ActorToolFactory* GetToolFactory(ActorService* service) {
     return service->tool_factory_.get();
+  }
+
+  const ProfileContextResolver* GetProfileContextResolver(
+      ActorService* service) {
+    return service->profile_context_resolver_.get();
   }
 
   // Returns whether a PageContext extraction is in progress.
@@ -1026,7 +1034,7 @@ TEST_F(ActorServiceTest, StopTask) {
            std::make_unique<MockActorTask>(
                task_id, "Test Task",
                /*allow_incognito_web_states=*/false, GetJournal(service),
-               GetToolFactory(service),
+               GetToolFactory(service), GetProfileContextResolver(service),
                BrowserListFactory::GetForProfile(profile_.get()),
                MakeOnStoppedCallback(service, task_id), &stop_called));
 
@@ -1602,7 +1610,7 @@ TEST_F(ActorServiceTest, ShutdownDropsQueuedStop) {
            std::make_unique<MockActorTask>(
                task_id, "Test Task",
                /*allow_incognito_web_states=*/false, GetJournal(service),
-               GetToolFactory(service),
+               GetToolFactory(service), GetProfileContextResolver(service),
                BrowserListFactory::GetForProfile(profile_.get()),
                MakeOnStoppedCallback(service, task_id), &stop_called));
 
@@ -2560,7 +2568,7 @@ TEST_F(ActorServiceTest, PerformActions_RejectedWhenBlockedByEnterprisePolicy) {
       std::make_unique<ActorTask>(
           task_id, "Test Task", TestSource(),
           /*allow_incognito_web_states=*/false, GetJournal(service),
-          GetToolFactory(service),
+          GetToolFactory(service), GetProfileContextResolver(service),
           BrowserListFactory::GetForProfile(profile_.get()),
           /*policy_checker=*/nullptr, MakeOnStoppedCallback(service, task_id)));
 

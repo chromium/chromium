@@ -43,6 +43,7 @@ class ActorTaskBackgroundWorker;
 class ActorToolRequest;
 class ActorToolFactory;
 class AggregatedJournal;
+class ProfileContextResolver;
 struct TaskSourceInfo;
 
 // Service responsible for handling Actor requests. The normal flow is to
@@ -208,12 +209,11 @@ class ActorService : public KeyedService {
  private:
   friend class ActorServiceTest;
 
-  // The profile associated with this service instance. Owned by the
-  // ProfileManager, which is guaranteed to outlive this KeyedService.
-  raw_ptr<ProfileIOS> profile_;
-
   // Actor tool factory.
   std::unique_ptr<ActorToolFactory> tool_factory_;
+
+  // Resolves profile-scoped services and browser state for tasks.
+  std::unique_ptr<ProfileContextResolver> profile_context_resolver_;
 
   // Journal used for logging task tools, state transitions, and results.
   std::unique_ptr<AggregatedJournal> journal_;
@@ -340,11 +340,6 @@ class ActorService : public KeyedService {
 
   // Stops all active tasks when enterprise policy disables web actuation.
   void OnCanActOnWebChanged(bool can_act_on_web);
-
-  // Returns the WebState associated with the given `web_state_id`, or nullptr
-  // if it cannot be found.
-  web::WebState* GetWebState(web::WebStateID web_state_id,
-                             bool allows_incognito);
 
   // Ensures the service is only used on the sequence it was created on.
   SEQUENCE_CHECKER(sequence_checker_);

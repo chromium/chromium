@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
+class BrowserList;
 class ProfileIOS;
 class UrlLoadingBrowserAgent;
 
@@ -21,6 +22,7 @@ class OriginGatingService;
 
 namespace web {
 class WebState;
+class WebStateID;
 }  // namespace web
 
 namespace actor {
@@ -52,6 +54,15 @@ class ProfileContextResolver {
 
   // Returns the OriginGatingService associated with the profile.
   origin_gating::OriginGatingService* GetOriginGatingService() const;
+
+  // Returns the BrowserList associated with the profile.
+  BrowserList* GetBrowserList() const;
+
+  // Returns the WebState with the given `web_state_id`, or nullptr if no such
+  // tab exists. Incognito tabs are only returned if `include_incognito` is
+  // true.
+  web::WebState* GetWebState(web::WebStateID web_state_id,
+                             bool include_incognito) const;
 
  private:
   // The ProfileIOS is guaranteed to outlive this resolver instance.

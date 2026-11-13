@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/web_state.h"
 #import "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -183,9 +184,7 @@ ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
           std::make_unique<ToolController>(/*tool_delegate=*/this)) {
   CHECK(execution_updates_delegate_);
   origin_gating::OriginGatingService* origin_gating_service =
-      owner_task_->GetToolFactory()
-          .profile_context_resolver()
-          .GetOriginGatingService();
+      owner_task_->profile_context_resolver().GetOriginGatingService();
   CHECK(origin_gating_service);
   origin_gating_registration_ = origin_gating_service->CreateAndRegisterChecker(
       origin_gating_delegate_.GetWeakPtr(), CreateOriginGatingConfig());
@@ -389,7 +388,7 @@ void ActorEngine::ExecuteNextAction() {
       IsActorOriginGatingEnabled()) {
     base::expected<ProfileContextResolver::TabResolutionResult,
                    ToolExecutionResult>
-        tab_resolution = GetToolFactory().profile_context_resolver().ResolveTab(
+        tab_resolution = owner_task_->profile_context_resolver().ResolveTab(
             action->GetTargetWebStateId().identifier());
     if (!tab_resolution.has_value() || !tab_resolution->web_state) {
       CompleteActions(ActionResult(

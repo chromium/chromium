@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -143,6 +144,7 @@ ActorTask::ActorTask(ActorTaskId task_id,
                      bool allow_incognito_web_states,
                      AggregatedJournal* journal,
                      ActorToolFactory* tool_factory,
+                     const ProfileContextResolver* profile_context_resolver,
                      BrowserList* browser_list,
                      const ActorEnterprisePolicyCheckerIOS* policy_checker,
                      base::OnceClosure on_stopped)
@@ -153,10 +155,12 @@ ActorTask::ActorTask(ActorTaskId task_id,
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
       tool_factory_(tool_factory),
+      profile_context_resolver_(profile_context_resolver),
       policy_checker_(policy_checker),
       on_stopped_(std::move(on_stopped)) {
   CHECK(journal);
   CHECK(tool_factory);
+  CHECK(profile_context_resolver);
   CHECK(browser_list);
   CHECK(on_stopped_);
   // TODO(crbug.com/504704411): Allow incognito WebStates.
@@ -269,9 +273,7 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
     if (engine_) {
       policy_deciders_[web_state->GetUniqueIdentifier()] =
           std::make_unique<ActorWebStatePolicyDecider>(
-              web_state,
-              tool_factory_->profile_context_resolver()
-                  .GetOriginGatingService(),
+              web_state, profile_context_resolver_->GetOriginGatingService(),
               engine_->GetOriginGatingCheckerId(), task_id_,
               base::BindRepeating(&ActorTask::OnNavigationBlocked,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -466,6 +468,11 @@ AggregatedJournal& ActorTask::GetJournal() const {
 ActorToolFactory& ActorTask::GetToolFactory() const {
   CHECK(tool_factory_);
   return *tool_factory_;
+}
+
+const ProfileContextResolver& ActorTask::profile_context_resolver() const {
+  CHECK(profile_context_resolver_);
+  return *profile_context_resolver_;
 }
 
 bool ActorTask::IsWindowIdValid(int32_t window_id) {

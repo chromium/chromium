@@ -87,4 +87,23 @@ ProfileContextResolver::GetOriginGatingService() const {
   return origin_gating::OriginGatingServiceFactory::GetForProfile(profile_);
 }
 
+BrowserList* ProfileContextResolver::GetBrowserList() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return BrowserListFactory::GetForProfile(profile_);
+}
+
+web::WebState* ProfileContextResolver::GetWebState(
+    web::WebStateID web_state_id,
+    bool include_incognito) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BrowserAndIndex browser_and_index =
+      FindBrowserAndIndexFromProfile(profile_, web_state_id, include_incognito);
+  if (browser_and_index.tab_index == WebStateList::kInvalidIndex ||
+      !browser_and_index.browser) {
+    return nullptr;
+  }
+  return browser_and_index.browser->GetWebStateList()->GetWebStateAt(
+      browser_and_index.tab_index);
+}
+
 }  // namespace actor

@@ -96,4 +96,54 @@ TEST_F(ProfileContextResolverTest, GetOriginGatingService) {
       origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get()));
 }
 
+// Tests that `GetBrowserList` returns the BrowserList associated with the
+// profile.
+TEST_F(ProfileContextResolverTest, GetBrowserList) {
+  EXPECT_EQ(resolver_->GetBrowserList(),
+            BrowserListFactory::GetForProfile(profile_.get()));
+}
+
+// Tests that `GetWebState` returns the WebState for a tab in a regular browser.
+TEST_F(ProfileContextResolverTest, GetWebStateForRegularTab) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  web::WebState* web_state_ptr = web_state.get();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  EXPECT_EQ(resolver_->GetWebState(web_state_id, /*include_incognito=*/false),
+            web_state_ptr);
+}
+
+// Tests that `GetWebState` returns nullptr for an unknown tab ID.
+TEST_F(ProfileContextResolverTest, GetWebStateForUnknownTab) {
+  EXPECT_EQ(resolver_->GetWebState(web::WebStateID::NewUnique(),
+                                   /*include_incognito=*/true),
+            nullptr);
+}
+
+// Tests that `GetWebState` only returns an incognito tab when
+// `include_incognito` is true.
+TEST_F(ProfileContextResolverTest, GetWebStateForIncognitoTab) {
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
+  auto otr_browser = std::make_unique<TestBrowser>(otr_profile);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  browser_list->AddBrowser(otr_browser.get());
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  web::WebState* web_state_ptr = web_state.get();
+  otr_browser->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  EXPECT_EQ(resolver_->GetWebState(web_state_id, /*include_incognito=*/false),
+            nullptr);
+  EXPECT_EQ(resolver_->GetWebState(web_state_id, /*include_incognito=*/true),
+            web_state_ptr);
+
+  browser_list->RemoveBrowser(otr_browser.get());
+}
+
 }  // namespace actor

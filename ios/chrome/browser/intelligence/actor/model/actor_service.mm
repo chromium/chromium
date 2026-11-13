@@ -33,15 +33,13 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/web/public/web_state.h"
@@ -138,14 +136,16 @@ void ActorService::RunReply(base::OnceClosure reply) {
 }
 
 ActorService::ActorService(ProfileIOS* profile)
-    : profile_(profile),
-      tool_factory_(std::make_unique<ActorToolFactory>(profile)),
+    : tool_factory_(std::make_unique<ActorToolFactory>(profile)),
+      profile_context_resolver_(
+          std::make_unique<ProfileContextResolver>(profile)),
       journal_(std::make_unique<AggregatedJournal>()),
       policy_checker_(std::make_unique<ActorEnterprisePolicyCheckerIOS>(
           profile ? profile->GetPrefs() : nullptr)),
       lifecycle_observers_([[PostedObserverList alloc]
           initWithProtocol:@protocol(ActorTaskLifecycleObserver)]) {
   CHECK(tool_factory_);
+  CHECK(profile_context_resolver_);
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
   can_act_on_web_subscription_ = policy_checker_->AddCanActOnWebChangedCallback(
       base::BindRepeating(&ActorService::OnCanActOnWebChanged, weak_this_));
@@ -171,6 +171,7 @@ void ActorService::Shutdown() {
   active_tasks_.clear();
   pending_delete_tasks_.clear();
   policy_checker_.reset();
+  profile_context_resolver_.reset();
 }
 
 ActorTaskId ActorService::CreateTask(const std::string& title,
@@ -190,10 +191,11 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   }
 
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
+  BrowserList* browser_list = profile_context_resolver_->GetBrowserList();
   auto task = std::make_unique<ActorTask>(
       task_id, title, source_info, allow_incognito_web_states, journal_.get(),
-      tool_factory_.get(), browser_list, policy_checker_.get(),
+      tool_factory_.get(), profile_context_resolver_.get(), browser_list,
+      policy_checker_.get(),
       base::BindOnce(&ActorService::OnTaskStopped, weak_this_, task_id));
 
   for (id<ActorTaskUpdatesObserver> observer : task_observers_) {
@@ -747,27 +749,12 @@ void ActorService::AddControlledWebStates(
       continue;
     }
 
-    web::WebState* web_state =
-        GetWebState(target_id, task->allow_incognito_web_states());
+    web::WebState* web_state = profile_context_resolver_->GetWebState(
+        target_id, task->allow_incognito_web_states());
     if (web_state) {
       task->AddControlledWebState(web_state);
     }
   }
-}
-
-web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
-                                         bool allows_incognito) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BrowserAndIndex browser_and_index =
-      FindBrowserAndIndexFromProfile(profile_, web_state_id, allows_incognito);
-
-  if (browser_and_index.tab_index == WebStateList::kInvalidIndex ||
-      !browser_and_index.browser) {
-    return nullptr;
-  }
-
-  return browser_and_index.browser->GetWebStateList()->GetWebStateAt(
-      browser_and_index.tab_index);
 }
 
 void ActorService::OnCanActOnWebChanged(bool can_act_on_web) {

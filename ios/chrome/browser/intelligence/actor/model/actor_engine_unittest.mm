@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/metrics.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/profile_context_resolver.h"
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
@@ -173,10 +174,13 @@ class ActorEngineTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
     tool_factory_ = CreateToolFactory();
+    profile_context_resolver_ =
+        std::make_unique<ProfileContextResolver>(profile_.get());
     task_ = std::make_unique<ActorTask>(
         ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
-        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
+        tool_factory_.get(), profile_context_resolver_.get(),
+        BrowserListFactory::GetForProfile(profile_.get()),
         /*policy_checker=*/nullptr, base::DoNothing());
     engine_ = std::make_unique<ActorEngine>(&execution_updates_delegate_,
                                             task_.get());
@@ -185,6 +189,7 @@ class ActorEngineTest : public PlatformTest {
   void TearDown() override {
     engine_.reset();
     task_.reset();
+    profile_context_resolver_.reset();
     tool_factory_.reset();
     journal_.reset();
     profile_.reset();
@@ -238,6 +243,7 @@ class ActorEngineTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<AggregatedJournal> journal_;
   std::unique_ptr<ActorToolFactory> tool_factory_;
+  std::unique_ptr<ProfileContextResolver> profile_context_resolver_;
   std::unique_ptr<ActorTask> task_;
   MockActorEngineExecutionUpdatesDelegate execution_updates_delegate_;
   std::unique_ptr<ActorEngine> engine_;
@@ -1431,7 +1437,7 @@ TEST_F(ActorEngineOriginGatingTest, BlocksUrlBlockedByEnterprisePolicy) {
 
   ActorTask task(ActorTaskId(2), "Policy Task", TestSource(),
                  /*allow_incognito_web_states=*/false, journal_.get(),
-                 tool_factory_.get(),
+                 tool_factory_.get(), profile_context_resolver_.get(),
                  BrowserListFactory::GetForProfile(profile_.get()),
                  &policy_checker, base::DoNothing());
   origin_gating::OriginGatingChecker* checker =
@@ -1477,7 +1483,7 @@ TEST_F(ActorEngineOriginGatingTest,
 
   ActorTask task(ActorTaskId(2), "Policy Task", TestSource(),
                  /*allow_incognito_web_states=*/false, journal_.get(),
-                 tool_factory_.get(),
+                 tool_factory_.get(), profile_context_resolver_.get(),
                  BrowserListFactory::GetForProfile(profile_.get()),
                  &policy_checker, base::DoNothing());
   origin_gating::OriginGatingChecker* checker =
