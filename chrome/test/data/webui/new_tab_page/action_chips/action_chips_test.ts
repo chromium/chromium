@@ -1084,5 +1084,29 @@ suite('NewTabPageActionChipsTest', () => {
       assertTrue(!!title);
       assertEquals(title.clientWidth, title.scrollWidth);
     });
+
+    test(
+        'keeps chips on one row when they fit the available width',
+        async () => {
+          const chip: TestActionChip = {
+            suggestTemplateInfo: {
+              typeIcon: IconType.kGlobeWithSearchLoop,
+              primaryText: 'Ask about the pages you have recently visited',
+              secondaryText: null,
+            },
+            suggestion: '',
+            tab: null,
+          };
+          await initializeChips({
+            ntpSmallActionChipsEnabled: true,
+            actionChips: [chip, chip, chip],
+          });
+          chips.style.display = 'block';
+          chips.style.width = '1000px';
+          const allChips = chips.shadowRoot.querySelectorAll<HTMLButtonElement>(
+              '.action-chip');
+          assertEquals(3, allChips.length);
+          assertEquals(allChips[0]!.offsetTop, allChips[2]!.offsetTop);
+        });
   });
 });
