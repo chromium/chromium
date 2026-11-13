@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.os.ResultReceiver;
 
 import androidx.annotation.OptIn;
+import androidx.annotation.VisibleForTesting;
 import androidx.credentials.ExperimentalDigitalCredentialApi;
 import androidx.credentials.exceptions.CreateCredentialCancellationException;
 import androidx.credentials.exceptions.CreateCredentialInterruptedException;
@@ -35,6 +36,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
+
 @NullMarked
 public class DigitalCredentialsCreationDelegate {
     private static final String TAG = "DCCreationDelegate";
@@ -50,21 +53,28 @@ public class DigitalCredentialsCreationDelegate {
     private static final String TYPE_INTERRUPTED =
             "android.credentials.CreateCredentialException.TYPE_INTERRUPTED";
 
+    @VisibleForTesting
+    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+        return IdentityCredentialManager.Companion.getClient(window);
+    }
+
     @OptIn(markerClass = ExperimentalDigitalCredentialApi.class)
     public Promise<DigitalCredential> create(
             WindowAndroid windowAndroid, String origin, String request) {
+        if (windowAndroid.isDestroyed()) return Promise.rejected();
         Activity window = windowAndroid.getActivity().get();
         if (window == null) return Promise.rejected();
 
         final IdentityCredentialClient client;
         try {
-            client = IdentityCredentialManager.Companion.getClient(window);
+            client = getIdentityCredentialClient(window);
         } catch (Exception e) {
             // Thrown when running in phones without the most current GMS
             // version.
             return Promise.rejected();
         }
 
+        WeakReference<WindowAndroid> windowRef = new WeakReference<>(windowAndroid);
         final Promise<DigitalCredential> result = new Promise<>();
 
         ResultReceiver resultReceiver =
@@ -153,6 +163,13 @@ public class DigitalCredentialsCreationDelegate {
         client.createCredential(createRequest)
                 .addOnSuccessListener(
                         response -> {
+                            WindowAndroid currentWindow = windowRef.get();
+                            if (currentWindow == null || currentWindow.isDestroyed()) {
+                                result.reject(
+                                        new CreateCredentialUnknownException(
+                                                "WindowAndroid is no longer available"));
+                                return;
+                            }
                             if (response.getPendingIntent() == null) {
                                 Log.d(TAG, "Response doesn't contain pendingIntent");
                                 result.reject(
@@ -163,23 +180,10 @@ public class DigitalCredentialsCreationDelegate {
                             Log.d(TAG, "Sending an intent for sender");
                             Log.d(TAG, request);
                             int requestCode =
-                                    windowAndroid.showCancelableIntent(
+                                    currentWindow.showCancelableIntent(
                                             response.getPendingIntent(),
-                                            (resultCode, intent) -> {
-                                                if (resultCode != Activity.RESULT_OK
-                                                        && result.isPending()) {
-                                                    androidx.credentials.exceptions
-                                                                    .CreateCredentialException
-                                                            exception =
-                                                                    intent != null
-                                                                            ? PendingIntentHandler
-                                                                                    .retrieveCreateCredentialException(
-                                                                                            intent)
-                                                                            : null;
-                                                    handleCreateCredentialException(
-                                                            resultCode, exception, result);
-                                                }
-                                            },
+                                            (resultCode, intent) ->
+                                                    onIntentCompleted(resultCode, intent, result),
                                             null);
                             if (requestCode == WindowAndroid.START_INTENT_FAILURE) {
                                 Log.e(TAG, "Sending an intent for sender failed");
@@ -231,6 +235,17 @@ public class DigitalCredentialsCreationDelegate {
         } catch (JSONException e) {
             Log.e(TAG, "Failed to parse response JSON: " + e);
             return null;
+        }
+    }
+
+    private static void onIntentCompleted(
+            int resultCode, @Nullable Intent intent, Promise<DigitalCredential> result) {
+        if (resultCode != Activity.RESULT_OK && result.isPending()) {
+            androidx.credentials.exceptions.CreateCredentialException exception =
+                    intent != null
+                            ? PendingIntentHandler.retrieveCreateCredentialException(intent)
+                            : null;
+            handleCreateCredentialException(resultCode, exception, result);
         }
     }
 

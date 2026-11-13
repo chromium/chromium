@@ -38,6 +38,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
 @NullMarked
@@ -69,21 +70,28 @@ public class DigitalCredentialsPresentationDelegate {
 
     private Bundle mLargeResultData = Bundle.EMPTY;
 
+    @VisibleForTesting
+    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+        return IdentityCredentialManager.Companion.getClient(window);
+    }
+
     @OptIn(markerClass = ExperimentalDigitalCredentialApi.class)
     public Promise<DigitalCredential> get(
             WindowAndroid windowAndroid, String origin, String request) {
+        if (windowAndroid.isDestroyed()) return Promise.rejected();
         Activity window = windowAndroid.getActivity().get();
         if (window == null) return Promise.rejected();
 
         final IdentityCredentialClient client;
         try {
-            client = IdentityCredentialManager.Companion.getClient(window);
+            client = getIdentityCredentialClient(window);
         } catch (Exception e) {
             // Thrown when running in phones without the most current GMS
             // version.
             return Promise.rejected();
         }
 
+        WeakReference<WindowAndroid> windowRef = new WeakReference<>(windowAndroid);
         final Promise<DigitalCredential> result = new Promise<>();
 
         final ResultReceiver largePayloadResultReceiver =
@@ -127,6 +135,13 @@ public class DigitalCredentialsPresentationDelegate {
                                 resultReceiver))
                 .addOnSuccessListener(
                         response -> {
+                            WindowAndroid currentWindow = windowRef.get();
+                            if (currentWindow == null || currentWindow.isDestroyed()) {
+                                result.reject(
+                                        new GetCredentialUnknownException(
+                                                "WindowAndroid is no longer available"));
+                                return;
+                            }
                             if (response.getPendingIntent() == null) {
                                 Log.d(TAG, "Response doesn't contain pendingIntent");
                                 result.reject(
@@ -137,23 +152,10 @@ public class DigitalCredentialsPresentationDelegate {
                             Log.d(TAG, "Sending an intent for sender");
                             Log.d(TAG, request);
                             int requestCode =
-                                    windowAndroid.showCancelableIntent(
+                                    currentWindow.showCancelableIntent(
                                             response.getPendingIntent(),
-                                            (resultCode, intent) -> {
-                                                if (resultCode != Activity.RESULT_OK
-                                                        && result.isPending()) {
-                                                    androidx.credentials.exceptions
-                                                                    .GetCredentialException
-                                                            exception =
-                                                                    intent != null
-                                                                            ? PendingIntentHandler
-                                                                                    .retrieveGetCredentialException(
-                                                                                            intent)
-                                                                            : null;
-                                                    handleGetCredentialException(
-                                                            resultCode, exception, result);
-                                                }
-                                            },
+                                            (resultCode, intent) ->
+                                                    onIntentCompleted(resultCode, intent, result),
                                             null);
                             if (requestCode == WindowAndroid.START_INTENT_FAILURE) {
                                 Log.e(TAG, "Sending an intent for sender failed");
@@ -296,6 +298,17 @@ public class DigitalCredentialsPresentationDelegate {
         String protocol = credential.getString(DC_API_RESPONSE_PROTOCOL_KEY);
         var data = credential.getJSONObject(DC_API_RESPONSE_DATA_KEY);
         return new DigitalCredential(protocol, data.toString());
+    }
+
+    private static void onIntentCompleted(
+            int resultCode, @Nullable Intent intent, Promise<DigitalCredential> result) {
+        if (resultCode != Activity.RESULT_OK && result.isPending()) {
+            androidx.credentials.exceptions.GetCredentialException exception =
+                    intent != null
+                            ? PendingIntentHandler.retrieveGetCredentialException(intent)
+                            : null;
+            handleGetCredentialException(resultCode, exception, result);
+        }
     }
 
     private static void handleGetCredentialException(

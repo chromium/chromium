@@ -7,25 +7,41 @@ package org.chromium.chrome.browser.webid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.exceptions.GetCredentialException;
 import androidx.credentials.exceptions.GetCredentialUnknownException;
 import androidx.credentials.provider.PendingIntentHandler;
 
+import com.google.android.gms.identitycredentials.IdentityCredentialClient;
+import com.google.android.gms.identitycredentials.PendingGetCredentialHandle;
+import com.google.android.gms.tasks.TaskCompletionSource;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
+import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link DigitalCredentialsPresentationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -86,7 +102,7 @@ public class DigitalCredentialsPresentationDelegateTest {
 
     @Test
     public void testHandleOnReceiveResult_LargePayload()
-            throws androidx.credentials.exceptions.GetCredentialException, JSONException {
+            throws GetCredentialException, JSONException {
         DigitalCredentialsPresentationDelegate delegate =
                 new DigitalCredentialsPresentationDelegate();
         Promise<DigitalCredential> promise = new Promise<>();
@@ -106,10 +122,69 @@ public class DigitalCredentialsPresentationDelegateTest {
 
         delegate.handleOnReceiveResult(Activity.RESULT_OK, data, promise, largeResultData);
 
-        org.junit.Assert.assertTrue(promise.isFulfilled());
+        assertTrue(promise.isFulfilled());
         DigitalCredential credential = promise.getResult();
-        org.junit.Assert.assertNotNull(credential);
-        org.junit.Assert.assertEquals(JSON_PROTOCOL, credential.mProtocol);
-        org.junit.Assert.assertEquals(JSON_DATA, credential.mData);
+        assertNotNull(credential);
+        assertEquals(JSON_PROTOCOL, credential.mProtocol);
+        assertEquals(JSON_DATA, credential.mData);
+    }
+
+    @Test
+    public void testGetWithDeadActivityReturnsRejected() {
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getActivity()).thenReturn(new ImmutableWeakReference<>(null));
+
+        DigitalCredentialsPresentationDelegate delegate =
+                new DigitalCredentialsPresentationDelegate();
+        Promise<DigitalCredential> promise =
+                delegate.get(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+
+        assertTrue(promise.isRejected());
+    }
+
+    @Test
+    public void testGetWithDestroyedWindowReturnsRejected() {
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.isDestroyed()).thenReturn(true);
+
+        DigitalCredentialsPresentationDelegate delegate =
+                new DigitalCredentialsPresentationDelegate();
+        Promise<DigitalCredential> promise =
+                delegate.get(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+
+        assertTrue(promise.isRejected());
+    }
+
+    @Test
+    public void testGetWhenWindowDestroyedInFlightRejectsAndSkipsIntent() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(windowAndroid.getActivity()).thenReturn(new ImmutableWeakReference<>(activity));
+        when(windowAndroid.isDestroyed()).thenReturn(false);
+
+        IdentityCredentialClient mockClient = mock(IdentityCredentialClient.class);
+        TaskCompletionSource<PendingGetCredentialHandle> taskSource = new TaskCompletionSource<>();
+        when(mockClient.getCredential(any())).thenReturn(taskSource.getTask());
+
+        DigitalCredentialsPresentationDelegate delegate =
+                new DigitalCredentialsPresentationDelegate() {
+                    @Override
+                    IdentityCredentialClient getIdentityCredentialClient(Activity window) {
+                        return mockClient;
+                    }
+                };
+
+        Promise<DigitalCredential> promise =
+                delegate.get(windowAndroid, "https://rp.example", "{\"requests\":[]}");
+        assertTrue(promise.isPending());
+
+        when(windowAndroid.isDestroyed()).thenReturn(true);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(activity, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE);
+        taskSource.setResult(new PendingGetCredentialHandle(pendingIntent));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        assertTrue(promise.isRejected());
+        verify(windowAndroid, never()).showCancelableIntent(any(PendingIntent.class), any(), any());
     }
 }

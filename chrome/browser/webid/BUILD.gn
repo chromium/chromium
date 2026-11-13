@@ -50,6 +50,7 @@ if (is_android) {
   robolectric_library("junit") {
     testonly = true
     sources = [
+      "android/junit/src/org/chromium/chrome/browser/webid/DigitalCredentialsCreationDelegateTest.java",
       "android/junit/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegateTest.java",
       "android/junit/src/org/chromium/chrome/browser/webid/DigitalIdentityProviderUnitTest.java",
     ]
@@ -57,12 +58,14 @@ if (is_android) {
     deps = [
       ":java",
       "$google_play_services_package:google_play_services_identity_credentials_java",
+      "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_junit_test_support",
       "//base:promise_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_credentials_credentials_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
+      "//ui/android:ui_no_recycler_view_java",
     ]
   }
 
