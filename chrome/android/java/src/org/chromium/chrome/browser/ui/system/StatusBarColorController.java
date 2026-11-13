@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -523,7 +524,23 @@ public class StatusBarColorController
 
     /** Calculate and update the status bar's color. */
     public void updateStatusBarColor() {
-        @ColorInt int statusBarColor = calculateFinalStatusBarColor();
+        @ColorInt int unscrimmedColor = calculateUnscrimmedStatusBarColor();
+        @ColorInt int scrimmedColor = applyCurrentScrimToColor(unscrimmedColor);
+        boolean isTopScalpEnabled =
+                EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                        && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity);
+        // When the top scalp draws the status bar area, the scrim view already draws over the
+        // scalp, so pass the unscrimmed color to avoid darkening it twice, while still computing
+        // status bar icon contrast from the scrimmed color.
+        @ColorInt int statusBarColor = isTopScalpEnabled ? unscrimmedColor : scrimmedColor;
+        boolean forceLightIconsForNtp =
+                mForceLightIconColorForNtp && isStandardNtp() && !mIsOmniboxFocused;
+        boolean forceLightIconsForTopScalpScrim =
+                isTopScalpEnabled
+                        && mScrimColor != Color.TRANSPARENT
+                        && ColorUtils.shouldUseLightForegroundOnBackground(scrimmedColor);
+        boolean forceLightIconColor = forceLightIconsForNtp || forceLightIconsForTopScalpScrim;
+
         // TaskDescription.Builder#setBackgroundColor is only supported on Android T+ (where 0 /
         // Color.TRANSPARENT means no custom Recents background color is set).
         @ColorInt int backgroundColor = Color.TRANSPARENT;
@@ -542,7 +559,7 @@ public class StatusBarColorController
                 mEdgeToEdgeSystemBarColorHelper,
                 mActivity,
                 statusBarColor,
-                mForceLightIconColorForNtp && isStandardNtp() && !mIsOmniboxFocused,
+                forceLightIconColor,
                 backgroundColor);
     }
 
@@ -569,12 +586,15 @@ public class StatusBarColorController
     @VisibleForTesting
     @ColorInt
     int calculateFinalStatusBarColor() {
+        return applyCurrentScrimToColor(calculateUnscrimmedStatusBarColor());
+    }
+
+    private @ColorInt int calculateUnscrimmedStatusBarColor() {
         mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
         @ColorInt
         int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
         statusBarColor = applyTabStripOverlay(statusBarColor);
         statusBarColor = ColorUtils.overlayColor(statusBarColor, mOverviewColorSupplier.get());
-        statusBarColor = applyCurrentScrimToColor(statusBarColor);
         return statusBarColor;
     }
 

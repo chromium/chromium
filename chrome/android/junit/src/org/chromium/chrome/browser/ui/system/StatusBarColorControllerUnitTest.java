@@ -42,8 +42,10 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -402,6 +404,29 @@ public class StatusBarColorControllerUnitTest {
         clearInvocations(mActivity);
         mStatusBarColorController.updateStatusBarColor();
         verify(mActivity, never()).setTaskDescription(any());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true")
+    public void testOnScrimColorChanged_TopScalpEnabled_KeepsUnscrimmedColorAndUpdatesIconTint() {
+        when(mSystemBarColorHelper.canSetStatusBarColor()).thenReturn(true);
+        when(mStatusBarColorProvider.getBaseStatusBarColor(any())).thenReturn(Color.WHITE);
+        initialize(/* isTablet= */ false, /* isInDesktopWindow= */ false);
+        clearInvocations(mSystemBarColorHelper);
+
+        // Dark 65% black scrim over a white status bar: the scalp color stays WHITE (unscrimmed),
+        // while forceLightIconColor flips to true because the scrimmed result is dark.
+        @ColorInt int darkScrim = ColorUtils.setAlphaComponentWithFloat(Color.BLACK, 0.65f);
+        mStatusBarColorController.onScrimColorChanged(darkScrim);
+        verify(mSystemBarColorHelper)
+                .setStatusBarColor(Color.WHITE, /* forceLightIconColor= */ true);
+
+        // Clearing the scrim restores dark icons on the white status bar.
+        clearInvocations(mSystemBarColorHelper);
+        mStatusBarColorController.onScrimColorChanged(Color.TRANSPARENT);
+        verify(mSystemBarColorHelper)
+                .setStatusBarColor(Color.WHITE, /* forceLightIconColor= */ false);
     }
 
     private void initialize(boolean isTablet, boolean isInDesktopWindow) {
