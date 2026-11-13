@@ -11061,7 +11061,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-oauth-multilogin-standard-cookies-binding",
      flag_descriptions::kEnableOAuthMultiloginStandardCookiesBindingName,
      flag_descriptions::kEnableOAuthMultiloginStandardCookiesBindingDescription,
-     kOsMac | kOsWin | kOsLinux,
+     kOsLinux,
      FEATURE_VALUE_TYPE(
          switches::kEnableOAuthMultiloginStandardCookiesBinding)},
 
@@ -11076,8 +11076,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-chrome-refresh-token-binding",
      flag_descriptions::kEnableChromeRefreshTokenBindingName,
-     flag_descriptions::kEnableChromeRefreshTokenBindingDescription,
-     kOsMac | kOsLinux,
+     flag_descriptions::kEnableChromeRefreshTokenBindingDescription, kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableChromeRefreshTokenBinding)},
 
     {"enable-chrome-refresh-token-binding-upgrade",
