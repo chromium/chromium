@@ -16,6 +16,7 @@ import {NavBraille} from '../../common/braille/nav_braille.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
 import {LogType} from '../../common/log_types.js';
+import type {ChromeVoxMessageId} from '../../common/msgs.js';
 import {Msgs} from '../../common/msgs.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {Spannable} from '../../common/spannable.js';
@@ -57,7 +58,7 @@ interface AncestryArgs {
 
 interface MessageHint {
   outputFormat?: string;
-  msgId?: string;
+  msgId?: ChromeVoxMessageId;
   subs?: string[];
   props?: outputTypes.OutputSpeechProperties;
   text?: string|Spannable;

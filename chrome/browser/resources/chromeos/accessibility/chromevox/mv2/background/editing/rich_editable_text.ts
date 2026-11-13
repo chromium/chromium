@@ -12,6 +12,7 @@ import {Cursor} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 
 import {NavBraille} from '../../common/braille/nav_braille.js';
+import type {ChromeVoxMessageId} from '../../common/msgs.js';
 import {Msgs} from '../../common/msgs.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {MultiSpannable} from '../../common/spannable.js';
@@ -286,7 +287,7 @@ export class RichEditableText extends AutomationEditableText {
 
       // Speech requires many more states than braille.
       const curExtent = baseLineOnStart ? startLine : endLine;
-      let suffixMsg = '';
+      let suffixMsg: ChromeVoxMessageId;
       if (curBase.isBeforeLine(curExtent)) {
         // Forward selection.
         if (prev.isBeforeLine(curBase) && !prev.start.equals(curBase.start)) {
@@ -477,7 +478,7 @@ export class RichEditableText extends AutomationEditableText {
       }
     }
 
-    const msgs: string[] = [];
+    const msgs: ChromeVoxMessageId[] = [];
     if (this.misspelled === !(markersWithinSelection[MarkerType.SPELLING])) {
       this.misspelled = !this.misspelled;
       msgs.push(this.misspelled ? 'misspelling_start' : 'misspelling_end');
@@ -495,7 +496,7 @@ export class RichEditableText extends AutomationEditableText {
   }
 
   private speakTextStyle_(style: AutomationNode): void {
-    const msgs: Array<{msg: string, opt_subs?: string[]}> = [];
+    const msgs: Array<{msg: ChromeVoxMessageId, opt_subs?: string[]}> = [];
     const fontSize = style.fontSize;
     const fontColor = Color.getColorDescription(style.color);
     const linked = style.state![StateType.LINKED];

@@ -6,6 +6,8 @@
  * @fileoverview The modes that the Chromevox panel can be in.
  */
 
+import type {ChromeVoxMessageId} from '../common/msgs.js';
+
 export enum PanelMode {
   COLLAPSED = 'collapsed',
   FOCUSED = 'focused',
@@ -15,7 +17,7 @@ export enum PanelMode {
 }
 
 interface PanelModeData {
-  title: string;
+  title: ChromeVoxMessageId;
   location?: string;
 }
 

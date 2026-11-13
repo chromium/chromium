@@ -7,6 +7,7 @@
  */
 import {BridgeCallbackManager} from '/common/bridge_callback_manager.js';
 
+import type {ChromeVoxMessageId} from '../common/msgs.js';
 import {Msgs} from '../common/msgs.js';
 import type {MenuDataForTest, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
@@ -32,7 +33,7 @@ export class PanelMenu {
   private updateScrollbarsTimeout_: number | null = null;
 
   /** @param menuMsg The msg id of the menu. */
-  constructor(menuMsg: string) {
+  constructor(menuMsg: ChromeVoxMessageId) {
     this.menuMsg = menuMsg;
     // The item in the menu bar containing the menu's title.
     this.menuBarItemElement = document.createElement('div');
@@ -324,7 +325,7 @@ export class PanelSearchMenu extends PanelMenu {
   /**
    * @param menuMsg The msg id of the menu.
    */
-  constructor(menuMsg: string) {
+  constructor(menuMsg: ChromeVoxMessageId) {
     super(menuMsg);
 
     // Add id attribute to the menu so we can associate it with search bar.

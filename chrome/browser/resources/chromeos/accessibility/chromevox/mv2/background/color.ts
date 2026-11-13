@@ -7,6 +7,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import type {ChromeVoxMessageId} from '../common/msgs.js';
 import {Msgs} from '../common/msgs.js';
 
 export class Color {
@@ -92,13 +93,17 @@ export class Color {
  */
 const DISTANCE_THRESHOLD = Color.findDistance(0X000000, 0X282828);
 
+interface ColorObject {
+  value: number;
+  colorMessageId: ChromeVoxMessageId;
+}
+
 /**
  * Holds objects that contain hexadecimal RGB values of colors and their
  * corresponding ChromeVox message IDs.
- * @private {!Array<{colorMessageId: string, value: number}>}
  * Obtained from url: https://www.w3schools.com/lib/w3color.js
  */
-const ColorObjectArray = [
+const ColorObjectArray: ColorObject[] = [
   {'value': 0x0, 'colorMessageId': 'color_black'},
   {'value': 0x6400, 'colorMessageId': 'color_dark_green'},
   {'value': 0x8000, 'colorMessageId': 'color_green'},

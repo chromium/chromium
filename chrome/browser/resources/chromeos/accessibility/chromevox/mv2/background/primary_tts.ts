@@ -9,6 +9,7 @@ import {constants} from '/common/constants.js';
 import {LocalStorage} from '/common/local_storage.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import type {ChromeVoxMessageId} from '../common/msgs.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {SettingsManager} from '../common/settings_manager.js';
@@ -659,7 +660,7 @@ export class PrimaryTts extends AbstractTts {
    * Method that cycles among the available punctuation echo levels.
    * @return The resulting punctuation level message id.
    */
-  cyclePunctuationEcho(): string {
+  cyclePunctuationEcho(): ChromeVoxMessageId {
     const nextPunctuationEcho =
         (this.currentPunctuationEcho_ + 1) % PunctuationEchoes.length;
     this.updatePunctuationEcho(nextPunctuationEcho);
@@ -778,7 +779,7 @@ export class PrimaryTts extends AbstractTts {
   private updateFromPrefs_(
       announce: boolean, prefs: chrome.settingsPrivate.PrefObject[]): void {
     prefs.forEach(pref => {
-      let msg: string;
+      let msg: ChromeVoxMessageId;
       let propertyName: TtsAudioProperty;
       switch (pref.key) {
         case 'settings.tts.speech_rate':

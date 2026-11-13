@@ -24,6 +24,7 @@ import {EarconId} from '../../common/earcon_id.js';
 import {EventSourceType} from '../../common/event_source_type.js';
 import {GestureGranularity} from '../../common/gesture_command_data.js';
 import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
+import type {ChromeVoxMessageId} from '../../common/msgs.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../../common/panel_command.js';
 import {PermissionChecker} from '../../common/permission_checker.js';
@@ -257,7 +258,7 @@ export class CommandHandler implements CommandHandlerInterface {
     let dir = Dir.FORWARD;
     let newRangeData;
     let pred: AutomationPredicate.Unary | null = null;
-    let predErrorMsg: string|undefined = undefined;
+    let predErrorMsg: ChromeVoxMessageId|undefined = undefined;
     let rootPred = AutomationPredicate.rootOrEditableRoot;
     let unit = null;
     let shouldWrap = true;

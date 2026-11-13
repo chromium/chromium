@@ -189,9 +189,11 @@ ts_library("build_ts") {
     #copied files
     ":stage_ts_build",
     ":stage_ts_build_sre",
+    "//chrome/browser/resources/chromeos/accessibility:chromevox_message_ids_dts",
   ]
 
   definitions = [
+    "$root_gen_dir/chrome/browser/resources/chromeos/accessibility/chromevox_message_ids.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",

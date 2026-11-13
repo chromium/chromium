@@ -14,7 +14,7 @@ import {ChromeVoxRange} from '../chromevox_range.js';
 
 /** Handles accessing and tracking access to the clipboard. */
 export class ClipboardHandler {
-  private lastClipboardEvent_?: string;
+  private lastClipboardEvent_?: 'copy';
   static instance: ClipboardHandler;
 
   static init(): void {
@@ -24,15 +24,14 @@ export class ClipboardHandler {
         () => ClipboardHandler.instance.onClipboardDataChanged_());
 
     document.addEventListener(
-        'copy',
-        event => ClipboardHandler.instance.onClipboardCopyEvent_(event));
+        'copy', () => ClipboardHandler.instance.onClipboardCopyEvent_());
   }
 
   /** Processes the copy clipboard event. */
-  private onClipboardCopyEvent_(evt: ClipboardEvent): void {
-    // This should always be 'copy', but is still important to set for the below
-    // extension event.
-    this.lastClipboardEvent_ = evt.type;
+  private onClipboardCopyEvent_(): void {
+    // Record that a 'copy' DOM event occurred for the subsequent extension
+    // clipboard event.
+    this.lastClipboardEvent_ = 'copy';
   }
 
   private onClipboardDataChanged_(): void {

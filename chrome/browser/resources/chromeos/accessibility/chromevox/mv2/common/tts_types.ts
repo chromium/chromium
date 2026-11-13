@@ -7,6 +7,8 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import type {ChromeVoxMessageId} from './msgs.js';
+
 /**
  * Categories for a speech utterance. This can be used with the
  * CATEGORY_FLUSH queue mode, which flushes all utterances from a given
@@ -190,7 +192,7 @@ export enum TtsSettings {
 
 export interface PunctuationEcho {
   name: string;
-  msg: string;
+  msg: ChromeVoxMessageId;
   regexp: RegExp;
   clear: boolean;
 }
@@ -229,7 +231,7 @@ export const PunctuationEchoes: PunctuationEcho[] = [
  * Character dictionary. These symbols are replaced with their human readable
  * equivalents. This replacement only occurs for single character utterances.
  */
-export const CharacterDictionary: Record<string, string> = {
+export const CharacterDictionary: Record<string, ChromeVoxMessageId> = {
   ' ': 'space',
   '\u00a0': 'space',
   '`': 'backtick',

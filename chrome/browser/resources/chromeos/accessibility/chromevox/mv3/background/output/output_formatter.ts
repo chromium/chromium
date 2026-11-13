@@ -245,10 +245,10 @@ export class OutputFormatter implements OutputFormatParserObserver {
           new outputTypes.OutputEarconAction(resolvedInfo.earcon),
           node.location || undefined);
     }
-    const msgId = this.output_.formatAsBraille ? resolvedInfo.msgId + '_brl' :
-                                                 resolvedInfo.msgId;
     // TODO(b/314203187): Not null asserted, check that this is correct.
-    const msg = Msgs.getMsg(msgId!);
+    const msg = this.output_.formatAsBraille ?
+        Msgs.getMsgWithBrailleFallback(resolvedInfo.msgId!) :
+        Msgs.getMsg(resolvedInfo.msgId!);
     this.output_.append(buff, msg, options);
     formatLog.writeTokenWithValue(token, msg);
   }
@@ -510,13 +510,13 @@ export class OutputFormatter implements OutputFormatParserObserver {
       return;
     }
     options.annotation.push(token);
-    let msgId =
+    const baseMsgId =
         outputTypes.INPUT_TYPE_MESSAGE_IDS[node.inputType] || 'input_type_text';
-    if (this.output_.formatAsBraille) {
-      msgId = msgId + '_brl';
-    }
-    this.output_.append(buff, Msgs.getMsg(msgId), options);
-    formatLog.writeTokenWithValue(token, Msgs.getMsg(msgId));
+    const msg = this.output_.formatAsBraille ?
+        Msgs.getMsgWithBrailleFallback(baseMsgId) :
+        Msgs.getMsg(baseMsgId);
+    this.output_.append(buff, msg, options);
+    formatLog.writeTokenWithValue(token, msg);
   }
 
   private formatJoinedDescendants_(
@@ -581,10 +581,10 @@ export class OutputFormatter implements OutputFormatParserObserver {
     if (!isPluralized) {
       msgArgs = this.getNonPluralizedArguments_(tree, node, formatLog, msgArgs);
     }
-    let msg = Msgs.getMsg(msgId, msgArgs);
+    let msg = Msgs.getDynamicMsg(msgId, msgArgs);
     try {
       if (this.output_.formatAsBraille) {
-        msg = Msgs.getMsg(msgId + '_brl', msgArgs) || msg;
+        msg = Msgs.getDynamicMsg(msgId + '_brl', msgArgs) || msg;
       }
     } catch (e) {
       // TODO(accessibility): Handle whatever error this is.
@@ -821,10 +821,10 @@ export class OutputFormatter implements OutputFormatParserObserver {
     if (node.roleDescription) {
       msg = node.roleDescription;
     } else if (info) {
-      if (this.output_.formatAsBraille) {
-        msg = Msgs.getMsg(info.msgId + '_brl');
-      } else if (info.msgId) {
-        msg = Msgs.getMsg(info.msgId);
+      if (info.msgId) {
+        msg = this.output_.formatAsBraille ?
+            Msgs.getMsgWithBrailleFallback(info.msgId) :
+            Msgs.getMsg(info.msgId);
       }
     } else {
       // We can safely ignore this role. ChromeVox output tests cover

@@ -27,6 +27,7 @@ import {KeyCode} from '/common/key_code.js';
 import {Command, CommandCategory} from './command.js';
 import type {KeyBinding, SerializedKeySequence} from './key_sequence.js';
 import {KeySequence} from './key_sequence.js';
+import type {ChromeVoxMessageId} from './msgs.js';
 
 export class CommandStore {
   /**
@@ -34,7 +35,7 @@ export class CommandStore {
    * @param command The command to query.
    * @return The message id, if any.
    */
-  static messageForCommand(command: Command): string | undefined {
+  static messageForCommand(command: Command): ChromeVoxMessageId|undefined {
     return COMMAND_DATA[command]?.msgId;
   }
 
@@ -125,7 +126,7 @@ export class CommandStore {
  */
 interface DataEntry {
   category: CommandCategory;
-  msgId?: string;
+  msgId?: ChromeVoxMessageId;
   denySignedOut?: boolean;
   sequence?: SerializedKeySequence;
   altSequence?: SerializedKeySequence;

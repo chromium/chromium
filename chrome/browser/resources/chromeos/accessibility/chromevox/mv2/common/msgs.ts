@@ -9,6 +9,9 @@
 import {MessageFormat} from '/chromevox/mv2/third_party/messageformat/messageformat.rollup.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+export type ChromeVoxMessageId =
+    ChromeVoxResourceMessageId|Lowercase<keyof typeof Msgs.Untranslated>;
+
 export class Msgs {
   /** Return the current locale. */
   static getLocale(): string {
@@ -25,8 +28,10 @@ export class Msgs {
    * @param subs Substitution strings.
    * @return The localized message.
    */
-  static getMsg(messageId: string, subs?: string[]): string {
-    let message: string = Msgs.Untranslated[messageId.toUpperCase()];
+  static getMsg(messageId: ChromeVoxMessageId, subs?: string[]): string {
+    let message: string|undefined =
+        (Msgs.Untranslated as
+         Record<string, string|undefined>)[messageId.toUpperCase()];
     if (message !== undefined) {
       return Msgs.applySubstitutions_(message, subs);
     }
@@ -46,12 +51,30 @@ export class Msgs {
   }
 
   /**
+   * Appends '_brl' for optional Braille overrides while keeping compile-time
+   * validation on the base messageId; delegates to getMsg so test stubs work.
+   */
+  static getMsgWithBrailleFallback(
+      messageId: ChromeVoxMessageId, subs?: string[]): string {
+    return Msgs.getMsg((messageId + '_brl') as ChromeVoxMessageId, subs);
+  }
+
+  /**
+   * Used only when messageId is parsed dynamically at runtime (such as DOM
+   * msgid attributes or OutputRule format tokens) and cannot be statically
+   * typed; delegates to getMsg so runtime error checking and test stubs work.
+   */
+  static getDynamicMsg(messageId: string, subs?: string[]): string {
+    return Msgs.getMsg(messageId as ChromeVoxMessageId, subs);
+  }
+
+  /**
    * Returns the message with the given message ID, formatted for the given
    * count.
    * @param subs Substitution strings.
    * @return The localized and formatted message.
    */
-  static getMsgWithCount(messageId: string, count: number): string {
+  static getMsgWithCount(messageId: ChromeVoxMessageId, count: number): string {
     const msg = Msgs.getMsg(messageId);
     const formatter = new MessageFormat(chrome.i18n.getUILanguage(), msg);
     return formatter.format({COUNT: count}, () => {});
@@ -73,7 +96,7 @@ export class Msgs {
       if (!msgid) {
         throw new Error('Element has no msgid attribute: ' + elts[i]);
       }
-      const val = Msgs.getMsg(msgid);
+      const val = Msgs.getDynamicMsg(msgid);
       if (elts[i].tagName === 'INPUT') {
         elts[i].setAttribute('placeholder', val);
       } else {
@@ -113,7 +136,7 @@ export const NAMESPACE_ = 'chromevox_';
  * Strings that are displayed in the user interface but don't need
  * be translated.
  */
-export const Untranslated: Record<string, string> = {
+export const Untranslated = {
   /** The unchecked state for a checkbox in braille. */
   CHECKBOX_UNCHECKED_STATE_BRL: '( )',
   /** The checked state for a checkbox in braille. */
@@ -164,7 +187,7 @@ export const Untranslated: Record<string, string> = {
   ARIA_VALUE_TEXT: '$1',
   /** Brailled when describing an ARIA value text. */
   ARIA_VALUE_TEXT_BRL: '$1',
-};
+} as const satisfies Record<string, string>;
 }
 
 TestImportManager.exportForTesting(Msgs);

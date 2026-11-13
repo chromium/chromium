@@ -11,6 +11,8 @@ import {AutomationPredicate} from '/common/automation_predicate.js';
 import type {BridgeCallbackId} from '/common/bridge_callback_manager.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import type {ChromeVoxMessageId} from './msgs.js';
+
 export enum PanelNodeMenuId {
   HEADING = 1,
   LANDMARK = 2,
@@ -21,7 +23,7 @@ export enum PanelNodeMenuId {
 
 export interface PanelNodeMenuData {
   menuId: PanelNodeMenuId;
-  titleId: string;
+  titleId: ChromeVoxMessageId;
   predicate: AutomationPredicate.Unary;
 }
 

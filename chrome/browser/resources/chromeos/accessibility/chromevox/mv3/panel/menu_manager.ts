@@ -20,6 +20,7 @@ import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
 import type {KeyBinding} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
+import type {ChromeVoxMessageId} from '../common/msgs.js';
 import {Msgs} from '../common/msgs.js';
 import type {CandidateMenuItemData, PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 import {ALL_PANEL_MENU_NODE_DATA} from '../common/panel_menu_data.js';
@@ -119,7 +120,7 @@ export class MenuManager {
    * @param menuMsg The msg id of the new menu to add.
    * @return The menu just created.
    */
-  addMenu(menuMsg: string): PanelMenu {
+  addMenu(menuMsg: ChromeVoxMessageId): PanelMenu {
     const menu = new PanelMenu(menuMsg);
     $('menu-bar')!.appendChild(menu.menuBarItemElement);
     menu.menuBarItemElement.addEventListener(
@@ -185,7 +186,7 @@ export class MenuManager {
    * @param menuMsg The msg id of the new menu to add.
    * @return The menu just created.
    */
-  addSearchMenu(menuMsg: string): PanelMenu {
+  addSearchMenu(menuMsg: ChromeVoxMessageId): PanelMenu {
     this.searchMenu_ = new PanelSearchMenu(menuMsg);
     // Add event listeners to search bar.
     this.searchMenu_.searchBar.addEventListener(
@@ -790,7 +791,7 @@ const COMMANDS_WITH_NO_MSG_ID = [
   'copy',
 ];
 
-const ACTION_TO_MSG_ID: Record<string, string> = {
+const ACTION_TO_MSG_ID: Record<string, ChromeVoxMessageId> = {
   decrement: 'action_decrement_description',
   doDefault: 'perform_default_action',
   increment: 'action_increment_description',

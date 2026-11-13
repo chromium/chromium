@@ -8,6 +8,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from '../command.js';
+import type {ChromeVoxMessageId} from '../msgs.js';
 import {Msgs} from '../msgs.js';
 
 export namespace BrailleCommandData {
@@ -46,7 +47,7 @@ export namespace BrailleCommandData {
         dots.push(shifter + 1);
       }
     }
-    let msgid;
+    let msgid: ChromeVoxMessageId|undefined;
     if (dots.length > 1) {
       msgid = 'braille_dots';
     } else if (dots.length === 1) {

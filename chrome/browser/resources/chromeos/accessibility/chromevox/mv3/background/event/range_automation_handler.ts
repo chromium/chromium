@@ -12,6 +12,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import type {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
+import type {ChromeVoxMessageId} from '../../common/msgs.js';
 import {Msgs} from '../../common/msgs.js';
 import {CaptionsHandler} from '../captions_handler.js';
 import {ChromeVox} from '../chromevox.js';
@@ -184,7 +185,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler
 
     // Report attribute changes for specific generated events.
     if (evt.type === chrome.automation.EventType.SORT_CHANGED) {
-      let msgId;
+      let msgId: ChromeVoxMessageId|undefined;
       if (evt.target.sortDirection ===
           chrome.automation.SortDirectionType.ASCENDING) {
         msgId = 'sort_ascending';

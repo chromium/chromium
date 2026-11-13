@@ -8,6 +8,7 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import type {ChromeVoxMessageId} from '../common/msgs.js';
 import {Msgs} from '../common/msgs.js';
 import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode} from '../common/tts_types.js';
@@ -155,7 +156,7 @@ export class DownloadHandler {
           'download_started', QueueMode.FLUSH, [optSub]);
     } else if (state) {
       const currentState = state.current;
-      let msgId = '';
+      let msgId: ChromeVoxMessageId;
       // Only give notification for COMPLETE and INTERRUPTED.
       // IN_PROGRESS notifications are given by notifyProgress function.
       if (currentState === DownloadState.COMPLETE) {
@@ -173,7 +174,7 @@ export class DownloadHandler {
       this.speechAndBrailleOutput_(msgId, QueueMode.FLUSH, optSubs);
     } else if (paused) {
       // Will be either resumed or paused.
-      let msgId = 'download_resumed';
+      let msgId: ChromeVoxMessageId = 'download_resumed';
       const optSubs = [storedItem.fileName];
       if (paused.current === true) {
         // Download paused.
@@ -210,7 +211,8 @@ export class DownloadHandler {
    * @param optSubs Substitution strings.
    */
   private speechAndBrailleOutput_(
-      msgId: string, queueMode: QueueMode, optSubs: string[]): void {
+      msgId: ChromeVoxMessageId, queueMode: QueueMode,
+      optSubs: string[]): void {
     if (SettingsManager.get('announceDownloadNotifications')) {
       const msg = Msgs.getMsg(msgId, optSubs);
       new Output().withString(msg).withQueueMode(queueMode).go();

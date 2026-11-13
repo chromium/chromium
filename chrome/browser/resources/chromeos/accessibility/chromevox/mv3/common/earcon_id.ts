@@ -7,6 +7,8 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import type {ChromeVoxMessageId} from './msgs.js';
+
 /** Earcon names. */
 export enum EarconId {
   ALERT_MODAL = 'alert_modal',
@@ -49,12 +51,14 @@ export namespace EarconId {
   }
 }
 
+type EarconDescriptionMap = Partial<Record<EarconId, ChromeVoxMessageId>>;
+
 /**
  * Maps a earcon id to a message id description.
  * Only add mappings for earcons used in ChromeVox Next. This map gets
  * used to generate tutorial content.
  */
-export const EarconDescription: Partial<Record<EarconId, string>> = {
+export const EarconDescription: EarconDescriptionMap = {
   [EarconId.ALERT_MODAL]: 'alert_modal_earcon_description',
   [EarconId.ALERT_NONMODAL]: 'alert_nonmodal_earcon_description',
   [EarconId.BUTTON]: 'button_earcon_description',

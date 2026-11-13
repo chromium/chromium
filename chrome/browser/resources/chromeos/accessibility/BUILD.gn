@@ -86,6 +86,18 @@ accessibility_strings("accessibility_strings") {
   out_dir = accessibility_out_dir
 }
 
+action("chromevox_message_ids_dts") {
+  script = "//chrome/browser/resources/chromeos/accessibility/tools/generate_chromevox_message_ids.py"
+  sources = [ "$accessibility_out_dir/_locales/en/messages.json.gz" ]
+  output_file = "$target_gen_dir/chromevox_message_ids.d.ts"
+  outputs = [ output_file ]
+  deps = [ ":accessibility_strings" ]
+  args = [
+           "-o",
+           rebase_path(output_file, root_build_dir),
+         ] + rebase_path(sources, root_build_dir)
+}
+
 group("browser_tests") {
   testonly = true
   deps = [

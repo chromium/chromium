@@ -17,6 +17,7 @@ import {CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
+import type {ChromeVoxMessageId} from '../common/msgs.js';
 import {Msgs} from '../common/msgs.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
@@ -147,7 +148,7 @@ export class LearnMode {
   static onBrailleKeyEvent(evt: chrome.brailleDisplayPrivate.KeyEvent): void {
     LearnMode.shouldFlushSpeech_ = true;
     LearnMode.maybeClose_();
-    let msgid;
+    let msgid: ChromeVoxMessageId|undefined;
     const msgArgs: string[] = [];
     let text;
     let callback;

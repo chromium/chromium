@@ -8,6 +8,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import type {EarconId} from '../../common/earcon_id.js';
+import type {ChromeVoxMessageId} from '../../common/msgs.js';
 import type {Spannable} from '../../common/spannable.js';
 import {ChromeVox} from '../chromevox.js';
 
@@ -116,8 +117,10 @@ export enum OutputCustomEvent {
 
 export type OutputEventType = EventType | OutputCustomEvent;
 
+type PropertyMessageMap = Record<string, Record<string, ChromeVoxMessageId>>;
+
 /** Rules for mapping properties to a msg id. */
-export const OutputPropertyMap: Record<string, Record<string, string>> = {
+export const OutputPropertyMap: PropertyMessageMap = {
   CHECKED: {
     'true': 'checked_true',
     'false': 'checked_false',
@@ -149,7 +152,7 @@ export interface AppendOptions {
 }
 
 export interface StateOutputInfo {
-  msgId?: string;
+  msgId?: ChromeVoxMessageId;
   earcon?: EarconId;
 }
 
@@ -159,8 +162,8 @@ export interface StateOutputInfo {
   * isRoleSpecific: info used for specific roles.
   */
 interface StateInfo {
-  on: {msgId: string, earcon?: EarconId};
-  off?: {msgId?: string, earcon?: EarconId};
+  on: {msgId: ChromeVoxMessageId, earcon?: EarconId};
+  off?: {msgId?: ChromeVoxMessageId, earcon?: EarconId};
   isRoleSpecific?: boolean;
 }
 
@@ -175,7 +178,7 @@ export const OUTPUT_STATE_INFO: Record<string, StateInfo> = {
 };
 
 /** Maps input types to message IDs. */
-export const INPUT_TYPE_MESSAGE_IDS: Record<string, string> = {
+export const INPUT_TYPE_MESSAGE_IDS: Record<string, ChromeVoxMessageId> = {
   'email': 'input_type_email',
   'number': 'input_type_number',
   'password': 'input_type_password',

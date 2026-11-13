@@ -8,6 +8,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../../common/earcon_id.js';
+import type {ChromeVoxMessageId} from '../../common/msgs.js';
 import type {ChromeVoxRole} from '../../common/role_type.js';
 import {AbstractRole} from '../../common/role_type.js';
 
@@ -31,7 +32,7 @@ export interface Info {
   earcon?: EarconId;
   ignoreAncestry?: boolean;
   inherits?: ChromeVoxRole;
-  msgId?: string;
+  msgId?: ChromeVoxMessageId;
   verboseAncestry?: boolean;
 }
 

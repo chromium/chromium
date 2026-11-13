@@ -5,6 +5,7 @@
 import {KeyCode} from '/common/key_code.js';
 
 import {Command} from './command.js';
+import type {ChromeVoxMessageId} from './msgs.js';
 
 type AcceleratorAction = chrome.accessibilityPrivate.AcceleratorAction;
 type SyntheticKeyboardModifiers =
@@ -18,10 +19,10 @@ interface KeyData {
 interface DataEntry {
   acceleratorAction?: AcceleratorAction;
   command?: Command;
-  commandDescriptionMsgId?: string;
+  commandDescriptionMsgId?: ChromeVoxMessageId;
   globalKey?: KeyData;
   menuKeyOverride?: KeyData;
-  msgId: string;
+  msgId: ChromeVoxMessageId;
 }
 
 export namespace GestureCommandData {

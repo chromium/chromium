@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ChromeVoxMessageId} from './msgs.js';
+
 export interface StateWithMaxCellHeight {
   rows: number;
   columns: number;
@@ -11,5 +13,5 @@ export interface StateWithMaxCellHeight {
 }
 
 export interface ClipboardData {
-  eventType?: string, clipboardContent?: string,
+  eventType?: ChromeVoxMessageId, clipboardContent?: string,
 }

@@ -113,11 +113,10 @@ class OffscreenLearnModeKeyboardHandler {
  */
 class OffscreenClipboardHandler {
   static instance?: OffscreenClipboardHandler;
-  private lastClipboardEvent_?: string;
+  private lastClipboardEvent_?: 'copy';
 
   constructor() {
-    document.addEventListener(
-        'copy', event => this.onClipboardCopyEvent_(event));
+    document.addEventListener('copy', () => this.onClipboardCopyEvent_());
 
     BridgeHelper.registerHandler(
         TARGET, Action.ON_CLIPBOARD_DATA_CHANGED,
@@ -134,10 +133,10 @@ class OffscreenClipboardHandler {
   }
 
   /** Processes the copy clipboard event. */
-  private onClipboardCopyEvent_(evt: ClipboardEvent): void {
-    // This should always be 'copy', but is still important to set for the below
-    // extension event.
-    this.lastClipboardEvent_ = evt.type;
+  private onClipboardCopyEvent_(): void {
+    // Record that a 'copy' DOM event occurred for the subsequent extension
+    // clipboard event.
+    this.lastClipboardEvent_ = 'copy';
   }
 
 
