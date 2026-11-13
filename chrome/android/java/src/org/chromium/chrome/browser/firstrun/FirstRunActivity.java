@@ -962,6 +962,9 @@ public class FirstRunActivity extends FirstRunActivityBase
             // Use linear interpolation to enable custom interpolators usage of various properties.
             mAnimator = ValueAnimator.ofFloat(0f, 1f);
             mAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+            // Number of pages to drag across, which is more than 1 when skipping pages, e.g. from
+            // History Sync to the Safety Promo when the Default Browser Promo is skipped.
+            int pageCount = Math.abs(position - oldPosition);
 
             class UpdateListener implements ValueAnimator.AnimatorUpdateListener {
                 /** Previous animated value to calculate fake drag delta for transitions. */
@@ -973,7 +976,7 @@ public class FirstRunActivity extends FirstRunActivityBase
                     // Get the up-to-date width, which is subject to user change, e.g., by
                     // orientation changes or window resize.
                     int width = mPager.getWidth();
-                    int animatedValue = Math.round(frac * width);
+                    int animatedValue = Math.round(frac * width * pageCount);
                     float deltaPx = dragSign * (animatedValue - mPrevAnimatedValue);
                     mPager.fakeDragBy(deltaPx);
                     mPrevAnimatedValue = animatedValue;
@@ -992,16 +995,7 @@ public class FirstRunActivity extends FirstRunActivityBase
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             mPager.endFakeDrag();
-                            if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()
-                                    && mPager.getCurrentItem() != position) {
-                                // When the user stays signed out, we jump from index 0 (sign-in
-                                // page) to index 2 (promo page) and skip index 1 (History sync).
-                                // Fake dragging seems to fail in multipage jumps, so we manually
-                                // jump to the target position.
-                                mPager.setCurrentItem(position, false);
-                            }
                             mAnimator = null;
-                            // No need to call `mPager.setCurrentItem(position, false)`.
                         }
 
                         @Override
