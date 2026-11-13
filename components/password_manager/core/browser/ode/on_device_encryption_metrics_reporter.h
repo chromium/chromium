@@ -17,11 +17,6 @@ class PrefService;
 
 namespace password_manager {
 
-inline constexpr char kPasskeyOnDeviceEncryptionStateHistogram[] =
-    "PasswordManager.OnDeviceEncryptionState.Passkeys";
-inline constexpr char kPasswordOnDeviceEncryptionStateHistogram[] =
-    "PasswordManager.OnDeviceEncryptionState.Passwords";
-
 // KeyedService that manages on-device encryption metrics reporters for
 // passwords and passkeys.
 class OnDeviceEncryptionMetricsReporter : public KeyedService {

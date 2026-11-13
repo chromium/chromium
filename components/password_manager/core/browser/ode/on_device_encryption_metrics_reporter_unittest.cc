@@ -19,6 +19,11 @@ namespace password_manager {
 
 namespace {
 
+constexpr char kPasskeyOnDeviceEncryptionStateHistogram[] =
+    "PasswordManager.OnDeviceEncryptionState.Passkeys";
+constexpr char kPasswordOnDeviceEncryptionStateHistogram[] =
+    "PasswordManager.OnDeviceEncryptionState.Passwords";
+
 class OnDeviceEncryptionMetricsReporterTest : public testing::Test {
  public:
   OnDeviceEncryptionMetricsReporterTest() {

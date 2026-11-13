@@ -13,13 +13,47 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace password_manager {
 
 namespace {
+
+using DataType = OnDeviceEncryptionDataTypeSpecificMetricsReporter::DataType;
+
+std::string_view DataTypeToHistogramSuffix(DataType data_type) {
+  switch (data_type) {
+    case DataType::kPasskeys:
+      return "Passkeys";
+    case DataType::kPasswords:
+      return "Passwords";
+  }
+  NOTREACHED();
+}
+
+std::string_view GetLastReportingTimePrefName(DataType data_type) {
+  switch (data_type) {
+    case DataType::kPasskeys:
+      return prefs::kOnDeviceEncryptionStatePasskeyLastReportingTime;
+    case DataType::kPasswords:
+      return prefs::kOnDeviceEncryptionStatePasswordLastReportingTime;
+  }
+  NOTREACHED();
+}
+
+std::string_view GetLastReportedBucketPrefName(DataType data_type) {
+  switch (data_type) {
+    case DataType::kPasskeys:
+      return prefs::kOnDeviceEncryptionStatePasskeyLastReportedBucket;
+    case DataType::kPasswords:
+      return prefs::kOnDeviceEncryptionStatePasswordLastReportedBucket;
+  }
+  NOTREACHED();
+}
 
 std::optional<OnDeviceEncryptionStateHistogramBucket>
 ToOnDeviceEncryptionStateHistogramBucket(OnDeviceEncryptionState state) {
@@ -51,19 +85,12 @@ ToOnDeviceEncryptionStateHistogramBucket(OnDeviceEncryptionState state) {
 
 OnDeviceEncryptionDataTypeSpecificMetricsReporter::
     OnDeviceEncryptionDataTypeSpecificMetricsReporter(
-        std::string_view histogram_name,
-        std::string_view pref_name_last_reporting_time,
-        std::string_view pref_name_last_reported_bucket,
+        DataType data_type,
         std::unique_ptr<OnDeviceEncryptionStateTracker> tracker,
         PrefService& pref_service)
-    : histogram_name_(histogram_name),
-      pref_name_last_reporting_time_(pref_name_last_reporting_time),
-      pref_name_last_reported_bucket_(pref_name_last_reported_bucket),
+    : data_type_(data_type),
       tracker_(std::move(tracker)),
       pref_service_(pref_service) {
-  CHECK(!histogram_name_.empty());
-  CHECK(!pref_name_last_reporting_time_.empty());
-  CHECK(!pref_name_last_reported_bucket_.empty());
   CHECK(tracker_);
   // During startup, services are actively initializing, and might also start
   // notifying the observers. On the other hand, it is good practice to avoid
@@ -92,7 +119,7 @@ void OnDeviceEncryptionDataTypeSpecificMetricsReporter::
     OnDeviceEncryptionStateChanged(OnDeviceEncryptionState /*previous_state*/,
                                    OnDeviceEncryptionState /*new_state*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  MaybeRecordReadiness();
+  MaybeRecordMetrics();
 }
 
 void OnDeviceEncryptionDataTypeSpecificMetricsReporter::
@@ -108,10 +135,16 @@ void OnDeviceEncryptionDataTypeSpecificMetricsReporter::
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(tracker_);
   observation_.Observe(tracker_.get());
-  MaybeRecordReadiness();
+  MaybeRecordMetrics();
 }
 
-void OnDeviceEncryptionDataTypeSpecificMetricsReporter::MaybeRecordReadiness() {
+void OnDeviceEncryptionDataTypeSpecificMetricsReporter::MaybeRecordMetrics() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleNextReporting(MaybeRecordReadiness());
+}
+
+base::Time
+OnDeviceEncryptionDataTypeSpecificMetricsReporter::MaybeRecordReadiness() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(tracker_);
   std::optional<OnDeviceEncryptionStateHistogramBucket> bucket =
@@ -142,7 +175,10 @@ void OnDeviceEncryptionDataTypeSpecificMetricsReporter::MaybeRecordReadiness() {
         metric_has_been_reported_long_ago || reporting_time_mismatch_detected;
 
     if (current_state_must_be_reported) {
-      base::UmaHistogramEnumeration(histogram_name_, *bucket);
+      base::UmaHistogramEnumeration(
+          base::StrCat({"PasswordManager.OnDeviceEncryptionState.",
+                        DataTypeToHistogramSuffix(data_type_)}),
+          *bucket);
       SetLastReportedTimeAndBucket(now, *bucket);
       next_scheduled_reporting_time = now + kPeriodicReportingDelay;
     } else {
@@ -150,7 +186,7 @@ void OnDeviceEncryptionDataTypeSpecificMetricsReporter::MaybeRecordReadiness() {
           last_reported_time + kPeriodicReportingDelay;
     }
   }
-  ScheduleNextReporting(next_scheduled_reporting_time);
+  return next_scheduled_reporting_time;
 }
 
 void OnDeviceEncryptionDataTypeSpecificMetricsReporter::ScheduleNextReporting(
@@ -159,7 +195,7 @@ void OnDeviceEncryptionDataTypeSpecificMetricsReporter::ScheduleNextReporting(
   timer_.Start(
       FROM_HERE, execution_time,
       base::BindOnce(&OnDeviceEncryptionDataTypeSpecificMetricsReporter::
-                         MaybeRecordReadiness,
+                         MaybeRecordMetrics,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -168,8 +204,9 @@ OnDeviceEncryptionDataTypeSpecificMetricsReporter::
     GetLastReportedTimeAndBucket() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Time time =
-      pref_service_->GetTime(pref_name_last_reporting_time_);
-  const int bucket = pref_service_->GetInteger(pref_name_last_reported_bucket_);
+      pref_service_->GetTime(GetLastReportingTimePrefName(data_type_));
+  const int bucket =
+      pref_service_->GetInteger(GetLastReportedBucketPrefName(data_type_));
   if (time.is_null() || bucket < 0 ||
       bucket >
           static_cast<int>(OnDeviceEncryptionStateHistogramBucket::kMaxValue)) {
@@ -184,8 +221,8 @@ void OnDeviceEncryptionDataTypeSpecificMetricsReporter::
         base::Time time,
         OnDeviceEncryptionStateHistogramBucket bucket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetTime(pref_name_last_reporting_time_, time);
-  pref_service_->SetInteger(pref_name_last_reported_bucket_,
+  pref_service_->SetTime(GetLastReportingTimePrefName(data_type_), time);
+  pref_service_->SetInteger(GetLastReportedBucketPrefName(data_type_),
                             static_cast<int>(bucket));
 }
 
