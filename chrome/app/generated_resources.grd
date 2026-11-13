@@ -11453,6 +11453,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_PICTURE_IN_PICTURE_MINIMIZE_CONTROL_TEXT" desc="Text label of the minimize control button. The button appears when the user hovers over the Picture-in-Picture window.">
         Minimize
       </message>
+      <if expr="is_chromeos">
+        <message name="IDS_PICTURE_IN_PICTURE_PIN_WINDOW_TEXT" desc="Text label of the pin control button. Pressing the button keeps the Picture-in-Picture window where the user places it, instead of snapping it to the edge of the screen. The button appears in the Picture-in-Picture window.">
+          Pin window
+        </message>
+        <message name="IDS_PICTURE_IN_PICTURE_UNPIN_WINDOW_TEXT" desc="Text label of the unpin control button. Pressing the button snaps the Picture-in-Picture window to the edge of the screen again. The button appears in the Picture-in-Picture window when the window is pinned.">
+          Unpin window
+        </message>
+      </if>
       <message name="IDS_PICTURE_IN_PICTURE_LIVE_CAPTION_CONTROL_TEXT" desc="Text label of the live caption button. The button appears when the user hovers over the Picture-in-Picture window.">
         Live Caption
       </message>

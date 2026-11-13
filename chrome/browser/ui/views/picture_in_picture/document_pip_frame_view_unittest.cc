@@ -61,10 +61,17 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -1554,3 +1561,88 @@ TEST_F(DocumentPipFrameViewTest, OnWidgetDestroyingClearsAutoPipOverlay) {
   EXPECT_FALSE(GetAutoPipOverlay(frame_view));
   EXPECT_FALSE(IsOverlayViewVisible(frame_view));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class DocumentPipFrameViewAutoLayoutToggleTest
+    : public DocumentPipFrameViewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DocumentPipFrameViewAutoLayoutToggleTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kPipAutoLayoutToggle, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// The Document PiP window enters the ash PiP state and has the pin button only
+// when the feature is enabled.
+TEST_P(DocumentPipFrameViewAutoLayoutToggleTest, EntersAshPipAndHasPinButton) {
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  aura::Window* window = frame_view->GetWidget()->GetNativeWindow();
+  const bool enabled = GetParam();
+
+  EXPECT_EQ(enabled, window->GetProperty(chromeos::kWindowStateTypeKey) ==
+                         chromeos::WindowStateType::kPip);
+  EXPECT_EQ(enabled, !!frame_view->GetPinButtonForTesting());
+  const ash::PipParams* pip_params = window->GetProperty(ash::kPipParamsKey);
+  if (enabled) {
+    ASSERT_NE(nullptr, pip_params);
+    // The auto layout is off (i.e. pinned) by default for Document PiP.
+    EXPECT_EQ((ash::PipParams{.auto_layout = false,
+                              .activatable = true,
+                              .double_tap_to_resize = false}),
+              *pip_params);
+  } else {
+    EXPECT_EQ(nullptr, pip_params);
+  }
+}
+
+// The pin button toggles the auto layout mode of the window.
+TEST_P(DocumentPipFrameViewAutoLayoutToggleTest, PinButtonTogglesAutoLayout) {
+  if (!GetParam()) {
+    GTEST_SKIP() << "The pin button only exists when the feature is enabled.";
+  }
+  auto* frame_view =
+      CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
+  auto* widget = frame_view->GetWidget();
+  widget->SetBounds({400, 300});
+  widget->LayoutRootViewIfNecessary();
+  aura::Window* window = widget->GetNativeWindow();
+
+  views::ToggleImageButton* pin_button = frame_view->GetPinButtonForTesting();
+  ASSERT_TRUE(pin_button);
+  ASSERT_FALSE(pin_button->bounds().IsEmpty());
+
+  // The pin button takes the input.
+  gfx::Point center = pin_button->bounds().CenterPoint();
+  views::View::ConvertPointToTarget(pin_button->parent(), frame_view, &center);
+  EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(center));
+
+  ASSERT_NE(nullptr, window->GetProperty(ash::kPipParamsKey));
+  EXPECT_FALSE(window->GetProperty(ash::kPipParamsKey)->auto_layout);
+  EXPECT_TRUE(pin_button->GetToggled());
+
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  event_generator.MoveMouseTo(pin_button->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+  EXPECT_EQ((ash::PipParams{.auto_layout = true,
+                            .activatable = true,
+                            .double_tap_to_resize = false}),
+            *window->GetProperty(ash::kPipParamsKey));
+  EXPECT_FALSE(pin_button->GetToggled());
+
+  event_generator.ClickLeftButton();
+  EXPECT_EQ((ash::PipParams{.auto_layout = false,
+                            .activatable = true,
+                            .double_tap_to_resize = false}),
+            *window->GetProperty(ash::kPipParamsKey));
+  EXPECT_TRUE(pin_button->GetToggled());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DocumentPipFrameViewAutoLayoutToggleTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_CHROMEOS)

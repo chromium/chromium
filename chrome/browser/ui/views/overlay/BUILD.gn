@@ -131,6 +131,12 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chromeos/ui/base" ]
+    deps += [
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//chrome/browser/ui/views/picture_in_picture",
+      "//chromeos/ui/base",
+      "//ui/aura",
+    ]
   }
 }

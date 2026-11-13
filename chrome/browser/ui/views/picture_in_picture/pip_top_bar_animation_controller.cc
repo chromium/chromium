@@ -132,6 +132,16 @@ PipTopBarAnimationController::PipTopBarAnimationController(
 
 PipTopBarAnimationController::~PipTopBarAnimationController() = default;
 
+#if BUILDFLAG(IS_CHROMEOS)
+void PipTopBarAnimationController::SetPinButton(views::View* pin_button) {
+  pin_button_ = pin_button;
+  if (pin_button_) {
+    pin_button_->SetPaintToLayer();
+    pin_button_->layer()->SetFillsBoundsOpaquely(false);
+  }
+}
+#endif
+
 void PipTopBarAnimationController::SetUpAnimationContainer(
     views::Widget* widget) {
   // Drive all top-bar animations from a single container backed by a compositor
@@ -295,6 +305,11 @@ void PipTopBarAnimationController::AnimationProgressed(
       close_and_back_to_tab_button_combined_widths +=
           back_to_tab_button_->width();
     }
+#if BUILDFLAG(IS_CHROMEOS)
+    if (pin_button_) {
+      close_and_back_to_tab_button_combined_widths += pin_button_->width();
+    }
+#endif
     for (ContentSettingImageView* view : content_setting_views_) {
       view->SetX(animation->CurrentValueBetween(
           close_and_back_to_tab_button_combined_widths, 0));
@@ -314,6 +329,11 @@ void PipTopBarAnimationController::AnimationProgressed(
       back_to_tab_button_->layer()->SetOpacity(animation_current_value);
     }
     close_image_button_->layer()->SetOpacity(animation_current_value);
+#if BUILDFLAG(IS_CHROMEOS)
+    if (pin_button_) {
+      pin_button_->layer()->SetOpacity(animation_current_value);
+    }
+#endif
     return;
   }
 
@@ -334,4 +354,9 @@ void PipTopBarAnimationController::AnimationProgressed(
   CHECK(animation == &show_close_button_animation_ ||
         animation == &hide_close_button_animation_);
   close_image_button_->layer()->SetOpacity(animation->GetCurrentValue());
+#if BUILDFLAG(IS_CHROMEOS)
+  if (pin_button_) {
+    pin_button_->layer()->SetOpacity(animation->GetCurrentValue());
+  }
+#endif
 }

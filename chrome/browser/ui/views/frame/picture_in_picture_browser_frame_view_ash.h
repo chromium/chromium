@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_ASH_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_ASH_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "ui/aura/window_observer.h"
 
 class BrowserView;
 class BrowserWidget;
+class PictureInPicturePinButton;
 
 // PictureInPictureBrowserFrameViewAsh provides the FrameView for pip
 // windows on ChromeOS under classic ash.
@@ -29,6 +31,8 @@ class PictureInPictureBrowserFrameViewAsh
   ~PictureInPictureBrowserFrameViewAsh() override;
 
   // BrowserFrameView:
+  void OnBrowserViewInitViewsComplete() override;
+  int NonClientHitTest(const gfx::Point& point) override;
   void UpdateWindowRoundedCorners() override;
 
   // aura::WindowObserver:
@@ -42,6 +46,9 @@ class PictureInPictureBrowserFrameViewAsh
   gfx::Insets ResizeBorderInsets() const override;
 
  private:
+  // The button to pin the window. Only created when the pin button is enabled.
+  raw_ptr<PictureInPicturePinButton> pin_button_ = nullptr;
+
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
 };

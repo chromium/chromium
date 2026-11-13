@@ -236,7 +236,10 @@ if (is_chromeos) {
       "//ui/aura",
     ]
     deps = [
+      ":browser_view_header",
       "//ash",
+      "//ash/constants",
+      "//ash/public/cpp",
       "//chrome/browser/ui/color:color_headers",
       "//chromeos/constants",
       "//chromeos/ui/base",

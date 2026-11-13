@@ -70,6 +70,12 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ui/aura/window.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_native_widget_mac.h"
 #endif
@@ -353,6 +359,20 @@ void DocumentPipHost::CreateAndShowPipWindow(
 
   widget_->non_client_view()->set_context_menu_controller(
       context_menu_controller_.get());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Let ash manage the Document PiP window in the same way as the video PiP
+  // window. The auto layout is off by default for Document PiP, so the window
+  // stays where it is placed.
+  if (ash::features::IsPipAutoLayoutToggleEnabled()) {
+    aura::Window* window = widget_->GetNativeWindow();
+    window->SetProperty(ash::kPipParamsKey,
+                        ash::PipParams{.auto_layout = false,
+                                       .activatable = true,
+                                       .double_tap_to_resize = false});
+    window->SetProperty(ash::kWindowPipTypeKey, true);
+  }
+#endif
 
   widget_observation_.Observe(widget_.get());
   if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {

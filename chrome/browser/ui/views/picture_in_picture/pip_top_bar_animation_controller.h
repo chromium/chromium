@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -68,6 +69,12 @@ class PipTopBarAnimationController : public gfx::AnimationDelegate {
       delete;
   ~PipTopBarAnimationController() override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Sets the optional pin button, painting it to a layer and fading it together
+  // with the close button.
+  void SetPinButton(views::View* pin_button);
+#endif
+
   // Attaches all animations to a single compositor-backed container so they
   // update together and in sync with the display. Must be called once the
   // frame view has been added to its Widget.
@@ -106,6 +113,9 @@ class PipTopBarAnimationController : public gfx::AnimationDelegate {
   bool HasAnyVisibleContentSettingViews() const;
 
   const raw_ref<Delegate> delegate_;
+#if BUILDFLAG(IS_CHROMEOS)
+  raw_ptr<views::View> pin_button_ = nullptr;
+#endif
   const raw_ptr<views::View> back_to_tab_button_;  // May be null.
   const raw_ref<views::View> close_image_button_;
   const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>

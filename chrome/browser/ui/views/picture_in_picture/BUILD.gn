@@ -130,6 +130,17 @@ source_set("picture_in_picture") {
       "//ui/platform_window",
     ]
   }
+
+  if (is_chromeos) {
+    public += [ "picture_in_picture_pin_button.h" ]
+    sources += [ "picture_in_picture_pin_button.cc" ]
+    public_deps += [ "//ui/aura" ]
+    deps += [
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//chrome/app/vector_icons",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -200,6 +211,16 @@ source_set("unit_tests") {
       "//components/zoom",
       "//extensions/browser",
       "//extensions/common",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//chromeos/ui/base",
+      "//ui/aura",
+      "//ui/events:test_support",
     ]
   }
 }

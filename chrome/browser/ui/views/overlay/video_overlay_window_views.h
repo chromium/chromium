@@ -44,6 +44,9 @@ class OverlayWindowBackToTabButton;
 class OverlayWindowLiveCaptionButton;
 class OverlayWindowLiveCaptionDialog;
 class OverlayWindowMinimizeButton;
+#if BUILDFLAG(IS_CHROMEOS)
+class PictureInPicturePinButton;
+#endif
 class PictureInPictureTucker;
 class PlaybackImageButton;
 class ResizeHandleButton;
@@ -154,6 +157,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   gfx::Rect GetResizeHandleControlsBounds();
 
+  // Gets the bounds of the pin button. Returns an empty rect if the pin button
+  // is not shown.
+  gfx::Rect GetPinControlsBounds();
+
   // Updates the bounds of |resize_handle_view_| based on what |quadrant| the
   // PIP window is in.
   void UpdateResizeHandleBounds(WindowQuadrant quadrant);
@@ -228,6 +235,11 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   CloseImageButton* close_button_for_testing() const;
   OverlayWindowMinimizeButton* minimize_button_for_testing() const;
   OverlayWindowBackToTabButton* back_to_tab_button_for_testing() const;
+#if BUILDFLAG(IS_CHROMEOS)
+  PictureInPicturePinButton* pin_button_for_testing() const {
+    return pin_button_;
+  }
+#endif
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
   PlaybackState playback_state_for_testing() const;
@@ -507,6 +519,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Generates a nine patch layer painted with a highlight border for ChromeOS
   // Ash.
   std::unique_ptr<HighlightBorderOverlay> highlight_border_overlay_;
+
+  // The button to pin the window. Only created when the pin button is enabled.
+  raw_ptr<PictureInPicturePinButton> pin_button_ = nullptr;
 #endif
 
   // Current playback state on the video in Picture-in-Picture window. It is

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/pip_top_bar_animation_controller.h"
@@ -33,6 +34,9 @@ class ColorProvider;
 namespace views {
 class FlexLayoutView;
 class ImageButton;
+#if BUILDFLAG(IS_CHROMEOS)
+class ToggleImageButton;
+#endif
 class Label;
 class Widget;
 }  // namespace views
@@ -63,6 +67,8 @@ class LocationBarModelImpl;
 //   |  |- spacer (views::View, flex: scale-to-zero..unbounded, draggable)
 //   |  `- button_container_view_ (FlexLayoutView)
 //   |     |- content_setting_views_[] (ContentSettingImageView: camera/mic)
+//   |     |- pin_wrapper (views::View, fill) [optional, ChromeOS only]
+//   |     |  `- pin_button_ (PictureInPicturePinButton)
 //   |     |- back_to_tab_wrapper (views::View, fill) [optional]
 //   |     |  `- back_to_tab_button_ (views::ImageButton)
 //   |     `- close_wrapper (views::View, fill)
@@ -153,6 +159,9 @@ class DocumentPipFrameView : public views::FrameView,
     return back_to_tab_button_;
   }
   views::ImageButton* GetCloseButtonForTesting() { return close_image_button_; }
+#if BUILDFLAG(IS_CHROMEOS)
+  views::ToggleImageButton* GetPinButtonForTesting() { return pin_button_; }
+#endif
   views::Label* GetWindowTitleForTesting() { return window_title_; }
   AutoPipSettingOverlayView* GetAutoPipSettingOverlayViewForTesting() {
     return auto_pip_setting_overlay_;
@@ -253,6 +262,10 @@ class DocumentPipFrameView : public views::FrameView,
       content_setting_views_;
 
   raw_ptr<views::ImageButton> back_to_tab_button_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+  // The button to pin the window. Only created when the pin button is enabled.
+  raw_ptr<views::ToggleImageButton> pin_button_ = nullptr;
+#endif
   raw_ptr<views::ImageButton> close_image_button_ = nullptr;
 
   // Owned by the view hierarchy via AddChildView(); the raw_ptr is nulled in

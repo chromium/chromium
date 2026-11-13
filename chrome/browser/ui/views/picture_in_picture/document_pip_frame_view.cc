@@ -80,6 +80,10 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_pin_button.h"
+#endif
+
 namespace {
 
 // These constants mirror PictureInPictureBrowserFrameView, which this class
@@ -447,6 +451,20 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
         button_container_view_->AddChildView(std::move(image_view)));
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Create the pin button, which toggles the window manager's auto layout of
+  // the PiP window. Wrap it in a fixed-size placeholder for the same reason as
+  // the back-to-tab button below.
+  if (PictureInPicturePinButton::IsEnabled()) {
+    auto pin_wrapper = std::make_unique<views::View>();
+    pin_wrapper->SetUseDefaultFillLayout(true);
+    pin_button_ = pin_wrapper->AddChildView(
+        std::make_unique<PictureInPicturePinButton>());
+    pin_wrapper->SetPreferredSize(pin_button_->GetPreferredSize());
+    button_container_view_->AddChildView(std::move(pin_wrapper));
+  }
+#endif
+
   // Create the back-to-tab button if allowed.
 
   if (!disallow_return_to_opener) {
@@ -520,6 +538,11 @@ DocumentPipFrameView::DocumentPipFrameView(DocumentPipHost* host)
   // animated, and starts in the active state.
   animation_controller_ = std::make_unique<PipTopBarAnimationController>(
       this, back_to_tab_button_, close_image_button_, content_setting_views_);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (pin_button_) {
+    animation_controller_->SetPinButton(pin_button_);
+  }
+#endif
 
   // If the window manager wants us to display an overlay, get it. In practice
   // this is the auto-PiP Allow / Block content-setting UI, shown when a site
@@ -601,6 +624,12 @@ int DocumentPipFrameView::NonClientHitTest(const gfx::Point& point) {
   // hidden, so gate on the top bar's active state to avoid hit-testing the
   // hidden buttons.
   const bool top_bar_active = animation_controller_->is_top_bar_active();
+#if BUILDFLAG(IS_CHROMEOS)
+  if (pin_button_ && top_bar_active &&
+      ConvertControlBoundsToFrame(pin_button_).Contains(point)) {
+    return HTCLIENT;
+  }
+#endif
   if (back_to_tab_button_ && top_bar_active &&
       ConvertControlBoundsToFrame(back_to_tab_button_).Contains(point)) {
     return HTCLIENT;
