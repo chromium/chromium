@@ -58,7 +58,7 @@
 }
 
 .auto-select-option.disabled {
-  color: color-mix(in lab, currentColor 50%, transparent);
+  color: color-mix(currentColor 50%, transparent);
 }
 
 .auto-select-option::before {
