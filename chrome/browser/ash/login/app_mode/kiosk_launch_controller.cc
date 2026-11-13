@@ -9,11 +9,9 @@
 #include <string>
 #include <utility>
 
-#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
-#include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -45,6 +43,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
+#include "chrome/browser/ash/app_mode/scoped_accelerator_disabler.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/watchdog/kiosk_app_launch_watchdog.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
@@ -240,26 +239,6 @@ class DefaultNetworkMonitor : public NetworkUiController::NetworkMonitor {
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 };
 
-class DefaultAcceleratorController
-    : public KioskLaunchController::AcceleratorController {
- public:
-  DefaultAcceleratorController() = default;
-  DefaultAcceleratorController(const DefaultAcceleratorController&) = delete;
-  DefaultAcceleratorController& operator=(const AcceleratorController&) =
-      delete;
-  ~DefaultAcceleratorController() override = default;
-
-  void DisableAccelerators() override {
-    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
-        true);
-  }
-
-  void EnableAccelerators() override {
-    Shell::Get()->accelerator_controller()->SetPreventProcessingAccelerators(
-        false);
-  }
-};
-
 std::string ToString(app_mode::ForceInstallObserver::Result result) {
   switch (result) {
     case app_mode::ForceInstallObserver::Result::kSuccess:
@@ -311,22 +290,6 @@ using NetworkUIState = NetworkUiController::NetworkUIState;
 
 const base::TimeDelta kDefaultKioskSplashScreenMinTime = base::Seconds(10);
 
-class KioskLaunchController::ScopedAcceleratorDisabler {
- public:
-  explicit ScopedAcceleratorDisabler(AcceleratorController& controller)
-      : controller_(controller) {
-    controller_->DisableAccelerators();
-  }
-
-  ScopedAcceleratorDisabler(const ScopedAcceleratorDisabler&) = delete;
-  ScopedAcceleratorDisabler& operator=(const ScopedAcceleratorDisabler&) =
-      delete;
-  ~ScopedAcceleratorDisabler() { controller_->EnableAccelerators(); }
-
- private:
-  raw_ref<AcceleratorController> controller_;
-};
-
 KioskLaunchController::KioskLaunchController(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
@@ -354,7 +317,7 @@ KioskLaunchController::KioskLaunchController(
           }),
           /*app_launcher_factory=*/base::BindRepeating(&BuildKioskAppLauncher),
           std::make_unique<DefaultNetworkMonitor>(),
-          std::make_unique<DefaultAcceleratorController>()) {}
+          kiosk::CreateAcceleratorController()) {}
 
 KioskLaunchController::KioskLaunchController(
     PrefService* local_state,

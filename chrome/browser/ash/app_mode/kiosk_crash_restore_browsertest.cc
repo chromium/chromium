@@ -5,7 +5,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/check.h"
@@ -22,6 +24,9 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -33,6 +38,7 @@
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,6 +159,11 @@ IN_PROC_BROWSER_TEST_F(ChromeKioskCrashRestoreTest,
   EXPECT_EQ(
       KioskAppLaunchError::Error::kUnableToLaunch,
       KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())));
+  EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
+            session_manager::SessionManager::Get()->session_state());
+  EXPECT_FALSE(Shell::Get()
+                   ->accelerator_controller()
+                   ->ShouldPreventProcessingAccelerators());
 }
 
 class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
@@ -165,12 +176,28 @@ class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, ShouldRelaunchCrashedWebApp) {
+  // While crash recovery is in progress, the session is not yet active,
+  // accelerators are disabled, and browser window creation is blocked.
+  EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
+            session_manager::SessionManager::Get()->session_state());
+  EXPECT_TRUE(Shell::Get()
+                  ->accelerator_controller()
+                  ->ShouldPreventProcessingAccelerators());
+  EXPECT_EQ(BrowserWindowInterface::CreationStatus::kErrorLoadingKiosk,
+            GetBrowserWindowCreationStatusForProfile(
+                CHECK_DEREF(ProfileManager::GetPrimaryUserProfile())));
+
   // Wait for the kiosk app to launch (through the crash recovery flow).
   ASSERT_TRUE(WaitKioskLaunched());
   // Check there was no launch error.
   EXPECT_EQ(
       KioskAppLaunchError::Error::kNone,
       KioskAppLaunchError::Get(CHECK_DEREF(g_browser_process->local_state())));
+  EXPECT_EQ(session_manager::SessionState::ACTIVE,
+            session_manager::SessionManager::Get()->session_state());
+  EXPECT_FALSE(Shell::Get()
+                   ->accelerator_controller()
+                   ->ShouldPreventProcessingAccelerators());
 }
 
 }  // namespace ash

@@ -307,8 +307,17 @@ void StartUserSession(
 
     user_session_mgr->OnUserProfileLoaded(user_profile, user);
 
-    // This call will set session state to SESSION_STATE_ACTIVE (same one).
-    session_manager::SessionManager::Get()->SessionStarted();
+    if (user->IsKioskType() &&
+        !command_line->HasSwitch(
+            ash::switches::kPreventKioskAutolaunchForTesting)) {
+      // Kiosk crash recovery starts in LOGIN_PRIMARY state and transitions to
+      // ACTIVE in CrashRecoveryLauncher once the kiosk app is launched.
+      session_manager::SessionManager::Get()->SetSessionState(
+          session_manager::SessionState::LOGIN_PRIMARY);
+    } else {
+      // This call will set session state to SESSION_STATE_ACTIVE (same one).
+      session_manager::SessionManager::Get()->SessionStarted();
+    }
 
     // Now is the good time to retrieve other logged in users for this session.
     // First user has been already marked as logged in and active in

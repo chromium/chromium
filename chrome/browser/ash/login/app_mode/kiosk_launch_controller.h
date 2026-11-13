@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/load_profile.h"
+#include "chrome/browser/ash/app_mode/scoped_accelerator_disabler.h"
 #include "chrome/browser/ash/app_mode/watchdog/kiosk_app_launch_watchdog.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
@@ -94,12 +95,7 @@ extern const base::TimeDelta kDefaultKioskSplashScreenMinTime;
 class KioskLaunchController : public KioskAppLauncher::Observer,
                               public NetworkUiController::Observer {
  public:
-  class AcceleratorController {
-   public:
-    virtual ~AcceleratorController() = default;
-    virtual void EnableAccelerators() = 0;
-    virtual void DisableAccelerators() = 0;
-  };
+  using AcceleratorController = kiosk::AcceleratorController;
 
   // Factory class that constructs a `KioskAppLauncher`.
   // The default implementation constructs the correct implementation of
@@ -200,7 +196,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
  private:
   friend class KioskLaunchControllerTest;
 
-  class ScopedAcceleratorDisabler;
+  using ScopedAcceleratorDisabler = kiosk::ScopedAcceleratorDisabler;
 
   enum AppState {
     kCreatingProfile = 0,   // Profile is being created.

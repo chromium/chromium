@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
@@ -16,8 +17,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/scoped_accelerator_disabler.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_service_launcher.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
 
@@ -47,12 +50,16 @@ std::unique_ptr<KioskAppLauncher> CreateAppLauncher(
 }
 }  // namespace
 
-CrashRecoveryLauncher::CrashRecoveryLauncher(PrefService* local_state,
-                                             Profile& profile,
-                                             const KioskAppId& kiosk_app_id)
+CrashRecoveryLauncher::CrashRecoveryLauncher(
+    PrefService* local_state,
+    Profile& profile,
+    const KioskAppId& kiosk_app_id,
+    std::unique_ptr<kiosk::AcceleratorController> accelerator_controller)
     : local_state_(CHECK_DEREF(local_state)),
       kiosk_app_id_(kiosk_app_id),
-      profile_(profile) {
+      profile_(profile),
+      accelerator_controller_(std::move(accelerator_controller)) {
+  CHECK(accelerator_controller_);
   app_launcher_ =
       CreateAppLauncher(profile, kiosk_app_id, /*network_delegate=*/this);
   observation_.Observe(app_launcher_.get());
@@ -63,6 +70,8 @@ CrashRecoveryLauncher::~CrashRecoveryLauncher() = default;
 void CrashRecoveryLauncher::Start(OnDoneCallback callback) {
   done_callback_ = std::move(callback);
   SYSLOG(INFO) << "Starting crash recovery flow for app " << kiosk_app_id_;
+  accelerator_disabler_ = std::make_unique<kiosk::ScopedAcceleratorDisabler>(
+      *accelerator_controller_);
   app_launcher_->Initialize();
 }
 
@@ -89,7 +98,16 @@ void CrashRecoveryLauncher::OnAppPrepared() {
   app_launcher_->LaunchApp();
 }
 
-void CrashRecoveryLauncher::OnAppLaunched() {}
+void CrashRecoveryLauncher::OnAppLaunching() {
+  // We need to change the session state so we are able to create browser
+  // windows.
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+}
+
+void CrashRecoveryLauncher::OnAppLaunched() {
+  session_manager::SessionManager::Get()->SessionStarted();
+}
 
 void CrashRecoveryLauncher::OnAppWindowCreated(
     const std::optional<webapps::AppId>& app_id) {

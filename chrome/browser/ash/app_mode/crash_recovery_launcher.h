@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_CRASH_RECOVERY_LAUNCHER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_CRASH_RECOVERY_LAUNCHER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -13,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/scoped_accelerator_disabler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -30,9 +32,12 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
                               const std::optional<webapps::AppId>& app_id)>;
 
   // `local_state` must be non-null, and must outlive `this`.
-  CrashRecoveryLauncher(PrefService* local_state,
-                        Profile& profile,
-                        const KioskAppId& kiosk_app_id);
+  CrashRecoveryLauncher(
+      PrefService* local_state,
+      Profile& profile,
+      const KioskAppId& kiosk_app_id,
+      std::unique_ptr<kiosk::AcceleratorController> accelerator_controller =
+          kiosk::CreateAcceleratorController());
   ~CrashRecoveryLauncher() override;
   CrashRecoveryLauncher(const CrashRecoveryLauncher&) = delete;
   CrashRecoveryLauncher& operator=(const CrashRecoveryLauncher&) = delete;
@@ -50,6 +55,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
   // KioskAppLauncher::Observer:
   void OnAppInstalling() override;
   void OnAppPrepared() override;
+  void OnAppLaunching() override;
   void OnAppLaunched() override;
   void OnAppWindowCreated(const std::optional<webapps::AppId>& app_id) override;
   void OnLaunchFailed(KioskAppLaunchError::Error error) override;
@@ -58,6 +64,9 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
   const KioskAppId kiosk_app_id_;
   const raw_ref<Profile> profile_;
   OnDoneCallback done_callback_;
+
+  std::unique_ptr<kiosk::AcceleratorController> accelerator_controller_;
+  std::unique_ptr<kiosk::ScopedAcceleratorDisabler> accelerator_disabler_;
 
   std::unique_ptr<KioskAppLauncher> app_launcher_;
   base::ScopedObservation<KioskAppLauncher, KioskAppLauncher::Observer>
