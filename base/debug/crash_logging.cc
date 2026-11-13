@@ -35,7 +35,9 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
   // the DCHECK in crash_reporter::internal::CrashKeyStringImpl::Set).
   // Enforcing this restrictions here ensures that crash keys will work for all
   // `CrashKeyStringImpl`s.
+  // LINT.IfChange(MaxCrashKeyNameLength)
   DCHECK_LT(name_piece.size(), 40u);
+  // LINT.ThenChange(//components/crash/core/common/crash_key.rs:MaxCrashKeyNameLength)
 #endif
 
   if (!g_crash_key_impl) {

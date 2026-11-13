@@ -4,4 +4,5 @@ include_rules = [
   "+components/previous_session_info/previous_session_info.h",
   "+third_party/breakpad/breakpad/src/client/ios/Breakpad.h",
   "+third_party/breakpad/breakpad/src/client/ios/BreakpadController.h",
+  "+third_party/rust/cxx/v1/cxx.h",
 ]

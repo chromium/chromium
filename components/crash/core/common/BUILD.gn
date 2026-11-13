@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cronet/config.gni")
+import("//build/rust/rust_static_library.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 
 declare_args() {
@@ -118,6 +119,57 @@ target(crash_key_target_type, "crash_key_lib") {
   }
 }
 
+if (use_crashpad_annotation) {
+  source_set("crash_key_rust_shim") {
+    visibility = [ ":*" ]
+    sources = [ "crash_key_rust_shim.cc" ]
+    deps = [ "//third_party/crashpad/crashpad/client" ]
+  }
+
+  # Rust API for crash keys. See crash_key.rs.
+  rust_static_library("crash_key_rust") {
+    crate_root = "crash_key.rs"
+    sources = [ crate_root ]
+    allow_unsafe = true
+    deps = [ ":crash_key_rust_shim" ]
+  }
+
+  # `crash_key_rust` with additional APIs for tests, which are behind
+  # `#[cfg(feature = "testing")]` in crash_key.rs.
+  rust_static_library("crash_key_rust_for_testing") {
+    testonly = true
+    crate_root = "crash_key.rs"
+    sources = [ crate_root ]
+    allow_unsafe = true
+    features = [ "testing" ]
+    deps = [ ":crash_key_rust_shim" ]
+  }
+
+  source_set("crash_key_rust_test_shim") {
+    testonly = true
+    sources = [
+      "crash_key_rust_test_shim.cc",
+      "crash_key_rust_test_shim.h",
+    ]
+    public_deps = [ "//third_party/crashpad/crashpad/client" ]
+    deps = [ "//third_party/rust/cxx/v1:lib" ]
+  }
+
+  rust_static_library("crash_key_rust_unittests") {
+    testonly = true
+    is_gtest_unittests = true
+    crate_root = "crash_key_rust_unittest.rs"
+    sources = [ crate_root ]
+    cxx_bindings = [ crate_root ]
+    allow_unsafe = true
+    deps = [
+      ":crash_key_rust_for_testing",
+      ":crash_key_rust_test_shim",
+      "//testing/rust_gtest_interop",
+    ]
+  }
+}
+
 static_library("crash_key_utils") {
   visibility = [ ":*" ]
 
@@ -208,5 +260,9 @@ source_set("unit_tests") {
       "crash_key_unittest.cc",
       "crash_keys_unittest.cc",
     ]
+  }
+
+  if (use_crashpad_annotation) {
+    deps += [ ":crash_key_rust_unittests" ]
   }
 }
