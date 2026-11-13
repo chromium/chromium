@@ -48,6 +48,7 @@
 #include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/interaction/widget_focus_observer.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -553,10 +554,10 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
           FeaturePromoClosedReason::kOverrideForUIRegionConflict));
 }
 
-class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
+class FeaturePromoLifecycleWebappUiTest : public FeaturePromoLifecycleUiTest {
  public:
-  FeaturePromoLifecycleAppUiTest() = default;
-  ~FeaturePromoLifecycleAppUiTest() override = default;
+  FeaturePromoLifecycleWebappUiTest() = default;
+  ~FeaturePromoLifecycleWebappUiTest() override = default;
 
   static constexpr char kApp1Host[] = "example.org";
   static constexpr char kApp2Host[] = "foo.com";
@@ -584,6 +585,17 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
         .SetDescription("CheckShownForApp()");
   }
 
+  BrowserWindowInterface* LaunchApp(const webapps::AppId& app_id) {
+    auto* const browser = LaunchWebAppBrowserAndWait(app_id);
+    BrowserView* const browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser);
+    CHECK_NE(nullptr, browser_view);
+    CHECK_NE(nullptr, browser_view->GetWidget());
+    views::test::WidgetVisibleWaiter waiter(browser_view->GetWidget());
+    waiter.Wait();
+    return browser;
+  }
+
  protected:
   webapps::AppId app1_id_;
   webapps::AppId app2_id_;
@@ -598,8 +610,8 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForApp) {
-  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleWebappUiTest, ShowForApp) {
+  BrowserWindowInterface* const app_browser = LaunchApp(app1_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
@@ -607,8 +619,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForApp) {
       CheckShownForApp());
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
-  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleWebappUiTest,
+                       ShowForAppThenBlocked) {
+  BrowserWindowInterface* const app_browser = LaunchApp(app1_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
@@ -618,8 +631,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForAppThenBlocked) {
                      FeaturePromoResult::kPermanentlyDismissed));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, HasPromoBeenDismissed) {
-  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleWebappUiTest,
+                       HasPromoBeenDismissed) {
+  BrowserWindowInterface* const app_browser = LaunchApp(app1_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId), CheckDismissed(false),
@@ -627,9 +641,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, HasPromoBeenDismissed) {
       CheckDismissed(true, &kFeaturePromoLifecycleTestPromo, app1_id_));
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleAppUiTest, ShowForTwoApps) {
-  BrowserWindowInterface* const app_browser = LaunchWebAppBrowser(app1_id_);
-  BrowserWindowInterface* const app_browser2 = LaunchWebAppBrowser(app2_id_);
+IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleWebappUiTest, ShowForTwoApps) {
+  BrowserWindowInterface* const app_browser = LaunchApp(app1_id_);
+  BrowserWindowInterface* const app_browser2 = LaunchApp(app2_id_);
   RunTestSequenceInContext(
       BrowserElements::From(app_browser)->GetContext(),
       WaitForShow(kToolbarAppMenuButtonElementId),
