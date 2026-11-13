@@ -35,11 +35,9 @@
 #include "net/ssl/ssl_platform_key_android.h"
 #include "net/ssl/ssl_private_key.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
-
-// Must come after headers that provide symbols used by @JniType.
-#include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 
 namespace browser_ui {
 namespace {
@@ -81,6 +79,23 @@ class ClientCertRequest {
   std::unique_ptr<content::ClientCertificateDelegate> delegate_;
   base::WeakPtrFactory<ClientCertRequest> weak_factory_{this};
 };
+
+// Wraps `std::unique_ptr<ClientCertRequest>` so `OnSystemRequestCompletion` can
+// reclaim ownership from `JniUniquePtr` without moving `ClientCertRequest`.
+struct JniClientCertRequest {
+  explicit JniClientCertRequest(std::unique_ptr<ClientCertRequest> req)
+      : request(std::move(req)) {}
+  std::unique_ptr<ClientCertRequest> request;
+};
+
+}  // namespace
+}  // namespace browser_ui
+
+// Must come after headers that provide symbols used by @JniType.
+#include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
+
+namespace browser_ui {
+namespace {
 
 class SSLClientCertPendingRequests
     : public content::WebContentsUserData<SSLClientCertPendingRequests>,
@@ -190,33 +205,27 @@ static bool StartClientCertificateRequest(
     return true;
   }
 
+  net::SSLCertRequestInfo* cert_request_info = request->cert_request_info();
+
   // Build the |key_types| JNI parameter, as a String[]
   std::vector<std::string> key_types = net::SignatureAlgorithmsToJavaKeyTypes(
-      request->cert_request_info()->signature_algorithms);
+      cert_request_info->signature_algorithms);
   JNIEnv* env = jni_zero::AttachCurrentThread();
 
   // Build the |encoded_principals| JNI parameter, as a byte[][]
   ScopedJavaLocalRef<jobjectArray> principals_ref =
       base::android::ToJavaArrayOfByteArray(
-          env, request->cert_request_info()->cert_authorities);
+          env, cert_request_info->cert_authorities);
   if (principals_ref.is_null()) {
     LOG(ERROR) << "Could not create principals array (byte[][])";
     return false;
   }
 
-  // Pass the address of the delegate through to Java.
-  int64_t request_id = reinterpret_cast<intptr_t>(request.get());
-
-  if (!Java_SSLClientCertificateRequest_selectClientCertificate(
-          env, request_id, window, key_types, principals_ref,
-          request->cert_request_info()->host_and_port.host(),
-          request->cert_request_info()->host_and_port.port())) {
-    return false;
-  }
-
-  // Ownership was transferred to Java.
-  std::ignore = request.release();
-  return true;
+  return Java_SSLClientCertificateRequest_selectClientCertificate(
+      env, jni_zero::MakeUnique<JniClientCertRequest>(std::move(request)),
+      window, key_types, principals_ref,
+      cert_request_info->host_and_port.host(),
+      cert_request_info->host_and_port.port());
 }
 
 void SSLClientCertPendingRequests::AddRequest(
@@ -366,9 +375,9 @@ void OnPrivateKeyWrapped(std::unique_ptr<ClientCertRequest> req,
 
 // Called from JNI on request completion/result.
 // - |env| is the current thread's JNIEnv.
-// - |request_id| is the id passed to
+// - |jni_request| holds the request owned by Java and passed to
 //   |Java_SSLClientCertificateRequest_selectClientCertificate| in
-//   ||StartClientCertificateRequest|.
+//   |StartClientCertificateRequest|.
 // - |encoded_chain_ref| is a JNI reference to a Java array of byte arrays, each
 //   item holding a DER-encoded X.509 certificate.
 // - |private_key_ref| is the platform PrivateKey object JNI reference for the
@@ -378,14 +387,14 @@ void OnPrivateKeyWrapped(std::unique_ptr<ClientCertRequest> req,
 // the user didn't select a certificate.
 static void JNI_SSLClientCertificateRequest_OnSystemRequestCompletion(
     JNIEnv* env,
-    int64_t request_id,
+    JniClientCertRequest* jni_request,
     const JavaRef<jobjectArray>& encoded_chain_ref,
     const JavaRef<jobject>& private_key_ref) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Take back ownership of the request object.
-  std::unique_ptr<ClientCertRequest> request(
-      reinterpret_cast<ClientCertRequest*>(request_id));
+  std::unique_ptr<ClientCertRequest> request = std::move(jni_request->request);
+  CHECK(request);
 
   if (!encoded_chain_ref || !private_key_ref) {
     LOG(ERROR) << "No client certificate selected";

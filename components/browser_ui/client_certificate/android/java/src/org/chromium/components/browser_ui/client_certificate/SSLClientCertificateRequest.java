@@ -19,7 +19,10 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -53,11 +56,14 @@ import javax.security.auth.x500.X500Principal;
 public class SSLClientCertificateRequest {
     static final String TAG = "SSLClientCertRequest";
 
+    @JniType("::browser_ui::JniClientCertRequest")
+    interface NativeClientCertRequest extends JniTypeToken {}
+
     /**
-     * Implementation for anynchronous task of handling the certificate request. This
-     * AsyncTask retrieves the authentication material from the system key store.
-     * The key store is accessed in background, as the APIs being exercised
-     * may be blocking. The results are posted back to native on the UI thread.
+     * Implementation for anynchronous task of handling the certificate request. This AsyncTask
+     * retrieves the authentication material from the system key store. The key store is accessed in
+     * background, as the APIs being exercised may be blocking. The results are posted back to
+     * native on the UI thread.
      */
     private static class CertAsyncTaskKeyChain extends AsyncTask<Void> {
         // These fields will store the results computed in doInBackground so that they can be posted
@@ -66,12 +72,13 @@ public class SSLClientCertificateRequest {
         private @Nullable PrivateKey mPrivateKey;
 
         // Pointer to the native certificate request needed to return the results.
-        private final long mNativePtr;
+        private final JniUniquePtr<NativeClientCertRequest> mNativePtr;
 
         final Context mContext;
         final String mAlias;
 
-        CertAsyncTaskKeyChain(Context context, long nativePtr, String alias) {
+        CertAsyncTaskKeyChain(
+                Context context, JniUniquePtr<NativeClientCertRequest> nativePtr, String alias) {
             mNativePtr = nativePtr;
             mContext = context;
             assert alias != null;
@@ -112,6 +119,7 @@ public class SSLClientCertificateRequest {
             ThreadUtils.assertOnUiThread();
             SSLClientCertificateRequestJni.get()
                     .onSystemRequestCompletion(mNativePtr, mEncodedChain, mPrivateKey);
+            mNativePtr.destroy();
         }
 
         private String getAlias() {
@@ -148,11 +156,12 @@ public class SSLClientCertificateRequest {
      * certificate selected by the user.
      */
     private static class KeyChainCertSelectionCallback implements KeyChainAliasCallback {
-        private final long mNativePtr;
+        private final JniUniquePtr<NativeClientCertRequest> mNativePtr;
         private final Context mContext;
         private boolean mAliasCalled;
 
-        KeyChainCertSelectionCallback(Context context, long nativePtr) {
+        KeyChainCertSelectionCallback(
+                Context context, JniUniquePtr<NativeClientCertRequest> nativePtr) {
             mContext = context;
             mNativePtr = nativePtr;
         }
@@ -177,6 +186,7 @@ public class SSLClientCertificateRequest {
                             // No certificate was selected.
                             SSLClientCertificateRequestJni.get()
                                     .onSystemRequestCompletion(mNativePtr, null, null);
+                            mNativePtr.destroy();
                         } else {
                             new CertAsyncTaskKeyChain(mContext, mNativePtr, alias)
                                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -273,8 +283,8 @@ public class SSLClientCertificateRequest {
      *     method returns true, and is never called before this method returns.
      */
     @CalledByNative
-    private static boolean selectClientCertificate(
-            long nativePtr,
+    static boolean selectClientCertificate(
+            JniUniquePtr<NativeClientCertRequest> nativePtr,
             @JniType("ui::WindowAndroid*") WindowAndroid window,
             @JniType("std::vector<std::string>") String[] keyTypes,
             byte[][] encodedPrincipals,
@@ -288,6 +298,7 @@ public class SSLClientCertificateRequest {
         final Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             Log.w(TAG, "Certificate request on GC'd activity.");
+            nativePtr.destroy();
             return false;
         }
 
@@ -301,6 +312,7 @@ public class SSLClientCertificateRequest {
                 }
             } catch (Exception e) {
                 Log.w(TAG, "Exception while decoding issuers list: " + e);
+                nativePtr.destroy();
                 return false;
             }
         }
@@ -350,6 +362,8 @@ public class SSLClientCertificateRequest {
 
         // Called to pass request results to native side.
         void onSystemRequestCompletion(
-                long requestPtr, byte @Nullable [][] certChain, @Nullable PrivateKey privateKey);
+                JniPtr<NativeClientCertRequest> requestPtr,
+                byte @Nullable [][] certChain,
+                @Nullable PrivateKey privateKey);
     }
 }
