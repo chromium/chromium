@@ -2078,6 +2078,7 @@ void AIManager::OnSemanticEmbedderModelReady(
   context_bound_object_set_.AddContextBoundObject(
       std::make_unique<AISemanticEmbedder>(
           context_bound_object_set_,
+          *service_launcher->controller()->GetEmbedder(),
           pending_remote.InitWithNewPipeAndPassReceiver()));
   client_remote->OnResult(std::move(pending_remote),
                           blink::mojom::AISemanticEmbedderInfo::New(

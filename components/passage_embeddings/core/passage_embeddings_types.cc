@@ -6,9 +6,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/not_fatal_until.h"
 
 namespace passage_embeddings {
@@ -24,6 +27,19 @@ float GetMagnitude(const std::vector<float>& data) {
 }
 
 }  // namespace
+
+EmbedderMetadata::EmbedderMetadata(int64_t model_version,
+                                   size_t output_size,
+                                   uint32_t input_window_size,
+                                   std::optional<double> search_score_threshold)
+    : model_version(model_version),
+      output_size(output_size),
+      input_window_size(input_window_size),
+      search_score_threshold(search_score_threshold) {
+  DCHECK_GT(model_version, 0);
+  DCHECK_GT(output_size, 0u);
+  DCHECK_GT(input_window_size, 0u);
+}
 
 Embedding::Embedding(std::vector<float> data) : data_(std::move(data)) {
   CHECK(!data_.empty(), base::NotFatalUntil::M152);

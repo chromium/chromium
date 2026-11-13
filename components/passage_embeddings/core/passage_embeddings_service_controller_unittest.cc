@@ -4,6 +4,8 @@
 
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 
+#include <cstdint>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
@@ -225,7 +227,6 @@ TEST_F(PassageEmbeddingsServiceControllerTest, MAYBE_ReceivesValidModelInfo) {
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(GetTestModelInfo()));
   EXPECT_TRUE(service_controller_->IsModelAvailable());
   auto metadata = embedder_metadata_future()->Take();
-  EXPECT_TRUE(metadata.IsValid());
   EXPECT_EQ(metadata.model_version, kEmbeddingsModelVersion);
   EXPECT_EQ(metadata.output_size, 3ul);
   EXPECT_EQ(metadata.input_window_size, 256u);
@@ -246,23 +247,8 @@ TEST_F(PassageEmbeddingsServiceControllerTest,
 
   EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(model_info));
   EmbedderMetadata metadata = embedder_metadata_future()->Take();
-  EXPECT_TRUE(metadata.IsValid());
   EXPECT_EQ(metadata.input_window_size, 256u);
   EXPECT_EQ(metadata.search_score_threshold, 0.5);
-}
-
-TEST_F(PassageEmbeddingsServiceControllerTest,
-       ReceivesModelInfoWithoutInputWindowSize) {
-  optimization_guide::proto::PassageEmbeddingsModelMetadata model_metadata;
-  model_metadata.set_output_size(3);
-  optimization_guide::ModelInfo model_info = GetTestModelInfo();
-  model_info.model_metadata = optimization_guide::AnyWrapProto(model_metadata);
-
-  // The model is accepted, but its metadata is invalid without a window.
-  EXPECT_TRUE(service_controller_->MaybeUpdateModelInfo(model_info));
-  EmbedderMetadata metadata = embedder_metadata_future()->Take();
-  EXPECT_EQ(metadata.input_window_size, 0u);
-  EXPECT_FALSE(metadata.IsValid());
 }
 
 TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesEmptyModelInfo) {
@@ -284,18 +270,45 @@ TEST_F(PassageEmbeddingsServiceControllerTest, ReceivesEmptyModelInfo) {
 #endif
 TEST_F(PassageEmbeddingsServiceControllerTest,
        MAYBE_ReceivesModelInfoWithInvalidModelMetadata) {
-  optimization_guide::proto::Any metadata_any;
-  metadata_any.set_type_url("not a valid type url");
-  metadata_any.set_value("not a valid serialized metadata");
-  optimization_guide::ModelInfo model_info = GetTestModelInfo();
-  model_info.model_metadata = metadata_any;
+  auto make_metadata = [](uint32_t input_window_size, uint32_t output_size) {
+    optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
+    metadata.set_input_window_size(input_window_size);
+    metadata.set_output_size(output_size);
+    return optimization_guide::AnyWrapProto(metadata);
+  };
 
-  EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(model_info));
-  EXPECT_FALSE(embedder_metadata_future()->IsReady());
+  optimization_guide::proto::Any invalid_any;
+  invalid_any.set_type_url("not a valid type url");
+  invalid_any.set_value("not a valid serialized metadata");
 
-  histogram_tester_.ExpectTotalCount(kModelInfoMetricName, 1);
+  optimization_guide::ModelInfo unparseable_metadata = GetTestModelInfo();
+  unparseable_metadata.model_metadata = invalid_any;
+
+  optimization_guide::ModelInfo zero_version = GetTestModelInfo();
+  zero_version.version = 0;
+
+  optimization_guide::ModelInfo negative_version = GetTestModelInfo();
+  negative_version.version = -1;
+
+  optimization_guide::ModelInfo zero_output_size = GetTestModelInfo();
+  zero_output_size.model_metadata = make_metadata(256, 0);
+
+  optimization_guide::ModelInfo zero_input_window_size = GetTestModelInfo();
+  zero_input_window_size.model_metadata = make_metadata(0, 3);
+
+  const optimization_guide::ModelInfo invalid_cases[] = {
+      unparseable_metadata, zero_version,           negative_version,
+      zero_output_size,     zero_input_window_size,
+  };
+  for (const auto& model_info : invalid_cases) {
+    EXPECT_FALSE(service_controller_->MaybeUpdateModelInfo(model_info));
+    EXPECT_FALSE(service_controller_->IsModelAvailable());
+    EXPECT_FALSE(embedder_metadata_future()->IsReady());
+  }
+
   histogram_tester_.ExpectUniqueSample(
-      kModelInfoMetricName, EmbeddingsModelInfoStatus::kInvalidMetadata, 1);
+      kModelInfoMetricName, EmbeddingsModelInfoStatus::kInvalidMetadata,
+      std::size(invalid_cases));
 }
 
 // TODO(crbug.com/524801761): Re-enable this test.

@@ -161,9 +161,9 @@ class SchedulingEmbedder
   // May be slow; await results before sending the next request.
   GetEmbeddingsCallback get_embeddings_callback_;
 
-  // Metadata about the embedder; Set when valid metadata is received from
+  // Metadata about the embedder; set when valid metadata is received from
   // `embedder_metadata_provider`.
-  EmbedderMetadata embedder_metadata_{0, 0, 0};
+  std::optional<EmbedderMetadata> embedder_metadata_;
 
   // The maximum number of jobs to hold at once. Exceeding the cap
   // will cause job failures on last pending jobs to avoid very high memory use.

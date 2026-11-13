@@ -132,7 +132,6 @@ TEST_F(InProcessCategoryClassificationServiceTest,
   EXPECT_EQ(1, metadata.model_version);
   EXPECT_EQ(768u, metadata.output_size);
   EXPECT_EQ(512u, metadata.input_window_size);
-  EXPECT_TRUE(metadata.IsValid());
 
   service_->RemoveObserver(&observer);
 }

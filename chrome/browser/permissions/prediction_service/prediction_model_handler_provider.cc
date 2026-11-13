@@ -130,10 +130,9 @@ void PredictionModelHandlerProvider::Shutdown() {
 }
 
 void PredictionModelHandlerProvider::EmbedderMetadataUpdated(
-    passage_embeddings::EmbedderMetadata metadata) {
-  is_passage_embedder_ready_ = metadata.IsValid();
-  VLOG(1) << "[PermissionsAI] Passage embedder readiness updated to: "
-          << is_passage_embedder_ready_;
+    passage_embeddings::EmbedderMetadata /*metadata*/) {
+  is_passage_embedder_ready_ = true;
+  VLOG(1) << "[PermissionsAI] Passage embedder is ready";
 }
 
 bool PredictionModelHandlerProvider::IsPassageEmbedderReady() const {

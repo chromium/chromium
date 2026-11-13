@@ -636,8 +636,9 @@ class ContextHubService : public KeyedService,
   // passage embedder is unavailable.
   const raw_ptr<passage_embeddings::Embedder> embedder_;
 
-  // Metadata of the embeddings model. Invalid until the model is available.
-  passage_embeddings::EmbedderMetadata embedder_metadata_{0, 0, 0};
+  // Metadata of the embeddings model. `std::nullopt` until the model is
+  // available.
+  std::optional<passage_embeddings::EmbedderMetadata> embedder_metadata_;
 
   // Indicates if a First Party Auto Todos generation request is in flight.
   // Remains true while waiting for exponential backoff retries via

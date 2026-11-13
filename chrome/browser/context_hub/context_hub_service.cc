@@ -733,8 +733,8 @@ void ContextHubService::OnMemoryBankEntriesDeleted(
 
 void ContextHubService::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {
-  if (!metadata.IsValid() ||
-      embedder_metadata_.model_version == metadata.model_version) {
+  if (embedder_metadata_ &&
+      embedder_metadata_->model_version == metadata.model_version) {
     return;
   }
   embedder_metadata_ = metadata;
@@ -745,7 +745,7 @@ void ContextHubService::EmbedderMetadataUpdated(
   memory_bank_embedding_jobs_.clear();
   memory_bank_query_embedding_job_.reset();
   context_hub_backend_->SetMemoryBankEmbeddingsVersion(
-      embedder_metadata_.model_version,
+      embedder_metadata_->model_version,
       base::BindOnce(&ContextHubService::OnMemoryBankEmbeddingsVersionSet,
                      weak_factory_.GetWeakPtr()));
 }
@@ -754,7 +754,7 @@ void ContextHubService::OnMemoryBankEmbeddingsVersionSet(bool success) {
   if (!success) {
     // Stored embeddings may still come from a previous model, so stop computing
     // new ones rather than mixing models. A later metadata update retries.
-    embedder_metadata_ = passage_embeddings::EmbedderMetadata(0, 0, 0);
+    embedder_metadata_.reset();
     memory_bank_pending_annotation_update_ids_.clear();
     memory_bank_embedding_jobs_.clear();
     memory_bank_query_embedding_job_.reset();
@@ -799,7 +799,7 @@ void ContextHubService::OnMemoryBankEntriesFetchedForAnnotationUpdate(
 }
 
 bool ContextHubService::CanComputeMemoryBankEmbeddings() {
-  return embedder_ && context_hub_backend_ && embedder_metadata_.IsValid();
+  return embedder_ && context_hub_backend_ && embedder_metadata_.has_value();
 }
 
 void ContextHubService::ComputeMemoryBankEmbeddings(
@@ -1642,7 +1642,7 @@ void ContextHubService::SearchMemoryBankEntries(
   // one) always supersedes the previous query and causes its callback to
   // receive no results in `OnMemoryBankQueryEmbeddingComputed()`.
   memory_bank_query_embedding_job_.reset();
-  if (!embedder_ || !context_hub_backend_ || !embedder_metadata_.IsValid() ||
+  if (!CanComputeMemoryBankEmbeddings() ||
       base::TrimWhitespaceASCII(query, base::TRIM_ALL).empty()) {
     std::move(callback).Run({});
     return;

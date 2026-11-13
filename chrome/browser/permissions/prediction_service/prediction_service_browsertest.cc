@@ -4,6 +4,7 @@
 
 #include "components/permissions/prediction_service/prediction_service.h"
 
+#include <optional>
 #include <variant>
 #include <vector>
 
@@ -909,8 +910,10 @@ class Aiv4ModelPredictionServiceBrowserTestBase
         passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 
     embedder_metadata_provider_fake.AddObserver(model_handler_provider());
-    embedder_metadata_provider_fake.NotifyObservers(
-        EmbedderMetadataProviderFake::GetValidEmbedderMetadata());
+    if (ShouldNotifyEmbedderMetadataOnSetUp()) {
+      embedder_metadata_provider_fake.NotifyObservers(
+          EmbedderMetadataProviderFake::GetValidEmbedderMetadata());
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -944,6 +947,8 @@ class Aiv4ModelPredictionServiceBrowserTestBase
   EmbedderMetadataProviderFake embedder_metadata_provider_fake;
 
  protected:
+  virtual bool ShouldNotifyEmbedderMetadataOnSetUp() const { return true; }
+
   PassageEmbedderMock passage_embedder_;
 };
 
@@ -1098,7 +1103,7 @@ struct Aiv4ModelFailureTestCase {
   SkBitmap snapshot;
   ComputeEmbeddingsStatus compute_embeddings_status;
   bool has_passage_embedder;
-  passage_embeddings::EmbedderMetadata embedder_metadata;
+  bool is_embedder_ready;
 };
 
 class Aiv4ModelFailureBrowserTest
@@ -1106,6 +1111,8 @@ class Aiv4ModelFailureBrowserTest
       public testing::WithParamInterface<Aiv4ModelFailureTestCase> {
  public:
   Aiv4ModelFailureBrowserTest() = default;
+
+  bool ShouldNotifyEmbedderMetadataOnSetUp() const override { return false; }
 
   void WaitForModelExecutionIfNecessary() override {
     // This test will not start any model execution.
@@ -1128,8 +1135,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*has_passage_embedder=*/true,
-            /*embedder_metadata=*/
-            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
+            /*is_embedder_ready=*/true,
         },
         {
             /*test_name=*/"EmptyInnerText",
@@ -1139,8 +1145,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*has_passage_embedder=*/true,
-            /*embedder_metadata=*/
-            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
+            /*is_embedder_ready=*/true,
         },
         {
             /*test_name=*/"EmbedderModelFails",
@@ -1150,8 +1155,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kExecutionFailure,
             /*has_passage_embedder=*/true,
-            /*embedder_metadata=*/
-            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
+            /*is_embedder_ready=*/true,
         },
         {
             /*test_name=*/"EmbedderModelDoesNotExist",
@@ -1161,8 +1165,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*has_passage_embedder=*/false,
-            /*embedder_metadata=*/
-            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
+            /*is_embedder_ready=*/true,
         },
         {
             /*test_name=*/"PageIsNotInEnglish",
@@ -1172,19 +1175,17 @@ INSTANTIATE_TEST_SUITE_P(
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*has_passage_embedder=*/true,
-            /*embedder_metadata=*/
-            EmbedderMetadataProviderFake::GetValidEmbedderMetadata(),
+            /*is_embedder_ready=*/true,
         },
         {
-            /*test_name=*/"InvalidEmbedderMetadata",
+            /*test_name=*/"EmbedderNotReady",
             /*page_language=*/"en",
             /*inner_text=*/"some valid text for aiv4 model",
             /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
             /*compute_embeddings_status=*/
             ComputeEmbeddingsStatus::kSuccess,
             /*has_passage_embedder=*/true,
-            /*embedder_metadata=*/
-            EmbedderMetadataProviderFake::GetInvalidEmbedderMetadata(),
+            /*is_embedder_ready=*/false,
         },
     }), /*name_generator=*/
     [](const testing::TestParamInfo<Aiv4ModelFailureBrowserTest::ParamType>&
@@ -1195,8 +1196,6 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
   ASSERT_TRUE(aiv4_model_handler());
   ASSERT_TRUE(embedded_test_server()->Start());
   PushModelFileToModelExecutor(ModelFilePath(kOneReturnAiv4Model));
-
-  embedder_metadata_provider_fake.NotifyObservers(GetParam().embedder_metadata);
 
   // We setup various failure conditions defined by the testcases.
   permissions_ai_ui_selector()->set_snapshot_for_testing(GetParam().snapshot);
@@ -1211,7 +1210,10 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
   } else {
     model_handler_provider()->set_passage_embedder_for_testing(nullptr);
   }
-  embedder_metadata_provider_fake.NotifyObservers(GetParam().embedder_metadata);
+  if (GetParam().is_embedder_ready) {
+    embedder_metadata_provider_fake.NotifyObservers(
+        EmbedderMetadataProviderFake::GetValidEmbedderMetadata());
+  }
 
   // We expect a vanilla CPSSv3 call without input from the
   // on-device model.
@@ -1242,6 +1244,10 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
 
   histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
                                         false, 1);
+  if (!GetParam().is_embedder_ready) {
+    histogram_tester().ExpectUniqueSample(kAiv4EmbedderMetadataValidHistogram,
+                                          false, 1);
+  }
 
   // Avoid dangling raw_ptr warning:
   model_handler_provider()->set_passage_embedder_for_testing(nullptr);

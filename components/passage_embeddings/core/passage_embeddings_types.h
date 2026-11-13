@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TYPES_H_
 #define COMPONENTS_PASSAGE_EMBEDDINGS_CORE_PASSAGE_EMBEDDINGS_TYPES_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
@@ -78,19 +78,15 @@ enum class ComputeEmbeddingsStatus {
   kMaxValue = kCanceled,
 };
 
+// Metadata describing a loaded embeddings model. `model_version`,
+// `output_size`, and `input_window_size` are always strictly positive.
 struct EmbedderMetadata {
+  // `model_version`, `output_size`, and `input_window_size` must be strictly
+  // positive.
   EmbedderMetadata(int64_t model_version,
                    size_t output_size,
                    uint32_t input_window_size,
-                   std::optional<double> search_score_threshold = std::nullopt)
-      : model_version(model_version),
-        output_size(output_size),
-        input_window_size(input_window_size),
-        search_score_threshold(search_score_threshold) {}
-
-  bool IsValid() const {
-    return model_version != 0 && output_size != 0 && input_window_size != 0;
-  }
+                   std::optional<double> search_score_threshold = std::nullopt);
 
   int64_t model_version;
   size_t output_size;

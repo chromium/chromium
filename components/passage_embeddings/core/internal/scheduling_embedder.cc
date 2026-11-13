@@ -181,7 +181,7 @@ base::WeakPtr<Embedder> SchedulingEmbedder::GetWeakPtr() {
 }
 
 void SchedulingEmbedder::SubmitWorkToEmbedder() {
-  if (!embedder_metadata_.IsValid()) {
+  if (!embedder_metadata_.has_value()) {
     // Underlying embedder not ready yet. Wait for it.
     VLOG(5) << "SubmitWorkToEmbedder: embedder not ready";
     return;

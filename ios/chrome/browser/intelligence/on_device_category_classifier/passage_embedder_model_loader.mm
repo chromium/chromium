@@ -107,7 +107,7 @@ void PassageEmbedderModelLoader::OnModelUpdated(
   DCHECK_EQ(optimization_target,
             optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER);
 
-  if (!model_info.has_value()) {
+  if (!model_info.has_value() || model_info->version <= 0) {
     on_model_unloaded_callback_.Run();
     return;
   }

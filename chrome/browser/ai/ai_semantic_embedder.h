@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
@@ -25,6 +26,7 @@ class AISemanticEmbedder : public AIContextBoundObject,
  public:
   AISemanticEmbedder(
       AIContextBoundObjectSet& context_bound_object_set,
+      passage_embeddings::Embedder& embedder,
       mojo::PendingReceiver<blink::mojom::AISemanticEmbedder> receiver);
   AISemanticEmbedder(const AISemanticEmbedder&) = delete;
   AISemanticEmbedder& operator=(const AISemanticEmbedder&) = delete;
@@ -48,6 +50,7 @@ class AISemanticEmbedder : public AIContextBoundObject,
                        uint64_t job_id,
                        passage_embeddings::ComputeEmbeddingsStatus status);
 
+  const raw_ref<passage_embeddings::Embedder> embedder_;
   mojo::Receiver<blink::mojom::AISemanticEmbedder> receiver_;
   // Priority of this document's jobs. AIContextBoundObjectSet sets it before
   // any Embed() can arrive and again whenever the page's visibility changes.

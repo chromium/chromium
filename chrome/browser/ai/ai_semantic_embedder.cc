@@ -17,8 +17,10 @@
 
 AISemanticEmbedder::AISemanticEmbedder(
     AIContextBoundObjectSet& context_bound_object_set,
+    passage_embeddings::Embedder& embedder,
     mojo::PendingReceiver<blink::mojom::AISemanticEmbedder> receiver)
     : AIContextBoundObject(context_bound_object_set),
+      embedder_(embedder),
       receiver_(this, std::move(receiver)) {
   receiver_.set_disconnect_handler(base::BindOnce(
       &AIContextBoundObject::RemoveFromSet, base::Unretained(this)));
@@ -102,7 +104,7 @@ void AISemanticEmbedder::Embed(
 
   pending_jobs_.emplace(
       request_id,
-      service_launcher->controller()->GetEmbedder()->ComputePassagesEmbeddings(
+      embedder_->ComputePassagesEmbeddings(
           priority_, std::move(formatted_inputs),
           base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),

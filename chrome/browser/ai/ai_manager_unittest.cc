@@ -7,9 +7,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
@@ -39,12 +42,14 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
+#include "services/passage_embeddings/public/mojom/passage_embeddings.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
@@ -73,7 +78,19 @@ namespace {
 namespace proto = ::optimization_guide::proto;
 
 class AISemanticEmbedderServiceLauncherForTest
-    : public AISemanticEmbedderServiceLauncher {};
+    : public AISemanticEmbedderServiceLauncher {
+ public:
+  void LaunchService(
+      mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
+          receiver) override {
+    service_receivers_.push_back(std::move(receiver));
+  }
+
+ private:
+  std::vector<mojo::PendingReceiver<
+      passage_embeddings::mojom::PassageEmbeddingsService>>
+      service_receivers_;
+};
 
 std::vector<blink::mojom::AILanguageCodePtr> MakeLanguageCodeVector(
     const std::vector<std::string>& languages) {
@@ -183,6 +200,11 @@ class AIManagerTest : public AITestUtils::AITestBase {
 
   void SetUp() override {
     AITestUtils::AITestBase::SetUp();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(base::WriteFile(temp_dir_.GetPath().AppendASCII("embeddings"),
+                                "dummy_embeddings"));
+    ASSERT_TRUE(
+        base::WriteFile(temp_dir_.GetPath().AppendASCII("sp"), "dummy_sp"));
     launcher_ = std::make_unique<AISemanticEmbedderServiceLauncherForTest>();
     AISemanticEmbedderServiceLauncher::SetForTesting(launcher_.get());
   }
@@ -196,9 +218,23 @@ class AIManagerTest : public AITestUtils::AITestBase {
     TestingBrowserProcess::GetGlobal()->SetComponentUpdater(nullptr);
 #endif
     AITestUtils::AITestBase::TearDown();
+    // Delete after `TearDown()` joins `ThreadPool` tasks holding model files.
+    ASSERT_TRUE(temp_dir_.Delete());
   }
 
  protected:
+  optimization_guide::ModelInfo GetTestEmbeddingsModelInfo(
+      uint32_t input_window_size = 2048) const {
+    optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
+    metadata.set_input_window_size(input_window_size);
+    metadata.set_output_size(768);
+    return optimization_guide::ModelInfo{
+        .model_file_path = temp_dir_.GetPath().AppendASCII("embeddings"),
+        .additional_files = {temp_dir_.GetPath().AppendASCII("sp")},
+        .version = 1,
+        .model_metadata = optimization_guide::AnyWrapProto(metadata),
+    };
+  }
   proto::SolutionConfig CreateSolution() override {
     proto::OnDeviceModelExecutionFeatureConfig config;
     config.set_feature(proto::ModelExecutionFeature::
@@ -257,6 +293,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
 #endif
 
  private:
+  base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<AISemanticEmbedderServiceLauncherForTest> launcher_;
 
@@ -397,13 +434,7 @@ TEST_F(AIManagerTest, CanCreateSemanticEmbedderCrashLimit) {
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   service_launcher->RecordSuccessfulUse();
   service_launcher->controller()->MaybeUpdateModelInfo(
-      optimization_guide::ModelInfo{
-          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
-          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
-          .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(
-              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
-      });
+      GetTestEmbeddingsModelInfo());
 
   // Ensure it's ready.
   EXPECT_TRUE(service_launcher->controller()->IsModelAvailable());
@@ -564,13 +595,7 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderWithoutOptimizationGuide) {
   // make create() fail.
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   ASSERT_TRUE(service_launcher->controller()->MaybeUpdateModelInfo(
-      optimization_guide::ModelInfo{
-          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
-          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
-          .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(
-              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
-      }));
+      GetTestEmbeddingsModelInfo()));
 
   TestCreateSemanticEmbedderClient client;
   ai_manager_->CreateSemanticEmbedder(client.BindNewPipeAndPassRemote(),
@@ -802,13 +827,7 @@ TEST_F(AIManagerTest, CanCreateDecisionModelWithEmbeddingGemmaV1Backend) {
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   service_launcher->RecordSuccessfulUse();
   service_launcher->controller()->MaybeUpdateModelInfo(
-      optimization_guide::ModelInfo{
-          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
-          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
-          .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(
-              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
-      });
+      GetTestEmbeddingsModelInfo());
   {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
     ai_manager_->CanCreateDecisionModel(
@@ -983,13 +1002,7 @@ TEST_F(AIManagerTest, CreateDecisionModelWithExplicitBackendOption) {
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   service_launcher->RecordSuccessfulUse();
   service_launcher->controller()->MaybeUpdateModelInfo(
-      optimization_guide::ModelInfo{
-          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
-          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
-          .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(
-              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
-      });
+      GetTestEmbeddingsModelInfo());
 
   // Verify availability defaults to the first enabled backend and can be
   // checked per backend.
@@ -1364,15 +1377,8 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderWaitsForModel) {
   EXPECT_FALSE(client.future().IsReady());
 
   // Now provide the model.
-  optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
-  metadata.set_input_window_size(2048);
   service_launcher->controller()->MaybeUpdateModelInfo(
-      optimization_guide::ModelInfo{
-          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
-          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
-          .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(metadata),
-      });
+      GetTestEmbeddingsModelInfo());
 
   // It should now be resolved, reporting the model's input window.
   EXPECT_TRUE(client.future().Wait());
@@ -1383,15 +1389,8 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderWaitsForModel) {
 TEST_F(AIManagerTest, CreateSemanticEmbedderReportsInputWindow) {
   // The model is already available: the direct creation path.
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
-  optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
-  metadata.set_input_window_size(512);
   service_launcher->controller()->MaybeUpdateModelInfo(
-      optimization_guide::ModelInfo{
-          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
-          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
-          .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(metadata),
-      });
+      GetTestEmbeddingsModelInfo(512));
   ASSERT_TRUE(service_launcher->controller()->IsModelAvailable());
 
   TestCreateSemanticEmbedderClient client;
@@ -1452,13 +1451,7 @@ TEST_F(AIManagerTest, CreateSemanticEmbedderDownloadProgress) {
   task_environment()->FastForwardBy(base::Milliseconds(51));
 
   service_launcher->controller()->MaybeUpdateModelInfo(
-      optimization_guide::ModelInfo{
-          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
-          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
-          .version = 1,
-          .model_metadata = optimization_guide::AnyWrapProto(
-              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
-      });
+      GetTestEmbeddingsModelInfo());
 
   EXPECT_TRUE(client.future().Wait());
 }

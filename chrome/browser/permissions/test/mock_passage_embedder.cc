@@ -133,11 +133,6 @@ EmbedderMetadata EmbedderMetadataProviderFake::GetValidEmbedderMetadata() {
   return EmbedderMetadata(1, 768, 512);
 }
 
-// static
-EmbedderMetadata EmbedderMetadataProviderFake::GetInvalidEmbedderMetadata() {
-  return EmbedderMetadata(0, 0, 0);
-}
-
 void EmbedderMetadataProviderFake::AddObserver(
     passage_embeddings::EmbedderMetadataObserver* observer) {
   observer_list_.AddObserver(observer);

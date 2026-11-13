@@ -101,7 +101,8 @@ PassageEmbeddingsServiceController::~PassageEmbeddingsServiceController() =
 bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   // Got the same version again. Do not run through rest of logic.
-  if (model_info && model_version_ == model_info->version) {
+  if (model_info && model_version_ > 0 &&
+      model_version_ == model_info->version) {
     return true;
   }
 
@@ -137,7 +138,9 @@ bool PassageEmbeddingsServiceController::MaybeUpdateModelInfo(
   std::optional<optimization_guide::proto::PassageEmbeddingsModelMetadata>
       embeddings_metadata = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::PassageEmbeddingsModelMetadata>(*metadata);
-  if (!embeddings_metadata) {
+  if (!embeddings_metadata || model_info->version <= 0 ||
+      embeddings_metadata->output_size() == 0 ||
+      embeddings_metadata->input_window_size() == 0) {
     logger.set_status(EmbeddingsModelInfoStatus::kInvalidMetadata);
     return false;
   }

@@ -34,12 +34,14 @@
 namespace {
 
 optimization_guide::ModelInfo GetTestModelInfo() {
+  optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
+  metadata.set_input_window_size(2048);
+  metadata.set_output_size(768);
   return optimization_guide::ModelInfo{
       .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
       .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
       .version = 1,
-      .model_metadata = optimization_guide::AnyWrapProto(
-          optimization_guide::proto::PassageEmbeddingsModelMetadata()),
+      .model_metadata = optimization_guide::AnyWrapProto(metadata),
   };
 }
 
@@ -211,6 +213,7 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
   AISemanticEmbedderServiceLauncherForTest launcher;
   optimization_guide::proto::PassageEmbeddingsModelMetadata metadata;
   metadata.set_input_window_size(512);
+  metadata.set_output_size(768);
   optimization_guide::ModelInfo model_info = GetTestModelInfo();
   model_info.model_metadata = optimization_guide::AnyWrapProto(metadata);
   ASSERT_TRUE(launcher.controller()->MaybeUpdateModelInfo(model_info));

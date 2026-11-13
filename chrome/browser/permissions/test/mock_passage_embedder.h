@@ -130,7 +130,6 @@ class EmbedderMetadataProviderFake
   void NotifyObservers(passage_embeddings::EmbedderMetadata metadata);
 
   static passage_embeddings::EmbedderMetadata GetValidEmbedderMetadata();
-  static passage_embeddings::EmbedderMetadata GetInvalidEmbedderMetadata();
 
  private:
   base::ObserverList<passage_embeddings::EmbedderMetadataObserver>

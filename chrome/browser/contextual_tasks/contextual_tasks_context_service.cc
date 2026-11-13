@@ -600,9 +600,7 @@ void ContextualTasksContextService::OnTypedQuery(
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {
-  embedder_model_version_ = metadata.IsValid()
-                                ? std::make_optional(metadata.model_version)
-                                : std::nullopt;
+  embedder_model_version_ = metadata.model_version;
 }
 
 page_content_annotations::PageEmbeddingsService::Priority
