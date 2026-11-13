@@ -526,10 +526,14 @@ void SpeechRecognition::ResultRetrieved(
 
   // The recognizer reports timestamps as offsets from the start of the audio
   // stream, so rebase them onto the time the stream started. If the recognizer
-  // did not supply timestamps, or audio never started, fall back to now.
+  // did not supply timestamps, audio never started, or result timestamps are
+  // disabled, fall back to now. Audio start is reported after the first audio
+  // chunk is captured, so never stamp the event later than now.
   base::TimeTicks event_time_stamp = base::TimeTicks::Now();
-  if (latest_audio_end_time.has_value() && !audio_start_ticks_.is_null()) {
-    event_time_stamp = audio_start_ticks_ + *latest_audio_end_time;
+  if (RuntimeEnabledFeatures::WebSpeechTimestampsEnabled() &&
+      latest_audio_end_time.has_value() && !audio_start_ticks_.is_null()) {
+    event_time_stamp =
+        std::min(audio_start_ticks_ + *latest_audio_end_time, event_time_stamp);
   }
 
   const wtf_size_t result_index = aggregated_results.size() - results.size();

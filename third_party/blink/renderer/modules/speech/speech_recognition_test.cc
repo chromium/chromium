@@ -10,6 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom-blink.h"
@@ -728,6 +729,7 @@ TEST_F(SpeechRecognitionInstallTest, UnavailableResolvesFalse) {
 }
 
 TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesRecognitionEndTime) {
+  ScopedWebSpeechTimestampsForTest scoped_timestamps(true);
   V8TestingScope scope;
   auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
 
@@ -739,8 +741,10 @@ TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesRecognitionEndTime) {
   speech_recognition->AudioStarted();
   const base::TimeTicks after_audio_start = base::TimeTicks::Now();
 
-  constexpr base::TimeDelta kAudioStartTime = base::Milliseconds(500);
-  constexpr base::TimeDelta kAudioEndTime = base::Milliseconds(1500);
+  constexpr base::TimeDelta kAudioStartTime = base::Milliseconds(5);
+  constexpr base::TimeDelta kAudioEndTime = base::Milliseconds(15);
+  // Results arrive after the speech they describe.
+  base::PlatformThread::Sleep(kAudioEndTime + base::Milliseconds(5));
 
   Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
   results.push_back(MakeResult("hello world", /*is_provisional=*/false,
@@ -755,6 +759,7 @@ TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesRecognitionEndTime) {
 }
 
 TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesLatestEndTime) {
+  ScopedWebSpeechTimestampsForTest scoped_timestamps(true);
   V8TestingScope scope;
   auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
 
@@ -765,8 +770,9 @@ TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesLatestEndTime) {
   speech_recognition->AudioStarted();
   const base::TimeTicks after_audio_start = base::TimeTicks::Now();
 
-  constexpr base::TimeDelta kFinalEndTime = base::Milliseconds(1000);
-  constexpr base::TimeDelta kProvisionalEndTime = base::Milliseconds(2500);
+  constexpr base::TimeDelta kFinalEndTime = base::Milliseconds(5);
+  constexpr base::TimeDelta kProvisionalEndTime = base::Milliseconds(15);
+  base::PlatformThread::Sleep(kProvisionalEndTime + base::Milliseconds(5));
 
   Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
   results.push_back(MakeResult("final", /*is_provisional=*/false,
@@ -781,6 +787,53 @@ TEST_F(SpeechRecognitionTest, ResultEventTimeStampUsesLatestEndTime) {
             before_audio_start + kProvisionalEndTime);
   EXPECT_LE(recorder->last_time_stamp(),
             after_audio_start + kProvisionalEndTime);
+}
+
+TEST_F(SpeechRecognitionTest, ResultEventTimeStampNotLaterThanNow) {
+  ScopedWebSpeechTimestampsForTest scoped_timestamps(true);
+  V8TestingScope scope;
+  auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
+
+  auto* recorder = MakeGarbageCollected<ResultEventRecorder>();
+  speech_recognition->addEventListener(event_type_names::kResult, recorder);
+
+  speech_recognition->AudioStarted();
+
+  Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
+  results.push_back(MakeResult("hello world", /*is_provisional=*/true,
+                               base::Milliseconds(0), base::Seconds(10)));
+  speech_recognition->ResultRetrieved(std::move(results));
+  const base::TimeTicks after_dispatch = base::TimeTicks::Now();
+
+  ASSERT_EQ(recorder->count(), 1);
+  // An end offset past the current time is clamped to the dispatch time.
+  EXPECT_LE(recorder->last_time_stamp(), after_dispatch);
+}
+
+TEST_F(SpeechRecognitionTest,
+       ResultEventTimeStampIgnoresTimestampsWhenDisabled) {
+  ScopedWebSpeechTimestampsForTest scoped_timestamps(false);
+  V8TestingScope scope;
+  auto* speech_recognition = SpeechRecognition::Create(&scope.GetWindow());
+
+  auto* recorder = MakeGarbageCollected<ResultEventRecorder>();
+  speech_recognition->addEventListener(event_type_names::kResult, recorder);
+
+  speech_recognition->AudioStarted();
+  base::PlatformThread::Sleep(base::Milliseconds(20));
+
+  Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results;
+  results.push_back(MakeResult("hello world", /*is_provisional=*/false,
+                               base::Milliseconds(0), base::Milliseconds(5)));
+
+  const base::TimeTicks before_dispatch = base::TimeTicks::Now();
+  speech_recognition->ResultRetrieved(std::move(results));
+  const base::TimeTicks after_dispatch = base::TimeTicks::Now();
+
+  ASSERT_EQ(recorder->count(), 1);
+  // With result timestamps disabled, the event uses the dispatch time.
+  EXPECT_GE(recorder->last_time_stamp(), before_dispatch);
+  EXPECT_LE(recorder->last_time_stamp(), after_dispatch);
 }
 
 TEST_F(SpeechRecognitionTest, ResultEventTimeStampFallsBackWithoutTimestamps) {
