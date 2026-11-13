@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/embedder_support/origin_trials/features.h"
@@ -114,7 +113,7 @@ class OriginTrialPolicyImplTest : public testing::Test {
         three_disabled_tokens_({kToken1SignatureEncoded,
                                 kToken2SignatureEncoded,
                                 kToken3SignatureEncoded}),
-        manager_(base::WrapUnique(new OriginTrialPolicyImpl())),
+        manager_(std::make_unique<OriginTrialPolicyImpl>()),
         default_keys_(manager_->GetPublicKeys()) {}
 
   OriginTrialPolicyImpl* manager() { return manager_.get(); }
@@ -319,7 +318,7 @@ class OriginTrialPolicyImplInitializationTest
     blink::OriginTrialsSettingsProvider::Get()->SetSettings(
         std::move(settings));
 
-    initialized_manager_ = base::WrapUnique(new OriginTrialPolicyImpl());
+    initialized_manager_ = std::make_unique<OriginTrialPolicyImpl>();
 
     // Provider is no longer needed after manager is initialized.
     // Reset the provider to free up the mock.
