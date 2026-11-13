@@ -2203,6 +2203,32 @@ TEST_F(PdfViewWebPluginTest, FindAndHighlightTextFragmentsNotFound) {
               base::ListValue().Append("hello-,world").Append("world,-hello")));
 }
 
+TEST_F(PdfViewWebPluginTest, HighlightSearchTerms) {
+  EXPECT_CALL(*engine_ptr_,
+              FindAndHighlightSearchTerms(ElementsAre("term1", "term2")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*engine_ptr_, ScrollToFirstSearchResult(2u));
+
+  plugin_->OnMessage(
+      base::DictValue()
+          .Set("type", "highlightSearchTerms")
+          .Set("searchTerms",
+               base::ListValue().Append("term1").Append("term2"))
+          .Set("startPageIndex", 2));
+}
+
+TEST_F(PdfViewWebPluginTest, HighlightSearchTermsNotFound) {
+  EXPECT_CALL(*engine_ptr_,
+              FindAndHighlightSearchTerms(ElementsAre("term1")))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*engine_ptr_, ScrollToFirstSearchResult).Times(0);
+
+  plugin_->OnMessage(base::DictValue()
+                         .Set("type", "highlightSearchTerms")
+                         .Set("searchTerms", base::ListValue().Append("term1"))
+                         .Set("startPageIndex", 0));
+}
+
 class PdfViewWebPluginWithDocInfoTest
     : public PdfViewWebPluginTest,
       public testing::WithParamInterface<bool> {

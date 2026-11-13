@@ -76,6 +76,7 @@ import {convertDocumentDimensionsMessage, convertFormFocusChangeMessage, convert
 import {PostMessageDataType, record, recordEnumeration, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
 import type {PdfNavigator} from './navigator.js';
+import type {OpenPdfParams} from './open_pdf_params_parser.js';
 import {LoadState} from './pdf_scripting_api.js';
 import {getCss} from './pdf_viewer.css.js';
 import {getHtml} from './pdf_viewer.html.js';
@@ -360,6 +361,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor fileName_: string = '';
   private accessor hadPassword_: boolean = false;
   protected accessor hasEdits_: boolean = false;
+  private hasUrlHighlights_: boolean = false;
   // <if expr="enable_pdf_ink2">
   private accessor hasCommittedInk2Edits_: boolean = false;
   // </if>
@@ -943,11 +945,23 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.loadProgress_ = progress;
     }
     super.updateProgress(progress);
+  }
 
-    // Text fragment directives should be handled after the document is set to
-    // finished loading.
-    if (progress === 100) {
-      this.maybeRenderTextDirectiveHighlights_(this.originalUrl);
+  override handleUrlParams(params: OpenPdfParams) {
+    super.handleUrlParams(params);
+
+    // Handle text directives and #search= (text directives take priority).
+    if (params.textFragments) {
+      this.hasUrlHighlights_ = true;
+      this.pluginController_.highlightTextFragments(params.textFragments);
+    } else if (params.searchTerms) {
+      this.hasUrlHighlights_ = true;
+      this.pluginController_.highlightSearchTerms(
+          params.searchTerms, params.pageIndex ?? 0);
+    } else if (this.hasUrlHighlights_) {
+      // Clear prior highlights if a viewport update drops both params.
+      this.hasUrlHighlights_ = false;
+      this.pluginController_.highlightTextFragments([]);
     }
   }
 
@@ -1351,7 +1365,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     assert(this.paramsParser);
     this.paramsParser.getViewportFromUrlParams(newUrl).then(
         params => this.handleUrlParams(params));
-    this.maybeRenderTextDirectiveHighlights_(newUrl);
   }
 
   // <if expr="enable_pdf_ink2">
@@ -1706,18 +1719,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.setShowBeforeUnloadDialog_(this.shouldShowBeforeUnloadDialog_());
   }
   // </if>
-
-  /**
-   * Sends a message to the PDF plugin to highlight the provided text
-   * directives if any.
-   */
-  private maybeRenderTextDirectiveHighlights_(url: string) {
-    assert(this.paramsParser);
-    const textDirectives = this.paramsParser.getTextFragments(url);
-    if (textDirectives.length > 0) {
-      this.pluginController_.highlightTextFragments(textDirectives);
-    }
-  }
 
   /**
    * Shows save file picker and returns a writable.

@@ -6416,4 +6416,86 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PDFiumEngineHighlightTextFragmentTest,
                          testing::Bool());
 
+class PDFiumEngineHighlightSearchTermsTest
+    : public PDFiumEngineHighlightTextFragmentTest {
+ public:
+  std::unique_ptr<PDFiumEngine> InitializeMultiPagesPdfEngine(
+      TestClient& client) {
+    return InitializeEngine(&client,
+                            FILE_PATH_LITERAL("ink_text_multi_pages.pdf"));
+  }
+};
+
+TEST_P(PDFiumEngineHighlightSearchTermsTest, FindSortAndMergeTerms) {
+  NiceMock<SearchStringTestClient> client(GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeMultiPagesPdfEngine(client);
+  ASSERT_TRUE(engine);
+
+  // Out-of-order terms sort by ascending (page_index, char_index).
+  EXPECT_TRUE(engine->FindAndHighlightSearchTerms({"0", "Page", "Hello"}));
+  ASSERT_EQ(5u, engine->text_fragment_highlights_for_testing().size());
+  EXPECT_EQ(0u, engine->text_fragment_highlights_for_testing()[0].page_index());
+  EXPECT_EQ(0, engine->text_fragment_highlights_for_testing()[0].char_index());
+  EXPECT_EQ(0u, engine->text_fragment_highlights_for_testing()[1].page_index());
+  EXPECT_EQ(6, engine->text_fragment_highlights_for_testing()[1].char_index());
+  EXPECT_EQ(0u, engine->text_fragment_highlights_for_testing()[2].page_index());
+  EXPECT_EQ(11, engine->text_fragment_highlights_for_testing()[2].char_index());
+  EXPECT_EQ(2u, engine->text_fragment_highlights_for_testing()[3].page_index());
+  EXPECT_EQ(2u, engine->text_fragment_highlights_for_testing()[4].page_index());
+
+  // Overlapping/duplicate terms merge into one range per matching page.
+  EXPECT_TRUE(engine->FindAndHighlightSearchTerms(
+      {"Hello", "Hello Page", "Page", "Hello"}));
+  ASSERT_EQ(2u, engine->text_fragment_highlights_for_testing().size());
+  EXPECT_EQ(0, engine->text_fragment_highlights_for_testing()[0].char_index());
+  EXPECT_EQ(10, engine->text_fragment_highlights_for_testing()[0].char_count());
+  EXPECT_EQ(0, engine->text_fragment_highlights_for_testing()[1].char_index());
+  EXPECT_EQ(10, engine->text_fragment_highlights_for_testing()[1].char_count());
+}
+
+TEST_P(PDFiumEngineHighlightSearchTermsTest, ScrollToFirstSearchResult) {
+  NiceMock<SearchStringTestClient> client(GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeMultiPagesPdfEngine(client);
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({200, 200});
+
+  // Matches on pages 0 and 2; starting at page 1 scrolls to page 2.
+  EXPECT_TRUE(engine->FindAndHighlightSearchTerms({"Hello"}));
+  int scroll_y_page2 = 0;
+  EXPECT_CALL(client, ScrollToY(testing::_, /*force_smooth_scroll=*/false))
+      .WillOnce(testing::SaveArg<0>(&scroll_y_page2));
+  engine->ScrollToFirstSearchResult(/*start_page_index=*/1u);
+  EXPECT_GT(scroll_y_page2, 400);
+  testing::Mock::VerifyAndClearExpectations(&client);
+
+  // Starting at page 2 for a match only on page 0 wraps around to page 0.
+  engine->ScrolledToYPosition(scroll_y_page2);
+  int scroll_y_page0 = 1000;
+  EXPECT_CALL(client, ScrollToY(testing::_, /*force_smooth_scroll=*/false))
+      .WillOnce(testing::SaveArg<0>(&scroll_y_page0));
+  EXPECT_TRUE(engine->FindAndHighlightSearchTerms({"Page 0"}));
+  engine->ScrollToFirstSearchResult(/*start_page_index=*/2u);
+  EXPECT_LT(scroll_y_page0, 300);
+}
+
+TEST_P(PDFiumEngineHighlightSearchTermsTest, DrawAndClearHighlights) {
+  NiceMock<SearchStringTestClient> client(GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
+  ASSERT_TRUE(engine);
+
+  engine->FindAndHighlightTextFragments({"Spanner"});
+  EXPECT_CALL(client, OnNewTextFragmentsSearchStarted).Times(2);
+  EXPECT_TRUE(engine->FindAndHighlightSearchTerms(
+      {"Spanner: Google's Globally-Distributed Database"}));
+  DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_end_highlight.png");
+
+  // Running a failed search clears existing highlights.
+  EXPECT_FALSE(engine->FindAndHighlightSearchTerms({"does_not_exist"}));
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFiumEngineHighlightSearchTermsTest,
+                         testing::Bool());
+
 }  // namespace chrome_pdf
