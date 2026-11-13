@@ -14,7 +14,6 @@ source_set("coordinator") {
     "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/mini_map/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -31,6 +30,7 @@ source_set("coordinator") {
     "//ios/web/public",
     "//ios/web/public/annotations",
     "//ui/base",
+    "//ui/base/mojom",
   ]
 }
 
@@ -51,13 +51,17 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/providers/mini_map",
     "//ios/web/common:features",
     "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
+    "//ui/base/mojom",
   ]
 }

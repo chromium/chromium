@@ -29,11 +29,7 @@ MiniMapTabHelper::MiniMapTabHelper(web::WebState* web_state)
   mini_map_service_ = MiniMapServiceFactory::GetForProfile(profile);
 }
 
-MiniMapTabHelper::~MiniMapTabHelper() {
-  if (policy_callback_) {
-    std::move(policy_callback_).Run(PolicyDecision::Cancel());
-  }
-}
+MiniMapTabHelper::~MiniMapTabHelper() = default;
 
 void MiniMapTabHelper::SetMiniMapCommands(
     id<MiniMapCommands> mini_map_handler) {
@@ -83,37 +79,15 @@ void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
     return;
   }
 
-  // Save fallback URL, defer navigation, and present Native Preview sheet.
-  PolicyDecisionCallback previous_callback = std::move(policy_callback_);
-  pending_treatment_url_ = modified_url;
-  pending_transition_type_ = request_info.transition_type;
-  policy_callback_ = std::move(callback);
-
+  // Cancel the original navigation and present the Native Preview sheet.
+  // Presentation is posted to the next runloop turn so `callback` (which may
+  // synchronously close the WebState) finishes running before UI presentation
+  // starts, and is cancelled via `weak_ptr_factory_` if `this` is destroyed.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MiniMapTabHelper::PresentMiniMapNativePreview,
                                 weak_ptr_factory_.GetWeakPtr(), modified_url));
 
-  if (previous_callback) {
-    std::move(previous_callback).Run(PolicyDecision::Allow());
-  }
-}
-
-void MiniMapTabHelper::OnMiniMapSuccess() {
-  pending_treatment_url_ = GURL();
-  pending_transition_type_.reset();
-  if (policy_callback_) {
-    std::move(policy_callback_).Run(PolicyDecision::Cancel());
-  }
-}
-
-void MiniMapTabHelper::OnMiniMapFailure() {
-  GURL url = std::move(pending_treatment_url_);
-  pending_treatment_url_ = GURL();
-  std::optional<ui::PageTransition> transition_type =
-      std::exchange(pending_transition_type_, std::nullopt);
-  if (policy_callback_ && transition_type.has_value()) {
-    CancelAndOpenURL(std::move(policy_callback_), url, *transition_type);
-  }
+  std::move(callback).Run(PolicyDecision::Cancel());
 }
 
 void MiniMapTabHelper::WebStateDestroyed() {
