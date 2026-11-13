@@ -2664,6 +2664,7 @@ source_set("browser_tests") {
     "//extensions/strings",
     "//services/network/public/cpp:ip_address_space_overrides_test_utils",
     "//ui/base:ozone_buildflags",
+    "//ui/base:test_support",
     "//ui/base/idle",
     "//ui/base/idle:test_support",
     "//ui/menus",

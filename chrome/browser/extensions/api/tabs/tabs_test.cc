@@ -76,6 +76,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -106,11 +107,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/base/base_window.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/test/mock_base_window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -5834,6 +5837,98 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   ASSERT_NE(nullptr, tabs);
   ASSERT_EQ(1u, tabs->size());
   EXPECT_EQ(tab_id, (*tabs)[0].GetDict().FindInt("id"));
+}
+
+// Verifies that WindowsUpdateFunction updates bounds and focus on a standalone
+// WindowController's BaseWindow and rejects fullscreen/maximized/minimized
+// states for Picture-in-Picture windows.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       WindowsUpdate_UpdatesStandaloneBaseWindow) {
+  content::WebContents::CreateParams create_params(profile());
+  create_params.picture_in_picture_options =
+      blink::mojom::PictureInPictureWindowOptions();
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(create_params);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(standalone_window_id);
+
+  PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+      GetActiveWebContents(), web_contents.get());
+  ASSERT_TRUE(
+      PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
+
+  testing::NiceMock<ui::MockBaseWindow> base_window;
+  gfx::Rect bounds(0, 0, 200, 200);
+  bool is_active = false;
+  ON_CALL(base_window, GetBounds)
+      .WillByDefault(testing::ReturnPointee(&bounds));
+  ON_CALL(base_window, SetBounds).WillByDefault(testing::SaveArg<0>(&bounds));
+  ON_CALL(base_window, IsActive)
+      .WillByDefault(testing::ReturnPointee(&is_active));
+  ON_CALL(base_window, Activate)
+      .WillByDefault(testing::Assign(&is_active, true));
+#if BUILDFLAG(IS_ANDROID)
+  ON_CALL(base_window, CanResize)
+      .WillByDefault(testing::DoAll(
+          testing::SetArgReferee<0>(ui::WindowResizePrecheckResult::kOk),
+          testing::Return(true)));
+#endif
+  TestStandaloneWindowController standalone_controller(
+      &base_window, profile(), standalone_window_id, web_contents.get());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("WindowsUpdateStandaloneTest").Build();
+  {
+    auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+    function->set_extension(extension.get());
+    std::string args = base::StringPrintf(
+        R"([%d, {"left": 50, "top": 60, "width": 320, "height": 240, )"
+        R"("focused": true}])",
+        standalone_window_id.id());
+    base::DictValue result =
+        utils::ToDict(utils::RunFunctionAndReturnSingleResult(function.get(),
+                                                              args, profile()));
+    EXPECT_EQ(gfx::Rect(50, 60, 320, 240), base_window.GetBounds());
+    EXPECT_TRUE(base_window.IsActive());
+    EXPECT_EQ(standalone_window_id.id(), result.FindInt("id"));
+    EXPECT_EQ(50, result.FindInt("left"));
+    EXPECT_EQ(60, result.FindInt("top"));
+    EXPECT_EQ(320, result.FindInt("width"));
+    EXPECT_EQ(240, result.FindInt("height"));
+    EXPECT_EQ(true, result.FindBool("focused"));
+  }
+
+  auto expect_disallowed_pip_states = [&]() {
+    for (const char* state : {
+             "fullscreen",
+             "maximized",
+             "minimized",
+#if BUILDFLAG(IS_CHROMEOS)
+             "locked-fullscreen",
+#endif
+         }) {
+      auto function = base::MakeRefCounted<WindowsUpdateFunction>();
+      function->set_extension(extension.get());
+      std::string args = base::StringPrintf(R"([%d, {"state": "%s"}])",
+                                            standalone_window_id.id(), state);
+      std::string error =
+          utils::RunFunctionAndReturnError(function.get(), args, profile());
+      EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError, error);
+    }
+  };
+
+  expect_disallowed_pip_states();
+
+  // Simulate async page unload during Document PiP teardown, where
+  // `PictureInPictureWindowManager` has already cleared its child pointer while
+  // the standalone `WindowController` remains registered.
+  PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+  ASSERT_FALSE(
+      PictureInPictureWindowManager::IsChildWebContents(web_contents.get()));
+  expect_disallowed_pip_states();
 }
 
 }  // namespace extensions

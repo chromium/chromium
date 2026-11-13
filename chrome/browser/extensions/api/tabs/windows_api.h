@@ -102,12 +102,11 @@ class WindowsUpdateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("windows.update", WINDOWS_UPDATE)
 
  private:
-  // Applies the updates from `params` to the `browser` window. Returns false if
-  // the `browser` or `window_controller` was synchronously destroyed during a
+  // Applies the updates from `params` to the `window_controller` window.
+  // Returns false if `window_controller` was synchronously destroyed during a
   // platform window state transition.
   [[nodiscard]] bool UpdateWindowState(
       const api::windows::Update::Params& params,
-      BrowserWindowInterface* browser,
       WindowController* window_controller,
       ui::mojom::WindowShowState show_state,
       bool set_window_bounds,
