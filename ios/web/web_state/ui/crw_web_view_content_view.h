@@ -45,6 +45,10 @@
 - (void)viewportInsetsDidChangeWithMinInset:(UIEdgeInsets)minInset
                                    maxInset:(UIEdgeInsets)maxInset;
 
+// Coalesces and posts `UIAccessibilityLayoutChangedNotification` once
+// viewport inset updates stop.
+- (void)scheduleAccessibilityLayoutChangedNotification;
+
 @end
 
 #endif  // IOS_WEB_WEB_STATE_UI_CRW_WEB_VIEW_CONTENT_VIEW_H_

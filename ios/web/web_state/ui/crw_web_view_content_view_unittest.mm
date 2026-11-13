@@ -4,6 +4,7 @@
 
 #import "ios/web/web_state/ui/crw_web_view_content_view.h"
 
+#import "base/test/task_environment.h"
 #import "ios/web/common/crw_viewport_controller.h"
 #import "ios/web/web_state/crw_web_view.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,10 @@
 
 namespace {
 
-using CRWWebViewContentViewTest = PlatformTest;
+class CRWWebViewContentViewTest : public PlatformTest {
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
 
 // Tests the ContentInset method when shouldUseViewContentInset is set to YES.
 TEST_F(CRWWebViewContentViewTest, ContentInsetWithInsetForPadding) {
@@ -592,6 +596,42 @@ TEST_F(CRWWebViewContentViewTest,
   EXPECT_TRUE(CGRectEqualToRect(kExpectedFrame, webView.frame));
   EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(kExpectedSafeAreaContentInset,
                                             scrollView.contentInset));
+}
+
+// Tests that `accessibilityElements` exposes `webView` and `accessibilityFrame`
+// lazily computes the inset visible area in screen coordinates.
+TEST_F(CRWWebViewContentViewTest, AccessibilityFrameReflectsVisibleArea) {
+  const CGRect kBounds = CGRectMake(0, 0, 800, 600);
+  UIWindow* window = [[UIWindow alloc] initWithFrame:kBounds];
+  CRWWebView* webView = [[CRWWebView alloc] initWithFrame:kBounds];
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.frame = kBounds;
+  [window addSubview:contentView];
+
+  EXPECT_TRUE([@[ webView ] isEqualToArray:contentView.accessibilityElements]);
+
+  // Positive `contentInset` shrinks the visible area.
+  scrollView.contentInset = UIEdgeInsetsMake(94, 0, 44, 0);
+  EXPECT_TRUE(CGRectEqualToRect(UIAccessibilityConvertFrameToScreenCoordinates(
+                                    CGRectMake(0, 94, 800, 462), contentView),
+                                contentView.accessibilityFrame));
+
+  // Offset `webView.frame` with negative top `contentInset` (e.g. PDF mode).
+  webView.frame = CGRectMake(0, 100, 800, 500);
+  scrollView.contentInset = UIEdgeInsetsMake(-30, 0, 50, 0);
+  EXPECT_TRUE(CGRectEqualToRect(UIAccessibilityConvertFrameToScreenCoordinates(
+                                    CGRectMake(0, 70, 800, 480), contentView),
+                                contentView.accessibilityFrame));
+
+  // Empty `webView.frame` with non-zero insets yields `CGRectZero`.
+  webView.frame = CGRectZero;
+  scrollView.contentInset = UIEdgeInsetsMake(94, 0, 44, 0);
+  EXPECT_TRUE(CGRectEqualToRect(CGRectZero, contentView.accessibilityFrame));
 }
 
 }  // namespace

@@ -10,8 +10,11 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "ios/web/common/crw_viewport_controller.h"
 #import "ios/web/common/crw_web_view_resizing_type.h"
 #import "ios/web/public/content_type_util.h"
@@ -81,6 +84,11 @@ UIEdgeInsets AdjustedPdfContentInsets(UIEdgeInsets contentInsets,
 // used by UIWebView.
 const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 
+// Trailing delay used to coalesce `UIAccessibilityLayoutChangedNotification`
+// until `contentInset` updates stop.
+constexpr base::TimeDelta kAccessibilityLayoutNotificationDelay =
+    base::Milliseconds(150);
+
 }  // namespace
 
 @implementation CRWWebViewContentView {
@@ -93,6 +101,9 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   BOOL _usesObscuredInsets;
   std::string _mimeTypeString;
   CRWViewportInsetsAnimator* _insetsAnimator;
+  // Coalesces `UIAccessibilityLayoutChangedNotification` across per-frame
+  // viewport inset updates.
+  base::OneShotTimer _accessibilityNotificationTimer;
 }
 @synthesize contentOffset = _contentOffset;
 @synthesize contentInset = _contentInset;
@@ -117,6 +128,9 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     _webView = webView;
     _scrollView = scrollView;
     _fullscreenState = fullscreenState;
+    // Explicitly expose `_webView` as the accessibility element so VoiceOver
+    // queries this view's overridden `-accessibilityFrame`.
+    self.accessibilityElements = @[ _webView ];
     // Default resizing value.
     if (@available(iOS 26, *)) {
       _webViewResizingType = WebViewResizingType::kContentInset;
@@ -157,6 +171,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 - (void)dealloc {
   [_insetsAnimator stop];
   _insetsAnimator = nil;
+  _accessibilityNotificationTimer.Stop();
 }
 
 - (void)willMoveToWindow:(UIWindow*)newWindow {
@@ -164,6 +179,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   if (!newWindow) {
     [_insetsAnimator stop];
     _insetsAnimator = nil;
+    _accessibilityNotificationTimer.Stop();
   }
 }
 
@@ -245,6 +261,34 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
                                    maxInset:(UIEdgeInsets)maxInset {
 }
 
+- (void)scheduleAccessibilityLayoutChangedNotification {
+  if (!self.window) {
+    return;
+  }
+  // Restarts the delay on every call so per-frame inset updates post a single
+  // notification once they stop.
+  _accessibilityNotificationTimer.Start(
+      FROM_HERE, kAccessibilityLayoutNotificationDelay,
+      base::BindOnce(&UIAccessibilityPostNotification,
+                     UIAccessibilityLayoutChangedNotification, nil));
+}
+
+#pragma mark - UIAccessibility
+
+// Returns the visible inset region in screen coordinates so VoiceOver orders
+// toolbars ahead of scrolled web content when `contentInset` is used.
+- (CGRect)accessibilityFrame {
+  if (!_webView) {
+    return [super accessibilityFrame];
+  }
+  CGRect visibleFrame =
+      UIEdgeInsetsInsetRect(_webView.frame, _scrollView.contentInset);
+  if (CGRectIsEmpty(visibleFrame)) {
+    return CGRectZero;
+  }
+  return UIAccessibilityConvertFrameToScreenCoordinates(visibleFrame, self);
+}
+
 #pragma mark Layout
 
 - (void)setContentOffset:(CGPoint)contentOffset {
@@ -272,6 +316,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
   _contentInset = contentInset;
   if (self.shouldUseViewContentInset) {
     [_scrollView setContentInset:contentInset];
+    [self scheduleAccessibilityLayoutChangedNotification];
   }
 }
 
@@ -388,8 +433,13 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
           // dynamically breaks scroll momentum in PDFs. We do not change the
           // frame here, but rather rely on layoutSubviews and
           // setMinimumViewportInset.
-          _scrollView.contentInset =
+          UIEdgeInsets pdfInsets =
               AdjustedPdfContentInsets(contentInsets, *_maxViewportInset);
+          if (!UIEdgeInsetsEqualToEdgeInsets(_scrollView.contentInset,
+                                             pdfInsets)) {
+            _scrollView.contentInset = pdfInsets;
+            [self scheduleAccessibilityLayoutChangedNotification];
+          }
         }
         break;
       }
@@ -471,8 +521,13 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
             UIScrollViewContentInsetAdjustmentNever;
         UIEdgeInsets contentInsets =
             AdjustInsetsForSafeArea(_obscuredInsets, self.safeAreaInsets);
-        _scrollView.contentInset =
+        UIEdgeInsets pdfInsets =
             AdjustedPdfContentInsets(contentInsets, maxInset);
+        if (!UIEdgeInsetsEqualToEdgeInsets(_scrollView.contentInset,
+                                           pdfInsets)) {
+          _scrollView.contentInset = pdfInsets;
+          [self scheduleAccessibilityLayoutChangedNotification];
+        }
       }
 
       // Do not pass the min/max viewport insets to the underlying web view if
@@ -531,6 +586,9 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     [_webView setObscuredContentInsets:obscuredInsets];
   }
   _obscuredInsets = obscuredInsets;
+  if (!UIEdgeInsetsEqualToEdgeInsets(oldInsets, contentInsets)) {
+    [self scheduleAccessibilityLayoutChangedNotification];
+  }
 }
 
 // Called when an insets animation completes, clearing the animator instance.
