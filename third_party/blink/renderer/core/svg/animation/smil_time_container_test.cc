@@ -336,6 +336,48 @@ TEST_F(SMILTimeContainerTest, StartSkipsPendingUseShadowTreeUpdate) {
   EXPECT_EQ(instance->parentNode(), shadow_root);
 }
 
+TEST_F(SMILTimeContainerTest,
+       ServiceAnimationsWhenUseShadowRebuildEmptiesQueue) {
+  Load(R"HTML(
+    <svg id="s">
+      <rect id="t" width="10" height="10">
+        <animate id="a" attributeName="width" from="0" to="100" dur="5s"/>
+      </rect>
+      <use id="u" href="#t"/>
+    </svg>
+  )HTML");
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* direct_animate = GetElementById("a");
+  auto* use = To<SVGUseElement>(GetElementById("u"));
+  ASSERT_TRUE(direct_animate);
+  ASSERT_TRUE(use && use->UserAgentShadowRoot());
+
+  // Remove the only directly-scheduled timed element. The priority queue
+  // still holds the instance <animate> inside |u|'s shadow tree.
+  direct_animate->remove();
+
+  // Point |u| at a target that will not resolve. The shadow tree rebuild is
+  // deferred; |u| is now on the pending <use>-shadow-tree queue.
+  use->setAttribute(svg_names::kHrefAttr, AtomicString("#nonexistent"));
+
+  // Entering AnimationTargetsMutationsForbidden runs that pending queue,
+  // tears down the old shadow tree -- unscheduling the instance animation --
+  // and fails to build a new one. priority_queue_ is empty by the time
+  // UpdateTimedElements() runs. Must not crash.
+  SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
+
+  // The pending shadow-tree rebuild ran; the new target does not resolve,
+  // so |u| has no instance subtree.
+  EXPECT_FALSE(use->UserAgentShadowRoot()->firstChild());
+
+  // A subsequent service call -- now reaching the pre-scope empty-queue
+  // early return -- is also a no-op.
+  SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
+  EXPECT_FALSE(use->UserAgentShadowRoot()->firstChild());
+}
+
 class ContentLoadedEventListener final : public NativeEventListener {
  public:
   using CallbackType = base::OnceCallback<void(Document&)>;

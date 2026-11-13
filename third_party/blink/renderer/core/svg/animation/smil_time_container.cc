@@ -542,6 +542,12 @@ bool SMILTimeContainer::UpdateAnimationsAndScheduleFrameIfNeeded(
   // insertion is still propagating, so a <use> that is instanced could
   // observe a target that is not yet marked as being connected.
   AnimationTargetsMutationsForbidden scope(this);
+  // The pending <use> shadow-tree update above can tear down shadow trees
+  // whose instanced SMIL elements were the only entries in |priority_queue_|,
+  // so re-check for an empty queue before continuing.
+  if (priority_queue_.IsEmpty()) {
+    return false;
+  }
   UpdateTimedElements(update);
   bool disable_throttling = ApplyTimedEffects(update.TargetTime());
   DCHECK(!wakeup_timer_.IsActive());
