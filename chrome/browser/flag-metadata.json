@@ -8704,6 +8704,15 @@
     "expiry_milestone": 160
   },
   {
+    "name": "rust-brotli-in-net",
+    "owners": [
+      "miketaylr@google.com",
+      "marcobartoli@microsoft.com",
+      "net-dev@chromium.org"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "saas-usage-reporting",
     "owners": [ "janzarzycki@google.com", "igorruvinov@chromium.org", "nicolaso@chromium.org" ],
     "expiry_milestone": 170

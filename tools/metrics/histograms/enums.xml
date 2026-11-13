@@ -9005,6 +9005,7 @@ from previous Chrome versions.
   <int value="-1801349476" label="FloatWindow:enabled"/>
   <int value="-1800643694" label="TabStripHeightTransitionGlitchFix:disabled"/>
   <int value="-1799801575" label="CookieDeprecationMessages:enabled"/>
+  <int value="-1799604058" label="RustBrotliInNet:disabled"/>
   <int value="-1799075778" label="AutofillAiWalletPassBranding2026:enabled"/>
   <int value="-1798337879" label="enable-md-downloads"/>
   <int value="-1798258607" label="AdaptiveCharging:disabled"/>
@@ -16638,6 +16639,7 @@ from previous Chrome versions.
   <int value="460136092" label="MidiManagerAndroid:disabled"/>
   <int value="460475728" label="wake-on-wifi-packet"/>
   <int value="460478987" label="Cr2023ActionChips:enabled"/>
+  <int value="460741002" label="RustBrotliInNet:enabled"/>
   <int value="461330165" label="ContainerAppPreinstallDebug:disabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
   <int value="462453078" label="cast-streaming-force-enable-hardware-h264"/>

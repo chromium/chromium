@@ -14181,6 +14181,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kOmitNativeFrameOnShadowlessMenus)},
 
+    {"rust-brotli-in-net", flag_descriptions::kRustBrotliInNetName,
+     flag_descriptions::kRustBrotliInNetDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kRustBrotliInNet)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

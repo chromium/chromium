@@ -4403,6 +4403,13 @@ inline constexpr char kRendererSideContentDecodingDescription[] =
     "network service sends compressed HTTP response bodies to the renderer "
     "process.";
 
+inline constexpr char kRustBrotliInNetName[] =
+    "Rust-based brotli decoding in the network stack";
+inline constexpr char kRustBrotliInNetDescription[] =
+    "When enabled, decodes brotli with the Rust `brotli-decompressor` crate "
+    "instead of the C brotli library. This covers the br content encoding "
+    "(also with a shared dictionary) and TLS certificate compression.";
+
 inline constexpr char kRustyIcoName[] = "Rust-based ICO image handling";
 inline constexpr char kRustyIcoDescription[] =
     "When enabled, uses Rust `image` crate to decode ICO images.";
