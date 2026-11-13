@@ -39,7 +39,6 @@ import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.transit.TripBuilder;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -76,7 +75,8 @@ import java.util.function.Supplier;
 @DoNotBatch(reason = "Safer to not batch as we are using multiple Android tasks")
 @EnableFeatures(BlinkFeatures.ANDROID_DESKTOP_WEB_PREFS_LARGE_DISPLAYS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/577194295
+// If individual tests are flaky, please disable them specifically rather than disabling the whole
+// suite.
 public class PopupMultiwindowPTTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
