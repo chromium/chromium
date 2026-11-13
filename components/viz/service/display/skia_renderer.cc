@@ -3692,7 +3692,10 @@ void SkiaRenderer::UpdateRenderPassTextures(
     // be destroyed when the backing is destroyed.
     if (!(root_buffer_queue_ && backing.is_root) && !backing.buffer_queue) {
       const bool should_stash_scanout_backing =
-          backing.is_scanout && !scanout_backing_for_reuse_ &&
+          backing.is_scanout &&
+          (!scanout_backing_for_reuse_ ||
+           backing.size.GetArea() >
+               scanout_backing_for_reuse_->size.GetArea()) &&
           base::FeatureList::IsEnabled(kReuseScanoutRenderPassBacking);
 #if BUILDFLAG(IS_WIN)
       // We only expect scanout backings with partially delegated compositing.
@@ -3707,8 +3710,13 @@ void SkiaRenderer::UpdateRenderPassTextures(
         // a scanout backing.
         //
         // If there are multiple scanout backings being discarded, only keep the
-        // first one we see. This is not a great heuristic, but it is not worse
-        // than not keeping a reuse pool.
+        // largest one we see. This lets us avoid extra allocation when we go
+        // from multiple web contents (e.g. split tab) to a single web contents.
+        // This is not worse than not keeping a reuse pool.
+        if (scanout_backing_for_reuse_) {
+          skia_output_surface_->DestroySharedImage(
+              scanout_backing_for_reuse_->mailbox);
+        }
         scanout_backing_for_reuse_.emplace(std::move(backing));
       } else {
         skia_output_surface_->DestroySharedImage(backing.mailbox);
