@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -63,6 +64,11 @@ enum class ImportContainerResult {
 }  // namespace
 
 using Status = CrostiniExportImportNotificationController::Status;
+
+bool IsExport(ExportImportType type) {
+  return type == ExportImportType::EXPORT ||
+         type == ExportImportType::EXPORT_DISK_IMAGE;
+}
 
 CrostiniExportImport::CrostiniExportImport(Profile* profile)
     : profile_(profile) {
@@ -320,30 +326,34 @@ void CrostiniExportImport::Start(
                          std::move(callback)));
       break;
     case ExportImportType::EXPORT_DISK_IMAGE:
+    case ExportImportType::IMPORT_DISK_IMAGE:
       // TODO(b:345312503): restart VM if it was started?
       crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
           container_id.vm_name,
-          base::BindOnce(&CrostiniExportImport::ExportDiskImage,
-                         weak_ptr_factory_.GetWeakPtr(), container_id, path,
-                         std::move(callback)));
-      break;
-    case ExportImportType::IMPORT_DISK_IMAGE:
-      crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
-          container_id.vm_name,
-          base::BindOnce(&CrostiniExportImport::ImportDiskImage,
-                         weak_ptr_factory_.GetWeakPtr(), container_id, path,
-                         std::move(callback)));
+          base::BindOnce(
+              &CrostiniExportImport::StartDiskImageOperation,
+              weak_ptr_factory_.GetWeakPtr(), type, container_id, path,
+              base::BindOnce(&CrostiniExportImport::AfterDiskImageOperation,
+                             weak_ptr_factory_.GetWeakPtr(), container_id,
+                             std::move(callback))));
       break;
   }
 }
 
-void CrostiniExportImport::ExportDiskImage(
+void CrostiniExportImport::StartDiskImageOperation(
+    ExportImportType type,
     const guest_os::GuestId& container_id,
     const base::FilePath& path,
     CrostiniManager::CrostiniResultCallback callback,
-    CrostiniResult result) {
-  if (result == CrostiniResult::VM_STOP_FAILED) {
-    LOG(ERROR) << "Unable to stop VM, cannot export disk image";
+    CrostiniResult stop_vm_result) {
+  CHECK(type == ExportImportType::EXPORT_DISK_IMAGE ||
+        type == ExportImportType::IMPORT_DISK_IMAGE);
+  const bool is_export = IsExport(type);
+
+  if (stop_vm_result != CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Unable to stop VM, cannot "
+               << (is_export ? "export" : "import")
+               << " disk image: " << CrostiniResultString(stop_vm_result);
     std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
     return;
   }
@@ -355,50 +365,20 @@ void CrostiniExportImport::ExportDiskImage(
     return;
   }
   user_manager::User* user = profile_helper->GetUserByProfile(profile_);
-
   if (!user) {
     LOG(ERROR) << "Unable to get user";
     std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
     return;
   }
 
-  CrostiniManager::GetForProfile(profile_)->ExportDiskImage(
-      container_id, user->username_hash(), path, /*force=*/false,
-      base::BindOnce(&CrostiniExportImport::AfterDiskImageOperation,
-                     weak_ptr_factory_.GetWeakPtr(), container_id,
-                     std::move(callback)));
-}
-
-void CrostiniExportImport::ImportDiskImage(
-    const guest_os::GuestId& container_id,
-    const base::FilePath& path,
-    CrostiniManager::CrostiniResultCallback callback,
-    CrostiniResult result) {
-  if (result == CrostiniResult::VM_STOP_FAILED) {
-    LOG(ERROR) << "Unable to stop VM, cannot import disk image";
-    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
-    return;
+  auto* manager = CrostiniManager::GetForProfile(profile_);
+  if (is_export) {
+    manager->ExportDiskImage(container_id, user->username_hash(), path,
+                             /*force=*/false, std::move(callback));
+  } else {
+    manager->ImportDiskImage(container_id, user->username_hash(), path,
+                             std::move(callback));
   }
-
-  ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
-  if (!profile_helper) {
-    LOG(ERROR) << "Unable to get profile helper";
-    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
-    return;
-  }
-  user_manager::User* user = profile_helper->GetUserByProfile(profile_);
-
-  if (!user) {
-    LOG(ERROR) << "Unable to get user";
-    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
-    return;
-  }
-
-  CrostiniManager::GetForProfile(profile_)->ImportDiskImage(
-      container_id, user->username_hash(), path,
-      base::BindOnce(&CrostiniExportImport::AfterDiskImageOperation,
-                     weak_ptr_factory_.GetWeakPtr(), container_id,
-                     std::move(callback)));
 }
 
 void CrostiniExportImport::AfterDiskImageOperation(
@@ -415,8 +395,7 @@ void CrostiniExportImport::AfterDiskImageOperation(
   // For exports, `path()` is the output file being written and should be
   // deleted if the operation is cancelled or fails. For imports, `path()` is
   // the user's input backup archive and must never be deleted.
-  const bool is_export =
-      it->second->type() == ExportImportType::EXPORT_DISK_IMAGE;
+  const bool is_export = IsExport(it->second->type());
 
   if (result == CrostiniResult::SUCCESS) {
     switch (it->second->status()) {
@@ -462,8 +441,7 @@ void CrostiniExportImport::AfterDiskImageOperation(
           base::NotFatalUntil::M160);
     RemoveNotificationController(it)->SetStatusFailedBadImage();
   } else if (result == CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE &&
-             (it->second->type() == ExportImportType::IMPORT ||
-              it->second->type() == ExportImportType::IMPORT_DISK_IMAGE)) {
+             !is_export) {
     CHECK(it->second->status() == Status::RUNNING ||
               it->second->status() == Status::CANCELLING,
           base::NotFatalUntil::M160);

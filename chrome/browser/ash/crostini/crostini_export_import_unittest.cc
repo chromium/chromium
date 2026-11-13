@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 
 #include <cstdint>
+#include <optional>
+#include <vector>
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
@@ -14,11 +16,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/run_until.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -47,6 +51,7 @@
 #include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -55,6 +60,24 @@
 namespace crostini {
 
 using Status = CrostiniExportImportNotificationController::Status;
+
+class TestOperationStatusObserver : public CrostiniExportImport::Observer {
+ public:
+  explicit TestOperationStatusObserver(CrostiniExportImport* service) {
+    observation_.Observe(service);
+  }
+
+  void OnCrostiniExportImportOperationStatusChanged(bool in_progress) override {
+    status_changes_.push_back(in_progress);
+  }
+
+  const std::vector<bool>& status_changes() const { return status_changes_; }
+
+ private:
+  base::ScopedObservation<CrostiniExportImport, CrostiniExportImport::Observer>
+      observation_{this};
+  std::vector<bool> status_changes_;
+};
 
 struct ExportProgressOptionalArguments {
   uint32_t total_files{};
@@ -262,6 +285,12 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
+  void VerifyStopVmFailure(
+      ExportImportType type,
+      std::optional<vm_tools::concierge::SuccessFailureResponse>
+          stop_vm_response,
+      bool cancel_while_stopping = false);
+
   const AccountId account_id_ =
       AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
   user_manager::ScopedUserManager user_manager_;
@@ -275,6 +304,100 @@ class CrostiniExportImportTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 };
+
+void CrostiniExportImportTest::VerifyStopVmFailure(
+    ExportImportType type,
+    std::optional<vm_tools::concierge::SuccessFailureResponse> stop_vm_response,
+    bool cancel_while_stopping) {
+  const bool is_export = IsExport(type);
+  if (!is_export) {
+    SetImportResponse();
+  }
+  auto* concierge = ash::FakeConciergeClient::Get();
+  concierge->set_stop_vm_response(stop_vm_response);
+
+  auto start_op = [&](const base::FilePath& path,
+                      CrostiniManager::CrostiniResultCallback cb) {
+    if (is_export) {
+      crostini_export_import_->ExportDiskImageWithCallback(
+          default_container_id_, path, std::move(cb));
+    } else {
+      crostini_export_import_->ImportDiskImageWithCallback(
+          default_container_id_, path, std::move(cb));
+    }
+  };
+
+  TestOperationStatusObserver observer(crostini_export_import_.get());
+  base::ScopedTempFile file;
+  ASSERT_TRUE(file.Create());
+  base::test::TestFuture<CrostiniResult> result_future;
+  start_op(file.path(), result_future.GetCallback());
+
+  EXPECT_TRUE(crostini_export_import_->GetExportImportOperationStatus());
+  EXPECT_THAT(observer.status_changes(), testing::ElementsAre(true));
+  base::WeakPtr<CrostiniExportImportNotificationController> controller =
+      GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(), Status::RUNNING);
+
+  std::string notification_id;
+  {
+    const message_center::Notification* notification =
+        GetNotification(default_container_id_);
+    ASSERT_NE(notification, nullptr);
+    notification_id = notification->id();
+  }
+
+  if (cancel_while_stopping) {
+    crostini_export_import_->CancelOperation(default_container_id_);
+    ASSERT_NE(controller, nullptr);
+    EXPECT_EQ(controller->status(), Status::CANCELLING);
+  }
+
+  EXPECT_EQ(result_future.Get(), CrostiniResult::DISK_IMAGE_FAILED);
+  EXPECT_EQ(concierge->export_disk_image_call_count(), 0);
+  EXPECT_EQ(concierge->import_disk_image_call_count(), 0);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_EQ(controller, nullptr);
+  EXPECT_FALSE(crostini_export_import_->GetExportImportOperationStatus());
+  EXPECT_THAT(observer.status_changes(), testing::ElementsAre(true, false));
+
+  {
+    const message_center::Notification* ui_notification =
+        GetUiNotification(notification_id);
+    ASSERT_NE(ui_notification, nullptr);
+    EXPECT_FALSE(ui_notification->pinned());
+    EXPECT_EQ(ui_notification->message(),
+              is_export ? u"Backup couldn't be completed due to an error"
+                        : u"Restoring couldn't be completed due to an error");
+  }
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_EQ(base::PathExists(file.path()), !is_export);
+
+  // A subsequent operation on the same container is not blocked.
+  vm_tools::concierge::SuccessFailureResponse ok_response;
+  ok_response.set_success(true);
+  concierge->set_stop_vm_response(ok_response);
+  base::ScopedTempFile retry_file;
+  ASSERT_TRUE(retry_file.Create());
+  base::test::TestFuture<CrostiniResult> retry_future;
+  start_op(retry_file.path(), retry_future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return (is_export ? concierge->export_disk_image_call_count()
+                      : concierge->import_disk_image_call_count()) == 1;
+  }));
+  controller = GetController(default_container_id_);
+  ASSERT_NE(controller, nullptr);
+  EXPECT_EQ(controller->status(), Status::RUNNING);
+  SendDiskImageProgress(default_container_id_,
+                        vm_tools::concierge::DISK_STATUS_CREATED, 100);
+  EXPECT_EQ(retry_future.Get(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(GetController(default_container_id_), nullptr);
+  EXPECT_FALSE(crostini_export_import_->GetExportImportOperationStatus());
+  EXPECT_THAT(observer.status_changes(),
+              testing::ElementsAre(true, false, true, false));
+}
 
 TEST_F(CrostiniExportImportTest, TestNotAllowed) {
   profile()->GetPrefs()->SetBoolean(
@@ -447,6 +570,12 @@ TEST_F(CrostiniExportImportTest, TestExportDiskImageFail) {
   }
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_FALSE(base::PathExists(zipfile.path()));
+}
+
+TEST_F(CrostiniExportImportTest, TestExportDiskImageStopVmFailed) {
+  vm_tools::concierge::SuccessFailureResponse stop_response;
+  stop_response.set_success(false);
+  VerifyStopVmFailure(ExportImportType::EXPORT_DISK_IMAGE, stop_response);
 }
 
 TEST_F(CrostiniExportImportTest, TestExportDiskImageFailSpace) {
@@ -769,6 +898,18 @@ TEST_F(CrostiniExportImportTest, TestImportDiskImageFail) {
   }
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_TRUE(base::PathExists(zipfile.path()));
+}
+
+TEST_F(CrostiniExportImportTest, TestImportDiskImageStopVmFailed) {
+  vm_tools::concierge::SuccessFailureResponse stop_response;
+  stop_response.set_success(false);
+  VerifyStopVmFailure(ExportImportType::IMPORT_DISK_IMAGE, stop_response);
+}
+
+TEST_F(CrostiniExportImportTest,
+       TestImportDiskImageCancelDuringStopVmNoResponse) {
+  VerifyStopVmFailure(ExportImportType::IMPORT_DISK_IMAGE, std::nullopt,
+                      /*cancel_while_stopping=*/true);
 }
 
 TEST_F(CrostiniExportImportTest, TestImportDiskImageFailSpace) {

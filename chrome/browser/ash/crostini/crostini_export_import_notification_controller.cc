@@ -37,13 +37,6 @@ namespace {
 constexpr char kNotifierCrostiniExportImportOperation[] =
     "crostini.export_operation";
 
-// Returns whether `type` is an export (backup), as opposed to an import
-// (restore).
-bool IsExport(ExportImportType type) {
-  return type == ExportImportType::EXPORT ||
-         type == ExportImportType::EXPORT_DISK_IMAGE;
-}
-
 }  // namespace
 
 CrostiniExportImportClickCloseDelegate::CrostiniExportImportClickCloseDelegate()

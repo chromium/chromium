@@ -37,6 +37,10 @@ enum class ExportImportType {
   IMPORT_DISK_IMAGE
 };
 
+// Returns whether `type` is an export (backup), as opposed to an import
+// (restore).
+bool IsExport(ExportImportType type);
+
 // CrostiniExportImport is a keyed profile service to manage exporting and
 // importing containers with crostini.  It manages a file dialog for selecting
 // files and a notification to show the progress of export/import.
@@ -217,15 +221,14 @@ class CrostiniExportImport : public KeyedService,
                                  uint64_t available_space,
                                  uint64_t minimum_required_space) override;
 
-  void ExportDiskImage(const guest_os::GuestId& container_id,
-                       const base::FilePath& path,
-                       CrostiniManager::CrostiniResultCallback callback,
-                       CrostiniResult result);
-
-  void ImportDiskImage(const guest_os::GuestId& container_id,
-                       const base::FilePath& path,
-                       CrostiniManager::CrostiniResultCallback callback,
-                       CrostiniResult result);
+  // Callback for StopVm() in the disk image flow. `callback` already wraps
+  // AfterDiskImageOperation(), so failures here also clean up the
+  // notification state.
+  void StartDiskImageOperation(ExportImportType type,
+                               const guest_os::GuestId& container_id,
+                               const base::FilePath& path,
+                               CrostiniManager::CrostiniResultCallback callback,
+                               CrostiniResult stop_vm_result);
 
   void AfterDiskImageOperation(const guest_os::GuestId& container_id,
                                CrostiniManager::CrostiniResultCallback callback,
