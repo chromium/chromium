@@ -191,6 +191,7 @@ const int DeviceManagementService::kIllegalAccountForPackagedEDULicense;
 const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
 const int DeviceManagementService::kOrgUnitEnrollmentLimitExceeded;
 
+// LINT.IfChange(EnterpriseDMServerRequest)
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     JobType type) {
@@ -251,6 +252,8 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
       return "Registration";
     case DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS:
       return "RemoteCommands";
+    case DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN:
+      return "RenewDmToken";
     // Type TOKEN_ENROLLMENT was renamed to BROWSER_REGISTRATION when device
     // token-based enrollment was added, but unfortunately we have to keep the
     // stringified job type as "TokenEnrollment" because this string defines
@@ -301,6 +304,7 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
       return "GenerateChromeProfileChallenge";
   }
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/histograms.xml:EnterpriseDMServerRequest)
 
 JobConfigurationBase::JobConfigurationBase(
     JobType type,
@@ -539,6 +543,7 @@ JobConfigurationBase::GetTrafficAnnotationTag() {
     case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
     case DeviceManagementService::JobConfiguration::
         TYPE_POLICY_AGENT_REGISTRATION:
+    case DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN:
       return net::DefineNetworkTrafficAnnotation("device_management_service",
                                                  R"(
         semantics {

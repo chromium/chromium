@@ -1051,6 +1051,25 @@ void CloudPolicyClient::GenerateChromeProfileChallenge(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
+void CloudPolicyClient::RenewDmToken(em::RenewDmTokenRequest request,
+                                     RenewDmTokenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(service_);
+  CHECK(is_registered());
+
+  auto params = DMServerJobConfiguration::CreateParams::WithClient(
+      DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN, this);
+  params.auth_data = DMAuth::FromDMToken(dm_token_);
+  params.callback =
+      base::BindOnce(&CloudPolicyClient::OnRenewDmTokenCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto config = std::make_unique<DMServerJobConfiguration>(std::move(params));
+
+  *config->request()->mutable_renew_dm_token_request() = std::move(request);
+
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
+}
+
 #if BUILDFLAG(IS_WIN)
 void CloudPolicyClient::SetBrowserDeviceIdentifier(
     em::PolicyFetchRequest* request,
@@ -2076,6 +2095,28 @@ void CloudPolicyClient::OnGenerateChromeProfileChallengeCompleted(
   std::move(callback).Run(
       last_dm_status_,
       result.response.generate_chrome_profile_challenge_response());
+}
+
+void CloudPolicyClient::OnRenewDmTokenCompleted(RenewDmTokenCallback callback,
+                                                DMServerJobResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (result.dm_status == DM_STATUS_SUCCESS &&
+      (!result.response.has_renew_dm_token_response() ||
+       result.response.renew_dm_token_response()
+           .device_management_token()
+           .empty())) {
+    result.dm_status = DM_STATUS_RESPONSE_DECODING_ERROR;
+  }
+
+  last_dm_status_ = result.dm_status;
+  if (last_dm_status_ != DM_STATUS_SUCCESS) {
+    NotifyClientError();
+  }
+
+  RemoveJob(result.job);
+
+  std::move(callback).Run(last_dm_status_,
+                          result.response.renew_dm_token_response());
 }
 
 void CloudPolicyClient::NotifyPolicyFetched() {

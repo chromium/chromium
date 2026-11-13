@@ -225,6 +225,17 @@ class DeviceManagementServiceTestBase : public testing::Test {
                     std::string(), payload, method, timeout);
   }
 
+  std::unique_ptr<DeviceManagementService::Job> StartRenewDmTokenJob(
+      const std::string& payload = std::string(),
+      DeviceManagementService::Job::RetryMethod method =
+          DeviceManagementService::Job::NO_RETRY,
+      base::TimeDelta timeout = base::Seconds(0)) {
+    return StartJob(
+        DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN,
+        /*critical=*/false, DMAuth::FromDMToken(kDMToken), std::string(),
+        payload, method, timeout);
+  }
+
   std::unique_ptr<DeviceManagementService::Job> StartOidcEnrollmentJob(
       const std::string& payload = std::string(),
       DeviceManagementService::Job::RetryMethod method =
@@ -879,6 +890,39 @@ TEST_F(DeviceManagementServiceTest, PolicyAgentRegistrationRequest) {
             request->request.headers.GetHeader("Authorization"));
 
   EXPECT_EQ(expected_data, network::GetUploadData(request->request));
+
+  // Generate the response.
+  SendResponse(net::OK, 200, expected_data);
+}
+
+TEST_F(DeviceManagementServiceTest, RenewDmToken) {
+  em::DeviceManagementResponse expected_response;
+  expected_response.mutable_renew_dm_token_response()
+      ->set_device_management_token(kDMToken);
+  std::string expected_data;
+  ASSERT_TRUE(expected_response.SerializeToString(&expected_data));
+
+  em::DeviceManagementRequest expected_request;
+  expected_request.mutable_renew_dm_token_request();
+  std::string request_data;
+  ASSERT_TRUE(expected_request.SerializeToString(&request_data));
+
+  EXPECT_CALL(*this, OnJobDone(_, DM_STATUS_SUCCESS, _, expected_data));
+  EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
+  EXPECT_CALL(*this, OnShouldJobRetry(200, expected_data));
+  std::unique_ptr<DeviceManagementService::Job> request_job(
+      StartRenewDmTokenJob(request_data));
+  auto* request = GetPendingRequest();
+  ASSERT_TRUE(request);
+
+  CheckURLAndQueryParams(request, dm_protocol::kValueRequestRenewDmToken,
+                         kClientID, "");
+
+  // Make sure request is properly authorized.
+  EXPECT_EQ("GoogleDMToken token=device-management-token",
+            request->request.headers.GetHeader("Authorization"));
+
+  EXPECT_EQ(request_data, network::GetUploadData(request->request));
 
   // Generate the response.
   SendResponse(net::OK, 200, expected_data);

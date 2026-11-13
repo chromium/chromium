@@ -169,6 +169,11 @@ class MockCloudPolicyClient : public CloudPolicyClient {
               GenerateChromeProfileChallenge,
               (GenerateChromeProfileChallengeCallback callback),
               (override));
+  MOCK_METHOD(void,
+              RenewDmToken,
+              (enterprise_management::RenewDmTokenRequest,
+               RenewDmTokenCallback),
+              (override));
 
   // Sets the DMToken.
   void SetDMToken(const std::string& token);

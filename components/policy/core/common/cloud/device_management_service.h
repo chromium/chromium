@@ -226,6 +226,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_DETERMINE_PROMOTION_ELIGIBILITY = 36,
       TYPE_GENERATE_CHROME_PROFILE_CHALLENGE = 37,
       TYPE_USER_MANAGEMENT_STATUS_AND_POLICIES = 38,
+      TYPE_RENEW_DM_TOKEN = 39,
     };
 
     // The set of HTTP query parameters of the request.

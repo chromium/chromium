@@ -112,6 +112,10 @@ class POLICY_EXPORT CloudPolicyClient {
       const enterprise_management::GenerateChromeProfileChallengeResponse&
           response)>;
 
+  using RenewDmTokenCallback = base::OnceCallback<void(
+      DeviceManagementStatus,
+      const enterprise_management::RenewDmTokenResponse& response)>;
+
   using MacAddress = std::array<uint8_t, 6>;
 
   // Observer interface for state and policy changes.
@@ -563,6 +567,10 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void GenerateChromeProfileChallenge(
       GenerateChromeProfileChallengeCallback callback);
 
+  // Sends a request to renew the DM token.
+  virtual void RenewDmToken(enterprise_management::RenewDmTokenRequest request,
+                            RenewDmTokenCallback callback);
+
   // Adds an observer to be called back upon policy and state changes.
   void AddObserver(Observer* observer);
 
@@ -865,6 +873,9 @@ class POLICY_EXPORT CloudPolicyClient {
   void OnGenerateChromeProfileChallengeCompleted(
       GenerateChromeProfileChallengeCallback callback,
       DMServerJobResult result);
+
+  void OnRenewDmTokenCompleted(RenewDmTokenCallback callback,
+                               DMServerJobResult result);
 
   // Callback for `UploadFmRegistrationToken` request.
   void OnUploadFmRegistrationTokenResponse(ResultCallback callback,

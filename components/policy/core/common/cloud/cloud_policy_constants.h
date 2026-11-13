@@ -81,6 +81,7 @@ extern const char kValueRequestFmRegistrationTokenUpload[];
 extern const char kValueRequestDeterminePromotionEligibility[];
 extern const char kValueRequestGenerateChromeProfileChallenge[];
 extern const char kValueRequestUserManagementStatusAndPolicies[];
+inline constexpr char kValueRequestRenewDmToken[] = "renew_dm_token";
 
 // Policy type strings for the policy_type field in PolicyFetchRequest.
 extern const char kChromeDevicePolicyType[];

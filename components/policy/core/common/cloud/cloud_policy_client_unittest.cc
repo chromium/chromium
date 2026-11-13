@@ -3620,6 +3620,95 @@ TEST_F(CloudPolicyClientTest,
       DM_STATUS_RESPONSE_DECODING_ERROR, 1);
 }
 
+TEST_F(CloudPolicyClientTest, RenewDmTokenRequest) {
+  RegisterClient();
+
+  em::DeviceManagementRequest expected_request;
+  expected_request.mutable_renew_dm_token_request();
+
+  em::DeviceManagementResponse outer_response;
+  em::RenewDmTokenResponse* fake_response =
+      outer_response.mutable_renew_dm_token_response();
+  fake_response->set_device_management_token("new_dm_token");
+
+  ExpectAndCaptureJob(outer_response);
+
+  base::test::TestFuture<DeviceManagementStatus,
+                         const em::RenewDmTokenResponse&>
+      result_future;
+
+  em::RenewDmTokenRequest request;
+  client_->RenewDmToken(request, result_future.GetCallback());
+
+  EXPECT_TRUE(result_future.Wait());
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN,
+            job_type_);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            expected_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
+
+  const auto [status, response] = result_future.Get();
+  EXPECT_EQ(status, DM_STATUS_SUCCESS);
+  EXPECT_EQ(response.device_management_token(), "new_dm_token");
+}
+
+TEST_F(CloudPolicyClientTest, RenewDmTokenRequestDecodingError) {
+  RegisterClient();
+
+  em::DeviceManagementResponse outer_response;
+  // Do not set renew_dm_token_response.
+
+  ExpectAndCaptureJob(outer_response);
+
+  StrictMock<MockCloudPolicyClientObserverWithObservation> client_observer(
+      client_.get());
+  EXPECT_CALL(client_observer, OnClientError);
+
+  base::test::TestFuture<DeviceManagementStatus,
+                         const em::RenewDmTokenResponse&>
+      result_future;
+
+  em::RenewDmTokenRequest request;
+  client_->RenewDmToken(request, result_future.GetCallback());
+
+  EXPECT_TRUE(result_future.Wait());
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN,
+            job_type_);
+  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->last_dm_status());
+
+  const auto [status, response] = result_future.Get();
+  EXPECT_EQ(status, DM_STATUS_RESPONSE_DECODING_ERROR);
+}
+
+TEST_F(CloudPolicyClientTest, RenewDmTokenRequestEmptyTokenDecodingError) {
+  RegisterClient();
+
+  em::DeviceManagementResponse outer_response;
+  // Provide renew_dm_token_response with an empty token.
+  outer_response.mutable_renew_dm_token_response();
+
+  ExpectAndCaptureJob(outer_response);
+
+  StrictMock<MockCloudPolicyClientObserverWithObservation> client_observer(
+      client_.get());
+  EXPECT_CALL(client_observer, OnClientError);
+
+  base::test::TestFuture<DeviceManagementStatus,
+                         const em::RenewDmTokenResponse&>
+      result_future;
+
+  em::RenewDmTokenRequest request;
+  client_->RenewDmToken(request, result_future.GetCallback());
+
+  EXPECT_TRUE(result_future.Wait());
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN,
+            job_type_);
+  EXPECT_EQ(DM_STATUS_RESPONSE_DECODING_ERROR, client_->last_dm_status());
+
+  const auto [status, response] = result_future.Get();
+  EXPECT_EQ(status, DM_STATUS_RESPONSE_DECODING_ERROR);
+}
+
 struct MockClientCertProvisioningRequestCallbackObserver {
   MOCK_METHOD(
       void,

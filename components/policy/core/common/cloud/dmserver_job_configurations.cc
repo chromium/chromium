@@ -123,6 +123,8 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_USER_MANAGEMENT_STATUS_AND_POLICIES:
       return dm_protocol::kValueRequestUserManagementStatusAndPolicies;
+    case DeviceManagementService::JobConfiguration::TYPE_RENEW_DM_TOKEN:
+      return dm_protocol::kValueRequestRenewDmToken;
   }
   NOTREACHED() << "Invalid job type " << type;
 }
