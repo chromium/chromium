@@ -190,7 +190,7 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   midi::MidiService* midi_service() const { return midi_service_.get(); }
 
-  // Returns the task runner for tasks that that are critical to producing a new
+  // Returns the task runner for tasks that are critical to producing a new
   // CompositorFrame on resize. On Mac this will be the task runner provided by
   // WindowResizeHelperMac, on other platforms it will just be the thread task
   // runner.
