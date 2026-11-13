@@ -7,6 +7,7 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.glic.ui.GlicFreRootView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/glic_fre_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,6 +26,7 @@ found in the LICENSE file.
 
         <ScrollView
             android:id="@+id/glic_fre_scroll_view"
+            tools:ignore="UselessParent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -68,16 +70,16 @@ found in the LICENSE file.
                     android:paddingTop="18dp"
                     android:paddingBottom="16dp"
                     android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/glic_fre_accept_button"
+                    style="@style/FilledButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/glic_fre_dialog_accept" />
             </LinearLayout>
         </ScrollView>
-
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/glic_fre_accept_button"
-            style="@style/FilledButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/glic_fre_dialog_accept" />
     </LinearLayout>
 
     <!-- TODO(crbug.com/582354339): Verify TalkBack. -->
