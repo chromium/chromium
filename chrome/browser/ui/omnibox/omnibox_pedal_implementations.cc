@@ -15,7 +15,6 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"

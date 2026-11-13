@@ -15,7 +15,6 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/buildflags.h"
 #include "components/search_engines/template_url.h"
 #include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
@@ -23,7 +22,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #define SUPPORT_PEDALS_VECTOR_ICONS
 namespace gfx {
 struct VectorIcon;

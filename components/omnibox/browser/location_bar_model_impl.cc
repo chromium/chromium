@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -34,7 +33,7 @@
 #include "url/origin.h"
 #include "url/url_canon.h"
 
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
@@ -257,7 +256,7 @@ LocationBarModelImpl::GetOmniboxComposeboxPageClassification() const {
 }
 
 const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
-#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   auto* const icon_override = delegate_->GetVectorIconOverride();
   if (icon_override)
     return *icon_override;
