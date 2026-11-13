@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -126,7 +127,7 @@ void SetUpFieldTrials(PrefService* local_state,
   field_trial_creator.SetUpFieldTrials(
       variation_ids, feature_overrides, std::move(feature_list),
       metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false,
+      /*low_entropy_source_value=*/std::nullopt,
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false));
 }

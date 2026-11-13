@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -255,7 +256,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManager* safe_seed_manager,
-    bool add_entropy_source_to_variations_ids,
+    std::optional<int> low_entropy_source_value,
     const EntropyProviders& entropy_providers) {
   DCHECK(feature_list);
   DCHECK(metrics_state_manager);
@@ -367,12 +368,11 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     variations_source_.type = VariationsSourceType::kVariationsServer;
   }
 
-  if (add_entropy_source_to_variations_ids &&
+  if (low_entropy_source_value.has_value() &&
       !create_trials_result.AppliedSeedHasActiveLimitedLayer()) {
     // TODO(crbug.com/424154785): Consider no longer transmitting LES values
     // alongside VariationsIDs.
-    http_header_provider->SetLowEntropySourceValue(
-        metrics_state_manager->GetLowEntropySource());
+    http_header_provider->SetLowEntropySourceValue(low_entropy_source_value);
   }
 
   platform_field_trials->SetUpClientSideFieldTrials(

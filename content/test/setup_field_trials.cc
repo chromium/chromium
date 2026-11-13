@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "content/public/test/setup_field_trials.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
@@ -154,7 +156,7 @@ void SetupFieldTrials() {
   field_trial_creator.SetUpFieldTrials(
       variation_ids, feature_overrides, std::move(feature_list),
       metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false,
+      /*low_entropy_source_value=*/std::nullopt,
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false));
 
