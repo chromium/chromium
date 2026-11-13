@@ -183,8 +183,8 @@ class VariationsFieldTrialCreator {
   // |safe_seed_manager| should be notified of the combined server and client
   // state that was activated to create the field trials (only when the return
   // value is true). Must not be null.
-  // |add_entropy_source_to_variations_ids| controls if an offset variations ID
-  // for the low entropy source is added to variations headers.
+  // |low_entropy_source_value| controls the offset variations ID for the low
+  // entropy source added to variations headers when present.
   // |entropy_providers| Used to provide entropy to field trials.
   //
   // NOTE: The ordering of the FeatureList method calls is such that the
@@ -192,7 +192,7 @@ class VariationsFieldTrialCreator {
   // take precedence over |extra_overrides|, which takes precedence over the
   // field trials.
   //
-  // TODO(crbug.com/424154785): Remove add_entropy_source_to_variations_ids.
+  // TODO(crbug.com/424154785): Remove low_entropy_source_value.
   bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
@@ -201,7 +201,7 @@ class VariationsFieldTrialCreator {
       metrics::MetricsStateManager* metrics_state_manager,
       PlatformFieldTrials* platform_field_trials,
       SafeSeedManager* safe_seed_manager,
-      bool add_entropy_source_to_variations_ids,
+      std::optional<int> low_entropy_source_value,
       const EntropyProviders& entropy_providers);
 
   // Returns all of the client state used for filtering studies.
