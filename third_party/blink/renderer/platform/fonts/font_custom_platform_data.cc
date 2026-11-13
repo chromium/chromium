@@ -32,6 +32,12 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <limits>
+#include <optional>
+#include <utility>
+
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -46,10 +52,13 @@
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/skia/include/core/SkFourByteTag.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "v8/include/v8.h"
 
+namespace blink {
 namespace {
 
 constexpr SkFourByteTag kItalTag = SkSetFourByteTag('i', 't', 'a', 'l');
@@ -58,30 +67,200 @@ constexpr SkFourByteTag kSlntTag = SkSetFourByteTag('s', 'l', 'n', 't');
 constexpr SkFourByteTag kWdthTag = SkSetFourByteTag('w', 'd', 't', 'h');
 constexpr SkFourByteTag kWghtTag = SkSetFourByteTag('w', 'g', 'h', 't');
 
-std::optional<SkFontParameters::Variation::Axis>
-RetrieveVariationDesignParametersByTag(sk_sp<SkTypeface> base_typeface,
-                                       SkFourByteTag tag) {
-  int axes_count = base_typeface->getVariationDesignParameters({});
+struct TypefaceAxes {
+  std::optional<SkFontParameters::Variation::Axis> wght;
+  std::optional<SkFontParameters::Variation::Axis> wdth;
+  std::optional<SkFontParameters::Variation::Axis> ital;
+  std::optional<SkFontParameters::Variation::Axis> slnt;
+  std::optional<SkFontParameters::Variation::Axis> opsz;
+};
+
+TypefaceAxes GetTypefaceAxes(const SkTypeface& typeface) {
+  TypefaceAxes result;
+  const int axes_count = typeface.getVariationDesignParameters({});
   if (axes_count <= 0) {
-    return std::nullopt;
+    return result;
   }
-  blink::Vector<SkFontParameters::Variation::Axis> axes;
-  axes.resize(axes_count);
-  int axes_read = base_typeface->getVariationDesignParameters(axes);
+  Vector<SkFontParameters::Variation::Axis, 5> axes(
+      static_cast<wtf_size_t>(axes_count));
+  const int axes_read = typeface.getVariationDesignParameters(axes);
   if (axes_read <= 0) {
-    return std::nullopt;
+    return result;
   }
-  for (auto& axis : axes) {
-    if (axis.tag == tag) {
-      return axis;
+  const int limit = std::min<int>(axes_read, axes.size());
+  for (int i = 0; i < limit; ++i) {
+    const SkFontParameters::Variation::Axis& axis = axes[i];
+    if (axis.tag == kWghtTag && !result.wght) {
+      result.wght = axis;
+    } else if (axis.tag == kWdthTag && !result.wdth) {
+      result.wdth = axis;
+    } else if (axis.tag == kItalTag && !result.ital) {
+      result.ital = axis;
+    } else if (axis.tag == kSlntTag && !result.slnt) {
+      result.slnt = axis;
+    } else if (axis.tag == kOpszTag && !result.opsz) {
+      result.opsz = axis;
     }
   }
-  return std::nullopt;
+  return result;
+}
+
+// Clamps `requested` to `descriptor_range` if set explicitly on `@font-face`,
+// or to `typeface_axis` bounds if `descriptor_range` is `auto`.
+float ClampAxisValue(
+    FontSelectionValue requested,
+    const FontSelectionRange& descriptor_range,
+    const std::optional<SkFontParameters::Variation::Axis>& typeface_axis) {
+  if (!descriptor_range.IsRangeSetFromAuto()) {
+    return descriptor_range.IsValid() ? descriptor_range.ClampToRange(requested)
+                                      : requested;
+  }
+  if (typeface_axis) {
+    FontSelectionRange axis_range(FontSelectionValue(typeface_axis->min),
+                                  FontSelectionValue(typeface_axis->max));
+    if (axis_range.IsValid()) {
+      return axis_range.ClampToRange(requested);
+    }
+  }
+  return requested;
+}
+
+struct ResolvedVariations {
+  Vector<FontVariationAxis, 5> axes;
+  bool synthetic_bold = false;
+  bool synthetic_italic = false;
+};
+
+ResolvedVariations ResolveVariations(
+    const sk_sp<SkTypeface>& base_typeface,
+    float adjusted_specified_size,
+    bool bold,
+    bool synthesize_italic,
+    bool is_italic_keyword,
+    const FontSelectionRequest& selection_request,
+    const FontSelectionCapabilities& selection_capabilities,
+    OpticalSizing optical_sizing,
+    const FontVariationSettings* variation_settings) {
+  ResolvedVariations result;
+  result.synthetic_bold = bold;
+  result.synthetic_italic = synthesize_italic;
+
+  FontFormatCheck::VariableFontSubType font_sub_type =
+      FontFormatCheck::ProbeVariableFont(base_typeface);
+  bool is_variable_font =
+      font_sub_type ==
+          FontFormatCheck::VariableFontSubType::kVariableTrueType ||
+      font_sub_type == FontFormatCheck::VariableFontSubType::kVariableCff2;
+  if (!is_variable_font) {
+    return result;
+  }
+
+  const TypefaceAxes typeface_axes = GetTypefaceAxes(*base_typeface);
+
+  // Maximum axis count is maximum value for the OpenType USHORT,
+  // which is a 16bit unsigned.
+  // https://www.microsoft.com/typography/otspec/fvar.htm Variation
+  // settings coming from CSS can have duplicate assignments and the
+  // list can be longer than UINT16_MAX, but ignoring the length for
+  // now, going with a reasonable upper limit. Deduplication is
+  // handled by Skia with priority given to the last occurring
+  // assignment.
+  const wtf_size_t settings_count =
+      (variation_settings &&
+       variation_settings->size() < std::numeric_limits<uint16_t>::max())
+          ? variation_settings->size()
+          : 0;
+  result.axes.reserve(5 + settings_count);
+
+  result.axes.emplace_back(
+      kWghtTag,
+      ClampAxisValue(selection_request.weight, selection_capabilities.weight,
+                     typeface_axes.wght));
+  if (selection_capabilities.weight.IsRangeSetFromAuto() &&
+      typeface_axes.wght) {
+    FontSelectionRange wght_range(FontSelectionValue(typeface_axes.wght->min),
+                                  FontSelectionValue(typeface_axes.wght->max));
+    if (wght_range.IsValid()) {
+      bool has_bold_variations = wght_range.maximum > kNormalWeightValue;
+      result.synthetic_bold = bold && !has_bold_variations &&
+                              selection_request.weight >= kBoldThreshold;
+    }
+  }
+
+  result.axes.emplace_back(
+      kWdthTag,
+      ClampAxisValue(selection_request.width, selection_capabilities.width,
+                     typeface_axes.wdth));
+
+  const bool font_variable_italic_axis =
+      RuntimeEnabledFeatures::FontVariableItalicAxisEnabled();
+  const bool use_ital_axis =
+      font_variable_italic_axis && is_italic_keyword && typeface_axes.ital &&
+      typeface_axes.ital->min <= 1 && typeface_axes.ital->max >= 1;
+  if (font_variable_italic_axis && typeface_axes.ital) {
+    // The italic keyword instantiates the ital axis at 1. Any other
+    // font-style value instantiates it at 0, as the matching algorithm
+    // selects italic value 0 within the axis range; in particular, the
+    // ital axis is not used to satisfy an oblique request. See
+    // https://drafts.csswg.org/css-fonts-4/#font-style-matching. Values
+    // outside the axis range are clamped by Skia.
+    result.axes.emplace_back(kItalTag, use_ital_axis ? 1.0f : 0.0f);
+  }
+
+  // CSS and OpenType have opposite definitions of direction of slant
+  // angle. In OpenType positive values turn counter-clockwise, negative
+  // values clockwise - in CSS positive values are clockwise rotations /
+  // skew. See note in https://drafts.csswg.org/css-fonts/#font-style-prop -
+  // map value from CSS to OpenType here.
+  auto negate_slope = [](float slope) { return slope == 0.0f ? 0.0f : -slope; };
+  float slnt = negate_slope(selection_request.slope);
+  if (use_ital_axis) {
+    result.synthetic_italic = false;
+    if (typeface_axes.slnt) {
+      slnt = typeface_axes.slnt->def;
+    }
+  } else if (!selection_capabilities.slope.IsRangeSetFromAuto()) {
+    if (selection_capabilities.slope.IsValid()) {
+      slnt = negate_slope(
+          selection_capabilities.slope.ClampToRange(selection_request.slope));
+    }
+  } else if (typeface_axes.slnt) {
+    FontSelectionRange slnt_range(FontSelectionValue(typeface_axes.slnt->min),
+                                  FontSelectionValue(typeface_axes.slnt->max));
+    if (slnt_range.IsValid()) {
+      slnt = slnt_range.ClampToRange(-selection_request.slope);
+      bool has_right_slanted_variations =
+          slnt_range.minimum < kNormalSlopeValue;
+      result.synthetic_italic = synthesize_italic &&
+                                !has_right_slanted_variations &&
+                                selection_request.slope >= kItalicSlopeValue;
+    }
+  }
+  result.axes.emplace_back(kSlntTag, slnt);
+
+  bool explicit_opsz_configured = false;
+  for (wtf_size_t i = 0; i < settings_count; ++i) {
+    const FontVariationAxis& setting = (*variation_settings)[i];
+    if (setting.Tag() == kOpszTag) {
+      explicit_opsz_configured = true;
+    }
+    result.axes.push_back(setting);
+  }
+
+  if (!explicit_opsz_configured) {
+    if (optical_sizing == OpticalSizing::kAuto) {
+      result.axes.emplace_back(kOpszTag, adjusted_specified_size);
+    } else if (optical_sizing == OpticalSizing::kNone && typeface_axes.opsz) {
+      // Explicitly set default value to avoid automatic application of
+      // optical sizing as it seems to happen on SkTypeface on Mac.
+      result.axes.emplace_back(kOpszTag, typeface_axes.opsz->def);
+    }
+  }
+
+  return result;
 }
 
 }  // namespace
-
-namespace blink {
 
 FontCustomPlatformData::FontCustomPlatformData(PassKey,
                                                sk_sp<SkTypeface> typeface,
@@ -120,141 +299,18 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
 
   sk_sp<SkTypeface> return_typeface = base_typeface_;
 
-  // Maximum axis count is maximum value for the OpenType USHORT,
-  // which is a 16bit unsigned.
-  // https://www.microsoft.com/typography/otspec/fvar.htm Variation
-  // settings coming from CSS can have duplicate assignments and the
-  // list can be longer than UINT16_MAX, but ignoring the length for
-  // now, going with a reasonable upper limit. Deduplication is
-  // handled by Skia with priority given to the last occuring
-  // assignment.
-  FontFormatCheck::VariableFontSubType font_sub_type =
-      FontFormatCheck::ProbeVariableFont(base_typeface_);
-  bool synthetic_bold = bold;
-  bool synthetic_italic = synthesize_italic;
-  if (font_sub_type ==
-          FontFormatCheck::VariableFontSubType::kVariableTrueType ||
-      font_sub_type == FontFormatCheck::VariableFontSubType::kVariableCff2) {
-    Vector<SkFontArguments::VariationPosition::Coordinate, 0> variation;
-
-    SkFontArguments::VariationPosition::Coordinate weight_coordinate = {
-        kWghtTag, SkFloatToScalar(selection_capabilities.weight.ClampToRange(
-                      selection_request.weight))};
-    std::optional<SkFontParameters::Variation::Axis> wght_parameters =
-        RetrieveVariationDesignParametersByTag(base_typeface_, kWghtTag);
-    if (selection_capabilities.weight.IsRangeSetFromAuto() && wght_parameters) {
-      FontSelectionRange wght_range = {
-          FontSelectionValue(wght_parameters->min),
-          FontSelectionValue(wght_parameters->max)};
-      if (wght_range.IsValid()) {
-        weight_coordinate = {
-            kWghtTag,
-            SkFloatToScalar(wght_range.ClampToRange(selection_request.weight))};
-        bool has_bold_variations = wght_range.maximum > kNormalWeightValue;
-        synthetic_bold = bold && !has_bold_variations &&
-                         selection_request.weight >= kBoldThreshold;
-      }
-    }
-
-    SkFontArguments::VariationPosition::Coordinate width_coordinate = {
-        kWdthTag, SkFloatToScalar(selection_capabilities.width.ClampToRange(
-                      selection_request.width))};
-    std::optional<SkFontParameters::Variation::Axis> wdth_parameters =
-        RetrieveVariationDesignParametersByTag(base_typeface_, kWdthTag);
-    if (selection_capabilities.width.IsRangeSetFromAuto() && wdth_parameters) {
-      FontSelectionRange wdth_range = {
-          FontSelectionValue(wdth_parameters->min),
-          FontSelectionValue(wdth_parameters->max)};
-      if (wdth_range.IsValid()) {
-        width_coordinate = {
-            kWdthTag,
-            SkFloatToScalar(wdth_range.ClampToRange(selection_request.width))};
-      }
-    }
-    std::optional<SkFontParameters::Variation::Axis> ital_parameters;
-    if (RuntimeEnabledFeatures::FontVariableItalicAxisEnabled()) {
-      ital_parameters =
-          RetrieveVariationDesignParametersByTag(base_typeface_, kItalTag);
-    }
-    bool use_ital_axis = is_italic_keyword && ital_parameters &&
-                         ital_parameters->min <= 1 && ital_parameters->max >= 1;
-    if (ital_parameters) {
-      // The italic keyword instantiates the ital axis at 1. Any other
-      // font-style value instantiates it at 0, as the matching algorithm
-      // selects italic value 0 within the axis range; in particular, the
-      // ital axis is not used to satisfy an oblique request. See
-      // https://drafts.csswg.org/css-fonts-4/#font-style-matching. Values
-      // outside the axis range are clamped by Skia.
-      SkFontArguments::VariationPosition::Coordinate italic_coordinate = {
-          kItalTag, SkFloatToScalar(use_ital_axis ? 1 : 0)};
-      variation.push_back(italic_coordinate);
-    }
-
-    // CSS and OpenType have opposite definitions of direction of slant
-    // angle. In OpenType positive values turn counter-clockwise, negative
-    // values clockwise - in CSS positive values are clockwise rotations /
-    // skew. See note in https://drafts.csswg.org/css-fonts/#font-style-prop -
-    // map value from CSS to OpenType here.
-    SkFontArguments::VariationPosition::Coordinate slant_coordinate = {
-        kSlntTag, SkFloatToScalar(-selection_capabilities.slope.ClampToRange(
-                      selection_request.slope))};
-    std::optional<SkFontParameters::Variation::Axis> slnt_parameters =
-        RetrieveVariationDesignParametersByTag(base_typeface_, kSlntTag);
-    if (use_ital_axis && slnt_parameters) {
-      slant_coordinate = {kSlntTag, SkFloatToScalar(slnt_parameters->def)};
-    } else if (selection_capabilities.slope.IsRangeSetFromAuto() &&
-               slnt_parameters) {
-      FontSelectionRange slnt_range = {
-          FontSelectionValue(slnt_parameters->min),
-          FontSelectionValue(slnt_parameters->max)};
-      if (slnt_range.IsValid()) {
-        slant_coordinate = {
-            kSlntTag,
-            SkFloatToScalar(slnt_range.ClampToRange(-selection_request.slope))};
-        bool has_right_slanted_variations =
-            slnt_range.minimum < kNormalSlopeValue;
-        synthetic_italic = synthesize_italic && !has_right_slanted_variations &&
-                           selection_request.slope >= kItalicSlopeValue;
-      }
-    }
-    if (use_ital_axis) {
-      synthetic_italic = false;
-    }
-
-    variation.push_back(weight_coordinate);
-    variation.push_back(width_coordinate);
-    variation.push_back(slant_coordinate);
-
-    bool explicit_opsz_configured = false;
-    if (variation_settings && variation_settings->size() < UINT16_MAX) {
-      variation.reserve(variation_settings->size() + variation.size());
-      for (const auto& setting : *variation_settings) {
-        if (setting.Tag() == kOpszTag) {
-          explicit_opsz_configured = true;
-        }
-        SkFontArguments::VariationPosition::Coordinate setting_coordinate = {
-            setting.Tag(), SkFloatToScalar(setting.Value())};
-        variation.push_back(setting_coordinate);
-      }
-    }
-
-    if (!explicit_opsz_configured) {
-      if (optical_sizing == OpticalSizing::kAuto) {
-        SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
-            kOpszTag, SkFloatToScalar(adjusted_specified_size)};
-        variation.push_back(opsz_coordinate);
-      } else if (optical_sizing == OpticalSizing::kNone) {
-        // Explicitly set default value to avoid automatic application of
-        // optical sizing as it seems to happen on SkTypeface on Mac.
-        std::optional<SkFontParameters::Variation::Axis> opsz_parameters =
-            RetrieveVariationDesignParametersByTag(return_typeface, kOpszTag);
-        if (opsz_parameters) {
-          float opsz_default = opsz_parameters->def;
-          SkFontArguments::VariationPosition::Coordinate opsz_coordinate = {
-              kOpszTag, SkFloatToScalar(opsz_default)};
-          variation.push_back(opsz_coordinate);
-        }
-      }
+  ResolvedVariations resolved = ResolveVariations(
+      base_typeface_, adjusted_specified_size, bold, synthesize_italic,
+      is_italic_keyword, selection_request, selection_capabilities,
+      optical_sizing, variation_settings);
+  bool synthetic_bold = resolved.synthetic_bold;
+  bool synthetic_italic = resolved.synthetic_italic;
+  if (!resolved.axes.empty()) {
+    Vector<SkFontArguments::VariationPosition::Coordinate, 5> variation;
+    variation.reserve(resolved.axes.size());
+    for (const FontVariationAxis& axis : resolved.axes) {
+      variation.push_back(SkFontArguments::VariationPosition::Coordinate{
+          axis.Tag(), SkFloatToScalar(axis.Value())});
     }
 
     SkFontArguments font_args;
@@ -263,7 +319,7 @@ const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     sk_sp<SkTypeface> sk_variation_font(base_typeface_->makeClone(font_args));
 
     if (sk_variation_font) {
-      return_typeface = sk_variation_font;
+      return_typeface = std::move(sk_variation_font);
     } else {
       SkString family_name;
       base_typeface_->getFamilyName(&family_name);
