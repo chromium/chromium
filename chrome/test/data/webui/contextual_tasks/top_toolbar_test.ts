@@ -469,6 +469,8 @@ suite('TopToolbarTest', () => {
               '.top-toolbar-logo-button');
           assertHTMLElement(logo);
           assertFalse(logo.classList.contains('clickable'));
+          assertEquals('', logo.title);
+          assertEquals(null, logo.getAttribute('aria-label'));
 
           logo.click();
           assertEquals(
@@ -476,6 +478,25 @@ suite('TopToolbarTest', () => {
           assertEquals(
               0,
               metrics.count('ContextualTasks.WebUI.UserAction.OpenPageInfo'));
+        });
+
+    test(
+        'logo button has hover tooltip and accessible name when flag enabled',
+        async () => {
+          document.body.innerHTML = window.trustedTypes!.emptyHTML;
+          loadTimeData.overrideValues({
+            contextualTasksSidePanelRearchitectureEnabled: true,
+          });
+          topToolbar = document.createElement('top-toolbar');
+          document.body.appendChild(topToolbar);
+          await microtasksFinished();
+
+          const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+              '.top-toolbar-logo-button');
+          assertHTMLElement(logo);
+          assertEquals('View site information', logo.title);
+          assertEquals(
+              'View site information', logo.getAttribute('aria-label'));
         });
 
     test(

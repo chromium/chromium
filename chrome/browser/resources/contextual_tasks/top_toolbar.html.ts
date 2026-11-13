@@ -23,6 +23,8 @@ export function getHtml(this: TopToolbarElement) {
     ${this.isSidePanelRearchitectureEnabled_ ? html`
       <cr-button class="top-toolbar-logo-button clickable"
           data-element-id="kContextualTasksSuperGButtonElementId"
+          title="$i18n{logoButtonTooltip}"
+          aria-label="$i18n{logoButtonTooltip}"
           @pointerdown="${this.onLogoPointerdown_}"
           @click="${this.onLogoClick_}">
         ${getLogoHtml()}
