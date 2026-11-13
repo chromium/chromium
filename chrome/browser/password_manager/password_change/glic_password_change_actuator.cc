@@ -9,7 +9,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
@@ -37,13 +36,7 @@
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/form_fetcher.h"
-#include "components/password_manager/core/browser/password_change/change_password_generation_util.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_form_manager.h"
-#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -345,48 +338,9 @@ void GlicPasswordChangeActuator::OpenPasswordChangeTab(
   }
 }
 
-PasswordChangeActuator::NewPasswordResult
-GlicPasswordChangeActuator::GetOrGenerateNewPassword(
-    password_manager::PasswordFormManager* form_manager) {
-  using Error = password_manager::PasswordChangeCredentialsProvider::Error;
-  if (generated_password_.has_value()) {
-    return *generated_password_;
-  }
-  if (!form_manager) {
-    return base::unexpected(Error::kGenerationFailed);
-  }
-
-  const password_manager::PasswordForm* parsed_form =
-      form_manager->GetParsedObservedForm();
-  CHECK(parsed_form);
-  base::WeakPtr<password_manager::PasswordManagerDriver> driver =
-      form_manager->GetDriver();
-  password_manager::PasswordGenerationFrameHelper* generation_helper =
-      driver ? driver->GetPasswordGenerationHelper() : nullptr;
-  if (!generation_helper) {
-    return base::unexpected(Error::kGenerationFailed);
-  }
-
-  generated_password_ = password_manager::GeneratePasswordForChangePasswordForm(
-                            *parsed_form, *generation_helper)
-                            .password;
-
-  // Keep a copy of the form manager to promote the backup password once the
-  // password change succeeds.
-  form_manager_ = form_manager->Clone();
-
-  // Save the generated password as a backup of the credential being changed,
-  // so that it isn't lost if the website accepts it but Chrome doesn't save
-  // it.
-  password_manager::PasswordForm form_to_save(*parsed_form);
-  form_to_save.username_value = credential_.username_value;
-  form_to_save.password_value = credential_.password_value;
-  password_manager::PasswordFormManager::PresaveGeneratedPasswordAsBackup(
-      *form_manager_, std::move(form_to_save), *generated_password_);
-  // Refetch the credentials so that `form_manager_` is aware of the backup.
-  form_manager_->GetFormFetcher()->Fetch();
-
-  return *generated_password_;
+password_manager::PasswordString
+GlicPasswordChangeActuator::GetGeneratedPassword() const {
+  return generated_password_;
 }
 
 void GlicPasswordChangeActuator::AddObserver(

@@ -8,7 +8,6 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -109,10 +108,10 @@ class MockPasswordChangeActuator : public PasswordChangeActuator {
               (),
               (const, override));
   MOCK_METHOD(void, OpenPasswordChangeTab, (content::WebContents*), (override));
-  MOCK_METHOD(NewPasswordResult,
-              GetOrGenerateNewPassword,
-              (password_manager::PasswordFormManager*),
-              (override));
+  MOCK_METHOD(password_manager::PasswordString,
+              GetGeneratedPassword,
+              (),
+              (const, override));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 
@@ -342,11 +341,17 @@ class PasswordChangeDelegateImplTest : public base::test::WithFeatureOverride,
       autofill_client_injector_;
 };
 
+TEST_P(PasswordChangeDelegateImplTest,
+       GeneratedPasswordWithoutActuatorIsEmpty) {
+  CreateDelegate(/*inject_actuator=*/false);
+
+  EXPECT_TRUE(delegate()->GetGeneratedPassword().empty());
+}
+
 TEST_P(PasswordChangeDelegateImplTest, GeneratedPasswordOutlivesDelegate) {
   CreateDelegate();
   const password_manager::PasswordString password(u"generated_password");
-  EXPECT_CALL(*actuator(), GetOrGenerateNewPassword(nullptr))
-      .WillOnce(Return(password));
+  EXPECT_CALL(*actuator(), GetGeneratedPassword()).WillOnce(Return(password));
 
   const password_manager::PasswordString generated_password =
       delegate()->GetGeneratedPassword();
@@ -371,27 +376,21 @@ TEST_P(PasswordChangeDelegateImplTest, OldPasswordFailsWithoutActuator) {
                   PasswordChangeDelegateImpl::Error::kNoPasswordChangeFlow));
 }
 
-TEST_P(PasswordChangeDelegateImplTest, NewPasswordIsGeneratedByActuator) {
-  base::test::ScopedFeatureList feature_list(
-      password_change::features::kPasswordChangeWithGlic);
+TEST_P(PasswordChangeDelegateImplTest, ProvidesActuatorGeneratedPassword) {
   CreateDelegate();
   FormManagerForTesting form_manager;
   const password_manager::PasswordString password(u"generated_password");
-  EXPECT_CALL(*actuator(), GetOrGenerateNewPassword(&form_manager.get()))
-      .WillOnce(Return(password));
+  EXPECT_CALL(*actuator(), GetGeneratedPassword()).WillOnce(Return(password));
 
   EXPECT_THAT(delegate()->GetNewPassword(&form_manager.get()),
               base::test::ValueIs(password));
 }
 
 TEST_P(PasswordChangeDelegateImplTest, NewPasswordFailsIfNotGenerated) {
-  base::test::ScopedFeatureList feature_list(
-      password_change::features::kPasswordChangeWithGlic);
   CreateDelegate();
   FormManagerForTesting form_manager;
-  EXPECT_CALL(*actuator(), GetOrGenerateNewPassword(&form_manager.get()))
-      .WillOnce(Return(base::unexpected(
-          PasswordChangeDelegateImpl::Error::kGenerationFailed)));
+  EXPECT_CALL(*actuator(), GetGeneratedPassword())
+      .WillOnce(Return(password_manager::PasswordString()));
 
   EXPECT_THAT(delegate()->GetNewPassword(&form_manager.get()),
               base::test::ErrorIs(
@@ -399,8 +398,6 @@ TEST_P(PasswordChangeDelegateImplTest, NewPasswordFailsIfNotGenerated) {
 }
 
 TEST_P(PasswordChangeDelegateImplTest, NewPasswordFailsWithoutActuator) {
-  base::test::ScopedFeatureList feature_list(
-      password_change::features::kPasswordChangeWithGlic);
   CreateDelegate(/*inject_actuator=*/false);
   FormManagerForTesting form_manager;
 
@@ -882,7 +879,7 @@ TEST_P(PasswordChangeDelegateImplTest, UIDelegateCredentialAccessors) {
   CreateDelegate();
 
   const std::u16string kNewPassword = u"NewSecurePassword";
-  EXPECT_CALL(*actuator(), GetOrGenerateNewPassword(nullptr))
+  EXPECT_CALL(*actuator(), GetGeneratedPassword())
       .WillOnce(Return(
           password_manager::PasswordString(std::u16string(kNewPassword))));
 
