@@ -471,6 +471,19 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool MayHaveViewportDependentMediaQueries();
   bool HasViewportDependentPropertyRegistrations();
 
+  class InApplyAnimatedStyleScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit InApplyAnimatedStyleScope(StyleEngine& engine)
+        : auto_reset_(&engine.in_apply_animated_style_, true) {}
+
+   private:
+    base::AutoReset<bool> auto_reset_;
+  };
+
+  bool InApplyAnimatedStyle() const { return in_apply_animated_style_; }
+
   class InApplyAnimationUpdateScope {
     STACK_ALLOCATED();
 
@@ -1118,6 +1131,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool in_scroll_markers_attachment_{false};
   bool in_dom_removal_{false};
   bool in_detach_scope_{false};
+  bool in_apply_animated_style_{false};
   bool in_apply_animation_update_{false};
   bool in_ensure_computed_style_{false};
   bool viewport_style_dirty_{false};
