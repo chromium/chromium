@@ -678,6 +678,7 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/576781074")
     public void testLongPressInputWhileComposingText() throws Exception {
         mRule.assertWaitForSelectActionBarStatus(false);
         mRule.setComposingText("SampleTextThatIsVeryLong Test", 1);
