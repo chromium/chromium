@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_GLIC_EXPERIMENTAL_TRIGGERING_ACTOR_LOG_H_
 
 #include <cstddef>
+#include <cstdint>
+#include <optional>
 #include <string_view>
 
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
@@ -21,6 +23,8 @@ class GlicExperimentalTriggering;
 
 namespace glic {
 
+struct ExperimentalTriggeringRequest;
+
 // Snapshot of an ExperimentalTriggeringUpdatesHandler's live-work state
 // captured at the start of its destructor (before teardown stops owned work).
 struct UpdatesHandlerDestroyedJournalSnapshot {
@@ -35,6 +39,8 @@ struct UpdatesHandlerDestroyedJournalSnapshot {
 // Returns stable diagnostic string names for actor journal detail values.
 std::string_view ExperimentalTriggeringHandlerDestroyReasonToString(
     GlicExperimentalTriggeringHandlerDestroyReason reason);
+std::string_view ExperimentalTriggeringSequenceAnomalyToString(
+    GlicExperimentalTriggeringSequenceAnomaly anomaly);
 
 // Logs a GlicExperimentalTriggering protobuf message to the actor journal.
 // `actor_service` is used to access the journal. `event_name` identifies the
@@ -55,6 +61,16 @@ void LogGlicExperimentalTriggeringHandlerDestroyed(
     std::string_view context_id,
     GlicExperimentalTriggeringHandlerDestroyReason reason,
     const UpdatesHandlerDestroyedJournalSnapshot& snapshot);
+
+// Logs an instant `SequenceAnomaly` entry on `context_id`'s
+// GlicExperimentalTriggering track when `journal` is non-null.
+void LogGlicExperimentalTriggeringSequenceAnomaly(
+    actor::AggregatedJournal* journal,
+    std::string_view context_id,
+    GlicExperimentalTriggeringSequenceAnomaly anomaly,
+    const ExperimentalTriggeringRequest& request,
+    std::optional<int64_t> handler_max_seen_seq,
+    int64_t handler_sent_count);
 
 }  // namespace glic
 

@@ -882,9 +882,14 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void RecordSequenceAnomaly(
+      const ExperimentalTriggeringRequest& request,
+      std::optional<int64_t> prev_max_seen_seq,
       GlicExperimentalTriggeringSequenceAnomaly anomaly) {
     metric_reporter_.RecordEnumeration("ExperimentalTriggering.SequenceAnomaly",
                                        anomaly);
+    LogGlicExperimentalTriggeringSequenceAnomaly(
+        journal_.get(), context_id_, anomaly, request, prev_max_seen_seq,
+        sequence_generator_.issued_count());
   }
 
   // Evaluates incoming `TaskMetadata` sequence numbers against this handler's
@@ -941,7 +946,7 @@ class ExperimentalTriggeringUpdatesHandler
     }
 
     if (anomaly.has_value()) {
-      RecordSequenceAnomaly(*anomaly);
+      RecordSequenceAnomaly(request, prev_max_seen, *anomaly);
     }
   }
   bool IsWaitingForBackgroundOptIn() const {

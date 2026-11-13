@@ -375,6 +375,10 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
           "Glic.Consumer.ExperimentalTriggering.SequenceAnomaly"}) {
       tester.ExpectTotalCount(name, count);
     }
+    if (journal_recorder_) {
+      EXPECT_EQ(journal_recorder_->GetEntries("SequenceAnomaly").size(),
+                static_cast<size_t>(count));
+    }
   }
 
  protected:
@@ -6590,6 +6594,19 @@ TEST_F(
       GlicExperimentalTriggeringSequenceAnomaly::kMissingHistory, 0);
   ExpectSequenceAnomalyTotalCount(histogram_tester, 1);
 
+  auto events = journal_recorder_->GetEntries("SequenceAnomaly");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(events[0].track_uuid,
+            actor::MakeGlicExperimentalTriggeringTrackUUID(kTestContextId));
+  EXPECT_THAT(events[0].details,
+              UnorderedElementsAre(
+                  Pair("context_id", std::string(kTestContextId)),
+                  Pair("anomaly", "StreamRestarted"),
+                  Pair("request_type", "ContinueActuationRequest"),
+                  Pair("request_seq", "1"), Pair("request_last_seen", "0"),
+                  Pair("handler_max_seen_request_seq", "none"),
+                  Pair("handler_sent_count", "0")));
+
   // Follow-up in-order request with seq=2 and last_seen=0 (<
   // sent_reply_count=1) confirms max_seen_request_sequence_number_ advanced to
   // 1 on the first request (records 0 additional anomalies).
@@ -6760,6 +6777,41 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       histogram_tester, GlicExperimentalTriggeringSequenceAnomaly::kRequestGap,
       1);
   ExpectSequenceAnomalyTotalCount(histogram_tester, 4);
+
+  auto events = journal_recorder_->GetEntries("SequenceAnomaly");
+  ASSERT_EQ(events.size(), 4u);
+  EXPECT_THAT(events[0].details,
+              UnorderedElementsAre(
+                  Pair("context_id", std::string(kTestContextId)),
+                  Pair("anomaly", "DuplicateOrReplayedRequest"),
+                  Pair("request_type", "TriggerActuationRequest"),
+                  Pair("request_seq", "0"), Pair("request_last_seen", "none"),
+                  Pair("handler_max_seen_request_seq", "0"),
+                  Pair("handler_sent_count", "1")));
+  EXPECT_THAT(events[1].details,
+              UnorderedElementsAre(
+                  Pair("context_id", std::string(kTestContextId)),
+                  Pair("anomaly", "LastSeenAheadOfSent"),
+                  Pair("request_type", "TaskMetadataUpdated"),
+                  Pair("request_seq", "2"), Pair("request_last_seen", "1"),
+                  Pair("handler_max_seen_request_seq", "0"),
+                  Pair("handler_sent_count", "1")));
+  EXPECT_THAT(events[2].details,
+              UnorderedElementsAre(
+                  Pair("context_id", std::string(kTestContextId)),
+                  Pair("anomaly", "DuplicateOrReplayedRequest"),
+                  Pair("request_type", "TaskMetadataUpdated"),
+                  Pair("request_seq", "1"), Pair("request_last_seen", "0"),
+                  Pair("handler_max_seen_request_seq", "2"),
+                  Pair("handler_sent_count", "1")));
+  EXPECT_THAT(events[3].details,
+              UnorderedElementsAre(
+                  Pair("context_id", std::string(kTestContextId)),
+                  Pair("anomaly", "RequestGap"),
+                  Pair("request_type", "TaskMetadataUpdated"),
+                  Pair("request_seq", "5"), Pair("request_last_seen", "1"),
+                  Pair("handler_max_seen_request_seq", "3"),
+                  Pair("handler_sent_count", "2")));
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
