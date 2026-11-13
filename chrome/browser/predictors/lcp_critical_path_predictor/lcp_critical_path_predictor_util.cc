@@ -541,10 +541,6 @@ bool RecordFetchedFontUrlsHistogram(int sliding_window_size,
     base::UmaHistogramCounts10000(
         "Blink.LCPP.RecordedFontUrlMatchCountForPagesWithFonts",
         base::checked_cast<int>(updater.num_matched()));
-    base::UmaHistogramPercentage(
-        "Blink.LCPP.RecordedFontUrlPredictionMatchPercent",
-        base::checked_cast<int>(100 * updater.num_matched() /
-                                fetched_font_urls.size()));
   }
 
   return updater.has_updated();
@@ -1044,10 +1040,6 @@ bool UpdateLcppStatWithLcppDataInputs(const LcppDataInputs& inputs,
         "Blink.LCPP.RecordedFontUrlPredictionHitPercent",
         base::checked_cast<int>(100 * inputs.font_url_hit_count /
                                 inputs.font_url_count));
-    base::UmaHistogramPercentage(
-        "Blink.LCPP.RecordedFontUrlPredictionHitPercentInRecordedFonts",
-        base::checked_cast<int>(100 * inputs.font_url_hit_count /
-                                inputs.font_urls.size()));
     base::UmaHistogramCounts10000(
         "Blink.LCPP.RecordedFontUrlReenterCountForPagesWithFonts",
         base::checked_cast<int>(inputs.font_url_reenter_count));

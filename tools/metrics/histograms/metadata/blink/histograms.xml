@@ -4113,38 +4113,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.LCPP.RecordedFontUrlPredictionHitPercentInRecordedFonts"
-    units="%" expires_after="2025-10-01">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Ratio of the font URLs that hits the prediction using LCPP out of fetched
-    fonts to be recorded.
-
-    This metric is emitted for every page load when it is about to emit
-    &quot;onload&quot; event. Unlike Blink.LCPP.ReportedFontCount, this metric
-    counts the number of fonts after filitering with the max fonts per site. If
-    the page does not have web fonts, they are excluded from this metrics.
-  </summary>
-</histogram>
-
-<histogram name="Blink.LCPP.RecordedFontUrlPredictionMatchPercent" units="%"
-    expires_after="2025-10-01">
-  <owner>yyanagisawa@chromium.org</owner>
-  <owner>
-    src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
-  </owner>
-  <summary>
-    Measures the percent of font URLs in the LCPP database against all fetched
-    font URLs.
-
-    This metric is emitted for every page load when it is about to emit
-    &quot;onload&quot; event.
-  </summary>
-</histogram>
-
 <histogram name="Blink.LCPP.RecordedFontUrlReenterCountForPagesWithFonts"
     units="count" expires_after="2025-10-01">
   <owner>yyanagisawa@chromium.org</owner>
