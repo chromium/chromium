@@ -238,7 +238,7 @@ public class StripLayoutTab extends StripLayoutView {
     // Preallocated
     private final RectF mClosePlacement = new RectF();
 
-    private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private @Nullable ObserverList<Observer> mObservers;
 
     private @VisualState int mVisualState = VisualState.NORMAL;
 
@@ -538,6 +538,9 @@ public class StripLayoutTab extends StripLayoutView {
      */
     @VisibleForTesting
     public void addObserver(Observer observer) {
+        if (mObservers == null) {
+            mObservers = new ObserverList<>();
+        }
         mObservers.addObserver(observer);
     }
 
@@ -545,7 +548,9 @@ public class StripLayoutTab extends StripLayoutView {
      * @param observer The observer to remove.
      */
     public void removeObserver(Observer observer) {
-        mObservers.removeObserver(observer);
+        if (mObservers != null) {
+            mObservers.removeObserver(observer);
+        }
     }
 
     @Override
@@ -746,8 +751,10 @@ public class StripLayoutTab extends StripLayoutView {
             mUpdateHost.releaseResourcesForTab(mTabId);
         }
 
-        for (Observer observer : mObservers) {
-            observer.onVisibilityChanged(isVisible());
+        if (mObservers != null) {
+            for (Observer observer : mObservers) {
+                observer.onVisibilityChanged(isVisible());
+            }
         }
     }
 
