@@ -447,7 +447,7 @@ def _performance_browser_tests(
       '--ui-test-action-timeout=60000',
       '--ui-test-action-max-timeout=60000',
       '--test-launcher-timeout=60000',
-      '--gtest_filter=*/TabCapturePerformanceTest.*:*/CastV2PerformanceTest.*',
+      '--gtest_filter=*/TabCapturePerformanceTest.*',
       *flags,
     ),
     estimated_runtime=estimated_runtime,
