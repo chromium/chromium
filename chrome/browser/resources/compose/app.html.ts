@@ -85,7 +85,7 @@ export function getHtml(this: ComposeAppElement) {
           @edit-click="${this.onEditClick_}"
           .inputParams="${this.inputParams_}">
       </compose-textarea>
-      <div id="inputModesContainer" ?hidden="${!this.showInputModes_}">
+      <div id="inputModesContainer" ?hidden="${this.submitted_}">
         <cr-chip id="polishChip" selected
             ?selected="${this.isInputModeSelected_(InputMode.kPolish)}"
             @click="${this.onPolishChipClick_}">

@@ -57,10 +57,8 @@ enum class ComposeContextMenuCtrEvent {
 // Keep in sync with ComposeRequestReason in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeRequestReason {
-  // When the ComposeUpfrontInputModes featuer is enabled, the "first request"
-  // is split between one of three input modes.
-  // TODO(b/371054228): Deprecate the kFirstRequest bucket when upfront inputs
-  // launches.
+  // The "first request" is split between one of three upfront input modes,
+  // except when no input mode is set (e.g. auto-submit).
   kFirstRequest = 0,
   kRetryRequest = 1,
   kUpdateRequest = 2,

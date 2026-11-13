@@ -58,9 +58,6 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeClose);
 // Enables or disables the Happiness Tracking System for nudge dismissal.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
 
-// Enables upfront input modes in the dialog.
-BASE_DECLARE_FEATURE(kComposeUpfrontInputModes);
-
 // If enabled, Compose nudges are hidden asynchronously to avoid reentrant
 // AutofillManager::Observer calls. See crbug.com/501120730 for details.
 BASE_DECLARE_FEATURE(kComposeHideComposeNudgesAsynchronously);

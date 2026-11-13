@@ -54,8 +54,6 @@ BASE_FEATURE(kHappinessTrackingSurveysForComposeClose,
 BASE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeUpfrontInputModes, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kComposeHideComposeNudgesAsynchronously,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
