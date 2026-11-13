@@ -6135,9 +6135,8 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
 void RenderFrameHostManager::NotifyPrepareForInnerDelegateAttachComplete(
     bool success) {
   CHECK(is_attaching_inner_delegate());
-  int32_t process_id = success
-                           ? render_frame_host_->GetProcess()->GetDeprecatedID()
-                           : ChildProcessHost::kInvalidUniqueID;
+  ChildProcessId process_id =
+      success ? render_frame_host_->GetProcess()->GetID() : ChildProcessId();
   int32_t routing_id =
       success ? render_frame_host_->GetRoutingID() : IPC::mojom::kRoutingIdNone;
   // Invoking the callback asynchronously to meet the APIs promise.
@@ -6145,7 +6144,7 @@ void RenderFrameHostManager::NotifyPrepareForInnerDelegateAttachComplete(
       FROM_HERE,
       base::BindOnce(
           [](RenderFrameHost::PrepareForInnerWebContentsAttachCallback callback,
-             int32_t process_id, int32_t routing_id) {
+             ChildProcessId process_id, int32_t routing_id) {
             std::move(callback).Run(
                 RenderFrameHostImpl::FromID(process_id, routing_id));
           },

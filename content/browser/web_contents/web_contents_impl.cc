@@ -11980,8 +11980,9 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      bool dialog_was_suppressed,
                                      bool success,
                                      const std::u16string& user_input) {
-  RenderFrameHostImpl* rfh =
-      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
+      ChildProcessId::FromUnsafeValue(render_process_id), render_frame_id);
   // The user confirms and closes a dialog even after the page has navigated
   // away and got into BackForwardCache.
   DCHECK(!rfh || rfh->IsActive() || rfh->IsInBackForwardCache());

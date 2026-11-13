@@ -437,7 +437,7 @@ bool RenderViewHostImpl::CreateRenderView(
   RenderFrameHostImpl* main_rfh = nullptr;
   RenderFrameProxyHost* main_rfph = nullptr;
   if (main_frame_routing_id_ != IPC::mojom::kRoutingIdNone) {
-    main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
+    main_rfh = RenderFrameHostImpl::FromID(GetProcess()->GetID(),
                                            main_frame_routing_id_);
     CHECK(main_rfh, base::NotFatalUntil::M152);
   } else {
@@ -795,7 +795,7 @@ RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
     return nullptr;
   }
 
-  return RenderFrameHostImpl::FromID(GetProcess()->GetDeprecatedID(),
+  return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
                                      main_frame_routing_id_);
 }
 

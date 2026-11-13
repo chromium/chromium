@@ -163,8 +163,10 @@ void MediaStreamUIProxy::Core::RequestAccess(
     return;
   }
 
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
   RenderFrameHostImpl* host = RenderFrameHostImpl::FromID(
-      request->render_process_id, request->render_frame_id);
+      ChildProcessId::FromUnsafeValue(request->render_process_id),
+      request->render_frame_id);
 
   render_delegate->RequestMediaAccessPermission(
       host, *request,
@@ -291,7 +293,9 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
         blink::mojom::StreamDevices::New());
   }
 
-  auto* host = RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  auto* host = RenderFrameHostImpl::FromID(
+      ChildProcessId::FromUnsafeValue(render_process_id), render_frame_id);
   bool is_allowed_while_screen_locked = false;
   if (result == blink::mojom::MediaStreamRequestResult::OK &&
       devices.video_device.has_value() &&

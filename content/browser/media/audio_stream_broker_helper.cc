@@ -16,8 +16,10 @@ void NotifyFrameHostOfAudioStreamStarted(int render_process_id,
                                          bool is_capturing) {
   auto impl = [](int render_process_id, int render_frame_id,
                  bool is_capturing) {
-    if (auto* host =
-            RenderFrameHostImpl::FromID(render_process_id, render_frame_id)) {
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+    if (auto* host = RenderFrameHostImpl::FromID(
+            ChildProcessId::FromUnsafeValue(render_process_id),
+            render_frame_id)) {
       const auto type =
           is_capturing
               ? RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream
@@ -35,8 +37,9 @@ void NotifyFrameHostOfAudioStreamStopped(int render_process_id,
                                          bool is_capturing) {
   auto impl = [](int render_process_id, int render_frame_id,
                  bool is_capturing) {
-    RenderFrameHostImpl* host =
-        RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+    RenderFrameHostImpl* host = RenderFrameHostImpl::FromID(
+        ChildProcessId::FromUnsafeValue(render_process_id), render_frame_id);
     const auto type =
         is_capturing
             ? RenderFrameHostImpl::MediaStreamType::kCapturingMediaStream

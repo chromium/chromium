@@ -316,8 +316,9 @@ void SendTextInputStateChangedToWidget(RenderWidgetHost* rwh,
 
 bool DestroyRenderWidgetHost(int32_t process_id,
                              int32_t local_root_routing_id) {
-  RenderFrameHostImpl* rfh =
-      RenderFrameHostImpl::FromID(process_id, local_root_routing_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
+      ChildProcessId::FromUnsafeValue(process_id), local_root_routing_id);
   if (!rfh)
     return false;
 

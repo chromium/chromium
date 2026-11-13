@@ -294,8 +294,10 @@ void SaveFileManager::SaveURL(
 
     network::mojom::URLLoaderFactory* factory = nullptr;
     mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
-    auto* rfh = RenderFrameHostImpl::FromID(render_process_host_id,
-                                            render_frame_routing_id);
+    // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+    auto* rfh = RenderFrameHostImpl::FromID(
+        ChildProcessId::FromUnsafeValue(render_process_host_id),
+        render_frame_routing_id);
 
     // TODO(crbug.com/382291442): Remove feature guarding once launched.
     if (base::FeatureList::IsEnabled(

@@ -620,7 +620,7 @@ void GrantFileAccess(ChildProcessId child_id,
 // process/routing IDs as a weak reference to the RenderFrameHostImpl.
 class RemoterFactoryImpl final : public media::mojom::RemoterFactory {
  public:
-  RemoterFactoryImpl(int process_id, int routing_id)
+  RemoterFactoryImpl(ChildProcessId process_id, int routing_id)
       : process_id_(process_id), routing_id_(routing_id) {}
 
   RemoterFactoryImpl(const RemoterFactoryImpl&) = delete;
@@ -635,15 +635,16 @@ class RemoterFactoryImpl final : public media::mojom::RemoterFactory {
     }
   }
 
-  const int process_id_;
+  const ChildProcessId process_id_;
   const int routing_id_;
 };
 #endif  // BUILDFLAG(ENABLE_MEDIA_REMOTING)
 
 RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(int process_id,
                                                     int routing_id) {
-  RenderFrameHostImpl* rfh =
-      RenderFrameHostImpl::FromID(process_id, routing_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
+      ChildProcessId::FromUnsafeValue(process_id), routing_id);
   RenderFrameProxyHost* proxy = nullptr;
   if (!rfh) {
     proxy = RenderFrameProxyHost::FromID(process_id, routing_id);
@@ -2410,13 +2411,6 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromID(GlobalRenderFrameHostId id) {
 }
 
 // static
-RenderFrameHostImpl* RenderFrameHostImpl::FromID(int render_process_id,
-                                                 int render_frame_id) {
-  return RenderFrameHostImpl::FromID(GlobalRenderFrameHostId(
-      ChildProcessId::FromUnsafeValue(render_process_id), render_frame_id));
-}
-
-// static
 RenderFrameHostImpl* RenderFrameHostImpl::FromID(
     ChildProcessId render_process_id,
     int render_frame_id) {
@@ -2514,7 +2508,9 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromAXTreeID(
   CHECK_CURRENTLY_ON(BrowserThread::UI);
   ui::AXActionHandlerRegistry::FrameID frame_id =
       ui::AXActionHandlerRegistry::GetInstance()->GetFrameID(ax_tree_id);
-  return RenderFrameHostImpl::FromID(frame_id.first, frame_id.second);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  return RenderFrameHostImpl::FromID(
+      ChildProcessId::FromUnsafeValue(frame_id.first), frame_id.second);
 }
 
 // static
@@ -15454,9 +15450,9 @@ void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 void RenderFrameHostImpl::BindMediaRemoterFactoryReceiver(
     mojo::PendingReceiver<media::mojom::RemoterFactory> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<RemoterFactoryImpl>(
-                                  GetProcess()->GetDeprecatedID(), routing_id_),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<RemoterFactoryImpl>(GetProcess()->GetID(), routing_id_),
+      std::move(receiver));
 }
 #endif
 

@@ -282,8 +282,9 @@ FrameTreeNode* FrameTree::FindByID(FrameTreeNodeId frame_tree_node_id) {
 }
 
 FrameTreeNode* FrameTree::FindByRoutingID(int process_id, int routing_id) {
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(process_id, routing_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  RenderFrameHostImpl* render_frame_host = RenderFrameHostImpl::FromID(
+      ChildProcessId::FromUnsafeValue(process_id), routing_id);
   if (render_frame_host) {
     FrameTreeNode* result = render_frame_host->frame_tree_node();
     if (this == &result->frame_tree())

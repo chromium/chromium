@@ -4307,9 +4307,10 @@ MediaStreamDevices MediaStreamManager::ConvertToMediaStreamDevices(
 
 void MediaStreamManager::ActivateTabOnUIThread(const DesktopMediaID source) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M158);
-  RenderFrameHostImpl* rfh =
-      RenderFrameHostImpl::FromID(source.web_contents_id.render_process_id,
-                                  source.web_contents_id.main_render_frame_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue().
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
+      ChildProcessId::FromUnsafeValue(source.web_contents_id.render_process_id),
+      source.web_contents_id.main_render_frame_id);
   if (rfh) {
     rfh->render_view_host()->GetDelegate()->Activate();
   }

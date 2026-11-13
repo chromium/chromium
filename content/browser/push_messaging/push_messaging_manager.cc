@@ -339,7 +339,7 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
             blink::mojom::PushRegistrationStatus::INCOGNITO_PERMISSION_DENIED);
       } else {
         RenderFrameHostImpl* render_frame_host_impl =
-            RenderFrameHostImpl::FromID(render_process_host_->GetDeprecatedID(),
+            RenderFrameHostImpl::FromID(render_process_host_->GetID(),
                                         render_frame_id_);
         if (render_frame_host_impl) {
           render_frame_host_impl->AddMessageToConsole(
