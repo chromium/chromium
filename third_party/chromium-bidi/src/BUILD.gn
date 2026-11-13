@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import(
-    "//third_party/devtools-frontend/src/scripts/build/typescript/typescript.gni")
+import("//build/config/devtools.gni")
 import("../tools/build/bidi_module.gni")
 
+# Must be imported after //build/config/devtools.gni.
+import("//$devtools_root_location/scripts/build/typescript/typescript.gni")
 if (build_with_chromium) {
   devtools_protocol_declare_dts =
       "$target_gen_dir/devtools_protocol_declare.d.ts"
