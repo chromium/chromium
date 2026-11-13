@@ -3444,7 +3444,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, CreateTargetLinkedFile) {
       testing::AllOf(HasPath(test_link()), testing::Not(HasErrored()), IsFile(),
                      HasModifiedPath(test_link()), HasNoMovedFromPath()));
   // TODO(crbug.com/40260973): Update this when change types are
-  // supported on on more platforms.
+  // supported on more platforms.
   static_assert(kExpectedEventsForNewFileWrite == 2);
   event_expecter.SetEventSequenceMatcher(
       IsType(FilePathWatcher::ChangeType::kCreated),
