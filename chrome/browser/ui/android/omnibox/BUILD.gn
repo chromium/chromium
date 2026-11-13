@@ -22,6 +22,7 @@ source_set("omnibox") {
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/omnibox/AiModeButtonState.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditText.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextModelBase.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteInputConnection.java",

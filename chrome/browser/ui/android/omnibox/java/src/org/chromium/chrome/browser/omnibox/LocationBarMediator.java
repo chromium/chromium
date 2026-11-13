@@ -2388,12 +2388,9 @@ public class LocationBarMediator
     }
 
     private void updateNavigateButtonVisibility() {
-        boolean hasTextOrAttachments =
-                !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete())
-                        || mFuseboxCoordinator.getHasAttachmentsSupplier().get();
         boolean isExpandedFusebox =
                 mFuseboxCoordinator.getFuseboxStateSupplier().get() == FuseboxState.EXPANDED;
-        boolean navigateButtonVisible = mUrlHasFocus && isExpandedFusebox && hasTextOrAttachments;
+        boolean navigateButtonVisible = mUrlHasFocus && isExpandedFusebox && hasTextOrAttachments();
         mLocationBarLayout.setNavigateButtonVisibility(navigateButtonVisible);
     }
 
@@ -3798,35 +3795,54 @@ public class LocationBarMediator
     }
 
     private void onAiModeButtonIconChanged(StatusIconResource icon) {
-        mLocationBarLayout
-                .getActivationChip()
-                .setIconWithTint(
-                        icon.getDrawable(mContext),
-                        /* tintWithTextColor= */ icon.getIconRes() != 0);
+        mLocationBarLayout.setAiModeButtonIcon(
+                icon.getDrawable(mContext), /* tintWithTextColor= */ icon.getIconRes() != 0);
     }
 
     /* package */ void updateActivationChip() {
-        boolean showActivationChip =
-                (mIsFuseboxEligible || mAiModeButtonUiConfig != null)
-                        && mCurrentInput != null
-                        && mWindowHasFocusSupplier.get()
-                        && mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
-                                == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                        && mCurrentInput.getRequestType() == AutocompleteRequestType.SEARCH
-                        && mCurrentInput.getSiteSearchData() == null
-                        && (mCurrentInput.getPreviewMatchUrl() == null
-                                || mCurrentInput.isInZeroPrefixContext())
-                        && mCurrentInput.getDisplayState() != DisplayState.DRAFTING_NO_FOCUS;
-        Profile profile = mProfileSupplier.get();
-        if (profile != null
-                && profile.getNativeBrowserContextPointer() != 0
-                && !UserPrefs.get(profile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON)) {
-            showActivationChip = false;
-        }
-        mLocationBarLayout.setActivationChipVisibility(showActivationChip);
-        mActivationChipVisibilitySupplier.set(showActivationChip);
-        updateUrlBarAccessibilityOrder(showActivationChip);
+        @AiModeButtonState int state = computeAiModeButtonState();
+        mLocationBarLayout.setAiModeButtonState(state);
+        mActivationChipVisibilitySupplier.set(state != AiModeButtonState.HIDDEN);
+        updateUrlBarAccessibilityOrder(state != AiModeButtonState.HIDDEN);
         updateActivationChipCompact();
+    }
+
+    /**
+     * Returns {@link AiModeButtonState#VISIBLE_INACTIVE} if the AI Mode button is eligible to be
+     * shown and the current input is a conventional search, or {@link AiModeButtonState#HIDDEN}
+     * otherwise.
+     */
+    /* package */ @AiModeButtonState
+    int computeAiModeButtonState() {
+        if (!isAiModeButtonEligible()) return AiModeButtonState.HIDDEN;
+        return mCurrentInput.getRequestType() == AutocompleteRequestType.SEARCH
+                ? AiModeButtonState.VISIBLE_INACTIVE
+                : AiModeButtonState.HIDDEN;
+    }
+
+    /** Returns whether the AI Mode button may be shown at all, regardless of the request type. */
+    @EnsuresNonNullIf("mCurrentInput")
+    private boolean isAiModeButtonEligible() {
+        if (!(mIsFuseboxEligible || mAiModeButtonUiConfig != null)
+                || mCurrentInput == null
+                || !mWindowHasFocusSupplier.get()
+                || mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get()
+                        != FuseboxLayoutMode.SUGGESTIONS_POPOVER
+                || mCurrentInput.getSiteSearchData() != null
+                || (mCurrentInput.getPreviewMatchUrl() != null
+                        && !mCurrentInput.isInZeroPrefixContext())
+                || mCurrentInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS) {
+            return false;
+        }
+        Profile profile = mProfileSupplier.get();
+        return profile == null
+                || profile.getNativeBrowserContextPointer() == 0
+                || UserPrefs.get(profile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
+    }
+
+    private boolean hasTextOrAttachments() {
+        return !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete())
+                || mFuseboxCoordinator.getHasAttachmentsSupplier().get();
     }
 
     /* package */ void onActivationChipSelectionChanged(boolean selected) {

@@ -635,8 +635,18 @@ public class LocationBarLayout extends ConstraintLayout {
         return mNavigateButton;
     }
 
-    /* package */ void setActivationChipVisibility(boolean shouldShow) {
-        setButtonVisibility(mActivationChip, shouldShow);
+    /* package */ void setAiModeButtonState(@AiModeButtonState int state) {
+        setButtonVisibility(mActivationChip, state != AiModeButtonState.HIDDEN);
+    }
+
+    /**
+     * Sets the icon identifying AI Mode, shown at the start of the AI Mode button.
+     *
+     * @param icon The icon to display.
+     * @param tintWithTextColor Whether to tint the icon to match the button's text color.
+     */
+    /* package */ void setAiModeButtonIcon(@Nullable Drawable icon, boolean tintWithTextColor) {
+        mActivationChip.setIconWithTint(icon, tintWithTextColor);
     }
 
     /* package */ void setActivationChipCompact(boolean isCompact) {

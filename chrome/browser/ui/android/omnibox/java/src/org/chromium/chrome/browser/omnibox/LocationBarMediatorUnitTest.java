@@ -5665,25 +5665,26 @@ public class LocationBarMediatorUnitTest {
         input.setPreviewMatchUrl(new GURL("https://page.com"));
         clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
-        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
+        verify(mLocationBarLayout, never()).setAiModeButtonState(AiModeButtonState.HIDDEN);
         clearInvocations(mLocationBarLayout);
 
         input.setSiteSearchData(new SiteSearchData("test", "Test"));
-        verify(mLocationBarLayout).setActivationChipVisibility(false);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.HIDDEN);
 
         input.setSiteSearchData(null);
-        verify(mLocationBarLayout).setActivationChipVisibility(true);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.VISIBLE_INACTIVE);
 
         // When user types a new URL, it hides the chip.
         input.setUserText("https://example.com");
         input.setPreviewMatchUrl(new GURL("https://example.com"));
-        verify(mLocationBarLayout, times(2)).setActivationChipVisibility(false);
+        verify(mLocationBarLayout, times(2)).setAiModeButtonState(AiModeButtonState.HIDDEN);
 
         input.setPreviewMatchUrl(null);
-        verify(mLocationBarLayout, times(2)).setActivationChipVisibility(true);
+        verify(mLocationBarLayout, times(2))
+                .setAiModeButtonState(AiModeButtonState.VISIBLE_INACTIVE);
 
         input.setRequestType(AutocompleteRequestType.AI_MODE);
-        verify(mLocationBarLayout, times(3)).setActivationChipVisibility(false);
+        verify(mLocationBarLayout, times(3)).setAiModeButtonState(AiModeButtonState.HIDDEN);
 
         mMediator.endInput();
     }
@@ -5698,14 +5699,14 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
 
-        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
+        verify(mLocationBarLayout, never()).setAiModeButtonState(AiModeButtonState.HIDDEN);
         clearInvocations(mLocationBarLayout);
 
         mWindowHasFocusSupplier.set(false);
-        verify(mLocationBarLayout).setActivationChipVisibility(false);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.HIDDEN);
 
         mWindowHasFocusSupplier.set(true);
-        verify(mLocationBarLayout).setActivationChipVisibility(true);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.VISIBLE_INACTIVE);
     }
 
     @Test
@@ -5718,14 +5719,14 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
 
-        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
+        verify(mLocationBarLayout, never()).setAiModeButtonState(AiModeButtonState.HIDDEN);
         clearInvocations(mLocationBarLayout);
 
         doReturn(123L).when(mProfile).getNativeBrowserContextPointer();
         doReturn(false).when(mPrefService).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
         mMediator.updateActivationChip();
 
-        verify(mLocationBarLayout).setActivationChipVisibility(false);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.HIDDEN);
     }
 
     @Test
@@ -5739,7 +5740,8 @@ public class LocationBarMediatorUnitTest {
         mMediator.beginInput(input);
         mMediator.updateActivationChip();
 
-        verify(mLocationBarLayout, never()).setActivationChipVisibility(true);
+        verify(mLocationBarLayout, never())
+                .setAiModeButtonState(AiModeButtonState.VISIBLE_INACTIVE);
     }
 
     @Test
@@ -5751,7 +5753,7 @@ public class LocationBarMediatorUnitTest {
         mMediator.onUrlFocusChange(/* hasFocus= */ true);
 
         assertEquals(DisplayState.DRAFTING, mSessionState.getAutocompleteInput().getDisplayState());
-        verify(mLocationBarLayout).setActivationChipVisibility(true);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.VISIBLE_INACTIVE);
     }
 
     @Test
@@ -6027,7 +6029,7 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mLocationBarLayout);
         mMediator.beginInput(input);
 
-        verify(mLocationBarLayout, never()).setActivationChipVisibility(false);
+        verify(mLocationBarLayout, never()).setAiModeButtonState(AiModeButtonState.HIDDEN);
     }
 
     /**
@@ -6085,7 +6087,7 @@ public class LocationBarMediatorUnitTest {
 
         mAiModeButtonUiConfigSupplier.set(null);
 
-        verify(mLocationBarLayout).setActivationChipVisibility(false);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.HIDDEN);
         verify(mActivationChip).setText("");
         verify(mActivationChip).setContentDescription(null);
         verify(mActivationChip).setTooltipText(null);
@@ -6099,7 +6101,7 @@ public class LocationBarMediatorUnitTest {
 
         mAiModeButtonUiConfigSupplier.set(createTestAiModeButtonUiConfig());
 
-        verify(mLocationBarLayout).setActivationChipVisibility(true);
+        verify(mLocationBarLayout).setAiModeButtonState(AiModeButtonState.VISIBLE_INACTIVE);
         verify(mActivationChip).setText("AI Mode");
         verify(mActivationChip).setContentDescription("AI Mode button");
         verify(mActivationChip).setTooltipText("Ask AI Mode");
@@ -6108,27 +6110,27 @@ public class LocationBarMediatorUnitTest {
     @Test
     public void testActivationChip_iconUpdatedFromSupplier_resourceIconTinted() {
         mMediator.onFinishNativeInitialization();
-        clearInvocations(mActivationChip);
+        clearInvocations(mLocationBarLayout);
 
         mAiModeButtonIconSupplier.set(
                 new StatusIconResource(
                         R.drawable.ic_search_24dp, R.color.default_icon_color_tint_list));
 
-        verify(mActivationChip)
-                .setIconWithTint(any(Drawable.class), /* tintWithTextColor= */ eq(true));
+        verify(mLocationBarLayout)
+                .setAiModeButtonIcon(any(Drawable.class), /* tintWithTextColor= */ eq(true));
     }
 
     @Test
     public void testActivationChip_iconUpdatedFromSupplier_bitmapIconNotTinted() {
         mMediator.onFinishNativeInitialization();
-        clearInvocations(mActivationChip);
+        clearInvocations(mLocationBarLayout);
 
         Bitmap bitmap = Bitmap.createBitmap(16, 16, Bitmap.Config.ARGB_8888);
         mAiModeButtonIconSupplier.set(
                 new StatusIconResource("https://3p.com/favicon.ico", bitmap, 0));
 
-        verify(mActivationChip)
-                .setIconWithTint(any(Drawable.class), /* tintWithTextColor= */ eq(false));
+        verify(mLocationBarLayout)
+                .setAiModeButtonIcon(any(Drawable.class), /* tintWithTextColor= */ eq(false));
     }
 
     @Test
