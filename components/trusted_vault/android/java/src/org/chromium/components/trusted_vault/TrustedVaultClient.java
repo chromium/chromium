@@ -144,11 +144,7 @@ public class TrustedVaultClient {
          * @return a promise which indicates completion and represents whether the account can be
          *     enrolled.
          */
-        // TODO(crbug.com/579292011): Remove the default implementation once downstream
-        // GmsTrustedVaultClientBackend implements this method.
-        default Promise<Boolean> canEnroll(CoreAccountInfo accountInfo) {
-            return Promise.fulfilled(false);
-        }
+        Promise<Boolean> canEnroll(CoreAccountInfo accountInfo);
 
         /**
          * Asynchronously enrolls {@code accountInfo} into the security domain.
@@ -157,11 +153,7 @@ public class TrustedVaultClient {
          * @return a promise with a pair of the new shared key and new key version, or rejected on
          *     failure.
          */
-        // TODO(crbug.com/579292011): Remove the default implementation once downstream
-        // GmsTrustedVaultClientBackend implements this method.
-        default Promise<Pair<byte[], Integer>> enroll(CoreAccountInfo accountInfo) {
-            return Promise.rejected();
-        }
+        Promise<Pair<byte[], Integer>> enroll(CoreAccountInfo accountInfo);
     }
 
     /** Trivial backend implementation that is always empty. */

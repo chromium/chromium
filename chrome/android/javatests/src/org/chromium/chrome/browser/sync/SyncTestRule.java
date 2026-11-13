@@ -18,6 +18,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.preference.TwoStatePreference;
@@ -170,6 +171,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
         @Override
         public Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
+
+        @Override
+        public Promise<Boolean> canEnroll(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(false);
+        }
+
+        @Override
+        public Promise<Pair<byte[], Integer>> enroll(CoreAccountInfo accountInfo) {
             return Promise.rejected();
         }
 
