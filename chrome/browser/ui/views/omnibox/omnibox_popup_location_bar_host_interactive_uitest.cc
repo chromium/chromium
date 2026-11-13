@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -169,12 +170,14 @@ class OmniboxPopupLocationBarHostTest : public InProcessBrowserTest {
          {omnibox::kOmniboxFullWebUIEvictOnHide, {}},
          {omnibox::kOmniboxFullWebUIDetachWebContentsOnHide, {}},
          {omnibox::kOmniboxWebUIPopupMarkAsHidden, {}}},
-        {
-            omnibox::kOmniboxAimPopupRequireEligibility,
-            // Avoid macOS menu bar NSStatusItem setup stalling
-            // PreRunTestOnMainThread.
-            omnibox::kOmniboxEverywhere,
-        });
+        {omnibox::kOmniboxAimPopupRequireEligibility,
+         // Avoid macOS menu bar NSStatusItem setup stalling
+         // PreRunTestOnMainThread.
+         omnibox::kOmniboxEverywhere,
+         // These tests exercise the popup hosted in the Views
+         // LocationBarView, which the WebUI toolbar and WebUI
+         // location bar replace.
+         features::kWebUILocationBar, features::kWebUIToolbar});
   }
 
   void SetUpOnMainThread() override {
