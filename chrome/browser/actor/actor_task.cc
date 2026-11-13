@@ -472,8 +472,9 @@ void ActorTask::OnFinishedAct(
     // before transitioning to `kActing`. Interruption (`kWaitingOnUser`) can
     // happen while acting, but completion is deferred until the task is
     // uninterrupted back to `kActing`.
-    CHECK(state_ == State::kCreated || state_ == State::kActing,
-          base::NotFatalUntil::M161);
+    // TODO(crbug.com/584658141): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(state_ == State::kCreated || state_ == State::kActing);
     action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_)
         .Run(std::move(action_results), std::move(observation_strategy));
