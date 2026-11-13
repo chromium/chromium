@@ -465,17 +465,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Lens.ImageClassification.ClassificationTime.SuccessOnQueryResultMs"
-    units="ms" expires_after="2022-11-13">
-  <owner>yusuyoutube@google.com</owner>
-  <owner>benwgold@google.com</owner>
-  <summary>
-    Logged the end to end latency of the Lens image classifcation call when the
-    user completes a long press on an image. Only logged on Android.
-  </summary>
-</histogram>
-
 <histogram name="Lens.ImageClassification.ResultState"
     enum="LensClassifyResultState" expires_after="2022-10-09">
   <owner>yusuyoutube@google.com</owner>
