@@ -285,6 +285,47 @@ def DismissCrashDialogs(device):
     return packages
 
 
+_USAGE_REPORTING_COMPONENT_PREFIX = 'com.google.android.gms/.usagereporting.'
+
+
+def _HasUsageReportingActivity(device):
+    output = device.RunShellCommand(
+        ['dumpsys', 'activity', 'activities'],
+        check_return=False,
+        large_output=True,
+    )
+    return any(_USAGE_REPORTING_COMPONENT_PREFIX in line for line in output)
+
+
+def _CloseLeftoverUsageReportingWindow(device):
+    """Closes the GMS "Usage & diagnostics" window left by bot provisioning.
+
+    Otherwise it steals focus from the first test (https://crbug.com/496912352).
+    """
+    if not _HasUsageReportingActivity(device):
+        return
+    logging.info(
+        'Removing desks to close leftover "Usage & diagnostics" window'
+    )
+    device.RunShellCommand(
+        [
+            'dumpsys',
+            'activity',
+            'service',
+            'SystemUIService',
+            'WMShell',
+            'desktopmode',
+            'removeAllDesks',
+        ],
+        check_return=False,
+    )
+    for _ in range(10):
+        time.sleep(0.5)
+        if not _HasUsageReportingActivity(device):
+            return
+    logging.warning('Failed to close leftover "Usage & diagnostics" window')
+
+
 _CURRENT_FOCUS_CRASH_RE = re.compile(
     r'\s*mCurrentFocus.*Application (Error|Not Responding): (\S+)}'
 )
@@ -650,6 +691,11 @@ class LocalDeviceInstrumentationTestRun(
                     )
 
             @trace_event.traced
+            def close_leftover_system_windows(dev):
+                if dev.is_desktop:
+                    _CloseLeftoverUsageReportingWindow(dev)
+
+            @trace_event.traced
             def set_vega_permissions(dev):
                 # Normally, installation of VrCore automatically grants storage
                 # permissions. However, since VrCore is part of the system image on
@@ -832,6 +878,7 @@ class LocalDeviceInstrumentationTestRun(
                 set_debug_app,
                 approve_app_links,
                 disable_system_modals,
+                close_leftover_system_windows,
                 set_vega_permissions,
                 DismissCrashDialogs,
             ]
