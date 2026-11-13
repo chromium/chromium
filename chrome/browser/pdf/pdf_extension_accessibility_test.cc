@@ -1199,7 +1199,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextStyle) {
 
 class PDFExtensionAccessibilityTreeDumpXfaTest
     : public ::testing::WithParamInterface<
-          std::tuple<ui::AXApiType::Type, PDFExtensionTestState>>,
+          std::tuple<ui::AXApiType::Type, bool>>,
       public PDFExtensionAccessibilityTreeDumpTestBase {
  public:
   PDFExtensionAccessibilityTreeDumpXfaTest()
@@ -1210,12 +1210,7 @@ class PDFExtensionAccessibilityTreeDumpXfaTest
     return std::get<0>(GetParam());
   }
 
-  bool UseOopif() const override {
-    return PDFTestStateUseOopif(std::get<1>(GetParam()));
-  }
-  bool EnableXfa() const {
-    return PDFTestStateEnableXfa(std::get<1>(GetParam()));
-  }
+  bool EnableXfa() const { return std::get<1>(GetParam()); }
 
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
@@ -1240,30 +1235,17 @@ class PDFExtensionAccessibilityTreeDumpXfaTest
 
 struct PDFExtensionAccessibilityTreeDumpXfaTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<
-          std::tuple<ui::AXApiType::Type, PDFExtensionTestState>>& i) const {
-    const char* config = [&] {
-      switch (std::get<1>(i.param)) {
-        case PDFExtensionTestState::kGuestViewNoXfa:
-          return "GUESTVIEW_NO_XFA_";
-        case PDFExtensionTestState::kOopifPdfNoXfa:
-          return "OOPIF_NO_XFA_";
-        case PDFExtensionTestState::kOopifPdfXfa:
-          return "OOPIF_XFA_";
-      }
-      NOTREACHED();
-    }();
-    return base::StrCat({config, std::string(std::get<0>(i.param))});
+      const ::testing::TestParamInfo<std::tuple<ui::AXApiType::Type, bool>>& i)
+      const {
+    return base::StrCat({std::get<1>(i.param) ? "XFA_" : "NO_XFA_",
+                         std::string(std::get<0>(i.param))});
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     PDFExtensionAccessibilityTreeDumpXfaTest,
-    testing::Combine(testing::ValuesIn(GetAXTestValues()),
-                     testing::Values(PDFExtensionTestState::kGuestViewNoXfa,
-                                     PDFExtensionTestState::kOopifPdfNoXfa,
-                                     PDFExtensionTestState::kOopifPdfXfa)),
+    testing::Combine(testing::ValuesIn(GetAXTestValues()), testing::Bool()),
     PDFExtensionAccessibilityTreeDumpXfaTestPassToString());
 
 // TODO(crbug.com/40745411)

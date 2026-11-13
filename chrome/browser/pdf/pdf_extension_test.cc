@@ -4629,13 +4629,11 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithRendererSideContentDecoding,
   EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf.gz")));
 }
 
-// Test class that is parameterized over OOPIF and PDF XFA support features.
-class PDFExtensionXfaTest
-    : public PDFExtensionTestBase,
-      public testing::WithParamInterface<PDFExtensionTestState> {
+// Test class that is parameterized over PDF XFA support feature.
+class PDFExtensionXfaTest : public PDFExtensionTestBase,
+                            public testing::WithParamInterface<bool> {
  public:
-  bool UseOopif() const override { return PDFTestStateUseOopif(GetParam()); }
-  bool EnableXfa() const { return PDFTestStateEnableXfa(GetParam()); }
+  bool EnableXfa() const { return GetParam(); }
 
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
@@ -4663,20 +4661,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionXfaTest, LoadXfaDocument) {
       embedded_test_server()->GetURL("/pdf/accessibility/xfa_fields.pdf")));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PDFExtensionXfaTest,
-    testing::Values(PDFExtensionTestState::kGuestViewNoXfa,
-                    PDFExtensionTestState::kOopifPdfNoXfa,
-                    PDFExtensionTestState::kOopifPdfXfa),
-    [](const testing::TestParamInfo<PDFExtensionTestState>& info) {
-      switch (info.param) {
-        case PDFExtensionTestState::kGuestViewNoXfa:
-          return "GUESTVIEW_NoXFA";
-        case PDFExtensionTestState::kOopifPdfNoXfa:
-          return "OOPIF_NoXFA";
-        case PDFExtensionTestState::kOopifPdfXfa:
-          return "OOPIF_XFA";
-      }
-      NOTREACHED();
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionXfaTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "XFA" : "NoXFA";
+                         });
