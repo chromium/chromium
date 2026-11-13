@@ -7,14 +7,11 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom-forward.h"
 #include "components/media_gallery_util/safe_media_metadata_parser.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 // Provides local media data in the browser process and send it to media gallery
 // util service to parse media metadata safely in an utility process.

@@ -286,28 +286,18 @@ IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, InvalidImage) {
            std::string(kInvalidMediaFile, std::size(kInvalidMediaFile)), false);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, InvalidAudio) {
-  MoveTest("a.ogg",
-           std::string(kInvalidMediaFile, std::size(kInvalidMediaFile)), false);
-}
-
-IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, ValidAudio) {
+// Audio and video files have no content validator, so even well-formed files
+// are rejected.
+IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, AudioRejected) {
   base::FilePath test_file = GetMediaTestDir();
   ASSERT_FALSE(test_file.empty());
   test_file = test_file.AppendASCII("sfx.ogg");
-  MoveTestFromFile("sfx.ogg", test_file, true);
+  MoveTestFromFile("sfx.ogg", test_file, false);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, InvalidVideo) {
+IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, VideoRejected) {
   base::FilePath test_file = GetMediaTestDir();
   ASSERT_FALSE(test_file.empty());
-  test_file = test_file.AppendASCII("no_streams.webm");
-  MoveTestFromFile("no_streams.webm", test_file, false);
-}
-
-IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, ValidVideo) {
-  base::FilePath test_file = GetMediaTestDir();
-  ASSERT_FALSE(test_file.empty());
-  test_file = test_file.AppendASCII("bear-320x240-multitrack.webm");
-  MoveTestFromFile("multitrack.webm", test_file, true);
+  test_file = test_file.AppendASCII("bear-320x240-video-only.webm");
+  MoveTestFromFile("video.webm", test_file, false);
 }

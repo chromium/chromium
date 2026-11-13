@@ -35,8 +35,6 @@ source_set("impl") {
     "native_media_file_util.h",
     "readahead_file_stream_reader.cc",
     "readahead_file_stream_reader.h",
-    "supported_audio_video_checker.cc",
-    "supported_audio_video_checker.h",
     "supported_image_type_validator.cc",
     "supported_image_type_validator.h",
   ]

@@ -11,7 +11,6 @@
 #include "third_party/libyuv/include/libyuv.h"
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-#include "media/filters/media_file_checker.h"
 extern "C" {
 #include <libavutil/cpu.h>
 }
@@ -45,17 +44,6 @@ void MediaParser::ParseMediaMetadata(
       std::move(source), mime_type, get_attached_images);
   parser->Start(base::BindOnce(&ParseMediaMetadataDone, std::move(callback),
                                base::Owned(parser)));
-}
-
-void MediaParser::CheckMediaFile(base::TimeDelta decode_time,
-                                 base::File file,
-                                 CheckMediaFileCallback callback) {
-#if BUILDFLAG(ENABLE_FFMPEG)
-  media::MediaFileChecker checker(std::move(file));
-  std::move(callback).Run(checker.Start(decode_time));
-#else
-  std::move(callback).Run(false);
-#endif
 }
 
 void MediaParser::GetCpuInfo(GetCpuInfoCallback callback) {

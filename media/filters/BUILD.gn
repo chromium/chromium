@@ -169,8 +169,6 @@ source_set("filters") {
       "ffmpeg_glue.h",
       "in_memory_url_protocol.cc",
       "in_memory_url_protocol.h",
-      "media_file_checker.cc",
-      "media_file_checker.h",
     ]
   }
 
@@ -424,10 +422,7 @@ source_set("unit_tests") {
     # Even if FFmpeg is enabled on Android we don't want these.
     # TODO(watk): Refactor tests that could be made to run on Android.
     if (!is_android) {
-      sources += [
-        "audio_video_metadata_extractor_unittest.cc",
-        "media_file_checker_unittest.cc",
-      ]
+      sources += [ "audio_video_metadata_extractor_unittest.cc" ]
     }
 
     if (enable_ffmpeg_video_decoders && proprietary_codecs) {

@@ -5,8 +5,6 @@
 module chrome.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
-import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
@@ -46,14 +44,6 @@ interface MediaParser {
                     uint32 total_size,
                     pending_remote<MediaDataSource> media_data_source)
       => (ExtractVideoFrameResult? result);
-
-  // Validates the passed media file with sanity checks, and file decoding
-  // for at most |decode_time| wall clock time. Returns |success| true if
-  // |file| appears to be a well-formed media file, false otherwise.
-  // Note: it is still not safe to decode the file in the calling process after
-  // this check.
-  CheckMediaFile(mojo_base.mojom.TimeDelta decode_time,
-                 mojo_base.mojom.ReadOnlyFile file) => (bool success);
 
   // Used by tests to validate the right CPU information is set on third-party
   // libraries.

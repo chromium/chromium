@@ -9,8 +9,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-// Base class used by SafeMediaMetadataParser and SafeAudioVideoChecker to
-// retrieve a mojo::Remote<MediaParser>.
+// Base class used by SafeMediaMetadataParser to retrieve a
+// mojo::Remote<MediaParser>.
 class MediaParserProvider {
  public:
   MediaParserProvider();

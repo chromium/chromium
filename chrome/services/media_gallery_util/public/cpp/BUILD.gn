@@ -8,7 +8,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "safe_audio_video_checker_browsertest.cc" ]
+  sources = []
 
   deps = [
     "//base",

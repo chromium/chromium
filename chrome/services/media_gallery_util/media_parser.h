@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file.h"
-#include "base/time/time.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 
 class MediaParser : public chrome::mojom::MediaParser {
@@ -29,9 +27,6 @@ class MediaParser : public chrome::mojom::MediaParser {
       bool get_attached_images,
       mojo::PendingRemote<chrome::mojom::MediaDataSource> media_data_source,
       ParseMediaMetadataCallback callback) override;
-  void CheckMediaFile(base::TimeDelta decode_time,
-                      base::File file,
-                      CheckMediaFileCallback callback) override;
   void GetCpuInfo(GetCpuInfoCallback callback) override;
 };
 
