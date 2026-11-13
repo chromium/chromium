@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.sync.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -37,13 +41,11 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.services.AiTierPillDrawable;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNames;
 import org.chromium.chrome.browser.subscription_eligibility.AiSubscriptionTierNamesJni;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.signin.FakeSubscriptionTierBrandingDelegate;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 
@@ -70,9 +72,6 @@ public class CentralAccountCardPreferenceTest {
 
     private Context mContext;
 
-    // Whether the card gets a branding delegate. Without one (e.g. in Chromium) the pill is plain.
-    private boolean mHasBrandingDelegate = true;
-
     @Before
     public void setUp() {
         mContext =
@@ -93,7 +92,7 @@ public class CentralAccountCardPreferenceTest {
         TextView pill = view.findViewById(R.id.central_account_ai_tier_pill);
         assertEquals(View.VISIBLE, pill.getVisibility());
         assertEquals(TIER_SHORT_NAME, pill.getText().toString());
-        assertTrue(pill.getBackground() instanceof AiTierPillDrawable);
+        assertNotNull(pill.getBackground());
         assertFalse(pill.isClickable());
         assertFalse(pill.isFocusable());
         assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, pill.getImportantForAccessibility());
@@ -222,24 +221,6 @@ public class CentralAccountCardPreferenceTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testPlainAiTierPillWithoutBrandingDelegate() {
-        // E.g. Chromium builds: they draw a plain ring and a plain pill.
-        mHasBrandingDelegate = false;
-        when(mTierNamesJni.getShortName(1)).thenReturn(TIER_SHORT_NAME);
-        when(mTierNamesJni.getFullName(1)).thenReturn(TIER_FULL_NAME);
-
-        View view = bind(createProfileData(FULL_NAME, /* hasAiTierRing= */ true, /* tier= */ 1));
-
-        TextView pill = view.findViewById(R.id.central_account_ai_tier_pill);
-        assertEquals(View.VISIBLE, pill.getVisibility());
-        assertEquals(TIER_SHORT_NAME, pill.getText().toString());
-        assertTrue(pill.getBackground() instanceof AiTierPillDrawable);
-        assertDescription(view, FULL_NAME + ", " + EMAIL + ". " + TIER_FULL_NAME + " membership.");
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
     public void testRebindHidesAiTierPill() {
         when(mTierNamesJni.getShortName(1)).thenReturn(TIER_SHORT_NAME);
         when(mTierNamesJni.getFullName(1)).thenReturn(TIER_FULL_NAME);
@@ -264,7 +245,7 @@ public class CentralAccountCardPreferenceTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testRebindKeepsAiTierPillDrawable() {
+    public void testEachViewHasItsOwnAiTierPillDrawable() {
         when(mTierNamesJni.getShortName(1)).thenReturn(TIER_SHORT_NAME);
         when(mTierNamesJni.getFullName(1)).thenReturn(TIER_FULL_NAME);
         CentralAccountCardPreference preference =
@@ -275,11 +256,26 @@ public class CentralAccountCardPreferenceTest {
         TextView pill = holder.itemView.findViewById(R.id.central_account_ai_tier_pill);
         Drawable background = pill.getBackground();
 
+        // The same view is bound again, after the pill is hidden and shown again: it keeps its
+        // drawable.
+        preference.onProfileDataUpdated(
+                createProfileData(FULL_NAME, /* hasAiTierRing= */ false, /* tier= */ 1));
+        preference.onBindViewHolder(holder);
         preference.onProfileDataUpdated(
                 createProfileData(FULL_NAME, /* hasAiTierRing= */ true, /* tier= */ 1));
         preference.onBindViewHolder(holder);
-
         assertSame(background, pill.getBackground());
+
+        // A new view is bound, e.g. for a change animation, while the old one is still shown: it
+        // gets its own drawable, since a drawable can't be shared by two views.
+        PreferenceViewHolder newHolder = createViewHolder(preference);
+        preference.onBindViewHolder(newHolder);
+        TextView newPill = newHolder.itemView.findViewById(R.id.central_account_ai_tier_pill);
+        assertNotNull(newPill.getBackground());
+        assertNotSame(background, newPill.getBackground());
+        assertSame(background, pill.getBackground());
+
+        verify(mProfileDataCache, times(2)).createAiTierPillDrawable();
     }
 
     @Test
@@ -299,7 +295,6 @@ public class CentralAccountCardPreferenceTest {
     private static void assertNoAiTierPill(View view) {
         TextView pill = view.findViewById(R.id.central_account_ai_tier_pill);
         assertEquals(View.GONE, pill.getVisibility());
-        assertNull(pill.getBackground());
     }
 
     /** Checks that the card has no description, so that screen readers read its texts. */
@@ -364,9 +359,8 @@ public class CentralAccountCardPreferenceTest {
     }
 
     private CentralAccountCardPreference createPreference(DisplayableProfileData profileData) {
-        when(mProfileDataCache.getSubscriptionTierBrandingDelegate())
-                .thenReturn(
-                        mHasBrandingDelegate ? new FakeSubscriptionTierBrandingDelegate() : null);
+        when(mProfileDataCache.createAiTierPillDrawable())
+                .thenAnswer(invocation -> new ColorDrawable());
         when(mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId())).thenReturn(profileData);
         CentralAccountCardPreference preference =
                 new CentralAccountCardPreference(mContext, /* attrs= */ null);

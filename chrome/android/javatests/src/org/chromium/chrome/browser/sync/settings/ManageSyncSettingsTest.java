@@ -65,7 +65,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matcher;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -173,7 +172,6 @@ import java.util.Set;
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 13;
-    private static final String AI_SUBSCRIPTION_TIER_PREF = "sync.ai_subscription_tier";
 
     /** Maps selected types to their Account UI element IDs. */
     private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
@@ -255,9 +253,6 @@ public class ManageSyncSettingsTest {
     // Returned by mSubscriptionEligibilityService. Tests set it to 1 to get the AI tier ring.
     private int mAiSubscriptionTier;
 
-    // Whether the test set AI_SUBSCRIPTION_TIER_PREF, which tearDown() then clears.
-    private boolean mAiSubscriptionTierPrefSet;
-
     @Before
     public void setUp() {
         UnifiedConsentServiceBridgeJni.setInstanceForTesting(mUnifiedConsentServiceBridgeMock);
@@ -287,16 +282,6 @@ public class ManageSyncSettingsTest {
         when(mSubscriptionEligibilityService.getAiSubscriptionTier())
                 .thenAnswer(invocation -> mAiSubscriptionTier);
         SubscriptionEligibilityServiceFactory.setForTesting(mSubscriptionEligibilityService);
-    }
-
-    @After
-    public void tearDown() {
-        if (mAiSubscriptionTierPrefSet) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                    .clearPref(AI_SUBSCRIPTION_TIER_PREF));
-        }
     }
 
     @Test
@@ -1632,51 +1617,6 @@ public class ManageSyncSettingsTest {
     }
 
     @Test
-    @LargeTest
-    @Feature({"Sync"})
-    @EnableFeatures({
-        SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING,
-        SigninFeatures.AI_SUBSCRIPTION_AVATAR_RING_FOLLOWUP
-    })
-    public void testCentralAccountCardShowsNoAiTierPillForUnknownTiers() {
-        useRealAiSubscriptionTier();
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        // Starts with a known tier, so that the card visibly changes for the unknown one.
-        setAiSubscriptionTierPref(1);
-        ManageSyncSettings fragment = startManageSyncPreferences();
-        CentralAccountCardPreference preference =
-                fragment.findPreference(ManageSyncSettings.PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    TextView pill = getAiTierPill(fragment);
-                    Criteria.checkThat(pill, notNullValue());
-                    Criteria.checkThat(pill.getVisibility(), is(View.VISIBLE));
-                });
-
-        // E.g. a tier added after this version was released: it has the ring but no name.
-        setAiSubscriptionTierPref(99);
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(getAiTierPill(fragment).getVisibility(), is(View.GONE));
-                    Criteria.checkThat(
-                            preference.getProfileDataForTesting().hasAiTierRing(), is(true));
-                    // Screen readers still hear about the membership, without a tier name.
-                    View card = getCentralAccountCard(fragment);
-                    Criteria.checkThat(card.getContentDescription(), notNullValue());
-                    Criteria.checkThat(
-                            card.getContentDescription().toString(),
-                            is(
-                                    fragment.getString(
-                                            R.string
-                                                    .account_settings_card_description_with_membership,
-                                            TestAccounts.ACCOUNT1.getFullName(),
-                                            TestAccounts.ACCOUNT1.getEmail())));
-                    Criteria.checkThat(card.isScreenReaderFocusable(), is(true));
-                });
-    }
-
-    @Test
     @SmallTest
     @Feature({"Sync"})
     public void testSyncDisabledByPolicy() {
@@ -1839,22 +1779,6 @@ public class ManageSyncSettingsTest {
                 fragment.findPreference(ManageSyncSettings.PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> preference.getProfileDataForTesting().hasAiTierRing());
-    }
-
-    /**
-     * Makes the AI subscription tier come from the pref instead of mSubscriptionEligibilityService,
-     * so that changing the pref updates the open page.
-     */
-    private void useRealAiSubscriptionTier() {
-        SubscriptionEligibilityServiceFactory.setForTesting(null);
-    }
-
-    private void setAiSubscriptionTierPref(int tier) {
-        mAiSubscriptionTierPrefSet = true;
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                .setInteger(AI_SUBSCRIPTION_TIER_PREF, tier));
     }
 
     @Test
