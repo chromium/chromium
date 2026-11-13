@@ -17382,6 +17382,28 @@
             ]
         }
     ],
+    "RustBrotliInNet": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "RustBrotliInNetExperiment",
+                    "enable_features": [
+                        "RustBrotliInNet"
+                    ]
+                }
+            ]
+        }
+    ],
     "RustPhishingModelSetter": [
         {
             "platforms": [
