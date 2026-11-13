@@ -503,17 +503,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     current_authorization_ = std::move(authorization);
 
     if (current_challenge_.has_value() || current_authorization_.has_value()) {
-      number_of_challenges_++;
-      if (number_of_challenges_ < kMaxChallenges) {
-        AttemptChallengeSigning();
-        // `this` may be deleted.
-        return;
-      } else {
-        RunCallback(CreateErrorRegistrationResult(
-            SessionError(SessionError::kTooManyChallenges)));
-        // `this` may be deleted.
-        return;
-      }
+      AttemptChallengeSigning();
+      // `this` may be deleted.
+      return;
     }
 
     StartFetcherEndpointRequest();
@@ -537,6 +529,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     CHECK(callback_.is_null());
     callback_ = std::move(callback);
     CHECK(callback_);
+    had_initial_challenge_ = registration_params.challenge().has_value();
 
     // TODO(crbug.com/578130078): Check the signing quota before generating
     // keys.
@@ -586,6 +579,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     CHECK(callback_.is_null());
     callback_ = std::move(callback);
+    had_initial_challenge_ = request_params.challenge().has_value();
 
     key_id_ = key_id;
     provider_url_ = provider_url;
@@ -625,6 +619,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     CHECK(callback_.is_null());
     callback_ = std::move(callback);
+    had_initial_challenge_ = request_params.challenge().has_value();
 
     key_id_ = key_id;
 
@@ -677,6 +672,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
   void StartFetcherEndpointRequest() {
+    if (attempts_made_ == 0) {
+      round_trip_count_++;
+    }
     url_fetcher_ = std::make_unique<URLFetcher>(
         context_, fetcher_endpoint_, referring_origin_, net_log_source_,
         IsForRefreshRequest(), GetRequestPriority(), GetTimeout());
@@ -804,7 +802,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     return base::ok();
   }
 
-  static constexpr size_t kMaxChallenges = 5;
+  // Maximum number of protocol request/response round-trips allowed in a single
+  // refresh.
+  static constexpr size_t kMaxRoundTrips = 5;
 
   void AttemptChallengeSigning() {
     base::OnceCallback<void(
@@ -921,6 +921,16 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     if (!session || !session->cached_challenge().has_value()) {
       RunCallback(CreateErrorRegistrationResult(
           SessionError(SessionError::kInvalidChallenge)));
+      // `this` may be deleted.
+      return;
+    }
+
+    // Limit the number of round-trips in a single refresh, regardless of
+    // whether the initial request or any subsequent retry used a cached
+    // challenge.
+    if (round_trip_count_ >= kMaxRoundTrips) {
+      RunCallback(CreateErrorRegistrationResult(
+          SessionError(SessionError::kTooManyChallenges)));
       // `this` may be deleted.
       return;
     }
@@ -1161,9 +1171,13 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
     AddNetLogResult(registration_result);
     if (IsForRefreshRequest()) {
-      base::UmaHistogramCounts100(
-          "Net.DeviceBoundSessions.RefreshChallengeCount",
-          number_of_challenges_);
+      base::UmaHistogramExactLinear(
+          had_initial_challenge_
+              ? "Net.DeviceBoundSessions.RefreshRequestCount."
+                "InitialCachedChallenge"
+              : "Net.DeviceBoundSessions.RefreshRequestCount."
+                "NoInitialCachedChallenge",
+          round_trip_count_, kMaxRoundTrips + 1);
     }
     std::move(callback_).Run(this, std::move(registration_result));
     // `this` may be deleted.
@@ -1272,9 +1286,15 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   std::unique_ptr<URLFetcher> url_fetcher_;
 
   GURL provider_url_;
+  // Whether the initial request carried a challenge.
+  bool had_initial_challenge_ = false;
   std::optional<std::string> current_challenge_;
   std::optional<std::string> current_authorization_;
-  size_t number_of_challenges_ = 0;
+  // Number of protocol request/response round-trips started against
+  // `fetcher_endpoint_` (excludes transient network/proxy retries within the
+  // same round-trip). Incremented right before sending the first network
+  // attempt of each round-trip.
+  size_t round_trip_count_ = 0;
 
   // The first redirect of the federated registration request. Recorded in UMA
   // once the request completes, because blocked redirects never make it into
@@ -1282,6 +1302,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   FederatedRegistrationRedirect federated_redirect_ =
       FederatedRegistrationRedirect::kNoRedirect;
 
+  // Number of completed network attempts within the current round-trip,
+  // incremented after each attempt finishes (1 after the first try, 2 after a
+  // transient-error retry). Reset to 0 when starting a new challenge
+  // round-trip so each round-trip gets its own transient-error retry budget.
   size_t attempts_made_ = 0;
   std::optional<RegistrationToken> last_registration_token_;
 

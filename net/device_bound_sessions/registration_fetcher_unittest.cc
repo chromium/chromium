@@ -305,6 +305,26 @@ class RegistrationTest : public TestWithTaskEnvironment {
     return std::get<1>(future.Take());
   }
 
+  RegistrationResult FetchWithExistingKey(
+      RegistrationRequestParam param,
+      UnexportableSigningKeyId key,
+      unexportable_keys::UnexportableKeyService* custom_key_service = nullptr) {
+    base::test::TestFuture<RegistrationFetcher*, RegistrationResult> future;
+    std::unique_ptr<RegistrationFetcher> fetcher =
+        RegistrationFetcher::CreateFetcher(
+            param, session_service(),
+            custom_key_service ? *custom_key_service
+                               : unexportable_key_service(),
+            context_.get(),
+            IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+            SiteForCookies(),
+            /*net_log_source=*/std::nullopt,
+            /*original_request_initiator=*/std::nullopt,
+            unexportable_keys::BackgroundTaskPriority::kBestEffort);
+    fetcher->StartFetchWithExistingKey(param, key, future.GetCallback());
+    return std::get<1>(future.Take());
+  }
+
   std::unique_ptr<Session> CreateTestSession(std::string session_identifier) {
     return std::move(*Session::CreateIfValid(SessionParams{
         .session_id = std::move(session_identifier),
@@ -2865,6 +2885,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
 }
 
 TEST_F(RegistrationTest, NetLogRegistrationResultLogged) {
+  base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -2889,6 +2910,11 @@ TEST_F(RegistrationTest, NetLogRegistrationResultLogged) {
                 .GetEntriesWithType(NetLogEventType::DBSC_REGISTRATION_RESULT)
                 .size(),
             1u);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge",
+      0);
 }
 
 TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
@@ -2960,6 +2986,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
 }
 
 TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
+  base::HistogramTester histogram_tester;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
   ASSERT_TRUE(server_.Start());
@@ -2996,6 +3023,12 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
   callback.WaitForCall();
 
   callback.outcome().SessionForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 1,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge",
+      0);
 }
 
 TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
@@ -3080,6 +3113,139 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
   callback.WaitForCall();
 
   callback.outcome().SessionForTesting();
+}
+
+class RegistrationInitialCachedChallengeRetryTest
+    : public RegistrationTest,
+      public testing::WithParamInterface<int> {};
+
+TEST_P(RegistrationInitialCachedChallengeRetryTest, RetriesUpToMaxRoundTrips) {
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  const int num_retries = GetParam();
+
+  auto* container = new ForbiddenThenSuccessResponseContainer(num_retries);
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ForbiddenThenSuccessResponseContainer::Return, base::Owned(container)));
+  ASSERT_TRUE(server_.Start());
+
+  std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+  session->set_cached_challenge("challenge");
+  EXPECT_CALL(
+      session_service(),
+      GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
+      .WillRepeatedly(Return(session.get()));
+
+  RegistrationResult result = FetchWithExistingKey(
+      RegistrationRequestParam::CreateForRefresh(*session), CreateSigningKey());
+
+  EXPECT_THAT(result, Not(IsErrorRegistrationResult()));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge",
+      num_retries + 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge",
+      0);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         RegistrationInitialCachedChallengeRetryTest,
+                         testing::Values(1, 4));
+
+TEST_F(RegistrationTest, RefreshWithoutCachedChallengeTwoRoundTrips) {
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  auto* container = new ForbiddenThenSuccessResponseContainer(1);
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ForbiddenThenSuccessResponseContainer::Return, base::Owned(container)));
+  ASSERT_TRUE(server_.Start());
+
+  std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+  auto request_param = RegistrationRequestParam::CreateForRefresh(*session);
+  session->set_cached_challenge("challenge");
+  EXPECT_CALL(
+      session_service(),
+      GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
+      .WillRepeatedly(Return(session.get()));
+
+  RegistrationResult result =
+      FetchWithExistingKey(std::move(request_param), CreateSigningKey());
+
+  EXPECT_THAT(result, Not(IsErrorRegistrationResult()));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge", 2,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 0);
+}
+
+TEST_F(RegistrationTest, TerminateSessionOnRepeatedCachedSignedChallenge) {
+  base::HistogramTester histogram_tester;
+
+  auto* container = new ForbiddenThenSuccessResponseContainer(100);
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ForbiddenThenSuccessResponseContainer::Return, base::Owned(container)));
+  ASSERT_TRUE(server_.Start());
+
+  std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+  session->set_cached_challenge(kChallenge);
+  EXPECT_CALL(
+      session_service(),
+      GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
+      .WillRepeatedly(Return(session.get()));
+
+  unexportable_keys::MockUnexportableKeyService mock_key_service;
+  EXPECT_CALL(mock_key_service, SignSlowlyAsync).Times(0);
+
+  SessionService::SignedRefreshChallenge cached_challenge;
+  cached_challenge.challenge = kChallenge;
+  cached_challenge.signed_challenge = "mock_signed_challenge";
+  EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
+      .WillRepeatedly(Return(&cached_challenge));
+  EXPECT_CALL(session_service(), TryConsumeSigningQuota).Times(0);
+
+  RegistrationResult result =
+      FetchWithExistingKey(RegistrationRequestParam::CreateForRefresh(*session),
+                           cached_challenge.key_id, &mock_key_service);
+
+  ASSERT_TRUE(result.SessionErrorForTesting());
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kTooManyChallenges);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 5,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge",
+      0);
+}
+
+TEST_F(RegistrationTest, RefreshSigningQuotaExceededBeforeRequestLogsZero) {
+  base::HistogramTester histogram_tester;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  EXPECT_CALL(session_service(), GetLatestSignedRefreshChallenge(_))
+      .WillOnce(Return(nullptr));
+  EXPECT_CALL(session_service(),
+              TryConsumeSigningQuota(SchemefulSite(GURL("https://a.test")),
+                                     SigningQuotaOperation::kRefresh))
+      .WillOnce(Return(false));
+
+  RegistrationResult result = FetchWithExistingKey(
+      RegistrationRequestParam::CreateForTesting(
+          GURL("https://a.test/refresh"), kSessionIdentifier, kChallenge,
+          /*authorization=*/std::nullopt),
+      CreateSigningKey());
+
+  ASSERT_TRUE(result.SessionErrorForTesting());
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kSigningQuotaExceeded);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 0,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge",
+      0);
 }
 
 TEST_F(RegistrationTest, RegistrationConsumesSigningQuota) {
@@ -4598,6 +4764,12 @@ TEST_F(RegistrationTest, RefreshRetryTransientError) {
       net::ERR_INVALID_HTTP_RESPONSE, 1);
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt", 200, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 1,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge",
+      0);
 }
 
 TEST_F(RegistrationTest, RefreshRetryTransientErrorOnSecondRoundtrip) {
@@ -4676,6 +4848,11 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnSecondRoundtrip) {
       histogram_tester.GetAllSamples(
           "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt"),
       BucketsAre(Bucket(200, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge", 2,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 0);
 }
 
 TEST_F(RegistrationTest, RefreshRetryTransientErrorOnBothRoundtrips) {
@@ -4758,6 +4935,11 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnBothRoundtrips) {
       histogram_tester.GetAllSamples(
           "Net.DeviceBoundSessions.Refresh.Network.Result.SecondAttempt"),
       BucketsAre(Bucket(403, 1), Bucket(200, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "Net.DeviceBoundSessions.RefreshRequestCount.NoInitialCachedChallenge", 2,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DeviceBoundSessions.RefreshRequestCount.InitialCachedChallenge", 0);
 }
 
 TEST_F(RegistrationTest, RefreshRetryTransientErrorDisabled) {

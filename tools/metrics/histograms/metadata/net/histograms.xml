@@ -2224,17 +2224,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.DeviceBoundSessions.RefreshChallengeCount"
-    units="challenges" expires_after="2027-04-11">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    This records the number of challenge signings done during one Device Bound
-    Session refresh (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
-    This is logged at the end of each session refresh.
-  </summary>
-</histogram>
-
 <histogram name="Net.DeviceBoundSessions.RefreshDuration" units="ms"
     expires_after="2027-10-07">
   <owner>oussamajb@google.com</owner>
@@ -2281,6 +2270,30 @@ chromium-metrics-reviews@google.com.
     (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure)
     when we reject a refresh due to exceeding the refresh quota.
   </summary>
+</histogram>
+
+<histogram
+    name="Net.DeviceBoundSessions.RefreshRequestCount.{CachedChallengeState}"
+    units="requests" expires_after="2027-11-01">
+  <owner>alexilin@chromium.org</owner>
+  <owner>oussamajb@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of HTTP request/response round-trips made during one
+    Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure)
+    refresh. Transient network or proxy error retries within a single challenge
+    round-trip are not counted as separate round-trips. Logged at the end of
+    each session refresh (recording 0 if the refresh fails before sending any
+    HTTP request). Recorded only if the fetcher was created with
+    {CachedChallengeState}.
+  </summary>
+  <token key="CachedChallengeState">
+    <variant name="InitialCachedChallenge"
+        summary="an initial cached challenge from a prior response"/>
+    <variant name="NoInitialCachedChallenge"
+        summary="no initial cached challenge"/>
+  </token>
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RefreshResult{RefreshType}"
