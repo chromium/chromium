@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+action("extract_eg_metadata") {
+  testonly = true
+  script = "//ios/testing/earl_grey_mcp/scripts/extract_eg_metadata.py"
+  inputs = [ "//ios/testing/earl_grey_mcp/mcp_domains.yaml" ]
+  outputs = [ "$target_gen_dir/eg_metadata.json" ]
+  depfile = "$target_gen_dir/eg_metadata.json.d"
+  args = [
+    "--src-root",
+    rebase_path("//", root_build_dir),
+    "--output",
+    rebase_path("$target_gen_dir/eg_metadata.json", root_build_dir),
+    "--depfile",
+    rebase_path("$target_gen_dir/eg_metadata.json.d", root_build_dir),
+    "--rules",
+    rebase_path("//ios/testing/earl_grey_mcp/mcp_domains.yaml", root_build_dir),
+  ]
+}
