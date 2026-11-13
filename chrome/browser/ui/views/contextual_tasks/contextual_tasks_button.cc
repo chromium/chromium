@@ -906,7 +906,7 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
           IsContextualTasksPinnedButtonActiveIndicatorCircleHighlightEnabled();
   const ui::ColorId icon_color_id =
       use_active_indicator ? ui::ColorId{kColorToolbarActionItemEngaged}
-                           : ui::ColorId{ui::kColorIcon};
+                           : ui::ColorId{kColorToolbarButtonIcon};
   if (contextual_tasks::ShouldUseSparkIconForPinButtons()) {
     return ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
