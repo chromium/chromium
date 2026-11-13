@@ -2303,6 +2303,7 @@ source_set("browser") {
     "//chrome/browser/account_settings",
     "//chrome/browser/actor",
     "//chrome/browser/actor:impl",
+    "//chrome/browser/actor/task_ui",
     "//chrome/browser/affiliations",
     "//chrome/browser/ai",
     "//chrome/browser/ai:impl",
