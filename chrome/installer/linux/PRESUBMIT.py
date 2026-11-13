@@ -116,6 +116,14 @@ def _CommonChecks(input_api, output_api):
             files_to_check=[r"^.+_unittest\.py$"],
         )
     )
+    results.extend(
+        input_api.canned_checks.RunUnitTestsInDirectory(
+            input_api,
+            output_api,
+            "common",
+            files_to_check=[r"^.+_unittest\.py$"],
+        )
+    )
     return results
 
 

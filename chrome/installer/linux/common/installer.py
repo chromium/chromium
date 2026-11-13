@@ -55,6 +55,8 @@ class Artifact:
     symlink_target: str = ""
     content: str = ""
     template_context: dict | None = None
+    # Keys removed from the [Desktop Entry] group of a generated desktop file.
+    removed_desktop_keys: tuple[str, ...] = ()
     compress: bool = False
 
 
@@ -274,6 +276,24 @@ def _process_template_includes(
                 output_lines.append(line)
 
     include_stack.pop()
+    return "".join(output_lines)
+
+
+def remove_desktop_entry_keys(content: str, keys: typing.Iterable[str]) -> str:
+    """Removes `keys` from the [Desktop Entry] group of a desktop file."""
+    keys = set(keys)
+    output_lines = []
+    group = None
+    for line in content.splitlines(keepends=True):
+        stripped = line.strip()
+        if stripped.startswith("[") and stripped.endswith("]"):
+            group = stripped
+        elif group == "[Desktop Entry]" and "=" in stripped:
+            key = stripped.split("=", 1)[0].strip()
+            # Also drop localized variants such as "Key[de]".
+            if key.split("[", 1)[0] in keys:
+                continue
+        output_lines.append(line)
     return "".join(output_lines)
 
 
@@ -937,15 +957,15 @@ class InstallerConfig:
         )
 
         # rdn desktop file
+        package = self.info_vars["PACKAGE"]
         rdn_extra_desktop_entries = (
-            f"# This is the same as {self.info_vars['PACKAGE']}.desktop except "
-            "NoDisplay=true prevents\n"
-            "# duplicate menu entries. This is required to match "
-            "the application ID\n"
-            "# used by XDG desktop portal, which has stricter "
-            "naming requirements.\n"
-            "# The old desktop file is kept to preserve default "
-            "browser settings.\n"
+            f"# This is a copy of {package}.desktop that matches the\n"
+            "# application ID used by XDG desktop portal, which has stricter\n"
+            "# naming requirements. NoDisplay=true prevents duplicate menu\n"
+            "# entries, and MimeType and StartupWMClass are omitted so that\n"
+            "# file associations and window matching only use\n"
+            f"# {package}.desktop. The old desktop file is kept to preserve\n"
+            "# default browser settings.\n"
             "NoDisplay=true\n"
         )
 
@@ -960,6 +980,7 @@ class InstallerConfig:
                 template_context={
                     "extra_desktop_entries": rdn_extra_desktop_entries
                 },
+                removed_desktop_keys=("MimeType", "StartupWMClass"),
             )
         )
 
@@ -1125,6 +1146,14 @@ class Installer:
                 if artifact.template_context:
                     context.update(artifact.template_context)
                 process_template(src, dst, context)
+                if artifact.removed_desktop_keys:
+                    dst.write_text(
+                        remove_desktop_entry_keys(
+                            dst.read_text(encoding="utf-8"),
+                            artifact.removed_desktop_keys,
+                        ),
+                        encoding="utf-8",
+                    )
                 if artifact.compress:
                     run_command(["gzip", "-9nf", str(dst)])
                     dst = dst.parent / (dst.name + ".gz")
