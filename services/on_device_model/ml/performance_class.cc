@@ -115,12 +115,6 @@ GetDeviceAndPerformanceInfo(const ChromeML& chrome_ml) {
       base::StrCat({"OnDeviceModel.DeviceHeapSize.",
                     is_integrated_gpu ? "Integrated" : "Discrete"}),
       device_heap_mb);
-  if (info.max_buffer_size) {
-    base::UmaHistogramMemoryLargeMB(
-        base::StrCat({"OnDeviceModel.MaxBufferSize.",
-                      is_integrated_gpu ? "Integrated" : "Discrete"}),
-        info.max_buffer_size);
-  }
 
   base::UmaHistogramCounts10000(
       "OnDeviceModel.BenchmarkEstimatedTokensPerSecond.Input", input_speed);
