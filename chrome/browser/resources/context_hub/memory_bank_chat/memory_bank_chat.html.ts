@@ -13,7 +13,15 @@ export function getHtml(this: MemoryBankChatElement) {
   return html`
     <main id="memory-bank-chat-view" class="chat-container">
       <div class="chat-header">
-        <h2>Memory Bank Chat</h2>
+        <div class="chat-header-title">
+          <cr-icon-button id="back-button"
+              iron-icon="cr:arrow-back"
+              aria-label="Back to Memory banks"
+              title="Back to Memory banks"
+              @click="${this.onBackClick_}">
+          </cr-icon-button>
+          <h2>Memory Bank Chat</h2>
+        </div>
         <cr-button class="action-button"
             id="clear-chat-history-button"
             aria-label="Clear chat"

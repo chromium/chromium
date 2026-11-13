@@ -566,6 +566,10 @@ export class MemoryBankChatElement extends CrLitElement {
     this.inputValue_ = '';
   }
 
+  protected onBackClick_() {
+    this.fire('back-click');
+  }
+
   private async scrollToBottom_() {
     await this.updateComplete;
     const chatMessages =

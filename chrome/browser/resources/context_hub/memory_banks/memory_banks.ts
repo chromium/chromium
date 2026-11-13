@@ -11,9 +11,11 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/icons.html.js';
 import '../icons.html.js';
+import '../memory_bank_chat/memory_bank_chat.js';
 import './memory_banks_edit_dialog.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -81,6 +83,7 @@ export class MemoryBanksElement extends CrLitElement {
       geminiResponse_: {type: String, state: true},
       isAskingGemini_: {type: Boolean, state: true},
       showGeminiPanel_: {type: Boolean, state: true},
+      showingChat_: {type: Boolean, state: true},
       editingEntry_: {type: Object, state: true},
       searchSuggestions_: {type: Array, state: true},
       highlightedSuggestionIndex_: {type: Number, state: true},
@@ -106,6 +109,7 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
+  protected accessor showingChat_: boolean = false;
   protected accessor editingEntry_: MemoryBankEntry|null = null;
   protected accessor searchSuggestions_: SearchSuggestion[] = [];
   protected accessor highlightedSuggestionIndex_: number = -1;
@@ -662,6 +666,20 @@ export class MemoryBanksElement extends CrLitElement {
       updated.delete(id);
     }
     this.selectedIds = updated;
+  }
+
+  protected onOpenChatClick_() {
+    this.activeFilterMenu_ = null;
+    this.showingChat_ = true;
+  }
+
+  protected async onChatBackClick_() {
+    this.showingChat_ = false;
+    await this.updateComplete;
+    if (this.searchQuery) {
+      this.searchField_?.setValue(this.searchQuery, /*noEvent=*/ true);
+    }
+    this.shadowRoot?.querySelector<CrButtonElement>('#chat-button')?.focus();
   }
 
   protected onAskGeminiClick_() {

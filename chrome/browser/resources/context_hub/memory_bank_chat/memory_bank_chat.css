@@ -36,6 +36,16 @@
   margin-bottom: 16px;
 }
 
+.chat-header-title {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+#back-button {
+  margin-inline-start: -8px;
+}
+
 .chat-header h2 {
   font-size: 16px;
   font-weight: 500;

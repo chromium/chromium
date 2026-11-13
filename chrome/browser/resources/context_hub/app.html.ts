@@ -40,13 +40,6 @@ export function getHtml(this: ContextHubAppElement) {
             Memory banks
           </a>
           <a role="menuitem"
-              href="#memory-bank-chat"
-              data-route="memory-bank-chat"
-              class="cr-nav-menu-item">
-            <cr-icon icon="cr:draft-filled"></cr-icon>
-            Memory Bank Chat
-          </a>
-          <a role="menuitem"
               href="#tab-groups"
               data-route="tab-groups"
               class="cr-nav-menu-item">

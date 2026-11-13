@@ -683,6 +683,12 @@ h2 {
   height: 56px;
 }
 
+.header-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
 /* Selection State */
 .card.selected {
   border-color: var(--cr-link-color);
@@ -723,7 +729,7 @@ h2 {
 
 .search-container {
   left: 50%;
-  max-width: calc(100% - 360px);
+  max-width: calc(100% - 440px);
   position: absolute;
   transform: translateX(-50%);
   width: 680px;

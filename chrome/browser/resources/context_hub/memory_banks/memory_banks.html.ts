@@ -10,6 +10,13 @@ import {getHtml as getMemoryBanksTableHtml} from './memory_banks_table.html.js';
 
 export function getHtml(this: MemoryBanksElement) {
   return html`
+    ${
+      this.showingChat_ ? html`
+      <memory-bank-chat id="memory-bank-chat"
+          @back-click="${this.onChatBackClick_}">
+      </memory-bank-chat>
+    ` :
+                          html`
     <main id="memory-banks-view">
         <section>
             <div class="header-container">
@@ -61,11 +68,17 @@ export function getHtml(this: MemoryBanksElement) {
                 </div>
               ` :
           ''}
-              <input id="fileInput" type="file" accept=".md" multiple hidden
-                  @change="${this.onFileUploadChange_}">
-              <cr-button id="upload-button" @click="${this.onUploadClick_}">
-                Upload
-              </cr-button>
+              <div class="header-actions">
+                <cr-button id="upload-button" @click="${this.onUploadClick_}">
+                  Upload
+                </cr-button>
+                <cr-button id="chat-button" class="action-button"
+                    @click="${this.onOpenChatClick_}">
+                  <cr-icon icon="context-hub:auto-awesome" slot="prefix-icon">
+                  </cr-icon>
+                  Chat
+                </cr-button>
+              </div>
             </div>
 
             ${
@@ -319,6 +332,7 @@ export function getHtml(this: MemoryBanksElement) {
             `}
         </section>
     </main>
+    `}
 
     ${
       this.editingEntry_ ? html`
@@ -330,6 +344,9 @@ export function getHtml(this: MemoryBanksElement) {
       </memory-banks-edit-dialog>
     ` :
                            ''}
+
+    <input id="fileInput" type="file" accept=".md" multiple hidden
+        @change="${this.onFileUploadChange_}">
 
     <cr-action-menu id="actionMenu">
       <button class="dropdown-item" @click="${this.onMenuEditClick_}">
