@@ -1105,6 +1105,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateControllerTest.java",
       "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateInstallerTest.java",
       "src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicyTest.java",
+      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateRestartTaskTest.java",
       "src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetricsTest.java",
     ]
 

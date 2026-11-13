@@ -347,6 +347,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FeedRefresh" summary="FeedRefresh"/>
   <variant name="FeedV2Refresh" summary="FeedV2Refresh"/>
   <variant name="Gcm" summary="Gcm"/>
+  <variant name="InAppUpdateRestart" summary="InAppUpdateRestart"/>
   <variant name="NotificationScheduler" summary="NotificationScheduler"/>
   <variant name="NotificationService" summary="NotificationService"/>
   <variant name="NotificationServicePreUnsubscribe"
@@ -2809,6 +2810,23 @@ chromium-metrics-reviews@google.com.
     Android, capturing the action taken (initiating download, completing
     restart, observing an in-progress download, falling back to an external
     update flow, or encountering a restart failure).
+  </summary>
+</histogram>
+
+<histogram name="Android.InAppUpdate.BackgroundRestart.Event"
+    enum="InAppUpdateBackgroundRestartEvent" expires_after="2027-03-10">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records lifecycle events for background installation of a downloaded in-app
+    update on Chrome for Android: scheduled on stop, cancelled on return to
+    foreground, skipped by a guard (screen locked, incognito tabs open, activity
+    visible at run time, update not downloaded), completeUpdate invoked,
+    completeUpdate failed, getAppUpdateInfo failed. There is no success bucket
+    because Play replaces the package and kills the process before a success
+    listener can run; for the same reason CompleteUpdateCalled undercounts when
+    the task runs in a cold Java-only process, and the install outcome should be
+    measured at the next launch.
   </summary>
 </histogram>
 

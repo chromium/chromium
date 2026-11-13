@@ -156,6 +156,10 @@ enum class TaskIds {
   DWA_UPLOAD_JOB_ID = 117,
   PUMA_UPLOAD_JOB_ID = 118,
   STRUCTURED_METRICS_UPLOAD_JOB_ID = 119,
+  // component: Internals>Installer
+  // team_email: chrome-counter-abuse-alerts@google.com
+  // owner: anunoy@chromium.org
+  IN_APP_UPDATE_RESTART_JOB_ID = 120,
 };
 
 }  // namespace background_task

@@ -173,7 +173,11 @@ public class BackgroundTaskSchedulerUmaTest {
                 BackgroundTaskSchedulerUma.BACKGROUND_STRUCTURED_METRICS_UPLOAD,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 40);
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_IN_APP_UPDATE_RESTART,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
+                        TaskIds.IN_APP_UPDATE_RESTART_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 41);
     }
 
     @Test

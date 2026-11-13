@@ -1184,6 +1184,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="DWA upload task"/>
   <int value="38" label="PUMA upload task"/>
   <int value="39" label="Structured Metrics upload task"/>
+  <int value="40" label="In-app update restart task"/>
 </enum>
 
 <enum name="BackPressConsumer">
@@ -1661,6 +1662,22 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateController.java:AppMenuAction) -->
+
+<!-- LINT.IfChange(InAppUpdateBackgroundRestartEvent) -->
+
+<enum name="InAppUpdateBackgroundRestartEvent">
+  <int value="0" label="Scheduled"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Skipped: Screen locked"/>
+  <int value="3" label="Skipped: Incognito tabs open"/>
+  <int value="4" label="Skipped: Visible at run time"/>
+  <int value="5" label="Skipped: Not downloaded"/>
+  <int value="6" label="Complete update called"/>
+  <int value="7" label="Complete update failed"/>
+  <int value="8" label="GetAppUpdateInfo failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateBackgroundRestartEvent.java:InAppUpdateBackgroundRestartEvent) -->
 
 <!-- LINT.IfChange(InAppUpdateDownloadResult) -->
 

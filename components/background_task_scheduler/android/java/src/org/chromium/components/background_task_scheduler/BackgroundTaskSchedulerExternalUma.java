@@ -55,8 +55,9 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_DWA_UPLOAD = 37;
     public static final int BACKGROUND_PUMA_UPLOAD = 38;
     public static final int BACKGROUND_STRUCTURED_METRICS_UPLOAD = 39;
+    public static final int BACKGROUND_IN_APP_UPDATE_RESTART = 40;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 40;
+    public static final int BACKGROUND_TASK_COUNT = 41;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -156,6 +157,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_PUMA_UPLOAD;
             case TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID:
                 return BACKGROUND_STRUCTURED_METRICS_UPLOAD;
+            case TaskIds.IN_APP_UPDATE_RESTART_JOB_ID:
+                return BACKGROUND_IN_APP_UPDATE_RESTART;
         }
         // Returning a value that is not expected to ever be reported.
         return BACKGROUND_TASK_NOT_FOUND;
@@ -237,6 +240,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "PumaUpload";
             case TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID:
                 return "StructuredMetricsUpload";
+            case TaskIds.IN_APP_UPDATE_RESTART_JOB_ID:
+                return "InAppUpdateRestart";
         }
         assert false;
         return null;
