@@ -53,6 +53,404 @@ namespace {
 // Maximum size, in bytes, of the message describing a script failure.
 constexpr size_t kMaxErrorMessageBytes = 1024;
 
+// Normalizes values that JSON.stringify() would otherwise serialize to "{}"
+// (DOM Elements, NodeLists, HTMLCollections, Errors, Maps, Sets, RegExps)
+// before stringifying. Runs inside the actor's isolated world without touching
+// globals.
+constexpr char kResultNormalizerScript[] = R"js(
+(function(root) {
+  const kMaxCollectionItems = 100;
+  const kMaxTextLength = 200;
+  const kMaxDepth = 32;
+  const kMaxNodes = 20000;
+  const seen = new WeakSet();
+  let nodeCount = 0;
+
+  function getGetter(proto, prop) {
+    return proto
+        ? Object.getOwnPropertyDescriptor(proto, prop)?.get
+        : undefined;
+  }
+
+  const elementProto =
+      typeof Element !== 'undefined' ? Element.prototype : null;
+  const htmlElementProto =
+      typeof HTMLElement !== 'undefined' ? HTMLElement.prototype : null;
+  const htmlInputProto = typeof HTMLInputElement !== 'undefined'
+      ? HTMLInputElement.prototype
+      : null;
+  const nodeProto = typeof Node !== 'undefined' ? Node.prototype : null;
+  const nodeListProto =
+      typeof NodeList !== 'undefined' ? NodeList.prototype : null;
+  const htmlCollectionProto = typeof HTMLCollection !== 'undefined'
+      ? HTMLCollection.prototype
+      : null;
+
+  const elTagName = getGetter(elementProto, 'tagName');
+  const elId = getGetter(elementProto, 'id');
+  const elRole = getGetter(elementProto, 'role');
+  const elAriaLabel = getGetter(elementProto, 'ariaLabel');
+  const elClientLeft = getGetter(elementProto, 'clientLeft');
+  const elClientTop = getGetter(elementProto, 'clientTop');
+  const elGetAttribute = elementProto?.getAttribute;
+  const elHasAttribute = elementProto?.hasAttribute;
+  const elGetBoundingClientRect = elementProto?.getBoundingClientRect;
+  const htmlElInnerText = getGetter(htmlElementProto, 'innerText');
+  const htmlInputType = getGetter(htmlInputProto, 'type');
+  const nodeTextContent = getGetter(nodeProto, 'textContent');
+  const nodeOwnerDocument = getGetter(nodeProto, 'ownerDocument');
+  const nodeListLength = getGetter(nodeListProto, 'length');
+  const nodeListItem = nodeListProto?.item;
+  const htmlCollectionLength = getGetter(htmlCollectionProto, 'length');
+  const htmlCollectionItem = htmlCollectionProto?.item;
+  const regexpSource = getGetter(RegExp.prototype, 'source');
+
+  function isElement(v) {
+    if (!elTagName) {
+      return false;
+    }
+    try {
+      elTagName.call(v);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function serializeElement(el) {
+    const out = { tag: elTagName.call(el).toLowerCase() };
+    const id = elId ? elId.call(el) : '';
+    if (id) {
+      out.id = id;
+    }
+    const role = (elGetAttribute && elGetAttribute.call(el, 'role')) ||
+        (elRole && elRole.call(el));
+    if (role) {
+      out.role = role;
+    }
+    const ariaLabel =
+        (elGetAttribute && elGetAttribute.call(el, 'aria-label')) ||
+        (elAriaLabel && elAriaLabel.call(el));
+    if (ariaLabel) {
+      out.ariaLabel = ariaLabel;
+    }
+    const rect = elGetBoundingClientRect.call(el);
+    let rawText = '';
+    let hasInnerText = false;
+    if (htmlElInnerText && (rect.width > 0 || rect.height > 0)) {
+      try {
+        const inner = htmlElInnerText.call(el);
+        if (typeof inner === 'string') {
+          rawText = inner;
+          hasInnerText = true;
+        }
+      } catch (e) {
+      }
+    }
+    if (!hasInnerText && nodeTextContent) {
+      rawText = nodeTextContent.call(el) || '';
+    }
+    const text = rawText.trimStart()
+                     .slice(0, kMaxTextLength * 4)
+                     .replace(/\s+/g, ' ')
+                     .trim()
+                     .slice(0, kMaxTextLength);
+    if (text) {
+      out.text = text;
+    }
+    let href = null;
+    try {
+      href = typeof el.href === 'string'
+          ? el.href
+          : elGetAttribute.call(el, 'href');
+    } catch (e) {
+      href = elGetAttribute.call(el, 'href');
+    }
+    if (href) {
+      out.href = href;
+    }
+    let inputType = '';
+    if (htmlInputType) {
+      try {
+        inputType = String(htmlInputType.call(el) || '').toLowerCase();
+      } catch (e) {
+      }
+    }
+    const omitValue =
+        inputType === 'password' ||
+        ((inputType === 'checkbox' || inputType === 'radio') &&
+         !elHasAttribute.call(el, 'value'));
+    try {
+      if (!omitValue && typeof el.value === 'string' && el.value !== '') {
+        out.value = el.value.slice(0, kMaxTextLength);
+      }
+    } catch (e) {
+    }
+    let left = rect.left;
+    let top = rect.top;
+    let win = null;
+    try {
+      const doc = nodeOwnerDocument ? nodeOwnerDocument.call(el) : null;
+      win = doc && doc.defaultView;
+      while (win && typeof window !== 'undefined' && win !== window &&
+             win !== win.parent && win.frameElement) {
+        const frameEl = win.frameElement;
+        const frameRect = elGetBoundingClientRect.call(frameEl);
+        const parentWin = win.parent;
+        const frameStyle = parentWin.getComputedStyle(frameEl);
+        left += frameRect.left + elClientLeft.call(frameEl) +
+                (parseFloat(frameStyle.paddingLeft) || 0);
+        top += frameRect.top + elClientTop.call(frameEl) +
+               (parseFloat(frameStyle.paddingTop) || 0);
+        win = parentWin;
+      }
+    } catch (e) {
+      win = null;
+    }
+    if (typeof window !== 'undefined' && win === window &&
+        rect.width > 0 && rect.height > 0) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      if (vw > 0 && vh > 0) {
+        out.center_0_999 = {
+          x: Math.round(((left + rect.width / 2) / vw) * 999),
+          y: Math.round(((top + rect.height / 2) / vh) * 999),
+        };
+      }
+    }
+    return out;
+  }
+
+  function unboxPrimitive(v, tag) {
+    try {
+      if (tag === '[object Number]') {
+        return Number.prototype.valueOf.call(v);
+      }
+      if (tag === '[object String]') {
+        return String.prototype.valueOf.call(v);
+      }
+      if (tag === '[object Boolean]') {
+        return Boolean.prototype.valueOf.call(v);
+      }
+      if (tag === '[object BigInt]') {
+        return BigInt.prototype.valueOf.call(v).toString();
+      }
+    } catch (e) {
+      // Spoofed Symbol.toStringTag; fall through to object traversal.
+    }
+    return undefined;
+  }
+
+  function normalize(v, depth) {
+    if (++nodeCount > kMaxNodes) {
+      return '[Truncated]';
+    }
+    if (v === null || v === undefined) {
+      return v;
+    }
+    if (typeof v === 'bigint') {
+      return v.toString();
+    }
+    if (typeof v !== 'object') {
+      return v;
+    }
+    if (depth >= kMaxDepth) {
+      return '[MaxDepth]';
+    }
+    if (isElement(v)) {
+      try {
+        return serializeElement(v);
+      } catch (e) {
+        return '[Unserializable]';
+      }
+    }
+    let tag = '';
+    try {
+      tag = Object.prototype.toString.call(v);
+    } catch (e) {
+      return '[Unserializable]';
+    }
+    if (v instanceof Error || tag === '[object Error]' ||
+        tag === '[object DOMException]') {
+      let name = 'Error';
+      let message = '';
+      try {
+        const n = v.name;
+        if (typeof n === 'string' && n) {
+          name = n;
+        }
+      } catch (e) {
+      }
+      try {
+        const m = v.message;
+        if (typeof m === 'string') {
+          message = m;
+        } else if (m != null) {
+          message = String(m);
+        }
+      } catch (e) {
+      }
+      return { name, message };
+    }
+    if (v instanceof RegExp || tag === '[object RegExp]') {
+      try {
+        if (regexpSource) {
+          regexpSource.call(v);
+        }
+        return RegExp.prototype.toString.call(v);
+      } catch (e) {
+      }
+    }
+    const unboxed = unboxPrimitive(v, tag);
+    if (unboxed !== undefined) {
+      return unboxed;
+    }
+    if (seen.has(v)) {
+      return '[Circular]';
+    }
+    seen.add(v);
+    try {
+      let collectionLen = null;
+      let collectionItem = null;
+      if (nodeListLength && nodeListItem) {
+        try {
+          collectionLen = nodeListLength.call(v);
+          collectionItem = nodeListItem;
+        } catch (e) {
+        }
+      }
+      if (collectionLen === null && htmlCollectionLength &&
+          htmlCollectionItem) {
+        try {
+          collectionLen = htmlCollectionLength.call(v);
+          collectionItem = htmlCollectionItem;
+        } catch (e) {
+        }
+      }
+      if (collectionLen !== null) {
+        const len = Math.min(collectionLen, kMaxCollectionItems);
+        const out = new Array(len);
+        for (let i = 0; i < len; ++i) {
+          if (nodeCount >= kMaxNodes) {
+            out.length = i;
+            out.push('[Truncated]');
+            break;
+          }
+          try {
+            out[i] = normalize(collectionItem.call(v, i), depth + 1);
+          } catch (e) {
+            ++nodeCount;
+            out[i] = '[Unserializable]';
+          }
+        }
+        return out;
+      }
+      if (v instanceof Set || tag === '[object Set]') {
+        let iter = null;
+        try {
+          iter = Set.prototype.values.call(v);
+        } catch (e) {
+        }
+        if (iter) {
+          const out = [];
+          for (const item of iter) {
+            if (nodeCount >= kMaxNodes) {
+              out.push('[Truncated]');
+              break;
+            }
+            out.push(normalize(item, depth + 1));
+          }
+          return out;
+        }
+      }
+      if (v instanceof Map || tag === '[object Map]') {
+        let iter = null;
+        try {
+          iter = Map.prototype.entries.call(v);
+        } catch (e) {
+        }
+        if (iter) {
+          const out = [];
+          for (const [k, val] of iter) {
+            if (nodeCount >= kMaxNodes) {
+              out.push('[Truncated]');
+              break;
+            }
+            out.push([normalize(k, depth + 1), normalize(val, depth + 1)]);
+          }
+          return out;
+        }
+      }
+      let toJsonFn = null;
+      try {
+        const fn = v.toJSON;
+        if (typeof fn === 'function') {
+          toJsonFn = fn;
+        }
+      } catch (e) {
+        return '[Unserializable]';
+      }
+      if (toJsonFn) {
+        try {
+          const json = toJsonFn.call(v);
+          if (json !== v) {
+            return normalize(json, depth + 1);
+          }
+        } catch (e) {
+          return '[Unserializable]';
+        }
+      }
+      if (Array.isArray(v)) {
+        let len = 0;
+        try {
+          len = v.length;
+        } catch (e) {
+          return '[Unserializable]';
+        }
+        const out = [];
+        for (let i = 0; i < len; ++i) {
+          if (nodeCount >= kMaxNodes) {
+            out.push('[Truncated]');
+            break;
+          }
+          try {
+            out.push(normalize(v[i], depth + 1));
+          } catch (e) {
+            ++nodeCount;
+            out.push('[Unserializable]');
+          }
+        }
+        return out;
+      }
+      const out = Object.create(null);
+      let keys;
+      try {
+        keys = Object.keys(v);
+      } catch (e) {
+        return '[Unserializable]';
+      }
+      for (const key of keys) {
+        if (nodeCount >= kMaxNodes) {
+          out[key] = '[Truncated]';
+          break;
+        }
+        try {
+          out[key] = normalize(v[key], depth + 1);
+        } catch (e) {
+          ++nodeCount;
+          out[key] = '[Unserializable]';
+        }
+      }
+      return out;
+    } finally {
+      seen.delete(v);
+    }
+  }
+
+  return normalize(root, 0);
+})
+)js";
+
 // State shared by a ScopedTimeoutWatchdog and its timeout task, which runs on
 // the thread pool. The lock makes terminating and cancelling mutually
 // exclusive, so script is never terminated after the watchdog is cancelled.
@@ -193,10 +591,30 @@ ScriptValueText ToUtf8(v8::Isolate* isolate,
   return utf8;
 }
 
+// Runs `kResultNormalizerScript` in `context` on `value`. Caller must hold a
+// v8::Context::Scope, v8::MicrotasksScope, v8::TryCatch, and
+// ScopedTimeoutWatchdog.
+v8::MaybeLocal<v8::Value> NormalizeResultValue(v8::Isolate* isolate,
+                                               v8::Local<v8::Context> context,
+                                               v8::Local<v8::Value> value) {
+  v8::Local<v8::String> source =
+      v8::String::NewFromUtf8Literal(isolate, kResultNormalizerScript);
+  v8::Local<v8::Script> script;
+  v8::Local<v8::Value> fn_value;
+  if (!v8::Script::Compile(context, source).ToLocal(&script) ||
+      !script->Run(context).ToLocal(&fn_value) || !fn_value->IsFunction()) {
+    return {};
+  }
+  v8::Local<v8::Value> argv[] = {value};
+  return fn_value.As<v8::Function>()->Call(context, v8::Undefined(isolate), 1,
+                                           argv);
+}
+
 // Converts `value`, which a script produced, to text: JSON if it can be
-// serialized, and its string conversion otherwise. Both can run page
-// JavaScript (toJSON(), toString()), so the conversion is bounded by
-// `deadline`. Returns std::nullopt if the deadline passes first.
+// serialized (after normalizing DOM/built-in objects), and its string
+// conversion otherwise. Both can run JavaScript (normalization, toJSON(),
+// toString()), so the conversion is bounded by `deadline`. Returns std::nullopt
+// if the deadline passes first.
 std::optional<ScriptValueText> ConvertResult(v8::Isolate* isolate,
                                              v8::Local<v8::Context> context,
                                              v8::Local<v8::Value> value,
@@ -209,10 +627,23 @@ std::optional<ScriptValueText> ConvertResult(v8::Isolate* isolate,
     return std::nullopt;
   }
   v8::Context::Scope context_scope(context);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::TryCatch try_catch(isolate);
   ScopedTimeoutWatchdog watchdog(isolate, remaining);
+  v8::Local<v8::Value> normalized = value;
+  if (value->IsBigInt() || (value->IsObject() && !value->IsFunction())) {
+    if (!NormalizeResultValue(isolate, context, value).ToLocal(&normalized)) {
+      if (try_catch.HasTerminated()) {
+        return std::nullopt;
+      }
+      try_catch.Reset();
+      normalized = value;
+    }
+  }
   v8::Local<v8::String> text;
-  if (!v8::JSON::Stringify(context, value).ToLocal(&text)) {
+  if (!v8::JSON::Stringify(context, normalized).ToLocal(&text)) {
     if (try_catch.HasTerminated()) {
       return std::nullopt;
     }

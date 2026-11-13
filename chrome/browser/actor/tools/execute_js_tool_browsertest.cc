@@ -7,8 +7,10 @@
 #include <string>
 #include <string_view>
 
+#include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -33,8 +35,10 @@ namespace actor {
 
 namespace {
 
+using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::StartsWith;
 
 // Returns the value the script produced, or nullopt if it failed.
@@ -43,6 +47,15 @@ std::optional<std::string> GetResponse(const mojom::ActionResult& result) {
     return std::nullopt;
   }
   return result.execute_js_response->result;
+}
+
+std::optional<base::Value> ParseJsonResponse(
+    const mojom::ActionResult& result) {
+  std::optional<std::string> response = GetResponse(result);
+  if (!response) {
+    return std::nullopt;
+  }
+  return base::JSONReader::Read(*response, base::JSON_PARSE_RFC);
 }
 
 std::optional<std::string> GetJsErrorMessage(
@@ -502,6 +515,560 @@ IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, StrictCsp) {
   ASSERT_TRUE(result);
   EXPECT_EQ(result->code, mojom::ActionResultCode::kOk);
   EXPECT_EQ(GetResponse(*result), "2");
+
+  // Result normalization should also succeed under a strict page CSP.
+  auto body_result = RunExecuteJsTool("document.body");
+  ASSERT_TRUE(body_result);
+  ASSERT_EQ(body_result->code, mojom::ActionResultCode::kOk);
+  std::optional<base::Value> parsed = ParseJsonResponse(*body_result);
+  ASSERT_TRUE(parsed && parsed->is_dict());
+  EXPECT_THAT(parsed->GetDict().FindString("tag"), Pointee(Eq("body")));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, SerializeElement) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.body.innerHTML = `"
+      "  <a id='nav-link' role='menuitem' aria-label='Go to docs'"
+      "     href='/docs' style='display:inline-block;width:100px;height:40px;'>"
+      "    Open   Docs"
+      "  </a>"
+      "  <input id='search-box' aria-label='Search' value='hello world'>"
+      "  <input id='secret-box' type='password' value='s3cr3t'>"
+      "  <input id='bare-checkbox' type='checkbox'>"
+      "  <input id='valued-checkbox' type='checkbox' value='opt1'>"
+      "  <button id='icon-btn' aria-label='Close'"
+      "          style='width:24px;height:24px;'>"
+      "    <svg><style>.st0{fill:#fff;}</style><path/></svg>"
+      "  </button>"
+      "  <svg width='20' height='20'>"
+      "    <a id='svg-link' href='/svg-target'>"
+      "      <rect width='20' height='20'/>"
+      "    </a>"
+      "  </svg>"
+      "  <sp-menu-item id='custom-item' role='menuitem'>Settings</sp-menu-item>"
+      "  <div id='hidden-el' style='display:none'>Hidden Text</div>"
+      "  <form id='clobbered-form' role='form' aria-label='Edit Form'>"
+      "    <input type='hidden' name='id' value='42'>"
+      "    <input name='tagName'>"
+      "    <input name='role'>"
+      "    <input name='ariaLabel'>"
+      "    <input name='getAttribute'>"
+      "    <input name='getBoundingClientRect'>"
+      "  </form>"
+      "  <div id='shadow-host'></div>"
+      "`;"
+      "const shadow = document.getElementById('shadow-host')"
+      "    .attachShadow({mode: 'open'});"
+      "shadow.innerHTML = "
+      "    '<button id=\"shadow-btn\">Inside Shadow</button>';"));
+
+  // Link element with metadata and 0-999 center coordinates.
+  {
+    auto result = RunExecuteJsTool("document.getElementById('nav-link')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue& dict = parsed->GetDict();
+    EXPECT_THAT(dict.FindString("tag"), Pointee(Eq("a")));
+    EXPECT_THAT(dict.FindString("id"), Pointee(Eq("nav-link")));
+    EXPECT_THAT(dict.FindString("role"), Pointee(Eq("menuitem")));
+    EXPECT_THAT(dict.FindString("ariaLabel"), Pointee(Eq("Go to docs")));
+    EXPECT_THAT(dict.FindString("text"), Pointee(Eq("Open Docs")));
+    EXPECT_THAT(dict.FindString("href"),
+                Pointee(Eq(GetTestPageUrl("/docs").spec())));
+    EXPECT_EQ(dict.Find("value"), nullptr);
+
+    const base::DictValue* center = dict.FindDict("center_0_999");
+    ASSERT_TRUE(center);
+    int expected_x =
+        content::EvalJs(
+            web_contents(),
+            "(() => {"
+            "  const r = "
+            "document.getElementById('nav-link').getBoundingClientRect();"
+            "  return Math.round(((r.left + r.width / 2) / window.innerWidth) "
+            "* 999);"
+            "})()")
+            .ExtractInt();
+    int expected_y =
+        content::EvalJs(
+            web_contents(),
+            "(() => {"
+            "  const r = "
+            "document.getElementById('nav-link').getBoundingClientRect();"
+            "  return Math.round(((r.top + r.height / 2) / window.innerHeight) "
+            "* 999);"
+            "})()")
+            .ExtractInt();
+    EXPECT_EQ(center->FindInt("x"), expected_x);
+    EXPECT_EQ(center->FindInt("y"), expected_y);
+  }
+
+  // Input element includes its value; password and bare checkbox inputs omit
+  // value, while checkboxes with an explicit value attribute keep it.
+  {
+    auto result = RunExecuteJsTool("document.getElementById('search-box')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue& dict = parsed->GetDict();
+    EXPECT_THAT(dict.FindString("tag"), Pointee(Eq("input")));
+    EXPECT_THAT(dict.FindString("id"), Pointee(Eq("search-box")));
+    EXPECT_THAT(dict.FindString("ariaLabel"), Pointee(Eq("Search")));
+    EXPECT_THAT(dict.FindString("value"), Pointee(Eq("hello world")));
+    EXPECT_TRUE(dict.FindDict("center_0_999"));
+  }
+  {
+    auto result = RunExecuteJsTool("document.getElementById('secret-box')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    EXPECT_EQ(parsed->GetDict().Find("value"), nullptr);
+  }
+  {
+    auto result = RunExecuteJsTool("document.getElementById('bare-checkbox')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    EXPECT_EQ(parsed->GetDict().Find("value"), nullptr);
+  }
+  {
+    auto result =
+        RunExecuteJsTool("document.getElementById('valued-checkbox')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    EXPECT_THAT(parsed->GetDict().FindString("value"), Pointee(Eq("opt1")));
+  }
+
+  // Visible element containing only <svg><style> does not leak CSS into text.
+  {
+    auto result = RunExecuteJsTool("document.getElementById('icon-btn')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    EXPECT_THAT(parsed->GetDict().FindString("ariaLabel"),
+                Pointee(Eq("Close")));
+    EXPECT_EQ(parsed->GetDict().Find("text"), nullptr);
+  }
+
+  // SVG <a> falls back from SVGAnimatedString .href to the href attribute.
+  {
+    auto result = RunExecuteJsTool("document.getElementById('svg-link')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    EXPECT_THAT(parsed->GetDict().FindString("href"),
+                Pointee(Eq("/svg-target")));
+  }
+
+  // Custom element queried via querySelectorAll returns serialized metadata.
+  {
+    auto result = RunExecuteJsTool("document.querySelectorAll('sp-menu-item')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_list());
+    const base::ListValue& list = parsed->GetList();
+    ASSERT_EQ(list.size(), 1u);
+    ASSERT_TRUE(list[0].is_dict());
+    const base::DictValue& dict = list[0].GetDict();
+    EXPECT_THAT(dict.FindString("tag"), Pointee(Eq("sp-menu-item")));
+    EXPECT_THAT(dict.FindString("id"), Pointee(Eq("custom-item")));
+    EXPECT_THAT(dict.FindString("role"), Pointee(Eq("menuitem")));
+    EXPECT_THAT(dict.FindString("text"), Pointee(Eq("Settings")));
+    EXPECT_TRUE(dict.FindDict("center_0_999"));
+  }
+
+  // Open Shadow DOM element serializes metadata and coordinates.
+  {
+    auto result = RunExecuteJsTool(
+        "document.getElementById('shadow-host').shadowRoot"
+        "    .querySelector('button')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue& dict = parsed->GetDict();
+    EXPECT_THAT(dict.FindString("tag"), Pointee(Eq("button")));
+    EXPECT_THAT(dict.FindString("id"), Pointee(Eq("shadow-btn")));
+    EXPECT_THAT(dict.FindString("text"), Pointee(Eq("Inside Shadow")));
+    EXPECT_TRUE(dict.FindDict("center_0_999"));
+  }
+
+  // Hidden element omits center_0_999 because it has zero layout size.
+  {
+    auto result = RunExecuteJsTool("document.getElementById('hidden-el')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue& dict = parsed->GetDict();
+    EXPECT_THAT(dict.FindString("tag"), Pointee(Eq("div")));
+    EXPECT_THAT(dict.FindString("id"), Pointee(Eq("hidden-el")));
+    EXPECT_THAT(dict.FindString("text"), Pointee(Eq("Hidden Text")));
+    EXPECT_EQ(dict.Find("center_0_999"), nullptr);
+  }
+
+  // Form with named child controls that clobber DOM properties still
+  // serializes its own Element metadata cleanly.
+  {
+    auto result = RunExecuteJsTool("document.getElementById('clobbered-form')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue& dict = parsed->GetDict();
+    EXPECT_THAT(dict.FindString("tag"), Pointee(Eq("form")));
+    EXPECT_THAT(dict.FindString("id"), Pointee(Eq("clobbered-form")));
+    EXPECT_THAT(dict.FindString("role"), Pointee(Eq("form")));
+    EXPECT_THAT(dict.FindString("ariaLabel"), Pointee(Eq("Edit Form")));
+  }
+
+  // XHTML <input> redacts password and default checkbox values even though
+  // tagName is lowercase in XML documents.
+  {
+    auto result = RunExecuteJsTool(
+        "(() => {"
+        "  const doc = document.implementation.createDocument("
+        "      'http://www.w3.org/1999/xhtml', 'html', null);"
+        "  const pw = doc.createElement('input');"
+        "  pw.type = 'password';"
+        "  pw.value = 's3cr3t';"
+        "  const cb = doc.createElement('input');"
+        "  cb.type = 'checkbox';"
+        "  return { pw, cb };"
+        "})()");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue* pw = parsed->GetDict().FindDict("pw");
+    ASSERT_TRUE(pw);
+    EXPECT_THAT(pw->FindString("tag"), Pointee(Eq("input")));
+    EXPECT_EQ(pw->Find("value"), nullptr);
+    const base::DictValue* cb = parsed->GetDict().FindDict("cb");
+    ASSERT_TRUE(cb);
+    EXPECT_THAT(cb->FindString("tag"), Pointee(Eq("input")));
+    EXPECT_EQ(cb->Find("value"), nullptr);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       SerializeNodeListAndHtmlCollection) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "const ul = document.createElement('ul');"
+                              "for (let i = 0; i < 120; ++i) {"
+                              "  const li = document.createElement('li');"
+                              "  li.className = 'row-item';"
+                              "  li.textContent = 'Item ' + i;"
+                              "  ul.appendChild(li);"
+                              "}"
+                              "document.body.appendChild(ul);"));
+
+  // NodeList capped at 100 items.
+  {
+    auto result = RunExecuteJsTool("document.querySelectorAll('li.row-item')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_list());
+    const base::ListValue& list = parsed->GetList();
+    ASSERT_EQ(list.size(), 100u);
+    ASSERT_TRUE(list[0].is_dict());
+    ASSERT_TRUE(list[99].is_dict());
+    EXPECT_THAT(list[0].GetDict().FindString("tag"), Pointee(Eq("li")));
+    EXPECT_THAT(list[0].GetDict().FindString("text"), Pointee(Eq("Item 0")));
+    // HTMLLIElement has numeric .value = 0 by default; should not leak as
+    // value.
+    EXPECT_EQ(list[0].GetDict().Find("value"), nullptr);
+    EXPECT_THAT(list[99].GetDict().FindString("text"), Pointee(Eq("Item 99")));
+  }
+
+  // HTMLCollection capped at 100 items.
+  {
+    auto result =
+        RunExecuteJsTool("document.getElementsByClassName('row-item')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_list());
+    EXPECT_EQ(parsed->GetList().size(), 100u);
+  }
+
+  // Empty NodeList serializes to [] instead of {}.
+  {
+    auto result = RunExecuteJsTool("document.querySelectorAll('.nonexistent')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    EXPECT_EQ(GetResponse(*result), "[]");
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, SerializeErrorMapSetAndNested) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "const btn = document.createElement('button');"
+                              "btn.id = 'ok-btn';"
+                              "btn.textContent = 'OK';"
+                              "document.body.appendChild(btn);"));
+
+  // Error object.
+  {
+    auto result = RunExecuteJsTool("new TypeError('bad arg')");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    EXPECT_THAT(parsed->GetDict().FindString("name"), Pointee(Eq("TypeError")));
+    EXPECT_THAT(parsed->GetDict().FindString("message"),
+                Pointee(Eq("bad arg")));
+  }
+
+  // Top-level BigInt serializes as a lossless JSON string.
+  {
+    auto result = RunExecuteJsTool("12345678901234567890n");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    EXPECT_EQ(GetResponse(*result), "\"12345678901234567890\"");
+  }
+
+  // Nested Map, Set, Element, RegExp, Date, DOMRect, BigInt, boxed primitives,
+  // throwing getters, and shared non-circular references.
+  {
+    auto result = RunExecuteJsTool(
+        "(() => {"
+        "  const btn = document.getElementById('ok-btn');"
+        "  const shared = { k: 7 };"
+        "  return {"
+        "    map: new Map([['btn', btn], ['count', 2]]),"
+        "    set: new Set(['a', btn]),"
+        "    err: new Error('warn'),"
+        "    re: /foo/gi,"
+        "    big: 12345678901234567890n,"
+        "    boxed: [new Number(0), new String(''), new Boolean(false), "
+        "            Object(99n)],"
+        "    date: new Date('2026-11-11T00:00:00.000Z'),"
+        "    rect: btn.getBoundingClientRect(),"
+        "    pair: [shared, shared],"
+        "    get throwing() { throw new Error('getter'); }"
+        "  };"
+        "})()");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue& dict = parsed->GetDict();
+
+    const base::ListValue* map_list = dict.FindList("map");
+    ASSERT_TRUE(map_list);
+    ASSERT_EQ(map_list->size(), 2u);
+    ASSERT_TRUE((*map_list)[0].is_list() &&
+                (*map_list)[0].GetList().size() == 2u);
+    ASSERT_TRUE((*map_list)[0].GetList()[1].is_dict());
+    EXPECT_THAT((*map_list)[0].GetList()[0].GetIfString(), Pointee(Eq("btn")));
+    EXPECT_THAT((*map_list)[0].GetList()[1].GetDict().FindString("id"),
+                Pointee(Eq("ok-btn")));
+    ASSERT_TRUE((*map_list)[1].is_list() &&
+                (*map_list)[1].GetList().size() == 2u);
+    EXPECT_THAT((*map_list)[1].GetList()[0].GetIfString(),
+                Pointee(Eq("count")));
+    EXPECT_EQ((*map_list)[1].GetList()[1].GetIfInt(), 2);
+
+    const base::ListValue* set_list = dict.FindList("set");
+    ASSERT_TRUE(set_list);
+    ASSERT_EQ(set_list->size(), 2u);
+    ASSERT_TRUE((*set_list)[1].is_dict());
+    EXPECT_THAT((*set_list)[0].GetIfString(), Pointee(Eq("a")));
+    EXPECT_THAT((*set_list)[1].GetDict().FindString("id"),
+                Pointee(Eq("ok-btn")));
+
+    const base::DictValue* err = dict.FindDict("err");
+    ASSERT_TRUE(err);
+    EXPECT_THAT(err->FindString("name"), Pointee(Eq("Error")));
+    EXPECT_THAT(err->FindString("message"), Pointee(Eq("warn")));
+
+    EXPECT_THAT(dict.FindString("re"), Pointee(Eq("/foo/gi")));
+    EXPECT_THAT(dict.FindString("big"), Pointee(Eq("12345678901234567890")));
+    const base::ListValue* boxed = dict.FindList("boxed");
+    ASSERT_TRUE(boxed);
+    ASSERT_EQ(boxed->size(), 4u);
+    EXPECT_EQ((*boxed)[0].GetIfInt(), 0);
+    EXPECT_THAT((*boxed)[1].GetIfString(), Pointee(Eq("")));
+    EXPECT_EQ((*boxed)[2].GetIfBool(), false);
+    EXPECT_THAT((*boxed)[3].GetIfString(), Pointee(Eq("99")));
+    EXPECT_THAT(dict.FindString("date"),
+                Pointee(Eq("2026-11-11T00:00:00.000Z")));
+    const base::DictValue* rect = dict.FindDict("rect");
+    ASSERT_TRUE(rect);
+    EXPECT_TRUE(rect->FindDouble("width").has_value());
+
+    const base::ListValue* pair = dict.FindList("pair");
+    ASSERT_TRUE(pair);
+    ASSERT_EQ(pair->size(), 2u);
+    ASSERT_TRUE((*pair)[0].is_dict() && (*pair)[1].is_dict());
+    EXPECT_EQ((*pair)[0].GetDict().FindInt("k"), 7);
+    EXPECT_EQ((*pair)[1].GetDict().FindInt("k"), 7);
+
+    EXPECT_THAT(dict.FindString("throwing"), Pointee(Eq("[Unserializable]")));
+  }
+
+  // Circular reference is handled cleanly instead of failing JSON.stringify.
+  {
+    auto result = RunExecuteJsTool(
+        "(() => { const a = {x: 1}; a.self = a; return a; })()");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    EXPECT_EQ(parsed->GetDict().FindInt("x"), 1);
+    EXPECT_THAT(parsed->GetDict().FindString("self"),
+                Pointee(Eq("[Circular]")));
+  }
+
+  // Spoofed prototypes, Proxies, overridden array methods, throwing array
+  // element getters, and huge sparse arrays do not abort normalization.
+  {
+    auto result = RunExecuteJsTool(
+        "(() => {"
+        "  const btn = document.getElementById('ok-btn');"
+        "  const badArr = [1, 2];"
+        "  Object.defineProperty(badArr, 1, "
+        "      { enumerable: true, get() { throw new Error('boom'); } });"
+        "  badArr.map = () => { throw new Error('map'); };"
+        "  return {"
+        "    btn,"
+        "    fakeEl: Object.create(Element.prototype),"
+        "    protoEl: HTMLElement.prototype,"
+        "    protoNl: NodeList.prototype,"
+        "    proxyEl: new Proxy(btn, {}),"
+        "    spoofRe: { [Symbol.toStringTag]: 'RegExp', a: 1 },"
+        "    spoofNl: { [Symbol.toStringTag]: 'NodeList', b: 2 },"
+        "    badArr,"
+        "    sparse: new Array(100000000)"
+        "  };"
+        "})()");
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+    std::optional<base::Value> parsed = ParseJsonResponse(*result);
+    ASSERT_TRUE(parsed && parsed->is_dict());
+    const base::DictValue& dict = parsed->GetDict();
+    const base::DictValue* btn = dict.FindDict("btn");
+    ASSERT_TRUE(btn);
+    EXPECT_THAT(btn->FindString("id"), Pointee(Eq("ok-btn")));
+    const base::DictValue* spoof_re = dict.FindDict("spoofRe");
+    ASSERT_TRUE(spoof_re);
+    EXPECT_EQ(spoof_re->FindInt("a"), 1);
+    const base::DictValue* spoof_nl = dict.FindDict("spoofNl");
+    ASSERT_TRUE(spoof_nl);
+    EXPECT_EQ(spoof_nl->FindInt("b"), 2);
+    const base::ListValue* bad_arr = dict.FindList("badArr");
+    ASSERT_TRUE(bad_arr);
+    ASSERT_EQ(bad_arr->size(), 2u);
+    EXPECT_EQ((*bad_arr)[0].GetIfInt(), 1);
+    EXPECT_THAT((*bad_arr)[1].GetIfString(), Pointee(Eq("[Unserializable]")));
+    const base::ListValue* sparse = dict.FindList("sparse");
+    ASSERT_TRUE(sparse);
+    ASSERT_FALSE(sparse->empty());
+    EXPECT_THAT(sparse->back().GetIfString(), Pointee(Eq("[Truncated]")));
+  }
+
+  // Infinite loop inside a getter during normalization is bounded by timeout.
+  {
+    auto result = RunExecuteJsTool("({get hang() { while (true) {} }})",
+                                   /*timeout_ms=*/200);
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->code, mojom::ActionResultCode::kExecuteJsTimeout);
+
+    auto follow_up = RunExecuteJsTool("2 + 2");
+    ASSERT_TRUE(follow_up);
+    EXPECT_EQ(GetResponse(*follow_up), "4");
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest, SerializeElementInPromise) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetTestPageUrl()));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "const btn = document.createElement('button');"
+                              "btn.id = 'async-btn';"
+                              "btn.textContent = 'Async';"
+                              "document.body.appendChild(btn);"));
+
+  auto result = RunExecuteJsTool(
+      "new Promise(r => setTimeout(() => "
+      "r(document.getElementById('async-btn')), 20))");
+  ASSERT_TRUE(result);
+  ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+  std::optional<base::Value> parsed = ParseJsonResponse(*result);
+  ASSERT_TRUE(parsed && parsed->is_dict());
+  EXPECT_THAT(parsed->GetDict().FindString("tag"), Pointee(Eq("button")));
+  EXPECT_THAT(parsed->GetDict().FindString("id"), Pointee(Eq("async-btn")));
+  EXPECT_THAT(parsed->GetDict().FindString("text"), Pointee(Eq("Async")));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsExecuteJsTest,
+                       SerializeSameOriginIframeElement) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GetTestPageUrl("/iframe.html")));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "const iframe = document.querySelector('iframe');"
+      "iframe.style.position = 'fixed';"
+      "iframe.style.left = '100px';"
+      "iframe.style.top = '80px';"
+      "iframe.style.border = '5px solid black';"
+      "iframe.style.padding = '10px';"
+      "const btn = iframe.contentDocument.createElement('button');"
+      "btn.id = 'inner-btn';"
+      "btn.style.position = 'fixed';"
+      "btn.style.left = '20px';"
+      "btn.style.top = '10px';"
+      "btn.style.width = '40px';"
+      "btn.style.height = '20px';"
+      "btn.textContent = 'Inner';"
+      "iframe.contentDocument.body.appendChild(btn);"));
+
+  auto result = RunExecuteJsTool(
+      "document.querySelector('iframe').contentDocument"
+      "    .getElementById('inner-btn')");
+  ASSERT_TRUE(result);
+  ASSERT_EQ(result->code, mojom::ActionResultCode::kOk);
+  std::optional<base::Value> parsed = ParseJsonResponse(*result);
+  ASSERT_TRUE(parsed && parsed->is_dict());
+  const base::DictValue& dict = parsed->GetDict();
+  EXPECT_THAT(dict.FindString("tag"), Pointee(Eq("button")));
+  EXPECT_THAT(dict.FindString("id"), Pointee(Eq("inner-btn")));
+  EXPECT_THAT(dict.FindString("text"), Pointee(Eq("Inner")));
+
+  const base::DictValue* center = dict.FindDict("center_0_999");
+  ASSERT_TRUE(center);
+  // 100 (iframe left) + 5 (border) + 10 (padding) + 20 (btn left) + 20 (w/2)
+  // = 155; 80 + 5 + 10 + 10 + 10 = 115.
+  int expected_x =
+      content::EvalJs(web_contents(),
+                      "Math.round((155 / window.innerWidth) * 999)")
+          .ExtractInt();
+  int expected_y =
+      content::EvalJs(web_contents(),
+                      "Math.round((115 / window.innerHeight) * 999)")
+          .ExtractInt();
+  EXPECT_EQ(center->FindInt("x"), expected_x);
+  EXPECT_EQ(center->FindInt("y"), expected_y);
 }
 
 }  // namespace actor
