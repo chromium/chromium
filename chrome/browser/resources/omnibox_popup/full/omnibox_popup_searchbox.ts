@@ -1081,6 +1081,11 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override async onInputWrapperKeydown(e: KeyboardEvent) {
+    // Some keys below are handled without calling
+    // `super.onInputWrapperKeydown()`, so update the state every key press
+    // affects first.
+    this.updateStateForKeydown(e);
+
     this.selectAllOnMouseRelease_ = false;
     this.unelideOnMouseRelease_ = false;
     this.queryZpsOnMouseRelease_ = false;
@@ -1097,10 +1102,6 @@ export class OmniboxPopupSearchboxElement extends
       // select omnibox text, & query ZPS if no user input in progress.
       e.preventDefault();
       e.stopPropagation();
-      // This returns before `super.onInputWrapperKeydown()` freezes the
-      // results, so freeze them here too. Otherwise, pending results would
-      // replace the selection below.
-      this.activeQueryId = -1;
       if (this.keywordModeManager.isInKeywordMode) {
         this.keywordModeManager.clearKeyword(
             this.getInputElement().inputElement.value);

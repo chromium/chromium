@@ -690,7 +690,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       this.pageHandler().onFocusChanged(false);
     }
 
-    async onInputWrapperKeydown(e: KeyboardEvent) {
+    /**
+     * Updates the state that every key press affects. It's called by
+     * `onInputWrapperKeydown()` and its overrides.
+     */
+    updateStateForKeydown(e: KeyboardEvent) {
       // On user interaction, freeze the current results to avoid result updates
       // potentially erasing user changes like cursor position. Freezing on
       // 'enter' would break the fast-enter navigations via
@@ -706,13 +710,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         this.activeQueryId = -1;
       }
       this.compositionCommitQueryId_ = null;
-      const modifier =
-          isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
-      if (modifier && e.key === 'z') {
-        e.stopPropagation();
-        return;
-      }
 
+      // Pressing another key with Ctrl consumes it, so a following Enter
+      // doesn't trigger Ctrl+Enter.
       if (this.shouldAppendDotComOnCtrlEnter()) {
         if (e.key === 'Control') {
           if (this.controlKeyState === ControlKeyState.UP) {
@@ -723,6 +723,16 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
             this.controlKeyState = ControlKeyState.DOWN_AND_CONSUMED;
           }
         }
+      }
+    }
+
+    async onInputWrapperKeydown(e: KeyboardEvent) {
+      this.updateStateForKeydown(e);
+      const modifier =
+          isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
+      if (modifier && e.key === 'z') {
+        e.stopPropagation();
+        return;
       }
 
       const KEYDOWN_HANDLED_KEYS = [
@@ -1436,6 +1446,7 @@ export interface SearchboxMixinInterface extends
   onAutocompleteResultChanged(result: AutocompleteResult|null): void;
   onInputFocusChanged(e: CustomEvent<{value: string}>): void;
   onInputWrapperFocusout(e: FocusEvent): void;
+  updateStateForKeydown(e: KeyboardEvent): void;
   onInputWrapperKeydown(e: KeyboardEvent): void;
   onMatchClick(): void;
   onMatchFocusin(e: CustomEvent<number>): void;
