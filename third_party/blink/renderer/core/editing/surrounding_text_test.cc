@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -456,6 +459,205 @@ TEST_F(SurroundingTextTest, SingleDotParagraph) {
   EXPECT_EQ("\n.", surrounding_text.TextContent());
   EXPECT_EQ(1u, surrounding_text.StartOffsetInTextContent());
   EXPECT_EQ(1u, surrounding_text.EndOffsetInTextContent());
+}
+
+TEST_F(SurroundingTextTest, ShadowDomRangeSelection) {
+  SetHtml("<div>Before <span id='host'></span> After</div>");
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<span>Pafos </span><span id='selection'>12:45</span><span> Riga</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* selection_el = shadow_root.getElementById(AtomicString("selection"));
+  const EphemeralRange selection(Position(selection_el->firstChild(), 0),
+                                 Position(selection_el->firstChild(), 5));
+
+  {
+    // Surrounding window stays inside the shadow tree.
+    SurroundingText surrounding_text(selection, 4);
+    EXPECT_EQ("s 12:45 R", surrounding_text.TextContent());
+    EXPECT_EQ(2u, surrounding_text.StartOffsetInTextContent());
+    EXPECT_EQ(7u, surrounding_text.EndOffsetInTextContent());
+  }
+
+  {
+    // Surrounding window crosses out of the shadow tree into light DOM.
+    SurroundingText surrounding_text(selection, 100);
+    EXPECT_EQ("Before Pafos 12:45 Riga After",
+              String(surrounding_text.TextContent()).SimplifyWhiteSpace());
+    EXPECT_EQ("12:45", surrounding_text.TextContent().substr(
+                           surrounding_text.StartOffsetInTextContent(),
+                           surrounding_text.EndOffsetInTextContent() -
+                               surrounding_text.StartOffsetInTextContent()));
+  }
+
+  {
+    // FrameSelection-backed constructor (used by GetTextSurroundingSelection).
+    Selection().SetSelection(
+        SelectionInDomTree::Builder().SetBaseAndExtent(selection).Build(),
+        SetSelectionOptions());
+    SurroundingText surrounding_text(&GetFrame(), 100);
+    EXPECT_FALSE(surrounding_text.IsEmpty());
+    EXPECT_EQ("Before Pafos 12:45 Riga After",
+              String(surrounding_text.TextContent()).SimplifyWhiteSpace());
+    EXPECT_EQ("12:45", surrounding_text.TextContent().substr(
+                           surrounding_text.StartOffsetInTextContent(),
+                           surrounding_text.EndOffsetInTextContent() -
+                               surrounding_text.StartOffsetInTextContent()));
+  }
+}
+
+TEST_F(SurroundingTextTest, ShadowDomWithSlottedContentAndNestedShadow) {
+  SetHtml(
+      "<div id='outer'>"
+      "<span slot='home'>Pafos</span>"
+      "<span slot='away'>Riga</span>"
+      "</div>");
+  Element* outer = GetElementById("outer");
+  ShadowRoot& outer_shadow =
+      outer->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  outer_shadow.SetInnerHTMLWithoutTrustedTypes(
+      "<slot name='home'></slot> <span id='inner'></span> "
+      "<slot name='away'></slot>");
+
+  Element* inner = outer_shadow.getElementById(AtomicString("inner"));
+  ShadowRoot& inner_shadow =
+      inner->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  inner_shadow.SetInnerHTMLWithoutTrustedTypes(
+      "<span id='selection'>12:45</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* selection_el =
+      inner_shadow.getElementById(AtomicString("selection"));
+  const EphemeralRange selection(Position(selection_el->firstChild(), 0),
+                                 Position(selection_el->firstChild(), 5));
+  Selection().SetSelection(
+      SelectionInDomTree::Builder().SetBaseAndExtent(selection).Build(),
+      SetSelectionOptions());
+
+  SurroundingText surrounding_text(&GetFrame(), 100);
+  EXPECT_EQ("Pafos 12:45 Riga",
+            String(surrounding_text.TextContent()).SimplifyWhiteSpace());
+  EXPECT_EQ("12:45", surrounding_text.TextContent().substr(
+                         surrounding_text.StartOffsetInTextContent(),
+                         surrounding_text.EndOffsetInTextContent() -
+                             surrounding_text.StartOffsetInTextContent()));
+}
+
+TEST_F(SurroundingTextTest, ShadowDomCrossBoundarySelection) {
+  SetHtml("<div id='light'>Before <span id='host'></span> After</div>");
+  Element* light = GetElementById("light");
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<span id='inner'>Inside</span> Shadow");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* inner = shadow_root.getElementById(AtomicString("inner"));
+  Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .SetBaseAndExtent(Position(light->firstChild(), 0),
+                            Position(inner->firstChild(), 6))
+          .Build(),
+      SetSelectionOptions());
+
+  SurroundingText surrounding_text(&GetFrame(), 100);
+  EXPECT_EQ("Before Inside Shadow After",
+            String(surrounding_text.TextContent()).SimplifyWhiteSpace());
+  EXPECT_EQ("Before Inside",
+            surrounding_text.TextContent().substr(
+                surrounding_text.StartOffsetInTextContent(),
+                surrounding_text.EndOffsetInTextContent() -
+                    surrounding_text.StartOffsetInTextContent()));
+}
+
+TEST_F(SurroundingTextTest, ShadowDomClosedRootRangeSelection) {
+  SetHtml("<div>Before <span id='host'></span> After</div>");
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kClosed);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<span>Pafos </span><span id='selection'>12:45</span><span> Riga</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* selection_el = shadow_root.getElementById(AtomicString("selection"));
+  const EphemeralRange selection(Position(selection_el->firstChild(), 0),
+                                 Position(selection_el->firstChild(), 5));
+  Selection().SetSelection(
+      SelectionInDomTree::Builder().SetBaseAndExtent(selection).Build(),
+      SetSelectionOptions());
+
+  SurroundingText surrounding_text(&GetFrame(), 100);
+  EXPECT_EQ("Before Pafos 12:45 Riga After",
+            String(surrounding_text.TextContent()).SimplifyWhiteSpace());
+  EXPECT_EQ("12:45", surrounding_text.TextContent().substr(
+                         surrounding_text.StartOffsetInTextContent(),
+                         surrounding_text.EndOffsetInTextContent() -
+                             surrounding_text.StartOffsetInTextContent()));
+}
+
+TEST_F(SurroundingTextTest, ShadowDomFormControlSelectionReturnsEmpty) {
+  SetHtml("<div id='host'></div>");
+  Element* host = GetElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(
+      "<span>Before</span><button id='selection'>Click</button>"
+      "<span>After</span>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* button = shadow_root.getElementById(AtomicString("selection"));
+  const EphemeralRange selection(Position(button->firstChild(), 0),
+                                 Position(button->firstChild(), 5));
+  SurroundingText surrounding_text(selection, 100);
+  EXPECT_TRUE(surrounding_text.IsEmpty());
+}
+
+TEST_F(SurroundingTextTest, LegacyDomTreeWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSurroundingTextUseFlatTree);
+
+  SetHtml("<span>Before <span id='selection'>target</span> After</span>");
+  const EphemeralRange selection = Select(0, 6);
+  {
+    SurroundingText surrounding_text(selection, 100);
+    EXPECT_EQ("Before target After", surrounding_text.TextContent());
+    EXPECT_EQ(7u, surrounding_text.StartOffsetInTextContent());
+    EXPECT_EQ(13u, surrounding_text.EndOffsetInTextContent());
+  }
+
+  {
+    Selection().SetSelection(
+        SelectionInDomTree::Builder().SetBaseAndExtent(selection).Build(),
+        SetSelectionOptions());
+    SurroundingText surrounding_text(&GetFrame(), 100);
+    EXPECT_EQ("Before target After", surrounding_text.TextContent());
+    EXPECT_EQ(7u, surrounding_text.StartOffsetInTextContent());
+    EXPECT_EQ(13u, surrounding_text.EndOffsetInTextContent());
+  }
+
+  // With the feature disabled, slotted light DOM selections traverse only the
+  // DOM tree and do not include shadow tree text.
+  SetHtml(
+      "<div id='outer'>"
+      "<span slot='home' id='selection'>Pafos</span>"
+      "<span slot='away'>Riga</span>"
+      "</div>");
+  Element* outer = GetElementById("outer");
+  ShadowRoot& outer_shadow =
+      outer->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  outer_shadow.SetInnerHTMLWithoutTrustedTypes(
+      "<slot name='home'></slot> <span>12:45</span> <slot name='away'></slot>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  const EphemeralRange slotted_selection = Select(0, 5);
+  SurroundingText slotted_surrounding_text(slotted_selection, 100);
+  EXPECT_EQ(
+      "PafosRiga",
+      String(slotted_surrounding_text.TextContent()).SimplifyWhiteSpace());
 }
 
 }  // namespace blink

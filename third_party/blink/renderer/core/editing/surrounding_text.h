@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SURROUNDING_TEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SURROUNDING_TEXT_H_
 
+#include "base/feature_list.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
 #if INSIDE_BLINK
@@ -33,6 +34,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+CORE_EXPORT BASE_DECLARE_FEATURE(kSurroundingTextUseFlatTree);
 
 class LocalFrame;
 
@@ -47,6 +50,7 @@ class CORE_EXPORT SurroundingText {
 
 #if INSIDE_BLINK
   SurroundingText(const EphemeralRange&, wtf_size_t max_length);
+  SurroundingText(const EphemeralRangeInFlatTree&, wtf_size_t max_length);
 #endif
 
   bool IsEmpty() const;
@@ -61,6 +65,12 @@ class CORE_EXPORT SurroundingText {
   wtf_size_t EndOffsetInTextContent() const;
 
  private:
+#if INSIDE_BLINK
+  void InitializeDomTree(const EphemeralRange&, wtf_size_t max_length);
+  void InitializeFlatTree(const EphemeralRangeInFlatTree&,
+                          wtf_size_t max_length);
+#endif
+
   String text_content_;
   wtf_size_t start_offset_in_text_content_ = 0;
   wtf_size_t end_offset_in_text_content_ = 0;
