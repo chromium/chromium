@@ -36,7 +36,6 @@
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
-#include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/persisted_data.h"
@@ -355,22 +354,56 @@ class UpdateServiceImplInstallTrackingTest : public ::testing::Test {
       GTEST_SKIP();
     }
 #endif  // BUILDFLAG(IS_POSIX)
-    // An empty update URL makes network requests fail immediately.
-    ASSERT_TRUE(ExternalConstantsBuilder()
-                    .SetUpdateURL(std::vector<std::string>{})
-                    .Overwrite());
-    scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope_);
-    ASSERT_TRUE(global_prefs);
+    // An empty update URL makes network requests fail immediately, and a
+    // nonexistent permission provider prevents `Configurator` from creating a
+    // `RemoteLoggingDelegate` reference cycle on Chrome-branded builds when
+    // the host has Chrome usage stats enabled.
+    // TODO(crbug.com/585592019): Remove the permission provider override once
+    // `Configurator` and `RemoteLoggingDelegate` no longer form a cycle.
+    base::DictValue overrides;
+    overrides.Set(kDevOverrideKeyUrl, base::ListValue());
+    overrides.Set(kDevOverrideKeyEventLoggingPermissionProviderAppId,
+                  "nonexistent");
+#if BUILDFLAG(IS_MAC)
+    overrides.Set(kDevOverrideKeyEventLoggingPermissionProviderDirectoryName,
+                  "nonexistent");
+#endif
+
+    // In-memory prefs don't take the inter-process `GlobalPrefs` lock, so a
+    // `Configurator` leaked by a test here can't make updaters started by
+    // later tests in this process hang.
+    auto pref = std::make_unique<TestingPrefServiceSimple>();
+    update_client::RegisterPrefs(pref->registry());
+    RegisterPersistedDataPrefs(pref->registry());
     config_ = base::MakeRefCounted<Configurator>(
-        global_prefs, CreateExternalConstants(), scope_);
+        base::MakeRefCounted<UpdaterPrefsImpl>(
+            /*prefs_dir=*/base::FilePath(), /*lock=*/nullptr, std::move(pref)),
+        base::MakeRefCounted<ExternalConstantsOverrider>(
+            std::move(overrides), CreateDefaultExternalConstants()),
+        scope_);
   }
 
   void TearDown() override {
     if (IsSkipped()) {
       return;
     }
-    config_ = nullptr;
-    base::DeletePathRecursively(*GetInstallDirectory(scope_));
+
+    // `RunInstaller()` doesn't wait for the install ping it sends. Until the
+    // ping task completes, it and `UpdateClientImpl` keep each other alive,
+    // and with them `config_`; destroying `task_environment_` drops the
+    // pending tasks without breaking that cycle. Drain the tasks, then check
+    // that nothing else holds the `Configurator`.
+    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(!config_ || config_->HasOneRef());
+    config_.reset();
+    // Destroying `Configurator`'s `CrxCache` schedules a write of its metadata
+    // to the install directory. Let it finish before deleting the directory.
+    task_environment_.RunUntilIdle();
+
+    const std::optional<base::FilePath> install_dir =
+        GetInstallDirectory(scope_);
+    ASSERT_TRUE(install_dir);
+    ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -378,18 +411,24 @@ class UpdateServiceImplInstallTrackingTest : public ::testing::Test {
   scoped_refptr<Configurator> config_;
 };
 
-// TODO(crbug.com/584356535): Re-enable once this stops leaking the GlobalPrefs
-// lock and causing subsequent IntegrationTests in the same batch to hang.
-TEST_F(UpdateServiceImplInstallTrackingTest, DISABLED_IsInstalling) {
+TEST_F(UpdateServiceImplInstallTrackingTest, IsInstalling) {
+  // Place the nonexistent path in an empty temp directory so macOS
+  // `RunApplicationInstaller` does not walk `.` when clearing quarantine
+  // attributes on `installer_path.DirName()`.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath installer_path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("nonexistent_installer"));
+
   auto service = base::MakeRefCounted<UpdateServiceImplImpl>(config_);
   base::RunLoop run_loop;
   const auto done = base::BarrierClosure(2, run_loop.QuitClosure());
   for (const char* app_id : {"app", "APP"}) {
-    service->RunInstaller(
-        app_id, base::FilePath(FILE_PATH_LITERAL("nonexistent_installer")),
-        /*install_args=*/{}, /*install_data=*/{}, /*install_settings=*/{},
-        /*language=*/{}, base::DoNothing(),
-        base::IgnoreArgs<UpdateService::Result>(done));
+    service->RunInstaller(app_id, installer_path,
+                          /*install_args=*/{}, /*install_data=*/{},
+                          /*install_settings=*/{},
+                          /*language=*/{}, base::DoNothing(),
+                          base::IgnoreArgs<UpdateService::Result>(done));
   }
   EXPECT_TRUE(service->IsInstalling("App"));
   run_loop.Run();
