@@ -57,11 +57,25 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
         &message_dispatcher_bridge_);
   }
 
+  void ClearTabModels() {
+    TabModelList::ForEachAll([](TabModel* tab_model) {
+      TabModelList::RemoveTabModel(tab_model);
+      return true;
+    });
+  }
+
+  size_t GetTabModelCount() {
+    size_t count = 0;
+    TabModelList::ForEachAll([&count](TabModel*) {
+      ++count;
+      return true;
+    });
+    return count;
+  }
+
   void TearDown() override {
     // Remove all tabs so testing state doesn't get affected
-    for (TabModel* tab : TabModelList::models()) {
-      TabModelList::RemoveTabModel(tab);
-    }
+    ClearTabModels();
     messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
     chrome_tailored_security_service_->Shutdown();
     chrome_tailored_security_service_.reset();
@@ -101,7 +115,7 @@ TEST_F(ChromeTailoredSecurityServiceTest, WhenATabIsAvailableShowsTheMessage) {
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest, WithNoTabsDoesNotLogWebContents) {
-  EXPECT_EQ(TabModelList::models().size(), 0U);
+  EXPECT_EQ(GetTabModelCount(), 0U);
 
   chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
       kTailoredSecurityEnabled);
@@ -113,7 +127,7 @@ TEST_F(ChromeTailoredSecurityServiceTest, WithNoTabsDoesNotLogWebContents) {
 TEST_F(ChromeTailoredSecurityServiceTest,
        WithNoTabsThenCallOnSyncThenAddTabLogsThatMessageWasShown) {
   // Call OnSync method while there are no tabs
-  EXPECT_EQ(TabModelList::models().size(), 0U);
+  EXPECT_EQ(GetTabModelCount(), 0U);
   tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
   histograms_.ExpectBucketCount(
       "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
@@ -138,11 +152,9 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest, WithNoWebContentsLogsRetryMechanism) {
-  for (TabModel* tab : TabModelList::models()) {
-    TabModelList::RemoveTabModel(tab);
-  }
+  ClearTabModels();
 
-  EXPECT_EQ(TabModelList::models().size(), 0U);
+  EXPECT_EQ(GetTabModelCount(), 0U);
 
   chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
       kTailoredSecurityEnabled);
@@ -171,7 +183,7 @@ TEST_F(ChromeTailoredSecurityServiceTest, WithTabModelAddsTabModelObserver) {
   TestTabModel tab_model(getProfile());
   EXPECT_EQ(tab_model.GetWebContentsAt(0), nullptr);
 
-  EXPECT_EQ(TabModelList::models().size(), 0U);
+  EXPECT_EQ(GetTabModelCount(), 0U);
   TabModelList::AddTabModel(&tab_model);
 
   // There should be no observers at this point.
@@ -192,7 +204,7 @@ TEST_F(ChromeTailoredSecurityServiceTest, CanRunTwoTimesWithoutCrashing) {
   TestTabModel tab_model(getProfile());
   EXPECT_EQ(tab_model.GetWebContentsAt(0), nullptr);
 
-  EXPECT_EQ(TabModelList::models().size(), 0U);
+  EXPECT_EQ(GetTabModelCount(), 0U);
   TabModelList::AddTabModel(&tab_model);
 
   chrome_tailored_security_service_->OnSyncNotificationMessageRequest(
