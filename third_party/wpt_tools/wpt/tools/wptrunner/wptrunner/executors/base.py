@@ -77,7 +77,7 @@ def strip_server(url):
 
 
 def server_url(server_config, protocol, subdomain=False):
-    scheme = "https" if protocol == "h2" else protocol
+    scheme = "https" if protocol in ("h2", "websocket-h3-https") else protocol
     host = server_config["browser_host"]
     if subdomain:
         # The only supported subdomain filename flag is "www".
