@@ -607,3 +607,10 @@ crbug.com/583813595 [ iPhone ] PolicyTestCase/testEnterpriseBubbleInEnhancedSafe
 crbug.com/584669470 [ Release Device ] UserPolicyTestCase/testThatPoliciesAreLoadedFromStoreWhenSignedInAtStartup [ Pass Failure ]
 crbug.com/584394355 [ iPad ] GeminiContainerTestCase/testOpenAndCloseGeminiTwice [ Failure ]
 crbug.com/584738140 [ iPad Device ] PageInfoTestCase/testContextMenuOpenInNewWindow [ Pass Failure ]
+
+# Gardening suppression 2026-11-13
+crbug.com/578914143 [ iOS27 iPad Simulator ] XCallbackURLEGTest/testIncognitoTextSearchWithoutProfileSwitch [ Pass Failure ]
+crbug.com/576674495 [ iOS26 iPhone Device ] AssistantAIMTestCase/testCobrowseHidesWhenToolbarsHide [ Pass Failure ]
+crbug.com/441013259 [ iOS26 iPhone Device ] PasswordSharingTestCase/testPasswordPickerSwipeToDismissFlow [ Pass Failure ]
+crbug.com/441013259 [ iOS26 iPhone Device ] PasswordSharingTestCase/testTappingFamilyPickerIneligibleRecipientInfoPopup [ Pass Failure ]
+crbug.com/579165092 [ iOS26 iPhone Device ] OtpInputDialogEgtest/testOtpInputDialogContent [ Pass Failure ]
