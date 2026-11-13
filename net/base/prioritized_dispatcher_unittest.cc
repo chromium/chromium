@@ -6,12 +6,18 @@
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "net/base/request_priority.h"
+#include "net/socket/socket_pool_additional_capacity.h"
+#include "net/socket/socket_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -526,7 +532,201 @@ TEST_F(PrioritizedDispatcherTest, ZeroLimitsThenIncreasePriority) {
   Expect("a.");
 }
 
+TEST_F(PrioritizedDispatcherTest, AdditionalCapacityTransitions) {
+  // Soft cap of 2 and additional capacity of 2 (hard cap 4), with a 50%
+  // transition probability between the soft and hard caps.
+  PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 2);
+  limits.additional_capacity =
+      SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.5, 0.0);
+  Prepare(limits);
+
+  // Below the soft cap, jobs always start.
+  std::unique_ptr<TestJob> job_a = AddJob('a', MEDIUM);
+  std::unique_ptr<TestJob> job_b = AddJobAtHead('b', MEDIUM);
+  ASSERT_TRUE(job_a->running());
+  ASSERT_TRUE(job_b->running());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped,
+            dispatcher_->expandability_for_testing());
+
+  // At the soft cap, a 3rd job may either start or be queued.
+  bool saw_uncapped = false;
+  bool saw_capped = false;
+  for (size_t i = 0; i < 1000 && (!saw_uncapped || !saw_capped); ++i) {
+    // Resets `expandability_` to `kUncapped`.
+    dispatcher_->SetLimits(limits);
+    std::unique_ptr<TestJob> job_c =
+        (i % 2 == 0) ? AddJob('c', MEDIUM) : AddJobAtHead('c', MEDIUM);
+    if (job_c->running()) {
+      saw_uncapped = true;
+      EXPECT_EQ(SocketPoolExpandability::kUncapped,
+                dispatcher_->expandability_for_testing());
+      job_c->Finish();
+    } else {
+      saw_capped = true;
+      EXPECT_EQ(SocketPoolExpandability::kCapped,
+                dispatcher_->expandability_for_testing());
+      job_c->Cancel();
+    }
+  }
+  EXPECT_TRUE(saw_uncapped);
+  EXPECT_TRUE(saw_capped);
+
+  job_a->Finish();
+  job_b->Finish();
+}
+
+TEST_F(PrioritizedDispatcherTest, AdditionalCapacityCapsAtHardCap) {
+  // Soft cap 1, additional capacity 2 (hard cap 3), and a 0% transition
+  // probability between the soft and hard caps.
+  PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 1);
+  limits.additional_capacity =
+      SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.0, 0.0);
+  Prepare(limits);
+
+  std::unique_ptr<TestJob> job_a = AddJob('a', MEDIUM);
+  std::unique_ptr<TestJob> job_b = AddJob('b', MEDIUM);
+  std::unique_ptr<TestJob> job_c = AddJob('c', MEDIUM);
+  ASSERT_TRUE(job_c->running());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped,
+            dispatcher_->expandability_for_testing());
+
+  // Reaching the hard cap always caps.
+  std::unique_ptr<TestJob> job_d = AddJob('d', MEDIUM);
+  std::unique_ptr<TestJob> job_e = AddJob('e', MEDIUM);
+  EXPECT_FALSE(job_d->running());
+  EXPECT_EQ(SocketPoolExpandability::kCapped,
+            dispatcher_->expandability_for_testing());
+
+  // Releases above the soft cap don't uncap, so nothing starts.
+  job_c->Finish();
+  EXPECT_FALSE(job_d->running());
+  EXPECT_EQ(SocketPoolExpandability::kCapped,
+            dispatcher_->expandability_for_testing());
+
+  // Dropping to the soft cap uncaps, which starts both queued jobs.
+  job_b->Finish();
+  ASSERT_TRUE(job_d->running());
+  ASSERT_TRUE(job_e->running());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped,
+            dispatcher_->expandability_for_testing());
+
+  job_a->Finish();
+  job_d->Finish();
+  job_e->Finish();
+  Expect("abc..de...");
+}
+
+TEST_F(PrioritizedDispatcherTest, AdditionalCapacityQueuedJobsKeepOrder) {
+  // Soft cap 1, additional capacity 2 (hard cap 3), and a 100% transition
+  // probability between the soft and hard caps.
+  PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 1);
+  limits.additional_capacity =
+      SocketPoolAdditionalCapacity::CreateForTest(1.0, 2, 1.0, 0.0);
+  Prepare(limits);
+
+  std::unique_ptr<TestJob> job_a = AddJob('a', MEDIUM);
+  std::unique_ptr<TestJob> job_b = AddJob('b', MEDIUM);
+  EXPECT_FALSE(job_b->running());
+  EXPECT_EQ(SocketPoolExpandability::kCapped,
+            dispatcher_->expandability_for_testing());
+
+  // Changing priority while capped doesn't start the job.
+  job_b->ChangePriority(HIGHEST);
+  EXPECT_FALSE(job_b->running());
+
+  // `job_b` starts below the soft cap, and then `job_c` caps again.
+  std::unique_ptr<TestJob> job_c = AddJob('c', MEDIUM);
+  job_a->Finish();
+  ASSERT_TRUE(job_b->running());
+  EXPECT_FALSE(job_c->running());
+  EXPECT_EQ(SocketPoolExpandability::kCapped,
+            dispatcher_->expandability_for_testing());
+
+  job_b->Finish();
+  ASSERT_TRUE(job_c->running());
+  job_c->Finish();
+  Expect("a.b.c.");
+}
+
+TEST_F(PrioritizedDispatcherTest, AdditionalCapacitySetLimitsResets) {
+  // Soft cap 1, additional capacity 2 (hard cap 3), and a 0% transition
+  // probability between the soft and hard caps.
+  PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 1);
+  limits.additional_capacity =
+      SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.0, 0.0);
+  Prepare(limits);
+
+  std::unique_ptr<TestJob> job_a = AddJob('a', MEDIUM);
+  std::unique_ptr<TestJob> job_b = AddJob('b', MEDIUM);
+  std::unique_ptr<TestJob> job_c = AddJob('c', MEDIUM);
+  std::unique_ptr<TestJob> job_d = AddJob('d', MEDIUM);
+  EXPECT_FALSE(job_d->running());
+  job_c->Finish();
+  EXPECT_FALSE(job_d->running());
+  EXPECT_EQ(SocketPoolExpandability::kCapped,
+            dispatcher_->expandability_for_testing());
+
+  // Nothing starts while limits are zero.
+  PrioritizedDispatcher::Limits saved_limits = dispatcher_->GetLimits();
+  EXPECT_EQ(2u, saved_limits.additional_capacity.capacity());
+  dispatcher_->SetLimitsToZero();
+  job_b->Finish();
+  EXPECT_FALSE(job_d->running());
+
+  // Restoring limits resets `expandability_`, which starts `job_d`.
+  dispatcher_->SetLimits(saved_limits);
+  ASSERT_TRUE(job_d->running());
+  EXPECT_EQ(SocketPoolExpandability::kUncapped,
+            dispatcher_->expandability_for_testing());
+
+  job_a->Finish();
+  job_d->Finish();
+  Expect("abc..d..");
+}
+
+TEST_F(PrioritizedDispatcherTest, ValidateAdditionalCapacity) {
+  PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 256);
+  limits.additional_capacity = SocketPoolAdditionalCapacity::CreateForTest(
+      1.000000e-06, 256, 1.000000e-02, 2.000000e-01);
+  Prepare(limits);
+
+  std::vector<std::unique_ptr<TestJob>> running_jobs;
+  ValidateAdditionalCapacityForSocketPool(
+      base::BindLambdaForTesting([&]() {
+        auto job =
+            std::make_unique<TestJob>(dispatcher_.get(), 'x', MEDIUM, &log_);
+        job->Add(/*at_head=*/false);
+        if (job->running()) {
+          running_jobs.push_back(std::move(job));
+        } else {
+          job->Cancel();
+        }
+        return dispatcher_->expandability_for_testing();
+      }),
+      base::DoNothing(), base::BindLambdaForTesting([&]() {
+        CHECK(!running_jobs.empty());
+        running_jobs.back()->Finish();
+        running_jobs.pop_back();
+        return dispatcher_->expandability_for_testing();
+      }),
+      base::BindLambdaForTesting(
+          [&]() { return dispatcher_->num_running_jobs(); }));
+
+  while (!running_jobs.empty()) {
+    running_jobs.back()->Finish();
+    running_jobs.pop_back();
+  }
+}
+
 #if GTEST_HAS_DEATH_TEST
+TEST_F(PrioritizedDispatcherTest, AdditionalCapacityWithReservedSlots) {
+  PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 2);
+  limits.reserved_slots[HIGHEST] = 1;
+  limits.additional_capacity =
+      SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.0, 0.0);
+  EXPECT_CHECK_DEATH(Prepare(limits));
+}
+
 TEST_F(PrioritizedDispatcherTest, CancelNull) {
   PrioritizedDispatcher::Limits limits(NUM_PRIORITIES, 1);
   Prepare(limits);

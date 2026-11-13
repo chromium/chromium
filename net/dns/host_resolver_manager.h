@@ -277,6 +277,10 @@ class NET_EXPORT HostResolverManager
     return dispatcher_->num_running_jobs();
   }
 
+  PrioritizedDispatcher::Limits dispatcher_limits_for_testing() const {
+    return dispatcher_->GetLimits();
+  }
+
   size_t num_jobs_for_testing() const { return jobs_.size(); }
 
   bool check_ipv6_on_wifi_for_testing() const { return check_ipv6_on_wifi_; }

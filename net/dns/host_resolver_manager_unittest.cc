@@ -4493,6 +4493,23 @@ TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
   }
 }
 
+TEST_F(HostResolverManagerTest, DefaultParallelismUsesAdditionalCapacity) {
+  CreateResolverWithLimitsAndParams(
+      HostResolver::ManagerOptions::kDefaultParallelism, DefaultParams(proc_),
+      /*ipv6_reachable=*/true, /*check_ipv6_on_wifi=*/true);
+  EXPECT_EQ(64u, resolver_->dispatcher_limits_for_testing().total_jobs);
+  EXPECT_EQ(64u, resolver_->dispatcher_limits_for_testing()
+                     .additional_capacity.capacity());
+
+  // Explicit `max_concurrent_resolves` doesn't use additional capacity.
+  CreateResolverWithLimitsAndParams(6u, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/true,
+                                    /*check_ipv6_on_wifi=*/true);
+  EXPECT_EQ(6u, resolver_->dispatcher_limits_for_testing().total_jobs);
+  EXPECT_EQ(0u, resolver_->dispatcher_limits_for_testing()
+                    .additional_capacity.capacity());
+}
+
 // Test that two requests made with different NetworkAnonymizationKeys are not
 // merged if network state partitioning is enabled.
 TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyTwoRequestsAtOnce) {

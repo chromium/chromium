@@ -117,6 +117,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/url_request/url_request_context.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -213,8 +214,13 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   std::string group =
       base::FieldTrialList::FindFullName("HostResolverDispatch");
 
-  if (group.empty())
+  if (group.empty()) {
+    // Randomize the effective limit above `kDefaultMaxSystemTasks`, matching
+    // the socket pools, so that sites can't probe for a fixed global limit.
+    limits.additional_capacity =
+        SocketPoolAdditionalCapacity::Create(kDefaultMaxSystemTasks);
     return limits;
+  }
 
   // The format of the group name is a list of non-negative integers separated
   // by ':'. Each of the elements in the list corresponds to an element in

@@ -30,8 +30,7 @@ PrioritizedDispatcher::Handle PrioritizedDispatcher::Add(
     Job* job, Priority priority) {
   DCHECK(job);
   DCHECK_LT(priority, num_priorities());
-  if (num_running_jobs_ < max_running_jobs_[priority]) {
-    ++num_running_jobs_;
+  if (TryAcquireSlot(priority)) {
     job->Start();
     return Handle();
   }
@@ -42,8 +41,7 @@ PrioritizedDispatcher::Handle PrioritizedDispatcher::AddAtHead(
     Job* job, Priority priority) {
   DCHECK(job);
   DCHECK_LT(priority, num_priorities());
-  if (num_running_jobs_ < max_running_jobs_[priority]) {
-    ++num_running_jobs_;
+  if (TryAcquireSlot(priority)) {
     job->Start();
     return Handle();
   }
@@ -83,12 +81,22 @@ PrioritizedDispatcher::Handle PrioritizedDispatcher::ChangePriority(
 void PrioritizedDispatcher::OnJobFinished() {
   DCHECK_GT(num_running_jobs_, 0u);
   --num_running_jobs_;
-  MaybeDispatchNextJob();
+  const size_t soft_cap = max_running_jobs_.back();
+  if (expandability_ == SocketPoolExpandability::kCapped &&
+      additional_capacity_.capacity() > 0 && soft_cap > 0 &&
+      num_running_jobs_ <= soft_cap + additional_capacity_.capacity()) {
+    expandability_ = additional_capacity_.NextExpandabilityAfterRelease(
+        expandability_, num_running_jobs_, soft_cap);
+  }
+  // Becoming `kUncapped` may allow more than one queued job to start.
+  while (MaybeDispatchNextJob()) {
+  }
 }
 
 PrioritizedDispatcher::Limits PrioritizedDispatcher::GetLimits() const {
   size_t num_priorities = max_running_jobs_.size();
   Limits limits(num_priorities, max_running_jobs_.back());
+  limits.additional_capacity = additional_capacity_;
 
   // Calculate the number of jobs reserved for each priority and higher.  Leave
   // the number of jobs reserved for the lowest priority or higher as 0.
@@ -112,6 +120,10 @@ void PrioritizedDispatcher::SetLimits(const Limits& limits) {
   for (size_t i = limits.reserved_slots.size(); i > 0; --i) {
     max_running_jobs_[i - 1] += spare;
   }
+  additional_capacity_ = limits.additional_capacity;
+  expandability_ = SocketPoolExpandability::kUncapped;
+  // Additional capacity isn't supported with reserved slots.
+  CHECK(additional_capacity_.capacity() == 0 || total == 0);
 
   // Start pending jobs, if limits permit.
   while (true) {
@@ -124,14 +136,34 @@ void PrioritizedDispatcher::SetLimitsToZero() {
   SetLimits(Limits(queue_.num_priorities(), 0));
 }
 
+bool PrioritizedDispatcher::TryAcquireSlot(Priority priority) {
+  DCHECK_LT(priority, num_priorities());
+  if (num_running_jobs_ >= max_running_jobs_[priority]) {
+    // Above the soft cap, mirror `ClientSocketPool` by updating
+    // `expandability_` before each attempted allocation.
+    const size_t soft_cap = max_running_jobs_.back();
+    if (expandability_ == SocketPoolExpandability::kCapped ||
+        additional_capacity_.capacity() == 0 || soft_cap == 0 ||
+        num_running_jobs_ > soft_cap + additional_capacity_.capacity()) {
+      return false;
+    }
+    expandability_ = additional_capacity_.NextExpandabilityBeforeAllocation(
+        expandability_, num_running_jobs_, soft_cap);
+    if (expandability_ == SocketPoolExpandability::kCapped) {
+      return false;
+    }
+  }
+  ++num_running_jobs_;
+  return true;
+}
+
 bool PrioritizedDispatcher::MaybeDispatchJob(const Handle& handle,
                                              Priority job_priority) {
-  DCHECK_LT(job_priority, num_priorities());
-  if (num_running_jobs_ >= max_running_jobs_[job_priority])
+  if (!TryAcquireSlot(job_priority)) {
     return false;
+  }
   Job* job = handle.value();
   queue_.Erase(handle);
-  ++num_running_jobs_;
   job->Start();
   return true;
 }

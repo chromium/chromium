@@ -11,6 +11,7 @@
 
 #include "net/base/net_export.h"
 #include "net/base/priority_queue.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 
 namespace net {
 
@@ -21,8 +22,14 @@ namespace net {
 //
 // This class is NOT thread-safe which is enforced by the underlying
 // non-thread-safe PriorityQueue. All operations are O(p) time for p priority
-// levels. It is safe to execute any method, including destructor, from within
-// Job::Start.
+// levels, per job started. It is safe to execute any method, other than the
+// destructor, from within `Job::Start()`.
+//
+// If `Limits::additional_capacity` is non-empty, `Limits::total_jobs` is a soft
+// cap and up to `additional_capacity.capacity()` more jobs may run, with the
+// effective limit randomized the same way as the socket pools' (see
+// `SocketPoolAdditionalCapacity`). This prevents one site from detecting
+// another site's activity by probing for a deterministic global limit.
 //
 class NET_EXPORT_PRIVATE PrioritizedDispatcher {
  public:
@@ -47,6 +54,10 @@ class NET_EXPORT_PRIVATE PrioritizedDispatcher {
     // Number of slots reserved for each priority and higher.
     // Sum of |reserved_slots| must be no greater than |total_jobs|.
     std::vector<size_t> reserved_slots;
+    // Randomized capacity above `total_jobs`. Can only be non-empty if no slots
+    // are reserved.
+    SocketPoolAdditionalCapacity additional_capacity =
+        SocketPoolAdditionalCapacity::CreateEmpty();
   };
 
   // An interface to the job dispatched by PrioritizedDispatcher. The dispatcher
@@ -111,12 +122,21 @@ class NET_EXPORT_PRIVATE PrioritizedDispatcher {
 
   // Updates |max_running_jobs_| to match |limits|.  Starts jobs if new limit
   // allows.  Does not stop jobs if the new limits are lower than the old ones.
+  // Resets the randomized limit, like `ClientSocketPool::ResetExpandability()`.
   void SetLimits(const Limits& limits);
 
   // Set the limits to zero for all priorities, allowing no new jobs to start.
   void SetLimitsToZero();
 
+  SocketPoolExpandability expandability_for_testing() const {
+    return expandability_;
+  }
+
  private:
+  // Increments `num_running_jobs_` and returns true if limits allow starting a
+  // job at `priority`.
+  bool TryAcquireSlot(Priority priority);
+
   // Attempts to dispatch the job with |handle| at priority |priority| (might be
   // different than |handle.priority()|. Returns true if successful. If so
   // the |handle| becomes invalid.
@@ -130,10 +150,17 @@ class NET_EXPORT_PRIVATE PrioritizedDispatcher {
   PriorityQueue<Job*> queue_;
   // Maximum total number of running jobs allowed after a job at a particular
   // priority is started. If a greater or equal number of jobs are running, then
-  // another job cannot be started.
+  // another job cannot be started unless `additional_capacity_` allows it.
   std::vector<size_t> max_running_jobs_;
   // Total number of running jobs.
   size_t num_running_jobs_ = 0;
+  // Randomized capacity above `max_running_jobs_.back()`. Jobs can only use it
+  // while `expandability_` is `kUncapped`. Like the socket pools,
+  // `expandability_` is updated before each attempt to start a job above the
+  // soft cap and after each job that finishes while `kCapped`.
+  SocketPoolAdditionalCapacity additional_capacity_ =
+      SocketPoolAdditionalCapacity::CreateEmpty();
+  SocketPoolExpandability expandability_ = SocketPoolExpandability::kUncapped;
 };
 
 }  // namespace net
