@@ -203,7 +203,12 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
         target_element && !pointer_event->FromTouch() &&
         (event_type == event_type_names::kPointerover ||
          event_type == event_type_names::kPointerout)) {
-      target_element->HandlePointerEventsForInterestFor(event_type);
+      Node* newly_hovered_node = event_type == event_type_names::kPointerout &&
+                                         pointer_event->relatedTarget()
+                                     ? pointer_event->relatedTarget()->ToNode()
+                                     : nullptr;
+      target_element->HandlePointerEventsForInterestFor(event_type,
+                                                        newly_hovered_node);
     }
   }
 

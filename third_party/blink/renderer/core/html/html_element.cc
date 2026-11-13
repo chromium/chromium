@@ -2722,8 +2722,12 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
       DCHECK_NE(upstream_invoker->GetInvokerData()->GetInterestState(),
                 InterestState::kNoInterest);
       // We're already closing this popover, so don't try to close it again.
+      // Hiding a popover can't be canceled, so neither can the resulting
+      // 'loseinterest' event.
       upstream_invoker->LoseInterestNow(
-          InterestLostCancelable::kCancelable,
+          RuntimeEnabledFeatures::InterestForSpecAlignmentEnabled()
+              ? InterestLostCancelable::kNotCancelable
+              : InterestLostCancelable::kCancelable,
           InterestLostPopoverBehavior::kDontClosePopovers);
     }
 
@@ -2793,7 +2797,7 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
   // 'loseinterest' event was not fired above (either because events are not
   // being fired, or because the invoker's `interestfor` relationship no longer
   // resolves), move the invoker to the no-interest state without firing
-  // events. If 'loseinterest' was fired and canceled, interest is maintained.
+  // events.
   if (InterestInvokerTargetData* target_data = GetInterestInvokerTargetData()) {
     if (Element* interest_invoker = target_data->interestInvoker();
         interest_invoker &&
@@ -2878,6 +2882,14 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
       previously_focused_element->Focus(FocusParams(
           SelectionBehaviorOnFocus::kRestore, mojom::blink::FocusType::kScript,
           /*capabilities=*/nullptr, focus_options));
+      if (RuntimeEnabledFeatures::InterestForSpecAlignmentEnabled()) {
+        // If focus didn't actually move to the previously focused element
+        // (e.g. because it is hidden or inert), the suppression flag might not
+        // have been consumed. Reset it, so it doesn't suppress a later focus.
+        if (InvokerData* data = previously_focused_element->GetInvokerData()) {
+          data->SetSuppressNextFocusInterest(false);
+        }
+      }
     }
   }
 

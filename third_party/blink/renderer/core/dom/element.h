@@ -1530,7 +1530,12 @@ class CORE_EXPORT Element : public ContainerNode {
     kFocus,
     kBlur,
   };
-  void HandleInterestForHoverOrFocus(InterestSource source);
+  // For `InterestSource::kDeHover`, `newly_hovered_node` is the node that is
+  // gaining hover (i.e. the `relatedTarget` of the `pointerout` event), if
+  // any. Flat tree inclusive ancestors of `newly_hovered_node` remain hovered,
+  // so they are skipped.
+  void HandleInterestForHoverOrFocus(InterestSource source,
+                                     Node* newly_hovered_node = nullptr);
 
   // Returns true if any of its (non-inclusive) flat tree descendants is
   // keyboard focusable. Note that this is quite slow, since it traverses the
@@ -2108,7 +2113,8 @@ class CORE_EXPORT Element : public ContainerNode {
   void RemoveInterestInvokerTargetData();
   InterestInvokerTargetData& EnsureInterestInvokerTargetData();
   InterestInvokerTargetData* GetInterestInvokerTargetData() const;
-  void HandlePointerEventsForInterestFor(const AtomicString& event_type);
+  void HandlePointerEventsForInterestFor(const AtomicString& event_type,
+                                         Node* newly_hovered_node);
   void HandleFocusEventsForInterestFor(FocusEvent* focus_event);
 
   void DefaultEventHandler(Event&) override;

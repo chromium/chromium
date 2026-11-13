@@ -4069,6 +4069,12 @@
       status: "stable",
     },
     {
+      // Kill switch for several `interestfor` behavior changes that align with
+      // the spec PR (https://github.com/whatwg/html/pull/11006).
+      name: "InterestForSpecAlignment",
+      status: "stable",
+    },
+    {
       // If enabled, BeginMainFrame will always be requested when there are
       // active IntersectionObservers and also active composited animations.
       name: "IntersectionObserverCompositedAnimationsForceMainFrames",

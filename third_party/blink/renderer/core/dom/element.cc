@@ -2106,9 +2106,18 @@ bool Element::InterestLost(Element* target,
     return false;
   }
 
-  // If the target still thinks this invoker is its invoker, remove it.
-  if (auto* targets_invoker = target->SourceInterestInvoker();
-      targets_invoker && targets_invoker == this) {
+  if (RuntimeEnabledFeatures::InterestForSpecAlignmentEnabled()) {
+    // The 'loseinterest' event handler might have changed the interest state,
+    // e.g. by resetting this invoker's interest state, or by causing another
+    // invoker to gain interest in `target`. In that case, don't remove
+    // interest, and don't hide the popover.
+    if (target->SourceInterestInvoker() != this) {
+      return true;
+    }
+    ChangeInterestState(target, InterestState::kNoInterest);
+  } else if (auto* targets_invoker = target->SourceInterestInvoker();
+             targets_invoker && targets_invoker == this) {
+    // If the target still thinks this invoker is its invoker, remove it.
     ChangeInterestState(target, InterestState::kNoInterest);
   }
 
@@ -2132,13 +2141,18 @@ bool Element::InterestLost(Element* target,
   return true;
 }
 
-void Element::HandlePointerEventsForInterestFor(
-    const AtomicString& event_type) {
+void Element::HandlePointerEventsForInterestFor(const AtomicString& event_type,
+                                                Node* newly_hovered_node) {
   if (event_type == event_type_names::kPointerover) {
+    DCHECK(!newly_hovered_node);
     HandleInterestForHoverOrFocus(InterestSource::kHover);
   } else {
     CHECK_EQ(event_type, event_type_names::kPointerout);
-    HandleInterestForHoverOrFocus(InterestSource::kDeHover);
+    HandleInterestForHoverOrFocus(
+        InterestSource::kDeHover,
+        RuntimeEnabledFeatures::InterestForSpecAlignmentEnabled()
+            ? newly_hovered_node
+            : nullptr);
   }
 }
 
@@ -13513,6 +13527,19 @@ HeapLinkedHashSet<Member<Element>> AllSourceInterestInvokers(Element& target) {
   return sources;
 }
 
+// Returns the next element in the ancestor chain used for interest invoker
+// hover/focus handling: the flat tree parent element, or the frame owner
+// element if `element` is the root of its document.
+Element* InterestAncestor(Element& element) {
+  if (Element* parent = FlatTreeTraversal::ParentElement(element)) {
+    return parent;
+  }
+  if (element.isConnected()) {
+    return element.GetDocument().LocalOwner();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // Mechanics of `interestfor` invokers ("interest invokers"):
@@ -13530,20 +13557,28 @@ HeapLinkedHashSet<Member<Element>> AllSourceInterestInvokers(Element& target) {
 //    losing focus (not any ancestors), and then SetFocused(true) is called on
 //    the element gaining focus. Because the ancestor chain is not automatically
 //    notified, this function must walk the ancestors manually.
-void Element::HandleInterestForHoverOrFocus(InterestSource source) {
+void Element::HandleInterestForHoverOrFocus(InterestSource source,
+                                            Node* newly_hovered_node) {
   if (!IsInTreeScope() || !GetDocument().IsActive()) {
     return;
   }
-  Element* element = this;
-  while (element) {
-    element->ScheduleInterestChangesIfNeeded(source);
-    if (Element* parent = FlatTreeTraversal::ParentElement(*element)) {
-      element = parent;
-    } else if (element->isConnected()) {
-      element = element->GetDocument().LocalOwner();
-    } else {
+  DCHECK(!newly_hovered_node || source == InterestSource::kDeHover);
+  DCHECK(!newly_hovered_node ||
+         RuntimeEnabledFeatures::InterestForSpecAlignmentEnabled());
+  // When de-hovering, the inclusive ancestors of the newly hovered node remain
+  // hovered, so they should not lose interest (or have their pending
+  // interest-gained tasks canceled).
+  HeapHashSet<Member<Element>> still_hovered;
+  for (Element* element = DynamicTo<Element>(newly_hovered_node); element;
+       element = InterestAncestor(*element)) {
+    still_hovered.insert(element);
+  }
+  for (Element* element = this; element; element = InterestAncestor(*element)) {
+    if (still_hovered.Contains(element)) {
+      // All further ancestors are also still hovered.
       break;
     }
+    element->ScheduleInterestChangesIfNeeded(source);
   }
 }
 
@@ -13573,8 +13608,13 @@ void Element::ScheduleInterestChangesIfNeeded(InterestSource source) {
         (!invoker_data || invoker_data->GetInterestState() ==
                               InterestState::kNoInterest)) [[unlikely]] {
       // This is an interest invoker that doesn't already have interest, and was
-      // just hovered or focused. Schedule an InterestGained task.
-      ScheduleInterestGainedTask();
+      // just hovered or focused. Schedule an InterestGained task, unless one is
+      // already pending (e.g. the pointer moved between descendants of this
+      // invoker), in which case the existing delay continues.
+      if (!RuntimeEnabledFeatures::InterestForSpecAlignmentEnabled() ||
+          !invoker_data || !invoker_data->HasInterestGainedTask()) {
+        ScheduleInterestGainedTask();
+      }
     }
   } else {
     DCHECK(source == InterestSource::kDeHover ||
