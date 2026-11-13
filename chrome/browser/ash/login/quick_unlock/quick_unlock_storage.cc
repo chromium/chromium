@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_types.h"
@@ -13,8 +15,6 @@
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -30,13 +30,12 @@ base::TimeDelta GetStrongAuthTimeout(PrefService* pref_service) {
 
 }  // namespace
 
-QuickUnlockStorage::QuickUnlockStorage(Profile* profile)
-    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
-  CHECK(profile);
-  PrefService* const pref_service = profile->GetPrefs();
+QuickUnlockStorage::QuickUnlockStorage(PrefService* pref_service,
+                                       std::string username_hash)
+    : pref_service_(pref_service), clock_(base::DefaultClock::GetInstance()) {
   CHECK(pref_service);
   fingerprint_storage_ = std::make_unique<FingerprintStorage>(
-      pref_service, ProfileHelper::GetUserIdHashFromProfile(profile));
+      pref_service, std::move(username_hash));
   pin_storage_prefs_ = std::make_unique<PinStoragePrefs>(pref_service);
 }
 
@@ -60,7 +59,7 @@ bool QuickUnlockStorage::HasStrongAuth() const {
 
 base::Time QuickUnlockStorage::TimeOfNextStrongAuth() const {
   CHECK(!last_strong_auth_.is_null(), base::NotFatalUntil::M161);
-  return last_strong_auth_ + GetStrongAuthTimeout(profile_->GetPrefs());
+  return last_strong_auth_ + GetStrongAuthTimeout(pref_service_);
 }
 
 bool QuickUnlockStorage::IsFingerprintAuthenticationAvailable(

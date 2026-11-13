@@ -10,9 +10,11 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_prefs/user_prefs.h"
 
 namespace ash {
 namespace quick_unlock {
@@ -117,8 +119,11 @@ QuickUnlockFactory::~QuickUnlockFactory() = default;
 std::unique_ptr<KeyedService>
 QuickUnlockFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // Not BrowserContextHelper::GetUserByBrowserContext(): this service is also
+  // built for Ash-internal browser contexts, which have no User.
   return std::make_unique<QuickUnlockStorage>(
-      Profile::FromBrowserContext(context));
+      user_prefs::UserPrefs::Get(context),
+      BrowserContextHelper::GetUserIdHashFromBrowserContext(context));
 }
 
 }  // namespace quick_unlock

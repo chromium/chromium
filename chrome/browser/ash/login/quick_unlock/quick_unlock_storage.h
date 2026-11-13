@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
+class PrefService;
 
 namespace ash {
 
@@ -29,7 +29,7 @@ enum class Purpose;
 // authentication used by Settings).
 class QuickUnlockStorage : public KeyedService {
  public:
-  explicit QuickUnlockStorage(Profile* profile);
+  QuickUnlockStorage(PrefService* pref_service, std::string username_hash);
 
   QuickUnlockStorage(const QuickUnlockStorage&) = delete;
   QuickUnlockStorage& operator=(const QuickUnlockStorage&) = delete;
@@ -92,7 +92,7 @@ class QuickUnlockStorage : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<PrefService> pref_service_;
   base::Time last_strong_auth_;
   // TODO(b/271249180): cleanup remaining AuthToken refs:
   std::unique_ptr<AuthToken> auth_token_;
