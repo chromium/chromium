@@ -39,6 +39,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
         <div id="container"></div>
       </div>
     )HTML");
+    UpdateAllLifecyclePhasesForTest();
   }
 
   Element& ContainerElement() { return *GetElementById("container"); }

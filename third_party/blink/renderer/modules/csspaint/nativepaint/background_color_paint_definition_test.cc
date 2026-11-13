@@ -224,6 +224,7 @@ TEST_F(BackgroundColorPaintDefinitionTest, FallbackWithPixelMovingFilter) {
   UpdateAllLifecyclePhasesForTest();
   animation->play();
 
+  GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_EQ(BackgroundColorPaintDefinition::GetAnimationIfCompositable(element),
             animation);
 
