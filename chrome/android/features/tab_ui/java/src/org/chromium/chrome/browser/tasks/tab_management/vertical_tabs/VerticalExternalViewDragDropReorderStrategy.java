@@ -87,67 +87,6 @@ public class VerticalExternalViewDragDropReorderStrategy {
             this.isGroupTopOrBottomBoundary = isGroupTopOrBottomBoundary;
             this.anchorBounds = anchorBounds;
         }
-
-        @Override
-        public boolean equals(@Nullable Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof DropTargetResult that)) return false;
-            return targetType == that.targetType
-                    && destTabIndex == that.destTabIndex
-                    && Objects.equals(destGroupId, that.destGroupId)
-                    && isPinned == that.isPinned
-                    && isZeroPinnedState == that.isZeroPinnedState
-                    && isZeroNormalTabsState == that.isZeroNormalTabsState
-                    && adapterPosition == that.adapterPosition
-                    && insertBefore == that.insertBefore
-                    && isGroupTopOrBottomBoundary == that.isGroupTopOrBottomBoundary
-                    && Objects.equals(targetViewHolder, that.targetViewHolder)
-                    && Objects.equals(anchorBounds, that.anchorBounds);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(
-                    targetType,
-                    destTabIndex,
-                    destGroupId,
-                    isPinned,
-                    isZeroPinnedState,
-                    isZeroNormalTabsState,
-                    targetViewHolder,
-                    adapterPosition,
-                    insertBefore,
-                    isGroupTopOrBottomBoundary,
-                    anchorBounds);
-        }
-
-        @Override
-        public String toString() {
-            return "DropTargetResult{"
-                    + "targetType="
-                    + targetType
-                    + ", destTabIndex="
-                    + destTabIndex
-                    + ", destGroupId="
-                    + destGroupId
-                    + ", isPinned="
-                    + isPinned
-                    + ", isZeroPinnedState="
-                    + isZeroPinnedState
-                    + ", isZeroNormalTabsState="
-                    + isZeroNormalTabsState
-                    + ", targetViewHolder="
-                    + targetViewHolder
-                    + ", adapterPosition="
-                    + adapterPosition
-                    + ", insertBefore="
-                    + insertBefore
-                    + ", isGroupTopOrBottomBoundary="
-                    + isGroupTopOrBottomBoundary
-                    + ", anchorBounds="
-                    + anchorBounds
-                    + '}';
-        }
     }
 
     private final Supplier<@Nullable TabModel> mTabModelSupplier;
