@@ -470,6 +470,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "android-feeds-visibility-sync-by-form-factor",
+    "owners": [ "hanxi@google.com", "clank-start@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-fre-layout-update",
     "owners": ["sinansahin@google.com"],
     "expiry_milestone": 160

@@ -5509,6 +5509,13 @@ inline constexpr char kAndroidElegantTextHeightName[] =
 inline constexpr char kAndroidElegantTextHeightDescription[] =
     "Enables elegant text height in core BrowserUI theme.";
 
+inline constexpr char kAndroidFeedsVisibilitySyncByFormFactorName[] =
+    "Sync feed visibility by form factor";
+inline constexpr char kAndroidFeedsVisibilitySyncByFormFactorDescription[] =
+    "Syncs whether the feed is turned on or off between Android devices of the "
+    "same form factor: between phones, and between tablets. Foldables sync "
+    "with phones.";
+
 inline constexpr char kAndroidFreLayoutUpdateName[] =
     "Android Fre Layout Update";
 inline constexpr char kAndroidFreLayoutUpdateDescription[] =

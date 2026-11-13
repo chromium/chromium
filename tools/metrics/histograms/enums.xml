@@ -12553,6 +12553,8 @@ from previous Chrome versions.
       label="AssistantEnableMediaSessionIntegration:enabled"/>
   <int value="-748133924" label="WebAssemblyExperimentalJSPI:disabled"/>
   <int value="-747919789" label="VideoToolboxVp9Decoding:enabled"/>
+  <int value="-747703922"
+      label="AndroidFeedsVisibilitySyncByFormFactor:enabled"/>
   <int value="-747520445" label="enable-search-engine-choice:enabled"/>
   <int value="-747463111" label="ContentSuggestionsNotifications:disabled"/>
   <int value="-747072690" label="NtpRepeatableQueries:disabled"/>
@@ -20931,6 +20933,8 @@ from previous Chrome versions.
   <int value="1739507233" label="EarlyEstablishGpuChannel:enabled"/>
   <int value="1739782037" label="LinkDoctorDeprecationAndroid:enabled"/>
   <int value="1740660782" label="VideoPictureInPictureMinimizeButton:disabled"/>
+  <int value="1740855227"
+      label="AndroidFeedsVisibilitySyncByFormFactor:disabled"/>
   <int value="1741200513"
       label="ContextualTasksBackButtonExpandsSidePanel:enabled"/>
   <int value="1741751043"

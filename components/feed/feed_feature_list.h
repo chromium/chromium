@@ -94,6 +94,12 @@ BASE_DECLARE_FEATURE(kAndroidOpenIncognitoAsWindow);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kWideScreenFeedForFoldables);
 
+// Feature that syncs whether the feed is turned on or off between Android
+// devices of the same form factor: between phones, and between tablets.
+// Foldables sync with phones.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kAndroidFeedsVisibilitySyncByFormFactor);
+
 // Feature flag for disabling the feed's item animations with a null
 // ItemAnimator while the NTP scroll position is restored, so that removed
 // items are released instead of staying drawn as stale views.

@@ -6411,6 +6411,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWideScreenFeedForFoldablesName,
      flag_descriptions::kWideScreenFeedForFoldablesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kWideScreenFeedForFoldables)},
+    {"android-feeds-visibility-sync-by-form-factor",
+     flag_descriptions::kAndroidFeedsVisibilitySyncByFormFactorName,
+     flag_descriptions::kAndroidFeedsVisibilitySyncByFormFactorDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kAndroidFeedsVisibilitySyncByFormFactor)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-force-dark", flag_descriptions::kAutoWebContentsDarkModeName,
      flag_descriptions::kAutoWebContentsDarkModeDescription, kOsAll,
