@@ -1069,6 +1069,9 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
 }
 
 void GlicNoWebviewContentsManager::StartGuestBootstrap() {
+  if (GetGlicProviderSpec(profile_).SupportsApiBundleResource()) {
+    return;
+  }
   if (!guest_contents() || !guest_contents()->GetPrimaryMainFrame()) {
     return;
   }
@@ -1078,6 +1081,9 @@ void GlicNoWebviewContentsManager::StartGuestBootstrap() {
 }
 
 void GlicNoWebviewContentsManager::StopGuestBootstrap() {
+  if (GetGlicProviderSpec(profile_).SupportsApiBundleResource()) {
+    return;
+  }
   if (!guest_contents() || !guest_contents()->GetPrimaryMainFrame()) {
     return;
   }

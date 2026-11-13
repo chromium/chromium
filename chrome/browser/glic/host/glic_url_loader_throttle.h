@@ -8,15 +8,16 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "url/origin.h"
 
 class Profile;
 
@@ -70,9 +71,14 @@ class GlicURLLoaderThrottle : public blink::URLLoaderThrottle {
   base::WeakPtr<Profile> profile_;
 };
 
-// Proxying URLLoaderFactory that injects Glic custom HTTP request headers on
-// subresource requests (fetch, XHR, WebSocket) issued by the Glic guest frame
-// in NoWebview mode.
+// Proxying URLLoaderFactory for subresource requests issued by the Glic guest
+// primary main frame in NoWebview mode:
+// - Serves `chrome__glic_api.js` (relative to the guest document) directly from
+//   browser memory with hash-based V8 bytecode caching enabled when
+//   `GlicProviderSpec::SupportsApiBundleResource()` is true and the origin is
+//   allowed the Glic API.
+// - Injects Glic custom HTTP request headers on network subresource requests
+//   (fetch, XHR, WebSocket) when `kGlicHeader` is enabled.
 class GlicSubresourceProxyingURLLoaderFactory
     : public network::SelfDeletingURLLoaderFactory {
  public:
@@ -81,6 +87,10 @@ class GlicSubresourceProxyingURLLoaderFactory
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
       base::WeakPtr<Profile> profile,
+      content::GlobalRenderFrameHostId frame_id,
+      url::Origin initiator,
+      bool inject_headers,
+      bool serve_api_bundle,
       base::SelfDeletingPassKey pass_key);
 
   GlicSubresourceProxyingURLLoaderFactory(
@@ -90,6 +100,7 @@ class GlicSubresourceProxyingURLLoaderFactory
 
   static void MaybeProxyRequest(
       content::RenderFrameHost* frame,
+      const url::Origin& request_initiator,
       network::URLLoaderFactoryBuilder& factory_builder);
 
   // network::mojom::URLLoaderFactory:
@@ -106,8 +117,18 @@ class GlicSubresourceProxyingURLLoaderFactory
   ~GlicSubresourceProxyingURLLoaderFactory() override;
   void OnTargetFactoryError();
 
+  bool IsBundleRequest(const network::ResourceRequest& request) const;
+  void HandleBundleRequest(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   base::WeakPtr<Profile> profile_;
+  const content::GlobalRenderFrameHostId frame_id_;
+  const url::Origin initiator_;
+  const bool inject_headers_;
+  const bool serve_api_bundle_;
 };
 
 }  // namespace glic

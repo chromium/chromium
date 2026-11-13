@@ -7005,8 +7005,10 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
   if (type == URLLoaderFactoryType::kDocumentSubResource) {
     contextual_tasks::ContextualTasksSubresourceProxyingURLLoaderFactory::
         MaybeProxyRequest(browser_context, isolation_info, factory_builder);
-    glic::GlicSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
-        frame, factory_builder);
+    if (is_for_network_service) {
+      glic::GlicSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
+          frame, request_initiator, factory_builder);
+    }
   }
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)

@@ -185,6 +185,12 @@ BASE_DECLARE_FEATURE(kGeicActuation);
 // can be rolled out separately.
 BASE_DECLARE_FEATURE(kGeicSsr);
 
+// Serves the Glic API bundle at `chrome__glic_api.js` (relative to the guest
+// document) to allowed Gemini Enterprise (GEiC) guest frames instead of sending
+// it via `glic-bootstrap` postMessage. Independent of `kGlicApiBundleResource`
+// so GEiC and consumer Gemini can roll out separately.
+BASE_DECLARE_FEATURE(kGeicApiBundleResource);
+
 // Prompts the user to relaunch Chrome when the Glic provider configuration
 // (e.g. the `GeminiEnterpriseUrl` policy) changes mid-session. Requires
 // `kGeic`.
@@ -301,6 +307,11 @@ BASE_DECLARE_FEATURE(kGlicExperimentalTriggeringBackgroundOptInNotification);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicExperimentalTriggeringBackgroundOptInTimeout;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Serves the Glic API bundle at `chrome__glic_api.js` (relative to the guest
+// document) to allowed consumer Gemini NoWebview guest frames instead of
+// sending it via `glic-bootstrap` postMessage.
+BASE_DECLARE_FEATURE(kGlicApiBundleResource);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

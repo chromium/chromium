@@ -279,6 +279,8 @@ BASE_FEATURE(kGeicActuation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeicSsr, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGeicApiBundleResource, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGeicProviderChangePrompt,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -439,4 +441,6 @@ const base::FeatureParam<base::TimeDelta>
         &kGlicExperimentalTriggeringBackgroundOptInNotification,
         "background_opt_in_timeout", base::Minutes(10)};
 #endif  // BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kGlicApiBundleResource, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

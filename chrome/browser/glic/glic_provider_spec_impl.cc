@@ -286,6 +286,9 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGlicSsr);
   }
+  bool SupportsApiBundleResource() const override {
+    return base::FeatureList::IsEnabled(features::kGlicApiBundleResource);
+  }
   bool PinOnBindEnabled() const override { return true; }
 
  private:
@@ -387,6 +390,9 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec {
   // TODO(b/576365433): Enable `kGeicSsr` once the webapp supports it.
   bool SupportsSsr() const override {
     return base::FeatureList::IsEnabled(features::kGeicSsr);
+  }
+  bool SupportsApiBundleResource() const override {
+    return base::FeatureList::IsEnabled(features::kGeicApiBundleResource);
   }
   // GEiC uses explicit single-tab attachment; tabs created via CreateTab or
   // link clicks (e.g. Send feedback, Help, citations) should not be auto-pinned

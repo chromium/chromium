@@ -24,9 +24,9 @@ namespace glic {
 namespace {
 
 TEST(GlicProviderSpecImplTest, PromoBodyStringId) {
-  EXPECT_EQ(CreateGlicProviderSpec(GlicProvider::kGemini, {})
-                ->GetPromoBodyStringId(),
-            IDS_GLIC_PROMO_BODY);
+  EXPECT_EQ(
+      CreateGlicProviderSpec(GlicProvider::kGemini, {})->GetPromoBodyStringId(),
+      IDS_GLIC_PROMO_BODY);
   EXPECT_EQ(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
                 ->GetPromoBodyStringId(),
             IDS_GEIC_PROMO_BODY);
@@ -60,6 +60,44 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsSsrFollowsGeicSsr) {
     feature_list.InitWithFeatures({features::kGlicSsr}, {features::kGeicSsr});
     EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
                      ->SupportsSsr());
+  }
+}
+
+TEST(GlicProviderSpecImplTest,
+     GeminiSupportsApiBundleResourceFollowsGlicApiBundleResource) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kGlicApiBundleResource},
+                                  {features::kGeicApiBundleResource});
+    EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
+                    ->SupportsApiBundleResource());
+  }
+  // kGeicApiBundleResource only applies to Gemini Enterprise.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kGeicApiBundleResource},
+                                  {features::kGlicApiBundleResource});
+    EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGemini, {})
+                     ->SupportsApiBundleResource());
+  }
+}
+
+TEST(GlicProviderSpecImplTest,
+     GeminiEnterpriseSupportsApiBundleResourceFollowsGeicApiBundleResource) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kGeicApiBundleResource},
+                                  {features::kGlicApiBundleResource});
+    EXPECT_TRUE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                    ->SupportsApiBundleResource());
+  }
+  // kGlicApiBundleResource only applies to consumer Gemini.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kGlicApiBundleResource},
+                                  {features::kGeicApiBundleResource});
+    EXPECT_FALSE(CreateGlicProviderSpec(GlicProvider::kGeminiEnterprise, {})
+                     ->SupportsApiBundleResource());
   }
 }
 
