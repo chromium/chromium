@@ -2196,6 +2196,16 @@ BASE_FEATURE_PARAM(bool,
                    "refresh_header_on_mismatch",
                    false);
 
+// If true, response headers of navigations intercepted by an embedder preload
+// handler (`ServiceWorkerClient::TakeInterceptingPreloadHandler()`) are
+// observed to populate the synthetic response header cache for subsequent
+// navigations. The response body is forwarded without buffering.
+BASE_FEATURE_PARAM(bool,
+                   kServiceWorkerSyntheticResponseCaptureInterceptedHeaders,
+                   &kServiceWorkerSyntheticResponse,
+                   "capture_intercepted_headers",
+                   false);
+
 // If enabled, force renderer process foregrounded from CommitNavigation to
 // DOMContentLoad (crbug/351953350).
 BASE_FEATURE(

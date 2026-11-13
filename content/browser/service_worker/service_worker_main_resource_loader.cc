@@ -1201,9 +1201,20 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
         service_worker_client_.get(),
         blink::mojom::ServiceWorkerFetchHandlerBypassOption::
             kSyntheticResponse);
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass =
+        url_loader_client_.Unbind();
+    if (blink::features::
+            kServiceWorkerSyntheticResponseCaptureInterceptedHeaders.Get() &&
+        !service_worker_loader_helpers::
+            IsSyntheticResponseDryRunModeEnabled()) {
+      // Observe `OnReceiveResponse` on the client pipe only; `receiver_` stays
+      // bound to the preload loader so the body is never buffered here.
+      client_to_pass = ServiceWorkerSyntheticResponseManager::
+          MaybeWrapClientToStoreResponseHeaders(version,
+                                                std::move(client_to_pass));
+    }
     std::move(handler.value())
-        .Run(resource_request_, receiver_.Unbind(),
-             url_loader_client_.Unbind());
+        .Run(resource_request_, receiver_.Unbind(), std::move(client_to_pass));
     return true;
   }
 

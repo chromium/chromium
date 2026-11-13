@@ -13,6 +13,8 @@
 #include "content/common/content_export.h"
 #include "content/common/service_worker/race_network_request_simple_buffer_manager.h"
 #include "content/common/service_worker/race_network_request_write_buffer_manager.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom-forward.h"
@@ -90,6 +92,16 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   // The static function to override the dry run mode.
   static void SetDryRunMode(bool enabled);
   static bool IsDryRunModeEnabledForTesting();
+
+  // Interposes a pass-through `URLLoaderClient` observer ahead of `client` that
+  // populates `version`'s synthetic response header cache from eligible 2xx
+  // responses (or clears stale cached headers on non-opt-in responses and
+  // redirects) while forwarding all events and the body stream handle directly
+  // without buffering. Both `version` and `client` must be valid.
+  static mojo::PendingRemote<network::mojom::URLLoaderClient>
+  MaybeWrapClientToStoreResponseHeaders(
+      scoped_refptr<ServiceWorkerVersion> version,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
  private:
   friend class ServiceWorkerSyntheticResponseManagerTest;

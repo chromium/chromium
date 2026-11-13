@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -2741,5 +2742,155 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, SRIMessageSignatureRejected) {
               testing::Optional(network::mojom::BlockedByResponseReason::
                                     kSRIMessageSignatureMismatch));
 }
+
+class ServiceWorkerMainResourceLoaderInterceptedHeaderTest
+    : public ServiceWorkerMainResourceLoaderTest,
+      public testing::WithParamInterface<bool> {};
+
+// Verifies that embedder-intercepted navigations forward response streams
+// transparently while storing synthetic response headers on `version_` only
+// when `capture_intercepted_headers` is enabled, and clearing stale cached
+// headers on non-opt-in responses or redirects.
+TEST_P(ServiceWorkerMainResourceLoaderInterceptedHeaderTest,
+       CapturesResponseHeadersOnlyWhenEnabled) {
+  const bool capture_enabled = GetParam();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kServiceWorkerSyntheticResponse,
+      {{"bypass_subresource", "true"},
+       {blink::features::
+            kServiceWorkerSyntheticResponseCaptureInterceptedHeaders.name,
+        capture_enabled ? "true" : "false"}});
+
+  const base::TimeTicks kPrefetchRequestStart =
+      base::TimeTicks::Now() - base::Milliseconds(42);
+  auto make_head = [&](bool opt_in) {
+    auto head = network::mojom::URLResponseHead::New();
+    head->was_in_prefetch_cache = true;
+    head->load_timing.request_start = kPrefetchRequestStart;
+    head->headers =
+        base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+    if (opt_in) {
+      head->headers->AddHeader("Service-Worker-Synthetic-Response", "?1");
+    }
+    head->headers->AddHeader("Content-Security-Policy", "default-src 'self'");
+    return head;
+  };
+
+  SetupStoragePartition();
+  registry().WaitForRegistrationsInitializedForTest();
+
+  MockSearchPrefetchContentBrowserClient mock_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&mock_browser_client);
+  base::ScopedClosureRunner restore_browser_client(base::BindOnce(
+      base::IgnoreResult(&SetBrowserClientForTesting), old_browser_client));
+
+  const GURL kSyntheticUrl("https://synthetic.example.com/page");
+  base::RunLoop loop;
+  registry().FindRegistrationForClientUrl(
+      ServiceWorkerRegistry::Purpose::kNavigation, kSyntheticUrl,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kSyntheticUrl)),
+      base::BindLambdaForTesting(
+          [&](blink::ServiceWorkerStatusCode status,
+              scoped_refptr<ServiceWorkerRegistration> found) {
+            ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+            registration_ = std::move(found);
+            version_ = registration_->active_version();
+            loop.Quit();
+          }));
+  loop.Run();
+  ASSERT_TRUE(version_);
+  ASSERT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+
+  mojo::PendingReceiver<network::mojom::URLLoader> keep_alive_loader_receiver;
+  mock_browser_client.set_handler(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request,
+          mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
+          mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+        keep_alive_loader_receiver = std::move(url_loader_receiver);
+        mojo::Remote<network::mojom::URLLoaderClient> remote_client(
+            std::move(client));
+
+        mojo::ScopedDataPipeProducerHandle producer;
+        mojo::ScopedDataPipeConsumerHandle consumer;
+        ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(/*options=*/nullptr,
+                                                       producer, consumer));
+        ASSERT_TRUE(mojo::BlockingCopyFromString("intercepted-body", producer));
+        producer.reset();
+
+        remote_client->OnReceiveResponse(make_head(/*opt_in=*/true),
+                                         std::move(consumer), std::nullopt);
+        remote_client->OnTransferSizeUpdated(128);
+        network::URLLoaderCompletionStatus status(net::OK);
+        status.encoded_data_length = base::ByteSize(256);
+        remote_client->OnComplete(status);
+      }));
+
+  std::unique_ptr<network::ResourceRequest> request = CreateRequest();
+  request->url = kSyntheticUrl;
+  SetUpTestWebContentsAndNavigation(request->url);
+  request->is_outermost_main_frame = true;
+
+  StartRequest(std::move(request));
+  client_.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  EXPECT_EQ(base::ByteSize(256),
+            client_.completion_status().encoded_data_length);
+  EXPECT_EQ(128, client_.body_transfer_size());
+  EXPECT_TRUE(client_.response_head()->was_in_prefetch_cache);
+  EXPECT_EQ(kPrefetchRequestStart,
+            client_.response_head()->load_timing.request_start);
+  std::string received_body;
+  ASSERT_TRUE(client_.response_body().is_valid());
+  EXPECT_TRUE(mojo::BlockingCopyToString(client_.response_body_release(),
+                                         &received_body));
+  EXPECT_EQ("intercepted-body", received_body);
+  const auto& stored_head = version_->GetResponseHeadForSyntheticResponse();
+  if (capture_enabled) {
+    ASSERT_TRUE(stored_head);
+    ASSERT_TRUE(stored_head->headers);
+    EXPECT_TRUE(stored_head->headers->HasHeaderValue("Content-Security-Policy",
+                                                     "default-src 'self'"));
+
+    // Verify observer edge cases: non-opt-in clearing, redirect clearing, and
+    // downstream disconnect propagation.
+    {
+      network::TestURLLoaderClient downstream;
+      mojo::Remote<network::mojom::URLLoaderClient> wrapped(
+          ServiceWorkerSyntheticResponseManager::
+              MaybeWrapClientToStoreResponseHeaders(version_,
+                                                    downstream.CreateRemote()));
+      wrapped->OnReceiveResponse(make_head(/*opt_in=*/false), {}, std::nullopt);
+      downstream.RunUntilResponseReceived();
+      EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+    }
+    version_->SetResponseHeadForSyntheticResponse(make_head(/*opt_in=*/true));
+    {
+      network::TestURLLoaderClient downstream;
+      mojo::Remote<network::mojom::URLLoaderClient> wrapped(
+          ServiceWorkerSyntheticResponseManager::
+              MaybeWrapClientToStoreResponseHeaders(version_,
+                                                    downstream.CreateRemote()));
+      net::RedirectInfo redirect_info;
+      redirect_info.status_code = 302;
+      redirect_info.new_url = GURL("https://example.com/next");
+      wrapped->OnReceiveRedirect(redirect_info, make_head(/*opt_in=*/true));
+      downstream.RunUntilRedirectReceived();
+      EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+
+      downstream.Unbind();
+      EXPECT_TRUE(
+          base::test::RunUntil([&]() { return !wrapped.is_connected(); }));
+    }
+  } else {
+    EXPECT_FALSE(stored_head);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerMainResourceLoaderInterceptedHeaderTest,
+                         testing::Bool());
 }  // namespace service_worker_main_resource_loader_unittest
 }  // namespace content

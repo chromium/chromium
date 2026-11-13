@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -23,6 +24,8 @@
 #include "content/browser/service_worker/service_worker_synthetic_response_data_pipe_connector.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_status_code.h"
@@ -163,6 +166,133 @@ blink::mojom::FetchAPIResponsePtr GetFetchAPIResponse(
 
   return out_response;
 }
+
+void MaybeStoreResponseHeadForVersion(
+    ServiceWorkerVersion& version,
+    const network::mojom::URLResponseHead& response_head) {
+  bool is_header_stored = false;
+  // Store only 2xx responses carrying both the explicit synthetic-response
+  // opt-in header and a Content-Security-Policy header so synthesized documents
+  // never execute without the server's CSP contract.
+  if (response_head.headers &&
+      network::IsSuccessfulStatus(response_head.headers->response_code()) &&
+      (IsBypassSyntheticResponseHeaderCheckEnabled() ||
+       (response_head.headers->HasHeaderValue(kOptInHeaderName,
+                                              kOptInHeaderValue) &&
+        response_head.headers->HasHeader(kCSPHeaderName)))) {
+    version.SetMainScriptResponse(
+        std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
+            response_head));
+    version.SetResponseHeadForSyntheticResponse(response_head.Clone());
+    is_header_stored = true;
+  } else if (version.GetResponseHeadForSyntheticResponse()) {
+    // Drop any previously cached header when the latest response no longer
+    // opts into synthetic response.
+    version.ResetResponseHeadForSyntheticResponse();
+  }
+  base::UmaHistogramBoolean(kHistogramIsHeaderStored, is_header_stored);
+}
+
+// Pass-through `URLLoaderClient` observer used when an embedder preload handler
+// intercepts the navigation. Observes `OnReceiveResponse` / `OnReceiveRedirect`
+// to update `ServiceWorkerVersion`'s synthetic response header cache while
+// forwarding all events and body handles directly to `forwarding_client_`.
+class InterceptedResponseHeaderObserver
+    : public network::mojom::URLLoaderClient {
+ public:
+  static mojo::PendingRemote<network::mojom::URLLoaderClient> Create(
+      base::WeakPtr<ServiceWorkerVersion> version,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
+    // The embedder preload loader is handed the navigation response task runner
+    // (see `ServiceWorkerClient::TakeInterceptingPreloadHandler()`); bind both
+    // ends of the interposed observer on the same runner so interposing this
+    // observer does not move the navigation response onto a lower-priority
+    // task queue.
+    scoped_refptr<base::SequencedTaskRunner> task_runner =
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse});
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
+    // Self-owned: deletes itself when either endpoint disconnects.
+    new InterceptedResponseHeaderObserver(
+        std::move(version), client_to_pass.InitWithNewPipeAndPassReceiver(),
+        std::move(forwarding_client), std::move(task_runner));
+    return client_to_pass;
+  }
+
+  InterceptedResponseHeaderObserver(const InterceptedResponseHeaderObserver&) =
+      delete;
+  InterceptedResponseHeaderObserver& operator=(
+      const InterceptedResponseHeaderObserver&) = delete;
+
+  // network::mojom::URLLoaderClient:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
+    forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
+  }
+
+  void OnReceiveResponse(
+      network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
+    if (version_ && response_head) {
+      MaybeStoreResponseHeadForVersion(*version_, *response_head);
+    }
+    forwarding_client_->OnReceiveResponse(
+        std::move(response_head), std::move(body), std::move(cached_metadata));
+  }
+
+  void OnReceiveRedirect(
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr response_head) override {
+    if (version_) {
+      version_->ResetResponseHeadForSyntheticResponse();
+    }
+    forwarding_client_->OnReceiveRedirect(redirect_info,
+                                          std::move(response_head));
+  }
+
+  void OnUploadProgress(int64_t current_position,
+                        int64_t total_size,
+                        OnUploadProgressCallback ack_callback) override {
+    forwarding_client_->OnUploadProgress(current_position, total_size,
+                                         std::move(ack_callback));
+  }
+
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
+    forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
+  }
+
+  void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    forwarding_client_->OnComplete(status);
+  }
+
+ private:
+  InterceptedResponseHeaderObserver(
+      base::WeakPtr<ServiceWorkerVersion> version,
+      mojo::PendingReceiver<network::mojom::URLLoaderClient> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
+      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : version_(std::move(version)),
+        receiver_(this, std::move(receiver), task_runner),
+        forwarding_client_(std::move(forwarding_client),
+                           std::move(task_runner)) {
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&InterceptedResponseHeaderObserver::OnDisconnect,
+                       base::Unretained(this)));
+    forwarding_client_.set_disconnect_handler(
+        base::BindOnce(&InterceptedResponseHeaderObserver::OnDisconnect,
+                       base::Unretained(this)));
+  }
+
+  ~InterceptedResponseHeaderObserver() override = default;
+
+  void OnDisconnect() { delete this; }
+
+  // Hold a `WeakPtr` rather than a `scoped_refptr` so an async Mojo disconnect
+  // after navigation cancellation never keeps a synthetic
+  // `ServiceWorkerVersion` alive past its `ServiceWorkerRegistration`.
+  base::WeakPtr<ServiceWorkerVersion> version_;
+  mojo::Receiver<network::mojom::URLLoaderClient> receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
+};
 }  // namespace
 
 class ServiceWorkerSyntheticResponseManager::SyntheticResponseURLLoaderClient
@@ -362,23 +492,7 @@ bool ServiceWorkerSyntheticResponseManager::MaybeStartSyntheticResponse(
 
 void ServiceWorkerSyntheticResponseManager::MaybeSetResponseHead(
     const network::mojom::URLResponseHead& response_head) {
-  bool is_header_stored = false;
-  // If the response is not successful or there is no opt-in header, do not
-  // update the response head.
-  // In addition to the opt-in header, we guarantee that the response has a
-  // Content-Security-Policy header as well.
-  if (network::IsSuccessfulStatus(response_head.headers->response_code()) &&
-      (IsBypassSyntheticResponseHeaderCheckEnabled() ||
-       (response_head.headers->HasHeaderValue(kOptInHeaderName,
-                                              kOptInHeaderValue) &&
-        response_head.headers->HasHeader(kCSPHeaderName)))) {
-    version_->SetMainScriptResponse(
-        std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
-            response_head));
-    version_->SetResponseHeadForSyntheticResponse(response_head.Clone());
-    is_header_stored = true;
-  }
-  base::UmaHistogramBoolean(kHistogramIsHeaderStored, is_header_stored);
+  MaybeStoreResponseHeadForVersion(*version_, response_head);
 }
 
 // static
@@ -663,6 +777,17 @@ void ServiceWorkerSyntheticResponseManager::SetDryRunMode(bool enabled) {
 }
 bool ServiceWorkerSyntheticResponseManager::IsDryRunModeEnabledForTesting() {
   return dry_run_mode_for_testing_;
+}
+
+// static
+mojo::PendingRemote<network::mojom::URLLoaderClient>
+ServiceWorkerSyntheticResponseManager::MaybeWrapClientToStoreResponseHeaders(
+    scoped_refptr<ServiceWorkerVersion> version,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+  CHECK(version);
+  CHECK(client);
+  return InterceptedResponseHeaderObserver::Create(version->GetWeakPtr(),
+                                                   std::move(client));
 }
 
 }  // namespace content
