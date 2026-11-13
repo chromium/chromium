@@ -255,7 +255,9 @@ if (!is_chromeos_device) {
       ":passwords",
       ":test_support",
       "//chrome/browser/actor:test_support",
+      "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:tab_dialogs",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords:test_support",
       "//chrome/browser/ui/views/controls",
@@ -263,6 +265,8 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/views/page_action:page_action_test_support",
       "//chrome/browser/ui/views/toolbar:test_support",
       "//chrome/test:test_support",
+      "//ui/actions",
+      "//ui/actions:actions_headers",
       "//ui/base/clipboard:clipboard_test_support",
     ]
   }
