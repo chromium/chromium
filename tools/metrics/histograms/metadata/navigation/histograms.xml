@@ -1947,19 +1947,6 @@ chromium-metrics-reviews@google.com.
   <token key="RegularOrMHTMLType" variants="RegularOrMHTMLType"/>
 </histogram>
 
-<histogram name="Navigation.Preconnect.ResolveHostCallbackQueueingTime"
-    units="ms" expires_after="2023-06-04">
-  <owner>alexilin@chromium.org</owner>
-  <owner>blundell@chromium.org</owner>
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Measures the amount of time that the task corresponding to the completion
-    callback for a host resolution performed as part of navigation preconnect
-    spent being queued before executing. Recorded for each host resolution.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.Prefetch.IsPrefetchingSRPUrl.{PreloadingEmbedderType}"
     enum="Boolean" expires_after="2026-09-27">

@@ -6,11 +6,7 @@
 
 #include <utility>
 
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/task/common/task_annotator.h"
-#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,25 +58,6 @@ void ResolveHostClientImpl::OnComplete(
     const net::ResolveErrorInfo& resolve_error_info,
     const net::AddressList& resolved_addresses,
     const net::HostResolverEndpointResults& alternative_endpoints) {
-  auto* task = base::TaskAnnotator::CurrentTaskForThread();
-  if (!task) {
-    // The `task` can be null in base::ScopedMockTimeMessageLoopTaskRunner scope
-    // in test.
-    CHECK_IS_TEST();
-  }
-  // As this method is executed as a callback from a Mojo call, it should be
-  // executed via RunTask() and thus have a non-delayed PendingTask associated
-  // with it.
-  CHECK(!task || task->delayed_run_time.is_null(), base::NotFatalUntil::M159);
-
-  // The task will have a null |queue_time| if run synchronously (this happens
-  // in unit tests, for example).
-  base::TimeTicks queue_time = (task && !task->queue_time.is_null())
-                                   ? task->queue_time
-                                   : base::TimeTicks::Now();
-  UMA_HISTOGRAM_TIMES("Navigation.Preconnect.ResolveHostCallbackQueueingTime",
-                      base::TimeTicks::Now() - queue_time);
-
   std::move(callback_).Run(result == net::OK);
 }
 
