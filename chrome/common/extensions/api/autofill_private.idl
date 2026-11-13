@@ -486,6 +486,22 @@ namespace autofillPrivate {
     DOMString? imageSrcDark;
   };
 
+  // A Google Wallet loyalty card which can be displayed in the autofill
+  // section of the settings UI.
+  dictionary LoyaltyCardEntry {
+    // Unique identifier for the loyalty card.
+    DOMString id;
+
+    // The name of the merchant that issued the loyalty card.
+    DOMString merchantName;
+
+    // The loyalty card number.
+    DOMString loyaltyCardNumber;
+
+    // URL of the page managing the loyalty card on the Google Wallet website.
+    DOMString walletUrl;
+  };
+
   // A link inside a legal message line.
   dictionary LegalMessageLink {
     long start;
@@ -524,6 +540,7 @@ namespace autofillPrivate {
   callback GetWalletablePassDetectionOptInStatusCallback = void(boolean optedIn);
   callback SetWalletablePassDetectionOptInStatusCallback = void(boolean success);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
+  callback GetLoyaltyCardListCallback = void(LoyaltyCardEntry[] entries);
   callback AuthenticateUserBeforeViewingEntityDataCallback = void(boolean success);
   callback UserDataProcessingConsentCallback = void(UserDataProcessingConsentStates states);
   callback GetDetailsForUpsertPassCallback = void(optional UpsertPassDetails details);
@@ -618,6 +635,11 @@ namespace autofillPrivate {
     //             Pay Over Time Issuers.
     static void getPayOverTimeIssuerList(
         GetPayOverTimeIssuerListCallback callback);
+
+    // Gets the list of Google Wallet loyalty cards.
+    // |callback|: Callback which will be called with the list of loyalty
+    //             cards.
+    static void getLoyaltyCardList(GetLoyaltyCardListCallback callback);
 
     // Authenticates the user via device authentication and if successful, it
     // will then flip the mandatory auth toggle.
@@ -735,5 +757,9 @@ namespace autofillPrivate {
     // removals).
     static void onEntityInstancesChanged(
         EntityInstanceWithLabels[] entityInstancesWithLabels);
+
+    // Fired when the user's Google Wallet loyalty cards have changed.
+    // `loyaltyCards`: the updated list of loyalty cards.
+    static void onLoyaltyCardsChanged(LoyaltyCardEntry[] loyaltyCards);
   };
 };

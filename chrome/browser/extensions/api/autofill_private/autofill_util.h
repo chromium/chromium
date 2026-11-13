@@ -16,6 +16,7 @@ namespace autofill {
 class AddressDataManager;
 class CreditCard;
 class PaymentsDataManager;
+class ValuablesDataManager;
 }  // namespace autofill
 
 namespace extensions::autofill_util {
@@ -26,6 +27,8 @@ using CreditCardEntryList = std::vector<api::autofill_private::CreditCardEntry>;
 using IbanEntryList = std::vector<api::autofill_private::IbanEntry>;
 using PayOverTimeIssuerEntryList =
     std::vector<api::autofill_private::PayOverTimeIssuerEntry>;
+using LoyaltyCardEntryList =
+    std::vector<api::autofill_private::LoyaltyCardEntry>;
 using CallbackAfterSuccessfulUserAuth = base::OnceCallback<void(bool)>;
 
 // Uses `adm` to generate a list of up-to-date AddressEntry objects.
@@ -47,6 +50,10 @@ IbanEntryList GenerateIbanList(const autofill::PaymentsDataManager& paydm);
 // objects.
 PayOverTimeIssuerEntryList GeneratePayOverTimeIssuerList(
     const autofill::PaymentsDataManager& paydm);
+
+// Uses `vdm` to generate a list of up-to-date LoyaltyCardEntry objects.
+LoyaltyCardEntryList GenerateLoyaltyCardList(
+    const autofill::ValuablesDataManager& vdm);
 
 // Uses `adm` to get primary account info.
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(

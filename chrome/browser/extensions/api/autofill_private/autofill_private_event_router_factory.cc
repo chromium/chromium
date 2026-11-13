@@ -6,6 +6,7 @@
 
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -48,6 +49,7 @@ AutofillPrivateEventRouterFactory::AutofillPrivateEventRouterFactory()
   DependsOn(EventRouterFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
+  DependsOn(autofill::ValuablesDataManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
 

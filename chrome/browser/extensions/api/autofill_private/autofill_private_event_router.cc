@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
@@ -66,16 +67,20 @@ AutofillPrivateEventRouter::AutofillPrivateEventRouter(
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context_);
   if (base::FeatureList::IsEnabled(
           kAutofillPrivateEventRouterObserveOnDemand)) {
-    // Observe `PersonalDataManager`, `SyncService` and `EntityDataManager`
-    // only while listeners exist for the corresponding events.
+    // Observe `PersonalDataManager`, `SyncService`, `EntityDataManager` and
+    // `ValuablesDataManager` only while listeners exist for the corresponding
+    // events.
     event_router_->RegisterObserver(
         this, api::autofill_private::OnPersonalDataChanged::kEventName);
     event_router_->RegisterObserver(
         this, api::autofill_private::OnEntityInstancesChanged::kEventName);
+    event_router_->RegisterObserver(
+        this, api::autofill_private::OnLoyaltyCardsChanged::kEventName);
     UpdateObservations();
   } else {
-    // Observe `PersonalDataManager`, `SyncService` and `EntityDataManager`
-    // (when available) whether or not there are listeners.
+    // Observe `PersonalDataManager`, `SyncService`, `EntityDataManager` and
+    // `ValuablesDataManager` (when available) whether or not there are
+    // listeners.
     if (personal_data_) {
       pdm_observer_.Observe(personal_data_);
     }
@@ -85,6 +90,12 @@ AutofillPrivateEventRouter::AutofillPrivateEventRouter(
             Profile::FromBrowserContext(context_));
     if (entity_data_manager) {
       entity_data_manager_observer_.Observe(entity_data_manager);
+    }
+
+    if (autofill::ValuablesDataManager* valuables_data_manager =
+            autofill::ValuablesDataManagerFactory::GetForProfile(
+                Profile::FromBrowserContext(context_))) {
+      valuables_data_manager_observer_.Observe(valuables_data_manager);
     }
 
     if (syncer::SyncService* sync = SyncServiceFactory::GetForProfile(
@@ -99,6 +110,7 @@ AutofillPrivateEventRouter::~AutofillPrivateEventRouter() = default;
 void AutofillPrivateEventRouter::Shutdown() {
   pdm_observer_.Reset();
   entity_data_manager_observer_.Reset();
+  valuables_data_manager_observer_.Reset();
   sync_observer_.Reset();
   if (event_router_) {
     event_router_->UnregisterObserver(this);
@@ -162,6 +174,19 @@ void AutofillPrivateEventRouter::OnEntityInstancesChanged() {
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 
+void AutofillPrivateEventRouter::OnValuablesDataChanged() {
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(ToValueList(autofill_util::GenerateLoyaltyCardList(
+      *valuables_data_manager_observer_.GetSource())));
+
+  auto extension_event = std::make_unique<Event>(
+      events::AUTOFILL_PRIVATE_ON_LOYALTY_CARDS_CHANGED,
+      api::autofill_private::OnLoyaltyCardsChanged::kEventName,
+      std::move(args));
+
+  event_router_->BroadcastEvent(std::move(extension_event));
+}
+
 void AutofillPrivateEventRouter::OnStateChanged(syncer::SyncService*) {
   BroadcastCurrentData();
 }
@@ -202,6 +227,18 @@ void AutofillPrivateEventRouter::UpdateObservations() {
     }
   } else {
     entity_data_manager_observer_.Reset();
+  }
+
+  if (event_router_->HasEventListener(
+          api::autofill_private::OnLoyaltyCardsChanged::kEventName)) {
+    autofill::ValuablesDataManager* valuables_data_manager =
+        autofill::ValuablesDataManagerFactory::GetForProfile(profile);
+    if (valuables_data_manager &&
+        !valuables_data_manager_observer_.IsObserving()) {
+      valuables_data_manager_observer_.Observe(valuables_data_manager);
+    }
+  } else {
+    valuables_data_manager_observer_.Reset();
   }
 }
 

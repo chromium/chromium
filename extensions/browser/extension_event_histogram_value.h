@@ -607,6 +607,7 @@ enum HistogramValue {
   ENTERPRISE_WEBRTC_ON_PEER_CONNECTION_REMOVED = 582,
   RUNTIME_ON_EXTENSION_LOADED = 583,
   ENTERPRISE_WEBRTC_ON_SNAPSHOT_TRUNCATED = 584,
+  AUTOFILL_PRIVATE_ON_LOYALTY_CARDS_CHANGED = 585,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

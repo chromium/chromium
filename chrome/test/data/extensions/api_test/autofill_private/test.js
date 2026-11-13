@@ -1495,6 +1495,12 @@ const availableTests = [
     chrome.test.succeed();
   },
 
+  async function getEmptyLoyaltyCardList() {
+    const loyaltyCardList = await chrome.autofillPrivate.getLoyaltyCardList();
+    chrome.test.assertEq([], loyaltyCardList);
+    chrome.test.succeed();
+  },
+
   async function optIntoAutofillAi() {
     await chrome.autofillPrivate.setAutofillAiOptInStatus(true);
     chrome.test.succeed();
@@ -1743,6 +1749,7 @@ const TESTS_FOR_CONFIG = {
   'testEntityTypeInEntityInstanceWithLabels':
       ['testEntityTypeInEntityInstanceWithLabels'],
   'getEmptyPayOverTimeIssuerList': ['getEmptyPayOverTimeIssuerList'],
+  'getEmptyLoyaltyCardList': ['getEmptyLoyaltyCardList'],
   'optIntoAutofillAi': ['optIntoAutofillAi'],
   'optOutOfAutofillAi': ['optOutOfAutofillAi'],
   'verifyUserOptedIntoAutofillAi': ['verifyUserOptedIntoAutofillAi'],

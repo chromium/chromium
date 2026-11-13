@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -24,10 +25,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -35,6 +38,7 @@
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/field_type_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -345,6 +349,21 @@ PayOverTimeIssuerEntryList GeneratePayOverTimeIssuerList(
       linked_issuers.end());
 
   return base::ToVector(linked_issuers, &BnplIssuerToPayOverTimeIssuerEntry);
+}
+
+LoyaltyCardEntryList GenerateLoyaltyCardList(
+    const autofill::ValuablesDataManager& vdm) {
+  return base::ToVector(
+      vdm.GetLoyaltyCards(), [](const autofill::LoyaltyCard& loyalty_card) {
+        autofill_private::LoyaltyCardEntry entry;
+        entry.id = loyalty_card.id().value();
+        entry.merchant_name = loyalty_card.merchant_name();
+        entry.loyalty_card_number = loyalty_card.loyalty_card_number();
+        // TODO(crbug.com/546252995): Use each card's `pass_view_url` when
+        // available.
+        entry.wallet_url = chrome::kWalletPassesPageURL;
+        return entry;
+      });
 }
 
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(

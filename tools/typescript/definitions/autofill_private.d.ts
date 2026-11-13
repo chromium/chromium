@@ -332,6 +332,13 @@ declare global {
         imageSrcDark?: string;
       }
 
+      export interface LoyaltyCardEntry {
+        id: string;
+        merchantName: string;
+        loyaltyCardNumber: string;
+        walletUrl: string;
+      }
+
       export function getAccountInfo(): Promise<AccountInfo|undefined>;
       export function saveAddress(address: AddressEntry): void;
       export function removeAddress(guid: string): void;
@@ -352,6 +359,7 @@ declare global {
       export function removeVirtualCard(cardId: string): void;
       export function getPayOverTimeIssuerList():
           Promise<PayOverTimeIssuerEntry[]>;
+      export function getLoyaltyCardList(): Promise<LoyaltyCardEntry[]>;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
       export function authenticateUserBeforeViewingEntityData():
           Promise<boolean>;
@@ -388,6 +396,8 @@ declare global {
            accountInfo?: AccountInfo) => void>;
       export const onEntityInstancesChanged: ChromeEvent<
           (entityInstancesWithLabels: EntityInstanceWithLabels[]) => void>;
+      export const onLoyaltyCardsChanged:
+          ChromeEvent<(loyaltyCards: LoyaltyCardEntry[]) => void>;
     }
   }
 }

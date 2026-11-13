@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -26,6 +27,9 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -139,6 +143,11 @@ std::unique_ptr<KeyedService> BuildEntityDataManager(
       /*strike_database=*/nullptr, autofill::GeoIpCountryCode("US"));
 }
 
+std::unique_ptr<KeyedService> BuildTestValuablesDataManager(
+    content::BrowserContext* context) {
+  return std::make_unique<autofill::TestValuablesDataManager>();
+}
+
 class AutofillPrivateEventRouterTest : public testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
@@ -159,7 +168,10 @@ class AutofillPrivateEventRouterTest : public testing::Test {
          TestingProfile::TestingFactory{
              autofill::AutofillEntityDataManagerFactory::GetInstance(),
              base::BindRepeating(&BuildEntityDataManager,
-                                 webdata_helper_.autofill_webdata_service())}});
+                                 webdata_helper_.autofill_webdata_service())},
+         TestingProfile::TestingFactory{
+             autofill::ValuablesDataManagerFactory::GetInstance(),
+             base::BindRepeating(&BuildTestValuablesDataManager)}});
     // Flush `EntityDataManager`'s initial asynchronous
     // `LoadEntitiesFromDatabase()` request so that its notification is
     // delivered now rather than during a later test step.
@@ -194,8 +206,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 // Verifies that without listeners, `AutofillPrivateEventRouter` observes
-// `SyncService` and broadcasts on every `PersonalDataManager`, `SyncService`
-// and `EntityDataManager` notification only when
+// `SyncService` and broadcasts on every `PersonalDataManager`, `SyncService`,
+// `EntityDataManager` and `ValuablesDataManager` notification only when
 // `kAutofillPrivateEventRouterObserveOnDemand` is disabled.
 TEST_P(AutofillPrivateEventRouterObserveOnDemandTest, NoListeners) {
   TestingProfile* profile = CreateProfileWithServices("no_listeners");
@@ -211,11 +223,15 @@ TEST_P(AutofillPrivateEventRouterObserveOnDemandTest, NoListeners) {
       CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)));
   autofill::EntityDataManager& entity_data_manager = CHECK_DEREF(
       autofill::AutofillEntityDataManagerFactory::GetForProfile(profile));
+  autofill::ValuablesDataManager& valuables_data_manager = CHECK_DEREF(
+      autofill::ValuablesDataManagerFactory::GetForProfile(profile));
 
   EXPECT_FALSE(event_router.HasEventListener(
       api::autofill_private::OnPersonalDataChanged::kEventName));
   EXPECT_FALSE(event_router.HasEventListener(
       api::autofill_private::OnEntityInstancesChanged::kEventName));
+  EXPECT_FALSE(event_router.HasEventListener(
+      api::autofill_private::OnLoyaltyCardsChanged::kEventName));
   EXPECT_EQ(sync_service.HasObserver(router), !IsObserveOnDemandEnabled());
 
   ScopedEventRouterTestObserver observer(event_router);
@@ -224,6 +240,7 @@ TEST_P(AutofillPrivateEventRouterObserveOnDemandTest, NoListeners) {
   pdm.NotifyPersonalDataObserver();
   sync_service.FireStateChanged();
   entity_data_manager.NotifyEntityInstancesChanged();
+  autofill::test_api(valuables_data_manager).NotifyObservers();
 
   EXPECT_EQ(observer.GetBroadcastCount(
                 api::autofill_private::OnPersonalDataChanged::kEventName),
@@ -231,12 +248,19 @@ TEST_P(AutofillPrivateEventRouterObserveOnDemandTest, NoListeners) {
   EXPECT_EQ(observer.GetBroadcastCount(
                 api::autofill_private::OnEntityInstancesChanged::kEventName),
             IsObserveOnDemandEnabled() ? 0 : 1);
+  EXPECT_EQ(observer.GetBroadcastCount(
+                api::autofill_private::OnLoyaltyCardsChanged::kEventName),
+            IsObserveOnDemandEnabled() ? 0 : 1);
   EXPECT_EQ(observer.GetDispatchCount(
                 api::autofill_private::OnPersonalDataChanged::kEventName,
                 rph.GetDeprecatedID()),
             0);
   EXPECT_EQ(observer.GetDispatchCount(
                 api::autofill_private::OnEntityInstancesChanged::kEventName,
+                rph.GetDeprecatedID()),
+            0);
+  EXPECT_EQ(observer.GetDispatchCount(
+                api::autofill_private::OnLoyaltyCardsChanged::kEventName,
                 rph.GetDeprecatedID()),
             0);
 }
@@ -356,6 +380,71 @@ TEST_F(AutofillPrivateEventRouterTest,
   entity_data_manager.NotifyEntityInstancesChanged();
   EXPECT_EQ(observer.GetBroadcastCount(
                 api::autofill_private::OnEntityInstancesChanged::kEventName),
+            1);
+}
+
+// Verifies that an `onLoyaltyCardsChanged` listener attaches only the
+// `ValuablesDataManager` observer, that valuables changes are dispatched to the
+// listener, and that the observer detaches when the last listener is removed.
+TEST_F(AutofillPrivateEventRouterTest, ObservesValuablesOnlyWithListener) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kAutofillPrivateEventRouterObserveOnDemand);
+
+  TestingProfile* profile = CreateProfileWithServices("valuables");
+  AutofillPrivateEventRouter* router =
+      AutofillPrivateEventRouterFactory::GetForProfile(profile);
+  ASSERT_NE(router, nullptr);
+
+  EventRouter& event_router =
+      CHECK_DEREF(EventRouterFactory::GetForBrowserContext(profile));
+  auto& sync_service = static_cast<syncer::TestSyncService&>(
+      CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)));
+  autofill::EntityDataManager& entity_data_manager = CHECK_DEREF(
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile));
+  autofill::ValuablesDataManager& valuables_data_manager = CHECK_DEREF(
+      autofill::ValuablesDataManagerFactory::GetForProfile(profile));
+
+  ScopedEventRouterTestObserver observer(event_router);
+  content::MockRenderProcessHost rph(profile);
+  const GURL settings_url(kSettingsUrl);
+
+  // Without a listener, valuables changes are not broadcast.
+  autofill::test_api(valuables_data_manager).NotifyObservers();
+  EXPECT_EQ(observer.GetBroadcastCount(
+                api::autofill_private::OnLoyaltyCardsChanged::kEventName),
+            0);
+
+  // Adding an `onLoyaltyCardsChanged` listener attaches only the
+  // `ValuablesDataManager` observer.
+  event_router.AddEventListenerForURL(
+      api::autofill_private::OnLoyaltyCardsChanged::kEventName, &rph,
+      settings_url);
+  EXPECT_FALSE(sync_service.HasObserver(router));
+
+  autofill::test_api(valuables_data_manager).NotifyObservers();
+  entity_data_manager.NotifyEntityInstancesChanged();
+
+  EXPECT_EQ(observer.GetBroadcastCount(
+                api::autofill_private::OnLoyaltyCardsChanged::kEventName),
+            1);
+  EXPECT_EQ(observer.GetDispatchCount(
+                api::autofill_private::OnLoyaltyCardsChanged::kEventName,
+                rph.GetDeprecatedID()),
+            1);
+  EXPECT_EQ(observer.GetBroadcastCount(
+                api::autofill_private::OnEntityInstancesChanged::kEventName),
+            0);
+  EXPECT_EQ(observer.GetBroadcastCount(
+                api::autofill_private::OnPersonalDataChanged::kEventName),
+            0);
+
+  // Removing the last listener detaches the `ValuablesDataManager` observer.
+  event_router.RemoveEventListenerForURL(
+      api::autofill_private::OnLoyaltyCardsChanged::kEventName, &rph,
+      settings_url);
+  autofill::test_api(valuables_data_manager).NotifyObservers();
+  EXPECT_EQ(observer.GetBroadcastCount(
+                api::autofill_private::OnLoyaltyCardsChanged::kEventName),
             1);
 }
 

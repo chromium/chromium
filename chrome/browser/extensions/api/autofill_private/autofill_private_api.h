@@ -16,6 +16,7 @@ class AddressDataManager;
 class ContentAutofillClient;
 class EntityDataManager;
 class PaymentsDataManager;
+class ValuablesDataManager;
 }  // namespace autofill
 
 namespace device_reauth {
@@ -40,6 +41,7 @@ class AutofillPrivateExtensionFunction : public ExtensionFunction {
   autofill::ContentAutofillClient* autofill_client();
   autofill::EntityDataManager* entity_data_manager();
   autofill::PaymentsDataManager* payments_data_manager();
+  autofill::ValuablesDataManager* valuables_data_manager();
 };
 
 class AutofillPrivateGetAccountInfoFunction
@@ -343,6 +345,24 @@ class AutofillPrivateGetPayOverTimeIssuerListFunction
 
  protected:
   ~AutofillPrivateGetPayOverTimeIssuerListFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
+class AutofillPrivateGetLoyaltyCardListFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateGetLoyaltyCardListFunction() = default;
+  AutofillPrivateGetLoyaltyCardListFunction(
+      const AutofillPrivateGetLoyaltyCardListFunction&) = delete;
+  AutofillPrivateGetLoyaltyCardListFunction& operator=(
+      const AutofillPrivateGetLoyaltyCardListFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.getLoyaltyCardList",
+                             AUTOFILLPRIVATE_GETLOYALTYCARDLIST)
+
+ protected:
+  ~AutofillPrivateGetLoyaltyCardListFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

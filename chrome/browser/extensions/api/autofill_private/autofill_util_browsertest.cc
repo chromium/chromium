@@ -8,10 +8,14 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -164,6 +168,27 @@ IN_PROC_BROWSER_TEST_F(AutofillUtilTestForBnpl,
   EXPECT_THAT(bnpl_issuer_list,
               UnorderedElementsAre(MatchesBnplIssuer(issuer_affirm),
                                    MatchesBnplIssuer(issuer_klarna)));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillUtilTest, GenerateLoyaltyCardList) {
+  autofill::TestValuablesDataManager vdm;
+  autofill::LoyaltyCard loyalty_card_1 = autofill::test::CreateLoyaltyCard();
+  autofill::LoyaltyCard loyalty_card_2 = autofill::test::CreateLoyaltyCard2();
+  autofill::test_api(vdm).SetLoyaltyCards({loyalty_card_1, loyalty_card_2});
+
+  LoyaltyCardEntryList loyalty_card_list = GenerateLoyaltyCardList(vdm);
+
+  ASSERT_EQ(2u, loyalty_card_list.size());
+  const std::vector<autofill::LoyaltyCard> expected_cards = {loyalty_card_1,
+                                                             loyalty_card_2};
+  for (size_t i = 0; i < expected_cards.size(); ++i) {
+    const auto& entry = loyalty_card_list[i];
+    EXPECT_EQ(expected_cards[i].id().value(), entry.id);
+    EXPECT_EQ(expected_cards[i].merchant_name(), entry.merchant_name);
+    EXPECT_EQ(expected_cards[i].loyalty_card_number(),
+              entry.loyalty_card_number);
+    EXPECT_EQ(entry.wallet_url, chrome::kWalletPassesPageURL);
+  }
 }
 
 }  // namespace

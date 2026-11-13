@@ -27,6 +27,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
@@ -40,6 +41,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_util.h"
@@ -122,6 +124,8 @@ static const char kErrorPaymentsDataManagerUnavailable[] =
     "Autofill payments data manager unavailable.";
 static const char kErrorPaymentsDataManagerLoadingUnfinished[] =
     "Autofill payments data manager loading unfinished.";
+static const char kErrorValuablesDataManagerUnavailable[] =
+    "Autofill valuables data manager unavailable.";
 static const char kErrorAddressProfileUnavailable[] =
     "Autofill address profile unavailable.";
 static const char kErrorAutofillAiUnavailable[] =
@@ -310,6 +314,18 @@ AutofillPrivateExtensionFunction::payments_data_manager() {
   autofill::ContentAutofillClient* client = autofill_client();
   return client ? &client->GetPersonalDataManager().payments_data_manager()
                 : nullptr;
+}
+
+autofill::ValuablesDataManager*
+AutofillPrivateExtensionFunction::valuables_data_manager() {
+  content::BrowserContext* context = browser_context();
+  if (!context) {
+    return nullptr;
+  }
+  AutofillPrivateEventRouterFactory::GetForProfile(context);
+  Profile* profile = Profile::FromBrowserContext(context);
+  return profile ? autofill::ValuablesDataManagerFactory::GetForProfile(profile)
+                 : nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -944,6 +960,21 @@ AutofillPrivateGetPayOverTimeIssuerListFunction::Run() {
   return RespondNow(ArgumentList(
       api::autofill_private::GetPayOverTimeIssuerList::Results::Create(
           pay_over_time_issuer_list)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateGetLoyaltyCardListFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateGetLoyaltyCardListFunction::Run() {
+  autofill::ValuablesDataManager* vdm = valuables_data_manager();
+  if (!vdm) {
+    return RespondNow(Error(base::StrCat(
+        {"Get loyalty card list - ", kErrorValuablesDataManagerUnavailable})));
+  }
+  return RespondNow(
+      ArgumentList(api::autofill_private::GetLoyaltyCardList::Results::Create(
+          autofill_util::GenerateLoyaltyCardList(*vdm))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
