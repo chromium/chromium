@@ -123,4 +123,17 @@ export class TestTextDomObserver extends TestSuite implements
     expectEq(this.corrupted.length, 1);
     expectEq(this.corrupted[0], annotation);
   }
+
+  // Tests that starting and stopping with a null root does not throw or observe
+  // any nodes.
+  testNullRootDoesNotThrow() {
+    this.observed.clear();
+    const nullRootObserver =
+        new TextDomObserver(null, this, this.decorationNodeRemovedConsumer);
+    nullRootObserver.start();
+    nullRootObserver.updateForTesting();
+    nullRootObserver.stop();
+    expectEq(this.observed.size, 0);
+    expectEq(this.corrupted.length, 0);
+  }
 }

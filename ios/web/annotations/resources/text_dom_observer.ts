@@ -28,7 +28,7 @@ export interface CountedIntersectionObserver {
 // (or unobserved) for viewport intersection.
 export class TextDomObserver {
   constructor(
-      public root: Element,
+      public root: Element|null,
       private intersectionObserver: CountedIntersectionObserver,
       private decorationNodeRemoved: TextDecorationNodeRemovedConsumer) {}
 
@@ -62,7 +62,10 @@ export class TextDomObserver {
 
   // Starts at given `node` and traverses all of its descendants, registering
   // text nodes with the IntersectionObserver.
-  private observeNodes(node: Node): void {
+  private observeNodes(node: Node|null|undefined): void {
+    if (!node) {
+      return;
+    }
     // Observe only nodes with text.
     if (node.nodeType === Node.TEXT_NODE) {
       this.intersectionObserver.observe(node);
@@ -80,7 +83,10 @@ export class TextDomObserver {
 
   // Starts at given `node` and traverses all of its descendants, unregistering
   // text nodes with the IntersectionObserver.
-  private unobserveNodes(node: Node): void {
+  private unobserveNodes(node: Node|null|undefined): void {
+    if (!node) {
+      return;
+    }
     // Only nodes with text are observed.
     if (node.nodeType === Node.TEXT_NODE) {
       this.intersectionObserver.unobserve(node);
@@ -99,6 +105,9 @@ export class TextDomObserver {
   // Starts the DOM observer. Scans the tree under `root` that is already loaded
   // then observes for further mutations.
   start(): void {
+    if (!this.root) {
+      return;
+    }
     this.observeNodes(this.root);
     // Only monitor DOM `element` changes and text nodes mutation.
     this.mutationObserver.observe(this.root, {

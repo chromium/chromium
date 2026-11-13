@@ -37,6 +37,11 @@ namespace {
 // This is for cases where no message should be sent back from Js.
 constexpr base::TimeDelta kWaitForJsNotReturnTimeout = base::Milliseconds(500);
 
+// Extended timeout for asynchronous text extraction and idle-task scheduling
+// in `WKWebView` to avoid flakiness under load.
+constexpr base::TimeDelta kWaitForTextExtractionTimeout =
+    4 * kWaitForActionTimeout;
+
 const char kTestScriptName[] = "annotations_test";
 const char kViewportScriptName[] = "text_main";
 
@@ -1121,6 +1126,112 @@ TEST_F(AnnotationTextManagerViewportTest,
 
   DispatchScriptMessage(trusted_feature.get(), message);
   EXPECT_EQ(1, observer()->clicks() - clicks);
+}
+
+// Tests that `annotations.start` does not throw when
+// `document.documentElement` is null after root removal, and succeeds on a
+// subsequent call in the same isolated-world context once a document root is
+// restored.
+TEST_F(AnnotationTextManagerViewportTest,
+       StartWithNullDocumentElementAllowsSubsequentStart) {
+  feature_.InitAndEnableFeature(features::kAssertOnJavaScriptErrors);
+
+  auto* manager = AnnotationsTextManager::FromWebState(web_state());
+  // Disable automatic extraction on `PageLoaded` so `annotations.start` is
+  // first invoked while `document.documentElement` is null.
+  manager->SetSupportedTypes(0);
+
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  auto* feature = AnnotationsJavaScriptFeature::GetInstance();
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), @"window.__annotationsContextMarker = 'preserved';",
+      feature);
+
+  ExecuteJavaScript(@"document.documentElement.remove(); true;");
+  ASSERT_TRUE(
+      [ExecuteJavaScript(@"document.documentElement === null;") isEqual:@YES]);
+
+  observer()->Reset();
+  const int initial_seq_id = observer()->seq_id();
+
+  feature->ExtractText(web_state(), kMaxAnnotationsTextLength, /*seq_id=*/1);
+  // Synchronously flush the isolated-world queue so any JS error reported via
+  // `WindowErrorResultHandler` is processed before restoring the root element.
+  web::test::ExecuteJavaScriptForFeature(web_state(), @"0;", feature);
+  EXPECT_EQ(0, observer()->text_extracted_calls());
+
+  // Re-populate the document in the same `window` via `document.open()` /
+  // `document.write()` so WebKit rebuilds the root renderer while keeping the
+  // existing `kInjectOncePerWindow` `text_main` closure intact.
+  ExecuteJavaScript(
+      @"document.open();"
+       "document.write('<html><body><p>Castro Street, Mountain View, "
+       "CA</p></body></html>');"
+       "document.close();"
+       "true;");
+  ASSERT_TRUE([web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+      web_state(), @"window.__annotationsContextMarker;", feature)
+      isEqual:@"preserved"]);
+
+  feature->ExtractText(web_state(), kMaxAnnotationsTextLength, /*seq_id=*/2);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForTextExtractionTimeout, ^{
+    return observer()->seq_id() > initial_seq_id;
+  }));
+  EXPECT_EQ("Castro Street, Mountain View, CA ", observer()->extracted_text());
+
+  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
+  CreateAndApplyAnnotations(source, @[ @"Mountain View" ],
+                            observer()->seq_id());
+  EXPECT_EQ(1, observer()->successes());
+  CheckHtml("<html><body>"
+            "<p>Castro Street,<span> </span><chrome_annotation>Mountain View"
+            "</chrome_annotation>, CA</p>"
+            "</body></html>");
+}
+
+// Tests that `annotations.start` does not throw while `document.open()` has
+// cleared `document.documentElement`, and succeeds once `document.write()`
+// populates a new document root.
+TEST_F(AnnotationTextManagerViewportTest,
+       StartDuringDocumentOpenAllowsSubsequentStart) {
+  feature_.InitAndEnableFeature(features::kAssertOnJavaScriptErrors);
+
+  auto* manager = AnnotationsTextManager::FromWebState(web_state());
+  manager->SetSupportedTypes(0);
+
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  ExecuteJavaScript(@"document.open(); true;");
+  ASSERT_TRUE(
+      [ExecuteJavaScript(@"document.documentElement === null;") isEqual:@YES]);
+
+  observer()->Reset();
+  const int initial_seq_id = observer()->seq_id();
+
+  auto* feature = AnnotationsJavaScriptFeature::GetInstance();
+  feature->ExtractText(web_state(), kMaxAnnotationsTextLength, /*seq_id=*/1);
+  web::test::ExecuteJavaScriptForFeature(web_state(), @"0;", feature);
+  EXPECT_EQ(0, observer()->text_extracted_calls());
+
+  ExecuteJavaScript(
+      @"document.write('<html lang=\"fr\"><body><p>Castro Street, Mountain "
+       "View, CA</p></body></html>');"
+       "document.close();"
+       "true;");
+
+  feature->ExtractText(web_state(), kMaxAnnotationsTextLength, /*seq_id=*/2);
+
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForTextExtractionTimeout, ^{
+    return observer()->seq_id() > initial_seq_id;
+  }));
+  EXPECT_EQ("Castro Street, Mountain View, CA ", observer()->extracted_text());
+  const std::string* html_lang = observer()->metadata().FindString("htmlLang");
+  ASSERT_TRUE(html_lang);
+  EXPECT_EQ("fr", *html_lang);
 }
 
 }  // namespace web

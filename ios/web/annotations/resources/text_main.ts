@@ -50,7 +50,7 @@ function textChunkConsumer(chunk: TextChunk): void {
     text: chunk.text,
     seqId: uniqueId,
     metadata: {
-      htmlLang: document.documentElement.lang,
+      htmlLang: document.documentElement?.lang ?? '',
       httpContentLanguage: getMetaContentByHttpEquiv('content-language'),
       wkNoTelephone: disabledTypes.has('telephone'),
       wkNoEmail: disabledTypes.has('email'),
@@ -124,7 +124,14 @@ function start(maxTextLength: number): void {
   if (hasNoIntentDetection() || intersectionObserver) {
     return;
   }
-  const root = document.documentElement;
+  // `document.documentElement` is null when a document has no root element
+  // (e.g., during `document.open()` or after root removal). Return before
+  // initializing module state so a subsequent `start` call can succeed once
+  // a root element is present.
+  const root: Element|null = document.documentElement;
+  if (!root) {
+    return;
+  }
   idleTaskTracker = new IdleTaskTracker();
   click = new TextClick(root, tapConsumer, () => decorator?.decorations);
   extractor = new TextExtractor(textChunkConsumer, maxTextLength);
