@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -25,8 +30,11 @@ import java.util.List;
  */
 @NullMarked
 public class NtpThemeCollectionBridge {
+    @JniType("::NtpThemeCollectionBridge")
+    public interface NativeNtpThemeCollectionBridge extends JniTypeToken {}
+
     private final Callback<@Nullable CustomBackgroundInfo> mOnCustomBackgroundImageUpdatedCallback;
-    private long mNativeNtpThemeCollectionBridge;
+    private @Nullable JniUniquePtr<NativeNtpThemeCollectionBridge> mNativeNtpThemeCollectionBridge;
 
     /**
      * Constructs a new NtpThemeCollectionBridge.
@@ -44,9 +52,9 @@ public class NtpThemeCollectionBridge {
 
     /** Cleans up the C++ side of this class. */
     public void destroy() {
-        assert mNativeNtpThemeCollectionBridge != 0;
-        NtpThemeCollectionBridgeJni.get().destroy(mNativeNtpThemeCollectionBridge);
-        mNativeNtpThemeCollectionBridge = 0;
+        assert mNativeNtpThemeCollectionBridge != null;
+        mNativeNtpThemeCollectionBridge.destroy();
+        mNativeNtpThemeCollectionBridge = null;
     }
 
     /**
@@ -55,9 +63,11 @@ public class NtpThemeCollectionBridge {
      * @param callback The callback to be invoked with the list of collections.
      */
     public void getBackgroundCollections(Callback<@Nullable List<BackgroundCollection>> callback) {
+        if (mNativeNtpThemeCollectionBridge == null) return;
+
         NtpThemeCollectionBridgeJni.get()
                 .getBackgroundCollections(
-                        mNativeNtpThemeCollectionBridge,
+                        assumeNonNull(mNativeNtpThemeCollectionBridge),
                         new Callback<Object[]>() {
                             @Override
                             public void onResult(Object[] collections) {
@@ -88,9 +98,11 @@ public class NtpThemeCollectionBridge {
      */
     public void getBackgroundImages(
             String collectionId, Callback<@Nullable List<CollectionImage>> callback) {
+        if (mNativeNtpThemeCollectionBridge == null) return;
+
         NtpThemeCollectionBridgeJni.get()
                 .getBackgroundImages(
-                        mNativeNtpThemeCollectionBridge,
+                        assumeNonNull(mNativeNtpThemeCollectionBridge),
                         collectionId,
                         new Callback<Object[]>() {
                             @Override
@@ -159,11 +171,13 @@ public class NtpThemeCollectionBridge {
      * @param image The {@link CollectionImage} selected by the user.
      */
     public void setThemeCollectionImage(CollectionImage image) {
+        if (mNativeNtpThemeCollectionBridge == null) return;
+
         String attributionLine1 = image.attribution.size() > 0 ? image.attribution.get(0) : null;
         String attributionLine2 = image.attribution.size() > 1 ? image.attribution.get(1) : null;
         NtpThemeCollectionBridgeJni.get()
                 .setThemeCollectionImage(
-                        mNativeNtpThemeCollectionBridge,
+                        assumeNonNull(mNativeNtpThemeCollectionBridge),
                         image.collectionId,
                         image.imageUrl,
                         image.previewImageUrl,
@@ -178,19 +192,19 @@ public class NtpThemeCollectionBridge {
      * @param themeCollectionId The id of the theme collection
      */
     public void setThemeCollectionDailyRefreshed(String themeCollectionId) {
-        if (mNativeNtpThemeCollectionBridge == 0) return;
+        if (mNativeNtpThemeCollectionBridge == null) return;
 
         NtpThemeCollectionBridgeJni.get()
                 .setThemeCollectionDailyRefreshed(
-                        mNativeNtpThemeCollectionBridge, themeCollectionId);
+                        assumeNonNull(mNativeNtpThemeCollectionBridge), themeCollectionId);
     }
 
     /** Fetches the next image for a theme collection with daily refresh enabled. */
     public void fetchNextThemeCollectionImage() {
-        if (mNativeNtpThemeCollectionBridge == 0) return;
+        if (mNativeNtpThemeCollectionBridge == null) return;
 
         NtpThemeCollectionBridgeJni.get()
-                .fetchNextThemeCollectionImage(mNativeNtpThemeCollectionBridge);
+                .fetchNextThemeCollectionImage(assumeNonNull(mNativeNtpThemeCollectionBridge));
     }
 
     /**
@@ -200,13 +214,13 @@ public class NtpThemeCollectionBridge {
     @CalledByNative
     @VisibleForTesting
     public void onCustomBackgroundImageUpdated() {
-        if (mNativeNtpThemeCollectionBridge == 0) {
+        if (mNativeNtpThemeCollectionBridge == null) {
             return;
         }
 
         CustomBackgroundInfo customBackgroundInfo =
                 NtpThemeCollectionBridgeJni.get()
-                        .getCustomBackgroundInfo(mNativeNtpThemeCollectionBridge);
+                        .getCustomBackgroundInfo(assumeNonNull(mNativeNtpThemeCollectionBridge));
         mOnCustomBackgroundImageUpdatedCallback.onResult(customBackgroundInfo);
     }
 
@@ -244,20 +258,19 @@ public class NtpThemeCollectionBridge {
 
     @NativeMethods
     public interface Natives {
-        long init(Profile profile, NtpThemeCollectionBridge caller);
-
-        void destroy(long nativeNtpThemeCollectionBridge);
+        JniUniquePtr<NativeNtpThemeCollectionBridge> init(
+                Profile profile, NtpThemeCollectionBridge caller);
 
         void getBackgroundCollections(
-                long nativeNtpThemeCollectionBridge, Callback<Object[]> callback);
+                JniPtr<NativeNtpThemeCollectionBridge> self, Callback<Object[]> callback);
 
         void getBackgroundImages(
-                long nativeNtpThemeCollectionBridge,
+                JniPtr<NativeNtpThemeCollectionBridge> self,
                 @JniType("std::string") String collectionId,
                 Callback<Object[]> callback);
 
         void setThemeCollectionImage(
-                long nativeNtpThemeCollectionBridge,
+                JniPtr<NativeNtpThemeCollectionBridge> self,
                 @JniType("std::string") String collectionId,
                 @JniType("GURL") GURL imageUrl,
                 @JniType("GURL") GURL previewImageUrl,
@@ -266,10 +279,12 @@ public class NtpThemeCollectionBridge {
                 @JniType("GURL") GURL attributionUrl);
 
         void setThemeCollectionDailyRefreshed(
-                long nativeNtpThemeCollectionBridge, @JniType("std::string") String collectionId);
+                JniPtr<NativeNtpThemeCollectionBridge> self,
+                @JniType("std::string") String collectionId);
 
-        void fetchNextThemeCollectionImage(long nativeNtpThemeCollectionBridge);
+        void fetchNextThemeCollectionImage(JniPtr<NativeNtpThemeCollectionBridge> self);
 
-        @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpThemeCollectionBridge);
+        @Nullable CustomBackgroundInfo getCustomBackgroundInfo(
+                JniPtr<NativeNtpThemeCollectionBridge> self);
     }
 }

@@ -38,8 +38,7 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
   NtpThemeCollectionBridge(const NtpThemeCollectionBridge&) = delete;
   NtpThemeCollectionBridge& operator=(const NtpThemeCollectionBridge&) = delete;
 
-  // Called by the Java counterpart to destroy this object.
-  void Destroy(JNIEnv* env);
+  ~NtpThemeCollectionBridge() override;
 
   // Fetches the list of background collections. The `j_callback` will be
   // invoked with the list of `BackgroundCollection` objects.
@@ -88,7 +87,6 @@ class NtpThemeCollectionBridge : public NtpBackgroundServiceObserver,
 
  protected:
   NtpThemeCollectionBridge();
-  ~NtpThemeCollectionBridge() override;
 
  private:
   // NtpBackgroundServiceObserver:

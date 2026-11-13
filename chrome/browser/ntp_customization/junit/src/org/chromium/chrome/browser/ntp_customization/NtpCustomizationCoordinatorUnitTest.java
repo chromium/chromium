@@ -36,6 +36,7 @@ import android.widget.ViewFlipper;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge.NativeNtpThemeCollectionBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridgeJni;
 import org.chromium.chrome.browser.ntp_customization.theme.tip.NtpThemeTipCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
@@ -101,6 +103,8 @@ public class NtpCustomizationCoordinatorUnitTest {
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
 
+    private JniUniquePtr<NativeNtpThemeCollectionBridge> mNativeNtpThemeCollectionBridge;
+
     @Before
     public void setUp() {
         mContext =
@@ -125,7 +129,9 @@ public class NtpCustomizationCoordinatorUnitTest {
         FeedServiceBridgeJni.setInstanceForTesting(mMockFeedServiceBridgeJni);
         when(mMockFeedServiceBridgeJni.isEnabled()).thenReturn(true);
         NtpThemeCollectionBridgeJni.setInstanceForTesting(mNtpThemeCollectionBridgeJni);
-        when(mNtpThemeCollectionBridgeJni.init(any(), any())).thenReturn(1L);
+        mNativeNtpThemeCollectionBridge = JniUniquePtr.createForTesting(1L);
+        when(mNtpThemeCollectionBridgeJni.init(any(), any()))
+                .thenReturn(mNativeNtpThemeCollectionBridge);
         CrossDeviceThemeTracker.setInstanceForTesting(mCrossDeviceThemeTrackerJni);
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
 
@@ -144,6 +150,7 @@ public class NtpCustomizationCoordinatorUnitTest {
 
     @After
     public void tearDown() {
+        mNativeNtpThemeCollectionBridge.destroy();
         mEdgeToEdgeStateProvider.detach();
     }
 

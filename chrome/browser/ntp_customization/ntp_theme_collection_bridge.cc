@@ -15,6 +15,7 @@
 #include "components/themes/ntp_background_data.h"
 #include "components/themes/ntp_background_service.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -24,14 +25,13 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-static int64_t JNI_NtpThemeCollectionBridge_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_profile,
-    const JavaRef<jobject>& j_java_obj) {
+static jni_zero::JniUniquePtr<NtpThemeCollectionBridge>
+JNI_NtpThemeCollectionBridge_Init(JNIEnv* env,
+                                  const JavaRef<jobject>& j_profile,
+                                  const JavaRef<jobject>& j_java_obj) {
   Profile* profile = Profile::FromJavaObject(j_profile);
-  NtpThemeCollectionBridge* ntp_theme_collection_bridge =
-      new NtpThemeCollectionBridge(env, profile, j_java_obj);
-  return reinterpret_cast<intptr_t>(ntp_theme_collection_bridge);
+  return jni_zero::MakeUnique<NtpThemeCollectionBridge>(env, profile,
+                                                        j_java_obj);
 }
 
 NtpThemeCollectionBridge::NtpThemeCollectionBridge(
@@ -50,22 +50,19 @@ NtpThemeCollectionBridge::NtpThemeCollectionBridge(
   ntp_custom_background_service_->SetThemeCollectionBridge(this);
 }
 
-void NtpThemeCollectionBridge::Destroy(JNIEnv* env) {
+void NtpThemeCollectionBridge::DisconnectCustomBackgroundService() {
+  ntp_custom_background_service_ = nullptr;
+}
+
+NtpThemeCollectionBridge::NtpThemeCollectionBridge() = default;
+NtpThemeCollectionBridge::~NtpThemeCollectionBridge() {
   if (ntp_background_service_) {
     ntp_background_service_->RemoveObserver(this);
   }
   if (ntp_custom_background_service_) {
     ntp_custom_background_service_->SetThemeCollectionBridge(nullptr);
   }
-  delete this;
 }
-
-void NtpThemeCollectionBridge::DisconnectCustomBackgroundService() {
-  ntp_custom_background_service_ = nullptr;
-}
-
-NtpThemeCollectionBridge::NtpThemeCollectionBridge() = default;
-NtpThemeCollectionBridge::~NtpThemeCollectionBridge() = default;
 
 void NtpThemeCollectionBridge::GetBackgroundCollections(
     JNIEnv* env,

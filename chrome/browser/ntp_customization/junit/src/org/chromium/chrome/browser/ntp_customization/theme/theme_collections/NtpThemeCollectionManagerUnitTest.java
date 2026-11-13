@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -22,6 +21,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.ColorInt;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge.NativeNtpThemeCollectionBridge;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -49,7 +50,6 @@ import java.util.List;
 /** Unit tests for {@link NtpThemeCollectionManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NtpThemeCollectionManagerUnitTest {
-    public static final long NATIVE_NTP_THEME_COLLECTION_BRIDGE = 1L;
     private static final String COLLECTION_ID = "collectionId";
     private static final String ATTR_1 = "attr1";
     private static final String ATTR_2 = "attr2";
@@ -66,13 +66,15 @@ public class NtpThemeCollectionManagerUnitTest {
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private NtpThemeCollectionManager mNtpThemeCollectionManager;
     private Context mContext;
+    private JniUniquePtr<NativeNtpThemeCollectionBridge> mNativeNtpThemeCollectionBridge;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         NtpCustomizationUtils.setImageFetcherForTesting(mImageFetcher);
         NtpThemeCollectionBridgeJni.setInstanceForTesting(mNatives);
-        when(mNatives.init(any(), any())).thenReturn(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
+        mNativeNtpThemeCollectionBridge = JniUniquePtr.createForTesting(1L);
+        when(mNatives.init(any(), any())).thenReturn(mNativeNtpThemeCollectionBridge);
         mNtpCustomizationConfigManager = spy(new NtpCustomizationConfigManager());
         NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
@@ -80,6 +82,9 @@ public class NtpThemeCollectionManagerUnitTest {
 
     @After
     public void tearDown() {
+        if (mNativeNtpThemeCollectionBridge != null) {
+            mNativeNtpThemeCollectionBridge.destroy();
+        }
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
@@ -87,8 +92,28 @@ public class NtpThemeCollectionManagerUnitTest {
     public void testDestroy() {
         mNtpThemeCollectionManager =
                 new NtpThemeCollectionManager(mContext, mProfile, mOnThemeImageSelectedCallback);
+        verify(mNatives).init(eq(mProfile), any());
+
+        mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(COLLECTION_ID);
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true);
+        mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(info);
+        verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
+
         mNtpThemeCollectionManager.destroy();
-        verify(mNatives).destroy(anyLong());
+        mNativeNtpThemeCollectionBridge = null;
+
+        mBitmapCallbackCaptor
+                .getValue()
+                .onResult(Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888));
+        verify(mOnThemeImageSelectedCallback, never()).onResult(any());
+
+        mNtpThemeCollectionManager.getBackgroundCollections(result -> {});
+        verify(mNatives, never()).getBackgroundCollections(any(), any());
     }
 
     @Test
@@ -195,7 +220,7 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(COLLECTION_ID);
         verify(mNatives)
                 .setThemeCollectionDailyRefreshed(
-                        eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE), eq(COLLECTION_ID));
+                        eq(mNativeNtpThemeCollectionBridge), eq(COLLECTION_ID));
 
         // 2. The first image for the collection arrives.
         GURL backgroundUrl = JUnitTestGURLs.URL_1;
@@ -225,7 +250,7 @@ public class NtpThemeCollectionManagerUnitTest {
         assertTrue(NtpCustomizationUtils.createBackgroundImageFile().exists());
 
         // 4. Verify the runnable was executed to fetch the next image for tomorrow.
-        verify(mNatives).fetchNextThemeCollectionImage(eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE));
+        verify(mNatives).fetchNextThemeCollectionImage(eq(mNativeNtpThemeCollectionBridge));
     }
 
     @Test
@@ -307,7 +332,7 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(newerInfo);
 
         verifyOnlySecondDownloadApplied(newerInfo);
-        verify(mNatives).fetchNextThemeCollectionImage(eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE));
+        verify(mNatives).fetchNextThemeCollectionImage(eq(mNativeNtpThemeCollectionBridge));
     }
 
     @Test
@@ -324,7 +349,7 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.onCustomBackgroundImageUpdated(newerInfo);
 
         verifyOnlySecondDownloadApplied(newerInfo);
-        verify(mNatives).fetchNextThemeCollectionImage(eq(NATIVE_NTP_THEME_COLLECTION_BRIDGE));
+        verify(mNatives).fetchNextThemeCollectionImage(eq(mNativeNtpThemeCollectionBridge));
     }
 
     /**
@@ -340,7 +365,7 @@ public class NtpThemeCollectionManagerUnitTest {
         completeDownload(firstCallback);
         verify(mOnThemeImageSelectedCallback, never()).onResult(any());
         verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
-        verify(mNatives, never()).fetchNextThemeCollectionImage(anyLong());
+        verify(mNatives, never()).fetchNextThemeCollectionImage(any());
 
         completeDownload(secondCallback);
         ArgumentCaptor<NtpBackgroundDataThemeCollection> dataCaptor =
@@ -370,7 +395,7 @@ public class NtpThemeCollectionManagerUnitTest {
         mNtpThemeCollectionManager.setThemeCollectionImage(image);
         verify(mNatives)
                 .setThemeCollectionImage(
-                        NATIVE_NTP_THEME_COLLECTION_BRIDGE,
+                        mNativeNtpThemeCollectionBridge,
                         COLLECTION_ID,
                         JUnitTestGURLs.URL_1,
                         JUnitTestGURLs.URL_2,
