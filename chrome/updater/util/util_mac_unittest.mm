@@ -5,13 +5,16 @@
 #include "chrome/updater/util/util.h"
 
 #include <errno.h>
+#include <string.h>
 #include <sys/stat.h>
+#include <sys/xattr.h>
 #include <unistd.h>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/posix/safe_strerror.h"
+#include "chrome/updater/util/mac_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -123,6 +126,21 @@ TEST(UtilTest, SetFilePermissionsRecursiveTestLink) {
   CheckPermission(dir, 0700);
   CheckPermission(file, 0600);
   CheckPermission(link, 0755);
+}
+
+TEST(UtilTest, IsQuarantined) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file = temp_dir.GetPath().AppendASCII("f");
+  ASSERT_TRUE(base::WriteFile(file, ""));
+  EXPECT_FALSE(IsQuarantined(file));
+
+  static constexpr char kQuarantine[] = "0081;00000000;Chromium;";
+  ASSERT_EQ(setxattr(file.value().c_str(), kQuarantineAttribute, kQuarantine,
+                     strlen(kQuarantine), /*position=*/0, /*options=*/0),
+            0);
+  EXPECT_TRUE(IsQuarantined(file));
+  EXPECT_FALSE(IsQuarantined(temp_dir.GetPath().AppendASCII("missing")));
 }
 
 }  // namespace updater

@@ -99,6 +99,8 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include <sys/stat.h>
+
 #include "chrome/updater/test/integration_tests_mac.h"
 #include "chrome/updater/util/mac_util.h"
 #endif
@@ -381,6 +383,17 @@ void ExpectReportsActiveUpdateCheck(ScopedServer& test_server) {
       R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
       R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
 }
+
+#if BUILDFLAG(IS_MAC)
+// Returns the inode of the wake plist, which changes if setup rewrites it.
+ino_t GetWakePlistInode() {
+  const std::optional<base::FilePath> path =
+      GetWakeTaskPlistPath(GetUpdaterScopeForTesting());
+  struct stat info = {};
+  EXPECT_TRUE(path && !stat(path->value().c_str(), &info)) << path;
+  return info.st_ino;
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -865,6 +878,10 @@ class IntegrationTest : public ::testing::Test {
   void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path) {
     test_commands_->ExpectPrepareToRunBundleSuccess(bundle_path);
   }
+
+  void QuarantineWakePlist() { test_commands_->QuarantineWakePlist(); }
+
+  void ExpectWakeJobLoaded() { test_commands_->ExpectWakeJobLoaded(); }
 
   void ExpectKSAdminFetchTag(bool elevate,
                              const std::string& product_id,
@@ -4281,6 +4298,48 @@ TEST_F(IntegrationTest, SmokeTestPrepareToRunBundle) {
   ASSERT_TRUE(updater_path);
   ASSERT_NO_FATAL_FAILURE(ExpectPrepareToRunBundleSuccess(*updater_path));
 
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+// Setup leaves an unchanged wake plist alone when a broken updater is
+// reinstalled at the same version: rewriting the plist can notify the user.
+TEST_F(IntegrationTest, OverinstallBrokenKeepsWakePlist) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  const ino_t inode = GetWakePlistInode();
+  ASSERT_NO_FATAL_FAILURE(DeleteActiveUpdaterExecutable());
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  EXPECT_EQ(GetWakePlistInode(), inode);
+  ASSERT_NO_FATAL_FAILURE(ExpectWakeJobLoaded());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+// launchd on macOS 27+ drops a quarantined wake plist at login. Setup must
+// rewrite and reload such a plist, even if its contents are unchanged.
+TEST_F(IntegrationTest, OverinstallBrokenRepairsQuarantinedWakePlist) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(QuarantineWakePlist());
+  ASSERT_NO_FATAL_FAILURE(DeleteActiveUpdaterExecutable());
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectWakeJobLoaded());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+// An updater launched by the browser inherits file quarantine, so the wake
+// plist it writes is quarantined. Setup must still get the wake job loaded.
+TEST_F(IntegrationTest, InstallWithInheritedQuarantine) {
+  if (IsSystemInstall(GetUpdaterScopeForTesting())) {
+    GTEST_SKIP() << "The browser installs only the user updater.";
+  }
+  ASSERT_NO_FATAL_FAILURE(InstallFromQuarantineEnabledApp());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectWakeJobLoaded());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

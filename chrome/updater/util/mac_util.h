@@ -54,6 +54,12 @@ bool PrepareToRunBundle(const base::FilePath& bundle_path);
 // Recursively remove quarantine attributes on `path`. Returns false on error.
 bool RemoveQuarantineAttributes(const base::FilePath& path);
 
+inline constexpr char kQuarantineAttribute[] = "com.apple.quarantine";
+
+// Returns true if the file at `path` has the com.apple.quarantine attribute;
+// false if it does not, does not exist, or cannot be read.
+bool IsQuarantined(const base::FilePath& path);
+
 std::string GetDomain(UpdaterScope scope);
 
 // Reads the value associated with `key` from the plist at `path`. Returns

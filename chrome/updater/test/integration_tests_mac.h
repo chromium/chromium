@@ -74,6 +74,10 @@ void ExpectRegistrationTestAppRegisterSuccess();
 // inside the application bundle, and then register itself for updates.
 void ExpectRegistrationTestAppInstallAndRegisterSuccess();
 
+// Installs the user updater from an app with LSFileQuarantineEnabled, as the
+// browser does, so that the updater inherits file quarantine.
+void InstallFromQuarantineEnabledApp();
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_MAC_H_

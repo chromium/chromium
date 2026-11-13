@@ -493,6 +493,14 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectPrepareToRunBundleSuccess(bundle_path);
   }
 
+  void QuarantineWakePlist() const override {
+    updater::test::QuarantineWakePlist(updater_scope_);
+  }
+
+  void ExpectWakeJobLoaded() const override {
+    updater::test::ExpectWakeJobLoaded(updater_scope_);
+  }
+
   void ExpectKSAdminFetchTag(
       bool elevate,
       const std::string& product_id,

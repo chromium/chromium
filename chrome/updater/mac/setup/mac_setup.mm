@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/mac/mac_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -102,7 +103,14 @@ bool CopyBundle(UpdaterScope scope) {
   return true;
 }
 
+// Removes quarantine from the plist at `path`, then bootstraps it into the
+// launchd domain for `scope`. Returns false if launchctl fails.
 bool BootstrapPlist(UpdaterScope scope, const base::FilePath& path) {
+  // The updater inherits file quarantine when the browser launches it, and
+  // launchd on macOS 27+ refuses quarantined plists.
+  if (!base::mac::RemoveQuarantineAttribute(path)) {
+    VPLOG(1) << "Failed to remove quarantine from " << path;
+  }
   std::string output;
   int exit_code = 0;
   base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
@@ -119,8 +127,8 @@ bool BootstrapPlist(UpdaterScope scope, const base::FilePath& path) {
 }
 
 // Ensure that the LaunchAgents/LaunchDaemons directory contains the wake item
-// plist, with the specified contents. If not, the plist will be overwritten and
-// the item reloaded. May block.
+// plist, with the specified contents and without quarantine. If not, the plist
+// will be overwritten and the item reloaded. May block.
 bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
   const std::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
   if (!path) {
@@ -153,7 +161,8 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
     NSURL* const url = base::apple::FilePathToNSURL(*path);
 
     // If the file is unchanged, avoid a spammy notification by not touching it.
-    if (previousPlistExists &&
+    // A quarantined plist may not be loadable, so it is always rewritten.
+    if (previousPlistExists && !IsQuarantined(*path) &&
         [contents isEqualToDictionary:[NSDictionary
                                           dictionaryWithContentsOfURL:url
                                                                 error:nil]]) {

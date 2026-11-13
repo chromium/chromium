@@ -216,6 +216,8 @@ class IntegrationTestCommands
   virtual void DeleteLegacyUpdater() const = 0;
   virtual void ExpectPrepareToRunBundleSuccess(
       const base::FilePath& bundle_path) const = 0;
+  virtual void QuarantineWakePlist() const = 0;
+  virtual void ExpectWakeJobLoaded() const = 0;
   virtual void ExpectKSAdminFetchTag(
       bool elevate,
       const std::string& product_id,

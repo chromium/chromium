@@ -554,6 +554,14 @@ void CloseInstallCompleteDialog(const std::u16string& bundle_name,
 void PrivilegedHelperInstall(UpdaterScope scope);
 void DeleteLegacyUpdater(UpdaterScope scope);
 void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path);
+
+// Unloads the wake job and quarantines its plist. This is the state launchd on
+// macOS 27+ leaves at login if a quarantined process wrote the plist.
+void QuarantineWakePlist(UpdaterScope scope);
+
+// Expects that launchd has loaded the wake job, and that its plist is not
+// quarantined.
+void ExpectWakeJobLoaded(UpdaterScope scope);
 #endif  // BUILDFLAG(IS_MAC)
 
 void ExpectLegacyUpdaterMigrated(UpdaterScope scope);

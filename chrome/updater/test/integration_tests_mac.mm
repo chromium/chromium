@@ -5,6 +5,8 @@
 #include "chrome/updater/test/integration_tests_mac.h"
 
 #include <stdlib.h>
+#include <string.h>
+#include <sys/xattr.h>
 
 #include <map>
 #include <memory>
@@ -556,6 +558,58 @@ void ExpectAppVersion(UpdaterScope scope,
 
 void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path) {
   EXPECT_TRUE(PrepareToRunBundle(bundle_path));
+}
+
+void QuarantineWakePlist(UpdaterScope scope) {
+  const std::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  ASSERT_TRUE(path);
+  base::CommandLine bootout(base::FilePath("/bin/launchctl"));
+  bootout.AppendArg("bootout");
+  bootout.AppendArg(
+      base::StrCat({GetDomain(scope), "/", GetWakeLaunchdName(scope)}));
+  ASSERT_NO_FATAL_FAILURE(ExpectCliResult(bootout, /*elevate=*/false, {}, 0));
+
+  // The attribute a quarantined process gives the files it writes.
+  static constexpr char kQuarantine[] = "0081;00000000;Chromium;";
+  ASSERT_EQ(setxattr(path->value().c_str(), kQuarantineAttribute, kQuarantine,
+                     strlen(kQuarantine), /*position=*/0, /*options=*/0),
+            0);
+}
+
+void ExpectWakeJobLoaded(UpdaterScope scope) {
+  const std::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  ASSERT_TRUE(path);
+  EXPECT_TRUE(base::PathExists(*path));
+  EXPECT_FALSE(IsQuarantined(*path));
+  base::CommandLine print(base::FilePath("/bin/launchctl"));
+  print.AppendArg("print");
+  print.AppendArg(
+      base::StrCat({GetDomain(scope), "/", GetWakeLaunchdName(scope)}));
+  ExpectCliResult(print, /*elevate=*/false, {}, 0);
+}
+
+void InstallFromQuarantineEnabledApp() {
+  base::FilePath exe_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_dir));
+  const base::FilePath app_path = exe_dir.Append(
+      "quarantine_enabled_app.app/Contents/MacOS/quarantine_enabled_app");
+
+  // Without inherited quarantine, the install below would prove nothing.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath probe = temp_dir.GetPath().Append("probe");
+  base::CommandLine touch(app_path);
+  touch.AppendArg("/usr/bin/touch");
+  touch.AppendArgPath(probe);
+  ASSERT_NO_FATAL_FAILURE(ExpectCliResult(touch, /*elevate=*/false, {}, 0));
+  ASSERT_TRUE(IsQuarantined(probe));
+
+  base::CommandLine install(app_path);
+  install.AppendArgPath(GetSetupExecutablePath());
+  install.AppendArg(base::StrCat({"--", kInstallSwitch, "=usagestats=1"}));
+  int exit_code = -1;
+  Run(UpdaterScope::kUser, install, &exit_code);
+  ASSERT_EQ(exit_code, 0);
 }
 
 void ExpectKSAdminResult(UpdaterScope scope,

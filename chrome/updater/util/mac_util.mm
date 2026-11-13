@@ -6,6 +6,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 #include <sys/stat.h>
+#include <sys/xattr.h>
 #include <unistd.h>
 
 #include <optional>
@@ -94,6 +95,12 @@ bool RemoveQuarantineAttributes(const base::FilePath& path) {
     success = base::mac::RemoveQuarantineAttribute(name) && success;
   }
   return success;
+}
+
+bool IsQuarantined(const base::FilePath& path) {
+  return getxattr(path.value().c_str(), kQuarantineAttribute,
+                  /*value=*/nullptr, /*size=*/0, /*position=*/0,
+                  /*options=*/0) >= 0;
 }
 
 std::string GetDomain(UpdaterScope scope) {

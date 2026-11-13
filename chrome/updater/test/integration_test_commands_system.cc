@@ -609,6 +609,14 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("bundle_path", bundle_path.AsUTF8Unsafe())});
   }
 
+  void QuarantineWakePlist() const override {
+    RunCommand("quarantine_wake_plist");
+  }
+
+  void ExpectWakeJobLoaded() const override {
+    RunCommand("expect_wake_job_loaded");
+  }
+
   void ExpectKSAdminFetchTag(
       bool elevate,
       const std::string& product_id,
