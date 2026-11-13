@@ -25,6 +25,9 @@ class CustomFormControlScriptRunnerTestApi {
     return runner_->detected_controls_;
   }
 
+  // Returns whether a fill of the detected controls is in progress.
+  bool is_filling() const { return runner_->filling_state_.has_value(); }
+
  private:
   const raw_ref<CustomFormControlScriptRunner> runner_;
 };
