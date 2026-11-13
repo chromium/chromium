@@ -63,7 +63,11 @@ if (swift_toolchain_path == -1) {
     swiftc_version = "swift-5.8-release"
 
     # Use the hermetic swift toolchain.
-    swift_toolchain_path = "//third_party/swift-toolchain/"
+    if (host_cpu == "x64") {
+      swift_toolchain_path = "//third_party/swift-toolchain/mac-amd64"
+    } else {
+      swift_toolchain_path = "//third_party/swift-toolchain/mac-arm64"
+    }
   } else {
     swift_toolchain_path = ""
   }
