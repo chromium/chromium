@@ -269,12 +269,13 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
     gfx::Vector2d current;
     gfx::Vector2d start_to_current_bounds;
 
-    // Converts `bounds_in_screen` into `host`'s starting coordinate space,
+    // Converts `bounds_in_top_host` (in the top-level animating container's
+    // logical coordinate space) into `host`'s starting coordinate space,
     // avoiding parabolic overshoot when `host` moves during a reparent
-    // animation.
-    gfx::Rect ConvertScreenRectToStartBounds(
+    // animation and preserving RTL mirroring across animating ancestors.
+    gfx::Rect ConvertTopHostRectToStartBounds(
         const views::View* host,
-        const gfx::Rect& bounds_in_screen) const;
+        const gfx::Rect& bounds_in_top_host) const;
 
     gfx::Rect InterpolateChildBounds(double value,
                                      const gfx::Rect& start_bounds,

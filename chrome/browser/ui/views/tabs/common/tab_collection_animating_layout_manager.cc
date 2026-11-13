@@ -39,8 +39,9 @@ namespace {
 // are removed from the View tree once they are no longer required.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPendingDeletion, false)
 
-// Stores the bounds in screen coordinates of the associated View prior to being
-// removed from its host TabCollectionNode. Used for collection move animations.
+// Stores the logical bounds of the associated View in the top-level animating
+// container's coordinate space prior to being removed from its host
+// TabCollectionNode. Used for collection move animations.
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kPreviousCollectionBounds)
 
 // Stores optional source layout information of the associated View. Used for
@@ -97,6 +98,14 @@ TabCollectionAnimatingLayoutManager* GetTopLevelAnimatingLayoutManager(
     manager = parent_layout_manager;
   }
   return manager;
+}
+
+const views::View* GetTopLevelAnimatingHostView(const views::View* host) {
+  while (const auto* parent_layout_manager =
+             GetParentAnimatingLayoutManager(host)) {
+    host = parent_layout_manager->host_view();
+  }
+  return host;
 }
 
 void RemoveViewFromChildLayouts(
@@ -757,17 +766,24 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
   if (!delegate_->IsViewDragging(*view_to_reparent) &&
       !previous_bounds_in_screen.IsEmpty()) {
     AcquireLayoutAnimationLayer(view_to_reparent.get());
+    const views::View* top_host = GetTopLevelAnimatingHostView(host_view());
+    const gfx::Rect previous_bounds_in_top_host =
+        top_host->GetMirroredRect(views::View::ConvertRectFromScreen(
+            top_host, previous_bounds_in_screen));
     view_to_reparent->SetProperty(kPreviousCollectionBounds,
-                                  previous_bounds_in_screen);
+                                  previous_bounds_in_top_host);
   }
   host_view()->AddChildView(std::move(view_to_reparent));
 }
 
 gfx::Rect TabCollectionAnimatingLayoutManager::HostAnimationOffsets::
-    ConvertScreenRectToStartBounds(const views::View* host,
-                                   const gfx::Rect& bounds_in_screen) const {
-  return views::View::ConvertRectFromScreen(host, bounds_in_screen) +
-         start_to_current_bounds;
+    ConvertTopHostRectToStartBounds(const views::View* host,
+                                    const gfx::Rect& bounds_in_top_host) const {
+  const views::View* top_host = GetTopLevelAnimatingHostView(host);
+  const gfx::Rect current_bounds_in_host =
+      host->GetMirroredRect(views::View::ConvertRectToTarget(
+          top_host, host, top_host->GetMirroredRect(bounds_in_top_host)));
+  return current_bounds_in_host + start_to_current_bounds;
 }
 
 gfx::Rect TabCollectionAnimatingLayoutManager::HostAnimationOffsets::
@@ -891,7 +907,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
             child_view->GetProperty(kPreviousCollectionBounds);
         if (previous_container_bounds) {
           gfx::Rect initial_bounds =
-              host_offsets.ConvertScreenRectToStartBounds(
+              host_offsets.ConvertTopHostRectToStartBounds(
                   host_view(), *previous_container_bounds);
           interpolated_child.bounds = host_offsets.InterpolateChildBounds(
               value, initial_bounds, target_it->second.bounds);
@@ -987,7 +1003,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     if (previous_collection_bounds &&
         !start_view_layout_map_.contains(child_view)) {
       const gfx::Rect start_bounds =
-          host_offsets.ConvertScreenRectToStartBounds(
+          host_offsets.ConvertTopHostRectToStartBounds(
               host_view(), *previous_collection_bounds);
 
       // Target bounds for the animate-out animation depends on

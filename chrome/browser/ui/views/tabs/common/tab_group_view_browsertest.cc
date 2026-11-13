@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -2218,6 +2219,69 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(group_view->GetCrossoverWidth(), observer.observed_crossover);
   EXPECT_EQ(group_view->GetPreferredSize(views::SizeBounds()).width(),
             observer.observed_pref);
+}
+
+// Adding multiple tabs to a new group in RTL animates them smoothly leftward in
+// RTL visual order (tab 0 stays to the right of tab 1) without reversing or
+// crossing over.
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       AddingTabsToNewGroupAnimatesInRTLOrder) {
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
+
+  AppendTab();
+  AppendTab();
+  views::Widget* const widget = tab_strip_view()->GetWidget();
+  widget->LayoutRootViewIfNecessary();
+
+  TabCollectionNode* const unpinned =
+      root_node()->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED);
+  ASSERT_NE(unpinned, nullptr);
+  ASSERT_GE(unpinned->children().size(), 3u);
+
+  views::View* const tab0_view = unpinned->children()[0]->view();
+  views::View* const tab1_view = unpinned->children()[1]->view();
+  const int initial_tab0_x = tab0_view->GetBoundsInScreen().x();
+  const int initial_tab1_x = tab1_view->GetBoundsInScreen().x();
+  ASSERT_GT(initial_tab0_x, initial_tab1_x);
+
+  ResetAnimationMode();
+  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  GetTabStripModel()->AddToNewGroup({0, 1});
+  widget->LayoutRootViewIfNecessary();
+
+  auto* const controller = root_node()->GetController();
+  ASSERT_NE(controller, nullptr);
+  EXPECT_TRUE(controller->animation_coordinator().IsAnimating());
+  EXPECT_EQ(tab0_view->GetBoundsInScreen().x(), initial_tab0_x);
+  EXPECT_EQ(tab1_view->GetBoundsInScreen().x(), initial_tab1_x);
+
+  int prev_tab0_x = initial_tab0_x;
+  int prev_tab1_x = initial_tab1_x;
+  gfx::SlideAnimation progress(nullptr);
+  for (double value : {0.25, 0.5, 0.75}) {
+    progress.Reset(value);
+    controller->animation_coordinator().AnimationProgressed(&progress);
+    widget->LayoutRootViewIfNecessary();
+
+    const int curr_tab0_x = tab0_view->GetBoundsInScreen().x();
+    const int curr_tab1_x = tab1_view->GetBoundsInScreen().x();
+    EXPECT_GT(curr_tab0_x, curr_tab1_x) << "at progress " << value;
+    EXPECT_LE(curr_tab0_x, prev_tab0_x) << "at progress " << value;
+    EXPECT_LE(curr_tab1_x, prev_tab1_x) << "at progress " << value;
+    prev_tab0_x = curr_tab0_x;
+    prev_tab1_x = curr_tab1_x;
+  }
+
+  controller->animation_coordinator().AnimationEnded(nullptr);
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_GT(tab0_view->GetBoundsInScreen().x(),
+            tab1_view->GetBoundsInScreen().x());
+  EXPECT_LT(tab0_view->GetBoundsInScreen().x(), initial_tab0_x);
+  EXPECT_LT(tab1_view->GetBoundsInScreen().x(), initial_tab1_x);
 }
 
 IN_PROC_BROWSER_TEST_F(
