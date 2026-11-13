@@ -7541,7 +7541,8 @@
                         "dse_preload2_initial_no_vary_search_hint": "",
                         "dse_preload2_prefetch_priority_policy": "SearchPrefetchCompat",
                         "force_wait_no_vary_search_header_policy": "AlwaysUse",
-                        "use_block_until_head_timeout": "false"
+                        "use_block_until_head_timeout": "false",
+                        "use_prefetch_loader_timeout": "false"
                     },
                     "enable_features": [
                         "DsePreload2",
