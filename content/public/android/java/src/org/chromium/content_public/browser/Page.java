@@ -28,9 +28,7 @@ public interface Page {
      */
     void setPageDeletionListener(PageDeletionListener listener);
 
-    /**
-     * @return Whether the page is currently prerendering.
-     */
+    /** Returns whether the page is currently prerendering. */
     boolean isPrerendering();
 
     /**
@@ -40,9 +38,7 @@ public interface Page {
      */
     void setIsPrerendering(boolean isPrerendering);
 
-    /**
-     * @return The URL of the page.
-     */
+    /** Returns the URL of the page. */
     GURL getUrl();
 
     /**
@@ -52,7 +48,7 @@ public interface Page {
      */
     void setUrl(GURL url);
 
-    /** Returns the most recent {@link PageState} */
+    /** Returns the most recent {@link PageState}. */
     @AnyThread
     PageState getMostRecentPageState();
 }

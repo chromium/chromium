@@ -21,7 +21,7 @@ public interface MotionEventSynthesizer {
      *
      * @param index Index of the point when there are multiple points.
      * @param x X coordinate of the point.
-     * @param x Y coordinate of the point.
+     * @param y Y coordinate of the point.
      * @param id Id property of the point.
      * @param toolType ToolType property of the point.
      */

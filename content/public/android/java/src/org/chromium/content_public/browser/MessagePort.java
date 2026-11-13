@@ -38,7 +38,7 @@ public interface MessagePort {
     /**
      * Called to create an entangled pair of ports.
      *
-     * @return An array of a pair of{@link MessagePort} instances.
+     * @return An array of a pair of {@link MessagePort} instances.
      */
     static MessagePort[] createPair() {
         return AppWebMessagePort.createPair();
@@ -47,28 +47,28 @@ public interface MessagePort {
     /** Close the port for use. */
     void close();
 
-    /**
-     * @return Whether the port has been closed before.
-     */
+    /** Returns whether the port has been closed before. */
     boolean isClosed();
 
     /**
-     * @return Whether the port has been transferred using
-     *         {@link MessagePort#postMessage(MessagePayload, MessagePort[])} before.
+     * Returns whether the port has been transferred using {@link
+     * MessagePort#postMessage(MessagePayload, MessagePort[])} before.
      */
     boolean isTransferred();
 
-    /**
-     * @return Whether the port has been started.
-     */
+    /** Returns whether the port has been started. */
     boolean isStarted();
 
     /**
      * Sets the handler and message callback to be used for the messages received. If the given
-     * {@link Handler} is not null, then the callback is received on the handler thread, if not
-     * it is on UI thread.
+     * {@link Handler} is not null, then the callback is received on the handler thread, if not, it
+     * is on the UI thread.
      *
-     * See {@link MessagePort.MessageCallback}
+     * <p>See {@link MessagePort.MessageCallback}.
+     *
+     * @param messageCallback The callback that receives the messages sent to this port.
+     * @param handler The handler whose thread the callback is run on, or {@code null} to run it on
+     *     the UI thread.
      */
     void setMessageCallback(MessageCallback messageCallback, @Nullable Handler handler);
 

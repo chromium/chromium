@@ -77,7 +77,9 @@ public interface ContactsPickerListener {
     /**
      * Called when the user has selected an action. For possible actions see above.
      *
-     * @param contacts The list of contacts selected.
+     * @param action The action the user took, one of the {@link ContactsPickerAction} values.
+     * @param contacts The list of contacts selected, or {@code null} if the action doesn't share
+     *     any contacts (for example, {@code SELECT_ALL} or {@code UNDO_SELECT_ALL}).
      * @param percentageShared How big a percentage of the full contact list was shared (for metrics
      *     purposes).
      * @param propertiesSiteRequested The properties requested by the website (bitmask of names,

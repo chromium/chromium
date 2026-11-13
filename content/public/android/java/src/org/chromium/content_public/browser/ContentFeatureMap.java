@@ -19,9 +19,7 @@ public class ContentFeatureMap extends FeatureMap {
     // Do not instantiate this class.
     private ContentFeatureMap() {}
 
-    /**
-     * @return the singleton {@link ContentFeatureMap}
-     */
+    /** Returns the singleton {@link ContentFeatureMap}. */
     public static ContentFeatureMap getInstance() {
         return sInstance;
     }

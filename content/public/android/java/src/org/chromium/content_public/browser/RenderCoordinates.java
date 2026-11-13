@@ -10,83 +10,55 @@ import org.chromium.content.browser.RenderCoordinatesImpl;
 /** Provides dimension/coordinate information of the view rendered by content layer. */
 @NullMarked
 public interface RenderCoordinates {
-    /**
-     * @return {@link Coord} instance associated with the given {@link WebContents}.
-     */
+    /** Returns the {@link RenderCoordinates} associated with the given {@link WebContents}. */
     static RenderCoordinates fromWebContents(WebContents webContents) {
         return RenderCoordinatesImpl.fromWebContents(webContents);
     }
 
-    /**
-     * @return Horizontal scroll offset in physical pixels (approx, integer).
-     */
+    /** Returns the horizontal scroll offset in physical pixels (approx, integer). */
     int getScrollXPixInt();
 
-    /**
-     * @return Vertical scroll offset in physical pixels (approx, integer).
-     */
+    /** Returns the vertical scroll offset in physical pixels (approx, integer). */
     int getScrollYPixInt();
 
-    /**
-     * @return Approximate width of the content in physical pixels (integer).
-     */
+    /** Returns the approximate width of the content in physical pixels (integer). */
     int getContentWidthPixInt();
 
-    /**
-     * @return Approximate height of the content in physical pixels (integer).
-     */
+    /** Returns the approximate height of the content in physical pixels (integer). */
     int getContentHeightPixInt();
 
-    /**
-     * @return Render-reported width of the viewport in physical pixels (approx, integer).
-     */
+    /** Returns the render-reported width of the viewport in physical pixels (approx, integer). */
     int getLastFrameViewportWidthPixInt();
 
-    /**
-     * @return Render-reported height of the viewport in physical pixels (approx, integer).
-     */
+    /** Returns the render-reported height of the viewport in physical pixels (approx, integer). */
     int getLastFrameViewportHeightPixInt();
 
-    /**
-     * @return Maximum possible vertical scroll in physical pixels (approx, integer).
-     */
+    /** Returns the maximum possible vertical scroll in physical pixels (approx, integer). */
     int getMaxVerticalScrollPixInt();
 
-    /**
-     * @return Maximum possible horizontal scroll in physical pixels (approx, integer).
-     */
+    /** Returns the maximum possible horizontal scroll in physical pixels (approx, integer). */
     int getMaxHorizontalScrollPixInt();
 
-    /**
-     * @return The Physical on-screen Y offset amount below the browser controls.
-     */
+    /** Returns the physical on-screen Y offset amount below the browser controls. */
     // TODO(crbug.com/582350727): Rename to getContentOffsetTopPixInt() for symmetry with
     // getContentOffsetBottomPixInt().
     int getContentOffsetYPixInt();
 
     /**
-     * @return Physical on-screen height of the bottom browser controls currently shown (approx,
-     *     integer).
+     * Returns the physical on-screen height of the bottom browser controls currently shown (approx,
+     * integer).
      */
     int getContentOffsetBottomPixInt();
 
-    /**
-     * @return Current page scale factor (approx, integer).
-     */
+    /** Returns the current page scale factor (approx, integer). */
     int getPageScaleFactorInt();
 
-    /**
-     * @return Current page scale factor.
-     */
+    /** Returns the current page scale factor. */
     float getPageScaleFactor();
 
-    /**
-     * @return Minimum page scale factor.
-     */
+    /** Returns the minimum page scale factor. */
     float getMinPageScaleFactor();
 
-    /**
-     * @return Local CSS converted to physical coordinates.
-     */
+    /** Returns the given local CSS value {@code css} converted to physical pixels. */
     float fromLocalCssToPix(float css);
 }

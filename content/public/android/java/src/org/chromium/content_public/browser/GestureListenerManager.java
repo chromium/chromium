@@ -10,15 +10,16 @@ import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 
 /**
- * Manages the {@link GestureStateListener} instances observing various gesture
- * events notifications from content layer.
+ * Manages the {@link GestureStateListener} instances observing various gesture event notifications
+ * from the content layer.
  */
 @NullMarked
 public interface GestureListenerManager {
     /**
+     * Returns the {@link GestureListenerManager} object used for the given WebContents. Creates one
+     * if not present.
+     *
      * @param webContents {@link WebContents} object.
-     * @return {@link GestureListenerManager} object used for the give WebContents.
-     *         Creates one if not present.
      */
     static @Nullable GestureListenerManager fromWebContents(WebContents webContents) {
         return GestureListenerManagerImpl.fromWebContents(webContents);
@@ -27,7 +28,7 @@ public interface GestureListenerManager {
     /**
      * Add a listener that gets alerted on gesture state changes. This is the same as calling {@link
      * #addListener(GestureStateListener, @RootScrollOffsetUpdateFrequency.EnumType int)} with
-     * `NONE` as the second argument.
+     * {@code NONE} as the second argument.
      *
      * @param listener Listener to add.
      */
@@ -35,11 +36,11 @@ public interface GestureListenerManager {
 
     /**
      * Add a listener that gets alerted on gesture state and potentially scroll offset changes based
-     * on the `frequency` provided.
+     * on the {@code frequency} provided.
      *
-     * WARNING: attaching a listener with a frequency higher than `NONE` results in extra IPC that
-     * impacts rendering performance. Only attach listeners when absolutely necessary and remove as
-     * soon as possible. See {@link RootScrollOffsetUpdateFrequency} for details.
+     * <p>WARNING: attaching a listener with a frequency higher than {@code NONE} results in extra
+     * IPC that impacts rendering performance. Only attach listeners when absolutely necessary and
+     * remove as soon as possible. See {@link RootScrollOffsetUpdateFrequency} for details.
      *
      * @param listener Listener to add.
      * @param frequency The {@link RootScrollOffsetUpdateFrequency} this listener needs.
@@ -56,14 +57,10 @@ public interface GestureListenerManager {
     /** Returns whether the provided listener has been added. */
     boolean hasListener(GestureStateListener listener);
 
-    /**
-     * @return Whether a scroll targeting web content is in progress.
-     */
+    /** Returns whether a scroll targeting web content is in progress. */
     boolean isScrollInProgress();
 
-    /**
-     * @return Whether there's an active, ongoing fling scroll.
-     */
+    /** Returns whether there's an active, ongoing fling scroll. */
     boolean hasActiveFlingScroll();
 
     /**

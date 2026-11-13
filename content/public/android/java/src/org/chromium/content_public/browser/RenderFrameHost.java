@@ -19,7 +19,7 @@ import java.util.List;
  */
 @NullMarked
 public interface RenderFrameHost {
-    /** The results of {@link #GetAssertionWebAuthSecurityChecks}. */
+    /** The results of {@link #performGetAssertionWebAuthSecurityChecks}. */
     final class WebAuthSecurityChecksResults {
         public final boolean isCrossOrigin;
         public final @AuthenticatorStatus.EnumType int securityCheckResult;
@@ -71,9 +71,7 @@ public interface RenderFrameHost {
      */
     @Nullable RenderFrameHost getMainFrame();
 
-    /**
-     * @return Whether the frame is an outermost main frame.
-     */
+    /** Returns whether the frame is an outermost main frame. */
     boolean isOutermostMainFrame();
 
     /**
@@ -133,9 +131,7 @@ public interface RenderFrameHost {
     /** Notifies the native RenderFrameHost about a successful WebAuthn assertion request. */
     void notifyWebAuthnAssertionRequestSucceeded();
 
-    /**
-     * @return Whether this frame has an active CloseWatcher in javascript.
-     */
+    /** Returns whether this frame has an active CloseWatcher in javascript. */
     boolean isCloseWatcherActive();
 
     /**
@@ -158,9 +154,7 @@ public interface RenderFrameHost {
      */
     boolean isRenderFrameLive();
 
-    /**
-     * @return Whether input events from the renderer are ignored on the browser side.
-     */
+    /** Returns whether input events from the renderer are ignored on the browser side. */
     boolean areInputEventsIgnored();
 
     /**
@@ -169,19 +163,19 @@ public interface RenderFrameHost {
      * then the effective origin is the same as the last committed origin. However, if the request
      * originated from an internal request from the browser process (e.g. Payments Autofill), then
      * the relying party ID would not match the renderer's origin, and will therefore have to
-     * provide its own effective origin. `isPaymentCredentialGetAssertion` indicates whether the
-     * security check is done for getting an assertion for Secure Payment Confirmation (SPC).
+     * provide its own effective origin. {@code isPaymentCredentialGetAssertion} indicates whether
+     * the security check is done for getting an assertion for Secure Payment Confirmation (SPC).
      *
-     * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
-     * the callback is an object containing (1) the status code indicating the result of the
-     * GetAssertion request security checks, and (2) whether the effectiveOrigin is a cross-origin
-     * with any frame in this frame's ancestor chain.
+     * <p>This operation may trigger network fetches and thus it takes a {@code Callback}. The
+     * argument to the callback is an object containing (1) the status code indicating the result of
+     * the GetAssertion request security checks, and (2) whether the effectiveOrigin is a
+     * cross-origin with any frame in this frame's ancestor chain.
      *
-     * <p>`remoteDesktopClientOverrideOrigin` is the origin from the RemoteDesktopClientOverride
-     * client extension for this request, if present.
+     * <p>{@code remoteDesktopClientOverrideOrigin} is the origin from the
+     * RemoteDesktopClientOverride client extension for this request, if present.
      *
-     * <p>`appId` is the URL from the AppId extension for this request, if present. It is passed as
-     * a string because conversion and validation are done as part of the checks.
+     * <p>{@code appId} is the URL from the AppId extension for this request, if present. It is
+     * passed as a string because conversion and validation are done as part of the checks.
      */
     void performGetAssertionWebAuthSecurityChecks(
             String relyingPartyId,
@@ -194,18 +188,18 @@ public interface RenderFrameHost {
     /**
      * Runs security checks associated with a Web Authentication MakeCredential request for the
      * given relying party ID, an effective origin and whether MakeCredential is making the payment
-     * credential. See performGetAssertionWebAuthSecurityChecks for more on |effectiveOrigin|.
+     * credential. See performGetAssertionWebAuthSecurityChecks for more on {@code effectiveOrigin}.
      *
-     * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
-     * the callback is an object containing (1) the status code indicating the result of the
-     * MakeCredential request security checks, and (2) whether the effectiveOrigin is a cross-origin
-     * with any frame in this frame's ancestor chain.
+     * <p>This operation may trigger network fetches and thus it takes a {@code Callback}. The
+     * argument to the callback is an object containing (1) the status code indicating the result of
+     * the MakeCredential request security checks, and (2) whether the effectiveOrigin is a
+     * cross-origin with any frame in this frame's ancestor chain.
      *
-     * <p>`remoteDesktopClientOverrideOrigin` is the origin from the RemoteDesktopClientOverride
-     * client extension for this request, if present.
+     * <p>{@code remoteDesktopClientOverrideOrigin} is the origin from the
+     * RemoteDesktopClientOverride client extension for this request, if present.
      *
-     * <p>`appId` is the origin from the AppId extension for this request, if present. It is passed
-     * as a string because conversion and validation are done as part of the checks.
+     * <p>{@code appId} is the origin from the AppId extension for this request, if present. It is
+     * passed as a string because conversion and validation are done as part of the checks.
      */
     void performMakeCredentialWebAuthSecurityChecks(
             String relyingPartyId,
@@ -218,21 +212,19 @@ public interface RenderFrameHost {
     /**
      * Runs security checks associated with a Web Authentication Report request for the given
      * relying party ID and an effective origin. See performGetAssertionWebAuthSecurityChecks for
-     * more on |effectiveOrigin|.
+     * more on {@code effectiveOrigin}.
      *
-     * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
-     * the callback is an object containing (1) the status code indicating the result of the Report
-     * request security checks, and (2) whether the effectiveOrigin is a cross-origin with any frame
-     * in this frame's ancestor chain.
+     * <p>This operation may trigger network fetches and thus it takes a {@code Callback}. The
+     * argument to the callback is an object containing (1) the status code indicating the result of
+     * the Report request security checks, and (2) whether the effectiveOrigin is a cross-origin
+     * with any frame in this frame's ancestor chain.
      */
     void performReportWebAuthSecurityChecks(
             String relyingPartyId,
             Origin effectiveOrigin,
             Callback<WebAuthSecurityChecksResults> callback);
 
-    /**
-     * @return An identifier for this RenderFrameHost.
-     */
+    /** Returns an identifier for this RenderFrameHost. */
     GlobalRenderFrameHostId getGlobalRenderFrameHostId();
 
     /**
@@ -264,24 +256,20 @@ public interface RenderFrameHost {
     void insertVisualStateCallback(Callback<Boolean> callback);
 
     /**
-     * Injects the passed Javascript code in the current page and evaluates it in an
-     * isolated world. If a result is required, pass in a callback.
-     * The caller should ensure the frame host hasn't been destroyed on the native side
-     * before calling this method.
+     * Injects the passed Javascript code in the current page and evaluates it in an isolated world.
+     * If a result is required, pass in a callback. The caller should ensure the frame host hasn't
+     * been destroyed on the native side before calling this method.
      *
-     * @param script   The Javascript to execute.
-     * @param worldId  Id of the isolated world.
-     * @param callback The callback to be fired off when a result is ready. The
-     *                 script's result will be json encoded and passed as the
-     *                 parameter, and the call will be made on the main thread.
-     *                 If no result is required, pass null.
+     * @param script The Javascript to execute.
+     * @param worldId Id of the isolated world.
+     * @param callback The callback to be fired off when a result is ready. The script's result will
+     *     be json encoded and passed as the parameter, and the call will be made on the main
+     *     thread. If no result is required, pass null.
      */
     void executeJavaScriptInIsolatedWorld(
             String script, int worldId, @Nullable JavaScriptCallback callback);
 
-    /**
-     * @return whether hit test data is available for this Frame.
-     */
+    /** Returns whether hit test data is available for this Frame. */
     boolean hasHitTestDataForTesting();
 
     /** Opens view-source tab for the document last committed in this RenderFrameHost. */

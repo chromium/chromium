@@ -8,24 +8,21 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * The NavigationController Java wrapper to allow communicating with the native
- * NavigationController object.
+ * The NavigationController Java wrapper to allow communicating with the native NavigationController
+ * object.
  */
 @NullMarked
 public interface NavigationController {
-    /**
-     * @return Whether back navigation is possible from the "current entry".
-     */
+    /** Returns whether back navigation is possible from the "current entry". */
     boolean canGoBack();
 
-    /**
-     * @return Whether forward navigation is possible from the "current entry".
-     */
+    /** Returns whether forward navigation is possible from the "current entry". */
     boolean canGoForward();
 
     /**
+     * Returns whether we can move in history by the given offset.
+     *
      * @param offset The offset into the navigation history.
-     * @return Whether we can move in history by given offset
      */
     boolean canGoToOffset(int offset);
 
@@ -48,17 +45,13 @@ public interface NavigationController {
     /** Goes to the first non-skippable navigation entry following the current. */
     void goForward();
 
-    /**
-     * @return Whether the tab is navigating to the URL the tab is opened with.
-     */
+    /** Returns whether the tab is navigating to the URL the tab is opened with. */
     boolean isInitialNavigation();
 
     /** Loads the current navigation if there is a pending lazy load (after tab restore). */
     void loadIfNecessary();
 
-    /**
-     * @return Whether a reload has been requested.
-     */
+    /** Returns whether a reload has been requested. */
     boolean needsReload();
 
     /** Requests the current navigation to be loaded upon the next call to loadIfNecessary(). */
@@ -99,10 +92,10 @@ public interface NavigationController {
 
     /**
      * Get the navigation history of NavigationController from current navigation entry index with
-     * direction (forward/backward)
+     * direction (forward/backward).
      *
-     * @param isForward determines forward or backward from current index
-     * @param itemLimit maximum number of entries to be retrieved in specified diection.
+     * @param isForward determines forward or backward from current index.
+     * @param itemLimit maximum number of entries to be retrieved in specified direction.
      * @return navigation history by keeping above constraints.
      */
     @Nullable NavigationHistory getDirectedNavigationHistory(boolean isForward, int itemLimit);
@@ -137,31 +130,28 @@ public interface NavigationController {
     @Nullable NavigationEntry getEntryAtIndex(int index);
 
     /**
-     * @return The {@link NavigationEntry} that is appropriate to be displayed in the address bar.
+     * Returns the {@link NavigationEntry} that is appropriate to be displayed in the address bar.
      */
     @Nullable NavigationEntry getVisibleEntry();
 
     /**
-     * @return The pending {@link NavigationEntry} for this controller or {@code null} if none
-     *     exists.
+     * Returns the pending {@link NavigationEntry} for this controller or {@code null} if none
+     * exists.
      */
     @Nullable NavigationEntry getPendingEntry();
 
-    /**
-     * @return The index of the last committed entry.
-     */
+    /** Returns the index of the last committed entry. */
     int getLastCommittedEntryIndex();
 
-    /**
-     * @return true, if the source for the current entry can be viewed.
-     */
+    /** Returns true if the source for the current entry can be viewed. */
     boolean canViewSource();
 
     /**
-     * Removes the entry at the specified |index|.
+     * Removes the entry at the specified {@code index}. Does nothing if the index is the last
+     * committed index or the pending entry; otherwise this call discards any pending entry.
      *
-     * @return false, if the index is the last committed index or the pending entry. Otherwise this
-     *     call discards any transient or pending entries.
+     * @param index The index of the entry to remove.
+     * @return Whether the entry was removed.
      */
     boolean removeEntryAtIndex(int index);
 

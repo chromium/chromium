@@ -32,10 +32,10 @@ public final class DeviceUtils {
     }
 
     /**
-     * @return A set of {@link InputDevice} source types of connected accessories including
-     *     keyboard, mouse, touchpad, trackball. Note: stylus is not included since this can only be
-     *     detected during a MotionEvent. (See
-     *     https://developer.android.com/reference/android/view/InputDevice#SOURCE_STYLUS)
+     * Returns a set of {@link InputDevice} source types of connected accessories including
+     * keyboard, mouse, touchpad, trackball. Note: stylus is not included since this can only be
+     * detected during a MotionEvent. (See
+     * https://developer.android.com/reference/android/view/InputDevice#SOURCE_STYLUS).
      */
     public static ArraySet<Integer> getConnectedDevices() {
         int[] deviceIds = InputDevice.getDeviceIds();
