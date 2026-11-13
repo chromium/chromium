@@ -91,7 +91,7 @@ class GeminiSharedTabsManagerImpl : public GeminiSharedTabsManager,
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
  private:
-  friend class GeminiBrowserAgentTest;
+  friend class GeminiSharedTabsManagerImplTest;
 
   using SharedTabsList =
       std::vector<std::pair<web::WebStateID, __strong GeminiPageContext*>>;

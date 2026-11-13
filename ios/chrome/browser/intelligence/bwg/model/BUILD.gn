@@ -381,6 +381,7 @@ source_set("unit_tests") {
     "gemini_service_factory_unittest.mm",
     "gemini_service_impl_unittest.mm",
     "gemini_session_handler_unittest.mm",
+    "gemini_shared_tabs_manager_impl_unittest.mm",
     "gemini_startup_configuration_unittest.mm",
     "gemini_suggestion_handler_unittest.mm",
     "gemini_tab_helper_unittest.mm",
