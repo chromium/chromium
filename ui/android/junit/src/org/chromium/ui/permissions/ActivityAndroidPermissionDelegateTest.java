@@ -6,13 +6,17 @@ package org.chromium.ui.permissions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.app.AppOpsManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Process;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -22,25 +26,31 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivity.PermissionsRequest;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.UiAndroidFeatures;
 
 import java.lang.ref.WeakReference;
 
 /**
- * Robolectric unit tests for {@link ActivityAndroidPermissionDelegate} and
- * {@link AndroidPermissionDelegateWithRequester}.
+ * Robolectric unit tests for {@link ActivityAndroidPermissionDelegate} and {@link
+ * AndroidPermissionDelegateWithRequester}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActivityAndroidPermissionDelegateTest {
     /**
      * Rule managing the lifecycle of activity in each {@code @Test}.
-     * <p>
-     * To access the activity and run code on its main thread, use
-     * {@link ActivityScenario#onActivity}:
+     *
+     * <p>To access the activity and run code on its main thread, use {@link
+     * ActivityScenario#onActivity}:
+     *
      * <pre>
      * mActivityScenarios.getScenario().onActivity(activity -> {
      *     // Your test code using the activity here.
@@ -382,6 +392,143 @@ public class ActivityAndroidPermissionDelegateTest {
                                     "If a permission is currently granted canRequestPermission"
                                             + " should return true",
                                     canRequest);
+                        });
+    }
+
+    private static final String ACCESS_LOCAL_NETWORK = "android.permission.ACCESS_LOCAL_NETWORK";
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    @EnableFeatures(UiAndroidFeatures.CHECK_LOCAL_NETWORK_PERMISSION_REVOKED_COMPAT)
+    public void testLocalNetworkPermission_revokedCompat_targetSdkBelow37() {
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            Context context = ContextUtils.getApplicationContext();
+                            int prevTargetSdk = context.getApplicationInfo().targetSdkVersion;
+                            try {
+                                context.getApplicationInfo().targetSdkVersion = 36;
+                                // In REVOKED_COMPAT, PackageManager reports PERMISSION_GRANTED
+                                // while AppOpsManager reports MODE_IGNORED.
+                                Shadows.shadowOf(activity).grantPermissions(ACCESS_LOCAL_NETWORK);
+                                AppOpsManager appOpsManager =
+                                        (AppOpsManager)
+                                                context.getSystemService(Context.APP_OPS_SERVICE);
+                                String op = AppOpsManager.permissionToOp(ACCESS_LOCAL_NETWORK);
+                                assertNotNull(op);
+                                Shadows.shadowOf(appOpsManager)
+                                        .setMode(
+                                                op,
+                                                Process.myUid(),
+                                                context.getPackageName(),
+                                                AppOpsManager.MODE_IGNORED);
+
+                                AndroidPermissionDelegate permissionDelegate =
+                                        new ActivityAndroidPermissionDelegate(
+                                                new WeakReference<>(activity));
+
+                                assertFalse(
+                                        "hasPermission should return false when AppOps is"
+                                                + " MODE_IGNORED (REVOKED_COMPAT)",
+                                        permissionDelegate.hasPermission(ACCESS_LOCAL_NETWORK));
+                                assertFalse(
+                                        "canRequestPermission should return false when"
+                                                + " targetSdkVersion < 37 and permission is"
+                                                + " compat-revoked",
+                                        permissionDelegate.canRequestPermission(
+                                                ACCESS_LOCAL_NETWORK));
+
+                                // Once the user re-enables the permission in Android Settings,
+                                // AppOps becomes MODE_ALLOWED.
+                                Shadows.shadowOf(appOpsManager)
+                                        .setMode(
+                                                op,
+                                                Process.myUid(),
+                                                context.getPackageName(),
+                                                AppOpsManager.MODE_ALLOWED);
+                                assertTrue(
+                                        "hasPermission should return true when AppOps is"
+                                                + " MODE_ALLOWED",
+                                        permissionDelegate.hasPermission(ACCESS_LOCAL_NETWORK));
+                                assertTrue(
+                                        "canRequestPermission should return true when permission"
+                                                + " is granted",
+                                        permissionDelegate.canRequestPermission(
+                                                ACCESS_LOCAL_NETWORK));
+                            } finally {
+                                context.getApplicationInfo().targetSdkVersion = prevTargetSdk;
+                            }
+                        });
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    @EnableFeatures(UiAndroidFeatures.CHECK_LOCAL_NETWORK_PERMISSION_REVOKED_COMPAT)
+    public void testLocalNetworkPermission_targetSdk37() {
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            Context context = ContextUtils.getApplicationContext();
+                            int prevTargetSdk = context.getApplicationInfo().targetSdkVersion;
+                            try {
+                                context.getApplicationInfo().targetSdkVersion = 37;
+                                AndroidPermissionDelegate permissionDelegate =
+                                        new ActivityAndroidPermissionDelegate(
+                                                new WeakReference<>(activity));
+
+                                assertFalse(permissionDelegate.hasPermission(ACCESS_LOCAL_NETWORK));
+                                assertTrue(
+                                        "When targeting SDK 37, ACCESS_LOCAL_NETWORK can be"
+                                                + " requested via runtime dialog",
+                                        permissionDelegate.canRequestPermission(
+                                                ACCESS_LOCAL_NETWORK));
+
+                                Shadows.shadowOf(activity).grantPermissions(ACCESS_LOCAL_NETWORK);
+                                assertTrue(permissionDelegate.hasPermission(ACCESS_LOCAL_NETWORK));
+                            } finally {
+                                context.getApplicationInfo().targetSdkVersion = prevTargetSdk;
+                            }
+                        });
+    }
+
+    @Test
+    @Config(sdk = BaseRobolectricTestRunner.MAX_SDK)
+    @DisableFeatures(UiAndroidFeatures.CHECK_LOCAL_NETWORK_PERMISSION_REVOKED_COMPAT)
+    public void testLocalNetworkPermission_revokedCompat_featureDisabled() {
+        mActivityScenarios
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            Context context = ContextUtils.getApplicationContext();
+                            int prevTargetSdk = context.getApplicationInfo().targetSdkVersion;
+                            try {
+                                context.getApplicationInfo().targetSdkVersion = 36;
+                                Shadows.shadowOf(activity).grantPermissions(ACCESS_LOCAL_NETWORK);
+                                AppOpsManager appOpsManager =
+                                        (AppOpsManager)
+                                                context.getSystemService(Context.APP_OPS_SERVICE);
+                                String op = AppOpsManager.permissionToOp(ACCESS_LOCAL_NETWORK);
+                                assertNotNull(op);
+                                Shadows.shadowOf(appOpsManager)
+                                        .setMode(
+                                                op,
+                                                Process.myUid(),
+                                                context.getPackageName(),
+                                                AppOpsManager.MODE_IGNORED);
+
+                                AndroidPermissionDelegate permissionDelegate =
+                                        new ActivityAndroidPermissionDelegate(
+                                                new WeakReference<>(activity));
+
+                                assertTrue(
+                                        "When kill switch is disabled, hasPermission falls back to"
+                                                + " PackageManager check",
+                                        permissionDelegate.hasPermission(ACCESS_LOCAL_NETWORK));
+                            } finally {
+                                context.getApplicationInfo().targetSdkVersion = prevTargetSdk;
+                            }
                         });
     }
 

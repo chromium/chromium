@@ -22,6 +22,7 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.webxr.WebXrAndroidFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.vr.XrFeatureStatus;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -115,17 +116,20 @@ public class PermissionUtil {
     /**
      * Returns whether Local Network Access permission is required.
      *
-     * <p>Local Network Protection (LNP) runtime permission is only required when both:
-     * 1. The host device is running Android 17 (SDK 37) or higher (Build.VERSION.SDK_INT >= 37).
-     * 2. The application targets Android 17 (SDK 37) or higher (targetSdkVersion >= 37).
-     *
-     * <p>For apps targeting lower SDK versions (<37), local network access is implicitly granted
-     * by the OS using the INTERNET permission without requiring runtime prompts.
-     * See: https://developer.android.com/privacy-and-security/local-network-permission
+     * <p>Even for apps targeting SDK version < 37, the user can revoke local network access in app
+     * settings (or inherit a compat-revoked state across an SDK downgrade) when running on Android
+     * 17 (SDK 37) or higher. Therefore enable support based on the device's SDK version. See:
+     * https://developer.android.com/privacy-and-security/local-network-permission
      */
     private static boolean isLocalNetworkAccessPermissionRequired() {
-        return Build.VERSION.SDK_INT >= 37
-                && ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion >= 37;
+        if (Build.VERSION.SDK_INT < 37) {
+            return false;
+        }
+        // TODO(https://crbug.com/583513077): Remove once targetSdkVersion 37 reaches Stable.
+        if (UiAndroidFeatureList.sCheckLocalNetworkPermissionRevokedCompat.isEnabled()) {
+            return true;
+        }
+        return ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion >= 37;
     }
 
     /**
