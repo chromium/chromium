@@ -220,6 +220,45 @@
               url,
               'none');
 
+    for (const imageSet of ['image-set', '-webkit-image-set']) {
+      // Resolution and type() must not use attribute data to select an image.
+      test_attr('background-image',
+                `${imageSet}(url(${url}) attr(data-foo type(<resolution>)), url(${url2}) 2x)`,
+                '1dppx',
+                'none');
+      test_attr('background-image',
+                `${imageSet}(url(${url}) calc((attr(data-foo type(<number>)) + 1000) * 1dppx), url(${url2}) 1008dppx)`,
+                '7',
+                'none');
+      test_attr('background-image',
+                `${imageSet}(url(${url}) type(attr(data-foo)) 1x, url(${url2}) 2x)`,
+                'image/png',
+                'none');
+      test_attr('background-image',
+                `${imageSet}(url(${url}) 1x type(attr(data-foo)), url(${url2}) 2x)`,
+                'image/png',
+                'none');
+      test_attr('background-image',
+                `${imageSet}(url(${url}) 1x, url(${url2}) type(attr(data-foo)))`,
+                'text/plain',
+                'none');
+
+      test_attr('background-image',
+                `${imageSet}(url(${url}) 1x type("image/png"), url(${url2}) 2x)`,
+                '',
+                `image-set(url("${url}") 1dppx type("image/png"), url("${url2}") 2dppx)`);
+      // Attribute data in the image itself cannot affect option selection.
+      test_attr('background-image',
+                `${imageSet}(linear-gradient(attr(data-foo type(<color>)), black) 1x, url(${url}) 2x)`,
+                'red',
+                `image-set(linear-gradient(rgb(255, 0, 0), rgb(0, 0, 0)) 1dppx, url("${url}") 2dppx)`);
+      test_attr_shorthand('background',
+                          'background-image',
+                          `${imageSet}(url(${url}) 1x, url(${url2}) 2x) attr(data-foo type(<color>))`,
+                          'red',
+                          `image-set(url("${url}") 1dppx, url("${url2}") 2dppx)`);
+    }
+
     // Verify attr()-tainting is relative to the substituted value.
     test_attr('background-image',
               `attr(data-foo type(*))`,

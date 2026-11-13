@@ -3704,6 +3704,7 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
     return nullptr;
   }
 
+  const wtf_size_t value_start_offset = stream.LookAheadOffset();
   // Type could appear before or after resolution
   CSSImageSetTypeValue* type = ConsumeImageSetType(stream);
   CSSPrimitiveValue* resolution =
@@ -3719,6 +3720,13 @@ static CSSImageSetOptionValue* ConsumeImageSetOption(
   }
   if (!type) {
     type = ConsumeImageSetType(stream);
+  }
+
+  const wtf_size_t value_end_offset = stream.LookAheadOffset();
+  if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
+    // Resolution and type() can select which URL is fetched, so they must not
+    // depend on attribute data.
+    return nullptr;
   }
 
   return MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution, type);
