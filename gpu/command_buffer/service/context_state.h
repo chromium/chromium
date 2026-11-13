@@ -239,10 +239,8 @@ struct GPU_GLES2_EXPORT ContextState {
   void DoLineWidth(GLfloat width) const;
 
   // Helper for getting cached state.
-  bool GetStateAsGLint(GLenum pname, GLint* params, GLsizei* num_written) const;
-  bool GetStateAsGLfloat(GLenum pname,
-                         GLfloat* params,
-                         GLsizei* num_written) const;
+  bool GetStateAsGLint(GLenum pname, base::span<GLint> params) const;
+  bool GetStateAsGLfloat(GLenum pname, base::span<GLfloat> params) const;
   bool GetEnabled(GLenum cap) const;
 
   inline void SetDeviceColorMask(GLboolean red,

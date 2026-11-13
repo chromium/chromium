@@ -6535,9 +6535,6 @@ bool GLES2DecoderImpl::GetHelper(
 bool GLES2DecoderImpl::GetNumValuesReturnedForGLGet(
     GLenum pname, GLsizei* num_values) {
   *num_values = 0;
-  if (state_.GetStateAsGLint(pname, nullptr, num_values)) {
-    return true;
-  }
   return GetHelper(pname, nullptr, num_values);
 }
 
@@ -6564,9 +6561,10 @@ void GLES2DecoderImpl::DoGetFloatv(GLenum pname,
                                    GLfloat* params,
                                    GLsizei params_size) {
   DCHECK(params);
-  GLsizei num_written = 0;
-  if (state_.GetStateAsGLfloat(pname, params, &num_written)) {
-    DCHECK_EQ(num_written, params_size);
+  // TODO(crbug.com/40285824): Pass `params` as a span.
+  base::span<GLfloat> params_span =
+      UNSAFE_TODO(base::span(params, base::checked_cast<size_t>(params_size)));
+  if (state_.GetStateAsGLfloat(pname, params_span)) {
     return;
   }
 
@@ -6583,7 +6581,7 @@ void GLES2DecoderImpl::DoGetFloatv(GLenum pname,
   auto values = base::HeapArray<GLint>::WithSize(params_size);
   DoGetIntegerv(pname, values.data(), params_size);
   for (GLsizei ii = 0; ii < params_size; ++ii) {
-    UNSAFE_TODO(params[ii]) = static_cast<GLfloat>(values[ii]);
+    params_span[ii] = static_cast<GLfloat>(values[ii]);
   }
 }
 
@@ -6619,14 +6617,19 @@ void GLES2DecoderImpl::DoGetInteger64v(GLenum pname,
 void GLES2DecoderImpl::DoGetIntegerv(GLenum pname,
                                      GLint* params,
                                      GLsizei params_size) {
-  GLsizei num_written = 0;
   if (params_size == 0) {
     return;
   }
 
   DCHECK(params);
-  if (state_.GetStateAsGLint(pname, params, &num_written) ||
-      GetHelper(pname, params, &num_written)) {
+  // TODO(crbug.com/40285824): Pass `params` as a span.
+  base::span<GLint> params_span =
+      UNSAFE_TODO(base::span(params, base::checked_cast<size_t>(params_size)));
+  if (state_.GetStateAsGLint(pname, params_span)) {
+    return;
+  }
+  GLsizei num_written = 0;
+  if (GetHelper(pname, params, &num_written)) {
     DCHECK_EQ(num_written, params_size);
     return;
   }

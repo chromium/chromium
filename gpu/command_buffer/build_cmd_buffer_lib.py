@@ -7062,7 +7062,7 @@ class GLGenerator:
       f.write(
         """
 bool %s::GetStateAs%s(
-    GLenum pname, %s* params, GLsizei* num_written) const {
+    GLenum pname, base::span<%s> params) const {
   switch (pname) {
 """
         % (class_name, gl_type, gl_type)
@@ -7070,37 +7070,26 @@ bool %s::GetStateAs%s(
       for state_name in sorted(_STATE_INFO.keys()):
         state = _STATE_INFO[state_name]
         if 'enum' in state:
+          values = ", ".join(
+            "static_cast<%s>(%s)" % (gl_type, item['name'])
+            for item in state['states']
+          )
           f.write("    case %s:\n" % state['enum'])
-          f.write("      *num_written = %d;\n" % len(state['states']))
-          f.write("      if (params) {\n")
-          for ndx, item in enumerate(state['states']):
-            f.write(
-              "        UNSAFE_TODO(params[%d]) = static_cast<%s>(%s);\n"
-              % (ndx, gl_type, item['name'])
-            )
-          f.write("      }\n")
+          f.write("      params.copy_from({%s});\n" % values)
           f.write("      return true;\n")
         else:
           for item in state['states']:
             assert isinstance(item['default'], str)
+            conv = GetGLGetTypeConversion(gl_type, item['type'], item['name'])
             f.write("    case %s:\n" % item['enum'])
-            f.write("      *num_written = 1;\n")
-            f.write("      if (params) {\n")
-            f.write(
-              "        UNSAFE_TODO(params[0]) = %s;\n"
-              % (GetGLGetTypeConversion(gl_type, item['type'], item['name']))
-            )
-            f.write("      }\n")
+            f.write("      params.copy_from({%s});\n" % conv)
             f.write("      return true;\n")
       for capability in self.capability_flags:
         f.write("    case GL_%s:\n" % capability['name'].upper())
-        f.write("      *num_written = 1;\n")
-        f.write("      if (params) {\n")
         f.write(
-          "        params[0] = static_cast<%s>(enable_flags.%s);\n"
+          "      params.copy_from({static_cast<%s>(enable_flags.%s)});\n"
           % (gl_type, capability['name'])
         )
-        f.write("      }\n")
         f.write("      return true;\n")
       f.write("""    default:
       return false;
