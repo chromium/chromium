@@ -796,6 +796,41 @@ TEST_F(HTMLCapabilityElementBaseTest,
   EXPECT_NE(permission_element, GetDocument().FocusedElement());
 }
 
+TEST_F(HTMLCapabilityElementBaseTest,
+       PermissionTextSpanUsesGenericFontFamilyAndIgnoresAuthorFontFace) {
+  ScopedInstallElementForTest scoped_install_feature(true);
+  ScopedUserMediaElementLegacyForTest scoped_legacy_feature(false);
+  String ahem_path = test::CoreTestDataPath("Ahem.ttf");
+  for (const char* family : {"Arial", "Helvetica", "sans-serif"}) {
+    LoadFontFromFile(GetFrame(), ahem_path, AtomicString(family));
+  }
+
+  HeapVector<Member<HTMLCapabilityElementBase>> elements = {
+      MakeGarbageCollected<HTMLCameraElement>(GetDocument()),
+      MakeGarbageCollected<HTMLMicrophoneElement>(GetDocument()),
+      MakeGarbageCollected<HTMLGeolocationElement>(GetDocument()),
+      MakeGarbageCollected<HTMLInstallElement>(GetDocument()),
+      MakeGarbageCollected<HTMLUserMediaElement>(GetDocument()),
+  };
+
+  for (const auto& element : elements) {
+    GetDocument().body()->AppendChild(element);
+  }
+  UpdateAllLifecyclePhasesForTest();
+
+  for (const auto& element : elements) {
+    SCOPED_TRACE(element->TagQName().ToString());
+    auto* text_span = element->permission_text_span_for_testing().Get();
+    ASSERT_TRUE(text_span);
+    const ComputedStyle* style = text_span->GetComputedStyle();
+    ASSERT_TRUE(style);
+    const FontFamily& family = style->GetFontDescription().Family();
+    EXPECT_TRUE(family.FamilyIsGeneric());
+    EXPECT_EQ(nullptr, family.Next());
+    EXPECT_FALSE(style->GetFont()->HasCustomFont());
+  }
+}
+
 class HTMLCapabilityElementBaseClickingEnabledTest
     : public HTMLCapabilityElementBaseTest {
  public:

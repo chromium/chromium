@@ -35,7 +35,9 @@ permission::-internal-permission-text, geolocation::-internal-permission-text, i
   text-shadow: initial !important;
   align-items: center;
   display: flex;
-  font-family: Arial, Helvetica, sans-serif;
+  /* Use a generic family so author @font-face rules cannot shadow the
+     browser-controlled label text. */
+  font-family: sans-serif !important;
   font-size: inherit;
   font-style: inherit;
   font-weight: inherit;
