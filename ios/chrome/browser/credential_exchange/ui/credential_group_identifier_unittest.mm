@@ -106,13 +106,10 @@ TEST_F(CredentialGroupIdentifierTest, EmptyIdentifiers) {
   EXPECT_NE([empty1 hash], [populated hash]);
 }
 
-// Tests that two groups evaluating to equal maintain the same hash, even if the
-// distribution of duplicate realms among their credentials differs.
+// Tests that two groups with different distributions of credentials across
+// sign-on realms evaluate as not equal.
 TEST_F(CredentialGroupIdentifierTest,
-       EqualGroupsWithDuplicateRealmsHaveSameHash) {
-  // entry_a and entry_b are identical except for the signon_realm.
-  // Because CredentialUIEntry operator== ignores the signon_realm, they will
-  // evaluate as equal when compared by AffiliatedGroup::operator==.
+       DifferentDuplicateRealmDistributionsNotEqual) {
   CredentialUIEntry entry_a =
       CreateEntry("https://example.com", "https://example.com", u"user");
   CredentialUIEntry entry_b =
@@ -128,8 +125,5 @@ TEST_F(CredentialGroupIdentifierTest,
   CredentialGroupIdentifier* id2 =
       [[CredentialGroupIdentifier alloc] initWithGroup:group2];
 
-  // We must guarantee their hashes match despite the different duplicate
-  // counts.
-  EXPECT_TRUE([id1 isEqual:id2]);
-  EXPECT_EQ([id1 hash], [id2 hash]);
+  EXPECT_FALSE([id1 isEqual:id2]);
 }

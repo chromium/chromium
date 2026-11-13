@@ -120,6 +120,9 @@ struct CredentialUIEntry {
 
     // The timestamp of when the backup password was set.
     base::Time creation_timestamp;
+
+    friend bool operator==(const BackupPasswordInfo& lhs,
+                           const BackupPasswordInfo& rhs) = default;
   };
 
   // Passkey-specific fields for entries representing a WebAuthn passkey.
@@ -138,6 +141,9 @@ struct CredentialUIEntry {
     // The relying party identifier.
     // https://w3c.github.io/webauthn/#relying-party-identifier
     std::string rp_id;
+
+    friend bool operator==(const PasskeyInfo& lhs,
+                           const PasskeyInfo& rhs) = default;
   };
 
   CredentialUIEntry();
@@ -240,6 +246,9 @@ struct CredentialUIEntry {
   // link which should be opened when item is clicked. Can be used by the UI to
   // display all the affiliated domains.
   std::vector<DomainInfo> GetAffiliatedDomains() const;
+
+  friend bool operator==(const CredentialUIEntry& lhs,
+                         const CredentialUIEntry& rhs) = default;
 };
 
 // Creates a non-secret key for sorting and bucketing credentials. Passwords
@@ -254,9 +263,6 @@ CredentialSortKey CreateCredentialSortKey(const StoredCredential& credential);
 // passwords), ignoring metadata such as notes, stores, or insecurity issues.
 bool AreCredentialsEquivalent(const CredentialUIEntry& lhs,
                               const CredentialUIEntry& rhs);
-
-bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
-bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 
 // Returns true when the credential is either leaked or phished.
 bool IsCompromised(const CredentialUIEntry& credential);

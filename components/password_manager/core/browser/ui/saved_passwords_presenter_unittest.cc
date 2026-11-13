@@ -1733,8 +1733,10 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest, UpdateStoredCredentials) {
   PasswordForm account_store_form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/0);
+  account_store_form_1.date_created = base::Time::Now();
   PasswordForm account_store_form_2 =
       CreateTestPasswordForm(PasswordForm::Store::kAccountStore, /*index=*/1);
+  account_store_form_2.date_created = base::Time::Now();
 
   std::vector<CredentialUIEntry> credentials_to_add = {
       CredentialUIEntry(account_store_form_1),
@@ -2496,12 +2498,10 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
               ElementsAre(Pair(account_form_with_www.signon_realm,
                                ElementsAre(account_form_with_www))));
 
-  PasswordForm expected_form = profile_store_form;
-  expected_form.in_store =
-      PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore;
-
   EXPECT_THAT(presenter().GetSavedCredentials(),
-              ElementsAre(CredentialUIEntry(expected_form)));
+              ElementsAre(CredentialUIEntry({mobile_profile_store_form,
+                                             profile_store_form,
+                                             account_form_with_www})));
 }
 
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {

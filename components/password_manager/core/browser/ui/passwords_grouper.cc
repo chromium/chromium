@@ -246,7 +246,9 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetBlockedSites() const {
                            return CredentialUIEntry(key_value.second.front());
                          });
   // Sort blocked sites.
-  std::sort(results.begin(), results.end());
+  std::ranges::sort(results, {}, [](const CredentialUIEntry& entry) {
+    return CreateCredentialSortKey(entry);
+  });
   return results;
 }
 

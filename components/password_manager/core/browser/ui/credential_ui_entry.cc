@@ -363,17 +363,6 @@ bool AreCredentialsEquivalent(const CredentialUIEntry& lhs,
          (lhs.blocked_by_user || lhs.password == rhs.password);
 }
 
-bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
-  return AreCredentialsEquivalent(lhs, rhs);
-}
-
-bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
-  // Intentionally does not include password since password is a PasswordString
-  // which intentionally does not include an operator< to avoid decrypting
-  // for ordering.
-  return CreateCredentialSortKey(lhs) < CreateCredentialSortKey(rhs);
-}
-
 bool IsCompromised(const CredentialUIEntry& credential) {
   return credential.IsLeaked() || credential.IsPhished();
 }

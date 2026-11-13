@@ -29,8 +29,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCredential = kItemTypeEnumZero,
 };
 
-// Orders passwords before passkeys. For the same type of credentials defaults
-// to the existing comparator.
+// Orders passwords before passkeys. For the same type of credentials orders by
+// `CreateCredentialSortKey()`.
 bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
                               const password_manager::CredentialUIEntry& rhs) {
   bool is_lhs_passkey = lhs.IsPasskey();
@@ -38,7 +38,8 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
   if (is_lhs_passkey != is_rhs_passkey) {
     return is_lhs_passkey < is_rhs_passkey;
   }
-  return lhs < rhs;
+  return password_manager::CreateCredentialSortKey(lhs) <
+         password_manager::CreateCredentialSortKey(rhs);
 }
 
 }  // namespace
