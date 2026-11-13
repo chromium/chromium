@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,6 +50,25 @@ class MockCustomFormControlAgent : public mojom::CustomFormControlAgent {
               DetectCustomFormControls,
               (const blink::DocumentToken& document,
                DetectCustomFormControlsCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ExtractOptions,
+              (const blink::DocumentToken& document,
+               FieldRendererId field,
+               ExtractOptionsCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ClosePopover,
+              (const blink::DocumentToken& document,
+               FieldRendererId field,
+               ClosePopoverCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SetValue,
+              (const blink::DocumentToken& document,
+               FieldRendererId field,
+               mojom::SelectOptionPtr option,
+               SetValueCallback callback),
               (override));
 
  private:

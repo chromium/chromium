@@ -4,26 +4,33 @@
 
 #include "components/autofill/content/renderer/custom_form_control_agent.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/custom_form_control_util.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_node.h"
 
 namespace autofill {
 
@@ -95,6 +102,50 @@ void CustomFormControlAgent::DetectCustomFormControls(
   std::move(callback).Run(std::move(detected));
 }
 
+void CustomFormControlAgent::ExtractOptions(
+    const blink::DocumentToken& document,
+    FieldRendererId field,
+    ExtractOptionsCallback callback) {
+  executor_.ExtractOptions(
+      GetElement(document, field),
+      base::BindOnce(
+          [](ExtractOptionsCallback callback,
+             std::optional<CustomFormControlOptions> options) {
+            // The script's options are untrusted, so only send valid ones.
+            if (!options || !IsValidOptionVector(options->options)) {
+              std::move(callback).Run(nullptr);
+              return;
+            }
+            std::move(callback).Run(
+                mojom::ExtractedCustomFormControlOptions::New(
+                    base::ToVector(options->options,
+                                   [](const SelectOption& option) {
+                                     return mojom::SelectOption::New(
+                                         option.value, option.text);
+                                   }),
+                    options->popover_needs_to_be_closed));
+          },
+          std::move(callback)));
+}
+
+void CustomFormControlAgent::ClosePopover(const blink::DocumentToken& document,
+                                          FieldRendererId field,
+                                          ClosePopoverCallback callback) {
+  executor_.ClosePopover(GetElement(document, field),
+                         base::IgnoreArgs<bool>(std::move(callback)));
+}
+
+void CustomFormControlAgent::SetValue(const blink::DocumentToken& document,
+                                      FieldRendererId field,
+                                      mojom::SelectOptionPtr option,
+                                      SetValueCallback callback) {
+  executor_.SetValue(
+      GetElement(document, field),
+      SelectOption{.value = std::move(option->value),
+                   .text = std::move(option->text)},
+      base::IgnoreArgs<CustomFormControlSetValueResult>(std::move(callback)));
+}
+
 bool CustomFormControlAgent::IsCurrentDocument(
     const blink::DocumentToken& document) const {
   // The executor observes the frame, so this is null once the frame is
@@ -102,6 +153,23 @@ bool CustomFormControlAgent::IsCurrentDocument(
   content::RenderFrame* render_frame = executor_.render_frame();
   return render_frame &&
          render_frame->GetWebFrame()->GetDocument().Token() == document;
+}
+
+blink::WebElement CustomFormControlAgent::GetElement(
+    const blink::DocumentToken& document,
+    FieldRendererId field) const {
+  if (!field || !IsCurrentDocument(document)) {
+    return blink::WebElement();
+  }
+  blink::WebElement element =
+      blink::WebNode::FromDomNodeId(*field).DynamicTo<blink::WebElement>();
+  // The renderer id may name an element of another document of the renderer,
+  // or an element that isn't accessible to scripts (e.g. in a user agent
+  // shadow tree).
+  return element && element.GetDocument().Token() == document &&
+                 form_util::IsAccessible(element)
+             ? element
+             : blink::WebElement();
 }
 
 void CustomFormControlAgent::BindReceiver(

@@ -6,8 +6,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -71,6 +73,80 @@ constexpr char kDetectingScript[] = R"(
   }
 )";
 
+// A script whose manager fills the custom select with the id `state`:
+// `extractOptions()` opens its popover, `closePopover()` closes it, and
+// `setValue()` writes the selected option into the element.
+constexpr char kFillingScript[] = R"(
+  function createCustomFormControlManager() {
+    return {
+      async extractOptions(node) {
+        node.dataset.popover = 'open';
+        return {
+          options: [{text: 'Bavaria', value: 'BY'}, {text: 'Berlin'}],
+          popoverNeedsToBeClosed: true,
+        };
+      },
+      async closePopover(node) {
+        node.dataset.popover = 'closed';
+      },
+      async setValue(node, value, text) {
+        if (value === 'missing') {
+          return {status: 'OPTION_NOT_FOUND'};
+        }
+        node.textContent = `${value}:${text}`;
+        node.dataset.popover = 'closed';
+        return {status: 'OK'};
+      },
+    };
+  }
+)";
+
+// A script whose manager detaches its own frame in each fill method, and then
+// replies as if it succeeded.
+constexpr char kDetachingFillingScript[] = R"(
+  function createCustomFormControlManager() {
+    return {
+      extractOptions(node) {
+        frameElement.remove();
+        return {options: [{text: 'Bavaria', value: 'BY'}],
+                popoverNeedsToBeClosed: true};
+      },
+      closePopover(node) {
+        frameElement.remove();
+      },
+      setValue(node, value, text) {
+        frameElement.remove();
+        return {status: 'OK'};
+      },
+    };
+  }
+)";
+
+// Like `kDetachingFillingScript`, but each fill method detaches its frame after
+// an `await`, i.e. while the call waits for the method's promise.
+constexpr char kDetachingAfterAwaitFillingScript[] = R"(
+  function createCustomFormControlManager() {
+    const detach = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      frameElement.remove();
+    };
+    return {
+      async extractOptions(node) {
+        await detach();
+        return {options: [{text: 'Bavaria', value: 'BY'}],
+                popoverNeedsToBeClosed: true};
+      },
+      async closePopover(node) {
+        await detach();
+      },
+      async setValue(node, value, text) {
+        await detach();
+        return {status: 'OK'};
+      },
+    };
+  }
+)";
+
 using Remote = mojo::AssociatedRemote<mojom::CustomFormControlAgent>;
 
 class CustomFormControlAgentTest : public test::AutofillRendererTest {
@@ -109,6 +185,97 @@ class CustomFormControlAgentTest : public test::AutofillRendererTest {
         detected;
     remote->DetectCustomFormControls(document, detected.GetCallback());
     return detected.Take();
+  }
+
+  // Extracts the options of `field` in `document` through `remote` and returns
+  // the reply.
+  mojom::ExtractedCustomFormControlOptionsPtr ExtractOptions(
+      Remote& remote,
+      const blink::DocumentToken& document,
+      FieldRendererId field) {
+    base::test::TestFuture<mojom::ExtractedCustomFormControlOptionsPtr>
+        extracted;
+    remote->ExtractOptions(document, field, extracted.GetCallback());
+    return extracted.Take();
+  }
+
+  // Closes the popover of `field` in `document` through `remote`, and waits
+  // for the reply.
+  void ClosePopover(Remote& remote,
+                    const blink::DocumentToken& document,
+                    FieldRendererId field) {
+    base::test::TestFuture<void> closed;
+    remote->ClosePopover(document, field, closed.GetCallback());
+    EXPECT_TRUE(closed.Wait());
+  }
+
+  // Selects the option with `value` and `text` in `field` of `document`
+  // through `remote`, and waits for the reply.
+  void SetValue(Remote& remote,
+                const blink::DocumentToken& document,
+                FieldRendererId field,
+                std::u16string value,
+                std::u16string text) {
+    base::test::TestFuture<void> set;
+    remote->SetValue(
+        document, field,
+        mojom::SelectOption::New(std::move(value), std::move(text)),
+        set.GetCallback());
+    EXPECT_TRUE(set.Wait());
+  }
+
+  // Returns the text content of the element with the id `id`.
+  std::string GetTextOf(std::string_view id) {
+    return GetMainFrame()
+        ->GetDocument()
+        .GetElementById(blink::WebString::FromUtf8(id))
+        .TextContent()
+        .Utf8();
+  }
+
+  // Returns the value of the attribute `name` of the element with the id `id`.
+  std::string GetAttributeOf(std::string_view id, std::string_view name) {
+    return GetMainFrame()
+        ->GetDocument()
+        .GetElementById(blink::WebString::FromUtf8(id))
+        .GetAttribute(blink::WebString::FromUtf8(name))
+        .Utf8();
+  }
+
+  // Creates an `AutofillAgent` with custom form control scripts for the first
+  // child frame, which must exist, loads `script` into it, and binds `remote`
+  // to its `CustomFormControlAgent`. Returns the child frame's document, or
+  // nullopt if that fails. The `AutofillAgent` deletes itself when the frame is
+  // destroyed.
+  std::optional<blink::DocumentToken> SetUpChildFrameAgent(
+      Remote& remote,
+      blink::AssociatedInterfaceRegistry& child_registry,
+      const std::string& script) {
+    blink::WebLocalFrame* child_frame =
+        GetMainFrame()->FirstChild()->ToWebLocalFrame();
+    content::RenderFrame* child =
+        content::RenderFrame::FromWebFrame(child_frame);
+    CreateAutofillAgent(child, /*password_autofill_agent=*/nullptr,
+                        /*password_generation_agent=*/nullptr, &child_registry)
+        .release()
+        ->EnableCustomFormControlScripts(kWorldId, child_registry);
+    const blink::DocumentToken document = child_frame->GetDocument().Token();
+    if (!Bind(remote, child_registry) ||
+        !LoadUnsafeScript(remote, document, script)) {
+      return std::nullopt;
+    }
+    return document;
+  }
+
+  // Returns the `FieldRendererId` of the element with the id `id` in the first
+  // child frame.
+  FieldRendererId GetChildFieldRendererIdOf(std::string_view id) {
+    return form_util::GetFieldRendererId(
+        GetMainFrame()
+            ->FirstChild()
+            ->ToWebLocalFrame()
+            ->GetDocument()
+            .GetElementById(blink::WebString::FromUtf8(id)));
   }
 
   // Returns the `FieldRendererId` of the element with the id `id`.
@@ -371,6 +538,190 @@ TEST_F(CustomFormControlAgentTest,
   EXPECT_TRUE(DetectCustomFormControls(remote, previous_document).empty());
   // Detection works for the current document.
   EXPECT_EQ(DetectCustomFormControls(remote, GetDocumentToken()).size(), 2u);
+}
+
+// Tests that the browser can extract the options of a custom select through
+// the interface.
+TEST_F(CustomFormControlAgentTest, ExtractsCustomFormControlOptions) {
+  LoadHTML("<div id=state></div>");
+  Remote remote;
+  ASSERT_TRUE(Bind(remote));
+  ASSERT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), kFillingScript));
+
+  mojom::ExtractedCustomFormControlOptionsPtr extracted =
+      ExtractOptions(remote, GetDocumentToken(), GetFieldRendererIdOf("state"));
+  ASSERT_TRUE(extracted);
+  ASSERT_EQ(extracted->options.size(), 2u);
+  EXPECT_EQ(extracted->options[0]->value, u"BY");
+  EXPECT_EQ(extracted->options[0]->text, u"Bavaria");
+  EXPECT_EQ(extracted->options[1]->value, u"Berlin");
+  EXPECT_EQ(extracted->options[1]->text, u"Berlin");
+  EXPECT_TRUE(extracted->popover_needs_to_be_closed);
+  EXPECT_EQ(GetAttributeOf("state", "data-popover"), "open");
+}
+
+// Tests that no options are sent if the script's options are invalid (see
+// `IsValidOptionVector()`), e.g. too long.
+TEST_F(CustomFormControlAgentTest, DropsInvalidOptions) {
+  LoadHTML("<div id=state></div>");
+  Remote remote;
+  ASSERT_TRUE(Bind(remote));
+  ASSERT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), R"(
+    function createCustomFormControlManager() {
+      return {
+        async extractOptions(node) {
+          return {options: [{text: 'x'.repeat(2000)}]};
+        },
+      };
+    }
+  )"));
+  EXPECT_FALSE(ExtractOptions(remote, GetDocumentToken(),
+                              GetFieldRendererIdOf("state")));
+}
+
+// Tests that the browser can close the popover of a custom select through the
+// interface.
+TEST_F(CustomFormControlAgentTest, ClosesCustomFormControlPopover) {
+  LoadHTML("<div id=state></div>");
+  Remote remote;
+  ASSERT_TRUE(Bind(remote));
+  ASSERT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), kFillingScript));
+
+  ClosePopover(remote, GetDocumentToken(), GetFieldRendererIdOf("state"));
+  EXPECT_EQ(GetAttributeOf("state", "data-popover"), "closed");
+}
+
+// Tests that the browser can select an option of a custom select through the
+// interface.
+TEST_F(CustomFormControlAgentTest, SetsCustomFormControlValue) {
+  LoadHTML("<div id=state></div>");
+  Remote remote;
+  ASSERT_TRUE(Bind(remote));
+  ASSERT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), kFillingScript));
+  const FieldRendererId state = GetFieldRendererIdOf("state");
+
+  SetValue(remote, GetDocumentToken(), state, u"BY", u"Bavaria");
+  EXPECT_EQ(GetAttributeOf("state", "data-popover"), "closed");
+  EXPECT_EQ(GetTextOf("state"), "BY:Bavaria");
+  // A missing option doesn't change the value.
+  SetValue(remote, GetDocumentToken(), state, u"missing", u"Missing");
+  EXPECT_EQ(GetTextOf("state"), "BY:Bavaria");
+}
+
+// Tests that the fill methods fail if they don't name an element of the current
+// document.
+TEST_F(CustomFormControlAgentTest, FillMethodsFailForInvalidTargets) {
+  Remote remote;
+  ASSERT_TRUE(Bind(remote));
+  const blink::DocumentToken previous_document = GetDocumentToken();
+  LoadHTML(
+      "<div id=state></div><div id=removed></div>"
+      "<iframe srcdoc='<div id=child></div>'>");
+  ASSERT_NE(GetDocumentToken(), previous_document);
+  ASSERT_TRUE(LoadUnsafeScript(remote, GetDocumentToken(), kFillingScript));
+  const FieldRendererId state = GetFieldRendererIdOf("state");
+  const FieldRendererId child = GetChildFieldRendererIdOf("child");
+  ASSERT_TRUE(child);
+  const FieldRendererId removed = GetFieldRendererIdOf("removed");
+  ExecuteJavaScriptForTests("document.getElementById('removed').remove();");
+
+  auto expect_fill_methods_fail = [this, &remote](blink::DocumentToken document,
+                                                  FieldRendererId field) {
+    EXPECT_FALSE(ExtractOptions(remote, document, field));
+    ClosePopover(remote, document, field);
+    SetValue(remote, document, field, u"BY", u"Bavaria");
+  };
+  // The previous document, which the browser may name if it sends a call
+  // before it learns that the frame committed a new one.
+  expect_fill_methods_fail(previous_document, state);
+  // A null renderer id.
+  expect_fill_methods_fail(GetDocumentToken(), FieldRendererId());
+  // A renderer id that no element has.
+  expect_fill_methods_fail(GetDocumentToken(), FieldRendererId(*state + 1000));
+  // An element of another document (here, of a child frame).
+  expect_fill_methods_fail(GetDocumentToken(), child);
+  // An element that was removed from the document, so scripts can't access it
+  // (see `form_util::IsAccessible()`).
+  expect_fill_methods_fail(GetDocumentToken(), removed);
+  // Nothing was opened, closed or set.
+  EXPECT_EQ(GetAttributeOf("state", "data-popover"), "");
+  EXPECT_EQ(GetTextOf("state"), "");
+}
+
+// Tests that the reply to `ExtractOptions()` is dropped if `extractOptions()`
+// detaches its own frame.
+TEST_F(CustomFormControlAgentTest,
+       DropsExtractOptionsReplyIfScriptDetachesFrame) {
+  LoadHTML("<iframe srcdoc='<div id=state></div>'></iframe>");
+  Remote remote;
+  blink::AssociatedInterfaceRegistry child_registry;
+  std::optional<blink::DocumentToken> document =
+      SetUpChildFrameAgent(remote, child_registry, kDetachingFillingScript);
+  ASSERT_TRUE(document);
+
+  base::test::TestFuture<mojom::ExtractedCustomFormControlOptionsPtr> extracted;
+  remote->ExtractOptions(*document, GetChildFieldRendererIdOf("state"),
+                         extracted.GetCallback());
+  ASSERT_TRUE(
+      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  EXPECT_FALSE(extracted.IsReady());
+}
+
+// Tests that the reply to `ClosePopover()` is dropped if `closePopover()`
+// detaches its own frame.
+TEST_F(CustomFormControlAgentTest,
+       DropsClosePopoverReplyIfScriptDetachesFrame) {
+  LoadHTML("<iframe srcdoc='<div id=state></div>'></iframe>");
+  Remote remote;
+  blink::AssociatedInterfaceRegistry child_registry;
+  std::optional<blink::DocumentToken> document =
+      SetUpChildFrameAgent(remote, child_registry, kDetachingFillingScript);
+  ASSERT_TRUE(document);
+
+  base::test::TestFuture<void> closed;
+  remote->ClosePopover(*document, GetChildFieldRendererIdOf("state"),
+                       closed.GetCallback());
+  ASSERT_TRUE(
+      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  EXPECT_FALSE(closed.IsReady());
+}
+
+// Tests that the reply to `SetValue()` is dropped if `setValue()` detaches its
+// own frame.
+TEST_F(CustomFormControlAgentTest, DropsSetValueReplyIfScriptDetachesFrame) {
+  LoadHTML("<iframe srcdoc='<div id=state></div>'></iframe>");
+  Remote remote;
+  blink::AssociatedInterfaceRegistry child_registry;
+  std::optional<blink::DocumentToken> document =
+      SetUpChildFrameAgent(remote, child_registry, kDetachingFillingScript);
+  ASSERT_TRUE(document);
+
+  base::test::TestFuture<void> result;
+  remote->SetValue(*document, GetChildFieldRendererIdOf("state"),
+                   mojom::SelectOption::New(u"BY", u"Bavaria"),
+                   result.GetCallback());
+  ASSERT_TRUE(
+      base::test::RunUntil([&remote] { return !remote.is_connected(); }));
+  EXPECT_FALSE(result.IsReady());
+}
+
+// Tests that the fill methods fail if the script detaches its own frame while
+// the call waits for the method's promise: then the executor fails the call
+// when the script context is released, before the agent is destroyed.
+TEST_F(CustomFormControlAgentTest,
+       FillMethodsFailIfScriptDetachesFrameAfterAwait) {
+  LoadHTML("<iframe srcdoc='<div id=state></div>'></iframe>");
+  Remote remote;
+  blink::AssociatedInterfaceRegistry child_registry;
+  std::optional<blink::DocumentToken> document = SetUpChildFrameAgent(
+      remote, child_registry, kDetachingAfterAwaitFillingScript);
+  ASSERT_TRUE(document);
+
+  base::test::TestFuture<mojom::ExtractedCustomFormControlOptionsPtr> extracted;
+  remote->ExtractOptions(*document, GetChildFieldRendererIdOf("state"),
+                         extracted.GetCallback());
+  ASSERT_TRUE(extracted.Wait());
+  EXPECT_FALSE(extracted.Get());
 }
 
 }  // namespace

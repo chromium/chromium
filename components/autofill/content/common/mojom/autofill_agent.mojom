@@ -292,6 +292,17 @@ struct DetectedCustomFormControl {
   bool is_active;
 };
 
+// The options that the script extracted from a custom form control.
+struct ExtractedCustomFormControlOptions {
+  // Valid (see `IsValidOptionVector()`): the renderer doesn't send invalid
+  // options, so the browser may treat them as a bad message.
+  array<SelectOption> options;
+  // Whether the script opened a popover to extract the options and left it
+  // open. Selecting an option with `SetValue()` closes it; otherwise,
+  // `ClosePopover()` must close it.
+  bool popover_needs_to_be_closed;
+};
+
 // Runs the custom form control script of a frame's current document in the
 // renderer. A custom form control script can detect, read and fill the page's
 // custom form controls (e.g. select-like widgets that aren't <select>
@@ -301,6 +312,8 @@ struct DetectedCustomFormControl {
 // `features::kAutofillCustomFormControlScripts` is enabled); then there is one
 // instance per render frame. All methods are called by the browser on the
 // renderer; replies come from the renderer, are informational and untrusted.
+// Calls fail while the script still handles a previous call, so the browser
+// waits for each reply before it sends the next call.
 //
 // For prototyping only: this isn't safe to ship yet (see `LoadUnsafeScript()`).
 interface CustomFormControlAgent {
@@ -327,4 +340,26 @@ interface CustomFormControlAgent {
   // different `field_id`s (see `DetectedCustomFormControl`).
   DetectCustomFormControls(blink.mojom.DocumentToken document)
       => (array<DetectedCustomFormControl> controls);
+
+  // Extracts the options of the custom form control `field` (as detected by
+  // `DetectCustomFormControls()`) in `document` with the loaded script. The
+  // script may open the control's popover to do so. `options` is null if no
+  // script is loaded, if the script fails or returns invalid options, if
+  // `field` isn't an element of `document`, or if `document` isn't the current
+  // document.
+  ExtractOptions(blink.mojom.DocumentToken document, FieldRendererId field)
+      => (ExtractedCustomFormControlOptions? options);
+
+  // Closes the popover of the custom form control `field` in `document` that
+  // `ExtractOptions()` left open. Replies once done, also if it fails.
+  ClosePopover(blink.mojom.DocumentToken document, FieldRendererId field)
+      => ();
+
+  // Selects `option` (one of the extracted options) in the custom form control
+  // `field` in `document` with the loaded script, which also closes its
+  // popover. Replies once done, also if it fails.
+  SetValue(blink.mojom.DocumentToken document,
+           FieldRendererId field,
+           SelectOption option)
+      => ();
 };
