@@ -28,6 +28,8 @@ source_set("transport_handler") {
   sources = [
     "task_ingress_transport_handler.cc",
     "task_ingress_transport_handler.h",
+    "task_ingress_transport_handler_factory.cc",
+    "task_ingress_transport_handler_factory.h",
   ]
 
   deps = [
