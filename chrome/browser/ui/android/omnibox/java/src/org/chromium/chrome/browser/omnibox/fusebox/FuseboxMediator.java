@@ -1665,16 +1665,18 @@ class FuseboxMediator implements BackPressHandler {
 
         List<PopupButtonData> modelButtonDataList = new ArrayList<>();
         if (inputState != null) {
-            boolean showActiveModel = isAimRequest && isModelSelectionAllowed(inputState);
+            // inputState.activeModel stays set so the user's model resumes after leaving the tool.
+            // Hide the selection checkmark while an incompatible tool is active.
+            boolean modelSelectionAllowed = isModelSelectionAllowed(inputState);
+            boolean showActiveModel = isAimRequest && modelSelectionAllowed;
             for (ModelConfig modelConfig : inputState.getModelConfigs()) {
                 int modelMode = modelConfig.getModelValue();
                 if (inputState.isModelVisible(modelMode)) {
-                    // TODO(crbug.com/584861500): Remove this workaround once InputState exposes the
-                    // effective model instead of the default model. This check is a hack because
-                    // inputState.activeModel cannot be trusted when the active tool is incompatible
-                    // with selectable models, as it still reports the default model rather than the
-                    // effective model that would be used.
                     boolean selected = showActiveModel && inputState.activeModel == modelMode;
+                    // TODO(crbug.com/584861500): Rely on inputState.isModelEnabled() alone once
+                    // InputStateModel populates disabledModels for disable_active_model_selection
+                    // and isModelEnabled() respects it.
+                    boolean enabled = modelSelectionAllowed && inputState.isModelEnabled(modelMode);
                     String tooltip = modelConfig.getMenuTooltip();
                     int iconId =
                             modelConfig.hasIcon() && modelConfig.getIcon().hasIconId()
@@ -1686,7 +1688,7 @@ class FuseboxMediator implements BackPressHandler {
                                     .setOnClicked(this::onDynamicButtonClicked)
                                     .setText(modelConfig.getMenuLabel())
                                     .setIconId(iconId)
-                                    .setEnabled(inputState.isModelEnabled(modelMode))
+                                    .setEnabled(enabled)
                                     .setSelected(selected)
                                     .setProtoId(modelMode)
                                     .setTooltip(tooltip)
@@ -1829,7 +1831,7 @@ class FuseboxMediator implements BackPressHandler {
 
     /**
      * Returns whether selecting a model is allowed while the active tool is selected. Returns true
-     * unless the active tool specifies that it is incompatible with selectable models.
+     * unless the active tool specifies that it is not compatible with selectable models.
      */
     private static boolean isModelSelectionAllowed(InputState inputState) {
         ToolConfig toolConfig = getActiveToolConfig(inputState);
