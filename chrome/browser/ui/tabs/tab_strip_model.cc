@@ -5530,9 +5530,13 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
 
   tabs::TabInterface* old_active_tab = GetActiveTab();
   // Remove the tab.
+  const bool remove_for_detach =
+      tab_detach_reason ==
+      tabs::TabInterface::DetachReason::kInsertIntoOtherWindow;
   std::unique_ptr<tabs::TabModel> old_data =
       base::WrapUnique(static_cast<tabs::TabModel*>(
-          contents_data_->RemoveTabAtIndexRecursive(index).release()));
+          contents_data_->RemoveTab(tab_to_remove, remove_for_detach)
+              .release()));
   selection_model_.RemoveTabFromSelection(tab_to_remove);
   selection_model_.InvalidateListSelectionModel(base::PassKey<TabStripModel>());
 

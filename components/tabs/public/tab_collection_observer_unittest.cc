@@ -38,7 +38,7 @@ class MockTabCollectionObserver : public TabCollectionObserver {
               (override));
   MOCK_METHOD(void,
               OnChildrenRemoved,
-              (const TabCollection::Position&, const TabCollectionNodes&),
+              (const TabCollection::Position&, const TabCollectionNodes&, bool),
               (override));
   MOCK_METHOD(void,
               OnChildMoved,
@@ -320,7 +320,8 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{group_tab_1_handle})))
+            testing::Eq(tabs::TabCollectionNodes{group_tab_1_handle}),
+            testing::Eq(false)))
         .Times(1);
 
     collection->RemoveTabAtIndexRecursive(3);
@@ -343,7 +344,8 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{group_collection_handle})))
+            testing::Eq(tabs::TabCollectionNodes{group_collection_handle}),
+            testing::Eq(false)))
         .Times(1);
 
     collection->RemoveTabAtIndexRecursive(2);
@@ -365,7 +367,8 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{unpinned_tab_handle})))
+            testing::Eq(tabs::TabCollectionNodes{unpinned_tab_handle}),
+            testing::Eq(false)))
         .Times(1);
 
     collection->RemoveTabAtIndexRecursive(1);
@@ -387,14 +390,124 @@ TEST_F(TabCollectionObserverTest, OnTabRemoved) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{pinned_tab_handle})))
+            testing::Eq(tabs::TabCollectionNodes{pinned_tab_handle}),
+            testing::Eq(false)))
         .Times(1);
 
     collection->RemoveTabAtIndexRecursive(0);
   }
 }
 
-TEST_F(TabCollectionObserverTest, OnCollectionRemoved) {
+TEST_F(TabCollectionObserverTest, OnTabDetached) {
+  // Setup with one group tab
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+
+  EXPECT_CALL(*GetGroupFactory(), Create)
+      .WillOnce([&](tabs::TabGroupTabCollection* collection,
+                    const tab_groups::TabGroupId& id,
+                    const tab_groups::TabGroupVisualData& visual_data) {
+        // Return a valid MockTabGroup object.
+        return std::make_unique<MockTabGroup>(collection, id, visual_data);
+      });
+
+  std::unique_ptr<MockTabInterface> pinned_tab = CreateMockTab();
+  std::unique_ptr<MockTabInterface> unpinned_tab = CreateMockTab();
+  std::unique_ptr<MockTabInterface> group_tab_0 = CreateMockTab();
+  std::unique_ptr<MockTabInterface> group_tab_1 = CreateMockTab();
+  MockTabInterface* pinned_tab_ptr = pinned_tab.get();
+  MockTabInterface* unpinned_tab_ptr = unpinned_tab.get();
+  MockTabInterface* group_tab_1_ptr = group_tab_1.get();
+  TabHandle pinned_tab_handle = pinned_tab->GetHandle();
+  TabHandle unpinned_tab_handle = unpinned_tab->GetHandle();
+  TabHandle group_tab_1_handle = group_tab_1->GetHandle();
+
+  tabs::TabStripCollection* collection = GetTabstripCollection();
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          *GetGroupFactory(), group_id, tab_groups::TabGroupVisualData());
+  tabs::TabGroupTabCollection* group_collection_ptr = group_collection.get();
+  TabCollectionHandle group_collection_handle = group_collection->GetHandle();
+  group_collection->AddTab(std::move(group_tab_0), 0);
+  collection->AddTabRecursive(std::move(pinned_tab), 0, std::nullopt, true);
+  collection->AddTabRecursive(std::move(unpinned_tab), 1, std::nullopt, false);
+  collection->InsertTabCollectionAt(std::move(group_collection), 2, false,
+                                    std::nullopt);
+  collection->AddTabRecursive(std::move(group_tab_1), 3, group_id, false);
+
+  MockTabCollectionObserver& observer = GetObserver();
+
+  // Test for non-final group tab.
+  {
+    EXPECT_CALL(*group_tab_1_ptr, GetParentCollection(testing::_))
+        .WillRepeatedly(Return(group_collection_ptr));
+    EXPECT_CALL(*group_tab_1_ptr, GetGroup()).WillRepeatedly(Return(group_id));
+    const TabCollection::Position expected_position = {
+        .parent_handle = group_collection_handle,
+        .index = 1ul,
+    };
+    EXPECT_CALL(
+        observer,
+        OnChildrenRemoved(
+            testing::AllOf(
+                testing::Field(&TabCollection::Position::parent_handle,
+                               testing::Eq(expected_position.parent_handle)),
+                testing::Field(&TabCollection::Position::index,
+                               testing::Eq(expected_position.index))),
+            testing::Eq(tabs::TabCollectionNodes{group_tab_1_handle}),
+            testing::Eq(true)))
+        .Times(1);
+
+    collection->RemoveTab(group_tab_1_ptr, true);
+  }
+
+  // Test for unpinned tab.
+  {
+    EXPECT_CALL(*unpinned_tab_ptr, GetParentCollection(testing::_))
+        .WillRepeatedly(Return(collection->unpinned_collection()));
+    const TabCollection::Position expected_position = {
+        .parent_handle = collection->unpinned_collection()->GetHandle(),
+        .index = 0ul,
+    };
+    EXPECT_CALL(
+        observer,
+        OnChildrenRemoved(
+            testing::AllOf(
+                testing::Field(&TabCollection::Position::parent_handle,
+                               testing::Eq(expected_position.parent_handle)),
+                testing::Field(&TabCollection::Position::index,
+                               testing::Eq(expected_position.index))),
+            testing::Eq(tabs::TabCollectionNodes{unpinned_tab_handle}),
+            testing::Eq(true)))
+        .Times(1);
+
+    collection->RemoveTab(unpinned_tab_ptr, true);
+  }
+
+  // Test for pinned tab.
+  {
+    EXPECT_CALL(*pinned_tab_ptr, GetParentCollection(testing::_))
+        .WillRepeatedly(Return(collection->pinned_collection()));
+    const TabCollection::Position expected_position = {
+        .parent_handle = collection->pinned_collection()->GetHandle(),
+        .index = 0ul,
+    };
+    EXPECT_CALL(
+        observer,
+        OnChildrenRemoved(
+            testing::AllOf(
+                testing::Field(&TabCollection::Position::parent_handle,
+                               testing::Eq(expected_position.parent_handle)),
+                testing::Field(&TabCollection::Position::index,
+                               testing::Eq(expected_position.index))),
+            testing::Eq(tabs::TabCollectionNodes{pinned_tab_handle}),
+            testing::Eq(true)))
+        .Times(1);
+
+    collection->RemoveTab(pinned_tab_ptr, true);
+  }
+}
+
+TEST_F(TabCollectionObserverTest, OnCollectionDetached) {
   MockTabCollectionObserver& observer = GetObserver();
   tabs::TabStripCollection* collection = GetTabstripCollection();
 
@@ -443,7 +556,8 @@ TEST_F(TabCollectionObserverTest, OnCollectionRemoved) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{split_handle})))
+            testing::Eq(tabs::TabCollectionNodes{split_handle}),
+            testing::Eq(true)))
         .Times(1);
 
     collection->RemoveTabCollection(split_collection_ptr);
@@ -463,7 +577,8 @@ TEST_F(TabCollectionObserverTest, OnCollectionRemoved) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{group_handle})))
+            testing::Eq(tabs::TabCollectionNodes{group_handle}),
+            testing::Eq(true)))
         .Times(1);
 
     collection->RemoveTabCollection(group_collection_ptr);
@@ -646,7 +761,8 @@ TEST_F(TabCollectionObserverTest, OnUnsplit) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{split_handle})))
+            testing::Eq(tabs::TabCollectionNodes{split_handle}),
+            testing::Eq(false)))
         .Times(1);
     collection->Unsplit(split_id);
   }
@@ -777,7 +893,8 @@ TEST_F(TabCollectionObserverTest, MoveTab) {
                                testing::Eq(expected_position.parent_handle)),
                 testing::Field(&TabCollection::Position::index,
                                testing::Eq(expected_position.index))),
-            testing::Eq(tabs::TabCollectionNodes{old_group_handle})))
+            testing::Eq(tabs::TabCollectionNodes{old_group_handle}),
+            testing::Eq(false)))
         .Times(1);
     collection->MoveTabRecursive(0, 5, new_group_id, false);
   }
@@ -1005,7 +1122,8 @@ TEST_F(TabCollectionObserverTest, MoveTabToPinnedOnlyNotifiesMoveInTabstrip) {
   // 2. Expectations: Check only OnChildMoved is called.
   EXPECT_CALL(observer, OnChildrenAdded(testing::_, testing::_, testing::_))
       .Times(0);
-  EXPECT_CALL(observer, OnChildrenRemoved(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(observer, OnChildrenRemoved(testing::_, testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(observer, OnChildMoved(testing::_, testing::_)).Times(1);
 
   // 3. Action: Move the tab at index 0 to index 0, but set `is_pinned` to true.

@@ -168,7 +168,8 @@ void CollectionStorageObserver::OnChildrenAdded(
 
 void CollectionStorageObserver::OnChildrenRemoved(
     const TabCollection::Position& position,
-    const tabs::TabCollectionNodes& handles) {
+    const tabs::TabCollectionNodes& handles,
+    bool remove_for_detach) {
   NodeHashCache* hash_cache =
       synchronizer_ ? &synchronizer_->hash_cache() : nullptr;
   for (const auto& handle : handles) {

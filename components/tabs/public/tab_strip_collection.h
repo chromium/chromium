@@ -70,6 +70,7 @@ class TabStripCollection : public TabCollection {
   // returns the unique_ptr to the tab model. If there is no tab present
   // due to bad input then CHECK.
   ScopedTab RemoveTabAtIndexRecursive(size_t index);
+  ScopedTab RemoveTab(TabInterface* tab, bool remove_for_detach);
 
   // TabCollection:
   // Tabs and Collections are not allowed to be removed from TabStripCollection.
@@ -84,7 +85,10 @@ class TabStripCollection : public TabCollection {
       bool pinned,
       std::optional<tab_groups::TabGroupId> parent_group);
 
-  // Remove a tab collection and send the appropriate notifications.
+  // Removes a tab collection so that it can be moved to another window, and
+  // send the appropriate notifications.
+  // TODO(crbug.com/585180639): Consolidate naming conventions between
+  // TabStripModel, here, and TabCollectionNode.
   std::unique_ptr<TabCollection> RemoveTabCollection(TabCollection* collection);
 
   // Adds the `tab_group_collection` to `detached_group_collections_`
@@ -172,9 +176,10 @@ class TabStripCollection : public TabCollection {
   // 1. Removing the node to the target collection at the specified direct
   // index.
   // 2. Notifying observers that a node has been removed.
-  ScopedTab RemoveTabImpl(TabInterface* tab);
+  ScopedTab RemoveTabImpl(TabInterface* tab, bool remove_for_detach = false);
   std::unique_ptr<TabCollection> RemoveTabCollectionImpl(
-      TabCollection* collection);
+      TabCollection* collection,
+      bool remove_for_detach = false);
 
   // Moves a tab or collection from the tab collection hierarchy.
   // This is the final step for moving a node, responsible for:

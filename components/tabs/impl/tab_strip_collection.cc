@@ -315,19 +315,12 @@ ChildrenPtrs TabStripCollection::GetTabsAndCollectionsForMove(
 
 ScopedTab TabStripCollection::RemoveTabAtIndexRecursive(size_t index) {
   TabInterface* tab_to_be_removed = GetTabAtIndexRecursive(index);
-  TabCollection* parent_collection =
-      tab_to_be_removed->GetParentCollection(GetPassKey());
-  CHECK(parent_collection);
+  return RemoveTabImpl(tab_to_be_removed);
+}
 
-  // If it is the only tab in the group remove the collection.
-  if (parent_collection != unpinned_collection_ &&
-      parent_collection != pinned_collection_ &&
-      parent_collection->TabCountRecursive() == 1) {
-    RemoveTabCollectionImpl(parent_collection);
-    return parent_collection->MaybeRemoveTab(tab_to_be_removed);
-  } else {
-    return RemoveTabImpl(tab_to_be_removed);
-  }
+ScopedTab TabStripCollection::RemoveTab(TabInterface* tab,
+                                        bool remove_for_detach = false) {
+  return RemoveTabImpl(tab, remove_for_detach);
 }
 
 ScopedTab TabStripCollection::MaybeRemoveTab(TabInterface* tab) {
@@ -355,18 +348,7 @@ void TabStripCollection::InsertTabCollectionAt(
 
 std::unique_ptr<TabCollection> TabStripCollection::RemoveTabCollection(
     TabCollection* collection) {
-  // Removed collection can be nullptr in the case of group. Return from
-  // detached collection instead in that case.
-  std::unique_ptr<TabCollection> removed_collection =
-      RemoveTabCollectionImpl(collection);
-
-  if (collection->type() == TabCollection::Type::GROUP) {
-    return PopDetachedGroupCollection(
-        static_cast<TabGroupTabCollection*>(collection)->GetTabGroupId());
-  } else {
-    CHECK(removed_collection);
-    return removed_collection;
-  }
+  return RemoveTabCollectionImpl(collection, /*remove_for_detach=*/true);
 }
 
 void TabStripCollection::CreateTabGroup(
@@ -614,10 +596,21 @@ void TabStripCollection::AddTabCollectionImpl(
       collection_ptr->TabCountRecursive() > 0);
 }
 
-ScopedTab TabStripCollection::RemoveTabImpl(TabInterface* tab) {
+ScopedTab TabStripCollection::RemoveTabImpl(TabInterface* tab,
+                                            bool remove_for_detach) {
   CHECK(tab);
 
   TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
+  CHECK(parent_collection);
+
+  // If it is the only tab in the group remove the collection.
+  if (parent_collection != unpinned_collection_ &&
+      parent_collection != pinned_collection_ &&
+      parent_collection->TabCountRecursive() == 1) {
+    RemoveTabCollectionImpl(parent_collection);
+    return parent_collection->MaybeRemoveTab(tab);
+  }
+
   TabCollection::Position position = {
       parent_collection->GetHandle(),
       parent_collection->GetIndexOfTab(tab).value()};
@@ -630,13 +623,14 @@ ScopedTab TabStripCollection::RemoveTabImpl(TabInterface* tab) {
       GetPassKey(), position,
       std::vector{std::variant<tabs::TabCollectionHandle, tabs::TabHandle>{
           removed_tab->GetHandle()}},
-      nullptr);
+      nullptr, remove_for_detach);
 
   return removed_tab;
 }
 
 std::unique_ptr<TabCollection> TabStripCollection::RemoveTabCollectionImpl(
-    TabCollection* collection) {
+    TabCollection* collection,
+    bool remove_for_detach) {
   TabCollectionHandle collection_handle = collection->GetHandle();
   TabCollection* parent_collection = collection->GetParentCollection();
   TabCollection::Position position = {
@@ -648,14 +642,18 @@ std::unique_ptr<TabCollection> TabStripCollection::RemoveTabCollectionImpl(
       parent_collection->MaybeRemoveCollection(collection);
 
   // In the case of group return null and store it in
-  // `detached_group_collections_` instead.
-  if (removed_collection->type() == TabCollection::Type::GROUP) {
+  // `detached_group_collections_` instead. If `remove_for_detach` is
+  // true, the group is being removed from the window altogether so this
+  // is not needed.
+  if (!remove_for_detach &&
+      removed_collection->type() == TabCollection::Type::GROUP) {
     detached_group_collections_.push_back(base::WrapUnique(
         static_cast<TabGroupTabCollection*>(removed_collection.release())));
   }
 
-  parent_collection->NotifyOnChildrenRemoved(
-      GetPassKey(), position, NodeHandles{collection_handle}, nullptr);
+  parent_collection->NotifyOnChildrenRemoved(GetPassKey(), position,
+                                             NodeHandles{collection_handle},
+                                             nullptr, remove_for_detach);
   return removed_collection;
 }
 

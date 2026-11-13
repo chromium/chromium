@@ -35,7 +35,8 @@ class CollectionStorageObserver
                        const TabCollectionNodes& handles,
                        bool insert_from_detached) override;
   void OnChildrenRemoved(const TabCollection::Position& position,
-                         const TabCollectionNodes& handles) override;
+                         const TabCollectionNodes& handles,
+                         bool remove_for_detach) override;
   void OnChildMoved(const TabCollection::Position& to_position,
                     const NodeData& node_data) override;
 

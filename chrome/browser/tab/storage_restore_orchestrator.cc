@@ -201,7 +201,8 @@ void StorageRestoreOrchestrator::OnChildrenAdded(
 
 void StorageRestoreOrchestrator::OnChildrenRemoved(
     const TabCollection::Position& position,
-    const TabCollectionNodes& handles) {
+    const TabCollectionNodes& handles,
+    bool remove_for_detach) {
   auto batch = service_->CreateScopedBatch();
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
   NodeHashCache* hash_cache =

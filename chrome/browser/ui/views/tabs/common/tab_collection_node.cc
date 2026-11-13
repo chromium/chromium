@@ -239,7 +239,8 @@ void TabCollectionNode::AddNewChild(
 
 void TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
                                     const tabs::TabCollectionNodeHandle& handle,
-                                    bool perform_deinitialization) {
+                                    bool perform_deinitialization,
+                                    bool remove_for_detach) {
   for (auto it = children_.begin(); it != children_.end(); ++it) {
     TabCollectionNode* child_node = it->get();
 
@@ -260,7 +261,7 @@ void TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
     children_.erase(it);
     node_to_remove.reset();
 
-    if (remove_child_from_node_) {
+    if (remove_child_from_node_ && !remove_for_detach) {
       remove_child_from_node_.Run(node_view_to_remove);
     } else {
       node_view_->RemoveChildViewT(node_view_to_remove);

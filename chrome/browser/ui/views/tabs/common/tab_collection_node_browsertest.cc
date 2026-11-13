@@ -12,7 +12,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
@@ -20,6 +22,8 @@
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
@@ -27,15 +31,19 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 
 class TabCollectionNodeBrowserTest
@@ -932,6 +940,185 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
 
   GetTabStripModel()->MoveSelectedTabsTo(2, /*group=*/std::nullopt);
   EXPECT_TRUE(root_node()->GetController()->IsGroupCollapsed(group_id));
+}
+
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
+                       DetachedViewsAreRemovedImmediatelyWithoutAnimatingOut) {
+  const gfx::AnimationTestApi::RenderModeResetter enable_rich_animations =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  const gfx::ScopedAnimationDurationScaleMode duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  AppendPinnedTab();
+  content::WebContents* pinned_tab_to_detach = AppendPinnedTab();
+  content::WebContents* unpinned_tab_to_detach = AppendTab();
+  content::WebContents* unpinned_tab_to_close = AppendTab();
+  auto [split_contents_1, split_contents_2] = AppendSplitTab();
+  auto [group_to_detach_contents, group_to_detach_id] = AppendTabsToNewGroup(2);
+  auto [group_tabs_contents, group_tabs_id] = AppendTabsToNewGroup(2);
+
+  auto settle_animations = [&]() {
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
+    root_node()
+        ->GetController()
+        ->animation_coordinator()
+        .StopAllAnimationsForTesting();
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetWidget()
+        ->LayoutRootViewIfNecessary();
+  };
+  settle_animations();
+  ASSERT_FALSE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+      unpinned_collection_node()->view()));
+  ASSERT_FALSE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+      pinned_collection_node()->view()));
+
+  // Detaching an unpinned tab removes its TabView immediately while animating
+  // sibling bounds in the unpinned container.
+  {
+    const int index =
+        GetTabStripModel()->GetIndexOfWebContents(unpinned_tab_to_detach);
+    ASSERT_NE(index, TabStripModel::kNoTab);
+    views::View* tab_view =
+        root_node()
+            ->GetNodeForHandle(
+                GetTabStripModel()->GetTabAtIndex(index)->GetHandle())
+            ->view();
+    ASSERT_TRUE(views::IsViewClass<TabView>(tab_view));
+    views::ViewTracker tracker(tab_view);
+
+    std::unique_ptr<tabs::TabModel> detached_tab =
+        GetTabStripModel()->DetachTabAtForInsertion(index);
+    EXPECT_EQ(tracker.view(), nullptr);
+    EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+        unpinned_collection_node()->view()));
+  }
+  settle_animations();
+
+  // Detaching a pinned tab removes its TabView immediately while animating
+  // sibling bounds in the pinned container.
+  {
+    const int index =
+        GetTabStripModel()->GetIndexOfWebContents(pinned_tab_to_detach);
+    ASSERT_NE(index, TabStripModel::kNoTab);
+    views::View* tab_view =
+        root_node()
+            ->GetNodeForHandle(
+                GetTabStripModel()->GetTabAtIndex(index)->GetHandle())
+            ->view();
+    ASSERT_TRUE(views::IsViewClass<TabView>(tab_view));
+    views::ViewTracker tracker(tab_view);
+
+    std::unique_ptr<tabs::TabModel> detached_tab =
+        GetTabStripModel()->DetachTabAtForInsertion(index);
+    EXPECT_EQ(tracker.view(), nullptr);
+    EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+        pinned_collection_node()->view()));
+  }
+  settle_animations();
+
+  // Detaching a split tab removes its SplitTabView immediately while animating
+  // sibling bounds in the unpinned container.
+  {
+    const int index =
+        GetTabStripModel()->GetIndexOfWebContents(split_contents_1);
+    ASSERT_NE(index, TabStripModel::kNoTab);
+    tabs::TabInterface* split_tab = GetTabStripModel()->GetTabAtIndex(index);
+    ASSERT_TRUE(split_tab->GetSplit().has_value());
+    const split_tabs::SplitTabId split_id = split_tab->GetSplit().value();
+    TabCollectionNode* split_node =
+        root_node()->GetParentNodeForHandle(split_tab->GetHandle());
+    ASSERT_NE(split_node, nullptr);
+    ASSERT_EQ(split_node->type(), TabCollectionNode::Type::SPLIT);
+    views::View* split_view = split_node->view();
+    ASSERT_TRUE(views::IsViewClass<SplitTabView>(split_view));
+    views::ViewTracker tracker(split_view);
+
+    std::unique_ptr<DetachedTabCollection> detached_split =
+        GetTabStripModel()->DetachSplitTabForInsertion(split_id);
+    EXPECT_EQ(tracker.view(), nullptr);
+    EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+        unpinned_collection_node()->view()));
+  }
+  settle_animations();
+
+  // Detaching a tab group removes its TabGroupView immediately while animating
+  // sibling bounds in the unpinned container.
+  {
+    const TabGroup* group =
+        GetTabStripModel()->group_model()->GetTabGroup(group_to_detach_id);
+    ASSERT_NE(group, nullptr);
+    views::View* group_view =
+        root_node()->GetNodeForHandle(group->GetCollectionHandle())->view();
+    ASSERT_TRUE(views::IsViewClass<TabGroupView>(group_view));
+    views::ViewTracker tracker(group_view);
+
+    std::unique_ptr<DetachedTabCollection> detached_group =
+        GetTabStripModel()->DetachTabGroupForInsertion(group_to_detach_id);
+    EXPECT_EQ(tracker.view(), nullptr);
+    EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+        unpinned_collection_node()->view()));
+  }
+  settle_animations();
+
+  // Detaching a tab from a multi-tab group removes its TabView immediately
+  // while keeping the TabGroupView and animating its bounds.
+  {
+    const TabGroup* group =
+        GetTabStripModel()->group_model()->GetTabGroup(group_tabs_id);
+    ASSERT_NE(group, nullptr);
+    views::View* group_view =
+        root_node()->GetNodeForHandle(group->GetCollectionHandle())->view();
+    ASSERT_TRUE(views::IsViewClass<TabGroupView>(group_view));
+    views::ViewTracker group_tracker(group_view);
+
+    const int first_index =
+        GetTabStripModel()->GetIndexOfWebContents(group_tabs_contents[0]);
+    ASSERT_NE(first_index, TabStripModel::kNoTab);
+    views::View* first_tab_view =
+        root_node()
+            ->GetNodeForHandle(
+                GetTabStripModel()->GetTabAtIndex(first_index)->GetHandle())
+            ->view();
+    ASSERT_TRUE(views::IsViewClass<TabView>(first_tab_view));
+    views::ViewTracker first_tab_tracker(first_tab_view);
+
+    std::unique_ptr<tabs::TabModel> detached_first_tab =
+        GetTabStripModel()->DetachTabAtForInsertion(first_index);
+    EXPECT_EQ(first_tab_tracker.view(), nullptr);
+    EXPECT_NE(group_tracker.view(), nullptr);
+    EXPECT_TRUE(
+        TabCollectionAnimatingLayoutManager::IsViewAnimating(group_view));
+    EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+        unpinned_collection_node()->view()));
+  }
+  settle_animations();
+
+  // Control case: closing an unpinned tab still animates its TabView out
+  // asynchronously instead of destroying it immediately.
+  {
+    const int index =
+        GetTabStripModel()->GetIndexOfWebContents(unpinned_tab_to_close);
+    ASSERT_NE(index, TabStripModel::kNoTab);
+    views::View* tab_view =
+        root_node()
+            ->GetNodeForHandle(
+                GetTabStripModel()->GetTabAtIndex(index)->GetHandle())
+            ->view();
+    ASSERT_TRUE(views::IsViewClass<TabView>(tab_view));
+    views::ViewTracker tracker(tab_view);
+
+    GetTabStripModel()->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
+    EXPECT_NE(tracker.view(), nullptr);
+    EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+        unpinned_collection_node()->view()));
+
+    settle_animations();
+    EXPECT_EQ(tracker.view(), nullptr);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

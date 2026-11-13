@@ -89,10 +89,13 @@ class TabCollectionNode {
                    base::OnceCallback<void(TabCollectionNode*)>
                        on_node_created = base::DoNothing());
 
-  // Removes the child and removes and destroys the view.
+  // Removes the child and removes and destroys the view. If `remove_for_detach`
+  // is true, the view is removed directly from `node_view_` rather than via
+  // `remove_child_from_node_`.
   void RemoveChild(base::PassKey<TabCollectionNode> pass_key,
                    const tabs::TabCollectionNodeHandle& handle,
-                   bool perform_deinitialization);
+                   bool perform_deinitialization,
+                   bool remove_for_detach = false);
 
   // Moves the node to the new index within the same parent. Also updates the
   // z-order of the moved child to the highest to ensure it shows over other

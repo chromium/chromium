@@ -29,8 +29,11 @@ class TabCollectionObserver : public base::CheckedObserver {
 
   // Notifies that tabs and collections are removed. `position` represents
   // the start of the block after which all children are removed.
+  // `remove_for_detach` is true when the children are removed for the purpose
+  // of moving to another window rather than for closing.
   virtual void OnChildrenRemoved(const TabCollection::Position& position,
-                                 const TabCollectionNodes& handles) {}
+                                 const TabCollectionNodes& handles,
+                                 bool remove_for_detach) {}
 
   // Notifies that a tab or collection is moved to a position. node_data
   // contains the src information.

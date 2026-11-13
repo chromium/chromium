@@ -160,7 +160,8 @@ void RootTabCollectionNode::OnChildrenAdded(
 
 void RootTabCollectionNode::OnChildrenRemoved(
     const tabs::TabCollection::Position& position,
-    const tabs::TabCollectionNodes& handles) {
+    const tabs::TabCollectionNodes& handles,
+    bool remove_for_detach) {
   TabCollectionNode* parent_node = GetNodeForHandle(position.parent_handle);
   if (!parent_node) {
     return;
@@ -176,7 +177,8 @@ void RootTabCollectionNode::OnChildrenRemoved(
       UnregisterSubtree(child_node);
     }
     parent_node->RemoveChild(GetPassKey(), handle,
-                             /*perform_deinitialization=*/false);
+                             /*perform_deinitialization=*/false,
+                             remove_for_detach);
   }
   UpdateAccessibleTabIndices();
   on_children_removed_callback_list_.Notify();
