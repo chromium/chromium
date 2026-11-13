@@ -4797,14 +4797,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWebAuthnInWarmedGuest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/449764057): Flakes/fails on all platforms except windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_testGetPageMetadataOnNavigation testGetPageMetadataOnNavigation
-#else
-#define MAYBE_testGetPageMetadataOnNavigation \
-  DISABLED_testGetPageMetadataOnNavigation
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testGetPageMetadataOnNavigation) {
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetPageMetadataOnNavigation) {
   ASSERT_TRUE(content::NavigateToURL(
       GetTabListInterface()->GetActiveTab()->GetContents(),
       embedded_test_server()->GetURL("/glic/browser_tests/test.html")));
