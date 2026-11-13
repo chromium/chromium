@@ -1277,6 +1277,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                    std::string& out_failure_reason)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // Returns whether a ProcessState exists for `child_id`. Acquires `lock_`, so
+  // the caller must not already hold it.
+  bool HasProcessState(ChildProcessId child_id) LOCKS_EXCLUDED(lock_);
+
   // Helper for public CanAccessOrigin overloads.
   bool CanAccessMaybeOpaqueOrigin(ChildProcessId child_id,
                                   const GURL& url,

@@ -2675,6 +2675,11 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
                          access_type);
 }
 
+bool ChildProcessSecurityPolicyImpl::HasProcessState(ChildProcessId child_id) {
+  base::AutoLock lock(lock_);
+  return !!process_states_.GetProcessStateForQuery(child_id);
+}
+
 bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(ChildProcessId child_id,
                                                      const url::Origin& origin,
                                                      AccessType access_type) {
@@ -2687,10 +2692,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(ChildProcessId child_id,
       // browser-initiated navigations to data: URLs) and fix them so we have
       // precursor information (or the process lock is compatible with a missing
       // precursor). Remove this logic once that has been completed.
-      base::AutoLock lock(lock_);
-      const ProcessState* process_state =
-          process_states_.GetProcessStateForQuery(child_id);
-      return !!process_state;
+      return HasProcessState(child_id);
     } else {
       url_to_check = precursor_tuple.GetURL();
     }
@@ -2726,10 +2728,7 @@ bool ChildProcessSecurityPolicyImpl::CanCommitNewOrigin(
       // browser-initiated navigations to data: URLs) and fix them so we have
       // precursor information (or the process lock is compatible with a missing
       // precursor). Remove this logic once that has been completed.
-      base::AutoLock lock(lock_);
-      const ProcessState* process_state =
-          process_states_.GetProcessStateForQuery(child_id);
-      return !!process_state;
+      return HasProcessState(child_id);
     } else {
       url_to_check = precursor_tuple.GetURL();
     }
