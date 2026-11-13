@@ -11,6 +11,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/functional/callback_helpers.h"
@@ -302,6 +303,7 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
   }
 
   void TearDown() override {
+    devices_.clear();
     picker_.reset();
     picker_swizzler_.reset();
     ns_running_app_swizzler_.reset();
@@ -359,14 +361,35 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
     }
   }
 
+  // Simulates the stream-created callback that ScreenCaptureKitDeviceMac
+  // posts back to the picker after it creates an SCStream.
+  void RegisterStream(DesktopMediaID::Id session_id, SCStream* stream) {
+    if (@available(macOS 14.0, *)) {
+      NativeScreenCapturePickerMac::GetInstance()->UpdateStreamMap(session_id,
+                                                                   stream);
+    }
+  }
+
+  // Creates a device for `session_id`, as production does before any stream
+  // exists, then registers a fake stream for it.
   SCStream* CreateAndRegisterFakeStream(DesktopMediaID::Id session_id) {
     if (@available(macOS 14.0, *)) {
+      devices_.push_back(picker_->CreateDevice(
+          DesktopMediaID(DesktopMediaID::TYPE_WINDOW, session_id)));
       SCStream* fake_stream = (SCStream*)[[FakeSCStreamForPicker alloc] init];
-      NativeScreenCapturePickerMac::GetInstance()->UpdateStreamMap(session_id,
-                                                                   fake_stream);
+      RegisterStream(session_id, fake_stream);
       return fake_stream;
     }
     return nil;
+  }
+
+  // Delivers a screen lock event through the public observer interface.
+  void LockScreen() {
+    if (@available(macOS 14.0, *)) {
+      static_cast<ScreenlockObserver*>(
+          NativeScreenCapturePickerMac::GetInstance())
+          ->OnScreenLocked();
+    }
   }
 
   void TriggerCancel() {
@@ -419,6 +442,8 @@ class NativeScreenCapturePickerMacTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<NativeScreenCapturePicker> picker_;
+  // Devices created by CreateAndRegisterFakeStream().
+  std::vector<std::unique_ptr<media::VideoCaptureDevice>> devices_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler> picker_swizzler_;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
       ns_running_app_swizzler_;
@@ -853,6 +878,161 @@ TEST_F(NativeScreenCapturePickerMacTest, OpenExcludesHiddenWindows) {
 
     [hidden_window close];
     [visible_window close];
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       CloseImmediatelyReleasesStreamReference) {
+  if (@available(macOS 14.0, *)) {
+    DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW);
+    DesktopMediaID device_id(DesktopMediaID::TYPE_WINDOW, session_id);
+
+    __weak SCStream* weak_stream = nil;
+    @autoreleasepool {
+      SCStream* fake_stream = CreateAndRegisterFakeStream(session_id);
+      weak_stream = fake_stream;
+      ASSERT_NE(weak_stream, nil);
+      picker_->Close(device_id);
+    }
+    // The SCStream reference should be released immediately on Close()
+    // without waiting for the 60-second filter cleanup timer.
+    EXPECT_EQ(weak_stream, nil);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       OnScreenLockedClearsCachedSessionsImmediately) {
+  if (@available(macOS 15.2, *)) {
+    const CGWindowID kWindowId = 101;
+    const std::string kExpectedBundleId = "com.example.app";
+    GetBundleMap()[kWindowId] = kExpectedBundleId;
+
+    DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW, kWindowId);
+    DesktopMediaID device_id(DesktopMediaID::TYPE_WINDOW, session_id);
+    auto device = picker_->CreateDevice(device_id);
+    picker_->Close(device_id);
+
+    // Before the 60-second timer expires, the session is still cached.
+    ASSERT_NO_FATAL_FAILURE(
+        VerifyApplicationAudioCaptureId(session_id, kExpectedBundleId));
+
+    // Locking the screen should immediately clear cached sessions without
+    // waiting for the 60-second timer.
+    LockScreen();
+    ASSERT_NO_FATAL_FAILURE(
+        VerifyApplicationAudioCaptureId(session_id, std::nullopt));
+    EXPECT_FALSE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       LateStreamCallbackAfterCloseDoesNotRetainStream) {
+  if (@available(macOS 14.0, *)) {
+    DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW);
+    DesktopMediaID device_id(DesktopMediaID::TYPE_WINDOW, session_id);
+    auto device = picker_->CreateDevice(device_id);
+    picker_->Close(device_id);
+
+    __weak SCStream* weak_stream = nil;
+    @autoreleasepool {
+      SCStream* fake_stream = (SCStream*)[[FakeSCStreamForPicker alloc] init];
+      weak_stream = fake_stream;
+      // The device's stream-created callback is posted, so it can arrive
+      // after Close(). It must not register the stream at that point.
+      RegisterStream(session_id, fake_stream);
+    }
+    EXPECT_EQ(weak_stream, nil);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       CloseAfterScreenLockDoesNotScheduleCleanup) {
+  if (@available(macOS 14.0, *)) {
+    DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW);
+    DesktopMediaID device_id(DesktopMediaID::TYPE_WINDOW, session_id);
+    auto device = picker_->CreateDevice(device_id);
+
+    // In production, VideoCaptureManager's Close() reaches the picker after
+    // the picker has already handled the lock.
+    LockScreen();
+    const size_t pending_tasks =
+        task_environment_.GetPendingMainThreadTaskCount();
+    picker_->Close(device_id);
+
+    // Close() must not recreate the purged session and start a new 60-second
+    // cleanup timer for it.
+    EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), pending_tasks);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       OnScreenLockedClearsStateBeforeRunningCancelCallback) {
+  if (@available(macOS 14.0, *)) {
+    bool reopened = false;
+    picker_->Open(DesktopMediaID::TYPE_WINDOW, base::DoNothing(),
+                  base::DoNothing(), base::BindLambdaForTesting([&]() {
+                    // A cancel callback may start a new request right away.
+                    picker_->Open(
+                        DesktopMediaID::TYPE_WINDOW,
+                        base::BindLambdaForTesting(
+                            [&](DesktopMediaID::Id) { reopened = true; }),
+                        base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                        base::DoNothing());
+                  }),
+                  base::DoNothing(), base::DoNothing());
+    ASSERT_TRUE(g_fake_picker.active);
+
+    LockScreen();
+
+    // The picker opened from the cancel callback must survive the lock
+    // handler's cleanup.
+    EXPECT_TRUE(reopened);
+    EXPECT_TRUE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       ClosingOtherSessionKeepsPendingPickerActive) {
+  if (@available(macOS 14.0, *)) {
+    DesktopMediaID::Id first_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW);
+    DesktopMediaID first_device_id(DesktopMediaID::TYPE_WINDOW, first_id);
+    auto device = picker_->CreateDevice(first_device_id);
+
+    // Open a second picker and leave it waiting for the user.
+    picker_->Open(DesktopMediaID::TYPE_WINDOW, base::DoNothing(),
+                  base::DoNothing(), base::DoNothing(), base::DoNothing(),
+                  base::DoNothing());
+    ASSERT_TRUE(g_fake_picker.active);
+
+    // Closing the first session leaves no active sources, but the second
+    // picker is still waiting for a choice and must stay up.
+    picker_->Close(first_device_id);
+    EXPECT_TRUE(g_fake_picker.active);
+  }
+}
+
+TEST_F(NativeScreenCapturePickerMacTest,
+       CreateDeviceAfterScreenLockReturnsNull) {
+  if (@available(macOS 14.0, *)) {
+    DesktopMediaID::Id session_id =
+        OpenPickerAndSelect(DesktopMediaID::TYPE_WINDOW);
+    DesktopMediaID device_id(DesktopMediaID::TYPE_WINDOW, session_id);
+
+    // The lock and the launcher's Close() can both reach the picker before
+    // the in-flight device launch calls CreateDevice().
+    LockScreen();
+    picker_->Close(device_id);
+    auto device = picker_->CreateDevice(device_id);
+
+    // CreateDevice() must not bring the session back, mark the source active,
+    // or turn the picker back on while the screen is locked.
+    EXPECT_FALSE(device);
+    EXPECT_FALSE(g_fake_picker.active);
   }
 }
 

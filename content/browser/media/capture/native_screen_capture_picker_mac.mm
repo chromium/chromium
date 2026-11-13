@@ -25,6 +25,7 @@
 #include "content/browser/media/capture/desktop_capture_util_mac.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
+#include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
@@ -398,9 +399,15 @@ NativeScreenCapturePickerMac::NativeScreenCapturePickerMac()
   CHECK(!g_instance.load())
       << "Only one instance of NativeScreenCapturePickerMac is allowed.";
   g_instance.store(this);
+  if (ScreenlockMonitor* monitor = ScreenlockMonitor::Get()) {
+    monitor->AddObserver(this);
+  }
 }
 
 NativeScreenCapturePickerMac::~NativeScreenCapturePickerMac() {
+  if (ScreenlockMonitor* monitor = ScreenlockMonitor::Get()) {
+    monitor->RemoveObserver(this);
+  }
   g_instance.store(nullptr);
 }
 
@@ -688,15 +695,26 @@ void NativeScreenCapturePickerMac::UpdateStreamMap(DesktopMediaID::Id id,
   CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M160);
   if (@available(macOS 14.0, *)) {
-    if (!stream) {
+    // This callback is posted, so it can arrive after Close() or
+    // OnScreenLocked() already dropped the session. Registering the stream
+    // then would keep it alive with nothing left to release it.
+    if (!stream || !active_source_ids_.contains(id)) {
       return;
     }
+    EraseStreamsForSession(id);
     stream_to_id_map_[stream] = id;
 
     VLOG(1) << "NSCPM::UpdateStreamMap: for source id = " << id;
   } else {
     NOTREACHED();
   }
+}
+
+void NativeScreenCapturePickerMac::EraseStreamsForSession(
+    DesktopMediaID::Id id) {
+  absl::erase_if(stream_to_id_map_, [id](const auto& stream_to_id_pair) {
+    return stream_to_id_pair.second == id;
+  });
 }
 
 void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
@@ -708,12 +726,37 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
       cancel_callback_.Reset();
       error_callback_.Reset();
     }
+    EraseStreamsForSession(device_id.id);
     ScheduleCleanup(device_id.id);
     active_source_ids_.erase(device_id.id);
     MaybeDeactivatePicker();
     VLOG(1) << "NSCPM::Close: for source id = " << device_id.id;
   } else {
     NOTREACHED();
+  }
+}
+
+void NativeScreenCapturePickerMac::OnScreenLocked() {
+  CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M160);
+  if (@available(macOS 14.0, *)) {
+    VLOG(1) << "NSCPM::OnScreenLocked: clearing " << sessions_.size()
+            << " session(s), " << stream_to_id_map_.size()
+            << " stream mapping(s), pending picker = "
+            << static_cast<bool>(cancel_callback_);
+    picker_callback_.Reset();
+    error_callback_.Reset();
+    base::OnceClosure cancel_callback = std::move(cancel_callback_);
+    sessions_.clear();
+    stream_to_id_map_.clear();
+    active_source_ids_.clear();
+    MaybeDeactivatePicker();
+    // Run the cancel callback last. It may call back into this object (for
+    // example, to Open() a new picker), and that new state must not be wiped
+    // by the clearing above.
+    if (cancel_callback) {
+      std::move(cancel_callback).Run();
+    }
   }
 }
 
@@ -743,7 +786,16 @@ NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
   CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M160);
 
-  auto& session = GetOrCreateCaptureSession(source.id);
+  // The launcher reaches here several thread hops after the session was
+  // picked, so OnScreenLocked() or a cleanup may have dropped it by now.
+  // Recreating it would mark the source active with no Close() to follow.
+  // Returning null makes the launch fail or abort cleanly instead.
+  auto it = sessions_.find(source.id);
+  if (it == sessions_.end() || !it->second->filter) {
+    VLOG(1) << "NSCPM::CreateDevice: no session for source.id = " << source.id;
+    return nullptr;
+  }
+  CaptureSession& session = *it->second;
   session.cleanup_timer.Stop();
   active_source_ids_.insert(source.id);
   SCContentSharingPicker* picker = [SCContentSharingPicker sharedPicker];
@@ -762,9 +814,15 @@ NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
 void NativeScreenCapturePickerMac::ScheduleCleanup(DesktopMediaID::Id id) {
   CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M160);
+  // Don't bring back a session that was already dropped, for example by
+  // OnScreenLocked() before a delayed Close() arrived.
+  auto it = sessions_.find(id);
+  if (it == sessions_.end()) {
+    return;
+  }
   // We need to retain the content filter for some time in case the device is
   // restarted, e.g., when ApplyConstraints is called on a MediaStreamTrack.
-  GetOrCreateCaptureSession(id).cleanup_timer.Start(
+  it->second->cleanup_timer.Start(
       FROM_HERE, base::Seconds(60),
       base::BindOnce(
           &NativeScreenCapturePickerMac::CleanupContentFilter,
@@ -776,9 +834,7 @@ void NativeScreenCapturePickerMac::CleanupContentFilter(DesktopMediaID::Id id) {
   CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M160);
   sessions_.erase(id);
-  absl::erase_if(stream_to_id_map_, [&](const auto& stream_to_id_pair) {
-    return stream_to_id_pair.second == id;
-  });
+  EraseStreamsForSession(id);
 
   VLOG(1) << "NSCPM::CleanupContentFilter: source id = " << id
           << ", sessions_.count = " << sessions_.size()
@@ -878,8 +934,10 @@ void NativeScreenCapturePickerMac::OnScreenshotCaptured(
 void NativeScreenCapturePickerMac::MaybeDeactivatePicker() {
   CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M160);
-  // Don't deactivate the picker if there are any active capture sessions.
-  if (active_source_ids_.empty()) {
+  // Don't deactivate the picker if there are any active capture sessions, or
+  // while a picker request is waiting for the user to choose a surface. Every
+  // path that ends a pending request resets `picker_callback_` first.
+  if (active_source_ids_.empty() && !picker_callback_) {
     SCContentSharingPicker* picker = [SCContentSharingPicker sharedPicker];
     picker.active = false;
   }
