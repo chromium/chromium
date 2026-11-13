@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
@@ -49,6 +46,7 @@ import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.signin.SignedOutAccountMenuFacility;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
 import org.chromium.chrome.test.transit.tab_strip.TabStripFacility;
+import org.chromium.chrome.test.transit.toolbar.ToolbarFacility;
 import org.chromium.chrome.test.transit.vertical_tabs.VerticalTabsFacility;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -71,6 +69,10 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                     withId(R.id.optional_toolbar_button),
                     withContentDescription(R.string.accessibility_toolbar_btn_mic));
 
+    /** The toolbar, entered by default with this Station. */
+    public final ToolbarFacility toolbar;
+
+    // Forwarded from |toolbar|.
     public final OptionalViewElement<View> optionalToolbarMicButtonElement;
     public final OptionalViewElement<View> homeButtonElement;
     public final OptionalViewElement<View> signinButtonElement;
@@ -91,41 +93,13 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         declareEnterCondition(
                 new LayoutTypeVisibleCondition(mActivityElement, LayoutType.BROWSING));
 
-        // TODO(crbug.com/41497463): These should be scoped, but for now they need to be unscoped
-        // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
-        // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
-        // visible.
-        toolbarElement =
-                declareView(
-                        ToolbarControlContainer.class,
-                        withId(R.id.control_container),
-                        ViewElement.unscopedOption());
-        // These should be unscoped because they can be present in both the top toolbar and the
-        // bottom bar.
-        tabSwitcherButtonElement =
-                declareView(
-                        View.class,
-                        allOf(withId(R.id.tab_switcher_button), isDisplayed()),
-                        ViewElement.unscopedOption());
-
-        menuButtonElement =
-                declareView(
-                        View.class,
-                        allOf(withId(R.id.menu_button), isDisplayed()),
-                        ViewElement.unscopedOption());
-
-        // The home button may not appear in tablets if the available screen size is too small.
-        homeButtonElement =
-                declareOptionalView(
-                        allOf(withId(R.id.home_button), isDisplayed()),
-                        ViewElement.unscopedOption());
-
-        // The optional toolbar mic button specifically.
-        optionalToolbarMicButtonElement = declareOptionalView(TOOLBAR_MIC_BUTTON);
-
-        // The sign-in button only appears when the toolbar sign-in button feature is enabled.
-        signinButtonElement =
-                declareOptionalView(withId(R.id.signin_button), ViewElement.unscopedOption());
+        toolbar = declareDefaultFacility(new ToolbarFacility());
+        toolbarElement = toolbar.toolbarElement;
+        tabSwitcherButtonElement = toolbar.tabSwitcherButtonElement;
+        menuButtonElement = toolbar.menuButtonElement;
+        homeButtonElement = toolbar.homeButtonElement;
+        optionalToolbarMicButtonElement = toolbar.optionalToolbarMicButtonElement;
+        signinButtonElement = toolbar.signinButtonElement;
     }
 
     /**
