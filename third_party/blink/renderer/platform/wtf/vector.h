@@ -1245,15 +1245,9 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
   ALWAYS_INLINE void CheckModifications() const {
     if constexpr (kCheckModifications) {
       if (modification_state_.modifications_ptr) {
-#if DCHECK_IS_ON()
-        DCHECK_EQ(modification_state_.captured_modifications,
-                  *modification_state_.modifications_ptr)
-            << "Vector modified while being iterated.";
-#else
         CHECK_EQ(modification_state_.captured_modifications,
                  *modification_state_.modifications_ptr)
             << "Vector modified while being iterated.";
-#endif
       }
     }
   }
