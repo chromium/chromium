@@ -123,6 +123,17 @@
     </issue>
 
     <issue
+        id="RequiresFeature"
+        message="addParentType should only be called if the feature SCHEMA_ADD_PARENT_TYPE is present; to check call androidx.appsearch.app.Features#isFeatureSupported"
+        errorLine1="                new AppSearchSchema.Builder(webpageSchema)"
+        errorLine2="                ^">
+        <location
+            file="../../chrome/browser/auxiliary_search/java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonationServiceBridge.java"
+            line="308"
+            column="17"/>
+    </issue>
+
+    <issue
         id="WrongConstant"
         message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK"
         errorLine1="                    getTransitionType(type, intent, loadUrlParams.getTransitionType()));"

@@ -232,7 +232,7 @@ public class MaterialProgressBar extends View implements AnimatorUpdateListener 
     }
 
     private void drawRect(Canvas canvas, Paint paint, float start, float end) {
-        if (ViewCompat.getLayoutDirection(this) == View.LAYOUT_DIRECTION_RTL) {
+        if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL) {
             int width = canvas.getWidth();
             float rtlStart = width - end;
             float rtlEnd = width - start;

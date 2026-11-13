@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
@@ -170,12 +169,12 @@ public final class AccessibilityNodeInfoCompatDumper {
         if (node.getLiveRegion() != 0) {
             builder.append(" liveRegion:").append(node.getLiveRegion());
         }
-        if (node.getExpandedState() != AccessibilityNodeInfo.EXPANDED_STATE_UNDEFINED) {
+        if (node.getExpandedState() != AccessibilityNodeInfoCompat.EXPANDED_STATE_UNDEFINED) {
             builder.append(" expandedState:").append(node.getExpandedState());
         }
-        if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_TRUE) {
+        if (node.getChecked() == AccessibilityNodeInfoCompat.CHECKED_STATE_TRUE) {
             builder.append(" checked");
-        } else if (node.getChecked() == AccessibilityNodeInfo.CHECKED_STATE_PARTIAL) {
+        } else if (node.getChecked() == AccessibilityNodeInfoCompat.CHECKED_STATE_PARTIAL) {
             builder.append(" partiallyChecked");
         }
 

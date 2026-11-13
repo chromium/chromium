@@ -147,6 +147,13 @@ def _GenerateProjectFile(
             if aar_dir := aar_dirs.get(aar):
                 # Already unpacked by the build, so lint need not unzip it.
                 lint.set('extracted', os.path.abspath(aar_dir))
+                # Lint reads an extracted aar's annotations.zip (typedefs and
+                # other external annotations of its classes) only when listed.
+                annotations = os.path.join(aar_dir, 'annotations.zip')
+                if os.path.exists(annotations):
+                    ElementTree.SubElement(main_module, 'annotations').set(
+                        'file', os.path.abspath(annotations)
+                    )
     return project
 
 

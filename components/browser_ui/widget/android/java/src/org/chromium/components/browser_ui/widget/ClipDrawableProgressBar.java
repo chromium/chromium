@@ -285,7 +285,7 @@ public class ClipDrawableProgressBar extends ImageView {
             }
         }
 
-        if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
+        if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getLeft(), getTop(), getRight(), getBottom());
             drawingInfoOut.progressBarRect.set(

@@ -579,8 +579,8 @@ public class CardUnmaskPrompt
         ViewCompat.setImportantForAccessibility(
                 mControlsContainer,
                 contentsShowing
-                        ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
-                        : View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+                        ? ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                        : ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         mControlsContainer.setDescendantFocusability(
                 contentsShowing
                         ? ViewGroup.FOCUS_BEFORE_DESCENDANTS

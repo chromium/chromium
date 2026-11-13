@@ -16,6 +16,10 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="AcceptsUserCertificates" severity="ignore"/>
   <issue id="ForegroundServiceType" severity="ignore" />
   <issue id="InsecureBaseConfiguration" severity="ignore"/>
+  <!-- 13 calls to androidx.webkit APIs lack a WebViewFeature check. Lint
+    sees their @RequiresFeature only since it reads aars' annotations.zip.
+  -->
+  <issue id="RequiresFeature" severity="ignore"/>
   <issue id="ScopedStorage" severity="ignore"/>
   <issue id="SetJavaScriptEnabled" severity="ignore"/>
   <!-- This check doesn't tend to catch new violations except when we increase
