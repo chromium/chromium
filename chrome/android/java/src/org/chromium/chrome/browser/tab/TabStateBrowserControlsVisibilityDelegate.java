@@ -37,8 +37,10 @@ import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -309,11 +311,45 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
      */
     private boolean shouldKeepControlsHiddenOnStart(
             NavigationHandle navigation, int fallbackShowAfterMs) {
-        // TODO(crbug.com/579544759): Filter by navigation type.
         return fallbackShowAfterMs > 0
                 && canKeepOmniboxHiddenInTab()
                 && areBrowserControlsOffScreen()
-                && isSameOriginHttpOrHttpsNavigation(navigation);
+                && isSameOriginHttpOrHttpsNavigation(navigation)
+                && isEligibleNavigationType(navigation);
+    }
+
+    /**
+     * Returns whether the type of a navigation lets the Omnibox stay hidden. These navigations are
+     * eligible: back and forward from the browser UI, and navigations that the page itself starts
+     * in its own origin. All other navigations keep the load lock.
+     *
+     * <p>A same-origin iframe or another same-origin window also passes, because Java has no
+     * initiator-frame signal.
+     */
+    private static boolean isEligibleNavigationType(NavigationHandle navigation) {
+        // Session restore also sets isHistory().
+        if (navigation.isRestore()) return false;
+        // Browser-initiated: only UI back/forward, which includes BFCache restores. Browser
+        // reloads (toolbar, pull-to-refresh) are not history, so they keep the lock.
+        if (!navigation.isRendererInitiated()) return navigation.isHistory();
+        // Renderer-initiated history: the initiator origin comes from the history entry, so the
+        // frame that called history.back() (main frame or iframe) is unknown. Keep the lock.
+        if (navigation.isHistory()) return false;
+        // Defense in depth: renderer-initiated FROM_API loads today have a null, opaque, or
+        // extension initiator, so isInitiatedBySameOrigin() also locks them.
+        if ((navigation.pageTransition() & PageTransition.FROM_API) != 0) return false;
+        // Only the page's own origin. Cross-origin, sandboxed, and data: iframes, and loads with an
+        // opaque initiator (Tab Group Sync, web sign-in redirect) keep the lock. A
+        // location.reload() call from the page passes, because a cross-origin frame cannot reload
+        // the top frame.
+        return isInitiatedBySameOrigin(navigation);
+    }
+
+    /** Returns whether the initiator origin of a navigation is the origin of its URL. */
+    private static boolean isInitiatedBySameOrigin(NavigationHandle navigation) {
+        Origin initiator = navigation.getInitiatorOrigin();
+        if (initiator == null) return false;
+        return initiator.equals(Origin.create(navigation.getUrl()));
     }
 
     private boolean isSameOriginHttpOrHttpsNavigation(NavigationHandle navigation) {

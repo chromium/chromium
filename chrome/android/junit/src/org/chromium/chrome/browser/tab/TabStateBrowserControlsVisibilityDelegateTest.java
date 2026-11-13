@@ -16,6 +16,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,6 +61,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.Origin;
 
 import java.util.concurrent.TimeUnit;
 
@@ -645,24 +647,47 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     private NavigationHandle startNavigation(GURL targetUrl, long navigationId) {
+        // A link click in the main frame of a page that has the same origin as targetUrl.
         NavigationHandle navigation =
-                new NavigationHandleTestBuilder(targetUrl)
-                        .setIsRendererInitiated(true)
-                        .setTransition(PageTransition.LINK)
-                        .setHasUserGesture(true)
-                        .setNavigationId(navigationId)
-                        .build();
+                withInitiatorOrigin(
+                        rendererInitiated(targetUrl, PageTransition.LINK)
+                                .setNavigationId(navigationId)
+                                .build(),
+                        Origin.create(targetUrl));
         mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
         return navigation;
+    }
+
+    /** Returns a builder for a browser-initiated navigation with a user gesture. */
+    private static NavigationHandleTestBuilder browserInitiated(
+            GURL targetUrl, @PageTransition int transition) {
+        return new NavigationHandleTestBuilder(targetUrl)
+                .setIsRendererInitiated(false)
+                .setTransition(transition)
+                .setHasUserGesture(true);
+    }
+
+    /** Returns a builder for a renderer-initiated navigation with a user gesture. */
+    private static NavigationHandleTestBuilder rendererInitiated(
+            GURL targetUrl, @PageTransition int transition) {
+        return new NavigationHandleTestBuilder(targetUrl)
+                .setIsRendererInitiated(true)
+                .setTransition(transition)
+                .setHasUserGesture(true);
+    }
+
+    /** Returns a spy of the navigation with an initiator origin. The builder cannot set it. */
+    private static NavigationHandle withInitiatorOrigin(
+            NavigationHandle navigation, Origin initiatorOrigin) {
+        NavigationHandle spyNavigation = spy(navigation);
+        doReturn(initiatorOrigin).when(spyNavigation).getInitiatorOrigin();
+        return spyNavigation;
     }
 
     private NavigationHandle startHistoryNavigation(
             GURL targetUrl, boolean isBack, long navigationId) {
         NavigationHandle navigation =
-                new NavigationHandleTestBuilder(targetUrl)
-                        .setIsRendererInitiated(false)
-                        .setTransition(PageTransition.LINK | PageTransition.FORWARD_BACK)
-                        .setHasUserGesture(true)
+                browserInitiated(targetUrl, PageTransition.LINK | PageTransition.FORWARD_BACK)
                         .setIsBack(isBack)
                         .setIsForward(!isBack)
                         .setNavigationId(navigationId)
@@ -673,10 +698,7 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     private NavigationHandle startReloadNavigation(GURL targetUrl, long navigationId) {
         NavigationHandle navigation =
-                new NavigationHandleTestBuilder(targetUrl)
-                        .setIsRendererInitiated(false)
-                        .setTransition(PageTransition.RELOAD)
-                        .setHasUserGesture(true)
+                browserInitiated(targetUrl, PageTransition.RELOAD)
                         .setIsReload(true)
                         .setNavigationId(navigationId)
                         .build();
@@ -804,14 +826,12 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544759")
     @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
     public void testSameOriginMinimization_SameOriginBackNavigationKeepsControlsHidden() {
         assertSameOriginHistoryNavigationKeepsControlsHidden(/* isBack= */ true);
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544759")
     @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
     public void testSameOriginMinimization_SameOriginForwardNavigationKeepsControlsHidden() {
         assertSameOriginHistoryNavigationKeepsControlsHidden(/* isBack= */ false);
@@ -1407,11 +1427,23 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
     private void assertSameOriginNavigationLocksControls(
             TabStateBrowserControlsVisibilityDelegate delegate) {
-        NavigationHandle navigation = startNavigation(JUnitTestGURLs.BLUE_2);
+        assertStartedNavigationLocksControls(delegate, startNavigation(JUnitTestGURLs.BLUE_2));
+    }
+
+    /** Starts the navigation and checks that it takes the load lock and keeps it. */
+    private void assertNavigationLocksControls(
+            TabStateBrowserControlsVisibilityDelegate delegate, NavigationHandle navigation) {
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
+        assertStartedNavigationLocksControls(delegate, navigation);
+    }
+
+    /** Checks that a started navigation takes the load lock and keeps it after it finishes. */
+    private void assertStartedNavigationLocksControls(
+            TabStateBrowserControlsVisibilityDelegate delegate, NavigationHandle navigation) {
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
         verifyControlsLockedShown();
 
-        finishNavigation(navigation, JUnitTestGURLs.BLUE_2, /* isSameOrigin= */ true);
+        finishNavigation(navigation, navigation.getUrl(), /* isSameOrigin= */ true);
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
     }
 
@@ -1534,42 +1566,143 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544759")
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
     public void testSameOriginMinimization_BrowserInitiatedSameOriginLocksControls() {
-        GURL sourceUrl = JUnitTestGURLs.BLUE_1;
-        GURL destinationUrl = JUnitTestGURLs.BLUE_2;
         TabStateBrowserControlsVisibilityDelegate delegate =
-                createWiredHiddenControlsDelegate(sourceUrl);
-        NavigationHandle navigation =
-                new NavigationHandleTestBuilder(destinationUrl)
-                        .setIsRendererInitiated(false)
-                        .setTransition(PageTransition.TYPED)
-                        .setHasUserGesture(true)
-                        .build();
-
-        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-        verifyControlsLockedShown();
-
-        finishNavigation(navigation, destinationUrl, /* isSameOrigin= */ true);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // A URL typed in the Omnibox.
+        assertNavigationLocksControls(
+                delegate, browserInitiated(JUnitTestGURLs.BLUE_2, PageTransition.TYPED).build());
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544759")
     @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
-    public void testSameOriginMinimization_ReloadLocksControls() {
+    public void testSameOriginMinimization_RendererInitiatedSameOriginReloadKeepsControlsHidden() {
         GURL sourceUrl = JUnitTestGURLs.BLUE_1;
         TabStateBrowserControlsVisibilityDelegate delegate =
                 createWiredHiddenControlsDelegate(sourceUrl);
+        // A location.reload() call from the page. A cross-origin frame cannot reload the top
+        // frame, so a same-origin initiator means that the page started it.
+        NavigationHandle navigation =
+                withInitiatorOrigin(
+                        rendererInitiated(
+                                        sourceUrl,
+                                        PageTransition.LINK | PageTransition.CLIENT_REDIRECT)
+                                .setHasUserGesture(false)
+                                .setIsReload(true)
+                                .build(),
+                        Origin.create(sourceUrl));
 
-        NavigationHandle navigation = startReloadNavigation(sourceUrl, /* navigationId= */ 1L);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
-        verifyControlsLockedShown();
+        mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verify(mConstraintsHelperJniMock, never())
+                .updateState(any(), anyInt(), anyInt(), anyBoolean(), any());
 
         finishNavigation(navigation, sourceUrl, /* isSameOrigin= */ true);
-        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_RestoredHistoryNavigationLocksControls() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // A back navigation to a restored entry that has not loaded yet. Content also sets
+        // isHistory() for it, but it must lock.
+        NavigationHandle navigation =
+                spy(
+                        browserInitiated(
+                                        JUnitTestGURLs.BLUE_2,
+                                        PageTransition.LINK | PageTransition.FORWARD_BACK)
+                                .setIsBack(true)
+                                .build());
+        doReturn(true).when(navigation).isRestore();
+        assertNavigationLocksControls(delegate, navigation);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_CrossOriginInitiatorLocksControls() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // A cross-origin iframe navigates the top frame to the origin of the page.
+        assertNavigationLocksControls(
+                delegate,
+                withInitiatorOrigin(
+                        rendererInitiated(JUnitTestGURLs.BLUE_2, PageTransition.LINK).build(),
+                        Origin.create(JUnitTestGURLs.RED_1)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_NullInitiatorLocksControls() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // A renderer-initiated load without an initiator, for example an intent that Chrome
+        // routes to itself. The builder sets no initiator. No FROM_API, so only the null check
+        // locks it.
+        assertNavigationLocksControls(
+                delegate, rendererInitiated(JUnitTestGURLs.BLUE_2, PageTransition.LINK).build());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_OpaqueInitiatorLocksControls() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // A Tab Group Sync update or a web sign-in redirect loads the URL with an opaque initiator.
+        assertNavigationLocksControls(
+                delegate,
+                withInitiatorOrigin(
+                        rendererInitiated(JUnitTestGURLs.BLUE_2, PageTransition.LINK)
+                                .setHasUserGesture(false)
+                                .build(),
+                        Origin.createOpaqueOrigin()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_SelfRoutedIntentLocksControls() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // An intent that Chrome routes to itself copies isRendererInitiated from the intent.
+        // Production self-routed intents have no initiator. This test gives a same-origin
+        // initiator to isolate the FROM_API check.
+        assertNavigationLocksControls(
+                delegate,
+                withInitiatorOrigin(
+                        rendererInitiated(
+                                        JUnitTestGURLs.BLUE_2,
+                                        PageTransition.LINK | PageTransition.FROM_API)
+                                .build(),
+                        Origin.create(JUnitTestGURLs.BLUE_1)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_RendererInitiatedHistoryNavigationLocksControls() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        // A history.back() call. The frame that called it can be a cross-origin iframe.
+        assertNavigationLocksControls(
+                delegate,
+                withInitiatorOrigin(
+                        rendererInitiated(
+                                        JUnitTestGURLs.BLUE_2,
+                                        PageTransition.LINK | PageTransition.FORWARD_BACK)
+                                .setIsBack(true)
+                                .build(),
+                        Origin.create(JUnitTestGURLs.BLUE_1)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_MINIMIZATION)
+    public void testSameOriginMinimization_ReloadLocksControls() {
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(JUnitTestGURLs.BLUE_1);
+        assertStartedNavigationLocksControls(
+                delegate, startReloadNavigation(JUnitTestGURLs.BLUE_1, /* navigationId= */ 1L));
     }
 
     @Test
@@ -1593,7 +1726,6 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/579544759")
     @EnableFeatures(MINIMIZATION_WITH_FALLBACK_PARAM)
     public void testSameOriginMinimization_EligibleNavigationKeepsLockOfSupersededNavigation() {
         GURL sourceUrl = JUnitTestGURLs.BLUE_1;
