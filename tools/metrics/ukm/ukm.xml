@@ -11901,13 +11901,6 @@ be describing additional metrics about the same event.
       Records duration in milliseconds from when the heuristic JavaScript is
       executed to when all required feature values for the model are collected.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <quantiles type="std-percentiles"/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -11948,13 +11941,6 @@ be describing additional metrics about the same event.
       The access point that triggered the Reading Mode UI that is shown for the
       current page.
     </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
