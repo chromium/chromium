@@ -39,6 +39,10 @@
 #include "ui/events/ash/pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/feed/core/shared_prefs/pref_names.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/pref_names.h"  // nogncheck
@@ -452,6 +456,8 @@ enum {
   kAudioFocusEnforcementEnabled = 100386,
   kTtcAutoPinnedMigration = 100387,
   kGlicSmartSelectionAutoPinnedMigration = 100388,
+  kArticlesListVisibleOnPhone = 100389,
+  kArticlesListVisibleOnTablet = 100390,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -467,6 +473,16 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     std::string_view,
     sync_preferences::SyncablePrefMetadata>({
 #if BUILDFLAG(IS_ANDROID)
+    {feed::prefs::kArticlesListVisibleOnPhone,
+     {syncable_prefs_ids::kArticlesListVisibleOnPhone, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone,
+      sync_preferences::WriteBehavior::kWriteToBoth}},
+    {feed::prefs::kArticlesListVisibleOnTablet,
+     {syncable_prefs_ids::kArticlesListVisibleOnTablet, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone,
+      sync_preferences::WriteBehavior::kWriteToBoth}},
     {language::prefs::kAppLanguagePromptShown,
      {syncable_prefs_ids::kAppLanguagePromptShown, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,

@@ -839,6 +839,8 @@ chromium-metrics-reviews@google.com.
   <int value="100386" label="AudioFocusEnforcementEnabled"/>
   <int value="100387" label="TtcAutoPinnedMigration"/>
   <int value="100388" label="GlicSmartSelectionAutoPinnedMigration"/>
+  <int value="100389" label="ArticlesListVisibleOnPhone"/>
+  <int value="100390" label="ArticlesListVisibleOnTablet"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

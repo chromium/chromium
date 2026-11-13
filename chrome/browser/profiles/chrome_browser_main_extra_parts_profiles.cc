@@ -354,6 +354,7 @@
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_factory.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
+#include "chrome/browser/feed/articles_list_visible_sync_service_factory.h"
 #include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
@@ -1039,6 +1040,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   FederatedIdentityAutoReauthnPermissionContextFactory::GetInstance();
   FederatedIdentityPermissionContextFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
+  feed::ArticlesListVisibleSyncServiceFactory::GetInstance();
   feed::FeedServiceFactory::GetInstance();
 #endif
   feedback::FeedbackUploaderFactoryChrome::GetInstance();

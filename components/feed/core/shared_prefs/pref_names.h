@@ -20,6 +20,15 @@ extern const char kEnableSnippets[];
 // the user toggles the list off.
 extern const char kArticlesListVisible[];
 
+// Whether the list of NTP snippets is visible on Android phones (including
+// foldables) and Android tablets respectively. Each is synced only between
+// Android devices of the same form factor, and is mirrored into
+// `kArticlesListVisible` by `ArticlesListVisibleSyncService`.
+inline constexpr char kArticlesListVisibleOnPhone[] =
+    "ntp_snippets.list_visible_on_phone";
+inline constexpr char kArticlesListVisibleOnTablet[] =
+    "ntp_snippets.list_visible_on_tablet";
+
 // This is set to false if swapping out NTP is enabled and default search engine
 // isn't Google.
 extern const char kEnableSnippetsByDse[];

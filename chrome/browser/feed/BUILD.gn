@@ -13,6 +13,7 @@ if (is_android) {
       "android/feed_surface_renderer_bridge.h",
       "android/jni_translation.h",
       "android/refresh_task_scheduler_impl.h",
+      "articles_list_visible_sync_service_factory.h",
       "feed_service_factory.h",
     ]
 
@@ -41,6 +42,7 @@ if (is_android) {
       "android/jni_translation.cc",
       "android/navigation_recorder.cc",
       "android/refresh_task_scheduler_impl.cc",
+      "articles_list_visible_sync_service_factory.cc",
       "feed_service_factory.cc",
     ]
 
@@ -54,6 +56,7 @@ if (is_android) {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/history",
       "//chrome/browser/metrics",
+      "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/common:channel_info",
@@ -74,6 +77,7 @@ if (is_android) {
       "//google_apis",
       "//net",
       "//services/service_manager/public/cpp",
+      "//ui/base",
     ]
   }
 }

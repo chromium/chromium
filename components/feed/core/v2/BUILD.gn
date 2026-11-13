@@ -11,6 +11,7 @@ if (is_android) {
 if (use_blink) {
   source_set("feed_core_v2") {
     public = [
+      "public/articles_list_visible_sync_service.h",
       "public/feed_api.h",
       "public/feed_service.h",
       "public/logging_parameters.h",
@@ -60,6 +61,7 @@ if (use_blink) {
       "proto_util.h",
       "protocol_translator.cc",
       "protocol_translator.h",
+      "public/articles_list_visible_sync_service.cc",
       "public/feed_api.cc",
       "public/feed_service.cc",
       "public/logging_parameters.cc",
@@ -126,7 +128,7 @@ if (use_blink) {
       "//components/history/core/browser",
       "//components/leveldb_proto",
       "//components/offline_pages/task",
-      "//components/prefs",
+      "//components/pref_registry",
       "//components/search_engines",
       "//components/signin/public/identity_manager",
       "//components/url_matcher",
@@ -138,7 +140,6 @@ if (use_blink) {
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//third_party/zlib/google:compression_utils",
-      "//ui/base",
     ]
 
     public_deps = [
@@ -147,6 +148,10 @@ if (use_blink) {
       "//components/feed/core/common:feed_core_common",
       "//components/feed/core/proto:proto_ios_shared_v2",
       "//components/feed/core/proto:proto_v2",
+      "//components/keyed_service/core",
+      "//components/prefs",
+      "//components/sync_preferences",
+      "//ui/base",
     ]
   }
 
@@ -180,6 +185,7 @@ if (use_blink) {
       "persistent_key_value_store_impl_unittest.cc",
       "proto_util_unittest.cc",
       "protocol_translator_unittest.cc",
+      "public/articles_list_visible_sync_service_unittest.cc",
       "public/feed_service_unittest.cc",
       "public/logging_parameters_unittest.cc",
       "public/ntp_feed_content_fetcher_unittest.cc",
@@ -219,7 +225,10 @@ if (use_blink) {
       "//components/search_engines:test_support",
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
       "//components/sync/base",
+      "//components/sync/model",
+      "//components/sync/protocol",
       "//components/sync_preferences:test_support",
       "//components/variations:test_support",
       "//components/version_info:channel",
