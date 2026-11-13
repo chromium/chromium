@@ -3,7 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import os
+import pathlib
 import sys
+import tempfile
 import unittest
 import unittest.mock
 
@@ -15,6 +17,8 @@ REPOSITORY_ROOT = os.path.abspath(
 
 sys.path.insert(0, REPOSITORY_ROOT)
 
+import components.cronet.gn2bp.gen_android_bp as gen_android_bp  # noqa: E402
+import components.cronet.gn2bp.gn_utils as gn_utils  # noqa: E402
 import components.cronet.gn2bp.run_gn2bp as run_gn2bp  # noqa: E402
 import components.cronet.tools.breakages_constants as breakages_constants  # noqa: E402
 
@@ -209,6 +213,72 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             ),
             30000,
         )
+
+    def test_extract_rust_crate_paths(self):
+        gn = gn_utils.GnParser({}, {})
+
+        rust_lib = gn_utils.GnParser.Target(
+            "//third_party/rust/small_ctor/v0_1:lib", "rust_library"
+        )
+        rust_lib.build_file_path = "third_party/rust/small_ctor/v0_1"
+        rust_lib.crate_root = (
+            "//third_party/rust/chromium_crates_io/vendor/"
+            "small_ctor-v0_1/src/lib.rs"
+        )
+        gn.all_targets[rust_lib.name] = rust_lib
+
+        build_script = gn_utils.GnParser.Target(
+            "//third_party/rust/serde/v1:build_script", "action"
+        )
+        build_script.build_file_path = "third_party/rust/serde/v1"
+        build_script.rust_source_dir = (
+            "third_party/rust/chromium_crates_io/vendor/serde-v1"
+        )
+        gn.all_targets[build_script.name] = build_script
+
+        cxx_action = gn_utils.GnParser.Target(
+            "//net/base:rust_bridge", "action"
+        )
+        cxx_action.build_file_path = "net/base"
+        cxx_action.script = (
+            "//third_party/rust/cxx/chromium_integration/run_cxxbridge.py"
+        )
+        cxx_action.common.sources.add(
+            "//third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h"
+        )
+        gn.all_targets[cxx_action.name] = cxx_action
+
+        self.assertEqual(
+            gen_android_bp.extract_rust_crate_paths(gn),
+            [
+                "third_party/rust/chromium_crates_io/vendor/cxx-v1/**",
+                "third_party/rust/chromium_crates_io/vendor/serde-v1/**",
+                "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/**",
+                "third_party/rust/cxx/**",
+                "third_party/rust/serde/**",
+                "third_party/rust/small_ctor/**",
+            ],
+        )
+
+    def test_write_copybara_rust_crates_file(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            gen_android_bp.write_copybara_rust_crates_file(
+                tmp_dir,
+                [
+                    "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/**",
+                    "third_party/rust/small_ctor/**",
+                ],
+            )
+            sky_path = pathlib.Path(tmp_dir) / "copybara_rust_crates.bara.sky"
+            self.assertTrue(sky_path.exists())
+            content = sky_path.read_text()
+            self.assertIn(
+                'RUST_CRATE_PATHS = [\n'
+                '    "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/**",\n'
+                '    "third_party/rust/small_ctor/**",\n'
+                ']\n',
+                content,
+            )
 
 
 if __name__ == '__main__':
