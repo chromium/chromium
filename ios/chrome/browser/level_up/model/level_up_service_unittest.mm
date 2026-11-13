@@ -11,6 +11,7 @@
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/level_up/model/level_up_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -33,7 +34,7 @@ namespace {
 class LevelUpServiceTest : public PlatformTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kIOSLevelUp);
+    scoped_feature_list_.InitWithFeatures({kIOSLevelUp, kPageActionMenu}, {});
     PlatformTest::SetUp();
 
     TestProfileIOS::Builder builder;
@@ -447,6 +448,16 @@ TEST_F(LevelUpServiceTest, RecordsLevelChangedMetric) {
   service_->MarkTaskCompleted(TaskType::kPasswordCheckup);
   histogram_tester.ExpectBucketCount(kLevelUpLevelChangedHistogram, 3, 1);
   histogram_tester.ExpectTotalCount(kLevelUpLevelChangedHistogram, 2);
+}
+
+// Tests that the Gemini task is omitted when the Page Action Menu is disabled.
+TEST_F(LevelUpServiceTest, TestGeminiTaskOmittedWhenPageActionMenuDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(kPageActionMenu);
+
+  LevelUpService service_without_gemini(profile_->GetPrefs());
+  EXPECT_EQ(nullptr, service_without_gemini.GetTaskInfo(TaskType::kGemini));
+  EXPECT_FALSE(service_without_gemini.GetTasks().contains(TaskType::kGemini));
 }
 
 }  // namespace
