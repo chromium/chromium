@@ -83,7 +83,6 @@ class HardwareDisplayPlane {
     DrmWrapper::Property in_fence_fd;
     DrmWrapper::Property plane_color_encoding;
     DrmWrapper::Property plane_color_range;
-    DrmWrapper::Property plane_fb_damage_clips;
     DrmWrapper::Property size_hints;
   };
 

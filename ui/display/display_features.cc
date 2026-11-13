@@ -83,12 +83,6 @@ bool IsHdcpKeyProvisioningRequired() {
   return base::FeatureList::IsEnabled(kRequireHdcpKeyProvisioning);
 }
 
-BASE_FEATURE(kPanelSelfRefresh2, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsPanelSelfRefresh2Enabled() {
-  return base::FeatureList::IsEnabled(kPanelSelfRefresh2);
-}
-
 BASE_FEATURE(kTiledDisplaySupport, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTiledDisplaySupportEnabled() {

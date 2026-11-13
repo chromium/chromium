@@ -2141,12 +2141,10 @@ class HardwareDisplayPlaneAtomicMock : public HardwareDisplayPlaneAtomic {
   HardwareDisplayPlaneAtomicMock() : HardwareDisplayPlaneAtomic(1) {}
   ~HardwareDisplayPlaneAtomicMock() override = default;
 
-  bool AssignPlaneProps(DrmDevice* drm,
-                        uint32_t crtc_id,
+  bool AssignPlaneProps(uint32_t crtc_id,
                         uint32_t framebuffer,
                         const gfx::Rect& crtc_rect,
                         const gfx::Rect& src_rect,
-                        const gfx::Rect& damage_rect,
                         const gfx::OverlayTransform transform,
                         const gfx::ColorSpace& color_space,
                         int in_fence_fd,

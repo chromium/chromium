@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
-#include "ui/display/display_features.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
@@ -121,8 +120,7 @@ std::ostream& HardwareDisplayPlane::DumpProperties(std::ostream& out) const {
   DRM_PROPERTY_DUMP_OPTIONAL(rotation, DRM_ROTATION)                   \
   DRM_PROPERTY_DUMP_OPTIONAL(in_fence_fd, DRM_INT)                     \
   DRM_PROPERTY_DUMP_OPTIONAL(plane_color_encoding, DRM_COLOR_ENCODING) \
-  DRM_PROPERTY_DUMP_OPTIONAL(plane_color_range, DRM_COLOR_RANGE)       \
-  DRM_PROPERTY_DUMP_OPTIONAL(plane_fb_damage_clips, DRM_INT)
+  DRM_PROPERTY_DUMP_OPTIONAL(plane_color_range, DRM_COLOR_RANGE)
 
 #define DRM_PROPERTY_DUMP_OPTIONAL(property, dump) \
   if (properties_.property.id) {                   \
@@ -336,10 +334,6 @@ void HardwareDisplayPlane::InitializeProperties(DrmDevice* drm) {
                         &properties_.plane_color_encoding);
   GetDrmPropertyForName(drm, props.get(), "COLOR_RANGE",
                         &properties_.plane_color_range);
-  if (display::features::IsPanelSelfRefresh2Enabled()) {
-    GetDrmPropertyForName(drm, props.get(), "FB_DAMAGE_CLIPS",
-                          &properties_.plane_fb_damage_clips);
-  }
   GetDrmPropertyForName(drm, props.get(), "SIZE_HINTS",
                         &properties_.size_hints);
 }

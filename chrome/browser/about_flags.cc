@@ -8582,12 +8582,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(paint_preview::kPaintPreviewDemo)},
 #endif  // BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"panel-self-refresh-2", flag_descriptions::kPanelSelfRefresh2Name,
-     flag_descriptions::kPanelSelfRefresh2Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(display::features::kPanelSelfRefresh2)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     {"run-video-capture-service-in-browser",
      flag_descriptions::kRunVideoCaptureServiceInBrowserProcessName,

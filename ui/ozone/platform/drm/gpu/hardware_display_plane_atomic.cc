@@ -8,10 +8,8 @@
 
 #include "base/files/platform_file.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
@@ -97,12 +95,10 @@ bool HardwareDisplayPlaneAtomic::Initialize(DrmDevice* drm) {
 }
 
 bool HardwareDisplayPlaneAtomic::AssignPlaneProps(
-    DrmDevice* drm,
     uint32_t crtc_id,
     uint32_t framebuffer,
     const gfx::Rect& crtc_rect,
     const gfx::Rect& src_rect,
-    const gfx::Rect& damage_rect,
     const gfx::OverlayTransform transform,
     const gfx::ColorSpace& color_space,
     int in_fence_fd,
@@ -133,25 +129,6 @@ bool HardwareDisplayPlaneAtomic::AssignPlaneProps(
   if (assigned_props_.rotation.id) {
     assigned_props_.rotation.value =
         OverlayTransformToDrmRotationPropertyValue(transform);
-  }
-
-  // Log an error if the clip is not in bounds. Restrict logging to when PSR2 is
-  // enabled. (plane_fb_damage_clips has non-zero ID).
-  const bool clip_in_bounds = crtc_rect.Contains(damage_rect);
-  if (!clip_in_bounds && assigned_props_.plane_fb_damage_clips.id) {
-    LOG(ERROR) << "Damage clip dmg: " << damage_rect.ToString()
-               << " not contained inside display bounds"
-               << " crtc: " << crtc_rect.ToString();
-  }
-  if (drm && assigned_props_.plane_fb_damage_clips.id) {
-    ScopedDrmModeRectPtr dmg_clip_blob_data = CreateDCBlob(damage_rect);
-    // dmg_clip_blob needs to live long enough to be committed.
-    // TODO(crbug.com/572557701): This is created once, from the first frame's
-    // damage rect and DRM device, and never updated.
-    static base::NoDestructor<ScopedDrmPropertyBlob> dmg_clip_blob(
-        drm->CreatePropertyBlob(dmg_clip_blob_data.get(),
-                                sizeof(drm_mode_rect)));
-    assigned_props_.plane_fb_damage_clips.value = (*dmg_clip_blob)->id();
   }
 
   if (assigned_props_.plane_color_encoding.id) {
@@ -185,11 +162,6 @@ bool HardwareDisplayPlaneAtomic::SetPlaneProps(drmModeAtomicReq* property_set) {
         AddPropertyIfValid(property_set, id_, assigned_props_.rotation);
   }
 
-  if (assigned_props_.plane_fb_damage_clips.id) {
-    plane_set_succeeded &= AddPropertyIfValid(
-        property_set, id_, assigned_props_.plane_fb_damage_clips);
-  }
-
   if (assigned_props_.in_fence_fd.id) {
     plane_set_succeeded &=
         AddPropertyIfValid(property_set, id_, assigned_props_.in_fence_fd);
@@ -219,9 +191,9 @@ bool HardwareDisplayPlaneAtomic::SetPlaneProps(drmModeAtomicReq* property_set) {
 void HardwareDisplayPlaneAtomic::AssignDisableProps() {
   set_in_use(false);
   set_owning_crtc(0);
-  AssignPlaneProps(nullptr, 0, 0, gfx::Rect(), gfx::Rect(), gfx::Rect(),
-                   gfx::OVERLAY_TRANSFORM_NONE, gfx::ColorSpace(),
-                   base::kInvalidPlatformFile, DRM_FORMAT_INVALID, false);
+  AssignPlaneProps(0, 0, gfx::Rect(), gfx::Rect(), gfx::OVERLAY_TRANSFORM_NONE,
+                   gfx::ColorSpace(), base::kInvalidPlatformFile,
+                   DRM_FORMAT_INVALID, false);
 }
 
 uint32_t HardwareDisplayPlaneAtomic::AssignedCrtcId() const {

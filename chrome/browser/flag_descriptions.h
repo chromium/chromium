@@ -7720,12 +7720,6 @@ inline constexpr char kEnableTouchpadsInDiagnosticsAppDescription[] =
     "Shows touchpad cards in the Diagnostics App's input section. Requires "
     "#enable-input-in-diagnostics-app to be enabled.";
 
-inline constexpr char kPanelSelfRefresh2Name[] = "Enable Panel Self Refresh 2";
-inline constexpr char kPanelSelfRefresh2Description[] =
-    "Enable Panel Self Refresh 2/Selective-Update where supported. "
-    "Allows the display driver to only update regions of the screen that have "
-    "damage.";
-
 inline constexpr char kEnableVariableRefreshRateName[] =
     "Enable Variable Refresh Rate";
 inline constexpr char kEnableVariableRefreshRateDescription[] =
