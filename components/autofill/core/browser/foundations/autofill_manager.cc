@@ -1190,8 +1190,7 @@ void AutofillManager::MaybeLoadCustomFormControlScript() {
   }
   const CustomFormControlScriptIndex* index =
       client().GetCustomFormControlScriptIndex();
-  // TODO(crbug.com/581337039): Consider checking `index->is_initialized()`.
-  if (!index) {
+  if (!index || !index->is_initialized()) {
     return;
   }
   // If a site has no script, this is not expected to change without a reload.

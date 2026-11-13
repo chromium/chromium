@@ -107,8 +107,10 @@ void CustomFormControlScriptIndex::InitializeFromDirectory(
             // Keep the current entries if the directory couldn't be read.
             if (entries) {
               self->SetEntries(*std::move(entries));
+            } else {
+              // In the "if" case `SetEntries()` already sets `is_initialized_`.
+              self->is_initialized_ = true;
             }
-            self->is_initialized_ = true;
           },
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -140,6 +142,7 @@ void CustomFormControlScriptIndex::SetEntries(std::vector<Entry> entries) {
     entries_.emplace_back(std::move(host), std::move(filter),
                           std::move(entry.script));
   }
+  is_initialized_ = true;
 }
 
 std::optional<std::string> CustomFormControlScriptIndex::FindScript(

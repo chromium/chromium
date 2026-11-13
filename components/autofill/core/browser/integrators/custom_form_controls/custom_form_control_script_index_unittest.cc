@@ -30,6 +30,7 @@ using ::testing::Optional;
 // `url_filter` match the URL.
 TEST(CustomFormControlScriptIndexTest, FindScriptMatchesHostAndPathForRequest) {
   CustomFormControlScriptIndex index;
+  EXPECT_FALSE(index.is_initialized());
   EXPECT_EQ(index.FindScript(GURL("https://example.com/")), std::nullopt);
   index.SetEntries({
       {.host = "shop.example.com",
@@ -43,6 +44,7 @@ TEST(CustomFormControlScriptIndexTest, FindScriptMatchesHostAndPathForRequest) {
        .script = "query_script"},
       {.host = "example.com", .url_filter = "", .script = "fallback_script"},
   });
+  EXPECT_TRUE(index.is_initialized());
 
   // Subdomain entry matches shop.example.com and its subdomains, not parent.
   EXPECT_THAT(index.FindScript(GURL("https://shop.example.com/cart")),

@@ -75,17 +75,18 @@ class CustomFormControlScriptIndex final {
   // `kMaxCustomFormControlScriptSizeBytes`.
   void InitializeFromDirectory(const base::FilePath& directory);
 
-  // Returns true once the most recent `InitializeFromDirectory()` call has
-  // finished reading the directory, whether or not it succeeded.
+  // Returns true once `SetEntries()` has been called or the most recent
+  // `InitializeFromDirectory()` call has finished reading the directory,
+  // whether or not it succeeded.
   bool is_initialized() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_initialized_;
   }
 
-  // Validates, compiles, and replaces the current entries. Entries with an
-  // uncanonicalizable or public-suffix-only host, an invalid `url_filter`
-  // regex, or an empty/oversized `script` are dropped. Entry order is
-  // preserved (the first matching entry wins).
+  // Validates, compiles, and replaces the current entries, and marks the index
+  // as initialized. Entries with an uncanonicalizable or public-suffix-only
+  // host, an invalid `url_filter` regex, or an empty/oversized `script` are
+  // dropped. Entry order is preserved (the first matching entry wins).
   void SetEntries(std::vector<Entry> entries);
 
   // Returns a copy of the script of the first entry matching `url` (HTTP/HTTPS
