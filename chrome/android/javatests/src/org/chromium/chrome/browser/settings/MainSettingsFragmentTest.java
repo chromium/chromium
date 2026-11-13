@@ -51,6 +51,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.LargeTest;
@@ -148,6 +149,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
@@ -316,7 +319,7 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
-    public void testSettingsIaReorganization_dropsHeadersAndGroupsRowsBySection() {
+    public void testSettingsIaReorganization_dropsHeadersAndGroupsRows() {
         startSettings();
 
         // The category headers are removed from the screen.
@@ -326,15 +329,88 @@ public class MainSettingsFragmentTest {
         Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_BASICS_SECTION));
         Assert.assertNull(mMainSettings.findPreference(ADVANCED_SECTION));
 
-        // Each row reports the header it used to sit under as its section id.
+        // Each row reports its top-level group as its section id.
         assertSectionId(
-                MainSettings.PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION,
-                MainSettings.PREF_GOOGLE_SERVICES);
-        assertSectionId(MainSettings.PREF_BASICS_SECTION, MainSettings.PREF_SEARCH_ENGINE);
-        assertSectionId(MainSettings.PREF_BASICS_SECTION, "privacy");
-        assertSectionId(MainSettings.PREF_BASICS_SECTION, MainSettings.PREF_AUTOFILL_AND_PASSWORDS);
-        assertSectionId(ADVANCED_SECTION, MainSettings.PREF_DOWNLOADS);
-        assertSectionId(ADVANCED_SECTION, "about_chrome");
+                SettingsIaArmHelper.GROUP_USER_AND_ACCOUNT, MainSettings.PREF_GOOGLE_SERVICES);
+        assertSectionId(SettingsIaArmHelper.GROUP_SAFETY_AND_PROTECTION, MainSettings.PREF_PRIVACY);
+        assertSectionId(
+                SettingsIaArmHelper.GROUP_SAFETY_AND_PROTECTION,
+                MainSettings.PREF_AUTOFILL_AND_PASSWORDS);
+        assertSectionId(SettingsIaArmHelper.GROUP_PERSONALIZATION, MainSettings.PREF_SEARCH_ENGINE);
+        assertSectionId(SettingsIaArmHelper.GROUP_PERSONALIZATION, MainSettings.PREF_APPEARANCE);
+        assertSectionId(SettingsIaArmHelper.GROUP_SUPPORT, MainSettings.PREF_DOWNLOADS);
+        assertSectionId(SettingsIaArmHelper.GROUP_SUPPORT, MainSettings.PREF_ABOUT_CHROME);
+
+        // The visible rows besides the promo card and search header follow the group layout
+        // exactly. Rows that this configuration hides are skipped.
+        List<String> expected = new ArrayList<>();
+        for (SettingsIaArmHelper.Group group : SettingsIaArmHelper.getGroups()) {
+            for (String key : group.keys) {
+                Preference pref = mMainSettings.findPreference(key);
+                if (pref != null && pref.isVisible()) expected.add(key);
+            }
+        }
+        Assert.assertEquals(expected, getVisibleGroupedKeysInOrder());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
+    public void testSettingsIaReorganization_readdedRowKeepsGroupAndOrder() {
+        startSettings();
+        List<String> before = getVisibleGroupedKeysInOrder();
+        Assert.assertTrue(before.contains(MainSettings.PREF_DEVELOPER));
+
+        // Remove the developer row, then add it back.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DeveloperSettings.setIsEnabledForTests(false);
+                    mMainSettings.onSignInAllowedChanged();
+                });
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_DEVELOPER));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DeveloperSettings.setIsEnabledForTests(true);
+                    mMainSettings.onSignInAllowedChanged();
+                });
+
+        assertSectionId(SettingsIaArmHelper.GROUP_SUPPORT, MainSettings.PREF_DEVELOPER);
+        Assert.assertEquals(before, getVisibleGroupedKeysInOrder());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)
+    public void testSettingsIaReorganizationDisabled_keepsHeadersAndNoGroups() {
+        startSettings();
+
+        Assert.assertNotNull(mMainSettings.findPreference(MainSettings.PREF_BASICS_SECTION));
+        Assert.assertNotNull(mMainSettings.findPreference(ADVANCED_SECTION));
+        Assert.assertNull(
+                mMainSettings.getSectionId(
+                        mMainSettings.findPreference(MainSettings.PREF_SEARCH_ENGINE)));
+    }
+
+    /** Returns the keys of the visible rows other than the promo card and search header. */
+    private List<String> getVisibleGroupedKeysInOrder() {
+        List<Preference> prefs = new ArrayList<>();
+        PreferenceScreen screen = mMainSettings.getPreferenceScreen();
+        for (int i = 0; i < screen.getPreferenceCount(); ++i) {
+            Preference pref = screen.getPreference(i);
+            String key = pref.getKey();
+            if (!pref.isVisible()
+                    || MainSettings.PREF_SETTINGS_PROMO_CARD.equals(key)
+                    || MainSettings.PREF_SEARCH_HEADER.equals(key)) {
+                continue;
+            }
+            Assert.assertNotNull(
+                    "Row should be in a group: " + key, mMainSettings.getSectionId(pref));
+            prefs.add(pref);
+        }
+        prefs.sort((a, b) -> Integer.compare(a.getOrder(), b.getOrder()));
+        List<String> keys = new ArrayList<>();
+        for (Preference pref : prefs) keys.add(pref.getKey());
+        return keys;
     }
 
     private void assertSectionId(String expectedSectionId, String key) {

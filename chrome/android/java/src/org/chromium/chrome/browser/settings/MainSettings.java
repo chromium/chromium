@@ -556,28 +556,35 @@ public class MainSettings extends ChromeBaseSettingsFragment
             mAllPreferences.put(preference.getKey(), preference);
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)) {
-            groupPreferencesBySection();
+            groupPreferences();
             applyRowIcons();
         }
     }
 
     /**
-     * Drops the category headers and records, for every row, the header it used to sit under.
-     * Containment then splits cards on section changes instead of on the headers.
+     * Drops the category headers, orders the rows by the {@link SettingsIaArmHelper} layout and
+     * records each row's group. Containment then splits cards where the group changes. The promo
+     * card stays on top, outside the groups. The search header is added after this runs.
      */
-    private void groupPreferencesBySection() {
-        List<Preference> byOrder = new ArrayList<>(mAllPreferences.values());
-        byOrder.sort((a, b) -> Integer.compare(a.getOrder(), b.getOrder()));
-        String section = null;
-        for (Preference preference : byOrder) {
+    private void groupPreferences() {
+        for (Preference preference : mAllPreferences.values()) {
             String key = preference.getKey();
-            if (key == null) continue;
-            if (preference instanceof PreferenceCategory) {
-                section = key;
+            if (key != null && preference instanceof PreferenceCategory) {
                 removePreferenceIfPresent(key);
-                continue;
             }
-            if (section != null) mSectionIdByKey.put(key, section);
+        }
+
+        // Groups start right after the promo card, which stays at the top.
+        Preference promoCard = mAllPreferences.get(PREF_SETTINGS_PROMO_CARD);
+        assert promoCard != null;
+        int order = promoCard.getOrder() + 1;
+        for (SettingsIaArmHelper.Group group : SettingsIaArmHelper.getGroups()) {
+            for (String key : group.keys) {
+                Preference preference = mAllPreferences.get(key);
+                if (preference == null) continue;
+                preference.setOrder(order++);
+                mSectionIdByKey.put(key, group.id);
+            }
         }
     }
 
@@ -1025,6 +1032,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
                     indexData.removeEntry(getUniqueId(PREF_SETTINGS_PROMO_CARD));
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IA_REORGANIZATION)) {
+                        SettingsIaArmHelper.setGroupHeaders(context, indexData, this);
+                    }
                     if (!shouldShowAddressBarPref(context)) {
                         indexData.removeEntry(getUniqueId(PREF_ADDRESS_BAR));
                     }

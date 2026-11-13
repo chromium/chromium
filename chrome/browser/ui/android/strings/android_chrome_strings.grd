@@ -211,6 +211,18 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_ADVANCED" desc='Title of "Advanced" section of preferences. [CHAR_LIMIT=32]'>
         Advanced
       </message>
+      <message name="IDS_PREFS_GROUP_USER_AND_ACCOUNT" desc='Name of the group of top-level settings about the user and their Google account, such as account and Google services. Shown as a header in settings search results. [CHAR_LIMIT=32]'>
+        User &amp; account
+      </message>
+      <message name="IDS_PREFS_GROUP_SAFETY_AND_PROTECTION" desc='Name of the group of top-level settings about safety and protection, such as privacy and security and passwords. Shown as a header in settings search results. [CHAR_LIMIT=32]'>
+        Safety &amp; protection
+      </message>
+      <message name="IDS_PREFS_GROUP_PERSONALIZATION" desc='Name of the group of top-level settings that personalize Chrome, such as search engine, appearance and notifications. Shown as a header in settings search results. [CHAR_LIMIT=32]'>
+        Personalization
+      </message>
+      <message name="IDS_PREFS_GROUP_SUPPORT" desc='Name of the group of top-level settings for general browser use and information, such as languages, downloads, accessibility and About Chrome. This is not customer help or a help center. Shown as a header in settings search results. [CHAR_LIMIT=32]'>
+        Support
+      </message>
       <message name="IDS_CCT_ALWAYS_OPEN_IN_BROWSER_TITLE" desc="Title for preference toggle in Settings to always open Custom Tabs in Chrome browser. [CHAR_LIMIT=40]">
         Always open custom tabs in Chrome
       </message>
