@@ -131,8 +131,9 @@ void ReaderModeTest::LoadWebpage(web::FakeWebState* web_state,
   web::FakeNavigationContext navigation_context;
   navigation_context.SetHasCommitted(true);
   web_state->OnNavigationStarted(&navigation_context);
-  web_state->LoadSimulatedRequest(url, @"<html><body>Content</body></html>");
+  web_state->SetCurrentURL(url);
   web_state->OnNavigationFinished(&navigation_context);
+  web_state->LoadSimulatedRequest(url, @"<html><body>Content</body></html>");
 }
 
 void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,

@@ -332,9 +332,10 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeEligibleForSamePageNavigation) {
   navigation_context.SetIsSameDocument(true);
   navigation_context.SetHasCommitted(true);
   web_state()->OnNavigationStarted(&navigation_context);
+  web_state()->SetCurrentURL(test_url_with_ref);
+  web_state()->OnNavigationFinished(&navigation_context);
   web_state()->LoadSimulatedRequest(test_url_with_ref,
                                     @"<html><body>Content</body></html>");
-  web_state()->OnNavigationFinished(&navigation_context);
 
   ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsDistillable());
 
@@ -1071,6 +1072,71 @@ TEST_F(ReaderModeTabHelperTest, BlurOverlayShownAndNotHiddenBeforeTimeout) {
   reader_mode_tab_helper()->DeactivateReader(
       ReaderModeDeactivationReason::kUserDeactivated);
   EXPECT_OCMOCK_VERIFY(reader_mode_handler);
+}
+
+// Tests that an uncommitted navigation does not deactivate active Reader Mode.
+TEST_F(ReaderModeTabHelperTest, UncommittedNavigationDoesNotDeactivateReader) {
+  MockReaderModeTabHelperObserver mock_observer;
+  base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
+      observation(&mock_observer);
+  observation.Observe(reader_mode_tab_helper());
+
+  // Load an eligible page and activate Reading Mode.
+  GURL test_url("https://test.url/");
+  LoadWebpage(web_state(), test_url);
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "Content");
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  EXPECT_CALL(mock_observer,
+              ReaderModeWebStateDidLoadContent(reader_mode_tab_helper(), _));
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  ASSERT_TRUE(WaitForAvailableReaderModeContentInWebState(web_state()));
+  ASSERT_TRUE(reader_mode_tab_helper()->IsActive());
+  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsDistillable());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  base::HistogramTester histogram_tester;
+
+  // An uncommitted cross-document navigation (e.g. download or 204 response)
+  // should leave Reading Mode, distillability, and session metrics intact.
+  EXPECT_CALL(mock_observer, ReaderModeWebStateWillBecomeUnavailable(_, _, _))
+      .Times(0);
+  GURL other_url("https://other.url/");
+  web::FakeNavigationContext uncommitted_context;
+  uncommitted_context.SetHasCommitted(false);
+  uncommitted_context.SetIsSameDocument(false);
+  uncommitted_context.SetUrl(other_url);
+  web_state()->OnNavigationStarted(&uncommitted_context);
+  web_state()->OnNavigationFinished(&uncommitted_context);
+  EXPECT_TRUE(reader_mode_tab_helper()->IsActive());
+  EXPECT_TRUE(reader_mode_tab_helper()->CurrentPageIsDistillable());
+  histogram_tester.ExpectTotalCount(kReaderModeDeactivationReasonHistogram, 0);
+  histogram_tester.ExpectTotalCount(kReaderModeTimeSpentHistogram, 0);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // A subsequent committed cross-document navigation should deactivate
+  // Reading Mode and flush session metrics.
+  EXPECT_CALL(mock_observer,
+              ReaderModeWebStateWillBecomeUnavailable(
+                  reader_mode_tab_helper(), _,
+                  ReaderModeDeactivationReason::kNavigationDeactivated));
+  web::FakeNavigationContext committed_context;
+  committed_context.SetHasCommitted(true);
+  committed_context.SetIsSameDocument(false);
+  committed_context.SetUrl(other_url);
+  web_state()->OnNavigationStarted(&committed_context);
+  web_state()->SetCurrentURL(other_url);
+  web_state()->OnNavigationFinished(&committed_context);
+  EXPECT_FALSE(reader_mode_tab_helper()->IsActive());
+  EXPECT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
+  // Both `ResetDecision` and `DeactivateReader` flush `kNavigationDeactivated`
+  // when navigating away from an active Reading Mode page.
+  histogram_tester.ExpectUniqueSample(
+      kReaderModeDeactivationReasonHistogram,
+      ReaderModeDeactivationReason::kNavigationDeactivated, 2);
+  histogram_tester.ExpectTotalCount(kReaderModeTimeSpentHistogram, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

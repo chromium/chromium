@@ -247,33 +247,21 @@ void ReaderModeTabHelper::PageLoaded(
   }
 }
 
-void ReaderModeTabHelper::DidStartNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  if (navigation_context->IsSameDocument()) {
-    return;
-  }
-  // A new navigation is started while the Reader Mode heuristic trigger is
-  // running on the previous navigation. Stop the trigger to attach the new
-  // navigation.
-  eligibility_decider_.ResetDecision(navigation_context->GetUrl());
-  distillation_already_failed_ = false;
-}
-
 void ReaderModeTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   // PageLoaded may not be called for fragment navigations or
   // pushState/replaceState. Do not reset eligibility state pre-emptively.
-  if (navigation_context->IsSameDocument()) {
+  // Also ignore uncommitted navigations since the active document did not
+  // change.
+  if (!navigation_context->HasCommitted() ||
+      navigation_context->IsSameDocument()) {
     return;
   }
 
-  if (!navigation_context->IsSameDocument() ||
-      navigation_context->HasUserGesture()) {
-    DeactivateReader(ReaderModeDeactivationReason::kNavigationDeactivated);
-  }
-
+  eligibility_decider_.ResetDecision(navigation_context->GetUrl());
+  DeactivateReader(ReaderModeDeactivationReason::kNavigationDeactivated);
+  distillation_already_failed_ = false;
   eligibility_decider_.SetLastCommittedUrl(web_state->GetLastCommittedURL());
 }
 
