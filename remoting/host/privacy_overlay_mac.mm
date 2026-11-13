@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -30,6 +31,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
@@ -74,6 +76,22 @@ constexpr CGFloat kButtonMargin = 12.0;
 constexpr CGFloat kMinButtonWidth = 100.0;
 constexpr CGFloat kMinButtonHeight = 24.0;
 
+// Per-axis movement threshold (in integer points truncated from
+// `CGEventGetLocation`, i.e., Chebyshev distance) required before local
+// pointer activity reveals the Disconnect button, filtering out <= 2pt
+// hardware/software cursor drift across both Retina and non-Retina (1x)
+// displays (including diagonal `(2, 2)` moves) while remaining well below
+// intentional user movement. Because remote-injected events are filtered
+// upstream, `mouse_position_` tracks the last *local* cursor position; if the
+// remote user moves the shared cursor first, a subsequent local hardware event
+// at the new location exceeds this threshold and reveals the button (acceptable
+// since the event originates from genuine local hardware input).
+constexpr int kMouseJitterThresholdPt = 2;
+
+// The amount of time to wait before hiding the Disconnect button after local
+// input stops.
+constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
+
 remoting::PrivacyOverlayMac::ScreenFramesProvider&
 GetScreenFramesProviderStorage() {
   static base::NoDestructor<remoting::PrivacyOverlayMac::ScreenFramesProvider>
@@ -89,6 +107,17 @@ GetCaptureExclusionApplierStorage() {
   return *applier;
 }
 
+remoting::PrivacyOverlayMac::MouseLocationProvider&
+GetMouseLocationProviderStorage() {
+  static base::NoDestructor<remoting::PrivacyOverlayMac::MouseLocationProvider>
+      provider;
+  return *provider;
+}
+
+// Returns active display frames in Cocoa global screen coordinates. Both
+// `NSScreen.screens` and `ScreenFramesProvider` guarantee that index 0 (when
+// non-empty) is the primary (menu-bar) display used as the vertical reference
+// when converting between Cocoa and Quartz global display coordinates.
 std::vector<NSRect> GetScreenFrames() {
   const auto& provider = GetScreenFramesProviderStorage();
   if (provider) {
@@ -101,6 +130,14 @@ std::vector<NSRect> GetScreenFrames() {
     frames.push_back(screen.frame);
   }
   return frames;
+}
+
+NSPoint GetCurrentMouseLocation() {
+  const auto& provider = GetMouseLocationProviderStorage();
+  if (provider) {
+    return provider.Run();
+  }
+  return NSEvent.mouseLocation;
 }
 
 bool ApplyCaptureExclusionForSize(NSWindow* window, NSSize size) {
@@ -192,6 +229,30 @@ bool IsRemoteInjectedEvent(NSEvent* event) {
   int64_t source_pid =
       CGEventGetIntegerValueField(cg_event, kCGEventSourceUnixProcessID);
   return source_pid == static_cast<int64_t>(getpid());
+}
+
+// Converts a point in Quartz global display coordinates (`(0, 0)` at top-left
+// of the primary screen, `y` increasing downward) to Cocoa screen coordinates
+// (`(0, 0)` at bottom-left of the primary screen, `y` increasing upward).
+// `screen_frames.front()` is the primary (menu-bar) display per
+// `GetScreenFrames()`.
+NSPoint ConvertQuartzPointToCocoa(const std::vector<NSRect>& screen_frames,
+                                  const webrtc::DesktopVector& position) {
+  CGFloat primary_height =
+      screen_frames.empty() ? 0.0 : NSHeight(screen_frames.front());
+  return NSMakePoint(position.x(), primary_height - position.y());
+}
+
+// Converts a point in Cocoa screen coordinates to Quartz global display
+// coordinates using the primary (menu-bar) display at `screen_frames.front()`.
+webrtc::DesktopVector ConvertCocoaPointToQuartz(
+    const std::vector<NSRect>& screen_frames,
+    NSPoint cocoa_point) {
+  CGFloat primary_height =
+      screen_frames.empty() ? 0.0 : NSHeight(screen_frames.front());
+  return webrtc::DesktopVector(
+      static_cast<int32_t>(std::lround(cocoa_point.x)),
+      static_cast<int32_t>(std::lround(primary_height - cocoa_point.y)));
 }
 
 size_t FindScreenIndexForCocoaPoint(const std::vector<NSRect>& screen_frames,
@@ -725,6 +786,27 @@ void PrivacyOverlayMac::Start(
     DisconnectSession("Failed to initialize Privacy Overlay.");
     return;
   }
+
+  if (local_input_monitor_) {
+    // Both `LocalMouseInputMonitorMac` (which forwards move, click, drag, and
+    // scroll `ui::EventType`s) and `LocalKeyboardInputMonitorMac` (which taps
+    // `kCGEventKeyDown` / `kCGEventKeyUp`) filter out events synthesized by the
+    // CRD host process (`kCGEventSourceUnixProcessID == getpid()`), so remote
+    // input will not reveal or hold open the Disconnect button.
+    // TODO(crbug.com/451238243): Have `LocalMouseInputMonitorMac` also invoke
+    // `disconnect_callback` on tap creation failure or mid-session
+    // `kCGEventTapDisabledByUserInput` revocation; currently the `on_error`
+    // fail-open path relies on `LocalKeyboardInputMonitorMac`.
+    local_input_monitor_->StartMonitoring(
+        base::BindRepeating(&PrivacyOverlayMac::OnLocalMouseEvent,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&PrivacyOverlayMac::OnLocalKeyPressed,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&PrivacyOverlayMac::StopAutoHideBehavior,
+                            weak_factory_.GetWeakPtr()));
+  } else {
+    StopAutoHideBehavior();
+  }
 }
 
 // static
@@ -741,6 +823,14 @@ PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
     CaptureExclusionApplier applier) {
   return base::AutoReset<CaptureExclusionApplier>(
       &GetCaptureExclusionApplierStorage(), std::move(applier));
+}
+
+// static
+base::AutoReset<PrivacyOverlayMac::MouseLocationProvider>
+PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+    MouseLocationProvider provider) {
+  return base::AutoReset<MouseLocationProvider>(
+      &GetMouseLocationProviderStorage(), std::move(provider));
 }
 
 // static
@@ -806,7 +896,11 @@ bool PrivacyOverlayMac::BeginOverlay() {
     return false;
   }
 
-  PositionDisconnectButton(NSEvent.mouseLocation);
+  const std::vector<NSRect> screen_frames = GetScreenFrames();
+  NSPoint initial_cocoa_pos = GetCurrentMouseLocation();
+  mouse_position_ = ConvertCocoaPointToQuartz(screen_frames, initial_cocoa_pos);
+
+  PositionDisconnectButton(screen_frames, initial_cocoa_pos);
   DeactivateDisconnectButton();
 
   NSAccessibilityPostNotificationWithUserInfo(
@@ -826,7 +920,9 @@ void PrivacyOverlayMac::EndOverlay() {
   }
   is_ending_ = true;
 
+  auto_hide_timer_.Stop();
   local_input_monitor_.reset();
+  active_button_screen_frame_.reset();
 
   for (PrivacyOverlayBackdropWindow* window in backdrop_windows_) {
     [window orderOut:nil];
@@ -845,6 +941,10 @@ void PrivacyOverlayMac::EndOverlay() {
 
 bool PrivacyOverlayMac::UpdateBackdrops() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Invalidate the cached button display frame so `ActivateDisconnectButton` /
+  // `PositionDisconnectButton` recomputes coordinates for updated geometry.
+  active_button_screen_frame_.reset();
 
   const std::vector<NSRect> screen_frames = GetScreenFrames();
   if (screen_frames.empty()) {
@@ -908,13 +1008,14 @@ bool PrivacyOverlayMac::UpdateBackdrops() {
   return true;
 }
 
-void PrivacyOverlayMac::PositionDisconnectButton(NSPoint cocoa_screen_point) {
+void PrivacyOverlayMac::PositionDisconnectButton(
+    const std::vector<NSRect>& screen_frames,
+    NSPoint cocoa_screen_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!button_window_) {
     return;
   }
 
-  const std::vector<NSRect> screen_frames = GetScreenFrames();
   DCHECK(!screen_frames.empty());
   if (screen_frames.empty()) {
     return;
@@ -953,6 +1054,8 @@ void PrivacyOverlayMac::PositionDisconnectButton(NSPoint cocoa_screen_point) {
   CGFloat cocoa_y =
       std::round(NSMaxY(screen_frame) - flipped_button_top - button_height);
 
+  active_button_screen_frame_ = screen_frame;
+
   // Store expected origin in global Cocoa screen coordinates (matching
   // `button_window_.frame.origin`, bottom-left origin of primary display) for
   // `ShouldRepositionOnDisplacement()` when observing `NSWindowDidMove` (wired
@@ -963,16 +1066,45 @@ void PrivacyOverlayMac::PositionDisconnectButton(NSPoint cocoa_screen_point) {
 
 void PrivacyOverlayMac::ActivateDisconnectButton(NSPoint cocoa_screen_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ActivateDisconnectButtonWithFrames(GetScreenFrames(), cocoa_screen_point);
+}
+
+void PrivacyOverlayMac::ActivateDisconnectButtonForQuartzPoint(
+    const webrtc::DesktopVector& quartz_point) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::vector<NSRect> screen_frames = GetScreenFrames();
+  ActivateDisconnectButtonWithFrames(
+      screen_frames, ConvertQuartzPointToCocoa(screen_frames, quartz_point));
+}
+
+void PrivacyOverlayMac::ActivateDisconnectButtonWithFrames(
+    const std::vector<NSRect>& screen_frames,
+    NSPoint cocoa_screen_point) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!button_window_) {
     return;
   }
 
-  const NSPoint old_origin = button_window_.frame.origin;
-  PositionDisconnectButton(cocoa_screen_point);
-  if (!is_button_hidden_ &&
-      NSEqualPoints(old_origin, button_window_.frame.origin)) {
+  if (auto_hide_enabled_) {
+    auto_hide_timer_.Start(
+        FROM_HERE, kAutoHideTimeout,
+        base::BindOnce(&PrivacyOverlayMac::DeactivateDisconnectButton,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  if (screen_frames.empty()) {
     return;
   }
+
+  if (!is_button_hidden_ && active_button_screen_frame_.has_value()) {
+    const NSRect& target_frame = screen_frames[FindScreenIndexForCocoaPoint(
+        screen_frames, cocoa_screen_point)];
+    if (NSEqualRects(*active_button_screen_frame_, target_frame)) {
+      return;
+    }
+  }
+
+  PositionDisconnectButton(screen_frames, cocoa_screen_point);
 
   if (!ApplyCaptureExclusion(button_window_)) {
     LOG(ERROR)
@@ -1001,6 +1133,35 @@ void PrivacyOverlayMac::DeactivateDisconnectButton() {
   button_window_.ignoresMouseEvents = YES;
   button_window_.alphaValue = 0.0;
   [button_window_ orderOut:nil];
+}
+
+void PrivacyOverlayMac::StopAutoHideBehavior() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto_hide_enabled_ = false;
+  auto_hide_timer_.Stop();
+  if (local_input_monitor_) {
+    // Release asynchronously in case a `LocalInputMonitor` implementation
+    // invokes `on_error` synchronously before unwinding its own stack frame.
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(local_input_monitor_));
+  }
+  ActivateDisconnectButtonForQuartzPoint(mouse_position_);
+}
+
+void PrivacyOverlayMac::OnLocalMouseEvent(const webrtc::DesktopVector& position,
+                                          ui::EventType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (std::abs(position.x() - mouse_position_.x()) > kMouseJitterThresholdPt ||
+      std::abs(position.y() - mouse_position_.y()) > kMouseJitterThresholdPt ||
+      type != ui::EventType::kMouseMoved) {
+    mouse_position_ = position;
+    ActivateDisconnectButtonForQuartzPoint(position);
+  }
+}
+
+void PrivacyOverlayMac::OnLocalKeyPressed(uint32_t /*usb_keycode*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ActivateDisconnectButtonForQuartzPoint(mouse_position_);
 }
 
 void PrivacyOverlayMac::OnDisconnectButtonClicked() {

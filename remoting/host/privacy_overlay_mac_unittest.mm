@@ -20,13 +20,17 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/auto_reset.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/mock_chrome_application_mac.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
@@ -35,7 +39,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/events/types/event_type.h"
 
 @interface TestPrivacyOverlayBackdropView : PrivacyOverlayBackdropView
 @property(nonatomic, readonly) NSUInteger displayInvalidationCount;
@@ -136,7 +142,11 @@ int CountNonBackgroundCenterPixels(NSBitmapImageRep* rep, NSSize point_size) {
 
 class FakeLocalInputMonitor : public LocalInputMonitor {
  public:
-  FakeLocalInputMonitor() = default;
+  using StartMonitoringCallback = base::OnceCallback<
+      void(PointerMoveCallback, KeyPressedCallback, base::RepeatingClosure)>;
+
+  explicit FakeLocalInputMonitor(StartMonitoringCallback callback)
+      : callback_(std::move(callback)) {}
   ~FakeLocalInputMonitor() override = default;
 
   void StartMonitoringForClientSession(
@@ -144,7 +154,39 @@ class FakeLocalInputMonitor : public LocalInputMonitor {
 
   void StartMonitoring(PointerMoveCallback on_pointer_input,
                        KeyPressedCallback on_keyboard_input,
-                       base::RepeatingClosure on_error) override {}
+                       base::RepeatingClosure on_error) override {
+    std::move(callback_).Run(std::move(on_pointer_input),
+                             std::move(on_keyboard_input), std::move(on_error));
+  }
+
+ private:
+  StartMonitoringCallback callback_;
+};
+
+class SynchronousErrorLocalInputMonitor : public LocalInputMonitor {
+ public:
+  explicit SynchronousErrorLocalInputMonitor(bool* destroyed_flag)
+      : destroyed_flag_(destroyed_flag) {}
+  ~SynchronousErrorLocalInputMonitor() override {
+    if (destroyed_flag_) {
+      *destroyed_flag_ = true;
+    }
+  }
+
+  void StartMonitoringForClientSession(
+      base::WeakPtr<ClientSessionControl> client_session_control) override {}
+
+  void StartMonitoring(PointerMoveCallback /*on_pointer_input*/,
+                       KeyPressedCallback /*on_keyboard_input*/,
+                       base::RepeatingClosure on_error) override {
+    // `StopAutoHideBehavior()` defers monitor destruction via `DeleteSoon`;
+    // ASan covers the synchronous use-after-free case while the test asserts
+    // `*destroyed_flag_` remains false until the task queue runs.
+    on_error.Run();
+  }
+
+ private:
+  raw_ptr<bool> destroyed_flag_;
 };
 
 class PrivacyOverlayMacTest : public testing::Test {
@@ -164,12 +206,47 @@ class PrivacyOverlayMacTest : public testing::Test {
   }
 
   void StartOverlay() {
-    auto monitor = std::make_unique<FakeLocalInputMonitor>();
+    auto monitor = std::make_unique<FakeLocalInputMonitor>(base::BindOnce(
+        [](PrivacyOverlayMacTest* test,
+           LocalInputMonitor::PointerMoveCallback on_pointer,
+           LocalInputMonitor::KeyPressedCallback on_keyboard,
+           base::RepeatingClosure on_error) {
+          test->pointer_callback_ = std::move(on_pointer);
+          test->keyboard_callback_ = std::move(on_keyboard);
+          test->error_callback_ = std::move(on_error);
+        },
+        base::Unretained(this)));
     overlay_ = std::make_unique<PrivacyOverlayMac>(std::move(monitor));
     overlay_->Start(weak_factory_.GetWeakPtr());
+    if (overlay_->button_window_for_testing() != nil) {
+      ASSERT_TRUE(pointer_callback_);
+      ASSERT_TRUE(keyboard_callback_);
+      ASSERT_TRUE(error_callback_);
+    }
   }
 
-  void DestroyOverlay() { overlay_.reset(); }
+  void DestroyOverlay() {
+    pointer_callback_.Reset();
+    keyboard_callback_.Reset();
+    error_callback_.Reset();
+    overlay_.reset();
+  }
+
+  void SimulatePointerMove(const webrtc::DesktopVector& pos,
+                           ui::EventType type = ui::EventType::kMouseMoved) {
+    ASSERT_TRUE(pointer_callback_);
+    pointer_callback_.Run(pos, type);
+  }
+
+  void SimulateKeyPress(uint32_t usb_keycode) {
+    ASSERT_TRUE(keyboard_callback_);
+    keyboard_callback_.Run(usb_keycode);
+  }
+
+  void SimulateError() {
+    ASSERT_TRUE(error_callback_);
+    error_callback_.Run();
+  }
 
   void ActivateDisconnectButtonOnPrimaryScreen() {
     NSScreen* primary_screen = NSScreen.screens.firstObject;
@@ -178,10 +255,16 @@ class PrivacyOverlayMacTest : public testing::Test {
         NSMidX(primary_screen.frame), NSMidY(primary_screen.frame)));
   }
 
+  // Declared before `task_environment_` so it outlives any pending `DeleteSoon`
+  // task if an assertion aborts a test before `RunUntilIdle()`.
+  bool synchronous_error_monitor_destroyed_ = false;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::string client_jid_ = "user@domain/jid123";
   NiceMock<MockClientSessionControl> client_session_control_;
+  LocalInputMonitor::PointerMoveCallback pointer_callback_;
+  LocalInputMonitor::KeyPressedCallback keyboard_callback_;
+  base::RepeatingClosure error_callback_;
   std::unique_ptr<PrivacyOverlayMac> overlay_;
   base::WeakPtrFactory<ClientSessionControl> weak_factory_{
       &client_session_control_};
@@ -1172,6 +1255,298 @@ TEST_F(PrivacyOverlayMacTest,
 
   overlay_->ActivateDisconnectButtonForTesting(NSMakePoint(4000.0, -100.0));
   EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kRightGapFrame), 1.0);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       LocalMouseMovementRevealsButtonAndAutoHidesAfterTimeout) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kPrimaryFrame]() { return std::vector<NSRect>{kPrimaryFrame}; }));
+  // Cocoa `(400, 500)` on a `1440 x 900` primary display corresponds to Quartz
+  // `(400, 400)`.
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(400.0, 500.0); }));
+
+  StartOverlay();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+
+  SimulatePointerMove(webrtc::DesktopVector(425, 425));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_FALSE(button_window.ignoresMouseEvents);
+  EXPECT_DOUBLE_EQ(button_window.alphaValue, 1.0);
+
+  // Move again after 5s to reset the 10s auto-hide timer.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  SimulatePointerMove(webrtc::DesktopVector(450, 450));
+  task_environment_.FastForwardBy(base::Seconds(6));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+
+  // Advance the remaining 4s of the 10s timeout.
+  task_environment_.FastForwardBy(base::Seconds(4));
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+  EXPECT_TRUE(button_window.ignoresMouseEvents);
+  EXPECT_DOUBLE_EQ(button_window.alphaValue, 0.0);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       LocalMouseMovementMigratesButtonAcrossVerticallyStackedDisplays) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  // Upper display above primary (`Cocoa y in [900, 1980)` <-> negative Quartz
+  // `y in [-1080, 0)`), and lower display below primary (`Cocoa y in [-900, 0)`
+  // <-> Quartz `y in [900, 1800)`), offset horizontally so `NSMidX` uniquely
+  // identifies each display.
+  const NSRect kUpperFrame = NSMakeRect(200.0, 900.0, 1920.0, 1080.0);
+  const NSRect kLowerFrame = NSMakeRect(400.0, -900.0, 1600.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting([kPrimaryFrame, kUpperFrame, kLowerFrame]() {
+        return std::vector<NSRect>{kPrimaryFrame, kUpperFrame, kLowerFrame};
+      }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(720.0, 450.0); }));
+
+  int button_exclusion_calls = 0;
+  auto reset_applier = PrivacyOverlayMac::SetCaptureExclusionApplierForTesting(
+      base::BindLambdaForTesting(
+          [&button_exclusion_calls](NSWindow* window, NSSize /*size*/) {
+            if ([window isKindOfClass:[PrivacyOverlayButtonWindow class]]) {
+              ++button_exclusion_calls;
+            }
+            return true;
+          }));
+
+  StartOverlay();
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  ASSERT_TRUE(overlay_->is_button_hidden_for_testing());
+  const int baseline_exclusion_calls = button_exclusion_calls;
+
+  // 1. Move to negative Quartz Y `(1160, -540)` -> Cocoa `(1160, 1440)` on
+  // `kUpperFrame`.
+  SimulatePointerMove(webrtc::DesktopVector(1160, -540));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kUpperFrame), 1.0);
+  EXPECT_GE(NSMinY(button_window.frame), NSMinY(kUpperFrame));
+  EXPECT_LE(NSMaxY(button_window.frame), NSMaxY(kUpperFrame));
+  EXPECT_EQ(button_exclusion_calls, baseline_exclusion_calls + 1);
+
+  // 2. Subsequent local pointer movement on the same display (`kUpperFrame`)
+  // keeps the button visible and skips redundant repositioning / capture
+  // exclusion work.
+  SimulatePointerMove(webrtc::DesktopVector(1200, -500));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kUpperFrame), 1.0);
+  EXPECT_EQ(button_exclusion_calls, baseline_exclusion_calls + 1);
+
+  // 3. Move to Quartz Y >= primary height `(1200, 1350)` -> Cocoa
+  // `(1200, -450)` on `kLowerFrame`.
+  SimulatePointerMove(webrtc::DesktopVector(1200, 1350));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kLowerFrame), 1.0);
+  EXPECT_GE(NSMinY(button_window.frame), NSMinY(kLowerFrame));
+  EXPECT_LE(NSMaxY(button_window.frame), NSMaxY(kLowerFrame));
+  EXPECT_EQ(button_exclusion_calls, baseline_exclusion_calls + 2);
+
+  // 4. Move back onto `kPrimaryFrame` at Quartz `(720, 450)` -> Cocoa
+  // `(720, 450)`.
+  SimulatePointerMove(webrtc::DesktopVector(720, 450));
+  EXPECT_NEAR(NSMidX(button_window.frame), NSMidX(kPrimaryFrame), 1.0);
+  EXPECT_GE(NSMinY(button_window.frame), NSMinY(kPrimaryFrame));
+  EXPECT_LE(NSMaxY(button_window.frame), NSMaxY(kPrimaryFrame));
+  EXPECT_EQ(button_exclusion_calls, baseline_exclusion_calls + 3);
+}
+
+TEST_F(PrivacyOverlayMacTest, SubThresholdMouseJitterDoesNotRevealButton) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kPrimaryFrame]() { return std::vector<NSRect>{kPrimaryFrame}; }));
+  // Initial Cocoa `(400, 500)` -> Quartz `(400, 400)`.
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(400.0, 500.0); }));
+
+  StartOverlay();
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+
+  // Sub-threshold moves (`<= 2pt` per axis, including diagonal `(2, 2)`) must
+  // not reveal the button or update `mouse_position_`.
+  SimulatePointerMove(webrtc::DesktopVector(400, 400),
+                      ui::EventType::kMouseMoved);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+
+  SimulatePointerMove(webrtc::DesktopVector(402, 402),
+                      ui::EventType::kMouseMoved);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+
+  SimulatePointerMove(webrtc::DesktopVector(398, 398),
+                      ui::EventType::kMouseMoved);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+
+  // Cumulative sub-threshold moves (`(400, 400)` -> `(402, 402)` ->
+  // `(403, 402)`) reach +3pt from the last revealed baseline `(400, 400)` and
+  // reveal the button.
+  SimulatePointerMove(webrtc::DesktopVector(402, 402),
+                      ui::EventType::kMouseMoved);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  SimulatePointerMove(webrtc::DesktopVector(403, 402),
+                      ui::EventType::kMouseMoved);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+
+  // Auto-hide (`mouse_position_` is now `(403, 402)`), then verify the direct
+  // +3pt boundary check (`(403, 405)`).
+  task_environment_.FastForwardBy(base::Seconds(10));
+  ASSERT_TRUE(overlay_->is_button_hidden_for_testing());
+  SimulatePointerMove(webrtc::DesktopVector(403, 405),
+                      ui::EventType::kMouseMoved);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+
+  // Auto-hide (`mouse_position_` is now `(403, 405)`), then verify a stationary
+  // sub-threshold `kMousePressed` click still reveals the button.
+  task_environment_.FastForwardBy(base::Seconds(10));
+  ASSERT_TRUE(overlay_->is_button_hidden_for_testing());
+  SimulatePointerMove(webrtc::DesktopVector(403, 405),
+                      ui::EventType::kMousePressed);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       LocalKeyPressRevealsButtonAndAutoHidesAfterTimeout) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kPrimaryFrame]() { return std::vector<NSRect>{kPrimaryFrame}; }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(400.0, 500.0); }));
+
+  StartOverlay();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+
+  SimulateKeyPress(0x070029);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_FALSE(button_window.ignoresMouseEvents);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+  EXPECT_FALSE(button_window.isVisible);
+  EXPECT_TRUE(button_window.ignoresMouseEvents);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       InputMonitorErrorPermanentlyRevealsDisconnectButton) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kPrimaryFrame]() { return std::vector<NSRect>{kPrimaryFrame}; }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(400.0, 500.0); }));
+
+  // 1. Error while the button is still in its initial hidden state reveals it
+  // permanently.
+  StartOverlay();
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_TRUE(overlay_->is_button_hidden_for_testing());
+
+  SimulateError();
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_FALSE(button_window.ignoresMouseEvents);
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+
+  // 2. Error after local input has already revealed the button cancels the
+  // pending 10s auto-hide timer and keeps the button permanently visible.
+  DestroyOverlay();
+  StartOverlay();
+  button_window = overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+
+  SimulateKeyPress(0x070029);
+  ASSERT_FALSE(overlay_->is_button_hidden_for_testing());
+  ASSERT_TRUE(button_window.isVisible);
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+  SimulateError();
+  task_environment_.FastForwardBy(base::Seconds(60));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_FALSE(button_window.ignoresMouseEvents);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       SynchronousErrorDuringStartMonitoringDefersDestructionAndRevealsButton) {
+  const NSRect kPrimaryFrame = NSMakeRect(0.0, 0.0, 1440.0, 900.0);
+  auto reset_screens = PrivacyOverlayMac::SetScreenFramesProviderForTesting(
+      base::BindLambdaForTesting(
+          [kPrimaryFrame]() { return std::vector<NSRect>{kPrimaryFrame}; }));
+  auto reset_mouse = PrivacyOverlayMac::SetMouseLocationProviderForTesting(
+      base::BindLambdaForTesting([]() { return NSMakePoint(400.0, 500.0); }));
+
+  synchronous_error_monitor_destroyed_ = false;
+  overlay_ = std::make_unique<PrivacyOverlayMac>(
+      std::make_unique<SynchronousErrorLocalInputMonitor>(
+          &synchronous_error_monitor_destroyed_));
+  overlay_->Start(weak_factory_.GetWeakPtr());
+
+  // `DeleteSoon` keeps the monitor alive until the current task unwinds, while
+  // `StopAutoHideBehavior()` has already revealed the Disconnect button.
+  EXPECT_FALSE(synchronous_error_monitor_destroyed_);
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(synchronous_error_monitor_destroyed_);
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+}
+
+TEST_F(PrivacyOverlayMacTest,
+       NullInputMonitorStartsWithDisconnectButtonPermanentlyVisible) {
+  overlay_ = std::make_unique<PrivacyOverlayMac>(nullptr);
+  overlay_->Start(weak_factory_.GetWeakPtr());
+
+  PrivacyOverlayButtonWindow* button_window =
+      overlay_->button_window_for_testing();
+  ASSERT_NE(button_window, nil);
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
+  EXPECT_FALSE(button_window.ignoresMouseEvents);
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+  EXPECT_FALSE(overlay_->is_button_hidden_for_testing());
+  EXPECT_TRUE(button_window.isVisible);
 }
 
 }  // namespace
