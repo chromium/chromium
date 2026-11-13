@@ -64,8 +64,11 @@ void VSyncProviderMac::AddSupportedDisplayLinkId(CGDirectDisplayID display_id) {
     // Insert an empty callback list.
     auto result =
         display_states_.emplace(std::make_pair(display_id, DisplayState()));
-    bool inserted = result.second;
-    CHECK(inserted, base::NotFatalUntil::M163);
+
+    if (!result.second) {
+      DLOG(WARNING) << "Display ID has already been added. display_id: "
+                    << display_id;
+    }
   }
 }
 

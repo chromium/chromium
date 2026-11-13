@@ -234,8 +234,6 @@ bool CVDisplayLinkMac::EnsureDisplayLinkRunning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!display_link_is_running_) {
-    CHECK(!CVDisplayLinkIsRunning(display_link_.get()),
-          base::NotFatalUntil::M163);
     CVReturn ret = CVDisplayLinkStart(display_link_.get());
     // https://developer.apple.com/documentation/corevideo/cvdisplaylinkstart(_:)
     // If the specified display link is already running, CVDisplayLinkStart
@@ -262,8 +260,6 @@ void CVDisplayLinkMac::StopDisplayLinkIfNeeded() {
 
   // Stop has already been requested; nothing to do.
   if (!display_link_is_running_) {
-    CHECK(!CVDisplayLinkIsRunning(display_link_.get()),
-          base::NotFatalUntil::M163);
     return;
   }
 
