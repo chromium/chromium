@@ -518,6 +518,9 @@ public final class ChromePreferenceKeys {
     public static final String IN_APP_UPDATE_DISCOVERY_BACKOFF_TIMESTAMP =
             "Chrome.InAppUpdate.DiscoveryBackoffTimestamp";
 
+    /** Whether an in-app update has been downloaded and staged on disk. */
+    public static final String IN_APP_UPDATE_DOWNLOADED = "Chrome.InAppUpdate.Downloaded";
+
     /** Timestamp when an in-app update download last failed. */
     public static final String IN_APP_UPDATE_FAILURE_BACKOFF_TIMESTAMP =
             "Chrome.InAppUpdate.FailureBackoffTimestamp";
@@ -1290,6 +1293,7 @@ public final class ChromePreferenceKeys {
                 INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 IN_APP_UPDATE_DISCOVERY_BACKOFF_TIMESTAMP,
+                IN_APP_UPDATE_DOWNLOADED,
                 IN_APP_UPDATE_FAILURE_BACKOFF_TIMESTAMP,
                 IN_APP_UPDATE_RESTART_BACKOFF_TIMESTAMP,
                 IS_CHROME_DEFAULT_SEARCH_ENGINE_GOOGLE,

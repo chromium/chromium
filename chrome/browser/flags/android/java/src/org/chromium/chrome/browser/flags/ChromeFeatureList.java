@@ -1349,6 +1349,7 @@ public abstract class ChromeFeatureList {
                     HOME_BUTTON_REMOVAL,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sInAppUpdateFlow = newCachedFlag(IN_APP_UPDATE_FLOW, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
     public static final CachedFlag sLensBypassCompressionForC2pa =
@@ -1687,6 +1688,7 @@ public abstract class ChromeFeatureList {
                     sGlicBackgroundTriggering,
                     sHistoryPaneAndroid,
                     sHomeButtonRemoval,
+                    sInAppUpdateFlow,
                     sKeyboardEscBackNavigation,
                     sLensBypassCompressionForC2pa,
                     sLensSendRawFileMediaTypes,
@@ -2434,6 +2436,9 @@ public abstract class ChromeFeatureList {
                             "set_default_to_false_on_homepage_on_desktop",
                             true);
 
+    public static final StringCachedFeatureParam sInAppUpdateRestartMode =
+            newStringCachedFeatureParam(IN_APP_UPDATE_FLOW, "restart_mode", "snackbar");
+
     public static final BooleanCachedFeatureParam sMaliciousApkDownloadCheckTelemetryOnly =
             newBooleanCachedFeatureParam(MALICIOUS_APK_DOWNLOAD_CHECK, "telemetry_only", false);
     public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxSchemeHost =
@@ -2615,6 +2620,7 @@ public abstract class ChromeFeatureList {
                     sHomeButtonRemovalEverywhere,
                     sHomeButtonRemovalKeepOnNtp,
                     sHomeButtonRemovalSetDefaultToFalseOnHomepageOnDesktop,
+                    sInAppUpdateRestartMode,
                     sLockTopControlsForceAdjustHeightOnStartup,
                     sLowMemoryDeviceThresholdMb,
                     sMaliciousApkDownloadCheckTelemetryOnly,

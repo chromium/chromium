@@ -376,6 +376,8 @@ public class InAppUpdateController {
                                 return;
                             }
                             int rawInstallStatus = appUpdateInfo.installStatus();
+                            InAppUpdatePolicy.setUpdateDownloaded(
+                                    rawInstallStatus == InstallStatus.DOWNLOADED);
                             int rawAvailability = appUpdateInfo.updateAvailability();
 
                             // Case 1: Download already in progress. Attach listener to observe
@@ -393,14 +395,9 @@ public class InAppUpdateController {
                             // Case 2: Update already downloaded and staged on disk. Check restart
                             // throttle (asymmetric: discovery backoff does not suppress restart).
                             if (rawInstallStatus == InstallStatus.DOWNLOADED) {
-                                if (!InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
-                                    return;
+                                if (InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
+                                    showRestartSnackbar();
                                 }
-                                Log.i(
-                                        TAG,
-                                        "checkAndStartUpdateFlow: Update already downloaded ->"
-                                                + " displaying restart snackbar.");
-                                showRestartSnackbar();
                                 return;
                             }
 
@@ -532,6 +529,10 @@ public class InAppUpdateController {
      * InAppUpdatePolicy#recordRestartDeclined()}.
      */
     private void showRestartSnackbar() {
+        if (InAppUpdatePolicy.getRestartMode() == InAppUpdatePolicy.RestartMode.BACKGROUND) {
+            return;
+        }
+
         // Guard against duplicate prompts and destroyed activity state.
         if (mRestartSnackbarController != null || isDestroyedFinishingOrChangingConfigurations()) {
             return;
@@ -541,6 +542,8 @@ public class InAppUpdateController {
         if (snackbarManager == null) {
             return;
         }
+
+        Log.i(TAG, "Showing restart snackbar.");
 
         if (mDiscoverySnackbarController != null) {
             mDiscoverySnackbarController.dismiss();
@@ -558,9 +561,8 @@ public class InAppUpdateController {
                                 return;
                             }
                             AppUpdateManager manager = getOrCreateAppUpdateManager();
-                            manager.completeUpdate()
+                            InAppUpdateInstaller.completeUpdate(manager)
                                     .addOnFailureListener(
-                                            mActivity,
                                             e -> {
                                                 Log.e(
                                                         TAG,
@@ -660,18 +662,18 @@ public class InAppUpdateController {
                         int errorCode = state.installErrorCode();
 
                         if (status == InstallStatus.DOWNLOADED) {
-                            Log.i(
-                                    TAG,
-                                    "InstallState: Update downloaded -> showing restart snackbar.");
+                            Log.i(TAG, "InstallState: Update downloaded.");
                             logDownloadResult(DownloadResult.SUCCEEDED);
                             // Clear restart backoff so that newly downloaded updates always get an
                             // unthrottled prompt to relaunch.
                             InAppUpdatePolicy.clearRestartBackoff();
+                            InAppUpdatePolicy.setUpdateDownloaded(true);
                             showRestartSnackbar();
                             unregisterInstallListener();
                         } else if (status == InstallStatus.FAILED) {
                             Log.w(TAG, "InstallState: Download failed (errorCode=%d).", errorCode);
                             logDownloadResult(DownloadResult.DOWNLOAD_FAILED);
+                            InAppUpdatePolicy.setUpdateDownloaded(false);
                             // Record failure backoff for transient issues (network drop, disk
                             // space).
                             InAppUpdatePolicy.recordDownloadFailed();
@@ -679,13 +681,16 @@ public class InAppUpdateController {
                         } else if (status == InstallStatus.CANCELED) {
                             Log.i(TAG, "InstallState: Download canceled.");
                             logDownloadResult(DownloadResult.DOWNLOAD_CANCELED);
+                            InAppUpdatePolicy.setUpdateDownloaded(false);
                             // User canceled in-flight download: apply discovery backoff.
                             InAppUpdatePolicy.recordUpdateDeclined();
                             unregisterInstallListener();
-                        } else if (status == InstallStatus.INSTALLING
-                                || status == InstallStatus.INSTALLED) {
-                            // InstallStatus.INSTALLING and INSTALLED occur during/after
-                            // completeUpdate() and are intentionally ignored here.
+                        } else if (status == InstallStatus.INSTALLED) {
+                            InAppUpdatePolicy.setUpdateDownloaded(false);
+                            unregisterInstallListener();
+                        } else if (status == InstallStatus.INSTALLING) {
+                            // InstallStatus.INSTALLING occurs during completeUpdate() and is
+                            // intentionally ignored here.
                         }
                     };
             getOrCreateAppUpdateManager().registerListener(mInstallListener);
@@ -835,18 +840,15 @@ public class InAppUpdateController {
                                 return;
                             }
                             int status = appUpdateInfo.installStatus();
+                            InAppUpdatePolicy.setUpdateDownloaded(
+                                    status == InstallStatus.DOWNLOADED);
                             if (status == InstallStatus.DOWNLOADING
                                     || status == InstallStatus.PENDING) {
                                 registerInstallListener();
                             } else if (status == InstallStatus.DOWNLOADED) {
-                                if (!InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
-                                    return;
+                                if (InAppUpdatePolicy.isRestartPromptAllowed(mActivity)) {
+                                    showRestartSnackbar();
                                 }
-                                Log.i(
-                                        TAG,
-                                        "onResume: Downloaded update waiting -> displaying restart"
-                                                + " snackbar.");
-                                showRestartSnackbar();
                             }
                         })
                 .addOnFailureListener(
@@ -912,22 +914,9 @@ public class InAppUpdateController {
                                         "onMenuItemClicked: Update already downloaded ->"
                                                 + " restarting Chrome via completeUpdate().");
                                 logAppMenuAction(AppMenuAction.TRIGGER_RESTART);
-                                manager.completeUpdate()
+                                InAppUpdateInstaller.completeUpdate(manager)
                                         .addOnFailureListener(
-                                                mActivity,
-                                                e -> {
-                                                    Log.e(
-                                                            TAG,
-                                                            "completeUpdate() failed on menu"
-                                                                    + " click: %s",
-                                                            e.getMessage(),
-                                                            e);
-                                                    InAppUpdatePolicy.recordDownloadFailed();
-                                                    logAppMenuAction(AppMenuAction.RESTART_FAILED);
-                                                    if (fallback != null) {
-                                                        fallback.run();
-                                                    }
-                                                });
+                                                e -> onMenuRestartFailed(e, fallback));
                                 return;
                             }
 
@@ -994,6 +983,20 @@ public class InAppUpdateController {
     private void triggerFallback(@Nullable Runnable fallback) {
         if (fallback != null) {
             logAppMenuAction(AppMenuAction.INTENT_FALLBACK);
+            fallback.run();
+        }
+    }
+
+    /**
+     * Handles a failed {@code completeUpdate()} from the app menu. The pref and metric writes must
+     * run regardless of activity state (the listener is not activity-scoped for that reason); only
+     * the UI fallback is lifecycle-gated.
+     */
+    private void onMenuRestartFailed(Exception e, @Nullable Runnable fallback) {
+        Log.e(TAG, "completeUpdate() failed on menu click: %s", e.getMessage(), e);
+        InAppUpdatePolicy.recordDownloadFailed();
+        logAppMenuAction(AppMenuAction.RESTART_FAILED);
+        if (fallback != null && !isDestroyedFinishingOrChangingConfigurations()) {
             fallback.run();
         }
     }

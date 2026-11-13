@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -26,11 +27,14 @@ import android.content.IntentSender;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateOptions;
 import com.google.android.play.core.appupdate.testing.FakeAppUpdateManager;
+import com.google.android.play.core.install.InstallState;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.install.model.ActivityResult;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.InstallStatus;
@@ -91,6 +95,7 @@ public class InAppUpdateControllerTest {
 
     @Before
     public void setUp() {
+        InAppUpdatePolicy.resetForTesting();
         InAppUpdateController.resetResumeCooldownForTesting();
         mActivityController = Robolectric.buildActivity(Activity.class).setup();
         mActivity = mActivityController.get();
@@ -110,7 +115,7 @@ public class InAppUpdateControllerTest {
         }
         InAppUpdateController.setAppUpdateManagerForTesting(null);
         InAppUpdateController.resetResumeCooldownForTesting();
-        InAppUpdatePolicy.clearBackoffsForTesting();
+        InAppUpdatePolicy.resetForTesting();
     }
 
     private InAppUpdateController createController() {
@@ -136,6 +141,38 @@ public class InAppUpdateControllerTest {
         mFakeAppUpdateManager.userAcceptsUpdate();
         mFakeAppUpdateManager.downloadStarts();
         mFakeAppUpdateManager.downloadCompletes();
+    }
+
+    private AppUpdateManager setMockManagerReporting(
+            @InstallStatus int installStatus, @UpdateAvailability int availability) {
+        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
+        when(mockInfo.installStatus()).thenReturn(installStatus);
+        when(mockInfo.updateAvailability()).thenReturn(availability);
+        AppUpdateManager mockManager = mock(AppUpdateManager.class);
+        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
+        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        return mockManager;
+    }
+
+    private TaskCompletionSource<Void> setupDownloadedWithPendingCompleteUpdate() {
+        TaskCompletionSource<Void> source = new TaskCompletionSource<>();
+        AppUpdateInfo mockInfo = mock(AppUpdateInfo.class);
+        when(mockInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
+        AppUpdateManager mockManager = mock(AppUpdateManager.class);
+        when(mockManager.getAppUpdateInfo()).thenReturn(Tasks.forResult(mockInfo));
+        when(mockManager.completeUpdate()).thenReturn(source.getTask());
+        InAppUpdateController.setAppUpdateManagerForTesting(mockManager);
+        return source;
+    }
+
+    private void startFlexibleDownload(InAppUpdateController controller) {
+        setupUpdateAvailable();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+        verify(mSnackbarManager, atLeastOnce()).showSnackbar(mSnackbarCaptor.capture());
+        mSnackbarCaptor.getValue().getController().onAction(null);
+        mFakeAppUpdateManager.userAcceptsUpdate();
+        mFakeAppUpdateManager.downloadStarts();
     }
 
     // =============================================================================================
@@ -451,12 +488,14 @@ public class InAppUpdateControllerTest {
 
         mFakeAppUpdateManager.userAcceptsUpdate();
         mFakeAppUpdateManager.downloadStarts();
+        InAppUpdatePolicy.setUpdateDownloaded(true);
         mFakeAppUpdateManager.downloadFails();
         ShadowLooper.idleMainLooper();
 
         watcher.assertExpected();
         assertNull(controller.getInstallListenerForTesting());
         assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
     }
 
     @Test
@@ -486,12 +525,14 @@ public class InAppUpdateControllerTest {
 
         mFakeAppUpdateManager.userAcceptsUpdate();
         mFakeAppUpdateManager.downloadStarts();
+        InAppUpdatePolicy.setUpdateDownloaded(true);
         mFakeAppUpdateManager.userCancelsDownload();
         ShadowLooper.idleMainLooper();
 
         watcher.assertExpected();
         assertNull(controller.getInstallListenerForTesting());
         assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
     }
 
     @Test
@@ -773,6 +814,7 @@ public class InAppUpdateControllerTest {
         InAppUpdateController controller = createController();
         controller.onResume();
         ShadowLooper.idleMainLooper();
+        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
 
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
         Snackbar snackbar = mSnackbarCaptor.getValue();
@@ -784,6 +826,7 @@ public class InAppUpdateControllerTest {
 
         snackbar.getController().onAction(null);
         ShadowLooper.idleMainLooper();
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
 
         watcher.assertExpected();
         assertTrue(mFakeAppUpdateManager.isInstallSplashScreenVisible());
@@ -1102,9 +1145,11 @@ public class InAppUpdateControllerTest {
                         InAppUpdateController.HISTOGRAM_APP_MENU_ACTION,
                         InAppUpdateController.AppMenuAction.TRIGGER_RESTART);
 
+        InAppUpdatePolicy.setUpdateDownloaded(true);
         InAppUpdateController controller = createController();
         controller.onMenuItemClicked(null);
         ShadowLooper.idleMainLooper();
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
 
         watcher.assertExpected();
         assertTrue(mFakeAppUpdateManager.isInstallSplashScreenVisible());
@@ -1401,6 +1446,7 @@ public class InAppUpdateControllerTest {
 
         assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
         assertTrue(InAppUpdatePolicy.isRestartPromptAllowed(mActivity));
+        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
     }
 
     @Test
@@ -1859,5 +1905,128 @@ public class InAppUpdateControllerTest {
 
         assertNull(controller.getDiscoverySnackbarControllerForTesting());
         verify(mSnackbarManager).dismissSnackbars(eq(discoveryController));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_restartModeBackground_setsFlagAndSuppressesSnackbar() {
+        ChromeFeatureList.sInAppUpdateRestartMode.setForTesting("background");
+        setupUpdateDownloaded();
+
+        InAppUpdateController controller = createController();
+        controller.checkAndStartUpdateFlow();
+        ShadowLooper.idleMainLooper();
+
+        verify(mSnackbarManager, never()).showSnackbar(any());
+        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testInstallListener_restartModeBackground_setsFlagAndSuppressesSnackbar() {
+        ChromeFeatureList.sInAppUpdateRestartMode.setForTesting("background");
+        InAppUpdateController controller = createController();
+        startFlexibleDownload(controller);
+        mFakeAppUpdateManager.downloadCompletes();
+        ShadowLooper.idleMainLooper();
+
+        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
+        assertNull(controller.getRestartSnackbarControllerForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testOnResume_restartModeBackground_setsFlagAndSuppressesSnackbar() {
+        ChromeFeatureList.sInAppUpdateRestartMode.setForTesting("background");
+        setupUpdateDownloaded();
+
+        InAppUpdateController controller = createController();
+        controller.onResume();
+        ShadowLooper.idleMainLooper();
+
+        verify(mSnackbarManager, never()).showSnackbar(any());
+        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void
+            testOnMenuItemClicked_completeUpdateFailsAfterActivityFinished_restoresFlagWithoutFallback() {
+        InAppUpdatePolicy.setUpdateDownloaded(true);
+        TaskCompletionSource<Void> source = setupDownloadedWithPendingCompleteUpdate();
+        InAppUpdateController controller = createController();
+        AtomicBoolean fallbackCalled = new AtomicBoolean(false);
+        controller.onMenuItemClicked(() -> fallbackCalled.set(true));
+        ShadowLooper.idleMainLooper();
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
+
+        mActivity.finish();
+        source.setException(new RuntimeException("Install failure"));
+        ShadowLooper.idleMainLooper();
+
+        assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
+        assertFalse(fallbackCalled.get());
+        assertFalse(InAppUpdatePolicy.isDiscoveryPromptAllowed(mActivity));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testCheckAndStartUpdateFlow_clearsFlagWhenNotDownloaded() {
+        int[][] states = {
+            {InstallStatus.UNKNOWN, UpdateAvailability.UPDATE_NOT_AVAILABLE},
+            {InstallStatus.DOWNLOADING, UpdateAvailability.UPDATE_AVAILABLE},
+            {InstallStatus.PENDING, UpdateAvailability.UPDATE_AVAILABLE},
+        };
+        for (int[] state : states) {
+            InAppUpdatePolicy.setUpdateDownloaded(true);
+            setMockManagerReporting(state[0], state[1]);
+
+            InAppUpdateController controller = createController();
+            controller.checkAndStartUpdateFlow();
+            ShadowLooper.idleMainLooper();
+            assertFalse(
+                    "Flag should be cleared for installStatus=" + state[0],
+                    InAppUpdatePolicy.isUpdateDownloaded());
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testOnResume_clearsFlagWhenNotDownloaded() {
+        int[][] states = {
+            {InstallStatus.UNKNOWN, UpdateAvailability.UPDATE_NOT_AVAILABLE},
+            {InstallStatus.DOWNLOADING, UpdateAvailability.UPDATE_AVAILABLE},
+            {InstallStatus.PENDING, UpdateAvailability.UPDATE_AVAILABLE},
+        };
+        for (int[] state : states) {
+            InAppUpdateController.resetResumeCooldownForTesting();
+            InAppUpdatePolicy.setUpdateDownloaded(true);
+            setMockManagerReporting(state[0], state[1]);
+
+            InAppUpdateController controller = createController();
+            controller.onResume();
+            ShadowLooper.idleMainLooper();
+            assertFalse(
+                    "Flag should be cleared for installStatus=" + state[0],
+                    InAppUpdatePolicy.isUpdateDownloaded());
+        }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
+    public void testInstallListener_installed_clearsDownloadedFlagAndUnregistersListener() {
+        InAppUpdateController controller = createController();
+        startFlexibleDownload(controller);
+
+        InstallStateUpdatedListener listener = controller.getInstallListenerForTesting();
+        assertNotNull(listener);
+
+        InAppUpdatePolicy.setUpdateDownloaded(true);
+        InstallState mockState = mock(InstallState.class);
+        when(mockState.installStatus()).thenReturn(InstallStatus.INSTALLED);
+        listener.onStateUpdate(mockState);
+
+        assertFalse(InAppUpdatePolicy.isUpdateDownloaded());
+        assertNull(controller.getInstallListenerForTesting());
     }
 }
