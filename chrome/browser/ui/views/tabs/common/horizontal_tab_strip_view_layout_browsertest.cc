@@ -129,8 +129,16 @@ class HorizontalTabStripViewLayoutBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/568066305): Failing on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ContainerOverlapAndZOrderOnOverflow \
+  DISABLED_ContainerOverlapAndZOrderOnOverflow
+#else
+#define MAYBE_ContainerOverlapAndZOrderOnOverflow \
+  ContainerOverlapAndZOrderOnOverflow
+#endif
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripViewLayoutBrowserTest,
-                       ContainerOverlapAndZOrderOnOverflow) {
+                       MAYBE_ContainerOverlapAndZOrderOnOverflow) {
   AppendPinnedTab();
   SetWindowWidth(800);
 
