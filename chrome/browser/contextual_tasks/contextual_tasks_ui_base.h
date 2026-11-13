@@ -263,9 +263,9 @@ class ContextualTasksUIBase
   void OpenUrlInNewTabFromPanelUi(const GURL& url);
 
   // Refreshes the profile indicator when the Google accounts in the cookie
-  // jar change, such as when the fresh list replaces the one cached from a
-  // previous session. This is a separate class because `ContextualTasksUI`
-  // already inherits `signin::IdentityManager::Observer`.
+  // jar, their extended account info (full name and avatar image), or the
+  // Chrome primary account change. This is a separate class because
+  // `ContextualTasksUI` already inherits `signin::IdentityManager::Observer`.
   class CookieJarObserver;
 
 #if !BUILDFLAG(IS_ANDROID)

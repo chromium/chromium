@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -5654,6 +5655,148 @@ TEST_F(ContextualTasksUiTest,
   EXPECT_EQ(account_info_future.Take(), std::make_tuple("", ""));
   EXPECT_EQ(account_count_future.Take(), 0u);
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(ContextualTasksUiTest,
+       ProfileIndicator_UpdatesWhenExtendedAccountInfoArrivesLater) {
+  identity_test_env()->EnableRemovalOfExtendedAccountInfo();
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  GURL last_avatar_url;
+  std::string last_full_name;
+  std::string last_email;
+  ON_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillByDefault(
+          [&last_avatar_url](const GURL& url) { last_avatar_url = url; });
+  ON_CALL(mock_page, SetAccountInfo(_, _))
+      .WillByDefault(
+          [&last_full_name, &last_email](const std::string& full_name,
+                                         const std::string& email) {
+            last_full_name = full_name;
+            last_email = email;
+          });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  controller.CreatePageHandler(mock_page.BindAndGetRemote(),
+                               page_handler.BindNewPipeAndPassReceiver());
+  mock_page.FlushForTesting();
+  EXPECT_EQ(last_avatar_url, GURL());
+  EXPECT_EQ(last_full_name, "");
+  EXPECT_EQ(last_email, "");
+
+  // User signs in to google.com while the side panel is open. Cookie jar
+  // updates before AccountFetcherService finishes fetching UserInfo or
+  // downloading the account avatar image.
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+  mock_page.FlushForTesting();
+  EXPECT_EQ(last_avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
+  EXPECT_EQ(last_full_name, "");
+  EXPECT_EQ(last_email, "user@example.com");
+
+  // AccountFetcherService finishes fetching UserInfo (full_name) first.
+  account_info =
+      AccountInfo::Builder(account_info).SetFullName("Jane Doe").Build();
+  signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                      account_info);
+  mock_page.FlushForTesting();
+  EXPECT_EQ(last_avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
+  EXPECT_EQ(last_full_name, "Jane Doe");
+  EXPECT_EQ(last_email, "user@example.com");
+
+  // AccountFetcherService finishes downloading the account avatar image.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_test_env()->identity_manager(), account_info.GetAccountId(),
+      "https://example.com/avatar.png", gfx::Image::CreateFrom1xBitmap(bitmap));
+  mock_page.FlushForTesting();
+  EXPECT_EQ(last_avatar_url,
+            GURL(base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
+                               "?gaia_id=",
+                               account_info.GetGaiaId().ToString()})));
+  EXPECT_EQ(last_full_name, "Jane Doe");
+  EXPECT_EQ(last_email, "user@example.com");
+
+  // Removing the refresh token clears extended account info and reverts to the
+  // placeholder avatar while the web cookie remains.
+  signin::RemoveRefreshTokenForAccount(identity_test_env()->identity_manager(),
+                                       account_info.GetAccountId());
+  mock_page.FlushForTesting();
+  EXPECT_EQ(last_avatar_url, GURL(profiles::GetPlaceholderAvatarIconUrl()));
+  EXPECT_EQ(last_full_name, "");
+  EXPECT_EQ(last_email, "user@example.com");
+}
+
+TEST_F(ContextualTasksUiTest,
+       ProfileIndicator_UpdatesWhenPrimaryAccountChanges) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("user@example.com");
+  account_info =
+      AccountInfo::Builder(account_info).SetFullName("Jane Doe").Build();
+  signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
+                                      account_info);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorBLUE);
+  signin::SimulateAccountImageFetch(
+      identity_test_env()->identity_manager(), account_info.GetAccountId(),
+      "https://example.com/avatar.png", gfx::Image::CreateFrom1xBitmap(bitmap));
+  identity_test_env()->SetCookieAccounts(
+      {{std::string(account_info.GetEmail()), account_info.GetGaiaId()}});
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUIBase controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksToolbarPage> mock_page;
+  GURL last_avatar_url;
+  std::string last_full_name;
+  std::string last_email;
+  uint32_t last_account_count = 0;
+  ON_CALL(mock_page, SetProfileAvatarUrl(_))
+      .WillByDefault(
+          [&last_avatar_url](const GURL& url) { last_avatar_url = url; });
+  ON_CALL(mock_page, SetAccountInfo(_, _))
+      .WillByDefault(
+          [&last_full_name, &last_email](const std::string& full_name,
+                                         const std::string& email) {
+            last_full_name = full_name;
+            last_email = email;
+          });
+  ON_CALL(mock_page, SetSignedInAccountCount(_))
+      .WillByDefault([&last_account_count](uint32_t count) {
+        last_account_count = count;
+      });
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  controller.CreatePageHandler(mock_page.BindAndGetRemote(),
+                               page_handler.BindNewPipeAndPassReceiver());
+  mock_page.FlushForTesting();
+  EXPECT_EQ(last_avatar_url,
+            GURL(base::StrCat({"chrome://contextual-tasks/profile-avatar.png"
+                               "?gaia_id=",
+                               account_info.GetGaiaId().ToString()})));
+  EXPECT_EQ(last_full_name, "Jane Doe");
+  EXPECT_EQ(last_email, "user@example.com");
+  EXPECT_EQ(last_account_count, 1u);
+
+  // Signing in to Chrome resolves the mixed-identity state and hides the
+  // side panel profile indicator.
+  identity_test_env()->SetPrimaryAccount("user@example.com",
+                                         signin::ConsentLevel::kSignin);
+  mock_page.FlushForTesting();
+  EXPECT_EQ(last_avatar_url, GURL());
+  EXPECT_EQ(last_full_name, "");
+  EXPECT_EQ(last_email, "");
+  EXPECT_EQ(last_account_count, 0u);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
