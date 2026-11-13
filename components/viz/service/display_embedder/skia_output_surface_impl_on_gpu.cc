@@ -2759,6 +2759,10 @@ void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
       (!is_10bit && vulkan_overlay_adaptor_->GetTileFormat() == media::kMT2T)) {
     vulkan_overlay_adaptor_ = media::VulkanOverlayAdaptor::Create(
         true, is_10bit ? media::kMT2T : media::kMM21);
+    if (!vulkan_overlay_adaptor_) {
+      LOG(ERROR) << "Failed to create VulkanOverlayAdaptor for detiling";
+      return;
+    }
   }
 
   // Note that we don't want to get the device queue from the
