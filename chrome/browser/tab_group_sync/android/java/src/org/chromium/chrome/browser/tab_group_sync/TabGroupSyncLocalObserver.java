@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -30,7 +29,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -121,31 +119,6 @@ public final class TabGroupSyncLocalObserver {
 
                 mRemoteTabGroupMutationHelper.addTab(
                         localTabGroupId, tab, mTabModel.getIndexOfTabInGroup(tab));
-            }
-
-            @Override
-            public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                if (!mIsObserving || tab.getTabGroupId() == null || !didCloseAlone) return;
-                LogUtils.log(TAG, "willCloseTab");
-
-                mRemoteTabGroupMutationHelper.handleWillCloseTabs(Collections.singletonList(tab));
-            }
-
-            @Override
-            public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                if (!mIsObserving || tabs.isEmpty()) return;
-                LogUtils.log(TAG, "willCloseMultipleTabs, tabs# " + tabs.size());
-
-                mRemoteTabGroupMutationHelper.handleWillCloseTabs(tabs);
-            }
-
-            @Override
-            public void willCloseAllTabs(boolean incognito) {
-                if (!mIsObserving) return;
-                LogUtils.log(TAG, "willCloseAllTabs");
-
-                mRemoteTabGroupMutationHelper.handleWillCloseTabs(
-                        TabModelUtils.convertTabListToListOfTabs(mTabModel));
             }
 
             @Override

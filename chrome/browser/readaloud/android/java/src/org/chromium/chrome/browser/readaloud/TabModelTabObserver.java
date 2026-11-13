@@ -50,11 +50,6 @@ public class TabModelTabObserver implements TabObserver {
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        TabModelTabObserver.this.willCloseTab(tab);
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         TabModelTabObserver.this.willCloseTabs(tabs, isAllTabs, allowUndo);
@@ -75,21 +70,8 @@ public class TabModelTabObserver implements TabObserver {
     }
 
     /**
-     * Called when a tab starts closing.
-     *
-     * @param tab The tab to close.
-     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
-     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
-     *     boolean, boolean)}.
-     */
-    @Deprecated
-    public void willCloseTab(Tab tab) {}
-
-    /**
-     * Called before one or more tabs are removed from the {@link TabModel} for closure.
-     *
-     * <p>TODO(crbug.com/381471263): Method in development. This replaces {@link #willCloseTab}. It
-     * is called once per closure operation while the tabs are still present in the tab model.
+     * Called before one or more tabs are removed from the {@link TabModel} for closure. It is
+     * called once per closure operation while the tabs are still present in the tab model.
      *
      * @param tabs The list of {@link Tab}s about to be closed.
      * @param isAllTabs Whether this closure operation will leave 0 tabs in the model.

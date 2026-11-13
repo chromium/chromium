@@ -339,16 +339,6 @@ public class SendTabToSelfBackPressHandlerTest {
         // The parent tab is closed while the STTS tab remains active. This is reachable on
         // tablets, where the tab strip is visible during browsing. The handler must reset so
         // that the supplier never claims a back press it cannot consume.
-        captureTabModelObserver().willCloseTab(mParentTab, /* didCloseAlone= */ true);
-
-        assertFalse(mHandler.getHandleBackPressChangedSupplier().get());
-        assertEquals(Tab.INVALID_TAB_ID, mHandler.getReceivedTabIdForTesting());
-    }
-
-    @Test
-    public void testParentTabClosedInBatch_ResetsHandler() {
-        enableOnSttsTab();
-
         captureTabModelObserver()
                 .willCloseTabs(List.of(mParentTab), /* isAllTabs= */ false, /* allowUndo= */ true);
 
@@ -372,7 +362,9 @@ public class SendTabToSelfBackPressHandlerTest {
 
         Tab unrelatedTab = mock(Tab.class);
         when(unrelatedTab.getId()).thenReturn(UNRELATED_TAB_ID);
-        captureTabModelObserver().willCloseTab(unrelatedTab, /* didCloseAlone= */ true);
+        captureTabModelObserver()
+                .willCloseTabs(
+                        List.of(unrelatedTab), /* isAllTabs= */ false, /* allowUndo= */ true);
 
         assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
         assertEquals(STTS_TAB_ID, mHandler.getReceivedTabIdForTesting());
@@ -382,16 +374,6 @@ public class SendTabToSelfBackPressHandlerTest {
     public void testSttsTabClosed_ResetsHandler() {
         enableOnSttsTab();
         assertTrue(mHandler.getHandleBackPressChangedSupplier().get());
-
-        captureTabModelObserver().willCloseTab(mSttsTab, /* didCloseAlone= */ true);
-
-        assertFalse(mHandler.getHandleBackPressChangedSupplier().get());
-        assertEquals(Tab.INVALID_TAB_ID, mHandler.getReceivedTabIdForTesting());
-    }
-
-    @Test
-    public void testSttsTabClosedInBatch_ResetsHandler() {
-        enableOnSttsTab();
 
         captureTabModelObserver()
                 .willCloseTabs(List.of(mSttsTab), /* isAllTabs= */ false, /* allowUndo= */ true);

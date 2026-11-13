@@ -848,35 +848,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testClosingTab() {
-        // Close a tab before any playback starts - tests null checks
-        mController.getTabModelTabObserverforTests().willCloseTab(mTab);
-
-        verify(mPlayerCoordinator, never()).dismissPlayers();
-        verify(mPlayback, never()).release();
-
-        // now start playing a tab
-        requestAndStartPlayback();
-
-        // close some other tab, playback should keep going
-        MockTab newTab = mTabModelSelector.addMockTab();
-        newTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc."));
-        mController.getTabModelTabObserverforTests().willCloseTab(newTab);
-
-        verify(mPlayerCoordinator, never()).dismissPlayers();
-        verify(mPlayback, never()).release();
-
-        // now close the playing tab
-        mController.getTabModelTabObserverforTests().willCloseTab(mTab);
-
-        verify(mPlayerCoordinator).dismissPlayers();
-        verify(mPlayback).release();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testClosingTab_WillCloseTabs() {
         // Close a tab before any playback starts - tests null checks
         mController.getTabModelTabObserverforTests()
                 .willCloseTabs(List.of(mTab), /* isAllTabs= */ false, /* allowUndo= */ false);
@@ -905,26 +877,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testClosingTab_errorUiDismissed() {
-        // start a playback with an error
-        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
-        resolvePromises();
-        verify(mPlaybackHooks, times(1))
-                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
-        mPlaybackCallbackCaptor.getValue().onFailure(new Exception("Very bad error"));
-        resolvePromises();
-
-        // Close this tab
-        mController.getTabModelTabObserverforTests().willCloseTab(mTab);
-
-        // No playback but error UI should get dismissed
-        verify(mPlayerCoordinator).dismissPlayers();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testClosingTab_errorUiDismissed_WillCloseTabs() {
         // start a playback with an error
         mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
         resolvePromises();

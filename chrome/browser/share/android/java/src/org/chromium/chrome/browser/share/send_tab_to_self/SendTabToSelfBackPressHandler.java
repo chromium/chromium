@@ -115,11 +115,6 @@ public final class SendTabToSelfBackPressHandler implements BackPressHandler, De
         mParentTabObserver =
                 new TabModelSelectorTabModelObserver(selector) {
                     @Override
-                    public void willCloseTab(Tab closingTab, boolean didCloseAlone) {
-                        resetIfParentOrReceived(closingTab);
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> closingTabs, boolean isAllTabs, boolean allowUndo) {
                         if (isAllTabs) {

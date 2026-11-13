@@ -75,11 +75,6 @@ public class SuggestionEventObserver {
                 }
 
                 @Override
-                public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                    mGroupSuggestionsService.willCloseTab(tab.getId());
-                }
-
-                @Override
                 public void willCloseTabs(
                         List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                     for (Tab tab : tabs) {

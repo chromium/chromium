@@ -864,18 +864,12 @@ public class ReadAloudController
                         }
 
                         @Override
-                        public void willCloseTab(Tab tab) {
-                            maybeStopPlayback(tab, ReasonForStoppingPlayback.TAB_CLOSED);
-                            // Make sure our translation observers are removed before tab's
-                            // WebContents is destroyed.
-                            removeTranslationObservers(tab);
-                        }
-
-                        @Override
                         public void willCloseTabs(
                                 List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                             for (Tab tab : tabs) {
                                 maybeStopPlayback(tab, ReasonForStoppingPlayback.TAB_CLOSED);
+                                // Make sure our translation observers are removed before tab's
+                                // WebContents is destroyed.
                                 removeTranslationObservers(tab);
                             }
                         }
