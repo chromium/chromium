@@ -25,9 +25,8 @@ namespace ttc {
 // Returns an empty rectangle if there are no points or no viewport.
 //
 // Points outside the viewport count as being on its nearest edge, so that
-// there is always an answer, but nothing can be shown or found at such a point.
-// TODO(crbug.com/571268337): Have the get_pointer tool drop points outside the
-// viewport before it crops, marks and hit-tests, so that the three agree.
+// there is always an answer, but nothing can be shown or found at such a
+// point; BuildGetPointerResponse() leaves them out before it gets here.
 gfx::Rect ComputePointerCropRect(base::span<const gfx::PointF> points,
                                  const gfx::Size& viewport_dip);
 

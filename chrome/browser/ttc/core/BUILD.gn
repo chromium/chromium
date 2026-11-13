@@ -108,6 +108,8 @@ source_set("impl") {
     "entrypoint_controller.cc",
     "eval_audio_controller.cc",
     "eval_audio_controller.h",
+    "get_pointer_response.cc",
+    "get_pointer_response.h",
     "hotl/hotl_transcript_matcher.cc",
     "hotl/hotl_transcript_matcher.h",
     "page_context.cc",
@@ -283,6 +285,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "get_pointer_response_unittest.cc",
     "hotl/hotl_transcript_matcher_unittest.cc",
     "page_context_util_unittest.cc",
     "pointer_crop_geometry_unittest.cc",
