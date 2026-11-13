@@ -12,9 +12,6 @@
 
 namespace chromeos::features {
 
-// Enables better quick settings UI for bluetooth and wifi error states.
-BASE_FEATURE(kBluetoothWifiQSPodRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // System location provider will use caching to optimize GCP usage. This flag
 // will be enabled with Finch.
 BASE_FEATURE(kCachedLocationProvider, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -87,10 +84,6 @@ BASE_FEATURE(kPlatformKeysChangesWave1, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsBluetoothWifiQSPodRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
-}
 
 bool IsCachedLocationProviderEnabled() {
   return base::FeatureList::IsEnabled(kCachedLocationProvider);
