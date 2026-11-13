@@ -23,6 +23,7 @@
 #include <cstring>
 
 #include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/fuchsia/fuchsia_logging.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
@@ -179,11 +180,20 @@ uintptr_t TrimMappingInternal(uintptr_t base_address,
   return base_address + pre_slack;
 }
 
+PA_ALWAYS_INLINE zx::unowned_vmar GetVmarForAddress(uintptr_t address) {
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  if (PartitionAddressSpace::IsInConfigurablePool(address)) {
+    return PartitionAddressSpace::GetConfigurablePoolVmar();
+  }
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  return zx::vmar::root_self();
+}
+
 bool TrySetSystemPagesAccessInternal(
     uint64_t address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  zx_status_t status = zx::vmar::root_self()->protect(
+  zx_status_t status = GetVmarForAddress(address)->protect(
       PageAccessibilityToZxVmOptions(accessibility), address, length);
   return status == ZX_OK;
 }
@@ -192,19 +202,20 @@ void SetSystemPagesAccessInternal(
     uint64_t address,
     size_t length,
     PageAccessibilityConfiguration accessibility) {
-  zx_status_t status = zx::vmar::root_self()->protect(
+  zx_status_t status = GetVmarForAddress(address)->protect(
       PageAccessibilityToZxVmOptions(accessibility), address, length);
   PA_ZX_CHECK(status == ZX_OK, status);
 }
 
 void FreePagesInternal(uint64_t address, size_t length) {
-  zx_status_t status = zx::vmar::root_self()->unmap(address, length);
+  zx_status_t status = GetVmarForAddress(address)->unmap(address, length);
   PA_ZX_CHECK(status == ZX_OK, status);
 }
 
 void DiscardSystemPagesInternal(uint64_t address, size_t length) {
-  zx_status_t status = zx::vmar::root_self()->op_range(
-      ZX_VMO_OP_DECOMMIT, address, length, nullptr, 0);
+  zx_status_t status = GetVmarForAddress(address)->op_range(
+      ZX_VMO_OP_DECOMMIT, address, length, /*buffer=*/nullptr,
+      /*buffer_size=*/0);
   PA_ZX_CHECK(status == ZX_OK, status);
 }
 

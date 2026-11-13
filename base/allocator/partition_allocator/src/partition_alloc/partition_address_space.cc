@@ -326,9 +326,8 @@ void PartitionAddressSpace::InitZeroSegment() {
 }
 #endif  // PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
 
-void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
-                                                 size_t size,
-                                                 int pkey) {
+void PartitionAddressSpace::InitConfigurablePool(
+    const ConfigurablePoolConfig& config) {
   // The ConfigurablePool must only be initialized once.
   PA_CHECK(!IsConfigurablePoolInitialized());
 
@@ -341,18 +340,24 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   }
 #endif
 
-  PA_CHECK(pool_base);
-  PA_CHECK(size <= kConfigurablePoolMaxSize);
-  PA_CHECK(size >= kConfigurablePoolMinSize);
-  PA_CHECK(std::has_single_bit(size));
-  PA_CHECK(pool_base % size == 0);
+  PA_CHECK(config.pool_base);
+  PA_CHECK(config.size <= kConfigurablePoolMaxSize);
+  PA_CHECK(config.size >= kConfigurablePoolMinSize);
+  PA_CHECK(std::has_single_bit(config.size));
+  PA_CHECK(config.pool_base % config.size == 0);
+#if PA_BUILDFLAG(IS_FUCHSIA)
+  PA_CHECK(config.vmar->is_valid());
+#endif
 
-  setup_.configurable_pool_base_address_ = pool_base;
-  setup_.configurable_pool_base_mask_ = ~(size - 1);
+  setup_.configurable_pool_base_address_ = config.pool_base;
+  setup_.configurable_pool_base_mask_ = ~(config.size - 1);
+#if PA_BUILDFLAG(IS_FUCHSIA)
+  setup_.configurable_pool_vmar_ = config.vmar->get();
+#endif
 
   AddressPoolManager::GetInstance().Add(kConfigurablePoolHandle,
                                         setup_.configurable_pool_base_address_,
-                                        size, pkey);
+                                        config.size, config.pkey);
 
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   // Initialize metadata for configurable pool without PartitionAlloc enabled.
@@ -437,6 +442,9 @@ void PartitionAddressSpace::UninitForTesting() {
   setup_.brp_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
+#if PA_BUILDFLAG(IS_FUCHSIA)
+  setup_.configurable_pool_vmar_ = ZX_HANDLE_INVALID;
+#endif  // PA_BUILDFLAG(IS_FUCHSIA)
   AddressPoolManager::GetInstance().ResetForTesting();
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::ResetBaseForTesting();
@@ -467,6 +475,9 @@ void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
   AddressPoolManager::GetInstance().Remove(kConfigurablePoolHandle);
   setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
+#if PA_BUILDFLAG(IS_FUCHSIA)
+  setup_.configurable_pool_vmar_ = ZX_HANDLE_INVALID;
+#endif  // PA_BUILDFLAG(IS_FUCHSIA)
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   setup_.offsets_to_metadata_[kConfigurablePoolHandle] = SystemPageSize();
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
