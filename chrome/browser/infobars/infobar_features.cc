@@ -65,7 +65,7 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE_PARAM(bool,
                    kMigratedGoogleApiKeys,
                    &kCentralizedInfoBarFramework,
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kMigratedIncognitoConnectability,
