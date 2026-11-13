@@ -124,9 +124,8 @@ bool RecommendAppsScreen::MaybeSkip(WizardContext& context) {
   }
 
   // The policy status is unset only if the cached user policy failed to
-  // load. Treat the user as unmanaged then, as the policy connector did.
-  // TODO(crbug.com/583357783): Skip the screen in that case.
-  bool is_managed_account = user.is_managed().value_or(false);
+  // load. The user may still be managed then, so skip the screen.
+  bool is_managed_account = user.is_managed().value_or(true);
   bool is_child_account = user.IsChild();
   if (is_managed_account || is_child_account) {
     exit_callback_.Run(Result::kNotApplicable);
