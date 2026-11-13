@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwDarkMode_jni.h"
@@ -31,13 +32,14 @@ bool IsForceDarkEnabled(content::WebContents* web_contents) {
 }  // namespace
 
 // static
-static int64_t JNI_AwDarkMode_Init(JNIEnv* env,
-                                   const JavaRef<jobject>& obj,
-                                   const JavaRef<jobject>& java_web_contents) {
+static jni_zero::JniRawPtr<AwDarkMode> JNI_AwDarkMode_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   DCHECK(web_contents);
-  return reinterpret_cast<intptr_t>(new AwDarkMode(env, obj, web_contents));
+  return jni_zero::MakeRaw(new AwDarkMode(env, obj, web_contents));
 }
 
 static void JNI_AwDarkMode_EnableLegacyDarkMode(JNIEnv* env) {

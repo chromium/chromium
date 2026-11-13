@@ -6,6 +6,10 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -18,7 +22,10 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("android_webview")
 @NullMarked
 public class AwDarkMode {
-    private long mNativeAwDarkMode;
+    @JniType("::android_webview::AwDarkMode")
+    interface NativeAwDarkMode extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAwDarkMode> mNativeAwDarkMode;
 
     private static boolean sEnableLegacyDarkMode;
 
@@ -43,12 +50,13 @@ public class AwDarkMode {
     }
 
     public void setWebContents(@Nullable WebContents webContents) {
-        if (mNativeAwDarkMode != 0) {
+        if (mNativeAwDarkMode != null) {
             AwDarkModeJni.get().detachFromJavaObject(mNativeAwDarkMode);
-            mNativeAwDarkMode = 0;
+            releaseNativeObject();
         }
         if (webContents != null) {
             mNativeAwDarkMode = AwDarkModeJni.get().init(this, webContents);
+            mAwContents.registerSafePointer(mNativeAwDarkMode);
         }
     }
 
@@ -69,7 +77,15 @@ public class AwDarkMode {
 
     @CalledByNative
     private void onNativeObjectDestroyed() {
-        mNativeAwDarkMode = 0;
+        releaseNativeObject();
+    }
+
+    private void releaseNativeObject() {
+        if (mNativeAwDarkMode != null) {
+            mAwContents.unregisterSafePointer(mNativeAwDarkMode);
+            mNativeAwDarkMode.release();
+            mNativeAwDarkMode = null;
+        }
     }
 
     @NativeMethods
@@ -78,8 +94,8 @@ public class AwDarkMode {
 
         void resetForTesting();
 
-        long init(AwDarkMode self, WebContents webContents);
+        JniRawPtr<NativeAwDarkMode> init(AwDarkMode self, WebContents webContents);
 
-        void detachFromJavaObject(long nativeAwDarkMode);
+        void detachFromJavaObject(JniPtr<NativeAwDarkMode> self);
     }
 }
