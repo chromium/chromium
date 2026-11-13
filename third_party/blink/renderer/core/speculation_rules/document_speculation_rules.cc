@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/containers/to_vector.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/state_transitions.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -183,19 +182,6 @@ std::optional<Referrer> GetReferrer(const SpeculationRule* rule,
 
   return referrer;
 }
-
-// The reason for calling |UpdateSpeculationCandidates| for metrics.
-// Currently, this is designed to measure the impact of the project of
-// retriggering preloading on BFCache restoration (crbug.com/1449163), so
-// other update reasons (such as ruleset insertion/removal etc...) will be
-// tentatively classified as |kOther|.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class UpdateSpeculationCandidatesReason {
-  kOther = 0,
-  kRestoredFromBFCache = 1,
-  kMaxValue = kRestoredFromBFCache,
-};
 
 // Converts a blink-variant No-Vary-Search hint into net's matcher type. This
 // mirrors content's no_vary_search::ParseHttpNoVarySearchDataFromMojom for the
@@ -642,7 +628,6 @@ void DocumentSpeculationRules::DisplayLockedElementDisconnected(Element* root) {
 }
 
 void DocumentSpeculationRules::DocumentRestoredFromBFCache() {
-  first_update_after_restored_from_bfcache_ = true;
   QueueUpdateSpeculationCandidates();
 }
 
@@ -990,14 +975,6 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     UseCounter::Count(document,
                       WebFeature::kSpeculationRulesEagernessImmediate);
   }
-
-  base::UmaHistogramEnumeration(
-      "Preloading.Experimental.UpdateSpeculationCandidatesReason",
-      first_update_after_restored_from_bfcache_
-          ? UpdateSpeculationCandidatesReason::kRestoredFromBFCache
-          : UpdateSpeculationCandidatesReason::kOther);
-
-  first_update_after_restored_from_bfcache_ = false;
 }
 
 void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(

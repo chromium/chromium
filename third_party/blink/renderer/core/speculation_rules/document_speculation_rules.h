@@ -228,8 +228,6 @@ class CORE_EXPORT DocumentSpeculationRules final
   // are no longer filtered by default.
   bool wants_pointer_events_ = false;
 
-  bool first_update_after_restored_from_bfcache_ = false;
-
   // Stores the current speculation candidates for the
   // SpeculationMeasurement API. These are populated when candidates are
   // sent to the browser and represent what the page has requested via
