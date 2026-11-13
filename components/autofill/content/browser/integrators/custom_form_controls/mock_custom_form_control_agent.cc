@@ -21,4 +21,8 @@ void MockCustomFormControlAgent::BindPendingReceiver(
                      std::move(handle)));
 }
 
+void MockCustomFormControlAgent::Flush() {
+  receivers_.FlushForTesting();
+}
+
 }  // namespace autofill

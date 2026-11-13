@@ -35,6 +35,9 @@ class MockCustomFormControlAgent : public mojom::CustomFormControlAgent {
   // the frame's `mojo::AssociatedRemote` reach the mocked methods.
   void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle);
 
+  // Waits until the replies sent so far have reached the remote.
+  void Flush();
+
   // mojom::CustomFormControlAgent:
   MOCK_METHOD(void,
               LoadUnsafeScript,
