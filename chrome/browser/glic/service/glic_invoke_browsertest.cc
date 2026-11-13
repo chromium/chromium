@@ -2,8 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
@@ -11,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
@@ -44,6 +50,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
+#include "components/metrics/structured/buildflags/buildflags.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
@@ -53,6 +60,12 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+#include "components/metrics/structured/event.h"
+#include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/test/test_structured_metrics_recorder.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog.h"
@@ -81,6 +94,62 @@ mojom::AdditionalContextPtr CreateMockAdditionalContext(
 
   return context_mojom;
 }
+
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+// Returns the value of `metric` on the single structured event named
+// `event_name` recorded so far, or nullopt if there is not exactly one such
+// event or it lacks the metric.
+std::optional<int> GetSingleStructuredMetric(
+    metrics::structured::TestStructuredMetricsRecorder& recorder,
+    std::string_view event_name,
+    std::string_view metric) {
+  const metrics::structured::Event* found = nullptr;
+  for (const auto& event : recorder.GetEvents()) {
+    if (event.event_name() != event_name) {
+      continue;
+    }
+    if (found) {
+      return std::nullopt;
+    }
+    found = &event;
+  }
+  if (!found) {
+    return std::nullopt;
+  }
+  auto it = found->metric_values().find(std::string(metric));
+  if (it == found->metric_values().end()) {
+    return std::nullopt;
+  }
+  // int metrics are stored as strings; enum metrics as ints.
+  const base::Value& value = it->second.value;
+  if (value.is_int()) {
+    return value.GetInt();
+  }
+  int result = 0;
+  if (value.is_string() && base::StringToInt(value.GetString(), &result)) {
+    return result;
+  }
+  return std::nullopt;
+}
+
+std::optional<int> GetInvokeStartedMetric(
+    metrics::structured::TestStructuredMetricsRecorder& recorder,
+    std::string_view metric) {
+  return GetSingleStructuredMetric(
+      recorder,
+      metrics::structured::events::v2::glic::InvokeStarted().event_name(),
+      metric);
+}
+
+std::optional<int> GetInvokeTerminatedMetric(
+    metrics::structured::TestStructuredMetricsRecorder& recorder,
+    std::string_view metric) {
+  return GetSingleStructuredMetric(
+      recorder,
+      metrics::structured::events::v2::glic::InvokeTerminated().event_name(),
+      metric);
+}
+#endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 }  // namespace
 
@@ -3065,6 +3134,63 @@ IN_PROC_BROWSER_TEST_F(
   // Now the success callback should be called.
   EXPECT_TRUE(success_future.Wait());
 }
+
+#if BUILDFLAG(STRUCTURED_METRICS_ENABLED)
+// GlicInvokeHandler fills the InvokeStarted FRE metrics from the profile's
+// consent status and NeedsFreCompletion(): an unconsented invocation that
+// carries a prompt waits for the FRE.
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeStartedRecordsFreStateWhenWaitingForFre) {
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kNotStarted);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
+  options.prompts = {"Hello"};
+  options.on_success = success_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return GetInvokeStartedMetric(recorder, "WaitsForFre").has_value();
+  }));
+  // structured.xml GlicFreStatus::NOT_STARTED, GlicFreOverride::UNSPECIFIED,
+  // and GlicFreWaitMode::DEFAULT.
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "FreStatusAtStart"), 0);
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "FreOverride"), 0);
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "FreWaitMode"), 0);
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "RequiresClientInvoke"), 1);
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "WaitsForFre"), 1);
+  EXPECT_FALSE(success_future.IsReady());
+
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_EQ(GetInvokeTerminatedMetric(recorder, "FreStatusAtStart"), 0);
+  EXPECT_EQ(GetInvokeTerminatedMetric(recorder, "WaitsForFre"), 1);
+}
+
+// The same invocation from a consented profile does not wait.
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeStartedRecordsFreStateWhenConsented) {
+  metrics::structured::TestStructuredMetricsRecorder recorder;
+  recorder.Initialize();
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  SetFRECompletion(GetProfile(), prefs::FreStatus::kCompleted);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(Target(*tab), mojom::InvocationSource::kOsButton);
+  options.prompts = {"Hello"};
+  options.on_success = success_future.GetCallback();
+  coordinator().Invoke(std::move(options));
+  EXPECT_TRUE(success_future.Wait());
+
+  // structured.xml GlicFreStatus::COMPLETED.
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "FreStatusAtStart"), 1);
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "RequiresClientInvoke"), 1);
+  EXPECT_EQ(GetInvokeStartedMetric(recorder, "WaitsForFre"), 0);
+}
+#endif  // BUILDFLAG(STRUCTURED_METRICS_ENABLED)
 
 IN_PROC_BROWSER_TEST_F(
     GlicInvokeBrowserTest,

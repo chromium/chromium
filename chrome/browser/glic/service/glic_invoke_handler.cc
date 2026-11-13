@@ -581,11 +581,19 @@ void GlicInvokeHandler::Invoke() {
           weak_ptr_factory_.GetWeakPtr()));
 
   // The feature mode and embedder type were set on `metrics_` by the
-  // coordinator while resolving this invocation. The client load state is
-  // captured here, before any task has run, so it reflects what the
-  // invocation inherited rather than what it caused.
+  // coordinator while resolving this invocation. The client load state and
+  // FRE state are captured here, before any task has run, so they reflect
+  // what the invocation inherited rather than what it caused.
   client_load_state_at_start_ = instance_->host().client_load_state();
   metrics_->SetClientLoadStateAtStart(*client_load_state_at_start_);
+  metrics_->SetFreStateAtStart(GlicInvokeFreState{
+      .preexisting_fre_status =
+          GlicEnabling::GetCompletedFre(instance_->profile()),
+      .fre_override = options_.fre_override,
+      .wait_mode = options_.fre_completion_wait_mode,
+      .requires_client_invoke = requires_client_invoke_,
+      .waits_for_fre = NeedsFreCompletion(),
+  });
   metrics_->RecordStarted();
   instance_->instance_metrics().SetActiveInvocationId(
       metrics_->GetInvocationId());

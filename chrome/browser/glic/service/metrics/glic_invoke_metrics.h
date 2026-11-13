@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "components/glic/glic_pref_names.h"
 
 namespace glic {
 
@@ -50,6 +51,30 @@ enum class GlicInvokeEntryPath {
 };
 // LINT.ThenChange(//tools/metrics/structured/sync/structured.xml:GlicInvokeEntryPath)
 
+// How an invocation stood with respect to the First Run Experience (FRE, the
+// consent screen) when it started. Recorded on InvokeStarted (with
+// FreStatusAtStart and WaitsForFre also on InvokeTerminated) so that first-run
+// attempts and outcomes can be told apart from returning users without joining
+// against profile-scoped Glic.Fre.* histograms, which cannot be attributed to
+// an invocation.
+struct GlicInvokeFreState {
+  // The profile's FRE status before any of the invocation's tasks ran, i.e.
+  // what the invocation inherited rather than what it caused.
+  prefs::FreStatus preexisting_fre_status = prefs::FreStatus::kNotStarted;
+  // GlicInvokeOptions::fre_override.
+  mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified;
+  // GlicInvokeOptions::fre_completion_wait_mode.
+  FreCompletionWaitMode wait_mode = FreCompletionWaitMode::kDefault;
+  // GlicInvokeHandler::RequiresClientInvoke(): whether the invocation carries
+  // something the web client must receive (a prompt, payload, context, ...),
+  // which is what makes a kDefault wait mode wait.
+  bool requires_client_invoke = false;
+  // Whether the invocation blocks on the user completing the FRE
+  // (GlicInvokeHandler::NeedsFreCompletion()). This is the derived decision;
+  // the four fields above are its inputs.
+  bool waits_for_fre = false;
+};
+
 class GlicInvokeMetrics {
  public:
   explicit GlicInvokeMetrics(mojom::InvocationSource source);
@@ -77,6 +102,12 @@ class GlicInvokeMetrics {
   // from an earlier show can be told apart from one that watched it happen.
   void SetClientLoadStateAtStart(ClientLoadState state) {
     client_load_state_at_start_ = state;
+  }
+  // The invocation's relationship to the FRE when it starts. Attached to
+  // InvokeStarted (with FreStatusAtStart and WaitsForFre also on
+  // InvokeTerminated); absent for invocations rejected before they start.
+  void SetFreStateAtStart(const GlicInvokeFreState& fre_state) {
+    fre_state_at_start_ = fre_state;
   }
 
   // A CUI tracker to resolve with the invocation's outcome: kSuccess on
@@ -124,6 +155,7 @@ class GlicInvokeMetrics {
   std::optional<mojom::FeatureMode> feature_mode_;
   std::optional<EmbedderType> embedder_type_;
   std::optional<ClientLoadState> client_load_state_at_start_;
+  std::optional<GlicInvokeFreState> fre_state_at_start_;
   GlicInvokeEntryPath entry_path_ = GlicInvokeEntryPath::kUnknown;
   std::unique_ptr<GlicCuiTracker> cui_tracker_;
 };

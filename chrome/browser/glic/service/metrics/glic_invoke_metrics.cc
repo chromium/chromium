@@ -78,6 +78,78 @@ ToStructuredEntryPath(GlicInvokeEntryPath entry_path) {
       return StructuredEntryPath::INVOKE_WITH_AUTO_SUBMIT;
   }
 }
+
+// As above, for prefs::FreStatus.
+metrics::structured::events::v2::glic::GlicFreStatus ToStructuredFreStatus(
+    prefs::FreStatus status) {
+  using StructuredFreStatus =
+      metrics::structured::events::v2::glic::GlicFreStatus;
+  switch (status) {
+    case prefs::FreStatus::kNotStarted:
+      return StructuredFreStatus::NOT_STARTED;
+    case prefs::FreStatus::kCompleted:
+      return StructuredFreStatus::COMPLETED;
+    case prefs::FreStatus::kIncomplete:
+      return StructuredFreStatus::INCOMPLETE;
+  }
+}
+
+// As above, for mojom::FreOverride.
+metrics::structured::events::v2::glic::GlicFreOverride ToStructuredFreOverride(
+    mojom::FreOverride fre_override) {
+  using StructuredFreOverride =
+      metrics::structured::events::v2::glic::GlicFreOverride;
+  switch (fre_override) {
+    case mojom::FreOverride::kUnspecified:
+      return StructuredFreOverride::UNSPECIFIED;
+    case mojom::FreOverride::kTrustFirstText:
+      return StructuredFreOverride::TRUST_FIRST_TEXT;
+    case mojom::FreOverride::kTrustFirstClick:
+      return StructuredFreOverride::TRUST_FIRST_CLICK;
+    case mojom::FreOverride::kTrustFirstInline:
+      return StructuredFreOverride::TRUST_FIRST_INLINE;
+    case mojom::FreOverride::kNativeFre:
+      return StructuredFreOverride::NATIVE_FRE;
+  }
+}
+
+// As above, for FreCompletionWaitMode.
+metrics::structured::events::v2::glic::GlicFreWaitMode ToStructuredFreWaitMode(
+    FreCompletionWaitMode mode) {
+  using StructuredFreWaitMode =
+      metrics::structured::events::v2::glic::GlicFreWaitMode;
+  switch (mode) {
+    case FreCompletionWaitMode::kDefault:
+      return StructuredFreWaitMode::DEFAULT;
+    case FreCompletionWaitMode::kNever:
+      return StructuredFreWaitMode::NEVER;
+    case FreCompletionWaitMode::kAlways:
+      return StructuredFreWaitMode::ALWAYS;
+  }
+}
+
+void SetStartedFreMetrics(
+    metrics::structured::events::v2::glic::InvokeStarted& event,
+    const GlicInvokeFreState& fre_state) {
+  event
+      .SetFreStatusAtStart(
+          ToStructuredFreStatus(fre_state.preexisting_fre_status))
+      .SetFreOverride(ToStructuredFreOverride(fre_state.fre_override))
+      .SetFreWaitMode(ToStructuredFreWaitMode(fre_state.wait_mode))
+      .SetRequiresClientInvoke(fre_state.requires_client_invoke ? 1 : 0)
+      .SetWaitsForFre(fre_state.waits_for_fre ? 1 : 0);
+}
+
+// InvokeTerminated carries only FreStatusAtStart and WaitsForFre for join-free
+// outcome slicing; the remaining inputs live on the matching InvokeStarted.
+void SetTerminatedFreMetrics(
+    metrics::structured::events::v2::glic::InvokeTerminated& event,
+    const GlicInvokeFreState& fre_state) {
+  event
+      .SetFreStatusAtStart(
+          ToStructuredFreStatus(fre_state.preexisting_fre_status))
+      .SetWaitsForFre(fre_state.waits_for_fre ? 1 : 0);
+}
 #endif
 
 }  // namespace
@@ -128,6 +200,9 @@ void GlicInvokeMetrics::RecordStarted() const {
   }
   if (embedder_type_.has_value()) {
     event.SetEmbedderType(ToStructuredEmbedderType(*embedder_type_));
+  }
+  if (fre_state_at_start_.has_value()) {
+    SetStartedFreMetrics(event, *fre_state_at_start_);
   }
   metrics::structured::StructuredMetricsClient::Record(std::move(event));
 #endif
@@ -242,6 +317,9 @@ void GlicInvokeMetrics::RecordTerminated(
   if (client_load_state_at_start_.has_value()) {
     event.SetClientLoadStateAtStart(
         ToStructuredClientLoadState(*client_load_state_at_start_));
+  }
+  if (fre_state_at_start_.has_value()) {
+    SetTerminatedFreMetrics(event, *fre_state_at_start_);
   }
   metrics::structured::StructuredMetricsClient::Record(std::move(event));
 #endif

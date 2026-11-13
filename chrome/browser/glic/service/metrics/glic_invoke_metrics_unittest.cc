@@ -372,6 +372,114 @@ TEST(GlicInvokeMetricsTest, RejectedInvocationTerminatedHasEntryPath) {
   EXPECT_EQ(GetIntMetric(*events[0], "EntryPath"), kEntryPathToggleWireValue);
 }
 
+// structured.xml GlicFreStatus, GlicFreOverride, and GlicFreWaitMode wire
+// values.
+constexpr int kFreStatusNotStartedWireValue = 0;
+constexpr int kFreStatusCompletedWireValue = 1;
+constexpr int kFreStatusIncompleteWireValue = 2;
+constexpr int kFreOverrideUnspecifiedWireValue = 0;
+constexpr int kFreOverrideTrustFirstTextWireValue = 1;
+constexpr int kFreOverrideTrustFirstClickWireValue = 2;
+constexpr int kFreOverrideTrustFirstInlineWireValue = 3;
+constexpr int kFreOverrideNativeFreWireValue = 4;
+constexpr int kFreWaitModeDefaultWireValue = 0;
+constexpr int kFreWaitModeNeverWireValue = 1;
+constexpr int kFreWaitModeAlwaysWireValue = 2;
+
+TEST(GlicInvokeMetricsTest, StartedAndTerminatedHaveFreState) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kToolbarButton);
+  metrics.SetFreStateAtStart(GlicInvokeFreState{
+      .preexisting_fre_status = prefs::FreStatus::kNotStarted,
+      .fre_override = mojom::FreOverride::kTrustFirstInline,
+      .wait_mode = FreCompletionWaitMode::kAlways,
+      .requires_client_invoke = true,
+      .waits_for_fre = true,
+  });
+  metrics.RecordStarted();
+  metrics.RecordError(GlicInvokeError::kPanelClosed,
+                      GlicTaskType::kWaitForFreCompletion);
+
+  auto started = capture.GetEvents("InvokeStarted");
+  ASSERT_EQ(started.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*started[0], "FreStatusAtStart"),
+            kFreStatusNotStartedWireValue);
+  EXPECT_EQ(GetIntMetric(*started[0], "FreOverride"),
+            kFreOverrideTrustFirstInlineWireValue);
+  EXPECT_EQ(GetIntMetric(*started[0], "FreWaitMode"),
+            kFreWaitModeAlwaysWireValue);
+  EXPECT_EQ(GetIntMetric(*started[0], "RequiresClientInvoke"), 1);
+  EXPECT_EQ(GetIntMetric(*started[0], "WaitsForFre"), 1);
+
+  auto terminated = capture.GetEvents("InvokeTerminated");
+  ASSERT_EQ(terminated.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "FreStatusAtStart"),
+            kFreStatusNotStartedWireValue);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "WaitsForFre"), 1);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "FreOverride"), std::nullopt);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "FreWaitMode"), std::nullopt);
+  EXPECT_EQ(GetIntMetric(*terminated[0], "RequiresClientInvoke"), std::nullopt);
+}
+
+TEST(GlicInvokeMetricsTest, FreStateWireValuesAreStable) {
+  const struct {
+    prefs::FreStatus fre_status;
+    mojom::FreOverride fre_override;
+    FreCompletionWaitMode wait_mode;
+    int status_wire_value;
+    int override_wire_value;
+    int wait_mode_wire_value;
+  } kCases[] = {
+      {prefs::FreStatus::kNotStarted, mojom::FreOverride::kUnspecified,
+       FreCompletionWaitMode::kDefault, kFreStatusNotStartedWireValue,
+       kFreOverrideUnspecifiedWireValue, kFreWaitModeDefaultWireValue},
+      {prefs::FreStatus::kCompleted, mojom::FreOverride::kTrustFirstText,
+       FreCompletionWaitMode::kNever, kFreStatusCompletedWireValue,
+       kFreOverrideTrustFirstTextWireValue, kFreWaitModeNeverWireValue},
+      {prefs::FreStatus::kIncomplete, mojom::FreOverride::kTrustFirstClick,
+       FreCompletionWaitMode::kAlways, kFreStatusIncompleteWireValue,
+       kFreOverrideTrustFirstClickWireValue, kFreWaitModeAlwaysWireValue},
+      {prefs::FreStatus::kNotStarted, mojom::FreOverride::kTrustFirstInline,
+       FreCompletionWaitMode::kDefault, kFreStatusNotStartedWireValue,
+       kFreOverrideTrustFirstInlineWireValue, kFreWaitModeDefaultWireValue},
+      {prefs::FreStatus::kNotStarted, mojom::FreOverride::kNativeFre,
+       FreCompletionWaitMode::kDefault, kFreStatusNotStartedWireValue,
+       kFreOverrideNativeFreWireValue, kFreWaitModeDefaultWireValue},
+  };
+  for (const auto& c : kCases) {
+    SCOPED_TRACE(static_cast<int>(c.fre_override));
+    ScopedStructuredEventCapture capture;
+    GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
+    metrics.SetFreStateAtStart(GlicInvokeFreState{
+        .preexisting_fre_status = c.fre_status,
+        .fre_override = c.fre_override,
+        .wait_mode = c.wait_mode,
+    });
+    metrics.RecordStarted();
+    auto events = capture.GetEvents("InvokeStarted");
+    ASSERT_EQ(events.size(), 1u);
+    EXPECT_EQ(GetIntMetric(*events[0], "FreStatusAtStart"),
+              c.status_wire_value);
+    EXPECT_EQ(GetIntMetric(*events[0], "FreOverride"), c.override_wire_value);
+    EXPECT_EQ(GetIntMetric(*events[0], "FreWaitMode"), c.wait_mode_wire_value);
+    EXPECT_EQ(GetIntMetric(*events[0], "RequiresClientInvoke"), 0);
+    EXPECT_EQ(GetIntMetric(*events[0], "WaitsForFre"), 0);
+  }
+}
+
+// FRE state is captured when the invocation starts, so a rejected invocation
+// has none to report.
+TEST(GlicInvokeMetricsTest, RejectedInvocationTerminatedOmitsFreState) {
+  ScopedStructuredEventCapture capture;
+  GlicInvokeMetrics metrics(mojom::InvocationSource::kOsButton);
+  metrics.RecordError(GlicInvokeError::kProfileNotEnabled);
+
+  auto events = capture.GetEvents("InvokeTerminated");
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(GetIntMetric(*events[0], "FreStatusAtStart"), std::nullopt);
+  EXPECT_EQ(GetIntMetric(*events[0], "WaitsForFre"), std::nullopt);
+}
+
 // structured.xml GlicCuiOutcome wire values.
 constexpr int kOutcomeAbandonedWireValue = 2;
 constexpr int kOutcomeFailedWireValue = 3;

@@ -3752,6 +3752,26 @@
     <variant value="2">INVOKE</variant>
     <variant value="3">INVOKE_WITH_AUTO_SUBMIT</variant>
   </enum>
+
+  <enum name="GlicFreStatus">
+    <variant value="0">NOT_STARTED</variant>
+    <variant value="1">COMPLETED</variant>
+    <variant value="2">INCOMPLETE</variant>
+  </enum>
+
+  <enum name="GlicFreOverride">
+    <variant value="0">UNSPECIFIED</variant>
+    <variant value="1">TRUST_FIRST_TEXT</variant>
+    <variant value="2">TRUST_FIRST_CLICK</variant>
+    <variant value="3">TRUST_FIRST_INLINE</variant>
+    <variant value="4">NATIVE_FRE</variant>
+  </enum>
+
+  <enum name="GlicFreWaitMode">
+    <variant value="0">DEFAULT</variant>
+    <variant value="1">NEVER</variant>
+    <variant value="2">ALWAYS</variant>
+  </enum>
   <event name="InvokeStarted">
     <summary>
       Recorded when a Glic invocation is initiated.
@@ -3790,6 +3810,56 @@
         InvokeWithAutoSubmit() APIs. Mirrors glic::GlicInvokeEntryPath in
         glic_invoke_metrics.h, translated by an exhaustive switch in
         glic_invoke_metrics.cc.
+      </summary>
+    </metric>
+    <metric name="FreStatusAtStart" type="GlicFreStatus">
+      <summary>
+        The profile's First Run Experience (consent) status when the
+        invocation started, before any of its tasks ran. NOT_STARTED and
+        INCOMPLETE invocations are first-run attempts: the user has not
+        consented yet and the panel shows the FRE instead of the client. Lets
+        invocation outcomes be sliced by first-run status, which the
+        profile-scoped Glic.Fre.* histograms cannot do per invocation. Read
+        from the FRE store of the profile's provider, so Gemini Enterprise in
+        Chrome (GEiC) profiles report the GEiC FRE, which never reports
+        INCOMPLETE; slice by provider before reading these rows as the
+        consumer FRE.
+      </summary>
+    </metric>
+    <metric name="FreOverride" type="GlicFreOverride">
+      <summary>
+        The FRE variant the invocation asked for, mapped from
+        mojom::FreOverride in //chrome/common/glic_enums.mojom by an exhaustive
+        switch in glic_invoke_metrics.cc.
+      </summary>
+    </metric>
+    <metric name="FreWaitMode" type="GlicFreWaitMode">
+      <summary>
+        GlicInvokeOptions::fre_completion_wait_mode: whether the caller asked
+        the invocation to wait for the FRE to complete before sending its
+        payload to the client.
+      </summary>
+    </metric>
+    <metric name="RequiresClientInvoke" type="int">
+      <summary>
+        1 if the invocation carries something the web client has to receive
+        (a prompt, payload, additional context, feature mode, actuation
+        target, skill or ZSS configuration; see
+        GlicInvokeHandler::RequiresClientInvoke()), else 0. With FreWaitMode
+        DEFAULT this is what decides whether an unconsented invocation waits
+        for the FRE.
+      </summary>
+    </metric>
+    <metric name="WaitsForFre" type="int">
+      <summary>
+        Whether the invocation blocks on the user completing the FRE: 1 if
+        so, 0 otherwise. This is the resolution of FreStatusAtStart,
+        FreOverride, FreWaitMode and RequiresClientInvoke. Such invocations
+        stay in flight while the consent screen is up; if the user accepts,
+        GlicInvokeHandler continues through client delivery (SendToClientTask
+        and, when actuating, WaitForActuationTask), so Outcome and
+        TimeSinceStart span client load, consent, and client delivery rather
+        than terminating on accept.
       </summary>
     </metric>
   </event>
@@ -3876,6 +3946,23 @@
         InvokeStarted.EntryPath. Duplicated here so that invocations rejected
         before they start (see InvocationSource) can still be attributed to the
         window entry point population.
+      </summary>
+    </metric>
+    <metric name="FreStatusAtStart" type="GlicFreStatus">
+      <summary>
+        See InvokeStarted.FreStatusAtStart. Duplicated here so that outcomes
+        can be sliced by first-run status without a join. Absent for
+        invocations rejected before they start.
+      </summary>
+    </metric>
+    <metric name="WaitsForFre" type="int">
+      <summary>
+        See InvokeStarted.WaitsForFre. For an invocation that waited, Outcome
+        and TimeSinceStart span client load, consent, and any post-consent
+        client delivery; ABANDONED with InvokeError kPanelClosed reflects
+        closing the FRE when StoppedTaskType is kWaitForFreCompletion (rather
+        than kWaitForClientReady while still loading). Absent for invocations
+        rejected before they start.
       </summary>
     </metric>
   </event>
