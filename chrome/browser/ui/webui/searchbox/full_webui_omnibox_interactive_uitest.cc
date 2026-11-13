@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
@@ -187,6 +189,7 @@
 #include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -311,6 +314,26 @@ class ContextMenuClipboardTextObserver
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ContextMenuClipboardTextObserver,
                                     kContextMenuClipboardText);
 #endif  // !BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns the first `views::Button` in the view tree rooted at `root` (searched
+// depth-first, starting with `root` itself) whose tooltip is `tooltip`, or null
+// if there is none. Icon-only buttons, such as the app menu's full screen
+// button, have no element identifier, but their tooltip identifies them.
+views::Button* FindButtonByTooltip(views::View* root,
+                                   std::u16string_view tooltip) {
+  if (auto* button = views::AsViewClass<views::Button>(root);
+      button && button->GetTooltipText() == tooltip) {
+    return button;
+  }
+  for (views::View* child : root->children()) {
+    if (views::Button* found = FindButtonByTooltip(child, tooltip)) {
+      return found;
+    }
+  }
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -3866,6 +3889,39 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       }),
       PollUntil([this]() { return browser()->GetWindow()->IsFullscreen(); },
                 "WaitForFullscreen"),
+      WaitForPopupDismissed(), WaitForOmniboxFocus(false),
+      WaitForImmersiveTopChromeHidden());
+}
+
+// Verifies that clicking the app menu's full screen button with the omnibox
+// focused on the NTP blurs the omnibox, so that immersive fullscreen hides top
+// chrome instead of keeping it revealed for the focused popup. See b/581620681.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FullscreenFromAppMenuBlursFocusedOmnibox) {
+  static constexpr char kFullscreenButton[] = "FullscreenButton";
+  const std::u16string fullscreen_tooltip =
+      l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN);
+  const ui::ElementContext browser_context =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetElementContext();
+  RunTestSequence(
+      FocusOmniboxOnInitialNtp(kTab1), WaitForPopupActive(),
+      InContext(browser_context, MoveMouseTo(kToolbarAppMenuButtonElementId)),
+      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                      ClickMouse()),
+      InAnyContext(WaitForShow(AppMenuModel::kMoreToolsMenuItem)),
+      // The full screen button in the menu's zoom row has no element
+      // identifier, so find it among the menu's views by its tooltip.
+      InAnyContext(NameViewRelative(
+          AppMenuModel::kMoreToolsMenuItem, kFullscreenButton,
+          [fullscreen_tooltip](views::View* menu_item) -> views::View* {
+            return FindButtonByTooltip(menu_item->GetWidget()->GetRootView(),
+                                       fullscreen_tooltip);
+          })),
+      InAnyContext(Steps(ScrollIntoView(kFullscreenButton),
+                         MoveMouseTo(kFullscreenButton), ClickMouse())),
+      PollUntil([this]() { return browser()->GetWindow()->IsFullscreen(); },
+                "WaitForFullscreen"),
+      InAnyContext(WaitForHide(AppMenuModel::kMoreToolsMenuItem)),
       WaitForPopupDismissed(), WaitForOmniboxFocus(false),
       WaitForImmersiveTopChromeHidden());
 }
