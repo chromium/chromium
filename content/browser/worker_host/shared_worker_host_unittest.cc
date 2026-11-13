@@ -5,7 +5,9 @@
 #include "content/browser/worker_host/shared_worker_host.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
@@ -104,17 +106,19 @@ class SharedWorkerHostTest : public testing::Test {
   base::WeakPtr<SharedWorkerHost> CreateHostWithParams(
       blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
       bool extended_lifetime,
-      PolicyContainerPolicies creator_policies = PolicyContainerPolicies()) {
+      PolicyContainerPolicies creator_policies = PolicyContainerPolicies(),
+      std::optional<GURL> script_url_override = std::nullopt) {
+    const GURL script_url = script_url_override.value_or(kWorkerUrl);
     blink::StorageKey creator_storage_key =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(kWorkerUrl));
     bool is_opaque_origin_enabled = base::FeatureList::IsEnabled(
         blink::features::kDataUrlWorkerOpaqueOrigin);
     blink::StorageKey worker_storage_key = CalculateWorkerStorageKey(
-        kWorkerUrl, creator_storage_key, is_opaque_origin_enabled);
+        script_url, creator_storage_key, is_opaque_origin_enabled);
     url::Origin renderer_origin = CalculateWorkerRendererOrigin(
-        kWorkerUrl, worker_storage_key, is_opaque_origin_enabled);
+        script_url, worker_storage_key, is_opaque_origin_enabled);
     SharedWorkerInstance instance(
-        kWorkerUrl, blink::mojom::ScriptType::kClassic,
+        script_url, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
         creator_storage_key, worker_storage_key, renderer_origin,
         blink::mojom::SharedWorkerCreationContextType::kSecure,
@@ -858,10 +862,73 @@ TEST_F(SharedWorkerHostTest, ServiceWorkerHandleDroppedWhenCSPSandboxed) {
   csp->sandbox = network::mojom::WebSandboxFlags::kOrigin;
   response_head->parsed_headers->content_security_policy.push_back(
       std::move(csp));
+  std::ignore = response_head->cache_storage_side_data_writer
+                    .InitWithNewPipeAndPassReceiver();
 
   StartWorker(host.get(), std::move(factory),
               GURL("https://www.example.com/w.js"), std::move(response_head));
   EXPECT_FALSE(HasServiceWorkerHandle(host.get()));
+
+  MockSharedWorkerClient client;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> remote_client;
+  client.Bind(remote_client.InitWithNewPipeAndPassReceiver());
+  AddClient(host.get(), std::move(remote_client));
+  base::RunLoop().RunUntilIdle();
+
+  mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+  mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params;
+  EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
+      host->instance().url(), host->instance().name(),
+      host->content_security_policies(), &worker_host, &worker_receiver,
+      &main_script_load_params));
+  ASSERT_TRUE(main_script_load_params);
+  ASSERT_TRUE(main_script_load_params->response_head);
+  EXPECT_FALSE(main_script_load_params->response_head
+                   ->cache_storage_side_data_writer.is_valid());
+}
+
+// Tests that a shared worker whose StorageKey origin is opaque (here, a data:
+// URL worker) drops the ServiceWorkerMainResourceHandle and the
+// CacheStorageSideDataWriter even though its script response carries no CSP
+// sandbox header.
+TEST_F(SharedWorkerHostTest,
+       ServiceWorkerHandleDroppedWhenWorkerOriginIsOpaque) {
+  const GURL kDataWorkerUrl("data:text/javascript,");
+  base::WeakPtr<SharedWorkerHost> host = CreateHostWithParams(
+      blink::mojom::SharedWorkerSameSiteCookies::kAll,
+      /*extended_lifetime=*/false, PolicyContainerPolicies(), kDataWorkerUrl);
+  ASSERT_TRUE(host->GetWorkerStorageKey().origin().opaque());
+  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
+  MockSharedWorkerFactory factory_impl(
+      factory.InitWithNewPipeAndPassReceiver());
+
+  auto response_head = network::mojom::URLResponseHead::New();
+  response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+  std::ignore = response_head->cache_storage_side_data_writer
+                    .InitWithNewPipeAndPassReceiver();
+
+  StartWorker(host.get(), std::move(factory), kDataWorkerUrl,
+              std::move(response_head));
+  EXPECT_FALSE(HasServiceWorkerHandle(host.get()));
+
+  MockSharedWorkerClient client;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> remote_client;
+  client.Bind(remote_client.InitWithNewPipeAndPassReceiver());
+  AddClient(host.get(), std::move(remote_client));
+  base::RunLoop().RunUntilIdle();
+
+  mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+  mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params;
+  EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
+      host->instance().url(), host->instance().name(),
+      host->content_security_policies(), &worker_host, &worker_receiver,
+      &main_script_load_params));
+  ASSERT_TRUE(main_script_load_params);
+  ASSERT_TRUE(main_script_load_params->response_head);
+  EXPECT_FALSE(main_script_load_params->response_head
+                   ->cache_storage_side_data_writer.is_valid());
 }
 
 TEST_F(SharedWorkerHostTest, NetworkResponseDoesNotInheritCreatorSandboxFlags) {

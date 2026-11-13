@@ -134,9 +134,13 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
+#include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using blink::mojom::CacheStorageError;
@@ -3580,10 +3584,11 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
  protected:
   virtual std::string GetWorkerURL() { return kWorkerUrl; }
 
-  void RegisterAndActivateServiceWorker() {
+  void RegisterAndActivateServiceWorker(
+      const std::string& scope_path = kPageUrl) {
     WorkerStateObserver observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
     blink::mojom::ServiceWorkerRegistrationOptions options(
-        embedded_test_server()->GetURL(kPageUrl),
+        embedded_test_server()->GetURL(scope_path),
         blink::mojom::ScriptType::kClassic,
         blink::mojom::ServiceWorkerUpdateViaCache::kImports);
     const blink::StorageKey key =
@@ -3862,6 +3867,161 @@ IN_PROC_BROWSER_TEST_F(
   // The full code cache should not be generated when the script is an opaque
   // response.
   WaitUntilCachedMetadataSizeIs(0);
+}
+
+namespace {
+
+class TestDedicatedWorkerFactoryClient
+    : public blink::mojom::DedicatedWorkerHostFactoryClient {
+ public:
+  TestDedicatedWorkerFactoryClient() = default;
+  ~TestDedicatedWorkerFactoryClient() override = default;
+
+  mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void WaitUntilFinished() { run_loop_.Run(); }
+
+  bool load_started() const { return load_started_; }
+  bool load_failed() const { return load_failed_; }
+  bool has_side_data_writer() const { return has_side_data_writer_; }
+  bool has_service_worker_container() const {
+    return has_service_worker_container_;
+  }
+
+  // blink::mojom::DedicatedWorkerHostFactoryClient:
+  void OnWorkerHostCreated(
+      mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+          browser_interface_broker,
+      mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> host,
+      const url::Origin& origin) override {
+    browser_interface_broker_ = std::move(browser_interface_broker);
+    host_ = std::move(host);
+  }
+
+  void OnScriptLoadStarted(
+      blink::mojom::ServiceWorkerContainerInfoForClientPtr
+          service_worker_container_info,
+      blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
+      std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
+          pending_subresource_loader_factory_bundle,
+      mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
+          subresource_loader_updater,
+      blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+      mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host,
+      blink::mojom::PolicyContainerPtr policy_container,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          coep_reporting_observer,
+      mojo::PendingReceiver<blink::mojom::ReportingObserver>
+          dip_reporting_observer) override {
+    load_started_ = true;
+    has_service_worker_container_ = !service_worker_container_info.is_null();
+    if (main_script_load_params && main_script_load_params->response_head) {
+      has_side_data_writer_ = main_script_load_params->response_head
+                                  ->cache_storage_side_data_writer.is_valid();
+    }
+    run_loop_.Quit();
+  }
+
+  void OnScriptLoadStartFailed() override {
+    load_failed_ = true;
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  bool load_started_ = false;
+  bool load_failed_ = false;
+  bool has_side_data_writer_ = false;
+  bool has_service_worker_container_ = false;
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+      browser_interface_broker_;
+  mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> host_;
+  mojo::Receiver<blink::mojom::DedicatedWorkerHostFactoryClient> receiver_{
+      this};
+};
+
+}  // namespace
+
+// Regression test for crbug.com/578670204: Verify that a sandboxed iframe
+// (locked to an opaque origin without access to the parent's origin data)
+// cannot obtain a `CacheStorageSideDataWriter` capability for a same-site
+// ServiceWorker's CacheStorage entry by requesting a dedicated worker script
+// load via `DedicatedWorkerHostFactory`.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerV8CodeCacheForCacheStorageTest,
+    SandboxedFrameWorkerScriptNotInterceptedByServiceWorker) {
+  RegisterAndActivateServiceWorker("/service_worker/");
+
+  // Populate CacheStorage by navigating to the test page once.
+  NavigateToTestPage();
+
+  const GURL script_url =
+      embedded_test_server()->GetURL("/service_worker/v8_cache_test.js");
+  auto* main_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  auto start_worker_load =
+      [&](RenderFrameHostImpl* rfh, TestDedicatedWorkerFactoryClient& client,
+          mojo::Remote<blink::mojom::DedicatedWorkerHostFactory>& factory) {
+        rfh->CreateDedicatedWorkerHostFactory(
+            factory.BindNewPipeAndPassReceiver());
+        auto settings = blink::mojom::FetchClientSettingsObject::New();
+        settings->policy_container_policies =
+            blink::mojom::PolicyContainerPolicies::New();
+        settings->outgoing_referrer = rfh->GetLastCommittedURL();
+        factory->CreateWorkerHostAndStartScriptLoad(
+            blink::DedicatedWorkerToken(), script_url,
+            network::mojom::CredentialsMode::kSameOrigin, std::move(settings),
+            mojo::NullRemote(), client.BindNewPipeAndPassRemote());
+        client.WaitUntilFinished();
+      };
+
+  // 1. Verify that a normal (unsandboxed) same-origin frame receives a valid
+  // `cache_storage_side_data_writer` when loading the cached script as a
+  // dedicated worker.
+  {
+    mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory;
+    TestDedicatedWorkerFactoryClient client;
+    start_worker_load(main_rfh, client, factory);
+    EXPECT_TRUE(client.load_started());
+    EXPECT_FALSE(client.load_failed());
+    EXPECT_TRUE(client.has_service_worker_container());
+    EXPECT_TRUE(client.has_side_data_writer());
+  }
+
+  // 2. Create a sandboxed iframe (`sandbox="allow-scripts"`, without
+  // `allow-same-origin`).
+  ASSERT_TRUE(ExecJs(main_rfh, R"(
+    new Promise(resolve => {
+      const f = document.createElement('iframe');
+      f.sandbox = 'allow-scripts';
+      f.src = '/service_worker/blank.html';
+      f.onload = resolve;
+      document.body.appendChild(f);
+    });
+  )"));
+  ASSERT_EQ(1u, main_rfh->child_count());
+  RenderFrameHostImpl* sandboxed_rfh =
+      main_rfh->child_at(0)->current_frame_host();
+  ASSERT_TRUE(sandboxed_rfh);
+  EXPECT_TRUE(sandboxed_rfh->GetLastCommittedOrigin().opaque());
+
+  // Simulate a compromised sandboxed renderer requesting a dedicated worker
+  // script load for `script_url` (which is cached in the parent origin's
+  // CacheStorage and intercepted by the ServiceWorker if allowed).
+  mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> sandboxed_factory;
+  TestDedicatedWorkerFactoryClient sandboxed_client;
+  start_worker_load(sandboxed_rfh, sandboxed_client, sandboxed_factory);
+
+  // Without ServiceWorker interception the same-origin-mode fetch from the
+  // opaque origin fails in the network service, so the sandboxed frame never
+  // receives a ServiceWorker container or a `CacheStorageSideDataWriter`.
+  EXPECT_FALSE(sandboxed_client.load_started());
+  EXPECT_TRUE(sandboxed_client.load_failed());
 }
 
 // ServiceWorkerDisableWebSecurityTests check the behavior when the web security

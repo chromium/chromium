@@ -27,6 +27,7 @@ namespace content {
 WorkerScriptLoader::WorkerScriptLoader(
     ChildProcessId process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
+    const blink::StorageKey& worker_storage_key,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& resource_request,
@@ -53,7 +54,7 @@ WorkerScriptLoader::WorkerScriptLoader(
   }
   interceptor_ = ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
       resource_request_, isolation_info, process_id, worker_token,
-      service_worker_handle_);
+      worker_storage_key, service_worker_handle_);
 
   Start();
 }

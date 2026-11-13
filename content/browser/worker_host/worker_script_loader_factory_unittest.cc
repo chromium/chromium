@@ -7,13 +7,20 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
+#include "content/browser/isolation_context.h"
+#include "content/browser/origin_agent_cluster_isolation_state.h"
+#include "content/browser/process_lock.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/url_info.h"
 #include "content/browser/worker_host/worker_script_loader.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -26,15 +33,10 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
-
-namespace {
-
-const ChildProcessId kProcessId(1);
-
-}  // namespace
 
 class WorkerScriptLoaderFactoryTest : public testing::Test {
  public:
@@ -45,6 +47,22 @@ class WorkerScriptLoaderFactoryTest : public testing::Test {
   void SetUp() override {
     // Set up the service worker system.
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
+
+    // Lock the worker process to the test site and record the origin as
+    // committed in it, as for a real renderer that created the worker, so
+    // that ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin() lets the
+    // worker match its origin's service worker registrations.
+    const GURL kOriginUrl("https://www.example.com");
+    IsolationContext isolation_context(
+        BrowsingInstanceId(1), helper_->browser_context(),
+        /*is_guest=*/false, /*is_fenced=*/false,
+        OriginAgentClusterIsolationState::CreateNonIsolatedByDefault());
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    policy->LockProcessForTesting(
+        isolation_context, helper_->mock_render_process_id(), kOriginUrl);
+    policy->AddCommittedOrigin(
+        helper_->mock_render_process_id().GetUnsafeValue(),
+        url::Origin::Create(kOriginUrl));
 
     browser_context_getter_ =
         base::BindRepeating(&ServiceWorkerContextWrapper::browser_context,
@@ -106,7 +124,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
 
   // Make the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(),
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_);
@@ -143,6 +162,67 @@ TEST_F(WorkerScriptLoaderFactoryTest, ServiceWorkerContainerHost) {
   EXPECT_EQ(url, service_worker_client->url());
 }
 
+// An opaque worker StorageKey must not create a ServiceWorkerClient (and so
+// cannot match the precursor origin's registrations).
+TEST_F(WorkerScriptLoaderFactoryTest,
+       NoServiceWorkerClientForOpaqueStorageKey) {
+  GURL url("https://www.example.com/worker.js");
+  auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(url).DeriveNewOpaqueOrigin()),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_);
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(url, factory.get(), &client);
+  base::RunLoop().RunUntilIdle();
+
+  // No ServiceWorkerClient was created, so the script is fetched from the
+  // network without service worker interception.
+  EXPECT_FALSE(service_worker_handle_->service_worker_client());
+  factory->GetScriptLoader()->OnFetcherCallbackCalled();
+  client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+}
+
+// A process that cannot access the worker origin's data (here, a
+// sandboxed-frame process) must not create a ServiceWorkerClient either.
+TEST_F(WorkerScriptLoaderFactoryTest,
+       NoServiceWorkerClientForProcessDeniedDataAccess) {
+  GURL url("https://www.example.com/worker.js");
+  MockRenderProcessHost sandboxed_process(helper_->browser_context());
+  sandboxed_process.Init();
+  IsolationContext isolation_context(
+      BrowsingInstanceId(1), helper_->browser_context(),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      OriginAgentClusterIsolationState::CreateNonIsolatedByDefault());
+  sandboxed_process.SetProcessLock(ProcessLock::Create(
+      isolation_context, UrlInfo(UrlInfoInit(GURL("https://www.example.com"))
+                                     .WithSandbox(true)
+                                     .WithStoragePartitionConfig(
+                                         StoragePartitionConfig::CreateDefault(
+                                             helper_->browser_context())))));
+  auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+      sandboxed_process.GetID(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_);
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(url, factory.get(), &client);
+  base::RunLoop().RunUntilIdle();
+
+  // No ServiceWorkerClient was created, so the script is fetched from the
+  // network without service worker interception.
+  EXPECT_FALSE(service_worker_handle_->service_worker_client());
+  factory->GetScriptLoader()->OnFetcherCallbackCalled();
+  client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+}
+
 // Test a null service worker handle. This typically only happens during
 // shutdown or after a fatal error occurred in the service worker system.
 TEST_F(WorkerScriptLoaderFactoryTest, NullServiceWorkerHandle) {
@@ -150,7 +230,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullServiceWorkerHandle) {
 
   // Make the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(),
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_);
@@ -176,7 +257,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, NullBrowserContext) {
 
   // Make the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(),
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_);
@@ -204,7 +286,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, RedirectFromBlobUrl) {
 
   // Create the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(),
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_);
@@ -245,7 +328,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, ResponseFromBlobUrl) {
 
   // Create the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(),
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_);
@@ -302,7 +386,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, EarlyHintsFromBlobUrl) {
 
   // Create the factory.
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(),
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_);
@@ -334,7 +419,8 @@ TEST_F(WorkerScriptLoaderFactoryTest, RejectUnsafeRedirectTarget) {
   network_loader_factory_instance_->DeferHandleRequest();
 
   auto factory = std::make_unique<WorkerScriptLoaderFactory>(
-      kProcessId, DedicatedOrSharedWorkerToken(),
+      helper_->mock_render_process_id(), DedicatedOrSharedWorkerToken(),
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
       service_worker_handle_.get(), browser_context_getter_,
       network_loader_factory_);

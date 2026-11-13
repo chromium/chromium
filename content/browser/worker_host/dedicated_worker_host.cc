@@ -610,15 +610,27 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   result->subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
-  // A worker sandboxed without `allow-same-origin` has an opaque origin and
-  // is not eligible to use service workers (mirroring
-  // `NavigationRequest::CommitNavigation()`).
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerDropHandleForCSPSandboxedWorker) &&
-      service_worker_handle_ &&
-      (policy_container_host_->policies().sandbox_flags &
-       network::mojom::WebSandboxFlags::kOrigin) ==
-          network::mojom::WebSandboxFlags::kOrigin) {
+  // A worker sandboxed without `allow-same-origin`, or created by an
+  // opaque-origin context, runs with an opaque origin and must never receive
+  // the CacheStorageSideDataWriter for its precursor origin's CacheStorage
+  // entry. This is a security fix with no web-observable behavior and is not
+  // behind a kill switch.
+  const bool is_csp_sandboxed =
+      IsSandboxedToOpaqueOrigin(policy_container_host_->policies());
+  const bool has_opaque_storage_key = worker_storage_key_.origin().opaque();
+  if (is_csp_sandboxed || has_opaque_storage_key) {
+    result->main_script_load_params->response_head
+        ->cache_storage_side_data_writer.reset();
+  }
+  // An opaque-origin worker is not eligible to use service workers (mirroring
+  // `NavigationRequest::CommitNavigation()`). For an opaque StorageKey the
+  // interceptor never created a ServiceWorkerClient, so dropping the handle is
+  // unconditional; only the CSP-sandbox-derived drop is web-observable and
+  // guarded by the kill switch.
+  if (has_opaque_storage_key ||
+      (is_csp_sandboxed &&
+       base::FeatureList::IsEnabled(
+           features::kServiceWorkerDropHandleForCSPSandboxedWorker))) {
     service_worker_handle_.reset();
   }
 
@@ -930,10 +942,28 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter =
       GetWorkerCoepReporter();
 
+  blink::StorageKey creator_storage_key_for_nested_worker =
+      GetWorkerStorageKey();
+  // Nested workers of a CSP-sandboxed worker inherit its opaque origin. This
+  // is not behind kServiceWorkerDropHandleForCSPSandboxedWorker because it
+  // determines the nested worker's StorageKey, not just its service worker
+  // eligibility.
+  if (IsSandboxedToOpaqueOrigin(policy_container_host_->policies()) &&
+      !creator_storage_key_for_nested_worker.origin().opaque()) {
+    if (!nested_worker_storage_key_for_sandbox_) {
+      nested_worker_storage_key_for_sandbox_ =
+          creator_storage_key_for_nested_worker.WithOrigin(
+              creator_storage_key_for_nested_worker.origin()
+                  .DeriveNewOpaqueOrigin());
+    }
+    creator_storage_key_for_nested_worker =
+        *nested_worker_storage_key_for_sandbox_;
+  }
+
   DedicatedWorkerHostFactoryImpl::Create(
       *ancestor_render_frame_host, std::move(receiver),
       worker_process_host_->GetID(), /*creator=*/token_, ancestor_document_,
-      GetWorkerStorageKey(), isolation_info_,
+      creator_storage_key_for_nested_worker, isolation_info_,
       worker_client_security_state_->Clone(),
       policy_container_host_->policies(), creator_coep_reporter,
       network_restrictions_id_);

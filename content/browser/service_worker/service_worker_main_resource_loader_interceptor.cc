@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -63,6 +64,18 @@ bool ShouldCreateForWorker(
   // Create the handler even for insecure HTTP since it's used in the
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url);
+}
+
+// Returns false if a worker with `worker_storage_key` hosted in `process_id`
+// must never match that origin's service worker registrations: a worker with an
+// opaque StorageKey origin (e.g. created by a sandboxed frame), or a process
+// that is not allowed to access the origin's data.
+bool CanWorkerAccessServiceWorkers(
+    ChildProcessId process_id,
+    const blink::StorageKey& worker_storage_key) {
+  return !worker_storage_key.origin().opaque() &&
+         ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+             process_id.GetUnsafeValue(), worker_storage_key.origin());
 }
 
 }  // namespace
@@ -180,6 +193,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     const net::IsolationInfo& isolation_info,
     ChildProcessId process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
+    const blink::StorageKey& worker_storage_key,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
@@ -196,6 +210,10 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   }
 
   if (!navigation_handle->context_wrapper()->context()) {
+    return nullptr;
+  }
+
+  if (!CanWorkerAccessServiceWorkers(process_id, worker_storage_key)) {
     return nullptr;
   }
 

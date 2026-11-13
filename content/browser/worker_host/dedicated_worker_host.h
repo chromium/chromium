@@ -372,6 +372,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   // for retrieving the origin of this worker
   // (https://html.spec.whatwg.org/C/#concept-settings-object-origin).
   const blink::StorageKey worker_storage_key_;
+  // Opaque-origin StorageKey handed to nested workers when this worker is
+  // CSP-sandboxed without `allow-same-origin`. Derived once so that sibling
+  // nested workers share one opaque origin, like workers of a sandboxed
+  // document.
+  std::optional<blink::StorageKey> nested_worker_storage_key_for_sandbox_;
 
   // The origin used by this dedicated worker on the renderer side. This will
   // almost always be the same as `worker_storage_key_`'s origin, except in the

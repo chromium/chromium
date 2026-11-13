@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -726,9 +727,12 @@ void ServiceWorkerMainResourceLoader::CommitResponseBody(
   }
 
   auto head = response_head.Clone();
-  if (response_head_.get() == response_head.get()) {
-    head->cache_storage_side_data_writer =
-        std::move(cache_storage_side_data_writer_);
+  if (response_head_.get() == response_head.get() &&
+      cache_storage_side_data_writer_) {
+    auto side_data_writer = std::move(cache_storage_side_data_writer_);
+    if (CanForwardCacheStorageSideDataWriter()) {
+      head->cache_storage_side_data_writer = std::move(side_data_writer);
+    }
   }
 
   url_loader_client_->OnReceiveResponse(
@@ -2147,6 +2151,23 @@ void ServiceWorkerMainResourceLoader::TransitionToStatus(Status new_status) {
 
 bool ServiceWorkerMainResourceLoader::IsMainResourceLoader() {
   return true;
+}
+
+bool ServiceWorkerMainResourceLoader::CanForwardCacheStorageSideDataWriter()
+    const {
+  // CSP-sandboxed workers are handled by the worker hosts once the policy
+  // container is known, and navigations never receive the writer because
+  // `URLResponseHead::Clone()` drops it. Here, only refuse to hand the writer
+  // to a worker process that is not allowed to access the client's origin.
+  if (!service_worker_client_) {
+    return false;
+  }
+  if (!service_worker_client_->IsContainerForWorkerClient()) {
+    return true;
+  }
+  return ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+      service_worker_client_->GetProcessId().GetUnsafeValue(),
+      service_worker_client_->key().origin());
 }
 
 void ServiceWorkerMainResourceLoader::CreateAndRunCacheMatcher(

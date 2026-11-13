@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base64.h"
@@ -22,8 +23,10 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/response_head_update_params.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
 #include "content/browser/service_worker/fake_service_worker.h"
@@ -145,6 +148,10 @@ blink::mojom::FetchAPIResponsePtr OkResponse(
   response->response_source = response_source;
   response->response_time = response_time;
   response->cache_storage_cache_name = cache_storage_cache_name;
+  if (response_source == network::mojom::FetchResponseSource::kCacheStorage) {
+    std::ignore = response->cache_storage_side_data_writer
+                      .InitWithNewPipeAndPassReceiver();
+  }
   response->blob = std::move(blob_body);
   if (response->blob) {
     response->headers.emplace("Content-Length",
@@ -172,10 +179,14 @@ blink::mojom::FetchAPIResponsePtr RedirectResponse(
 }
 
 blink::mojom::FetchAPIResponsePtr HeadersResponse(
-    const base::flat_map<std::string, std::string>& headers) {
-  auto response = blink::mojom::FetchAPIResponse::New();
-  response->status_code = 200;
-  response->status_text = "OK";
+    const base::flat_map<std::string, std::string>& headers,
+    network::mojom::FetchResponseSource response_source =
+        network::mojom::FetchResponseSource::kUnspecified,
+    base::Time response_time = base::Time(),
+    std::string cache_storage_cache_name = std::string()) {
+  auto response =
+      OkResponse(/*blob_body=*/nullptr, response_source, response_time,
+                 std::move(cache_storage_cache_name));
   response->headers.insert(headers.begin(), headers.end());
   return response;
 }
@@ -424,8 +435,10 @@ class FetchEventServiceWorker : public FakeServiceWorker {
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
       case ResponseMode::kHeaders:
-        response_callback->OnResponse(HeadersResponse(headers_),
-                                      std::move(timing), /*errors=*/nullptr);
+        response_callback->OnResponse(
+            HeadersResponse(headers_, response_source_, response_time_,
+                            cache_storage_cache_name_),
+            std::move(timing), /*errors=*/nullptr);
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
@@ -939,6 +952,60 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     return version->HasWorkInBrowser();
   }
 
+  // Starts a cache-storage-served worker script request whose
+  // ServiceWorkerClient lives in a MockRenderProcessHost locked to
+  // https://example.com. When `sandboxed_process` is true, the process is
+  // locked as a sandboxed-frame process, so
+  // ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin() denies it access
+  // to the origin's data.
+  void StartWorkerRequestFromProcess(bool sandboxed_process) {
+    service_worker_->SetResponseSource(
+        network::mojom::FetchResponseSource::kCacheStorage);
+    service_worker_->RespondWithHeaders({});
+
+    auto request = CreateRequest();
+    request->destination = network::mojom::RequestDestination::kWorker;
+
+    worker_process_ =
+        std::make_unique<MockRenderProcessHost>(helper_->browser_context());
+    worker_process_->Init();
+    const GURL kOriginUrl("https://example.com");
+    IsolationContext isolation_context(
+        BrowsingInstanceId(1), helper_->browser_context(),
+        /*is_guest=*/false,
+        /*is_fenced=*/false,
+        OriginAgentClusterIsolationState::CreateNonIsolatedByDefault());
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    policy->LockProcess(
+        worker_process_->GetID(),
+        ProcessLock::Create(
+            isolation_context,
+            UrlInfo(UrlInfoInit(kOriginUrl)
+                        .WithSandbox(sandboxed_process)
+                        .WithStoragePartitionConfig(
+                            StoragePartitionConfig::CreateDefault(
+                                helper_->browser_context())))));
+    policy->AddCommittedOrigin(worker_process_->GetID().GetUnsafeValue(),
+                               url::Origin::Create(kOriginUrl));
+
+    const blink::DedicatedWorkerToken worker_token;
+    service_worker_client_ = std::make_unique<ScopedServiceWorkerClient>(
+        helper_->context()
+            ->service_worker_client_owner()
+            .CreateServiceWorkerClientForWorker(
+                worker_process_->GetID(),
+                ServiceWorkerClientInfo(worker_token)));
+    service_worker_client()->UpdateUrls(
+        request->url, url::Origin::Create(request->url),
+        blink::StorageKey::CreateFirstParty(url::Origin::Create(request->url)));
+    service_worker_client()->AddMatchingRegistration(registration_.get());
+    service_worker_client()->SetControllerRegistration(
+        registration_, /*notify_controllerchange=*/false);
+
+    StartRequest(std::move(request));
+    client_.RunUntilComplete();
+  }
+
  protected:
   ServiceWorkerClient* service_worker_client() const {
     return service_worker_client_->get();
@@ -970,6 +1037,7 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   std::unique_ptr<ServiceWorkerMainResourceLoader> loader_;
   mojo::Remote<network::mojom::URLLoader> loader_remote_;
   std::unique_ptr<ScopedServiceWorkerClient> service_worker_client_;
+  std::unique_ptr<MockRenderProcessHost> worker_process_;
 
   bool did_call_fallback_callback_ = false;
   base::OnceClosure quit_closure_for_fallback_callback_;
@@ -2741,6 +2809,24 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, SRIMessageSignatureRejected) {
   EXPECT_THAT(client_.completion_status().blocked_by_response_reason,
               testing::Optional(network::mojom::BlockedByResponseReason::
                                     kSRIMessageSignatureMismatch));
+}
+
+TEST_F(ServiceWorkerMainResourceLoaderTest,
+       SideDataWriterNotForwardedToUntrustedWorkerProcess) {
+  StartWorkerRequestFromProcess(/*sandboxed_process=*/true);
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_FALSE(
+      client_.response_head()->cache_storage_side_data_writer.is_valid());
+}
+
+TEST_F(ServiceWorkerMainResourceLoaderTest,
+       SideDataWriterForwardedToTrustedWorkerProcess) {
+  StartWorkerRequestFromProcess(/*sandboxed_process=*/false);
+  EXPECT_EQ(net::OK, client_.completion_status().error_code);
+  ASSERT_TRUE(client_.response_head());
+  EXPECT_TRUE(
+      client_.response_head()->cache_storage_side_data_writer.is_valid());
 }
 
 class ServiceWorkerMainResourceLoaderInterceptedHeaderTest

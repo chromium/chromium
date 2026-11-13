@@ -418,10 +418,11 @@ void WorkerScriptFetcher::CreateAndStart(
       *resource_request);
 
   WorkerScriptFetcher::CreateScriptLoader(
-      worker_process_id, worker_token, initial_request_url,
-      ancestor_render_frame_host, creator_render_frame_host,
-      trusted_isolation_info, std::move(client_security_state),
-      std::move(resource_request), std::move(factory_bundle_for_browser),
+      worker_process_id, worker_token, request_initiator_storage_key,
+      initial_request_url, ancestor_render_frame_host,
+      creator_render_frame_host, trusted_isolation_info,
+      std::move(client_security_state), std::move(resource_request),
+      std::move(factory_bundle_for_browser),
       std::move(subresource_loader_factories),
       std::move(service_worker_context), service_worker_handle,
       std::move(blob_url_loader_factory),
@@ -434,6 +435,7 @@ void WorkerScriptFetcher::CreateAndStart(
 void WorkerScriptFetcher::CreateScriptLoader(
     int worker_process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
+    const blink::StorageKey& worker_storage_key,
     const GURL& initial_request_url,
     RenderFrameHostImpl& ancestor_render_frame_host,
     RenderFrameHostImpl* creator_render_frame_host,
@@ -612,8 +614,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
   auto* script_fetcher = new WorkerScriptFetcher(
       std::make_unique<WorkerScriptLoaderFactory>(
           ChildProcessId::FromUnsafeValue(worker_process_id), worker_token,
-          trusted_isolation_info, service_worker_handle, browser_context_getter,
-          std::move(url_loader_factory)),
+          worker_storage_key, trusted_isolation_info, service_worker_handle,
+          browser_context_getter, std::move(url_loader_factory)),
       std::move(resource_request),
       base::BindOnce(DidCreateScriptLoader, std::move(callback),
                      std::move(subresource_loader_factories),

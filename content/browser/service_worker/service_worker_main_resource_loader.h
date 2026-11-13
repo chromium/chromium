@@ -316,6 +316,10 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // consumed yet. This is used to decide the timing of the object destruction.
   bool ShouldDelayDeletion();
 
+  // Returns true if `cache_storage_side_data_writer_` may be forwarded to the
+  // client's process.
+  bool CanForwardCacheStorageSideDataWriter() const;
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   int32_t request_id_ = 0;
