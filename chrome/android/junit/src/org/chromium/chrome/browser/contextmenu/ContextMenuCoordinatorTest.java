@@ -17,6 +17,8 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PRO
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -288,12 +290,9 @@ public class ContextMenuCoordinatorTest {
                 rect.bottom);
     }
 
-    // Pinned to SDK 29 because getSelectedItemPosition() returns -1 on SDK 30+ in Robolectric,
-    // which breaks the verification of the first item being selected after navigation.
-    // See: crbug.com/450954710
     @Test
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @Config(sdk = BaseRobolectricTestRunner.MIN_SDK, qualifiers = "mdpi")
+    @Config(qualifiers = "mdpi")
     @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
     public void testFocusAfterSubmenuNavigation() {
         final int triggeringTouchXDp = 100;
@@ -337,6 +336,151 @@ public class ContextMenuCoordinatorTest {
         // Verify that 1st item is selected
         Assert.assertEquals(
                 "Expected 1st list item to be selected", 0, listView.getSelectedItemPosition());
+    }
+
+    @Test
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @Config(qualifiers = "mdpi")
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
+    public void testArrowKeyNavigationMovesKeyboardFocus() {
+        ModelList group1 = new ModelList();
+        group1.add(
+                new ListItem(
+                        MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(TITLE, "Open in new tab")
+                                .with(ENABLED, true)
+                                .build()));
+        ModelList group2 = new ModelList();
+        group2.add(
+                new ListItem(
+                        MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(TITLE, "Ask Gemini")
+                                .with(ENABLED, true)
+                                .build()));
+
+        ContextMenuDialog dialog =
+                displayContextMenuDialogAtLocation(100, 200, List.of(group1, group2));
+        dialog.show();
+
+        List<ContextMenuListView> listViews = mCoordinator.getListViewsForTest();
+        assertThat("Expected there to be 1 ContextMenuListView", listViews, hasSize(1));
+        ContextMenuListView listView = listViews.get(0);
+        mActivity.setContentView((View) listView.getParent().getParent());
+        listView.measure(
+                View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY));
+        listView.layout(0, 0, 300, 500);
+
+        // ModelList contains: [0: HEADER, 1: DIVIDER, 2: "Open in new tab", 3: DIVIDER, 4: "Ask
+        // Gemini"].
+        // First Down arrow should skip HEADER (0) and DIVIDER (1) and focus "Open in new tab" (2).
+        Assert.assertTrue(
+                listView.onKeyDown(
+                        KeyEvent.KEYCODE_DPAD_DOWN,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN)));
+        Assert.assertEquals(2, listView.getSelectedItemPosition());
+        Assert.assertTrue(listView.getChildAt(2).hasFocus());
+
+        // Second Down arrow should skip DIVIDER (3) and focus "Ask Gemini" (4).
+        Assert.assertTrue(
+                listView.onKeyDown(
+                        KeyEvent.KEYCODE_DPAD_DOWN,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN)));
+        Assert.assertEquals(4, listView.getSelectedItemPosition());
+        Assert.assertTrue(listView.getChildAt(4).hasFocus());
+
+        // Up arrow should skip DIVIDER (3) and return focus to "Open in new tab" (2).
+        Assert.assertTrue(
+                listView.onKeyDown(
+                        KeyEvent.KEYCODE_DPAD_UP,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP)));
+        Assert.assertEquals(2, listView.getSelectedItemPosition());
+        Assert.assertTrue(listView.getChildAt(2).hasFocus());
+    }
+
+    @Test
+    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    @Config(qualifiers = "mdpi")
+    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
+    public void testTabNavigationReachesQuickShareIcon() {
+        ModelList group = new ModelList();
+        group.add(
+                new ListItem(
+                        ContextMenuCoordinator.ContextMenuItemType
+                                .CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
+                        new PropertyModel.Builder(ContextMenuItemWithIconButtonProperties.ALL_KEYS)
+                                .with(TITLE, "Share link")
+                                .with(ENABLED, true)
+                                .with(
+                                        ContextMenuItemWithIconButtonProperties.END_BUTTON_IMAGE,
+                                        new ColorDrawable())
+                                .build()));
+        group.add(
+                new ListItem(
+                        MENU_ITEM,
+                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                .with(TITLE, "Ask Gemini")
+                                .with(ENABLED, true)
+                                .build()));
+
+        ContextMenuDialog dialog = displayContextMenuDialogAtLocation(100, 200, List.of(group));
+        dialog.show();
+
+        ContextMenuListView listView = mCoordinator.getListViewsForTest().get(0);
+        mActivity.setContentView((View) listView.getParent().getParent());
+        listView.measure(
+                View.MeasureSpec.makeMeasureSpec(300, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(500, View.MeasureSpec.EXACTLY));
+        listView.layout(0, 0, 300, 500);
+
+        // ModelList contains: [0: HEADER, 1: DIVIDER, 2: "Share link" + quick-share icon,
+        // 3: "Ask Gemini"].
+        View shareRow = listView.getChildAt(2);
+        View shareMainItem = shareRow.findViewById(R.id.menu_row_item);
+        View shareQuickIcon = shareRow.findViewById(R.id.menu_row_share_icon);
+
+        // First Tab focuses the Share row's main item.
+        Assert.assertTrue(
+                listView.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB)));
+        Assert.assertEquals(2, listView.getSelectedItemPosition());
+        Assert.assertTrue(shareMainItem.hasFocus());
+
+        // Second Tab focuses the Share row's inline quick-share button.
+        Assert.assertTrue(
+                listView.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB)));
+        Assert.assertEquals(2, listView.getSelectedItemPosition());
+        Assert.assertTrue(shareQuickIcon.hasFocus());
+
+        // Third Tab advances to the "Ask Gemini" row.
+        Assert.assertTrue(
+                listView.onKeyDown(
+                        KeyEvent.KEYCODE_TAB,
+                        new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB)));
+        Assert.assertEquals(3, listView.getSelectedItemPosition());
+        Assert.assertTrue(listView.getChildAt(3).hasFocus());
+
+        // Shift+Tab from "Ask Gemini" moves back to the quick-share button first, then main item.
+        KeyEvent shiftTab =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_TAB,
+                        0,
+                        KeyEvent.META_SHIFT_ON);
+        Assert.assertTrue(listView.onKeyDown(KeyEvent.KEYCODE_TAB, shiftTab));
+        Assert.assertEquals(2, listView.getSelectedItemPosition());
+        Assert.assertTrue(shareQuickIcon.hasFocus());
+
+        Assert.assertTrue(listView.onKeyDown(KeyEvent.KEYCODE_TAB, shiftTab));
+        Assert.assertEquals(2, listView.getSelectedItemPosition());
+        Assert.assertTrue(shareMainItem.hasFocus());
     }
 
     private ContextMenuDialog createContextMenuDialogForTest(boolean isPopup) {

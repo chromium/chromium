@@ -8,12 +8,12 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListAdapter;
-import android.widget.ListView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ContextMenuItemType;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.listmenu.KeyboardAccessibleListView;
 
 import java.util.Set;
 
@@ -22,7 +22,7 @@ import java.util.Set;
  * constrained to make sure the view fits the screen size with margins.
  */
 @NullMarked
-public class ContextMenuListView extends ListView {
+public class ContextMenuListView extends KeyboardAccessibleListView {
     private final int mMinWidth;
     private final int mMaxWidth;
     private final int mFlyoutMaxWidth;
