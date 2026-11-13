@@ -2110,6 +2110,26 @@
             ]
         }
     ],
+    "AutofillEnableOAuth2TokenFix": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableOAuth2TokenFix"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableOmniboxAutofill": [
         {
             "platforms": [
