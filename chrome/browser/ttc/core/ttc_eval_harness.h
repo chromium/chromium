@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,7 @@
 #include "chrome/browser/ttc/core/eval_audio_controller.h"
 #include "chrome/browser/ttc/core/eval_harness.mojom.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ttc {
 
@@ -52,6 +54,12 @@ class TtcEvalHarness : public SessionController::Observer {
   // Executes an automated audio turn with 16kHz 16-bit mono PCM samples.
   void SendAudio(base::span<const int16_t> pcm16_samples,
                  TurnCompleteCallback callback);
+
+  // Makes the session see the user as pressing at `point`, whatever the real
+  // pointer does, until the next turn ends or this is called with nullopt.
+  // `point` is in DIPs relative to the focused tab's contents. Returns false
+  // if the session does not track the pointer.
+  bool SetPointerLocation(std::optional<gfx::PointF> point);
 
   // SessionController::Observer implementation:
   void OnSessionLifecycleChanged(SessionLifecycle state) override;

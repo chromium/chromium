@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/switches.h"
 #include "chrome/browser/ttc/core/ttc_eval_harness.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 
@@ -69,6 +71,17 @@ void HarnessPageHandler::SendAudio(const std::vector<uint8_t>& pcm16_bytes,
   std::vector<int16_t> audio_samples(sample_count);
   base::as_writable_byte_span(base::span(audio_samples)).copy_from(pcm16_bytes);
   eval_harness_->SendAudio(audio_samples, std::move(callback));
+}
+
+void HarnessPageHandler::SetPointerLocation(
+    const std::optional<gfx::PointF>& point,
+    SetPointerLocationCallback callback) {
+  // The page is also served without the test API, and must not be able to
+  // tell a session where the user points then.
+  const bool is_allowed = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableTtcTestApi);
+  std::move(callback).Run(is_allowed && eval_harness_ &&
+                          eval_harness_->SetPointerLocation(point));
 }
 
 }  // namespace ttc

@@ -30,11 +30,13 @@ class BrowserContext;
 namespace ttc {
 
 class Conversation;
+class PointerTracker;
 class SessionController;
 class SessionControllerImpl;
 class SessionView;
 class SessionViewDelegate;
 class TtcActorUiStateManager;
+class TtcEvalHarness;
 
 // SupportsUserData lets platform-specific bridges (e.g. the Android JNI
 // bridge) attach themselves to the service so they share its lifetime.
@@ -92,6 +94,10 @@ class TtcKeyedService : public KeyedService, public base::SupportsUserData {
 
   // The active session's controller, or null if there's none.
   SessionController* session_controller();
+
+  // The active session's pointer tracker, for the eval harness to simulate a
+  // pointer. Null if there's no session or it does not track the pointer.
+  PointerTracker* GetPointerTracker(base::PassKey<TtcEvalHarness>);
 
   // Mutes or unmutes the active session's microphone. Returns whether the state
   // changed: false if there's no live session, or the microphone already was in

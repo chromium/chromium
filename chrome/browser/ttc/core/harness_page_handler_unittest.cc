@@ -5,16 +5,24 @@
 #include "chrome/browser/ttc/core/harness_page_handler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/ttc/core/eval_harness.mojom.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/switches.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -24,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ttc {
 namespace {
@@ -58,7 +67,9 @@ class FakeConversation : public Conversation {
 class HarnessPageHandlerTest : public testing::Test {
  public:
   HarnessPageHandlerTest() {
-    scoped_feature_list_.InitAndEnableFeature(kTtc);
+    scoped_feature_list_.InitWithFeatures({kTtc, kTtcGetPointer}, {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kEnableTtcTestApi);
     service_ = static_cast<TtcKeyedService*>(
         TtcKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             &profile_,
@@ -81,6 +92,7 @@ class HarnessPageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   raw_ptr<TtcKeyedService> service_ = nullptr;
   mojo::Remote<mojom::HarnessPageHandler> handler_remote_;
   std::unique_ptr<HarnessPageHandler> handler_;
@@ -88,6 +100,34 @@ class HarnessPageHandlerTest : public testing::Test {
   void SetUp() override {
     handler_ = std::make_unique<HarnessPageHandler>(
         *service_, handler_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  // Starts a session through the handler and makes it live.
+  void StartLiveSession() {
+    base::test::TestFuture<bool> started;
+    handler_remote_->StartSession(started.GetCallback());
+    handler_remote_.FlushForTesting();
+    ASSERT_TRUE(service_->is_session_active());
+    service_->session_controller()->SetSessionLifecycle(
+        SessionLifecycle::kLive);
+    ASSERT_TRUE(started.Get());
+  }
+
+  bool SetPointerLocation(std::optional<gfx::PointF> point) {
+    base::test::TestFuture<bool> success;
+    handler_remote_->SetPointerLocation(point, success.GetCallback());
+    return success.Get();
+  }
+
+  PointerTracker& pointer_tracker() {
+    return *static_cast<SessionControllerImpl*>(service_->session_controller())
+                ->pointer_tracker();
+  }
+
+  // Where the session thinks the user pointed in a turn starting now.
+  std::vector<PointerTracker::Location> ResolvePointerLocations() {
+    const base::TimeTicks now = base::TimeTicks::Now();
+    return pointer_tracker().ResolveLocations(now, now);
   }
 };
 
@@ -173,6 +213,47 @@ TEST_F(HarnessPageHandlerTest, SendAudioReturnsResult) {
   ASSERT_TRUE(handler_->eval_harness());
   handler_->eval_harness()->OnModelTurnComplete();
   turn_loop.Run();
+}
+
+TEST_F(HarnessPageHandlerTest, SetPointerLocationNeedsSession) {
+  EXPECT_FALSE(SetPointerLocation(gfx::PointF(10, 20)));
+}
+
+TEST_F(HarnessPageHandlerTest, SetPointerLocationNeedsTestApiSwitch) {
+  StartLiveSession();
+  scoped_command_line_.GetProcessCommandLine()->RemoveSwitch(
+      switches::kEnableTtcTestApi);
+  EXPECT_FALSE(SetPointerLocation(gfx::PointF(10, 20)));
+}
+
+TEST_F(HarnessPageHandlerTest, SetPointerLocationPressesUntilTurnEnds) {
+  StartLiveSession();
+  ASSERT_TRUE(SetPointerLocation(gfx::PointF(10, 20)));
+  // The real pointer does not compete with the simulated one.
+  pointer_tracker().RecordSample(base::TimeTicks::Now(), gfx::PointF(300, 300),
+                                 /*is_press=*/true);
+
+  base::test::TestFuture<mojom::TurnResultPtr> turn;
+  handler_remote_->SendText("What is this?", turn.GetCallback());
+  handler_remote_.FlushForTesting();
+  std::vector<PointerTracker::Location> locations = ResolvePointerLocations();
+  ASSERT_EQ(locations.size(), 1u);
+  EXPECT_EQ(locations[0].point, gfx::PointF(10, 20));
+  EXPECT_TRUE(locations[0].is_press);
+
+  handler_->eval_harness()->OnModelTurnComplete();
+  ASSERT_TRUE(turn.Get());
+  // The real pointer counts again.
+  locations = ResolvePointerLocations();
+  ASSERT_EQ(locations.size(), 1u);
+  EXPECT_EQ(locations[0].point, gfx::PointF(300, 300));
+}
+
+TEST_F(HarnessPageHandlerTest, SetPointerLocationNullForgetsPoint) {
+  StartLiveSession();
+  ASSERT_TRUE(SetPointerLocation(gfx::PointF(10, 20)));
+  ASSERT_TRUE(SetPointerLocation(std::nullopt));
+  EXPECT_THAT(ResolvePointerLocations(), testing::IsEmpty());
 }
 
 TEST_F(HarnessPageHandlerTest, CloseSessionDoesNotCrash) {

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -119,6 +120,12 @@ class PointerTracker {
   // Forgets all samples.
   void Clear();
 
+  // Makes ResolveLocations() answer with a press at `point`, whatever is
+  // recorded and whenever the turn started, until this is called with nullopt.
+  // For evals, which simulate where the user points: the machine's own pointer
+  // would otherwise compete with theirs.
+  void SetLocationOverride(std::optional<gfx::PointF> point);
+
   size_t sample_count_for_testing() const { return samples_.size(); }
 
  private:
@@ -127,6 +134,7 @@ class PointerTracker {
 
   const Config config_;
   base::circular_deque<Sample> samples_;
+  std::optional<gfx::PointF> location_override_;
 };
 
 }  // namespace ttc

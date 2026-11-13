@@ -55,6 +55,13 @@ std::vector<PointerTracker::Location> PointerTracker::ResolveLocations(
   // has been recorded since.
   Prune(now);
 
+  if (location_override_) {
+    return {Location{.point = *location_override_,
+                     .time = now,
+                     .is_press = true,
+                     .is_dwell = true}};
+  }
+
   std::vector<Location> results;
   const base::TimeTicks window_start = turn_start - config_.pre_turn_lookback;
 
@@ -125,6 +132,10 @@ std::vector<PointerTracker::Location> PointerTracker::ResolveLocations(
 
 void PointerTracker::Clear() {
   samples_.clear();
+}
+
+void PointerTracker::SetLocationOverride(std::optional<gfx::PointF> point) {
+  location_override_ = point;
 }
 
 void PointerTracker::Prune(base::TimeTicks now) {

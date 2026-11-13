@@ -49,6 +49,11 @@ SessionController* TtcKeyedService::session_controller() {
   return session_controller_.get();
 }
 
+PointerTracker* TtcKeyedService::GetPointerTracker(
+    base::PassKey<TtcEvalHarness>) {
+  return session_controller_ ? session_controller_->pointer_tracker() : nullptr;
+}
+
 bool TtcKeyedService::SetMicMuted(bool muted) {
   return session_controller_ && session_controller_->SetMicMuted(muted);
 }

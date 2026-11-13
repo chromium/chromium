@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_TTC_CORE_HARNESS_PAGE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ttc/core/eval_harness.mojom.h"
 #include "chrome/browser/ttc/core/ttc_eval_harness.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ttc {
 
@@ -33,6 +35,8 @@ class HarnessPageHandler : public mojom::HarnessPageHandler {
   void SendText(const std::string& text, SendTextCallback callback) override;
   void SendAudio(const std::vector<uint8_t>& pcm16_bytes,
                  SendAudioCallback callback) override;
+  void SetPointerLocation(const std::optional<gfx::PointF>& point,
+                          SetPointerLocationCallback callback) override;
 
   TtcEvalHarness* eval_harness() { return eval_harness_.get(); }
 

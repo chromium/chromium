@@ -54,6 +54,18 @@ export class EvalAppElement extends CrLitElement {
     const response = await this.handler_.sendAudio(Array.from(pcm16Audio));
     return response.result;
   }
+
+  // Makes the session see the user as pressing at (x, y), in DIPs relative to
+  // the top left of the focused tab's contents, until the next turn ends. A
+  // null `x` or a missing `y` forgets the press.
+  async setCursor(x: number|null, y?: number): Promise<boolean> {
+    if (!this.isTestApiEnabled_()) {
+      throw new Error('TTC Test API is not enabled.');
+    }
+    const point = (x !== null && y !== undefined) ? {x, y} : null;
+    const response = await this.handler_.setPointerLocation(point);
+    return response.success;
+  }
 }
 
 declare global {

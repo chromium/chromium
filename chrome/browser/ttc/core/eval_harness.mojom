@@ -5,6 +5,7 @@
 module ttc.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Status of an interactive test turn.
 enum TurnStatus {
@@ -57,4 +58,12 @@ interface HarnessPageHandler {
   // PCM audio samples, observing the session lifecycle and returning the
   // consolidated TurnResult.
   SendAudio(array<uint8> pcm16_bytes) => (TurnResult result);
+
+  // Makes the session see the user as pressing at `point`, whatever the real
+  // pointer does, so the get_pointer tool can be evaluated without one. `point`
+  // is in DIPs relative to the top left of the focused tab's contents. It is
+  // forgotten when the next turn ends; null forgets it right away. Returns
+  // false if the browser was not started with --enable-ttc-test-api, there is
+  // no session, or the session does not track the pointer.
+  SetPointerLocation(gfx.mojom.PointF? point) => (bool success);
 };

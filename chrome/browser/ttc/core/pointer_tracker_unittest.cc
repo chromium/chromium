@@ -331,5 +331,27 @@ TEST(PointerTrackerTest, RestBeforeWindowOnlyCountsInsideWindow) {
   EXPECT_FALSE(results[0].is_press);
 }
 
+TEST(PointerTrackerTest, LocationOverride) {
+  PointerTracker tracker;
+  tracker.RecordSample(At(base::Seconds(5)), gfx::PointF(100, 100),
+                       /*is_press=*/true);
+  tracker.SetLocationOverride(gfx::PointF(300, 200));
+  // Neither what is recorded nor being cleared changes the answer.
+  tracker.RecordSample(At(base::Seconds(6)), gfx::PointF(500, 100),
+                       /*is_press=*/true);
+  tracker.Clear();
+  std::vector<PointerTracker::Location> results =
+      tracker.ResolveLocations(At(base::Seconds(60)), At(base::Seconds(61)));
+  ASSERT_THAT(results, SizeIs(1));
+  EXPECT_EQ(results[0].point, gfx::PointF(300, 200));
+  EXPECT_TRUE(results[0].is_press);
+  EXPECT_TRUE(results[0].is_dwell);
+
+  tracker.SetLocationOverride(std::nullopt);
+  EXPECT_THAT(
+      tracker.ResolveLocations(At(base::Seconds(60)), At(base::Seconds(61))),
+      SizeIs(0));
+}
+
 }  // namespace
 }  // namespace ttc

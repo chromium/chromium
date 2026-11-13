@@ -11,7 +11,9 @@
 #include "base/containers/span.h"
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
+#include "chrome/browser/ttc/core/pointer_tracker.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 
@@ -115,6 +117,16 @@ void TtcEvalHarness::BeginUserTurn(TurnCompleteCallback callback) {
                       base::BindOnce(&TtcEvalHarness::OnTurnTimeout,
                                      weak_factory_.GetWeakPtr()));
   StopAudioInjection();
+}
+
+bool TtcEvalHarness::SetPointerLocation(std::optional<gfx::PointF> point) {
+  PointerTracker* tracker =
+      service_->GetPointerTracker(base::PassKey<TtcEvalHarness>());
+  if (!tracker) {
+    return false;
+  }
+  tracker->SetLocationOverride(point);
+  return true;
 }
 
 void TtcEvalHarness::SendText(const std::string& text,
@@ -233,6 +245,8 @@ void TtcEvalHarness::OnModelTurnComplete() {
 void TtcEvalHarness::FinishTurn() {
   turn_timeout_.Stop();
   StopAudioInjection();
+  // Where the user was made to point must not leak into the next turn.
+  SetPointerLocation(std::nullopt);
   if (turn_complete_callback_) {
     std::move(turn_complete_callback_).Run(std::move(current_turn_result_));
   }
