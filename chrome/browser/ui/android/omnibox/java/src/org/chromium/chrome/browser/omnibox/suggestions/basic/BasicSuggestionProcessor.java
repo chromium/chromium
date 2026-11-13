@@ -276,7 +276,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 getSuggestedQuery(
                         suggestion, !isSearchSuggestion && !isDocumentSuggestion, !urlHighlighted);
 
-        applyTextColor(textLine1, mUiContext.resourceProvider.getSuggestionPrimaryTextColor());
         applyTextColor(textLine2, textLine2Color);
 
         // Tab search on desktop is exempt from the standard single-line desktop layout.
@@ -428,7 +427,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         // Non-search takeover matches (e.g., Lens pedal) inline "contents - description" on line
         // 1; search/document suggestions already populate `textLine2` with the description.
         if (showDescriptionIfPresent && suggestion.getTakeoverAction() != null) {
-            return getTakeoverActionSuggestedQuery(suggestion);
+            SuggestionSpannable str = getTakeoverActionSuggestedQuery(suggestion);
+            applyTextColor(str, mUiContext.resourceProvider.getSuggestionPrimaryTextColor());
+            return str;
         }
 
         String suggestedQuery = null;
@@ -451,6 +452,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         SuggestionSpannable str = new SuggestionSpannable(suggestedQuery);
         if (shouldHighlight) applyHighlightToMatchRegions(str, classifications);
+        str.applyTextColor(
+                classifications,
+                mUiContext.resourceProvider.getSuggestionPrimaryTextColor(),
+                mUiContext.resourceProvider.getSuggestionSecondaryTextColor());
         return str;
     }
 

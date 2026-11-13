@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.styles;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -34,11 +35,18 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
+
+import java.util.List;
 
 /** Tests for {@link SuggestionSpannable}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionSpannableUnitTest {
+    private static final int DEFAULT_COLOR = 0xFF112233;
+    private static final int DIM_COLOR = 0xFF445566;
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -532,5 +540,67 @@ public class SuggestionSpannableUnitTest {
         SuggestionSpannable s = new SuggestionSpannable(" x");
         s.setSpan(new ImageSpan(icon, alignment), 0, 1, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         return s;
+    }
+
+    @Test
+    public void applyTextColor_nonDimClassification() {
+        SuggestionSpannable text = new SuggestionSpannable("0123456789");
+        List<MatchClassification> classifications =
+                List.of(
+                        new MatchClassification(0, MatchClassificationStyle.NONE),
+                        new MatchClassification(4, MatchClassificationStyle.MATCH));
+
+        text.applyTextColor(classifications, DEFAULT_COLOR, DIM_COLOR);
+
+        SuggestionSpannable expected = new SuggestionSpannable("0123456789");
+        expected.setSpan(
+                new ForegroundColorSpan(DEFAULT_COLOR),
+                0,
+                expected.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        assertEquals(expected, text);
+    }
+
+    @Test
+    public void applyTextColor_allDim() {
+        SuggestionSpannable text = new SuggestionSpannable("0123456789");
+        List<MatchClassification> classifications =
+                List.of(new MatchClassification(0, MatchClassificationStyle.DIM));
+
+        text.applyTextColor(classifications, DEFAULT_COLOR, DIM_COLOR);
+
+        SuggestionSpannable expected = new SuggestionSpannable("0123456789");
+        expected.setSpan(
+                new ForegroundColorSpan(DIM_COLOR),
+                0,
+                expected.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        assertEquals(expected, text);
+    }
+
+    @Test
+    public void applyTextColor_mixedDimAndDefault() {
+        SuggestionSpannable text = new SuggestionSpannable("0123456789");
+        List<MatchClassification> classifications =
+                List.of(
+                        new MatchClassification(0, MatchClassificationStyle.NONE),
+                        new MatchClassification(3, MatchClassificationStyle.DIM),
+                        new MatchClassification(
+                                6, MatchClassificationStyle.MATCH | MatchClassificationStyle.DIM),
+                        new MatchClassification(8, MatchClassificationStyle.NONE));
+
+        text.applyTextColor(classifications, DEFAULT_COLOR, DIM_COLOR);
+
+        SuggestionSpannable expected = new SuggestionSpannable("0123456789");
+        expected.setSpan(
+                new ForegroundColorSpan(DEFAULT_COLOR), 0, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        expected.setSpan(
+                new ForegroundColorSpan(DIM_COLOR), 3, 8, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        expected.setSpan(
+                new ForegroundColorSpan(DEFAULT_COLOR),
+                8,
+                expected.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        assertEquals(expected, text);
     }
 }
