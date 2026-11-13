@@ -75,8 +75,9 @@ class Wiggle {
   }
 }
 
-const globalEnergyWiggle = new Wiggle(/*amplitude=*/ 2,
-                                      /*frequency=*/ 0.5);
+const globalEnergyWiggle = new Wiggle(
+    /*amplitude=*/ 2,
+    /*frequency=*/ 0.5);
 
 export interface Bar {
   level: number;
@@ -242,10 +243,10 @@ function getGradientColor(ratio: number, stops: ColorStop[]): string {
 // spring at continuous time t (seconds), assuming initial position 0, target
 // position 1, and initial velocity 0.
 function solveAnalyticalSpring(
-  timeSeconds: number,
-  stiffness: number,
-  dampingRatio: number,
-): number {
+    timeSeconds: number,
+    stiffness: number,
+    dampingRatio: number,
+    ): number {
   if (timeSeconds <= 0) {
     return 0;
   }
@@ -342,13 +343,6 @@ export class RecordingWaveElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('transcript')) {
-      AudioProcessor.updateTranscript(this.transcript);
-    }
-    if (changedProperties.has('receivedSpeech')) {
-      AudioProcessor.updateReceivedSpeech(this.receivedSpeech);
-    }
-
     if (changedProperties.has('isListening') ||
         changedProperties.has('darkThemeColorsEnabled')) {
       const isDark =
@@ -406,6 +400,13 @@ export class RecordingWaveElement extends CrLitElement {
         }
       }
     }
+
+    if (changedProperties.has('receivedSpeech')) {
+      AudioProcessor.updateReceivedSpeech(this.receivedSpeech);
+    }
+    if (changedProperties.has('transcript')) {
+      AudioProcessor.updateTranscript(this.transcript);
+    }
   }
 
   // Animation: volume bar start off as balls (uninitialized volume),
@@ -431,11 +432,12 @@ export class RecordingWaveElement extends CrLitElement {
 
     const now = performance.now();
 
-    // Time elapsed since the last bar was created. Note that this is used solely
-    // for deciding when to spawn a new bar and for smooth sliding/scrolling
-    // transitions of the entire wave container to the left. It is not used for
-    // the spring physics simulation of individual bars, which operates on absolute time
-    // and no longer delta time (the time since last frame).
+    // Time elapsed since the last bar was created. Note that this is used
+    // solely for deciding when to spawn a new bar and for smooth
+    // sliding/scrolling transitions of the entire wave container to the left.
+    // It is not used for the spring physics simulation of individual bars,
+    // which operates on absolute time and no longer delta time (the time since
+    // last frame).
     let elapsed = now - this.lastDrawTimestamp_;
 
     // If it is time to create a new bar:
@@ -475,8 +477,8 @@ export class RecordingWaveElement extends CrLitElement {
       elapsed = delayedRemainder;
     }
 
-    // While there are more bars than should be shown, even if between frames, remove
-    // from the array and DOM:
+    // While there are more bars than should be shown, even if between frames,
+    // remove from the array and DOM:
     while (this.barsData_.length > this.maxBars_) {
       this.barsData_.pop();
       if (this.$.barsContainer.lastElementChild) {
@@ -547,14 +549,14 @@ export class RecordingWaveElement extends CrLitElement {
       // volume height and width.
       if (bar.isSpawning) {
         const t = (performance.now() - bar.spawnTimeMs) / 1000;
-        const currentScaleY = solveAnalyticalSpring(
-            t, SPRING_STIFFNESS, SPRING_DAMPING_HEIGHT);
-        const currentScaleX = solveAnalyticalSpring(
-            t, SPRING_STIFFNESS, SPRING_DAMPING_WIDTH);
+        const currentScaleY =
+            solveAnalyticalSpring(t, SPRING_STIFFNESS, SPRING_DAMPING_HEIGHT);
+        const currentScaleX =
+            solveAnalyticalSpring(t, SPRING_STIFFNESS, SPRING_DAMPING_WIDTH);
 
-        // Check if the spring has completed its oscillation and settled (reached
-        // the mechanical noise floor). Once done, snap the scales to 1.0 and
-        // disable further physics processing to conserve CPU cycles.
+        // Check if the spring has completed its oscillation and settled
+        // (reached the mechanical noise floor). Once done, snap the scales
+        // to 1.0 and disable further physics processing to conserve CPU cycles.
         const isDone = t > SPRING_SETTLE_TIME_SECONDS;
 
         bar.currentScaleY = isDone ? 1.0 : currentScaleY;

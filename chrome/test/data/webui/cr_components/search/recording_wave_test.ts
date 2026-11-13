@@ -10,15 +10,14 @@ import type {Bar, RecordingWaveElement} from 'chrome://resources/cr_components/s
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-type MockRecordingWaveElement =
-    Omit<
-        RecordingWaveElement,
-        'animationFrameId_'|'barsData_'|'maxBars_'|'animationLoop_'>&{
-      animationFrameId_: number | null,
-      barsData_: Bar[],
-      maxBars_: number,
-      animationLoop_: (timestamp?: number) => void,
-    };
+type MockRecordingWaveElement = Omit<
+    RecordingWaveElement,
+    'animationFrameId_'|'barsData_'|'maxBars_'|'animationLoop_'>&{
+  animationFrameId_: number | null,
+  barsData_: Bar[],
+  maxBars_: number,
+  animationLoop_: (timestamp?: number) => void,
+};
 
 suite('RecordingWaveElementTest', () => {
   let recordingWaveElement: MockRecordingWaveElement;
@@ -28,8 +27,8 @@ suite('RecordingWaveElementTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const initialElement: RecordingWaveElement =
         document.createElement('recording-wave');
-    recordingWaveElement = initialElement as
-        unknown as MockRecordingWaveElement;
+    recordingWaveElement =
+        initialElement as unknown as MockRecordingWaveElement;
     recordingWaveElement.style.display = 'block';
     recordingWaveElement.style.width = '1500px';
     document.body.appendChild(recordingWaveElement);
@@ -314,6 +313,9 @@ suite('RecordingWaveElementTest', () => {
   test(
       'AudioProcessor simulation mode returns simulated volume from transcript',
       async () => {
+        const origPerformanceNow = performance.now.bind(performance);
+        let mockNowMs = 1000;
+        performance.now = () => mockNowMs;
         AudioProcessor.setSimulate(true);
         try {
           assertEquals(
@@ -323,26 +325,99 @@ suite('RecordingWaveElementTest', () => {
           const started = await AudioProcessor.startMonitoringLevels();
           assertTrue(started);
 
-          // Simulate receiving speech: triggers initial amplitude spike.
+          // Simulate receiving speech mid-interval, then sample at the 120ms
+          // `<recording-wave>` bar spawn interval.
+          mockNowMs += 50;
           AudioProcessor.updateReceivedSpeech(true);
+          mockNowMs += 70;
           const volAfterSpeech = AudioProcessor.getVolume();
           assertTrue(
-              volAfterSpeech > 0,
-              'Volume should increase after receivedSpeech=true');
+              volAfterSpeech >= 0.5,
+              `Expected responsive speech spike >= 0.5, got ${volAfterSpeech}`);
 
-          // Simulate transcript update with words: triggers syllable bumps.
-          AudioProcessor.updateTranscript('hello chromium world');
-          const volAfterTranscript = AudioProcessor.getVolume();
+          // Advance until the initial speech bump finishes, then verify a
+          // single-syllable first word still produces visible bumps.
+          mockNowMs += 1500;
+          AudioProcessor.getVolume();
+          AudioProcessor.updateTranscript('hi');
+          const immediateSingleWordVol = AudioProcessor.getVolume();
           assertTrue(
-              volAfterTranscript > 0,
-              'Volume should remain non-zero during simulated speech');
+              immediateSingleWordVol >= 0.4,
+              `Expected immediate single-word spike >= 0.4, got ` +
+                  `${immediateSingleWordVol}`);
+          mockNowMs += 120;
+          const peakSingleWordVol = AudioProcessor.getVolume();
+          assertTrue(
+              peakSingleWordVol >= 0.4,
+              `Expected single-word bump volume >= 0.4 at next bar tick, got ` +
+                  `${peakSingleWordVol}`);
+
+          // Advance past the first word and verify streaming partial growth of
+          // the same word ('art' -> 'artificial') triggers additional bumps.
+          mockNowMs += 1500;
+          AudioProcessor.getVolume();
+          AudioProcessor.updateTranscript('art');
+          mockNowMs += 1200;
+          AudioProcessor.getVolume();
+          AudioProcessor.updateTranscript('artificial');
+          mockNowMs += 120;
+          const streamingWordVol = AudioProcessor.getVolume();
+          assertTrue(
+              streamingWordVol >= 0.4,
+              `Expected streaming syllable growth volume >= 0.4, got ` +
+                  `${streamingWordVol}`);
+
+          // Multi-word transcript updates continue driving simulated speech.
+          AudioProcessor.updateTranscript('artificial intelligence world');
+          mockNowMs += 120;
+          const volAfterPhrase = AudioProcessor.getVolume();
+          assertTrue(
+              volAfterPhrase >= 0.4,
+              `Expected phrase volume >= 0.4, got ${volAfterPhrase}`);
 
           // Ensure `stopListening()` cleans up and resets volume back to 0.
-          AudioProcessor.stopListening();
+          await AudioProcessor.stopListening();
           assertEquals(
               0, AudioProcessor.getVolume(),
               'Volume must reset to exactly 0 after stopListening()');
         } finally {
+          performance.now = origPerformanceNow;
+          AudioProcessor.setSimulate(false);
+        }
+      });
+
+  test(
+      'batched isListening, receivedSpeech, and transcript apply in order',
+      async () => {
+        const origPerformanceNow = performance.now.bind(performance);
+        const mockAnimationLoopLength = 1000;
+        performance.now = () => mockAnimationLoopLength;
+        AudioProcessor.setSimulate(true);
+        try {
+          recordingWaveElement.isListening = true;
+          recordingWaveElement.receivedSpeech = true;
+          recordingWaveElement.transcript = 'hello world';
+          await recordingWaveElement.updateComplete;
+
+          // Cancel the background rAF loop before yielding so slow debug bots
+          // cannot consume pendingSpikeAmplitude before the explicit frame
+          // step.
+          if (recordingWaveElement.animationFrameId_ !== null) {
+            cancelAnimationFrame(recordingWaveElement.animationFrameId_);
+            recordingWaveElement.animationFrameId_ = null;
+          }
+          await microtasksFinished();
+
+          const barsData = recordingWaveElement.barsData_;
+          barsData[6]!.isUnspawned = true;
+          recordingWaveElement.animationLoop_(mockAnimationLoopLength);
+          assertTrue(
+              barsData[6]!.targetHeightPx >= 20,
+              `Expected active bar height >= 20px, got ` +
+                  `${barsData[6]!.targetHeightPx}px`);
+        } finally {
+          performance.now = origPerformanceNow;
+          await AudioProcessor.stopListening();
           AudioProcessor.setSimulate(false);
         }
       });

@@ -15,19 +15,18 @@ import {assertAlmostEquals} from './composebox_test_utils.js';
 
 type MockAudioWaveElement = Omit<
     AudioWaveElement,
-    |'isExpanding_'|'animationFrameId_'|'decayingAmplitude_'|'lastWordCount_'|
-    'containerWidth_'|'volumeHistory_'|'activeSimulatedBumps_'|'frame_'|
-    'onStartListen_'|'updateVolume_'|'makeSimulatedAudioBump_'|'firstSyllable_'|
-    'getSimulatedAudioBumpsSum_'>&{
+    |'isExpanding_'|'animationFrameId_'|'decayingAmplitude_'|
+    'lastSyllableCount_'|'containerWidth_'|'volumeHistory_'|
+    'activeSimulatedBumps_'|'frame_'|'onStartListen_'|'updateVolume_'|
+    'makeSimulatedAudioBump_'|'getSimulatedAudioBumpsSum_'>&{
   isExpanding_: boolean,
   animationFrameId_: number,
   decayingAmplitude_: number,
-  lastWordCount_: number,
+  lastSyllableCount_: number,
   containerWidth_: number,
   volumeHistory_: number[],
   activeSimulatedBumps_: Bump[],
   frame_: number,
-  firstSyllable_: boolean,
   onStartListen_: () => void,
   updateVolume_: () => void,
   makeSimulatedAudioBump_:
@@ -106,19 +105,12 @@ suite('Composebox audio wave animation', () => {
         audioWaveElement.transcript = '';
         audioWaveElement.isListening = true;
         await audioWaveElement.updateComplete;
-        await microtasksFinished;
+        await microtasksFinished();
 
         audioWaveElement.receivedSpeech = true;
 
         await audioWaveElement.updateComplete;
-        await microtasksFinished;
-
-        assertFalse(
-            audioWaveElement.firstSyllable_,
-            'First syllable should be false since receivedSpeech is true\
-            while transcript is empty. This means it is not already heard\
-            and accounted for by receivedSpeech. That receivedSpeech\
-            indication was simply a random background noise, not speech.');
+        await microtasksFinished();
 
         const getBumpsLength = () =>
             audioWaveElement.activeSimulatedBumps_.length;
@@ -128,7 +120,7 @@ suite('Composebox audio wave animation', () => {
 
         audioWaveElement.transcript = 'test';
         await audioWaveElement.updateComplete;
-        await microtasksFinished;
+        await microtasksFinished();
 
         assertEquals(2, getBumpsLength(), 'There should be 1 bump from "test"');
 
@@ -141,7 +133,7 @@ suite('Composebox audio wave animation', () => {
   test('transcript updates trigger syllable bumps', async () => {
     audioWaveElement.isListening = true;
     await audioWaveElement.updateComplete;
-    await microtasksFinished;
+    await microtasksFinished();
 
     assertFalse(
         audioWaveElement.receivedSpeech,
@@ -149,29 +141,17 @@ suite('Composebox audio wave animation', () => {
     audioWaveElement.transcript = 'test';
     audioWaveElement.receivedSpeech = true;
     await audioWaveElement.updateComplete;
-    await microtasksFinished;
-
-    /* First syllable becomes true when receivedSpeech Updated() runs,
-     * meaning receivedSpeech turning true indicates that what was heard
-     * was a word (the first syllable). Transcript will ignore its next word's
-     * first syllable. After though, once transcript Updated() runs, it will be
-     * false.
-     */
-    assertFalse(
-        audioWaveElement.firstSyllable_,
-        'First syllable should be false since first syllable was read by\
-        transcript updated()');
+    await microtasksFinished();
 
     const getBumpsLength = () => audioWaveElement.activeSimulatedBumps_.length;
-    await audioWaveElement.updateComplete;
-    await microtasksFinished;
     assertEquals(
-        1, getBumpsLength(), 'There should be exactly 1 bump fromt "test"');
+        2, getBumpsLength(),
+        'There should be 1 bump from receivedSpeech and 1 from "test"');
 
     audioWaveElement.transcript = 'test hello';
     await audioWaveElement.updateComplete;
-    await microtasksFinished;
-    assertEquals(3, getBumpsLength(), 'There should be 3 bumps total');
+    await microtasksFinished();
+    assertEquals(4, getBumpsLength(), 'There should be 4 bumps total');
   });
 
   test('receivedSpeech triggers visual amplitude spike', async () => {
@@ -189,17 +169,16 @@ suite('Composebox audio wave animation', () => {
         ${audioWaveElement.decayingAmplitude_}`);
   });
 
-  test('empty transcript resets word count logic', async () => {
+  test('empty transcript resets syllable count logic', async () => {
     audioWaveElement.isListening = true;
     audioWaveElement.transcript = 'one two three';
     await audioWaveElement.updateComplete;
 
-
-    assertEquals(3, audioWaveElement.lastWordCount_);
+    assertEquals(3, audioWaveElement.lastSyllableCount_);
 
     audioWaveElement.transcript = '';
     await audioWaveElement.updateComplete;
-    assertEquals(0, audioWaveElement.lastWordCount_);
+    assertEquals(0, audioWaveElement.lastSyllableCount_);
   });
 
   test('disconnected callback cleans up animation', async () => {
@@ -220,7 +199,6 @@ suite('Composebox audio wave animation', () => {
     audioWaveElement.isListening = true;
     await microtasksFinished();
 
-    audioWaveElement.receivedSpeech = true;
     audioWaveElement.transcript = 'hello';
     await microtasksFinished();
     await audioWaveElement.updateComplete;
