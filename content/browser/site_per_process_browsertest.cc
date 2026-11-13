@@ -188,6 +188,10 @@
 #include "ui/aura/window.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/ui_base_features.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -501,9 +505,16 @@ SitePerProcessBrowserTestBase::SitePerProcessBrowserTestBase() {
   // Overlay scrollbar will be turned off with both conditions satisfied:
   // 1) feature flag `kOverlayScrollbar` is off
   // 2) always show scrollbar preference setting on.
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kOverlayScrollbar});
+  std::vector<base::test::FeatureRef> disabled_features = {
+      features::kOverlayScrollbar};
+#if BUILDFLAG(IS_WIN)
+  // Native window occlusion is calculated asynchronously on Windows, so an
+  // occlusion update can arrive after a test calls
+  // UpdateWebContentsVisibility(Visibility::HIDDEN) and make the WebContents
+  // visible again.
+  disabled_features.push_back(features::kCalculateNativeWinOcclusion);
+#endif
+  feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled_features);
 #endif
 }
 
