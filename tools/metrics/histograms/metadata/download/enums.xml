@@ -437,13 +437,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Multiple downloads dangerous"/>
 </enum>
 
-<enum name="DownloadInputStreamReadErrorType">
-  <int value="0" label="Invalid argument"/>
-  <int value="1" label="Out of range"/>
-  <int value="2" label="Busy"/>
-  <int value="3" label="Unknown"/>
-</enum>
-
 <enum name="DownloadInterstitialUIAction">
   <int value="0" label="Interstitial opened"/>
   <int value="1" label="Download completed"/>

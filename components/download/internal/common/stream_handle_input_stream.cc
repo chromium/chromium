@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
-#include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_utils.h"
 #include "mojo/public/c/system/types.h"
 
@@ -88,7 +87,6 @@ InputStream::StreamState StreamHandleInputStream::Read(
     case MOJO_RESULT_INVALID_ARGUMENT:
     case MOJO_RESULT_OUT_OF_RANGE:
     case MOJO_RESULT_BUSY:
-      RecordInputStreamReadError(mojo_result);
       return InputStream::COMPLETE;
   }
   return InputStream::EMPTY;

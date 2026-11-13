@@ -567,24 +567,6 @@ void RecordDownloadHttpResponseCode(int response_code,
   }
 }
 
-void RecordInputStreamReadError(MojoResult mojo_result) {
-  InputStreamReadError error = InputStreamReadError::kUnknown;
-  switch (mojo_result) {
-    case MOJO_RESULT_INVALID_ARGUMENT:
-      error = InputStreamReadError::kInvalidArgument;
-      break;
-    case MOJO_RESULT_OUT_OF_RANGE:
-      error = InputStreamReadError::kOutOfRange;
-      break;
-    case MOJO_RESULT_BUSY:
-      error = InputStreamReadError::kBusy;
-      break;
-    default:
-      NOTREACHED();
-  }
-  base::UmaHistogramEnumeration("Download.InputStreamReadError", error);
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void RecordDuplicatePdfDownloadTriggered(bool open_inline) {
   base::UmaHistogramBoolean("Download.DuplicatePdfDownloadTriggered",

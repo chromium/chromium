@@ -529,16 +529,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Download.InputStreamReadError"
-    enum="DownloadInputStreamReadErrorType" expires_after="2024-01-14">
-  <owner>qinmin@chromium.org</owner>
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records errors when reading from the mojo input stream before a download
-    completes.
-  </summary>
-</histogram>
-
 <histogram name="Download.InterruptedReason.ParallelDownload"
     enum="InterruptReason" expires_after="never">
 <!-- expires-never: Core download metrics, used in go/chrome-download-dashboard. -->
