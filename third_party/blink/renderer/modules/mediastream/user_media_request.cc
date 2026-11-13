@@ -605,15 +605,6 @@ UserMediaRequest* UserMediaRequest::Create(
     return nullptr;
   }
   result->set_exclude_monitor_type_surfaces(exclude_monitor_type_surfaces);
-  if (media_type == UserMediaRequestType::kDisplayMedia) {
-    std::optional<V8DisplayMediaIncludeOrExclude::Enum> include_or_exclude;
-    if (options->hasMonitorTypeSurfaces()) {
-      include_or_exclude = options->monitorTypeSurfaces().AsEnum();
-    }
-    RecordGetDisplayMediaIncludeExcludeConstraintUma(
-        include_or_exclude,
-        "Media.GetDisplayMedia.Constraints.MonitorTypeSurfaces");
-  }
 
   result->set_audio_selection_preferred(options->hasAudioSelection());
   if (media_type == UserMediaRequestType::kDisplayMedia) {
