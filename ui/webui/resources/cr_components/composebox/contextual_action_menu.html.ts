@@ -19,6 +19,11 @@ export function getHtml(this: ContextualActionMenuElement) {
           this.isInputTypeAllowed_(InputType.kBrowserTab) ? html`
           ${this.contextManagementInComposeboxEnabled ? html`
             ${this.shouldShowSingleTabItem_() ? html`
+              ${this.showContextMenuHeaders_ ? html`
+                <h4 id="tabHeader" aria-hidden="true">
+                  ${this.i18n('tabsHeader')}
+                </h4>
+              ` : ''}
               <button id="singleTabItem" class="dropdown-item"
                   role="${this.enableMultiTabSelection_ ?
                       'menuitemcheckbox' : 'menuitem'}"

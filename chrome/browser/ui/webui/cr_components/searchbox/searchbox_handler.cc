@@ -432,6 +432,7 @@ base::DictValue SearchboxHandler::GetProfileIndependentWebUIDataSourceDict(
       {"addImage", IDS_NTP_COMPOSE_ADD_IMAGE},
       {"addDriveFile", IDS_NTP_COMPOSE_ADD_DRIVE},
       {"addTab", IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE},
+      {"tabsHeader", IDS_OMNIBOX_NAVATTACH_TABS},
       {"shareTabs", IDS_COMPOSE_ADD_TABS},
       {"recentTabsSuffix", IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX},
       {"sharingTabsWithGoogle", IDS_COMPOSE_SHARING_TABS_WITH_GOOGLE},

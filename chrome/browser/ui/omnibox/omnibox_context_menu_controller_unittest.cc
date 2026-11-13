@@ -1490,7 +1490,12 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   ui::SimpleMenuModel* menu = controller()->menu_model();
   ASSERT_TRUE(SingleTabIndex().has_value());
   ASSERT_TRUE(SubmenuIndex().has_value());
+  EXPECT_EQ(*SingleTabIndex(), 1u);
   EXPECT_EQ(*SingleTabIndex() + 1, *SubmenuIndex());
+
+  EXPECT_EQ(menu->GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
+  EXPECT_EQ(menu->GetLabelAt(0),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_NAVATTACH_TABS));
 
   const size_t index = *SingleTabIndex();
   EXPECT_EQ(menu->GetTypeAt(index), ui::MenuModel::TYPE_COMMAND);
@@ -1500,6 +1505,20 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   EXPECT_FALSE(menu->GetIconAt(index).IsEmpty());
   EXPECT_EQ(menu->GetElementIdentifierAt(index),
             OmniboxContextMenuController::kSingleTabMenuItemIdForTesting);
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       OmitsTabsHeaderWhenShowContextMenuHeadersDisabled) {
+  base::test::ScopedFeatureList headers_feature_list;
+  headers_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::internal::kWebUIOmniboxAimPopup,
+      {{omnibox::kShowContextMenuHeaders.name, "false"}});
+
+  controller()->SetMockTabs({MakeTab(1, u"Active", /*is_active_tab=*/true)});
+  controller()->RebuildMenu();
+
+  ASSERT_TRUE(SingleTabIndex().has_value());
+  EXPECT_EQ(*SingleTabIndex(), 0u);
 }
 
 TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
@@ -1570,6 +1589,8 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   fake_handler.active_ = true;
   controller()->RebuildMenu();
   EXPECT_FALSE(SingleTabIndex().has_value());
+  EXPECT_NE(controller()->menu_model()->GetTypeAt(0),
+            ui::MenuModel::TYPE_TITLE);
   EXPECT_TRUE(controller()
                   ->menu_model()
                   ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING)
@@ -1578,12 +1599,18 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   fake_handler.active_ = false;
   controller()->RebuildMenu();
   EXPECT_TRUE(SingleTabIndex().has_value());
+  EXPECT_EQ(controller()->menu_model()->GetTypeAt(0),
+            ui::MenuModel::TYPE_TITLE);
 }
 
 TEST_F(OmniboxContextMenuControllerSingleTabItemTest, HiddenWhenNoTabs) {
   controller()->SetMockTabs({});
   controller()->RebuildMenu();
   EXPECT_FALSE(SingleTabIndex().has_value());
+  if (controller()->menu_model()->GetItemCount() > 0) {
+    EXPECT_NE(controller()->menu_model()->GetLabelAt(0),
+              l10n_util::GetStringUTF16(IDS_OMNIBOX_NAVATTACH_TABS));
+  }
 }
 
 TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
