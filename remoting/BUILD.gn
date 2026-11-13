@@ -14,10 +14,7 @@ group("remoting_all") {
   }
 
   if (is_win) {
-    deps += [
-      "//remoting/host/win:all",
-      "//remoting/tools:remoting_breakpad_tester",
-    ]
+    deps += [ "//remoting/host/win:all" ]
 
     if (is_chrome_branded) {
       deps += [ "//remoting/host:remoting_host_installation" ]

@@ -29,7 +29,4 @@ declare_args() {
   # variable explicitly to true will cause your build to fail if the
   # //remoting/internal directory is not present in your checkout.
   remoting_internal = enable_src_internal
-
-  # Set to true to enable using Crashpad instead of Breakpad.
-  enable_chromoting_crashpad = is_linux || is_win
 }

@@ -27,10 +27,8 @@ should **not** depend on higher-level components like `host` or `client`.
         URL paths, authentication requirements, and optional `RetryPolicy`.
 
 *   **Crash Reporting (`//remoting/base/crash`):**
-    *   **Linux:** Fully migrated to `Crashpad`.
-    *   **Windows:** Currently uses `Breakpad` (including an out-of-process
-        crash server for low-privilege processes), but is in the process of
-        migrating to `Crashpad`.
+    *   **Linux & Windows:** Uses `Crashpad` (including out-of-process handler
+        registration for unprivileged and session worker processes).
     *   **Mac:** Crash reporting is currently not implemented in this layer.
 
 *   **Internal Headers & Buildflags:**
