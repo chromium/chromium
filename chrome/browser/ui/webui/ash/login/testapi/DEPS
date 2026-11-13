@@ -8,14 +8,12 @@ include_rules = [
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
-
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/browser_process.h",
 ]
 
 specific_include_rules = {
+  "oobe_test_api_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
   "oobe_test_api_handler\\.cc": [
     "+ash/display/cros_display_config.h",
     "+ash/shell.h",

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +23,10 @@ class PrefService;
 namespace content {
 class WebUIConfig;
 }  // namespace content
+
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -40,16 +45,23 @@ namespace ash {
 // to ensure clean shutdown before services/resources are torn down.
 class AshWebUIConfigManager : public variations::VariationsService::Observer {
  public:
+  // TODO(crbug.com/558489113): Revisit callback usage once lifetime is resolved
+  // to inject raw_ref/raw_ptr directly.
+  using MetricsServiceGetter =
+      base::RepeatingCallback<::metrics::MetricsService*()>;
+
   // Returns the singleton instance pointer or nullptr (e.g., in unit tests).
   static AshWebUIConfigManager* GetInstance();
 
   // `local_state` and `application_locale_storage` must not be null and must
-  // outlive `this`. `variations_service`, `browser_policy_connector_ash` and
+  // outlive `this`. `metrics_service_getter` must not be null.
+  // `variations_service`, `browser_policy_connector_ash` and
   // `shared_url_loader_factory` can only be null in tests. If
   // `browser_policy_connector_ash` is non-null, it must outlive `this`.
   AshWebUIConfigManager(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
+      MetricsServiceGetter metrics_service_getter,
       variations::VariationsService* variations_service,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
@@ -87,6 +99,7 @@ class AshWebUIConfigManager : public variations::VariationsService::Observer {
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const MetricsServiceGetter metrics_service_getter_;
 
   // Note: `browser_policy_connector_ash_` and `shared_url_loader_factory_` may
   // be null only in unit tests.

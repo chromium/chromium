@@ -7,8 +7,12 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
+#include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
@@ -17,6 +21,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "components/metrics/metrics_service.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/metrics/test/test_metrics_service_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -59,6 +67,13 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
           TestingBrowserProcess::GetGlobal()
               ->GetFeatures()
               ->application_locale_storage(),
+          /*metrics_service_getter=*/
+          base::BindRepeating([]() {
+            metrics::MetricsService* metrics_service =
+                TestingBrowserProcess::GetGlobal()->metrics_service();
+            CHECK(metrics_service);
+            return metrics_service;
+          }),
           TestingBrowserProcess::GetGlobal()
               ->platform_part()
               ->browser_policy_connector_ash(),
@@ -95,6 +110,19 @@ class OobeUIDialogDelegateTest : public AshTestBase {
     AshTestBase::SetUp();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
+
+    // Needed for OobeUI.
+    base::SetRecordActionTaskRunner(
+        task_environment()->GetMainThreadTaskRunner());
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        &enabled_state_provider_, std::wstring(), base::FilePath());
+    metrics_service_ = std::make_unique<metrics::MetricsService>(
+        metrics_state_manager_.get(), &metrics_service_client_,
+        TestingBrowserProcess::GetGlobal()->local_state());
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(
+        metrics_service_.get());
+
     chrome_keyboard_controller_client_ =
         ChromeKeyboardControllerClient::CreateForTest();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
@@ -112,6 +140,9 @@ class OobeUIDialogDelegateTest : public AshTestBase {
     oobe_configuration_.reset();
     network_handler_test_helper_.reset();
     chrome_keyboard_controller_client_.reset();
+    TestingBrowserProcess::GetGlobal()->SetMetricsService(nullptr);
+    metrics_service_.reset();
+    metrics_state_manager_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     AshTestBase::TearDown();
   }
@@ -119,6 +150,11 @@ class OobeUIDialogDelegateTest : public AshTestBase {
  protected:
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  metrics::TestEnabledStateProvider enabled_state_provider_{/*consent=*/false,
+                                                            /*enabled=*/false};
+  metrics::TestMetricsServiceClient metrics_service_client_;
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<metrics::MetricsService> metrics_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

@@ -35,6 +35,7 @@ static_library("config") {
     "//ash/webui/shortcut_customization_ui",
     "//ash/webui/status_area_internals",
     "//ash/webui/vc_background_ui",
+    "//base",
     "//chrome/browser/app_mode",
     "//chrome/browser/ash/annotator",
     "//chrome/browser/ash/app_mode",

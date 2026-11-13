@@ -14,7 +14,9 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "base/metrics/user_metrics.h"
@@ -517,6 +519,13 @@ class WizardControllerTest : public WizardControllerTestBase {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
+        /*metrics_service_getter=*/
+        base::BindRepeating([]() {
+          metrics::MetricsService* metrics_service =
+              TestingBrowserProcess::GetGlobal()->metrics_service();
+          CHECK(metrics_service);
+          return metrics_service;
+        }),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->browser_policy_connector_ash(),

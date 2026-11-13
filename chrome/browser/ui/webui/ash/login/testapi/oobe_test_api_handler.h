@@ -8,18 +8,30 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/base_webui_handler.h"
 
 class PrefService;
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace ash {
 
 class OobeTestAPIHandler : public BaseWebUIHandler {
  public:
+  // TODO(crbug.com/558489113): Revisit callback usage once lifetime is resolved
+  // to inject raw_ref/raw_ptr directly.
+  using MetricsServiceGetter =
+      base::RepeatingCallback<::metrics::MetricsService*()>;
+
   // `local_state` must be non-null and must outlive `this`.
-  explicit OobeTestAPIHandler(PrefService* local_state);
+  // `metrics_service_getter` must be non-null.
+  OobeTestAPIHandler(PrefService* local_state,
+                     MetricsServiceGetter metrics_service_getter);
   ~OobeTestAPIHandler() override;
   OobeTestAPIHandler(const OobeTestAPIHandler&) = delete;
   OobeTestAPIHandler& operator=(const OobeTestAPIHandler&) = delete;
@@ -47,6 +59,7 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void HandleGetShouldSkipSplitModifierScreen(const std::string& callback_id);
 
   const raw_ref<PrefService> local_state_;
+  const MetricsServiceGetter metrics_service_getter_;
 };
 
 }  // namespace ash

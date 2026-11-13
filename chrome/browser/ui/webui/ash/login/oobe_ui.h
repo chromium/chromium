@@ -12,6 +12,7 @@
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/backend/webui_syslog_emitter.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -38,6 +39,10 @@ namespace content {
 class WebUIDataSource;
 }
 
+namespace metrics {
+class MetricsService;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -56,12 +61,18 @@ class OobeUI;
 // The WebUIConfig for chrome://oobe urls
 class OobeUIConfig : public content::WebUIConfig {
  public:
+  // TODO(crbug.com/558489113): Revisit callback usage once lifetime is resolved
+  // to inject raw_ref/raw_ptr directly.
+  using MetricsServiceGetter =
+      base::RepeatingCallback<::metrics::MetricsService*()>;
+
   // `local_state`, `application_locale_storage`, and
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
-  // `shared_url_loader_factory` must be non-null.
+  // `metrics_service_getter` and `shared_url_loader_factory` must be non-null.
   OobeUIConfig(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
+      MetricsServiceGetter metrics_service_getter,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   OobeUIConfig(const OobeUIConfig&) = delete;
@@ -77,6 +88,7 @@ class OobeUIConfig : public content::WebUIConfig {
  private:
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const MetricsServiceGetter metrics_service_getter_;
   const raw_ref<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
   const scoped_refptr<network::SharedURLLoaderFactory>
@@ -89,6 +101,8 @@ class OobeUIConfig : public content::WebUIConfig {
 // - update screen.
 class OobeUI : public ui::MojoWebUIController {
  public:
+  using MetricsServiceGetter = OobeUIConfig::MetricsServiceGetter;
+
   // List of known types of OobeUI. Type added as path in chrome://oobe url, for
   // example chrome://oobe/gaia-signin.
   static inline constexpr char kAppLaunchSplashDisplay[] = "app-launch-splash";
@@ -114,10 +128,11 @@ class OobeUI : public ui::MojoWebUIController {
 
   // `local_state`, `application_locale_storage`, and
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
-  // `shared_url_loader_factory` must be non-null.
+  // `metrics_service_getter` and `shared_url_loader_factory` must be non-null.
   OobeUI(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
+      MetricsServiceGetter metrics_service_getter,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       content::WebUI* web_ui,

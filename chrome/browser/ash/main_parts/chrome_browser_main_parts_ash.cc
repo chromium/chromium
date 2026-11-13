@@ -27,6 +27,7 @@
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
 #include "ash/wm/coral/coral_controller.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -1253,6 +1254,14 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   ash_web_ui_config_manager_ = std::make_unique<AshWebUIConfigManager>(
       g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage(),
+      // TODO(crbug.com/558489113): Revisit callback usage once lifetime is
+      // resolved.
+      base::BindRepeating([]() {
+        metrics::MetricsService* metrics_service =
+            g_browser_process->metrics_service();
+        CHECK(metrics_service);
+        return metrics_service;
+      }),
       g_browser_process->variations_service(),
       g_browser_process->platform_part()->browser_policy_connector_ash(),
       g_browser_process->shared_url_loader_factory());

@@ -23,6 +23,7 @@
 #include "ash/webui/common/backend/webui_syslog_emitter.h"
 #include "ash/webui/common/mojom/webui_syslog_emitter.mojom.h"
 #include "ash/webui/common/trusted_types_util.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
@@ -400,13 +401,16 @@ const DisplayScaleFactor k4KDisplay = {3840, 1.5f},
 OobeUIConfig::OobeUIConfig(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    MetricsServiceGetter metrics_service_getter,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : WebUIConfig(content::kChromeUIScheme, ash::kChromeUIOobeHost),
       local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      metrics_service_getter_(std::move(metrics_service_getter)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
+  CHECK(metrics_service_getter_);
   CHECK(shared_url_loader_factory_);
 }
 
@@ -423,10 +427,10 @@ bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 std::unique_ptr<content::WebUIController> OobeUIConfig::CreateWebUIController(
     content::WebUI* web_ui,
     const GURL& url) {
-  return std::make_unique<OobeUI>(&local_state_.get(),
-                                  &application_locale_storage_.get(),
-                                  &browser_policy_connector_ash_.get(),
-                                  shared_url_loader_factory_, web_ui, url);
+  return std::make_unique<OobeUI>(
+      &local_state_.get(), &application_locale_storage_.get(),
+      metrics_service_getter_, &browser_policy_connector_ash_.get(),
+      shared_url_loader_factory_, web_ui, url);
 }
 
 void OobeUI::ConfigureOobeDisplay(
@@ -727,6 +731,7 @@ void OobeUI::BindInterface(
 OobeUI::OobeUI(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    MetricsServiceGetter metrics_service_getter,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     content::WebUI* web_ui,
@@ -734,6 +739,7 @@ OobeUI::OobeUI(
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
+  CHECK(metrics_service_getter);
   CHECK(browser_policy_connector_ash);
   CHECK(shared_url_loader_factory);
   LOG(WARNING) << "OobeUI created";
@@ -762,7 +768,8 @@ OobeUI::OobeUI(
 
   bool enable_test_api = command_line->HasSwitch(switches::kEnableOobeTestAPI);
   if (enable_test_api) {
-    AddWebUIHandler(std::make_unique<OobeTestAPIHandler>(&local_state_.get()));
+    AddWebUIHandler(std::make_unique<OobeTestAPIHandler>(
+        &local_state_.get(), std::move(metrics_service_getter)));
   }
 
   base::DictValue localized_strings = GetLocalizedStrings();
