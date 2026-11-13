@@ -32,6 +32,8 @@
 
 namespace blink {
 
+class SVGRectElement;
+
 class LayoutSVGRect final : public LayoutSVGShape {
  public:
   explicit LayoutSVGRect(SVGRectElement*);
@@ -42,7 +44,16 @@ class LayoutSVGRect final : public LayoutSVGShape {
     return "LayoutSVGRect";
   }
 
+  // The size as resolved from the SVG width/height attributes, before any
+  // normalization for degenerate geometry. Used by CSS 'width'/'height'.
+  gfx::SizeF UsedSize() const;
+
  private:
+  bool IsSVGRect() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const ComputedStyle& new_style,
@@ -54,6 +65,13 @@ class LayoutSVGRect final : public LayoutSVGShape {
                                   const WindRule) const override;
   bool CanUseStrokeHitTestFastPath() const;
   bool DefinitelyHasSimpleStroke() const;
+};
+
+template <>
+struct DowncastTraits<LayoutSVGRect> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGRect();
+  }
 };
 
 }  // namespace blink

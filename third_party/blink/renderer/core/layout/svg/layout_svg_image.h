@@ -61,6 +61,13 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
     return !object_bounding_box_.IsEmpty();
   }
 
+  // The size as resolved from the SVG width/height attributes, before any
+  // normalization for degenerate geometry. Used by CSS 'width'/'height'.
+  gfx::SizeF UsedSize() const {
+    NOT_DESTROYED();
+    return CalculateObjectSize();
+  }
+
   bool IsSVGImage() const final {
     NOT_DESTROYED();
     return true;
@@ -100,6 +107,7 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
   void Paint(const PaintInfo&) const override;
 
   bool UpdateBoundingBox();
+
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
   bool UpdateAfterSVGLayout(const SVGLayoutInfo&, bool bbox_changed);
@@ -110,6 +118,9 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
                    HitTestPhase) override;
 
   gfx::SizeF CalculateObjectSize() const;
+  // `CalculateObjectSize()` with degenerate (zero-width or zero-height)
+  // sizes collapsed to empty.
+  gfx::SizeF CalculateNormalizedObjectSize() const;
 
   // True if `local_transform_` is not up-to-date.
   bool needs_transform_update_ : 1 = true;

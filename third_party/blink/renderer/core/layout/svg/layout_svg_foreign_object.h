@@ -38,6 +38,10 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
 
   bool IsObjectBoundingBoxValid() const;
 
+  // The size of the viewport established by this element, before any
+  // normalization for degenerate geometry. Used by CSS 'width'/'height'.
+  gfx::SizeF UsedSize() const;
+
   // A method to call when recursively hit testing from an SVG parent.
   // Since LayoutSVGRoot has a PaintLayer always, this will cause a
   // trampoline through PaintLayer::HitTest and back to a call to NodeAtPoint

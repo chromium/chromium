@@ -71,6 +71,9 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -80,7 +83,6 @@
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/core/style/superellipse.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
-#include "third_party/blink/renderer/core/svg/svg_rect_element.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
@@ -2372,11 +2374,22 @@ CSSValue* ComputedStyleUtils::ValueForGridLanesDirection(
   return list;
 }
 
-static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
+// Returns the used size for SVG elements whose 'width' and 'height'
+// properties establish their size: <image>, <foreignObject> and <rect>.
+static std::optional<gfx::SizeF> UsedSVGBoxSize(
+    const LayoutObject& layout_object) {
   DCHECK(layout_object.IsSVGChild());
-  return layout_object.IsSVGImage() || layout_object.IsSVGForeignObject() ||
-         (layout_object.IsSVGShape() &&
-          IsA<SVGRectElement>(layout_object.GetNode()));
+  if (const auto* svg_image = DynamicTo<LayoutSVGImage>(layout_object)) {
+    return svg_image->UsedSize();
+  }
+  if (const auto* foreign_object =
+          DynamicTo<LayoutSVGForeignObject>(layout_object)) {
+    return foreign_object->UsedSize();
+  }
+  if (const auto* rect = DynamicTo<LayoutSVGRect>(layout_object)) {
+    return rect->UsedSize();
+  }
+  return std::nullopt;
 }
 
 // https://drafts.csswg.org/cssom/#resolved-value
@@ -2392,10 +2405,11 @@ static bool IsSVGObjectWithWidthAndHeight(const LayoutObject& layout_object) {
 std::optional<gfx::SizeF> ComputedStyleUtils::UsedBoxSize(
     const LayoutObject& layout_object) {
   if (layout_object.IsSVGChild()) {
-    if (!IsSVGObjectWithWidthAndHeight(layout_object)) {
+    std::optional<gfx::SizeF> svg_size = UsedSVGBoxSize(layout_object);
+    if (!svg_size) {
       return std::nullopt;
     }
-    gfx::SizeF size = layout_object.ObjectBoundingBox().size();
+    gfx::SizeF size = *svg_size;
     if (!RuntimeEnabledFeatures::SvgNewZoomEnabled()) {
       // The CSS value producer will divide by EffectiveZoom, so the value
       // returned here must be in zoomed-pixel units.

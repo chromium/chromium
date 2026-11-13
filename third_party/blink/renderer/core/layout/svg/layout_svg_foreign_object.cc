@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -45,7 +46,16 @@ bool LayoutSVGForeignObject::IsObjectBoundingBoxValid() const {
 
 gfx::RectF LayoutSVGForeignObject::ObjectBoundingBox() const {
   NOT_DESTROYED();
+  if (!IsObjectBoundingBoxValid() &&
+      RuntimeEnabledFeatures::SvgEmptyBBoxForNonRenderedEnabled()) {
+    return gfx::RectF();
+  }
   return viewport_;
+}
+
+gfx::SizeF LayoutSVGForeignObject::UsedSize() const {
+  NOT_DESTROYED();
+  return viewport_.size();
 }
 
 gfx::RectF LayoutSVGForeignObject::StrokeBoundingBox() const {

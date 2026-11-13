@@ -63,7 +63,6 @@ bool HasValidBoundingBoxForContainer(const LayoutObject* object) {
   if (auto* svg_image = DynamicTo<LayoutSVGImage>(object)) {
     return svg_image->IsObjectBoundingBoxValid();
   }
-
   return false;
 }
 
@@ -234,6 +233,10 @@ gfx::RectF SVGGraphicsElement::GetBBox() {
   auto* layout_object = GetLayoutObject();
   DCHECK(layout_object);
   gfx::RectF bbox = layout_object->ObjectBoundingBox();
+  if (layout_object->IsSVGHiddenContainer() &&
+      RuntimeEnabledFeatures::SvgEmptyBBoxForNonRenderedEnabled()) {
+    bbox = gfx::RectF();
+  }
 
   if (bbox != gfx::RectF(0, 0, 0, 0) &&
       (!HasValidBoundingBoxForContainer(layout_object) ||
@@ -245,8 +248,8 @@ gfx::RectF SVGGraphicsElement::GetBBox() {
   // TODO: Having zero width or height in viewport makes the container element
   // non-rendered, currently we return the bbox of its contents, which can
   // change if we decided to return an empty bbox for such cases. Depending on
-  // the count of `kGetBBoxForNestedSVGElementWithZeroWidthOrHeight` it might be
-  // safe to not consider this case at all.
+  // the count of `kGetBBoxForNestedSVGElementWithZeroWidthOrHeight` it might
+  // be safe to not consider this case at all.
   if (auto* svg_viewport_container =
           DynamicTo<LayoutSVGViewportContainer>(layout_object)) {
     if (bbox != gfx::RectF(0, 0, 0, 0) &&

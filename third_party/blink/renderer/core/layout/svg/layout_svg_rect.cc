@@ -82,11 +82,7 @@ gfx::RectF LayoutSVGRect::UpdateShapeFromElement() {
   const SVGViewportResolver viewport_resolver(*this);
   const gfx::PointF origin =
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
-  const gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
-                                                  viewport_resolver, style);
-  // Spec: "A negative value is an error." gfx::SizeF() clamps negative
-  // width/height to 0.
-  const gfx::RectF bounding_box(origin, gfx::SizeF(size.x(), size.y()));
+  const gfx::RectF bounding_box(origin, UsedSize());
 
   // Spec: "A value of zero disables rendering of the element."
   if (!bounding_box.IsEmpty()) {
@@ -102,6 +98,17 @@ gfx::RectF LayoutSVGRect::UpdateShapeFromElement() {
     }
   }
   return bounding_box;
+}
+
+gfx::SizeF LayoutSVGRect::UsedSize() const {
+  NOT_DESTROYED();
+  const ComputedStyle& style = Style();
+  const SVGViewportResolver viewport_resolver(*this);
+  const gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
+                                                  viewport_resolver, style);
+  // Spec: "A negative value is an error." gfx::SizeF() clamps negative
+  // width/height to 0.
+  return gfx::SizeF(size.x(), size.y());
 }
 
 bool LayoutSVGRect::CanUseStrokeHitTestFastPath() const {

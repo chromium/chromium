@@ -538,7 +538,7 @@ TEST_F(LayoutSVGForeignObjectTest, GetBBoxUseCounterForZeroHeight) {
 
   To<SVGGraphicsElement>(GetElementById("foreign"))->GetBBox();
 
-  EXPECT_TRUE(GetDocument().IsUseCounted(
+  EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kGetBBoxForElementWithZeroWidthOrHeight));
 }
 
@@ -558,7 +558,7 @@ TEST_F(LayoutSVGForeignObjectTest, GetBBoxUseCounterForZeroWidth) {
 
   To<SVGGraphicsElement>(GetElementById("foreign"))->GetBBox();
 
-  EXPECT_TRUE(GetDocument().IsUseCounted(
+  EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kGetBBoxForElementWithZeroWidthOrHeight));
 }
 

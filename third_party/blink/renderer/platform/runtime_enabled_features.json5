@@ -6692,6 +6692,12 @@
       status: "stable",
     },
     {
+      // getBBox() returns the empty rect for shapes that are not rendered,
+      // i.e. zero/negative geometry or a non-rendered ancestor.
+      name: "SvgEmptyBBoxForNonRendered",
+      status: "stable",
+    },
+    {
       name: "SvgEnableTextDecorationCssStyling",
       status: "stable",
     },

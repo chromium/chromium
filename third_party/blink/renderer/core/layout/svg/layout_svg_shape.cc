@@ -389,6 +389,11 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
   if (needs_shape_update_) {
     gfx::RectF new_object_bounding_box = UpdateShapeFromElement();
     ClampBoundsToFinite(new_object_bounding_box);
+    if (IsShapeEmpty() &&
+        RuntimeEnabledFeatures::SvgEmptyBBoxForNonRenderedEnabled()) {
+      // Report an empty box for shapes with degenerate geometry.
+      new_object_bounding_box = gfx::RectF();
+    }
     bbox_changed = fill_bounding_box_ != new_object_bounding_box;
     fill_bounding_box_ = new_object_bounding_box;
     needs_shape_update_ = false;

@@ -27,7 +27,7 @@ TEST_F(LayoutSVGImageTest, GetBBoxUseCounterForZeroHeight) {
 
   To<SVGGraphicsElement>(GetElementById("image"))->GetBBox();
 
-  EXPECT_TRUE(GetDocument().IsUseCounted(
+  EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kGetBBoxForElementWithZeroWidthOrHeight));
 }
 
@@ -45,7 +45,7 @@ TEST_F(LayoutSVGImageTest, GetBBoxUseCounterForZeroWidth) {
 
   To<SVGGraphicsElement>(GetElementById("image"))->GetBBox();
 
-  EXPECT_TRUE(GetDocument().IsUseCounted(
+  EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kGetBBoxForElementWithZeroWidthOrHeight));
 }
 
