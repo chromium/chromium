@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Coses que pots provar de fer</translation>
 <translation id="112308213915226829">Amaga el prestatge automàticament</translation>
 <translation id="1129383337808748948">Actualitza <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Ha de tenir com a mínim una lletra o un símbol</translation>
 <translation id="1142002900084379065">Fotos recents</translation>
 <translation id="114221662579355151">Permet l'accés a la càmera a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir a la càmera. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="1145593918056169051">La impressora s'ha aturat</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Obre una pestanya nova en una finestra nova</translation>
 <translation id="1536604384701784949">Per utilitzar l'adreça <ph name="USER_EMAIL_ADDRESS" />, primer has de tancar la sessió de tots els comptes. Per tancar la sessió i tornar enrere, selecciona Cancel·la. Després selecciona l'hora per obrir l'àrea d'estat i, a continuació, l'opció Tanca la sessió. Torna a iniciar la sessió amb l'adreça <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Cursor del ratolí gran</translation>
+<translation id="1538808328818992871">Ha de tenir com a mínim <ph name="MIN_LENGTH" /> caràcters</translation>
 <translation id="1545331255323159851">Consulta les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="1546492247443594934">Escriptori 2</translation>
 <translation id="1546930421365146760">Demana a l'administrador que configuri aquest dispositiu a la consola d'administració de Google</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Feu clic per veure més opcions</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1557622599341396706">Mostra el nom de l'escriptori</translation>
+<translation id="1568242747239041185">Ha de tenir dos dels elements següents: lletres majúscules, lletres minúscules, números o símbols</translation>
 <translation id="1569384531973824928">Permet l'accés a tots els llocs web i totes les aplicacions amb permisos per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
 <translation id="1570235441606255261">Instal·lador de Steam</translation>
 <translation id="1571697193564730395">Commuta el mode No molestis. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Replega Google Tasks</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2215920961700443347">No hi ha connexió a Internet. Connecta-t'hi i torna-ho a provar.</translation>
+<translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
 <translation id="2223384056430485343">En una pantalla dividida</translation>
 <translation id="2224075387478458881">No es permet la gravació de pantalla quan es mostra contingut protegit</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Les tecles del ratolí estan en pausa</translation>
 <translation id="2268731132310444948">Pas <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> de la visita. Un cop s'hagi activat el menú d'aplicacions, tindràs una barra de cerca millorada. Podràs començar a escriure-hi per cercar fitxers, aplicacions i més. També hi podràs obtenir respostes a preguntes sobre el teu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
+<translation id="2273432041732361925">No ha de tenir caràcters repetits ni seqüències de 4 o més</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2278668501808246459">S'està iniciant el gestor de contenidors</translation>
 <translation id="2282073721614284166">Obre l'enllaç en una pestanya</translation>
@@ -1056,6 +1061,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4072805772816336153">Torna-ho a provar més tard</translation>
 <translation id="4077623680826964850">S'ha esgotat el temps d'espera en iniciar la VM o tornar a connectar-s'hi.</translation>
 <translation id="4086921558679520050">Activa l'interruptor del micròfon físic al dispositiu</translation>
+<translation id="4093173301198419723">Ha de tenir lletres majúscules, lletres minúscules, números i símbols</translation>
 <translation id="4099874310852108874">S'ha produït un error de la xarxa.</translation>
 <translation id="4101772068965291327">Obre la pàgina d'inici</translation>
 <translation id="4102906002417106771">Reinicia per fer un Powerwash</translation>
@@ -1276,6 +1282,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4668936527507421457">El PIN només pot incloure números</translation>
 <translation id="4672539464599646374">Estalvi de bateria s'ha activat</translation>
 <translation id="4673427585974421255">Mantén activat</translation>
+<translation id="467510802200863975">Les contrasenyes no coincideixen</translation>
 <translation id="4677040906536311086">Full de càlcul de Google</translation>
 <translation id="468019262817532242">Ningú no pot compartir contingut amb tu</translation>
 <translation id="468293128311738995">Aplicacions del telèfon</translation>
@@ -1299,6 +1306,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Actualitza el dispositiu a la versió anterior en el termini d'1 dia}other{Actualitza el dispositiu a la versió anterior en el termini de # dies}}</translation>
 <translation id="4747410141429390146">Desbloqueja per veure les notificacions</translation>
 <translation id="4752784485658729358">Només s'admeten 6 escriptoris desats. Suprimeix-ne un per desar-ne un de nou.</translation>
+<translation id="4753084533826742808">Ha de tenir com a mínim un caràcter</translation>
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />+fletxa amunt</translation>
 <translation id="4762573482154983647">Amaga les aplicacions</translation>
@@ -1435,6 +1443,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5144005092084035179">Vols canviar l'entrada d'àudio?</translation>
 <translation id="5145464978649806571">Si t'apartes del dispositiu, la pantalla es bloquejarà automàticament. Quan siguis davant del dispositiu, la pantalla es mantindrà activa més temps. Si la pantalla de bloqueig està desactivada, el dispositiu entrarà en mode de repòs en lloc de bloquejar-se.</translation>
 <translation id="5147567197700016471">Desbloquejat</translation>
+<translation id="5148285448107770349">La contrasenya ha de tenir 8 caràcters com a mínim</translation>
 <translation id="5150070631291639005">Configuració de la privadesa</translation>
 <translation id="5155897006997040331">Velocitat de lectura</translation>
 <translation id="5158206172605340248">S'ha ignorat el menú de marques d'èmfasi.</translation>
@@ -1555,6 +1564,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.</translation>
 <translation id="547979256943495781">El prestatge és a la dreta</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Confirma la contrasenya</translation>
 <translation id="5491186829646618080">Hi ha actualitzacions de microprogramari disponibles</translation>
 <translation id="5503884284981862082">Obre/Tanca l'Assistent de Google</translation>
 <translation id="550391772491508736">Reprèn l'emissió</translation>
@@ -1815,6 +1825,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6198252989419008588">Canvia el PIN</translation>
 <translation id="6199775032047436064">Torna a carregar la pàgina actual</translation>
 <translation id="6200515304866777730">No compatible amb l'aplicació</translation>
+<translation id="6209589022625766110">La contrasenya ha de tenir com a mínim 8 caràcters i incloure almenys dos dels elements següents: lletres majúscules, lletres minúscules, números o símbols. No ha de tenir caràcters repetits ni seqüències de 4 o més.</translation>
 <translation id="6210042900243040400">Connecta <ph name="NAME" />, desat anteriorment a <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">Durant 10 min</translation>
 <translation id="6213808132343683860">Fes una captura o una gravació de pantalla parcials</translation>
@@ -1849,6 +1860,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6297986260307280218">Envia dades d'ús i de diagnòstic. Ajuda a millorar la teva experiència a Android enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta <ph name="BEGIN_LINK1" />opció de configuració<ph name="END_LINK1" />. És possible que el propietari decideixi enviar a Google dades de diagnòstic i d'ús sobre aquest dispositiu. Si l'opció de configuració Activitat al web i en aplicacions addicional està activada, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK2" />Més informació sobre les mètriques<ph name="BEGIN_LINK2_END" />Més informació<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Personalitza aquest dispositiu a l'aplicació</translation>
 <translation id="6298962879096096191">Utilitza Google Play per instal·lar aplicacions per a Android</translation>
+<translation id="6300478323573969040">Ha de tenir com a mínim 12 caràcters i incloure lletres majúscules i minúscules, números i símbols. No ha de tenir caràcters repetits ni seqüències de 4 o més.</translation>
 <translation id="6304076460080088478">Tanca o minimitza les finestres d'incògnit per cercar el que hi ha en pantalla amb Google Lens</translation>
 <translation id="6309219492973062892">Toca les icones 1-8 del prestatge o fes-hi clic</translation>
 <translation id="6315170314923504164">Veu</translation>
@@ -2021,7 +2033,6 @@ Instal·lació nova</translation>
 <translation id="6782919488259222803">Cerca a la pàgina actual</translation>
 <translation id="6783348167101855071">Ansa inferior dreta seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="6786750046913594791">Tanca la carpeta</translation>
-<translation id="6792262051831399889">No disponible</translation>
 <translation id="6792351896138862473">No es pot obrir l'aplicació de quiosc no admesa. Notifica aquest problema a l'administrador.</translation>
 <translation id="679368458793552943">Amplia el zoom quan la lupa estigui activada</translation>
 <translation id="6794287755901682422">Aquest element té: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8063363226185507157">Configuració d'accessibilitat sincronitzada</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8079538659226626406">Compartició de pantalla</translation>
 <translation id="8083540854303889870">Desat per a més tard</translation>
@@ -2627,6 +2639,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8555757996376137129">Suprimeix l'escriptori actual</translation>
 <translation id="8558521694042102707">La IA generativa pot cometre errors, també sobre persones, així que comprova'n les respostes.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> l'ha editat</translation>
+<translation id="8567946600191652875">Ha de tenir com a mínim 6 caràcters i incloure almenys una lletra o un símbol</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">El menú s'ha mogut a l'extrem inferior dret de la pantalla.</translation>
 <translation id="8581946341807941670">Prem <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> i fes clic en un enllaç</translation>
@@ -2800,7 +2813,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9037818663270399707">La teva connexió no és privada per a tot el trànsit de xarxa</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">El Bluetooth no està disponible</translation>
 <translation id="9050999376345823055">Prem "." per deixar anar</translation>
 <translation id="906458777597946297">Maximitza la finestra</translation>
 <translation id="9065203028668620118">Edita</translation>

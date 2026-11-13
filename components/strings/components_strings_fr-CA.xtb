@@ -726,7 +726,6 @@
 <translation id="22081806969704220">Bac 3</translation>
 <translation id="2210794033760923560">Téléverser le rapport</translation>
 <translation id="2212735316055980242">Règle introuvable</translation>
-<translation id="2213606439339815911">Récupération des entrées...</translation>
 <translation id="2213612003795704869">La page est imprimée</translation>
 <translation id="2214086901479959524">Mettez à jour Chrome pour continuer à utiliser vos groupes d'onglets partagés</translation>
 <translation id="2214453882118345682">Magasinez, traduisez et identifiez ce que vous voyez avec votre appareil photo.</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">Une liste limitée d'URL de pages que vous visitez où se produisent des événements relatifs aux technologies patrimoniales</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Partagera 1 onglet}one{Partagera {NUM_TABS} onglet}other{Partagera {NUM_TABS} onglets}}</translation>
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte est géré par <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Consultez votre réponse de recherche Google avec l'IA dans cet onglet</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="236000571258713023">Véhicules</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">Enregistrer le billet d'événement dans Portefeuille</translation>
 <translation id="2925454999967523701">Bouton Créer un document, activez-le pour créer rapidement un nouveau document Google</translation>
 <translation id="2925673989565098301">Mode de livraison rapide</translation>
+<translation id="2927328994673424423">Il y a 2 semaines</translation>
 <translation id="2928426578619531300">Utilisateur affilié</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autres adresses}}</translation>
 <translation id="2930531075747147366">Onglet à partir de votre autre appareil</translation>
@@ -1275,7 +1276,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3141337053413339205">Basculez vers cet onglet.</translation>
 <translation id="3144458715650412431">Les politiques de test ont été appliquées. Examinez-les et réinitialisez-les à la page chrome://policy/test. Les politiques d'administrateur ne seront pas appliquées.</translation>
 <translation id="3145945101586104090">Échec du décodage de la réponse</translation>
-<translation id="3149865382039202168">Enregistrez vos informations dans <ph name="GOOGLE_WALLET_TITLE" /> et effectuez des tâches plus rapidement, comme remplir des formulaires dans les produits Google. Vous pouvez contrôler <ph name="HOW_INFO_IS_USED_LINK" /> dans vos paramètres de cartes privées pour <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Erreur de serveur temporaire</translation>
 <translation id="3150889484970506196">Bouton Créer une feuille, activez-le pour créer rapidement une nouvelle feuille Google</translation>
 <translation id="3154506275960390542">Cette page inclut un formulaire qui pourrait ne pas être soumis en toute sécurité. Les données que vous envoyez peuvent être consultées par d'autres personnes pendant leur transfert ou pourraient être modifiées par un pirate informatique afin de changer ce que le serveur reçoit.</translation>
@@ -1521,7 +1521,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3558335486599406178">IBAN enregistré dans Google Portefeuille</translation>
 <translation id="3558573058928565255">Pendant la journée</translation>
 <translation id="3559897352860026926">Demandez à votre administrateur de vérifier les paramètres de configuration de leur <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">Voir les sites connexes</translation>
 <translation id="3566021033012934673">Votre connexion n'est pas privée</translation>
 <translation id="3566336457819493938">215 mm x 315 mm</translation>
 <translation id="3566681680543111735">Copier la chaîne de variantes</translation>
@@ -2164,7 +2163,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4603727370377253901">Réservations de vols</translation>
 <translation id="4607608436550361748">Afficher les astuces de Chrome</translation>
 <translation id="460848736049414407">Bloqué par l'administrateur</translation>
-<translation id="4610279718074907952">Ce site fait partie d'un groupe défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
 <translation id="4612631413844865947">Une erreur s'est produite lors du traitement de votre commande sur <ph name="MERCHANT_ORIGIN" /> par le biais de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Ce site peut comporter un contenu pour adultes. Un parent ou un tuteur doit indiquer que tu es autorisé à visiter ce site Web.</translation>
 <translation id="4613873770449493819">L'URL doit pointer vers un domaine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3710,7 +3708,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7173338713290252554">Historique des prix sur le Web</translation>
 <translation id="7174545416324379297">Fusionnées</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}one{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre option de livraison}other{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres options de livraison}}</translation>
-<translation id="7180611975245234373">Actualiser</translation>
 <translation id="7181261019481237103">Ouvrir une fenêtre de navigation privée</translation>
 <translation id="7182878459783632708">Aucune politique configurée</translation>
 <translation id="7186833457841277072">Enveloppe (jet d'encre)</translation>
@@ -4176,7 +4173,6 @@ Détails supplémentaires :
 <translation id="7932579305932748336">Revêtement</translation>
 <translation id="79338296614623784">Entrez un numéro de téléphone valide</translation>
 <translation id="7934414805353235750"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Les capteurs de mouvement sont autorisés</translation>
 <translation id="7937163678541954811">Le code CVC de cette carte sera chiffré et enregistré sur votre appareil pour un paiement plus rapide</translation>
 <translation id="7937554595067888181">Expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4224,7 +4220,6 @@ Détails supplémentaires :
 <translation id="7999482381722829925">Crée une liste de contrôle priorisée pour un nettoyage en profondeur pièce par pièce, en ciblant les endroits souvent oubliés</translation>
 <translation id="8001912761979890298">Ce serveur n'a pas pu prouver qu'il s'agit bien de <ph name="DOMAIN" /> parce qu'il utilise un certificat de sécurité qui n'est pas approuvé par Chromium ni par la configuration de votre système pour le chiffrement du trafic Web. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par un pirate informatique. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Afficher le certificat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Essayez de fermer d'autres onglets ou programmes pour libérer de la mémoire.</translation>
-<translation id="8002230960325005199">Voir les sites connexes dans un nouvel onglet</translation>
 <translation id="8003046808285812021">« <ph name="SEARCH_TERMS" /> »</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
@@ -4265,7 +4260,6 @@ Détails supplémentaires :
 <translation id="8079976827192572403">Site dangereux</translation>
 <translation id="8086971161893892807">Brouillon</translation>
 <translation id="8087558780672230449">Chargement de <ph name="APP_ORIGIN" /> pour gérer votre paiement sur <ph name="MERCHANT_ORIGIN" /> en cours…</translation>
-<translation id="8088680233425245692">Échec de visionnement de l'article.</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8091372947890762290">Le serveur doit faire l'activation.</translation>
 <translation id="8092254339843485299">6 po x 8 po</translation>
@@ -4904,7 +4898,6 @@ Détails supplémentaires :
 <translation id="9199905725844810519">L'impression est bloquée</translation>
 <translation id="9204089334327209740">Quand le téléversement sera terminé, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. Le stockage local, y compris tous les fichiers de la corbeille, sera automatiquement retiré.</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase de passe de synchronisation. Veuillez l'entrer pour commencer la synchronisation.</translation>
-<translation id="9207861905230894330">Échec de l'ajout d'un article.</translation>
 <translation id="9209339767782560829">Un problème est survenu lors de l'utilisation de votre certificat de connexion.</translation>
 <translation id="9210152531668884481">J'accepte</translation>
 <translation id="9213433120051936369">Personnaliser l'apparence</translation>

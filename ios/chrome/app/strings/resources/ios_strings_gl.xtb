@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
 <translation id="2022431790688770637">Xestionar suxestións de Gemini</translation>
+<translation id="2023265063803387188">Gemini non está dispoñible no modo de incógnito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" />, polo que é posible que poida ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Deter</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" non ten permiso para acceder á cámara</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pagar a prazos</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="386224966259596343">Terás a oportunidade de gardar esta información en Wallet a próxima vez que completes un formulario relevante.</translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
+<translation id="3870931306085184145">Non hai contrasinais gardados para <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
 <translation id="3878657761594430423">Control da folla</translation>
 <translation id="3884810423191119660">Garda os contrasinais de forma segura para poder iniciar sesión facilmente en sitios e aplicacións</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Potencia a túa navegación</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
-<translation id="5070314445039955096">Os permisos de <ph name="SITE_DOMAIN" /> volverán desactivarse cando saias deste sitio</translation>
 <translation id="507187271399539513">{count,plural, =1{Método de pago {position} de {count}}other{Método de pago {position} de {count}}}</translation>
 <translation id="5075939510584558547">Gardar sen encriptación</translation>
 <translation id="5076534614343816664">Seguimento de prezos</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Para usar Level Up, debes ter a sesión iniciada</translation>
 <translation id="5352128922772839949">Gardar o ficheiro</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" ten permiso para usar o micrófono sempre que visites este sitio</translation>
 <translation id="5359436665022446585">Mellora na apertura de ligazóns</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5364647308446127983">{count,plural, =1{Non se puido importar {count} clave de acceso}other{Non se puideron importar {count} claves de acceso}}</translation>
@@ -1484,6 +1483,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5612225021788368236">Pechar a promoción do navegador predeterminado</translation>
 <translation id="561269594905823128">Toca <ph name="BEGIN_BOLD" />Select your file<ph name="END_BOLD" /> (Selecciona o teu ficheiro)</translation>
 <translation id="5613297089029360427">Ordenar por máis recente</translation>
+<translation id="561349411957324076">Descarga completada</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
 <translation id="5617769621178348890">Abrir na aplicación Ficheiros</translation>
 <translation id="5619871095170816857">Esta tarxeta móstrache a última pestana aberta que usaches en todos os dispositivos sincronizados nas últimas 24 horas.</translation>
@@ -2333,7 +2333,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
 <translation id="8161614462829037225">Desbloquear co seguinte método: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Lonxitude</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" ten permiso para usar a cámara sempre que visites este sitio</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} e {website_2}}=3{Para {website_1}, {website_2} e 1 sitio máis}other{Para {website_1}, {website_2} e {more_count} sitios máis}}</translation>
 <translation id="8184895727539791845">Para permitir que Gemini use a túa cámara, actívaa na configuración de iOS</translation>
 <translation id="8185076488803799132">Import (Importar)</translation>
@@ -2504,7 +2503,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8674716540979958118">Tes contrasinais vulnerados.</translation>
 <translation id="8679900250380464358">Engadir á lista de lectura</translation>
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" non ten permiso para acceder ao micrófono</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
 <translation id="8692107307702113268">O contrasinal ten máis de 1000 caracteres</translation>
 <translation id="8692689525339542358">Protéxete contra as extensións, descargas e sitios perigosos.</translation>

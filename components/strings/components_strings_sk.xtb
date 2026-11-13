@@ -726,7 +726,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="22081806969704220">Priehradka č. 3</translation>
 <translation id="2210794033760923560">Nahrať prehľad</translation>
 <translation id="2212735316055980242">Pravidlo sa nenašlo</translation>
-<translation id="2213606439339815911">Načítavanie záznamov...</translation>
 <translation id="2213612003795704869">Stránka je vytlačená</translation>
 <translation id="2214086901479959524">Ak chcete naďalej používať zdieľané skupiny kariet, aktualizujte Chrome</translation>
 <translation id="2214453882118345682">Nakupujte, prekladajte a identifikujte, čo vidíte, pomocou kamery.</translation>
@@ -823,6 +822,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2356941001189392209">Obmedzený zoznam webových adries stránok, ktoré navštívite a na ktorých sa vyskytujú udalosti využívajúce starú technológiu</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Bude sa zdieľať 1 karta}few{Budú sa zdieľať {NUM_TABS} karty}many{Will share {NUM_TABS} tabs}other{Bude sa zdieľať {NUM_TABS} kariet}}</translation>
 <translation id="2357481397660644965">Vaše zariadenie spravuje <ph name="DEVICE_MANAGER" /> a váš účet spravuje <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Pozrite si odpoveď z Vyhľadávania pomocou umelej inteligencie od Googlu na tejto karte</translation>
 <translation id="2359629602545592467">Viaceré</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="236000571258713023">Vozidlá</translation>
@@ -1141,6 +1141,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2925032407415783182">Uložte si vstupenku na podujatie do Peňaženky</translation>
 <translation id="2925454999967523701">Tlačidlo Vytvoriť dokument, ktorého aktivovaním rýchlo vytvoríte nový dokument Google</translation>
 <translation id="2925673989565098301">Spôsob doručenia</translation>
+<translation id="2927328994673424423">Pred 2 týždňami</translation>
 <translation id="2928426578619531300">Používateľ bol pridružený</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšia}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšie}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšej}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalších}}</translation>
 <translation id="2930531075747147366">Karta z vášho druhého zariadenia</translation>
@@ -1275,7 +1276,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3141337053413339205">Prepnúť na túto kartu</translation>
 <translation id="3144458715650412431">Testovacie pravidlá boli použité. Skontrolujte ich a resetujte na chrome://policy/test. Pravidlá správcu sa nepoužijú.</translation>
 <translation id="3145945101586104090">Odpoveď sa nepodarilo dekódovať</translation>
-<translation id="3149865382039202168">Uložte si údaje v službe <ph name="GOOGLE_WALLET_TITLE" />, aby ste ich mohli používať rýchlejšie, napríklad pri vypĺňaní formulárov v službách Googlu. V nastaveniach osobných preukazov pre účet <ph name="ACCOUNT" /> môžete ovládať, <ph name="HOW_INFO_IS_USED_LINK" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Dočasná chyba servera</translation>
 <translation id="3150889484970506196">Tlačidlo Vytvoriť tabuľku, ktorého aktivovaním rýchlo vytvoríte novú tabuľku Google</translation>
 <translation id="3154506275960390542">Táto stránka obsahuje formulár, ktorý zrejme nebude možné bezpečne odoslať. Odoslané dáta si môžu pri prenose zobraziť iní používatelia a prípadný útočník ich môže zmeniť. Server preto môže prijať niečo iné, než ste odoslali.</translation>
@@ -1518,7 +1518,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3558335486599406178">Číslo IBAN bolo uložené v Peňaženke Google</translation>
 <translation id="3558573058928565255">Čas dňa</translation>
 <translation id="3559897352860026926">Požiadajte správcu o overenie nastavení konfigurácie služby <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">Zobraziť súvisiace weby</translation>
 <translation id="3566021033012934673">Vaše pripojenie nie je súkromné</translation>
 <translation id="3566336457819493938">215 × 315 mm</translation>
 <translation id="3566681680543111735">Kopírovať reťazec variácií</translation>
@@ -2160,7 +2159,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4603727370377253901">Rezervácie leteniek</translation>
 <translation id="4607608436550361748">Zobraziť tipy Chromu</translation>
 <translation id="460848736049414407">Blokuje správca</translation>
-<translation id="4610279718074907952">Tento web je v skupine definovanej vlastníkom <ph name="SET_OWNER" />, ktorému sa zobrazuje vaša aktivita</translation>
 <translation id="4612631413844865947">Pri spracovaní objednávky v obchode <ph name="MERCHANT_ORIGIN" /> prostredníctvom aplikácie <ph name="PAYMENT_APP_ORIGIN" /> sa vyskytla chyba.</translation>
 <translation id="4612904677925722054">Na tomto webe môže byť obsah nevhodný pre deti. Rodič alebo zákonný zástupca musí súhlasiť s tým, že ho môžeš navštíviť.</translation>
 <translation id="4613873770449493819">Webová adresa musí smerovať na doménu <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3706,7 +3704,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7173338713290252554">História cien na internete</translation>
 <translation id="7174545416324379297">Zlúčené</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalšia}few{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalšie}many{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalšej}other{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ďalších}}</translation>
-<translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7181261019481237103">Otvoriť okno inkognito</translation>
 <translation id="7182878459783632708">Nie sú nastavené žiadne pravidlá</translation>
 <translation id="7186833457841277072">Obálka (atramentová tlačiareň)</translation>
@@ -4172,7 +4169,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7932579305932748336">Naniesť povrchovú vrstvu</translation>
 <translation id="79338296614623784">Zadajte platné telefónne číslo</translation>
 <translation id="7934414805353235750">Web <ph name="URL" /> chce prehrať chránený obsah. Google overí totožnosť zariadenia.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Senzory pohybu sú povolené</translation>
 <translation id="7937163678541954811">Overovací kód tejto karty bude zašifrovaný a uložený do vášho zariadenia na zrýchlenie platieb</translation>
 <translation id="7937554595067888181">Platí do <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4220,7 +4216,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7999482381722829925">Vytvor kontrolný zoznam s pokynmi na dôkladné upratovanie jednotlivých miestností. Nech je zoradený podľa priority a pamätá aj na bežne prehliadané miesta.</translation>
 <translation id="8001912761979890298">Tento server nedokázal potvrdiť, či ide o doménu <ph name="DOMAIN" />, pretože používa bezpečnostný certifikát, ktorý nie je pre Chromium alebo vašu systémovú konfiguráciu šifrovania internetovej návštevnosti dôveryhodný. Môže to byť spôsobené nesprávnou konfiguráciou alebo napadnutím vášho pripojenia útočníkom. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Zobraziť certifikát<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Skúste zavrieť ostatné karty alebo programy a uvoľniť tak miesto v pamäti.</translation>
-<translation id="8002230960325005199">Zobraziť súvisiace weby na novej karte</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Prehliadač</translation>
 <translation id="8009225694047762179">Spravovať heslá</translation>
@@ -4261,7 +4256,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8079976827192572403">Nebezpečný web</translation>
 <translation id="8086971161893892807">Koncept</translation>
 <translation id="8087558780672230449">Načítava sa aplikácia <ph name="APP_ORIGIN" /> kvôli spracovaniu vašej platby na webe <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Článok sa nepodarilo zobraziť.</translation>
 <translation id="808894953321890993">Zmeniť heslo</translation>
 <translation id="8091372947890762290">Aktivácia čaká na server</translation>
 <translation id="8092254339843485299">6 × 8 palcov</translation>
@@ -4901,7 +4895,6 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="9199905725844810519">Tlač je blokovaná</translation>
 <translation id="9204089334327209740">Po dokončení nahrávania môžete svoje súbory upraviť v službe <ph name="CLOUD_PROVIDER" />. Obsah miestneho úložiska vrátane všetkých súborov v koši bude automaticky odstránený.</translation>
 <translation id="9205078245616868884">Údaje sú šifrované pomocou vlastnej prístupovej frázy synchronizácie. Keď ju zadáte, synchronizácia sa spustí.</translation>
-<translation id="9207861905230894330">Článok sa nepodarilo pridať.</translation>
 <translation id="9209339767782560829">Pri používaní prihlasovacieho certifikátu sa vyskytol problém.</translation>
 <translation id="9210152531668884481">Súhlasím</translation>
 <translation id="9213433120051936369">Prispôsobenie vzhľadu</translation>

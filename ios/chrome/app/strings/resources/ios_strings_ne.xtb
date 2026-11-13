@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
 <translation id="201759455285471444">ट्याब समूह एक्स्पान्ड गर्नुहोस्।</translation>
 <translation id="2022431790688770637">Gemini का सुझावहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="2023265063803387188">इन्कोग्निटो मोडमा Gemini प्रयोग गर्न मिल्दैन</translation>
 <translation id="2031515492007104071">लेभल अप</translation>
 <translation id="2044394949148788042">ट्याब ग्रिड खोल्नुहोस्</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ले <ph name="USER_EMAIL" /> खाता व्यवस्थापन गर्छ र यसले केही जानकारी हेर्न सक्ने सम्भावना हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">रोक्नुहोस्</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" लाई तपाईंको क्यामेरा एक्सेस गर्ने अनुमति दिइएको छैन</translation>
 <translation id="2671423594960767771">समूहमा सेयर गर्नु</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">किस्ताबन्दीमा भुक्तानी</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">नाम</translation>
 <translation id="386224966259596343">तपाईंले अर्को पटक कुनै सम्बन्धित फाराम भर्दा तपाईं यो जानकारी Wallet मा सेभ गर्न सक्नु हुने छ।</translation>
 <translation id="3868495844258915202">पूरै URL देखाउनुहोस्</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" /> को कुनै पनि पासवर्ड सुरक्षित गरिएको छैन</translation>
 <translation id="3875783148670536197">यसो गर्ने तरिका देखाउनुहोस्</translation>
 <translation id="3878657761594430423">पाना ग्र्याबर</translation>
 <translation id="3884810423191119660">तपाईं साइट र एपहरूमा सजिलैसँग साइन इन गर्न सक्नुहोस् भन्नाका लागि पासवर्डहरू सुरक्षित तरिकाले सेभ गर्नुहोस्</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">ब्राउज गर्ने तरिकामा सुधार गर्नुहोस्</translation>
 <translation id="5062321486222145940">Google ड्राइभ स्थापना गर्नुहोस्</translation>
 <translation id="5067540696062462445">डाउनलोड गरिएका सामग्रीहरू</translation>
-<translation id="5070314445039955096">तपाईं यो साइटबाट बाहिरिनुभयो भने "<ph name="SITE_DOMAIN" />" सम्बन्धी अनुमति रिसेट गरी अफ गरिने छ</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} मध्ये {position} भुक्तानी विधि}other{{count} मध्ये {position} भुक्तानी विधि}}</translation>
 <translation id="5075939510584558547">इन्क्रिप्ट नगरिकनै सेभ गर्नुहोस्</translation>
 <translation id="5076534614343816664">मूल्य ट्र्याकिङ</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">तपाईंले साइन इन गरेपछि मात्र तपाईं Level Up प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="5352128922772839949">फाइल सेभ गर्नुहोस्</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
-<translation id="5355871759168485600">तपाईंले यो साइट खोलेका बेला "<ph name="SITE_DOMAIN" />" लाई जुनसुकै बेला तपाईंको माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5359436665022446585">लिंक खोल्ने अझ राम्रो सुविधा</translation>
 <translation id="536067926684072644">बुकमार्कहरू देखाउनुहोस्</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} पासकी इम्पोर्ट गर्न सकिएन}other{{count} वटा पासकी इम्पोर्ट गर्न सकिएन}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">डिफल्ट ब्राउजरको प्रोमो बन्द गर्नुहोस्</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />आफ्नो फाइल चयन गर्नुहोस्<ph name="END_BOLD" /> मा ट्याप गर्नुहोस्</translation>
 <translation id="5613297089029360427">प्रकाशित समयअनुसार क्रमबद्ध गर्नुहोस्</translation>
+<translation id="561349411957324076">सम्पन्न भयो</translation>
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
 <translation id="5617769621178348890">Files एप खोल्नुहोस्</translation>
 <translation id="5619871095170816857">यो कार्डले पछिल्ला २४ घण्टामा सिंक गरिएका तपाईंका सबै डिभाइसहरूमा तपाईंले पछिल्लो पटक प्रयोग गर्नुभएको खुला ट्याब देखाउँछ।</translation>
@@ -2333,7 +2333,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> खाताहरू</translation>
 <translation id="8161614462829037225">"<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" प्रयोग गरेर अनलक गर्नुहोस्</translation>
 <translation id="8173034266693057059">लम्बाइ</translation>
-<translation id="8181328232274170248">तपाईंले यो साइट खोलेका बेला "<ph name="SITE_DOMAIN" />" लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} का लागि}=2{{website_2} र {website_1} का लागि}=3{{website_1}, {website_2} र थप एउटा वेबसाइटका लागि}other{{website_1}, {website_2} र थप {more_count} वटा वेबसाइटका लागि}}</translation>
 <translation id="8184895727539791845">Gemini लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिन iOS का सेटिङमा गई क्यामेरा अन गर्नुहोस्</translation>
 <translation id="8185076488803799132">इम्पोर्ट गर्नुहोस्</translation>
@@ -2504,7 +2503,6 @@
 <translation id="8674716540979958118">तपाईंका पासवर्डहरू ह्याक वा चोरी भएका छन्।</translation>
 <translation id="8679900250380464358">रिडिङ लिस्टमा हाल्नुहोस्</translation>
 <translation id="8680787084697685621">खाता साइन-इन विवरणहरूको समय समाप्त भएको छ।</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" लाई तपाईंको माइक्रोफोन एक्सेस गर्ने अनुमति दिइएको छैन</translation>
 <translation id="8690752723634292147">मेटाउन चाहेको कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8692107307702113268">पासवर्ड १००० वर्णभन्दा लामो छ</translation>
 <translation id="8692689525339542358">खतरनाक साइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित रहनुहोस्।</translation>

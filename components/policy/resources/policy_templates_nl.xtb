@@ -4251,14 +4251,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="366494444808132420">Gemini-integraties toestaan</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
 <translation id="3671773704245936868">Markering toetsenbordfocus uitzetten</translation>
-<translation id="367258298235646178">Hiermee kunnen beheerders het uiterlijk van watermerken aanpassen die worden toegepast door regels voor Gegevensverlies voorkomen (Data Loss Prevention, DLP). Dit omvat het instellen van de ondoorzichtigheid van de opvulling/omtrek, het definiëren van de lettergrootte en het instellen van de tijdzone van de tijdstempel.
-Als je dit beleid of bepaalde waarden niet instelt, gebruikt Chrome het standaardgedrag voor watermerken.
-De standaardwaarden op desktop zijn: ondoorzichtigheid van opvulling op 4, ondoorzichtigheid van omtrek op 6 en lettergrootte op 24. Op iOS zijn de standaardwaarden: ondoorzichtigheid van opvulling op 10, ondoorzichtigheid van omtrek op 15 en lettergrootte op 16. Op alle platforms is tijdzone van tijdstempel standaard ingesteld op user_device (lokale tijdzone van het apparaat van de gebruiker).
-
-De ondoorzichtigheid van de opvulling is een percentage van 0 (volledig transparant) tot 100 (volledig ondoorzichtig).
-De ondoorzichtigheid van de omtrek is een percentage van 0 (volledig transparant) tot 100 (volledig ondoorzichtig).
-De lettergrootte wordt aangegeven in punten.
-De tijdzone van het tijdstempel geeft de IANA-tijdzone-ID aan (bijv. 'America/Toronto') die wordt gebruikt voor het opmaken van tijdstempels voor watermerken (ondersteund vanaf Chrome 152 en hoger). Deze ID's volgen de namen in de IANA Time Zone Database (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">CORS-verzoekheaders zonder jokertekens niet ondersteunen.</translation>
 <translation id="3675248815331229366">Als je het beleid instelt, kun je een lijst met URL-patronen instellen voor sites die geen toegang tot de geolocatie van de gebruiker hebben en die de gebruiker ook niet om toestemming kunnen vragen.
 
@@ -4640,7 +4632,6 @@ Het beleid kan worden gecombineerd met <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="390296766888987595">Het schermtoetsenbord alleen tonen als de gebruiker of app hier om vraagt.</translation>
 <translation id="3903313632842363082">Rapportage voor gebruikers van apparaat uitzetten</translation>
 <translation id="3904304709151553598">Rapportage van ventilatorinformatie van apparaat uitzetten</translation>
-<translation id="3905883021371603181">Opheffing van systeemaudio-echo aanzetten</translation>
 <translation id="3907683835264956726">Zet online inloggen van gebruikers op een vergrendelscherm aan. Als het beleid wordt ingesteld op True, wordt online opnieuw verifiëren op een vergrendelscherm geactiveerd door <ph name="POLICY" />.
       Opnieuw verifiëren wordt onmiddellijk afgedwongen als het vergrendelscherm actief is, of de volgende keer dat een gebruiker het scherm vergrendelt nadat aan deze voorwaarde is voldaan.
       Als het beleid is ingesteld op False of niet is ingesteld, kunnen gebruikers het scherm altijd ontgrendelen met de lokale inloggegevens.</translation>
@@ -4741,7 +4732,6 @@ Opmerking: Als de instelling resulteert in geen verificatiemethoden die wederzij
 <translation id="3989635538409502728">Uitloggen</translation>
 <translation id="3989829840000169163">Verouderde extensiepunten van browser blokkeren</translation>
 <translation id="3990391739475801018">De batterijbesparingsmodus wordt uitgezet.</translation>
-<translation id="3990834929384096140">Opheffing van systeemaudio-echo niet afdwingen</translation>
 <translation id="3994043824457743421">De aankondiging in de middelste ruimte op de pagina Nieuw tabblad tonen</translation>
 <translation id="399433537808390819">Samengestelde desktopmodus niet beschikbaar maken voor de gebruiker</translation>
 <translation id="3995880046827722248">Manifest v2 staat uit</translation>
@@ -6050,12 +6040,6 @@ Ga voor meer informatie naar het Helpcentrum-artikel: https://support.google.com
       Apparaten waarop TLS niet correct wordt geïmplementeerd, werken misschien niet goed en verbreken mogelijk de verbinding als TLS 1.3 Early Data wordt gebruikt. Als dit gebeurt, moeten beheerders contact opnemen met de leverancier voor een oplossing.
 
       Dit beleid is een tijdelijke maatregel om de functie te beheren en wordt daarna verwijderd. Je kunt het beleid aanzetten om te testen of er problemen zijn en uitzetten als er problemen optreden.</translation>
-<translation id="4800438168909332958">De functie voor systeemaudio-echo opheffen (AEC) aanzetten. Systeem-AEC is een akoestische echo-opheffing, ofwel een audioverwerkingsmodule waarmee systeemaudioweergave (echo) uit het microfoonsignaal wordt verwijderd.
-Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-echo wordt gelanceerd.
-
-  Als je dit beleid instelt op True, wordt opheffing van systeemaudio-echo altijd aangezet.
-
-  Als je dit beleid instelt op False of niet instelt, kan opheffing van systeemaudio-echo nog steeds worden aangezet op basis van het bijbehorende lanceringsplan maar wordt het niet afgedwongen door dit beleid.</translation>
 <translation id="4800865664096110749">Het attestproces <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aanzetten voor een lijst met URL's in beheerde profielen</translation>
 <translation id="4801512016965057443">Mobiele dataroaming toestaan</translation>
 <translation id="4801647366128872782">Definieert URL's die rapportage over verouderde technologie toestaan</translation>
@@ -11772,6 +11756,12 @@ Certificaten moeten base64-gecodeerd zijn.</translation>
 Als je het beleid instelt, wordt de rapportage van websitetelemetrie voor URL's op de toelatingslijst ingesteld.
 Als je dit beleid niet instelt, wordt er geen websitetelemetrie gerapporteerd.
 Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleerde informatie over geldige URL-patronen. Alleen HTTP- en HTTPS-URL-schema's zijn toegestaan voor dit beleid.</translation>
+<translation id="8392016343898518010">Dit beleid is beëindigd en heeft geen effect meer vanaf M159, omdat de functie Voorgestelde content is verwijderd.
+
+Vóór M159 zette deze functie suggesties aan voor nieuwe content om te verkennen, waaronder apps en webpagina's.
+Als je dit beleid hebt ingesteld op True, werden suggesties voor nieuwe content die je kunt bekijken aangezet.
+Als je dit beleid instelde op Onwaar, werden suggesties voor nieuwe content die je kunt verkennen uitgezet.
+Als je dit beleid niet instelt, worden suggesties voor nieuwe content die gebruikers kunnen verkennen uitgezet voor beheerde gebruikers en aangezet voor andere gebruikers.</translation>
 <translation id="8392478748777481636">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Alleen platform</translation>
 <translation id="8395350646076131800">Time-out van de screensaver voor het vergrendelscherm.</translation>
@@ -12858,7 +12848,6 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
 <translation id="9087652369391570821">Configuratiebeleid voor de Chrome Enterprise Connector OnFileTransfer</translation>
 <translation id="9088433379343318874">Contentprovider voor gebruiker onder toezicht gebruiken</translation>
 <translation id="9088444059179765143">De methode voor automatische tijdzonedetectie configureren</translation>
-<translation id="9091741086777905807">IANA-tijdzone-ID (bijv. 'America/Toronto') die wordt gebruikt om tijdstempels voor watermerken op te maken (ondersteund vanaf Chrome 152 en hoger). Standaard ingesteld op user_device.</translation>
 <translation id="9094681501120769194">Hiermee bepaal je of de pdf-viewer in <ph name="PRODUCT_NAME" /> een out-of-process iframe (OOPIF) gebruikt. In de toekomst wordt dit de nieuwe pdf-viewerarchitectuur, omdat dit eenvoudiger is en het makkelijker maakt om nieuwe functies toe te voegen. De bestaande GuestView-pdf-viewer is een verouderde, complexe architectuur die wordt beëindigd.
 
 Als je dit beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de OOPIF-pdf-viewerarchitectuur gebruiken. Wanneer je dit beleid toepast of niet instelt, wordt het standaardgedrag bepaald door <ph name="PRODUCT_NAME" />.

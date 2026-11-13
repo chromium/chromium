@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
 <translation id="201759455285471444">টেবৰ গোট বিস্তাৰ কৰক।</translation>
 <translation id="2022431790688770637">Geminiৰ পৰামৰ্শ পৰিচালনা কৰক</translation>
+<translation id="2023265063803387188">ইনক’গনিট’ ম’ডত Gemini উপলব্ধ নহয়</translation>
 <translation id="2031515492007104071">স্তৰ-উন্নীতকৰণ</translation>
 <translation id="2044394949148788042">টেব গ্ৰীডটো খোলক</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, যি হয়তো কিছুমান তথ্য চাব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">বন্ধ কৰক</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
 <translation id="2669454659051515572">এই ডিভাইচটো ব্যৱহাৰ কৰা যিকোনো লোকে ডাউনল’ড কৰা ফাইল চাব পাৰে</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />"ক আপোনাৰ কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়া হোৱা নাই</translation>
 <translation id="2671423594960767771">গোট শ্বেয়াৰ কৰক</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">কিস্তিত পৰিশোধ কৰক</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">নাম</translation>
 <translation id="386224966259596343">আপুনি পৰৱৰ্তী সময়ত কোনো প্ৰাসংগিক ফৰ্ম পূৰ কৰোঁতে এই তথ্য Walletত ছেভ কৰাৰ সুযোগ পাব।</translation>
 <translation id="3868495844258915202">সম্পূৰ্ণ URL দেখুৱাওক</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" />ৰ কাৰণে ছেভ কৰি থোৱা কোনো পাছৱৰ্ড নাই</translation>
 <translation id="3875783148670536197">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="3878657761594430423">শ্বীট গ্ৰেবাৰ</translation>
 <translation id="3884810423191119660">পাছৱৰ্ডসমূহ সুৰক্ষিতভাৱে ছেভ কৰক যাতে আপুনি ছাইট আৰু এপ্‌সমূহত সহজে ছাইন ইন কৰিব পাৰে</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰক</translation>
 <translation id="5062321486222145940">Google Drive ইনষ্টল কৰক</translation>
 <translation id="5067540696062462445">ডাউনল’ড</translation>
-<translation id="5070314445039955096">আপুনি এই ছাইটটোৰ পৰা বাহিৰ ওলালে "<ph name="SITE_DOMAIN" />"ৰ অনুমতিসমূহ অফ হিচাপে ৰিছেট কৰা হ’ব</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} টা পৰিশোধ পদ্ধতিৰ {position} নম্বৰ পদ্ধতিটো}one{{count} টা পৰিশোধ পদ্ধতিৰ {position} নম্বৰ পদ্ধতিটো}other{{count} টা পৰিশোধ পদ্ধতিৰ {position} নম্বৰ পদ্ধতিটো}}</translation>
 <translation id="5075939510584558547">এনক্ৰিপশ্বনৰ অবিহনে ছেভ কৰক</translation>
 <translation id="5076534614343816664">মূল্য ট্ৰেকিং</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Up ব্যৱহাৰ কৰিবলৈ আপুনি ছাইন ইন থাকিব লাগিব</translation>
 <translation id="5352128922772839949">ফাইল ছেভ কৰক</translation>
 <translation id="5355191726083956201">বৰ্ধিত সুৰক্ষা অন আছে</translation>
-<translation id="5355871759168485600">আপুনি যেতিয়াই এই ছাইটটোলৈ যায়, "<ph name="SITE_DOMAIN" />"ক আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰাৰ অনুমতি দিয়া হয়</translation>
 <translation id="5359436665022446585">লিংক খোলাৰ উন্নত সুবিধা</translation>
 <translation id="536067926684072644">বুকমাৰ্ক দেখুৱাওক</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} টা পাছকী আমদানি কৰিব পৰা নগ’ল}one{{count} টা পাছকী আমদানি কৰিব পৰা নগ’ল}other{{count} টা পাছকী আমদানি কৰিব পৰা নগ’ল}}</translation>
@@ -2339,7 +2338,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> টা একাউণ্ট</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ৰ জৰিয়তে আনলক কৰক</translation>
 <translation id="8173034266693057059">দৈৰ্ঘ্য</translation>
-<translation id="8181328232274170248">আপুনি যেতিয়াই এই ছাইটটোলৈ যায়, "<ph name="SITE_DOMAIN" />"ক আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়া হয়</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}ৰ বাবে}=2{{website_2}, {website_1}ৰ বাবে}=3{{website_1}, {website_2} আৰু ১ টাৰ বাবে}one{{website_1}, {website_2} আৰু {more_count} টাৰ বাবে}other{{website_1}, {website_2} আৰু {more_count} টাৰ বাবে}}</translation>
 <translation id="8184895727539791845">Geminiক আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিবলৈ দিবলৈ, iOSৰ ছেটিঙত কেমেৰা অন কৰক</translation>
 <translation id="8185076488803799132">আমদানি কৰক</translation>
@@ -2510,7 +2508,6 @@
 <translation id="8674716540979958118">আপোনাৰ হেক কৰা পাছৱৰ্ড আছে।</translation>
 <translation id="8679900250380464358">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="8680787084697685621">একাউণ্টৰ ছাইন ইনৰ সবিশেষৰ ম্যাদ উকলিল।</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />"ক আপোনাৰ মাইক্ৰ’ফ’ন এক্সেছ কৰাৰ অনুমতি দিয়া হোৱা নাই</translation>
 <translation id="8690752723634292147">মচি পেলোৱাটো নিশ্চিত কৰক</translation>
 <translation id="8692107307702113268">পাছৱৰ্ডটোত ১০০০ টাতকৈ অধিক বৰ্ণ আছে</translation>
 <translation id="8692689525339542358">বিপজ্জনক ছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষা লাভ কৰক।</translation>
@@ -2656,6 +2653,7 @@
 <translation id="91023216973987714">পৰিশোধ পদ্ধতি</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"ৰ পৰা</translation>
 <translation id="9107664647686727385">পাছৱৰ্ড হেক কৰা হৈছেনে নাই পৰীক্ষা কৰক</translation>
+<translation id="9115035712231910133">সংলগ্ন কৰা প্ৰতিচ্ছবি {title}</translation>
 <translation id="9119764377203471454">সংলগ্নক যোগ দিব পৰা নগ’ল</translation>
 <translation id="9124387962554796433">Googleএ Search আৰু অন্য Google সেৱাসমূহ ব্যক্তিগতকৃত কৰিবলৈ আপোনাৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="9124978074365039456">আপোনাৰ কেমেৰা আৰু ফট’ গেলাৰী ব্যৱহাৰ কৰি ক্ৰয় কৰক, অনুবাদ কৰক আৰু আপুনি দেখা পোৱা বস্তু চিনাক্ত কৰক</translation>

@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="201759455285471444">ટૅબનું ગ્રૂપ મોટું કરો.</translation>
 <translation id="2022431790688770637">Geminiના સૂચનો મેનેજ કરો</translation>
+<translation id="2023265063803387188">Gemini છૂપા મોડમાં ઉપલબ્ધ નથી</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">ટૅબ ગ્રિડ ખોલો</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> એકાઉન્ટ, <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે, જે કદાચ અમુક માહિતી જોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">રોકો</translation>
 <translation id="2666092431469916601">ઉપર</translation>
 <translation id="2669454659051515572">આ ડિવાઇસનો ઉપયોગ કરનારી કોઈપણ વ્યક્તિ ડાઉનલોડ કરેલી ફાઇલો જોઈ શકે છે</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />"ને તમારો કૅમેરા ઍક્સેસ કરવાની મંજૂરી નથી</translation>
 <translation id="2671423594960767771">જૂથ શેર કરો</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">હપ્તેથી ચુકવણી કરો</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">નામ</translation>
 <translation id="386224966259596343">આગલી વખતે જ્યારે તમે સંબંધિત ફોર્મ ભરો, ત્યારે તમને આ માહિતી Walletમાં સાચવવાની તક મળશે.</translation>
 <translation id="3868495844258915202">સંપૂર્ણ URL બતાવો</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" /> માટે કોઈ પાસવર્ડ સાચવેેેેલ નથી</translation>
 <translation id="3875783148670536197">મને બતાવો કે કેવી રીતે</translation>
 <translation id="3878657761594430423">શીટ ગ્રેબર</translation>
 <translation id="3884810423191119660">પાસવર્ડ સુરક્ષિત રીતે સાચવો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">તમારા બ્રાઉઝિંગને એક લેવલ ઉપર લઈ જાઓ</translation>
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
 <translation id="5067540696062462445">ડાઉનલોડ</translation>
-<translation id="5070314445039955096">જ્યારે તમે સાઇટમાંથી બહાર નીકળી જશો, ત્યારે "<ph name="SITE_DOMAIN" />" સંબંધિત પરવાનગીઓ બંધ પર રીસેટ કરવામાં આવશે</translation>
 <translation id="507187271399539513">{count,plural, =1{{count}માંથી {position} નંબરની ચુકવણી પદ્ધતિ}one{{count}માંથી {position} નંબરની ચુકવણી પદ્ધતિ}other{{count}માંથી {position} નંબરની ચુકવણી પદ્ધતિ}}</translation>
 <translation id="5075939510584558547">એન્ક્રિપ્શન વિના સાચવો</translation>
 <translation id="5076534614343816664">કિંમતને ટ્રૅક કરવી</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Up સુવિધાનો ઉપયોગ કરવા માટે તમારે સાઇન ઇન કરવું જરૂરી છે</translation>
 <translation id="5352128922772839949">ફાઇલ સાચવો</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
-<translation id="5355871759168485600">જ્યારે પણ તમે આ સાઇટની મુલાકાત લો, ત્યારે "<ph name="SITE_DOMAIN" />"ને તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="5359436665022446585">લિંક ખોલવાની બહેતર સુવિધા</translation>
 <translation id="536067926684072644">બુકમાર્ક બતાવો</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} પાસકી આયાત કરી શક્યા નથી}one{{count} પાસકી આયાત કરી શક્યા નથી}other{{count} પાસકી આયાત કરી શક્યા નથી}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">ડિફૉલ્ટ બ્રાઉઝરનો પ્રોમો બંધ કરો</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />તમારી ફાઇલ પસંદ કરો<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
 <translation id="5613297089029360427">નવીનતમ મુજબ સૉર્ટ કરો</translation>
+<translation id="561349411957324076">પૂર્ણ</translation>
 <translation id="5614553682702429503">પાસવર્ડ સાચવીએ?</translation>
 <translation id="5617769621178348890">Files ઍપ ખોલો</translation>
 <translation id="5619871095170816857">આ કાર્ડ છેલ્લા 24 કલાકની અંદર તમારા બધા સિંક કરેલા ડિવાઇસ પરથી તમારું છેલ્લે વપરાયેલું ખુલ્લું ટૅબ બતાવે છે.</translation>
@@ -2333,7 +2333,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> એકાઉન્ટ્સ</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે અનલૉક કરો</translation>
 <translation id="8173034266693057059">લંબાઈ</translation>
-<translation id="8181328232274170248">જ્યારે પણ તમે આ સાઇટની મુલાકાત લો, ત્યારે "<ph name="SITE_DOMAIN" />"ને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} માટે}=2{{website_1} અને {website_2} માટે}=3{{website_1}, {website_2} અને વધુ 1 માટે}one{{website_1}, {website_2} અને વધુ {more_count} માટે}other{{website_1}, {website_2} અને વધુ {more_count} માટે}}</translation>
 <translation id="8184895727539791845">Geminiને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપવા માટે, iOS સેટિંગમાં કૅમેરા ચાલુ કરો</translation>
 <translation id="8185076488803799132">આયાત કરો</translation>
@@ -2504,7 +2503,6 @@
 <translation id="8674716540979958118">તમારી પાસે ચેડાં કરાયેલા પાસવર્ડ છે.</translation>
 <translation id="8679900250380464358">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="8680787084697685621">એકાઉન્ટ સાઇન ઇન વિગતો જૂની થઈ ગઈ છે.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />"ને તમારો માઇક્રોફોન ઍક્સેસ કરવાની મંજૂરી નથી</translation>
 <translation id="8690752723634292147">ડિલીટ કરવાનું કન્ફર્મ કરો</translation>
 <translation id="8692107307702113268">પાસવર્ડ 1000 કરતાં વધુ અક્ષર ધરાવે છે</translation>
 <translation id="8692689525339542358">જોખમી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શનથી સુરક્ષા મેળવો.</translation>

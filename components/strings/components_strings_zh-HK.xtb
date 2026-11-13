@@ -726,7 +726,6 @@
 <translation id="22081806969704220">紙匣 3</translation>
 <translation id="2210794033760923560">上載報告</translation>
 <translation id="2212735316055980242">找不到政策</translation>
-<translation id="2213606439339815911">正在擷取項目…</translation>
 <translation id="2213612003795704869">已列印頁面</translation>
 <translation id="2214086901479959524">更新 Chrome 即可繼續使用共用分頁群組</translation>
 <translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">你瀏覽的網頁網址清單 (只列出發生舊版科技事件的網址)</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{將會分享 1 個分頁}other{將會分享 {NUM_TABS} 個分頁}}</translation>
 <translation id="2357481397660644965">您的裝置由 <ph name="DEVICE_MANAGER" /> 管理，而您的帳戶由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
+<translation id="2358479643736965923">在此分頁查看 Google AI 搜尋答案</translation>
 <translation id="2359629602545592467">多種貨幣</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="236000571258713023">汽車</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">將活動門票儲存至「錢包」</translation>
 <translation id="2925454999967523701">建立文件按鈕，啟動之後就可以快速建立新嘅 Google 文件</translation>
 <translation id="2925673989565098301">送貨方式</translation>
+<translation id="2927328994673424423">2 星期前</translation>
 <translation id="2928426578619531300">相關聯的使用者</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="2930531075747147366">你的另一部裝置傳來分頁</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">切換至此分頁。</translation>
 <translation id="3144458715650412431">已套用測試政策。請前往 chrome://policy/test 查看並重設政策。系統不會套用管理員政策。</translation>
 <translation id="3145945101586104090">無法將回應解碼</translation>
-<translation id="3149865382039202168">在「<ph name="GOOGLE_WALLET_TITLE" />」儲存資料可以提升操作效率，例如在不同 Google 產品中填寫表格。你可在 <ph name="ACCOUNT" /> 的私人證件設定中控制<ph name="HOW_INFO_IS_USED_LINK" />。<ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">伺服器暫時發生錯誤</translation>
 <translation id="3150889484970506196">建立試算表按鈕，啟動之後就可以快速建立新嘅 Google 試算表</translation>
 <translation id="3154506275960390542">這個網頁含有可能不經安全途徑提交內容的表格。其他人可能會在傳輸期間查看您的資料，攻擊者也可能會修改這些資料，導致伺服器接收不同內容。</translation>
@@ -1520,7 +1520,6 @@
 <translation id="3558335486599406178">IBAN 已儲存至「Google 錢包」</translation>
 <translation id="3558573058928565255">日間</translation>
 <translation id="3559897352860026926">請要求管理員檢查「<ph name="CLOUD_PROVIDER" />」的配置設定。</translation>
-<translation id="3560824484345057728">查看相關網站</translation>
 <translation id="3566021033012934673">您的連線不是私人連線</translation>
 <translation id="3566336457819493938">215 x 315 毫米</translation>
 <translation id="3566681680543111735">複製變數字串</translation>
@@ -2163,7 +2162,6 @@
 <translation id="4603727370377253901">機票預訂</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="460848736049414407">已被管理員封鎖</translation>
-<translation id="4610279718074907952">此網站屬於由 <ph name="SET_OWNER" /> 定義的群組，因此可查看您的活動</translation>
 <translation id="4612631413844865947">透過 <ph name="PAYMENT_APP_ORIGIN" /> 處理 <ph name="MERCHANT_ORIGIN" /> 的訂單時發生錯誤。</translation>
 <translation id="4612904677925722054">此網站可能含有兒童不宜內容。你必須獲得家長或監護人許可，才能瀏覽此網站。</translation>
 <translation id="4613873770449493819">網址必須指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域。</translation>
@@ -3710,7 +3708,6 @@
 <translation id="7173338713290252554">網絡上的價格記錄</translation>
 <translation id="7174545416324379297">已合併</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種選項}}</translation>
-<translation id="7180611975245234373">重新整理</translation>
 <translation id="7181261019481237103">開啟無痕式視窗</translation>
 <translation id="7182878459783632708">未設定政策</translation>
 <translation id="7186833457841277072">信封 (噴墨打印)</translation>
@@ -4176,7 +4173,6 @@
 <translation id="7932579305932748336">塗布</translation>
 <translation id="79338296614623784">請輸入有效的電話號碼</translation>
 <translation id="7934414805353235750"><ph name="URL" /> 想播放受保護的內容。Google 將對裝置進行身分驗證。</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">允許使用動作感應器</translation>
 <translation id="7937163678541954811">此付款卡的 CVC 經已加密並儲存至你的裝置，以便快速結帳</translation>
 <translation id="7937554595067888181">到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4224,7 +4220,6 @@
 <translation id="7999482381722829925">建立按房間劃分優先順序的深度清潔檢查清單，重點放在容易忽略的地方</translation>
 <translation id="8001912761979890298">伺服器所用的安全性憑證未受 Chromium 或系統網絡流量加密設定的信任，因此無法證明屬於 <ph name="DOMAIN" /> 網域。這可能是由於設定錯誤，或有攻擊者攔截你的連線。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />查看憑證<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">嘗試關閉其他分頁或應用程式，以釋出記憶體。</translation>
-<translation id="8002230960325005199">在新分頁中查看相關網站</translation>
 <translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8009225694047762179">管理密碼</translation>
@@ -4265,7 +4260,6 @@
 <translation id="8079976827192572403">危險網站</translation>
 <translation id="8086971161893892807">草稿</translation>
 <translation id="8087558780672230449">正在載入 <ph name="APP_ORIGIN" /> 以處理你在 <ph name="MERCHANT_ORIGIN" /> 的付款。</translation>
-<translation id="8088680233425245692">無法檢視文章。</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8091372947890762290">尚未在伺服器上啟動</translation>
 <translation id="8092254339843485299">6 x 8 吋</translation>
@@ -4904,7 +4898,6 @@
 <translation id="9199905725844810519">已封鎖列印功能</translation>
 <translation id="9204089334327209740">上載完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 修改檔案。本機儲存項目 (包括「垃圾桶」中的任何檔案) 將自動移除。</translation>
 <translation id="9205078245616868884">您已使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
-<translation id="9207861905230894330">無法新增文章。</translation>
 <translation id="9209339767782560829">使用登入憑證時發生問題。</translation>
 <translation id="9210152531668884481">我同意</translation>
 <translation id="9213433120051936369">自訂外觀</translation>

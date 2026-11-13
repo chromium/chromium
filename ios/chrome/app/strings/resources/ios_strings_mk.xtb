@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="201759455285471444">Прошири ја групата картички.</translation>
 <translation id="2022431790688770637">Управувајте со предлозите од Gemini</translation>
+<translation id="2023265063803387188">Gemini не е достапен во режимот „Инкогнито“</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Отворете ја мрежата со картички</translation>
 <translation id="2044681667265133332">Со сметката <ph name="USER_EMAIL" /> управува <ph name="HOSTED_DOMAIN" />, што може да прегледува некои податоци. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Запри</translation>
 <translation id="2666092431469916601">Горе</translation>
 <translation id="2669454659051515572">Сите кои го користат уредов може да ги видат преземените датотеки</translation>
-<translation id="2671316366021598595">„<ph name="SITE_DOMAIN" />“ нема дозвола да пристапува до камерата</translation>
 <translation id="2671423594960767771">Сподели ја групата</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Плаќање на рати</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Име</translation>
 <translation id="386224966259596343">Ќе имате можност да ги зачувате податоциве во Wallet следниот пат кога ќе пополнувате соодветен формулар.</translation>
 <translation id="3868495844258915202">Прикажи ја целосната URL-адреса</translation>
+<translation id="3870931306085184145">Нема зачувани лозинки за <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3878657761594430423">Фаќач на листови</translation>
 <translation id="3884810423191119660">Безбедно зачувувајте ги лозинките за да може лесно да се најавувате на сајтовите и апликациите</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Подобрете го прелистувањето</translation>
 <translation id="5062321486222145940">Инсталирајте Диск на Google</translation>
 <translation id="5067540696062462445">Преземања</translation>
-<translation id="5070314445039955096">Дозволите за <ph name="SITE_DOMAIN" />„“ ќе се ресетираат на „Исклучено“ кога ќе го напуштите сајтов</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} од {count} начин на плаќање}one{{position} од {count} начин на плаќање}other{{position} од {count} начини на плаќање}}</translation>
 <translation id="5075939510584558547">Зачувувајте без шифрирање</translation>
 <translation id="5076534614343816664">Следење цена</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Мора да бидете најавени за да користите Level Up</translation>
 <translation id="5352128922772839949">Зачувајте ја датотеката</translation>
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
-<translation id="5355871759168485600">„<ph name="SITE_DOMAIN" />“ има дозвола да го користи микрофонот секогаш кога ќе го посетите сајтов</translation>
 <translation id="5359436665022446585">Подобро отворање линкови</translation>
 <translation id="536067926684072644">Прикажи ги обележувачите</translation>
 <translation id="5364647308446127983">{count,plural, =1{Не можеше да се увезе {count} криптографски клуч}one{Не можеше да се увезат {count} криптографски клуч}other{Не можеше да се увезат {count} криптографски клуча}}</translation>
@@ -1484,6 +1483,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5612225021788368236">Затвори ја промоцијата за стандардниот прелистувач</translation>
 <translation id="561269594905823128">Допрете <ph name="BEGIN_BOLD" />Select your file<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Подреди според најнови</translation>
+<translation id="561349411957324076">Завршено</translation>
 <translation id="5614553682702429503">Дали да се зачува лозинката?</translation>
 <translation id="5617769621178348890">Отворете во Files App</translation>
 <translation id="5619871095170816857">Картичкава ја прикажува вашата последно користена отворена картичка на сите ваши синхронизирани уреди во последните 24 часа.</translation>
@@ -2333,7 +2333,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> сметки</translation>
 <translation id="8161614462829037225">Отклучете со <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Должина</translation>
-<translation id="8181328232274170248">„<ph name="SITE_DOMAIN" />“ има дозвола да ја користи камерата секогаш кога ќе го посетите сајтов</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1}, {website_2}}=3{За {website_1}, {website_2} и уште 1}one{За {website_1}, {website_2} и уште {more_count}}other{За {website_1}, {website_2} и уште {more_count}}}</translation>
 <translation id="8184895727539791845">За да му дозволите на Gemini да ја користи вашата камера, вклучете ја камерата во поставките за iOS</translation>
 <translation id="8185076488803799132">Import</translation>
@@ -2504,7 +2503,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8674716540979958118">Имате компромитирани лозинки.</translation>
 <translation id="8679900250380464358">Додај во „Список за читање“</translation>
 <translation id="8680787084697685621">Деталите за најавување на сметка се застарени.</translation>
-<translation id="868648444055742370">„<ph name="SITE_DOMAIN" />“ нема дозвола да пристапува до микрофонот</translation>
 <translation id="8690752723634292147">Потврдете го бришењето</translation>
 <translation id="8692107307702113268">Лозинката содржи повеќе од 1.000 знаци</translation>
 <translation id="8692689525339542358">Заштитете се од опасни сајтови, преземања и екстензии.</translation>
@@ -2650,6 +2648,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="91023216973987714">Начини на плаќање</translation>
 <translation id="9106655997975673326">Од „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Проверува дали има компромитирани лозинки</translation>
+<translation id="9115035712231910133">Приложена слика {title}</translation>
 <translation id="9119764377203471454">Не можеше да се додадат прилози</translation>
 <translation id="9124387962554796433">Google може да ја користи вашата историја за да ги персонализира „Пребарувањето“ и другите услуги на Google.</translation>
 <translation id="9124978074365039456">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата и фотогалеријата</translation>

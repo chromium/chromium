@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Усё гатова!</translation>
 <translation id="1149483087970735785">Налады спецыяльных магчымасцей</translation>
 <translation id="1150490752229770117">Гэта апошняе аўтаматычнае абнаўленне праграмнага забеспячэння і сістэмы бяспекі для гэтай прылады <ph name="DEVICE_TYPE" />. Каб атрымліваць наступныя абнаўленні, перайдзіце на новую мадэль. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Пра ChromeOS</translation>
 <translation id="1155816283571436363">Ідзе падключэнне да тэлефона</translation>
 <translation id="1160800016654917722">Акно перамешчана ўніз і ўлева</translation>
 <translation id="1164015913575846413">Alt + націсканне</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">Клавіша панэлі запуску + стрэлка ўправа</translation>
 <translation id="1280332775949918163">Прывязаць акно</translation>
+<translation id="1285625592773741684">Бягучая налада выкарыстання трафіка: мабільная перадача даных</translation>
 <translation id="1285815028662278915">Ваш план мабільнай перадачы даных можа не падтрымліваць выкарыстанне хот-спота. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Начная падсветка ўключыцца аўтаматычна пасля захаду сонца</translation>
 <translation id="1288300545283011870">Параметры маўлення</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Пашырэнні будуць адключаны, а налады скінуты да бяспечных стандартных значэнняў. Укладкі і файлы (у тым ліку cookie) будуць захаваны. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Лупа для поўнаэкраннага рэжыму</translation>
 <translation id="1539727654733007771">Мабільныя сеткі не наладжаны. Спампуйце новы <ph name="BEGIN_LINK" />профіль<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Я разумею, што, калі я выкарыстаю Powerwash, усталяваныя профілі eSIM-карты выдалены не будуць</translation>
 <translation id="1549275686094429035">Тэхналогія ARC уключана</translation>
 <translation id="1554640914375980459">Экран будзе міргаць пры атрыманні апавяшчэння. Калі ў вас павышаная адчувальнасць да святла, карыстайцеся флэш-апавяшчэннямі з асцярожнасцю.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Выкарыстоўваць Wi‑Fi або мабільныя сеткі для вызначэння месцазнаходжання</translation>
 <translation id="1650407365859096313">Адкрыецца ў новай укладцы, стан дазволу: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Уключыць функцыю "Абагульванне паблізу"</translation>
+<translation id="1662146548738125461">Пра Chrome OS Flex</translation>
 <translation id="1663698992894057019">Перайдзіце на актуальную версію Chromebook, каб атрымаць доступ да найноўшых сродкаў бяспекі і праграмнага забеспячэння</translation>
 <translation id="1665328953287874063">Выкарыстоўвайце для разблакіроўкі прылады <ph name="DEVICE_TYPE" /> пароль або PIN-код</translation>
 <translation id="1667842670298352129">Тэксты для вас могуць зачытвацца ўслых. Для гэтага вам трэба спачатку націснуць на значок "Чытаць уголас" уверсе экрана, а затым вылучыць тэкст. Вы таксама можаце карыстацца спалучэннем клавіш – вылучыце тэкст і націсніце Пошук + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Заўвага. Выкарыстанне адбітка пальца можа быць менш бяспечным, чым надзейны пароль або PIN-код.</translation>
 <translation id="1724801751621173132">Рэжым уводу</translation>
 <translation id="1741190788710022490">Адаптыўная зарадка</translation>
+<translation id="1745732479023874451">Кіраваць кантактамі</translation>
 <translation id="1751335846119670066">Дапамога з чытаннем</translation>
 <translation id="1755601632425835748">Памер тэксту</translation>
 <translation id="1761402971842586829">Кнопка "<ph name="BUTTON_NAME" />" перапрызначана для дзеяння "<ph name="REMAPPING_OPTION" />".</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Не, пакінуць 1 пераключальнік</translation>
 <translation id="1842681835432895345">Выключыць гэты дысплэй у рэжыме люстэрка</translation>
 <translation id="1848219224579402567">Выходзіць з сістэмы, калі вечка закрываецца</translation>
+<translation id="185970820835152459">У гэтым раздзеле можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Вашы Уліковыя запісы Google выкарыстоўваюцца ў браўзеры Chromium, Краме Play, пошце Gmail і іншых сэрвісах. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ (напрыклад, для ўдзельніка сямейнай групы), дадайце на прыладу "<ph name="DEVICE_TYPE" />" новага карыстальніка. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Халадней</translation>
 <translation id="1866589962721094893">Дайце праграмам Android дазвол на кіраванне USB-прыладамі на гэтай прыладзе Chromebook. Запыт дазволу будзе з’яўляцца пры кожным падключэнні USB-прылады. Асобныя праграмы Android будуць запытваць дадатковыя дазволы.</translation>
 <translation id="1877377290348678128">Метка (неабавязкова)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Гук</translation>
 <translation id="2097950021134740304">Скасаваць выдаленне падпіскі</translation>
 <translation id="2104166991923847969">Аўтаматычна выключаць хот-спот</translation>
+<translation id="2106831557840787829">Chrome OS Flex, як і <ph name="BEGIN_LINK_LINUX_OSS" />Асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2114995631896158695">SIM-карта не ўстаўлена</translation>
 <translation id="2121825465123208577">Змяніць памер</translation>
 <translation id="2127372758936585790">Зарадная прылада малой магутнасці</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Выдаліць карыстальніка <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2363475280045770326">Памылка захавання канфігурацыі</translation>
+<translation id="236939127352773362">Калі прылады, якія знаходзяцца паблізу, абагульваюць змесціва</translation>
 <translation id="237336063998926520">Выкарыстоўваць ваш IP-адрас для вызначэння месцазнаходжання</translation>
 <translation id="2373499590298659902">Каб націснуць і ўтрымліваць кнопку мышы, выкарыстайце "0"</translation>
 <translation id="2375406435414127095">Падключэнне да тэлефона</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Блакіраваць трафік, калі няма падключэння VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Дзякуючы наладзе "Дакладнасць вызначэння месцазнаходжання" праграмы і сэрвісы атрымліваюць больш дакладныя геаданыя. Для работы гэтай функцыі Google перыядычна апрацоўвае звесткі пра датчыкі прылады і бесправадныя сігналы з вашай прылады і збірае агульную базу месцазнаходжанняў бесправадных сігналаў. Гэта ананімныя даныя, якія выкарыстоўваюцца для павышэння дакладнасці вызначэння месцазнаходжання і паляпшэння сэрвісаў на аснове геалакацыі, а таксама для агульнага забеспячэння работы, падтрымкі і паляпшэння нашых сэрвісаў у адпаведнасці з законнымі інтарэсамі Google і старонніх суб’ектаў з мэтай задавальнення патрэб карыстальнікаў.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Выхадны латок амаль запоўнены</translation>
 <translation id="3390013585654699824">Звесткі пра праграму</translation>
 <translation id="3390740059150071453">Паглядзіце ўлева</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Адрас электроннай пошты</translation>
 <translation id="3701028563242674350">Павялічваць курсор хуткім варушэннем мышы</translation>
 <translation id="3703699162703116302">Білет абноўлены</translation>
+<translation id="3703994572283698466">Chrome OS, як і <ph name="BEGIN_LINK_LINUX_OSS" />асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="370649949373421643">Уключыць Wi-Fi</translation>
 <translation id="370665806235115550">Загрузка…</translation>
 <translation id="3707163604290651814">Карыстальнік увайшоў у сістэму як <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Знойдзена прынтараў на серверы друку: <ph name="NUM_PRINTERS" /></translation>
 <translation id="371370241367527062">Пярэдні мікрафон</translation>
 <translation id="37143699183660101">Стабільнасць курсора</translation>
+<translation id="3716540481907974026">Версія Chrome OS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Няправільны PIN-код. Паўтарыце спробу.</translation>
 <translation id="3728681439294129328">Наладзіць адрас сеткі</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Паказваць падкрэсліванне тэксту пры яго ўводзе</translation>
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="379509625511193653">Выключана</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3796215473395753611">Alt + стрэлка ўверх</translation>
 <translation id="3798670284305777884">Дынамік (унутраны)</translation>
 <translation id="3799128412641261490">Налады доступу праз пераключальнікі</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Убудаваная клавіятура</translation>
 <translation id="3917644013202553949">Недастаткова месца для сінхранізацыі файлаў. Паспрабуйце вызваліць яго.</translation>
 <translation id="3919229493046408863">Выключыць апавяшчэнні пра знаходжанне прылад паблізу</translation>
+<translation id="3923184630988645767">Выкарыстанне трафіка</translation>
 <translation id="3923494859158167397">Мабільныя сеткі не наладжаны</translation>
 <translation id="3924145049010392604">Клавіша Meta</translation>
 <translation id="3925926055063465902">Іншыя карыстальнікі прылады таксама могуць выкарыстоўваць гэту сетку</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Пошук азначэнняў з дапамогай Хуткіх адказаў</translation>
 <translation id="3994075804072562819">Дайце праграме "<ph name="SPECIFIC_NAME" />" дазвол на кіраванне USB-прыладамі.</translation>
 <translation id="3994530503403062649">Знайдзіце на планшэце кнопкі</translation>
+<translation id="3997429360543082038">Пра Chromium OS</translation>
 <translation id="4001540981461989979">Вылучаць курсор мышы, калі ён рухаецца</translation>
 <translation id="4005817994523282006">Спосаб выяўлення часавага пояса</translation>
+<translation id="4019629340646866719">Chromium OS, як і <ph name="BEGIN_LINK_LINUX_OSS" />асяроддзе распрацоўкі Linux<ph name="END_LINK_LINUX_OSS" />, працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Скапіраваць звесткі пра зборку</translation>
 <translation id="4028467762035011525">Дадаць метады ўводу</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Каб перайсці да апошняга выкарыстанага спосабу ўводу, націсніце <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">пошук + стрэлка ўправа</translation>
 <translation id="405181879009056822">Налады ChromeOS</translation>
+<translation id="4054070260844648638">Бачнасць для ўсіх</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Каб паглядзець даступныя ў сетцы прынтары, патрабуецца падключэнне да інтэрнэту.</translation>
 <translation id="4068776064906523561">Захаваныя адбіткі пальцаў</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, узровень <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Знайсці больш праграм для стыла</translation>
 <translation id="4248401726442101648">Камера не падключана</translation>
+<translation id="424864128008805179">Выйсці з Chrome?</translation>
 <translation id="4249116869350613769">Рэжым энергазберажэння</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
 <translation id="425411422794688815">Нешта пайшло не так. Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Уліковы запіс Google}one{<ph name="EXTRA_ACCOUNTS" /> Уліковы запіс Google}few{<ph name="EXTRA_ACCOUNTS" /> Уліковыя запісы Google}many{<ph name="EXTRA_ACCOUNTS" /> Уліковых запісаў Google}other{<ph name="EXTRA_ACCOUNTS" /> Уліковага запісу Google}}</translation>
 <translation id="4314497418046265427">Працуйце эфектыўней, падключыўшы тэлефон да прылады "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="4314561087119792062">Дадаць новы пункт доступу</translation>
+<translation id="4314815835985389558">Кіраванне сінхранізацыяй</translation>
 <translation id="4320177379694898372">Няма падключэння да інтэрнэту</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Сховішча і сілкаванне</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Колькасць прапаноў</translation>
 <translation id="4606933160360542263">Уласная камбінацыя клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Калі выбрана левая кнопка мышы, выкарыстайце "/", каб націснуць двойчы</translation>
+<translation id="4613863813562375431">Версія Chromium OS</translation>
 <translation id="461661862154729886">Крыніца энергіі</translation>
 <translation id="4617880081511131945">Не ўдалося ўстанавіць падключэнне</translation>
 <translation id="4620757807254334872">мыш</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">Наладзіць серверы даменных імён</translation>
 <translation id="4779083564647765204">Маштаб</translation>
 <translation id="4779766576531456629">Перайменаваць сотавую сетку eSIM-карты</translation>
+<translation id="4789550509729954245">Паказваць апавяшчэнне, калі прылады, якія знаходзяцца паблізу, абагульваюць змесціва</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Уключыць паскарэнне TrackPoint</translation>
 <translation id="479664067938200069">Праграмы, якія ўсталяваны з праграмы "<ph name="APP_NAME" />"</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">Замацаваць акно</translation>
 <translation id="4964673849688379040">Ідзе праверка...</translation>
 <translation id="4967571733817147990">Наладзіць кнопкі мышы</translation>
+<translation id="4970880042055371251">Версія Chrome OS</translation>
 <translation id="4972129977812092092">Рэдагаваць звесткі прынтара</translation>
 <translation id="4975771730019223894">Значкі колькасці апавяшчэнняў у праграмах</translation>
 <translation id="4979263087381759787">Параметры распрацоўшчыка</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">Доступ да Google Дыска на гэтай прыладзе Chromebook, у тым ліку да ўсіх пазасеткавых файлаў, будзе выдалены</translation>
 <translation id="5196790039230503600">З дапамогай жэста і павароту галавы пакажыце, куды б вы хацелі ўставіць гэты элемент. Устаўце элемент з дапамогай жэста.</translation>
 <translation id="5197255632782567636">Інтэрнэт</translation>
+<translation id="5205484256512407285">Ніколі не выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="5207949376430453814">Указваць на курсор рэдагавання тэксту</translation>
 <translation id="5208926629108082192">Інфармацыя аб мабільнай сетцы прылады</translation>
 <translation id="5208988882104884956">Палавінная шырыня</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">Праграма сістэмы Chrome OS</translation>
 <translation id="5334113802138581043">Доступ да мікрафона</translation>
 <translation id="5336689872433667741">Курсор і сэнсарная панэль</translation>
+<translation id="5337926771328966926">Бягучая назва прылады – <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Адпраўка даных пра выкарыстанне і дыягностыку</translation>
 <translation id="5369694795837229225">Наладзіць асяроддзе распрацоўкі Linux</translation>
 <translation id="5377367976106153749">Дазволіць доступ да камеры?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">Гэтыя налады можа змяняць толькі ўладальнік:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Чахол</translation>
+<translation id="5840680448799937675">Файлы будуць заўсёды абагульвацца па-за сеткай</translation>
 <translation id="5841270259333717135">Наладзіць Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth уключаны</translation>
 <translation id="5846200638699387931">Памылка сінтаксісу суаднясення: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Запытваць перад капіраваннем або перамяшчэннем файлаў Microsoft на Google Дыск</translation>
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="594048410531370124">Невядомая клавіша. Каб <ph name="RESPONSE" />, націсніце любую клавішу.</translation>
+<translation id="5942779427914696408">Бачнасць прылады</translation>
 <translation id="5945192511027649793">Адключыць сэнсарную панэль</translation>
 <translation id="5947651424015173580">Двойчы націснуць на кнопку мышы</translation>
 <translation id="594993197557058302">Націсніце ад адной да чатырох клавіш-мадыфікатараў (Ctrl, Alt, Shift, клавішу пошуку або клавішу панэлі запуску) і яшчэ 1 клавішу. Можна таксама выбраць адну асобную клавішу.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">Прызначыць жэст</translation>
 <translation id="5968022600320704045">Няма вынікаў пошуку</translation>
 <translation id="5969728632630673489">Апавяшчэнне пра спалучэнні клавіш закрыта</translation>
+<translation id="5979353814339191480">Гэты параметр прымяняецца да прылад Chromebook, якія выкарыстоўваюць план перадачы даных або падключаны да мабільнай сеткі праз USB-мадэм, а таксама пры падключэнні да партатыўнага хот-спота</translation>
 <translation id="5985556342298151179">Праграма Chrome ўсталявана адміністратарам прылады.</translation>
 <translation id="5986442691296752186">Дайце праграмам Linux дазвол на кіраванне USB-прыладамі.</translation>
 <translation id="598810097218913399">Выдаліць прызначэнне</translation>
 <translation id="5988563937187882754">Паглядзіце ўправа</translation>
+<translation id="5990266201903445068">Толькі Wi-Fi</translation>
 <translation id="5992225669837656567">Усе мышы адключаны</translation>
 <translation id="5999630716831179808">Галасы</translation>
 <translation id="6002458620803359783">Пажаданыя галасы</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">Асноўная кнопка TrackPoint</translation>
 <translation id="6048747414605857443">Выберыце і наладзьце галасы для сінтэзу маўлення ў ChromeVox і функцыі "Чытаць у голас"</translation>
 <translation id="6050189528197190982">Адценні шэрага</translation>
+<translation id="6054961935262556546">Змяніць бачнасць</translation>
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
 <translation id="6059925163896151826">USB-прылады</translation>
 <translation id="6064764629679333574">Палепшыце якасць гуку Bluetooth-мікрафона, змяніўшы раздзяляльнасць аўдыя з нізкай на высокую.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Запытваць перад капіраваннем або перамяшчэннем файлаў Microsoft на Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Выдаліць порт</translation>
 <translation id="6266532094411434237">Ідзе падключэнне да прылады "<ph name="DEVICE" />"</translation>
+<translation id="6268381023930128611">Выйсці з уліковага запісу ў браўзеры Chromium?</translation>
 <translation id="6270309713620950855">Выключыць гук напамінаў</translation>
 <translation id="6274089201566806618">Ідзе падключэнне да прылады "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="628352644014831790">4 секунды</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">Каб перайсці да наступнага спосабу ўводу, націсніце <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Прабел<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Выдаліць гэты слоўнік</translation>
 <translation id="6463596731306859179">З’яўляюцца непажаданыя ўсплывальныя вокны, або прылада працуе нязвыкла? Часам праграмы і пашырэнні, якія вы ўсталёўваеце, могуць змяняць налады ChromeOS без вашага ведама.</translation>
+<translation id="6465841119675156448">Без інтэрнэту</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> можа выконваць наступныя дзеянні:</translation>
 <translation id="6469557521904094793">Уключыць сотавую сетку</translation>
 <translation id="6470120577693311302">Флэш-апавяшчэнні</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">Рэжым эфекту</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Спалучэнне клавіш для выбару</translation>
+<translation id="6632473616050862500">Chrome OS Flex працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Выключыць хуткае спалучэнне</translation>
 <translation id="6647690760956378579">Узор натуральнага голасу</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">Тут будуць з’яўляцца даступныя прылады.</translation>
 <translation id="6776729248872343918">Уключыць хуткае спалучэнне</translation>
 <translation id="6777845730143344223">Даведацца больш пра падпіскі Passpoint</translation>
+<translation id="6779406956731413166">Chromium OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Выдаліць інфармацыю пра гэту прыладу?</translation>
 <translation id="6783667414610055871">Налады Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Адваротная прагортка <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">Налады голасу для сінтэзу маўлення</translation>
 <translation id="7282547042039404307">Добрая</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Важныя звесткі пра выкарыстанне і бяспеку</translation>
 <translation id="7303485269821975179">Устанавіць пароль для прылады "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="7304030187361489308">Высокая</translation>
 <translation id="7308643132139167865">Мовы вэб-сайтаў</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">Нядаўнія фота</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Заблакіравана праграм: <ph name="BLOCKED_APPS_SIZE" /> з <ph name="APPS_LIST_SIZE" /></translation>
+<translation id="7423425410216218516">Прылада будзе бачнай яшчэ <ph name="MINUTES" /> хв</translation>
 <translation id="7423513079490750513">Выдаліць: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Дапамога з напісаннем</translation>
 <translation id="7429415133937917139">Імітуе вывад дынамічнага дысплэя Брайля
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">Налады аўтэнтыфікацыі з дапамогай адбіткаў пальцаў</translation>
 <translation id="7578692661782707876">Увядзіце код пацвярджэння.</translation>
 <translation id="7582582252461552277">Прыярытэтная сетка</translation>
+<translation id="7582844466922312471">Мабільная перадача даных</translation>
 <translation id="7587806318633605613">Гісторыя прапаноў</translation>
 <translation id="7590883480672980941">Налады ўводу</translation>
 <translation id="7592060599656252486">Некаторыя знакі пунктуацыі</translation>
 <translation id="7602173054665172958">Кіраванне друкам</translation>
 <translation id="7605163396341021431">Дайце праграмам Android дазвол на кіраванне USB-прыладамі на гэтай прыладзе Chromebook</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7608810328871051088">Налады Android</translation>
 <translation id="7611713099524036757">клавіша Meta</translation>
 <translation id="7612655942094160088">Уключэнне функцый падключанага тэлефона.</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">Выкарыстоўваць бяспечнае падключэнне для пошуку адрасоў сайтаў</translation>
 <translation id="7634337648687970851">Аднаўленне лакальных даных зараз не падтрымліваецца.</translation>
 <translation id="7640256527901510478">IMEI прылады: <ph name="IMEI_NUMBER" />; серыйны нумар: <ph name="SERIAL_NUMBER" />. Гэтыя нумары можна выкарыстаць для актывацыі сэрвісу.</translation>
+<translation id="7640308610547854367">Вы вярнуліся да папярэдняй версіі ChromeOS. Каб атрымліваць абнаўленні, дачакайцеся выхаду наступнай версіі.</translation>
 <translation id="7641513591566880111">Новая назва профілю</translation>
 <translation id="764178579712141045">Карыстальнік <ph name="USER_EMAIL" /> дададзены</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (уладальнік)</translation>
 <translation id="7648048654005891115">Стыль раскладкі спалучэнняў клавіш</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Зарэгістраваны 1 адбітак пальца}one{Зарэгістраваны {COUNT} адбітак пальцаў}few{Зарэгістравана {COUNT} адбіткі пальцаў}many{Зарэгістравана {COUNT} адбіткаў пальцаў}other{Зарэгістравана {COUNT} адбітка пальцаў}}</translation>
+<translation id="7650677314924139716">Бягучая налада выкарыстання трафіка: толькі па Wi-Fi</translation>
 <translation id="7651400349472467012">Даступны імгненны хот-спот</translation>
 <translation id="7651784568388208829">Працяг задачы Тэлефоннага цэнтра</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Пераклад</translation>
 <translation id="7915457674565721553">Каб наладзіць бацькоўскі кантроль, падключыцеся да інтэрнэту</translation>
+<translation id="7917876797003313048">У гэтым раздзеле можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Вашы Уліковыя запісы Google выкарыстоўваюцца ў браўзеры Chrome, Краме Play, пошце Gmail і іншых сэрвісах. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ (напрыклад, для ўдзельніка сямейнай групы), дадайце на прыладу "<ph name="DEVICE_TYPE" />" новага карыстальніка. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920482456679570420">Дадайце словы, правапіс якіх не трэба правяраць</translation>
 <translation id="7921347341284348270">Вы не можаце праглядаць апавяшчэнні з тэлефона праз гэты ўліковы запіс пад кіраваннем. Паўтарыце спробу, выкарыстаўшы іншы ўліковы запіс. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">Налады курсора скінуты</translation>
 <translation id="8437209419043462667">ЗША</translation>
 <translation id="8439506636278576865">Прапаноўваць перакладаць старонкі на гэтай мове</translation>
+<translation id="8449347986464073209">Выдаліць і выйсці</translation>
 <translation id="8451512073679317615">памочнік</translation>
 <translation id="8455775311562941553">Падключана да прылады "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="8473540203671727883">Агучваць тэкст пад курсорам мышы</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">Гук выключаны. Уключыць гук.</translation>
 <translation id="888256071122006425">Налады сэнсарнай панэлі і мышы</translation>
 <translation id="8885449336974696155">Дапамажыце палепшыць ChromeOS, паведаміўшы пра <ph name="BEGIN_LINK" />бягучыя налады<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">За мабільную перадачу даных можа спаганяцца плата</translation>
 <translation id="8890529496706615641">Не ўдалося перайменаваць профіль. Паўтарыце спробу або звярніцеся да свайго аператара па тэхнічную падтрымку.</translation>
 <translation id="8894761918470382415">Абмежаванне доступу да даных для перыферыйных прылад</translation>
 <translation id="8896830132794747524">Больш хуткія рухі мышшу будуць перамяшчаць курсор на большую адлегласць</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320">Прылада "<ph name="DEVICE_NAME" />" адключана</translation>
 <translation id="8980345560318123814">Адпраўка справаздач</translation>
 <translation id="8981825781894055334">Мала паперы</translation>
+<translation id="8984694057134206124">Ваша прылада будзе бачнай усім яшчэ <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Парог выяўлення жэста</translation>
 <translation id="8986362086234534611">Забыць</translation>
 <translation id="8991694323904646277">Няма камеры</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">Выдаліць Google Play і праграмы для Android</translation>
 <translation id="910000385680858937">Выкарыстанне дазволена (<ph name="PERMISSION_DETAILS" />). Падключыце мікрафон да прылады.</translation>
 <translation id="9100416672768993722">Каб перайсці да апошняга выкарыстанага спосабу ўводу, націсніце <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Прабел<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Бягучая налада выкарыстання трафіка: без падключэння да інтэрнэту</translation>
 <translation id="9108294543511800041">Цяпер вы можаце праглядаць нядаўнія апавяшчэнні, медыяфайлы і фота з тэлефона</translation>
 <translation id="9109122242323516435">Каб вызваліць месца, выдаліце файлы са сховішча прылады.</translation>
 <translation id="9111330022786356709">Дадайце кнопкі мышы або змяніце іх размяшчэнне</translation>

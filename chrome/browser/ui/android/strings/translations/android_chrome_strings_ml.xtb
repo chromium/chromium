@@ -206,6 +206,7 @@
 <translation id="1807709131360304325">ഒരു പുതിയ വിൻഡോ തുറക്കുക</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിന് <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുന്നത് തുടരാനാകുന്നില്ല</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, മീഡിയ റെക്കോർഡ് ചെയ്യുന്ന ടാബ്</translation>
+<translation id="1817594121551034302">അഡ്രസ് ബാർ കുറുക്കുവഴി</translation>
 <translation id="1819443852740954262">എല്ലാം അദൃശ്യ വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="1820408774134375111">സൈൻ ഇൻ ചെയ്യാനുള്ള ബോട്ടം ഷീറ്റ്</translation>
 <translation id="1824902652744048041">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക ടാപ്പ് ചെയ്യുക</translation>
@@ -830,6 +831,7 @@
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, 'ചിത്രത്തിനുള്ളിൽ ചിത്രം' അദൃശ്യ ടാബ്</translation>
 <translation id="4285498937028063278">പിൻചെയ്യൽ മാറ്റുക</translation>
 <translation id="4285846616383034558">കുക്കികൾ, കാഷെ, മറ്റ് സൈറ്റ് ഡാറ്റ എന്നിവ</translation>
+<translation id="429016203314124112">നിങ്ങൾ തിരഞ്ഞെടുത്ത തിരയൽ എഞ്ചിൻ Chrome-ൽ ഡിഫോൾട്ടായി ഉപയോഗിക്കും</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ സ്ക്രീൻ ലോക്ക് ഓണാക്കുക<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">നിങ്ങളുടെ ഫോൺ</translation>
 <translation id="4295640788982898778">നിങ്ങളുടെ വിപുലീകരണങ്ങൾ Google Account-ൽ സംരക്ഷിച്ചിട്ടുണ്ട്, എന്നാൽ ഈ ഉപകരണത്തിൽ മാത്രമായി സംരക്ഷിച്ചിട്ടുള്ള അവയുടെ ഏത് ഡാറ്റയും ഇല്ലാതാക്കിയേക്കാം</translation>
@@ -984,6 +986,7 @@
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ഒരു ടാബ് ഗ്രൂപ്പ് അടയ്‌ക്കുകയും സംരക്ഷിക്കുകയും ചെയ്‌തു</translation>
 <translation id="4835385943915508971">അഭ്യർത്ഥിച്ച ഉറവിടത്തിലേക്ക് Chrome-ന് ആക്‌സസ് ഇല്ല.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_ONE" /> ടാബുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}}</translation>
+<translation id="48431900345921167"><ph name="ACCOUNT_EMAIL" /> എന്നതിന് ചില സേവനങ്ങൾ ലഭ്യമല്ല</translation>
 <translation id="4849731766219625109">നിങ്ങളുടെ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> അക്കൗണ്ട് ഉപയോഗിക്കുക</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="4860895144060829044">വിളിക്കുക</translation>
@@ -1008,6 +1011,7 @@
 <translation id="4925120120285606924">സ്‌ക്രീൻഷോട്ട് <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ഓഫ്‌ലൈനിൽ കാണാനോ മറ്റ് ആപ്പുകളിൽ പങ്കിടാനോ നിങ്ങൾക്ക് ചിത്രങ്ങളും ഫയലുകളും സംരക്ഷിക്കാനാകും</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{ഒരു ബുക്ക്‌മാർക്കും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}other{# ബുക്ക്‌മാർക്കുകളും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, അവ നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കുക.}}</translation>
+<translation id="4932733599132424254">തീയതി</translation>
 <translation id="4943703118917034429">വെർച്വൽ റിയാലിറ്റി</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>
 <translation id="4957722034734105353">കൂടുതലറിയുക...</translation>
@@ -1042,6 +1046,7 @@
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> വിൻഡോ തിരഞ്ഞടുത്തു}other{<ph name="WINDOW_COUNT_NORMAL" /> വിൻഡോകൾ തിരഞ്ഞെടുത്തു}}</translation>
 <translation id="5058506215037547387">പേജ് പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="506254248375231072">ടാബുകളൊന്നും ഇല്ല</translation>
+<translation id="5065494736868031814">ടൂൾബാറിൽ</translation>
 <translation id="5075939510584558547">എൻക്രിപ്ഷൻ ഇല്ലാതെ സംരക്ഷിക്കുക</translation>
 <translation id="5078638979202084724">എല്ലാ ടാബുകളും ബുക്ക്‌മാര്‍ക്ക് ചെയ്യുക</translation>
 <translation id="5085038751173179818">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടാൻ ഈ സൈറ്റിലേക്കും Chrome-ലേക്കും സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -1061,6 +1066,7 @@
 <translation id="5142281402488957685">പുതിയ സ്റ്റോറികൾക്ക്, റീഫ്രഷ് ചെയ്യാൻ താഴേക്ക് വലിക്കുക</translation>
 <translation id="5144385790872094440">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തവയാണ്. Google സൈറ്റ് അല്ലെങ്കിൽ ആപ്പിൽ നിന്ന് ലിങ്ക് ചെയ്യുമ്പോൾ, Google സെർവറുകൾ മുഖേന പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തേക്കാം.</translation>
 <translation id="5152843274749979095">ഉപയോഗിക്കാനാവുന്ന ആപ്‌സൊന്നും ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
 <translation id="5161262286013276579">പാസ്‌കീ സ്ഥിരീകരിക്കൽ ഷീറ്റ് തുറന്നു</translation>
 <translation id="5163361352003913350">നിലവിൽ <ph name="NAME" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു. അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക.</translation>
@@ -1144,6 +1150,7 @@
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> എന്നയാളായി ചേരുക</translation>
 <translation id="5517326820028369152">'സമീപകാല ആക്റ്റിവിറ്റി' ബോട്ടം ഷീറ്റ്</translation>
+<translation id="5519516356611866228">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ സഹിതം</translation>
 <translation id="5526281268548144413">ഒന്നിലധികം വിൻഡോകളിൽ അടയ്ക്കാൻ കഴിയില്ല</translation>
 <translation id="5532536403031755365">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഉപയോഗിച്ച് ഓൺലൈൻ ഭീഷണികൾക്കെതിരെ അധിക പരിരക്ഷ ചേർക്കുക</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{ബുക്ക്‌മാർക്ക് തുറക്കുക}other{എല്ലാം തുറക്കുക (#)}}</translation>
@@ -1256,6 +1263,7 @@
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്തതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്തു</translation>
 <translation id="5995726099713306770">പേജ് വീണ്ടും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="6000066717592683814">Google ഉപയോഗിക്കുക</translation>
+<translation id="6000860861660592745">ചോയ്‌സ് സംരക്ഷിച്ചു</translation>
 <translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
 <translation id="6011308810877101166">തിരയൽ നിർദ്ദേശങ്ങൾ മെച്ചപ്പെടുത്തുക</translation>
 <translation id="6013305291643746595">പഴയത് പ്രകാരം അടുക്കുന്നു</translation>
@@ -1282,6 +1290,7 @@
 <translation id="6095578583683628124">Google നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രം കൂടെയാണെങ്കിൽ, മികച്ചതും സന്ദർഭോചിതവുമായ നിർദ്ദേശങ്ങൾ നിങ്ങൾ കാണും</translation>
 <translation id="6104768972315313991">ജനറേറ്റ് ചെയ്ത QR കോഡ്</translation>
 <translation id="610630277578876674">സന്ദേശങ്ങളിലെയും മറ്റും ലിങ്കുകൾ വേഗത്തിൽ തുറക്കുക</translation>
+<translation id="6110067234345111822">നിങ്ങളുടെ പ്രദേശത്തെ നിയമം അനുസരിച്ച്, Chrome-നുള്ള തിരയൽ എഞ്ചിൻ നിങ്ങൾ തിരഞ്ഞെടുക്കേണ്ടതുണ്ട്</translation>
 <translation id="6112702117600201073">പേജ് പുതുക്കുന്നു</translation>
 <translation id="612221930823678863">ചോദ്യത്തിന്റെ സ്ഥാനത്ത് <ph name="QUERY" /> ഉള്ള URL</translation>
 <translation id="6122831415929794347">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാക്കണോ?</translation>
@@ -1406,6 +1415,7 @@
 <translation id="6482749332252372425">സ്‌റ്റോറേജ് ഇടമില്ലാത്തതിനാൽ <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="6486420406192123355">ഈ PDF ഫയൽ, സുരക്ഷിതമല്ലാത്ത കണക്ഷൻ ഉപയോഗിക്കുന്ന സൈറ്റിൽ നിന്നാണ്</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ഫയൽ ഡൗൺലോഡ് ചെയ്‌തു}other{# ഡൗൺലോഡുകൾ പൂർത്തിയായി}}</translation>
+<translation id="6502991525169604759">നിങ്ങൾ വരുത്തിയ മാറ്റങ്ങൾ ഇല്ലാതെ</translation>
 <translation id="6508722015517270189">Chrome റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
 <translation id="6513924416597632811">ഇനിപ്പറയുന്നതിനുള്ള തിരയൽ ഫലങ്ങളുടെ പേജിലേക്കുള്ള ലിങ്ക് പകർത്തുക: <ph name="SEARCH_QUERY" />. ഉറവിടം: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">സ്ഥിരീകരിക്കുക</translation>
@@ -1447,6 +1457,7 @@
 <translation id="6659594942844771486">ടാബ്</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6669390930482049506">എന്നെ അറിയിക്കുക</translation>
+<translation id="6670742294143102726">നിങ്ങളുടെ തിരയലിലേക്ക് ചേർക്കാൻ ഒന്നോ അതിലധികമോ ടാബുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
 <translation id="6675622031235530028">പുറത്തുകടക്കാൻ Ctrl+Q അമർത്തിപ്പിടിക്കുക</translation>
@@ -1578,6 +1589,7 @@
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> അടയ്‌ക്കുക</translation>
 <translation id="7121179479711575744">Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="7130633106249192408">ഈ ഉപകരണത്തിൽ നിന്ന് ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക</translation>
+<translation id="7134511521562699550">അഡ്രസ് ബാറിൽ</translation>
 <translation id="7136694880210472378">ഡിഫോൾട്ട് ആക്കുക</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 സൈറ്റിന്റെ അനുമതികൾ അവലോകനം ചെയ്തു}other{# സൈറ്റുകളുടെ അനുമതികൾ അവലോകനം ചെയ്തു}}</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
@@ -1610,6 +1622,7 @@
 <translation id="7196455519852483601">നിങ്ങളുടെ ചരിത്രം, കുക്കികൾ, സൈറ്റ് ഡാറ്റ എന്നിവയും മറ്റും പൂർണ്ണമായോ ഭാഗികമായോ നിങ്ങൾക്ക് ഇല്ലാതാക്കാൻ കഴിയും</translation>
 <translation id="7197682514647286393">ബ്രൗസിംഗ് ഡാറ്റ വേഗം ഇല്ലാതാക്കൂ</translation>
 <translation id="719791532916917144">കീബോഡ് കുറുക്കുവഴികൾ</translation>
+<translation id="7198747540865146057">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7203150201908454328">വിപുലീകരിച്ചത്</translation>
 <translation id="7207760545532569765">പുതിയ പശ്ചാത്തല ടാബുകളായി <ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിക്കുക.</translation>
 <translation id="7217781228893594884">നിങ്ങൾ Chrome-ൽ നിന്ന് പുറത്തുകടക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യും</translation>
@@ -1684,7 +1697,6 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (അപ്‌ഡേറ്റ് ചെയ്‌തു, <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">കാത്തിരിക്കുക...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, മ്യൂട്ട് ചെയ്ത ടാബ്</translation>
-<translation id="7500851014030446046">PDF ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="7501135638693251872">എല്ലാ ബുക്ക്മാർക്കുകളും</translation>
 <translation id="7504076214066136798">എഡിറ്റുകൾ സംരക്ഷിക്കാനാകുന്നില്ല</translation>
 <translation id="7507207699631365376">ഈ ദാതാവിന്റെ <ph name="BEGIN_LINK" />സ്വകാര്യതാ നയം<ph name="END_LINK" /> കാണുക</translation>
@@ -1920,6 +1932,7 @@
 <translation id="8368001212524806591">നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ടാബ് ഗ്രൂപ്പ്}other{<ph name="TAB_GROUPS_MANY" /> ടാബ് ഗ്രൂപ്പുകൾ}}</translation>
 <translation id="8387617938027387193">ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
+<translation id="8392241619862061825">Gemini കുറുക്കുവഴി കാണിക്കുക</translation>
 <translation id="8393700583063109961">സന്ദേശം അയയ്ക്കുക</translation>
 <translation id="8398389123831319859">അദൃശ്യ മോഡിലേക്ക് മാറാൻ ഡബിൾ ടാപ്പ് ചെയ്ത് പിടിക്കുക</translation>
 <translation id="8401904657382223224">ഹോസ്റ്റ് പ്രകാരം ഫിൽട്ടർ ചെയ്യുക</translation>
@@ -2001,6 +2014,7 @@
 <translation id="8639963783467694461">സ്വയമേവ പൂരിപ്പിക്കൽ ക്രമീകരണങ്ങള്‍</translation>
 <translation id="8642256427178803328">നിങ്ങൾ Chrome-ൽ നിന്ന് പുറത്തുകടക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യുക ടോഗിൾ ചെയ്യുക</translation>
 <translation id="8644482734962137770">Chrome ഉപയോഗിക്കാൻ Gemini-ക്ക് അനുമതി ആവശ്യമാണ്</translation>
+<translation id="8653883575875371543">ടൂൾബാറിൽ Gemini കാണിക്കുക</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8664979001105139458">ഫയലിന്റെ പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ സൈനപ്പ് ചെയ്യുക</translation>
@@ -2018,6 +2032,7 @@
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8727043961453758442">Chrome പരമാവധി പ്രയോജനപ്പെടുത്തുക</translation>
 <translation id="8728810647305130936">പുതിയ ടാബുകൾ തുറക്കുക</translation>
+<translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8731268612289859741">സുരക്ഷാ കോഡ്</translation>
 <translation id="8738163682604285902">റീഡിംഗ് മോഡിൽ കാണണോ?</translation>
 <translation id="8746155870861185046">ഹൈലൈറ്റ് പങ്കിടുക</translation>

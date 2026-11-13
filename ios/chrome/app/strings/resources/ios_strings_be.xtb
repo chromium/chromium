@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="201759455285471444">Разгарнуць групу ўкладак.</translation>
 <translation id="2022431790688770637">Кіраваць прапановамі Gemini</translation>
+<translation id="2023265063803387188">Сэрвіс Gemini недаступны ў рэжыме інкогніта</translation>
 <translation id="2031515492007104071">Новы ўзровень</translation>
 <translation id="2044394949148788042">Адкрыйце сетку ўкладак</translation>
 <translation id="2044681667265133332">Уліковым запісам <ph name="USER_EMAIL" /> кіруе дамен "<ph name="HOSTED_DOMAIN" />", які можа праглядаць пэўную інфармацыю. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Спыніць</translation>
 <translation id="2666092431469916601">Зверху</translation>
 <translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
-<translation id="2671316366021598595">Сайту "<ph name="SITE_DOMAIN" />" забаронены доступ да камеры</translation>
 <translation id="2671423594960767771">Абагуліць групу</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Купля ў растэрміноўку</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="386224966259596343">Вы зможаце захаваць гэту інфармацыю ў Кашальку, калі будзеце запаўняць адпаведную форму ў наступны раз.</translation>
 <translation id="3868495844258915202">Паказаць увесь URL-адрас</translation>
+<translation id="3870931306085184145">Няма захаваных пароляў для <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Паказаць</translation>
 <translation id="3878657761594430423">Захоп старонкі</translation>
 <translation id="3884810423191119660">Надзейна захоўвайце паролі, каб з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах</translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Спыніць спампоўванне?</translation>
 <translation id="4796496140132859135">Група ўкладак. Згорнута.</translation>
 <translation id="4800912004582762296">Націсканне</translation>
+<translation id="4800930308997591052">Пераключыцеся на ўліковы запіс <ph name="EMAIL" />, каб лёгка абагульваць укладкі паміж прыладамі і атрымліваць доступ да пароляў, закладак і іншага змесціва з вашага Уліковага запісу Google.</translation>
 <translation id="4802185666270672526">Схаваць пункт "Запытаць сайт для ПК"</translation>
 <translation id="4803185665210547709">Пад кіраваннем вашай арганізацыі.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -1311,7 +1313,6 @@
 <translation id="5061202435354361813">Карыстайцеся браўзерам больш эфектыўна</translation>
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
 <translation id="5067540696062462445">Спампоўкі</translation>
-<translation id="5070314445039955096">Пасля пераходу з сайта "<ph name="SITE_DOMAIN" />" яго дазволы будуць скінуты</translation>
 <translation id="507187271399539513">{count,plural, =1{Спосаб аплаты {position} з {count}}one{Спосаб аплаты {position} з {count}}few{Спосаб аплаты {position} з {count}}many{Спосаб аплаты {position} з {count}}other{Спосаб аплаты {position} з {count}}}</translation>
 <translation id="5075939510584558547">Захоўванне без шыфравання</translation>
 <translation id="5076534614343816664">Адсочванне цэн</translation>
@@ -1410,7 +1411,6 @@
 <translation id="5351613737248079168">Каб выкарыстоўваць праграму Level Up, трэба ўвайсці ва ўліковы запіс</translation>
 <translation id="5352128922772839949">Захаваць файл</translation>
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
-<translation id="5355871759168485600">Сайту "<ph name="SITE_DOMAIN" />" дазволена выкарыстоўваць мікрафон кожны раз, калі вы яго наведваеце</translation>
 <translation id="5359436665022446585">Больш зручнае адкрыццё спасылак</translation>
 <translation id="536067926684072644">Паказаць закладкі</translation>
 <translation id="5364647308446127983">{count,plural, =1{Не ўдалося імпартаваць {count} ключ доступу}one{Не ўдалося імпартаваць {count} ключ доступу}few{Не ўдалося імпартаваць {count} ключы доступу}many{Не ўдалося імпартаваць {count} ключоў доступу}other{Не ўдалося імпартаваць {count} ключа доступу}}</translation>
@@ -2148,6 +2148,7 @@
 <translation id="7618220760967055820">Выберыце, якая кнопка будзе паказвацца на панэлі інструментаў</translation>
 <translation id="7620522820075868385">Скасаваць</translation>
 <translation id="762078666799342162">Ранейшыя спампоўкі можна паглядзець у <ph name="BEGIN_LINK" />Файлах<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Працягвайце з таго месца, дзе спыніліся на камп’ютары</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Раскрытыя паролі}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="7640669552036055091">Укладкі з Android</translation>
@@ -2333,7 +2334,6 @@
 <translation id="8157532349231307196">Уліковых запісаў: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Разблакіраваць, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Даўжыня</translation>
-<translation id="8181328232274170248">Сайту "<ph name="SITE_DOMAIN" />" дазволена выкарыстоўваць камеру кожны раз, калі вы яго наведваеце</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для {website_1}}=2{Для {website_1}, {website_2}}=3{Для {website_1}, {website_2} і яшчэ 1}one{Для {website_1}, {website_2} і яшчэ {more_count}}few{Для {website_1}, {website_2} і яшчэ {more_count}}many{Для {website_1}, {website_2} і яшчэ {more_count}}other{Для {website_1}, {website_2} і яшчэ {more_count}}}</translation>
 <translation id="8184895727539791845">Каб дазволіць Gemini выкарыстоўваць камеру, уключыце камеру ў наладах iOS</translation>
 <translation id="8185076488803799132">Імпартаваць</translation>
@@ -2504,7 +2504,6 @@
 <translation id="8674716540979958118">У вас ёсць раскрытыя паролі.</translation>
 <translation id="8679900250380464358">Дадаць у Спіс на прагляд</translation>
 <translation id="8680787084697685621">Даныя ўліковага запісу для ўваходу састарэлі.</translation>
-<translation id="868648444055742370">Сайту "<ph name="SITE_DOMAIN" />" забаронены доступ да мікрафона</translation>
 <translation id="8690752723634292147">Пацвердзіце выдаленне</translation>
 <translation id="8692107307702113268">Даўжыня пароля перавышае 1000 сімвалаў</translation>
 <translation id="8692689525339542358">Абараніцеся ад небяспечных сайтаў, спамповак і пашырэнняў.</translation>

@@ -726,7 +726,6 @@
 <translation id="22081806969704220">Латок 3</translation>
 <translation id="2210794033760923560">Запампаваць справаздачу</translation>
 <translation id="2212735316055980242">Палітыка не знойдзена</translation>
-<translation id="2213606439339815911">Ідзе атрыманне запісаў...</translation>
 <translation id="2213612003795704869">Старонка надрукавана</translation>
 <translation id="2214086901479959524">Каб працягваць карыстацца абагуленымі групамі ўкладак, абнавіце Chrome</translation>
 <translation id="2214453882118345682">Знаходзьце тавары, перакладайце тэксты і распазнавайце навакольныя аб’екты з дапамогай камеры.</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">Абмежаваны спіс URL-адрасоў наведаных вамі старонак, дзе адбываюцца падзеі ўстарэлых тэхналогій.</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Будзе абагулена 1 укладка}one{Будзе абагулена {NUM_TABS} укладка}few{Будуць абагулены {NUM_TABS} укладкі}many{Будуць абагулены {NUM_TABS} укладак}other{Будуць абагулены {NUM_TABS} укладкі}}</translation>
 <translation id="2357481397660644965">Вашай прыладай кіруе <ph name="DEVICE_MANAGER" />, а вашым уліковым запісам – <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Праглядзіце адказ AI на пошукавы запыт Google на гэтай укладцы</translation>
 <translation id="2359629602545592467">Некалькі</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="236000571258713023">Транспартныя сродкі</translation>
@@ -1142,6 +1142,7 @@
 <translation id="2925032407415783182">Захаваць білет на мерапрыемства ў Кашальку</translation>
 <translation id="2925454999967523701">Кнопка "Стварыць дакумент". Каб хутка стварыць новы дакумент Google, націсніце яе.</translation>
 <translation id="2925673989565098301">Спосаб дастаўкі</translation>
+<translation id="2927328994673424423">2 тыдні таму</translation>
 <translation id="2928426578619531300">Прыналежнасць карыстальніка</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Укладка з іншай прылады</translation>
@@ -1276,7 +1277,6 @@
 <translation id="3141337053413339205">Пераключыцца на гэту ўкладку.</translation>
 <translation id="3144458715650412431">Прыменены тэставыя правілы. Праглядзець і скінуць іх можна на старонцы chrome://policy/test. Правілы адміністратара не будуць прыменены.</translation>
 <translation id="3145945101586104090">Не ўдалося дэкадаваць адказ</translation>
-<translation id="3149865382039202168">Выкарыстоўвайце <ph name="GOOGLE_WALLET_TITLE" /> для захавання сваіх звестак. Гэта паскорыць працу ў розных прадуктах Google, напрыклад запаўненне форм. Кіраваць тым, <ph name="HOW_INFO_IS_USED_LINK" />, можна ў наладах прыватных картак для ўліковага запісу <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Часовая памылка сервера</translation>
 <translation id="3150889484970506196">Кнопка "Стварыць табліцу". Каб хутка стварыць новую табліцу Google, націсніце яе.</translation>
 <translation id="3154506275960390542">На гэтай старонцы ёсць форма, адпраўка звестак праз якую можа быць небяспечнай. Даныя, якія вы адпраўляеце, могуць быць прагледжаны падчас перадачы або могуць быць мадыфікаваны зламыснікам з мэтай унесці змены ў даныя, якія атрымае сервер.</translation>
@@ -1521,7 +1521,6 @@
 <translation id="3558335486599406178">Нумар IBAN захаваны ў Google Кашальку</translation>
 <translation id="3558573058928565255">Светлы час дня</translation>
 <translation id="3559897352860026926">Папрасіце адміністратара спраўдзіць налады канфігурацыі воблака "<ph name="CLOUD_PROVIDER" />".</translation>
-<translation id="3560824484345057728">Паказаць спіс звязаных сайтаў</translation>
 <translation id="3566021033012934673">Падключэнне не з’яўляецца прыватным</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
 <translation id="3566681680543111735">Капіраваць радок з мадыфікацыямі</translation>
@@ -2164,7 +2163,6 @@
 <translation id="4603727370377253901">Браніраванне авіябілетаў</translation>
 <translation id="4607608436550361748">Паказаць парады адносна Chrome</translation>
 <translation id="460848736049414407">Заблакіравана адміністратарам</translation>
-<translation id="4610279718074907952">Гэты сайт належыць да вызначанай даменам <ph name="SET_OWNER" /> групы сайтаў, якія маюць доступ да звестак пра вашы дзеянні</translation>
 <translation id="4612631413844865947">Адбылася памылка апрацоўкі вашага заказу на сайце "<ph name="MERCHANT_ORIGIN" />" праз праграму "<ph name="PAYMENT_APP_ORIGIN" />".</translation>
 <translation id="4612904677925722054">Гэты сайт можа змяшчаць змесціва для дарослых. Адзін з бацькоў або законны прадстаўнік павінен даць дазвол на наведванне гэтага сайта.</translation>
 <translation id="4613873770449493819">URL-адрас павінен указваць на дамен <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3709,7 +3707,6 @@
 <translation id="7173338713290252554">Гісторыя цаны ў інтэрнэце</translation>
 <translation id="7174545416324379297">Аб’яднана</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7181261019481237103">Адкрыць акно ў рэжыме інкогніта</translation>
 <translation id="7182878459783632708">Палітыкі не зададзены</translation>
 <translation id="7186833457841277072">Канверт з матэрыялу для струменнага друку</translation>
@@ -4176,7 +4173,6 @@
 <translation id="7932579305932748336">Пакрыццё</translation>
 <translation id="79338296614623784">Увядзіце сапраўдны нумар тэлефона</translation>
 <translation id="7934414805353235750"><ph name="URL" /> запытвае дазвол на прайграванне абароненага змесціва. Google спраўдзіць ідэнтыфікатар вашай прылады.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Выкарыстанне датчыкаў руху дазволена</translation>
 <translation id="7937163678541954811">Код CVC карткі будзе зашыфраваны і захаваны на гэтай прыладзе для больш хуткай аплаты</translation>
 <translation id="7937554595067888181">Тэрмін дзеяння: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4224,7 +4220,6 @@
 <translation id="7999482381722829925">Ствары кантрольны спіс генеральнага прыбірання па пакоях, аддаючы прыярытэт месцам, якія звычайна прапускаюць</translation>
 <translation id="8001912761979890298">Серверу не ўдалося даказаць, што гэта дамен <ph name="DOMAIN" />, бо ён выкарыстоўвае сертыфікат бяспекі, якому не давярае Chromium ці канфігурацыя вашай сістэмы для шыфравання інтэрнэт-трафіка. Прычынай могуць быць няправільныя налады або спроба зламысніка перахапіць падключэнне. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Праглядзець сертыфікат<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Каб вызваліць памяць, закрыйце іншыя ўкладкі або праграмы.</translation>
-<translation id="8002230960325005199">Паказаць спіс звязаных сайтаў у новай укладцы</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Браўзер</translation>
 <translation id="8009225694047762179">Кіраваць паролямі</translation>
@@ -4265,7 +4260,6 @@
 <translation id="8079976827192572403">Небяспечны сайт</translation>
 <translation id="8086971161893892807">Чарнавая</translation>
 <translation id="8087558780672230449">Загружаецца <ph name="APP_ORIGIN" />, каб апрацаваць ваш плацеж на сайце <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Не ўдалося паглядзець артыкул.</translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8091372947890762290">Чакаецца актывацыя на серверы</translation>
 <translation id="8092254339843485299">6 x 8 цаляў</translation>
@@ -4905,7 +4899,6 @@
 <translation id="9199905725844810519">Друкаванне заблакіравана</translation>
 <translation id="9204089334327209740">Пасля завяршэння запампоўвання Вы зможаце ўносіць змяненні ў файлы ў сэрвісе <ph name="CLOUD_PROVIDER" />. Змесціва лакальнага сховішча, у тым ліку сметніцы, будзе аўтаматычна выдалена.</translation>
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
-<translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
 <translation id="9209339767782560829">Узнікла праблема з выкарыстаннем вашага сертыфіката ўваходу.</translation>
 <translation id="9210152531668884481">Згаджаюся</translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>

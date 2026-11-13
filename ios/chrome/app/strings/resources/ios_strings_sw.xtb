@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="201759455285471444">Panua kikundi cha vichupo.</translation>
 <translation id="2022431790688770637">Dhibiti mapendekezo ya Gemini</translation>
+<translation id="2023265063803387188">Gemini haipatikani katika Hali ya kutumia faraghani</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Fungua gridi ya kichupo</translation>
 <translation id="2044681667265133332">Akaunti ya <ph name="USER_EMAIL" /> inasimamiwa na <ph name="HOSTED_DOMAIN" />, inayoweza kuangalia baadhi ya maelezo. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Sitisha</translation>
 <translation id="2666092431469916601">Juu</translation>
 <translation id="2669454659051515572">Mtu yeyote anayetumia kifaa hiki anaweza kuona faili zilizopakuliwa</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" hairuhusiwi kufikia kamera yako</translation>
 <translation id="2671423594960767771">Shiriki kikundi</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Lipa Polepole</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Jina</translation>
 <translation id="386224966259596343">Utapata nafasi ya kuhifadhi maelezo haya kwenye Pochi wakati mwingine utakapojaza fomu husika.</translation>
 <translation id="3868495844258915202">Onyesha URL kamili</translation>
+<translation id="3870931306085184145">Hamna manenosiri yaliyohifadhiwa ya <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Nionyeshe Jinsi ya Kufanya</translation>
 <translation id="3878657761594430423">Kiteuzi cha laha</translation>
 <translation id="3884810423191119660">Hifadhi manenosiri kwa usalama ili uweze kuingia katika tovuti na programu kwa urahisi</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Boresha hali yako ya kuvinjari</translation>
 <translation id="5062321486222145940">Pakua Hifadhi ya Google</translation>
 <translation id="5067540696062462445">Vipakuliwa</translation>
-<translation id="5070314445039955096">Ruhusa za "<ph name="SITE_DOMAIN" />" zitazimwa utakapoondoka kwenye tovuti hii</translation>
 <translation id="507187271399539513">{count,plural, =1{Njia ya {position} kati ya {count} ya kulipa}other{Njia ya {position} kati ya {count} za kulipa}}</translation>
 <translation id="5075939510584558547">Hifadhi bila usimbaji fiche</translation>
 <translation id="5076534614343816664">Ufuatiliaji wa bei</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Ni sharti uingie katika akaunti ili utumie programu ya Level Up</translation>
 <translation id="5352128922772839949">Hifadhi faili</translation>
 <translation id="5355191726083956201">Umewasha Kipengele cha Ulinzi Ulioboreshwa</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" inaruhusiwa kutumia maikrofoni yako wakati wowote unapotembelea tovuti hii</translation>
 <translation id="5359436665022446585">Njia bora ya kufungua viungo</translation>
 <translation id="536067926684072644">Onyesha Alamisho</translation>
 <translation id="5364647308446127983">{count,plural, =1{Imeshindwa kupakia ufunguo {count} wa siri}other{Imeshindwa kupakia funguo {count} za siri}}</translation>
@@ -1484,6 +1483,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="5612225021788368236">Funga tangazo la kivinjari chaguomsingi</translation>
 <translation id="561269594905823128">Gusa <ph name="BEGIN_BOLD" />Chagua faili yako<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Panga kulingana na mipasho ya hivi punde</translation>
+<translation id="561349411957324076">Imekamilika</translation>
 <translation id="5614553682702429503">Ungependa kuhifadhi nenosiri?</translation>
 <translation id="5617769621178348890">Fungua Programu ya Files</translation>
 <translation id="5619871095170816857">Kadi hii inaonyesha kichupo ulichofungua mwisho kwenye vifaa vyako vyote vilivyosawazishwa ndani ya saa 24 zilizopita.</translation>
@@ -2333,7 +2333,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8157532349231307196">Akaunti <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Fungua ukitumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Urefu</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" inaruhusiwa kutumia kamera yako wakati wowote unapotembelea tovuti hii</translation>
 <translation id="8182037667962849780">{count,plural, =1{Yanatumika kwenye {website_1}}=2{Yanatumika kwenye {website_1} na {website_2}}=3{Yanatumika kwenye {website_1}, {website_2} na nyingine 1}other{Yanatumika kwenye {website_1}, {website_2} na nyingine {more_count}}}</translation>
 <translation id="8184895727539791845">Ili uruhusu Gemini itumie kamera yako, washa Kamera katika mipangilio ya iOS</translation>
 <translation id="8185076488803799132">Pakia</translation>
@@ -2504,7 +2503,6 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8674716540979958118">Una manenosiri yaliyoathiriwa.</translation>
 <translation id="8679900250380464358">Weka kwenye Orodha ya Kusoma</translation>
 <translation id="8680787084697685621">Maelezo ya kuingia kwenye akaunti yamechina.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" hairuhusiwi kufikia maikrofoni yako</translation>
 <translation id="8690752723634292147">Thibitisha ufutaji</translation>
 <translation id="8692107307702113268">Nenosiri limezidi herufi 1000</translation>
 <translation id="8692689525339542358">Pata ulinzi dhidi ya tovuti, vipakuliwa na viendelezi hatari.</translation>

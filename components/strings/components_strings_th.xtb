@@ -726,7 +726,6 @@
 <translation id="22081806969704220">ถาด 3</translation>
 <translation id="2210794033760923560">อัปโหลดรายงาน</translation>
 <translation id="2212735316055980242">ไม่พบนโยบาย</translation>
-<translation id="2213606439339815911">กำลังดึงรายการ...</translation>
 <translation id="2213612003795704869">พิมพ์หน้าแล้ว</translation>
 <translation id="2214086901479959524">อัปเดต Chrome เพื่อใช้กลุ่มแท็บที่แชร์ต่อไป</translation>
 <translation id="2214453882118345682">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้อง</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้เหตุการณ์เทคโนโลยีเดิม</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{จะแชร์ 1 แท็บ}other{จะแชร์ {NUM_TABS} แท็บ}}</translation>
 <translation id="2357481397660644965">อุปกรณ์ของคุณจัดการโดย <ph name="DEVICE_MANAGER" /> และบัญชีของคุณจัดการโดย <ph name="ACCOUNT_MANAGER" /></translation>
+<translation id="2358479643736965923">ดูคำตอบจากการค้นหาด้วย Google AI ในแท็บนี้</translation>
 <translation id="2359629602545592467">หลายรายการ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="236000571258713023">ยานพาหนะ</translation>
@@ -1003,7 +1003,7 @@
 <translation id="2647086987482648627">ผ้า (กึ่งเงา)</translation>
 <translation id="264810637653812429">ไม่พบอุปกรณ์ที่เข้ากันได้</translation>
 <translation id="2650446666397867134">การเข้าถึงไฟล์ถูกปฏิเสธ</translation>
-<translation id="2651465929321991146">ประวัติและแท็บ</translation>
+<translation id="2651465929321991146">ประวัติการเข้าชมและแท็บ</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2656194288057285221">ปุ่ม "ปิดเคล็ดลับสำหรับ Chrome" กด Enter เพื่อปิด</translation>
 <translation id="2657637947725373811">{0,plural, =1{โอนไฟล์ลับใช่ไหม}other{โอนไฟล์ลับใช่ไหม}}</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">บันทึกตั๋วเข้างานลงใน Wallet</translation>
 <translation id="2925454999967523701">ปุ่มสร้างเอกสาร เปิดใช้งานเพื่อสร้างเอกสารใหม่ใน Google เอกสารอย่างรวดเร็ว</translation>
 <translation id="2925673989565098301">วิธีการนำส่งสินค้า</translation>
+<translation id="2927328994673424423">2 สัปดาห์ที่ผ่านมา</translation>
 <translation id="2928426578619531300">ผู้ใช้ที่เชื่อมโยง</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> รายการ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> รายการ}}</translation>
 <translation id="2930531075747147366">แท็บจากอุปกรณ์เครื่องอื่น</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">เปลี่ยนเป็นแท็บนี้</translation>
 <translation id="3144458715650412431">ใช้นโยบายทดสอบแล้ว ตรวจสอบและรีเซ็ตได้ที่ chrome://policy/test นโยบายของผู้ดูแลระบบจะไม่มีผล</translation>
 <translation id="3145945101586104090">การถอดรหัสการตอบกลับล้มเหลว</translation>
-<translation id="3149865382039202168">บันทึกข้อมูลใน <ph name="GOOGLE_WALLET_TITLE" /> เพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณควบคุม<ph name="HOW_INFO_IS_USED_LINK" />ได้ในการตั้งค่าบัตรส่วนตัวสำหรับ <ph name="ACCOUNT" /> <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">ข้อผิดพลาดชั่วคราวของเซิร์ฟเวอร์</translation>
 <translation id="3150889484970506196">ปุ่มสร้างชีต เปิดใช้งานเพื่อสร้างสเปรดชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="3154506275960390542">หน้านี้มีฟอร์มที่อาจส่งอย่างไม่ปลอดภัย บุคคลอื่นสามารถดูข้อมูลที่คุณส่งได้ระหว่างทางหรือข้อมูลอาจถูกแก้ไขโดยผู้โจมตีเพื่อเปลี่ยนแปลงสิ่งที่เซิร์ฟเวอร์จะได้รับ</translation>
@@ -1520,7 +1520,6 @@
 <translation id="3558335486599406178">บันทึก IBAN ใน Google Wallet แล้ว</translation>
 <translation id="3558573058928565255">ตอนกลางวัน</translation>
 <translation id="3559897352860026926">ขอให้ผู้ดูแลระบบยืนยันการตั้งค่าการกำหนดค่า <ph name="CLOUD_PROVIDER" /></translation>
-<translation id="3560824484345057728">ดูเว็บไซต์ที่เกี่ยวข้อง</translation>
 <translation id="3566021033012934673">การเชื่อมต่อของคุณไม่เป็นส่วนตัว</translation>
 <translation id="3566336457819493938">215 x 315 มม.</translation>
 <translation id="3566681680543111735">คัดลอกสตริงรูปแบบ</translation>
@@ -2163,7 +2162,6 @@
 <translation id="4603727370377253901">การจองเที่ยวบิน</translation>
 <translation id="4607608436550361748">ดูเคล็ดลับในการใช้ Chrome</translation>
 <translation id="460848736049414407">ถูกบล็อกโดยผู้ดูแลระบบ</translation>
-<translation id="4610279718074907952">เว็บไซต์นี้อยู่ในกลุ่มที่ <ph name="SET_OWNER" /> กำหนดไว้และสามารถดูกิจกรรมของคุณได้</translation>
 <translation id="4612631413844865947">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณที่ <ph name="MERCHANT_ORIGIN" /> ผ่าน <ph name="PAYMENT_APP_ORIGIN" /></translation>
 <translation id="4612904677925722054">เว็บไซต์นี้อาจมีเนื้อหาสำหรับผู้ใหญ่ พ่อแม่หรือผู้ปกครองต้องระบุว่าคุณเข้าชมเว็บไซต์นี้ได้</translation>
 <translation id="4613873770449493819">URL ต้องนำไปยังโดเมน <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /></translation>
@@ -3710,7 +3708,6 @@
 <translation id="7173338713290252554">ประวัติราคาในเว็บ</translation>
 <translation id="7174545416324379297">รวมแล้ว</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> วิธี}other{<ph name="SHIPPING_OPTION_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> วิธี}}</translation>
-<translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7181261019481237103">เปิดหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="7182878459783632708">ไม่ได้กำหนดนโยบายไว้</translation>
 <translation id="7186833457841277072">ซอง (อิงค์เจ็ท)</translation>
@@ -4176,7 +4173,6 @@
 <translation id="7932579305932748336">เคลือบ</translation>
 <translation id="79338296614623784">ป้อนหมายเลขโทรศัพท์ที่ถูกต้อง</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ต้องการเปิดเนื้อหาที่ได้รับความคุ้มครอง Google จะตรวจสอบข้อมูลประจำตัวของอุปกรณ์</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">อนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวแล้ว</translation>
 <translation id="7937163678541954811">ระบบจะเข้ารหัส CVC ของบัตรนี้และบันทึกลงในอุปกรณ์ของคุณเพื่อการชำระเงินที่เร็วขึ้น</translation>
 <translation id="7937554595067888181">หมดอายุ <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4224,7 +4220,6 @@
 <translation id="7999482381722829925">สร้างรายการตรวจสอบการทำความสะอาดอย่างละเอียดแบบแยกตามห้องโดยจัดลำดับความสำคัญและเน้นจุดที่มักถูกมองข้าม</translation>
 <translation id="8001912761979890298">เซิร์ฟเวอร์นี้พิสูจน์ไม่ได้ว่าเป็น <ph name="DOMAIN" /> เนื่องจากใช้ใบรับรองความปลอดภัยที่ Chromium หรือการกำหนดค่าระบบของคุณไม่เชื่อถือสำหรับการเข้ารหัสการเข้าชมเว็บ สาเหตุอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีขัดขวางการเชื่อมต่อของคุณ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ดูใบรับรอง<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">ลองปิดแท็บหรือโปรแกรมอื่นๆ เพื่อเพิ่มหน่วยความจำ</translation>
-<translation id="8002230960325005199">ดูเว็บไซต์ที่เกี่ยวข้องในแท็บใหม่</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
 <translation id="8009225694047762179">จัดการรหัสผ่าน</translation>
@@ -4265,7 +4260,6 @@
 <translation id="8079976827192572403">เว็บไซต์อันตราย</translation>
 <translation id="8086971161893892807">ฉบับร่าง</translation>
 <translation id="8087558780672230449">กำลังโหลด <ph name="APP_ORIGIN" /> เพื่อจัดการการชำระเงินของคุณใน <ph name="MERCHANT_ORIGIN" /></translation>
-<translation id="8088680233425245692">การดูบทความล้มเหลว</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8091372947890762290">กำลังรอการเปิดใช้งานบนเซิร์ฟเวอร์</translation>
 <translation id="8092254339843485299">6 x 8 นิ้ว</translation>
@@ -4905,7 +4899,6 @@
 <translation id="9199905725844810519">การพิมพ์ถูกบล็อก</translation>
 <translation id="9204089334327209740">เมื่ออัปโหลดเสร็จสมบูรณ์แล้ว คุณจะแก้ไขไฟล์ใน <ph name="CLOUD_PROVIDER" /> ได้ ระบบจะนำพื้นที่เก็บข้อมูลในเครื่อง รวมถึงไฟล์ในถังขยะออกโดยอัตโนมัติ</translation>
 <translation id="9205078245616868884">ข้อมูลของคุณมีการเข้ารหัสด้วยพาสเฟรสการซิงค์ โปรดป้อนพาสเฟรสเพื่อเริ่มซิงค์</translation>
-<translation id="9207861905230894330">การเพิ่มบทความล้มเหลว</translation>
 <translation id="9209339767782560829">เกิดปัญหาในการใช้ใบรับรองการเข้าสู่ระบบ</translation>
 <translation id="9210152531668884481">ตกลง</translation>
 <translation id="9213433120051936369">กำหนดลักษณะที่ปรากฏ</translation>

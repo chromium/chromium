@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="201759455285471444">Развернуть группу вкладок.</translation>
 <translation id="2022431790688770637">Настроить подсказки от Gemini</translation>
+<translation id="2023265063803387188">Gemini недоступен в режиме инкогнито.</translation>
 <translation id="2031515492007104071">Повышение уровня</translation>
 <translation id="2044394949148788042">Откройте сетку таблицы.</translation>
 <translation id="2044681667265133332">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="HOSTED_DOMAIN" />. Некоторая ваша информация может быть видна этой организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Остановить</translation>
 <translation id="2666092431469916601">Сверху</translation>
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
-<translation id="2671316366021598595">У сайта "<ph name="SITE_DOMAIN" />" нет доступа к камере</translation>
 <translation id="2671423594960767771">Открыть доступ</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Рассрочка</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Название</translation>
 <translation id="386224966259596343">Вы сможете сохранить эту информацию в Кошельке, когда в следующий раз будете заполнять подходящую форму.</translation>
 <translation id="3868495844258915202">Показать URL полностью</translation>
+<translation id="3870931306085184145">Для домена <ph name="DOMAIN" /> нет сохраненных паролей.</translation>
 <translation id="3875783148670536197">Подробнее</translation>
 <translation id="3878657761594430423">Маркер нижнего экрана</translation>
 <translation id="3884810423191119660">Сохраняйте пароли в безопасности, чтобы упростить вход на сайты и в приложения.</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Пользуйтесь браузером эффективнее</translation>
 <translation id="5062321486222145940">Установить Google Диск</translation>
 <translation id="5067540696062462445">Скачанные файлы</translation>
-<translation id="5070314445039955096">Когда вы покинете сайт <ph name="SITE_DOMAIN" />, все разрешения для него будут отключены.</translation>
 <translation id="507187271399539513">{count,plural, =1{Способ оплаты {position} из {count}}one{Способ оплаты {position} из {count}}few{Способ оплаты {position} из {count}}many{Способ оплаты {position} из {count}}other{Способ оплаты {position} из {count}}}</translation>
 <translation id="5075939510584558547">Сохранение без шифрования</translation>
 <translation id="5076534614343816664">Отслеживание цен</translation>
@@ -1327,7 +1327,7 @@
 <translation id="510580293474170715">Ничего не импортировано</translation>
 <translation id="5113960131843706315">Загрузка данных…</translation>
 <translation id="5116347248003317626">Запретить сайтам доступ к геоданным</translation>
-<translation id="5118462200606189584">Добавить аккаунт…</translation>
+<translation id="5118462200606189584">Добавить аккаунт</translation>
 <translation id="5118764316110575523">ВЫКЛ</translation>
 <translation id="5119329531859909472">Чтобы отслеживать цену на товар, выберите "Отслеживать".</translation>
 <translation id="5121618895923301719">Вы уже отслеживаете этот товар. Эта страница добавлена в папку <ph name="BEGIN_LINK" />Закладки на мобильном устройстве<ph name="END_LINK" />.</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Войдите в аккаунт, чтобы пользоваться Level Up.</translation>
 <translation id="5352128922772839949">Сохранить файл</translation>
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
-<translation id="5355871759168485600">У сайта "<ph name="SITE_DOMAIN" />" появляется доступ к микрофону, когда вы его посещаете</translation>
 <translation id="5359436665022446585">Удобный переход по ссылкам</translation>
 <translation id="536067926684072644">Показать закладки</translation>
 <translation id="5364647308446127983">{count,plural, =1{Не удалось импортировать {count} ключ доступа.}one{Не удалось импортировать {count} ключ доступа.}few{Не удалось импортировать {count} ключа доступа.}many{Не удалось импортировать {count} ключей доступа.}other{Не удалось импортировать {count} ключа доступа.}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">Закрыть предложение браузера по умолчанию</translation>
 <translation id="561269594905823128">Нажмите <ph name="BEGIN_BOLD" />Выбрать файл<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Сортировать по дате</translation>
+<translation id="561349411957324076">Завершено</translation>
 <translation id="5614553682702429503">Сохранить пароль?</translation>
 <translation id="5617769621178348890">Открыть в приложении "Файлы"</translation>
 <translation id="5619871095170816857">Здесь показана последняя открытая вкладка на всех синхронизированных устройствах за прошедшие 24 часа</translation>
@@ -2333,7 +2333,6 @@
 <translation id="8157532349231307196">Аккаунты: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Разблокировать с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Длина</translation>
-<translation id="8181328232274170248">У сайта "<ph name="SITE_DOMAIN" />" появляется доступ к камере, когда вы его посещаете</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для {website_1}}=2{Для {website_1} и {website_2}}=3{Для {website_1}, {website_2} и ещё 1}one{Для {website_1}, {website_2} и ещё {more_count}}few{Для {website_1}, {website_2} и ещё {more_count}}many{Для {website_1}, {website_2} и ещё {more_count}}other{Для {website_1}, {website_2} и ещё {more_count}}}</translation>
 <translation id="8184895727539791845">Для этого включите ее в настройках iOS.</translation>
 <translation id="8185076488803799132">Импортировать</translation>
@@ -2504,7 +2503,6 @@
 <translation id="8674716540979958118">У вас есть раскрытые пароли.</translation>
 <translation id="8679900250380464358">Добавить в список для чтения</translation>
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
-<translation id="868648444055742370">У сайта "<ph name="SITE_DOMAIN" />" нет доступа к микрофону</translation>
 <translation id="8690752723634292147">Подтвердите удаление</translation>
 <translation id="8692107307702113268">В пароле более 1000 символов.</translation>
 <translation id="8692689525339542358">Защититесь от опасных сайтов, расширений и скачанных файлов.</translation>
@@ -2650,6 +2648,7 @@
 <translation id="91023216973987714">Способы оплаты</translation>
 <translation id="9106655997975673326">С устройства "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Определяет раскрытые пароли</translation>
+<translation id="9115035712231910133">Прикрепленное изображение "{title}"</translation>
 <translation id="9119764377203471454">Не удалось добавить файлы.</translation>
 <translation id="9124387962554796433">Google может использовать вашу историю для персонализации Поиска и других сервисов.</translation>
 <translation id="9124978074365039456">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру или фото из галереи.</translation>

@@ -4446,14 +4446,6 @@ menyertakan keduanya di sertifikat RSA yang ditujukan untuk HTTPS.</translation>
 <translation id="366494444808132420">Izinkan integrasi Gemini.</translation>
 <translation id="3665437376055221832">Hanya minta pengguna saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
 <translation id="3671773704245936868">Nonaktifkan penyorotan fokus keyboard</translation>
-<translation id="367258298235646178">Mengizinkan administrator menyesuaikan tampilan watermark yang diterapkan oleh aturan Pencegahan Kebocoran Data (DLP). Penyesuaian ini mencakup setelan opasitas isian/garis tepi, penentuan ukuran font, serta setelan zona waktu untuk stempel waktu.
-Jika kebijakan ini atau beberapa nilainya tidak disetel, Chrome akan menggunakan perilaku watermark default.
-Nilai defaultnya di desktop adalah: opasitas isian 4, opasitas garis tepi 6, dan ukuran font 24. Di iOS, nilai defaultnya adalah: opasitas isian 10, opasitas garis tepi 15, dan ukuran font 16. Di semua platform, zona waktu stempel waktu secara default adalah 'user_device' (zona waktu perangkat lokal pengguna).
-
-'Opasitas Isian' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
-'Opasitas Garis Tepi' adalah persentase dari 0 (sepenuhnya transparan) hingga 100 (sepenuhnya buram).
-'Ukuran Font' ditentukan dalam satuan poin.
-'Zona Waktu Stempel Waktu' menentukan ID zona waktu IANA (mis., 'America/Toronto') yang digunakan untuk memformat stempel waktu watermark (didukung mulai Chrome 152 ke atas), yang mengacu pada nama-nama di Database Zona Waktu IANA ( https://www.iana.org/time-zones ).</translation>
 <translation id="3674010627788940405">Jangan dukung header permintaan non-karakter pengganti CORS.</translation>
 <translation id="3675248815331229366">Jika kebijakan ini disetel, Anda dapat menetapkan daftar pola URL yang menentukan situs yang tidak diizinkan untuk mengakses geolokasi pengguna, dan juga tidak diizinkan untuk meminta izin pengguna untuk melakukannya.
 
@@ -4836,7 +4828,6 @@ Kebijakan ini dapat digabungkan dengan <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="390296766888987595">Hanya tampilkan keyboard virtual jika pengguna atau aplikasi memintanya.</translation>
 <translation id="3903313632842363082">Nonaktifkan pelaporan pengguna perangkat</translation>
 <translation id="3904304709151553598">Nonaktifkan pelaporan info kipas perangkat</translation>
-<translation id="3905883021371603181">Aktifkan pengurangan gema audio sistem</translation>
 <translation id="3907683835264956726">Memungkinkan login pengguna online di layar kunci. Jika kebijakan disetel ke benar (true), autentikasi ulang online di layar kunci akan dipicu, misalnya oleh <ph name="POLICY" />.
       Autentikasi ulang diterapkan segera saat di layar kunci atau di waktu berikutnya pengguna mengunci layar, setelah kondisinya terpenuhi.
       Jika kebijakan disetel ke salah (false) atau tidak disetel, pengguna akan selalu dapat membuka kunci layar dengan kredensial lokal.</translation>
@@ -4938,7 +4929,6 @@ Catatan: Jika setelah kebijakan disetel, tetapi tidak ada metode autentikasi yan
 <translation id="3989635538409502728">Keluar</translation>
 <translation id="3989829840000169163">Memblokir Titik Ekstensi Lama Browser</translation>
 <translation id="3990391739475801018">Mode Penghemat Baterai akan dinonaktifkan.</translation>
-<translation id="3990834929384096140">Jangan terapkan pengurangan gema audio sistem</translation>
 <translation id="3994043824457743421">Menampilkan pengumuman slot tengah di Halaman Tab Baru</translation>
 <translation id="399433537808390819">Jangan menyediakan Mode Desktop Terpadu untuk pengguna</translation>
 <translation id="3995880046827722248">Manifes v2 dinonaktifkan</translation>
@@ -5078,7 +5068,7 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 <translation id="4081127242481747676">Setelan sensor</translation>
 <translation id="4082405593844340376">Menentukan apakah akan menerapkan batasan untuk permintaan ke endpoint jaringan yang lebih pribadi</translation>
 <translation id="4082498585300984671">Mengaktifkan Fitur Click to Call</translation>
-<translation id="4082809879536562387">Memungkinkan Anda menyetel jangka waktu, dalam milidetik, antara notifikasi pertama yang memberi tahu bahwa perangkat <ph name="PRODUCT_OS_NAME" /> harus dimulai ulang untuk menerapkan update tertunda dan akhir dari jangka waktu yang ditentukan oleh kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
+<translation id="4082809879536562387">Memungkinkan Anda menyetel jangka waktu, dalam milidetik, antara notifikasi pertama yang memberitahukan bahwa perangkat <ph name="PRODUCT_OS_NAME" /> harus dimulai ulang untuk menerapkan update tertunda dan akhir dari jangka waktu yang ditentukan oleh kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
 
       Jika tidak disetel, jangka waktu default selama 259200000 milidetik (tiga hari) akan digunakan untuk perangkat <ph name="PRODUCT_OS_NAME" />.
 
@@ -6293,14 +6283,6 @@ Untuk mengetahui informasi selengkapnya, baca artikel pusat bantuan: https://sup
       Namun, perangkat yang tidak menerapkan TLS dengan tepat mungkin berhenti berfungsi dan berhenti terhubung saat TLS 1.3 Early Data digunakan. Jika hal ini terjadi, administrator harus menghubungi vendor untuk memperbaikinya.
 
       Kebijakan ini adalah tindakan sementara untuk mengontrol fitur dan akan dihapus setelahnya. Kebijakan ini mungkin akan disetel ke aktif supaya Anda dapat melakukan pengujian untuk mendeteksi masalah, dan mungkin akan disetel ke nonaktif saat masalah sedang diselesaikan.</translation>
-<translation id="4800438168909332958">Mengaktifkan fitur pengurangan gema audio (AEC) sistem. AEC sistem adalah peredam gema akustik,
-yaitu modul pemrosesan audio yang menghapus pemutaran audio sistem (gema) dari sinyal mikrofon.
-Kebijakan ini bersifat sementara dan akan dihapus segera setelah pengurangan gema audio sistem diluncurkan.
-
-  Jika kebijakan ini disetel ke benar (true), pengurangan gema audio sistem akan selalu diaktifkan.
-
-  Jika kebijakan ini disetel ke salah (false) atau tidak disetel, pengurangan gema audio sistem mungkin masih
-  diaktifkan berdasarkan rencana peluncurannya, tetapi tidak diberlakukan oleh kebijakan ini.</translation>
 <translation id="4800865664096110749">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL di Profil Terkelola</translation>
 <translation id="4801512016965057443">Izinkan roaming data seluler</translation>
 <translation id="4801647366128872782">Menentukan URL yang mengizinkan laporan teknologi lama</translation>
@@ -12325,6 +12307,12 @@ Sertifikat harus dienkode dengan base64.</translation>
 Jika kebijakan ini disetel, pelaporan telemetri situs untuk URL yang diizinkan akan dikontrol.
 Jika kebijakan ini tidak disetel, tidak ada telemetri situs yang akan dilaporkan.
 Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns/. Hanya skema URL HTTP dan HTTPS yang diizinkan untuk kebijakan ini.</translation>
+<translation id="8392016343898518010">Kebijakan ini tidak digunakan lagi dan tidak berpengaruh mulai M159 karena fitur Konten yang Disarankan telah dihapus.
+
+Sebelum M159, fitur ini mengaktifkan saran konten baru untuk dijelajahi, termasuk aplikasi, halaman web, dan lainnya.
+Jika kebijakan ini disetel ke Benar (True), saran konten baru untuk dijelajahi akan diaktifkan.
+Jika kebijakan ini disetel ke Salah (False), saran konten baru untuk dijelajahi akan dinonaktifkan.
+Jika kebijakan ini tidak disetel, saran konten baru untuk dijelajahi akan dinonaktifkan bagi pengguna terkelola dan diaktifkan bagi pengguna lainnya.</translation>
 <translation id="8392478748777481636">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />'.</translation>
 <translation id="8393850527597048037">Khusus Platform</translation>
 <translation id="8395350646076131800">Waktu tunggu tidak ada aktivitas untuk screensaver layar kunci pengguna.</translation>
@@ -13465,7 +13453,6 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 <translation id="9087652369391570821">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileTransfer</translation>
 <translation id="9088433379343318874">Izinkan penyedia konten pengguna yang dilindungi</translation>
 <translation id="9088444059179765143">Mengonfigurasi metode deteksi zona waktu otomatis</translation>
-<translation id="9091741086777905807">ID zona waktu IANA (mis. 'America/Toronto') yang digunakan untuk memformat stempel waktu watermark (didukung mulai Chrome 152 ke atas). Setelan default-nya adalah 'user_device'.</translation>
 <translation id="9094681501120769194">Mengontrol apakah penampil PDF di <ph name="PRODUCT_NAME" /> menggunakan iframe di luar proses (OOPIF). Perilaku ini akan menjadi arsitektur penampil PDF baru pada masa mendatang, karena lebih sederhana dan mempermudah penambahan fitur baru. Penampil PDF GuestView yang ada adalah arsitektur kompleks dan usang yang tidak akan digunakan lagi.
 
 Jika kebijakan ini disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan dapat menggunakan arsitektur penampil PDF OOPIF. Ketika disetel ke Aktif atau tidak disetel, perilaku default akan ditentukan oleh <ph name="PRODUCT_NAME" />.

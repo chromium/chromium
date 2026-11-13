@@ -20,7 +20,6 @@
 <translation id="1142745911746664600">Не може да се ажурира Chrome</translation>
 <translation id="1148360048981192980">Следниот пат кога ќе го отворите Chrome на вашиот <ph name="DEVICE_TYPE" />, ќе видите барање да ја користите Google Password Manager.</translation>
 <translation id="1150418667633096194">Копчето „Странична табла за ’Пребарување на Google‘“ на алатникот има нова икона. Кликнете го за да поставувате прашања додека прелистувате со страничната табла за „Пребарување на Google“.</translation>
-<translation id="1152920704813762236">Повеќе за ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Отвори во Chrome</translation>
 <translation id="1157952955648710254">Затвори ја страничната табла на „Пребарување на Google“</translation>
 <translation id="1157985233335035034">Неодамнешни јазици</translation>
@@ -57,7 +56,6 @@
 <translation id="1507198376417198979">Приспособете го вашиот нов профил на Chrome</translation>
 <translation id="1518627427551567882">Страницава е заштитена</translation>
 <translation id="15408169957028265">Отвори ја повторно „Пребарување на Google“ во Chrome</translation>
-<translation id="1547295885616600893">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Ја завршува нагласената задача.</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
 <translation id="1587223624401073077">Google Chrome ја користи вашата камера.</translation>
@@ -78,7 +76,6 @@
 <translation id="1632241302126471515">Пребарувајте со Chrome Canary</translation>
 <translation id="1640672724030957280">Се презема…</translation>
 <translation id="1651617469580841801">Кога ја користите Google Lens, насловот, URL-адресата и содржините на страницата, како и PDF-датотеките, се испраќаат до Google. <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">За ChromeOS Flex</translation>
 <translation id="1674870198290878346">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не може да чита и да пишува во директориумот за податоци:
 
@@ -99,6 +96,7 @@
 <translation id="1843347690926158494">Пребарајте ја картичкава со Google Lens</translation>
 <translation id="1849248141818021764">Само лицата што ја имаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката ниту се испраќа до Google ниту Google ја складира. Ако ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ги <ph name="BEGIN_LINK" />избришете податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
 <translation id="1867503717113754604">Најавете се на Chrome со вашата сметка на Google за да користите го <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
+<translation id="1871615898038944731">Вашиот <ph name="DEVICE_TYPE" /> е ажуриран</translation>
 <translation id="1873233029667955273">Google Chrome не е вашиот стандарден прелистувач</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
@@ -106,6 +104,7 @@
 <translation id="1880677175115548835">Изберете текст</translation>
 <translation id="1896602904211344018">Преземете ја апликацијата Chrome</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
+<translation id="1925069572871307609">За да добивате идни ажурирања на Google Chrome, потребен ви е Windows 10 1809 или понова верзија. Овој компјутер користи постара верзија на Windows 10.</translation>
 <translation id="1979600810166324878">Бидете побезбедни во движење со „Подобрено безбедно прелистување“ на Chrome за iOS</translation>
 <translation id="2001586581944147178">Отежнете им на луѓето со пристап до вашиот сообраќај на интернет да гледаат кои сајтови ги отворате. Chrome користи безбедна врска за да ја бара IP-адресата на даден сајт во DNS (Систем за имиња на домени).</translation>
 <translation id="2018879682492276940">Инсталирањето не успеа. Обидете се повторно.</translation>
@@ -118,7 +117,6 @@
 <translation id="2091012649849228750">За да добивате идни ажурирања на Google Chrome, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.</translation>
 <translation id="2094919256425865063">Сепак да се напушти Chrome?</translation>
 <translation id="2096213354152647998">Не сте дошле одамна. Chrome ја отстрани следнава дозвола: <ph name="PERMISSION" />.</translation>
-<translation id="2106831557840787829">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />Linux-околината за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Оневозможете Chrome да се извршува во заднина за апликациите</translation>
 <translation id="2111985952714409792">За да ги добиете екстензиите и друго на сите ваши уреди, најавете се на Chrome</translation>
 <translation id="2120620239521071941">Ова ќе избрише <ph name="ITEMS_COUNT" /> ставки од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
@@ -145,6 +143,7 @@
 <translation id="2307973900865360088">Чувај во Dock</translation>
 <translation id="2309047409763057870">Ова е второстепена инсталација на Google Chrome и затоа не може да биде стандарден прелистувач.</translation>
 <translation id="2345992953227471816">Chrome откри дека екстензииве содржат злонамерен софтвер:</translation>
+<translation id="2350411688004301551">Префрлете се на Gemini Enterprise</translation>
 <translation id="2358140144860869442">За да ги добиете вашата „Список за читање“ и друго на сите ваши уреди, најавете се на Chrome</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2403703063067034158">Грешка при стартување: во тек е друго поставување во моментов, обидете се повторно подоцна.</translation>
@@ -155,6 +154,7 @@
 <translation id="2482846200327569645">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите обележувачи и друго од <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2513154137948333830">Потребно е рестартирање: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">вашата организација</translation>
 <translation id="2521391734665471391">Затвори го „AI-режимот“ на „Пребарување на Google“</translation>
 <translation id="2523492931736391680">Вашата работа е заштитена на Chrome</translation>
 <translation id="2534365042754120737">За да ги заштитите вашите податоци, дозволете Chrome да ги отстрани дозволите од сајтовите што не сте ги отвориле одамна. Ова нема да ги сопре известувањата.</translation>
@@ -201,6 +201,7 @@
 <translation id="2876628302275096482">Дознајте повеќе за тоа <ph name="BEGIN_LINK" />како Chrome ја штити приватноста на вашите податоци<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2888126860611144412">За Chrome</translation>
+<translation id="2898830646167954300">Вратете се на вашиот неуправуван помошник Gemini</translation>
 <translation id="2915996080311180594">Рестартирај подоцна</translation>
 <translation id="2926952073016206995">На Chrome му треба дозвола за камерата за сајтов</translation>
 <translation id="2945997411976714835">Грешка при инсталирање: процесот на инсталаторот не можеше да започне.</translation>
@@ -211,7 +212,6 @@
 <translation id="2994465299455873643">Обезбедува услуги за шифрирање и безбеден клуч за враќање на <ph name="BROWSER_NAME" /> ако застари. Ако е оневозможена услугава, <ph name="BROWSER_NAME" /> може да го изгуби пристапот до шифрираните податоци, поради што <ph name="BROWSER_NAME" /> може да не може да се врати.</translation>
 <translation id="3003694935412297923">Сите задачи</translation>
 <translation id="3019382870990049182">Рестартирај за да се ажурира &amp;ChromeOS Flex</translation>
-<translation id="3034219227076811559">„Пребарување на Google“ во Chrome</translation>
 <translation id="3037190258341683404">Може да ја закачите „Пребарување на Google“ во Chrome за да поставувате прашања додека прелистувате</translation>
 <translation id="3037517125981011456">Прикажува prompt за најава на Chrome</translation>
 <translation id="3037838751736561277">Google Chrome е во заднински режим.</translation>
@@ -235,6 +235,7 @@
 <translation id="3140883423282498090">Вашите промени ќе делуваат со следното рестартирање на Google Chrome.</translation>
 <translation id="3149510190863420837">Апликации на Chrome</translation>
 <translation id="3161522574479303604">Сите јазици</translation>
+<translation id="3183555099201190073">Пристапувајте до „Пребарување“ од која било картичка</translation>
 <translation id="318555301233810762">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chrome во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите обележувачи и друго на сите ваши уреди.</translation>
 <translation id="319199214552513804">За да ја добиете екстензијава, а и друго на сите ваши компјутери, најавете се на Chrome</translation>
 <translation id="3196187562065225381">Chrome го блокираше преземањево затоа што датотеката е опасна</translation>
@@ -279,8 +280,6 @@
 <translation id="3667616615096815454">Не можеше да се инсталира. Апликацијата е непозната за серверот.</translation>
 <translation id="3673813398384385993">Chrome откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
 <translation id="3697952514309507634">Други профили на Chrome</translation>
-<translation id="3703994572283698466">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="3716540481907974026">Верзија на ChromeOS Flex</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{Достапно е ново ажурирање за Chrome и ќе се примени штом ќе го рестартирате. Има отворено прозорец „Инкогнито“ или „Изолиран прозорец“. Нема да се отвори повторно по рестартирањето.}one{Достапно е ново ажурирање за Chrome и ќе се примени штом ќе го рестартирате. Има отворено # прозорец „Инкогнито“ и „Изолиран прозорец“ во профилите. Нема да се отворат повторно по рестартирањето.}other{Достапно е ново ажурирање за Chrome и ќе се примени штом ќе го рестартирате. Има отворено # прозорци „Инкогнито“ и „Изолирани прозорци“ во профилите. Нема да се отворат повторно по рестартирањето.}}</translation>
 <translation id="3718181793972440140">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome препорачува да ја отстраните. <ph name="BEGIN_LINK" />Дознајте повеќе за поддржаните екстензии<ph name="END_LINK" />}one{Chrome препорачува да ги отстраните. <ph name="BEGIN_LINK" />Дознајте повеќе за поддржаните екстензии<ph name="END_LINK" />}other{Chrome препорачува да ги отстраните. <ph name="BEGIN_LINK" />Дознајте повеќе за поддржаните екстензии<ph name="END_LINK" />}}</translation>
@@ -289,7 +288,6 @@
 <translation id="3772152698251011058">Пријавете го сајтов до Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex не може да ги синхронизира вашите податоци поради грешка при најавување.</translation>
-<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="383455301564000773">Ќе надградувате на Windows 11? Преземете го Chrome во OneDrive за да бидете подготвени од самиот почеток.</translation>
 <translation id="383928141529488001">Google Chrome бара пристап до Bluetooth за да открива 
@@ -313,10 +311,12 @@
 <translation id="4022972681110646219">Преведи го екранот</translation>
 <translation id="4023601594785368013">Изворен јазик: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Вградено во Chrome за да ви помогне да создавате, да зачувувате и автоматски да пополнувате силни лозинки. Додајте ја кратенката за лесен пристап.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Членство на Google.</translation>
 <translation id="4035053306113201399">Chrome OS треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="4053720452172726777">Приспособи го и контролирај го Google Chrome</translation>
 <translation id="408393047846373801">За да ги добиете лозинките и друго на сите ваши уреди, најавете се на Chrome. Откако ќе се најавите, лозинкава ќе се зачува во вашата сметка на Google.</translation>
 <translation id="4102173024714616627">Екстензиите се додатоци што ви овозможуваат да го приспособувате Chrome. Од организирање до поедноставување на секојдневните задачи, екстензиите ви помагаат да го приспособувате Chrome според вашите потреби.</translation>
+<translation id="4103543596018881622">„’Пребарување на Google‘ во Chrome“ е закачена на алатникот!</translation>
 <translation id="4110895483821904099">Поставете нов профил на Chrome</translation>
 <translation id="4111566860456076004">Chrome не може да потврди од каде е екстензијава, па може да биде небезбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и личните податоци.</translation>
 <translation id="4148957013307229264">Се инсталира...</translation>
@@ -394,7 +394,6 @@
 <translation id="495931528404527476">Во Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex не можеше да ги синхронизира вашите податоци бидејќи вашите детали за најавување на сметката се застарени.</translation>
 <translation id="4970761609246024540">Добре дојдовте во профили на Chrome</translation>
-<translation id="4970880042055371251">Верзија на Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Канари</translation>
 <translation id="5003967926796347400">Кликнете „Google Password Manager“</translation>
 <translation id="5043786843026425788">Дознајте повеќе за пребарувањето со Google Lens во Chrome</translation>
@@ -417,6 +416,7 @@
 <translation id="5174969993834422967">Обично ги блокирате известувањата. За да овозможите сајтов да ве известува, кликнете ја иконата за известувања во десниот агол на лентата за локација.</translation>
 <translation id="5174983315706567306">Нема доволно простор на дискот.</translation>
 <translation id="5179933070463113976">За да го користите Gemini во Chrome, треба да бидете најавени на Chrome со вашата сметка на Google</translation>
+<translation id="5184662919967270437">Уредот се ажурира</translation>
 <translation id="5190467473654176081">Приспособете го Chrome за да му го подновите изгледот</translation>
 <translation id="5201744974236816379">новости на Chrome</translation>
 <translation id="5234764350956374838">Отфрли</translation>
@@ -427,6 +427,7 @@
 <translation id="5320351714793324716">Ако ги дозволите колачињата, Chrome може да ги користи кога вчитува однапред</translation>
 <translation id="5321325624576443340">Google Lens не е достапна. Обидете се повторно подоцна.</translation>
 <translation id="5334309298019785904">Chrome OS не може да ги синхронизира податоците бидејќи синхронизацијата не е достапна за вашиот домен.</translation>
+<translation id="5336664042114176802">Може да се префрлите на помошникот Gemini што е првично поврзан со вашата сметка на Google и со којшто не управува <ph name="DOMAIN" />. Одговорите веќе нема да бидат втемелени во датотеките или услугите со кои управува <ph name="DOMAIN" />, а вашата историја на разговори нема да се пренесе. Може да не е соодветен за користење за работа. За да се префрлите, треба да го рестартирате Chrome.</translation>
 <translation id="5346389065299425353">Продлабочете го пребарувањето со додавање повеќе картички, датотеки и алатки</translation>
 <translation id="5353252989841766347">Извоз на лозинки од Chrome</translation>
 <translation id="5368118228313795342">Дополнителен код: <ph name="EXTRA_CODE" />.</translation>
@@ -453,6 +454,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5649156266046089790">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Создајте профили за пријателите и семејството или поделете ги меѓу работа и забава.</translation>
 <translation id="565744775970812598">Датотеката <ph name="FILE_NAME" /> може да биде опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="566568153320186256">Chrome ја штеди батеријата така што ги ограничува активноста во заднина и визуелните ефекти, како лесно лизгање и стапки на видеокадри. <ph name="BEGIN_LINK" />Дознајте повеќе за „Штедачот на енергија“<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">ChromeOS е застарен</translation>
 <translation id="567202749201779594">избришете ги податоците од Chrome во вашата сметка</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево}=1{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево. Прозорецот „Инкогнито“ нема да се отвори повторно.}one{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево. # прозорец „Инкогнито“ нема да се отвори повторно.}other{Администраторот бара да го рестартирате Chrome за да се примени ажурирањево. # прозорци „Инкогнито“ нема да се отворат повторно.}}</translation>
 <translation id="568656514202614970">Успешно! Отсега може лесно да поставувате прашања додека прелистувате со „Пребарување на Google“ во страничната табла</translation>
@@ -475,6 +477,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5894164573378901688">За да го користите Gemini во Chrome, најавете се со друга сметка на Google</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Мрежно најавување</translation>
+<translation id="5906655207909574370">Речиси ажурирано! Рестартирајте го уредот за да се заврши ажурирањето.</translation>
 <translation id="5924017743176219022">Се поврзува на интернет…</translation>
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
@@ -530,6 +533,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6326175484149238433">Отстрани од Chrome</translation>
 <translation id="6334815226785304306">Поставете го Google Chrome како стандарден прелистувач и закачете го на „Лентата со задачи“</translation>
 <translation id="6339888439788291743">Нова икона, иста кратенка: Кликнете за да поставувате прашања додека прелистувате со „AI-режимот“ на „Пребарување на Google“.</translation>
+<translation id="6349304688246983183">Лесно поставувајте прашања додека прелистувате со „Пребарување на Google“</translation>
 <translation id="63540178978900677">Chrome веќе не е вашиот стандарден прелистувач. Да се постави Chrome како стандарден прелистувач?</translation>
 <translation id="6357670763064300993">Gemini Enterprise во Chrome</translation>
 <translation id="6360449101159168105">Додека картичкава беше неактивна, се ослободи меморија за да продолжи Chrome брзо да работи. Може да изберете сајтов секогаш да се изоставува од неактивност.</translation>
@@ -543,6 +547,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6438015621983209660">Проширете ја „Подобрено безбедно прелистување“ со Chrome на вашиот телефон</translation>
 <translation id="6442774133615368941">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата во апликацијата Chrome за iOS</translation>
 <translation id="6446105560007692480">за да пребарувате со Chrome или да приспособите во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Овој управуван прелистувач може да користи помошник Gemini поставен за работа од <ph name="DOMAIN" />. Може да наоѓа податоци и да обезбедува одговори втемелени во датотеките и одобрените услуги на организацијата. Не се препорачува да се користи со личен профил. Историјата на разговори нема да се пренесе. За да се префрлите, треба да го рестартирате Chrome.</translation>
 <translation id="6448835208126432197">За да изберете дел од екранот во Gemini во Chrome, користете ја кратенката од тастатура.</translation>
 <translation id="6473905796280459355">Одете на страницата „За Chrome“</translation>
 <translation id="6481963882741794338">Поврзете ги Chrome и другите услуги на Google за персонализација и други цели</translation>
@@ -563,8 +568,8 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6612152958212564387">Не испраќате статистика за користење и извештаи за падови до Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Одржувајте ги лозинките, обележувачите и историјата совршено синхронизирани на уредите така што ќе го поставите Chrome како ваш стандарден прелистувач.</translation>
 <translation id="6632012506031284914">за да пребарувате со Chrome.</translation>
-<translation id="6632473616050862500">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Промените на поставкава ќе се применат кога ќе се рестартира Chrome.</translation>
+<translation id="6644846457769259194">Уредот се ажурира (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">Ќе се најавите на Chrome?</translation>
 <translation id="6664219008737641504">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="SETTINGS_LINK" /> податоците од Chrome во вашата сметка</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>
@@ -628,7 +633,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7285990705317078173">Преземете го Chrome на телефонот за да ги следите цените и да добивате известувања кога ќе се намали цената на кој било сајт</translation>
 <translation id="7288567540154601580">Картички и екстензии</translation>
 <translation id="7290997427370476749">Од копчето „Табла за ’Пребарување на Google‘“ на алатникот, може да ја отворите повторно таблата за „Пребарување на Google“ за да поставувате прашања додека прелистувате</translation>
-<translation id="7296210096911315575">Важни информации за користење и безбедност</translation>
 <translation id="7299899569525778554">Пребарувајте од компјутер</translation>
 <translation id="7302361266603927550">Некои од вашите податоци од Chrome сѐ уште не се зачувани во вашата сметка на Google. Почекајте неколку минути пред да се одјавите. Ако се одјавите сега, податоциве ќе се избришат.</translation>
 <translation id="7306401458628386911">Започнете да прелистувате веднаш: Chrome отсега може да се стартува заедно со Windows.</translation>
@@ -661,9 +665,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7572537927358445944">Исклучено • Chrome не може да потврди од каде е екстензијава</translation>
 <translation id="7583399374488819119">Инсталатор на <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Може да го користите Chrome секогаш кога ќе кликнете линкови во пораки, документи и други апликации</translation>
-<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">За да ги заштитите вашите податоци, дозволете му на Chrome да ги отстрани дозволите за сајтовите што не сте ги посетиле неодамна.</translation>
-<translation id="7629898584100520089">AI‑иновациите како вештините се зачувуваат во вашата сметка на Google и со нив се управува одделно од синхронизацијата на Chrome</translation>
 <translation id="7641148173327520642">Системскиот администратор го конфигурирал Google Chrome да отвора <ph name="ALTERNATIVE_BROWSER_NAME" /> за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Помош</translation>
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
@@ -703,7 +705,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7904213866086517086">Отвори ја повторно „Пребарување на Google“ во страничната табла</translation>
 <translation id="7904985524660297937">Испробајте го Gemini во Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS не можеше да ги зачува податоците од Chrome во вашата сметка на Google поради грешка при најавувањето</translation>
-<translation id="7917876797003313048">Може да управувате со најавените сметки на Google. Вашите сметки на Google се користат за прелистувачот Chrome, Play Store, Gmail и друго. Ако сакате да додадете сметка за некој друг, како член на семејството, додајте ново лице во вашиот уред <ph name="DEVICE_TYPE" /> наместо тоа. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome го блокираше преземањево затоа што датотеката е измамничка и може да изврши неочекувани промени на вашиот уред</translation>
 <translation id="7951272445806340501">ChromeOS Flex треба да се рестартира за да се примени ажурирањето.</translation>
 <translation id="7959172989483770734">Управувајте со профилите на Chrome</translation>
@@ -719,9 +720,11 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Кликнете <ph name="BUTTON_LABEL" /> подолу
 2. Кликнете <ph name="BUTTON_2" /> во поставките за Windows Кликнете <ph name="BUTTON_3" /> во известувањето на Windows за да го закачите Chrome на лентата со задачи за брз пристап</translation>
+<translation id="8066474819446975249">Рестартирај го Chrome за да се префрли</translation>
 <translation id="8074398340364918139">За да пребарувате одредена функција или екстензија на Chrome, напишете ја нејзината кратенка во лентата за адреси, а потоа притиснете го избраното копче на тастатурата</translation>
 <translation id="8077579734294125741">Други профили на Chrome</translation>
 <translation id="8086881907087796310">Инсталацијата не успеа бидејќи вашиот компјутер не ги исполнува минималните барања за хардвер.</translation>
+<translation id="8095439028686936591">ChromeOS е ажуриран</translation>
 <translation id="8110438089258398864">Може повторно да ја отворите „’AI-режим‘ на ’Пребарување на Google‘“ за да поставувате прашања додека прелистувате</translation>
 <translation id="8113883687556086139">Потврдете го вашиот идентитет за да користите и зачувувате податоци од Chrome во вашата сметка <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Персонализирање на Chrome…</translation>
@@ -848,6 +851,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="911206726377975832">Да се избришат ли и вашите податоци од пребарувањата?</translation>
 <translation id="9138603949443464873">За да се применат измените, рестартирајте го Chrome</translation>
 <translation id="9148058034647219655">Излези</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Членство на Google.</translation>
 <translation id="922152298093051471">Приспособете го Chrome</translation>
 <translation id="93760716455950538">Рестартирајте ја ChromeOS Flex</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>

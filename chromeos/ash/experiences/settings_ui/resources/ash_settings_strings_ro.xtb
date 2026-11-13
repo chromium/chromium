@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Ești gata!</translation>
 <translation id="1149483087970735785">Tehnologie de asistare</translation>
 <translation id="1150490752229770117">Aceasta este cea mai recentă actualizare automată de software și securitate pentru acest dispozitiv <ph name="DEVICE_TYPE" />. Pentru a primi actualizări viitoare, fă upgrade la un model mai nou. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Despre ChromeOS</translation>
 <translation id="1155816283571436363">Se conectează la telefon</translation>
 <translation id="1160800016654917722">Fereastra a fost mutată în jos și spre stânga</translation>
 <translation id="1164015913575846413">Alt + clic</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">Lansator + săgeată spre dreapta</translation>
 <translation id="1280332775949918163">Fixează fereastra</translation>
+<translation id="1285625592773741684">Setarea actuală pentru utilizarea datelor este „Date mobile”</translation>
 <translation id="1285815028662278915">Este posibil ca datele tale mobile să nu accepte hotspotul. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Lumina de noapte se va activa automat la apus</translation>
 <translation id="1288300545283011870">Proprietăți pentru vorbire</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Astfel, extensiile se vor dezactiva și setările vor reveni la valorile prestabilite sigure. Filele, fișierele și cookie-urile vor fi păstrate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupă de ecran complet</translation>
 <translation id="1539727654733007771">Nu s-a configurat nicio rețea mobilă. Descarcă un <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> nou.</translation>
+<translation id="1547295885616600893">ChromeOS este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="1547808936554660006">Înțeleg că profilurile eSIM instalate nu vor fi eliminate în urma rulării funcției Powerwash</translation>
 <translation id="1549275686094429035">ARC activat</translation>
 <translation id="1554640914375980459">Iluminează intermitent ecranul când primești notificări. Folosește cu atenție notificările flash dacă ai sensibilitate la lumină.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Folosește Wi-Fi sau rețelele mobile pentru detectarea locației</translation>
 <translation id="1650407365859096313">Se deschide într-o filă nouă, Permisiunea este <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Activează Trimiterea în apropiere</translation>
+<translation id="1662146548738125461">Despre sistemul de operare Chrome Flex</translation>
 <translation id="1663698992894057019">Fă upgrade la un Chromebook nou pentru cea mai recentă securitate și cel mai recent software</translation>
 <translation id="1665328953287874063">Folosește o parolă sau un cod PIN pentru a debloca dispozitivul <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Ascultă un anumit text citit cu voce tare. Mai întâi, selectează pictograma Selectați și ascultați din partea de jos a ecranului, apoi evidențiază textul. Poți folosi și o comandă rapidă de la tastatură: evidențiază textul, apoi apasă pe tasta de căutare + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Notă: este posibil ca amprenta să fie mai puțin sigură decât o parolă sau un cod PIN puternic.</translation>
 <translation id="1724801751621173132">Mod de introducere</translation>
 <translation id="1741190788710022490">Încărcare adaptabilă</translation>
+<translation id="1745732479023874451">Gestionează agenda</translation>
 <translation id="1751335846119670066">Ajută-mă să citesc</translation>
 <translation id="1755601632425835748">Dimensiunea textului</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> a fost remapat la<ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Nu, folosește un singur comutator</translation>
 <translation id="1842681835432895345">Exclude ecranul în modul oglindă</translation>
 <translation id="1848219224579402567">Când capacul este închis: deconectare</translation>
+<translation id="185970820835152459">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chromium, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Mai rece</translation>
 <translation id="1866589962721094893">Oferă aplicațiilor pentru Android control asupra dispozitivelor USB de pe acest Chromebook. Permisiunea va fi solicitată de fiecare dată când conectezi un dispozitiv USB. Aplicațiile pentru Android individuale vor solicita permisiuni suplimentare.</translation>
 <translation id="1877377290348678128">Etichetă (opțional)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Sunet</translation>
 <translation id="2097950021134740304">Anulează eliminarea abonamentului</translation>
 <translation id="2104166991923847969">Dezactivează automat hotspotul</translation>
+<translation id="2106831557840787829">ChromeOS Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Nu s-a introdus un card SIM</translation>
 <translation id="2121825465123208577">Redimensionează</translation>
 <translation id="2127372758936585790">Încărcător de putere joasă</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Șterge utilizatorul <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2363475280045770326">Eroare la salvarea configurației</translation>
+<translation id="236939127352773362">Când există dispozitive în apropiere care trimit fișiere</translation>
 <translation id="237336063998926520">Folosește adresa IP pentru a detecta locația</translation>
 <translation id="2373499590298659902">Folosește „0” pentru a apăsa lung un buton al mouse-ului</translation>
 <translation id="2375406435414127095">Conectează-te la telefon</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blochează traficul fără VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Precizia locației afișează locația mai precisă pentru aplicații și servicii. În acest scop, Google prelucrează periodic informații despre senzorii și semnalele wireless de la dispozitivul tău, pentru a obține locația semnalelor wireless prin crowdsourcing. Acestea se folosesc fără a te identifica, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în general în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor.</translation>
+<translation id="3387527074123400161">Sistemul de operare Chromium</translation>
 <translation id="3388094447051599208">Tava de ieșire este aproape plină</translation>
 <translation id="3390013585654699824">Detalii despre aplicație</translation>
 <translation id="3390740059150071453">Privire spre stânga</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Adresă de e-mail</translation>
 <translation id="3701028563242674350">Mișcă de mai multe ori cursorul mouse-ului pentru a-l mări</translation>
 <translation id="3703699162703116302">Tichetul a fost actualizat</translation>
+<translation id="3703994572283698466">ChromeOS este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Activați Wi-Fi</translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3707163604290651814">Te-ai conectat ca <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">S-au găsit <ph name="NUM_PRINTERS" /> imprimante de la serverul de imprimare</translation>
 <translation id="371370241367527062">Microfonul din față</translation>
 <translation id="37143699183660101">Stabilitatea cursorului</translation>
+<translation id="3716540481907974026">Versiunea sistemului de operare Chrome Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Codul PIN este incorect. Încearcă din nou</translation>
 <translation id="3728681439294129328">Configurează adresa rețelei</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Subliniază textul scris</translation>
 <translation id="3789841737615482174">Instalează</translation>
 <translation id="379509625511193653">Dezactivat</translation>
+<translation id="3795971588916395511">Sistemul de operare Google Chrome</translation>
 <translation id="3796215473395753611">alt + săgeată în sus</translation>
 <translation id="3798670284305777884">Difuzor (intern)</translation>
 <translation id="3799128412641261490">Setările pentru accesul prin comutare</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Tastatură integrată</translation>
 <translation id="3917644013202553949">Nu ai suficient spațiu de stocare pentru a sincroniza fișierele. Eliberează spațiu.</translation>
 <translation id="3919229493046408863">Dezactivează notificarea când există dispozitive în apropiere</translation>
+<translation id="3923184630988645767">Utilizarea datelor</translation>
 <translation id="3923494859158167397">Nu a fost configurată nicio rețea mobilă</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Și alți utilizatori ai dispozitivului pot folosi această rețea</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definiție cu Răspunsuri rapide</translation>
 <translation id="3994075804072562819">Oferă aplicației <ph name="SPECIFIC_NAME" /> control asupra dispozitivelor USB.</translation>
 <translation id="3994530503403062649">Apasă butoanele tabletei</translation>
+<translation id="3997429360543082038">Despre sistemul de operare Chromium</translation>
 <translation id="4001540981461989979">Evidențiază cursorul mouse-ului la mișcare</translation>
 <translation id="4005817994523282006">Metoda de detectare a fusului orar</translation>
+<translation id="4019629340646866719">Sistemul de operare Chromium este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Copiază detaliile versiunii</translation>
 <translation id="4028467762035011525">Adaugă metode de introducere a textului</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Pentru a trece la ultima metodă de introducere a textului folosită, apasă pe <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">tasta de căutare + săgeată spre dreapta</translation>
 <translation id="405181879009056822">Setările ChromeOS</translation>
+<translation id="4054070260844648638">Vizibil pentru toată lumea</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Verifică-ți conexiunea pentru a vedea imprimantele disponibile din rețea</translation>
 <translation id="4068776064906523561">Amprentele salvate</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, nivelul <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Găsește mai multe aplicații pentru creion</translation>
 <translation id="4248401726442101648">Nicio cameră conectată</translation>
+<translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4249116869350613769">Economisirea bateriei</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="425411422794688815">A apărut o eroare. Asigură-te că telefonul este în apropiere, deblocat, cu Bluetooth și Wi-Fi activate.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{Un cont Google}few{<ph name="EXTRA_ACCOUNTS" /> conturi Google}other{<ph name="EXTRA_ACCOUNTS" /> de conturi Google}}</translation>
 <translation id="4314497418046265427">Lucrează mai eficient când conectezi telefonul la <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Adaugă un nou nume de punct de acces</translation>
+<translation id="4314815835985389558">Gestionează sincronizarea</translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Spațiu de stocare și alimentare</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Numărul de sugestii</translation>
 <translation id="4606933160360542263">Combinație de taste personalizată: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Când butonul stâng al mouse-ului este selectat, folosește „/” pentru a da dublu clic</translation>
+<translation id="4613863813562375431">Versiunea sistemului de operare Chromium</translation>
 <translation id="461661862154729886">Sursa de energie</translation>
 <translation id="4617880081511131945">Nu se poate stabili conexiunea</translation>
 <translation id="4620757807254334872">mouse</translation>
@@ -1136,6 +1155,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4777943778632837590">Configurează serverele de nume din rețea</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779766576531456629">Redenumește rețeaua de date mobile eSIM</translation>
+<translation id="4789550509729954245">Afișează notificarea când există dispozitive în apropiere care trimit fișiere</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Activează accelerarea TrackPoint</translation>
 <translation id="479664067938200069">Aplicații instalate de <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4964544790384916627">Andochează fereastra</translation>
 <translation id="4964673849688379040">Se verifică...</translation>
 <translation id="4967571733817147990">Personalizează butoanele mouse-ului</translation>
+<translation id="4970880042055371251">Versiunea sistemului de operare Chrome</translation>
 <translation id="4972129977812092092">Editează imprimanta</translation>
 <translation id="4975771730019223894">Marcarea cu insignă a aplicațiilor</translation>
 <translation id="4979263087381759787">Opțiuni pentru dezvoltatori</translation>
@@ -1275,6 +1296,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5193978546360574373">Astfel, va fi eliminat accesul la Google Drive de pe acest Chromebook, inclusiv accesul la fișierele care au devenit disponibile offline</translation>
 <translation id="5196790039230503600">Folosește gestul, apoi mișcă-ți capul pentru a indica unde vrei să plasezi articolul. Folosește din nou gestul pentru a-l plasa.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Nu folosi niciodată date mobile pentru transfer</translation>
 <translation id="5207949376430453814">Evidențiază cursorul pentru text</translation>
 <translation id="5208926629108082192">Informații despre rețeaua mobilă a dispozitivului</translation>
 <translation id="5208988882104884956">Cu jumătate de lățime</translation>
@@ -1307,6 +1329,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5331568967879689647">Aplicație pentru sistemul de operare Chrome</translation>
 <translation id="5334113802138581043">Acces la microfon</translation>
 <translation id="5336689872433667741">Cursor și touchpad</translation>
+<translation id="5337926771328966926">Numele actual al dispozitivului este <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Trimite date de diagnosticare și de utilizare</translation>
 <translation id="5369694795837229225">Configurează mediul de dezvoltare Linux</translation>
 <translation id="5377367976106153749">Activezi accesul la camera foto?</translation>
@@ -1444,6 +1467,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5833726373896279253">Aceste setări pot fi modificate numai de proprietar:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Caz</translation>
+<translation id="5840680448799937675">Fișierele vor fi distribuite întotdeauna offline</translation>
 <translation id="5841270259333717135">Configurează setările de Ethernet</translation>
 <translation id="5842497610951477805">Activează Bluetooth</translation>
 <translation id="5846200638699387931">Eroare de sintaxă a relației: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5924438086390153180">Întreabă înainte de a copia sau a muta fișiere Microsoft în Google Drive</translation>
 <translation id="5939518447894949180">Resetează</translation>
 <translation id="594048410531370124">Tasta nu a fost recunoscută. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Vizibilitatea dispozitivului</translation>
 <translation id="5945192511027649793">Dezactivează touchpadul</translation>
 <translation id="5947651424015173580">Dă dublu clic cu mouse-ul</translation>
 <translation id="594993197557058302">Apasă pe 1 – 4 taste de modificare (Ctrl, Alt, Shift, Căutare sau Lansator) și încă o tastă. Poți și să selectezi o singură tastă.</translation>
@@ -1491,10 +1516,12 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5961545272769624207">Atribuie un gest</translation>
 <translation id="5968022600320704045">Niciun rezultat al căutării</translation>
 <translation id="5969728632630673489">Notificarea privind comenzile rapide de la tastatură a fost închisă</translation>
+<translation id="5979353814339191480">Această opțiune se aplică Chromebookurilor cu un plan de date sau un dongle de rețea mobilă ori atunci când folosești un hotspot portabil</translation>
 <translation id="5985556342298151179">Aplicația Chrome a fost instalată de administratorul dispozitivului.</translation>
 <translation id="5986442691296752186">Oferă aplicațiilor Linux control asupra dispozitivelor USB.</translation>
 <translation id="598810097218913399">Elimină atribuirea</translation>
 <translation id="5988563937187882754">Privește în dreapta</translation>
+<translation id="5990266201903445068">Numai Wi-Fi</translation>
 <translation id="5992225669837656567">Toate mouse-urile au fost deconectate</translation>
 <translation id="5999630716831179808">Voci</translation>
 <translation id="6002458620803359783">Vocile preferate</translation>
@@ -1509,6 +1536,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6045114302329202345">Butonul TrackPoint principal</translation>
 <translation id="6048747414605857443">Selectează și personalizează vocile de redare vocală a textului pentru ChromeVox și Selectați și ascultați</translation>
 <translation id="6050189528197190982">Tonuri de gri</translation>
+<translation id="6054961935262556546">Modifică vizibilitatea</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
 <translation id="6059925163896151826">Dispozitive USB</translation>
 <translation id="6064764629679333574">Îmbunătățește calitatea sunetului microfonului prin Bluetooth prin optimizarea sunetului de la rezoluție joasă la rezoluție înaltă.</translation>
@@ -1567,6 +1595,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6265159465845424232">Întreabă înainte de a copia sau a muta fișiere Microsoft în Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Elimină portul</translation>
 <translation id="6266532094411434237">Se conectează la <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
 <translation id="6270309713620950855">Dezactivează reafișarea</translation>
 <translation id="6274089201566806618">Se conectează la <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 secunde</translation>
@@ -1618,6 +1647,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6453921811609336127">Pentru a trece la următoarea metodă de introducere a textului, apasă pe <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />tasta de spațiu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Șterge acest dicționar</translation>
 <translation id="6463596731306859179">Ai întâlnit ferestre pop-up nedorite sau un alt comportament neașteptat? Uneori, aplicațiile și extensiile pe care le instalezi pot modifica setările din ChromeOS fără să știi.</translation>
+<translation id="6465841119675156448">Fără internet</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> poate să realizeze următoarele:</translation>
 <translation id="6469557521904094793">Activează rețeaua mobilă</translation>
 <translation id="6470120577693311302">Notificări flash</translation>
@@ -1668,6 +1698,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6626581113916585374">Modul de efecte</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Comandă rapidă pentru selecție</translation>
+<translation id="6632473616050862500">ChromeOS Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="6646476869708241165">Dezactivează Fast Pair</translation>
 <translation id="6647690760956378579">Previzualizare vocală naturală</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
@@ -1711,6 +1742,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6775163072363532304">Dispozitivele disponibile vor apărea aici.</translation>
 <translation id="6776729248872343918">Activează Fast Pair</translation>
 <translation id="6777845730143344223">Află mai multe despre abonamentele Passpoint</translation>
+<translation id="6779406956731413166">Sistemul de operare Chromium este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="6783036716881942511">Elimini dispozitivul?</translation>
 <translation id="6783667414610055871">Setări pentru Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Derulare inversă <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7280649757394340890">Setări ale vocii pentru redarea vocală a textului</translation>
 <translation id="7282547042039404307">Mișcare lină</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Informații importante cu privire la folosire și siguranță</translation>
 <translation id="7303485269821975179">Configurează o parolă pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Înaltă</translation>
 <translation id="7308643132139167865">Limbi pentru site-uri</translation>
@@ -1873,6 +1906,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7409599290172516453">Fotografii recente</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> din <ph name="APPS_LIST_SIZE" /> aplicații blocate</translation>
+<translation id="7423425410216218516">Vizibilitatea este activată pentru <ph name="MINUTES" /> minute</translation>
 <translation id="7423513079490750513">Elimină <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Ajută-mă să scriu</translation>
 <translation id="7429415133937917139">Simulează ieșirea unui afișaj Braille actualizabil
@@ -1920,11 +1954,13 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7578137152457315135">Setări pentru amprentă</translation>
 <translation id="7578692661782707876">Introdu codul de confirmare.</translation>
 <translation id="7582582252461552277">Prefer această rețea</translation>
+<translation id="7582844466922312471">Date mobile</translation>
 <translation id="7587806318633605613">Istoricul sugestiilor</translation>
 <translation id="7590883480672980941">Setări de introducere a textului</translation>
 <translation id="7592060599656252486">Câteva</translation>
 <translation id="7602173054665172958">Gestionarea printării</translation>
 <translation id="7605163396341021431">Oferă aplicațiilor pentru Android control asupra dispozitivelor USB de pe acest Chromebook</translation>
+<translation id="7606334485649076285">Sistemul de operare Google Chrome Flex</translation>
 <translation id="7608810328871051088">Preferințe Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Activarea funcțiilor telefonului conectat.</translation>
@@ -1935,12 +1971,14 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7632437836497571618">Folosește conexiuni securizate pentru a accesa site-uri</translation>
 <translation id="7634337648687970851">Recuperarea datelor locale nu este acceptată momentan.</translation>
 <translation id="7640256527901510478">Numărul IMEI al dispozitivului este <ph name="IMEI_NUMBER" />, iar seria dispozitivului este <ph name="SERIAL_NUMBER" />. Aceste numere se pot folosi pentru activarea serviciului.</translation>
+<translation id="7640308610547854367">Ai revenit la o versiune anterioară de ChromeOS. Pentru a primi actualizări, așteaptă până când va fi disponibilă următoarea versiune.</translation>
 <translation id="7641513591566880111">Numele noului profil</translation>
 <translation id="764178579712141045">S-a adăugat <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietar)</translation>
 <translation id="7648048654005891115">Stil hartă taste</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{O amprentă configurată}few{{COUNT} amprente configurate}other{{COUNT} de amprente configurate}}</translation>
+<translation id="7650677314924139716">Setarea actuală pentru utilizarea datelor este „Numai Wi-Fi”</translation>
 <translation id="7651400349472467012">Este disponibil un hotspot instant</translation>
 <translation id="7651784568388208829">Continuarea activității din Phone Hub</translation>
 <translation id="7658239707568436148">Anulează</translation>
@@ -2031,6 +2069,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Traducere</translation>
 <translation id="7915457674565721553">Conectează-te la internet pentru a configura controlul parental</translation>
+<translation id="7917876797003313048">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chrome, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sec.</translation>
 <translation id="7920482456679570420">Adaugă cuvinte pe care vrei să le sară verificarea ortografiei</translation>
 <translation id="7921347341284348270">Nu poți vedea notificările telefonului din acest cont gestionat. Încearcă din nou cu alt cont. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="8431977087510901105">Setările cursorului au fost resetate</translation>
 <translation id="8437209419043462667">S.U.A.</translation>
 <translation id="8439506636278576865">Oferă-te să traduci paginile în această limbă</translation>
+<translation id="8449347986464073209">Șterge și deconectează-te</translation>
 <translation id="8451512073679317615">asistent</translation>
 <translation id="8455775311562941553">Conectat la <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Rostește textul de sub cursor</translation>
@@ -2320,6 +2360,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="8872774989979382243">Sunetul este dezactivat. Activează sunetul.</translation>
 <translation id="888256071122006425">Setări pentru mouse și touchpad</translation>
 <translation id="8885449336974696155">Contribuie la îmbunătățirea sistemului de operare ChromeOS raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Se pot aplica taxe pentru date mobile</translation>
 <translation id="8890529496706615641">Profilul nu a putut fi redenumit. Încearcă din nou sau contactează operatorul pentru asistență tehnică.</translation>
 <translation id="8894761918470382415">Protecția accesului la date pentru dispozitive periferice</translation>
 <translation id="8896830132794747524">Mișcările mai rapide ale mouse-ului vor deplasa mai mult cursorul</translation>
@@ -2345,6 +2386,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> s-a deconectat</translation>
 <translation id="8980345560318123814">Rapoarte de feedback</translation>
 <translation id="8981825781894055334">Nivel scăzut de hârtie</translation>
+<translation id="8984694057134206124">Dispozitivul tău va fi vizibil pentru toți timp de <ph name="MINUTES" /> minute. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Pragul de detectare</translation>
 <translation id="8986362086234534611">Șterge</translation>
 <translation id="8991694323904646277">Nicio cameră foto</translation>
@@ -2391,6 +2433,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="9098860402274800697">Elimină aplicațiile Google Play și Android</translation>
 <translation id="910000385680858937">Se permite – <ph name="PERMISSION_DETAILS" />. Conectează un microfon la dispozitiv.</translation>
 <translation id="9100416672768993722">Pentru a trece la ultima metodă de introducere a textului folosită, apasă pe <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />tasta spațiu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Setarea actuală pentru utilizarea datelor este „Fără internet”</translation>
 <translation id="9108294543511800041">Acum poți vedea fotografiile, conținutul media și notificările recente ale telefonului</translation>
 <translation id="9109122242323516435">Pentru a elibera spațiu, șterge fișiere din stocarea dispozitivului.</translation>
 <translation id="9111330022786356709">Adaugă sau găsește butoane pe mouse</translation>

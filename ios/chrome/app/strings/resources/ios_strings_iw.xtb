@@ -563,7 +563,6 @@
 <translation id="2664621323652615289">עצירה</translation>
 <translation id="2666092431469916601">למעלה</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
-<translation id="2671316366021598595">לאתר "<ph name="SITE_DOMAIN" />" אין הרשאה להשתמש במצלמה</translation>
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">תשלום בתשלומים</translation>
@@ -913,6 +912,7 @@
 <translation id="3858860766373142691">שם</translation>
 <translation id="386224966259596343">‏יש אפשרות לשמור את הפרטים האלה ב-Wallet בפעם הבאה שממלאים טופס רלוונטי.</translation>
 <translation id="3868495844258915202">‏הצגת כתובת ה-URL המלאה</translation>
+<translation id="3870931306085184145">לא נשמרו סיסמאות בשביל <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
 <translation id="3878657761594430423">כלי לאיסוף גיליונות</translation>
 <translation id="3884810423191119660">כדי להתחבר בקלות לאתרים ולאפליקציות, אפשר לשמור סיסמאות בצורה מאובטחת</translation>
@@ -1311,7 +1311,6 @@
 <translation id="5061202435354361813">רוצה לשדרג את הגלישה?</translation>
 <translation id="5062321486222145940">‏התקנת Google Drive</translation>
 <translation id="5067540696062462445">הורדות</translation>
-<translation id="5070314445039955096">ההרשאות לאתר <ph name="SITE_DOMAIN" /> יאופסו לאחר היציאה ממנו</translation>
 <translation id="507187271399539513">{count,plural, =1{אמצעי תשלום אחד ({position}) מתוך {count}}one{‫{position} מתוך {count} אמצעי תשלום}two{‫{position} מתוך {count} אמצעי תשלום}other{‫{position} מתוך {count} אמצעי תשלום}}</translation>
 <translation id="5075939510584558547">שמירה ללא הצפנה</translation>
 <translation id="5076534614343816664">מעקב מחירים</translation>
@@ -1410,7 +1409,6 @@
 <translation id="5351613737248079168">‏כדי להשתמש ב-Level Up, צריך להתחבר לחשבון</translation>
 <translation id="5352128922772839949">שמירת קובץ</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
-<translation id="5355871759168485600">לאתר "<ph name="SITE_DOMAIN" />" מותר להשתמש במיקרופון בכל כניסה שלך אליו</translation>
 <translation id="5359436665022446585">פתיחת קישורים בקלות</translation>
 <translation id="536067926684072644">הצגת הסימניות</translation>
 <translation id="5364647308446127983">{count,plural, =1{לא ניתן לייבא מפתח גישה אחד ({count})}one{לא ניתן לייבא {count} מפתחות גישה}two{לא ניתן לייבא {count} מפתחות גישה}other{לא ניתן לייבא {count} מפתחות גישה}}</translation>
@@ -1484,6 +1482,7 @@
 <translation id="5612225021788368236">סגירת המודעה לגבי דפדפן ברירת מחדל</translation>
 <translation id="561269594905823128">לוחצים על <ph name="BEGIN_BOLD" />בחירת קובץ<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">מיון לפי הישן ביותר</translation>
+<translation id="561349411957324076">הושלמה</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
 <translation id="5617769621178348890">פתיחה באפליקציה "קבצים"</translation>
 <translation id="5619871095170816857">בכרטיס הזה מוצגת הכרטיסייה הפתוחה האחרונה שהשתמשת בה בכל המכשירים המסונכרנים שלך ב-24 השעות האחרונות.</translation>
@@ -2035,6 +2034,7 @@
 <translation id="728025568708172005">התחלת סיור</translation>
 <translation id="7280980607183752256">אי אפשר לייבא את הקובץ הזה</translation>
 <translation id="7282197670900591579">עיצוב צהוב</translation>
+<translation id="7283937415134849498">‏כדי לספק עזרה בהתאמה אישית, Gemini משתף חלק מהנתונים שלך (למשל חלקים מהשיחות שלך, המיקום שלך ופרטים רלוונטיים נוספים) עם שירותי Google אחרים, כמו מפות וטיסות. המידע הזה עשוי לשמש לשיפור השירותים האלה, גם אם ההיסטוריה שלך ב-Gemini תימחק בהמשך. מידע נוסף מופיע <ph name="BEGIN_LINK" />במרכז המידע על פרטיות בממשקי Gemini<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
 <translation id="72961285530871072">‏הפעולה הזו תמחק סופית את ההתקדמות שלך בתוכנית Level Up, ונתוני השימוש בפיצ'רים במסגרת התוכנית הזו לא יישלחו יותר ל-Google מהפרופיל שלך.
 
@@ -2332,7 +2332,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> חשבונות</translation>
 <translation id="8161614462829037225">ביטול נעילה באמצעות <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">אורך</translation>
-<translation id="8181328232274170248">לאתר "<ph name="SITE_DOMAIN" />" מותר להשתמש במצלמה בכל כניסה שלך אליו</translation>
 <translation id="8182037667962849780">{count,plural, =1{של {website_1}}=2{של {website_1},‏ {website_2}}=3{של {website_1},‏ {website_2} ועוד אתר אחד}one{‏של {website_1},‎ {website_2} ועוד {more_count} אתרים}other{‏של {website_1},‎ {website_2} ועוד {more_count} אתרים}}</translation>
 <translation id="8184895727539791845">‏כדי לאפשר ל-Gemini להשתמש במצלמה, צריך להפעיל את המצלמה בהגדרות iOS</translation>
 <translation id="8185076488803799132">ייבוא</translation>
@@ -2503,7 +2502,6 @@
 <translation id="8674716540979958118">יש לך סיסמאות שנחשפו.</translation>
 <translation id="8679900250380464358">הוספה לרשימת הקריאה</translation>
 <translation id="8680787084697685621">פרטי הכניסה לחשבון אינם מעודכנים.</translation>
-<translation id="868648444055742370">לאתר "<ph name="SITE_DOMAIN" />" אין הרשאה להשתמש במיקרופון</translation>
 <translation id="8690752723634292147">אישור של המחיקה</translation>
 <translation id="8692107307702113268">הסיסמה מכילה יותר מ-1,000 תווים</translation>
 <translation id="8692689525339542358">הגנה מפני אתרים, הורדות ותוספים מסוכנים.</translation>
@@ -2649,6 +2647,7 @@
 <translation id="91023216973987714">אמצעי תשלום</translation>
 <translation id="9106655997975673326">מהמכשיר '<ph name="SOURCE_DEVICE" />'</translation>
 <translation id="9107664647686727385">בדיקה לאיתור סיסמאות שנחשפו</translation>
+<translation id="9115035712231910133">‏התמונה המצורפת {title}</translation>
 <translation id="9119764377203471454">אי אפשר לצרף קבצים</translation>
 <translation id="9124387962554796433">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך כדי להתאים אישית את החיפוש ושירותי Google נוספים.</translation>
 <translation id="9124978074365039456">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה וגלריית התמונות</translation>

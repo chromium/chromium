@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Готово!</translation>
 <translation id="1149483087970735785">Технологія доступності</translation>
 <translation id="1150490752229770117">Це останнє автоматичне оновлення програмного забезпечення й системи безпеки на пристрої <ph name="DEVICE_TYPE" />. Щоб отримувати оновлення надалі, придбайте новішу модель. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Про ChromeOS</translation>
 <translation id="1155816283571436363">Підключення до телефона</translation>
 <translation id="1160800016654917722">Вікно переміщено вниз і ліворуч</translation>
 <translation id="1164015913575846413">Alt + клік</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">клавіша Панелі запуску + стрілка вправо</translation>
 <translation id="1280332775949918163">Прив’язати вікно</translation>
+<translation id="1285625592773741684">Поточне налаштування використання трафіку: "Мобільний трафік"</translation>
 <translation id="1285815028662278915">Ваш тарифний план мобільного Інтернету може не підтримувати точку доступу. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Нічний екран увімкнеться автоматично після заходу сонця</translation>
 <translation id="1288300545283011870">Властивості мовлення</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Розширення буде вимкнено, а також буде відновлено безпечні налаштування за умовчанням. Вкладки, файли й файли cookie збережуться. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Лупа для всього екрана</translation>
 <translation id="1539727654733007771">Мобільні мережі не налаштовано. Завантажте новий <ph name="BEGIN_LINK" />профіль<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">ОС Chrome працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Я розумію, що функція Powerwash не видаляє встановлені профілі eSIM-карти</translation>
 <translation id="1549275686094429035">ARC ввімкнено</translation>
 <translation id="1554640914375980459">Коли вам надходитимуть сповіщення, екран блиматиме. Якщо у вас чутливість до світла, використовуйте сповіщення зі спалахом обережно.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Визначати місцезнаходження за допомогою Wi-Fi або мобільних мереж</translation>
 <translation id="1650407365859096313">Відкриється в новій вкладці; дозвіл: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Увімкнути функцію "Передавання поблизу"</translation>
+<translation id="1662146548738125461">Про ОС Chrome Flex</translation>
 <translation id="1663698992894057019">Придбайте новий Chromebook з останньою версією системи безпеки й програмного забезпечення</translation>
 <translation id="1665328953287874063">Розблоковуйте свій пристрій <ph name="DEVICE_TYPE" /> за допомогою пароля або PIN-коду</translation>
 <translation id="1667842670298352129">Озвучуйте текст. Спершу натисніть значок функції "Читання з екрана" внизу, а потім виділіть потрібний текст. Також можна скористатися комбінацією клавіш: виділіть текст і натисніть клавішу пошуку + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Примітка. Відбиток пальця може бути менш надійним, ніж пароль чи PIN-код.</translation>
 <translation id="1724801751621173132">Режим введення</translation>
 <translation id="1741190788710022490">Адаптивне заряджання</translation>
+<translation id="1745732479023874451">Керувати контактами</translation>
 <translation id="1751335846119670066">Допомога із читанням</translation>
 <translation id="1755601632425835748">Розмір тексту</translation>
 <translation id="1761402971842586829">Для кнопки "<ph name="BUTTON_NAME" />" призначено таку дію: <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Ні, не потрібно</translation>
 <translation id="1842681835432895345">Не показувати цей екран у дзеркальному режимі</translation>
 <translation id="1848219224579402567">Виходити з облікового запису, коли кришка закрита</translation>
+<translation id="185970820835152459">Ви можете керувати обліковими записами Google, у які ввійшли. Через них ви входите у веб-переглядач Chromium, Google Play, Gmail тощо. Якщо ви хочете додати обліковий запис для іншого користувача (наприклад, учасника сімейної групи), зробіть це натомість на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Холод</translation>
 <translation id="1866589962721094893">Надайте додаткам для Android дозвіл керувати USB-пристроями на цьому Chromebook. Ви отримуватимете запит на дозвіл щоразу, коли підключатимете USB-пристрій. Окремі додатки для Android запитуватимуть додаткові дозволи.</translation>
 <translation id="1877377290348678128">Мітка (необов'язково)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Звук</translation>
 <translation id="2097950021134740304">Скасувати вилучення підписки</translation>
 <translation id="2104166991923847969">Вимикати точку доступу автоматично</translation>
+<translation id="2106831557840787829">ОС Chrome Flex і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2114995631896158695">SIM-карту не вставлено</translation>
 <translation id="2121825465123208577">Змінити розмір</translation>
 <translation id="2127372758936585790">Зарядний пристрій низької потужності</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Видалити користувача <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2363475280045770326">Не вдалося зберегти конфігурацію</translation>
+<translation id="236939127352773362">Коли пристрої поблизу передають дані</translation>
 <translation id="237336063998926520">Використовуйте свою IP адресу, щоб визначити місцезнаходження</translation>
 <translation id="2373499590298659902">Щоб натиснути й утримувати кнопку миші, натисніть клавішу "0"</translation>
 <translation id="2375406435414127095">Підключитися до телефона</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Блокувати трафік, коли немає підключення до VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Завдяки точній геолокації додатки й сервіси отримують точніші геодані. Для роботи цієї функції Google періодично обробляє інформацію про датчики й бездротові сигнали з вашого пристрою, щоб збирати краудсорсингові дані про місцеположення бездротових сигналів. Ці відомості використовуються, не ідентифікуючи вашу особу, щоб покращувати точність геолокації і сервіси, які враховують місцезнаходження користувачів, а також надавати, підтримувати й удосконалювати сервіси Google загалом на підставі законних інтересів Google і третіх осіб в обслуговуванні користувачів.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Вихідний лоток майже заповнено</translation>
 <translation id="3390013585654699824">Дані про додаток</translation>
 <translation id="3390740059150071453">Подивитися ліворуч</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Електронна адреса</translation>
 <translation id="3701028563242674350">Поворушити курсор миші, щоб збільшити його</translation>
 <translation id="3703699162703116302">Квиток оновлено</translation>
+<translation id="3703994572283698466">ОС Chrome і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="370649949373421643">Увімкнути Wi-Fi</translation>
 <translation id="370665806235115550">Завантаження...</translation>
 <translation id="3707163604290651814">Ви ввійшли як <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Кількість принтерів на сервері друку: <ph name="NUM_PRINTERS" /></translation>
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="37143699183660101">Стабільність курсора</translation>
+<translation id="3716540481907974026">Версія ОС Chrome Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Неправильний PIN-код. Повторіть спробу.</translation>
 <translation id="3728681439294129328">Налаштувати адресу мережі</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Показувати підкреслення під час введення тексту</translation>
 <translation id="3789841737615482174">Установити</translation>
 <translation id="379509625511193653">Вимкнено</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + стрілка вгору</translation>
 <translation id="3798670284305777884">Динамік (внутрішній)</translation>
 <translation id="3799128412641261490">Налаштування кнопкового доступу</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Вбудована клавіатура</translation>
 <translation id="3917644013202553949">Недостатньо пам’яті, щоб синхронізувати файли. Спробуйте звільнити місце.</translation>
 <translation id="3919229493046408863">Вимкнути сповіщення, якщо буде знайдено пристрої поблизу</translation>
+<translation id="3923184630988645767">Використання трафіку</translation>
 <translation id="3923494859158167397">Мобільні мережі не налаштовано</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Інші користувачі пристрою також можуть використовувати цю мережу</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Визначення у швидких відповідях</translation>
 <translation id="3994075804072562819">Надайте комп’ютеру <ph name="SPECIFIC_NAME" /> дозвіл керувати USB-пристроями.</translation>
 <translation id="3994530503403062649">Знайдіть кнопки на планшеті</translation>
+<translation id="3997429360543082038">Про Chromium OS</translation>
 <translation id="4001540981461989979">Підсвічувати курсор миші під час руху</translation>
 <translation id="4005817994523282006">Спосіб визначення часового поясу</translation>
+<translation id="4019629340646866719">Chromium OS і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Копіювати відомості про складання</translation>
 <translation id="4028467762035011525">Додати методи введення</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Щоб вибрати останній використаний метод введення, натисніть клавіші <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">клавіша пошуку + стрілка вправо</translation>
 <translation id="405181879009056822">Налаштування ChromeOS</translation>
+<translation id="4054070260844648638">Пристрій видимий усім</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Перевірте з'єднання, щоб побачити доступні принтери в мережі</translation>
 <translation id="4068776064906523561">Збережені відбитки пальців</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, ступінь <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Більше додатків із використанням стилуса</translation>
 <translation id="4248401726442101648">Камеру не підключено</translation>
+<translation id="424864128008805179">Вийти з Chrome?</translation>
 <translation id="4249116869350613769">Режим енергозбереження</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="425411422794688815">Сталася помилка. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 обліковий запис Google}one{<ph name="EXTRA_ACCOUNTS" /> обліковий запис Google}few{<ph name="EXTRA_ACCOUNTS" /> облікові записи Google}many{<ph name="EXTRA_ACCOUNTS" /> облікових записів Google}other{<ph name="EXTRA_ACCOUNTS" /> облікового запису Google}}</translation>
 <translation id="4314497418046265427">Підключіть телефон до пристрою <ph name="DEVICE_TYPE" />, щоб працювати продуктивніше</translation>
 <translation id="4314561087119792062">Додати нову точку доступу</translation>
+<translation id="4314815835985389558">Керувати синхронізацією</translation>
 <translation id="4320177379694898372">Немає з’єднання з Інтернетом</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Сховище й живлення</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Кількість пропозицій</translation>
 <translation id="4606933160360542263">Власна комбінація клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Щоб двічі натиснути ліву кнопку миші, коли її вибрано, натисніть клавішу "/"</translation>
+<translation id="4613863813562375431">Версія Chromium OS</translation>
 <translation id="461661862154729886">Джерело живлення</translation>
 <translation id="4617880081511131945">Не вдалося підключитися до телефона</translation>
 <translation id="4620757807254334872">миша</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">Налаштувати мережеві сервери імен</translation>
 <translation id="4779083564647765204">Збільшити</translation>
 <translation id="4779766576531456629">Перейменувати мобільну мережу eSIM-карти</translation>
+<translation id="4789550509729954245">Показувати сповіщення, коли пристрої поблизу обмінюються даними</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Увімкнути прискорення TrackPoint</translation>
 <translation id="479664067938200069">Додатки, установлені <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">Закріпити вікно</translation>
 <translation id="4964673849688379040">Перевірка…</translation>
 <translation id="4967571733817147990">Налаштувати кнопки миші</translation>
+<translation id="4970880042055371251">Версія ОС Chrome</translation>
 <translation id="4972129977812092092">Змінити принтер</translation>
 <translation id="4975771730019223894">Лічильники сповіщень на значках додатків</translation>
 <translation id="4979263087381759787">Параметри розробника</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">Ви більше не матимете доступу до Google Диска (зокрема до файлів, збережених для перегляду офлайн) на цьому пристрої Chromebook</translation>
 <translation id="5196790039230503600">Скористайтеся жестом, а потім поверніть голову в напрямку, куди потрібно перемістити елемент. Щоб відпустити його, повторіть жест.</translation>
 <translation id="5197255632782567636">Інтернет</translation>
+<translation id="5205484256512407285">Ніколи не використовувати мобільний трафік для передавання</translation>
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="5208926629108082192">Інформація про мобільну мережу пристрою</translation>
 <translation id="5208988882104884956">Половинна ширина</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">Системний додаток ОС Chrome</translation>
 <translation id="5334113802138581043">Доступ до мікрофона</translation>
 <translation id="5336689872433667741">Курсор і сенсорна панель</translation>
+<translation id="5337926771328966926">Поточна назва пристрою: <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Надсилати дані про діагностику й використання</translation>
 <translation id="5369694795837229225">Налаштувати середовище для розробки Linux</translation>
 <translation id="5377367976106153749">Увімкнути доступ до камери?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">Лише власник може змінювати ці налаштування:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Чохол</translation>
+<translation id="5840680448799937675">Завжди передавати файли офлайн</translation>
 <translation id="5841270259333717135">Налаштувати Ethernet</translation>
 <translation id="5842497610951477805">Увімкнути Bluetooth</translation>
 <translation id="5846200638699387931">Синтаксична помилка у відношенні: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Запитувати, перш ніж копіювати або переміщувати файли Microsoft на Google Диск</translation>
 <translation id="5939518447894949180">Скинути</translation>
 <translation id="594048410531370124">Клавішу не розпізнано. Щоб <ph name="RESPONSE" />, натисніть будь-яку клавішу.</translation>
+<translation id="5942779427914696408">Видимість пристрою</translation>
 <translation id="5945192511027649793">Вимкнути сенсорну панель</translation>
 <translation id="5947651424015173580">Двічі натиснути лівою кнопкою миші</translation>
 <translation id="594993197557058302">Натисніть одну із чотирьох клавіш-модифікаторів (Ctrl, Alt, Shift, клавішу пошуку або Панелі запуску) і ще 1 клавішу. Також можна вибрати одну клавішу.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">Призначити жест</translation>
 <translation id="5968022600320704045">Нічого не знайдено</translation>
 <translation id="5969728632630673489">Сповіщення про комбінацію клавіш закрито</translation>
+<translation id="5979353814339191480">Цей параметр застосовується для пристроїв Chromebook із тарифним планом або модемом мобільної мережі, а також під час прив'язки до портативної точки доступу</translation>
 <translation id="5985556342298151179">Додаток Chrome установив адміністратор вашого пристрою.</translation>
 <translation id="5986442691296752186">Надайте додаткам для Linux дозвіл керувати USB-пристроями.</translation>
 <translation id="598810097218913399">Видалити призначення</translation>
 <translation id="5988563937187882754">Подивитися праворуч</translation>
+<translation id="5990266201903445068">Лише через Wi-Fi</translation>
 <translation id="5992225669837656567">Усі миші відключено</translation>
 <translation id="5999630716831179808">Голоси</translation>
 <translation id="6002458620803359783">Рекомендовані голоси</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">Основна кнопка TrackPoint</translation>
 <translation id="6048747414605857443">Виберіть і налаштуйте голоси для синтезу мовлення в ChromeVox і функції "Читання з екрана"</translation>
 <translation id="6050189528197190982">Відтінки сірого</translation>
+<translation id="6054961935262556546">Змінити налаштування видимості</translation>
 <translation id="6059276912018042191">Останні вкладки Chrome</translation>
 <translation id="6059925163896151826">Пристрої USB</translation>
 <translation id="6064764629679333574">Покращте якість звуку Bluetooth-мікрофона, змінивши роздільну здатність аудіо з низької на високу.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Запитувати, перш ніж копіювати або переміщувати файли Microsoft у Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Вилучити порт</translation>
 <translation id="6266532094411434237">Підключення до пристрою "<ph name="DEVICE" />"</translation>
+<translation id="6268381023930128611">Вийти з Chromium?</translation>
 <translation id="6270309713620950855">Нагадування про вимкнений мікрофон</translation>
 <translation id="6274089201566806618">Підключення до пристрою "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="628352644014831790">4 секунди</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">Щоб вибрати наступний метод введення, натисніть <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />пробіл<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Видалити цей словник</translation>
 <translation id="6463596731306859179">З’являються небажані спливаючі вікна чи інша неочікувана поведінка? Іноді додатки й розширення, які ви встановлюєте, можуть змінювати налаштування ChromeOS без вашого відома.</translation>
+<translation id="6465841119675156448">Без Інтернету</translation>
 <translation id="6467377768028664108">Пристрій <ph name="DEVICE_TYPE" /> надаватиме вам такі можливості:</translation>
 <translation id="6469557521904094793">Увімкнути мобільну мережу</translation>
 <translation id="6470120577693311302">Сповіщення зі спалахом</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">Режим ефектів</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Сполучення клавіш для вибору</translation>
+<translation id="6632473616050862500">ОС Chrome Flex працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Вимкнути функцію "Швидка пара"</translation>
 <translation id="6647690760956378579">Попереднє прослуховування природного голосу</translation>
 <translation id="6650072551060208490">Сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">Тут відображатимуться доступні пристрої.</translation>
 <translation id="6776729248872343918">Увімкнути функцію "Швидка пара"</translation>
 <translation id="6777845730143344223">Докладніше про підписки Passpoint</translation>
+<translation id="6779406956731413166">Chromium OS працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Забути цей пристрій?</translation>
 <translation id="6783667414610055871">Налаштування Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Зворотне прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">Налаштування голосу для синтезу мовлення</translation>
 <translation id="7282547042039404307">Плавно</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Важлива інформація про використання й безпеку</translation>
 <translation id="7303485269821975179">Установіть пароль для пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Високий</translation>
 <translation id="7308643132139167865">Мови веб-сайтів</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">Останні фотографії</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Заблоковано додатків: <ph name="BLOCKED_APPS_SIZE" /> з <ph name="APPS_LIST_SIZE" /></translation>
+<translation id="7423425410216218516">Пристрій буде видимим упродовж <ph name="MINUTES" /> хв</translation>
 <translation id="7423513079490750513">Вилучити метод введення "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="7425037327577270384">Допомога з текстом</translation>
 <translation id="7429415133937917139">Імітує вивід оновлюваного брайлівського дисплея на панелі ChromeVox угорі екрана</translation>
@@ -1919,11 +1953,13 @@
 <translation id="7578137152457315135">Налаштування відбитка</translation>
 <translation id="7578692661782707876">Введіть код підтвердження.</translation>
 <translation id="7582582252461552277">Віддавати перевагу цій мережі</translation>
+<translation id="7582844466922312471">Мобільний Інтернет</translation>
 <translation id="7587806318633605613">Історія пропозицій</translation>
 <translation id="7590883480672980941">Налаштування введення</translation>
 <translation id="7592060599656252486">Деякі розділові знаки</translation>
 <translation id="7602173054665172958">Керування друком</translation>
 <translation id="7605163396341021431">Надайте додаткам для Android дозвіл керувати USB-пристроями на цьому Chromebook</translation>
+<translation id="7606334485649076285">ОС Google Chrome Flex</translation>
 <translation id="7608810328871051088">Параметри Android</translation>
 <translation id="7611713099524036757">мета-клавіша</translation>
 <translation id="7612655942094160088">Увімкнути функції підключеного телефона.</translation>
@@ -1934,12 +1970,14 @@
 <translation id="7632437836497571618">Використовувати захищені підключення для пошуку сайтів</translation>
 <translation id="7634337648687970851">Відновлення локальних даних наразі не підтримується.</translation>
 <translation id="7640256527901510478">IMEI пристрою: <ph name="IMEI_NUMBER" />; серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
+<translation id="7640308610547854367">Ви повернулися до попередньої версії ChromeOS. Ви зможете отримувати оновлення, коли стане доступна наступна версія.</translation>
 <translation id="7641513591566880111">Нова назва профілю</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> додано</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
 <translation id="7648048654005891115">Стиль таблиці клавіш</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Налаштовано 1 відбиток пальця}one{Налаштовано {COUNT} відбиток пальця}few{Налаштовано {COUNT} відбитки пальця}many{Налаштовано {COUNT} відбитків пальця}other{Налаштовано {COUNT} відбитка пальця}}</translation>
+<translation id="7650677314924139716">Поточне налаштування використання трафіку: "Лише через Wi-Fi"</translation>
 <translation id="7651400349472467012">Доступна миттєва точка доступу</translation>
 <translation id="7651784568388208829">Продовження виконання завдань у функції "Керування телефоном"</translation>
 <translation id="7658239707568436148">Скасувати</translation>
@@ -2030,6 +2068,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Переклад</translation>
 <translation id="7915457674565721553">Щоб налаштувати батьківський контроль, під'єднайте пристрій до Інтернету</translation>
+<translation id="7917876797003313048">Ви можете керувати обліковими записами Google, у які ввійшли. Через них ви входите у веб-переглядач Chrome, Google Play, Gmail тощо. Якщо ви хочете додати обліковий запис для іншого користувача (наприклад, учасника сімейної групи), зробіть це натомість на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920482456679570420">Додайте слова, які потрібно пропускати під час перевірки орфографії</translation>
 <translation id="7921347341284348270">Ви не можете переглядати сповіщення зі свого телефона в цьому керованому обліковому записі. Спробуйте скористатись іншим обліковим записом. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
@@ -2194,6 +2233,7 @@
 <translation id="8431977087510901105">Налаштування курсора скинуто</translation>
 <translation id="8437209419043462667">Американська</translation>
 <translation id="8439506636278576865">Пропонувати переклад сторінок цією мовою</translation>
+<translation id="8449347986464073209">Видалити й вийти</translation>
 <translation id="8451512073679317615">асистент</translation>
 <translation id="8455775311562941553">Підключено до пристрою "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="8473540203671727883">Озвучувати текст під мишею</translation>
@@ -2319,6 +2359,7 @@
 <translation id="8872774989979382243">Звук вимкнено. Увімкнути його.</translation>
 <translation id="888256071122006425">Налаштування миші й сенсорної панелі</translation>
 <translation id="8885449336974696155">Допоможіть покращити ChromeOS, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" />.</translation>
+<translation id="8890170499370378450">Може стягуватися плата за мобільний трафік</translation>
 <translation id="8890529496706615641">Не вдалося перейменувати профіль. Повторіть спробу або зв'яжіться з оператором, щоб отримати технічну підтримку.</translation>
 <translation id="8894761918470382415">Обмежити доступ до даних для периферійних пристроїв</translation>
 <translation id="8896830132794747524">Якщо рухати мишу швидше, курсор переміщуватиметься далі</translation>
@@ -2344,6 +2385,7 @@
 <translation id="8978939272793553320">Пристрій (<ph name="DEVICE_NAME" />) відключено</translation>
 <translation id="8980345560318123814">Надсилати відгуки</translation>
 <translation id="8981825781894055334">Недостатньо паперу</translation>
+<translation id="8984694057134206124">Пристрій зможуть бачити всі користувачі впродовж <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Поріг виявлення</translation>
 <translation id="8986362086234534611">Забути</translation>
 <translation id="8991694323904646277">Немає підключених камер</translation>
@@ -2390,6 +2432,7 @@
 <translation id="9098860402274800697">Вилучити Google Play і додатки для Android</translation>
 <translation id="910000385680858937">Дозволено: <ph name="PERMISSION_DETAILS" />. Підключіть мікрофон до пристрою.</translation>
 <translation id="9100416672768993722">Щоб вибрати останній використаний метод введення, натисніть <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />пробіл<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Поточне налаштування використання трафіку: "Без Інтернету"</translation>
 <translation id="9108294543511800041">Тепер ви можете переглядати нещодавні фотографії, медіафайли та сповіщення з телефона</translation>
 <translation id="9109122242323516435">Щоб звільнити місце, видаліть файли з пристрою.</translation>
 <translation id="9111330022786356709">Додати або знайти кнопки миші</translation>

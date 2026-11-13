@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="201759455285471444">Zgjero grupin e skedave.</translation>
 <translation id="2022431790688770637">Menaxho sugjerimet e Gemini</translation>
+<translation id="2023265063803387188">Gemini nuk ofrohet në modalitetin "I fshehtë"</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Hap rrjetën e skedave</translation>
 <translation id="2044681667265133332">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Ndalo</translation>
 <translation id="2666092431469916601">I sipërm</translation>
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" nuk lejohet të qaset te kamera jote</translation>
 <translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Paguaj me kalimin e kohës</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Emri</translation>
 <translation id="386224966259596343">Do të kesh mundësinë që t'i ruash këto informacione te "Portofoli" herën tjetër kur të plotësosh një formular përkatës.</translation>
 <translation id="3868495844258915202">Shfaq URL-në e plotë</translation>
+<translation id="3870931306085184145">Nuk ka fjalëkalime të ruajtura për <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>
 <translation id="3878657761594430423">Marrësja e fletëve</translation>
 <translation id="3884810423191119660">Ruaj në mënyrë të sigurt fjalëkalimet që të mund të identifikohesh me lehtësi në sajte dhe aplikacione</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Përmirëso shfletimin tënd</translation>
 <translation id="5062321486222145940">Instalo "Diskun e Google"</translation>
 <translation id="5067540696062462445">Shkarkimet</translation>
-<translation id="5070314445039955096">Lejet e "<ph name="SITE_DOMAIN" />" do të rivendosen në joaktive kur të largohesh nga ky sajt</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} nga {count} mënyrë pagese}other{{position} nga {count} mënyra pagese}}</translation>
 <translation id="5075939510584558547">Ruaj pa enkriptim</translation>
 <translation id="5076534614343816664">Monitorimi i çmimeve</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Duhet të jesh identifikuar për të përdorur Level Up</translation>
 <translation id="5352128922772839949">Ruaj skedarin</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" lejohet të përdorë mikrofonin tënd sa herë që ti viziton këtë sajt</translation>
 <translation id="5359436665022446585">Hapje më e mirë e lidhjeve</translation>
 <translation id="536067926684072644">Shfaq faqeshënuesit</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} çelës kalimi nuk mund të importohej}other{{count} çelësa kalimi nuk mund të importoheshin}}</translation>
@@ -1484,6 +1483,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5612225021788368236">Mbyll promovimin e shfletuesit të parazgjedhur</translation>
 <translation id="561269594905823128">Trokit te <ph name="BEGIN_BOLD" />Zgjidh skedarin tënd<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Rendit sipas "Më të fundit"</translation>
+<translation id="561349411957324076">Përfundoi</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
 <translation id="5617769621178348890">Hap në aplikacionin Files</translation>
 <translation id="5619871095170816857">Kjo kartë shfaq skedën e hapur të përdorur për herë të fundit në të gjitha pajisjet e tua të sinkronizuara brenda 24 orëve të fundit.</translation>
@@ -2333,7 +2333,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> llogari</translation>
 <translation id="8161614462829037225">Shkyç me <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Kohëzgjatja</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" lejohet të përdorë kamerën tënde sa herë që ti viziton këtë sajt</translation>
 <translation id="8182037667962849780">{count,plural, =1{Për {website_1}}=2{Për {website_1}, {website_2}}=3{Për {website_1}, {website_2} dhe 1 tjetër}other{Për {website_1}, {website_2} dhe {more_count} të tjerë}}</translation>
 <translation id="8184895727539791845">Për të lejuar që Gemini të përdorë kamerën tënde, aktivizo "Kamerën" te cilësimet e iOS</translation>
 <translation id="8185076488803799132">Importo</translation>
@@ -2504,7 +2503,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8674716540979958118">Ke fjalëkalime të komprometuara.</translation>
 <translation id="8679900250380464358">Shto te lista e leximit</translation>
 <translation id="8680787084697685621">Detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" nuk lejohet të qaset te mikrofoni yt</translation>
 <translation id="8690752723634292147">Konfirmo fshirjen</translation>
 <translation id="8692107307702113268">Fjalëkalimi është më shumë se 1000 karaktere</translation>
 <translation id="8692689525339542358">Merr mbrojtjen nga sajtet, shkarkimet dhe shtesat e rrezikshme.</translation>
@@ -2650,6 +2648,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="91023216973987714">Mënyrat e pagesës</translation>
 <translation id="9106655997975673326">Nga "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Kontrollo për fjalëkalime të komprometuara</translation>
+<translation id="9115035712231910133">Imazhi i bashkëngjitur "{title}"</translation>
 <translation id="9119764377203471454">Bashkëngjitjet nuk mund të shtohen</translation>
 <translation id="9124387962554796433">Google mund ta përdorë historikun tënd për të personalizuar "Kërko" dhe shërbime të tjera të Google.</translation>
 <translation id="9124978074365039456">Bli, përkthe dhe identifiko ato që shikon duke përdorur kamerën dhe galerinë e fotografive</translation>

@@ -206,6 +206,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1807709131360304325">Abrir uma nova janela</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar usando o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, guia com gravação</translation>
+<translation id="1817594121551034302">Atalho da barra de endereço</translation>
 <translation id="1819443852740954262">Abrir todos em uma janela anônima</translation>
 <translation id="1820408774134375111">Página inferior de login</translation>
 <translation id="1824902652744048041">Toque em Excluir Dados de Navegação.</translation>
@@ -830,6 +831,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, guia anônima picture-in-picture</translation>
 <translation id="4285498937028063278">Liberar guia</translation>
 <translation id="4285846616383034558">Cookies, cache e outros dados de sites</translation>
+<translation id="429016203314124112">O mecanismo de pesquisa escolhido será usado por padrão no Chrome</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ativar o bloqueio de tela nas configurações do Android<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">seu smartphone</translation>
 <translation id="4295640788982898778">Suas extensões estão salvas na sua Conta do Google, mas os dados salvos por elas apenas neste dispositivo podem ser excluídos</translation>
@@ -985,6 +987,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4822710610088666676">Grupo de guias <ph name="TAB_GROUP_TITLE" /> fechado e salvo</translation>
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restaurar grupo de <ph name="TAB_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}one{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}other{Restaurar grupo de <ph name="TAB_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" /> como um novo grupo de guias em segundo plano.}}</translation>
+<translation id="48431900345921167">Alguns serviços não estão disponíveis para <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4849731766219625109">Usar sua conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4860895144060829044">Ligar</translation>
@@ -1009,6 +1012,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4925120120285606924">Captura de tela <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Você pode salvar imagens e arquivos para visualizar off-line ou compartilhar em outros apps</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}one{# favorito e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}other{# favoritos e outros itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google para usar em outros dispositivos.}}</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4943703118917034429">Realidade virtual</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4957722034734105353">Saiba mais...</translation>
@@ -1043,6 +1047,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> janela selecionada}one{<ph name="WINDOW_COUNT_NORMAL" /> janela selecionada}other{<ph name="WINDOW_COUNT_NORMAL" /> janelas selecionadas}}</translation>
 <translation id="5058506215037547387">Visualizar página</translation>
 <translation id="506254248375231072">Nenhuma guia</translation>
+<translation id="5065494736868031814">Na barra de ferramentas</translation>
 <translation id="5075939510584558547">Salvar sem criptografia</translation>
 <translation id="5078638979202084724">Adicionar todas as guias aos favoritos</translation>
 <translation id="5085038751173179818">Faça login neste site e no Chrome para conferir seus favoritos e muito mais em todos os seus dispositivos</translation>
@@ -1062,6 +1067,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5142281402488957685">Puxe para baixo para atualizar e ver novas matérias</translation>
 <translation id="5144385790872094440">Algumas das páginas que você visita serão pré-carregadas. As páginas podem ser pré-carregadas por servidores do Google quando o link for de um site ou app do Google.</translation>
 <translation id="5152843274749979095">Nenhum app compatível instalado</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">O título é obrigatório</translation>
 <translation id="5161262286013276579">Página de confirmação da chave de acesso aberta</translation>
 <translation id="5163361352003913350">Seleção atual: <ph name="NAME" />. Escolha uma conta.</translation>
@@ -1145,6 +1151,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5494920125229734069">Selecionar todas</translation>
 <translation id="549660026907543296">Participar como <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Página inferior de atividade recente</translation>
+<translation id="5519516356611866228">Com suas modificações</translation>
 <translation id="5526281268548144413">Não é possível fechar em várias janelas</translation>
 <translation id="5532536403031755365">Adicione uma camada extra de segurança contra ameaças on-line com a proteção reforçada</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Abrir favorito}one{Abrir todos (#)}other{Abrir todos (#)}}</translation>
@@ -1257,6 +1264,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5992182727984874868"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não visitou o site recentemente</translation>
 <translation id="5995726099713306770">Baixar página novamente?</translation>
 <translation id="6000066717592683814">Continuar usando o Google</translation>
+<translation id="6000860861660592745">Escolha salva</translation>
 <translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6013305291643746595">Ordenar por mais antigos</translation>
@@ -1283,6 +1291,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6095578583683628124">Se o Google também for seu mecanismo de pesquisa padrão, você receberá sugestões melhores e relevantes para o contexto</translation>
 <translation id="6104768972315313991">QR code gerado</translation>
 <translation id="610630277578876674">Abra links rapidamente em mensagens e muito mais</translation>
+<translation id="6110067234345111822">Com base nas leis da sua região, é necessário definir um mecanismo de pesquisa para o Chrome</translation>
 <translation id="6112702117600201073">Atualizando página</translation>
 <translation id="612221930823678863">URL com <ph name="QUERY" /> no lugar da consulta</translation>
 <translation id="6122831415929794347">Desativar a Navegação segura?</translation>
@@ -1407,6 +1416,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6482749332252372425">Falha no download do arquivo <ph name="FILE_NAME" /> devido à falta de espaço de armazenamento.</translation>
 <translation id="6486420406192123355">Esse arquivo PDF está hospedado em um site com uma conexão sem segurança</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Download concluído}one{# download concluído}other{# downloads concluídos}}</translation>
+<translation id="6502991525169604759">Sem suas modificações</translation>
 <translation id="6508722015517270189">Reiniciar o Chrome</translation>
 <translation id="6513924416597632811">Copiar o link para a página de resultados da pesquisa de: <ph name="SEARCH_QUERY" />. Fonte: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Confirmar</translation>
@@ -1448,6 +1458,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Abrir no <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Receber notificações</translation>
+<translation id="6670742294143102726">Selecione uma ou mais guias para adicionar à pesquisa</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6672697278890207089">Digite sua senha</translation>
 <translation id="6675622031235530028">Mantenha Ctrl+Q pressionado para sair</translation>
@@ -1579,6 +1590,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7119984597597798764">Fechar <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Fazer login no Chrome</translation>
 <translation id="7130633106249192408">Excluir dados de navegação deste dispositivo</translation>
+<translation id="7134511521562699550">Na barra de endereço</translation>
 <translation id="7136694880210472378">Tornar padrão</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissões revisadas para 1 site}one{Permissões revisadas para # site}other{Permissões revisadas para # sites}}</translation>
 <translation id="7138678301420049075">Outro</translation>
@@ -1611,6 +1623,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7196455519852483601">Você pode excluir alguns ou todos os dados do seu histórico, cookies, sites e muito mais</translation>
 <translation id="7197682514647286393">Exclua rapidamente seus dados de navegação</translation>
 <translation id="719791532916917144">Atalho do teclado</translation>
+<translation id="7198747540865146057">Escolher o mecanismo de pesquisa padrão</translation>
 <translation id="7203150201908454328">Expandido</translation>
 <translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> guias como novas guias em segundo plano.</translation>
 <translation id="7217781228893594884">As guias anônimas vão ser bloqueadas quando você sair do Chrome</translation>
@@ -1685,7 +1698,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7493994139787901920"><ph name="VERSION" /> (atualizada <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Aguarde...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, guia com áudio desativado fixada</translation>
-<translation id="7500851014030446046">Baixando PDF</translation>
 <translation id="7501135638693251872">Todos os favoritos</translation>
 <translation id="7504076214066136798">Não é possível salvar as edições</translation>
 <translation id="7507207699631365376">Consulte a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste provedor</translation>
@@ -1921,6 +1933,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8368001212524806591">Monitorar preço</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> grupo de guias}one{<ph name="TAB_GROUPS_MANY" /> grupo de guias}other{<ph name="TAB_GROUPS_MANY" /> grupos de guias}}</translation>
 <translation id="8387617938027387193">Confirme que é você</translation>
+<translation id="8392241619862061825">Mostrar atalho do Gemini</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8398389123831319859">Toque duas vezes e mantenha para mudar para a navegação anônima</translation>
 <translation id="8401904657382223224">Filtrar por host</translation>
@@ -2002,6 +2015,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8639963783467694461">Definições de preenchimento automático</translation>
 <translation id="8642256427178803328">Ative a opção Bloquear guias anônimas ao sair do Chrome</translation>
 <translation id="8644482734962137770">O Gemini precisa de permissão para usar o Chrome</translation>
+<translation id="8653883575875371543">Mostrar o Gemini na barra de ferramentas</translation>
 <translation id="8662474268934425487">Fazer login no site <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">O nome do arquivo já existe</translation>
 <translation id="8676276370198826499">Inscreva-se no <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -2019,6 +2033,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8727043961453758442">Aproveite o Chrome</translation>
 <translation id="8728810647305130936">Abrir novas guias</translation>
+<translation id="8730621377337864115">Concluído</translation>
 <translation id="8731268612289859741">Código de segurança</translation>
 <translation id="8738163682604285902">Ver Modo de Leitura?</translation>
 <translation id="8746155870861185046">Compartilhar texto em destaque</translation>

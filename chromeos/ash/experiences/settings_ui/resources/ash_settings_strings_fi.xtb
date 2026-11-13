@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Kaikki on valmista!</translation>
 <translation id="1149483087970735785">Avustusteknologia</translation>
 <translation id="1150490752229770117">Tämä on viimeinen automaattinen ohjelmisto- ja tietoturvapäivitys, jonka <ph name="DEVICE_TYPE" /> saa. Vaihda uudempaan malliin, jos haluat jatkossa saada päivityksiä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS</translation>
 <translation id="1155816283571436363">Yhdistetään puhelimeen</translation>
 <translation id="1160800016654917722">Ikkuna siirretty alas vasemmalle</translation>
 <translation id="1164015913575846413">alt + klikkaus</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">käynnistysohjelma + oikea nuoli</translation>
 <translation id="1280332775949918163">Siirrä ikkuna automaattisesti</translation>
+<translation id="1285625592773741684">Nykyinen datankäyttöasetus on Mobiilidata</translation>
 <translation id="1285815028662278915">Mobiilidata ei ehkä tue hotspotia. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Yövalo käynnistyy automaattisesti, kun aurinko laskee.</translation>
 <translation id="1288300545283011870">Puheominaisuudet</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Tämä poistaa laajennukset käytöstä ja palauttaa asetuksesi turvallisiin oletusasetuksiin. Välilehdet, tiedostot ja evästeet säilytetään. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Koko näytön suurennus</translation>
 <translation id="1539727654733007771">Mobiiliverkkoja ei luotu. Lataa uusi <ph name="BEGIN_LINK" />profiili<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää.</translation>
 <translation id="1547808936554660006">Ymmärrän, että powerwash ei poista asennettuja eSIM-profiileita</translation>
 <translation id="1549275686094429035">ARC käytössä</translation>
 <translation id="1554640914375980459">Käytä näytöllä välkkyvää valoa ilmoituksen merkiksi. Käytä valoilmoituksia harkiten, jos olet herkkä valolle.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Käytä Wi-Fi- ja mobiiliverkkoja sijainnin määrittämiseen</translation>
 <translation id="1650407365859096313">Avautuu uudelle välilehdelle, lupa: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Ota lähijakaminen käyttöön</translation>
+<translation id="1662146548738125461">Tietoa ChromeOS Flexistä</translation>
 <translation id="1663698992894057019">Päivitä uuteen Chromebookiin, niin saat uusimmat ohjelmistot ja tietoturvaominaisuudet</translation>
 <translation id="1665328953287874063">Avaa <ph name="DEVICE_TYPE" /> salasanalla tai PIN-koodilla</translation>
 <translation id="1667842670298352129">Kuuntele tietty teksti ääneen luettuna. Valitse ensin Teksti puhuttuna ‐kuvake näytön alareunasta ja korosta sitten tekstiä. Voit myös käyttää pikanäppäinyhdistelmää: korosta tekstiä ja paina Haku + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Huom. Sormenjälki ei välttämättä ole yhtä turvallinen kuin vahva salasana tai PIN-koodi.</translation>
 <translation id="1724801751621173132">Syöttötapa</translation>
 <translation id="1741190788710022490">Mukautuva lataus</translation>
+<translation id="1745732479023874451">Ylläpidä kontakteja</translation>
 <translation id="1751335846119670066">Apua lukemiseen</translation>
 <translation id="1755601632425835748">Tekstin koko</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> on määritetty uudelleen: <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Ei, käytä vain yhtä kytkintä</translation>
 <translation id="1842681835432895345">Jätä tämä näyttö pois peilaustilasta</translation>
 <translation id="1848219224579402567">Kirjaudu ulos, kun kansi suljetaan</translation>
+<translation id="185970820835152459">Voit ylläpitää sisäänkirjautuneita Google-tilejäsi. Google-tilejäsi käytetään Chromium-selaimella, Play Kaupassa ja muualla. Jos haluat lisätä tilin jollekulle toiselle, esim. perheenjäsenelle, lisää tämän sijasta uusi henkilö laitteelle (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Viileä</translation>
 <translation id="1866589962721094893">Salli Android-sovellusten hallita USB-laitteita tällä Chromebookilla. Lupaa pyydetään aina, kun liität uuden USB-laitteen. Yksittäiset Android-sovellukset pyytävät lisälupia.</translation>
 <translation id="1877377290348678128">Tunniste (valinnainen)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Ääni</translation>
 <translation id="2097950021134740304">Peruuta tilauksen unohtaminen</translation>
 <translation id="2104166991923847969">Laita hotspot pois päältä automaattisesti</translation>
+<translation id="2106831557840787829">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">SIM-korttia ei ole asetettu</translation>
 <translation id="2121825465123208577">Muuta kokoa</translation>
 <translation id="2127372758936585790">Pienitehoinen laturi</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Poista <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2363475280045770326">Virhe määrityksen tallentamisessa</translation>
+<translation id="236939127352773362">Kun lähistöllä olevat laitteet jakavat sisältöä</translation>
 <translation id="237336063998926520">Määritä sijainti IP-osoitteesi avulla</translation>
 <translation id="2373499590298659902">Paina hiiren painiketta ja pidä sitä painettuna painamalla "0"</translation>
 <translation id="2375406435414127095">Muodosta yhteys puhelimeen</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Estä liikenne, jossa ei käytetä VPN:ää</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Sijaintitietojen tarkkuus tarjoaa tarkemman sijainnin sovelluksille ja palveluille. Google käsittelee ajoittain laitteen anturien ja langattoman signaalin tietoja langattomien signaalien sijainnin keräämistä varten. Näitä anonyymejä tietoja käytetään sijaintitietojen tarkkuuden ja sijaintiin perustuvien palvelujen kehittämiseen sekä Googlen palvelujen kehittämiseen, tarjoamiseen ja ylläpitämiseen. Tämä perustuu Googlen ja kolmansien osapuolten oikeutettuun etuun palvella käyttäjien tarpeita.</translation>
+<translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
 <translation id="3388094447051599208">Tulostuslokero on melkein täynnä</translation>
 <translation id="3390013585654699824">Sovelluksen tiedot</translation>
 <translation id="3390740059150071453">Katso vasemmalle</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Sähköpostiosoite</translation>
 <translation id="3701028563242674350">Suurenna hiiren kohdistinta ravistamalla sitä</translation>
 <translation id="3703699162703116302">Tukipyyntö päivitetty</translation>
+<translation id="3703994572283698466">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Ota Wi-Fi käyttöön</translation>
 <translation id="370665806235115550">Ladataan...</translation>
 <translation id="3707163604290651814"><ph name="NAME" /> on kirjautuneena sisään</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Tulostinpalvelimelta löytyi <ph name="NUM_PRINTERS" /> tulostinta</translation>
 <translation id="371370241367527062">Etumikrofoni</translation>
 <translation id="37143699183660101">Kohdistimen vakaus</translation>
+<translation id="3716540481907974026">ChromeOS Flexin versio</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Väärä PIN-koodi. Yritä uudelleen</translation>
 <translation id="3728681439294129328">Määritä verkko-osoite</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Näytä alleviivaus tekstin kirjoituksen aikana</translation>
 <translation id="3789841737615482174">Asenna</translation>
 <translation id="379509625511193653">Pois päältä</translation>
+<translation id="3795971588916395511">Google Chrome ‑käyttöjärjestelmä</translation>
 <translation id="3796215473395753611">Alt + ylänuoli</translation>
 <translation id="3798670284305777884">Kaiutin (sisäinen)</translation>
 <translation id="3799128412641261490">Kytkimen käytön asetukset</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Sisäänrakennettu näppäimistö</translation>
 <translation id="3917644013202553949">Tallennustila ei riitä tiedostojen synkronointiin. Yritä vapauttaa tilaa.</translation>
 <translation id="3919229493046408863">Laita ilmoitukset lähellä olevista laitteista pois päältä</translation>
+<translation id="3923184630988645767">Datan käyttö</translation>
 <translation id="3923494859158167397">Mobiiliverkkoja ei luotu</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Myös muut laitteen käyttäjät voivat käyttää tätä verkkoa</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Pikavastaukset: määritelmä</translation>
 <translation id="3994075804072562819">Anna laitteelle (<ph name="SPECIFIC_NAME" />) pääsy USB-laitteisiin.</translation>
 <translation id="3994530503403062649">Aseta tabletin painikkeet</translation>
+<translation id="3997429360543082038">Tietoa Chromium-käyttöjärjestelmästä</translation>
 <translation id="4001540981461989979">Korosta hiiren kohdistin sen liikkuessa</translation>
 <translation id="4005817994523282006">Aikavyöhykkeen tunnistusmenetelmä</translation>
+<translation id="4019629340646866719">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chromium-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopioi koontiversion tiedot</translation>
 <translation id="4028467762035011525">Lisää syöttötapoja</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Vaihda viimeksi käytettyyn syöttötapaan painamalla <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">haku + oikea nuoli</translation>
 <translation id="405181879009056822">ChromeOS-asetukset</translation>
+<translation id="4054070260844648638">Näkyy kaikille</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Tarkista yhteys, jotta näet verkossasi saatavilla olevat tulostimet</translation>
 <translation id="4068776064906523561">Tallennetut sormenjäljet</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, tyyppi <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Hae lisää näyttökynäsovelluksia</translation>
 <translation id="4248401726442101648">Kameraa ei yhdistetty</translation>
+<translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4249116869350613769">Virransäästö</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="425411422794688815">Jotain meni pieleen. Varmista, että puhelin on lähellä, sen lukitus on avattu ja Bluetooth ja Wi-Fi ovat päällä.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-tili}other{<ph name="EXTRA_ACCOUNTS" /> Google-tiliä}}</translation>
 <translation id="4314497418046265427">Yhdistä puhelimesi ja <ph name="DEVICE_TYPE" />, niin saat enemmän aikaan</translation>
 <translation id="4314561087119792062">Lisää uusi tukiaseman nimi</translation>
+<translation id="4314815835985389558">Synkronointiasetusten muokkaus</translation>
 <translation id="4320177379694898372">Ei internetyhteyttä</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Tallennustila ja virta</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Ehdotusten määrä</translation>
 <translation id="4606933160360542263">Oma näppäinyhdistelmä: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Kun hiiren vasen painike on valittu, kaksoisklikkaa painamalla "/"</translation>
+<translation id="4613863813562375431">Chromium-käyttöjärjestelmän versio</translation>
 <translation id="461661862154729886">Energianlähde</translation>
 <translation id="4617880081511131945">Yhteyttä ei voi muodostaa</translation>
 <translation id="4620757807254334872">hiiri</translation>
@@ -1136,6 +1155,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4777943778632837590">Määritä verkon nimipalvelimet</translation>
 <translation id="4779083564647765204">Lähennä</translation>
 <translation id="4779766576531456629">Nimeä eSIM-mobiiliverkko uudelleen</translation>
+<translation id="4789550509729954245">Näytä ilmoitus, kun lähistöllä olevat laitteet jakavat sisältöä</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Ota TrackPoint-nopeuttaminen käyttöön</translation>
 <translation id="479664067938200069">Sovellukset, jotka <ph name="APP_NAME" /> on asentanut</translation>
@@ -1196,6 +1216,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4964544790384916627">Kiinnitä ikkuna</translation>
 <translation id="4964673849688379040">Tarkistetaan…</translation>
 <translation id="4967571733817147990">Muokkaa hiiren painikkeita</translation>
+<translation id="4970880042055371251">Chrome-käyttöjärjestelmän versio</translation>
 <translation id="4972129977812092092">Muokkaa tulostinta</translation>
 <translation id="4975771730019223894">Sovellusten merkitseminen</translation>
 <translation id="4979263087381759787">Kehittäjäasetukset</translation>
@@ -1275,6 +1296,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5193978546360574373">Tämä estää pääsyn Google Driveen tällä Chromebookilla, mukaan lukien pääsyn offline-tilassa saatavilla oleviin tiedostoihin</translation>
 <translation id="5196790039230503600">Tee ele ja liikuta sitten päätäsi näyttääksesi, mihin haluat pudottaa kohteen. Pudota kohde käyttämällä samaa elettä uudelleen.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Älä koskaan käytä mobiilidataa siirtoihin</translation>
 <translation id="5207949376430453814">Korosta tekstikursori</translation>
 <translation id="5208926629108082192">Laitteen mobiiliverkon tiedot</translation>
 <translation id="5208988882104884956">Kapea</translation>
@@ -1307,6 +1329,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5331568967879689647">Chrome-käyttöjärjestelmäsovellus</translation>
 <translation id="5334113802138581043">Pääsy mikrofoniin</translation>
 <translation id="5336689872433667741">Kohdistin ja kosketuslevy</translation>
+<translation id="5337926771328966926">Laitteen nimi on tällä hetkellä <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Lähetä diagnostiikka- ja käyttödataa</translation>
 <translation id="5369694795837229225">Ota käyttöön Linux-kehitysympäristö</translation>
 <translation id="5377367976106153749">Sallitaanko kameran käyttö?</translation>
@@ -1444,6 +1467,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5833726373896279253">Vain omistaja voi muokata näitä asetuksia:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Kotelo</translation>
+<translation id="5840680448799937675">Tiedostot jaetaan aina offline-tilassa</translation>
 <translation id="5841270259333717135">Ethernet-asetukset</translation>
 <translation id="5842497610951477805">Bluetoothin käyttöönotto</translation>
 <translation id="5846200638699387931">Suhteen syntaksivirhe: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5924438086390153180">Kysy ennen Microsoft-tiedostojen kopioimista tai siirtämistä Google Driveen</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="594048410531370124">Tuntematon näppäin. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
+<translation id="5942779427914696408">Laitteen näkyvyys</translation>
 <translation id="5945192511027649793">Poista kosketuslevy käytöstä</translation>
 <translation id="5947651424015173580">Kaksoisklikkaa hiirtä</translation>
 <translation id="594993197557058302">Paina 1–4 muokkausnäppäintä (ctrl, alt, vaihto, haku tai käynnistysohjelma) ja yhtä muuta näppäintä. Voit myös valita yksittäisen näppäimen.</translation>
@@ -1491,10 +1516,12 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5961545272769624207">Valitse ele</translation>
 <translation id="5968022600320704045">Ei hakutuloksia</translation>
 <translation id="5969728632630673489">Pikanäppäinilmoitus ohitettu</translation>
+<translation id="5979353814339191480">Tämä vaihtoehto koskee Chromebookeja, joissa on datapaketin tai mobiiliverkon tikku, tai yhteyden jakamista kannettavaan hotspotiin</translation>
 <translation id="5985556342298151179">Laitteen järjestelmänvalvojan asentama Chrome-sovellus.</translation>
 <translation id="5986442691296752186">Anna Linux-sovelluksille USB-laitteiden hallintaoikeus.</translation>
 <translation id="598810097218913399">Poista määritys</translation>
 <translation id="5988563937187882754">Katso oikealle</translation>
+<translation id="5990266201903445068">Vain Wi-Fi</translation>
 <translation id="5992225669837656567">Kaikkien hiirien yhteys on katkaistu</translation>
 <translation id="5999630716831179808">Äänet</translation>
 <translation id="6002458620803359783">Ensisijaiset äänet</translation>
@@ -1509,6 +1536,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="6045114302329202345">Ensisijainen TrackPoint-painike</translation>
 <translation id="6048747414605857443">Valitse ja yksilöi Tekstistä puheeksi ‑ääniä, joita ChromeVox ja Teksti puhuttuna ‑ominaisuus käyttävät.</translation>
 <translation id="6050189528197190982">Harmaasävy</translation>
+<translation id="6054961935262556546">Muuta näkyvyyttä</translation>
 <translation id="6059276912018042191">Viimeaikaiset Chrome-välilehdet</translation>
 <translation id="6059925163896151826">USB-laitteet</translation>
 <translation id="6064764629679333574">Paranna Bluetooth-mikrofonin äänen laatua nostamalla matalaresoluutioinen audio korkeaan resoluutioon.</translation>
@@ -1567,6 +1595,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="6265159465845424232">Kysy ennen Microsoft-tiedostojen kopioimista tai siirtämistä Microsoft OneDriveen</translation>
 <translation id="6265687851677020761">Poista portti</translation>
 <translation id="6266532094411434237">Yhdistetään: <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="6270309713620950855">Muistutus mykistyksestä</translation>
 <translation id="6274089201566806618">Yhdistetään: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekuntia</translation>
@@ -1618,6 +1647,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="6453921811609336127">Vaihda seuraavaan syöttötapaan painamalla <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />sarkain<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />välilyönti<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Poista tämä sanakirja</translation>
 <translation id="6463596731306859179">Näetkö ei-toivottuja ponnahdusikkunoita tai muita odottamattomia asioita? Joskus asentamasi sovellukset ja laajennukset voivat muuttaa ChromeOS-asetuksia tietämättäsi.</translation>
+<translation id="6465841119675156448">Ilman internetyhteyttä</translation>
 <translation id="6467377768028664108">Sen jälkeen <ph name="DEVICE_TYPE" /> voi</translation>
 <translation id="6469557521904094793">Laita mobiiliverkko päälle</translation>
 <translation id="6470120577693311302">Valoilmoitukset</translation>
@@ -1668,6 +1698,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="6626581113916585374">Tehostetila</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630452975878488444">Pikavalintanäppäin</translation>
+<translation id="6632473616050862500">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä.</translation>
 <translation id="6646476869708241165">Laita Pikapari pois päältä</translation>
 <translation id="6647690760956378579">Luonnollisen äänen esikuuntelu</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> haluaa varmistaa henkilöllisyytesi</translation>
@@ -1711,6 +1742,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="6775163072363532304">Käytettävissä olevat laitteet tulevat näkyviin tähän.</translation>
 <translation id="6776729248872343918">Laita Pikapari pois päältä</translation>
 <translation id="6777845730143344223">Lue lisää Passpoint-tilauksista</translation>
+<translation id="6779406956731413166">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chromium-käyttöjärjestelmää.</translation>
 <translation id="6783036716881942511">Unohda tämä laite?</translation>
 <translation id="6783667414610055871">Microsoft OneDriven asetukset</translation>
 <translation id="6785915470941880363">Käänteinen vieritys <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="7280649757394340890">Tekstistä puheeksi ‑ääniasetukset</translation>
 <translation id="7282547042039404307">Tasainen</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Tärkeää käyttö- ja turvallisuustietoa</translation>
 <translation id="7303485269821975179">Luo salasana: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Korkea</translation>
 <translation id="7308643132139167865">Verkkosivustojen kielet</translation>
@@ -1873,6 +1906,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="7409599290172516453">Viimeisimmät kuvat</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> sovellusta estetty</translation>
+<translation id="7423425410216218516">Näkyvyys on päällä <ph name="MINUTES" /> minuutin ajan</translation>
 <translation id="7423513079490750513">Poista <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Auta minua kirjoittamaan</translation>
 <translation id="7429415133937917139">Simuloi päivitettävän pistekirjoitusnäytön ulostuloa
@@ -1920,11 +1954,13 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="7578137152457315135">Sormenjälkiasetukset</translation>
 <translation id="7578692661782707876">Lisää vahvistuskoodisi.</translation>
 <translation id="7582582252461552277">Käytä ensisijaisesti tätä verkkoa</translation>
+<translation id="7582844466922312471">Tiedonsiirto</translation>
 <translation id="7587806318633605613">Ehdotushistoria</translation>
 <translation id="7590883480672980941">Syöttöasetukset</translation>
 <translation id="7592060599656252486">Osa</translation>
 <translation id="7602173054665172958">Tulostustyöt</translation>
 <translation id="7605163396341021431">Salli Android-sovellusten hallita USB-laitteita tällä Chromebookilla</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android-asetukset</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Liitettyjen puhelimien ominaisuuksien käyttöönotto.</translation>
@@ -1935,12 +1971,14 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="7632437836497571618">Sivustojen hakeminen turvallisella yhteydellä</translation>
 <translation id="7634337648687970851">Paikallisen datan palauttamista ei tällä hetkellä tueta.</translation>
 <translation id="7640256527901510478">Laitteesi IMEI-koodi on <ph name="IMEI_NUMBER" /> ja sarjanumero <ph name="SERIAL_NUMBER" />. Näitä numeroita voi käyttää palvelun aktivointiin.</translation>
+<translation id="7640308610547854367">Olet palauttanut ChromeOS:n aiemman version. Jos haluat saada päivityksiä, odota, kunnes seuraava versio on saatavilla.</translation>
 <translation id="7641513591566880111">Uusi profiilin nimi</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> lisätty</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (omistaja)</translation>
 <translation id="7648048654005891115">Näppäinkartan tyyli</translation>
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 sormenjälki otettu käyttöön}other{{COUNT} sormenjälkeä otettu käyttöön}}</translation>
+<translation id="7650677314924139716">Nykyinen datankäyttöasetus on Vain Wi-Fi</translation>
 <translation id="7651400349472467012">Hotspotin pikajakaminen saatavilla</translation>
 <translation id="7651784568388208829">Puhelinhubin tehtävien jatkaminen</translation>
 <translation id="7658239707568436148">Peru</translation>
@@ -2031,6 +2069,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Käännös</translation>
 <translation id="7915457674565721553">Muodosta yhteys internetiin, niin voit määrittää lapsilukon</translation>
+<translation id="7917876797003313048">Voit ylläpitää sisäänkirjautuneita Google-tilejäsi. Google-tilejäsi käytetään Chrome-selaimella, Play Kaupassa ja muualla. Jos haluat lisätä tilin jollekulle toiselle, esim. perheenjäsenelle, lisää tämän sijasta uusi henkilö laitteelle (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Lisää sanoja, jotka oikeinkirjoituksen tarkistuksen tulee ohittaa</translation>
 <translation id="7921347341284348270">Et voi katsoa puhelimesi ilmoituksia hallinnoidulla tilillä. Yritä uudelleen eri tilillä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="8431977087510901105">Kohdistinasetukset nollattu</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8439506636278576865">Tarjoudu kääntämään sivuja tälle kielelle</translation>
+<translation id="8449347986464073209">Poista ja kirjaudu ulos</translation>
 <translation id="8451512073679317615">assistant</translation>
 <translation id="8455775311562941553">Yhdistetty: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Lue hiiren kohdalla oleva teksti ääneen</translation>
@@ -2320,6 +2360,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="8872774989979382243">Äänet ovat pois päältä. Laita äänet päälle.</translation>
 <translation id="888256071122006425">Hiiren ja kosketuslevyn asetukset</translation>
 <translation id="8885449336974696155">Auta parantamaan ChromeOS:ää ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
+<translation id="8890170499370378450">Voi aiheuttaa mobiilidatamaksuja</translation>
 <translation id="8890529496706615641">Profiilia ei voitu nimetä uudelleen. Yritä uudelleen tai pyydä operaattorilta teknistä tukea.</translation>
 <translation id="8894761918470382415">Datan käyttösuoja lisälaitteilla</translation>
 <translation id="8896830132794747524">Nopeammat liikkeet hiirellä liikuttavat kohdistinta kauemmas</translation>
@@ -2345,6 +2386,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="8978939272793553320">Yhteys katkaistu (<ph name="DEVICE_NAME" />)</translation>
 <translation id="8980345560318123814">Palauteraportit</translation>
 <translation id="8981825781894055334">Paperi vähissä</translation>
+<translation id="8984694057134206124">Näyt kaikille <ph name="MINUTES" /> minuutin ajan. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Havaitsemiskynnys</translation>
 <translation id="8986362086234534611">Unohda</translation>
 <translation id="8991694323904646277">Ei kameraa</translation>
@@ -2391,6 +2433,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="9098860402274800697">Poista Google Play- ja Android-sovellukset</translation>
 <translation id="910000385680858937">Sallittu – <ph name="PERMISSION_DETAILS" />. Yhdistä mikrofoni laitteeseesi.</translation>
 <translation id="9100416672768993722">Jos haluat vaihtaa viimeksi käytettyyn syöttötapaan, paina <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />välilyönti<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Nykyinen datankäyttöasetus on Ilman internetyhteyttä</translation>
 <translation id="9108294543511800041">Voit nyt nähdä puhelimen viimeaikaiset kuvat, median ja ilmoitukset</translation>
 <translation id="9109122242323516435">Vapauta tilaa poistamalla laitteeseen tallennettuja tiedostoja.</translation>
 <translation id="9111330022786356709">Lisää tai etsi painikkeita hiirellä</translation>

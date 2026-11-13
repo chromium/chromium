@@ -206,6 +206,7 @@
 <translation id="1807709131360304325">አዲስ መስኮት ክፈት</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> መጠቀም መቀጠል አይችልም</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />፣ እየቀዳ ያለ ትር</translation>
+<translation id="1817594121551034302">የአድራሻ አሞሌ አቋራጭ</translation>
 <translation id="1819443852740954262">ሁሉንም ማንነት በማያሳውቅ መስኮት ውስጥ ክፈት</translation>
 <translation id="1820408774134375111">የመግቢያ የግርጌ ሉህ</translation>
 <translation id="1824902652744048041">የአሰሳ ውሂብን ሰርዝ ላይ መታ ያድርጉ</translation>
@@ -830,6 +831,7 @@
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />፣ የሥዕል-ላይ-ሥዕል ማንነት የማያሳውቅ ትር</translation>
 <translation id="4285498937028063278">ይንቀሉ</translation>
 <translation id="4285846616383034558">ኩኪዎች፣ መሸጎጫ እና ሌላ የጣቢያ ውሂብ</translation>
+<translation id="429016203314124112">የመረጡት የፍለጋ ፕሮግራም በChrome ውስጥ በነባሪነት ጥቅም ላይ ይውላል</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />በAndroid ቅንብሮች ውስጥ ማያ ገፅ መቆለፊያን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">የእርስዎ ስልክ</translation>
 <translation id="4295640788982898778">ቅጥያዎችዎ በGoogle መለያዎ ውስጥ ይቀመጣሉ፣ ነገር ግን በዚህ መሣሪያ ላይ ብቻ ያስቀመጡት ማንኛውም ውሂብ ሊሰረዝ ይችላል</translation>
@@ -984,6 +986,7 @@
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> የትር ቡድን ተዘግቷል እና ተቀምጧል</translation>
 <translation id="4835385943915508971">Chrome የተጠየቀው ግብዓት መዳረሻ የለውም።</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{የ<ph name="TAB_COUNT_ONE" /> ትር የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}one{የ<ph name="TAB_COUNT_MANY" /> ትር የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}other{የ<ph name="TAB_COUNT_MANY" /> ትሮች የትር ቡድን፣ ቀለም <ph name="COLOR_NAME" />፣ እንደ አዲስ የዳራ የትር ቡድን ወደነበረበት ይመልሱ።}}</translation>
+<translation id="48431900345921167">አንዳንድ አገልግሎቶች ለ<ph name="ACCOUNT_EMAIL" /> አይገኙም</translation>
 <translation id="4849731766219625109">የእርስዎን <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> መለያ ይጠቀሙ</translation>
 <translation id="4850886885716139402">አሳይ</translation>
 <translation id="4860895144060829044">ደውል</translation>
@@ -1008,6 +1011,7 @@
 <translation id="4925120120285606924">ቅጽበታዊ ገፅ ዕይታ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ከመስመር ውጭ ለመመልከት ወይም በሌሎች መተግበሪያዎች ውስጥ ለማጋራት ምስሎችን እና ፋይሎችን ማስቀመጥ ይችላሉ</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 ዕልባት እና ሌሎች ንጥሎች በዚህ መሣሪያ ላይ ብቻ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}one{# ዕልባት እና ሌሎች ንጥሎች በዚህ መሣሪያ ላይ ብቻ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}other{# ዕልባቶች እና ሌሎች ንጥሎች በዚህ መሣሪያ ላይ ብቻ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}}</translation>
+<translation id="4932733599132424254">ቀን</translation>
 <translation id="4943703118917034429">ምናባዊ እውነታ</translation>
 <translation id="4943872375798546930">ውጤቶች የሉም</translation>
 <translation id="4957722034734105353">ተጨማሪ ለመረዳት...</translation>
@@ -1042,6 +1046,7 @@
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> መስኮት ተመርጧል}one{<ph name="WINDOW_COUNT_NORMAL" /> መስኮት ተመርጧል}other{<ph name="WINDOW_COUNT_NORMAL" /> መስኮቶች ተመርጠዋል}}</translation>
 <translation id="5058506215037547387">የቅድመ ዕይታ ገጽ</translation>
 <translation id="506254248375231072">ምንም ትሮች የሉም</translation>
+<translation id="5065494736868031814">በመሣሪያ አሞሌ ውስጥ</translation>
 <translation id="5075939510584558547">ያለምስጠራ ያስቀምጡ</translation>
 <translation id="5078638979202084724">ለሁሉም ትሮች ዕልባት ያብጁ</translation>
 <translation id="5085038751173179818">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን ዕልባቶች እና ሌሎችም ለማግኘት ወደዚህ ጣቢያ እና Chrome ይግቡ።</translation>
@@ -1061,6 +1066,7 @@
 <translation id="5142281402488957685">ለአዳዲስ ታሪኮች ለማደስ ወደ ታች ይጎትቱ</translation>
 <translation id="5144385790872094440">የሚጎበኟቸው አንዳንድ ገፆች ቅድሚያ የተጫኑ ናቸው። ገፆች ከGoogle ጣቢያ ወይም መተግበሪያ ላይ ከተገናኙ በGoogle አገልጋዮች በኩል ቅድሚያ ሊጫኑ ይችላሉ።</translation>
 <translation id="5152843274749979095">ምንም የሚደገፉ መተግበሪያዎች አልተጫኑም</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="5161262286013276579">የይለፍ ቁልፍ ማረጋገጫ ሉህ ተከፍቷል</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> አሁን ተመርጧል። መለያ ይምረጡ።</translation>
@@ -1144,6 +1150,7 @@
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
 <translation id="549660026907543296">እንደ <ph name="MEMBER_FULL_NAME" /> ይቀላቀሉ</translation>
 <translation id="5517326820028369152">የቅርብ ጊዜ እንቅስቃሴ የግርጌ ሉህ</translation>
+<translation id="5519516356611866228">ከእርስዎ ለውጦች ጋር</translation>
 <translation id="5526281268548144413">በብዙ መስኮቶች ላይ መዝጋት አልተቻለም</translation>
 <translation id="5532536403031755365">በላቀ ጥበቃ ከመስመር ላይ ጥቃቶች ለመጠበቅ ተጨማሪ የጥበቃ ንብርብር ያክሉ</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{ዕልባት ክፈት}one{ሁሉንም ክፈት (#)}other{ሁሉንም (#) ክፈት}}</translation>
@@ -1256,6 +1263,7 @@
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ <ph name="SEPARATOR" /> እርስዎ በቅርብ ጊዜ ስላልጎበኙ Chrome እነዚህን ፈቃዶች አስወግዷል</translation>
 <translation id="5995726099713306770">ገፅ እንደገና ይውረድ?</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
+<translation id="6000860861660592745">ምርጫ ተቀምጧል</translation>
 <translation id="6002122790816966947">የእርስዎ መሣሪያዎች</translation>
 <translation id="6011308810877101166">የፍለጋ አስተያየት ጥቆማዎችን ያሻሽሉ</translation>
 <translation id="6013305291643746595">በጣም የድሮ ከሆነው ጀምሮ በመደርደር ላይ</translation>
@@ -1282,6 +1290,7 @@
 <translation id="6095578583683628124">Google እንዲሁ የእርስዎ ነባሪ የፍለጋ ፕሮግራምዎ ከሆነ፣ የተሻለ፣ ከአውድ ጋር ተዛማጅነት ያላቸውን አስተያየቶች ያያሉ።</translation>
 <translation id="6104768972315313991">የመነጨ የQR ኮድ</translation>
 <translation id="610630277578876674">በመልዕክቶች ውስጥ አገናኞችን በፍጥነት ይክፈቱ እና ሌሎችንም ያድርጉ</translation>
+<translation id="6110067234345111822">በክልልዎ ውስጥ ባለ ሕግ መሠረት ለChrome የፍለጋ ፕሮግራምዎን መምረጥ ያስፈልግዎታል</translation>
 <translation id="6112702117600201073">ገፅ በማደስ ላይ</translation>
 <translation id="612221930823678863">ከመጠይቅ ይልቅ <ph name="QUERY" /> ያለው ዩአርኤል</translation>
 <translation id="6122831415929794347">የጥንቃቄ አሰሳ ይጥፋ?</translation>
@@ -1406,6 +1415,7 @@
 <translation id="6482749332252372425">በማከማቻ ቦታ ጥበት ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
 <translation id="6486420406192123355">ይህ PDF ፋይል ደህንነቱ ያልተጠበቀ ግንኙነት ከሚጠቀም ጣቢያ የመጣ ነው</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ፋይል ወርዷል}one{# ውርዶች ተጠናቅቀዋል}other{# ውርዶች ተጠናቅቀዋል}}</translation>
+<translation id="6502991525169604759">ያለ የእርስዎ ለውጦች</translation>
 <translation id="6508722015517270189">Chromeን ዳግም ያስጀምሩት</translation>
 <translation id="6513924416597632811">የፍለጋ ውጤቶች ገጽ አገናኝን ለሚከተለው ይቅዱ፦ <ph name="SEARCH_QUERY" />። ምንጭ፦ <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">አረጋግጥ</translation>
@@ -1447,6 +1457,7 @@
 <translation id="6659594942844771486">ትር</translation>
 <translation id="666731172850799929">በ<ph name="APP_NAME" /> ውስጥ ክፈት</translation>
 <translation id="6669390930482049506">አሳውቀኝ</translation>
+<translation id="6670742294143102726">ወደ ፍለጋዎ ለማከል አንድ ወይም ከዚያ በላይ ትሮችን ይምረጡ</translation>
 <translation id="6671495933530132209">ምስል ቅዳ</translation>
 <translation id="6672697278890207089">የእርስዎን የይለፍ ሐረግ ያስገቡ</translation>
 <translation id="6675622031235530028">ለማብቃት Ctrl+Qን ይያዙ</translation>
@@ -1578,6 +1589,7 @@
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />ን ዝጋ</translation>
 <translation id="7121179479711575744">Chrome ውስጥ ይግቡ</translation>
 <translation id="7130633106249192408">ከዚህ መሣሪያ የአሰሳ ውሂብን ይሰርዙ</translation>
+<translation id="7134511521562699550">በአድራሻ አሞሌ ውስጥ</translation>
 <translation id="7136694880210472378">ነባሪ አድርግ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ፈቃዶች ለ1 ጣቢያ ተገምግመዋል}one{ፈቃዶች ለ# ጣቢያ ተገምግመዋል}other{ፈቃዶች ለ# ጣቢያዎች ተገምግመዋል}}</translation>
 <translation id="7138678301420049075">ሌላ</translation>
@@ -1610,6 +1622,7 @@
 <translation id="7196455519852483601">የእርስዎን አንዳንድ ወይም ሁሉንም ታሪክ፣ ኩኪዎች፣ የጣቢያ ውሂቦች እና ሌሎችም መሰረዝ ይችላሉ</translation>
 <translation id="7197682514647286393">የአሰሳ ውሂብዎን በፍጥነት ይሰርዙ</translation>
 <translation id="719791532916917144">የቁልፍ ሰሌዳ አቋራጭ</translation>
+<translation id="7198747540865146057">ነባሪ የፍለጋ ፕሮግራምዎን ይምረጡ</translation>
 <translation id="7203150201908454328">ተዘርግቷል</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ትሮችን እንደ አዲስ የዳራ ትሮች ወደነበሩበት መልስ።</translation>
 <translation id="7217781228893594884">ከChrome ለቀው ሲወጡ ማንነት የማያሳውቁ ትሮች ይቆለፋሉ</translation>
@@ -1684,7 +1697,6 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (የተዘመነው በ<ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">እባክዎ ይጠብቁ…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />፣ ፒን የተደረገ ድምፀ-ከል የተደረገ ትር</translation>
-<translation id="7500851014030446046">PDF በማውረድ ላይ</translation>
 <translation id="7501135638693251872">ሁሉም ዕልባቶች</translation>
 <translation id="7504076214066136798">አርትዖቶችን ማስቀመጥ አልተቻለም</translation>
 <translation id="7507207699631365376">የዚህን አቅራቢ <ph name="BEGIN_LINK" />የግላዊነት መመሪያ<ph name="END_LINK" /> ይመልከቱ</translation>
@@ -1920,6 +1932,7 @@
 <translation id="8368001212524806591">የዋጋን ዱካ ይከታተሉ</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> የትር ቡድን}one{<ph name="TAB_GROUPS_MANY" /> የትር ቡድን}other{<ph name="TAB_GROUPS_MANY" /> የትር ቡድኖች}}</translation>
 <translation id="8387617938027387193">እርስዎን መሆንዎን ያረጋግጡ</translation>
+<translation id="8392241619862061825">የGemini አቋራጭን አሳይ</translation>
 <translation id="8393700583063109961">መልዕክት ይላኩ</translation>
 <translation id="8398389123831319859">ወደ ማንነት የማያሳውቅ ለመቀየር ሁለት ጊዜ መታ አድርገው ይያዙ</translation>
 <translation id="8401904657382223224">በአስተናጋጅ አጣራ</translation>
@@ -2001,6 +2014,7 @@
 <translation id="8639963783467694461">የራስ-ሙላ ቅንብሮች</translation>
 <translation id="8642256427178803328">Chromeን ለቅቀው ሲወጡ ማንነት የማያሳውቁ ትሮችን ቆልፍ የሚለውን ያብሩ</translation>
 <translation id="8644482734962137770">Gemini Chromeን ለመጠቀም ፈቃድ ያስፈልገዋል</translation>
+<translation id="8653883575875371543">Geminiን በመሣሪያ አሞሌው ውስጥ አሳይ</translation>
 <translation id="8662474268934425487">ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይግቡ</translation>
 <translation id="8664979001105139458">የፋይል ስም አስቀድሞ አለ</translation>
 <translation id="8676276370198826499">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይመዝገቡ</translation>
@@ -2018,6 +2032,7 @@
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
 <translation id="8727043961453758442">ከChrome ምርጡን ያግኙ</translation>
 <translation id="8728810647305130936">አዲስ ትሮችን ክፈት</translation>
+<translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8731268612289859741">የደህንነት ኮድ</translation>
 <translation id="8738163682604285902">የንባብ ሁነታ ይታይ?</translation>
 <translation id="8746155870861185046">ማድመቂያ ያጋሩ</translation>

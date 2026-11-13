@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">اكتملت المهمة</translation>
 <translation id="1149483087970735785">التكنولوجيا المساعِدة</translation>
 <translation id="1150490752229770117">هذا هو التحديث التلقائي الأخير للبرنامج والأمان على الجهاز<ph name="DEVICE_TYPE" />. للحصول على التحديثات المستقبلية، يُرجى الترقية إلى طراز أحدث. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">‏لمحة عن ChromeOS</translation>
 <translation id="1155816283571436363">جارٍ الاتصال بهاتفك</translation>
 <translation id="1160800016654917722">تم نقل النافذة إلى الأسفل وإلى اليسار</translation>
 <translation id="1164015913575846413">‏‫Alt + النقر</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16 ضعفًا</translation>
 <translation id="1275936815032730048">مفتاح مشغِّل التطبيقات + السهم المتّجه لليمين</translation>
 <translation id="1280332775949918163">محاذاة النافذة</translation>
+<translation id="1285625592773741684">الإعداد الحالي لاستخدام البيانات هو "بيانات الجوّال".</translation>
 <translation id="1285815028662278915">قد لا تتوافق بيانات الجوّال مع نقطة الاتصال. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">سيتم تشغيل الإضاءة الليلية تلقائيًا عند غروب الشمس.</translation>
 <translation id="1288300545283011870">خصائص الكلام</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">سيؤدي هذا الإجراء إلى إيقاف الإضافات وإعادة ضبط الجهاز على الإعدادات التلقائية الآمنة، علمًا بأنّه سيتم الاحتفاظ بالملفات وعلامات التبويب وملفات تعريف الارتباط. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">مكبّر بملء الشاشة</translation>
 <translation id="1539727654733007771">لم يتم إعداد أي شبكات جوّال. يجب تنزيل <ph name="BEGIN_LINK" />ملف شخصي<ph name="END_LINK" /> جديد.</translation>
+<translation id="1547295885616600893">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">‏أدرك أنّ الملفات التعريفية المثبّتة لشرائح eSIM لن تتم إزالتها بعد إجراء عملية Powerwash</translation>
 <translation id="1549275686094429035">‏تم تفعيل "وقت تشغيل التطبيقات في Chrome"</translation>
 <translation id="1554640914375980459">يتم تشغيل وميض الشاشة عند تلقّي إشعارات. يُرجى توخّي الحذر عند استخدام الإشعارات المصحوبة بوميض إذا كنت تعاني من حساسية الضوء.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">‏استخدام شبكة Wi‑Fi أو شبكات الجوَّال لتحديد الموقع الجغرافي</translation>
 <translation id="1650407365859096313">يتم فتح الرابط في علامة تبويب جديدة. وحالة الإذن هي "<ph name="PERMISSION_STATE" />".</translation>
 <translation id="1652326691684645429">تفعيل ميزة "المشاركة عن قرب"</translation>
+<translation id="1662146548738125461">‏لمحة عن نظام التشغيل ChromeOS Flex</translation>
 <translation id="1663698992894057019">‏عليك الترقية إلى جهاز Chromebook جديد للحصول على أحدث البرامج وميزات الأمان</translation>
 <translation id="1665328953287874063">مطلوب استخدام كلمة مرور أو رقم تعريف شخصي لفتح قفل <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">‏هذه الميزة تتيح لك إمكانية سماع نص معيَّن بصوت عالٍ. أولاً، انقر على رمز "سماع الاختيار" في أسفل الشاشة، ثم ميِّز النص التي تريد سماعه. ويمكنك أيضًا استخدام اختصار لوحة المفاتيح لسماع النص، وذلك من خلال تمييز النص، ثم الضغط على مفتاح البحث + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">ملاحظة: قد يكون استخدام ميزة بصمة الإصبع أقل أمانًا من استخدام كلمة مرور أو رقم تعريف شخصي قوي.</translation>
 <translation id="1724801751621173132">وضع الإدخال</translation>
 <translation id="1741190788710022490">ميزة "الشحن التكيُّفي"</translation>
+<translation id="1745732479023874451">إدارة جهات الاتصال</translation>
 <translation id="1751335846119670066">ساعدني في القراءة</translation>
 <translation id="1755601632425835748">حجم النص</translation>
 <translation id="1761402971842586829">تمت إعادة تخصيص "<ph name="BUTTON_NAME" />" إلى "<ph name="REMAPPING_OPTION" />".</translation>
@@ -264,6 +269,7 @@
 <translation id="184183613002882946">لا، أريد استخدام مفتاح تحكّم واحد</translation>
 <translation id="1842681835432895345">استبعاد هذه الشاشة في "وضع المرآة"</translation>
 <translation id="1848219224579402567">تسجيل الخروج عند إغلاق الغطاء</translation>
+<translation id="185970820835152459">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها. يتم استخدام حساباتك على Google في متصفّح Chromium و"متجر Play" وGmail والمزيد. إذا أردت إضافة حساب لمستخدم آخر، مثل أحد أفراد العائلة، أضِف شخصًا جديدًا إلى <ph name="DEVICE_TYPE" /> بدلاً من ذلك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">أكثر برودة</translation>
 <translation id="1866589962721094893">‏يُرجى منح تطبيقات Android الإذن بالتحكّم في أجهزة USB على جهاز Chromebook هذا. سيتم طلب هذا الإذن في كل مرة توصِّل فيها جهاز USB. وستطلب تطبيقات معيّنة على Android أذونات إضافية.</translation>
 <translation id="1877377290348678128">التصنيف (اختياري)</translation>
@@ -336,6 +342,7 @@
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2097950021134740304">إلغاء إزالة الاشتراك</translation>
 <translation id="2104166991923847969">إيقاف نقطة الاتصال تلقائيًا</translation>
+<translation id="2106831557840787829">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير نظام التشغيل Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">‏لم يتم إدخال أي شريحة SIM.</translation>
 <translation id="2121825465123208577">تغيير الحجم</translation>
 <translation id="2127372758936585790">شاحن منخفض الطاقة</translation>
@@ -412,6 +419,7 @@
 <translation id="2357330829548294574">إزالة <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2363475280045770326">حدث خطأ أثناء حفظ الإعدادات.</translation>
+<translation id="236939127352773362">عندما تشارك الأجهزة المجاورة محتوى</translation>
 <translation id="237336063998926520">‏استخدام عنوان IP لتحديد الموقع</translation>
 <translation id="2373499590298659902">للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "0"</translation>
 <translation id="2375406435414127095">الاتصال بهاتفك</translation>
@@ -707,6 +715,7 @@
 <translation id="338323348408199233">‏حظر الزيارات بدون شبكة VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">‏يتيح الإعداد "دقة الموقع الجغرافي" تزويد التطبيقات والخدمات ببيانات موقعك الجغرافي بشكل أكثر دقة. ولإجراء ذلك، تعالج Google بشكل دوري معلومات أدوات الاستشعار والإشارات اللاسلكية التي يرسلها جهازك لجمع بيانات المواقع الجغرافية للإشارات اللاسلكية. وتُستخدَم هذه المعلومات بدون الكشف عن هويتك لتحسين دقة الموقع الجغرافي والخدمات المستنِدة إليه، وتحسين خدمات Google وتقديمها وصيانتها بشكل عام استنادًا إلى المصالح المشروعة للجهات الخارجية وGoogle من أجل تلبية احتياجات المستخدمين.</translation>
+<translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
 <translation id="3388094447051599208">دُرج الإخراج في الطابعة شبه ممتلئ</translation>
 <translation id="3390013585654699824">تفاصيل التطبيق</translation>
 <translation id="3390740059150071453">النظر جهة اليسار</translation>
@@ -812,6 +821,7 @@
 <translation id="3699624789011381381">عنوان البريد الإلكتروني</translation>
 <translation id="3701028563242674350">تحريك مؤشر الماوس لتكبيره</translation>
 <translation id="3703699162703116302">تمت تحديث التذكرة.</translation>
+<translation id="3703994572283698466">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">‏تفعيل Wi-Fi</translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3707163604290651814">تم تسجيل الدخول حاليًا باسم <ph name="NAME" /></translation>
@@ -819,6 +829,7 @@
 <translation id="3711945201266135623">تم العثور على <ph name="NUM_PRINTERS" /> طابعة من خادم الطباعة.</translation>
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
 <translation id="37143699183660101">ثبات المؤشر</translation>
+<translation id="3716540481907974026">‏إصدار نظام التشغيل ChromeOS Flex</translation>
 <translation id="372062398998492895">‏إعدادات طابعات CUPS</translation>
 <translation id="3727843212509629024">رقم التعريف الشخصي غير صحيح. يُرجى إعادة المحاولة</translation>
 <translation id="3728681439294129328">ضبط عنوان الشبكة</translation>
@@ -840,6 +851,7 @@
 <translation id="3786834302860277193">إظهار التسطير للنص التجميعي</translation>
 <translation id="3789841737615482174">تثبيت</translation>
 <translation id="379509625511193653">غير مفعَّل</translation>
+<translation id="3795971588916395511">‏نظام التشغيل Chrome من Google</translation>
 <translation id="3796215473395753611">‏‫alt + السهم المتّجه للأعلى</translation>
 <translation id="3798670284305777884">سماعة (داخلية)</translation>
 <translation id="3799128412641261490">إعدادات "الوصول عبر مفتاح تحكّم"</translation>
@@ -879,6 +891,7 @@
 <translation id="3903187154317825986">لوحة المفاتيح المضمّنة</translation>
 <translation id="3917644013202553949">لا تتوفّر مساحة تخزين كافية لمزامنة ملفاتك. جرِّب إخلاء بعض المساحة.</translation>
 <translation id="3919229493046408863">إيقاف الإشعارات عندما تكون الأجهزة قريبة</translation>
+<translation id="3923184630988645767">استخدام البيانات</translation>
 <translation id="3923494859158167397">ما مِن شبكات جوّال تم إعدادها.</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">يمكن للمستخدمين الآخرين على هذا الجهاز استخدام هذه الشبكة أيضًا.</translation>
@@ -904,8 +917,10 @@
 <translation id="3984862166739904574">تعريف المصطلحات باستخدام ميزة "معلومات سريعة"</translation>
 <translation id="3994075804072562819">‏يُرجى منح "<ph name="SPECIFIC_NAME" />" الإذن بالتحكّم في أجهزة USB.</translation>
 <translation id="3994530503403062649">تحديد مكان الأزرار على جهازك اللوحي</translation>
+<translation id="3997429360543082038">‏لمحة عن نظام التشغيل Chromium</translation>
 <translation id="4001540981461989979">تمييز مؤشر الماوس عند تحرّكه</translation>
 <translation id="4005817994523282006">طريقة رصد المنطقة الزمنية</translation>
+<translation id="4019629340646866719">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">‏بروتوكول (TCP)</translation>
 <translation id="4021909830315618592">نسخ تفاصيل الإصدار</translation>
 <translation id="4028467762035011525">إضافة أساليب إدخال</translation>
@@ -920,6 +935,7 @@
 <translation id="4050931325744810690">للتبديل إلى آخر أسلوب إدخال تم استخدامه، اضغط على <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">مفتاح البحث + السهم المتّجه لليمين</translation>
 <translation id="405181879009056822">‏إعدادات ChromeOS</translation>
+<translation id="4054070260844648638">مرئي للجميع</translation>
 <translation id="4058720513957747556">‏AppSocket (بروتوكول TCP/IP)</translation>
 <translation id="4066207411788646768">يُرجى التحقق من الاتصال بالإنترنت لمعرفة الطابعات المتاحة في شبكتك.</translation>
 <translation id="4068776064906523561">بصمات الإصبع المحفوظة</translation>
@@ -975,6 +991,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />، الدرجة <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">العثور على المزيد من تطبيقات قلم الشاشة</translation>
 <translation id="4248401726442101648">لم يتم توصيل أي كاميرات.</translation>
+<translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4249116869350613769">توفير شحن البطارية</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="425411422794688815">‏حدث خطأ. يُرجى التأكُّد من أنّ هاتفك قريب وغير مُقفل وتم تفعيل البلوتوث واتصال Wi-Fi عليه.</translation>
@@ -1004,6 +1021,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{‏حساب Google واحد}zero{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}two{‏حسابا Google (<ph name="EXTRA_ACCOUNTS" />)}few{‏<ph name="EXTRA_ACCOUNTS" /> حسابات Google}many{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}other{‏<ph name="EXTRA_ACCOUNTS" /> حساب Google}}</translation>
 <translation id="4314497418046265427">زيادة الإنتاجية من خلال توصيل هاتفك بجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">إضافة اسم نقطة وصول جديد</translation>
+<translation id="4314815835985389558">إدارة المزامنة</translation>
 <translation id="4320177379694898372">لا يتوفر اتصال بالإنترنت</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">التخزين والطاقة</translation>
@@ -1090,6 +1108,7 @@
 <translation id="4600071396330666617">عدد الاقتراحات</translation>
 <translation id="4606933160360542263">مجموعة مفاتيح مخصّصة: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">في حال اختيار زر الماوس الأيسر، يجب استخدام مفتاح "/" للنقر مرّتين</translation>
+<translation id="4613863813562375431">‏إصدار نظام التشغيل Chromium</translation>
 <translation id="461661862154729886">مصدر الطاقة</translation>
 <translation id="4617880081511131945">لا يمكن إجراء اتصال</translation>
 <translation id="4620757807254334872">الماوس</translation>
@@ -1139,6 +1158,7 @@
 <translation id="4777943778632837590">ضبط خوادم أسماء الشبكة</translation>
 <translation id="4779083564647765204">تكبير/تصغير</translation>
 <translation id="4779766576531456629">‏إعادة تسمية شبكة الجوّال لشريحة eSIM</translation>
+<translation id="4789550509729954245">عرض الإشعارات عند محاولة الأجهزة المجاورة مشاركة محتوى</translation>
 <translation id="4791037424585594169">‏بروتوكول (UDP)</translation>
 <translation id="4792290259143007505">‏تفعيل تسارع TrackPoint</translation>
 <translation id="479664067938200069">التطبيقات المثبَّتة من "<ph name="APP_NAME" />"</translation>
@@ -1199,6 +1219,7 @@
 <translation id="4964544790384916627">إرساء النافذة</translation>
 <translation id="4964673849688379040">جارٍ التحقق...</translation>
 <translation id="4967571733817147990">تخصيص أزرار الماوس</translation>
+<translation id="4970880042055371251">‏إصدار نظام التشغيل Chrome</translation>
 <translation id="4972129977812092092">تعديل الطابعة</translation>
 <translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
 <translation id="4979263087381759787">خيارات المطورين</translation>
@@ -1278,6 +1299,7 @@
 <translation id="5193978546360574373">‏سيؤدي هذا الإجراء إلى إزالة إمكانية الوصول إلى Google Drive على جهاز Chromebook هذا، بما في ذلك إمكانية الوصول إلى أي ملفات تمت إتاحتها بلا اتصال بالإنترنت.</translation>
 <translation id="5196790039230503600">استخدِم الإيماءة، ثم حرِّك رأسك لإظهار المكان الذي تريد إفلات العنصر فيه ثمّ استخدِمها مرة أخرى لإفلاته.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
+<translation id="5205484256512407285">عدم استخدام بيانات الجوّال للنقل مطلقًا</translation>
 <translation id="5207949376430453814">تمييز علامة إقحام النص</translation>
 <translation id="5208926629108082192">معلومات شبكة الجوّال على الجهاز</translation>
 <translation id="5208988882104884956">نصف العرض</translation>
@@ -1310,6 +1332,7 @@
 <translation id="5331568967879689647">‏تطبيق نظام التشغيل Chrome</translation>
 <translation id="5334113802138581043">الوصول إلى الميكروفون</translation>
 <translation id="5336689872433667741">المؤشّر ولوحة اللمس</translation>
+<translation id="5337926771328966926">اسم الجهاز الحالي هو <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">إرسال بيانات التشخيص والاستخدام</translation>
 <translation id="5369694795837229225">‏إعداد بيئة تطوير نظام التشغيل Linux</translation>
 <translation id="5377367976106153749">هل تريد تفعيل إمكانية الوصول إلى الكاميرا؟</translation>
@@ -1447,6 +1470,7 @@
 <translation id="5833726373896279253">يمكن للمالك فقط تعديل هذه الإعدادات:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">الحافظة</translation>
+<translation id="5840680448799937675">ستتم دائمًا مشاركة الملفات بلا اتصال بالإنترنت.</translation>
 <translation id="5841270259333717135">ضبط إعدادات إيثرنت</translation>
 <translation id="5842497610951477805">تفعيل البلوتوث</translation>
 <translation id="5846200638699387931">خطأ في بنية العلاقة: <ph name="ERROR_LINE" /></translation>
@@ -1483,6 +1507,7 @@
 <translation id="5924438086390153180">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Google Drive</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="594048410531370124">لم يتم التعرُّف على المفتاح. يمكنك الضغط على أي مفتاح لاختيار <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">مستوى ظهور الجهاز</translation>
 <translation id="5945192511027649793">إيقاف لوحة اللمس</translation>
 <translation id="5947651424015173580">النقر مرّتين على الماوس</translation>
 <translation id="594993197557058302">‏اضغط على مفاتيح التعديل من 1 إلى 4 (Ctrl أو Alt أو Shift أو مفتاح البحث أو مفتاح مشغِّل التطبيقات) ومفتاح آخر، كما يمكنك اختيار مفتاح واحد.</translation>
@@ -1494,10 +1519,12 @@
 <translation id="5961545272769624207">تخصيص إيماءة</translation>
 <translation id="5968022600320704045">لم يتم العثور نتائج بحث.</translation>
 <translation id="5969728632630673489">تم إغلاق إشعار اختصارات لوحة المفاتيح.</translation>
+<translation id="5979353814339191480">‏ينطبق هذا الخيار على أجهزة Chromebook التي تستخدم خطة بيانات أو جهاز دونغل يوفّر إمكانية الوصول إلى شبكة الجوّال أو عند التوصيل بنقطة اتصال محمولة.</translation>
 <translation id="5985556342298151179">‏ثبّتَ مشرف الجهاز تطبيق Chrome هذا.</translation>
 <translation id="5986442691296752186">‏يُرجى منح تطبيقات Linux الإذن بالتحكّم في أجهزة USB.</translation>
 <translation id="598810097218913399">إزالة تخصيص المفتاح</translation>
 <translation id="5988563937187882754">النظر جهة اليمين</translation>
+<translation id="5990266201903445068">‏Wi-Fi فقط</translation>
 <translation id="5992225669837656567">انقطع اتصال كل أجهزة الماوس.</translation>
 <translation id="5999630716831179808">الأصوات</translation>
 <translation id="6002458620803359783">الأصوات المُفضَّلة</translation>
@@ -1512,6 +1539,7 @@
 <translation id="6045114302329202345">‏زر TrackPoint الأساسي</translation>
 <translation id="6048747414605857443">‏يمكنك اختيار الأصوات في ميزة تحويل النص إلى كلام وتخصيصها لكل من قارئ الشاشة ChromeVox وميزة "سماع الاختيار".</translation>
 <translation id="6050189528197190982">تدرج الرمادي</translation>
+<translation id="6054961935262556546">تغيير إذن الوصول</translation>
 <translation id="6059276912018042191">‏علامات تبويب Chrome الأخيرة</translation>
 <translation id="6059925163896151826">‏أجهزة USB</translation>
 <translation id="6064764629679333574">يمكنك تحسين جودة الصوت في ميكروفون البلوتوث من خلال الارتقاء بمستوى الصوت من منخفض الدقة إلى عالي الدقة.</translation>
@@ -1570,6 +1598,7 @@
 <translation id="6265159465845424232">‏طلب الإذن قبل نسخ ملفات Microsoft أو نقلها إلى Microsoft OneDrive</translation>
 <translation id="6265687851677020761">إزالة المنفذ</translation>
 <translation id="6266532094411434237">جارٍ الربط بجهاز <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">‏هل تريد الخروج من Chromium؟</translation>
 <translation id="6270309713620950855">تذكير تلقائي بأنّ الصوت مكتوم</translation>
 <translation id="6274089201566806618">جارٍ الاتصال بجهاز "<ph name="HOST_DEVICE_NAME" />"</translation>
 <translation id="628352644014831790">4 ثوانٍ</translation>
@@ -1621,6 +1650,7 @@
 <translation id="6453921811609336127">‏للتبديل إلى أسلوب الإدخال التالي، يمكنك الضغط على <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />مفتاح المسافة<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
 <translation id="6463488491707167747">حذف هذا القاموس</translation>
 <translation id="6463596731306859179">‏هل تظهر لك نوافذ منبثقة غير مرغوب فيها أو سلوكيات أخرى غير متوقعة؟ أحيانًا، يمكن أن تغيّر التطبيقات والإضافات التي تثبِّتها إعدادات ChromeOS بدون علمك.</translation>
+<translation id="6465841119675156448">بدون إنترنت</translation>
 <translation id="6467377768028664108">سيتمكّن جهاز <ph name="DEVICE_TYPE" /> من تنفيذ الآتي:</translation>
 <translation id="6469557521904094793">تفعيل شبكة الجوّال</translation>
 <translation id="6470120577693311302">الإشعارات المصحوبة بوميض</translation>
@@ -1671,6 +1701,7 @@
 <translation id="6626581113916585374">وضع التأثيرات</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">اختصار التحديد</translation>
+<translation id="6632473616050862500">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">إيقاف ميزة "الإقران السريع"</translation>
 <translation id="6647690760956378579">الاستماع إلى معاينة الصوت الطبيعي</translation>
 <translation id="6650072551060208490">يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
@@ -1714,6 +1745,7 @@
 <translation id="6775163072363532304">الأجهزة المتاحة ستظهر هنا.</translation>
 <translation id="6776729248872343918">تفعيل ميزة "الإقران السريع"</translation>
 <translation id="6777845730143344223">مزيد من المعلومات حول اشتراكات "نقطة مرور"</translation>
+<translation id="6779406956731413166">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">هل تريد حذف هذا الجهاز؟</translation>
 <translation id="6783667414610055871">‏إعدادات Microsoft OneDrive</translation>
 <translation id="6785915470941880363"><ph name="LINK_BEGIN" />المزيد من المعلومات عن<ph name="LINK_END" /> المحتوى المتحرك باتجاه عكسي</translation>
@@ -1847,6 +1879,7 @@
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>
 <translation id="7282547042039404307">سلسة</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
 <translation id="7303485269821975179">ضبط كلمة مرور لجهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">مرتفع</translation>
 <translation id="7308643132139167865">لغات المواقع الإلكترونية</translation>
@@ -1876,6 +1909,7 @@
 <translation id="7409599290172516453">الصور الحديثة</translation>
 <translation id="7414464185801331860">18 ضعفًا</translation>
 <translation id="7417435070053325657">عدد التطبيقات التي تم حظرها: <ph name="BLOCKED_APPS_SIZE" /> من إجمالي <ph name="APPS_LIST_SIZE" /></translation>
+<translation id="7423425410216218516">تم تفعيل ظهور الجهاز لمدة <ph name="MINUTES" /> دقيقة.</translation>
 <translation id="7423513079490750513">إزالة <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">مساعدة في الكتابة</translation>
 <translation id="7429415133937917139">‏يحاكي إخراج جهاز عرض بلغة برايل قابل لإعادة التحميل في لوحة ChromeVox بأعلى الشاشة.</translation>
@@ -1922,11 +1956,13 @@
 <translation id="7578137152457315135">إعدادات بصمة الإصبع</translation>
 <translation id="7578692661782707876">يُرجى إدخال رمز تأكيد البيانات.</translation>
 <translation id="7582582252461552277">تفضيل هذه الشبكة</translation>
+<translation id="7582844466922312471">بيانات الجوال</translation>
 <translation id="7587806318633605613">سجلّ الاقتراحات</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
 <translation id="7592060599656252486">بعض</translation>
 <translation id="7602173054665172958">إدارة الطباعة</translation>
 <translation id="7605163396341021431">‏يُرجى منح تطبيقات Android الإذن بالتحكّم في أجهزة USB على جهاز Chromebook هذا</translation>
+<translation id="7606334485649076285">‏نظام التشغيل ChromeOS Flex من Google</translation>
 <translation id="7608810328871051088">‏إعدادات Android المفضّلة</translation>
 <translation id="7611713099524036757">‏مفتاح Meta</translation>
 <translation id="7612655942094160088">تفعيل ميزات الهاتف المرتبطة</translation>
@@ -1937,12 +1973,14 @@
 <translation id="7632437836497571618">استخدام الاتصالات الآمنة للبحث عن المواقع الإلكترونية</translation>
 <translation id="7634337648687970851">ميزة "استرداد البيانات المحلية" غير متاحة حاليًا.</translation>
 <translation id="7640256527901510478">‏رمز IMEI للجهاز هو <ph name="IMEI_NUMBER" /> والرقم التسلسلي للجهاز هو <ph name="SERIAL_NUMBER" />. يمكن استخدام هذه الأرقام للمساعدة في تفعيل الخدمة.</translation>
+<translation id="7640308610547854367">‏تم العودة إلى إصدار سابق من ChromeOS. للحصول على التحديثات، يُرجى الانتظار إلى أن يتوفّر الإصدار التالي.</translation>
 <translation id="7641513591566880111">اسم الملف الشخصي الجديد</translation>
 <translation id="764178579712141045">تمت إضافة <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (المالك)</translation>
 <translation id="7648048654005891115">أسلوب الخريطة الرئيسية</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{تم إعداد بصمة إصبع واحدة.}zero{تم إعداد {COUNT} بصمة إصبع.}two{تم إعداد بصمتَي إصبع ({COUNT}).}few{تم إعداد {COUNT} بصمات إصبع.}many{تم إعداد {COUNT} بصمة إصبع.}other{تم إعداد {COUNT} بصمة إصبع.}}</translation>
+<translation id="7650677314924139716">‏إعداد استخدام البيانات الحالي هو "Wi-Fi فقط"</translation>
 <translation id="7651400349472467012">تتوفَّر نقطة اتصال فوري.</translation>
 <translation id="7651784568388208829">استكمال المهام من خلال مركز التحكم بالهاتف</translation>
 <translation id="7658239707568436148">إلغاء</translation>
@@ -2033,6 +2071,7 @@
 <translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
 <translation id="7912974581251770345">الترجمة</translation>
 <translation id="7915457674565721553">الاتصال بالإنترنت لإعداد أدوات رقابة الأهل</translation>
+<translation id="7917876797003313048">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها. يتم استخدام حساباتك على Google في متصفّح Chrome و"متجر Play" وGmail والمزيد. إذا أردت إضافة حساب لمستخدم آخر، مثل أحد أفراد العائلة، أضِف شخصًا جديدًا إلى <ph name="DEVICE_TYPE" /> بدلاً من ذلك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> ثوانٍ</translation>
 <translation id="7920482456679570420">يُرجى إضافة كلمات تريد أن يتخطاها التدقيق الإملائي.</translation>
 <translation id="7921347341284348270">لا يمكنك الاطّلاع على إشعارات هاتفك من خلال هذا الحساب المُدار. يُرجى إعادة المحاولة من خلال حساب مختلف. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -2197,6 +2236,7 @@
 <translation id="8431977087510901105">إعادة ضبط إعدادات المؤشر</translation>
 <translation id="8437209419043462667">الأمريكية</translation>
 <translation id="8439506636278576865">عرض ترجمة الصفحات المكتوبة بهذه اللغة</translation>
+<translation id="8449347986464073209">الحذف وتسجيل الخروج</translation>
 <translation id="8451512073679317615">المساعد</translation>
 <translation id="8455775311562941553">تم الربط بـ "<ph name="HOST_DEVICE_NAME" />".</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
@@ -2322,6 +2362,7 @@
 <translation id="8872774989979382243">الصوت غير مفعَّل. انقر لتفعيله.</translation>
 <translation id="888256071122006425">إعدادات الماوس ولوحة اللمس</translation>
 <translation id="8885449336974696155">‏يمكنك المساعدة في تحسين ChromeOS بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" />.</translation>
+<translation id="8890170499370378450">قد يتم تحصيل رسوم منك مقابل استخدام بيانات الجوّال.</translation>
 <translation id="8890529496706615641">تعذّرت إعادة تسمية الملف الشخصي. يُرجى إعادة المحاولة أو التواصل مع فريق الدعم الفني لدى مشغّل شبكة الجوّال.</translation>
 <translation id="8894761918470382415">الحماية من الوصول إلى البيانات بالنسبة إلى الأجهزة الملحقة</translation>
 <translation id="8896830132794747524">تؤدي الحركات السريعة باستخدام الماوس إلى تحريك المؤشر بعيدًا.</translation>
@@ -2347,6 +2388,7 @@
 <translation id="8978939272793553320">انقطع اتصال "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8980345560318123814">تقارير التعليقات</translation>
 <translation id="8981825781894055334">هناك نقص في ورق الطابعة</translation>
+<translation id="8984694057134206124">سيكون جهازك مرئيًا لجميع المستخدمين لمدة <ph name="MINUTES" /> دقيقة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">الحد الأدنى لرصد الإيماءة</translation>
 <translation id="8986362086234534611">حذف</translation>
 <translation id="8991694323904646277">ما مِن كاميرا متّصلة بالجهاز.</translation>
@@ -2393,6 +2435,7 @@
 <translation id="9098860402274800697">‏إزالة تطبيقات Google Play وAndroid</translation>
 <translation id="910000385680858937">تم منح إذن الوصول إلى الميكروفون: <ph name="PERMISSION_DETAILS" />. عليك توصيل ميكروفون بجهازك.</translation>
 <translation id="9100416672768993722">‏للتبديل إلى آخر أسلوب إدخال تم استخدامه، يمكنك الضغط على <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />مفتاح المسافة<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
+<translation id="9108072915170399168">إعداد استخدام البيانات الحالي هو "بدون إنترنت"</translation>
 <translation id="9108294543511800041">يمكنك الآن الاطّلاع على أحدث الصور والوسائط والإشعارات المتوفّرة على هاتفك</translation>
 <translation id="9109122242323516435">لتفريغ مساحة، احذف الملفات من مساحة تخزين الجهاز.</translation>
 <translation id="9111330022786356709">إضافة أزرار على الماوس أو تحديد مكانها</translation>

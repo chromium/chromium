@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes configurar un código de acceso en tu dispositivo.</translation>
 <translation id="201759455285471444">Desplegar grupo de pestañas.</translation>
 <translation id="2022431790688770637">Gestionar sugerencias de Gemini</translation>
+<translation id="2023265063803387188">Gemini no está disponible en el modo Incógnito</translation>
 <translation id="2031515492007104071">Subir de nivel</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332">La cuenta <ph name="USER_EMAIL" /> la gestiona <ph name="HOSTED_DOMAIN" />, que podría ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Detener</translation>
 <translation id="2666092431469916601">Arriba</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" no tiene permiso para acceder a tu cámara</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pagar a plazos</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="386224966259596343">Tendrás la oportunidad de guardar esta información en Wallet la próxima vez que rellenes un formulario pertinente.</translation>
 <translation id="3868495844258915202">Mostrar URL completa</translation>
+<translation id="3870931306085184145">No hay contraseñas guardadas de <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Ver cómo</translation>
 <translation id="3878657761594430423">Sujetahojas</translation>
 <translation id="3884810423191119660">Guarda contraseñas de forma segura para iniciar sesión fácilmente en sitios y aplicaciones</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Mejora tu experiencia de navegación</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
 <translation id="5067540696062462445">Descargas</translation>
-<translation id="5070314445039955096">Se volverán a desactivar los permisos de "<ph name="SITE_DOMAIN" />" cuando salgas de este sitio</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} de {count} método de pago}other{{position} de {count} métodos de pago}}</translation>
 <translation id="5075939510584558547">Guardar sin cifrado</translation>
 <translation id="5076534614343816664">Seguimiento de precios</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Debes iniciar sesión para usar Level Up</translation>
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" puede usar tu micrófono siempre que visites este sitio</translation>
 <translation id="5359436665022446585">Abre enlaces más fácilmente</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5364647308446127983">{count,plural, =1{No se ha podido importar {count} llave de acceso}other{No se han podido importar {count} llaves de acceso}}</translation>
@@ -1484,6 +1483,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5612225021788368236">Cerrar promoción de navegador predeterminado</translation>
 <translation id="561269594905823128">Toca <ph name="BEGIN_BOLD" />Seleccionar archivo<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por más recientes</translation>
+<translation id="561349411957324076">Finalizado</translation>
 <translation id="5614553682702429503">¿Guardar la contraseña?</translation>
 <translation id="5617769621178348890">Abrir en la app Archivos</translation>
 <translation id="5619871095170816857">Esta tarjeta muestra la última pestaña abierta que has usado en todos los dispositivos sincronizados en las últimas 24 horas.</translation>
@@ -2333,7 +2333,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> cuentas</translation>
 <translation id="8161614462829037225">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Longitud</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" puede usar tu cámara siempre que visites este sitio</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} y {website_2}}=3{Para {website_1}, {website_2} y 1 más}other{Para {website_1}, {website_2} y {more_count} más}}</translation>
 <translation id="8184895727539791845">Para permitir que Gemini use tu cámara, actívala en los ajustes de iOS</translation>
 <translation id="8185076488803799132">Importar</translation>
@@ -2504,7 +2503,6 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8674716540979958118">Tienes contraseñas vulneradas.</translation>
 <translation id="8679900250380464358">Añadir a lista de lectura</translation>
 <translation id="8680787084697685621">La información de inicio de sesión no está actualizada.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" no tiene permiso para acceder a tu micrófono</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
 <translation id="8692107307702113268">La contraseña contiene más de 1000 caracteres</translation>
 <translation id="8692689525339542358">Protégete frente a sitios, descargas y extensiones peligrosos.</translation>
@@ -2650,6 +2648,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="91023216973987714">Métodos de pago</translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Comprueba si tienes contraseñas vulneradas</translation>
+<translation id="9115035712231910133">Imagen adjunta {title}</translation>
 <translation id="9119764377203471454">No se pueden añadir archivos adjuntos</translation>
 <translation id="9124387962554796433">Es posible que Google utilice tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="9124978074365039456">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos</translation>

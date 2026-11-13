@@ -726,7 +726,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2210794033760923560">Mag-upload ng Ulat</translation>
 <translation id="2212735316055980242">Hindi nahanap ang patakaran</translation>
-<translation id="2213606439339815911">Kinukuha ang mga entry...</translation>
 <translation id="2213612003795704869">Na-print ang page</translation>
 <translation id="2214086901479959524">I-update ang Chrome para patuloy na gamitin ang iyong mga naka-share na grupo ng tab</translation>
 <translation id="2214453882118345682">Bilhin, isalin, at tukuyin ang nakikita mo gamit ang iyong camera.</translation>
@@ -823,6 +822,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2356941001189392209">Limitadong listahan ng mga URL ng mga page na binisita mo kung saan may mga event ng legacy na teknolohiya</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Magse-share ng 1 tab}one{Magse-share ng {NUM_TABS} tab}other{Magse-share ng {NUM_TABS} na tab}}</translation>
 <translation id="2357481397660644965">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_MANAGER" /> ang account mo.</translation>
+<translation id="2358479643736965923">Tingnan ang iyong sagot sa paghahanap ng Google AI sa tab na ito</translation>
 <translation id="2359629602545592467">Marami</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="236000571258713023">Mga sasakyan</translation>
@@ -1141,6 +1141,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2925032407415783182">I-save ang ticket ng event sa Wallet</translation>
 <translation id="2925454999967523701">Button na Gumawa ng doc, i-activate para mabilis na makagawa ng bagong Google Doc</translation>
 <translation id="2925673989565098301">Paraan ng Paghahatid</translation>
+<translation id="2927328994673424423">2 linggo ang nakalipas</translation>
 <translation id="2928426578619531300">Affiliated na user</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}}</translation>
 <translation id="2930531075747147366">Tab mula sa Iba Mo Pang Device</translation>
@@ -1275,7 +1276,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3141337053413339205">Lumipat sa tab na ito.</translation>
 <translation id="3144458715650412431">Nailapat na ang mga patakaran sa pag-test. Suriin at i-reset ang mga ito sa chrome://policy/test. Hindi malalapat ang mga patakaran ng admin.</translation>
 <translation id="3145945101586104090">Nabigong i-decode ang tugon</translation>
-<translation id="3149865382039202168">I-save ang iyong impormasyon sa <ph name="GOOGLE_WALLET_TITLE" /> at mas mabilis na tapusin ang mga bagay, tulad ng pagsagot ng mga form sa mga produkto ng Google. Puwede mong kontrolin <ph name="HOW_INFO_IS_USED_LINK" /> sa iyong mga setting ng pribadong pass para sa <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Pansamantalang error sa server</translation>
 <translation id="3150889484970506196">Button na Gumawa ng sheet, i-activate para mabilis na makagawa ng bagong Google Sheet</translation>
 <translation id="3154506275960390542">Naglalaman ang page na ito ng isang form na maaaring hindi secure na maisusumite. Maaaring makita ng iba ang data na iyong ipapadala habang ipinapadala ito o maaaring mabago ng isang nang-aatake upang baguhin kung ano ang matatanggap ng server.</translation>
@@ -1521,7 +1521,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3558335486599406178">Na-save ang IBAN sa Google Wallet</translation>
 <translation id="3558573058928565255">Oras sa umaga</translation>
 <translation id="3559897352860026926">Hilingin sa iyong administrator na i-verify ang kanyang mga setting ng configuration ng <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">Tingnan ang mga kaugnay na site</translation>
 <translation id="3566021033012934673">Hindi pribado ang iyong koneksyon</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3566681680543111735">Kopyahin ang string ng mga variation</translation>
@@ -2164,7 +2163,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4603727370377253901">Mga reservation ng flight</translation>
 <translation id="4607608436550361748">Tingnan ang mga tip sa Chrome</translation>
 <translation id="460848736049414407">Na-block ng Admin</translation>
-<translation id="4610279718074907952">Ang site na ito ay nasa isang grupo, na tinukoy ng <ph name="SET_OWNER" />, na makakakita ng iyong aktibidad</translation>
 <translation id="4612631413844865947">Nagka-error sa pagpoproseso ng iyong order sa <ph name="MERCHANT_ORIGIN" /> sa pamamagitan ng <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Posibleng may pang-mature na content ang site na ito. Kailangang sabihin ng magulang o tagapag-alaga na OK na bisitahin mo ang website na ito.</translation>
 <translation id="4613873770449493819">Dapat tumuro ang URL sa isang domain ng <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3711,7 +3709,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="7173338713290252554">History ng presyo sa buong web</translation>
 <translation id="7174545416324379297">Naka-merge</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> pa}one{<ph name="SHIPPING_OPTION_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> pa}other{<ph name="SHIPPING_OPTION_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> pa}}</translation>
-<translation id="7180611975245234373">I-refresh</translation>
 <translation id="7181261019481237103">Magbukas ng Incognito window</translation>
 <translation id="7182878459783632708">Walang nakatakdang mga patakaran</translation>
 <translation id="7186833457841277072">Envelope (Inkjet)</translation>
@@ -4177,7 +4174,6 @@ Mga karagdagang detalye:
 <translation id="7932579305932748336">Coat</translation>
 <translation id="79338296614623784">Maglagay ng wastong numero ng telepono</translation>
 <translation id="7934414805353235750">Gusto ng <ph name="URL" /> na mag-play ng pinoprotektahang content. Ive-veify ng Google ang pagkakakilanlan ng iyong device.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Pinapayagan ang mga sensor ng paggalaw</translation>
 <translation id="7937163678541954811">Ie-encypt at ise-save sa iyong device ang CVC ng card na ito para sa mas mabilis na pag-checkout</translation>
 <translation id="7937554595067888181">Mag-e-expire sa <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4225,7 +4221,6 @@ Mga karagdagang detalye:
 <translation id="7999482381722829925">Gumawa ng may priyoridad at room-by-room na checklist sa malalim na paglilinis na nagta-target sa mga lugar na karaniwang nakakaligtaan</translation>
 <translation id="8001912761979890298">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito dahil gumagamit ito ng certificate na panseguridad na hindi pinagkakatiwalaan ng Chromium o ng iyong configuration ng system para sa pag-encrypt ng trapiko sa web. Posibleng sanhi ito ng maling pag-configure, o ng pag-intercept ng isang attacker sa koneksyon mo. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Tingnan ang Certificate<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Subukang isara ang iba pang tab o program upang magbakante ng memory.</translation>
-<translation id="8002230960325005199">Tingnan ang mga kaugnay na site sa bagong tab</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Pamahalaan ang Mga Password</translation>
@@ -4266,7 +4261,6 @@ Mga karagdagang detalye:
 <translation id="8079976827192572403">Mapanganib na site</translation>
 <translation id="8086971161893892807">Draft</translation>
 <translation id="8087558780672230449">Nilo-load ang <ph name="APP_ORIGIN" /> para pangasiwaan ang iyong pagbabayad sa <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Hindi natingnan ang artikulo.</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8091372947890762290">Nakabinbin sa server ang pag-activate</translation>
 <translation id="8092254339843485299">6 x 8 in</translation>
@@ -4906,7 +4900,6 @@ Mga karagdagang detalye:
 <translation id="9199905725844810519">Naka-block ang pag-print</translation>
 <translation id="9204089334327209740">Kapag natapos na ang pag-upload, puwede mong baguhin ang iyong mga file sa <ph name="CLOUD_PROVIDER" />. Awtomatikong aalisin ang lokal na storage, kasama ang anumang file sa Trash.</translation>
 <translation id="9205078245616868884">Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upang simulan ang pag-sync.</translation>
-<translation id="9207861905230894330">Hindi naidagdag ang artikulo.</translation>
 <translation id="9209339767782560829">Nagkaproblema sa paggamit ng iyong certificate sa pag-log in.</translation>
 <translation id="9210152531668884481">Sige</translation>
 <translation id="9213433120051936369">I-customize ang hitsura</translation>

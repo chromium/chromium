@@ -726,7 +726,6 @@
 <translation id="22081806969704220">Фиока 3</translation>
 <translation id="2210794033760923560">Прикачи пријава</translation>
 <translation id="2212735316055980242">Политиката не е пронајдена</translation>
-<translation id="2213606439339815911">Земање записи...</translation>
 <translation id="2213612003795704869">Страницата е испечатена</translation>
 <translation id="2214086901479959524">Ажурирајте го Chrome за да продолжите да ги користите споделените групи картички</translation>
 <translation id="2214453882118345682">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата.</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат настани со застарена технологија</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Ќе се сподели 1 картичка}one{Ќе се споделат {NUM_TABS} картичка}other{Ќе се споделат {NUM_TABS} картички}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> управува со уредот, а <ph name="ACCOUNT_MANAGER" /> управува со сметката.</translation>
+<translation id="2358479643736965923">Погледнете го вашиот одговор од AI на „Пребарување на Google“ на оваа картичка</translation>
 <translation id="2359629602545592467">Повеќе</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="236000571258713023">Возила</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">Зачувајте го билетот за настанот во Wallet</translation>
 <translation id="2925454999967523701">Копче за создавање документ, активирајте го за да набрзина создадете нов документ на Google</translation>
 <translation id="2925673989565098301">Начин на испорака</translation>
+<translation id="2927328994673424423">Пред 2 седмици</translation>
 <translation id="2928426578619531300">Корисникот е партнер</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Картичка од другиот ваш уред</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">Префрлете се во оваа картичка.</translation>
 <translation id="3144458715650412431">Применети се правила за тестирање. Прегледајте и ресетирајте ги на chrome://policy/test. Нема да се применат администраторски правила.</translation>
 <translation id="3145945101586104090">Не успеа да дешифрира одговор</translation>
-<translation id="3149865382039202168">Зачувајте ги вашите податоци во <ph name="GOOGLE_WALLET_TITLE" /> и завршувајте ги нештата побрзо, како пополнувањето формулари во производите на Google. Може да контролирате <ph name="HOW_INFO_IS_USED_LINK" /> во вашите поставки за приватни пропусници за <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Привремена грешка на серверот</translation>
 <translation id="3150889484970506196">Копче за создавање табела, активирајте го за да набрзина создадете нова табела на Google</translation>
 <translation id="3154506275960390542">Формуларот што го содржи страницава може да не се испрати безбедно. При преносот, податоците што ги испраќате може да ги гледаат други лица или да ги менува напаѓач за да го измени она што треба да го добие серверот.</translation>
@@ -1521,7 +1521,6 @@
 <translation id="3558335486599406178">IBAN е зачуван во Google Wallet</translation>
 <translation id="3558573058928565255">Во текот на денот</translation>
 <translation id="3559897352860026926">Побарајте од администраторот да ги потврди своите поставки за конфигурација на <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">Прикажувај поврзани сајтови</translation>
 <translation id="3566021033012934673">Вашето поврзување не е приватно</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3566681680543111735">Копирај ја низата на варијации</translation>
@@ -2164,7 +2163,6 @@
 <translation id="4603727370377253901">Резервации на летови</translation>
 <translation id="4607608436550361748">Видете ги советите за Chrome</translation>
 <translation id="460848736049414407">Блокирано од администраторот</translation>
-<translation id="4610279718074907952">Сајтов е во група, дефинирана од сопственикот <ph name="SET_OWNER" />, којшто може да ја види вашата активност</translation>
 <translation id="4612631413844865947">Се јави грешка при обработката на вашата нарачка на <ph name="MERCHANT_ORIGIN" /> преку <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Сајтов може да опфаќа содржини за возрасни. Родител или старател мора да одобри за да го отвориш веб-сајтов.</translation>
 <translation id="4613873770449493819">URL-адресата мора да води до домен на <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3710,7 +3708,6 @@
 <translation id="7173338713290252554">Историја на цени на интернет</translation>
 <translation id="7174545416324379297">Споена</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">Освежи</translation>
 <translation id="7181261019481237103">Отвори прозорец во режим „Инкогнито“</translation>
 <translation id="7182878459783632708">Не се поставени политики</translation>
 <translation id="7186833457841277072">Коверт (за мастилен печатач)</translation>
@@ -4176,7 +4173,6 @@
 <translation id="7932579305932748336">Омот</translation>
 <translation id="79338296614623784">Внесете важечки телефонски број</translation>
 <translation id="7934414805353235750"><ph name="URL" /> сака да пушти заштитени содржини. Google ќе го потврди идентитетот на вашиот уред.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Сензорите за движење се дозволени</translation>
 <translation id="7937163678541954811">За побрзо плаќање, CVC на картичкава ќе се шифрира и зачува на вашиот уред</translation>
 <translation id="7937554595067888181">Истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4224,7 +4220,6 @@
 <translation id="7999482381722829925">Создај приоритетен контролен список за темелно чистење на секоја просторија посебно, со фокус на местата што обично се пропуштаат</translation>
 <translation id="8001912761979890298">Серверов не можеше да докаже дека е <ph name="DOMAIN" /> бидејќи користи сертификат за безбедност во којшто нема доверба Chromium или конфигурацијата на системот за шифрирање сообраќај на интернет. Тоа може да се должи на погрешна конфигурација или на напаѓач што ја пресретнува врската. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Прегледајте го сертификатот<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Обидете се да ги затворите другите картички или програми за да ослободите меморија.</translation>
-<translation id="8002230960325005199">Прикажувај ги поврзаните сајтови во нова картичка</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8009225694047762179">Управување со лозинки</translation>
@@ -4265,7 +4260,6 @@
 <translation id="8079976827192572403">Опасен сајт</translation>
 <translation id="8086971161893892807">Нацрт</translation>
 <translation id="8087558780672230449">Се вчитува <ph name="APP_ORIGIN" /> за да се обработи вашето плаќање на <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Не успеа да прикаже напис.</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8091372947890762290">Активирањето чека на ред на серверот</translation>
 <translation id="8092254339843485299">6 x 8 инчи</translation>
@@ -4905,7 +4899,6 @@
 <translation id="9199905725844810519">Печатењето е блокирано</translation>
 <translation id="9204089334327209740">Штом ќе заврши прикачувањето, може да ги менувате датотеките во <ph name="CLOUD_PROVIDER" />. Локалниот простор (што ги опфаќа и датотеките во „Корпа“) ќе се отстрани автоматски.</translation>
 <translation id="9205078245616868884">Вашите податоци се шифрирани со лозинката за синхронизирање. Внесете ја за да го започнете синхронизирањето.</translation>
-<translation id="9207861905230894330">Не успеа да се додаде напис.</translation>
 <translation id="9209339767782560829">Се јави проблем при користењето на сертификатот за најавување.</translation>
 <translation id="9210152531668884481">Прифаќам</translation>
 <translation id="9213433120051936369">Приспособете го изгледот</translation>

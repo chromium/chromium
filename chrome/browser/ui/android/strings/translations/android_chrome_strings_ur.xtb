@@ -129,6 +129,7 @@
 <translation id="1460751212339734034">وقت کی بچت کریں، کم ٹائپ کریں</translation>
 <translation id="146522654774760805">پاس ورڈز اور آٹو فل</translation>
 <translation id="1466383950273130737">‏Chrome کی زبان منتخب کریں</translation>
+<translation id="1473344277210704336">‏نئے نیچے والے ٹول بار پر Gemini اور آپ کے لوازمات</translation>
 <translation id="1477626028522505441">سروس کے مسائل کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="147982357559798527">تبدیل کر دیا گیا</translation>
 <translation id="1480287803138246127">‏ہو سکتا ہے آپ کی کچھ سرگزشت یہاں ظاہر نہ ہو۔ اپنی تمام Chrome کی سرگزشت دیکھنے کے لیے، مکمل Chrome کی سرگزشت کھولیں۔</translation>
@@ -907,6 +908,7 @@
 <translation id="4537987892902330164">آپ <ph name="NAME_OR_EMAIL" /> کے بطور سائن ان رہے۔</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_COUNT_MANY" /> ٹیبز، <ph name="TAB_COUNT_INCOGNITO" /> پوشیدگی}}</translation>
 <translation id="4558311620361989323">ویب صفحہ شارٹ کٹس</translation>
+<translation id="4558547432122102499">‫<ph name="USER_NAME" />، <ph name="EMAIL" />۔ ‫<ph name="SUBSCRIPTION_NAME" /> کی رکنیت۔</translation>
 <translation id="4572422548854449519">نظم کردہ اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="4577115723294378384">‏A سے Z کے لحاظ سے ترتیب دیں</translation>
 <translation id="4578289292431526768">آئیے شروع کریں</translation>
@@ -914,6 +916,7 @@
 <translation id="4585751637295612750">اسے اپنے سوال میں شامل کرنے کے لیے ایک نیا ٹیب کھولیں</translation>
 <translation id="4585793705637313973">صفحہ میں ترمیم کریں</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
+<translation id="4587590257937792551">‏‫Chrome میں اب ایک نیا نیچے کا ٹول بار ہے جو آپ کی سہولت کے لیے تیار کیا گیا ہے۔ آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت واپس سوئچ کر سکتے ہیں۔</translation>
 <translation id="4594952190837476234">یہ آف لائن صفحہ <ph name="CREATION_TIME" /> کا ہے اور آن لائن ورژن سے مختلف ہو سکتا ہے۔</translation>
 <translation id="4595237294768457124">نئے ٹیب کا صفحہ کھولیں</translation>
 <translation id="4595276580892809760">گیلری سے تصاویر منسلک کریں</translation>
@@ -986,6 +989,7 @@
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ٹیب گروپ کو بند اور محفوظ کر دیا گیا</translation>
 <translation id="4835385943915508971">‏Chrome کو درخواست کردہ وسیلہ تک رسائی حاصل نہیں ہے۔</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> رنگ کے <ph name="TAB_COUNT_ONE" /> ٹیب کے ٹیب گروپ کو پس منظر کے ایک نئے ٹیب گروپ کے بطور بحال کریں۔}other{<ph name="COLOR_NAME" /> رنگ کے <ph name="TAB_COUNT_MANY" /> ٹیبز کے ٹیب گروپ کو پس منظر کے ایک نئے ٹیب گروپ کے بطور بحال کریں۔}}</translation>
+<translation id="48431900345921167">کچھ سروسز <ph name="ACCOUNT_EMAIL" /> کے لیے دستیاب نہیں ہیں</translation>
 <translation id="4849731766219625109">اپنا <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اکاؤنٹ استعمال کریں</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
 <translation id="4860895144060829044">کال کریں</translation>
@@ -1010,6 +1014,7 @@
 <translation id="4925120120285606924">اسکرین شاٹ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">آپ تصاویر اور فائلز کو آف لائن دیکھنے یا دیگر ایپس میں ان کا اشتراک کرنے کے لیے محفوظ کر سکتے ہیں۔</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{‏‫1 بُک مارک اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫# بُک مارکس اور دیگر آئٹمز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
+<translation id="4932733599132424254">تاریخ</translation>
 <translation id="4943703118917034429">ورچوئل رئیلٹی</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4957722034734105353">مزید جانیں…</translation>
@@ -1064,6 +1069,7 @@
 <translation id="5142281402488957685">نئی کہانیوں کی خاطر، ریفریش کرنے کے لیے نیـچے کی طرف کھینچیں</translation>
 <translation id="5144385790872094440">‏آپ کے ملاحظہ کردہ صفحات میں سے کچھ پیشگی لوڈ کردہ ہیں۔ کسی Google سائٹ یا ایپ سے لنک ہونے پر صفحات کو Google سرورز کے ذریعے پیشگی لوڈ کیا جا سکتا ہے۔</translation>
 <translation id="5152843274749979095">کوئی تعاون یافتہ ایپ انسٹال نہیں کی گئی</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
 <translation id="5161262286013276579">پاسکی کی تصدیقی شیٹ کھولی گئی</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> فی الحال منتخب کردہ ہے۔ ایک اکاؤنٹ منتخب کریں۔</translation>
@@ -1147,6 +1153,7 @@
 <translation id="5494920125229734069">سبھی کو منتخب کریں</translation>
 <translation id="549660026907543296">بطور <ph name="MEMBER_FULL_NAME" /> شامل ہوں</translation>
 <translation id="5517326820028369152">حالیہ سرگرمی کی نیچے کی شیٹ</translation>
+<translation id="5519516356611866228">آپ کی تبدیلیوں کے ساتھ</translation>
 <translation id="5526281268548144413">متعدد ونڈوز میں بند نہیں کیا جا سکتا</translation>
 <translation id="5532536403031755365">بہتر کردہ حفاظت کے ساتھ آن لائن خطرات کے خلاف تحفظ کی ایک اضافی پرت شامل کریں</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{بُک مارک کھولیں}other{سبھی (#) کھولیں}}</translation>
@@ -1411,6 +1418,7 @@
 <translation id="6482749332252372425">اسٹوریج کی جگہ کم ہونے کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="6486420406192123355">‏یہ PDF فائل ایک ایسی سائٹ سے ہے جو ایک غیر محفوظ کنکشن کا استعمال کر رہی ہے</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{فائل ڈاؤن لوڈ ہو گئی}other{# ڈاؤن لوڈز مکمل ہو گئے}}</translation>
+<translation id="6502991525169604759">آپ کی تبدیلیوں کے بغیر</translation>
 <translation id="6508722015517270189">‏Chrome کو دوبارہ شروع کریں</translation>
 <translation id="6513924416597632811">اس کے لیے تلاش کے نتائج کے صفحہ کے لنک کو کاپی کریں: <ph name="SEARCH_QUERY" />۔ ماخذ: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">توثیق کریں</translation>
@@ -1433,7 +1441,6 @@
 <translation id="6573096386450695060">ہمیشہ اجازت دیں</translation>
 <translation id="657480975869429144">‏‫Chrome کا نیا ورژن دستیاب ہے</translation>
 <translation id="658099107946526506">‏غیر مطلوبہ رسائی کو روکنے کے لیے PIN کے ساتھ اپنی نجی براؤزنگ کی حفاظت کریں</translation>
-<translation id="65829135876155327">وقت کا دورانیہ</translation>
 <translation id="6583199322650523874">موجودہ صفحہ کا بُک مارک بنائیں</translation>
 <translation id="6588043302623806746">‏محفوظ DNS استعمال کریں</translation>
 <translation id="6590471736817333463">60 فیصد تک ڈیٹا کی بچت کریں</translation>
@@ -1447,6 +1454,7 @@
 <translation id="6633067410344541938">پوشیدگی کو غیر مقفل کریں</translation>
 <translation id="6636623428211296678">ذیل میں مزید ترتیبات دریافت کریں یا ابھی مکمل کریں</translation>
 <translation id="6637100877383020115">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور ناکامی کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_UMA_LINK" />نظم کریں<ph name="END_UMA_LINK" /></translation>
+<translation id="6640259500074236510">آپ کے ضروری ٹولز، اب براہ راست نیچے والے ٹول بار پر۔ آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت واپس سوئچ کر سکتے ہیں۔</translation>
 <translation id="6642299196749785472">ٹیبز منسلک کریں</translation>
 <translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
@@ -1645,6 +1653,7 @@
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />، منتخب کردہ پن کردہ اشتراک کا ٹیب</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
 <translation id="7314734791127433392">پاس ورڈز کو چیک نہیں کر سکتے</translation>
+<translation id="7324177883197548771">‏‫Chrome کی ایک نئی شکل ہے، جو سہولت کے لیے بنائی گئی ہے۔ آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت واپس سوئچ کر سکتے ہیں۔</translation>
 <translation id="7324354302972299151">‏"Do Not Track" درخواست بھیجیں</translation>
 <translation id="7333041109965360609">اطلاعات سے اَن سبسکرائب کر دیا گیا</translation>
 <translation id="7335766481146072567">جاری رکھیں دبائیں</translation>
@@ -1693,7 +1702,6 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (اپ ڈیٹ کا وقت <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">براہ کرم انتظار کریں…</translation>
 <translation id="7499065150275272675">‫<ph name="TAB_TITLE" />، پن کردہ خاموش کردہ ٹیب</translation>
-<translation id="7500851014030446046">‏‫PDF کو ڈاؤن لوڈ کیا جا رہا ہے</translation>
 <translation id="7501135638693251872">سبھی بُک مارکس</translation>
 <translation id="7504076214066136798">ترامیم کو محفوظ نہیں کیا جا سکتا</translation>
 <translation id="7507207699631365376">اس فراہم کنندہ کی <ph name="BEGIN_LINK" />راز داری کی پالیسی<ph name="END_LINK" /> دیکھیں</translation>
@@ -1747,6 +1755,7 @@
 <translation id="7697383401610880082">گھسیٹنے کا ہینڈل</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> میں ای میل تخلیق کریں</translation>
 <translation id="7702420606070050505">حالیہ سرگرمی کی نیچے کی شیٹ پوری کھلی ہے</translation>
+<translation id="7706590516064393665">‫<ph name="USER_NAME_OR_EMAIL" />۔ <ph name="SUBSCRIPTION_NAME" /> رکنیت۔</translation>
 <translation id="7707922173985738739">موبائل ڈیٹا استعمال کریں</translation>
 <translation id="7708994397325774423">اپنے تمام پاس ورڈز حاصل کریں</translation>
 <translation id="7714077993070342304">‏‫Chrome مینیو کھولیں</translation>
@@ -1834,7 +1843,6 @@
 <translation id="8036587585440959897">‏کچھ ایکسٹینشنز Chrome میں سرچ انجنز کو شامل کر سکتی ہیں۔</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> دن باقی</translation>
 <translation id="8037801708772278989">ابھی چیک کیا گيا</translation>
-<translation id="8038975372993801438">وقت کے دورانیے کے لحاظ سے فلٹر کریں</translation>
 <translation id="804335162455518893">‏SD کارڈ نہیں ملا</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> پوشیدگی ٹیب}other{<ph name="TAB_COUNT_NORMAL" /> پوشیدگی ٹیبز}}</translation>
 <translation id="8051695050440594747">‏<ph name="MEGABYTES" /> MB دستیاب ہے</translation>
@@ -2030,6 +2038,7 @@
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8727043961453758442">‏Chrome سے زیادہ سے زیادہ فائدہ اٹھائیں</translation>
 <translation id="8728810647305130936">نئے ٹیبز کھولیں</translation>
+<translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8731268612289859741">سیکیورٹی کوڈ</translation>
 <translation id="8738163682604285902">ریڈنگ موڈ دیکھیں؟</translation>
 <translation id="8746155870861185046">ہائی لائٹ کا اشتراک کریں</translation>

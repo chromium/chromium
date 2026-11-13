@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
 <translation id="201759455285471444">ขยายกลุ่มแท็บ</translation>
 <translation id="2022431790688770637">จัดการคำแนะนำของ Gemini</translation>
+<translation id="2023265063803387188">Gemini ไม่พร้อมใช้งานในโหมดไม่ระบุตัวตน</translation>
 <translation id="2031515492007104071">เลื่อนระดับ</translation>
 <translation id="2044394949148788042">เปิดตารางกริดของแท็บ</translation>
 <translation id="2044681667265133332">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">หยุด</translation>
 <translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
-<translation id="2671316366021598595">ไม่อนุญาตให้ "<ph name="SITE_DOMAIN" />" เข้าถึงกล้อง</translation>
 <translation id="2671423594960767771">แชร์กลุ่ม</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">จ่ายแบบผ่อนชำระ</translation>
@@ -852,7 +852,7 @@
 <translation id="3631443864840848029">ตรวจสอบว่าคุณกำลังบันทึกรหัสผ่านปัจจุบันสำหรับเว็บไซต์นี้</translation>
 <translation id="3641456520301071208">เว็บไซต์ขอตำแหน่งของคุณได้</translation>
 <translation id="3642060527569456384">กลุ่มแท็บจะบันทึกและอัปเดตโดยอัตโนมัติในอุปกรณ์ทั้งหมด</translation>
-<translation id="3643338347976071250">{count,plural, =1{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{รหัสผ่าน {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
+<translation id="3643338347976071250">{count,plural, =1{ระบบจะบันทึกรหัสผ่าน {count} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{]ระบบจะบันทึกรหัสผ่าน {count} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
 <translation id="3657176844107584515"><ph name="EMAIL" />, การเป็นสมาชิก Google</translation>
 <translation id="3659297405161482746">ไม่พบวิธีการชำระเงิน</translation>
 <translation id="3662966164093827811">{count,plural, =1{เลือกไว้ 1 รายการ}other{เลือกไว้ # รายการ}}</translation>
@@ -867,7 +867,7 @@
 <translation id="3695446226812920698">ดูวิธีการ</translation>
 <translation id="3700134753671613714">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กบนอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="3701167022068948696">แก้ไขเลย</translation>
-<translation id="3708944822379815019">{COUNT,plural, =1{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {EMAIL}}other{รหัสผ่าน {COUNT} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {EMAIL}}}</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{ระบบจะบันทึกรหัสผ่าน {COUNT} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {EMAIL}}other{]ระบบจะบันทึกรหัสผ่าน {COUNT} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {EMAIL}}}</translation>
 <translation id="3709621342136814217">เลือกแบบอักษร ขนาดข้อความ และอื่นๆ ที่นี่</translation>
 <translation id="371230970611282515">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="372115889256123713">ไฟล์ที่แคชไว้</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="386224966259596343">คุณจะมีโอกาสบันทึกข้อมูลนี้ลงใน Wallet เมื่อกรอกแบบฟอร์มที่เกี่ยวข้องครั้งถัดไป</translation>
 <translation id="3868495844258915202">แสดง URL แบบเต็ม</translation>
+<translation id="3870931306085184145">ไม่มีรหัสผ่านที่บันทึกไว้สำหรับ <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
 <translation id="3878657761594430423">เครื่องมือจับชีต</translation>
 <translation id="3884810423191119660">บันทึกรหัสผ่านอย่างปลอดภัยเพื่อให้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย</translation>
@@ -1020,7 +1021,7 @@
 <translation id="4183350924949589798">หากต้องการความปลอดภัยมากขึ้น</translation>
 <translation id="4184063163998877398">{count,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {count} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {count} รายการ}}</translation>
 <translation id="4196758674971560031">ระบบจะบันทึกกลุ่มแท็บที่คุณสร้างไว้ในส่วนกลุ่มแท็บและอัปเดตในอุปกรณ์ต่างๆ</translation>
-<translation id="4197456013861852807">{count,plural, =1{ข้อมูล {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{ข้อมูล {count} รายการจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
+<translation id="4197456013861852807">{count,plural, =1{ระบบจะบันทึกข้อมูล {count} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}other{ระบบจะบันทึกข้อมูล {count} รายการไว้ในอุปกรณ์นี้เท่านั้น หากต้องการใช้งานในอุปกรณ์อื่น ให้บันทึกไว้ในบัญชี Google {email}}}</translation>
 <translation id="4207873326995387292">ข้อมูลเบราว์เซอร์</translation>
 <translation id="421070604241073551">เมื่อเปิดไว้ ระบบจะบันทึกข้อมูลในบัญชี Google ของคุณ เมื่อปิดไว้ ระบบจะบันทึกข้อมูลในอุปกรณ์เครื่องนี้เท่านั้น</translation>
 <translation id="4224534474590365556">ปิดแท็บที่ไม่ได้ใช้งานจำนวนกว่า 99 แท็บใช่ไหม</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">ยกระดับประสบการณ์การท่องเว็บของคุณ</translation>
 <translation id="5062321486222145940">ติดตั้ง Google ไดรฟ์</translation>
 <translation id="5067540696062462445">รายการดาวน์โหลด</translation>
-<translation id="5070314445039955096">สิทธิ์ "<ph name="SITE_DOMAIN" />" จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
 <translation id="507187271399539513">{count,plural, =1{วิธีการชำระเงิน {position} จาก {count} วิธี}other{วิธีการชำระเงิน {position} จาก {count} วิธี}}</translation>
 <translation id="5075939510584558547">บันทึกโดยไม่เข้ารหัส</translation>
 <translation id="5076534614343816664">การติดตามราคา</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">คุณต้องลงชื่อเข้าใช้เพื่อใช้ Level Up</translation>
 <translation id="5352128922772839949">บันทึกไฟล์</translation>
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
-<translation id="5355871759168485600">อนุญาตให้ "<ph name="SITE_DOMAIN" />" ใช้ไมโครโฟนทุกครั้งที่คุณเข้าชมเว็บไซต์นี้</translation>
 <translation id="5359436665022446585">เปิดลิงก์ได้ดียิ่งขึ้น</translation>
 <translation id="536067926684072644">แสดงบุ๊กมาร์ก</translation>
 <translation id="5364647308446127983">{count,plural, =1{นำเข้าพาสคีย์ {count} รายการไม่ได้}other{นำเข้าพาสคีย์ {count} รายการไม่ได้}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">ปิดการโปรโมตเบราว์เซอร์เริ่มต้น</translation>
 <translation id="561269594905823128">แตะ<ph name="BEGIN_BOLD" />เลือกไฟล์<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">จัดเรียงตามล่าสุด</translation>
+<translation id="561349411957324076">เสร็จสมบูรณ์</translation>
 <translation id="5614553682702429503">บันทึกรหัสผ่านไหม</translation>
 <translation id="5617769621178348890">เปิดในแอป Files</translation>
 <translation id="5619871095170816857">การ์ดนี้จะแสดงแท็บที่เปิดไว้ล่าสุดในอุปกรณ์ทุกเครื่องที่ซิงค์ในช่วง 24 ชั่วโมงที่ผ่านมา</translation>
@@ -2333,7 +2333,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> บัญชี</translation>
 <translation id="8161614462829037225">ปลดล็อกด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">ความยาว</translation>
-<translation id="8181328232274170248">อนุญาตให้ "<ph name="SITE_DOMAIN" />" ใช้กล้องทุกครั้งที่คุณเข้าชมเว็บไซต์นี้</translation>
 <translation id="8182037667962849780">{count,plural, =1{สำหรับ {website_1}}=2{สำหรับ {website_1}, {website_2}}=3{สำหรับ {website_1}, {website_2} และอีก 1 เว็บไซต์}other{สำหรับ {website_1}, {website_2} และอีก {more_count} เว็บไซต์}}</translation>
 <translation id="8184895727539791845">หากต้องการอนุญาตให้ Gemini ใช้กล้อง ให้เปิดใช้กล้องในการตั้งค่า iOS</translation>
 <translation id="8185076488803799132">นำเข้า</translation>
@@ -2504,7 +2503,6 @@
 <translation id="8674716540979958118">คุณมีรหัสผ่านที่ถูกละเมิด</translation>
 <translation id="8679900250380464358">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="8680787084697685621">รายละเอียดการลงชื่อเข้าใช้บัญชีเก่าเกินไป</translation>
-<translation id="868648444055742370">ไม่อนุญาตให้ "<ph name="SITE_DOMAIN" />" เข้าถึงไมโครโฟน</translation>
 <translation id="8690752723634292147">ยืนยันการลบ</translation>
 <translation id="8692107307702113268">รหัสผ่านมีอักขระเกิน 1,000 ตัว</translation>
 <translation id="8692689525339542358">รับการปกป้องให้พ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย</translation>
@@ -2650,6 +2648,7 @@
 <translation id="91023216973987714">วิธีการชำระเงิน</translation>
 <translation id="9106655997975673326">จาก "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">ตรวจหารหัสผ่านที่ถูกละเมิด</translation>
+<translation id="9115035712231910133">รูปภาพที่แนบ {title}</translation>
 <translation id="9119764377203471454">เพิ่มไฟล์แนบไม่ได้</translation>
 <translation id="9124387962554796433">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เหมาะกับคุณ</translation>
 <translation id="9124978074365039456">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องและแกลเลอรีรูปภาพ</translation>

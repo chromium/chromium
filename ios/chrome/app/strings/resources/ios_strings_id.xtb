@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="201759455285471444">Luaskan grup tab.</translation>
 <translation id="2022431790688770637">Kelola saran Gemini</translation>
+<translation id="2023265063803387188">Gemini tidak tersedia dalam mode Samaran</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buka petak tab</translation>
 <translation id="2044681667265133332">Akun <ph name="USER_EMAIL" /> dikelola oleh <ph name="HOSTED_DOMAIN" />, yang mungkin dapat melihat beberapa informasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Hentikan</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" tidak diizinkan mengakses kamera Anda</translation>
 <translation id="2671423594960767771">Bagikan grup</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Bayar dengan Cicilan</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nama</translation>
 <translation id="386224966259596343">Anda akan memiliki kesempatan untuk menyimpan info ini ke Wallet saat Anda mengisi formulir terkait lagi.</translation>
 <translation id="3868495844258915202">Tampilkan URL lengkap</translation>
+<translation id="3870931306085184145">Tidak ada sandi yang tersimpan untuk <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Lihat Caranya</translation>
 <translation id="3878657761594430423">Pengambil sheet</translation>
 <translation id="3884810423191119660">Simpan sandi dengan aman agar Anda dapat login ke situs dan aplikasi dengan mudah</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Tingkatkan pengalaman penjelajahan Anda</translation>
 <translation id="5062321486222145940">Instal Google Drive</translation>
 <translation id="5067540696062462445">Download</translation>
-<translation id="5070314445039955096">Izin "<ph name="SITE_DOMAIN" />" akan direset ke nonaktif saat Anda menutup situs ini</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} dari {count} metode pembayaran}other{{position} dari {count} metode pembayaran}}</translation>
 <translation id="5075939510584558547">Simpan tanpa enkripsi</translation>
 <translation id="5076534614343816664">Pemantauan harga</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Anda harus login untuk menggunakan Level Up</translation>
 <translation id="5352128922772839949">Simpan file</translation>
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" diizinkan mengakses mikrofon Anda setiap kali Anda mengunjungi situs ini</translation>
 <translation id="5359436665022446585">Cara lebih baik membuka link</translation>
 <translation id="536067926684072644">Tampilkan Bookmark</translation>
 <translation id="5364647308446127983">{count,plural, =1{Tidak dapat mengimpor {count} kunci sandi}other{Tidak dapat mengimpor {count} kunci sandi}}</translation>
@@ -1484,6 +1483,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5612225021788368236">Tutup promo browser default</translation>
 <translation id="561269594905823128">Ketuk <ph name="BEGIN_BOLD" />Pilih file Anda<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Urutkan menurut yang terbaru</translation>
+<translation id="561349411957324076">Selesai</translation>
 <translation id="5614553682702429503">Simpan sandi?</translation>
 <translation id="5617769621178348890">Buka di Aplikasi Files</translation>
 <translation id="5619871095170816857">Kartu ini menampilkan tab terbuka yang terakhir digunakan di semua perangkat yang disinkronkan dalam 24 jam terakhir.</translation>
@@ -2333,7 +2333,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> akun</translation>
 <translation id="8161614462829037225">Buka kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Panjang</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" diizinkan mengakses kamera Anda setiap kali Anda mengunjungi situs ini</translation>
 <translation id="8182037667962849780">{count,plural, =1{Untuk {website_1}}=2{Untuk {website_1}, {website_2}}=3{Untuk {website_1}, {website_2}, dan 1 lainnya}other{Untuk {website_1}, {website_2}, dan {more_count} lainnya}}</translation>
 <translation id="8184895727539791845">Untuk mengizinkan Gemini menggunakan kamera, aktifkan Kamera di setelan iOS</translation>
 <translation id="8185076488803799132">Impor</translation>
@@ -2504,7 +2503,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8674716540979958118">Anda memiliki sandi yang telah dibobol.</translation>
 <translation id="8679900250380464358">Tambahkan ke Daftar Bacaan</translation>
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" tidak diizinkan mengakses mikrofon Anda</translation>
 <translation id="8690752723634292147">Konfirmasi penghapusan</translation>
 <translation id="8692107307702113268">Sandi berisi lebih dari 1.000 karakter</translation>
 <translation id="8692689525339542358">Dapatkan perlindungan dari situs, download, dan ekstensi berbahaya.</translation>
@@ -2650,6 +2648,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="91023216973987714">Metode pembayaran</translation>
 <translation id="9106655997975673326">Dari "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Periksa sandi yang telah dibobol</translation>
+<translation id="9115035712231910133">Gambar terlampir {title}</translation>
 <translation id="9119764377203471454">Tidak dapat menambahkan lampiran</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
 <translation id="9124978074365039456">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat menggunakan kamera dan galeri foto</translation>

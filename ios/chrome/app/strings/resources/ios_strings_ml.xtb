@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="201759455285471444">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
 <translation id="2022431790688770637">Gemini നിർദ്ദേശങ്ങൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="2023265063803387188">Gemini അദൃശ്യ മോഡിൽ ലഭ്യമല്ല</translation>
 <translation id="2031515492007104071">നില ഉയർത്തുക</translation>
 <translation id="2044394949148788042">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="HOSTED_DOMAIN" /> ആണ്, അതിന് ചില വിവരങ്ങൾ കാണാനായേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">നിർത്തുക</translation>
 <translation id="2666092431469916601">മുകളിലേക്ക്</translation>
 <translation id="2669454659051515572">ഡൗൺലോഡ് ചെയ്യുന്ന ഫയലുകൾ ഈ ഉപകരണം ഉപയോഗിക്കുന്ന എല്ലാവർക്കും കാണാനാകും</translation>
-<translation id="2671316366021598595">നിങ്ങളുടെ ക്യാമറ ആക്‌സസ് ചെയ്യാൻ "<ph name="SITE_DOMAIN" />" എന്നതിന് അനുവാദമില്ല</translation>
 <translation id="2671423594960767771">ഗ്രൂപ്പ് പങ്കിടുക</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">പിന്നീട് പേ ചെയ്യുക</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="386224966259596343">അടുത്ത തവണ നിങ്ങൾ പ്രസക്തമായ ഫോം പൂരിപ്പിക്കുമ്പോൾ ഈ വിവരങ്ങൾ Wallet-ലേക്ക് സംരക്ഷിക്കാനുള്ള അവസരം ലഭിക്കും.</translation>
 <translation id="3868495844258915202">പൂർണ്ണ URL കാണിക്കുക</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" /> ഡൊമെയ്‌നിന് സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇല്ല</translation>
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="3878657761594430423">ഷീറ്റ് ഗ്രാബർ</translation>
 <translation id="3884810423191119660">സൈറ്റുകളിലേക്കും ആപ്പുകളിലേക്കും എളുപ്പത്തിൽ സൈൻ ഇൻ ചെയ്യാൻ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സംരക്ഷിക്കുക</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">നിങ്ങളുടെ ബ്രൗസിംഗ് മെച്ചപ്പെടുത്തൂ</translation>
 <translation id="5062321486222145940">Google ഡ്രൈവ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="5067540696062462445">ഡൗൺലോഡുകൾ</translation>
-<translation id="5070314445039955096">നിങ്ങൾ സൈറ്റിൽ നിന്ന് പുറത്തുകടക്കുമ്പോൾ "<ph name="SITE_DOMAIN" />" അനുമതികൾ ഓഫാക്കി റീസെറ്റ് ചെയ്യും</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} പേയ്‌മെന്റ് രീതിയിൽ {position}-ാമത്തേത്}other{{count} പേയ്‌മെന്റ് രീതികളിൽ {position}-ാമത്തേത്}}</translation>
 <translation id="5075939510584558547">എൻക്രിപ്ഷൻ ഇല്ലാതെ സംരക്ഷിക്കുക</translation>
 <translation id="5076534614343816664">നിരക്ക് ട്രാക്ക് ചെയ്യൽ</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Up ഉപയോഗിക്കാൻ നിങ്ങൾ സൈൻ ഇൻ ചെയ്തിരിക്കണം</translation>
 <translation id="5352128922772839949">ഫയൽ സംരക്ഷിക്കുക</translation>
 <translation id="5355191726083956201">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കിയിരിക്കുന്നു</translation>
-<translation id="5355871759168485600">നിങ്ങൾ ഈ സൈറ്റ് സന്ദർശിക്കുമ്പോഴെല്ലാം "<ph name="SITE_DOMAIN" />" എന്നതിന് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ അനുമതിയുണ്ട്</translation>
 <translation id="5359436665022446585">മെച്ചപ്പെട്ട ലിങ്ക് തുറക്കൽ</translation>
 <translation id="536067926684072644">ബുക്ക്‌മാർക്കുകൾ കാണിക്കുക</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} പാസ്‌കീ ഇമ്പോർട്ട് ചെയ്യാനായില്ല}other{{count} പാസ്‌കീകൾ ഇമ്പോർട്ട് ചെയ്യാനായില്ല}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">ഡിഫോൾട്ട് ബ്രൗസർ പ്രമോ അടയ്ക്കുക</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />നിങ്ങളുടെ ഫയൽ തിരഞ്ഞെടുക്കുക<ph name="END_BOLD" /> ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5613297089029360427">ഏറ്റവും പുതിയത് അനുസരിച്ച് അടുക്കുക</translation>
+<translation id="561349411957324076">പൂര്‍ത്തിയാക്കി</translation>
 <translation id="5614553682702429503">പാസ്‌വേഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="5617769621178348890">Files ആപ്പിൽ തുറക്കുക</translation>
 <translation id="5619871095170816857">കഴിഞ്ഞ 24 മണിക്കൂറിനുള്ളിൽ സമന്വയിപ്പിച്ച എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങൾ അവസാനം ഉപയോഗിച്ച തുറന്ന ടാബ് ഈ കാർഡ് കാണിക്കുന്നു.</translation>
@@ -2333,7 +2333,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകൾ</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="8173034266693057059">നീളം</translation>
-<translation id="8181328232274170248">നിങ്ങൾ ഈ സൈറ്റ് സന്ദർശിക്കുമ്പോഴെല്ലാം "<ph name="SITE_DOMAIN" />" എന്നതിന് നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ അനുമതിയുണ്ട്</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} എന്നതിന്}=2{{website_2}, {website_1} എന്നിവയ്ക്ക്}=3{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റൊരെണ്ണത്തിനും}other{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റ് {more_count} എണ്ണത്തിനും}}</translation>
 <translation id="8184895727539791845">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ Gemini-യെ അനുവദിക്കുന്നതിന്, iOS ക്രമീകരണത്തിൽ ക്യാമറ ഓണാക്കുക</translation>
 <translation id="8185076488803799132">ഇമ്പോർട്ട് ചെയ്യുക</translation>
@@ -2504,7 +2503,6 @@
 <translation id="8674716540979958118">നിങ്ങൾക്ക് അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകളുണ്ട്.</translation>
 <translation id="8679900250380464358">വായിക്കാനുള്ളവയുടെ ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="8680787084697685621">അക്കൗണ്ട് പ്രവേശന വിവരങ്ങള്‍ കാലഹരണപ്പെട്ടതാണ്.</translation>
-<translation id="868648444055742370">നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യാൻ "<ph name="SITE_DOMAIN" />" എന്നതിന് അനുമതിയില്ല</translation>
 <translation id="8690752723634292147">ഇല്ലാതാക്കൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="8692107307702113268">പാസ്‌വേഡിൽ 1000-ലേറെ പ്രതീകങ്ങൾ അടങ്ങിയിരിക്കുന്നു</translation>
 <translation id="8692689525339542358">അപകടകരമായ സൈറ്റുകളിൽ നിന്നും ഡൗൺലോഡുകളിൽ നിന്നും വിപുലീകരണങ്ങളിൽ നിന്നും പരിരക്ഷ നേടുക.</translation>
@@ -2650,6 +2648,7 @@
 <translation id="91023216973987714">പേയ്‌മെന്റ് രീതികൾ</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" എന്നതിൽ നിന്ന്</translation>
 <translation id="9107664647686727385">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ കണ്ടെത്താൻ പരിശോധിക്കുക</translation>
+<translation id="9115035712231910133">അറ്റാച്ച് ചെയ്ത ചിത്രം {title}</translation>
 <translation id="9119764377203471454">അറ്റാച്ച്‌മെന്റുകൾ ചേർക്കാനാകുന്നില്ല</translation>
 <translation id="9124387962554796433">Search-ഉം മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം.</translation>
 <translation id="9124978074365039456">ക്യാമറയും ഫോട്ടോ ഗാലറിയും ഉപയോഗിച്ച് ഷോപ്പ് ചെയ്യുക, വിവർത്തനം ചെയ്യുക, നിങ്ങൾ കാണുന്നത് തിരിച്ചറിയുക</translation>

@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Ychydig o bethau i roi cynnig arnynt</translation>
 <translation id="112308213915226829">Cuddio silff yn awtomatig</translation>
 <translation id="1129383337808748948">Ail-lwytho <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Rhaid cael o leiaf un llythyren neu symbol</translation>
 <translation id="1142002900084379065">Lluniau diweddar</translation>
 <translation id="114221662579355151">Mae hyn yn caniatáu mynediad camera ar gyfer <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, a phob ap a gwefan sydd â'r caniatâd camera. Mae'n bosib y bydd angen i chi ail-lwytho'r dudalen gwe neu ailddechrau'r ap.</translation>
 <translation id="1145593918056169051">Mae'r argraffydd wedi stopio</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Agor y tab newydd mewn ffenestr newydd</translation>
 <translation id="1536604384701784949">I ddefnyddio <ph name="USER_EMAIL_ADDRESS" />, mae angen i chi allgofnodi o'r holl gyfrifon yn gyntaf. I allgofnodi, dewiswch Canslo i fynd yn ôl. Yna dewiswch yr amser i agor yr ardal statws a dewiswch Allgofnodi. Yna mewngofnodwch i <ph name="USER_EMAIL_ADDRESS_2" /> eto.</translation>
 <translation id="15373452373711364">Cyrchwr llygoden mawr</translation>
+<translation id="1538808328818992871">Rhaid cael o leiaf <ph name="MIN_LENGTH" /> nod</translation>
 <translation id="1545331255323159851">Gweld lluniau, cyfryngau, a hysbysebion diweddar eich ffôn</translation>
 <translation id="1546492247443594934">Desg 2</translation>
 <translation id="1546930421365146760">Gofynnwch i'ch gweinyddwr osod y ddyfais hon ym mhanel Gweinyddwyr Google</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Cliciwch am ragor o ddewisiadau</translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="1557622599341396706">Dangos enw desg</translation>
+<translation id="1568242747239041185">Rhaid cael dau o'r canlynol: priflythrennau, llythrennau bach, rhifau neu symbolau</translation>
 <translation id="1569384531973824928">Mae hyn yn caniatáu mynediad ar gyfer pob ap a gwefan sydd â'r caniatadau camera a meicroffon. Mae'n bosib y bydd angen i chi ail-lwytho'r dudalen gwe neu ailddechrau'r ap.</translation>
 <translation id="1570235441606255261">Gosodwr Steam</translation>
 <translation id="1571697193564730395">Toglo Peidiwch ag Aflonyddu. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Crebachu Google Tasks</translation>
 <translation id="2208323208084708176">Modd bwrdd gwaith unedig</translation>
 <translation id="2215920961700443347">Dim rhyngrwyd. Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
+<translation id="2220572644011485463">PIN neu gyfrinair</translation>
 <translation id="2222841058024245321">Desg 7</translation>
 <translation id="2223384056430485343">Mewn sgrîn hollt</translation>
 <translation id="2224075387478458881">Ni chaniateir recordio'r sgrîn pan fydd cynnwys gwarchodedig yn weladwy</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Wedi seibio bysellau'r llygoden</translation>
 <translation id="2268731132310444948">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Unwaith y bydd Lansiwr wedi'i weithredu, byddwch yn cael bar chwilio uwch. Gallwch ddechrau teipio i chwilio am eich ffeiliau, apiau a rhagor. Gallwch hefyd gael atebion i gwestiynau am eich <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Allgofnodi o bob un</translation>
+<translation id="2273432041732361925">Rhaid peidio â chael nodau neu ddilyniannau sy'n ailadrodd o 4 neu fwy</translation>
 <translation id="2276987123919776440">15mun</translation>
 <translation id="2278668501808246459">Wrthi'n dechrau'r rheolwr cynwysyddion</translation>
 <translation id="2282073721614284166">Agor dolen mewn tab</translation>
@@ -1056,6 +1061,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4072805772816336153">Rhowch gynnig arall arni'n nes ymlaen</translation>
 <translation id="4077623680826964850">Terfyn amser pan fyddwch yn cychwyn neu'n ailgysylltu â VM.</translation>
 <translation id="4086921558679520050">Trowch switsh meic ffisegol ymlaen ar eich dyfais</translation>
+<translation id="4093173301198419723">Rhaid cael priflythrennau, llythrennau bach, rhifau a symbolau</translation>
 <translation id="4099874310852108874">Bu gwall rhwydwaith.</translation>
 <translation id="4101772068965291327">Agor y dudalen hafan</translation>
 <translation id="4102906002417106771">Ailgychwynnwch i ddefnyddio Powerwash</translation>
@@ -1280,6 +1286,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4668936527507421457">Rhaid i PIN ddefnyddio rhifau yn unig</translation>
 <translation id="4672539464599646374">Mae'r modd Arbed Batri wedi'i droi ymlaen</translation>
 <translation id="4673427585974421255">Cadw ymlaen</translation>
+<translation id="467510802200863975">Nid yw'r cyfrineiriau'n cyfateb</translation>
 <translation id="4677040906536311086">Dalen Google</translation>
 <translation id="468019262817532242">Ni all unrhyw un rannu â chi</translation>
 <translation id="468293128311738995">Apiau o'ch ffôn</translation>
@@ -1303,6 +1310,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Diweddaru dyfais i'r fersiwn flaenorol o fewn diwrnod}zero{Diweddaru dyfais i'r fersiwn flaenorol o fewn # diwrnod}two{Diweddaru dyfais i'r fersiwn flaenorol o fewn # ddiwrnod}few{Diweddaru dyfais i'r fersiwn flaenorol o fewn # diwrnod}many{Diweddaru dyfais i'r fersiwn flaenorol o fewn # diwrnod}other{Diweddaru dyfais i'r fersiwn flaenorol o fewn # diwrnod}}</translation>
 <translation id="4747410141429390146">Datglowch i weld hysbysiadau</translation>
 <translation id="4752784485658729358">Dim ond 6 desg sydd wedi'u cadw a ganiateir. Tynnwch ddesg i gadw un newydd.</translation>
+<translation id="4753084533826742808">Rhaid cael o leiaf 1 nod</translation>
 <translation id="4759238208242260848">Lawrlwythiadau</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + saeth i fyny</translation>
 <translation id="4762573482154983647">Cuddio apiau</translation>
@@ -1439,6 +1447,7 @@ Gallwch hefyd ddefnyddio'r llwybr byr bysellfwrdd. Yn gyntaf, amlygwch y testun,
 <translation id="5144005092084035179">Newid mewnbwn sain?</translation>
 <translation id="5145464978649806571">Os byddwch yn symud i ffwrdd o'ch dyfais, bydd eich sgrîn yn cloi yn awtomatig. Pan fyddwch o flaen eich dyfais, bydd eich sgrîn yn aros yn effro yn hirach. Os yw clo sgrîn wedi'i analluogi, bydd eich dyfais yn cysgu yn lle cloi.</translation>
 <translation id="5147567197700016471">Wedi'i ddatgloi</translation>
+<translation id="5148285448107770349">Rhaid i gyfrinair fod o leiaf 8 nod</translation>
 <translation id="5150070631291639005">Gosodiadau preifatrwydd</translation>
 <translation id="5155897006997040331">Cyflymder darllen</translation>
 <translation id="5158206172605340248">Gwrthodwyd y ddewislen nodau acen.</translation>
@@ -1559,6 +1568,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5474859849784484111">Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi nawr a lawrlwytho diweddariad. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).</translation>
 <translation id="547979256943495781">Silff i'r dde</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Cadarnhewch eich cyfrinair</translation>
 <translation id="5491186829646618080">Mae diweddariadau cadarnwedd ar gael</translation>
 <translation id="5503884284981862082">Agor/cau Google Assistant</translation>
 <translation id="550391772491508736">Parhau â chastio</translation>
@@ -1823,6 +1833,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6198252989419008588">Newid PIN</translation>
 <translation id="6199775032047436064">Ail-lwytho'r dudalen bresennol</translation>
 <translation id="6200515304866777730">Ni chefnogir hyn gan yr ap</translation>
+<translation id="6209589022625766110">Rhaid iddo fod o leiaf 8 nod o hyd a chynnwys o leiaf ddau o'r canlynol: priflythrennau, llythrennau bach, rhifau neu symbolau. Rhaid peidio â chael nodau neu ddilyniannau sy'n ailadrodd o 4 neu fwy.</translation>
 <translation id="6210042900243040400">Cysylltu <ph name="NAME" /> a gadwyd yn flaenorol i <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">Am 10 mun</translation>
 <translation id="6213808132343683860">Tynnu sgrinlun neu gwneud recordiad sgrîn rhannol</translation>
@@ -1857,6 +1868,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6297986260307280218">Anfon data defnydd a diagnostig. Helpwch i wella'ch profiad Android drwy anfon data diagnostig, dyfais a defnydd apiau yn awtomatig at Google. Bydd hyn yn helpu sefydlogrwydd system ac ap a gwelliannau eraill. Bydd rhywfaint o ddata cyfanredol hefyd yn helpu apiau a phartneriaid Google, megis datblygwyr Android. Gorfodir y <ph name="BEGIN_LINK1" />gosodiad<ph name="END_LINK1" /> hwn gan y perchennog. Mae'n bosib y bydd y perchennog yn dewis anfon data diagnostig a defnydd ar gyfer y ddyfais hon at Google. Os caiff eich gosodiad Gweithgarwch ar y We ac Apiau ychwanegol ei droi ymlaen, gellir cadw'r data hyn i'ch cyfrif Google. <ph name="BEGIN_LINK2" />Dysgu rhagor am fetrigau<ph name="BEGIN_LINK2_END" />Dysgu rhagor<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Addasu'r ddyfais hon yn yr ap</translation>
 <translation id="6298962879096096191">Defnyddio Google Play i osod apiau Android</translation>
+<translation id="6300478323573969040">Rhaid iddo fod o leiaf 12 nod o hyd a chynnwys priflythrennau, llythrennau bach, rhifau a symbolau. Rhaid peidio â chael nodau neu ddilyniannau sy'n ailadrodd o 4 neu fwy.</translation>
 <translation id="6304076460080088478">Cau neu leihau ffenestri Anhysbys i chwilio'ch sgrîn gyda Google Lens</translation>
 <translation id="6309219492973062892">Clicio neu dapio eiconau silff 1-8</translation>
 <translation id="6315170314923504164">Llais</translation>
@@ -2029,7 +2041,6 @@ Gosodiad newydd</translation>
 <translation id="6782919488259222803">Chwilio'r dudalen bresennol</translation>
 <translation id="6783348167101855071">Handlen dde isaf wedi'i dewis, defnyddiwch y bysellau saeth i symud</translation>
 <translation id="6786750046913594791">Cau'r ffolder</translation>
-<translation id="6792262051831399889">Ddim ar gael</translation>
 <translation id="6792351896138862473">Methu â lansio ap Kiosk heb ei gefnogi. Rhowch wybod i'ch gweinyddwr am y broblem hon.</translation>
 <translation id="679368458793552943">Chwyddo pan fydd y chwyddwydr ymlaen</translation>
 <translation id="6794287755901682422">Mae gan yr eitem hon: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2472,6 +2483,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="8054466585765276473">Wrthi'n cyfrifo amser y batri.</translation>
 <translation id="8063363226185507157">Gosodiadau hygyrchedd wedi'u cysoni</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Tabiau</translation>
 <translation id="8079538659226626406">Rhannu Sgrîn</translation>
 <translation id="8083540854303889870">Cadwyd ar gyfer nes ymlaen</translation>
@@ -2635,6 +2647,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8555757996376137129">Tynnu'r ddesg bresennol</translation>
 <translation id="8558521694042102707">Gall AI cynhyrchiol wneud camgymeriadau, gan gynnwys am bobl, felly gwiriwch ef ddwywaith.</translation>
 <translation id="8559845965695780508">Gwnaeth <ph name="USER" /> olygu</translation>
+<translation id="8567946600191652875">Rhaid iddo fod o leiaf 6 nod o hyd a chael o leiaf un llythyren neu symbol</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Cafodd y ddewislen ei symud i gornel dde waelod y sgrîn.</translation>
 <translation id="8581946341807941670">Pwyswch <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> a chliciwch ddolen</translation>
@@ -2808,7 +2821,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9034924485347205037">Ffeiliau Linux</translation>
 <translation id="9037818663270399707">Nid yw eich cysylltiad yn breifat ar gyfer yr holl draffig rhwydwaith</translation>
 <translation id="9047624247355796468">Agor gosodiadau ar gyfer <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Nid yw Bluetooth ar gael</translation>
 <translation id="9050999376345823055">Pwyswch "." i ryddhau</translation>
 <translation id="906458777597946297">Mwyhau'r ffenestr</translation>
 <translation id="9065203028668620118">Golygu</translation>

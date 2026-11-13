@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Vše je nastaveno!</translation>
 <translation id="1149483087970735785">Asistenční technologie</translation>
 <translation id="1150490752229770117">Toto je poslední automatická aktualizace softwaru a zabezpečení pro toto zařízení typu <ph name="DEVICE_TYPE" />. Chcete-li dostávat budoucí aktualizace, upgradujte na novější model. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">O systému ChromeOS</translation>
 <translation id="1155816283571436363">Připojování k telefonu</translation>
 <translation id="1160800016654917722">Okno se posunulo dolů a doleva</translation>
 <translation id="1164015913575846413">alt + kliknutí</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16×</translation>
 <translation id="1275936815032730048">spouštěč + šipka vpravo</translation>
 <translation id="1280332775949918163">Přichytit okno</translation>
+<translation id="1285625592773741684">Využívání dat je aktuálně nastaveno na možnost Mobilní data</translation>
 <translation id="1285815028662278915">Je možné, že váš mobilní datový tarif hotspot nepodporuje. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Noční režim se zapne automaticky za soumraku</translation>
 <translation id="1288300545283011870">Vlastnosti řeči</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Tímto deaktivujete rozšíření a resetujete nastavení na bezpečné výchozí hodnoty. Karty, soubory a cookies zůstanou zachovány. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Zvětšení obrazovky</translation>
 <translation id="1539727654733007771">Nejsou nastaveny žádné mobilní sítě. Stáhněte nový <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">Systém ChromeOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Vím, že nainstalované profily eSIM se neodstraní resetováním do továrního nastavení</translation>
 <translation id="1549275686094429035">Povoleno ARC</translation>
 <translation id="1554640914375980459">Při přijetí oznámení zablikat obrazovkou. Pokud jste citliví na světlo, používejte světelná oznámení opatrně.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">K určování polohy používat Wi-Fi nebo mobilní sítě</translation>
 <translation id="1650407365859096313">Otevře se na nové kartě, oprávnění je <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Aktivovat sdílení nablízko</translation>
+<translation id="1662146548738125461">O systému ChromeOS Flex</translation>
 <translation id="1663698992894057019">Pokud chcete mít nejnovější zabezpečení a software, upgradujte na nový Chromebook</translation>
 <translation id="1665328953287874063">Odemykejte svůj <ph name="DEVICE_TYPE" /> heslem nebo kódem PIN</translation>
 <translation id="1667842670298352129">Nechte si nahlas přečíst konkrétní text. V dolní části obrazovky vyberte ikonu Poslech vybraného textu a potom zvýrazněte text. Můžete také použít klávesovou zkratku: zvýrazněte text a potom stiskněte klávesu Hledat + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Poznámka: Otisk prstu může být méně bezpečný než silné heslo nebo PIN.</translation>
 <translation id="1724801751621173132">Režim vstupu</translation>
 <translation id="1741190788710022490">Adaptivní nabíjení</translation>
+<translation id="1745732479023874451">Spravovat kontakty</translation>
 <translation id="1751335846119670066">Pomoz mi přečíst</translation>
 <translation id="1755601632425835748">Velikost textu</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> je přemapováno na <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Ne, zůstat u jednoho přepínače</translation>
 <translation id="1842681835432895345">Vyloučit tento displej v režimu zrcadlení</translation>
 <translation id="1848219224579402567">Při zavření víka se odhlásit</translation>
+<translation id="185970820835152459">Můžete spravovat účty Google, ke kterým jste přihlášeni. Účty Google jsou používány v prohlížeči Chromium, Obchodu Play, Gmailu a dalších službách. Pokud chcete přidat účet někoho jiného, například člena rodiny, přidejte nového uživatele do zařízení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Studenější</translation>
 <translation id="1866589962721094893">Povolit aplikacím pro Android ovládat zařízení USB na tomto Chromebooku. O oprávnění budete požádáni pokaždé, když připojíte zařízení USB. Jednotlivé aplikace pro Android budou žádat o další oprávnění.</translation>
 <translation id="1877377290348678128">Štítek (volitelné)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2097950021134740304">Zrušit zapomenutí předplatného</translation>
 <translation id="2104166991923847969">Hotspot automaticky vypínat</translation>
+<translation id="2106831557840787829">Systém ChromeOS Flex by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Není vložena žádná SIM karta</translation>
 <translation id="2121825465123208577">Změnit velikost</translation>
 <translation id="2127372758936585790">Nabíječka má příliš nízký výkon</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Odstranit uživatele <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2363475280045770326">Při ukládání konfigurace došlo k chybě</translation>
+<translation id="236939127352773362">Když zařízení v okolí sdílejí obsah</translation>
 <translation id="237336063998926520">Určit polohu podle IP adresy</translation>
 <translation id="2373499590298659902">Klávesou „0“ stisknete a podržíte tlačítko myši</translation>
 <translation id="2375406435414127095">Připojte se k telefonu</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blokovat provoz bez VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Přesnost určování polohy poskytuje přesnější polohu pro aplikace a služby. Za tímto účelem Google pravidelně zpracovává informace o senzorech a bezdrátových signálech z vašeho zařízení, aby prostřednictvím crowdsourcingu určil umístění zdrojů bezdrátových signálů v okolí. Tento proces vás nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a obecné vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Výstupní zásobník je téměř plný</translation>
 <translation id="3390013585654699824">Podrobnosti o aplikaci</translation>
 <translation id="3390740059150071453">Podívejte se doleva</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">E-mailová adresa</translation>
 <translation id="3701028563242674350">Zatřesením zvětšit kurzor myši</translation>
 <translation id="3703699162703116302">Lístek byl obnoven</translation>
+<translation id="3703994572283698466">Systém ChromeOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Povolit Wi-Fi</translation>
 <translation id="370665806235115550">Načítání...</translation>
 <translation id="3707163604290651814">Jste přihlášeni jako <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Na tiskovém serveru byl nalezen tento počet tiskáren: <ph name="NUM_PRINTERS" /></translation>
 <translation id="371370241367527062">Přední mikrofon</translation>
 <translation id="37143699183660101">Stabilita kurzoru</translation>
+<translation id="3716540481907974026">Verze systému ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Nesprávný PIN. Zkuste to znovu.</translation>
 <translation id="3728681439294129328">Konfigurovat síťovou adresu</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Zobrazit podtržení pro kompoziční text</translation>
 <translation id="3789841737615482174">Instalovat</translation>
 <translation id="379509625511193653">Vypnuto</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + šipka nahoru</translation>
 <translation id="3798670284305777884">Reproduktor (interní)</translation>
 <translation id="3799128412641261490">Nastavení ovládání přepínači</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Vestavěná klávesnice</translation>
 <translation id="3917644013202553949">K synchronizaci souborů není k dispozici dostatek místa. Zkuste nějaké uvolnit.</translation>
 <translation id="3919229493046408863">Vypnout oznámení o zařízeních v okolí</translation>
+<translation id="3923184630988645767">Využití dat</translation>
 <translation id="3923494859158167397">Nejsou nastaveny žádné mobilní sítě</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Tuto síť mohou používat i ostatní uživatelé tohoto zařízení</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Rychlé odpovědi – definice</translation>
 <translation id="3994075804072562819">Povolit pluginu <ph name="SPECIFIC_NAME" /> ovládat zařízení USB.</translation>
 <translation id="3994530503403062649">Najděte tlačítka na tabletu</translation>
+<translation id="3997429360543082038">O systému ChromiumOS</translation>
 <translation id="4001540981461989979">Při pohybu zvýraznit kurzor myši</translation>
 <translation id="4005817994523282006">Metoda zjišťování časového pásma</translation>
+<translation id="4019629340646866719">Systém ChromiumOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopírovat podrobnosti sestavení</translation>
 <translation id="4028467762035011525">Přidat metody zadávání</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Pokud chcete přepnout na naposledy použitou metodu zadávání, stiskněte <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">hledat + šipka vpravo</translation>
 <translation id="405181879009056822">Nastavení systému ChromeOS</translation>
+<translation id="4054070260844648638">Viditelné pro všechny</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Chcete-li zobrazit dostupné tiskárny v síti, zkontrolujte připojení</translation>
 <translation id="4068776064906523561">Uložené otisky prstu</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, podoba: <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Najít další aplikace pro dotyková pera</translation>
 <translation id="4248401726442101648">Není připojen žádný fotoaparát</translation>
+<translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4249116869350613769">Spořič baterie</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="425411422794688815">Něco se pokazilo. Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda jsou zapnuté Bluetooth a Wi-Fi.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 účet Google}few{<ph name="EXTRA_ACCOUNTS" /> účty Google}many{<ph name="EXTRA_ACCOUNTS" /> účtu Google}other{<ph name="EXTRA_ACCOUNTS" /> účtů Google}}</translation>
 <translation id="4314497418046265427">Buďte po propojení telefonu se zařízením <ph name="DEVICE_TYPE" /> produktivnější</translation>
 <translation id="4314561087119792062">Přidat nový název přístupového bodu</translation>
+<translation id="4314815835985389558">Správa synchronizace</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Úložiště a napájení</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Počet návrhů</translation>
 <translation id="4606933160360542263">Vlastní kombinace kláves: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Když je vybráno levé tlačítko myši, klávesou „/“ dvakrát kliknete</translation>
+<translation id="4613863813562375431">Verze systému ChromiumOS</translation>
 <translation id="461661862154729886">Zdroj energie</translation>
 <translation id="4617880081511131945">Nelze navázat spojení</translation>
 <translation id="4620757807254334872">myš</translation>
@@ -1136,6 +1155,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4777943778632837590">Konfigurovat názvové servery sítě</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4779766576531456629">Přejmenovat mobilní síť eSIM</translation>
+<translation id="4789550509729954245">Zobrazit oznámení, když zařízení v okolí sdílí obsah</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Povolit akceleraci TrackPointu</translation>
 <translation id="479664067938200069">Aplikace nainstalované aplikací <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4964544790384916627">Zadokovat okno</translation>
 <translation id="4964673849688379040">Kontrola...</translation>
 <translation id="4967571733817147990">Přizpůsobení tlačítek myši</translation>
+<translation id="4970880042055371251">Verze systému ChromeOS</translation>
 <translation id="4972129977812092092">Úprava tiskárny</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
 <translation id="4979263087381759787">Pro vývojáře</translation>
@@ -1275,6 +1296,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5193978546360574373">Touto akcí odeberete v tomto Chromebooku přístup k Disku Google, včetně přístupu ke všem souborům, které byly zpřístupněny offline</translation>
 <translation id="5196790039230503600">Použijte gesto a pak pohybem hlavy ukažte, kam chcete položku přesunout. Opětovným provedením gesta ji pusťte.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">K přenosu nikdy nepoužívat mobilní data</translation>
 <translation id="5207949376430453814">Zvýraznit textový kurzor</translation>
 <translation id="5208926629108082192">Informace o mobilní síti zařízení</translation>
 <translation id="5208988882104884956">Poloviční šířka</translation>
@@ -1307,6 +1329,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5331568967879689647">Systémová aplikace ChromeOS</translation>
 <translation id="5334113802138581043">Přístup k mikrofonu</translation>
 <translation id="5336689872433667741">Kurzor a touchpad</translation>
+<translation id="5337926771328966926">Aktuální název zařízení je <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Odesílat diagnostické údaje a údaje o využití</translation>
 <translation id="5369694795837229225">Nastavte vývojářské prostředí Linuxu</translation>
 <translation id="5377367976106153749">Zapnout přístup k fotoaparátu?</translation>
@@ -1444,6 +1467,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5833726373896279253">Toto nastavení může upravit pouze vlastník.</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Pouzdro</translation>
+<translation id="5840680448799937675">Soubory se vždy budou sdílet offline</translation>
 <translation id="5841270259333717135">Nakonfigurovat ethernet</translation>
 <translation id="5842497610951477805">Aktivace Bluetooth</translation>
 <translation id="5846200638699387931">Chyba syntaxe vztahu: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5924438086390153180">Před zkopírováním nebo přesunutím souborů Microsoft na Disk Google se zeptat</translation>
 <translation id="5939518447894949180">Resetovat</translation>
 <translation id="594048410531370124">Nerozpoznaná klávesa. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>
+<translation id="5942779427914696408">Viditelnost zařízení</translation>
 <translation id="5945192511027649793">Vypnout touchpad</translation>
 <translation id="5947651424015173580">Dvakrát kliknout myší</translation>
 <translation id="594993197557058302">Stiskněte 1–4 modifikační klávesy (ctrl, alt, shift, hledat nebo spouštěč) a 1 další klávesu. Můžete také vybrat jednu klávesu.</translation>
@@ -1491,10 +1516,12 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5961545272769624207">Přiřadit gesto</translation>
 <translation id="5968022600320704045">Žádné výsledky hledání</translation>
 <translation id="5969728632630673489">Oznámení o klávesové zkratce bylo zavřeno</translation>
+<translation id="5979353814339191480">Tato možnost se týká Chromebooků s datovým tarifem, hardwarovým klíčem pro mobilní síť nebo tetheringu na přenosný hotspot</translation>
 <translation id="5985556342298151179">Aplikace pro Chrome nainstalovaná administrátorem zařízení.</translation>
 <translation id="5986442691296752186">Povolit linuxovým aplikacím ovládat zařízení USB.</translation>
 <translation id="598810097218913399">Odstranit přiřazení</translation>
 <translation id="5988563937187882754">Podívejte se doprava</translation>
+<translation id="5990266201903445068">Pouze Wi-Fi</translation>
 <translation id="5992225669837656567">Všechny myši byly odpojeny</translation>
 <translation id="5999630716831179808">Hlasy</translation>
 <translation id="6002458620803359783">Preferované hlasy</translation>
@@ -1509,6 +1536,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6045114302329202345">Primární tlačítko TrackPointu</translation>
 <translation id="6048747414605857443">Vyberte a přizpůsobte hlasy převodu textu na řeč pro ChromeVox a poslech vybraného textu</translation>
 <translation id="6050189528197190982">Stupně šedé</translation>
+<translation id="6054961935262556546">Změnit viditelnost</translation>
 <translation id="6059276912018042191">Nedávno použité karty Chromu</translation>
 <translation id="6059925163896151826">Zařízení USB</translation>
 <translation id="6064764629679333574">Zlepšit kvalitu zvuku mikrofonu připojeného přes Bluetooth převzorkováním zvuku s nízkým rozlišením na zvuk s vysokým rozlišením.</translation>
@@ -1567,6 +1595,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6265159465845424232">Před zkopírováním nebo přesunutím souborů Microsoft do úložiště Microsoft OneDrive se zeptat</translation>
 <translation id="6265687851677020761">Odebrat port</translation>
 <translation id="6266532094411434237">Připojování k zařízení <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
 <translation id="6270309713620950855">Připomenutí ztlumení</translation>
 <translation id="6274089201566806618">Připojování k zařízení <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekundy</translation>
@@ -1618,6 +1647,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6453921811609336127">Pokud chcete přepnout na další metodu zadávání, stiskněte <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mezerník<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Smazat tento slovník</translation>
 <translation id="6463596731306859179">Máte problémy s nechtěnými vyskakovacími okny nebo jiným neočekávaným chováním? Někdy mohou aplikace a rozšíření, které nainstalujete, změnit nastavení systému ChromeOS, aniž byste o tom věděli.</translation>
+<translation id="6465841119675156448">Bez internetu</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> pak může:</translation>
 <translation id="6469557521904094793">Zapnout mobilní síť</translation>
 <translation id="6470120577693311302">Světelná oznámení</translation>
@@ -1668,6 +1698,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6626581113916585374">Režim efektů</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Zástupce výběru</translation>
+<translation id="6632473616050862500">Systém ChromeOS Flex by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Vypnout Rychlé párování</translation>
 <translation id="6647690760956378579">Náhled přirozeného hlasu</translation>
 <translation id="6650072551060208490">Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
@@ -1711,6 +1742,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6775163072363532304">Zde se budou zobrazovat dostupná zařízení.</translation>
 <translation id="6776729248872343918">Aktivovat Rychlé párování</translation>
 <translation id="6777845730143344223">Další informace o předplatných Passpoint</translation>
+<translation id="6779406956731413166">Systém ChromiumOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Zapomenout toto zařízení?</translation>
 <translation id="6783667414610055871">Nastavení Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Reverzní posouvání <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7280649757394340890">Nastavení hlasu převodu textu na řeč</translation>
 <translation id="7282547042039404307">Plynulé</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7303485269821975179">Nastavit heslo pro zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Vysoký</translation>
 <translation id="7308643132139167865">Jazyky webových stránek</translation>
@@ -1873,6 +1906,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7409599290172516453">Poslední fotky</translation>
 <translation id="7414464185801331860">18×</translation>
 <translation id="7417435070053325657">Zablokováno: <ph name="BLOCKED_APPS_SIZE" /> z <ph name="APPS_LIST_SIZE" /> aplikací</translation>
+<translation id="7423425410216218516">Viditelnost je zapnutá na <ph name="MINUTES" /> min</translation>
 <translation id="7423513079490750513">Odstranit: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Pomozte mi s psaním</translation>
 <translation id="7429415133937917139">Simuluje výstup obnovitelného hmatového displeje na panelu ChromeVox v horní části obrazovky</translation>
@@ -1919,11 +1953,13 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7578137152457315135">Nastavení otisků prstů</translation>
 <translation id="7578692661782707876">Zadejte potvrzovací kód.</translation>
 <translation id="7582582252461552277">Preferovat tuto síť</translation>
+<translation id="7582844466922312471">Mobilní data</translation>
 <translation id="7587806318633605613">Historie návrhů</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
 <translation id="7592060599656252486">Některé</translation>
 <translation id="7602173054665172958">Správa tisku</translation>
 <translation id="7605163396341021431">Povolit aplikacím pro Android ovládat zařízení USB na tomto Chromebooku</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Předvolby Androidu</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Aktivace funkcí připojeného telefonu.</translation>
@@ -1934,12 +1970,14 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7632437836497571618">Vyhledávání webů prostřednictvím zabezpečeného připojení</translation>
 <translation id="7634337648687970851">Obnovení místních dat aktuálně není podporováno.</translation>
 <translation id="7640256527901510478">IMEI vašeho zařízení je <ph name="IMEI_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Tato čísla lze použít k aktivaci služby.</translation>
+<translation id="7640308610547854367">Vrátili jste se k předchozí verzi systému ChromeOS. Pokud chcete získat aktualizace, počkejte, až bude k dispozici další verze.</translation>
 <translation id="7641513591566880111">Název nového profilu</translation>
 <translation id="764178579712141045">Uživatel <ph name="USER_EMAIL" /> byl přidán</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7648048654005891115">Styl mapy kláves</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Je nastaven 1 otisk prstu}few{Jsou nastaveny {COUNT} otisky prstů}many{Je nastaveno {COUNT} otisku prstu}other{Je nastaveno {COUNT} otisků prstů}}</translation>
+<translation id="7650677314924139716">Využívání dat je aktuálně nastaveno na možnost Pouze Wi-Fi</translation>
 <translation id="7651400349472467012">K dispozici je okamžitý hotspot</translation>
 <translation id="7651784568388208829">Pokračování úloh Telefonního centra</translation>
 <translation id="7658239707568436148">Zrušit</translation>
@@ -2030,6 +2068,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Překlad</translation>
 <translation id="7915457674565721553">Chcete-li nastavit rodičovskou kontrolu, připojte se k internetu</translation>
+<translation id="7917876797003313048">Můžete spravovat účty Google, ke kterým jste přihlášeni. Účty Google jsou používány v prohlížeči Chrome, Obchodu Play, Gmailu a dalších službách. Pokud chcete přidat účet někoho jiného, například člena rodiny, přidejte nového uživatele do zařízení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Přidat slova, která má kontrola pravopisu přeskakovat</translation>
 <translation id="7921347341284348270">V tomto spravovaném účtu oznámení svého telefonu zobrazit nemůžete. Zkuste to znovu s jiným účtem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -2194,6 +2233,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="8431977087510901105">Nastavení kurzoru byla resetována</translation>
 <translation id="8437209419043462667">Americká klávesnice</translation>
 <translation id="8439506636278576865">Nabízet překlad stránek v tomto jazyce</translation>
+<translation id="8449347986464073209">Vymazat a odhlásit se</translation>
 <translation id="8451512073679317615">asistent</translation>
 <translation id="8455775311562941553">Připojeno k zařízení <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Přečíst text pod myší</translation>
@@ -2319,6 +2359,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="8872774989979382243">Zvuk je vypnutý. Zapnout zvuk.</translation>
 <translation id="888256071122006425">Nastavení myši a touchpadu</translation>
 <translation id="8885449336974696155">Pomozte s vylepšováním systému ChromeOS tím, že nahlásíte <ph name="BEGIN_LINK" />aktuální nastavení<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Mohou být účtovány poplatky za mobilní data</translation>
 <translation id="8890529496706615641">Profil se nepodařilo přejmenovat. Zkuste to znovu nebo požádejte o technickou podporu operátora.</translation>
 <translation id="8894761918470382415">Ochrana přístupu k datům pro periferní zařízení</translation>
 <translation id="8896830132794747524">Rychlejší pohyby myši posunou kurzor dále</translation>
@@ -2344,6 +2385,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="8978939272793553320">Zařízení <ph name="DEVICE_NAME" /> bylo odpojeno</translation>
 <translation id="8980345560318123814">Zprávy zpětné vazby</translation>
 <translation id="8981825781894055334">Dochází papír</translation>
+<translation id="8984694057134206124">Budete viditelní pro všechny po dobu <ph name="MINUTES" /> minut. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Práh detekce</translation>
 <translation id="8986362086234534611">Odstranit</translation>
 <translation id="8991694323904646277">Žádný fotoaparát</translation>
@@ -2390,6 +2432,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="9098860402274800697">Odstranit Google Play a aplikace pro Android</translation>
 <translation id="910000385680858937">Povoleno – <ph name="PERMISSION_DETAILS" />. Připojte k zařízení mikrofon.</translation>
 <translation id="9100416672768993722">Pokud chcete přepnout na naposledy použitou metodu zadávání, stiskněte <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />mezerník<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Využívání dat je aktuálně nastaveno na možnost Bez internetu</translation>
 <translation id="9108294543511800041">Nyní můžete zobrazit nedávné fotky, média a oznámení v telefonu</translation>
 <translation id="9109122242323516435">Uvolněte místo smazáním souborů z úložiště zařízení.</translation>
 <translation id="9111330022786356709">Přidejte nebo vyhledejte tlačítka na myši</translation>

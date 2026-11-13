@@ -726,7 +726,6 @@
 <translation id="22081806969704220">트레이 3</translation>
 <translation id="2210794033760923560">보고서 업로드</translation>
 <translation id="2212735316055980242">정책을 찾을 수 없음</translation>
-<translation id="2213606439339815911">항목을 가져오는 중...</translation>
 <translation id="2213612003795704869">페이지가 인쇄됨</translation>
 <translation id="2214086901479959524">공유 탭 그룹을 계속 사용하려면 Chrome을 업데이트하세요.</translation>
 <translation id="2214453882118345682">카메라를 사용해 지금 보고 있는 항목을 쇼핑하고, 번역하고, 무엇인지 알아보세요</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">기존 기술 이벤트가 발생하는 페이지의 제한된 URL 목록</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{탭 1개 공유 예정}other{탭 {NUM_TABS}개 공유 예정}}</translation>
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
+<translation id="2358479643736965923">이 탭에서 Google AI 검색 대답을 확인하세요.</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="236000571258713023">차량</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">월렛에 이벤트 티켓을 저장하세요</translation>
 <translation id="2925454999967523701">문서 만들기 버튼, 새 Google 문서를 빠르게 만들려면 활성화하세요.</translation>
 <translation id="2925673989565098301">배달 방법</translation>
+<translation id="2927328994673424423">2주 전</translation>
 <translation id="2928426578619531300">연결된 사용자</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}}</translation>
 <translation id="2930531075747147366">다른 기기의 탭</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">이 탭으로 전환합니다.</translation>
 <translation id="3144458715650412431">테스트 정책이 적용되었습니다. chrome://policy/test에서 정책을 검토하고 재설정하세요. 관리자 정책은 적용되지 않습니다.</translation>
 <translation id="3145945101586104090">응답 디코딩 실패</translation>
-<translation id="3149865382039202168">정보를 <ph name="GOOGLE_WALLET_TITLE" />에 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="ACCOUNT" />의 비공개 패스 설정에서 <ph name="HOW_INFO_IS_USED_LINK" />을(를) 관리할 수 있습니다. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">일시적인 서버 오류</translation>
 <translation id="3150889484970506196">시트 만들기 버튼, 새 Google 시트를 빠르게 만들려면 활성화하세요.</translation>
 <translation id="3154506275960390542">이 페이지에 포함된 양식은 안전하게 제출되지 않을 수 있습니다. 전송되는 데이터는 전송 중에 다른 사람이 볼 수 있으며 서버에서 수신하는 데이터를 변경하기 위해 공격자가 수정할 수 있습니다.</translation>
@@ -1521,7 +1521,6 @@
 <translation id="3558335486599406178">Google 월렛에 IBAN이 저장되었습니다.</translation>
 <translation id="3558573058928565255">낮</translation>
 <translation id="3559897352860026926">관리자에게 <ph name="CLOUD_PROVIDER" /> 구성 설정을 확인해 달라고 요청하세요.</translation>
-<translation id="3560824484345057728">관련 사이트 보기</translation>
 <translation id="3566021033012934673">연결이 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="3566336457819493938">215x315mm</translation>
 <translation id="3566681680543111735">변형 문자열 복사</translation>
@@ -2164,7 +2163,6 @@
 <translation id="4603727370377253901">항공편 예약</translation>
 <translation id="4607608436550361748">Chrome 도움말 보기</translation>
 <translation id="460848736049414407">관리자가 차단함</translation>
-<translation id="4610279718074907952"><ph name="SET_OWNER" />에서 정의한 그룹(내 활동을 볼 수 있음)에 속하는 사이트입니다.</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> 앱으로 <ph name="MERCHANT_ORIGIN" /> 주문을 처리하는 중에 오류가 발생했습니다.</translation>
 <translation id="4612904677925722054">이 사이트에는 미성년자 부적합 콘텐츠가 포함되어 있을 수 있습니다. 부모님 또는 보호자가 이 웹사이트 방문을 허용해야 합니다.</translation>
 <translation id="4613873770449493819">URL은 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 도메인을 가리켜야 합니다.</translation>
@@ -3711,7 +3709,6 @@
 <translation id="7173338713290252554">웹에서의 가격 변동 내역</translation>
 <translation id="7174545416324379297">병합됨</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}other{<ph name="SHIPPING_OPTION_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />개}}</translation>
-<translation id="7180611975245234373">새로고침</translation>
 <translation id="7181261019481237103">시크릿 창 열기</translation>
 <translation id="7182878459783632708">설정된 정책 없음</translation>
 <translation id="7186833457841277072">봉투(잉크젯)</translation>
@@ -4176,7 +4173,6 @@
 <translation id="7932579305932748336">코팅</translation>
 <translation id="79338296614623784">올바른 전화번호를 입력하세요.</translation>
 <translation id="7934414805353235750"><ph name="URL" />에서 보호된 콘텐츠를 재생하려고 합니다. Google에서 기기의 ID를 인증해야 합니다.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">움직임 감지 센서가 허용되었습니다</translation>
 <translation id="7937163678541954811">더 빠른 결제를 위해 이 카드의 CVC가 암호화되어 기기에 저장됩니다.</translation>
 <translation id="7937554595067888181">만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4224,7 +4220,6 @@
 <translation id="7999482381722829925">방별로 우선순위를 정하고 놓치기 쉬운 부분을 명시해서 대청소 체크리스트를 만들어 줘.</translation>
 <translation id="8001912761979890298">이 서버가 Chromium이나 웹 트래픽 암호화를 위한 시스템 구성에서 신뢰하지 않는 보안 인증서를 사용하고 있기 때문에 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />인증서 보기<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">다른 탭이나 프로그램을 종료하여 메모리를 확보하세요.</translation>
-<translation id="8002230960325005199">새 탭에서 관련 사이트 보기</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8009225694047762179">비밀번호 관리</translation>
@@ -4265,7 +4260,6 @@
 <translation id="8079976827192572403">위험한 사이트</translation>
 <translation id="8086971161893892807">초고</translation>
 <translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" />에서 결제를 처리하기 위해 <ph name="APP_ORIGIN" />을 로드하는 중입니다.</translation>
-<translation id="8088680233425245692">글을 조회하지 못했습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8091372947890762290">활성화 요청이 서버에서 대기 중</translation>
 <translation id="8092254339843485299">6x8인치</translation>
@@ -4904,7 +4898,6 @@
 <translation id="9199905725844810519">인쇄가 차단됨</translation>
 <translation id="9204089334327209740">업로드가 완료되면 <ph name="CLOUD_PROVIDER" />에서 파일을 수정할 수 있습니다. 휴지통에 있는 파일을 포함한 로컬 저장용량이 자동으로 삭제됩니다.</translation>
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
-<translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>
 <translation id="9209339767782560829">로그인 인증서를 사용하는 중에 문제가 발생했습니다.</translation>
 <translation id="9210152531668884481">주소</translation>
 <translation id="9213433120051936369">디자인 사용자설정</translation>

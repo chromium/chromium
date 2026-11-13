@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">ყველაფერი მზადაა!</translation>
 <translation id="1149483087970735785">დამხმარე ტექნოლოგია</translation>
 <translation id="1150490752229770117">ეს არის პროგრამული უზრუნველყოფისა და უსაფრთხოების ბოლო განახლება, რომელსაც თქვენი <ph name="DEVICE_TYPE" /> იღებს. მომავალი განახლებების მისაღებად გადადით ახალ მოდელზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS-ის შესახებ</translation>
 <translation id="1155816283571436363">მიმდინარეობს თქვენს ტელეფონთან დაკავშირება</translation>
 <translation id="1160800016654917722">ფანჯარამ გადაინაცვლა ქვემოთ და მარცხნივ</translation>
 <translation id="1164015913575846413">alt + დაწკაპუნება</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">launcher + მარჯვნივ მიმართული ისარი</translation>
 <translation id="1280332775949918163">ფანჯრის გადატანა</translation>
+<translation id="1285625592773741684">მონაცემთა გადაცემისთვის ამჟამად არჩეული გაქვთ „მობილური ინტერნეტი“</translation>
 <translation id="1285815028662278915">უსადენო ქსელი, შესაძლოა, მხარდაუჭერელი იყოს თქვენი მობილური ინტერნეტის მიერ. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">ღამის განათება ავტომატურად ჩაირთვება მზის ჩასვლისას</translation>
 <translation id="1288300545283011870">მეტყველების პარამეტრები</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">ეს მოქმედება გათიშავს გაფართოებებს და დააბრუნებს თქვენს პარამეტრებს უსაფრთხო, ნაგულისხმევ მნიშვნელობებზე. ჩანართები, ფაილები და ქუქი-ჩანაწერები შენარჩუნდება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">სრულეკრანიანი ლუპა</translation>
 <translation id="1539727654733007771">მობილური ქსელები დაყენებული არ არის. ჩამოტვირთეთ ახალი <ph name="BEGIN_LINK" />პროფილი.<ph name="END_LINK" /></translation>
+<translation id="1547295885616600893">ChromeOS მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="1547808936554660006">მესმის, რომ დაინსტალირებული eSIM პროფილები არ ამოიშლება Powerwash-ით</translation>
 <translation id="1549275686094429035">ARC ჩართულია</translation>
 <translation id="1554640914375980459">ეკრანის ციმციმი შეტყობინების მიღებისას. გამოიყენეთ ბლიც გაფრთხილებები სიფრთხილით, თუ სინათლისადმი მგრძნობიარე ხართ.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">მდებარეობის დასადგენად Wi-Fi ან მობილური ქსელების გამოყენება</translation>
 <translation id="1650407365859096313">გაიხსნება ახალ ჩანართში, ნებართვად განსაზღვრულია „<ph name="PERMISSION_STATE" />“</translation>
 <translation id="1652326691684645429">მახლობლად გაზიარების გააქტიურება</translation>
+<translation id="1662146548738125461">ChromeOS Flex-ის შესახებ</translation>
 <translation id="1663698992894057019">უახლესი პროგრამული უზრუნველყოფითა და უსაფრთხოების ფუნქციებით რომ ისარგებლოთ, გამოცვალეთ თქვენი Chromebook</translation>
 <translation id="1665328953287874063">თქვენი <ph name="DEVICE_TYPE" /> რომ განბლოკოთ, გამოიყენეთ პაროლი ან PIN-კოდი.</translation>
 <translation id="1667842670298352129">მოისმინეთ კონკრეტული ტექსტი ხმამაღლა. პირველ რიგში, აირჩიეთ წარმოსათქმელად მონიშვნის ხატულა ეკრანის ქვედა ნაწილში, შემდეგ კი გამოყავით ტექსტი. შეგიძლიათ კლავიატურის მალსახმობის გამოყენებაც: გამოყავით ტექსტი, შემდეგ კი დააჭირეთ კლავიატურის მალსახმობს Search + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">შენიშვნა: თქვენი თითის ანაბეჭდი შეიძლება ძლიერ პაროლზე ან PIN-კოდზე ნაკლებად საიმედო იყოს.</translation>
 <translation id="1724801751621173132">შეყვანის რეჟიმი</translation>
 <translation id="1741190788710022490">ადაპტირებადი დატენა</translation>
+<translation id="1745732479023874451">კონტაქტების მართვა</translation>
 <translation id="1751335846119670066">წაკითხვაში დახმარება</translation>
 <translation id="1755601632425835748">ტექსტის ზომა</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> შეიცვალა და გახდა <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">არა, მსურს 1 გადამრთველის შენარჩუნება</translation>
 <translation id="1842681835432895345">ამ ეკრანის გამორიცხვა სარკის რეჟიმში</translation>
 <translation id="1848219224579402567">სისტემიდან გამოსვლა თავსახურის დახურვისას</translation>
+<translation id="185970820835152459">შეგიძლიათ მართოთ თქვენი სისტემაში შესული Google ანგარიშები. თქვენი Google ანგარიშები გამოიყენება Chromium ბრაუზერისთვის, Play Store-ისთვის, Gmail-ისთვის და სხვა პროდუქტებისთვის. თუ სხვისი, მაგალითად, ოჯახის წევრის, ანგარიშის დამატება გსურთ, სანაცვლოდ დაამატეთ ახალი პიროვნება თქვენს <ph name="DEVICE_TYPE" />-ს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">უფრო ცივი</translation>
 <translation id="1866589962721094893">მიეცით Android აპებს ამ Chromebook-ზე USB მოწყობილობებზე წვდომის უფლება ნებართვა მოთხოვნილი იქნება USB მოწყობილობის ყოველი მიერთებისას. ცალკეული Android აპები დამატებით ნებართვებს მოითხოვს.</translation>
 <translation id="1877377290348678128">ლეიბლი (არასავალდებულო)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">ხმა</translation>
 <translation id="2097950021134740304">დავიწყებული გამოწერის გაუქმება</translation>
 <translation id="2104166991923847969">უსადენო ქსელის ავტოგამორთვა</translation>
+<translation id="2106831557840787829">ChromeOS Flex და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო<ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="2114995631896158695">SIM ბარათი ჩასმული არ არის</translation>
 <translation id="2121825465123208577">ზომის შეცვლა</translation>
 <translation id="2127372758936585790">დამტენის დაბალი მუხტი</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">გსურთ <ph name="USER_NAME" />-ის ამოშლა?</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2363475280045770326">შეცდომა კონფიგურაციის შენახვისას</translation>
+<translation id="236939127352773362">როცა მოწყობილობები ახლომახლო აზიარებენ</translation>
 <translation id="237336063998926520">მდებარეობის დასადგენად თქვენი IP მისამართის გამოყენება</translation>
 <translation id="2373499590298659902">გამოიყენეთ „0“, რომ ხანგრძლივად დააჭიროთ მაუსის ღილაკს</translation>
 <translation id="2375406435414127095">დაუკავშირდით თქვენს ტელეფონს</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">VPN-ის გარეშე ტრაფიკის დაბლოკვა</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">მდებარეობის სიზუსტე უზრუნველყოფს აპებისა და სერვისებისთვის უფრო ზუსტ მდებარეობებს. ამისთვის Google პერიოდულად დაამუშავებს ინფორმაციას მოწყობილობის სენსორებისა და უსადენო სიგნალების შესახებ თქვენი მოწყობილობიდან, რათა განსაზღვროს უსადენო სიგნალების მდებარეობა. ისინი, თქვენი ვინაობის იდენტიფიცირების გარეშე, გამოიყენება მდებარეობის სიზუსტის და მდებარეობაზე დაფუძნებული სერვისების გასაუმჯობესებლად და Google სერვისების გასაუმჯობესებლად, უზრუნველსაყოფად და შესანარჩუნებლად, Google-ისა და მესამე მხარის ლეგიტიმური ინტერესების საფუძველზე მომხმარებლების მოთხოვნების დასაკმაყოფილებლად.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">გამომავალი ლანგარი თითქმის სავსეა</translation>
 <translation id="3390013585654699824">აპის შესახებ</translation>
 <translation id="3390740059150071453">გაიხედეთ მარცხნივ</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">ელფოსტის მისამართი</translation>
 <translation id="3701028563242674350">შეანჯღრიეთ მაუსის კურსორი, რომ გაადიდოთ</translation>
 <translation id="3703699162703116302">ბილეთი განახლდა</translation>
+<translation id="3703994572283698466">ChromeOS და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო <ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="370649949373421643">ჩართეთ Wi-Fi</translation>
 <translation id="370665806235115550">იტვირთება…</translation>
 <translation id="3707163604290651814">ამჟამად სისტემაში შესული ხართ, როგორც <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">ბეჭდვის სერვერზე მოიძებნა <ph name="NUM_PRINTERS" /> პრინტერი</translation>
 <translation id="371370241367527062">წინა მიკროფონი</translation>
 <translation id="37143699183660101">კურსორის სტაბილურობა</translation>
+<translation id="3716540481907974026">ChromeOS Flex-ის ვერსია</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN-კოდი არასწორია. ცადეთ ხელახლა</translation>
 <translation id="3728681439294129328">ქსელის მისამართის კონფიგურაცია</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">ხაზგასმის ჩვენება შედგენილი ტექსტისთვის</translation>
 <translation id="3789841737615482174">ინსტალაცია</translation>
 <translation id="379509625511193653">გამორთული</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + ზემოთ მიმართული ისარი</translation>
 <translation id="3798670284305777884">დინამიკი (შიდა)</translation>
 <translation id="3799128412641261490">გადამრთველით წვდომის პარამეტრები</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">ჩაშენებული კლავიატურა</translation>
 <translation id="3917644013202553949">თქვენი ფაილების სინქრონიზაციისთვის მეხსიერება არასაკმარისია. ცადეთ სივრცის გათავისუფლება.</translation>
 <translation id="3919229493046408863">გამორთეთ შეტყობინებები, როცა მოწყობილობები ახლომახლოა</translation>
+<translation id="3923184630988645767">მონაცემთა მოხმარება</translation>
 <translation id="3923494859158167397">მობილური ქსელები დაყენებული არ არის</translation>
 <translation id="3924145049010392604">მეტა</translation>
 <translation id="3925926055063465902">ამ ქსელის გამოყენებას ამ მოწყობილობის სხვა მომხმარებლებიც შეძლებენ</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">სწრაფი პასუხები — განმარტება</translation>
 <translation id="3994075804072562819">მიეცით <ph name="SPECIFIC_NAME" />-ს USB მოწყობილობების მართვის უფლება.</translation>
 <translation id="3994530503403062649">განსაზღვრეთ თქვენი ტაბლეტის ღილაკები</translation>
+<translation id="3997429360543082038">ChromiumOS-ის შესახებ</translation>
 <translation id="4001540981461989979">მაუსის კურსორის გამოყოფა გადაადგილებისას</translation>
 <translation id="4005817994523282006">სასაათო სარტყლის ამოცნობის მეთოდი</translation>
+<translation id="4019629340646866719">ChromiumOS და <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ის შემუშავების გარემო <ph name="END_LINK_LINUX_OSS" /> მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის დამატებითი პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">ანაწყობის დეტალების კოპირება</translation>
 <translation id="4028467762035011525">შეყვანის მეთოდების დამატება</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">შეყვანის ბოლოს გამოყენებულ მეთოდზე გადასართავად დააჭირეთ შემდეგს: <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">search + მარჯვნივ მიმართული ისარი</translation>
 <translation id="405181879009056822">ChromeOS-ის პარამეტრები</translation>
+<translation id="4054070260844648638">ხილულია ყველასთვის</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">თქვენს ქსელში ხელმისაწვდომი პრინტერების სანახავად შეამოწმეთ კავშირი</translation>
 <translation id="4068776064906523561">შენახული თითის ანაბეჭდები</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, კატეგორია <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">სტილუსის მეტი აპის პოვნა</translation>
 <translation id="4248401726442101648">კამერა დაკავშირებული არ არის</translation>
+<translation id="424864128008805179">გსურთ Chrome-იდან გამოსვლა?</translation>
 <translation id="4249116869350613769">ბატარეის დამზოგი</translation>
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
 <translation id="425411422794688815">წარმოიქმნა შეფერხება. დარწმუნდით, რომ განბლოკილი ტელეფონი ახლოს გაქვთ და მასზე ჩართულია Bluetooth და Wi-Fi.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google ანგარიში}other{<ph name="EXTRA_ACCOUNTS" /> Google ანგარიში}}</translation>
 <translation id="4314497418046265427">იყავით უფრო პროდუქტიული — დააკავშირეთ თქვენი ტელეფონი თქვენს <ph name="DEVICE_TYPE" />-ს</translation>
 <translation id="4314561087119792062">წვდომის წერტილის ახალი სახელის დამატება</translation>
+<translation id="4314815835985389558">სინქრონიზაციის მართვა</translation>
 <translation id="4320177379694898372">ინტერნეტთან კავშირი არ არის</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">მეხსიერება და ელკვება</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">შემოთავაზებების რაოდენობა</translation>
 <translation id="4606933160360542263">კლავიშების მორგებული კომბინაცია: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">როცა მაუსის მარცხენა ღილაკია არჩეული, გამოიყენეთ „/“ ორმაგად დაწკაპუნებისთვის</translation>
+<translation id="4613863813562375431">ChromiumOS-ის ვერსია</translation>
 <translation id="461661862154729886">ელკვების წყარო</translation>
 <translation id="4617880081511131945">კავშირის დამყარება ვერ ხერხდება</translation>
 <translation id="4620757807254334872">მაუსი</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">ქსელის სახელთა სერვერების კონფიგურაცია</translation>
 <translation id="4779083564647765204">მასშტაბირება</translation>
 <translation id="4779766576531456629">eSIM ფიჭური ქსელის გადარქმევა</translation>
+<translation id="4789550509729954245">შეტყობინების ჩვენება, როცა მოწყობილობები ახლომახლოა</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint-ის აჩქარების ჩართვა</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" />-დან დაინსტალირებული აპები</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">ფანჯრის ჩამაგრება</translation>
 <translation id="4964673849688379040">შემოწმება…</translation>
 <translation id="4967571733817147990">მაუსის ღილაკების მორგება</translation>
+<translation id="4970880042055371251">ChromeOS ვერსია</translation>
 <translation id="4972129977812092092">პრინტერის რედაქტირება</translation>
 <translation id="4975771730019223894">აპებზე ბეჯების მიმაგრება</translation>
 <translation id="4979263087381759787">დეველოპერთა პარამეტრები</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">ეს მოქმედება ამ Chromebook-ზე გააუქმებს წვდომას Google Drive-ზე, მათ შორის, ფაილებზე, რომლებიც ხაზგარეშე ხელმისაწვდომად გარდაიქმნა</translation>
 <translation id="5196790039230503600">გამოიყენეთ ჟესტი, შემდეგ გაამოძრავეთ თავი, რომ აჩვენოთ, სად გსურთ ერთეულის ჩასმა. ჩასასმელად გაიმეორეთ ჟესტი.</translation>
 <translation id="5197255632782567636">ინტერნეტი</translation>
+<translation id="5205484256512407285">მონაცემთა გადაცემა მობილური ინტერნეტის გამოყენების გარეშე</translation>
 <translation id="5207949376430453814">ტექსტის კურსორის გამოყოფა</translation>
 <translation id="5208926629108082192">მოწყობილობის მობილური ქსელის ინფორმაცია</translation>
 <translation id="5208988882104884956">ნახევარი სიგანე</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">Chrome OS სისტემის აპი</translation>
 <translation id="5334113802138581043">მიკროფონზე წვდომა</translation>
 <translation id="5336689872433667741">კურსორი და სენსორული პანელი</translation>
+<translation id="5337926771328966926">მოწყობილობის ამჟამინდელი სახელია <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">დიაგნოსტიკური და გამოყენების მონაცემების გაგზავნა</translation>
 <translation id="5369694795837229225">Linux-ის შემუშავების გარემოს დაყენება</translation>
 <translation id="5377367976106153749">ჩაირთოს კამერაზე წვდომა?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">ამ პარამეტრების შეცვლა მხოლოდ მფლობელს შეუძლია.</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">სათავსო</translation>
+<translation id="5840680448799937675">ფაილები ყოველთვის ხაზგარეშე რეჟიმში გაზიარდება</translation>
 <translation id="5841270259333717135">Ethernet-ის კონფიგურაცია</translation>
 <translation id="5842497610951477805">Bluetooth-ის ჩართვა</translation>
 <translation id="5846200638699387931">კავშირის სინტაქსის შეცდომა: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">მკითხეთ Microsoft ფაილების Google Drive-ში კოპირებამდე ან გადატანამდე</translation>
 <translation id="5939518447894949180">გადატვირთვა</translation>
 <translation id="594048410531370124">კლავიშის ამოცნობა ვერ მოხერხდა. <ph name="RESPONSE" /> რომ შესრულდეს, დააჭირეთ ნებისმიერ კლავიშს.</translation>
+<translation id="5942779427914696408">მოწყობილობის ხილვადობა</translation>
 <translation id="5945192511027649793">სენსორული პანელის გათიშვა</translation>
 <translation id="5947651424015173580">მაუსზე ორმაგი დაწკაპუნება</translation>
 <translation id="594993197557058302">დააჭირეთ 1-დან 4-მდე მოდიფიკატორ კლავიშს (ctrl, alt, shift, ძიება ან გამშვები) და კიდევ 1 კლავიშს. ერთი კლავიშის არჩევაც შეგიძლიათ.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">ჟესტის მინიჭება</translation>
 <translation id="5968022600320704045">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="5969728632630673489">კლავიატურის მალსახმობების შესახებ შეტყობინება დაიხურა</translation>
+<translation id="5979353814339191480">ეს ვარიანტი ვრცელდება Chromebook-ებზე, რომლებზეც გამოიყენება მობილური ინტერნეტის პაკეტი ან მობილური ქსელის მოდემი, ასევე, პორტატიულ უსადენო ქსელთან ტეტერინგის დროს</translation>
 <translation id="5985556342298151179">Chrome აპი დაყენებულია თქვენი მოწყობილობის ადმინისტრატორის მიერ.</translation>
 <translation id="5986442691296752186">მიეცით Linux აპებს USB მოწყობილობების მართვის უფლება.</translation>
 <translation id="598810097218913399">მიმაგრების მოხსნა</translation>
 <translation id="5988563937187882754">გაიხედეთ მარჯვნივ</translation>
+<translation id="5990266201903445068">მხოლოდ Wi-Fi</translation>
 <translation id="5992225669837656567">ყველა მაუსი გათიშულია</translation>
 <translation id="5999630716831179808">ხმები</translation>
 <translation id="6002458620803359783">სასურველი ხმები</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">ძირითადი TrackPoint-ის ღილაკი</translation>
 <translation id="6048747414605857443">აირჩიეთ და მოირგეთ ტექსტის გახმოვანების ხმები ChromeVox-ში და წარმოსათქმელად მონიშვნის ფუნქციისთვის</translation>
 <translation id="6050189528197190982">ნაცრისფერის ელფერები</translation>
+<translation id="6054961935262556546">ხილვადობის შეცვლა</translation>
 <translation id="6059276912018042191">Chrome-ის ბოლოდროინდელი ჩანართები</translation>
 <translation id="6059925163896151826">USB მოწყობილობები</translation>
 <translation id="6064764629679333574">გააუმჯობესეთ Bluetooth მიკროფონის ხმის ხარისხი. შეცვალეთ აუდიოს დაბალი გარჩევადობა მაღლით.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">მკითხეთ Microsoft ფაილების Microsoft OneDrive-ში კოპირებამდე ან გადატანამდე</translation>
 <translation id="6265687851677020761">პორტის ამოშლა</translation>
 <translation id="6266532094411434237">მიმდინარეობს <ph name="DEVICE" />-თან დაკავშირება</translation>
+<translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>
 <translation id="6270309713620950855">შეხსენების დადუმება</translation>
 <translation id="6274089201566806618">მიმდინარეობს <ph name="HOST_DEVICE_NAME" />-თან დაკავშირება</translation>
 <translation id="628352644014831790">4 წამი</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">შეყვანის მომდევნო მეთოდზე გადასართავად დააჭირეთ კლავიშთა კომბინაციას <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />შორისი<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">ამ ლექსიკონის წაშლა</translation>
 <translation id="6463596731306859179">არასასურველი ამომხტარი ფანჯრები გხვდებათ, ან სხვა მოულოდნელი ქცევა შენიშნეთ? თქვენ მიერ დაინსტალირებულ აპებსა და გაფართოებებს ზოგჯერ შეუძლია ChromeOS-ის პარამეტრების შეცვლა თქვენი ინფორმირების გარეშე.</translation>
+<translation id="6465841119675156448">ინტერნეტის გარეშე</translation>
 <translation id="6467377768028664108">თქვენს <ph name="DEVICE_TYPE" />-ს შემდეგ შეეძლება:</translation>
 <translation id="6469557521904094793">ფიჭური ქსელის ჩართვა</translation>
 <translation id="6470120577693311302">ბლიც გაფრთხილებები</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">ეფექტის ხმა</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">მონიშვნის მალსახმობი</translation>
+<translation id="6632473616050862500">ChromeOS Flex მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="6646476869708241165">სწრაფი დაწყვილების გამორთვა</translation>
 <translation id="6647690760956378579">ბუნებრივი ხმის წინასწარი ვერსია</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">აქ გამოჩნდება ხელმისაწვდომი მოწყობილობები.</translation>
 <translation id="6776729248872343918">სწრაფი დაწყვილების ჩართვა</translation>
 <translation id="6777845730143344223">შეიტყვეთ მეტი Passpoint-ის გამოწერის შესახებ</translation>
+<translation id="6779406956731413166">ChromiumOS-ს უზრუნველყოფს დამატებითი <ph name="BEGIN_LINK_CROS_OSS" />ღია წყაროს პროგრამული უზრუნველყოფა<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">გსურთ ამ მოწყობილობის დავიწყება?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-ის პარამეტრები</translation>
 <translation id="6785915470941880363">უკუგადაადგილება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">ტექსტის გახმოვანების ხმის პარამეტრები</translation>
 <translation id="7282547042039404307">გლუვი</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">მნიშნველოვანი ინფორმაცია გამოყენებისა და უსაფრთხოების შესახებ</translation>
 <translation id="7303485269821975179">დააყენეთ <ph name="DEVICE_TYPE" />-ის პაროლი</translation>
 <translation id="7304030187361489308">მაღალი</translation>
 <translation id="7308643132139167865">ვებსაიტების ენები</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">ბოლოდროინდელი ფოტოები</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">დაიბლოკა <ph name="APPS_LIST_SIZE" />-დან <ph name="BLOCKED_APPS_SIZE" /> აპი</translation>
+<translation id="7423425410216218516">ხილვადობა ჩართულია <ph name="MINUTES" /> წუთით</translation>
 <translation id="7423513079490750513">წაიშალოს <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">დამეხმარეთ დაწერაში</translation>
 <translation id="7429415133937917139">მოახდენს ბრაილის განახლებადი ეკრანის გამოტანის სიმულირებას ChromeVox პანელში, რომელიც ეკრანის ზედა ნაწილშია მოცემული</translation>
@@ -1919,11 +1953,13 @@
 <translation id="7578137152457315135">თითის ანაბეჭდის პარამეტრები</translation>
 <translation id="7578692661782707876">შეიყვანეთ დადასტურების კოდი.</translation>
 <translation id="7582582252461552277">ეს ქსელი იყოს უპირატესი</translation>
+<translation id="7582844466922312471">მობილური მონაცემები</translation>
 <translation id="7587806318633605613">შემოთავაზებების ისტორია</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7592060599656252486">ზოგიერთი</translation>
 <translation id="7602173054665172958">ბეჭდვის მართვა</translation>
 <translation id="7605163396341021431">მიეცით Android აპებს ამ Chromebook-ზე USB მოწყობილობებზე წვდომის უფლება.</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android-ის პარამეტრები</translation>
 <translation id="7611713099524036757">მეტა</translation>
 <translation id="7612655942094160088">დაკავშირებული ტელეფონის ფუნქციების ჩართვა.</translation>
@@ -1934,12 +1970,14 @@
 <translation id="7632437836497571618">უსაფრთხო კავშირების გამოყენება საიტების მოსაძიებლად</translation>
 <translation id="7634337648687970851">ადგილობრივი მონაცემების აღდგენა ამჟამად მხარდაუჭერელია.</translation>
 <translation id="7640256527901510478">თქვენი მოწყობილობის IMEI არის <ph name="IMEI_NUMBER" />, ხოლო მისი სერიული ნომერია <ph name="SERIAL_NUMBER" />. აღნიშნული ნომრები დაგეხმარებათ სერვისის გააქტიურებაში.</translation>
+<translation id="7640308610547854367">თქვენ დაუბრუნდით ChromeOS-ის წინა ვერსიას. განახლებების მისაღებად დაელოდებით მომდევნო ვერსიის ხელმისაწვდომობას.</translation>
 <translation id="7641513591566880111">ახალი პროფილის სახელი</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> დამატებულია</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (მფლობელი)</translation>
 <translation id="7648048654005891115">განლაგების სტილი</translation>
 <translation id="7649070708921625228">დახმარება</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{დაყენებულია 1 თითის ანაბეჭდი}other{დაყენებულია {COUNT} თითის ანაბეჭდი}}</translation>
+<translation id="7650677314924139716">მონაცემთა გადაცემისთვის ამჟამად არჩეული გაქვთ „მხოლოდ Wi-Fi“</translation>
 <translation id="7651400349472467012">ხელმისაწვდომია მყისიერი უსადენო ქსელი</translation>
 <translation id="7651784568388208829">აქტივობის გაგრძელება ტელეფონის ცენტრში</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
@@ -2030,6 +2068,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">თარგმნა</translation>
 <translation id="7915457674565721553">მშობლის მიერ კონტროლის დასაყენებლად დაუკავშირდით ინტერნეტს</translation>
+<translation id="7917876797003313048">შეგიძლიათ მართოთ თქვენი სისტემაში შესული Google ანგარიშები. თქვენი Google ანგარიშები გამოიყენება Chrome ბრაუზერისთვის, Play Store-ისთვის, Gmail-ისთვის და სხვა პროდუქტებისთვის. თუ სხვისი, მაგალითად, ოჯახის წევრის, ანგარიშის დამატება გსურთ, სანაცვლოდ დაამატეთ ახალი პიროვნება თქვენს <ph name="DEVICE_TYPE" />-ს. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />წმ</translation>
 <translation id="7920482456679570420">დაამატეთ სიტყვები, რომლებიც გსურთ, გამოტოვებული იყოს მართლწერის შემოწმებისას</translation>
 <translation id="7921347341284348270">თქვენი ტელეფონის შეტყობინებებს ამ მართულ ანგარიშზე ვერ ნახავთ. ცადეთ ხელახლა სხვა ანგარიშის გამოყენებით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -2194,6 +2233,7 @@
 <translation id="8431977087510901105">კურსორის პარამეტრების გადაყენება</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8439506636278576865">გვერდის ამ ენაზე გადათარგმნის შემოთავაზება</translation>
+<translation id="8449347986464073209">წაშლა და გასვლა</translation>
 <translation id="8451512073679317615">ასისტენტი</translation>
 <translation id="8455775311562941553">დაკავშირებულია <ph name="HOST_DEVICE_NAME" />-სთან</translation>
 <translation id="8473540203671727883">მაუსის კურსორის ქვეშ მოქცეული ტექსტის გახმოვანება</translation>
@@ -2319,6 +2359,7 @@
 <translation id="8872774989979382243">ხმა გამორთულია. ხმის ჩართვა.</translation>
 <translation id="888256071122006425">მაუსისა და სენსორული პანელის პარამეტრები</translation>
 <translation id="8885449336974696155">ხელი შეუწყვეთ ChromeOS-ის გაუმჯობესებას <ph name="BEGIN_LINK" />მიმდინარე პარამეტრების<ph name="END_LINK" /> გამოგზავნის გზით</translation>
+<translation id="8890170499370378450">შესაძლოა, დაგეკისროთ მობილური ინტერნეტის საფასურის გადახდა</translation>
 <translation id="8890529496706615641">პროფილის გადარქმევა ვერ მოხერხდა. ცადეთ ხელახლა ან დაუკავშირდით თქვენს ოპერატორს ტექნიკური მხარდაჭერისთვის.</translation>
 <translation id="8894761918470382415">მონაცემებზე წვდომის დაცვა პერიფერიული მოწყობილობებისთვის</translation>
 <translation id="8896830132794747524">მაუსით უფრო სწრაფი მოძრაობები კურსორს უფრო შორს გადასწევს</translation>
@@ -2344,6 +2385,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> გათიშულია</translation>
 <translation id="8980345560318123814">უკუკავშირის ანგარიშები</translation>
 <translation id="8981825781894055334">ქაღალდი იწურება</translation>
+<translation id="8984694057134206124"><ph name="MINUTES" /> წუთის განმავლობაში ყველასთვის ხილული იქნებით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">გამოვლენის ზღურბლი</translation>
 <translation id="8986362086234534611">დავიწყება</translation>
 <translation id="8991694323904646277">კამერა არ არის</translation>
@@ -2390,6 +2432,7 @@
 <translation id="9098860402274800697">Google Play-სა და Android აპების ამოშლა</translation>
 <translation id="910000385680858937">ნებადართულია — <ph name="PERMISSION_DETAILS" />. დააკავშირეთ მიკროფონი თქვენს მოწყობილობასთან.</translation>
 <translation id="9100416672768993722">შეყვანის ბოლოს გამოყენებულ მეთოდზე გადასართავად დააჭირეთ კლავიშთა კომბინაციას <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />შორისი<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">მონაცემთა გადაცემისთვის ამჟამად არჩეული გაქვთ „ინტერნეტის გარეშე“</translation>
 <translation id="9108294543511800041">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები და შეტყობინებები</translation>
 <translation id="9109122242323516435">მეხსიერების გამოთავისუფლება მოწყობილობიდან ფაილების წაშლით შეგიძლიათ.</translation>
 <translation id="9111330022786356709">დაამატეთ ან იპოვეთ ღილაკები თქვენს მაუსზე</translation>

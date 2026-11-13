@@ -166,6 +166,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Tab für die Freigabe</translation>
 <translation id="1601378265092360672">Zu den Browserdaten gehören dein Browserverlauf, Cookies und andere Websitedaten, im Cache gespeicherte Bilder und Dateien sowie geöffnete Tabs</translation>
 <translation id="160275202205869636">Bei aktivierten Optionen kannst du die entsprechenden Daten in deinem Google-Konto nutzen und speichern. Bei Deaktivierung werden sie nur auf diesem Gerät gespeichert.</translation>
+<translation id="160403827062749147">Willkommen bei Google Chrome, dem sichersten Browser der Welt</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{1 ausgewähltes Element entfernen}other{# ausgewählte Elemente entfernen}}</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -858,6 +859,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4374192654218566997">\n\nDu kannst diese Daten auch von diesem Gerät entfernen:</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Wenn das Problem weiterhin auftritt, kannst du andere Möglichkeiten zum Fortfahren auf <ph name="SITE_ETLD_PLUS_ONE" /> ausprobieren.</translation>
+<translation id="4381351546374507910">Melde dich an, um deine Lesezeichen, Passwörter und Autofill-Informationen auf allen deinen Geräten abzurufen.</translation>
 <translation id="4384468725000734951">Suche erfolgt mit Sogou</translation>
 <translation id="4387647248986092471">Autoprofilsperre erstellen</translation>
 <translation id="4387817230000841154">Downloads öffnen</translation>
@@ -1006,6 +1008,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Du kannst Bilder und Dateien speichern, um sie offline anzusehen oder in anderen Apps zu teilen</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}other{# Lesezeichen und andere Elemente sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}}</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
 <translation id="4957722034734105353">Weitere Informationen...</translation>
@@ -1059,6 +1062,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5142281402488957685">Nach unten ziehen, um neue Artikel zu sehen</translation>
 <translation id="5144385790872094440">Einige der Seiten, die du besuchst, werden vorab geladen. Diese Seiten werden über Google-Server geladen, wenn sie von einer Google-Website oder ‑App verlinkt sind.</translation>
 <translation id="5152843274749979095">Keine unterstützten Apps installiert</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">Titel erforderlich</translation>
 <translation id="5161262286013276579">Passkey-Bestätigungsansicht geöffnet</translation>
 <translation id="5163361352003913350">Aktuell ausgewählt: <ph name="NAME" />. Wähle ein Konto aus.</translation>
@@ -1142,6 +1146,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="549660026907543296">Als <ph name="MEMBER_FULL_NAME" /> beitreten</translation>
 <translation id="5517326820028369152">Ansicht mit den letzten Aktivitäten am unteren Rand</translation>
+<translation id="5519516356611866228">Mit meinen Änderungen</translation>
 <translation id="5526281268548144413">Kann nicht in mehreren Fenstern geschlossen werden</translation>
 <translation id="5532536403031755365">Mit dem erweiterten Schutz kannst du dich durch zusätzliche Schutzmaßnahmen besser vor Onlinebedrohungen schützen lassen</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Lesezeichen öffnen}other{Alle öffnen (#)}}</translation>
@@ -1231,6 +1236,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5865733239029070421">Nutzungsstatistiken und Absturzberichte werden automatisch an Google gesendet</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5870416898561279542">Doppelte Tabs und Tabgruppen oder solche, die <ph name="DAYS_INACTIVE" /> Tage lang nicht verwendet wurden, werden hierher verschoben<ph name="AUTODELETE_SECTION" />. Du kannst diese Einstellung jederzeit in den <ph name="DECLUTTER_SETTINGS_TITLE" /> ändern.</translation>
+<translation id="5882488054564514114">Melde dich an, um deine Daten auf allen deinen Geräten abzurufen und dein Nutzungserlebnis zu personalisieren.</translation>
 <translation id="5885378508678660271">Benachrichtigungen <ph name="SEPARATOR" /> Chrome hat diese Berechtigungen entfernt, weil diese Website gefährlich ist</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5896944002928653773">Ansicht mit Haftungsausschluss für Unternehmenssignale am unteren Rand ist geschlossen</translation>
@@ -1403,6 +1409,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> konnte nicht heruntergeladen werden, weil nicht genügend Speicherplatz vorhanden ist.</translation>
 <translation id="6486420406192123355">Diese PDF-Datei stammt von einer Website, die über eine unsichere Verbindung geladen wurde</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Datei heruntergeladen}other{# Downloads abgeschlossen}}</translation>
+<translation id="6502991525169604759">Ohne meine Änderungen</translation>
 <translation id="6508722015517270189">Chrome neu starten</translation>
 <translation id="6513924416597632811">Link zur Suchergebnisseite für „<ph name="SEARCH_QUERY" />“ kopieren. Quelle: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Bestätigen</translation>
@@ -1681,7 +1688,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7493994139787901920"><ph name="VERSION" /> (aktualisiert <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Bitte warten...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, angepinnter, stummgeschalteter Tab</translation>
-<translation id="7500851014030446046">PDF wird heruntergeladen</translation>
 <translation id="7501135638693251872">Alle Lesezeichen</translation>
 <translation id="7504076214066136798">Änderungen können nicht gespeichert werden</translation>
 <translation id="7507207699631365376"><ph name="BEGIN_LINK" />Datenschutzerklärung<ph name="END_LINK" /> dieses Dienstanbieters ansehen</translation>
@@ -1976,6 +1982,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8570677896027847510">Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8580435650274205305">Ablaufdatum, erforderlich</translation>
+<translation id="8584698523080138290">Chrome immer und überall nutzen</translation>
 <translation id="8585103689515290060">Autofill-Services</translation>
 <translation id="8586116786993312006">Hier tippen, um Browserdaten in Chrome zu löschen</translation>
 <translation id="859046281437143747">Über den Button „Weitere Optionen“ kannst du den Preis beobachten</translation>
@@ -2010,6 +2017,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8727043961453758442">Chrome optimal nutzen</translation>
 <translation id="8728810647305130936">Neue Tabs öffnen</translation>
+<translation id="8730621377337864115">Fertig</translation>
 <translation id="8731268612289859741">Sicherheitscode</translation>
 <translation id="8738163682604285902">Lesemodus öffnen?</translation>
 <translation id="8746155870861185046">Markierung teilen</translation>

@@ -4251,14 +4251,6 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 <translation id="366494444808132420">Autoriser les intégrations de Gemini.</translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
 <translation id="3671773704245936868">Désactiver la mise en surbrillance des éléments sélectionnés au clavier</translation>
-<translation id="367258298235646178">Permet aux administrateurs de personnaliser l'apparence des filigranes appliqués par les règles de Protection contre la perte de données. Cela inclut la définition de l'opacité du remplissage/du contour, de la taille de la police et du code temporel du fuseau horaire.
-Si cette règle ou certaines valeurs ne sont pas définies, Chrome utilisera son comportement par défaut pour les filigranes.
-Les valeurs par défaut sur ordinateur sont les suivantes : opacité du remplissage à 4, opacité du contour à 6 et taille de police à 24. Sur iOS, les valeurs par défaut sont les suivantes : opacité du remplissage à 10, opacité du contour à 15 et taille de police à 16. Sur toutes les plates-formes, le code temporel du fuseau horaire est défini par défaut sur "user_device" (fuseau horaire local de l'appareil de l'utilisateur).
-
-L'opacité du remplissage est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
-L'opacité du contour est un pourcentage compris entre 0 (totalement transparent) et 100 (totalement opaque).
-La taille de police est indiquée en points.
-Le champ "Code temporel du fuseau horaire" spécifie l'identifiant de fuseau horaire IANA (par exemple, "America/Toronto") utilisé pour formater les codes temporels du filigrane (pris en charge à partir de Chrome 152), qui utilise les noms de la base de données des fuseaux horaires IANA (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">Ne prend pas en charge les en-têtes de requêtes CORS sans caractères génériques.</translation>
 <translation id="3675248815331229366">Définir cette règle vous permet de définir une liste de formats d'URL indiquant les sites non autorisés à accéder à la géolocalisation de l'utilisateur et qui ne peuvent pas demander l'autorisation de le faire à l'utilisateur.
 
@@ -4640,7 +4632,6 @@ Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
 <translation id="390296766888987595">Le clavier à l'écran n'est affiché que si l'utilisateur ou l'application le demande.</translation>
 <translation id="3903313632842363082">Désactiver les rapports sur les utilisateurs de l'appareil</translation>
 <translation id="3904304709151553598">Désactiver les rapports sur les ventilateurs de l'appareil</translation>
-<translation id="3905883021371603181">Activer l'annulation de l'écho audio du système</translation>
 <translation id="3907683835264956726">Permet aux utilisateurs de se connecter en ligne via l'écran de verrouillage. Si cette règle est définie sur "True", la réauthentification en ligne via l'écran de verrouillage est déclenchée, par exemple, par la règle <ph name="POLICY" />.
       Cette réauthentification est appliquée immédiatement lorsque l'utilisateur est sur l'écran de verrouillage ou la prochaine fois qu'il verrouille l'écran une fois la condition remplie.
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent toujours déverrouiller l'écran avec leurs identifiants locaux.</translation>
@@ -4741,7 +4732,6 @@ Remarque : Si ce paramètre a pour conséquence qu'aucune méthode d'authentifi
 <translation id="3989635538409502728">Déconnexion</translation>
 <translation id="3989829840000169163">Bloquer les anciens points d'extension du navigateur</translation>
 <translation id="3990391739475801018">Le mode Économiseur de batterie sera désactivé.</translation>
-<translation id="3990834929384096140">Ne pas appliquer l'annulation de l'écho audio du système</translation>
 <translation id="3994043824457743421">Afficher l'annonce d'espace intermédiaire sur la page "Nouvel onglet"</translation>
 <translation id="399433537808390819">Ne pas rendre le mode Bureau unifié accessible à l'utilisateur</translation>
 <translation id="3995880046827722248">Manifest V2 est désactivé</translation>
@@ -6063,12 +6053,6 @@ Pour en savoir plus, veuillez consulter l'article du centre d'aide https://suppo
       Toutefois, les appareils qui n'implémentent pas correctement TLS peuvent dysfonctionner et se déconnecter lorsque TLS 1.3 Early Data est utilisée. Si cela se produit, les administrateurs doivent contacter le fournisseur pour obtenir une solution.
 
       Cette règle est une mesure temporaire pour contrôler la fonctionnalité et sera supprimée par la suite. Elle peut être activée pour vous permettre de tester des problèmes, ou désactivée pendant la résolution des problèmes.</translation>
-<translation id="4800438168909332958">Active la fonctionnalité d'annulation de l'écho audio du système. Cette fonctionnalité est un dispositif d'annulation de l'écho acoustique, c'est-à-dire un module de traitement audio qui supprime la lecture audio du système (écho) du signal du micro.
-Cette règle est temporaire et sera supprimée dès le lancement de l'annulation de l'écho audio du système.
-
-  Si cette règle est définie sur "True", l'annulation de l'écho audio du système est toujours activée.
-
-  Si elle est définie sur "False" ou n'est pas définie, il est possible que l'annulation de l'écho audio du système soit activée, en fonction de son plan de lancement, mais elle n'est pas appliquée par cette règle.</translation>
 <translation id="4800865664096110749">Activer le flux d'attestation <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> pour une liste d'URL dans les profils gérés</translation>
 <translation id="4801512016965057443">Autoriser l'itinérance des données mobiles</translation>
 <translation id="4801647366128872782">Spécifier les URL qui génèrent un rapport en cas d'utilisation d'anciennes technologies</translation>
@@ -11813,6 +11797,12 @@ Les certificats doivent être encodés en base64.</translation>
 Si cette règle est configurée, des rapports de télémétrie de site Web sont créés pour les URL figurant dans la liste d'autorisation.
 Si cette règle n'est pas configurée, aucun rapport de télémétrie de site Web n'est créé.
 Pour en savoir plus sur les formats d'URL valides, consultez https://chromeenterprise.google/policies/url-patterns/. Seuls les schémas d'URL HTTP et HTTPS sont autorisés pour cette règle.</translation>
+<translation id="8392016343898518010">Cette règle est obsolète et n'a aucun effet à partir de M159, car la fonctionnalité de suggestions de contenus a été supprimée.
+
+Avant M159, cette fonctionnalité permettait de suggérer de nouveaux contenus à explorer, y compris des applis, des pages Web, etc.
+Si cette règle était définie sur "True", les suggestions de nouveaux contenus à explorer étaient activées.
+Si cette règle était définie sur "False", les suggestions de nouveaux contenus à explorer étaient désactivées.
+Si cette règle n'était pas configurée, les suggestions de nouveaux contenus à explorer étaient désactivées pour les utilisateurs gérés et activées pour les autres.</translation>
 <translation id="8392478748777481636">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
 <translation id="8395350646076131800">Délai d'inactivité pour l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>
@@ -12899,7 +12889,6 @@ Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les donnée
 <translation id="9087652369391570821">Règle de configuration du connecteur Chrome Enterprise OnFileTransfer</translation>
 <translation id="9088433379343318874">Activer le fournisseur de contenu de l'utilisateur supervisé</translation>
 <translation id="9088444059179765143">Configurer la méthode de détection automatique du fuseau horaire</translation>
-<translation id="9091741086777905807">Identifiant de fuseau horaire IANA (par exemple, "America/Toronto") utilisé pour formater les codes temporels du filigrane (pris en charge à partir de Chrome 152). La valeur par défaut est "user_device".</translation>
 <translation id="9094681501120769194">Détermine si la visionneuse de PDF de <ph name="PRODUCT_NAME" /> utilise un iFrame hors processus (OOPIF). Cette architecture sera utilisée à l'avenir pour la visionneuse de PDF, car elle est plus simple et permet d'ajouter plus facilement de nouvelles fonctionnalités. L'architecture GuestView complexe et obsolète de la visionneuse de PDF est en cours d'abandon.
 
 Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> peut utiliser l'architecture OOPIF de la visionneuse de PDF. Si cette règle est activée ou n'est pas configurée, le comportement par défaut est défini par <ph name="PRODUCT_NAME" />.

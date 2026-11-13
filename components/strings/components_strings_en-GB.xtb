@@ -726,7 +726,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="22081806969704220">Tray 3</translation>
 <translation id="2210794033760923560">Upload report</translation>
 <translation id="2212735316055980242">Policy not found</translation>
-<translation id="2213606439339815911">Fetching entries...</translation>
 <translation id="2213612003795704869">Page is printed</translation>
 <translation id="2214086901479959524">Update Chrome to continue using your shared tab groups</translation>
 <translation id="2214453882118345682">Shop, translate and identify what you see with your camera.</translation>
@@ -823,6 +822,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2356941001189392209">A limited list of URLs of pages that you visit where legacy technology events are occurring</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Will share 1 tab}other{Will share {NUM_TABS} tabs}}</translation>
 <translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">See your Google AI search answer on this tab</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="236000571258713023">Vehicles</translation>
@@ -1141,6 +1141,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2925032407415783182">Save event ticket to Wallet</translation>
 <translation id="2925454999967523701">Create doc button, activate to quickly create a new Google Doc</translation>
 <translation id="2925673989565098301">Delivery Method</translation>
+<translation id="2927328994673424423">2 weeks ago</translation>
 <translation id="2928426578619531300">User affiliated</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}}</translation>
 <translation id="2930531075747147366">Tab from your other device</translation>
@@ -1275,7 +1276,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3141337053413339205">Switch to this tab.</translation>
 <translation id="3144458715650412431">Test policies have been applied. Review and reset them at chrome://policy/test. Admin policies will not be applied.</translation>
 <translation id="3145945101586104090">Failed to decode response</translation>
-<translation id="3149865382039202168">Save your info in <ph name="GOOGLE_WALLET_TITLE" /> and get things done faster, like filling forms across Google products. You can control <ph name="HOW_INFO_IS_USED_LINK" /> in your private pass settings for <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Temporary server error</translation>
 <translation id="3150889484970506196">Create sheet button, activate to quickly create a new Google Sheet</translation>
 <translation id="3154506275960390542">This page includes a form that may not submit securely. Data that you send can be viewed by others while in transit or could be modified by an attacker to change what the server receives.</translation>
@@ -1521,7 +1521,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3558335486599406178">IBAN saved in Google Wallet</translation>
 <translation id="3558573058928565255">Day time</translation>
 <translation id="3559897352860026926">Ask your administrator to verify their <ph name="CLOUD_PROVIDER" /> configuration settings.</translation>
-<translation id="3560824484345057728">See related sites</translation>
 <translation id="3566021033012934673">Your connection is not private</translation>
 <translation id="3566336457819493938">215 mm x 315 mm</translation>
 <translation id="3566681680543111735">Copy variations string</translation>
@@ -2164,7 +2163,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4603727370377253901">Flight reservations</translation>
 <translation id="4607608436550361748">See Chrome tips</translation>
 <translation id="460848736049414407">Blocked by admin</translation>
-<translation id="4610279718074907952">This site is in a group, defined by <ph name="SET_OWNER" />, that can see your activity</translation>
 <translation id="4612631413844865947">There was an error processing your order on <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">This site may have mature content. A parent or guardian has to say that it's OK for you to visit this website.</translation>
 <translation id="4613873770449493819">URL must point to a <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> domain.</translation>
@@ -3711,7 +3709,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="7173338713290252554">Price history across the web</translation>
 <translation id="7174545416324379297">Merged</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
-<translation id="7180611975245234373">Refresh</translation>
 <translation id="7181261019481237103">Open incognito window</translation>
 <translation id="7182878459783632708">No policies set</translation>
 <translation id="7186833457841277072">Envelope (inkjet)</translation>
@@ -4177,7 +4174,6 @@ Additional details:
 <translation id="7932579305932748336">Coat</translation>
 <translation id="79338296614623784">Enter a valid phone number</translation>
 <translation id="7934414805353235750"><ph name="URL" /> wants to play protected content. Your device’s identity will be verified by Google.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Motion sensors allowed</translation>
 <translation id="7937163678541954811">This card's CVC will be encrypted and saved to your device for faster checkout</translation>
 <translation id="7937554595067888181">Expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4225,7 +4221,6 @@ Additional details:
 <translation id="7999482381722829925">Create a prioritised, room-by-room deep cleaning checklist targeting commonly missed spots</translation>
 <translation id="8001912761979890298">This server could not prove that it is <ph name="DOMAIN" /> because it is using a security certificate that is not trusted by Chromium or your system configuration for web traffic encryption. This may be caused by a misconfiguration or an attacker intercepting your connection. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />View certificate<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
-<translation id="8002230960325005199">See related sites in a new tab</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Manage passwords</translation>
@@ -4266,7 +4261,6 @@ Additional details:
 <translation id="8079976827192572403">Dangerous site</translation>
 <translation id="8086971161893892807">Draft</translation>
 <translation id="8087558780672230449">Loading <ph name="APP_ORIGIN" /> to handle your payment on <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Failed to view article.</translation>
 <translation id="808894953321890993">Change password</translation>
 <translation id="8091372947890762290">Activation is pending on the server</translation>
 <translation id="8092254339843485299">6 in x 8 in</translation>
@@ -4906,7 +4900,6 @@ Additional details:
 <translation id="9199905725844810519">Printing is blocked</translation>
 <translation id="9204089334327209740">Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER" />. Local storage, including any files in Trash, will be automatically removed.</translation>
 <translation id="9205078245616868884">Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
-<translation id="9207861905230894330">Failed to add article.</translation>
 <translation id="9209339767782560829">There was a problem using your login certificate.</translation>
 <translation id="9210152531668884481">I'm in</translation>
 <translation id="9213433120051936369">Customise appearance</translation>

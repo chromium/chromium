@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Všetko je nastavené</translation>
 <translation id="1149483087970735785">Asistenčná technológia</translation>
 <translation id="1150490752229770117">Toto je posledná automatická aktualizácia softvéru a zabezpečenia pre toto zariadenie (<ph name="DEVICE_TYPE" />). Ak chcete v budúcnosti dostávať aktualizácie, prejdite na novší model. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">O systéme ChromeOS</translation>
 <translation id="1155816283571436363">Pripája sa k vášmu telefónu</translation>
 <translation id="1160800016654917722">Okno bolo presunuté nadol a doľava</translation>
 <translation id="1164015913575846413">alt + kliknutie</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">kláves spúšťača + šípka doprava</translation>
 <translation id="1280332775949918163">Prichytiť okno</translation>
+<translation id="1285625592773741684">Aktuálne nastavenie spotreby dát: mobilné dáta</translation>
 <translation id="1285815028662278915">Vaše mobilné dáta nemusia podporovať hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Nočný režim sa automaticky zapne pri západe slnka</translation>
 <translation id="1288300545283011870">Vlastnosti hlasovej odozvy</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Deaktivujete tým rozšírenia a obnovíte bezpečné predvolené nastavenia. Karty, súbory a súbory cookie budú zachované. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa celej obrazovky</translation>
 <translation id="1539727654733007771">Nie sú nastavené žiadne mobilné siete. Stiahnite <ph name="BEGIN_LINK" />nový profil.<ph name="END_LINK" /></translation>
+<translation id="1547295885616600893">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Rozumiem, že profily nainštalovanej eSIM karty sa neodstránia obnovením pomocou funkcie Powerwash</translation>
 <translation id="1549275686094429035">ARC je aktivované</translation>
 <translation id="1554640914375980459">Nastavte si blikanie obrazovky, keď dostanete upozornenie. Ak patríte medzi osoby citlivé na svetlo, používajte svetelné upozornenia obozretne.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Na určenie polohy používať Wi‑Fi alebo mobilnú sieť</translation>
 <translation id="1650407365859096313">Otvorí sa na novej karte. Povolenie je <ph name="PERMISSION_STATE" />.</translation>
 <translation id="1652326691684645429">Povoliť Zdieľanie nablízku</translation>
+<translation id="1662146548738125461">Chrome OS Flex</translation>
 <translation id="1663698992894057019">Zadovážte si nový Chromebook a získate najnovšie zabezpečenie a softvér</translation>
 <translation id="1665328953287874063">Zariadenie <ph name="DEVICE_TYPE" /> odomknite heslom alebo kódom PIN</translation>
 <translation id="1667842670298352129">Vypočujte si konkrétny text nahlas. Najprv vyberte ikonu počúvania vybraného textu v dolnej časti obrazovky a potom zvýraznite text. Môžete použiť aj klávesovú skratku: zvýraznite text a stlačte Hľadať + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Poznámka: Odtlačok môže byť menej bezpečný ako silné heslo alebo kód PIN.</translation>
 <translation id="1724801751621173132">Režim vstupu</translation>
 <translation id="1741190788710022490">Adaptívne nabíjanie</translation>
+<translation id="1745732479023874451">Spravovať kontakty</translation>
 <translation id="1751335846119670066">Asistent pri čítaní</translation>
 <translation id="1755601632425835748">Veľkosť textu</translation>
 <translation id="1761402971842586829">Tlačidlo <ph name="BUTTON_NAME" /> bolo znova namapované na <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Nie, používať jeden prepínač</translation>
 <translation id="1842681835432895345">Vylúčiť toto zobrazenie v režime zrkadlenia</translation>
 <translation id="1848219224579402567">Pri zavretí krytu sa odhlásiť</translation>
+<translation id="185970820835152459">Svoje prihlásené účty Google môžete spravovať. Účty Google sa používajú pre prehliadač Chromium, Obchod Play, Gmail a ďalšie služby. Ak chcete pridať účet inej osoby, napríklad člena rodiny, pridajte radšej novú osobu do svojho zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Chladnejšie</translation>
 <translation id="1866589962721094893">Povoľte aplikáciám pre Android ovládať zariadenia USB v tomto Chromebooku. Povolenie sa bude požadovať pri každom pripojení zariadenia USB. Jednotlivé aplikácie pre Android budú požadovať ďalšie povolenia.</translation>
 <translation id="1877377290348678128">Štítok (nepovinné)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2097950021134740304">Zrušiť odstránenie odberu</translation>
 <translation id="2104166991923847969">Vypínať hotspot automaticky</translation>
+<translation id="2106831557840787829">Chrome OS Flex mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Nie je vložená SIM karta</translation>
 <translation id="2121825465123208577">Zmeniť veľkosť</translation>
 <translation id="2127372758936585790">Nabíjačka s nízkym výkonom</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Odobrať používateľa <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2363475280045770326">Chyba pri ukladaní konfigurácie</translation>
+<translation id="236939127352773362">Pri zdieľaní zariadeniami nablízku</translation>
 <translation id="237336063998926520">Na zistenie polohy použiť adresu IP</translation>
 <translation id="2373499590298659902">Tlačidlo myši stlačíte a pridržíte klávesom 0</translation>
 <translation id="2375406435414127095">Pripojenie k telefónu</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blokovať dátové prenosy bez siete VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Presnosť určovania polohy poskytuje aplikáciám aj službám presnejšiu polohu. Google na tento účel pravidelne spracúva informácie o senzoroch zariadení a bezdrôtových signáloch z vášho zariadenia, aby zaistil crowdsourcing polôh bezdrôtového signálu. Používajú sa bez toho, aby umožňovali zistenie vašej totožnosti, na účely zlepšenia presnosti určovania polohy a služieb podmienených polohou, ale aj všeobecného zlepšenia, poskytovania a udržiavania služieb Googlu na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Výstupný zásobník je takmer plný</translation>
 <translation id="3390013585654699824">Podrobnosti o aplikácii</translation>
 <translation id="3390740059150071453">Pozrite sa doľava</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">E-mailová adresa</translation>
 <translation id="3701028563242674350">Zväčšiť kurzor myši zatrasením</translation>
 <translation id="3703699162703116302">Tiket bol obnovený</translation>
+<translation id="3703994572283698466">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Povoliť Wi‑Fi</translation>
 <translation id="370665806235115550">Načítava sa...</translation>
 <translation id="3707163604290651814">Momentálne je prihlásený účet <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Na tlačovom serveri boli nájdené tlačiarne (<ph name="NUM_PRINTERS" />)</translation>
 <translation id="371370241367527062">Predný mikrofón</translation>
 <translation id="37143699183660101">Stabilita kurzora</translation>
+<translation id="3716540481907974026">Verzia systému Chrome OS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Nesprávny kód PIN. Skúste to znova.</translation>
 <translation id="3728681439294129328">Konfigurovať adresu siete</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Zobrazovať podčiarknutie písaného textu</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="379509625511193653">Vypnuté</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + šípka nahor</translation>
 <translation id="3798670284305777884">Reproduktor (vnútorný)</translation>
 <translation id="3799128412641261490">Nastavenia ovládania prepínačmi</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Vstavaná klávesnica</translation>
 <translation id="3917644013202553949">Na synchronizáciu súborov nemáte dostatok priestoru. Skúste nejaký uvoľniť.</translation>
 <translation id="3919229493046408863">Vypnúť upozornenie na zariadenia v okolí</translation>
+<translation id="3923184630988645767">Spotreba dát</translation>
 <translation id="3923494859158167397">Žiadne nastavené mobilné siete</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Túto sieť môžu používať aj ostatní používatelia tohto zariadenia</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definícia v rámci rýchlych odpovedí</translation>
 <translation id="3994075804072562819">Povoľte zariadeniu <ph name="SPECIFIC_NAME" /> ovládať zariadenia USB.</translation>
 <translation id="3994530503403062649">Vyhľadanie tlačidiel tabletu</translation>
+<translation id="3997429360543082038">Chromium OS</translation>
 <translation id="4001540981461989979">Zvýrazniť kurzor myši pri pohybe</translation>
 <translation id="4005817994523282006">Metóda zisťovania časového pásma</translation>
+<translation id="4019629340646866719">Chromium OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopírovať podrobnosti o zostave</translation>
 <translation id="4028467762035011525">Pridať metódy vstupu</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Ak chcete prepnúť na poslednú použitú metódu vstupu, stlačte <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">kláves vyhľadávania + šípka doprava</translation>
 <translation id="405181879009056822">Nastavenia systému ChromeOS</translation>
+<translation id="4054070260844648638">Viditeľné pre všetkých</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Ak si chcete zobraziť dostupné tlačiarne v sieti, skontrolujte pripojenie</translation>
 <translation id="4068776064906523561">Uložené odtlačky prstov</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, stupeň <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Nájsť ďalšie aplikácie pre dotykové pero</translation>
 <translation id="4248401726442101648">Nie je pripojená žiadna kamera</translation>
+<translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4249116869350613769">Šetrič batérie</translation>
 <translation id="4250229828105606438">Snímka obrazovky</translation>
 <translation id="425411422794688815">Niečo sa pokazilo. Uistite sa, že telefón máte nablízku, odomknutý a so zapnutým rozhraním Bluetooth a pripojením Wi‑Fi.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 účet Google}few{<ph name="EXTRA_ACCOUNTS" /> účty Google}many{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}other{<ph name="EXTRA_ACCOUNTS" /> účtov Google}}</translation>
 <translation id="4314497418046265427">Zvýšte si produktivitu pripojením svojho telefónu k zariadeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Pridať nový názov prístupového bodu</translation>
+<translation id="4314815835985389558">Správa synchronizácie</translation>
 <translation id="4320177379694898372">Žiadne internetové pripojenie</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Priestor a napájanie</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Počet návrhov</translation>
 <translation id="4606933160360542263">Vlastná kombinácia klávesov: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Keď je vybrané ľavé tlačidlo myši, na dvojité kliknutie použite kláves lomky</translation>
+<translation id="4613863813562375431">Verzia systému Chromium OS</translation>
 <translation id="461661862154729886">Zdroj napájania</translation>
 <translation id="4617880081511131945">Pripojenie sa nedá nadviazať</translation>
 <translation id="4620757807254334872">myš</translation>
@@ -1136,6 +1155,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4777943778632837590">Konfigurovať servery s názvami siete</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4779766576531456629">Premenovať mobilnú sieť eSIM</translation>
+<translation id="4789550509729954245">Zobrazovať upozornenie pri zdieľaní zariadení nablízku</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Povoliť akceleráciu zariadenia TrackPoint</translation>
 <translation id="479664067938200069">Aplikácie nainštalované aplikáciou <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4964544790384916627">Ukotviť okno</translation>
 <translation id="4964673849688379040">Prebieha kontrola...</translation>
 <translation id="4967571733817147990">Prispôsobiť tlačidlá myši</translation>
+<translation id="4970880042055371251">Verzia systému Chrome OS</translation>
 <translation id="4972129977812092092">Úprava tlačiarne</translation>
 <translation id="4975771730019223894">Označenie aplikácie odznakom</translation>
 <translation id="4979263087381759787">Možnosti pre vývojárov</translation>
@@ -1275,6 +1296,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5193978546360574373">Týmto odstránite prístup k Disku Google v tomto Chromebooku a aj prístup k všetkým súborom, ktoré ste mali k dispozícii offline</translation>
 <translation id="5196790039230503600">Použite gesto a potom pohybom hlavy naznačte, kam chcete položku presunúť. Opätovným použitím gesta ju uložíte na miesto.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Na prenos nikdy nepoužívať mobilné dáta</translation>
 <translation id="5207949376430453814">Zvýrazniť textový kurzor</translation>
 <translation id="5208926629108082192">Informácie o mobilnej sieti zariadenia</translation>
 <translation id="5208988882104884956">Polovičná šírka</translation>
@@ -1307,6 +1329,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5331568967879689647">Systémová aplikácia systému Chrome OS</translation>
 <translation id="5334113802138581043">Prístup k mikrofónu</translation>
 <translation id="5336689872433667741">Kurzor a touchpad</translation>
+<translation id="5337926771328966926">Aktuálny názov zariadenia: <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Odosielať diagnostiku a údaje o využití</translation>
 <translation id="5369694795837229225">Nastaviť vývojové prostredie systému Linux</translation>
 <translation id="5377367976106153749">Chcete zapnúť prístup ku kamere?</translation>
@@ -1444,6 +1467,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5833726373896279253">Tieto nastavenia môže upraviť len vlastník:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Puzdro</translation>
+<translation id="5840680448799937675">Súbory sa vždy budú zdieľať offline</translation>
 <translation id="5841270259333717135">Konfigurácia ethernetu</translation>
 <translation id="5842497610951477805">Povolenie rozhrania Bluetooth</translation>
 <translation id="5846200638699387931">Chyba syntaxe vzťahu: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5924438086390153180">Opýtať sa pred kopírovaním alebo presunom súborov Microsoft na Disk Google</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="594048410531370124">Nerozpoznaný kláves. Ak chcete <ph name="RESPONSE" />, stlačte ľubovoľný kláves.</translation>
+<translation id="5942779427914696408">Viditeľnosť zariadenia</translation>
 <translation id="5945192511027649793">Vypnúť touchpad</translation>
 <translation id="5947651424015173580">Dvakrát kliknúť na myš</translation>
 <translation id="594993197557058302">Stlačte prvý až štvrtý kláves modifikátora (ctrl, alt, shift, kláves vyhľadávania alebo Spúšťač) a 1 ďalší kláves. Môžete vybrať aj jeden kláves.</translation>
@@ -1491,10 +1516,12 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5961545272769624207">Priradiť gesto</translation>
 <translation id="5968022600320704045">Žiadne výsledky vyhľadávania</translation>
 <translation id="5969728632630673489">Upozornenie na klávesové skratky bolo zavreté</translation>
+<translation id="5979353814339191480">Táto možnosť sa týka iba Chromebookov s doplnkovými dátovými tarifami alebo mobilnými sieťami, prípadne ak zdieľajú dátové pripojenie do prenosného hotspotu</translation>
 <translation id="5985556342298151179">Aplikáciu pre Chrome nainštaloval správca vášho zariadenia.</translation>
 <translation id="5986442691296752186">Povoľte aplikáciám pre Linux ovládať zariadenia USB.</translation>
 <translation id="598810097218913399">Odstrániť pridelenie</translation>
 <translation id="5988563937187882754">Pozrite sa doprava</translation>
+<translation id="5990266201903445068">Len Wi‑Fi</translation>
 <translation id="5992225669837656567">Všetky myši boli odpojené</translation>
 <translation id="5999630716831179808">Hlasy</translation>
 <translation id="6002458620803359783">Preferované hlasy</translation>
@@ -1509,6 +1536,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6045114302329202345">Primárne tlačidlo TrackPoint</translation>
 <translation id="6048747414605857443">Vyberte a prispôsobte si hlasy prevodu textu na reč pre ChromeVox a počúvanie vybraného textu</translation>
 <translation id="6050189528197190982">Odtiene sivej</translation>
+<translation id="6054961935262556546">Zmeniť viditeľnosť</translation>
 <translation id="6059276912018042191">Nedávne karty Chromu</translation>
 <translation id="6059925163896151826">Zariadenia USB</translation>
 <translation id="6064764629679333574">Zlepšite kvalitu zvuku mikrofónu s rozhraním Bluetooth tým, že zvýšite rozlíšenie zvuku z nízkeho na vysoké.</translation>
@@ -1567,6 +1595,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6265159465845424232">Opýtať sa pred kopírovaním alebo presunom súborov Microsoft do služby Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Odstrániť port</translation>
 <translation id="6266532094411434237">Pripája sa k zariadeniu <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
 <translation id="6270309713620950855">Štuchnutie vypnutého zvuku</translation>
 <translation id="6274089201566806618">Pripája sa k zariadeniu <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekundy</translation>
@@ -1618,6 +1647,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6453921811609336127">Ak chcete prepnúť na ďalšiu metódu vstupu, stlačte <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />medzerník<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Odstrániť tento slovník</translation>
 <translation id="6463596731306859179">Zobrazujú sa vám neželané vyskakovacie okná či dochádza k inému neočakávanému správaniu? Niekedy môžu aplikácie a rozšírenia, ktoré nainštalujete, zmeniť nastavenia systému ChromeOS bez vášho vedomia.</translation>
+<translation id="6465841119675156448">Bez internetu</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> potom bude môcť:</translation>
 <translation id="6469557521904094793">Zapnúť mobilnú sieť</translation>
 <translation id="6470120577693311302">Svetelné upozornenia</translation>
@@ -1668,6 +1698,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6626581113916585374">Režim efektov</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Skratka výberu</translation>
+<translation id="6632473616050862500">Systém Chrome OS Flex mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Vypnúť rýchle párovanie</translation>
 <translation id="6647690760956378579">Ukážka prirodzeného hlasu</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> chce potvrdiť, že ste to vy</translation>
@@ -1711,6 +1742,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6775163072363532304">Tu sa zobrazia dostupné zariadenia.</translation>
 <translation id="6776729248872343918">Povoliť rýchle párovanie</translation>
 <translation id="6777845730143344223">Ďalšie informácie o odberoch Passpoint</translation>
+<translation id="6779406956731413166">Chromium OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Chcete zabudnúť na toto zariadenie?</translation>
 <translation id="6783667414610055871">Nastavenia služby Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Obrátené posúvanie <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7280649757394340890">Nastavenia hlasu pre prevod textu na reč</translation>
 <translation id="7282547042039404307">Plynulá</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Dôležité informácie o používaní a zabezpečení</translation>
 <translation id="7303485269821975179">Nastaviť heslo pre zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Vysoký</translation>
 <translation id="7308643132139167865">Jazyky webov</translation>
@@ -1873,6 +1906,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7409599290172516453">Najnovšie fotky</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Blokované aplikácie: <ph name="BLOCKED_APPS_SIZE" /> z <ph name="APPS_LIST_SIZE" /></translation>
+<translation id="7423425410216218516">Viditeľnosť je zapnutá na <ph name="MINUTES" /> min.</translation>
 <translation id="7423513079490750513">Odstrániť <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Asistent pri písaní</translation>
 <translation id="7429415133937917139">Simuluje výstup obnoviteľného Braillovho displeja na paneli ChromeVox v hornej časti obrazovky</translation>
@@ -1919,11 +1953,13 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7578137152457315135">Nastavenia odtlačku prsta</translation>
 <translation id="7578692661782707876">Zadajte potvrdzovací kód.</translation>
 <translation id="7582582252461552277">Preferovať túto sieť</translation>
+<translation id="7582844466922312471">Mobilné dáta</translation>
 <translation id="7587806318633605613">História návrhov</translation>
 <translation id="7590883480672980941">Nastavenia vstupu</translation>
 <translation id="7592060599656252486">Niektoré</translation>
 <translation id="7602173054665172958">Správa tlače</translation>
 <translation id="7605163396341021431">Povoľte aplikáciám pre Android ovládať zariadenia USB v tomto Chromebooku</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7608810328871051088">Predvoľby Androidu</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Povolenie funkcií pripojeného telefónu</translation>
@@ -1934,12 +1970,14 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7632437836497571618">Vyhľadávanie webov pomocou zabezpečeného pripojenia</translation>
 <translation id="7634337648687970851">Obnova miestnych údajov nie je momentálne podporovaná.</translation>
 <translation id="7640256527901510478">IMEI zariadenia je <ph name="IMEI_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Pomocou týchto čísel je možné aktivovať službu.</translation>
+<translation id="7640308610547854367">Vrátili ste sa k predchádzajúcej verzii systému ChromeOS. Ak chcete získať aktualizácie, počkajte, kým bude k dispozícii ďalšia verzia.</translation>
 <translation id="7641513591566880111">Názov nového profilu</translation>
 <translation id="764178579712141045">Bol pridaný používateľ <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7648048654005891115">Štýl mapy klávesov</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Bol nastavený 1 odtlačok prsta}few{Boli nastavené {COUNT} odtlačky prsta}many{{COUNT} fingerprints set up}other{Bolo nastavených {COUNT} odtlačkov prsta}}</translation>
+<translation id="7650677314924139716">Aktuálne nastavenie spotreby dát: len Wi‑Fi</translation>
 <translation id="7651400349472467012">Okamžitý hotspot je k dispozícii</translation>
 <translation id="7651784568388208829">Pokračovanie úlohy Telefónneho centra</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
@@ -2030,6 +2068,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Preklad</translation>
 <translation id="7915457674565721553">Ak chcete nastaviť rodičovskú kontrolu, pripojte sa k internetu</translation>
+<translation id="7917876797003313048">Svoje prihlásené účty Google môžete spravovať. Účty Google sa používajú pre prehliadač Chrome, Obchod Play, Gmail a ďalšie služby. Ak chcete pridať účet inej osoby, napríklad člena rodiny, pridajte radšej novú osobu do svojho zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Pridajte slová, ktoré má kontrola pravopisu preskočiť</translation>
 <translation id="7921347341284348270">V tomto spravovanom účte si nemôžete zobrazovať upozornenia zo svojho telefónu. Vyskúšajte to znova s iným účtom. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -2194,6 +2233,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="8431977087510901105">Nastavenia kurzora boli resetované</translation>
 <translation id="8437209419043462667">Americká klávesnica</translation>
 <translation id="8439506636278576865">Ponúkať preklad stránok v tomto jazyku</translation>
+<translation id="8449347986464073209">Odstrániť a odhlásiť</translation>
 <translation id="8451512073679317615">asistent</translation>
 <translation id="8455775311562941553">Pripojené k zariadeniu <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Čítať text pod kurzorom myši</translation>
@@ -2319,6 +2359,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="8872774989979382243">Zvuk je vypnutý. Zapnite ho.</translation>
 <translation id="888256071122006425">Nastavenia myši a touchpadu</translation>
 <translation id="8885449336974696155">Nahláste <ph name="BEGIN_LINK" />aktuálne nastavenia<ph name="END_LINK" /> a pomôžte tak zlepšiť ChromeOS</translation>
+<translation id="8890170499370378450">Môžu sa vám účtovať poplatky za mobilné dáta</translation>
 <translation id="8890529496706615641">Profil sa nepodarilo premenovať. Skúste to znova alebo požiadajte o technickú podporu operátora.</translation>
 <translation id="8894761918470382415">Ochrana prístupu k údajom pre periférie</translation>
 <translation id="8896830132794747524">Rýchlejším pohybmi myšou pohnete kurzor ďalej</translation>
@@ -2344,6 +2385,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="8978939272793553320">Zariadenie <ph name="DEVICE_NAME" /> bolo odpojené</translation>
 <translation id="8980345560318123814">Hlásenia spätnej väzby</translation>
 <translation id="8981825781894055334">Čoskoro sa minie papier</translation>
+<translation id="8984694057134206124">Všetci vás budú vidieť <ph name="MINUTES" /> min. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Prah rozpoznania</translation>
 <translation id="8986362086234534611">Odstrániť</translation>
 <translation id="8991694323904646277">Žiadna kamera</translation>
@@ -2390,6 +2432,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="9098860402274800697">Odstrániť aplikáciu Google Play a aplikácie pre Android</translation>
 <translation id="910000385680858937">Povolený – <ph name="PERMISSION_DETAILS" />. Pripojte k zariadeniu mikrofón.</translation>
 <translation id="9100416672768993722">Ak chcete prepnúť na poslednú použitú metódu vstupu, stlačte <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />medzerník<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Aktuálne nastavenie spotreby dát: bez internetu</translation>
 <translation id="9108294543511800041">Teraz si môžete zobraziť nedávne fotky, médiá a upozornenia svojho telefónu</translation>
 <translation id="9109122242323516435">Miesto uvoľníte odstránením súborov z úložiska zariadenia.</translation>
 <translation id="9111330022786356709">Pridajte alebo vyhľadajte tlačidlá na myši</translation>

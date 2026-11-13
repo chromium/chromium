@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="201759455285471444">Rozbaliť skupinu kariet</translation>
 <translation id="2022431790688770637">Spravovať návrhy od Gemini</translation>
+<translation id="2023265063803387188">Gemini nie je v režime inkognito k dispozícii</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Otvorte mriežku kariet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, ktorá si môže zobraziť určité informácie. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Ukončiť</translation>
 <translation id="2666092431469916601">Vrch</translation>
 <translation id="2669454659051515572">Stiahnuté súbory uvidia všetci používatelia tohto zariadenia</translation>
-<translation id="2671316366021598595">Web <ph name="SITE_DOMAIN" /> nemá povolený prístup k vašej kamere</translation>
 <translation id="2671423594960767771">Zdieľať skupinu</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Platba na splátky</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Názov</translation>
 <translation id="386224966259596343">Tieto informácie budete môcť uložiť do Peňaženky pri ďalšom vypĺňaní príslušného formulára.</translation>
 <translation id="3868495844258915202">Zobraziť úplnú webovú adresu</translation>
+<translation id="3870931306085184145">Žiadne uložené heslá domény <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Ukázať postup</translation>
 <translation id="3878657761594430423">Rukoväť hárka</translation>
 <translation id="3884810423191119660">Bezpečne ukladajte svoje heslá, aby ste sa mohli jednoducho prihlasovať na weboch a v aplikáciách</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Prejdite na vyššiu úroveň prehliadania</translation>
 <translation id="5062321486222145940">Nainštalovať Disk Google</translation>
 <translation id="5067540696062462445">Stiahnuté</translation>
-<translation id="5070314445039955096">Keď web <ph name="SITE_DOMAIN" /> opustíte, povolenia preň sa resetujú na možnosť Vypnuté</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} z {count} spôsobu platby}few{{position} z {count} spôsobov platby}many{{position} of {count} payment methods}other{{position} z {count} spôsobov platby}}</translation>
 <translation id="5075939510584558547">Uloženie bez šifrovania</translation>
 <translation id="5076534614343816664">Sledovanie cien</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Ak chcete používať program Level Up, musíte sa prihlásiť</translation>
 <translation id="5352128922772839949">Uložiť súbor</translation>
 <translation id="5355191726083956201">Je zapnutá rozšírená ochrana</translation>
-<translation id="5355871759168485600">Web <ph name="SITE_DOMAIN" /> môže používať váš mikrofón, kedykoľvek ho navštívite</translation>
 <translation id="5359436665022446585">Lepšie otváranie odkazov</translation>
 <translation id="536067926684072644">Zobraziť záložky</translation>
 <translation id="5364647308446127983">{count,plural, =1{Nepodarilo sa importovať {count} prístupový kľúč.}few{Nepodarilo sa importovať {count} prístupové kľúče.}many{Couldn't import {count} passkeys}other{Nepodarilo sa importovať {count} prístupových kľúčov.}}</translation>
@@ -1484,6 +1483,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5612225021788368236">Zavrieť promo na predvolený prehliadač</translation>
 <translation id="561269594905823128">Klepnite na <ph name="BEGIN_BOLD" />Vybrať súbor<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Zoradiť od najnovších</translation>
+<translation id="561349411957324076">Hotovo</translation>
 <translation id="5614553682702429503">Uložiť heslo?</translation>
 <translation id="5617769621178348890">Otvoriť v aplikácii Súbory</translation>
 <translation id="5619871095170816857">Na tejto karte je zobrazená naposledy použitá karta vo všetkých vašich synchronizovaných zariadeniach za posledných 24 hodín.</translation>
@@ -2333,7 +2333,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8157532349231307196">Počet účtov: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Odomknúť pomocou funkcie <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Dĺžka</translation>
-<translation id="8181328232274170248">Web <ph name="SITE_DOMAIN" /> môže používať vašu kameru, kedykoľvek ho navštívite</translation>
 <translation id="8182037667962849780">{count,plural, =1{Pre {website_1}}=2{Pre {website_1}, {website_2}}=3{Pre {website_1}, {website_2} a 1 ďalší web}few{Pre {website_1}, {website_2} a {more_count} ďalšie weby}many{For {website_1}, {website_2}, and {more_count} more}other{Pre {website_1}, {website_2} a {more_count} ďalších webov}}</translation>
 <translation id="8184895727539791845">Ak chcete povoliť Gemini používať vašu kameru, zapnite ju v nastaveniach systému iOS</translation>
 <translation id="8185076488803799132">Importovať</translation>
@@ -2504,7 +2503,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8674716540979958118">Máte odhalené heslá.</translation>
 <translation id="8679900250380464358">Pridať do čitateľského zoznamu</translation>
 <translation id="8680787084697685621">Informácie o prihlásení do účtu sú neaktuálne.</translation>
-<translation id="868648444055742370">Web <ph name="SITE_DOMAIN" /> nemá povolený prístup k vášmu mikrofónu</translation>
 <translation id="8690752723634292147">Potvrdenie odstránenia</translation>
 <translation id="8692107307702113268">Heslo má viac ako 1 000 znakov</translation>
 <translation id="8692689525339542358">Získajte ochranu pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami.</translation>
@@ -2650,6 +2648,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="91023216973987714">Spôsoby platby</translation>
 <translation id="9106655997975673326">Zo zariadenia <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Kontroluje, či neboli prelomené heslá</translation>
+<translation id="9115035712231910133">Priložený obrázok {title}</translation>
 <translation id="9119764377203471454">Prílohy sa nepodarilo pridať</translation>
 <translation id="9124387962554796433">Google môže pomocou vašej histórie prispôsobiť Vyhľadávanie a ďalšie služby Googlu.</translation>
 <translation id="9124978074365039456">Nakupujte, prekladajte a identifikujte, čo vidíte, pomocou kamery a fotogalérie</translation>

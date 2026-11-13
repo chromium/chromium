@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Kokeile näitä</translation>
 <translation id="112308213915226829">Piilota hylly automaattisesti</translation>
 <translation id="1129383337808748948">Päivitä <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Salasanassa on oltava vähintään yksi kirjain tai symboli</translation>
 <translation id="1142002900084379065">Viimeisimmät kuvat</translation>
 <translation id="114221662579355151"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ja kaikki sovellukset ja verkkosivustot, joilla on kameralupa, saavat pääsyn kameraan. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
 <translation id="1145593918056169051">Tulostin on pysähtynyt</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Avaa uusi välilehti uudessa ikkunassa</translation>
 <translation id="1536604384701784949">Jotta <ph name="USER_EMAIL_ADDRESS" /> on käytettävissä, sinun on ensin kirjauduttava ulos kaikilta tileiltä. Jos haluat kirjautua ulos, palaa takaisin valitsemalla Peru. Avaa sitten tila-alue valitsemalla aika ja valitse Kirjaudu ulos. Kirjaa sitten <ph name="USER_EMAIL_ADDRESS_2" /> uudelleen sisään.</translation>
 <translation id="15373452373711364">Suuri hiiren osoitin</translation>
+<translation id="1538808328818992871">Salasanassa on oltava vähintään <ph name="MIN_LENGTH" /> merkkiä</translation>
 <translation id="1545331255323159851">Katsele puhelimesi viimeaikaisia kuvia, mediaa ja ilmoituksia</translation>
 <translation id="1546492247443594934">Pöytä 2</translation>
 <translation id="1546930421365146760">Pyydä järjestelmänvalvojaa suorittamaan käyttöönotto Google-hallintakonsolissa</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Näet lisävaihtoehtoja klikkaamalla tätä.</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="1557622599341396706">Näytä työpöydän nimi</translation>
+<translation id="1568242747239041185">Salasanassa on oltava vähintään kahta seuraavista: isoja kirjaimia, pieniä kirjaimia, numeroita tai symboleita</translation>
 <translation id="1569384531973824928">Sallii pääsyn kaikille sovelluksille ja verkkosivustoille, joilla on kamera- ja mikrofonilupa. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
 <translation id="1570235441606255261">Steamin asennusohjelma</translation>
 <translation id="1571697193564730395">Älä häiritse ‑tila päälle tai pois. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Tiivistä Google Tasks</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2215920961700443347">Ei internetyhteyttä Muodosta internetyhteys ja yritä uudelleen.</translation>
+<translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="2222841058024245321">Työpöytä 7</translation>
 <translation id="2223384056430485343">Jaetulla näytöllä</translation>
 <translation id="2224075387478458881">Näytön tallentajan käyttöä ei sallita, kun suojattua sisältöä on nähtävissä</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Hiiren painikkeet keskeytetty</translation>
 <translation id="2268731132310444948">Esittelyn vaihe <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Kun käynnistysohjelma on aktivoitu, näet parannetun hakukentän. Voit hakea esimerkiksi tiedostoja ja sovelluksia kirjoittamalla. Voit myös saada vastauksia kysymyksiin aiheesta <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Kirjaa kaikki ulos</translation>
+<translation id="2273432041732361925">Salasana ei saa sisältää toistuvia merkkejä tai vähintään neljän merkin sarjoja</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2278668501808246459">Käynnistetään säilönhallintaa</translation>
 <translation id="2282073721614284166">Avaa linkki välilehdellä</translation>
@@ -1056,6 +1061,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4072805772816336153">Yritä myöhemmin uudelleen</translation>
 <translation id="4077623680826964850">Aikakatkaisu käynnistettäessä tai yhdistettäessä VM:ään uudelleen.</translation>
 <translation id="4086921558679520050">Laitteen fyysisen mikrofonikytkimen laittaminen päälle</translation>
+<translation id="4093173301198419723">Salasanassa on oltava isoja ja pieniä kirjaimia, numeroita ja symboleita</translation>
 <translation id="4099874310852108874">Verkkovirhe tapahtui.</translation>
 <translation id="4101772068965291327">Avaa etusivu</translation>
 <translation id="4102906002417106771">Aloita Powerwash käynnistämällä uudelleen</translation>
@@ -1276,6 +1282,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4668936527507421457">PIN-koodissa voi olla vain numeroita</translation>
 <translation id="4672539464599646374">Virransäästö päällä</translation>
 <translation id="4673427585974421255">Pidä päällä</translation>
+<translation id="467510802200863975">Salasanat eivät täsmää</translation>
 <translation id="4677040906536311086">Google Sheets ‑taulukko</translation>
 <translation id="468019262817532242">Kukaan ei voi jakaa sinulle sisältöä</translation>
 <translation id="468293128311738995">Puhelimesi sovellukset</translation>
@@ -1299,6 +1306,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Päivitä laite aiempaan versioon päivän kuluessa}other{Päivitä laite aiempaan versioon # päivän kuluessa}}</translation>
 <translation id="4747410141429390146">Avaa lukitus nähdäksesi ilmoitukset</translation>
 <translation id="4752784485658729358">Vain kuusi tallennettua työpöytää sallitaan. Poista jokin työpöytä tallentaaksesi uuden.</translation>
+<translation id="4753084533826742808">Salasanassa on oltava vähintään 1 merkki</translation>
 <translation id="4759238208242260848">Lataukset</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + ylänuoli</translation>
 <translation id="4762573482154983647">Piilota sovellukset</translation>
@@ -1435,6 +1443,7 @@ Voit myös käyttää pikanäppäintä. Korosta ensin teksti ja paina sitten <ph
 <translation id="5144005092084035179">Vaihdetaanko äänituloa?</translation>
 <translation id="5145464978649806571">Jos poistut laitteen läheltä, näyttö lukittuu automaattisesti. Kun pysyt laitteen edessä, näyttö pysyy päällä pidempään. Jos lukitusnäyttö ei ole käytössä, laite siirtyy virransäästötilaan lukittumisen sijaan.</translation>
 <translation id="5147567197700016471">Avattu</translation>
+<translation id="5148285448107770349">Salasanan vähimmäispituus on kahdeksan merkkiä</translation>
 <translation id="5150070631291639005">Tietosuoja-asetukset</translation>
 <translation id="5155897006997040331">Lukunopeus</translation>
 <translation id="5158206172605340248">Aksenttimerkkien valikko hylätty.</translation>
@@ -1555,6 +1564,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> edellyttää, että yhdistät Wi-Fi-verkkoon nyt ja lataat päivityksen. Voit myös ladata sen maksullisella yhteydellä (tästä voidaan veloittaa).</translation>
 <translation id="547979256943495781">Hylly oikealla</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Vahvista salasana</translation>
 <translation id="5491186829646618080">Laiteohjelmiston päivityksiä saatavilla</translation>
 <translation id="5503884284981862082">Avaa/sulje Google Assistant</translation>
 <translation id="550391772491508736">Jatka striimausta</translation>
@@ -1815,6 +1825,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6198252989419008588">Vaihda PIN-koodi</translation>
 <translation id="6199775032047436064">Lataa nykyinen sivu uudelleen</translation>
 <translation id="6200515304866777730">Sovellus ei tue tätä</translation>
+<translation id="6209589022625766110">Pituuden on oltava vähintään kahdeksan merkkiä, ja salasanassa on oltava vähintään kaksi isoa kirjainta, pientä kirjainta, numeroa tai symbolia. Ei saa sisältää toistuvia merkkejä tai vähintään neljän merkin sarjoja.</translation>
 <translation id="6210042900243040400">Yhdistä <ph name="NAME" />, joka tallennettiin aiemmin tänne: <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">10 minuutiksi</translation>
 <translation id="6213808132343683860">Ota osittainen kuvakaappaus tai tallennus näytöltä</translation>
@@ -1849,6 +1860,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6297986260307280218">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Koostetusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille. Omistaja on ottanut tämän <ph name="BEGIN_LINK1" />asetuksen<ph name="END_LINK1" /> käyttöön. Omistaja voi lähettää tätä laitetta koskevaa diagnostiikka‑ ja käyttödataa Googlelle. Jos olet laittanut päälle muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi. <ph name="BEGIN_LINK2" />Lue lisää mittareista<ph name="BEGIN_LINK2_END" />Lue lisää<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Muokkaa laitetta sovelluksessa</translation>
 <translation id="6298962879096096191">Asenna Android-sovelluksia Google Playn avulla</translation>
+<translation id="6300478323573969040">Salasanassa on oltava vähintään 12 merkkiä, joihin kuuluu isoja ja pieniä kirjaimia, numeroita ja symboleita. Ei saa sisältää toistuvia merkkejä tai vähintään neljän merkin sarjoja.</translation>
 <translation id="6304076460080088478">Sulje tai pienennä incognito-ikkunat, niin voit hakea näytöltä Google Lensilla</translation>
 <translation id="6309219492973062892">Klikkaa tai napauta hyllyn kuvakkeita 1–8</translation>
 <translation id="6315170314923504164">Ääni</translation>
@@ -2021,7 +2033,6 @@ Uusi asennus</translation>
 <translation id="6782919488259222803">Hae nykyiseltä sivulta</translation>
 <translation id="6783348167101855071">Valittu alaoikea kahva, siirry nuolinäppäimillä</translation>
 <translation id="6786750046913594791">Sulje kansio</translation>
-<translation id="6792262051831399889">Ei käytettävissä</translation>
 <translation id="6792351896138862473">Ei-tuettua kioskisovellusta ei voida käynnistää. Ilmoita ongelmasta järjestelmänvalvojalle.</translation>
 <translation id="679368458793552943">Lähennä, kun suurennus on päällä</translation>
 <translation id="6794287755901682422">Kohteen tiedot: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8052898407431791827">Kopioitu leikepöydälle</translation>
 <translation id="8054466585765276473">Lasketaan akun kesto.</translation>
 <translation id="8063363226185507157">Synkronoitavat saavutettavuusasetukset</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8079538659226626406">Näytön jakaminen</translation>
 <translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>
@@ -2627,6 +2639,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8555757996376137129">Poista nykyinen työpöytä</translation>
 <translation id="8558521694042102707">Generatiivinen tekoäly voi tehdä virheitä, myös ihmisiin liittyviä, joten tarkista sen vastaukset.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> muokkasi</translation>
+<translation id="8567946600191652875">Salasanassa on oltava vähintään kuusi merkkiä, joista vähintään yksi on kirjain tai symboli</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Valikko siirretty näytön oikeaan alanurkkaan</translation>
 <translation id="8581946341807941670">Paina <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ja klikkaa linkkiä</translation>
@@ -2799,7 +2812,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9034924485347205037">Linux-tiedostot</translation>
 <translation id="9037818663270399707">Yhteytesi kaikkea verkkoliikennettä ei suojata</translation>
 <translation id="9047624247355796468">Avaa asetukset: <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Bluetooth ei ole käytettävissä</translation>
 <translation id="9050999376345823055">Vapauta painamalla "."</translation>
 <translation id="906458777597946297">Suurenna ikkuna</translation>
 <translation id="9065203028668620118">Muokkaa</translation>

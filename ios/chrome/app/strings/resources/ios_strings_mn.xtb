@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="201759455285471444">Табын бүлгийг дэлгэнэ үү.</translation>
 <translation id="2022431790688770637">Gemini-н зөвлөмжийг удирдах</translation>
+<translation id="2023265063803387188">Gemini-г Нууцлалын горимд ашиглах боломжгүй</translation>
 <translation id="2031515492007104071">Түвшин ахиулах</translation>
 <translation id="2044394949148788042">Табын хүснэгтийг нээх</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> бүртгэлд <ph name="HOSTED_DOMAIN" />-с тохиргоо хийсэн бөгөөд зарим мэдээллийг үзэх боломжтой байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Зогсоох</translation>
 <translation id="2666092431469916601">Дээд</translation>
 <translation id="2669454659051515572">Энэ төхөөрөмжийг ашиглаж байгаа дурын хүн татсан файлуудыг харах боломжтой</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />"-д таны камерт хандахыг зөвшөөрөөгүй</translation>
 <translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Цагийн явцад төлөх</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="386224966259596343">Та дараагийн удаа холбогдох маягтыг бөглөхдөө энэ мэдээллийг Wallet-д хадгалах боломжтой болно.</translation>
 <translation id="3868495844258915202">Бүтэн URL-г харуулах</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" />-д хадгалсан нууц үг алга</translation>
 <translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="3878657761594430423">Хүснэгтийн бариул</translation>
 <translation id="3884810423191119660">Нууц үгийг аюулгүй хадгалснаар та сайт, аппад хялбархан нэвтрэх боломжтой</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Үзэлтээ түвшин ахиулаарай</translation>
 <translation id="5062321486222145940">Google Drive суулгах</translation>
 <translation id="5067540696062462445">Татаж авсан файл</translation>
-<translation id="5070314445039955096">Таныг энэ сайтаас гарах үед "<ph name="SITE_DOMAIN" />"-н зөвшөөрлийг унтраасан болгож шинэчилнэ</translation>
 <translation id="507187271399539513">{count,plural, =1{{count}-н {position}-р төлбөрийн хэрэгсэл}other{{count}-н {position}-р төлбөрийн хэрэгсэл}}</translation>
 <translation id="5075939510584558547">Шифрлэлтгүйгээр хадгалах</translation>
 <translation id="5076534614343816664">Үнэ мөшгөх</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Та Level Up-г ашиглахын тулд нэвтэрсэн байх ёстой</translation>
 <translation id="5352128922772839949">Файлыг хадгалах</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
-<translation id="5355871759168485600">Таныг энэ сайтад зочлох бүрд "<ph name="SITE_DOMAIN" />"-д таны микрофоныг ашиглахыг зөвшөөрсөн</translation>
 <translation id="5359436665022446585">Холбоосыг илүү сайн нээх</translation>
 <translation id="536067926684072644">Хавчуурга харуулах</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} нэвтрэх түлхүүрийг импортолж чадсангүй}other{{count} нэвтрэх түлхүүрийг импортолж чадсангүй}}</translation>
@@ -1484,6 +1483,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5612225021788368236">Өгөгдмөл хөтчийн сурталчилгааг хаах</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />Файлаа сонгох<ph name="END_BOLD" /> дээр товшино уу</translation>
 <translation id="5613297089029360427">Сүүлийн үеийнхээр нь эрэмбэлэх</translation>
+<translation id="561349411957324076">Дууссан</translation>
 <translation id="5614553682702429503">Нууц үгийг хадгалах уу?</translation>
 <translation id="5617769621178348890">Файлс аппад нээх</translation>
 <translation id="5619871095170816857">Энэ карт сүүлийн 24 цагийн дотор таны синк хийсэн бүх төхөөрөмж дээрх сүүлд ашигласан нээлттэй табыг харуулна.</translation>
@@ -2333,7 +2333,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> хаяг</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-р түгжээг тайлах</translation>
 <translation id="8173034266693057059">Урт</translation>
-<translation id="8181328232274170248">Таныг энэ сайтад зочлох бүрд "<ph name="SITE_DOMAIN" />"-д таны камерыг ашиглахыг зөвшөөрсөн</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}-д}=2{{website_1}, {website_2}-д}=3{{website_1}, {website_2} болон өөр 1 вебсайтад}other{{website_1}, {website_2} болон өөр {more_count} вебсайтад}}</translation>
 <translation id="8184895727539791845">Gemini-д камерыг тань ашиглахыг зөвшөөрөхийн тулд iOS-н тохиргооноос Камерыг асаана уу</translation>
 <translation id="8185076488803799132">Импортлох</translation>
@@ -2504,7 +2503,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8674716540979958118">Танд алдагдсан нууц үгнүүд байна.</translation>
 <translation id="8679900250380464358">Унших жагсаалтад нэмэх</translation>
 <translation id="8680787084697685621">Дансны нэвтрэх мэдээлэл хуучирсан байна.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />"-д таны микрофонд хандахыг зөвшөөрөөгүй</translation>
 <translation id="8690752723634292147">Устгахыг баталгаажуулах</translation>
 <translation id="8692107307702113268">Нууц үг 1000-аас дээш тэмдэгттэй байна</translation>
 <translation id="8692689525339542358">Аюултай сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаалалттай байгаарай.</translation>

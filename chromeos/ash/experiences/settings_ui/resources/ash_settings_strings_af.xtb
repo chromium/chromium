@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Jy's gereed!</translation>
 <translation id="1149483087970735785">Bystandstegnologie</translation>
 <translation id="1150490752229770117">Dit is die laaste outomatiese sagteware- en sekuriteitopdatering vir hierdie <ph name="DEVICE_TYPE" />. Gradeer na 'n nuwer model toe op om toekomstige opdaterings te kry. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Meer oor ChromeOS</translation>
 <translation id="1155816283571436363">Koppel tans aan jou foon</translation>
 <translation id="1160800016654917722">Venster het af en na links beweeg</translation>
 <translation id="1164015913575846413">alt + klik</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">lanseerder + regspyl</translation>
 <translation id="1280332775949918163">Gooi venster</translation>
+<translation id="1285625592773741684">Huidige datagebruikinstelling is Mobiele data</translation>
 <translation id="1285815028662278915">Jou mobieldata gebruik dalk nie warmkol nie. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Aandbeligting sal met sondsondergang outomaties aanskakel</translation>
 <translation id="1288300545283011870">Spraakeienskappe</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Dit sal uitbreidings deaktiveer en jou instellings na veilige verstekke terugstel. Oortjies, lêers en webkoekies sal bewaar word. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Volskermvergrootglas</translation>
 <translation id="1539727654733007771">Geen selnetwerke is opgestel nie. Laai ’n nuwe <ph name="BEGIN_LINK" />profiel<ph name="END_LINK" /> af.</translation>
+<translation id="1547295885616600893">Chrome-bedryfstelsel word deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> moontlik gemaak.</translation>
 <translation id="1547808936554660006">Ek verstaan dat Powerwash nie geïnstalleerde e-SIM-profiele sal verwyder nie</translation>
 <translation id="1549275686094429035">ARC-geaktiveer</translation>
 <translation id="1554640914375980459">Laat flits die skerm wanneer jy kennisgewings ontvang. Gebruik flitskennisgewings versigtig as jy ligsensitief is.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Gebruik Wi-Fi of selnetwerke om ligging te bepaal</translation>
 <translation id="1650407365859096313">Maak in nuwe oortjie oop, toestemming is <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Aktiveer Nabydeling</translation>
+<translation id="1662146548738125461">Meer oor Chrome OS Flex</translation>
 <translation id="1663698992894057019">Gradeer op na ’n nuwe Chromebook vir die jongste sekuriteit en sagteware</translation>
 <translation id="1665328953287874063">Gebruik ’n wagwoord of PIN om jou <ph name="DEVICE_TYPE" /> te ontsluit</translation>
 <translation id="1667842670298352129">Hoor hoe spesifieke teks hardop gelees word. Kies eerstens die Hardoplees-ikoon aan die onderkant van jou skerm en merk dan die teks. Jy kan ook ’n kortpadsleutel gebruik: Merk teks en druk dan Soek + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Let wel: Jou vingerafdruk kan minder veilig as 'n sterk wagwoord of PIN wees.</translation>
 <translation id="1724801751621173132">Invoermodus</translation>
 <translation id="1741190788710022490">Aanpasbare laaiproses</translation>
+<translation id="1745732479023874451">Bestuur kontakte</translation>
 <translation id="1751335846119670066">Help My Lees</translation>
 <translation id="1755601632425835748">Teksgrootte</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> hertoegewys na <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Nee, bly by 1 skakelaar</translation>
 <translation id="1842681835432895345">Sluit hierdie skerm uit in spieëlmodus</translation>
 <translation id="1848219224579402567">Meld af wanneer deksel toegemaak word</translation>
+<translation id="185970820835152459">Jy kan jou aangemelde Google-rekeninge bestuur. Jou Google-rekeninge word gebruik vir Chromium-blaaier, Play Winkel, Gmail en meer. As jy 'n rekening vir iemand anders, soos 'n gesinslid, wil byvoeg, kan jy 'n nuwe persoon eerder by jou <ph name="DEVICE_TYPE" /> voeg. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Koeler</translation>
 <translation id="1866589962721094893">Gee Android-apps beheer oor USB-toestelle op hierdie Chromebook. Toestemming sal versoek word elke keer wanneer jy by 'n USB-toestel inprop. Individuele Android-programme sal vir bykomende toestemmings vra.</translation>
 <translation id="1877377290348678128">Etiket (opsioneel)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Klank</translation>
 <translation id="2097950021134740304">Kanselleer vergeet van intekening</translation>
 <translation id="2104166991923847969">Skakel warmkol outomaties af</translation>
+<translation id="2106831557840787829">Chrome OS Flex word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />, soos die geval ook is met die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Geen SIM-kaart ingesit nie</translation>
 <translation id="2121825465123208577">Verander grootte</translation>
 <translation id="2127372758936585790">Laekrag-laaier</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Verwyder <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2363475280045770326">Kon nie die opstelling stoor nie</translation>
+<translation id="236939127352773362">Wanneer toestelle in die omtrek deel</translation>
 <translation id="237336063998926520">Gebruik jou IP-adres om ligging te bepaal</translation>
 <translation id="2373499590298659902">Gebruik “0” om ’n muisknoppie te druk en hou</translation>
 <translation id="2375406435414127095">Koppel aan jou foon</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blokkeer verkeer sonder VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Liggingakkuraatheid verskaf ’n akkurater ligging vir apps en dienste. Om dit te doen, verwerk Google van tyd tot tyd inligting oor toestelsensors en draadlose seine vanaf jou toestel om draadloseseinliggings met skareverkryging te kry. Dit word gebruik, sonder om jou te identifiseer, om liggingakkuraatheid en ligginggegronde dienste te verbeter en om oor die algemeen Google se dienste te verbeter, te verskaf en te handhaaf op grond van Google en derde partye se wettige belange om in gebruikers se behoeftes te voorsien.</translation>
+<translation id="3387527074123400161">Chromium-bedryfstelsel</translation>
 <translation id="3388094447051599208">Uitvoerlaai is amper vol</translation>
 <translation id="3390013585654699824">Programbesonderhede</translation>
 <translation id="3390740059150071453">Kyk links</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">E-posadres</translation>
 <translation id="3701028563242674350">Skud die muisskermpyltjie om dit groter te maak</translation>
 <translation id="3703699162703116302">Kaartjie is herlaai</translation>
+<translation id="3703994572283698466">Chrome-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> soos die geval ook is met <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Aktiveer Wi-Fi</translation>
 <translation id="370665806235115550">Laai tans …</translation>
 <translation id="3707163604290651814">Tans aangemeld as <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Het <ph name="NUM_PRINTERS" /> drukkers op die drukbediener gekry</translation>
 <translation id="371370241367527062">Voorste mikrofoon</translation>
 <translation id="37143699183660101">Stabiliteit van skermpyltjie</translation>
+<translation id="3716540481907974026">Chrome OS Flex-weergawe</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Verkeerde PIN. Probeer weer</translation>
 <translation id="3728681439294129328">Stel netwerkadres op</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Wys onderstreep vir samestellingteks</translation>
 <translation id="3789841737615482174">Installeer</translation>
 <translation id="379509625511193653">Af</translation>
+<translation id="3795971588916395511">Google Chrome-bedryfstelsel</translation>
 <translation id="3796215473395753611">alt + oppyl</translation>
 <translation id="3798670284305777884">Luidspreker (intern)</translation>
 <translation id="3799128412641261490">Skakelaartoegang-instellings</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Ingeboude sleutelbord</translation>
 <translation id="3917644013202553949">Daar is nie genoeg bergingspasie om jou lêers te sinkroniseer nie. Probeer spasie beskikbaar maak.</translation>
 <translation id="3919229493046408863">Skakel kennisgewing af wanneer toestelle in die omtrek is</translation>
+<translation id="3923184630988645767">Datagebruik</translation>
 <translation id="3923494859158167397">Geen selnetwerke is opgestel nie</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Ander gebruikers op hierdie toestel kan ook hierdie netwerk gebruik</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definisie van Vinnige Antwoorde</translation>
 <translation id="3994075804072562819">Gee <ph name="SPECIFIC_NAME" /> beheer oor USB-toestelle.</translation>
 <translation id="3994530503403062649">Vind knoppies op jou tablet</translation>
+<translation id="3997429360543082038">Meer oor Chromium-bedryfstelsel</translation>
 <translation id="4001540981461989979">Merk muisskermpyltjie wanneer dit beweeg</translation>
 <translation id="4005817994523282006">Tydsone-bespeuringsmetode</translation>
+<translation id="4019629340646866719">Chromium-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />, soos die geval ook is met <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopieer bouweergawes</translation>
 <translation id="4028467762035011525">Voeg invoermetodes by</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Druk <ph name="KEY_CODES" /> om oor te skakel na die invoermetode wat laaste gebruik is</translation>
 <translation id="4051177682900543628">soek + regspyl</translation>
 <translation id="405181879009056822">ChromeOS-instellings</translation>
+<translation id="4054070260844648638">Sigbaar vir almal</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Gaan jou verbinding na om beskikbare drukkers in jou netwerk te sien</translation>
 <translation id="4068776064906523561">Gestoorde vingerafdrukke</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, Graad <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Vind meer stilusprogramme</translation>
 <translation id="4248401726442101648">Geen kamera is gekoppel nie</translation>
+<translation id="424864128008805179">Meld af uit Chrome?</translation>
 <translation id="4249116869350613769">Batterybespaarder</translation>
 <translation id="4250229828105606438">Skermkiekie</translation>
 <translation id="425411422794688815">Iets het skeefgeloop. Maak seker dat jou foon in die omtrek en ontsluit is, en dat Bluetooth en wi-fi aangeskakel is.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-rekening}other{<ph name="EXTRA_ACCOUNTS" /> Google-rekeninge}}</translation>
 <translation id="4314497418046265427">Wees meer produktief deur jou foon aan jou <ph name="DEVICE_TYPE" /> te koppel</translation>
 <translation id="4314561087119792062">Voeg nuwe toegangspuntnaam by</translation>
+<translation id="4314815835985389558">Bestuur sinkronisering</translation>
 <translation id="4320177379694898372">Geen internetverbinding nie</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Berging en krag</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Aantal voorstelle</translation>
 <translation id="4606933160360542263">Gepasmaakte sleutelkombinasie: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Wanneer linkermuisknoppie gekies word, gebruik “/” om te dubbelklik</translation>
+<translation id="4613863813562375431">Chromium-bedryfstelselweergawe</translation>
 <translation id="461661862154729886">Energiebron</translation>
 <translation id="4617880081511131945">Kan nie verbinding vestig nie</translation>
 <translation id="4620757807254334872">muis</translation>
@@ -1136,6 +1155,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4777943778632837590">Stel netwerknaambedieners op</translation>
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4779766576531456629">Hernoem e-SIM-selnetwerk</translation>
+<translation id="4789550509729954245">Wys kennisgewing wanneer toestelle in die omtrek deel</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktiveer TrackPoint-versnelling</translation>
 <translation id="479664067938200069">Geïnstalleerde apps van <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4964544790384916627">Dok venster</translation>
 <translation id="4964673849688379040">Gaan tans na …</translation>
 <translation id="4967571733817147990">Pasmaak muisknoppies</translation>
+<translation id="4970880042055371251">Chrome-bedryfstelselweergawe</translation>
 <translation id="4972129977812092092">Wysig drukker</translation>
 <translation id="4975771730019223894">Programkentekens</translation>
 <translation id="4979263087381759787">Ontwikkelaaropsies</translation>
@@ -1275,6 +1296,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5193978546360574373">Dit sal toegang tot Google Drive op hierdie Chromebook verwyder, insluitend toegang tot enige lêers wat vanlyn beskikbaar gestel is</translation>
 <translation id="5196790039230503600">Gebruik die gebaar en beweeg dan jou kop om te wys waar jy graag die item wil neersit. Gebruik weer die gebaar om dit neer te sit.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Moet nooit mobiele data vir oordrag gebruik nie</translation>
 <translation id="5207949376430453814">Lig tekskaret uit</translation>
 <translation id="5208926629108082192">Inligting oor toestel se selnetwerk</translation>
 <translation id="5208988882104884956">Halfwydte</translation>
@@ -1307,6 +1329,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5331568967879689647">Chrome-bedryfstelsel se stelselprogram</translation>
 <translation id="5334113802138581043">Mikrofoontoegang</translation>
 <translation id="5336689872433667741">Skermpyltjie en raakpaneel</translation>
+<translation id="5337926771328966926">Huidige toestelnaam is <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Stuur diagnostiese en gebruiksdata</translation>
 <translation id="5369694795837229225">Stel Linux-ontwikkelingomgewing op</translation>
 <translation id="5377367976106153749">Skakel kameratoegang aan?</translation>
@@ -1444,6 +1467,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5833726373896279253">Hierdie instellings kan slegs deur die eienaar verander word:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Houer</translation>
+<translation id="5840680448799937675">Lêers sal altyd vanlyn gedeel word</translation>
 <translation id="5841270259333717135">Stel Ethernet op</translation>
 <translation id="5842497610951477805">Aktiveer Bluetooth</translation>
 <translation id="5846200638699387931">Verhoudingsinsboufout: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5924438086390153180">Vra voordat jy Microsoft-lêers na Google Drive kopieer of skuif</translation>
 <translation id="5939518447894949180">Stel terug</translation>
 <translation id="594048410531370124">Sleutel nie herken nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Toestelsigbaarheid</translation>
 <translation id="5945192511027649793">Deaktiveer raakpaneel</translation>
 <translation id="5947651424015173580">Dubbelklik die muis</translation>
 <translation id="594993197557058302">Druk 1-4 wysigersleutels (ctrl, alt, shift, soek of lanseerder) en nog 1 sleutel. Jy kan ook ’n enkele sleutel kies.</translation>
@@ -1491,10 +1516,12 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5961545272769624207">Wys ’n gebaar toe</translation>
 <translation id="5968022600320704045">Geen soekresultate nie</translation>
 <translation id="5969728632630673489">Kortpadsleutelkennisgewing is toegemaak</translation>
+<translation id="5979353814339191480">Hierdie opsie is van toepassing op Chromebooks met 'n dataplan of mobielenetwerkdongel, of wat aan 'n draagbare warmkol verbind is</translation>
 <translation id="5985556342298151179">Chrome-app is deur jou toesteladmin geïnstalleer.</translation>
 <translation id="5986442691296752186">Gee Linux-apps beheer oor USB-toestelle.</translation>
 <translation id="598810097218913399">Verwyder toewysing</translation>
 <translation id="5988563937187882754">Kyk regs</translation>
+<translation id="5990266201903445068">Net Wi-Fi</translation>
 <translation id="5992225669837656567">Alle muise is ontkoppel</translation>
 <translation id="5999630716831179808">Stemme</translation>
 <translation id="6002458620803359783">Voorkeurstemme</translation>
@@ -1509,6 +1536,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="6045114302329202345">Primêre TrackPoint-knoppie</translation>
 <translation id="6048747414605857443">Kies en pasmaak teks-na-spraak-stemme vir ChromeVox en Hardoplees</translation>
 <translation id="6050189528197190982">Grysskaal</translation>
+<translation id="6054961935262556546">Verander sigbaarheid</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
 <translation id="6059925163896151826">USB-toestelle</translation>
 <translation id="6064764629679333574">Verbeter die gehalte van Bluetooth se mikrofoonklank deur laeresolusie-oudio na hoë resolusie op te skaal.</translation>
@@ -1567,6 +1595,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="6265159465845424232">Vra voordat jy Microsoft-lêers na Microsoft OneDrive kopieer of skuif</translation>
 <translation id="6265687851677020761">Verwyder poort</translation>
 <translation id="6266532094411434237">Koppel tans aan <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Meld by Chromium af?</translation>
 <translation id="6270309713620950855">Demp por</translation>
 <translation id="6274089201566806618">Koppel tans aan <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekondes</translation>
@@ -1618,6 +1647,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="6453921811609336127">Druk <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Spasiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> om na die volgende invoermetode oor te skakel</translation>
 <translation id="6463488491707167747">Vee hierdie woordeboek uit</translation>
 <translation id="6463596731306859179">Kry jy ongewenste opspringers of ander onverwagte gedrag? Soms kan apps en uitbreidings wat jy installeer jou ChromeOS-instellings verander sonder dat jy weet.</translation>
+<translation id="6465841119675156448">Sonder internet</translation>
 <translation id="6467377768028664108">Jou <ph name="DEVICE_TYPE" /> kan dan:</translation>
 <translation id="6469557521904094793">Skakel sellulêre netwerk aan</translation>
 <translation id="6470120577693311302">Flitskennisgewings</translation>
@@ -1668,6 +1698,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="6626581113916585374">Effekmodus</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Seleksie-kortpad</translation>
+<translation id="6632473616050862500">Chrome OS Flex word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Skakel Kitsbind af</translation>
 <translation id="6647690760956378579">Voorskou van natuurlike stem</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
@@ -1711,6 +1742,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="6775163072363532304">Beskikbare toestelle sal hier verskyn.</translation>
 <translation id="6776729248872343918">Aktiveer Kitsbind</translation>
 <translation id="6777845730143344223">Kom meer te wete oor Passpoint-intekeninge</translation>
+<translation id="6779406956731413166">Chromium-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Vergeet hierdie toestel?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-instellings</translation>
 <translation id="6785915470941880363">Omgekeerde rollees <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="7280649757394340890">Teks-na-spraak-steminstellings</translation>
 <translation id="7282547042039404307">Glad</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
 <translation id="7303485269821975179">Stel ’n <ph name="DEVICE_TYPE" />-wagwoord op</translation>
 <translation id="7304030187361489308">Hoog</translation>
 <translation id="7308643132139167865">Webwerftale</translation>
@@ -1873,6 +1906,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="7409599290172516453">Onlangse foto's</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> van <ph name="APPS_LIST_SIZE" /> apps is geblokkeer</translation>
+<translation id="7423425410216218516">Sigbaarheid is aan vir <ph name="MINUTES" /> minute</translation>
 <translation id="7423513079490750513">Verwyder <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Help my skryf</translation>
 <translation id="7429415133937917139">Simuleer die lewering van 'n herlaaibare brailleskerm
@@ -1920,11 +1954,13 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="7578137152457315135">Vingerafdrukinstellings</translation>
 <translation id="7578692661782707876">Voer asseblief jou bevestigingkode in.</translation>
 <translation id="7582582252461552277">Verkies hierdie netwerk</translation>
+<translation id="7582844466922312471">Mobiele data</translation>
 <translation id="7587806318633605613">Voorstelgeskiedenis</translation>
 <translation id="7590883480672980941">Invoerinstellings</translation>
 <translation id="7592060599656252486">Sommige</translation>
 <translation id="7602173054665172958">Drukbestuur</translation>
 <translation id="7605163396341021431">Gee Android-apps beheer oor USB-toestelle op hierdie Chromebook</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7608810328871051088">Android-voorkeure</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Aktiveer gekoppelde foonkenmerke.</translation>
@@ -1935,12 +1971,14 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="7632437836497571618">Gebruik veilige verbindings om werwe op te soek</translation>
 <translation id="7634337648687970851">Plaaslike dataterugstelling word nie tans gesteun nie.</translation>
 <translation id="7640256527901510478">Jou toestel se IMEI is <ph name="IMEI_NUMBER" /> en jou toestelreeksnommer is <ph name="SERIAL_NUMBER" />. Hierdie nommers kan gebruik word om diens te help aktiveer.</translation>
+<translation id="7640308610547854367">Jy het teruggekeer na ’n vorige weergawe van ChromeOS. Wag totdat die volgende weergawe beskikbaar is om opdaterings te kry.</translation>
 <translation id="7641513591566880111">Nuwe profielnaam</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> is bygevoeg</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eienaar)</translation>
 <translation id="7648048654005891115">Sleutelkaartstyl</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 vingerafdruk is opgestel}other{{COUNT} vingerafdrukke is opgestel}}</translation>
+<translation id="7650677314924139716">Huidige datagebruikinstelling is Net Wi-Fi</translation>
 <translation id="7651400349472467012">Kitswarmkol is beskikbaar</translation>
 <translation id="7651784568388208829">Foonsentrum-taakvoortsetting</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
@@ -2031,6 +2069,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Vertaling</translation>
 <translation id="7915457674565721553">Koppel aan die internet om ouerkontroles op te stel</translation>
+<translation id="7917876797003313048">Jy kan jou aangemelde Google-rekeninge bestuur. Jou Google-rekeninge word gebruik vir Chrome-blaaier, Play Winkel, Gmail en meer. As jy 'n rekening vir iemand anders, soos 'n gesinslid, wil byvoeg, kan jy 'n nuwe persoon eerder by jou <ph name="DEVICE_TYPE" /> voeg. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s.</translation>
 <translation id="7920482456679570420">Voeg woorde by wat jy wil hê speltoets moet oorslaan</translation>
 <translation id="7921347341284348270">Jy kan nie op hierdie bestuurde rekening na jou foon se kennisgewings kyk nie. Probeer weer met ’n ander rekening. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="8431977087510901105">Terugstelling van skermpyltjie-instellings</translation>
 <translation id="8437209419043462667">VSA</translation>
 <translation id="8439506636278576865">Bied aan om bladsye in hierdie taal te vertaal</translation>
+<translation id="8449347986464073209">Vee uit en meld af</translation>
 <translation id="8451512073679317615">assistent</translation>
 <translation id="8455775311562941553">Gekoppel aan <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Lees teks onder die muis</translation>
@@ -2320,6 +2360,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="8872774989979382243">Volume is af. Skakel volume aan.</translation>
 <translation id="888256071122006425">Muis- en raakpaneelinstellings</translation>
 <translation id="8885449336974696155">Help om ChromeOS te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
+<translation id="8890170499370378450">Kan mobiele dataheffings aangaan</translation>
 <translation id="8890529496706615641">Profiel kon nie hernoem word nie. Probeer weer of kontak jou diensverskaffer vir tegniese steundiens.</translation>
 <translation id="8894761918470382415">Datatoegangbeskerming vir randtoestelle</translation>
 <translation id="8896830132794747524">Vinniger bewegings met jou muis sal die skermpyltjie verder beweeg</translation>
@@ -2345,6 +2386,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> is ontkoppel</translation>
 <translation id="8980345560318123814">Terugvoerverslae</translation>
 <translation id="8981825781894055334">Min papier</translation>
+<translation id="8984694057134206124">Jy sal vir <ph name="MINUTES" /> minute vir almal sigbaar wees. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Bespeuringdrempel</translation>
 <translation id="8986362086234534611">Vergeet</translation>
 <translation id="8991694323904646277">Geen kamera nie</translation>
@@ -2391,6 +2433,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="9098860402274800697">Verwyder Google Play- en Android-apps</translation>
 <translation id="910000385680858937">Toegelaat – <ph name="PERMISSION_DETAILS" />. Koppel ’n mikrofoon aan jou toestel.</translation>
 <translation id="9100416672768993722">Druk <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Spasiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> om oor te skakel na die invoermetode wat laaste gebruik is</translation>
+<translation id="9108072915170399168">Huidige datagebruikinstelling is Sonder Internet</translation>
 <translation id="9108294543511800041">Jy kan nou jou foon se onlangse foto's, media en kennisgewings bekyk</translation>
 <translation id="9109122242323516435">Vee lêers uit toestelberging om spasie beskikbaar te maak.</translation>
 <translation id="9111330022786356709">Voeg of soek knoppies op jou muis</translation>

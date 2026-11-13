@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="201759455285471444">የትር ቡድኑን ዘርጋ</translation>
 <translation id="2022431790688770637">የGemini ጥቆማዎችን ያስተዳድሩ</translation>
+<translation id="2023265063803387188">Gemini ማንነት የማያሳውቅ ሁነታ ውስጥ አይገኝም</translation>
 <translation id="2031515492007104071">ደረጃ ከፍ አድርግ</translation>
 <translation id="2044394949148788042">የትር ፍርግርግን ይክፈቱ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> የሚለው መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ይህም የተወሰነ መረጃን ሊመለከት ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">አቁም</translation>
 <translation id="2666092431469916601">ላይ</translation>
 <translation id="2669454659051515572">ይህን መሣሪያ የሚጠቀም ማንኛውም ሰው የወረዱ ፋይሎችን መመልከት ይችላል</translation>
-<translation id="2671316366021598595">«<ph name="SITE_DOMAIN" />» ካሜራዎን እንዲደርስ አልተፈቀደለትም</translation>
 <translation id="2671423594960767771">ቡድንን አጋራ</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">በጊዜ ሂደት ይክፈሉ</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">ስም</translation>
 <translation id="386224966259596343">አግባብነት ያለው ቅጽ በሚሞሉበት በሚቀጥለው ጊዜ ይህን መረጃ ወደ Wallet የማስቀመጥ ዕድል ይኖርዎታል።</translation>
 <translation id="3868495844258915202">ሙሉውን ዩአርኤል አሳይ</translation>
+<translation id="3870931306085184145">ምንም የተቀመጡ የ<ph name="DOMAIN" /> የይለፍ ቃላት የሉም</translation>
 <translation id="3875783148670536197">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="3878657761594430423">ሉህ ያዢ</translation>
 <translation id="3884810423191119660">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች መግባት እንዲችሉ የይለፍ ቃላትን ደኅንነቱ በተጠበቀ ሁኔታ ያስቀምጡ</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">የአሰሳዎን ደረጃ ከፍ ያድርጉ</translation>
 <translation id="5062321486222145940">Google Driveን ጫን</translation>
 <translation id="5067540696062462445">ውርዶች</translation>
-<translation id="5070314445039955096">እርስዎ ከዚህ ጣቢያ ሲወጡ የ«<ph name="SITE_DOMAIN" />» ፈቃዶች እንደገና እንዲጠፉ ይደረጋሉ</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} ከ{count} የመክፈያ ዘዴ}one{{position} ከ{count} የመክፈያ ዘዴ}other{{position} ከ{count} የመክፈያ ዘዴዎች}}</translation>
 <translation id="5075939510584558547">ያለምስጠራ ያስቀምጡ</translation>
 <translation id="5076534614343816664">የዋጋ ክትትል</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Upን ለመጠቀም በመለያ መግባት አለብዎት</translation>
 <translation id="5352128922772839949">ፋይል አስቀምጥ</translation>
 <translation id="5355191726083956201">የተሻሻለ ጥበቃ በርቷል</translation>
-<translation id="5355871759168485600">«<ph name="SITE_DOMAIN" />» እርስዎ ይህን ጣቢያ በሚጎበኙበት ጊዜ ሁሉ ማይክሮፎንዎን እንዲጠቀም ተፈቅዶለታል</translation>
 <translation id="5359436665022446585">የተሻለ አገናኝ መክፈት</translation>
 <translation id="536067926684072644">እልባቶችን አሳይ</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} የይለፍ ቁልፍ ማስመጣት አልተቻለም}one{{count} የይለፍ ቁልፍ ማስመጣት አልተቻለም}other{{count} የይለፍ ቁልፎችን ማስመጣት አልተቻለም}}</translation>
@@ -1484,6 +1483,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5612225021788368236">የነባሪ አሳሽ ማስተዋወቂያን ዝጋ</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />ፋይልዎን ይምረጡ<ph name="END_BOLD" /> ላይ መታ ያድርጉ</translation>
 <translation id="5613297089029360427">የቅርብ ጊዜ በሆኑት ደርድር</translation>
+<translation id="561349411957324076">ተጠናቋል</translation>
 <translation id="5614553682702429503">የይለፍ ቃል ይቀመጥ?</translation>
 <translation id="5617769621178348890">በፋይሎች መተግበሪያ ውስጥ ክፈት</translation>
 <translation id="5619871095170816857">ይህ ካርድ በመጨረሻዎቹ 24 ሰዓታት ውስጥ በመላው የሰመሩ መሣሪያዎችዎ ላይ ለመጨረሻ ጊዜ የተጠቀሙበትን ክፍት ትር ያሳያል።</translation>
@@ -2333,7 +2333,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> መለያዎች</translation>
 <translation id="8161614462829037225">በ<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ክፈት</translation>
 <translation id="8173034266693057059">ርዝመት</translation>
-<translation id="8181328232274170248">«<ph name="SITE_DOMAIN" />» እርስዎ ይህን ጣቢያ በሚጎበኙበት ጊዜ ሁሉ ካሜራዎን እንዲጠቀም ተፈቅዶለታል</translation>
 <translation id="8182037667962849780">{count,plural, =1{ለ{website_1}}=2{ለ{website_1}፣ {website_2}}=3{ለ{website_1}፣ {website_2} እና 1 ተጨማሪ}one{ለ{website_1}፣ {website_2} እና {more_count} ተጨማሪ}other{ለ{website_1}፣ {website_2} እና {more_count} ተጨማሪ}}</translation>
 <translation id="8184895727539791845">Gemini ካሜራዎን እንዲጠቀም ለመፍቀድ፣ በiOS ቅንብሮች ውስጥ ካሜራን ያብሩ</translation>
 <translation id="8185076488803799132">አምጣ</translation>
@@ -2504,7 +2503,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8674716540979958118">የተጠለፉ የይለፍ ቃላት አሉዎት።</translation>
 <translation id="8679900250380464358">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="8680787084697685621">የመለያ መግቢያ ዝርዝሮች ጊዜ ያለፈባቸው ናቸው።</translation>
-<translation id="868648444055742370">«<ph name="SITE_DOMAIN" />» ማይክሮፎንዎን እንዲደርስ አይፈቀድለትም</translation>
 <translation id="8690752723634292147">ስረዛ ያረጋግጡ</translation>
 <translation id="8692107307702113268">የይለፍ ቃል ከ1000 ቁምፊዎች በላይ ነው</translation>
 <translation id="8692689525339542358">ከአደገኛ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያግኙ።</translation>
@@ -2650,6 +2648,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="91023216973987714">የመክፈያ ዘዴዎች</translation>
 <translation id="9106655997975673326">ከ«<ph name="SOURCE_DEVICE" />»</translation>
 <translation id="9107664647686727385">የተጠለፉ የይለፍ ቃላትን ይፈትሹ</translation>
+<translation id="9115035712231910133">ዓባሪ የተደረገ ምስል {title}</translation>
 <translation id="9119764377203471454">ዓባሪዎችን ማከል አልተቻለም</translation>
 <translation id="9124387962554796433">Google ፍለጋን እና ሌሎች የGoogle አገልግሎቶችን ግላዊነት ለማላበስ ሲል ታሪክዎን ሊጠቀም ይችላል።</translation>
 <translation id="9124978074365039456">የእርስዎን ካሜራ እና የፎቶ ማዕከለ ሥዕላት ተጠቅመው ያዩትን ይግዙ፣ ይተርጉሙ እና ይለዩ</translation>

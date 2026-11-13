@@ -726,7 +726,6 @@
 <translation id="22081806969704220">ਟ੍ਰੇਅ 3</translation>
 <translation id="2210794033760923560">ਰਿਪੋਰਟ ਨੂੰ ਅੱਪਲੋਡ ਕਰੋ</translation>
 <translation id="2212735316055980242">ਨੀਤੀ ਨਹੀਂ ਮਿਲੀ</translation>
-<translation id="2213606439339815911">ਐਂਟਰੀਆਂ ਪ੍ਰਾਪਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2213612003795704869">ਪੰਨਾ ਪ੍ਰਿੰਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2214086901479959524">ਆਪਣੇ ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਦੀ ਵਰਤੋਂ ਜਾਰੀ ਰੱਖਣ ਲਈ Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="2214453882118345682">ਤੁਹਾਨੂੰ ਜਿਹੜੀਆਂ ਚੀਜ਼ਾਂ ਦਿਖਾਈ ਦੇ ਰਹੀਆਂ ਹਨ, ਉਨ੍ਹਾਂ ਨੂੰ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਖਰੀਦੋ, ਉਨ੍ਹਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀ ਪਛਾਣ ਕਰੋ।</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨਿਆਂ ਦੇ URL ਦੀ ਇੱਕ ਸੀਮਤ ਸੂਚੀ, ਜਿੱਥੇ ਵਿਰਾਸਤੀ ਤਕਨਾਲੋਜੀ ਇਵੈਂਟ ਵਾਪਰ ਰਹੇ ਹਨ</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ਟੈਬ ਸਾਂਝੀ ਕੀਤੀ ਜਾਵੇਗੀ}one{{NUM_TABS} ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ}other{{NUM_TABS} ਟੈਬਾਂ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ}}</translation>
 <translation id="2357481397660644965">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DEVICE_MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="ACCOUNT_MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
+<translation id="2358479643736965923">ਇਸ ਟੈਬ 'ਤੇ ਆਪਣਾ Google AI ਖੋਜ ਜਵਾਬ ਦੇਖੋ</translation>
 <translation id="2359629602545592467">ਇੱਕ ਤੋਂ ਵਧੇਰੇ</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="236000571258713023">ਵਾਹਨ</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">ਇਵੈਂਟ ਟਿਕਟ ਨੂੰ Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="2925454999967523701">'ਡੌਕ ਬਣਾਓ' ਬਟਨ, ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ Google ਡੌਕ ਬਣਾਉਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="2925673989565098301">ਡਿਲਿਵਰੀ ਵਿਧੀ</translation>
+<translation id="2927328994673424423">2 ਹਫ਼ਤੇ ਪਹਿਲਾਂ</translation>
 <translation id="2928426578619531300">ਵਰਤੋਂਕਾਰ ਨਾਲ ਸੰਬੰਧਿਤ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}}</translation>
 <translation id="2930531075747147366">ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸ ਦਾ ਟੈਬ</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">ਇਸ ਟੈਬ 'ਤੇ ਸਵਿੱਚ ਕਰੋ।</translation>
 <translation id="3144458715650412431">ਜਾਂਚ ਨੀਤੀਆਂ ਲਾਗੂ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ। chrome://policy/test 'ਤੇ ਜਾ ਕੇ ਉਨ੍ਹਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ। ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀਆਂ ਲਾਗੂ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ।</translation>
 <translation id="3145945101586104090">ਜਵਾਬ ਡੀਕੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫਲ</translation>
-<translation id="3149865382039202168"><ph name="GOOGLE_WALLET_TITLE" /> ਵਿੱਚ ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="ACCOUNT" /> ਲਈ ਆਪਣੀਆਂ ਪ੍ਰਾਈਵੇਟ ਪਾਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ <ph name="HOW_INFO_IS_USED_LINK" /> ਨੂੰ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ। <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">ਅਸਥਾਈ ਸਰਵਰ ਗੜਬੜ</translation>
 <translation id="3150889484970506196">'ਸ਼ੀਟ ਬਣਾਓ' ਬਟਨ, ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ Google ਸ਼ੀਟ ਬਣਾਉਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="3154506275960390542">ਇਸ ਪੰਨੇ ਵਿੱਚ ਕੋਈ ਅਜਿਹਾ ਫ਼ਾਰਮ ਸ਼ਾਮਲ ਹੈ ਜਿਸਨੂੰ ਸ਼ਾਇਦ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸਪੁਰਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਭੇਜੇ ਜਾਣ ਵਾਲੇ ਡਾਟੇ ਨੂੰ ਆਵਾਜਾਈ ਵਿੱਚ ਹੋਰਾਂ ਵੱਲੋਂ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਸਰਵਰ ਨੂੰ ਪ੍ਰਾਪਤ ਹੋਣ ਵਾਲੇ ਡਾਟੇ ਨਾਲ ਛੇੜਛਾੜ ਕਰਨ ਲਈ ਇਸਨੂੰ ਸੋਧ ਸਕਦਾ ਹੈ।</translation>
@@ -1519,7 +1519,6 @@
 <translation id="3558335486599406178">IBAN ਨੂੰ Google Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3558573058928565255">ਦਿਨ ਦਾ ਸਮਾਂ</translation>
 <translation id="3559897352860026926">ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ <ph name="CLOUD_PROVIDER" /> ਦੀਆਂ ਆਪਣੀਆਂ ਸੰਰੂਪਣ ਸੈਟਿੰਗਾਂ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਹੋ।</translation>
-<translation id="3560824484345057728">ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਦੇਖੋ</translation>
 <translation id="3566021033012934673">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਨਿੱਜੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="3566336457819493938">215 x 315 ਮਿ.ਮੀ.</translation>
 <translation id="3566681680543111735">ਵੱਖ-ਵੱਖ ਕਿਸਮਾਂ ਦੀ ਸਤਰ ਨੂੰ ਕਾਪੀ ਕਰੋ</translation>
@@ -2161,7 +2160,6 @@
 <translation id="4603727370377253901">ਉਡਾਣ ਦੇ ਰਾਖਵੇਂਕਰਨ</translation>
 <translation id="4607608436550361748">Chrome ਸੰਬੰਧੀ ਨੁਕਤੇ ਦੇਖੋ</translation>
 <translation id="460848736049414407">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="4610279718074907952">ਇਹ ਸਾਈਟ <ph name="SET_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤੇ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ, ਜਿਸਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦਿਖਣਯੋਗ ਹੈ</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> ਰਾਹੀਂ <ph name="MERCHANT_ORIGIN" /> 'ਤੇ ਤੁਹਾਡੇ ਆਰਡਰ 'ਤੇ ਪ੍ਰਕਿਰਿਆ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="4612904677925722054">ਇਹ ਸਾਈਟ ਵਿੱਚ ਬਾਲਗ ਸਮੱਗਰੀ ਹੋ ਸਕਦੀ ਹੈ। ਮਾਂ-ਪਿਓ ਜਾਂ ਸਰਪ੍ਰਸਤ ਨੂੰ ਇਹ ਕਹਿਣਾ ਹੋਵੇਗਾ ਕਿ ਤੁਸੀਂ ਇਸ ਵੈੱਬਸਾਈਟ 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4613873770449493819">URL ਦਾ ਕਿਸੇ <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ਡੋਮੇਨ ਵੱਲ ਇਸ਼ਾਰਾ ਕਰਨਾ ਜ਼ਰੂਰੀ ਹੈ।</translation>
@@ -3706,7 +3704,6 @@
 <translation id="7173338713290252554">ਵੈੱਬ 'ਤੇ ਕੀਮਤ ਦਾ ਇਤਿਹਾਸ</translation>
 <translation id="7174545416324379297">ਵਿਲੀਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}}</translation>
-<translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7181261019481237103">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
 <translation id="7182878459783632708">ਕੋਈ ਨੀਤੀਆਂ ਸੈਟ ਨਹੀਂ ਕੀਤੀਆਂ</translation>
 <translation id="7186833457841277072">ਐਨਵਲੋਪ (ਇੰਕਜੈੱਟ)</translation>
@@ -4172,7 +4169,6 @@
 <translation id="7932579305932748336">ਕੋਟ</translation>
 <translation id="79338296614623784">ਕੋਈ ਵੈਧ ਫ਼ੋਨ ਨੰਬਰ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣਾ ਚਾਹੁੰਦਾ ਹੈ। Google ਰਾਹੀਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">ਮੋਸ਼ਨ ਸੈਂਸਰਾਂ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="7937163678541954811">ਤੇਜ਼ੀ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰਨ ਲਈ, ਤੁਹਾਡੇ ਕਾਰਡ ਦੇ CVC ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="7937554595067888181">ਮਿਆਦ <ph name="EXPIRATION_DATE_ABBR" /> ਨੂੰ ਸਮਾਪਤ ਹੋਵੇਗੀ</translation>
@@ -4220,7 +4216,6 @@
 <translation id="7999482381722829925">ਆਮ ਤੌਰ 'ਤੇ ਛੱਡੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਥਾਵਾਂ ਨੂੰ ਟਾਰਗੇਟ ਕਰਦੇ ਹੋਏ, ਕਮਰੇ-ਦਰ-ਕਮਰੇ ਡੂੰਘੀ ਸਫ਼ਾਈ ਕਰਨ ਲਈ ਤਰਜੀਹੀ ਕਾਰਜ-ਸੂਚੀ ਬਣਾਓ</translation>
 <translation id="8001912761979890298">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ ਕਿਉਂਕਿ ਇਹ ਇੱਕ ਅਜਿਹੇ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਵਰਤੋਂ ਕਰ ਰਿਹਾ ਹੈ, ਜਿਸ 'ਤੇ Chromium ਜਾਂ ਵੈੱਬ ਟਰੈਫ਼ਿਕ ਇਨਕ੍ਰਿਪਸ਼ਨ ਲਈ ਉਪਲਬਧ ਤੁਹਾਡਾ ਸਿਸਟਮ ਸੰਰੂਪਣ ਭਰੋਸਾ ਨਹੀਂ ਕਰਦਾ। ਇਸ ਦਾ ਕਾਰਨ ਕੋਈ ਗਲਤ ਸੰਰੂਪਣ ਜਾਂ ਕਿਸੇ ਹਮਲਾਵਰ ਵੱਲੋਂ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕਣਾ ਹੋ ਸਕਦਾ ਹੈ। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੇਖੋ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">ਮੈਮੋਰੀ ਖਾਲੀ ਕਰਨ ਲਈ ਦੂਜੀਆਂ ਟੈਬਾਂ ਜਾਂ ਪ੍ਰੋਗਰਾਮਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="8002230960325005199">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਸੰਬੰਧਿਤ ਸਾਈਟਾਂ ਦੇਖੋ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8009225694047762179">ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -4261,7 +4256,6 @@
 <translation id="8079976827192572403">ਖਤਰਨਾਕ ਸਾਈਟ</translation>
 <translation id="8086971161893892807">ਡਰਾਫਟ</translation>
 <translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> 'ਤੇ ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਨੂੰ ਸੰਭਾਲਣ ਲਈ <ph name="APP_ORIGIN" /> ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
-<translation id="8088680233425245692">ਲੇਖ ਦੇਖਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="808894953321890993">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
 <translation id="8091372947890762290">ਸਕਿਰਿਆਕਰਨ ਸਰਵਰ ਤੇ ਵਿਚਾਰਅਧੀਨ ਹੈ</translation>
 <translation id="8092254339843485299">6 x 8 ਇੰਚ</translation>
@@ -4901,7 +4895,6 @@
 <translation id="9199905725844810519">ਪ੍ਰਿੰਟ ਕਰਨਾ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="9204089334327209740">ਇੱਕ ਵਾਰ ਅੱਪਲੋਡ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋ ਜਾਣ 'ਤੇ, ਤੁਸੀਂ <ph name="CLOUD_PROVIDER" /> ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਸੋਧ ਸਕਦੇ ਹੋ। ਰੱਦੀ ਵਿੱਚ ਮੌਜੂਦ ਕਿਸੇ ਵੀ ਫ਼ਾਈਲ ਸਮੇਤ ਸਥਾਨਕ ਸਟੋਰੇਜ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="9205078245616868884">ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡੇ ਸਿੰਕ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇਸਨੂੰ ਦਾਖਲ ਕਰੋ।</translation>
-<translation id="9207861905230894330">ਲੇਖ ਜੋੜਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="9209339767782560829">ਤੁਹਾਡੇ ਲੌਗ-ਇਨ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਕੋਈ ਸਮੱਸਿਆ ਹੋ ਗਈ।</translation>
 <translation id="9210152531668884481">ਮੈਂ ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="9213433120051936369">ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>

@@ -206,6 +206,7 @@
 <translation id="1807709131360304325">புதிய சாளரத்தைத் திறக்க</translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ஐப் பயன்படுத்தி <ph name="SITE_ETLD_PLUS_ONE" /> ஐத் தொடர முடியாது</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ரெக்கார்டு செய்யப்படுகின்ற பக்கம்</translation>
+<translation id="1817594121551034302">முகவரிப் பட்டி ஷார்ட்கட்</translation>
 <translation id="1819443852740954262">அனைத்தையும் மறைநிலைச் சாளரத்தில் திற</translation>
 <translation id="1820408774134375111">உள்நுழைவதற்கான கீழ்ப்புறச் சீட்டு</translation>
 <translation id="1824902652744048041">பிரவுசிங் தரவை நீக்கு என்பதைத் தட்டவும்</translation>
@@ -830,6 +831,7 @@
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, பிக்ச்சர்-இன்-பிக்ச்சர் மறைநிலைப் பக்கம்</translation>
 <translation id="4285498937028063278">பிரித்தெடு</translation>
 <translation id="4285846616383034558">குக்கீகள், தற்காலிகச் சேமிப்பு மற்றும் பிற தளத் தரவு</translation>
+<translation id="429016203314124112">நீங்கள் தேர்வுசெய்த தேடல் இன்ஜின் Chromeமில் இயல்பாகப் பயன்படுத்தப்படும்</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android அமைப்புகளில் திரைப் பூட்டு அம்சத்தை இயக்கவும்<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">உங்கள் மொபைலில்</translation>
 <translation id="4295640788982898778">உங்கள் நீட்டிப்புகள் Google கணக்கில் சேமிக்கப்பட்டுள்ளன. ஆனால், அவற்றால் இந்தச் சாதனத்தில் மட்டும் சேமித்து வைக்கப்பட்டிருக்கும் தரவு நீக்கப்படலாம்</translation>
@@ -984,6 +986,7 @@
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> பக்கக் குழு மூடப்பட்டு சேமிக்கப்பட்டது</translation>
 <translation id="4835385943915508971">Chromeமிடம் நீங்கள் கோரியதற்கான அணுகல் இல்லை.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> பக்கத்தின் பக்கக் குழுவையும் <ph name="COLOR_NAME" /> வண்ணத்தையும் புதிய பின்னணிப் பக்கக் குழுவாக மீட்டெடுக்கும்.}other{<ph name="TAB_COUNT_MANY" /> பக்கங்களின் பக்கக் குழுவையும் <ph name="COLOR_NAME" /> வண்ணத்தையும் புதிய பின்னணிப் பக்கக் குழுவாக மீட்டெடுக்கும்.}}</translation>
+<translation id="48431900345921167"><ph name="ACCOUNT_EMAIL" /> கணக்கிற்குச் சில சேவைகள் கிடைக்கவில்லை</translation>
 <translation id="4849731766219625109">உங்கள் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> கணக்கைப் பயன்படுத்துங்கள்</translation>
 <translation id="4850886885716139402">காட்சி</translation>
 <translation id="4860895144060829044">அழை</translation>
@@ -1008,6 +1011,7 @@
 <translation id="4925120120285606924">ஸ்கிரீன்ஷாட் <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ஆஃப்லைனில் பார்க்கவோ பிற ஆப்ஸில் பகிரவோ படங்களையும் ஃபைல்களையும் சேமிக்கலாம்</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 புக்மார்க்கும் பிற தரவுகளும் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன. உங்களின் பிற சாதனங்களில் அவற்றைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}other{# புக்மார்க்குகளும் பிற தரவுகளும் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன. உங்களின் பிற சாதனங்களில் அவற்றைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}}</translation>
+<translation id="4932733599132424254">தேதி</translation>
 <translation id="4943703118917034429">விர்ச்சுவல் ரியாலிட்டி</translation>
 <translation id="4943872375798546930">முடிவுகள் இல்லை</translation>
 <translation id="4957722034734105353">மேலும் அறிக...</translation>
@@ -1042,6 +1046,7 @@
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> சாளரம் தேர்ந்தெடுக்கப்பட்டுள்ளது}other{<ph name="WINDOW_COUNT_NORMAL" /> சாளரங்கள் தேர்ந்தெடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="5058506215037547387">பக்கத்தின் மாதிரிக்காட்சி</translation>
 <translation id="506254248375231072">பக்கங்கள் எதுவுமில்லை</translation>
+<translation id="5065494736868031814">கருவிப்பட்டியில்</translation>
 <translation id="5075939510584558547">என்க்ரிப்ஷன் செய்யாமலே சேமித்தல்</translation>
 <translation id="5078638979202084724">அனைத்து தாவல்களையும் புக்மார்க்கிடுக</translation>
 <translation id="5085038751173179818">உங்கள் சாதனங்கள் அனைத்திலும் உங்கள் புக்மார்க்குகள் மற்றும் பலவற்றைப் பெற இந்தத் தளத்திலும் Chrome உலாவியிலும் உள்நுழையுங்கள்</translation>
@@ -1061,6 +1066,7 @@
 <translation id="5142281402488957685">புதிய செய்திக் கட்டுரைகளைப் பார்க்க கீழே இழுக்கவும்</translation>
 <translation id="5144385790872094440">நீங்கள் பார்வையிடும் சில பக்கங்கள் முன்கூட்டியே ஏற்றப்பட்டிருக்கும். Google தளம் அல்லது ஆப்ஸில் இருந்து இணைக்கப்படும்போது Google சேவையகங்கள் மூலம் பக்கங்கள் முன்கூட்டியே ஏற்றப்படக்கூடும்.</translation>
 <translation id="5152843274749979095">ஆதரிக்கப்படும் ஆப்ஸ் நிறுவப்படவில்லை</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
 <translation id="5161262286013276579">கடவுச்சாவியை உறுதிப்படுத்துவதற்கான தாள் திறக்கப்பட்டது</translation>
 <translation id="5163361352003913350">தற்போது தேர்ந்தெடுக்கப்பட்டுள்ளது: <ph name="NAME" />. கணக்கைத் தேர்வுசெய்யும்.</translation>
@@ -1144,6 +1150,7 @@
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> என்ற பெயரில் சேர்கிறீர்கள்</translation>
 <translation id="5517326820028369152">சமீபத்திய செயல்பாடுகளைக் காட்டும் கீழ்ப்புறச் சீட்டு</translation>
+<translation id="5519516356611866228">நான் செய்த மாற்றங்களுடன் பதிவிறக்கு</translation>
 <translation id="5526281268548144413">பல சாளரங்களில் உள்ள பக்கங்கள் மூடப்படாது</translation>
 <translation id="5532536403031755365">மேம்பட்ட பாதுகாப்பு மூலம் ஆன்லைன் அச்சுறுத்தல்களுக்கு எதிராகக் கூடுதல் பாதுகாப்பைச் சேர்க்கலாம்</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{புக்மார்க்கைத் திற}other{அனைத்தையும் திற (#)}}</translation>
@@ -1256,6 +1263,7 @@
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> நீங்கள் சமீபத்தில் இந்தத் தளத்தைப் பார்வையிடாததால் Chrome இந்த அனுமதிகளை அகற்றியது</translation>
 <translation id="5995726099713306770">பக்கத்தை மீண்டும் பதிவிறக்கவா?</translation>
 <translation id="6000066717592683814">Googleஐ இயல்பு இன்ஜினாக வைத்திரு</translation>
+<translation id="6000860861660592745">விருப்பம் சேமிக்கப்பட்டது</translation>
 <translation id="6002122790816966947">உங்கள் சாதனங்கள்</translation>
 <translation id="6011308810877101166">தேடல் பரிந்துரைகளை மேம்படுத்து</translation>
 <translation id="6013305291643746595">பழையவற்றின்படி வரிசைப்படுத்துகிறது</translation>
@@ -1282,6 +1290,7 @@
 <translation id="6095578583683628124">உங்களின் இயல்புத் தேடல் இன்ஜினாகவும் Google இருந்தால் சூழலுக்குத் தொடர்புடைய சிறப்பான பரிந்துரைகள் காட்டப்படும்</translation>
 <translation id="6104768972315313991">உருவாக்கப்பட்ட QR குறியீடு</translation>
 <translation id="610630277578876674">மெசேஜ்கள் மற்றும் பலவற்றில் உள்ள இணைப்புகளை விரைவாகத் திறக்கும்</translation>
+<translation id="6110067234345111822">உங்கள் பிராந்தியத்தில் உள்ள சட்டத்தின்படி Chromeமிற்கான தேடல் இன்ஜினை நீங்கள் தேர்வுசெய்ய வேண்டும்</translation>
 <translation id="6112702117600201073">பக்கத்தைப் புதுப்பிக்கிறது</translation>
 <translation id="612221930823678863">வினவலுக்கான இடத்தில் <ph name="QUERY" />ஐக் கொண்ட URL</translation>
 <translation id="6122831415929794347">'பாதுகாப்பு உலாவல்' அம்சத்தை முடக்கவா?</translation>
@@ -1406,6 +1415,7 @@
 <translation id="6482749332252372425">போதுமான சேமிப்பிடம் இல்லாததால் <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="6486420406192123355">பாதுகாப்பற்ற இணைப்பைப் பயன்படுத்தும் தளத்திலிருந்து இந்த PDF ஃபைல் பெறப்பட்டது</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ஃபைல் பதிவிறக்கப்பட்டது}other{# பதிவிறக்கங்கள் முடிந்தன}}</translation>
+<translation id="6502991525169604759">அசல் ஆவணத்தைப் பதிவிறக்கு</translation>
 <translation id="6508722015517270189">Chromeஐ மீண்டும் தொடங்கவும்</translation>
 <translation id="6513924416597632811"><ph name="SEARCH_QUERY" /> என்ற தேடல் வினவலுக்கான தேடல் முடிவுகளின் பக்கத்திற்கான இணைப்பை நகலெடுக்கும். தகவல் ஆதாரம்: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">சரிபார்</translation>
@@ -1447,6 +1457,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="6669390930482049506">எனக்குத் தெரிவி</translation>
+<translation id="6670742294143102726">உங்கள் தேடலில் சேர்க்க ஒன்று அல்லது அதற்கு மேற்பட்ட பக்கங்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
 <translation id="6672697278890207089">உங்கள் கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="6675622031235530028">வெளியேற Ctrl+Q பட்டன்களை அழுத்திப் பிடிக்கவும்</translation>
@@ -1578,6 +1589,7 @@
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> ஐ மூடும்</translation>
 <translation id="7121179479711575744">Chromeமில் உள்நுழை</translation>
 <translation id="7130633106249192408">இந்தச் சாதனத்தில் இருந்து பிரவுசிங் தரவை நீக்கு</translation>
+<translation id="7134511521562699550">முகவரிப் பட்டியில்</translation>
 <translation id="7136694880210472378">இயல்புநிலையாக மாற்று</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 தளத்திற்கு அனுமதிகள் சரிபார்க்கப்பட்டன}other{# தளங்களுக்கு அனுமதிகள் சரிபார்க்கப்பட்டன}}</translation>
 <translation id="7138678301420049075">மற்றவை</translation>
@@ -1610,6 +1622,7 @@
 <translation id="7196455519852483601">பதிவுகள், குக்கீகள், தளத் தரவு மற்றும் பலவற்றில் இருந்து சிலவற்றையோ எல்லாவற்றையுமோ நீக்கலாம்</translation>
 <translation id="7197682514647286393">பிரவுசிங் தரவை விரைவாக நீக்குதல்</translation>
 <translation id="719791532916917144">கீபோர்டு ஷார்ட்கட்</translation>
+<translation id="7198747540865146057">உங்கள் இயல்புத் தேடல் இன்ஜினைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="7203150201908454328">விரிவாக்கப்பட்டது</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> பக்கங்களைப் புதிய பின்னணிப் பக்கங்களாக மீட்டெடுக்கும்.</translation>
 <translation id="7217781228893594884">Chromeமை விட்டு வெளியேறும்போது மறைநிலைப் பக்கங்கள் பூட்டப்படும்</translation>
@@ -1684,7 +1697,6 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (புதுப்பித்தது: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">காத்திருக்கவும்…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட ஒலியடக்கப்பட்டுள்ள பக்கம்</translation>
-<translation id="7500851014030446046">PDF பதிவிறக்குகிறது</translation>
 <translation id="7501135638693251872">எல்லா புத்தகக்குறிகளும்</translation>
 <translation id="7504076214066136798">மாற்றங்களைச் சேமிக்க முடியவில்லை</translation>
 <translation id="7507207699631365376">இந்த வழங்குநரின் <ph name="BEGIN_LINK" />தனியுரிமைக் கொள்கையைக்<ph name="END_LINK" /> காட்டு</translation>
@@ -1920,6 +1932,7 @@
 <translation id="8368001212524806591">விலையைக் கண்காணி</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> பக்கக் குழு}other{<ph name="TAB_GROUPS_MANY" /> பக்கக் குழுக்கள்}}</translation>
 <translation id="8387617938027387193">நீங்கள்தான் என்பதை உறுதிசெய்யுங்கள்</translation>
+<translation id="8392241619862061825">Gemini ஷார்ட்கட்டைக் காட்டு</translation>
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
 <translation id="8398389123831319859">மறைநிலைக்கு மாற இருமுறை தட்டிப் பிடிக்கவும்</translation>
 <translation id="8401904657382223224">ஹோஸ்ட்டின்படி ஃபில்டர் செய்</translation>
@@ -2001,6 +2014,7 @@
 <translation id="8639963783467694461">தானியங்குநிரப்பி அமைப்புகள்</translation>
 <translation id="8642256427178803328">Chromeமில் இருந்து வெளியேறும்போது மறைநிலைப் பக்கங்களைப் பூட்டு என்பதை ஆன் செய்யவும்</translation>
 <translation id="8644482734962137770">Chromeமைப் பயன்படுத்த Geminiக்கு அனுமதி தேவை</translation>
+<translation id="8653883575875371543">கருவிப்பட்டியில் Gemini காட்டு</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> கணக்கில் உள்நுழையுங்கள்</translation>
 <translation id="8664979001105139458">ஃபைல் பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தில் பதிவு செய்யுங்கள்</translation>
@@ -2018,6 +2032,7 @@
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8727043961453758442">Chromeமில் அதிகப் பலன்களைப் பெறுங்கள்</translation>
 <translation id="8728810647305130936">புதிய பக்கங்களைத் திறக்கும்</translation>
+<translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8731268612289859741">பாதுகாப்புக் குறியீடு</translation>
 <translation id="8738163682604285902">படிக்கும் பயன்முறையைக் காட்டவா?</translation>
 <translation id="8746155870861185046">ஹைலைட் செய்த உரையைப் பகிர்</translation>

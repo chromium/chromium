@@ -206,6 +206,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1807709131360304325">Open a new window</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, recording tab</translation>
+<translation id="1817594121551034302">Address bar shortcut</translation>
 <translation id="1819443852740954262">Open all in Incognito window</translation>
 <translation id="1820408774134375111">Sign-in bottom sheet</translation>
 <translation id="1824902652744048041">Tap Delete browsing data</translation>
@@ -830,6 +831,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, picture-in-picture Incognito tab</translation>
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="4285846616383034558">Cookies, cache and other site data</translation>
+<translation id="429016203314124112">The search engine that you chose will be used by default in Chrome</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Turn on screen lock in Android settings<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">your phone</translation>
 <translation id="4295640788982898778">Your extensions are saved in your Google Account, but any data that they've saved only on this device may be deleted</translation>
@@ -984,6 +986,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> tab group closed and saved</translation>
 <translation id="4835385943915508971">Chrome does not have access to the requested resource.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restore tab group of <ph name="TAB_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />, as a new background tab group.}other{Restore tab group of <ph name="TAB_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />, as a new background tab group.}}</translation>
+<translation id="48431900345921167">Some services aren't available for <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="4849731766219625109">Use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4860895144060829044">Call</translation>
@@ -1008,6 +1011,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4925120120285606924">Screenshot <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">You can save images and files to view offline or share in other apps</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}other{# bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
+<translation id="4932733599132424254">Date</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4957722034734105353">Learn more...</translation>
@@ -1042,6 +1046,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> Window selected}other{<ph name="WINDOW_COUNT_NORMAL" /> Windows selected}}</translation>
 <translation id="5058506215037547387">Preview page</translation>
 <translation id="506254248375231072">No tabs</translation>
+<translation id="5065494736868031814">In toolbar</translation>
 <translation id="5075939510584558547">Save without encryption</translation>
 <translation id="5078638979202084724">Bookmark all tabs</translation>
 <translation id="5085038751173179818">Sign in to this site and Chrome to get your bookmarks and more on all your devices</translation>
@@ -1061,6 +1066,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5142281402488957685">For new stories, pull down to refresh</translation>
 <translation id="5144385790872094440">Some of the pages that you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site or app.</translation>
 <translation id="5152843274749979095">No supported apps installed</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5161262286013276579">Passkey confirmation sheet opened</translation>
 <translation id="5163361352003913350"><ph name="NAME" /> currently selected. Choose an account.</translation>
@@ -1144,6 +1150,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5494920125229734069">Select all</translation>
 <translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Recent activity bottom sheet</translation>
+<translation id="5519516356611866228">With your changes</translation>
 <translation id="5526281268548144413">Can't be closed across multiple windows</translation>
 <translation id="5532536403031755365">Add an extra layer of protection against online threats with enhanced protection</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Open bookmark}other{Open all (#)}}</translation>
@@ -1256,6 +1263,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="5995726099713306770">Download page again?</translation>
 <translation id="6000066717592683814">Keep Google</translation>
+<translation id="6000860861660592745">Choice saved</translation>
 <translation id="6002122790816966947">Your devices</translation>
 <translation id="6011308810877101166">Improve search suggestions</translation>
 <translation id="6013305291643746595">Sorting by oldest</translation>
@@ -1282,6 +1290,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6095578583683628124">If Google is also your default search engine, you’ll see better, contextually relevant suggestions</translation>
 <translation id="6104768972315313991">Generated QR code</translation>
 <translation id="610630277578876674">Quickly open links in messages and more</translation>
+<translation id="6110067234345111822">Based on a law in your region, you need to choose your search engine for Chrome</translation>
 <translation id="6112702117600201073">Refreshing page</translation>
 <translation id="612221930823678863">URL with <ph name="QUERY" /> in place of query</translation>
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
@@ -1406,6 +1415,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> download failed due to lack of storage space.</translation>
 <translation id="6486420406192123355">This PDF file is from a site using an insecure connection</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{File downloaded}other{# downloads complete}}</translation>
+<translation id="6502991525169604759">Without your changes</translation>
 <translation id="6508722015517270189">Restart Chrome</translation>
 <translation id="6513924416597632811">Copy link to search results page for: <ph name="SEARCH_QUERY" />. Source: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verify</translation>
@@ -1447,6 +1457,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notify me</translation>
+<translation id="6670742294143102726">Select one or more tabs to add to your search</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6672697278890207089">Enter your passphrase</translation>
 <translation id="6675622031235530028">Hold Ctrl+Q to quit</translation>
@@ -1578,6 +1589,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7119984597597798764">Close <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Sign in to Chrome</translation>
 <translation id="7130633106249192408">Delete browsing data from this device</translation>
+<translation id="7134511521562699550">In address bar</translation>
 <translation id="7136694880210472378">Make default</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissions reviewed for 1 site}other{Permissions reviewed for # sites}}</translation>
 <translation id="7138678301420049075">Other</translation>
@@ -1610,6 +1622,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7196455519852483601">You can delete some or all of your history, cookies, site data and more</translation>
 <translation id="7197682514647286393">Quickly delete your browsing data</translation>
 <translation id="719791532916917144">Keyboard shortcut</translation>
+<translation id="7198747540865146057">Choose your default search engine</translation>
 <translation id="7203150201908454328">Expanded</translation>
 <translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
 <translation id="7217781228893594884">Incognito tabs will be locked when you leave Chrome</translation>
@@ -1684,7 +1697,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Please wait…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, pinned muted tab</translation>
-<translation id="7500851014030446046">Downloading PDF</translation>
 <translation id="7501135638693251872">All bookmarks</translation>
 <translation id="7504076214066136798">Cannot save edits</translation>
 <translation id="7507207699631365376">See this provider's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" /></translation>
@@ -1920,6 +1932,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8368001212524806591">Track price</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> tab group}other{<ph name="TAB_GROUPS_MANY" /> tab groups}}</translation>
 <translation id="8387617938027387193">Verify that it’s you</translation>
+<translation id="8392241619862061825">Show Gemini shortcut</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8398389123831319859">Double-tap and hold to switch to Incognito</translation>
 <translation id="8401904657382223224">Filter by host</translation>
@@ -2001,6 +2014,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8639963783467694461">Autofill settings</translation>
 <translation id="8642256427178803328">Toggle on Lock Incognito tabs when you leave Chrome</translation>
 <translation id="8644482734962137770">Gemini needs permission to use Chrome</translation>
+<translation id="8653883575875371543">Show Gemini in the toolbar</translation>
 <translation id="8662474268934425487">Sign in to <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8676276370198826499">Sign up to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -2018,6 +2032,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8727043961453758442">Get the most out of Chrome</translation>
 <translation id="8728810647305130936">Open new tabs</translation>
+<translation id="8730621377337864115">Done</translation>
 <translation id="8731268612289859741">Security code</translation>
 <translation id="8738163682604285902">View reading mode?</translation>
 <translation id="8746155870861185046">Share highlight</translation>

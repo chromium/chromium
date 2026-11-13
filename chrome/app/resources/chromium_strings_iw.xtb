@@ -72,9 +72,9 @@
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
 <translation id="18552579716432081">‏כדי למחוק את נתוני הגלישה מהמכשיר הזה בלבד ועדיין לשמור אותם בחשבון שלך ב-Google, <ph name="BEGIN_LINK" />עליך לצאת מהחשבון ב-Chromium<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">‏כדי לפתוח או ליצור קבוצות חדשות של כרטיסיות תוך כדי תנועה, כדאי להוריד את Chromium לטלפון שלך.</translation>
-<translation id="185970820835152459">‏יש לך אפשרות לנהל את חשבונות Google שאליהם נכנסת. כדי ליהנות מחיבור לחשבון בדפדפן Chromium, בחנות Play, ב-‏Gmail ובשירותים נוספים, עליך להיכנס עם חשבונות Google שלך. כדי להוסיף חשבון של מישהו אחר, כמו חבר/ה בקבוצה המשפחתית, יש להוסיף משתמש חדש ל-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">חיפוש באמצעות התכונה 'חיפוש תמונות'</translation>
 <translation id="1863837059069884561">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסימניות ופריטים נוספים יופיעו במכשיר <ph name="DEVICE" />.</translation>
+<translation id="1871615898038944731">ה-<ph name="DEVICE_TYPE" /> שלך מעודכן</translation>
 <translation id="1880677175115548835">בחירת טקסט</translation>
 <translation id="1896836275755235458">‏‫Chromium חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון באנרגיה<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">‏שירות לעדכון של Chromium</translation>
@@ -180,7 +180,6 @@
 <translation id="3003694935412297923">כל המשימות</translation>
 <translation id="3012615494352020668">{count,plural, =1{‏‫Chromium צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו (פריט אחד).}one{‏‫Chromium צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו ({count} פריטים).}two{‏‫Chromium צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו ({count} פריטים).}other{‏‫Chromium צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו ({count} פריטים).}}</translation>
 <translation id="3013473503895162900">‏פתיחה של <ph name="URL" /> בכרטיסייה חדשה ב-Chromium.</translation>
-<translation id="302551344979399011">‏חידושים בתחום ה-AI, כמו מיומנויות, נשמרים בחשבון שלך ב-Google ומנוהלים בנפרד מסנכרון Chromium</translation>
 <translation id="3032219013429286568">‏כדי לקבל גישה לתוספים ולנתונים נוספים מכל המכשירים, צריך להתחבר ל-Chromium</translation>
 <translation id="3032787606318309379">‏מתבצעת הוספה ל-Chromium...</translation>
 <translation id="3038232873781883849">בהמתנה להתקנה…</translation>
@@ -232,6 +231,7 @@
 <translation id="3561853857681580870">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chromium בקטע "הגדרות המערכת".</translation>
 <translation id="3597003331831379823">הפעלת ההגדרה נכשלה עם הרשאות מורחבות. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">‏כניסה ל-Chromium</translation>
+<translation id="36205707939705218">‫<ph name="USER_NAME" />,‏ <ph name="EMAIL" />. מינוי.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש.}=1{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. החלון האנונימי לא ייפתח מחדש.}one{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏יש עדכון חדש בשביל Chromium והמערכת תחיל אותו ברגע שתבוצע הפעלה מחדש. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="3667616615096815454">אין אפשרות להתקין, האפליקציה לא מוכרת לשרת.</translation>
 <translation id="3675854891107786059">‏שימוש ב<ph name="BEGIN_LINK" />ביטוי סיסמה משלך<ph name="END_LINK" /> כדי להצפין את כל נתוני Chromium בחשבון Google. אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chromium לא תסונכרן.</translation>
@@ -260,10 +260,8 @@
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3971865010372729242">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chromium שולח את הטקסט הזה לכלי החיפוש, הבינה המלאכותית והסוכנים של הארגון כדי לקבל הצעות.</translation>
 <translation id="3975724895399328945">‏מידע על &amp;Google Chrome for Testing</translation>
-<translation id="3997429360543082038">‏מידע על ChromiumOS</translation>
 <translation id="399788104667917863">הצמדה לסרגל הכלים</translation>
 <translation id="4016217212818346953">מנהל הסיסמאות עוזר לשמור על הבטיחות שלך</translation>
-<translation id="4019629340646866719">‏השימוש ב-ChromiumOS מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנות קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספות כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">תרגום המסך</translation>
 <translation id="4023601594785368013">שפה מקורית: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">‏אפשר לפתוח קישורים ב-Chromium מכל אפליקציה. בנוסף Chromium מוצמד לשורת המשימות לגישה נוחה.</translation>
@@ -318,7 +316,6 @@
 <translation id="4594305310729380060">שמירה למנהל הסיסמאות במכשיר הזה</translation>
 <translation id="459535195905078186">‏יישומי Chromium</translation>
 <translation id="4598116752460667024">מחפשים תהליך כלשהו מהרשימה.</translation>
-<translation id="4613863813562375431">‏גרסת ChromiumOS</translation>
 <translation id="4621240073146040695">‏העדכון כמעט הושלם! הפעל מחדש את Chromium‏ כדי לסיים את העדכון.</translation>
 <translation id="4625064703209785397">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chromium, אבל Chromium יהיה קצת פחות עמיד בפני מתקפות.</translation>
 <translation id="4626321472657185181">‏פתיחת החיפוש באמצעות Chromium</translation>
@@ -352,6 +349,7 @@
 <translation id="5171868502429358653">‏כניסה אל Chromium</translation>
 <translation id="5174969993834422967">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות, יש ללחוץ על סמל ההתראה בפינה השמאלית של סרגל המיקום.</translation>
 <translation id="5174983315706567306">אין מספיק מקום בכונן.</translation>
+<translation id="5184662919967270437">עדכון המכשיר שלך מתבצע</translation>
 <translation id="5187123684706427865">‏נדרש אימות מחדש לחשבון Chromium</translation>
 <translation id="5231355151045086930">‏יציאה מ-Chromium</translation>
 <translation id="5234764350956374838">סגירה</translation>
@@ -397,6 +395,8 @@
 <translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}one{‏עדכון של Chromium זמין כבר # ימים}two{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
 <translation id="5643865575100044307">‏מחיקת נתונים מאתרים מהמכשיר בכל פעם שסוגרים את Chromium</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
+<translation id="565409517765894456">‏כדי לקבל עדכונים של Chromium בעתיד, עליך להשתמש ב-Windows 10 מגרסה 1809 ואילך. במחשב הזה פועלת גרסה ישנה של Windows 10.</translation>
+<translation id="5669863904928111203">‏מערכת ChromeOS לא מעודכנת</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
 <translation id="569897634095159764">‏לא ניתן להתחבר לאינטרנט. נדרש אימות של שרת ה-proxy.</translation>
@@ -415,6 +415,7 @@
 <translation id="5896077214220653386">‏‫Gemini Enterprise ב-Chromium</translation>
 <translation id="5900507321340749588">‏כדי להפעיל תכונות כמו זיהוי תרמיות, Chromium יכול להשתמש במודלים של AI שפועלים ישירות במכשיר שלך. כשההגדרה מושבתת, התכונות האלה לא פועלות. <ph name="BEGIN_LINK" />מידע נוסף על AI במכשיר<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – כניסה לרשת</translation>
+<translation id="5906655207909574370">העדכון כמעט הושלם! צריך להפעיל מחדש את המכשיר כדי לסיים את העדכון.</translation>
 <translation id="5924017743176219022">מתבצעת התחברות לאינטרנט…</translation>
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5949225980829865667">‏כדי לקבל גישה לסימניה הזו ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס ל-Chromium</translation>
@@ -490,6 +491,7 @@
 <translation id="6600016381025017075">אפשר לחפש משהו בדף הזה</translation>
 <translation id="6613594504749178791">‏השינויים שביצעת ייכנסו לתוקף בפעם הבאה שתפעיל מחדש את Chromium‏.</translation>
 <translation id="6637908313088374648">‏‫Chromium מופעל עכשיו יחד עם Windows, כך שאפשר להתחיל לגלוש מיד. ניתן להשבית זאת בהגדרות.</translation>
+<translation id="6644846457769259194">עדכון המכשיר שלך מתבצע (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">‏נדרשת הרשאת גישה למצלמה ב-Chromium כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="6669284030132180248">‏אם הסימניות שלך נשמרות גם בחשבון Google, יש לך אפשרות לעקוב אחרי מחירי מוצרים ב-Chromium ולקבל הודעות כשהמחירים יורדים</translation>
 <translation id="6676384891291319759">גישה אל האינטרנט</translation>
@@ -506,8 +508,8 @@
 <translation id="674891594898436429">סגירת החיפוש הפעיל בכרטיסייה הזו</translation>
 <translation id="6751374565094704799">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chromium, אבל Chromium יהיה קצת פחות עמיד בפני מתקפות. ההגדרה הזו פועלת.</translation>
 <translation id="6754665438209053659">{count,plural, =1{‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו (פריט אחד).}one{‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו ({count} פריטים).}two{‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו ({count} פריטים).}other{‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו ({count} פריטים).}}</translation>
-<translation id="6779406956731413166">‏<ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת מאפשרת את השימוש ב-ChromiumOS.</translation>
 <translation id="6804256634866838775">סגירת החיפוש הפעיל</translation>
+<translation id="6818170431027022139">‫<ph name="USER_NAME_OR_EMAIL" />. מינוי.</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="684888714667046800">לא ניתן להתחבר לאינטרנט. אם משתמשים בחומת אש, צריך לוודא ש-<ph name="PRODUCT_EXE_NAME" /> ברשימת ההיתרים.</translation>
 <translation id="6857782730669500492">‏Chromium‏ - <ph name="PAGE_TITLE" /></translation>
@@ -553,7 +555,6 @@
 <translation id="7204669035546236137">‏עם Gemini ב-Chromium אפשר לשאול כל דבר, מכל מקום</translation>
 <translation id="7213008767289637091">‏כדאי להשאיר את Chromium ב-Dock כדי לגשת אליו במהירות מתי שרוצים</translation>
 <translation id="7213407614656404070">‏שימוש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
-<translation id="7213435258745128111">‏חיפוש Google ב-Chromium</translation>
 <translation id="7216228761061470870">‏כשמשתמשים ב"חיפוש תמונות" במחשב, כותרת הדף, כתובת ה-URL והתוכן שלו, כולל קובצי PDF, נשלחים לשרת</translation>
 <translation id="7223968959479464213">‏מנהל המשימות - Chromium</translation>
 <translation id="7226331818892775989">‏אפשר לשאול על תוכן מחוץ ל-Chromium, כמו אפליקציות או קבצים אחרים</translation>
@@ -638,6 +639,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8077498902115777962">‏השבתת הפעילות של Chromium ברקע לאפליקציות</translation>
 <translation id="80790299200510644">חיפוש באמצעות תמונות</translation>
 <translation id="8086881907087796310">ההתקנה נכשלה כי המחשב לא עומד בדרישות החומרה המינימליות.</translation>
+<translation id="8095439028686936591">‏מערכת ChromeOS מעודכנת</translation>
 <translation id="8096472344908884505">‏<ph name="PAGE_TITLE" /> –‏ Google Chrome for Testing</translation>
 <translation id="8105840573057009683">‏נדרשת הרשאת מיקום ב-Chromium עבור האתר הזה</translation>
 <translation id="8107060931443639922">‏בפתיחה הבאה של Chromium במכשיר <ph name="DEVICE_TYPE" />, תופיע הנחיה להפעיל התראות על מעקב מחירים.</translation>

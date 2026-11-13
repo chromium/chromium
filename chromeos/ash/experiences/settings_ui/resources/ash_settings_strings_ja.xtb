@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">設定完了。</translation>
 <translation id="1149483087970735785">支援技術</translation>
 <translation id="1150490752229770117">この <ph name="DEVICE_TYPE" /> でソフトウェアとセキュリティの自動アップデートが行われるのは今回が最後です。今後もアップデートを取得するには、新しいモデルにアップグレードしてください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS について</translation>
 <translation id="1155816283571436363">スマートフォンに接続しています</translation>
 <translation id="1160800016654917722">ウィンドウを左下に移動しました</translation>
 <translation id="1164015913575846413">Alt+クリック</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16 倍</translation>
 <translation id="1275936815032730048">ランチャー+右矢印</translation>
 <translation id="1280332775949918163">ウィンドウをスナップする</translation>
+<translation id="1285625592773741684">現在のデータ使用設定はモバイルデータです</translation>
 <translation id="1285815028662278915">モバイルデータ接続がアクセス ポイントに対応していない可能性があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">夜間モードは日の入り時刻に自動的にオンになります</translation>
 <translation id="1288300545283011870">読み上げのプロパティ</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">拡張機能が無効になり、設定が安全なデフォルトにリセットされます。タブ、ファイル、Cookie は保持されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">全画面拡大鏡</translation>
 <translation id="1539727654733007771">モバイル ネットワークが設定されていません。新しい<ph name="BEGIN_LINK" />プロファイル<ph name="END_LINK" />をダウンロードしてください。</translation>
+<translation id="1547295885616600893">ChromeOS は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="1547808936554660006">eSIM プロファイルは Powerwash で削除されないことを理解しました</translation>
 <translation id="1549275686094429035">ARC は有効になっています</translation>
 <translation id="1554640914375980459">通知の受信時に画面を点滅させます。光に敏感な方は、点滅による通知を慎重に使用してください。</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Wi‑Fi またはモバイル ネットワークを使用して現在地を特定する</translation>
 <translation id="1650407365859096313">新しいタブで開きます。権限は <ph name="PERMISSION_STATE" /> です</translation>
 <translation id="1652326691684645429">ニアバイシェアを有効にする</translation>
+<translation id="1662146548738125461">ChromeOS Flex について</translation>
 <translation id="1663698992894057019">新しい Chromebook にアップグレードして、最新のセキュリティとソフトウェアを手に入れましょう</translation>
 <translation id="1665328953287874063">パスワードまたは PIN を使用して <ph name="DEVICE_TYPE" /> のロックを解除してください</translation>
 <translation id="1667842670298352129">指定したテキストを読み上げます。画面下部の「選択して読み上げ」アイコンを選択してから、テキストを選択します。キーボード ショートカットを使用する場合は、テキストを選択してから検索+S キーを押します。</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">注: 指紋は複雑なパスワードや PIN より安全面で劣る場合があります。</translation>
 <translation id="1724801751621173132">ローマ字入力・かな入力</translation>
 <translation id="1741190788710022490">アダプティブ充電</translation>
+<translation id="1745732479023874451">連絡先を管理</translation>
 <translation id="1751335846119670066">文書読解サポート</translation>
 <translation id="1755601632425835748">テキストのサイズ</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> を <ph name="REMAPPING_OPTION" /> に再マッピングしました。</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">1 つのスイッチをそのまま使用する</translation>
 <translation id="1842681835432895345">ミラーモードでこのディスプレイを除外する</translation>
 <translation id="1848219224579402567">ディスプレイを閉じたときにログアウトする</translation>
+<translation id="185970820835152459">ログインする Google アカウントを管理できます。Google アカウントは、Chromium ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">寒色</translation>
 <translation id="1866589962721094893">この Chromebook で Android アプリに USB デバイスの制御を許可します。USB デバイスを接続するたびに権限がリクエストされます。一部の Android アプリでは、他の権限もリクエストされる場合があります。</translation>
 <translation id="1877377290348678128">ラベル（省略可）</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">音声</translation>
 <translation id="2097950021134740304">登録の削除をキャンセル</translation>
 <translation id="2104166991923847969">アクセス ポイントを自動的にオフにする</translation>
+<translation id="2106831557840787829">ChromeOS Flex も <ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />も追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="2114995631896158695">SIM カードが挿入されていません</translation>
 <translation id="2121825465123208577">サイズを変更</translation>
 <translation id="2127372758936585790">低電力の充電器</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574"><ph name="USER_NAME" /> を削除</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2363475280045770326">設定の保存中にエラーが発生しました</translation>
+<translation id="236939127352773362">コンテンツの送信を希望しているデバイスが近くにある場合に通知します</translation>
 <translation id="237336063998926520">IP アドレスを使って現在地を特定します</translation>
 <translation id="2373499590298659902">0　キーを使用してマウスボタンを長押しする</translation>
 <translation id="2375406435414127095">スマートフォンに接続</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">VPN 以外のトラフィックをブロック</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">[位置情報の精度] 設定では、アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを全般的に改善、提供、維持する目的でも使用されます。</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">排紙トレイがあと少しでいっぱいです</translation>
 <translation id="3390013585654699824">アプリの詳細</translation>
 <translation id="3390740059150071453">左を見る</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">メール アドレス</translation>
 <translation id="3701028563242674350">マウスカーソルを振って拡大する</translation>
 <translation id="3703699162703116302">チケットが更新されました</translation>
+<translation id="3703994572283698466">ChromeOS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="370649949373421643">Wi-Fi を有効にする</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3707163604290651814">現在、<ph name="NAME" /> としてログインしています</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">プリント サーバーで <ph name="NUM_PRINTERS" /> 個のプリンタが見つかりました</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="37143699183660101">カーソルの安定性</translation>
+<translation id="3716540481907974026">ChromeOS Flex のバージョン</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN が正しくありません。もう一度お試しください</translation>
 <translation id="3728681439294129328">ネットワーク アドレスの設定</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">コンポジション テキストに下線を表示</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="379509625511193653">オフ</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">Alt+上矢印</translation>
 <translation id="3798670284305777884">スピーカー（内蔵）</translation>
 <translation id="3799128412641261490">スイッチ アクセスの設定</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">デバイス内蔵キーボード</translation>
 <translation id="3917644013202553949">空き容量が不足しているため、ファイルを同期できません。空き容量を増やしてみてください。</translation>
 <translation id="3919229493046408863">周辺にデバイスがあるときに通知をオフにする</translation>
+<translation id="3923184630988645767">データ使用</translation>
 <translation id="3923494859158167397">モバイル ネットワークが設定されていません</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">このデバイスの他のユーザーもこのネットワークを使用できます</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">クイック アンサーの定義</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> に USB デバイスの制御を許可します。</translation>
 <translation id="3994530503403062649">タブレットのボタン設定</translation>
+<translation id="3997429360543082038">Chromium OS について</translation>
 <translation id="4001540981461989979">移動中のマウスカーソルをハイライト表示する</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
+<translation id="4019629340646866719">Chromium OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="402184264550408568">（TCP）</translation>
 <translation id="4021909830315618592">ビルド情報をコピー</translation>
 <translation id="4028467762035011525">入力方法を追加</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">前回使用した入力方法に切り替えるには、<ph name="KEY_CODES" /> キーを押します</translation>
 <translation id="4051177682900543628">検索+右矢印</translation>
 <translation id="405181879009056822">ChromeOS 設定</translation>
+<translation id="4054070260844648638">全員が検出可能</translation>
 <translation id="4058720513957747556">AppSocket（TCP/IP）</translation>
 <translation id="4066207411788646768">ネットワークで使用できるプリンタを表示するには、インターネット接続を確認してください</translation>
 <translation id="4068776064906523561">保存した指紋</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />、グレード <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">他のタッチペン アプリを探す</translation>
 <translation id="4248401726442101648">カメラが接続されていません</translation>
+<translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="4249116869350613769">バッテリー セーバー</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
 <translation id="425411422794688815">エラーが発生しました。スマートフォンが近くにあってロックが解除され、Bluetooth と Wi−Fi がオンになっていることを確認してください。</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 件の Google アカウント}other{<ph name="EXTRA_ACCOUNTS" /> 件の Google アカウント}}</translation>
 <translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> をリンクすれば、生産性が向上します</translation>
 <translation id="4314561087119792062">新しいアクセス ポイント名を追加</translation>
+<translation id="4314815835985389558">同期を管理</translation>
 <translation id="4320177379694898372">インターネットに接続されていません</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">ストレージと電源</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">サジェストの候補数</translation>
 <translation id="4606933160360542263">カスタムキーの組み合わせ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">マウスの左ボタンを選択した状態で「/」キーを使用してダブルクリックする</translation>
+<translation id="4613863813562375431">Chromium OS のバージョン</translation>
 <translation id="461661862154729886">電源</translation>
 <translation id="4617880081511131945">接続を確立できません</translation>
 <translation id="4620757807254334872">マウス</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">ネットワーク ネームサーバーの設定</translation>
 <translation id="4779083564647765204">ズーム</translation>
 <translation id="4779766576531456629">eSIM モバイル ネットワークの名前変更</translation>
+<translation id="4789550509729954245">付近に共有を行っているデバイスがある場合に通知を表示します</translation>
 <translation id="4791037424585594169">（UDP）</translation>
 <translation id="4792290259143007505">TrackPoint アクセラレーションを有効にする</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" /> からインストールされたアプリケーション</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">ウィンドウを固定する</translation>
 <translation id="4964673849688379040">確認しています...</translation>
 <translation id="4967571733817147990">マウスボタンをカスタマイズ</translation>
+<translation id="4970880042055371251">ChromeOS のバージョン</translation>
 <translation id="4972129977812092092">プリンタの編集</translation>
 <translation id="4975771730019223894">アプリのバッジ</translation>
 <translation id="4979263087381759787">デベロッパー オプション</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">この操作を行うと、この Chromebook で Google ドライブ（オフラインで使用可能になったファイルを含む）にアクセスできなくなります</translation>
 <translation id="5196790039230503600">ジェスチャーを行ってから、頭を動かしてアイテムをドロップする場所を示します。ジェスチャーをもう一度行って、アイテムをドロップします。</translation>
 <translation id="5197255632782567636">インターネット</translation>
+<translation id="5205484256512407285">転送にモバイルデータを使用しない</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="5208926629108082192">デバイスのモバイル ネットワーク情報</translation>
 <translation id="5208988882104884956">半角</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">ChromeOS のシステムアプリ</translation>
 <translation id="5334113802138581043">マイクへのアクセス</translation>
 <translation id="5336689872433667741">カーソルとタッチパッド</translation>
+<translation id="5337926771328966926">現在のデバイス名は <ph name="DEVICE_NAME" /> です</translation>
 <translation id="5340900621595888432">診断データと使用状況データを送信する</translation>
 <translation id="5369694795837229225">Linux 開発環境をセットアップする</translation>
 <translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
@@ -1443,6 +1466,7 @@
 <translation id="5833726373896279253">これらの設定を変更できるのは所有者だけです:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">ケース</translation>
+<translation id="5840680448799937675">常にオフラインでファイルを共有します</translation>
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
 <translation id="5846200638699387931">関係を表す構文にエラーがあります: <ph name="ERROR_LINE" /></translation>
@@ -1479,6 +1503,7 @@
 <translation id="5924438086390153180">Microsoft のファイルを Google ドライブにコピーまたは移動する前に確認する</translation>
 <translation id="5939518447894949180">リセット</translation>
 <translation id="594048410531370124">認識できないキーです。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
+<translation id="5942779427914696408">デバイスの公開設定</translation>
 <translation id="5945192511027649793">タッチパッドを無効にする</translation>
 <translation id="5947651424015173580">マウスをダブルクリックする</translation>
 <translation id="594993197557058302">1～4 個の修飾キー（Ctrl、Alt、Shift、検索、またはランチャー）と、もう 1 つキーを押してください。キーを 1 つだけ選択することもできます。</translation>
@@ -1490,10 +1515,12 @@
 <translation id="5961545272769624207">ジェスチャーを割り当て</translation>
 <translation id="5968022600320704045">検索結果はありません</translation>
 <translation id="5969728632630673489">キーボード ショートカットの通知を非表示にしました</translation>
+<translation id="5979353814339191480">このオプションは、データプランやモバイル ネットワーク ドングル、またはモバイル アクセス ポイントのテザリングを使用する Chromebook に適用されます。</translation>
 <translation id="5985556342298151179">デバイス管理者がインストールした Chrome アプリ。</translation>
 <translation id="5986442691296752186">Linux アプリに USB デバイスの制御を許可します。</translation>
 <translation id="598810097218913399">割り当てを解除</translation>
 <translation id="5988563937187882754">右を見る</translation>
+<translation id="5990266201903445068">Wi-Fi のみ</translation>
 <translation id="5992225669837656567">すべてのマウスの接続を解除しました</translation>
 <translation id="5999630716831179808">音声</translation>
 <translation id="6002458620803359783">使用する音声</translation>
@@ -1508,6 +1535,7 @@
 <translation id="6045114302329202345">メインの TrackPoint ボタン</translation>
 <translation id="6048747414605857443">ChromeVox と「選択して読み上げ」のテキスト読み上げ用の音声を選択してカスタマイズします</translation>
 <translation id="6050189528197190982">グレースケール</translation>
+<translation id="6054961935262556546">公開設定を変更</translation>
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
 <translation id="6059925163896151826">USB デバイス</translation>
 <translation id="6064764629679333574">低解像度音声を高解像度にアップスケーリングすることで、Bluetooth マイクの音質を向上させます。</translation>
@@ -1566,6 +1594,7 @@
 <translation id="6265159465845424232">Microsoft のファイルを Microsoft OneDrive にコピーまたは移動する前に確認する</translation>
 <translation id="6265687851677020761">ポートを削除</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> に接続しています</translation>
+<translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
 <translation id="6270309713620950855">ミュートの通知</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />に接続しています</translation>
 <translation id="628352644014831790">4秒</translation>
@@ -1617,6 +1646,7 @@
 <translation id="6453921811609336127">次の入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
 <translation id="6463488491707167747">この辞書を削除</translation>
 <translation id="6463596731306859179">望ましくないポップアップなど、予期しない動作が発生する場合、インストールしたアプリや拡張機能によって、気付かないうちに ChromeOS の設定が変更されることがあります。</translation>
+<translation id="6465841119675156448">インターネットを使用しない</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> で次の操作を実行できます。</translation>
 <translation id="6469557521904094793">モバイル ネットワークをオンにする</translation>
 <translation id="6470120577693311302">点滅による通知</translation>
@@ -1667,6 +1697,7 @@
 <translation id="6626581113916585374">エフェクト モード</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /> キー</translation>
 <translation id="6630452975878488444">選択ショートカット</translation>
+<translation id="6632473616050862500">ChromeOS Flex は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="6646476869708241165">ファスト ペアリングをオフにする</translation>
 <translation id="6647690760956378579">自然な音声のプレビュー</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
@@ -1710,6 +1741,7 @@
 <translation id="6775163072363532304">利用可能なデバイスはここに表示されます。</translation>
 <translation id="6776729248872343918">ファスト ペアリングを有効にする</translation>
 <translation id="6777845730143344223">Passpoint の登録の詳細</translation>
+<translation id="6779406956731413166">Chromium OS は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="6783036716881942511">このデバイスを削除しますか？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive の設定</translation>
 <translation id="6785915470941880363">逆スクロール（<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" />）</translation>
@@ -1843,6 +1875,7 @@
 <translation id="7280649757394340890">テキスト読み上げの音声の設定</translation>
 <translation id="7282547042039404307">滑らか</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />（<ph name="VARIANT" />）</translation>
+<translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> のパスワードを設定する</translation>
 <translation id="7304030187361489308">高め</translation>
 <translation id="7308643132139167865">ウェブサイトの言語</translation>
@@ -1872,6 +1905,7 @@
 <translation id="7409599290172516453">最近の写真</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" /> 個中 <ph name="BLOCKED_APPS_SIZE" /> 個のアプリをブロックしました</translation>
+<translation id="7423425410216218516">公開設定は <ph name="MINUTES" /> 分間有効です</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> を削除</translation>
 <translation id="7425037327577270384">文書作成サポート</translation>
 <translation id="7429415133937917139">点字ディスプレイの出力を
@@ -1919,11 +1953,13 @@
 <translation id="7578137152457315135">指紋の設定</translation>
 <translation id="7578692661782707876">確認コードを入力してください。</translation>
 <translation id="7582582252461552277">このネットワークを優先する</translation>
+<translation id="7582844466922312471">モバイル データ</translation>
 <translation id="7587806318633605613">候補の履歴</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7592060599656252486">一部</translation>
 <translation id="7602173054665172958">印刷の管理</translation>
 <translation id="7605163396341021431">この Chromebook で Android アプリに USB デバイスの制御を許可します</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android 設定</translation>
 <translation id="7611713099524036757">メタ</translation>
 <translation id="7612655942094160088">接続されているスマートフォンの機能を有効にできます。</translation>
@@ -1934,12 +1970,14 @@
 <translation id="7632437836497571618">サイトのルックアップに安全な接続を使用する</translation>
 <translation id="7634337648687970851">ローカルデータの復元は現在サポートされていません。</translation>
 <translation id="7640256527901510478">デバイスの IMEI は <ph name="IMEI_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
+<translation id="7640308610547854367">ChromeOS を以前のバージョンに戻しました。アップデートを入手するには、次のバージョンが公開されるまでお待ちください。</translation>
 <translation id="7641513591566880111">新しいプロファイル名</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> を追加しました</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7648048654005891115">キーマップのスタイル</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 件の指紋が設定されています}other{{COUNT} 件の指紋が設定されています}}</translation>
+<translation id="7650677314924139716">現在のデータ使用設定は「Wi-Fi のみ」です</translation>
 <translation id="7651400349472467012">インスタント アクセス ポイントを利用できます</translation>
 <translation id="7651784568388208829">スマートフォン ハブの作業の継続</translation>
 <translation id="7658239707568436148">キャンセル</translation>
@@ -2029,6 +2067,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">翻訳</translation>
 <translation id="7915457674565721553">保護者による使用制限を設定するにはインターネットに接続してください</translation>
+<translation id="7917876797003313048">ログインする Google アカウントを管理できます。Google アカウントは、Chrome ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />秒</translation>
 <translation id="7920482456679570420">スペルチェックしない語句を追加してください</translation>
 <translation id="7921347341284348270">この管理対象アカウントではスマートフォンの通知を表示できません。別のアカウントでお試しください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -2193,6 +2232,7 @@
 <translation id="8431977087510901105">カーソルの設定がリセットされました</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8439506636278576865">この言語のページで翻訳ツールを表示する</translation>
+<translation id="8449347986464073209">削除してログアウト</translation>
 <translation id="8451512073679317615">アシスタント</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> に接続しました</translation>
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
@@ -2318,6 +2358,7 @@
 <translation id="8872774989979382243">音量はオフになっています。音量をオンにします。</translation>
 <translation id="888256071122006425">マウスとタッチパッドの設定</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して ChromeOS の品質向上にご協力ください</translation>
+<translation id="8890170499370378450">モバイルデータ通信料が発生することがあります</translation>
 <translation id="8890529496706615641">プロファイルの名前を変更できませんでした。もう一度お試しいただくか、ご利用の携帯通信会社のテクニカル サポートにお問い合わせください。</translation>
 <translation id="8894761918470382415">周辺機器のデータアクセス保護</translation>
 <translation id="8896830132794747524">マウスをより速く動かすとカーソルの移動幅が大きくなります</translation>
@@ -2343,6 +2384,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> の接続を解除しました</translation>
 <translation id="8980345560318123814">フィードバック レポート</translation>
 <translation id="8981825781894055334">用紙が残り少なくなっています</translation>
+<translation id="8984694057134206124">あなたのデバイスは誰でも <ph name="MINUTES" /> 分間検出できるようになります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">検出しきい値</translation>
 <translation id="8986362086234534611">削除</translation>
 <translation id="8991694323904646277">カメラがありません</translation>
@@ -2389,6 +2431,7 @@
 <translation id="9098860402274800697">Google Play と Android アプリを削除する</translation>
 <translation id="910000385680858937">許可 – <ph name="PERMISSION_DETAILS" />。デバイスにマイクを接続してください。</translation>
 <translation id="9100416672768993722">前回使用した入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
+<translation id="9108072915170399168">現在のデータ使用設定は「インターネットを使用しない」です</translation>
 <translation id="9108294543511800041">スマートフォンの最近の写真、メディア、通知を表示できるようになりました</translation>
 <translation id="9109122242323516435">空き領域を確保するために、デバイスのストレージからファイルを削除してください。</translation>
 <translation id="9111330022786356709">マウスボタンの追加または指定</translation>

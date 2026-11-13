@@ -18,7 +18,6 @@
 <translation id="1142745911746664600">Не удалось обновить Chrome</translation>
 <translation id="1148360048981192980">Когда вы в следующий раз откроете Chrome на устройстве <ph name="DEVICE_TYPE" />, то увидите предложение использовать Google Менеджер паролей.</translation>
 <translation id="1150418667633096194">У кнопки "Google Поиск на боковой панели" на панели инструментов теперь новый значок. Нажмите на него, чтобы во время просмотра сайтов задавать вопросы на боковой панели Google Поиска.</translation>
-<translation id="1152920704813762236">Подробнее о ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Открыть в Chrome</translation>
 <translation id="1157952955648710254">Закрыть боковую панель Google Поиска</translation>
 <translation id="1157985233335035034">Недавние языки</translation>
@@ -55,7 +54,6 @@
 <translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1518627427551567882">Эта страница защищена</translation>
 <translation id="15408169957028265">Снова открыть Google Поиск в Chrome</translation>
-<translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Завершить выбранную задачу.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
@@ -76,7 +74,6 @@
 <translation id="1632241302126471515">Поиск в Chrome Canary</translation>
 <translation id="1640672724030957280">Загрузка...</translation>
 <translation id="1651617469580841801">При использовании Google Объектива заголовок, URL и контент страницы, в том числе PDF-файлы, отправляются в Google. <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">О Chrome OS Flex</translation>
 <translation id="1674870198290878346">Открыть ссылку в режиме инкогнито браузера Chrome</translation>
 <translation id="1682634494516646069">Браузеру Google Chrome не может выполнять операции чтения и записи в каталоге данных <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Когда вы вводите текст в адресную строку или окно поиска, Chrome передает этот запрос вашей организации, а именно ее поисковой системе, инструментам агентов и искусственному интеллекту. Это нужно, чтобы получить подсказки.</translation>
@@ -95,6 +92,7 @@
 <translation id="1843347690926158494">Найти на этой вкладке с помощью Google Объектива</translation>
 <translation id="1849248141818021764">Прочесть ваши зашифрованные данные сможет только тот, кто знает кодовую фразу. Она не отправляется компании Google и не хранится на ее серверах. Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="1867503717113754604">Чтобы использовать <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />, войдите в Chrome с аккаунтом Google.</translation>
+<translation id="1871615898038944731">На вашем устройстве <ph name="DEVICE_TYPE" /> установлены все необходимые обновления</translation>
 <translation id="1873233029667955273">Google Chrome не является браузером по умолчанию.</translation>
 <translation id="1874309113135274312">Google Chrome (бета, mDNS-In)</translation>
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
@@ -102,6 +100,7 @@
 <translation id="1880677175115548835">Выбрать текст</translation>
 <translation id="1896602904211344018">Скачать Chrome</translation>
 <translation id="1919130412786645364">Разрешить вход в Chrome</translation>
+<translation id="1925069572871307609">Чтобы получать обновления Google Chrome в будущем, потребуется Windows 10 версии 1809 или более поздней. На этом компьютере установлена устаревшая версия Windows 10.</translation>
 <translation id="1979600810166324878">Улучшенный Безопасный просмотр в Chrome для iOS поможет защитить данные мобильных устройств.</translation>
 <translation id="2001586581944147178">Чтобы тем, у кого есть доступ к вашему интернет-трафику, было сложнее видеть, какие сайты вы посещаете, Chrome использует защищенное подключение для поиска IP-адресов сайтов в DNS (системе доменных имен).</translation>
 <translation id="2018879682492276940">Ошибка установки. Повторите попытку.</translation>
@@ -114,7 +113,6 @@
 <translation id="2091012649849228750">Чтобы обновлять Google Chrome, нужна Windows 10 или более поздней версии. У вас установлена Windows 8.</translation>
 <translation id="2094919256425865063">Завершить работу Chrome?</translation>
 <translation id="2096213354152647998">Вы давно не посещали этот сайт. Браузер Chrome отозвал разрешение "<ph name="PERMISSION" />".</translation>
-<translation id="2106831557840787829">Chrome OS Flex, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2108778574543343055">Отключить фоновый режим для приложений в Chrome</translation>
 <translation id="2111985952714409792">Чтобы получить доступ к расширениям на всех своих устройствах, войдите в Chrome.</translation>
 <translation id="2120620239521071941">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
@@ -141,6 +139,7 @@
 <translation id="2307973900865360088">Закрепить на панели Dock</translation>
 <translation id="2309047409763057870">Это дополнительная установка Google Chrome. Его нельзя сделать браузером по умолчанию.</translation>
 <translation id="2345992953227471816">Браузер Chrome обнаружил, что эти расширения содержат вредоносное ПО:</translation>
+<translation id="2350411688004301551">Перейти на Gemini Enterprise</translation>
 <translation id="2358140144860869442">Чтобы получить доступ к списку для чтения и другим данным на всех своих устройствах, войдите в Chrome.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2403703063067034158">Ошибка при запуске: настройка уже запущена. Повторите попытку позже.</translation>
@@ -151,6 +150,7 @@
 <translation id="2482846200327569645">Активный профиль пользователя: <ph name="EXISTING_USER" />. Чтобы данные о вашей работе в браузере хранились отдельно, войдите в собственный профиль Chrome (<ph name="USER_EMAIL_ADDRESS" />). Вам также будут доступны закладки и другие сведения с <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2513154137948333830">Требуется перезагрузка. <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">вашей организации</translation>
 <translation id="2521391734665471391">Закрыть режим ИИ в Google Поиске</translation>
 <translation id="2523492931736391680">Ваша работа в Chrome под защитой</translation>
 <translation id="2534365042754120737">Чтобы защитить свои данные, разрешите Chrome отзывать разрешения у сайтов, которые вы давно не посещали. Уведомления при этом не отключаются.</translation>
@@ -197,6 +197,7 @@
 <translation id="2876628302275096482">Подробнее о том, <ph name="BEGIN_LINK" />как Chrome обеспечивает конфиденциальность ваших данных<ph name="END_LINK" />…</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2888126860611144412">О браузере Chrome</translation>
+<translation id="2898830646167954300">Переключиться обратно на помощника Gemini без управления</translation>
 <translation id="2915996080311180594">Перезапустить позже</translation>
 <translation id="2926952073016206995">Браузер Chrome запрашивает доступ к камере для этого сайта.</translation>
 <translation id="2945997411976714835">Произошла ошибка. Не удалось начать установку.</translation>
@@ -207,7 +208,6 @@
 <translation id="2994465299455873643">Предоставляет сервисы шифрования и безопасный метод восстановления браузера "<ph name="BROWSER_NAME" />", если браузер устареет. Если этот сервис отключен, возможно <ph name="BROWSER_NAME" /> потеряет доступ к зашифрованным данным и браузеру "<ph name="BROWSER_NAME" />" не удастся восстановиться.</translation>
 <translation id="3003694935412297923">Все задачи</translation>
 <translation id="3019382870990049182">Перезапустить и обновить &amp;Chrome OS Flex</translation>
-<translation id="3034219227076811559">Google Поиск в Chrome</translation>
 <translation id="3037190258341683404">Можно закрепить Google Поиск в Chrome и задавать вопросы во время просмотра сайтов.</translation>
 <translation id="3037517125981011456">Показывать предложения войти в Chrome</translation>
 <translation id="3037838751736561277">Google Chrome работает в фоновом режиме</translation>
@@ -231,6 +231,7 @@
 <translation id="3140883423282498090">Внесенные изменения станут активны после перезапуска Google Chrome.</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3161522574479303604">Все языки</translation>
+<translation id="3183555099201190073">Доступ к Поиску на любой вкладке</translation>
 <translation id="318555301233810762">Активный профиль пользователя: <ph name="EXISTING_USER" />. Чтобы данные о вашей работе в браузере хранились отдельно, войдите в собственный профиль Chrome (<ph name="USER_EMAIL_ADDRESS" />). Закладки и другие сведения также появятся на всех ваших устройствах.</translation>
 <translation id="319199214552513804">Чтобы пользоваться этим и другими расширениями на всех компьютерах, войдите в Chrome.</translation>
 <translation id="3196187562065225381">Chrome заблокировал скачивание, поскольку файл опасен</translation>
@@ -275,8 +276,6 @@
 <translation id="3667616615096815454">Не удалось выполнить установку из-за того, что сервер не распознал приложение.</translation>
 <translation id="3673813398384385993">Браузер Chrome обнаружил, что расширение "<ph name="EXTENSION_NAME" />" содержит вредоносное ПО.</translation>
 <translation id="3697952514309507634">Другие профили Chrome</translation>
-<translation id="3703994572283698466">Chrome OS, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="3716540481907974026">Версия Chrome OS Flex</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{Для Chrome доступно обновление, которое установится при перезапуске браузера. Одно окно открыто в режиме инкогнито или изолированном режиме. Оно не восстановится после перезапуска.}one{Для Chrome доступно обновление, которое установится при перезапуске браузера. В профилях открыто # окно в режиме инкогнито и изолированном режиме. Они не восстановятся после перезапуска.}few{Для Chrome доступно обновление, которое установится при перезапуске браузера. В профилях открыто # окна в режиме инкогнито и изолированном режиме. Они не восстановятся после перезапуска.}many{Для Chrome доступно обновление, которое установится при перезапуске браузера. В профилях открыто # окон в режиме инкогнито и изолированном режиме. Они не восстановятся после перезапуска.}other{Для Chrome доступно обновление, которое установится при перезапуске браузера. В профилях открыто # окна в режиме инкогнито и изолированном режиме. Они не восстановятся после перезапуска.}}</translation>
 <translation id="3718181793972440140">С устройства будет удален 1 объект. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome рекомендует удалить его. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}one{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}few{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}many{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}other{Chrome рекомендует удалить их. Подробнее <ph name="BEGIN_LINK" />о поддерживаемых расширениях<ph name="END_LINK" />…}}</translation>
@@ -285,7 +284,6 @@
 <translation id="3772152698251011058">Жалоба на сайт</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex не удалось синхронизировать данные, так как при входе в аккаунт произошла ошибка.</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">Настроить</translation>
 <translation id="383455301564000773">Планируете перейти на Windows 11? Скачайте Chrome в OneDrive, чтобы вас ничего не задерживало.</translation>
 <translation id="383928141529488001">Чтобы найти устройства, предоставьте браузеру Google Chrome доступ к Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -308,10 +306,12 @@
 <translation id="4022972681110646219">Перевести текст на экране</translation>
 <translation id="4023601594785368013">Язык оригинала: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Он встроен в Chrome и позволяет создавать, сохранять и автоматически подставлять надежные пароли. Добавьте ярлык для быстрого доступа.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Подписка Google.</translation>
 <translation id="4035053306113201399">Чтобы установить обновление, перезапустите Chrome OS.</translation>
 <translation id="4053720452172726777">Настройка и управление Google Chrome</translation>
 <translation id="408393047846373801">Чтобы синхронизировать пароли и другие данные на всех своих устройствах, войдите в Chrome. Затем этот пароль будет сохранен в аккаунте Google.</translation>
 <translation id="4102173024714616627">Расширения – это дополнения, которые позволяют настраивать Chrome. Они помогают организовать работу, упростить повседневные задачи и настроить Chrome под себя.</translation>
+<translation id="4103543596018881622">Google Поиск в Chrome закреплен на панели инструментов.</translation>
 <translation id="4110895483821904099">Создайте профиль Chrome</translation>
 <translation id="4111566860456076004">Chrome не может проверить происхождение этого расширения, поэтому оно может быть опасным. Удалите расширение из Chrome, чтобы оно больше не могло читать и менять ваши данные с посещаемых сайтов, в том числе личную информацию.</translation>
 <translation id="4148957013307229264">Установка...</translation>
@@ -389,7 +389,6 @@
 <translation id="495931528404527476">В Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex не удалось выполнить синхронизацию, так как учетные данные устарели.</translation>
 <translation id="4970761609246024540">Представляем профили Chrome</translation>
-<translation id="4970880042055371251">Версия Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Выберите "Google Менеджер паролей".</translation>
 <translation id="5043786843026425788">Подробнее о поиске с помощью Google Объектива в Chrome</translation>
@@ -410,6 +409,7 @@
 <translation id="5174969993834422967">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите на значок оповещений в правом верхнем углу адресной строки.</translation>
 <translation id="5174983315706567306">Недостаточно места на диске.</translation>
 <translation id="5179933070463113976">Чтобы использовать Gemini в Chrome, войдите в браузер с аккаунтом Google.</translation>
+<translation id="5184662919967270437">Обновление операционной системы…</translation>
 <translation id="5190467473654176081">Придайте Chrome новый вид</translation>
 <translation id="5201744974236816379">обновление Chrome</translation>
 <translation id="5234764350956374838">Закрыть</translation>
@@ -420,6 +420,7 @@
 <translation id="5320351714793324716">Если вы разрешили использование файлов cookie, Chrome может применять их для предзагрузки.</translation>
 <translation id="5321325624576443340">Google Объектив недоступен. Повторите попытку позже.</translation>
 <translation id="5334309298019785904">Не удалось синхронизировать данные, так как эта функция недоступна для вашего домена.</translation>
+<translation id="5336664042114176802">Вы можете переключиться на помощника Gemini, который изначально связан с вашим аккаунтом Google и не находится под управлением <ph name="DOMAIN" />. Ответы больше не будут основываться на файлах или сервисах под управлением <ph name="DOMAIN" />. История чата не будет перенесена. Этот помощник может не подходить для работы. Для переключения нужно перезапустить Chrome.</translation>
 <translation id="5346389065299425353">Чтобы расширить поиск, добавьте несколько вкладок, файлов и инструментов</translation>
 <translation id="5353252989841766347">Экспорт паролей из Chrome</translation>
 <translation id="5368118228313795342">Дополнительный код: <ph name="EXTRA_CODE" />.</translation>
@@ -444,6 +445,7 @@
 <translation id="5649156266046089790">Профили Chrome нужны для раздельного использования браузера, например разными людьми или в разных целях.</translation>
 <translation id="565744775970812598">Chrome заблокировал файл <ph name="FILE_NAME" /> как потенциально опасный.</translation>
 <translation id="566568153320186256">Chrome экономит заряд батареи, ограничивая фоновую активность и визуальные эффекты, например плавную прокрутку страниц и частоту кадров в видео. Подробнее <ph name="BEGIN_LINK" />о режиме энергосбережения<ph name="END_LINK" />…</translation>
+<translation id="5669863904928111203">Версия ChromeOS устарела</translation>
 <translation id="567202749201779594">Удалить данные Chrome из аккаунта</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Администратор просит перезапустить Chrome для установки обновления.}=1{Администратор просит перезапустить Chrome для установки обновления. Окно в режиме инкогнито не будет открыто повторно.}one{Администратор просит перезапустить Chrome для установки обновления. # окно в режиме инкогнито не будет открыто повторно.}few{Администратор просит перезапустить Chrome для установки обновления. # окна в режиме инкогнито не будут открыты повторно.}many{Администратор просит перезапустить Chrome для установки обновления. # окон в режиме инкогнито не будут открыты повторно.}other{Администратор просит перезапустить Chrome для установки обновления. # окна в режиме инкогнито не будут открыты повторно.}}</translation>
 <translation id="568656514202614970">Готово! Теперь во время просмотра сайтов можно задавать вопросы, используя боковую панель Google Поиска.</translation>
@@ -466,6 +468,7 @@
 <translation id="5894164573378901688">Чтобы использовать Gemini в Chrome, войдите с другим аккаунтом Google.</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="5903106910045431592">"<ph name="PAGE_TITLE" />" – вход в сеть</translation>
+<translation id="5906655207909574370">Чтобы завершить обновление, перезапустите устройство.</translation>
 <translation id="5924017743176219022">Подключение к интернету…</translation>
 <translation id="5941711191222866238">Свернуть</translation>
 <translation id="5941830788786076944">Назначить Google Chrome браузером по умолчанию</translation>
@@ -521,6 +524,7 @@
 <translation id="6326175484149238433">Удалить</translation>
 <translation id="6334815226785304306">Сделать Google Chrome браузером по умолчанию и закрепить на панели задач</translation>
 <translation id="6339888439788291743">Новый значок, прежний ярлык. Нажмите на него, чтобы задавать вопросы во время просмотра сайтов, используя режим ИИ в Google Поиске.</translation>
+<translation id="6349304688246983183">Задавайте вопросы во время просмотра сайтов, используя Google Поиск.</translation>
 <translation id="63540178978900677">Chrome больше не браузер по умолчанию. Вернуть его?</translation>
 <translation id="6357670763064300993">Gemini Enterprise в Chrome</translation>
 <translation id="6360449101159168105">Пока эта вкладка была неактивна, выделенная для нее память была освобождена, чтобы браузер Chrome работал быстрее. Вы можете сделать так, чтобы вкладки с этим сайтом всегда были активны.</translation>
@@ -534,6 +538,7 @@
 <translation id="6438015621983209660">Расширьте возможности улучшенного Безопасного просмотра с помощью Chrome на телефоне</translation>
 <translation id="6442774133615368941">Находите товары, переводите тексты и получайте информацию о том, что вас окружает, используя камеру в приложении Chrome для iOS.</translation>
 <translation id="6446105560007692480">для поиска в Chrome или изменения <ph name="BEGIN_LINK" />настроек<ph name="END_LINK" />.</translation>
+<translation id="6447943657065463998">Этот управляемый браузер может использовать помощника Gemini, настроенного для работы в <ph name="DOMAIN" />. Помощник может находить информацию и давать ответы на основе файлов организации и одобренных сервисов. Использовать его с личным профилем не рекомендуется. История чата не будет перенесена. Для переключения нужно перезапустить Chrome.</translation>
 <translation id="6448835208126432197">Использовать быстрые клавиши, чтобы выбирать область экрана в Gemini в Chrome.</translation>
 <translation id="6473905796280459355">Перейти на страницу "О Chrome"</translation>
 <translation id="6481963882741794338">Вы можете связать Chrome с другими сервисами Google. Это нужно для персонализации и иных целей.</translation>
@@ -554,8 +559,8 @@
 <translation id="6612152958212564387">Вы не отправляете в Google статистику использования и отчеты о сбоях. <ph name="BEGIN_LINK" />Настроить отправку данных<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Сделайте Chrome браузером по умолчанию, чтобы пароли, закладки и история синхронизировались на всех ваших устройствах.</translation>
 <translation id="6632012506031284914">для поиска в Chrome.</translation>
-<translation id="6632473616050862500">Chrome OS Flex работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Новые настройки будут применены после перезапуска Chrome</translation>
+<translation id="6644846457769259194">Обновление устройства (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6660596345553328257">Войти в Chrome?</translation>
 <translation id="6664219008737641504">Если вы забыли кодовую фразу или хотите изменить эти настройки, <ph name="SETTINGS_LINK" /> данные Chrome из аккаунта.</translation>
 <translation id="6676384891291319759">Доступ в Интернет</translation>
@@ -619,7 +624,6 @@
 <translation id="7285990705317078173">Скачайте Chrome на телефон, чтобы отслеживать цены и получать уведомления о скидках на любом сайте.</translation>
 <translation id="7288567540154601580">Вкладки и расширения</translation>
 <translation id="7290997427370476749">Можно снова открыть панель Google Поиска специальной кнопкой на панели инструментов и задавать вопросы во время просмотра сайтов.</translation>
-<translation id="7296210096911315575">Использование и безопасность</translation>
 <translation id="7299899569525778554">Поиск на компьютере</translation>
 <translation id="7302361266603927550">Некоторые данные Chrome ещё не сохранены в аккаунте Google. Подождите несколько минут. Если вы выйдете прямо сейчас, эти данные будут удалены.</translation>
 <translation id="7306401458628386911">Пользуйтесь браузером сразу после включения компьютера. Chrome теперь может запускаться вместе с Windows.</translation>
@@ -652,9 +656,7 @@
 <translation id="7572537927358445944">Отключено • Chrome не может проверить происхождение расширения</translation>
 <translation id="7583399374488819119">Установщик <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">С помощью Chrome можно открывать ссылки в сообщениях, документах и других приложениях</translation>
-<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7627609214560473136">Чтобы защитить свои данные, разрешите Chrome отзывать разрешения у сайтов, которые вы давно не посещали.</translation>
-<translation id="7629898584100520089">Функции на основе искусственного интеллекта, такие как специализированные действия, сохраняются в вашем аккаунте Google и настраиваются отдельно от синхронизации Chrome.</translation>
 <translation id="7641148173327520642">Ваш системный администратор задал настройки, согласно которым Google Chrome должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7651907282515937834">Логотип Chrome Enterprise</translation>
@@ -694,7 +696,6 @@
 <translation id="7904213866086517086">Вновь открыть Google Поиск на боковой панели</translation>
 <translation id="7904985524660297937">Используйте Gemini в Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS не удалось сохранить данные Chrome в аккаунте Google из-за ошибки входа.</translation>
-<translation id="7917876797003313048">В этом разделе можно управлять аккаунтами Google, в которые вы вошли. Они используются в Google Play, Gmail, браузере Chrome и других сервисах. Чтобы указать аккаунт участника семейной группы или кого-нибудь ещё, добавьте на устройство <ph name="DEVICE_TYPE" /> нового пользователя. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome заблокировал скачивание, поскольку файл поддельный. Он может внести неожиданные изменения на вашем устройстве.</translation>
 <translation id="7951272445806340501">Чтобы установить обновление, перезапустите Chrome OS Flex.</translation>
 <translation id="7959172989483770734">Настроить профили Chrome</translation>
@@ -711,9 +712,11 @@
 <translation id="8064965390968184078">1. Нажмите "<ph name="BUTTON_LABEL" />" ниже.
 2. Выберите "<ph name="BUTTON_2" />" в настройках Windows.
 3. Чтобы закрепить Chrome на панели задач для быстрого доступа, нажмите "<ph name="BUTTON_3" />" в уведомлении Windows.</translation>
+<translation id="8066474819446975249">Перезапустить Chrome, чтобы переключиться</translation>
 <translation id="8074398340364918139">Для поиска определенной функции или расширения Chrome введите в адресной строке назначенное сочетание клавиш, а затем выбранную клавишу.</translation>
 <translation id="8077579734294125741">Другие профили Chrome</translation>
 <translation id="8086881907087796310">Установка не удалась, так как аппаратное обеспечение компьютера не соответствует минимальным требованиям.</translation>
+<translation id="8095439028686936591">У вас установлена последняя версия ChromeOS</translation>
 <translation id="8110438089258398864">Вы можете снова открыть режим ИИ в Google Поиске, чтобы задавать вопросы во время просмотра сайтов.</translation>
 <translation id="8113883687556086139">Подтвердите свою личность, чтобы использовать и сохранять данные Chrome в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="8115695070094288807">Настраиваем Chrome для вас…</translation>
@@ -840,6 +843,7 @@
 <translation id="911206726377975832">Также удалить данные о работе в браузере?</translation>
 <translation id="9138603949443464873">Чтобы изменения вступили в силу, перезапустите Chrome.</translation>
 <translation id="9148058034647219655">Выйти</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Подписка Google.</translation>
 <translation id="922152298093051471">Настроить Chrome</translation>
 <translation id="93760716455950538">Перезапуск Chrome OS Flex</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>

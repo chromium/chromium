@@ -71,9 +71,9 @@
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>
 <translation id="1857749206890802997">在手机上下载 Chromium，随时随地打开现有标签页分组或创建新标签页分组。</translation>
-<translation id="185970820835152459">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">使用图片搜索功能进行搜索</translation>
 <translation id="1863837059069884561"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。登录后，您还可以获取<ph name="DEVICE" />中的书签等信息。</translation>
+<translation id="1871615898038944731">您的 <ph name="DEVICE_TYPE" /> 使用的操作系统已为最新版本</translation>
 <translation id="1880677175115548835">选择文字</translation>
 <translation id="1896836275755235458">Chromium 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。<ph name="BEGIN_LINK" />详细了解节能模式<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 更新程序服务</translation>
@@ -179,7 +179,6 @@
 <translation id="3003694935412297923">所有任务</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据（1 项）将被删除。}other{Chromium 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据（{count} 项）将被删除。}}</translation>
 <translation id="3013473503895162900">在 Chromium 的新标签页中打开 <ph name="URL" />。</translation>
-<translation id="302551344979399011">技能等 AI 创新功能会保存到您的 Google 账号，并与 Chromium 同步功能分开管理</translation>
 <translation id="3032219013429286568">如需在您的所有设备上获取扩展程序等内容，请登录 Chromium</translation>
 <translation id="3032787606318309379">正在添加到 Chromium...</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
@@ -233,6 +232,7 @@
 <translation id="3561853857681580870">若要共享屏幕，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">登录 Chromium</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />，<ph name="EMAIL" />。会员。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
 <translation id="3675854891107786059">使用您<ph name="BEGIN_LINK" />自己的口令<ph name="END_LINK" />加密您 Google 账号中的所有 Chromium 数据。系统不会加密 Google Pay 中的支付方式和地址，也不会同步 Chromium 中的浏览记录。</translation>
@@ -262,10 +262,8 @@
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3971865010372729242">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>
 <translation id="3975724895399328945">关于 Google Chrome for Testing(&amp;G)</translation>
-<translation id="3997429360543082038">关于 Chromium 操作系统</translation>
 <translation id="399788104667917863">固定到工具栏</translation>
 <translation id="4016217212818346953">利用“密码管理工具”，保障安全无忧</translation>
-<translation id="4019629340646866719">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chromium 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">在任意应用内通过 Chromium 打开链接。此外，为了方便使用，Chromium 会固定到任务栏。</translation>
@@ -320,7 +318,6 @@
 <translation id="4594305310729380060">保存到此设备上的密码管理工具中</translation>
 <translation id="459535195905078186">Chromium 应用</translation>
 <translation id="4598116752460667024">从列表中搜索任何进程。</translation>
-<translation id="4613863813562375431">Chromium 操作系统版本</translation>
 <translation id="4621240073146040695">即将更新到最新版本！重新启动 Chromium 即可完成更新。</translation>
 <translation id="4625064703209785397">使用 Chromium 的 V8 引擎加快网站速度，但 Chromium 的防范攻击能力会略微降低</translation>
 <translation id="4626321472657185181">使用 Chromium 打开搜索功能</translation>
@@ -354,6 +351,7 @@
 <translation id="5171868502429358653">登录 Chromium</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5174983315706567306">磁盘可用空间不足。</translation>
+<translation id="5184662919967270437">正在更新设备</translation>
 <translation id="5187123684706427865">Chromium 账号需要重新验证身份</translation>
 <translation id="5231355151045086930">退出 Chromium</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -399,6 +397,8 @@
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
 <translation id="5643865575100044307">始终在关闭 Chromium 时删除设备上的网站数据</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
+<translation id="565409517765894456">若要接收后续 Chromium 更新，您需要使用 Windows 10 版本 1809 或更高版本。此电脑目前使用的是旧版 Windows 10。</translation>
+<translation id="5669863904928111203">ChromeOS 版本太旧</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以这种语言显示 Chromium</translation>
 <translation id="569897634095159764">无法连接到互联网。代理服务器要求进行身份验证。</translation>
@@ -417,6 +417,7 @@
 <translation id="5896077214220653386">Chromium 中的 Gemini Enterprise</translation>
 <translation id="5900507321340749588">为提供诈骗检测等功能，Chromium 可使用直接在设备上运行的 AI 模型。如果关闭此设置，这些功能可能无法正常运行。<ph name="BEGIN_LINK" />详细了解设备端 AI<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 网络登录</translation>
+<translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5924017743176219022">正在连接到互联网…</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5949225980829865667">如需在您的所有设备上获取此书签等内容，请登录 Chromium</translation>
@@ -492,6 +493,7 @@
 <translation id="6600016381025017075">搜索此页面上的任何内容</translation>
 <translation id="6613594504749178791">您所做的更改会在下次重新启动 Chromium 时生效。</translation>
 <translation id="6637908313088374648">现在，Chromium 会在 Windows 启动时启动，让您可以即刻开启浏览之旅。您可在“设置”中关闭此功能。</translation>
+<translation id="6644846457769259194">正在更新您的设备 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6669284030132180248">如果您还将书签保存在 Google 账号中，则可在 Chromium 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="6676384891291319759">访问互联网</translation>
@@ -508,8 +510,8 @@
 <translation id="674891594898436429">关闭此标签页中的当前搜索</translation>
 <translation id="6751374565094704799">使用 Chromium 的 V8 引擎加速网站，但 Chromium 的防攻击能力会略微降低。此设置已开启。</translation>
 <translation id="6754665438209053659">{count,plural, =1{某些 Chromium 数据尚未保存到您的 Google 账号中。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据（1 项）将被删除。}other{某些 Chromium 数据尚未保存到您的 Google 账号中。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据（{count} 项）将被删除。}}</translation>
-<translation id="6779406956731413166">Chromium 操作系统是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6804256634866838775">关闭当前搜索</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />。会员。</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -555,7 +557,6 @@
 <translation id="7204669035546236137">借助 Chromium 中的 Gemini，无需离开当前页面即可随心提问</translation>
 <translation id="7213008767289637091">将 Chromium 保留在程序坞中，即可随时快速访问</translation>
 <translation id="7213407614656404070">随时使用 Chromium 打开您在消息、文档和其他应用内点击的链接</translation>
-<translation id="7213435258745128111">Chromium 中的 Google 搜索</translation>
 <translation id="7216228761061470870">当您在桌面设备上使用“图片搜索”功能时，系统会将网页标题、网址和内容（包括 PDF 文件）发送给服务器</translation>
 <translation id="7223968959479464213">任务管理器 - Chromium</translation>
 <translation id="7226331818892775989">针对 Chromium 之外的内容提问，例如其他应用或文件</translation>
@@ -640,6 +641,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8077498902115777962">为应用停用 Chromium 后台运行功能</translation>
 <translation id="80790299200510644">图片搜索</translation>
 <translation id="8086881907087796310">安装失败，因为您的计算机未达到最低硬件要求。</translation>
+<translation id="8095439028686936591">ChromeOS 已是最新版本</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium 需要为此网站授予位置信息权限</translation>
 <translation id="8107060931443639922">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chromium 时，系统会提示您启用价格跟踪提醒。</translation>

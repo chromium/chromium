@@ -726,7 +726,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Fazer upload do relatório</translation>
 <translation id="2212735316055980242">Política não encontrada</translation>
-<translation id="2213606439339815911">Buscando entradas...</translation>
 <translation id="2213612003795704869">A página foi impressa</translation>
 <translation id="2214086901479959524">Atualize o Chrome para continuar usando seus grupos de guias compartilhados</translation>
 <translation id="2214453882118345682">Compre, traduza e identifique o que você quiser usando a câmera.</translation>
@@ -823,6 +822,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2356941001189392209">Uma lista limitada de URLs de páginas acessadas em que eventos de tecnologia legados estão ocorrendo</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Vai compartilhar 1 guia}one{Vai compartilhar {NUM_TABS} guia}other{Vai compartilhar {NUM_TABS} guias}}</translation>
 <translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Veja a resposta da Pesquisa com IA do Google nesta guia</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="236000571258713023">Veículos</translation>
@@ -1141,6 +1141,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2925032407415783182">Salvar ingresso do evento na Carteira</translation>
 <translation id="2925454999967523701">Botão "Criar documento". Ative para criar rapidamente um novo arquivo do Google Docs</translation>
 <translation id="2925673989565098301">Método de envio</translation>
+<translation id="2927328994673424423">Há 2 semanas</translation>
 <translation id="2928426578619531300">Afiliado do usuário</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Guia no seu outro dispositivo</translation>
@@ -1275,7 +1276,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3141337053413339205">Mudar para esta guia.</translation>
 <translation id="3144458715650412431">As políticas de teste foram aplicadas e podem ser revisadas ou redefinidas em chrome://policy/test. As políticas de admin não serão aplicadas.</translation>
 <translation id="3145945101586104090">Falha ao decodificar resposta</translation>
-<translation id="3149865382039202168">Salve suas informações em <ph name="GOOGLE_WALLET_TITLE" /> e agilize ações como o preenchimento de formulários em produtos do Google. Você pode controlar <ph name="HOW_INFO_IS_USED_LINK" /> nas configurações de cartão pessoal de <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Erro temporário do servidor</translation>
 <translation id="3150889484970506196">Botão "Criar uma planilha". Ative para criar um novo arquivo do Google Planilhas em instantes</translation>
 <translation id="3154506275960390542">Essa página inclui um formulário que pode não ser enviado de forma segura. Os dados que você envia podem ser vistos por outras pessoas enquanto elas navegam ou ser modificados por um invasor para alterar o que o servidor recebe.</translation>
@@ -1521,7 +1521,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3558335486599406178">IBAN salvo na Carteira do Google</translation>
 <translation id="3558573058928565255">Dia</translation>
 <translation id="3559897352860026926">Peça ao administrador para conferir as configurações de <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">Ver sites relacionados</translation>
 <translation id="3566021033012934673">Sua conexão não é particular</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3566681680543111735">Copiar string de variações</translation>
@@ -2164,7 +2163,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4603727370377253901">Reservas de voo</translation>
 <translation id="4607608436550361748">Ver dicas do Chrome</translation>
 <translation id="460848736049414407">Bloqueado pelo administrador</translation>
-<translation id="4610279718074907952">Este site está em um grupo, definido por <ph name="SET_OWNER" />, que pode ver sua atividade</translation>
 <translation id="4612631413844865947">Ocorreu um erro ao processar seu pedido em <ph name="MERCHANT_ORIGIN" /> usando <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Este site pode ter conteúdo para maiores. Um familiar ou responsável precisa autorizar seu acesso.</translation>
 <translation id="4613873770449493819">O URL precisa levar a um domínio do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3711,7 +3709,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="7173338713290252554">Histórico de preços na Web</translation>
 <translation id="7174545416324379297">Mescla</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">Atualizar</translation>
 <translation id="7181261019481237103">Abrir janela anônima</translation>
 <translation id="7182878459783632708">Não há políticas definidas</translation>
 <translation id="7186833457841277072">Envelope (jato de tinta)</translation>
@@ -4177,7 +4174,6 @@ Mais detalhes:
 <translation id="7932579305932748336">Revestir</translation>
 <translation id="79338296614623784">Informe um número de telefone válido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> quer reproduzir conteúdo protegido. A identidade do seu dispositivo será verificada pelo Google.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Sensores de movimento permitidos</translation>
 <translation id="7937163678541954811">O CVC deste cartão será criptografado e salvo no seu dispositivo para agilizar pagamentos</translation>
 <translation id="7937554595067888181">Expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4225,7 +4221,6 @@ Mais detalhes:
 <translation id="7999482381722829925">Crie uma lista, em ordem de prioridade, para limpeza profunda de cada cômodo, com foco em locais que costumam ser esquecidos</translation>
 <translation id="8001912761979890298">Este servidor não conseguiu provar que é <ph name="DOMAIN" /> porque está usando um certificado de segurança que não é confiável para o Chromium ou sua configuração do sistema para criptografia de tráfego da Web. Isso pode ser causado por uma configuração incorreta ou por um invasor que tenha interceptado sua conexão. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ver certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Tente fechar outras guias ou programas para liberar memória.</translation>
-<translation id="8002230960325005199">Ver sites relacionados em uma nova guia</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Gerenciar senhas</translation>
@@ -4266,7 +4261,6 @@ Mais detalhes:
 <translation id="8079976827192572403">Site perigoso</translation>
 <translation id="8086971161893892807">Rascunho</translation>
 <translation id="8087558780672230449">Carregando <ph name="APP_ORIGIN" /> para processar seu pagamento em <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Falha ao exibir artigo.</translation>
 <translation id="808894953321890993">Alterar senha</translation>
 <translation id="8091372947890762290">A ativação está pendente no servidor</translation>
 <translation id="8092254339843485299">6 x 8 pol.</translation>
@@ -4908,7 +4902,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9199905725844810519">A impressão foi bloqueada</translation>
 <translation id="9204089334327209740">Depois que o upload for concluído, você poderá modificar seus arquivos no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os arquivos na lixeira, será removido automaticamente.</translation>
 <translation id="9205078245616868884">Seus dados são criptografados com sua senha longa de sincronização. Informe-a para começar a sincronização.</translation>
-<translation id="9207861905230894330">Falha ao adicionar artigo.</translation>
 <translation id="9209339767782560829">Ocorreu um problema ao usar seu certificado de login.</translation>
 <translation id="9210152531668884481">Aceitar</translation>
 <translation id="9213433120051936369">Personalizar aparência</translation>

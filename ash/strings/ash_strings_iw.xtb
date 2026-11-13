@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">כמה דברים שכדאי לנסות</translation>
 <translation id="112308213915226829">הסתרה אוטומטית של המדף</translation>
 <translation id="1129383337808748948">רענון של <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">הסיסמה חייבת להכיל לפחות אות אחת או סמל אחד</translation>
 <translation id="1142002900084379065">תמונות אחרונות</translation>
 <translation id="114221662579355151">הפעולה הזו תאפשר גישה למצלמה לאפליקציות <ph name="APP1_NAME" />,‏ <ph name="APP2_NAME" /> ולכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="1145593918056169051">המדפסת הפסיקה לפעול</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">פתיחת כרטיסייה חדשה בחלון חדש</translation>
 <translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לוחצים על השעון כדי לפתוח את אזור הסטטוס ובוחרים באפשרות 'יציאה'. אחר כך נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
+<translation id="1538808328818992871">הסיסמה חייבת להכיל לפחות <ph name="MIN_LENGTH" /> תווים</translation>
 <translation id="1545331255323159851">הצגת התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
 <translation id="1546492247443594934">שולחן עבודה 2</translation>
 <translation id="1546930421365146760">‏צריך לבקש מהאדמין להגדיר את המכשיר במסוף Google Admin</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">יש ללחוץ לקבלת אפשרויות נוספות</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="1557622599341396706">הצגת השם של שולחן העבודה הווירטואלי</translation>
+<translation id="1568242747239041185">הסיסמה חייבת להכיל לפחות שניים מהבאים: אותיות רישיות, אותיות קטנות, מספרים או תווים מיוחדים</translation>
 <translation id="1569384531973824928">הפעולה הזו תאפשר גישה למצלמה ולמיקרופון לכל האפליקציות והאתרים שיש להם הרשאות לכך. יכול להיות שיהיה צורך לרענן את דף האינטרנט או להפעיל מחדש את האפליקציה.</translation>
 <translation id="1570235441606255261">‏מנהל ההתקנה של אפליקציית Steam</translation>
 <translation id="1571697193564730395">הפעלה או השבתה של המצב 'נא לא להפריע'. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">‏כיווץ של Google Tasks</translation>
 <translation id="2208323208084708176">מצב שולחן עבודה מאוחד</translation>
 <translation id="2215920961700443347">אין אינטרנט. צריך להתחבר לאינטרנט ולנסות שוב.</translation>
+<translation id="2220572644011485463">קוד אימות או סיסמה</translation>
 <translation id="2222841058024245321">שולחן עבודה וירטואלי 7</translation>
 <translation id="2223384056430485343">במסך מפוצל</translation>
 <translation id="2224075387478458881">הקלטת המסך אסורה כשמוצג תוכן מוגן</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">השליטה בעכבר מהמקלדת הושהתה</translation>
 <translation id="2268731132310444948">שלב <ph name="STEP" /> מתוך <ph name="TOTAL_STEPS" /> בסיור. אחרי שמפעילים את מרכז האפליקציות מופיע סרגל חיפוש משופר. אפשר להתחיל להקליד כדי לחפש קבצים, אפליקציות ועוד. אפשר גם לקבל תשובות לשאלות לגבי <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">יציאה מכל החשבונות</translation>
+<translation id="2273432041732361925">אסור להשתמש בתווים חוזרים או ברצפים של 4 תווים או יותר</translation>
 <translation id="2276987123919776440">15 דקות</translation>
 <translation id="2278668501808246459">המערכת מפעילה את מנהל המאגר</translation>
 <translation id="2282073721614284166">פתיחת הקישור בכרטיסייה</translation>
@@ -1056,6 +1061,7 @@
 <translation id="4072805772816336153">יש לנסות שוב מאוחר יותר</translation>
 <translation id="4077623680826964850">‏זמן קצוב לתפוגה כשמפעילים VM או מתחברים אליו מחדש.</translation>
 <translation id="4086921558679520050">הפעלת מתג המיקרופון הפיזי במכשיר</translation>
+<translation id="4093173301198419723">הסיסמה חייבת להכיל אותיות רישיות, אותיות קטנות, מספרים ותווים מיוחדים</translation>
 <translation id="4099874310852108874">התרחשה שגיאת רשת.</translation>
 <translation id="4101772068965291327">פתיחה של דף הבית</translation>
 <translation id="4102906002417106771">‏הפעלה מחדש לביצוע Powerwash</translation>
@@ -1278,6 +1284,7 @@
 <translation id="4668936527507421457">קוד האימות יכול לכלול רק ספרות</translation>
 <translation id="4672539464599646374">התכונה 'חיסכון בסוללה' הופעלה</translation>
 <translation id="4673427585974421255">‏אני רוצה להמשיך להשתמש ב-Bluetooth</translation>
+<translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
 <translation id="4677040906536311086">‏גיליון אלקטרוני ב-Google Sheets</translation>
 <translation id="468019262817532242">אף אחד לא יכול לשתף איתך</translation>
 <translation id="468293128311738995">אפליקציות מהטלפון שלך</translation>
@@ -1301,6 +1308,7 @@
 <translation id="4746798685375253449">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יום אחד}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יומיים (#)}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}}</translation>
 <translation id="4747410141429390146">צריך לבטל את הנעילה כדי להציג את ההתראות</translation>
 <translation id="4752784485658729358">ניתן לשמור רק 6 שולחנות עבודה וירטואליים. צריך להסיר שולחן עבודה וירטואלי כדי לשמור אחד חדש.</translation>
+<translation id="4753084533826742808">הסיסמה חייבת להכיל תו אחד לפחות</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + חץ למעלה</translation>
 <translation id="4762573482154983647">הסתרת אפליקציות</translation>
@@ -1437,6 +1445,7 @@
 <translation id="5144005092084035179">להחליף את קלט האודיו?</translation>
 <translation id="5145464978649806571">אם מתרחקים מהמכשיר, המסך ננעל באופן אוטומטי. כשנמצאים מול המכשיר, המסך יפעל במשך זמן ארוך יותר לפני שיכנס למצב שינה. אם מסך הנעילה מושבת, המכשיר נכנס למצב שינה במקום להינעל.</translation>
 <translation id="5147567197700016471">הנעילה בוטלה</translation>
+<translation id="5148285448107770349">הסיסמה חייבת להכיל 8 תווים לפחות.</translation>
 <translation id="5150070631291639005">הגדרות הפרטיות</translation>
 <translation id="5155897006997040331">מהירות הקריאה</translation>
 <translation id="5158206172605340248">תפריט הסימנים הדיאקריטיים נסגר.</translation>
@@ -1557,6 +1566,7 @@
 <translation id="5474859849784484111">‏כדי להיכנס אל <ph name="MANAGER" />, מתחברים עכשיו לרשת Wi-Fi ומורידים עדכון. ניתן גם לבצע את ההורדה דרך חיבור עם חיוב לפי שימוש בנתונים (עשויים לחול חיובים).</translation>
 <translation id="547979256943495781">המדף בצד ימין</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">אישור סיסמה</translation>
 <translation id="5491186829646618080">יש עדכוני קושחה זמינים</translation>
 <translation id="5503884284981862082">‏פתיחה/סגירה של Google Assistant</translation>
 <translation id="550391772491508736">‏המשך הפעלת ה-Cast</translation>
@@ -1819,6 +1829,7 @@
 <translation id="6198252989419008588">שינוי קוד אימות</translation>
 <translation id="6199775032047436064">טען מחדש את הדף הנוכחי</translation>
 <translation id="6200515304866777730">האפליקציה לא תומכת בפעולה</translation>
+<translation id="6209589022625766110">הסיסמה צריכה להכיל 8 תווים לפחות, ולכלול לפחות שניים מהבאים: אותיות רישיות, אותיות קטנות, מספרים או תווים מיוחדים. אסור להשתמש בתווים חוזרים או ברצפים של 4 תווים או יותר.</translation>
 <translation id="6210042900243040400">יש לקשר את המכשיר <ph name="NAME" /> שנשמר בעבר בחשבון <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">למשך 10 דקות</translation>
 <translation id="6213808132343683860">יצירת צילום מסך או הקלטת מסך חלקיים</translation>
@@ -1853,6 +1864,7 @@
 <translation id="6297986260307280218">‏שליחת מידע לגבי אופן השימוש בנתונים וניתוח הביצועים. כדי לעזור בשיפור חוויית המשתמש ב-Android, אפשר לשלוח אל Google באופן אוטומטי נתוני אבחון, נתוני מכשיר ונתוני שימוש באפליקציות. הנתונים האלה יעזרו לשמור על היציבות של המערכת ושל האפליקציות ולבצע שיפורים אחרים. חלק מהנתונים הנצברים יעזרו גם לשפר את האפליקציות של Google ויעזרו לשותפים של Google, כמו מפתחים של Android. <ph name="BEGIN_LINK1" />ההגדרה<ph name="END_LINK1" /> הזו נאכפת על ידי הבעלים. יכול להיות שהבעלים יבחרו לשלוח אל Google נתוני אבחון ונתוני שימוש במכשיר. אם ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים' הופעלה, יכול להיות שהנתונים האלה יישמרו בחשבון שלך ב-Google. <ph name="BEGIN_LINK2" />מידע נוסף על מדדים<ph name="BEGIN_LINK2_END" />מידע נוסף<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">יש אפשרות להתאים אישית את המכשיר הזה באפליקציה</translation>
 <translation id="6298962879096096191">‏התקנת אפליקציות ל-Android באמצעות Google Play</translation>
+<translation id="6300478323573969040">הסיסמה צריכה להכיל 12 תווים לפחות, כולל אותיות רישיות, אותיות קטנות, מספרים ותווים מיוחדים. אסור להשתמש בתווים חוזרים או ברצפים של 4 תווים או יותר.</translation>
 <translation id="6304076460080088478">‏צריך לסגור או למזער חלונות פרטיים כדי לחפש במסך באמצעות Google Lens</translation>
 <translation id="6309219492973062892">לחיצה או לחיצה על הסמלים 1-8 במדף</translation>
 <translation id="6315170314923504164">קול</translation>
@@ -2025,7 +2037,6 @@
 <translation id="6782919488259222803">חיפוש בדף הנוכחי</translation>
 <translation id="6783348167101855071">נקודת האחיזה שנבחרה בפינה הימנית התחתונה. אפשר להשתמש במקשי החיצים כדי להזיז אותה</translation>
 <translation id="6786750046913594791">סגירת התיקייה</translation>
-<translation id="6792262051831399889">לא זמין</translation>
 <translation id="6792351896138862473">אי אפשר להפעיל אפליקציית קיוסק שלא נתמכת. צריך לדווח על הבעיה לאדמין.</translation>
 <translation id="679368458793552943">הגדלת התצוגה כשמפעילים זכוכית מגדלת</translation>
 <translation id="6794287755901682422">פרטי המשימה הזו: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2470,6 +2481,7 @@
 <translation id="8052898407431791827">הועתק ללוח</translation>
 <translation id="8054466585765276473">מחשב זמן סוללה</translation>
 <translation id="8063363226185507157">הגדרות מסונכרנות בנושא נגישות</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8079538659226626406">שיתוף המסך</translation>
 <translation id="8083540854303889870">שולחן העבודה נשמר למועד מאוחר יותר</translation>
@@ -2633,6 +2645,7 @@
 <translation id="8555757996376137129">הסרת שולחן העבודה הווירטואלי הנוכחי</translation>
 <translation id="8558521694042102707">בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות.</translation>
 <translation id="8559845965695780508">נערך על ידי <ph name="USER" /></translation>
+<translation id="8567946600191652875">הסיסמה חייבת להכיל 6 תווים לפחות ולכלול לפחות אות אחת או תו מיוחד אחד</translation>
 <translation id="8569146227972631631">‎°F</translation>
 <translation id="857201607579416096">התפריט הועבר לפינה השמאלית התחתונה של המסך.</translation>
 <translation id="8581946341807941670">הקשה על <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ולחיצה על קישור</translation>
@@ -2806,7 +2819,6 @@
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9037818663270399707">החיבור שלך אינו פרטי בכל התנועה ברשת</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">‏Bluetooth לא זמין</translation>
 <translation id="9050999376345823055">כדי לשחרר, צריך ללחוץ על "."</translation>
 <translation id="906458777597946297">הגדלת החלון</translation>
 <translation id="9065203028668620118">עריכה</translation>

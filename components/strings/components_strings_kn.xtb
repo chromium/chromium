@@ -725,7 +725,6 @@
 <translation id="22081806969704220">ಟ್ರೇ 3</translation>
 <translation id="2210794033760923560">ವರದಿಯನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="2212735316055980242">ನೀತಿ ಕಂಡು ಬಂದಿಲ್ಲ</translation>
-<translation id="2213606439339815911">ನಮೂದುಗಳನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2213612003795704869">ಪುಟವನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2214086901479959524">ನಿಮ್ಮ ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳ ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಲು Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="2214453882118345682">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿಕೊಂಡು ನೀವು ಏನನ್ನು ನೋಡುತ್ತೀರಿ ಎಂಬುದನ್ನು ಶಾಪಿಂಗ್ ಮಾಡಿ, ಅನುವಾದಿಸಿ ಮತ್ತು ಗುರುತಿಸಿ.</translation>
@@ -822,6 +821,7 @@
 <translation id="2356941001189392209">ಲೆಗಸಿ ತಂತ್ರಜ್ಞಾನದ ಈವೆಂಟ್‌ಗಳು ಸಂಭವಿಸುತ್ತಿರುವ ಸ್ಥಳದಲ್ಲಿ ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳ ಸೀಮಿತ ಪಟ್ಟಿ</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ}one{{NUM_TABS} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ}other{{NUM_TABS} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ}}</translation>
 <translation id="2357481397660644965">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="DEVICE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ ಮತ್ತು ನಿಮ್ಮ ಖಾತೆಯನ್ನು <ph name="ACCOUNT_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ.</translation>
+<translation id="2358479643736965923">ಈ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ನಿಮ್ಮ Google AI ಹುಡುಕಾಟದ ಉತ್ತರವನ್ನು ನೋಡಿ</translation>
 <translation id="2359629602545592467">ಬಹು</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="236000571258713023">ವಾಹನಗಳು</translation>
@@ -1140,6 +1140,7 @@
 <translation id="2925032407415783182">ಈವೆಂಟ್ ಟಿಕೆಟ್ ಅನ್ನು Wallet ಗೆ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="2925454999967523701">ಡಾಕ್ ಅನ್ನು ರಚಿಸಿ ಬಟನ್, ಹೊಸ Google ಡಾಕ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2925673989565098301">ಡೆಲಿವರಿ ವಿಧಾನ</translation>
+<translation id="2927328994673424423">2 ವಾರಗಳ ಹಿಂದೆ</translation>
 <translation id="2928426578619531300">ಬಳಕೆದಾರರು ಅಫಿಲಿಯೇಟ್ ಆಗಿದ್ದಾರೆ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ಇನ್ನಷ್ಟು}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ಇನ್ನಷ್ಟು}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ಇನ್ನಷ್ಟು}}</translation>
 <translation id="2930531075747147366">ನಿಮ್ಮ ಇತರ ಸಾಧನದಲ್ಲಿನ ಟ್ಯಾಬ್</translation>
@@ -1274,7 +1275,6 @@
 <translation id="3141337053413339205">ಈ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಾಯಿಸಿ.</translation>
 <translation id="3144458715650412431">ಪರೀಕ್ಷಾ ನೀತಿಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗಿದೆ. ಅವುಗಳನ್ನು chrome://policy/test ನಲ್ಲಿ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ರೀಸೆಟ್ ಮಾಡಿ. ನಿರ್ವಾಹಕ ನೀತಿಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3145945101586104090">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಡೀಕೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
-<translation id="3149865382039202168">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು <ph name="GOOGLE_WALLET_TITLE" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ ಮತ್ತು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಫಾರ್ಮ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡುವಂತಹ ಕೆಲಸಗಳನ್ನು ವೇಗವಾಗಿ ಮಾಡಿ. <ph name="ACCOUNT" /> ಗಾಗಿ ನಿಮ್ಮ ಖಾಸಗಿ ಪಾಸ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು <ph name="HOW_INFO_IS_USED_LINK" /> ಅನ್ನು ನಿಯಂತ್ರಿಸಬಹುದು. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">ತಾತ್ಕಾಲಿಕ ಸರ್ವರ್  ದೋಷ</translation>
 <translation id="3150889484970506196">ಶೀಟ್ ರಚಿಸಿ ಬಟನ್, ಹೊಸ Google ಶೀಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3154506275960390542">ಈ ಪುಟದಲ್ಲಿರುವ ಒಂದು ಫಾರ್ಮ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸಲ್ಲಿಸಲು ಸಾಧ್ಯವಾಗದಿರಬಹುದು. ರವಾನಿಸುವ ಸಮಯದಲ್ಲಿ, ನೀವು ಕಳುಹಿಸುವ ಡೇಟಾವನ್ನು ಇತರರು ವೀಕ್ಷಿಸಬಹುದು ಅಥವಾ ಸರ್ವರ್ ಪಡೆಯುವ ವಿಷಯವನ್ನು ದಾಳಿಕೋರರು ಮಾರ್ಪಡಿಸಬಹುದು.</translation>
@@ -1518,7 +1518,6 @@
 <translation id="3558335486599406178">IBAN ಅನ್ನು Google Wallet ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3558573058928565255">ದಿನದ ಸಮಯ</translation>
 <translation id="3559897352860026926">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ <ph name="CLOUD_PROVIDER" /> ಕಾನ್ಫಿಗರೇಶನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಹೇಳಿ.</translation>
-<translation id="3560824484345057728">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="3566021033012934673">ನಿಮ್ಮ ಸಂಪರ್ಕವು ಖಾಸಗಿಯಲ್ಲ</translation>
 <translation id="3566336457819493938">215 x 315 ಮಿಮೀ</translation>
 <translation id="3566681680543111735">ವೇರಿಯೇಶನ್‌ಗಳ ಸ್ಟ್ರಿಂಗ್ ಅನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
@@ -2160,7 +2159,6 @@
 <translation id="4603727370377253901">ಫ್ಲೈಟ್ ರಿಸರ್ವೇಶನ್‌ಗಳು</translation>
 <translation id="4607608436550361748">Chrome ಸಲಹೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="460848736049414407">ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
-<translation id="4610279718074907952">ಈ ಸೈಟ್ <ph name="SET_OWNER" /> ಮೂಲಕ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಗುಂಪಿನಲ್ಲಿದೆ, ಅದು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಬಹುದು</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> ಮೂಲಕ <ph name="MERCHANT_ORIGIN" /> ನಲ್ಲಿ ನಿಮ್ಮ ಆರ್ಡರ್ ಅನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವಾಗ ದೋಷ ಕಂಡುಬಂದಿದೆ.</translation>
 <translation id="4612904677925722054">ಈ ಸೈಟ್ ವಯಸ್ಕರರಿಗೆ ಸಂಬಂಧಿಸಿದ ಕಂಟೆಂಟ್ ಅನ್ನು ಹೊಂದಿರಬಹುದು. ನೀವು ಈ ವೆಬ್‌ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಪೋಷಕರ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="4613873770449493819">URL <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ಡೊಮೇನ್‌ಗೆ ಲಿಂಕ್ ಆಗಿರಬೇಕು.</translation>
@@ -3707,7 +3705,6 @@
 <translation id="7173338713290252554">ವೆಬ್‌ನಾದ್ಯಂತ ದರದ ಇತಿಹಾಸ</translation>
 <translation id="7174545416324379297">ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ಇನ್ನಷ್ಟು}one{<ph name="SHIPPING_OPTION_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ಇನ್ನಷ್ಟು}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ಇನ್ನಷ್ಟು}}</translation>
-<translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7181261019481237103">ಅದೃಶ್ಯ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7182878459783632708">ಯಾವುದೇ ನೀತಿಗಳನ್ನು ಹೊಂದಿಸಿಲ್ಲ</translation>
 <translation id="7186833457841277072">ಎನ್ವಲಪ್ (ಇಂಕ್‌ಜೆಟ್‌)</translation>
@@ -4172,7 +4169,6 @@
 <translation id="7932579305932748336">ಹಚ್ಚು</translation>
 <translation id="79338296614623784">ಮಾನ್ಯವಾದ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="7934414805353235750">ಸಂರಕ್ಷಿಸಲಾದ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡಲು <ph name="URL" /> ಬಯಸುತ್ತದೆ. ನಿಮ್ಮ ಸಾಧನದ ಗುರುತನ್ನು Google ಪರಿಶೀಲಿಸುವುದು.</translation>
-<translation id="7935318582918952113">DOM ಡಿಸ್ಟಿಲರ್</translation>
 <translation id="7935520077478121175">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="7937163678541954811">ಈ ಕಾರ್ಡ್‌ನ CVC ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ವೇಗವಾಗಿ ಚೆಕ್‌ಔಟ್ ಮಾಡಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> ದಿನಾಂಕದಂದು ಅವಧಿ ಮೀರುತ್ತದೆ</translation>
@@ -4220,7 +4216,6 @@
 <translation id="7999482381722829925">ಸಾಮಾನ್ಯವಾಗಿ ಮಿಸ್ ಆಗುವ ಸ್ಥಳಗಳ ಮೇಲೆ ಹೆಚ್ಚು ಗಮನಹರಿಸಲು, ಆದ್ಯತೆ ಮೇರೆಗೆ ಪ್ರತಿ ಕೊಠಡಿಯ ಆಳವಾದ ಶುಚಿಗೊಳಿಸುವಿಕೆಯ ಪರಿಶೀಲನಾಪಟ್ಟಿಯನ್ನು ಸಿದ್ಧಪಡಿಸು</translation>
 <translation id="8001912761979890298">ಈ ಸರ್ವರ್ Chromium ನಿಂದ ಅಥವಾ ವೆಬ್ ಟ್ರಾಫಿಕ್ ಎನ್‌ಕ್ರಿಪ್ಶನ್‌ಗಾಗಿ ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ವಿಶ್ವಾಸಾರ್ಹವಲ್ಲದ ಭದ್ರತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸುತ್ತಿರುವುದರಿಂದ ಅದು <ph name="DOMAIN" /> ಎಂದು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಇದು ತಪ್ಪಾದ ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ದಾಳಿಕೋರರು ನಿಮ್ಮ ಕನೆಕ್ಷನ್‌ಗೆ ಅಡ್ಡಿಪಡಿಸಿರುವುದರಿಂದ ಉಂಟಾಗಿರಬಹುದು. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ಪ್ರಮಾಣಪತ್ರವನ್ನು ವೀಕ್ಷಿಸಿ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">ಮೆಮೊರಿ ಮುಕ್ತಗೊಳಿಸಲು ಇತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಥವಾ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಮುಚ್ಚಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="8002230960325005199">ಸಂಬಂಧಿತ ಸೈಟ್‌ಗಳನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ಬ್ರೌಸರ್</translation>
 <translation id="8009225694047762179">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -4261,7 +4256,6 @@
 <translation id="8079976827192572403">ಅಪಾಯಕಾರಿ ಸೈಟ್</translation>
 <translation id="8086971161893892807">ಡ್ರಾಫ್ಟ್‌</translation>
 <translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> ನಲ್ಲಿ ನಿಮ್ಮ ಪಾವತಿಯನ್ನು ನಿರ್ವಹಿಸಲು <ph name="APP_ORIGIN" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
-<translation id="8088680233425245692">ಲೇಖನವನ್ನು ವೀಕ್ಷಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
 <translation id="8091372947890762290">ಸರ್ವರ್‌ನಲ್ಲಿ ಸಕ್ರಿಯತೆ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="8092254339843485299">6 x 8 ಇಂಚು</translation>
@@ -4901,7 +4895,6 @@
 <translation id="9199905725844810519">ಪ್ರಿಂಟಿಂಗ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="9204089334327209740">ಒಮ್ಮೆ ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡ ನಂತರ, ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ನೀವು <ph name="CLOUD_PROVIDER" /> ನಲ್ಲಿ ಮಾರ್ಪಡಿಸಬಹುದು. ಟ್ರ್ಯಾಶ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ಫೈಲ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಸ್ಥಳೀಯ ಸಂಗ್ರಹಣೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="9205078245616868884">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
-<translation id="9207861905230894330">ಲೇಖನವನ್ನು ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="9209339767782560829">ನಿಮ್ಮ ಲಾಗಿನ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸುವಾಗ ಸಮಸ್ಯೆ ಉಂಟಾಗಿದೆ.</translation>
 <translation id="9210152531668884481">ನಾನು ಒಪ್ಪುತ್ತೇನೆ</translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>

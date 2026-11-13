@@ -4333,14 +4333,6 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="366494444808132420">Gemini 통합을 허용합니다.</translation>
 <translation id="3665437376055221832">자동 선택과 일치하는 인증서가 없을 때만 사용자에게 메시지 표시</translation>
 <translation id="3671773704245936868">키보드 포커스 강조표시 사용 중지</translation>
-<translation id="367258298235646178">관리자가 데이터 손실 방지(DLP) 규칙에 따라 적용된 워터마크의 모양을 맞춤설정할 수 있습니다. 여기에는 채우기/윤곽선 불투명도 설정, 글꼴 크기 정의, 타임스탬프 시간대 설정이 포함됩니다.
-정책 또는 일부 값을 설정하지 않으면 Chrome에서 기본 워터마크 동작을 사용합니다.
-데스크톱의 기본값은 채우기 불투명도 4, 윤곽선 불투명도 6, 글꼴 크기 24입니다. iOS의 기본값은 채우기 불투명도 10, 윤곽선 불투명도 15, 글꼴 크기 16입니다. 모든 플랫폼에서 타임스탬프 시간대는 기본적으로 'user_device'(사용자의 로컬 기기 시간대)로 설정됩니다.
-
-'채우기 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
-'윤곽선 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
-'글꼴 크기'는 포인트 단위로 지정됩니다.
-'타임스탬프 시간대'는 IANA 시간대 데이터베이스(https://www.iana.org/time-zones)의 이름을 따르는 워터마크 타임스탬프(Chrome 152 이상에서 지원)의 형식을 지정하는 데 사용되는 IANA 시간대 식별자(예: 'America/Toronto')를 지정합니다.</translation>
 <translation id="3674010627788940405">와일드카드가 아닌 CORS 요청 헤더는 지원되지 않습니다.</translation>
 <translation id="3675248815331229366">정책을 설정하면 사용자의 위치정보에 액세스할 수 없으며 액세스 권한을 요청할 수 없는 사이트를 지정하는 URL 패턴 목록을 설정할 수 있습니다.
 
@@ -4722,7 +4714,6 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="390296766888987595">사용자 또는 애플리케이션의 요청이 있는 경우에만 터치 키보드를 표시합니다.</translation>
 <translation id="3903313632842363082">기기 사용자 보고 사용 중지</translation>
 <translation id="3904304709151553598">기기 팬 정보 보고 사용 중지</translation>
-<translation id="3905883021371603181">시스템 오디오 에코 제거 사용 설정</translation>
 <translation id="3907683835264956726">잠금 화면에서 온라인 사용자 로그인을 사용 설정합니다. 이 정책이 true로 설정되어 있으면 <ph name="POLICY" /> 등에 의해 잠금 화면에서 온라인 재인증이 실행됩니다.
       잠금 화면에 있거나 다음에 조건이 충족된 후 사용자가 화면을 잠갔을 때 재인증이 즉시 실행됩니다.
       정책이 false로 설정되거나 아무 설정도 되어 있지 않으면 사용자는 항상 로컬 사용자 인증 정보로 화면을 잠금 해제할 수 있습니다.</translation>
@@ -4824,7 +4815,6 @@ HTTPS용 RSA 인증서에 두 가지를 모두 포함해야 합니다.</translat
 <translation id="3989635538409502728">로그아웃</translation>
 <translation id="3989829840000169163">브라우저 기존 확장 프로그램 포인트 차단</translation>
 <translation id="3990391739475801018">절전 모드가 사용 중지됩니다.</translation>
-<translation id="3990834929384096140">시스템 오디오 에코 제거 적용 안 함</translation>
 <translation id="3994043824457743421">새 탭 페이지에서 가운데 슬롯 알림 표시</translation>
 <translation id="399433537808390819">사용자가 통합 바탕화면 모드를 사용할 수 없도록 설정</translation>
 <translation id="3995880046827722248">매니페스트 v2가 사용 중지됨</translation>
@@ -6163,12 +6153,6 @@ URL 패턴이 <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />와 충돌하는 경�
       하지만 TLS를 올바르게 구현하지 않은 기기는 TLS 1.3 조기 데이터를 사용하는 경우 오작동하고 연결이 끊어질 수 있습니다. 문제가 발생하면 관리자가 공급업체에 문의하여 문제를 해결해야 합니다.
 
       이 정책은 기능을 제어하기 위한 일시적인 조치이며 이후 삭제될 예정입니다. 문제 테스트를 위해 정책이 사용 설정되거나, 문제가 해결되는 동안 사용 중지될 수 있습니다.</translation>
-<translation id="4800438168909332958">시스템 오디오 에코 제거(AEC) 기능을 사용 설정합니다. 시스템 AEC는 어쿠스틱 에코 제거기로, 마이크 신호에서 시스템 오디오 재생(에코)를 제거하는 오디오 처리 모듈입니다.
-이 정책은 일시적으로 사용되며 시스템 오디오 에코 제거가 시작되는 즉시 삭제됩니다.
-
-  정책을 True로 설정하면 시스템 오디오 에코 제거가 항상 사용 설정됩니다.
-
-  정책을 False로 설정하거나 설정하지 않으면 시스템 오디오 에코 제거가 출시 계획에 따라 사용 설정될 수 있지만 이 정책에 의해 적용되지는 않습니다.</translation>
 <translation id="4800865664096110749">관리 프로필의 URL 목록에 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 증명 흐름 사용 설정</translation>
 <translation id="4801512016965057443">모바일 데이터 로밍 허용</translation>
 <translation id="4801647366128872782">기존 기술 보고서를 허용하는 URL을 지정합니다.</translation>
@@ -12034,6 +12018,12 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 정책을 설정하면 허용 목록에 추가된 URL에 대해 웹사이트 텔레메트리 보고서가 관리됩니다.
 설정하지 않으면 웹사이트 텔레메트리가 보고되지 않습니다.
 유효한 URL 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세요. 이 정책에는 HTTP 및 HTTPS URL 스키마만 허용됩니다.</translation>
+<translation id="8392016343898518010">추천 콘텐츠 기능이 삭제되었으므로 이 정책은 지원 중단되며 M159부터는 적용되지 않습니다.
+
+M159 이전까지 이 기능은 앱, 웹페이지 등 볼 만한 신규 콘텐츠를 추천하도록 설정하는 데 사용되었습니다.
+이 정책을 True로 설정하면 볼 만한 신규 콘텐츠 추천 기능이 사용 설정됩니다.
+이 정책을 False로 설정하면 볼 만한 신규 콘텐츠 추천 기능이 사용 중지됩니다.
+이 정책을 설정하지 않으면 관리 사용자의 경우 볼 만한 신규 콘텐츠 추천 기능이 사용 중지되고 다른 사용자의 경우 사용 설정됩니다.</translation>
 <translation id="8392478748777481636">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />' 정책을 사용하세요.</translation>
 <translation id="8393850527597048037">플랫폼만</translation>
 <translation id="8395350646076131800">사용자 화면 보호기 잠금 화면의 유휴 상태 제한 시간입니다.</translation>
@@ -13150,7 +13140,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 커넥터 설정 정책</translation>
 <translation id="9088433379343318874">관리 대상 사용자 콘텐츠 제공업체 사용</translation>
 <translation id="9088444059179765143">자동 시간대 감지 방법 설정</translation>
-<translation id="9091741086777905807">워터마크 타임스탬프의 형식을 지정하는 데 사용되는 IANA 시간대 식별자(예: 'America/Toronto')이며, Chrome 152 이상에서 지원됩니다. 기본값은 'user_device'입니다.</translation>
 <translation id="9094681501120769194"><ph name="PRODUCT_NAME" />의 PDF 뷰어에서 프로세스 외부 iframe(OOPIF)을 사용할지 여부를 제어합니다. 더 간단해지고 새로운 기능을 더 쉽게 추가할 수 있으므로 향후 새로운 PDF 뷰어 아키텍처가 될 것입니다. 기존 GuestView PDF 뷰어는 오래되고 복잡한 아키텍처로서 지원이 중단됩니다.
 
 정책을 '사용'으로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 OOPIF PDF 뷰어 아키텍처를 사용할 수 있습니다. 사용 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 기본 동작을 결정합니다.

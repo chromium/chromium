@@ -727,7 +727,6 @@
 <translation id="22081806969704220">سینی ۳</translation>
 <translation id="2210794033760923560">بارگذاری گزارش</translation>
 <translation id="2212735316055980242">خط‌مشی یافت نشد</translation>
-<translation id="2213606439339815911">در حال واکشی موارد...</translation>
 <translation id="2213612003795704869">صفحه چاپ شد</translation>
 <translation id="2214086901479959524">‏برای ادامه استفاده از گروه‌های زبانه هم‌رسانی‌شده، Chrome را به‌روز کنید</translation>
 <translation id="2214453882118345682">آنچه را می‌بینید با دوربینتان بخرید، ترجمه کنید، و شناسایی کنید.</translation>
@@ -824,6 +823,7 @@
 <translation id="2356941001189392209">فهرست محدودی از نشانی وب صفحه‌هایی که بازدید می‌کنید و رویدادهای فناوری قدیمی در آن‌ها روی می‌دهد</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{‫۱ زبانه هم‌رسانی خواهد شد}one{‫{NUM_TABS} زبانه هم‌رسانی خواهد شد}other{‫{NUM_TABS} زبانه هم‌رسانی خواهد شد}}</translation>
 <translation id="2357481397660644965">دستگاهتان توسط <ph name="DEVICE_MANAGER" />، و حسابتان توسط <ph name="ACCOUNT_MANAGER" /> مدیریت می‌شود.</translation>
+<translation id="2358479643736965923">‏پاسخ جستجوی Google AI را در این زبانه ببینید</translation>
 <translation id="2359629602545592467">چند ارز</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="236000571258713023">وسایل نقلیه</translation>
@@ -1142,6 +1142,7 @@
 <translation id="2925032407415783182">ذخیره کردن بلیت رویداد در «کیف پول»</translation>
 <translation id="2925454999967523701">‏دکمه ایجاد سند؛ برای ایجاد سریع «سندنگار Google» جدید، آن را فعال کنید</translation>
 <translation id="2925673989565098301">روش ارسال</translation>
+<translation id="2927328994673424423">‫۲ هفته قبل</translation>
 <translation id="2928426578619531300">کاربر وابسته</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}}</translation>
 <translation id="2930531075747147366">زبانه از «دستگاه دیگر شما»</translation>
@@ -1276,7 +1277,6 @@
 <translation id="3141337053413339205">به این زبانه می‌روید.</translation>
 <translation id="3144458715650412431">‏خط‌مشی‌های آزمایشی اعمال شده است. آن‌ها را در chrome://policy/test مرور و بازنشانی کنید. خط‌مشی‌های سرپرست اعمال نخواهد شد.</translation>
 <translation id="3145945101586104090">رمزگشایی پاسخ انجام نشد</translation>
-<translation id="3149865382039202168">‏اطلاعاتتان را در <ph name="GOOGLE_WALLET_TITLE" /> ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. می‌توانید <ph name="HOW_INFO_IS_USED_LINK" /> را در تنظیمات مجوز شخصی برای <ph name="ACCOUNT" /> کنترل کنید. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">خطای موقت سرور</translation>
 <translation id="3150889484970506196">‏دکمه ایجاد کاربرگ؛ برای ایجاد سریع «کاربرگ‌نگار Google» جدید، آن را فعال کنید</translation>
 <translation id="3154506275960390542">این صفحه حاوی فرمی است که ممکن است به‌طور ایمن ارسال نشود. دیگران می‌توانند داده‌هایی را که ارسال می‌کنید درحین انتقال ببینند یا مهاجمان می‌توانند برای تغییر آنچه سرور دریافت می‌کند، آن‌ها را تغییر دهند.</translation>
@@ -1522,7 +1522,6 @@
 <translation id="3558335486599406178">‏‫IBAN در «کیف پول Google» ذخیره شد.</translation>
 <translation id="3558573058928565255">ساعت از روز</translation>
 <translation id="3559897352860026926">از سرپرستتان بخواهید تنظیمات پیکربندی <ph name="CLOUD_PROVIDER" /> را بررسی کند.</translation>
-<translation id="3560824484345057728">دیدن سایت‌های مرتبط</translation>
 <translation id="3566021033012934673">اتصال شما خصوصی نیست</translation>
 <translation id="3566336457819493938">۳۱۵ × ۲۱۵ میلی‌متر</translation>
 <translation id="3566681680543111735">کپی کردن رشته گونه‌ها</translation>
@@ -2165,7 +2164,6 @@
 <translation id="4603727370377253901">پروازهای رزروشده</translation>
 <translation id="4607608436550361748">‏دیدن نکته‌های Chrome</translation>
 <translation id="460848736049414407">سرپرست آن را مسدود کرده است</translation>
-<translation id="4610279718074907952">این سایت در گروهی است که <ph name="SET_OWNER" /> تعریف کرده است و می‌تواند فعالیت شما را ببیند</translation>
 <translation id="4612631413844865947">هنگام پردازش سفارشتان در <ph name="MERCHANT_ORIGIN" /> ازطریق <ph name="PAYMENT_APP_ORIGIN" /> خطایی روی داد.</translation>
 <translation id="4612904677925722054">این سایت ممکن است محتوای مناسب بزرگسالان داشته باشد. ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند.</translation>
 <translation id="4613873770449493819">نشانی وب باید به دامنه <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> اشاره کند.</translation>
@@ -3712,7 +3710,6 @@
 <translation id="7173338713290252554">سابقه قیمت در سراسر وب</translation>
 <translation id="7174545416324379297">ادغام شد</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}one{<ph name="SHIPPING_OPTION_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}other{<ph name="SHIPPING_OPTION_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> گزینه دیگر}}</translation>
-<translation id="7180611975245234373">بازآوری</translation>
 <translation id="7181261019481237103">پنجره ناشناس باز کنید</translation>
 <translation id="7182878459783632708">خط‌مشی‌ای تنظیم نشده</translation>
 <translation id="7186833457841277072">پاکت (جوهرافشان)</translation>
@@ -4178,7 +4175,6 @@
 <translation id="7932579305932748336">جلد</translation>
 <translation id="79338296614623784">شماره تلفن معتبری وارد کنید</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> می‌خواهد محتوای محافظت‌شده را پخش کند. شناسه دستگاه شما توسط Google درستی‌سنجی خواهد شد.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">حسگرهای حرکتی مجاز هستند</translation>
 <translation id="7937163678541954811">‏برای تسویه‌حساب سریع‌تر، کد CVC این کارت رمزگذاری خواهد شد و در دستگاهتان ذخیره می‌شود</translation>
 <translation id="7937554595067888181">در <ph name="EXPIRATION_DATE_ABBR" /> منقضی می‌شود</translation>
@@ -4226,7 +4222,6 @@
 <translation id="7999482381722829925">یک بازبینه اولویت‌بندی‌شده برای نظافت اساسی اتاق‌به‌اتاق با تمرکز بر بخش‌هایی که معمولاً فراموش می‌شوند تهیه کنید.</translation>
 <translation id="8001912761979890298">‏این سرور نتوانست اثبات کند <ph name="DOMAIN" /> است زیرا از گواهینامه امنیتی‌ای استفاده می‌کند که مورداعتماد Chromium یا پیکربندی سیستم برای رمزگذاری ترافیک وب نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />مشاهده گواهینامه<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">سعی کنید زبانه‌ها یا برنامه‌های دیگر را ببندید تا حافظه آزاد شود.</translation>
-<translation id="8002230960325005199">دیدن سایت‌های مرتبط در برگه جدید</translation>
 <translation id="8003046808285812021">«<ph name="SEARCH_TERMS" />»</translation>
 <translation id="8004582292198964060">مرورگر</translation>
 <translation id="8009225694047762179">مدیریت گذرواژه</translation>
@@ -4267,7 +4262,6 @@
 <translation id="8079976827192572403">سایت خطرناک</translation>
 <translation id="8086971161893892807">پیش‌نویس</translation>
 <translation id="8087558780672230449">درحال بار کردن <ph name="APP_ORIGIN" /> برای رسیدگی پرداختتان در <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">مشاهده مقاله ناموفق بود.</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8091372947890762290">فعال‌سازی در سرور در حالت تعلیق است</translation>
 <translation id="8092254339843485299">۸ × ۶ اینچ</translation>
@@ -4907,7 +4901,6 @@
 <translation id="9199905725844810519">چاپ کردن مسدود شده است</translation>
 <translation id="9204089334327209740">بعداز کامل شدن بارگذاری، می‌توانید فایل‌هایتان را در <ph name="CLOUD_PROVIDER" /> اصلاح کنید. فضای ذخیره‌سازی محلی، شامل هر فایلی در «حذف‌شده‌ها»، به‌طور خودکار برداشته خواهد شد.</translation>
 <translation id="9205078245616868884">داده‌های شما با گذرعبارت همگام‌سازی رمزگذاری می‌شود. برای شروع همگام‌سازی آن را وارد کنید.</translation>
-<translation id="9207861905230894330">افزودن مقاله ناموفق بود.</translation>
 <translation id="9209339767782560829">هنگام استفاده از گواهینامه ورود به سیستم، مشکلی پیش آمد.</translation>
 <translation id="9210152531668884481">موافقم</translation>
 <translation id="9213433120051936369">سفارشی ساختن شکل ظاهری</translation>

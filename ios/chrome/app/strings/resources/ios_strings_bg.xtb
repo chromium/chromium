@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="201759455285471444">Разгъване на групата раздели.</translation>
 <translation id="2022431790688770637">Управление на предложенията от Gemini</translation>
+<translation id="2023265063803387188">Gemini не е налице в режим „инкогнито“</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Отворете мрежата с раздели.</translation>
 <translation id="2044681667265133332">Профилът <ph name="USER_EMAIL" /> се управлява от организацията <ph name="HOSTED_DOMAIN" />, която може да преглежда определена информация. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Спиране</translation>
 <translation id="2666092431469916601">Най-горе</translation>
 <translation id="2669454659051515572">Всеки, който използва това устройство, може да преглежда изтеглените файлове</translation>
-<translation id="2671316366021598595"><ph name="SITE_DOMAIN" /> няма разрешение за достъп до камерата ви</translation>
 <translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Разсрочено плащане</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Име</translation>
 <translation id="386224966259596343">Ще имате възможност да запазите тази информация в Wallet следващия път, когато попълвате съответен формуляр.</translation>
 <translation id="3868495844258915202">Показване на пълния URL адрес</translation>
+<translation id="3870931306085184145">Няма запазени пароли за <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Покажете ми как</translation>
 <translation id="3878657761594430423">Приспособление за хващане на листа</translation>
 <translation id="3884810423191119660">Запазвайте паролите си по сигурен начин, за да можете лесно да влизате в сайтове и приложения</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Подобрете сърфирането си</translation>
 <translation id="5062321486222145940">Инсталиране на Google Диск</translation>
 <translation id="5067540696062462445">Изтегляния</translation>
-<translation id="5070314445039955096">Разрешенията за сайта <ph name="SITE_DOMAIN" /> ще бъдат изключени, когато го напуснете</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} от {count} начин на плащане}other{{position} от {count} начина на плащане}}</translation>
 <translation id="5075939510584558547">Запазване без шифроване</translation>
 <translation id="5076534614343816664">Проследяване на цената</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Трябва да сте влезли в профила си, за да използвате Level Up</translation>
 <translation id="5352128922772839949">Запазване на файла</translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
-<translation id="5355871759168485600">На <ph name="SITE_DOMAIN" /> е разрешено да използва микрофона ви, когато посещавате този сайт</translation>
 <translation id="5359436665022446585">По-добро отваряне на връзките</translation>
 <translation id="536067926684072644">Показване на отметките</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} ключ за достъп не бе импортиран}other{{count} ключа за достъп не бяха импортирани}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">Затваряне на популяризирането на основния браузър</translation>
 <translation id="561269594905823128">Докоснете <ph name="BEGIN_BOLD" />Избиране на файл<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Сортиране по актуалност</translation>
+<translation id="561349411957324076">Завършено</translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
 <translation id="5617769621178348890">Отваряне в приложението „Файлове“</translation>
 <translation id="5619871095170816857">Тази карта показва последно използвания от вас отворен раздел на всичките ви синхронизирани устройства през последните 24 часа.</translation>
@@ -2333,7 +2333,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> профила</translation>
 <translation id="8161614462829037225">Отключване с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Дължина</translation>
-<translation id="8181328232274170248">На <ph name="SITE_DOMAIN" /> е разрешено да използва камерата ви, когато посещавате този сайт</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и още 1}other{За {website_1}, {website_2} и още {more_count}}}</translation>
 <translation id="8184895727539791845">За да разрешите на Gemini да използва камерата ви, включете съответната опция в настройките на iOS</translation>
 <translation id="8185076488803799132">Import</translation>
@@ -2504,7 +2503,6 @@
 <translation id="8674716540979958118">Имате компрометирани пароли.</translation>
 <translation id="8679900250380464358">Добавяне към списъка за четене</translation>
 <translation id="8680787084697685621">Данните за вход в профила ви не са актуални.</translation>
-<translation id="868648444055742370"><ph name="SITE_DOMAIN" /> няма разрешение за достъп до микрофона ви</translation>
 <translation id="8690752723634292147">Потвърждаване на изтриването</translation>
 <translation id="8692107307702113268">Паролата съдържа повече от 1000 знака</translation>
 <translation id="8692689525339542358">Получете защита срещу опасни сайтове, изтегляния и разширения.</translation>
@@ -2650,6 +2648,7 @@
 <translation id="91023216973987714">Начини на плащане</translation>
 <translation id="9106655997975673326">От <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Проверка за компрометирани пароли</translation>
+<translation id="9115035712231910133">Прикачено изображение: {title}</translation>
 <translation id="9119764377203471454">Прикачените файлове не могат да бъдат добавени</translation>
 <translation id="9124387962554796433">Възможно е да използваме историята ви, за да персонализираме търсенето и други услуги на Google.</translation>
 <translation id="9124978074365039456">Пазарувайте, превеждайте и идентифицирайте това, което виждате във визьора на камерата и фотогалерията си</translation>

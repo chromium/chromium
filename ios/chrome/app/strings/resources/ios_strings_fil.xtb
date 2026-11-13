@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="201759455285471444">I-expand ang grupo ng tab.</translation>
 <translation id="2022431790688770637">Pamahalaan ang mga suhestyon ng Gemini</translation>
+<translation id="2023265063803387188">Hindi available ang Gemini sa Incognito mode</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buksan ang grid ng tab</translation>
 <translation id="2044681667265133332">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Ihinto</translation>
 <translation id="2666092431469916601">Tuktok</translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
-<translation id="2671316366021598595">Hindi pinapayagan ang "<ph name="SITE_DOMAIN" />" na i-access ang iyong camera</translation>
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pagbabayad sa Paglipas ng Panahon</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="386224966259596343">Magkakaroon ka ng pagkakataong i-save ang impormasyong ito sa Wallet sa susunod na pagkakataong magsagot ka ng nauugnay na form.</translation>
 <translation id="3868495844258915202">Ipakita ang buong URL</translation>
+<translation id="3870931306085184145">Walang naka-save na password para sa <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Ipakita sa Akin Kung Paano</translation>
 <translation id="3878657761594430423">Sheet grabber</translation>
 <translation id="3884810423191119660">Secure na i-save ang mga password para madali kang makapag-sign in sa mga site at app</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">I-level up ang iyong pag-browse</translation>
 <translation id="5062321486222145940">I-install - Google Drive</translation>
 <translation id="5067540696062462445">Mga Download</translation>
-<translation id="5070314445039955096">Mare-reset sa naka-off ang mga pahintulot sa "<ph name="SITE_DOMAIN" />" kapag umalis ka sa site na ito</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} sa {count} paraan ng pagbabayad}one{{position} sa {count} paraan ng pagbabayad}other{{position} sa {count} na paraan ng pagbabayad}}</translation>
 <translation id="5075939510584558547">I-save nang walang pag-encrypt</translation>
 <translation id="5076534614343816664">Pagsubaybay sa presyo</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Kailangang naka-sign in ka para magamit ang Level Up</translation>
 <translation id="5352128922772839949">I-save ang file</translation>
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
-<translation id="5355871759168485600">Pinapayagan ang "<ph name="SITE_DOMAIN" />" na gamitin ang iyong mikropono sa tuwing bibisita ka sa site na ito</translation>
 <translation id="5359436665022446585">Mas mahusay na pagbubukas ng link</translation>
 <translation id="536067926684072644">Ipakita ang Mga Bookmark</translation>
 <translation id="5364647308446127983">{count,plural, =1{Hindi ma-import ang {count} passkey}one{Hindi ma-import ang {count} passkey}other{Hindi ma-import ang {count} na passkey}}</translation>
@@ -1484,6 +1483,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5612225021788368236">Isara ang promo ng default browser</translation>
 <translation id="561269594905823128">I-tap ang <ph name="BEGIN_BOLD" />Piliin ang iyong file<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Pagbukud-bukurin ayon sa pinakabago</translation>
+<translation id="561349411957324076">Nakumpleto</translation>
 <translation id="5614553682702429503">I-save ang password?</translation>
 <translation id="5617769621178348890">Buksan sa App na Mga File</translation>
 <translation id="5619871095170816857">Ipinapakita ng card na ito ang iyong huling ginamit na bukas na tab sa lahat ng naka-sync na device mo sa loob ng nakalipas na 24 na oras.</translation>
@@ -2333,7 +2333,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> (na) account</translation>
 <translation id="8161614462829037225">I-unlock gamit ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Haba</translation>
-<translation id="8181328232274170248">Pinapayagan ang "<ph name="SITE_DOMAIN" />" na gamitin ang iyong camera sa tuwing bibisita ka sa site na ito</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para sa {website_1}}=2{Para sa {website_1}, {website_2}}=3{Para sa {website_1}, {website_2}, at 1 pa}one{Para sa {website_1}, {website_2}, at {more_count} pa}other{Para sa {website_1}, {website_2}, at {more_count} pa}}</translation>
 <translation id="8184895727539791845">Para payagan ang Gemini na gamitin ang iyong camera, i-on ang Camera sa mga setting ng iOS</translation>
 <translation id="8185076488803799132">I-import</translation>
@@ -2504,7 +2503,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8674716540979958118">Mayroon kang mga nakompromisong password.</translation>
 <translation id="8679900250380464358">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="8680787084697685621">Wala sa panahon ang mga detalye sa pag-sign-in sa account.</translation>
-<translation id="868648444055742370">Hindi pinapayagan ang "<ph name="SITE_DOMAIN" />" na i-access ang iyong mikropono</translation>
 <translation id="8690752723634292147">Kumpirmahin ang pag-delete</translation>
 <translation id="8692107307702113268">Mahigit sa 1000 character ang password</translation>
 <translation id="8692689525339542358">Makakuha ng proteksyon laban sa mga mapanganib na site, download, at extension.</translation>

@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Ting du kan prøve</translation>
 <translation id="112308213915226829">Skjul hyllen automatisk</translation>
 <translation id="1129383337808748948">Last inn <ph name="CONTENT_TITLE" /> på nytt</translation>
+<translation id="1139368021151541038">Må inneholde minst én bokstav eller ett symbol</translation>
 <translation id="1142002900084379065">Nylige bilder</translation>
 <translation id="114221662579355151">Dette gir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder som har kameratillatelsen, tilgang til kameraet. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="1145593918056169051">Skriveren har stoppet</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Åpne ny fane i et nytt vindu</translation>
 <translation id="1536604384701784949">For å bruke <ph name="USER_EMAIL_ADDRESS" /> må du først logge av alle kontoer. For å logge av, velg Avbryt for å gå tilbake. Velg deretter klokkeslettet for å åpne statusfeltet, og velg Logg av. Logg deretter på <ph name="USER_EMAIL_ADDRESS_2" /> igjen.</translation>
 <translation id="15373452373711364">Stor markør</translation>
+<translation id="1538808328818992871">Må inneholde minst <ph name="MIN_LENGTH" /> tegn</translation>
 <translation id="1545331255323159851">Se nylige bilder, medier og varsler fra telefonen din</translation>
 <translation id="1546492247443594934">Skrivebord 2</translation>
 <translation id="1546930421365146760">Be administratoren din om å konfigurere denne enheten i Google Administrasjonskonsoll</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Klikk for å se flere alternativer</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1557622599341396706">Vis skrivebordets navn</translation>
+<translation id="1568242747239041185">Må inneholde to av følgende: store bokstaver, små bokstaver, tall eller symboler</translation>
 <translation id="1569384531973824928">Dette gir tilgang til alle apper og nettsteder som har kamera- og mikrofontillatelsen. Det kan hende du må laste inn nettsiden på nytt eller starte appen på nytt.</translation>
 <translation id="1570235441606255261">Steam-installasjonsprogram</translation>
 <translation id="1571697193564730395">Slå av/på Ikke forstyrr. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Skjul Google Huskeliste</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
 <translation id="2215920961700443347">Ingen internettilkobling. Koble til internett, og prøv på nytt.</translation>
+<translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2222841058024245321">Skrivebord 7</translation>
 <translation id="2223384056430485343">På delt skjerm</translation>
 <translation id="2224075387478458881">Skjermopptak tillates ikke når beskyttet innhold er synlig</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Musetaster er satt på pause</translation>
 <translation id="2268731132310444948">Innføringstrinn <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Når appoversikten er aktivert, får du et forbedret søkefelt. Du kan begynne å skrive for å søke etter filer, apper med mer. Du kan også få svar på spørsmål om <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Logg alle av</translation>
+<translation id="2273432041732361925">Kan ikke inneholde gjentatte tegn eller sekvenser på fire eller flere tegn</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2278668501808246459">Starter beholderbehandling</translation>
 <translation id="2282073721614284166">Åpne link i fane</translation>
@@ -1056,6 +1061,7 @@ Koble enheten til strøm.</translation>
 <translation id="4072805772816336153">Prøv på nytt senere</translation>
 <translation id="4077623680826964850">Tidsavbrudd ved oppstart eller gjenoppkobling til VM.</translation>
 <translation id="4086921558679520050">Slå på den fysiske mikrofonbryteren på enheten</translation>
+<translation id="4093173301198419723">Må inneholde store bokstaver, små bokstaver, tall og symboler</translation>
 <translation id="4099874310852108874">Det oppsto en nettverksfeil.</translation>
 <translation id="4101772068965291327">Åpne startsiden</translation>
 <translation id="4102906002417106771">Start på nytt for å utføre en powerwash</translation>
@@ -1276,6 +1282,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4668936527507421457">PIN-koden kan bare inneholde tall</translation>
 <translation id="4672539464599646374">Batterisparing er slått på</translation>
 <translation id="4673427585974421255">Behold på</translation>
+<translation id="467510802200863975">Passordene er ikke like</translation>
 <translation id="4677040906536311086">Google-regneark</translation>
 <translation id="468019262817532242">Ingen kan dele med deg</translation>
 <translation id="468293128311738995">Apper fra telefonen din</translation>
@@ -1299,6 +1306,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Oppdater enheten til en tidligere versjon innen en dag}other{Oppdater enheten til en tidligere versjon innen # dager}}</translation>
 <translation id="4747410141429390146">Lås opp for å se varsler</translation>
 <translation id="4752784485658729358">Kun 6 lagrede skrivebord er tillatt. Fjern et skrivebord for å lagre et nytt.</translation>
+<translation id="4753084533826742808">Må bestå av minst 1 tegn</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + oppoverpil</translation>
 <translation id="4762573482154983647">Skjul apper</translation>
@@ -1435,6 +1443,7 @@ Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <p
 <translation id="5144005092084035179">Vil du bytte innenhet for lyd?</translation>
 <translation id="5145464978649806571">Hvis du beveger deg bort fra enheten, låses skjermen automatisk. Når du er foran enheten, holder skjermen seg ulåst lenger. Hvis låseskjermen er avslått, går enheten over i hvilemodus i stedet for å bli låst.</translation>
 <translation id="5147567197700016471">Ulåst</translation>
+<translation id="5148285448107770349">Passordet må bestå av minst åtte tegn.</translation>
 <translation id="5150070631291639005">Personverninnstillinger</translation>
 <translation id="5155897006997040331">Lesehastighet</translation>
 <translation id="5158206172605340248">Menyen med aksenttegn er lukket.</translation>
@@ -1555,6 +1564,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> krever at du kobler til wifi nå og laster ned en oppdatering. Eller last ned via en tilkobling med datamåling (kostnader kan påløpe).</translation>
 <translation id="547979256943495781">Hyllen er til høyre</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Bekreft passordet</translation>
 <translation id="5491186829646618080">Fastvareoppdateringer er tilgjengelige</translation>
 <translation id="5503884284981862082">Åpne/lukk Google-assistenten</translation>
 <translation id="550391772491508736">Gjenoppta castingen</translation>
@@ -1815,6 +1825,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6199775032047436064">Laster inn gjeldende side på nytt</translation>
 <translation id="6200515304866777730">Støttes ikke av appen</translation>
+<translation id="6209589022625766110">Må bestå av minst 8 tegn og ha minst to av følgende: store bokstaver, små bokstaver, tall eller symboler Kan ikke inneholde gjentatte tegn eller sekvenser på fire eller flere tegn.</translation>
 <translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">i 10 minutter</translation>
 <translation id="6213808132343683860">Ta delvis skjermbilde eller skjermopptak</translation>
@@ -1849,6 +1860,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6297986260307280218">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen din bedre ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen samlede data er også til nytte for Google-apper og partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Eieren kan velge å sende diagnostikk- og bruksdata for denne enheten til Google. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer om beregninger<ph name="BEGIN_LINK2_END" />Finn ut mer<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Tilpass denne enheten i appen</translation>
 <translation id="6298962879096096191">Bruk Google Play til å installere Android-apper</translation>
+<translation id="6300478323573969040">Må bestå av minst 12 tegn og inneholde store bokstaver, små bokstaver, tall og symboler. Kan ikke inneholde gjentatte tegn eller sekvenser på fire eller flere tegn.</translation>
 <translation id="6304076460080088478">Lukk eller minimer inkognitovinduer for å søke på skjermen med Google Lens</translation>
 <translation id="6309219492973062892">Klikk eller trykk på hylleikonene 1–8</translation>
 <translation id="6315170314923504164">Tale</translation>
@@ -2021,7 +2033,6 @@ Nylig installert</translation>
 <translation id="6782919488259222803">Søk på gjeldende side</translation>
 <translation id="6783348167101855071">Du har valgt håndtaket nederst til høyre – bruk piltastene for å flytte det</translation>
 <translation id="6786750046913594791">Lukk mappen</translation>
-<translation id="6792262051831399889">Utilgjengelig</translation>
 <translation id="6792351896138862473">Kan ikke starte kioskapp som ikke støttes. Varsle administratoren din om dette problemet.</translation>
 <translation id="679368458793552943">Zoom inn når forstørreren er på</translation>
 <translation id="6794287755901682422">Dette elementet har <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8052898407431791827">Kopiert til utklippstavlen</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
 <translation id="8063363226185507157">Synkroniserte tilgjengelighetsinnstillinger</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8079538659226626406">Skjermdeling</translation>
 <translation id="8083540854303889870">Lagret for senere bruk</translation>
@@ -2627,6 +2639,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8555757996376137129">Fjern gjeldende skrivebord</translation>
 <translation id="8558521694042102707">Generativ AI kan ta feil, blant annet om personer, så dobbeltsjekk svarene den gir.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> redigerte</translation>
+<translation id="8567946600191652875">Må bestå av minst 6 tegn og inneholde minst én bokstav eller ett symbol</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Menyen ble flyttet til nedre høyre hjørne av skjermen.</translation>
 <translation id="8581946341807941670">Trykk på <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> og klikk på en link</translation>
@@ -2800,7 +2813,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9037818663270399707">Tilkoblingen din er ikke privat for all nettverkstrafikk</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Bluetooth er utilgjengelig</translation>
 <translation id="9050999376345823055">Trykk på «.» for å slippe</translation>
 <translation id="906458777597946297">Maksimer vinduet</translation>
 <translation id="9065203028668620118">Endre</translation>

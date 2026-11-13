@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="201759455285471444">Išskleisti skirtukų grupę.</translation>
 <translation id="2022431790688770637">Tvarkyti „Gemini“ pasiūlymus</translation>
+<translation id="2023265063803387188">„Gemini“ nepasiekiama inkognito režimu</translation>
 <translation id="2031515492007104071">Naujas lygis</translation>
 <translation id="2044394949148788042">Atidarykite skirtuko tinklelį</translation>
 <translation id="2044681667265133332">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Sustabdyti</translation>
 <translation id="2666092431469916601">Į viršų</translation>
 <translation id="2669454659051515572">Visi šį įrenginį naudojantys asmenys gali peržiūrėti atsisiųstus failus</translation>
-<translation id="2671316366021598595"><ph name="SITE_DOMAIN" /> neleidžiama pasiekti fotoaparato</translation>
 <translation id="2671423594960767771">Bendrinti grupę</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Mokėjimas per tam tikrą laiką</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="386224966259596343">Turėsite galimybę išsaugoti šią informaciją „Wallet“ kitą kartą, kai užpildysite atitinkamą formą.</translation>
 <translation id="3868495844258915202">Rodyti visą URL</translation>
+<translation id="3870931306085184145">Nėra išsaugotų <ph name="DOMAIN" /> slaptažodžių</translation>
 <translation id="3875783148670536197">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="3878657761594430423">Lapo laikiklis</translation>
 <translation id="3884810423191119660">Saugiai išsaugokite slaptažodžius, kad galėtumėte lengvai prisijungti prie svetainių ir programų</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Pagerinkite naršymą</translation>
 <translation id="5062321486222145940">Įdiegti „Google“ diską</translation>
 <translation id="5067540696062462445">Atsisiuntimai</translation>
-<translation id="5070314445039955096"><ph name="SITE_DOMAIN" /> leidimai bus iš naujo nustatyti kaip išjungti, kai išeisite iš šios svetainės</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} mokėjimo metodas iš {count}}one{{position} mokėjimo metodas iš {count}}few{{position} mokėjimo metodas iš {count}}many{{position} mokėjimo metodas iš {count}}other{{position} mokėjimo metodas iš {count}}}</translation>
 <translation id="5075939510584558547">Išsaugoti be šifruotės</translation>
 <translation id="5076534614343816664">Kainų stebėjimas</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Turite būti prisijungę, kad galėtumėte naudoti „Level Up“</translation>
 <translation id="5352128922772839949">Išsaugoti failą</translation>
 <translation id="5355191726083956201">Sustiprinta apsauga įjungta</translation>
-<translation id="5355871759168485600"><ph name="SITE_DOMAIN" /> leidžiama naudoti mikrofoną, kai lankotės šioje svetainėje</translation>
 <translation id="5359436665022446585">Geresnis nuorodų atidarymas</translation>
 <translation id="536067926684072644">Rodyti žymes</translation>
 <translation id="5364647308446127983">{count,plural, =1{Nepavyko importuoti {count} prieigos rakto}one{Nepavyko importuoti {count} prieigos rakto}few{Nepavyko importuoti {count} prieigos raktų}many{Nepavyko importuoti {count} prieigos rakto}other{Nepavyko importuoti {count} prieigos raktų}}</translation>
@@ -1484,6 +1483,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5612225021788368236">Uždaryti raginimo nustatyti numatytąją naršyklę skydelį</translation>
 <translation id="561269594905823128">Palieskite <ph name="BEGIN_BOLD" />Pasirinkite failą<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Rūšiuoti pagal naujausią</translation>
+<translation id="561349411957324076">Baigta</translation>
 <translation id="5614553682702429503">Išsaugoti slaptažodį?</translation>
 <translation id="5617769621178348890">Atidaryti Failų programoje</translation>
 <translation id="5619871095170816857">Šioje kortelėje rodomas paskutinis naudotas atidarytas skirtukas visuose sinchronizuojamuose įrenginiuose per pastarąsias dvidešimt keturias valandas.</translation>
@@ -2333,7 +2333,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8157532349231307196">Paskyrų: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Atrakinti naudojant <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Ilgis</translation>
-<translation id="8181328232274170248"><ph name="SITE_DOMAIN" /> leidžiama naudoti vaizdo kamerą, kai lankotės šioje svetainėje</translation>
 <translation id="8182037667962849780">{count,plural, =1{Skirta {website_1}}=2{Skirta {website_1}, {website_2}}=3{Skirta {website_1}, {website_2} ir dar vienai}one{Skirta {website_1}, {website_2} ir dar {more_count}}few{Skirta {website_1}, {website_2} ir dar {more_count}}many{Skirta {website_1}, {website_2} ir dar {more_count}}other{Skirta {website_1}, {website_2} ir dar {more_count}}}</translation>
 <translation id="8184895727539791845">Jei norite leisti „Gemini“ naudoti fotoaparatą, įjunkite Fotoaparatą „iOS“ nustatymuose</translation>
 <translation id="8185076488803799132">Importuoti</translation>
@@ -2504,7 +2503,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8674716540979958118">Turite pažeistų slaptažodžių.</translation>
 <translation id="8679900250380464358">Pridėti prie skaitymo sąrašo</translation>
 <translation id="8680787084697685621">Išsami prisijungimo prie paskyros informacija pasenusi.</translation>
-<translation id="868648444055742370"><ph name="SITE_DOMAIN" /> neleidžiama pasiekti mikrofono</translation>
 <translation id="8690752723634292147">Ištrynimo patvirtinimas</translation>
 <translation id="8692107307702113268">Slaptažodį sudaro daugiau nei 1 000 simbolių</translation>
 <translation id="8692689525339542358">Gaukite apsaugą nuo pavojingų svetainių, atsisiuntimų ir plėtinių.</translation>
@@ -2650,6 +2648,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="91023216973987714">Mokėjimo metodai</translation>
 <translation id="9106655997975673326">Iš „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Patikrinkite, ar nėra pažeistų slaptažodžių</translation>
+<translation id="9115035712231910133">Pridėtas vaizdas „{title}“</translation>
 <translation id="9119764377203471454">Nepavyko pridėti priedų</translation>
 <translation id="9124387962554796433">Naudodama naršymo istoriją „Google“ gali suasmeninti Paiešką ir kitas „Google“ paslaugas.</translation>
 <translation id="9124978074365039456">Pirkite, verskite ir nustatykite, ką matote, naudodami fotoaparatą ir nuotraukų galeriją</translation>

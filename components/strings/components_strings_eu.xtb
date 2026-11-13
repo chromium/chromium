@@ -726,7 +726,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="22081806969704220">3. erretilua</translation>
 <translation id="2210794033760923560">Kargatu txostena</translation>
 <translation id="2212735316055980242">Ez da gidalerroa aurkitu</translation>
-<translation id="2213606439339815911">Sarrerak eskuratzen…</translation>
 <translation id="2213612003795704869">Orria inprimatu da</translation>
 <translation id="2214086901479959524">Eguneratu Chrome fitxa talde partekatuak erabiltzen jarraitzeko</translation>
 <translation id="2214453882118345682">Erosi, itzuli eta identifikatu ikusten duzuna kameraren bidez.</translation>
@@ -1275,7 +1274,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3141337053413339205">Aldatu fitxa honetara.</translation>
 <translation id="3144458715650412431">Probako gidalerroak aplikatu dira. Haiek berrikusteko eta berrezartzeko, joan chrome://policy/test atalera. Administratzaileen gidalerroak ez dira aplikatuko.</translation>
 <translation id="3145945101586104090">Ezin izan da deskodetu erantzuna</translation>
-<translation id="3149865382039202168">Gorde informazioa <ph name="GOOGLE_WALLET_TITLE" /> zerbitzuan gauzak bizkorrago egiteko, hala nola Google-ren zerbitzuetan inprimakiak betetzeko. <ph name="ACCOUNT" /> kontuko txartel pribatuen ezarpenetan kontrola dezakezu <ph name="HOW_INFO_IS_USED_LINK" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Aldi baterako zerbitzariko errorea</translation>
 <translation id="3150889484970506196">Kalkulu-orri bat sortzeko botoia: aktiba ezazu Google-ko kalkulu-orri bat bizkor sortzeko</translation>
 <translation id="3154506275960390542">Orri honetan dagoen inprimaki bat agian ez da bidaliko segurtasunez. Datuak bidean dauden bitartean beste pertsona batzuek ikus ditzakete eta erasotzaileek aldatu egin ditzakete zerbitzariak beste zerbait jaso dezan.</translation>
@@ -1517,7 +1515,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3558335486599406178">Gorde da IBANa Google Wallet-en</translation>
 <translation id="3558573058928565255">Eguna</translation>
 <translation id="3559897352860026926">Eskatu administratzaileari <ph name="CLOUD_PROVIDER" /> zerbitzuko konfigurazio-ezarpenak egiaztatzeko.</translation>
-<translation id="3560824484345057728">Ikusi erlazionatutako webguneak</translation>
 <translation id="3566021033012934673">Konexioa ez da pribatua</translation>
 <translation id="3566336457819493938">215 × 315 mm</translation>
 <translation id="3566681680543111735">Kopiatu aldaeren katea</translation>
@@ -2160,7 +2157,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4603727370377253901">Hegaldien erreserbak</translation>
 <translation id="4607608436550361748">Ikusi Chrome-ri buruzko aholkuak</translation>
 <translation id="460848736049414407">Administratzaileak blokeatu du</translation>
-<translation id="4610279718074907952">Egiten dituzun jarduerak ikus ditzakeen talde batean (<ph name="SET_OWNER" /> domeinuak definitutakoa) dago webgunea</translation>
 <translation id="4612631413844865947">Errore bat gertatu da <ph name="MERCHANT_ORIGIN" /> saltzaileari <ph name="PAYMENT_APP_ORIGIN" /> bidez egindako eskaera prozesatzean.</translation>
 <translation id="4612904677925722054">Baliteke webgune honek helduentzako edukia izatea. Guraso edo tutore batek webgunea bisitatzeko baimena eman behar dizu.</translation>
 <translation id="4613873770449493819">URLak <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> domeinu batera bideratu behar du.</translation>
@@ -3705,7 +3701,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="7173338713290252554">Prezioaren historia sarean</translation>
 <translation id="7174545416324379297">Bateratuta</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">Freskatu</translation>
 <translation id="7181261019481237103">Ireki ezkutuko moduko leiho bat</translation>
 <translation id="7182878459783632708">Ez da gidalerrorik ezarri</translation>
 <translation id="7186833457841277072">Gutun-azala (tinta-zurrusta)</translation>
@@ -4171,7 +4166,6 @@ Xehetasun gehiago:
 <translation id="7932579305932748336">Forratu</translation>
 <translation id="79338296614623784">Idatzi balio duen telefono-zenbaki bat</translation>
 <translation id="7934414805353235750"><ph name="URL" /> webguneak eduki babestua erreproduzitu nahi du. Google-k zure gailuaren identitatea egiaztatuko du.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Eman da mugimendu-sentsoreak erabiltzeko baimena</translation>
 <translation id="7937163678541954811">Txartel honen CVCa enkriptatuko da, eta gailuan gordeko, azkarrago ordaintzeko</translation>
 <translation id="7937554595067888181">Iraungitze-data: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4219,7 +4213,6 @@ Xehetasun gehiago:
 <translation id="7999482381722829925">Sortu garbiketa sakon bat egiteko egiaztapen-zerrenda bat, gelaka banatuta, lehentasunak kontuan hartuta eta gehienetan garbitu gabe geratzen diren tokietan arreta jarrita</translation>
 <translation id="8001912761979890298">Zerbitzariak ezin izan du frogatu <ph name="DOMAIN" /> denik, Chromium-ek edo zure sareko trafikoa enkriptatzeko sistema-konfigurazioak fidagarritzat hartzen ez duen segurtasun-ziurtagiri bat darabilelako. Baliteke oker konfiguratuta dagoelako edo erasotzaile batek zure konexioa atzeman duelako izatea. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ikusi ziurtagiria<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Saiatu beste fitxa edo programa batzuk ixten memoria gehiago uzteko erabilgarri.</translation>
-<translation id="8002230960325005199">Ikusi erlazionatutako webguneak beste fitxa batean</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="8009225694047762179">Kudeatu pasahitzak</translation>
@@ -4260,7 +4253,6 @@ Xehetasun gehiago:
 <translation id="8079976827192572403">Webgune arriskutsua</translation>
 <translation id="8086971161893892807">Zirriborroa</translation>
 <translation id="8087558780672230449"><ph name="APP_ORIGIN" /> kargatzen <ph name="MERCHANT_ORIGIN" /> datako ordainketa kudeatzeko.</translation>
-<translation id="8088680233425245692">Ezin izan da ikusi artikulua.</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
 <translation id="8091372947890762290">Aktibazioa zain dago zerbitzarian</translation>
 <translation id="8092254339843485299">15,24 × 20,32 cm (6 × 8 in)</translation>
@@ -4899,7 +4891,6 @@ Xehetasun gehiago:
 <translation id="9199905725844810519">Inprimatzeko aukera blokeatuta dago</translation>
 <translation id="9204089334327209740">Karga osatu ostean, fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzuan alda ditzakezu. Gailuko biltegiratzea, zaborrontziko fitxategiak barne, automatikoki kenduko da.</translation>
 <translation id="9205078245616868884">Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sinkronizatzen hasteko.</translation>
-<translation id="9207861905230894330">Ezin izan da artikulua gehitu.</translation>
 <translation id="9209339767782560829">Arazo bat izan da saioa hasteko ziurtagiria erabiltzean.</translation>
 <translation id="9210152531668884481">Ados</translation>
 <translation id="9213433120051936369">Pertsonalizatu itxura</translation>

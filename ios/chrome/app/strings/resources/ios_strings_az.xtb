@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="201759455285471444">Tab qrupunu genişləndirin.</translation>
 <translation id="2022431790688770637">Gemini təkliflərini idarə edin</translation>
+<translation id="2023265063803387188">Gemini Anonim rejimdə əlçatan deyil</translation>
 <translation id="2031515492007104071">Səviyyə artımı</translation>
 <translation id="2044394949148788042">Tab torunu açın</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> hesabı <ph name="HOSTED_DOMAIN" /> tərəfindən idarə olunur və o, müəyyən məlumatlara baxa bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Dayandırın</translation>
 <translation id="2666092431469916601">Yuxarı</translation>
 <translation id="2669454659051515572">Bu cihazdan istifadə edən hər kəs endirilmiş faylları görə bilər</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" saytının kameranıza daxil olmasına icazə verilmir</translation>
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Hissə-hissə ödəyin</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Ad</translation>
 <translation id="386224966259596343">Növbəti dəfə müvafiq formanı doldurduğunuz zaman bu məlumatı Pulqabıda yadda saxlamaq şansınız olacaq.</translation>
 <translation id="3868495844258915202">Tam URL-i göstərin</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" /> üçün parollar yadda saxlanıldı</translation>
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
 <translation id="3878657761594430423">Vərəq tutucu</translation>
 <translation id="3884810423191119660">Sayt və tətbiqlərə asan giriş üçün parolları təhlükəsiz şəkildə yadda saxlayın</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Axtarış təcrübənizi təkmilləşdirin</translation>
 <translation id="5062321486222145940">Google Diski quraşdırın</translation>
 <translation id="5067540696062462445">Endirmələr</translation>
-<translation id="5070314445039955096">Bu saytdan çıxdığınız zaman "<ph name="SITE_DOMAIN" />" icazələri sıfırlanaraq deaktiv olacaq</translation>
 <translation id="507187271399539513">{count,plural, =1{Ödəniş metodu {position}/{count}}other{Ödəniş metodu {position}/{count}}}</translation>
 <translation id="5075939510584558547">Şifrələmədən yadda saxlayın</translation>
 <translation id="5076534614343816664">Qiymət izləmə</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Səviyyəni artırmaq üçün daxil olmalısınız</translation>
 <translation id="5352128922772839949">Faylı yadda saxlayın</translation>
 <translation id="5355191726083956201">Qabaqcıl Qoruma aktivdir</translation>
-<translation id="5355871759168485600">Bu sayta daxil olduğunuz zaman "<ph name="SITE_DOMAIN" />" mikrofonunuzdan istifadə edə bilər</translation>
 <translation id="5359436665022446585">Təkmilləşdirilmiş keçid açma</translation>
 <translation id="536067926684072644">Əlfəcinləri göstərin</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} giriş açarını import etmək olmadı}other{{count} giriş açarını import etmək olmadı}}</translation>
@@ -1484,6 +1483,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5612225021788368236">Defolt brauzer tanıtımını bağlayın</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />Fayl seçin<ph name="END_BOLD" /> seçiminə toxunun</translation>
 <translation id="5613297089029360427">Sonuncular üzrə çeşidləyin</translation>
+<translation id="561349411957324076">Tamamlandı</translation>
 <translation id="5614553682702429503">Parol yadda saxlanılsın?</translation>
 <translation id="5617769621178348890">Fayllar tətbiqində açılır</translation>
 <translation id="5619871095170816857">Bu kart son 24 saat ərzində sinxronlaşdırılmış bütün cihazlarda açılan son tabı göstərir.</translation>
@@ -2333,7 +2333,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> hesabları</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
 <translation id="8173034266693057059">Uzunluq</translation>
-<translation id="8181328232274170248">Bu sayta daxil olduğunuz zaman "<ph name="SITE_DOMAIN" />" kameranızdan istifadə edə bilər</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} üçün}=2{{website_1}, {website_2} üçün}=3{{website_1}, {website_2} və digər 1 veb-sayt üçün}other{{website_1}, {website_2} və digər {more_count} veb-sayt üçün}}</translation>
 <translation id="8184895727539791845">Gemini-ın kameranızdan istifadə etməsinə icazə vermək üçün iOS ayarlarında Kameranı yandırın</translation>
 <translation id="8185076488803799132">İmport edin</translation>
@@ -2504,7 +2503,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8674716540979958118">Oğurlanmış parollar var.</translation>
 <translation id="8679900250380464358">Oxu Siyahısına əlavə edin</translation>
 <translation id="8680787084697685621">Hesaba avtomatik giriş detallarının vaxtı keçib.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" saytının mikrofonunuza daxil olmasına icazə verilmir</translation>
 <translation id="8690752723634292147">Silinməni təsdiqləyin</translation>
 <translation id="8692107307702113268">Parol 1000 simvoldan uzundur</translation>
 <translation id="8692689525339542358">Təhlükəli sayt, endirmə və artırmalardan qorunun.</translation>

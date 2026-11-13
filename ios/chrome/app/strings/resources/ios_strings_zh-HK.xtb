@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="201759455285471444">打開分頁群組。</translation>
 <translation id="2022431790688770637">管理 Gemini 建議</translation>
+<translation id="2023265063803387188">Gemini 不支援無痕模式</translation>
 <translation id="2031515492007104071">升級</translation>
 <translation id="2044394949148788042">開啟分頁網格</translation>
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">返回頁首</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
-<translation id="2671316366021598595">「<ph name="SITE_DOMAIN" />」不可取用你的鏡頭</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">分期付款</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="386224966259596343">下次填寫相關表格時，你可以選擇將資料儲存至「錢包」。</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
+<translation id="3870931306085184145">沒有儲存的 <ph name="DOMAIN" /> 密碼</translation>
 <translation id="3875783148670536197">顯示方法</translation>
 <translation id="3878657761594430423">表格擷取器</translation>
 <translation id="3884810423191119660">安全地儲存密碼，輕鬆登入網站和應用程式</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">升級瀏覽體驗</translation>
 <translation id="5062321486222145940">安裝「Google 雲端硬碟」</translation>
 <translation id="5067540696062462445">下載內容</translation>
-<translation id="5070314445039955096">「<ph name="SITE_DOMAIN" />」的權限會在你離開此網站後重設為停用</translation>
 <translation id="507187271399539513">{count,plural, =1{第 {position} 個付款方法，總共有 {count} 個}other{第 {position} 個付款方法，總共有 {count} 個}}</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
 <translation id="5076534614343816664">價格追蹤</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">你必須登入才能使用 Level Up</translation>
 <translation id="5352128922772839949">儲存檔案</translation>
 <translation id="5355191726083956201">已開啟「強化保護功能」</translation>
-<translation id="5355871759168485600">每當你瀏覽此網站時，「<ph name="SITE_DOMAIN" />」都可取用你的麥克風</translation>
 <translation id="5359436665022446585">開啟連結更方便</translation>
 <translation id="536067926684072644">顯示書籤</translation>
 <translation id="5364647308446127983">{count,plural, =1{無法匯入 {count} 個密鑰}other{無法匯入 {count} 個密鑰}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">閂埋預設瀏覽器宣傳</translation>
 <translation id="561269594905823128">輕按 [選取檔案]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">按最新項目排序</translation>
+<translation id="561349411957324076">完成</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5617769621178348890">在「檔案」應用程式中開啟</translation>
 <translation id="5619871095170816857">此資訊卡會顯示所有已同步裝置在過去 24 小時內最後開啟的分頁。</translation>
@@ -2331,7 +2331,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶</translation>
 <translation id="8161614462829037225">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
 <translation id="8173034266693057059">長度</translation>
-<translation id="8181328232274170248">每當你瀏覽此網站時，「<ph name="SITE_DOMAIN" />」都可取用你的鏡頭</translation>
 <translation id="8182037667962849780">{count,plural, =1{適用於 {website_1}}=2{適用於 {website_1}、{website_2}}=3{適用於 {website_1}、{website_2} 和另外 1 個網站}other{適用於 {website_1}、{website_2} 和另外 {more_count} 個網站}}</translation>
 <translation id="8184895727539791845">如要允許 Gemini 使用你的相機，請在 iOS 設定中啟用「相機」</translation>
 <translation id="8185076488803799132">匯入</translation>
@@ -2502,7 +2501,6 @@
 <translation id="8674716540979958118">你有密碼被盜用。</translation>
 <translation id="8679900250380464358">加入閱讀清單</translation>
 <translation id="8680787084697685621">帳戶登入詳情已過期。</translation>
-<translation id="868648444055742370">「<ph name="SITE_DOMAIN" />」不可取用你的麥克風</translation>
 <translation id="8690752723634292147">確認刪除</translation>
 <translation id="8692107307702113268">密碼超過 1000 個字元</translation>
 <translation id="8692689525339542358">防範危險網站、下載項目和擴充程式。</translation>

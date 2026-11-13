@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="201759455285471444">Espandi il gruppo di schede.</translation>
 <translation id="2022431790688770637">Gestisci i suggerimenti di Gemini</translation>
+<translation id="2023265063803387188">Gemini non è disponibile nella modalità Incognito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Apri la griglia delle schede</translation>
 <translation id="2044681667265133332">L'account <ph name="USER_EMAIL" /> è gestito da <ph name="HOSTED_DOMAIN" />, che potrebbe essere in grado di visualizzare alcune informazioni. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Interrompi</translation>
 <translation id="2666092431469916601">In alto</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" non può accedere alla fotocamera</translation>
 <translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Paga a rate</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="386224966259596343">Avrai la possibilità di salvare queste informazioni in Wallet la prossima volta che compilerai un modulo pertinente.</translation>
 <translation id="3868495844258915202">Mostra URL completo</translation>
+<translation id="3870931306085184145">Nessuna password salvata per <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Mostrami come fare</translation>
 <translation id="3878657761594430423">Pinza per fogli</translation>
 <translation id="3884810423191119660">Salva le password in modo sicuro per accedere facilmente a siti e app</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Migliora la tua navigazione</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
 <translation id="5067540696062462445">Download</translation>
-<translation id="5070314445039955096">Le autorizzazioni di "<ph name="SITE_DOMAIN" />" verranno reimpostate su Disattivate quando esci dal sito</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} di {count} metodo di pagamento}other{{position} di {count} metodi di pagamento}}</translation>
 <translation id="5075939510584558547">Salva senza crittografia</translation>
 <translation id="5076534614343816664">Monitoraggio del prezzo</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Devi aver eseguito l'accesso per usare Level Up</translation>
 <translation id="5352128922772839949">Salva file</translation>
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" può usare il microfono ogni volta che visiti questo sito</translation>
 <translation id="5359436665022446585">Apertura dei link migliorata</translation>
 <translation id="536067926684072644">Mostra i preferiti</translation>
 <translation id="5364647308446127983">{count,plural, =1{Impossibile importare {count} passkey}other{Impossibile importare {count} passkey}}</translation>
@@ -1484,6 +1483,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5612225021788368236">Chiudi la promozione del browser predefinito</translation>
 <translation id="561269594905823128">Tocca <ph name="BEGIN_BOLD" />Seleziona il file<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordina per Più recenti</translation>
+<translation id="561349411957324076">Completato</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>
 <translation id="5617769621178348890">Apri nell'app File</translation>
 <translation id="5619871095170816857">Questa scheda mostra l'ultima scheda aperta usata su tutti i dispositivi sincronizzati nelle ultime 24 ore.</translation>
@@ -2333,7 +2333,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> account</translation>
 <translation id="8161614462829037225">Sblocca con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Lunghezza</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" può usare la fotocamera ogni volta che visiti questo sito</translation>
 <translation id="8182037667962849780">{count,plural, =1{Per {website_1}}=2{Per {website_1}, {website_2}}=3{Per {website_1}, {website_2} e 1 altro}other{Per {website_1}, {website_2} e altri {more_count}}}</translation>
 <translation id="8184895727539791845">Per consentire a Gemini di usare la fotocamera, attiva l'autorizzazione Fotocamera nelle impostazioni di iOS</translation>
 <translation id="8185076488803799132">Importa</translation>
@@ -2504,7 +2503,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8674716540979958118">Hai password compromesse.</translation>
 <translation id="8679900250380464358">Aggiungi a elenco lettura</translation>
 <translation id="8680787084697685621">I dati di accesso dell'account sono obsoleti.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" non può accedere al microfono</translation>
 <translation id="8690752723634292147">Conferma eliminazione</translation>
 <translation id="8692107307702113268">La password contiene più di 1000 caratteri</translation>
 <translation id="8692689525339542358">Ricevi protezione da estensioni, download e siti pericolosi.</translation>
@@ -2650,6 +2648,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="91023216973987714">Metodi di pagamento</translation>
 <translation id="9106655997975673326">Di "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Controlla eventuali password compromesse</translation>
+<translation id="9115035712231910133">Immagine allegata {title}</translation>
 <translation id="9119764377203471454">Impossibile aggiungere allegati</translation>
 <translation id="9124387962554796433">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google.</translation>
 <translation id="9124978074365039456">Acquista, traduci e identifica ciò che vedi usando la fotocamera e la galleria fotografica</translation>

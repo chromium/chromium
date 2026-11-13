@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">మీరు అంతా పూర్తి చేశారు!</translation>
 <translation id="1149483087970735785">సహాయకర టెక్నాలజీ</translation>
 <translation id="1150490752229770117">ఈ <ph name="DEVICE_TYPE" />కు ఇదే చివరి ఆటోమేటిక్ సాఫ్ట్‌వేర్ మరియు భద్రతాపరమైన అప్‌డేట్. భవిష్యత్తు అప్‌డేట్‌లను పొందడానికి, సరికొత్త మోడల్‌కు అప్‌గ్రేడ్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS గురించి</translation>
 <translation id="1155816283571436363">మీ ఫోన్‌కు కనెక్ట్ అవుతోంది</translation>
 <translation id="1160800016654917722">విండో దిగువ ఎడమ వైపునకు తరలించబడింది</translation>
 <translation id="1164015913575846413">alt + క్లిక్</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">లాంచర్ + కుడి వైపు బాణం</translation>
 <translation id="1280332775949918163">స్నాప్ విండో</translation>
+<translation id="1285625592773741684">ప్రస్తుతం డేటా వినియోగం మొబైల్ డేటా ద్వారా జరిగేలా సెట్ చేయబడి ఉంది</translation>
 <translation id="1285815028662278915">మీ మొబైల్ డేటా హాట్‌స్పాట్‌ను సపోర్ట్ చేయకపోవచ్చు. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">రాత్రి కాంతి, సూర్యాస్తమయ సమయానికి ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
 <translation id="1288300545283011870">ప్రసంగ లక్షణాలు</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">ఇది ఎక్స్‌టెన్షన్‌లను డిజేబుల్ చేస్తుంది, మీ సెట్టింగ్‌లను సురక్షిత ఆటోమేటిక్ సెట్టింగ్‌లకు రీసెట్ చేస్తుంది. ట్యాబ్‌లు, ఫైల్స్, ఇంకా కుక్కీలు ప్రిజర్వ్ చేయబడతాయి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">ఫుల్-స్క్రీన్‌‌ మాగ్నిఫైయర్</translation>
 <translation id="1539727654733007771">ఎలాంటి మొబైల్ నెట్‌వర్క్‌లు సెటప్ చేయబడలేదు. కొత్త <ph name="BEGIN_LINK" />ప్రొఫైల్<ph name="END_LINK" />‌ను డౌన్‌లోడ్ చేయండి.</translation>
+<translation id="1547295885616600893">ChromeOS అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="1547808936554660006">eSIM ప్రొఫైళ్లు పవర్‌వాష్ ద్వారా తీసివేయబడవని నేను అర్ధం చేసుకున్నాను</translation>
 <translation id="1549275686094429035">ARC ఎనేబుల్ చేయబడింది</translation>
 <translation id="1554640914375980459">మీరు నోటిఫికేషన్‌లను అందుకున్నప్పుడు స్క్రీన్ ఫ్లాష్ అవుతుంది. మీరు లైట్ సెన్సిటివ్ అయితే, ఫ్లాష్ నోటిఫికేషన్‌లను జాగ్రత్తగా ఉపయోగించండి.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">లొకేషన్‌ను గుర్తించడానికి Wi‑Fi లేదా మొబైల్ నెట్‌వర్క్‌లను ఉపయోగించండి</translation>
 <translation id="1650407365859096313">కొత్త ట్యాబ్‌లో తెరవబడుతుంది, అనుమతిని <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">సమీప షేరింగ్‌ను ఎనేబుల్ చేయండి</translation>
+<translation id="1662146548738125461">ChromeOS Flex గురించి</translation>
 <translation id="1663698992894057019">తాజా సెక్యూరిటీ, సాఫ్ట్‌వేర్ కోసం కొత్త Chromebookకు అప్‌గ్రేడ్ చేయండి</translation>
 <translation id="1665328953287874063">పాస్‌వర్డ్ లేదా పిన్‌తో మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="1667842670298352129">వినేందుకు వీలుగా నిర్దిష్ట టెక్స్ట్ గట్టిగా చదవబడుతుంది. ముందుగా, మీ స్క్రీన్ దిగువున ఉన్న 'వినడానికి ఎంచుకోండి' చిహ్నాన్ని ఎంచుకొని, ఆపై టెక్స్ట్‌ను హైలైట్ చేయండి. మీరు కీబోర్డ్ షార్ట్‌కట్‌ను కూడా ఉపయోగించవచ్చు: టెక్స్ట్‌ను హైలైట్ చేసి, ఆపై సెర్చ్ + Sను నొక్కండి.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">గమనిక: శక్తివంతమైన పాస్‌వర్డ్ లేదా PIN కంటే మీ వేలిముద్ర తక్కువ సురక్షితంగా ఉండవచ్చు.</translation>
 <translation id="1724801751621173132">ఇన్‌పుట్ మోడ్</translation>
 <translation id="1741190788710022490">అనుకూల ఛార్జింగ్</translation>
+<translation id="1745732479023874451">కాంటాక్ట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1751335846119670066">చదవడంలో సహాయం పొందండి</translation>
 <translation id="1755601632425835748">వచన సైజ్‌</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" />కి రీమ్యాప్ చేయబడింది.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">వద్దు, 1 స్విచ్ సరిపోతుంది</translation>
 <translation id="1842681835432895345">మిర్రర్ మోడ్‌లో ఈ డిస్‌ప్లే‌ను మినహాయించండి</translation>
 <translation id="1848219224579402567">మూత మూసి ఉన్నప్పుడు సైన్ అవుట్ చేయండి</translation>
+<translation id="185970820835152459">మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మీరు మేనేజ్ చేయవచ్చు. Chromium బ్రౌజర్, Play Store, Gmail, ఇంకా మరిన్నింటి కోసం మీ Google ఖాతాలు ఉపయోగించబడతాయి. ఫ్యామిలీ మెంబర్ వంటి వారి కోసం మీరు ఖాతాను జోడించాలనుకుంటే, బదులుగా కొత్త వ్యక్తిని మీ <ph name="DEVICE_TYPE" />కు జోడించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">చల్లని</translation>
 <translation id="1866589962721094893">ఈ Chromebookలోని USB డివైజ్‌లపై Android యాప్‌లకు కంట్రోల్ ఇవ్వండి. మీరు USB డివైజ్‌ను ప్లగ్-ఇన్ చేసిన ప్రతిసారి అనుమతి కోసం రిక్వెస్ట్ పంపబడుతుంది. ఒక్కో Android యాప్ అదనపు అనుమతుల కోసం అడుగుతుంది.</translation>
 <translation id="1877377290348678128">లేబుల్ (ఆప్షనల్)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">ధ్వని</translation>
 <translation id="2097950021134740304">సబ్‌స్క్రిప్షన్‌ను విస్మరించడాన్ని రద్దు చేయండి</translation>
 <translation id="2104166991923847969">హాట్‌స్పాట్‌ను ఆటోమేటిక్‌గా ఆఫ్ చేయండి</translation>
+<translation id="2106831557840787829">ChromeOS Flex అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="2114995631896158695">ఎలాంటి SIM కార్డ్ ఇన్‌సర్ట్ చేయబడలేదు</translation>
 <translation id="2121825465123208577">సైజ్‌ మార్చు</translation>
 <translation id="2127372758936585790">తక్కువ-పవర్ గల ఛార్జర్</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574"><ph name="USER_NAME" />ను తీసివేయండి</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2363475280045770326">కాన్ఫిగరేషన్‌ను సేవ్ చేయడంలో ఎర్రర్ ఏర్పడింది</translation>
+<translation id="236939127352773362">సమీపంలోని పరికరాలు షేర్ చేస్తున్నప్పుడు</translation>
 <translation id="237336063998926520">లొకేషన్‌ను గుర్తించడానికి మీ IP అడ్రస్‌ను ఉపయోగించండి</translation>
 <translation id="2373499590298659902">మౌస్ బటన్‌ను నొక్కి పట్టుకోవడానికి “0”ను వినియోగించండి</translation>
 <translation id="2375406435414127095">మీ ఫోన్‌కి కనెక్ట్ చేయండి</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">VPN లేకుండా ట్రాఫిక్‌ను బ్లాక్ చేయండి</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">'లొకేషన్ ఖచ్చితత్వం', యాప్‌లకు, సర్వీస్‌లకు మరింత ఖచ్చితమైన లొకేషన్ సమాచారాన్ని అందిస్తుంది. దీన్ని చేయడానికి,  Google మీ డివైజ్ నుండి, డివైజ్ సెన్సర్‌లు, వైర్‌లెస్ సిగ్నల్స్‌కు సంబంధించిన సమాచారాన్ని ప్రాసెస్ చేసి, వైర్‌లెస్ సిగ్నల్ లొకేషన్‌లను క్రౌడ్‌సోర్స్ చేస్తుంది. ఇవి మిమ్మల్ని గుర్తించకుండా లొకేషన్ ఖచ్చితత్వాన్ని, లొకేషన్ ఆధారిత సర్వీస్‌లను మెరుగుపరచడానికి, అలాగే సాధారణంగా యూజర్ అవసరాలను తీర్చడానికి Google, థర్డ్-పార్టీల చట్టబద్ధమైన ప్రయోజనాలకు అనుగుణంగా Google సర్వీస్‌లను మెరుగుపరచడానికి, అందించడానికి, మెయిన్‌టెయిన్ వినియోగించబడతాయి.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">అవుట్‌పుట్ ట్రే దాదాపు నిండింది</translation>
 <translation id="3390013585654699824">యాప్ వివరాలు</translation>
 <translation id="3390740059150071453">ఎడమ వైపు చూడటం</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">ఈమెయిల్‌ అడ్రస్‌</translation>
 <translation id="3701028563242674350">మౌస్ కర్సర్‌ను పెద్దదిగా చేయడానికి దాన్ని షేక్ చేయండి</translation>
 <translation id="3703699162703116302">టికెట్ రిఫ్రెష్ చేయబడింది</translation>
+<translation id="3703994572283698466">ChromeOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="370649949373421643">Wi-fiని ప్రారంభించండి</translation>
 <translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3707163604290651814">ప్రస్తుతం <ph name="NAME" />గా సైన్ ఇన్ చేయబడి ఉన్నారు</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">ప్రింట్ సర్వర్‌లో <ph name="NUM_PRINTERS" /> ప్రింటర్‌లు కనుగొనబడ్డాయి</translation>
 <translation id="371370241367527062">ముందువైపు మైక్రోఫోన్</translation>
 <translation id="37143699183660101">కర్సర్ స్థిరత్వం</translation>
+<translation id="3716540481907974026">ChromeOS Flex వెర్షన్</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">పిన్ తప్పు. మళ్లీ ట్రై చేయండి</translation>
 <translation id="3728681439294129328">నెట్‌వర్క్ అడ్రస్‌ను కాన్ఫిగర్ చేయడం</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">కంపోజిషన్ టెక్స్ట్ కోసం అండర్‌లైన్‌ను చూపించండి</translation>
 <translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="379509625511193653">ఆఫ్ చేయబడి ఉంది</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + పై వైపు బాణం గుర్తు</translation>
 <translation id="3798670284305777884">స్పీకర్ (అంతర్గతం)</translation>
 <translation id="3799128412641261490">స్విచ్ యాక్సెస్ సెట్టింగ్‌లు</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">బిల్ట్-ఇన్ కీబోర్డ్</translation>
 <translation id="3917644013202553949">మీ ఫైళ్లను సింక్ చేయడానికి తగినంత స్టోరేజ్ లేదు. స్పేస్‌ను ఖాళీ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="3919229493046408863">పరికరాలు సమీపంలో ఉన్నప్పుడు నోటిఫికేషన్‌లను ఆఫ్ చేయండి</translation>
+<translation id="3923184630988645767">డేటా వినియోగం</translation>
 <translation id="3923494859158167397">ఎలాంటి మొబైల్ నెట్‌వర్క్‌లు సెటప్ చేయబడలేదు</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">ఈ పరికరంలోని ఇతర యూజర్‌లు కూడా ఈ నెట్‌వర్క్‌ను ఉపయోగించవచ్చు</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">త్వరిత సమాధానాల నిర్వచనం</translation>
 <translation id="3994075804072562819">USB డివైజ్‌లపై <ph name="SPECIFIC_NAME" /> కంట్రోల్‌ను అందించండి.</translation>
 <translation id="3994530503403062649">మీ టాబ్లెట్‌లో బటన్‌లను గుర్తించండి</translation>
+<translation id="3997429360543082038">ChromiumOS గురించి</translation>
 <translation id="4001540981461989979">కదులుతున్నప్పుడు మౌస్ కర్సర్‌ను హైలైట్ చేయండి</translation>
 <translation id="4005817994523282006">సమయ మండలి గుర్తింపు పద్ధతి</translation>
+<translation id="4019629340646866719">ChromiumOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">బిల్డ్ వివరాలను కాపీ చేయండి</translation>
 <translation id="4028467762035011525">ఇన్‌పుట్ విధానాలను జోడించండి</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">చివరిగా ఉపయోగించిన ఇన్‌పుట్ విధానానికి స్విచ్ చేయడానికి, <ph name="KEY_CODES" /> కీలను నొక్కండి</translation>
 <translation id="4051177682900543628">సెర్చ్ + కుడి వైపు బాణం</translation>
 <translation id="405181879009056822">ChromeOS సెట్టింగ్‌లు</translation>
+<translation id="4054070260844648638">ప్రతిఒక్కరికీ కనిపిస్తుంది</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">మీ నెట్‌వర్క్‌లో అందుబాటులో గల ప్రింటర్లను చూడడానికి మీ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="4068776064906523561">సేవ్ చేయబడిన వేలిముద్రలు</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />వ గ్రేడ్</translation>
 <translation id="4244238649050961491">మరిన్ని స్టయిలస్ యాప్‌లను కనుగొనండి</translation>
 <translation id="4248401726442101648">కెమెరా కనెక్ట్ కాలేదు</translation>
+<translation id="424864128008805179">Chrome నుండి సైన్ అవుట్ చేయాలా?</translation>
 <translation id="4249116869350613769">బ్యాటరీ సేవర్</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="425411422794688815">ఏదో పొరపాటు జరిగింది. మీ ఫోన్ సమీపంలోనే ఉందని, అన్‌లాక్ చేసి ఉందని, ఇంకా బ్లూటూత్, Wi-Fi ఆన్ చేసి ఉన్నాయని నిర్ధారించుకోండి.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google ఖాతా}other{<ph name="EXTRA_ACCOUNTS" /> Google ఖాతాలు}}</translation>
 <translation id="4314497418046265427">మీ ఫోన్‌ను మీ <ph name="DEVICE_TYPE" />కు కనెక్ట్ చేసినప్పుడు మరిన్ని ప్రయోజనాలు పొందండి</translation>
 <translation id="4314561087119792062">కొత్త యాక్సెస్ స్థానం పేరును జోడించండి</translation>
+<translation id="4314815835985389558">సింక్‌ను నిర్వహించండి</translation>
 <translation id="4320177379694898372">ఇంటర్నెట్ కనెక్షన్ లేదు</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">స్టోరేజ్, పవర్</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">సూచనల సంఖ్య</translation>
 <translation id="4606933160360542263">అనుకూల కీ కాంబినేషన్: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">ఎడమ మౌస్ బటన్‌ను ఎంచుకున్నప్పుడు, డబుల్-క్లిక్ చేయడానికి “/”ను వినియోగించండి</translation>
+<translation id="4613863813562375431">ChromiumOS వెర్షన్</translation>
 <translation id="461661862154729886">పవర్ సోర్స్</translation>
 <translation id="4617880081511131945">కనెక్షన్‌ను ఏర్పాటు చేయడం సాధ్యపడలేదు</translation>
 <translation id="4620757807254334872">మౌస్</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">నెట్‌వర్క్ పేరు సర్వర్‌లను కాన్ఫిగర్ చేయడం</translation>
 <translation id="4779083564647765204">జూమ్ చేయి</translation>
 <translation id="4779766576531456629">eSIM సెల్యులర్ నెట్‌వర్క్‌కు పేరు మార్చండి</translation>
+<translation id="4789550509729954245">పరికరాలు సమీపంలోని షేర్ చేస్తున్నప్పుడు నోటిఫికేషన్‌ను చూడండి</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">ట్రాక్‌పాయింట్ యాక్సిలరేషన్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" /> నుండి ఇన్‌స్టాల్ చేసిన అప్లికేషన్‌లు</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">డాక్ విండో</translation>
 <translation id="4964673849688379040">చెక్ చేస్తోంది...</translation>
 <translation id="4967571733817147990">మౌస్ బటన్‌లను అనుకూలంగా మార్చండి</translation>
+<translation id="4970880042055371251">ChromeOS వెర్షన్</translation>
 <translation id="4972129977812092092">ప్రింటర్‌ను ఎడిట్ చేయండి</translation>
 <translation id="4975771730019223894">యాప్ బ్యాడ్జింగ్</translation>
 <translation id="4979263087381759787">డెవలపర్ ఆప్షన్లు</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">ఇది ఆఫ్‌లైన్‌లో అందుబాటులో ఉంచబడిన ఏవైనా ఫైళ్లకు యాక్సెస్‌తో సహా ఈ Chromebookలో Google Drive‌కు యాక్సెస్‌ను తీసివేస్తుంది</translation>
 <translation id="5196790039230503600">సంజ్ఞను ఉపయోగించండి, ఆపై మీరు ఐటెమ్‌ను ఎక్కడ వదలాలనుకుంటున్నారో చూపడానికి మీ తలను కదిలించండి. దాన్ని వదలడానికి సంజ్ఞను మళ్లీ ఉపయోగించండి.</translation>
 <translation id="5197255632782567636">ఇంటర్నెట్</translation>
+<translation id="5205484256512407285">బదిలీ చేయడానికి మొబైల్ డేటాను ఎప్పుడూ ఉపయోగించవద్దు</translation>
 <translation id="5207949376430453814">వచన కర్సర్ గుర్తును హైలైట్ చేయి</translation>
 <translation id="5208926629108082192">పరికరం మొబైల్ నెట్‌వర్క్ సమాచారం</translation>
 <translation id="5208988882104884956">సగం వెడల్పు</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">ChromeOS సిస్టమ్ యాప్</translation>
 <translation id="5334113802138581043">మైక్రోఫోన్ యాక్సెస్</translation>
 <translation id="5336689872433667741">కర్సర్, టచ్‌ప్యాడ్</translation>
+<translation id="5337926771328966926">ప్రస్తుత పరికరం యొక్క పేరు <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">సమస్య విశ్లేషణ, వినియోగ డేటాను పంపండి</translation>
 <translation id="5369694795837229225">Linux డెవలప్‌మెంట్ ఎన్విరాన్మెంట్‌ను సెటప్ చేయండి</translation>
 <translation id="5377367976106153749">కెమెరా యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">ఈ సెట్టింగ్‌లు మీ యజమాని ద్వారా మాత్రమే సవరించబడతాయి:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">కేస్</translation>
+<translation id="5840680448799937675">ఫైళ్లు ఎల్లప్పుడూ ఆఫ్‌లైన్‌లో షేర్ చేయబడతాయి</translation>
 <translation id="5841270259333717135">ఈథర్‌నెట్‌ను కాన్ఫిగర్ చేయండి</translation>
 <translation id="5842497610951477805">బ్లూటూత్‌ను ప్రారంభించండి</translation>
 <translation id="5846200638699387931">రిలేషన్ సింటాక్స్ ఎర్రర్: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Microsoft ఫైల్స్‌ను కాపీ చేయడానికి లేదా Google Driveకి తరలించడానికి ముందు అడగండి</translation>
 <translation id="5939518447894949180">రీసెట్ చేయండి</translation>
 <translation id="594048410531370124">గుర్తించబడని కీ. <ph name="RESPONSE" /> కోసం ఏదైనా కీని నొక్కండి.</translation>
+<translation id="5942779427914696408">పరికర విజిబిలిటీ</translation>
 <translation id="5945192511027649793">టచ్‌ప్యాడ్‌ను డిజేబుల్ చేయండి</translation>
 <translation id="5947651424015173580">మౌస్‌పై డబుల్-క్లిక్ చేయండి</translation>
 <translation id="594993197557058302">1-4 మోడిఫయర్ కీలను (ctrl, alt, shift, search, లేదా లాంచర్), ఇంకా మరో 1 కీని నొక్కండి. మీరు ఒకే కీని కూడా ఎంచుకోవచ్చు.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">సంజ్ఞను కేటాయించండి</translation>
 <translation id="5968022600320704045">సెర్చ్ ఫలితాలు ఏవీ లేవు</translation>
 <translation id="5969728632630673489">కీబోర్డ్ షార్ట్‌కట్ నోటిస్‌ను విస్మరించారు</translation>
+<translation id="5979353814339191480">ఈ ఆప్షన్ డేటా ప్లాన్ లేదా మొబైల్ నెట్‌వర్క్ డాంగిల్ కలిగిన, లేదా పోర్టబుల్ హాట్‌స్పాట్‌కు టెథరింగ్ చేస్తున్న Chromebookలకు వర్తిస్తుంది</translation>
 <translation id="5985556342298151179">మీ పరికర అడ్మినిస్ట్రేటర్ ద్వారా Chrome యాప్ ఇన్‌స్టాల్ చేయబడింది.</translation>
 <translation id="5986442691296752186">USB డివైజ్‌లపై Linux యాప్‌లకు కంట్రోల్‌ను ఇవ్వండి.</translation>
 <translation id="598810097218913399">కేటాయింపును తీసివేయండి</translation>
 <translation id="5988563937187882754">కుడి వైపు చూడటం</translation>
+<translation id="5990266201903445068">Wi-Fi మాత్రమే</translation>
 <translation id="5992225669837656567">అన్ని మౌస్‌లు డిస్‌కనెక్ట్ చేయబడ్డాయి</translation>
 <translation id="5999630716831179808">వాయిస్‌లు</translation>
 <translation id="6002458620803359783">ప్రాధాన్య వాయిస్‌లు</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">ప్రధాన TrackPoint బటన్</translation>
 <translation id="6048747414605857443">ChromeVox, 'వినడానికి ఎంచుకోండి'కి టెక్స్ట్-టు-స్పీచ్ వాయిస్‌లను ఎంచుకోండి, అనుకూలంగా మార్చండి</translation>
 <translation id="6050189528197190982">బూడిద రంగు ప్రమాణం</translation>
+<translation id="6054961935262556546">విజిబిలిటీను మార్చు</translation>
 <translation id="6059276912018042191">ఇటీవలి Chrome ట్యాబ్‌లు</translation>
 <translation id="6059925163896151826">USB పరికరాలు</translation>
 <translation id="6064764629679333574">తక్కువ రిజల్యూషన్ ఆడియోను ఎక్కువ రిజల్యూషన్‌కు పెంచడం ద్వారా బ్లూటూత్ మైక్ సౌండ్ క్వాలిటీని మెరుగుపరచండి.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Microsoft ఫైల్స్‌ను కాపీ చేయడానికి లేదా Microsoft OneDriveకి తరలించడానికి ముందు అడగండి</translation>
 <translation id="6265687851677020761">పోర్ట్‌ను తీసివేయండి</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" />కు కనెక్ట్ అవుతోంది</translation>
+<translation id="6268381023930128611">Chromium నుండి సైన్ అవుట్ చేయాలా?</translation>
 <translation id="6270309713620950855">ఆటోమేటిక్ రిమైండర్‌ను మ్యూట్ చేయండి</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />‌కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="628352644014831790">4 సెకన్లు</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">తర్వాతి ఇన్‌పుట్ విధానానికి స్విచ్ చేయడానికి, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> కీలను నొక్కండి</translation>
 <translation id="6463488491707167747">ఈ డిక్షనరీని తొలగించండి</translation>
 <translation id="6463596731306859179">అవసరంలేని పాప్-అప్‌లు లేదా ఇతర ఊహించని ప్రవర్తనను పొందుతున్నారా? కొన్నిసార్లు, మీరు ఇన్‌స్టాల్ చేసే యాప్‌లు, ఎక్స్‌టెన్షన్‌లు మీకు తెలియకుండానే మీ ChromeOS సెట్టింగ్‌లను మార్చవచ్చు.</translation>
+<translation id="6465841119675156448">ఇంటర్నెట్ లేకుండా</translation>
 <translation id="6467377768028664108">ఆపై మీ <ph name="DEVICE_TYPE" /> వీటిని చేయగలదు:</translation>
 <translation id="6469557521904094793">సెల్యూలార్ నెట్‌వర్క్ ఆన్ చేయడం</translation>
 <translation id="6470120577693311302">ఫ్లాష్ నోటిఫికేషన్‌లు</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">ఎఫెక్ట్ మోడ్</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">ఎంపిక షార్ట్‌కట్‌</translation>
+<translation id="6632473616050862500">ChromeOS Flex అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="6646476869708241165">ఫాస్ట్ పెయిర్‌ను ఆఫ్ చేయండి</translation>
 <translation id="6647690760956378579">సహజమైన వాయిస్‌కు ప్రివ్యూ</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">అందుబాటులో ఉన్న పరికరాలు ఇక్కడ కనిపిస్తాయి.</translation>
 <translation id="6776729248872343918">ఫాస్ట్ పెయిర్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="6777845730143344223">Passpoint సబ్‌స్క్రిప్షన్‌ల గురించి మరింత తెలుసుకోండి</translation>
+<translation id="6779406956731413166">ChromiumOS అనేది అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="6783036716881942511">ఈ డివైజ్‌ను విస్మరించాలా?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive సెట్టింగ్‌లు</translation>
 <translation id="6785915470941880363">రివర్స్ స్క్రోలింగ్ గురించి <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">వచనం-నుండి-ప్రసంగం వాయిస్ సెట్టింగ్‌లు</translation>
 <translation id="7282547042039404307">మృదువైనది</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">ముఖ్యమైన వినియోగ, భద్రతా సమాచారం</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> పాస్‌వర్డ్‌ను సెటప్ చేయండి</translation>
 <translation id="7304030187361489308">అధికం</translation>
 <translation id="7308643132139167865">వెబ్‌సైట్ భాషలు</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">ఇటీవలి ఫోటోలు</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" />లో <ph name="BLOCKED_APPS_SIZE" /> యాప్‌లు బ్లాక్ చేయబడ్డాయి</translation>
+<translation id="7423425410216218516">విజిబిలిటీ <ph name="MINUTES" /> నిమిషాల వరకు ఆన్‌లో ఉంటుంది</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" />ను తీసివేస్తుంది</translation>
 <translation id="7425037327577270384">రాయడంలో నాకు సహాయపడండి</translation>
 <translation id="7429415133937917139">స్క్రీన్ ఎగువున ChromeVox ప్యానెల్‌లో రిఫ్రెష్ చేయగలిగే
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">వేలిముద్ర సెట్టింగ్‌లు</translation>
 <translation id="7578692661782707876">దయచేసి మీ నిర్ధారణ కోడ్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="7582582252461552277">ఈ నెట్‌వర్క్‌ను ప్రాధాన్యపరచు</translation>
+<translation id="7582844466922312471">మొబైల్ డేటా</translation>
 <translation id="7587806318633605613">సూచన హిస్టరీ</translation>
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7592060599656252486">కొన్ని</translation>
 <translation id="7602173054665172958">ప్రింట్ మేనేజ్‌మెంట్</translation>
 <translation id="7605163396341021431">ఈ Chromebookలోని USB డివైజ్‌లపై Android యాప్‌లకు కంట్రోల్ ఇవ్వండి</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android ప్రాధాన్యతలు</translation>
 <translation id="7611713099524036757">మెటా</translation>
 <translation id="7612655942094160088">కనెక్ట్ చేసిన ఫోన్ ఫీచర్‌లు ఎనేబుల్ చేయబడతాయి.</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">సైట్‌లను వెతకడానికి సురక్షితమైన కనెక్షన్‌లను ఉపయోగించండి</translation>
 <translation id="7634337648687970851">లోకల్ డేటా రికవర్ చేయడానికి ప్రస్తుతం సపోర్ట్ లేదు.</translation>
 <translation id="7640256527901510478">మీ పరికర IMEI <ph name="IMEI_NUMBER" />, పరికర సీరియల్ నంబర్ <ph name="SERIAL_NUMBER" />. సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయపడటానికి ఈ నంబర్‌లను ఉపయోగించవచ్చు.</translation>
+<translation id="7640308610547854367">మీరు ChromeOSను మునుపటి వెర్షన్‌కు మార్చారు. అప్‌డేట్‌లను పొందాలంటే, తర్వాతి వెర్షన్ అందుబాటులోకి వచ్చే వరకు వేచి ఉండండి.</translation>
 <translation id="7641513591566880111">కొత్త ప్రొఫైల్ పేరు</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> జోడించబడింది</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (యజమాని)</translation>
 <translation id="7648048654005891115">కీమ్యాప్ శైలి</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 వేలిముద్ర సెటప్ చేయబడింది}other{{COUNT} వేలిముద్రలు సెటప్ చేయబడ్డాయి}}</translation>
+<translation id="7650677314924139716">ప్రస్తుతం డేటా వినియోగం Wi-Fi ద్వారా మాత్రమే జరిగేలా సెట్ చేయబడి ఉంది</translation>
 <translation id="7651400349472467012">ఇన్‌స్టంట్ హాట్‌స్పాట్ అందుబాటులో ఉంది</translation>
 <translation id="7651784568388208829">ఫోన్ హబ్ టాస్క్ కొనసాగింపు</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">అనువాదం</translation>
 <translation id="7915457674565721553">తల్లిదండ్రుల నియంత్రణలను సెటప్ చేయడానికి ఇంటర్నెట్‌కు కనెక్ట్ చేయండి</translation>
+<translation id="7917876797003313048">మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మీరు మేనేజ్ చేయవచ్చు. Chrome బ్రౌజర్, Play Store, Gmail, ఇంకా మరిన్నింటి కోసం మీ Google ఖాతాలు ఉపయోగించబడతాయి. ఫ్యామిలీ మెంబర్ వంటి వారి కోసం మీరు ఖాతాను జోడించాలనుకుంటే, బదులుగా కొత్త వ్యక్తిని మీ <ph name="DEVICE_TYPE" />కు జోడించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />సె</translation>
 <translation id="7920482456679570420">మీరు వేటికి స్పెల్ చెక్‌ను స్కిప్ చేయాలనుకుంటారో ఆ పదాలను జోడించండి</translation>
 <translation id="7921347341284348270">మీరు ఈ మేనేజ్ చేయబడే ఖాతాలో మీ ఫోన్ నోటిఫికేషన్‌లను చూడలేరు. వేరే ఖాతాతో మళ్లీ ట్రై చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">కర్సర్ సెట్టింగ్‌లు రీసెట్ అయ్యాయి</translation>
 <translation id="8437209419043462667">యుఎస్</translation>
 <translation id="8439506636278576865">ఈ భాషలో పేజీలకు అనువాదం అందించు</translation>
+<translation id="8449347986464073209">తొలగించి, సైన్ అవుట్ చేయండి</translation>
 <translation id="8451512073679317615">సహాయకం</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" />‌కు కనెక్ట్ అయ్యి ఉంది</translation>
 <translation id="8473540203671727883">మౌస్ కింద ఉన్న వచనాన్ని చదువు</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">వాల్యూమ్ ఆఫ్‌లో ఉంది. వాల్యూమ్‌ను ఆన్ చేయండి.</translation>
 <translation id="888256071122006425">మౌస్, టచ్‌ప్యాడ్ సెట్టింగ్‌లు</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయడం ద్వారా ChromeOSను మెరుగుపరచడంలో సహాయపడండి</translation>
+<translation id="8890170499370378450">మొబైల్ డేటా ఛార్జీ‌లు విధించబడవచ్చు</translation>
 <translation id="8890529496706615641">ప్రొఫైల్ పేరు మార్చడం సాధ్యపడలేదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా టెక్నికల్ సపోర్ట్ కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="8894761918470382415">పెరిఫెరల్స్ కోసం డేటా యాక్సెస్ రక్షణ</translation>
 <translation id="8896830132794747524">మీ మౌస్‌ను వేగంగా కదిపితే, కర్సర్ మరింత దూరం కదులుతుంది</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="8980345560318123814">Feedback రిపోర్ట్‌లు</translation>
 <translation id="8981825781894055334">పేపర్‌లు తక్కువగా ఉన్నాయి</translation>
+<translation id="8984694057134206124">మీరు <ph name="MINUTES" /> నిమిషాల పాటు ప్రతి ఒక్కరికి కనిపిస్తారు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">గుర్తించిన పరిమితి</translation>
 <translation id="8986362086234534611">మరిచిపోయారా</translation>
 <translation id="8991694323904646277">కెమెరా లేదు</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">Google Play, Android యాప్‌లను తీసివేయండి</translation>
 <translation id="910000385680858937">అనుమతించబడింది – <ph name="PERMISSION_DETAILS" />. మీ పరికరానికి మైక్రోఫోన్‌ను కనెక్ట్ చేయండి.</translation>
 <translation id="9100416672768993722">చివరిగా ఉపయోగించిన ఇన్‌పుట్ విధానానికి స్విచ్ చేయడానికి, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> కీలను నొక్కండి</translation>
+<translation id="9108072915170399168">ప్రస్తుతం డేటా వినియోగం ఇంటర్నెట్ లేనప్పుడు జరిగేలా సెట్ చేయబడి ఉంది</translation>
 <translation id="9108294543511800041">మీరు ఇప్పుడు మీ ఫోన్‌లోని ఇటీవలి ఫోటోలు, మీడియా, ఇంకా నోటిఫికేషన్‌లను చూడవచ్చు</translation>
 <translation id="9109122242323516435">స్థలాన్ని ఖాళీ చేయడానికి, పరికర స్టోరేజ్‌ నుండి ఫైళ్లను తొలగించండి.</translation>
 <translation id="9111330022786356709">మీ మౌస్ పై బటన్‌లను ఆన్ చేయండి లేదా గుర్తించండి</translation>

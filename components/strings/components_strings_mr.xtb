@@ -726,7 +726,6 @@
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">अहवाल अपलोड करा</translation>
 <translation id="2212735316055980242">धोरण आढळले नाही</translation>
-<translation id="2213606439339815911">एंट्री आणत आहे...</translation>
 <translation id="2213612003795704869">पेज प्रिंट केले आहे</translation>
 <translation id="2214086901479959524">तुमचे शेअर केलेले टॅब गट वापरणे पुढे सुरू ठेवण्यासाठी Chrome अपडेट करा</translation>
 <translation id="2214453882118345682">तुमचा कॅमेरा वापरून, तुम्ही जे पाहता ते खरेदी करा, त्याचे भाषांतर करा आणि ते ओळखा.</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">लेगसी तंत्रज्ञानासंबंधित इव्‍हेंट होत आहेत अशा तुम्ही भेट देता त्या पेजच्या URLs ची मर्यादित सूची</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{१ टॅब शेअर करेल}other{{NUM_TABS} टॅब शेअर करेल}}</translation>
 <translation id="2357481397660644965">तुमचे डिव्हाइस <ph name="DEVICE_MANAGER" /> द्वारे आणि खाते <ph name="ACCOUNT_MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
+<translation id="2358479643736965923">या टॅबवर तुमचे Google AI शोध उत्तर पहा</translation>
 <translation id="2359629602545592467">अनेक</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="236000571258713023">वाहने</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">Wallet मध्ये इव्हेंटचे तिकीट सेव्ह करा</translation>
 <translation id="2925454999967523701">दस्तऐवज तयार करा बटण, नवीन Google दस्तऐवज झटपट तयार करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="2925673989565098301">वितरण पद्धत</translation>
+<translation id="2927328994673424423">२ आठवड्यांपूर्वी</translation>
 <translation id="2928426578619531300">वापरकर्त्याशी संलग्न</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> आणखी}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> आणखी}}</translation>
 <translation id="2930531075747147366">तुमच्या इतर डिव्हाइसवरील टॅब</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">या टॅबवर स्विच करा.</translation>
 <translation id="3144458715650412431">चाचणी धोरणे लागू केली आहेत. chrome://policy/test येथे त्यांचे पुनरावलोकन करा आणि रीसेट करा. ॲडमिन धोरणे लागू केली जाणार नाहीत.</translation>
 <translation id="3145945101586104090">प्रतिसाद डीकोड करण्यात अयशस्वी</translation>
-<translation id="3149865382039202168">तुमची माहिती <ph name="GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="ACCOUNT" /> साठी तुमच्या खाजगी पास सेटिंग्जमध्ये <ph name="HOW_INFO_IS_USED_LINK" /> नियंत्रित करू शकता. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">तात्पुरती सर्व्हर एरर</translation>
 <translation id="3150889484970506196">शीट तयार करा बटण, नवीन Google शीट झटपट तयार करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
 <translation id="3154506275960390542">या पेजवर एक फॉर्म आहे जो कदाचित सुरक्षितपणे सबमिट होणार नाही. तुम्ही पाठविलेला डेटा प्रवासादरम्यान इतर पाहू शकतात किंवा सर्व्हर प्राप्त करत असलेल्या आक्रमणकर्त्याद्वारे सुधारित केले जाऊ शकते.</translation>
@@ -1520,7 +1520,6 @@
 <translation id="3558335486599406178">IBAN Google Wallet मध्ये सेव्ह केला आहे</translation>
 <translation id="3558573058928565255">दिवसापर्यंत</translation>
 <translation id="3559897352860026926">तुमच्या अ‍ॅडमिनिस्ट्रेटरला त्यांच्या <ph name="CLOUD_PROVIDER" /> कॉन्फिगरेशन सेटिंग्जची पडताळणी करण्यास सांगा.</translation>
-<translation id="3560824484345057728">संबंधित साइट पहा</translation>
 <translation id="3566021033012934673">तुमचे कनेक्शन खाजगी नाही</translation>
 <translation id="3566336457819493938">२१५ x ३१५ मिमी</translation>
 <translation id="3566681680543111735">व्हेरिएशनची स्ट्रिंग कॉपी करा</translation>
@@ -2163,7 +2162,6 @@
 <translation id="4603727370377253901">फ्लाइटची आरक्षणे</translation>
 <translation id="4607608436550361748">Chrome शी संबंधित टिपा पहा</translation>
 <translation id="460848736049414407">अ‍ॅडमिनने ब्लॉक केलेली</translation>
-<translation id="4610279718074907952">ही साइट <ph name="SET_OWNER" /> द्वारे परिभाषित केलेल्या गटामध्ये आहे, जी तुमच्या अ‍ॅक्टिव्हिटी पाहू शकते</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> द्वारे <ph name="MERCHANT_ORIGIN" /> वर तुमच्या ऑर्डरवर प्रक्रिया करताना एरर आली.</translation>
 <translation id="4612904677925722054">या साइटमध्ये प्रौढ आशय असू शकतो. तुम्ही या वेबसाइटला भेट देऊ शकता अशी आई-वडिलांनी किंवा पालकांनी मंजुरी देणे आवश्यक आहे.</translation>
 <translation id="4613873770449493819">URL ने <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> डोमेनकडे निर्देशित करणे आवश्यक आहे.</translation>
@@ -3711,7 +3709,6 @@
 <translation id="7173338713290252554">संपूर्ण वेबवरील किमतीचा इतिहास</translation>
 <translation id="7174545416324379297">मर्ज केले</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> आणखी}other{<ph name="SHIPPING_OPTION_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> आणखी}}</translation>
-<translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7181261019481237103">गुप्त विंडो उघडा</translation>
 <translation id="7182878459783632708">कोणतीही धोरणे सेट नाहीत</translation>
 <translation id="7186833457841277072">एन्व्हलप (इंकजेट)</translation>
@@ -4177,7 +4174,6 @@
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">वैध फोन नंबर एंटर करा</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ला संरक्षित आशय सुरू करायचा आहे. तुमच्या डिव्हाइसची ओळख Google द्वारे पडताळली जाईल</translation>
-<translation id="7935318582918952113">DOM डिस्टिलर</translation>
 <translation id="7935520077478121175">मोशन सेन्सरना अनुमती आहे</translation>
 <translation id="7937163678541954811">या कार्डचा CVC एन्क्रिप्ट केला जाईल आणि जलद चेकआउट करण्यासाठी तुमच्या डिव्हाइसवर सेव्ह केला जाईल</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> रोजी एक्स्पायर होईल</translation>
@@ -4225,7 +4221,6 @@
 <translation id="7999482381722829925">सामान्यतः दुर्लक्ष होणाऱ्या जागांकडे लक्ष देणारी, खोलीनुसार प्राधान्य दिलेली, सखोल साफसफाईची चेकलिस्ट तयार करा</translation>
 <translation id="8001912761979890298">या सर्व्हरला तो <ph name="DOMAIN" /> असल्याचे सिद्ध करता आले नाही, कारण तो Chromium द्वारे किंवा वेब ट्रॅफिक एन्क्रिप्शनसाठी तुमच्या सिस्टीम कॉन्फिगरेशनद्वारे विश्वसनीय नसलेले सुरक्षा प्रमाणपत्र वापरत आहे. हे चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झालेले असू शकते. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />प्रमाणपत्र पहा<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">मेमरी मोकळी करण्‍यासाठी अन्य टॅब किंवा प्रोग्राम बंद करून पहा.</translation>
-<translation id="8002230960325005199">नवीन टॅबमध्ये संबंधित साइट पहा</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8009225694047762179">पासवर्ड व्यवस्थापित करा</translation>
@@ -4266,7 +4261,6 @@
 <translation id="8079976827192572403">धोकादायक साइट</translation>
 <translation id="8086971161893892807">मसुदा</translation>
 <translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> वर तुमचे पेमेंट हाताळण्यासाठी <ph name="APP_ORIGIN" /> लोड करत आहे.</translation>
-<translation id="8088680233425245692">लेख पाहण्यात अयशस्वी.</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
 <translation id="8091372947890762290">सक्रियकरण सर्व्हरवर प्रलंबित आहे</translation>
 <translation id="8092254339843485299">६ x ८ इं</translation>
@@ -4906,7 +4900,6 @@
 <translation id="9199905725844810519">प्रिंट करणे ब्लॉक केले</translation>
 <translation id="9204089334327209740">अपलोड पूर्ण झाल्यावर, तुम्ही <ph name="CLOUD_PROVIDER" /> मध्ये तुमच्या फाइलमध्ये फेरबदल करू शकता. ट्रॅश मधील कोणत्याही फाइलसह स्थानिक स्टोरेज आपोआप काढून टाकले जाईल.</translation>
 <translation id="9205078245616868884">तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझासह एंक्रिप्ट केलेला केला जातो. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
-<translation id="9207861905230894330">लेख जोडण्यात अयशस्वी.</translation>
 <translation id="9209339767782560829">तुमचे लॉगिन सर्टिफिकेट वापरताना समस्या आली.</translation>
 <translation id="9210152531668884481">मी तयार आहे</translation>
 <translation id="9213433120051936369">स्वरूप कस्टमाइझ करा</translation>

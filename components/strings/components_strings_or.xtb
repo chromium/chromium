@@ -726,7 +726,6 @@
 <translation id="22081806969704220">ଟ୍ରେ 3</translation>
 <translation id="2210794033760923560">ରିପୋର୍ଟ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="2212735316055980242">ନୀତି ମିଳିଲା ନାହିଁ</translation>
-<translation id="2213606439339815911">ପ୍ରବିଷ୍ଟଗୁଡ଼ିକୁ ଅଣାଯାଉଛି...</translation>
 <translation id="2213612003795704869">ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି</translation>
 <translation id="2214086901479959524">ସେୟାର କରାଯାଇଥିବା ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକର ବ୍ୟବହାର ଜାରି ରଖିବାକୁ Chromeକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="2214453882118345682">ଆପଣଙ୍କ କେମେରା ମାଧ୍ୟମରେ ଆପଣ ଯାହା ଦେଖନ୍ତି ତାହାକୁ କ୍ରୟ, ଅନୁବାଦ ଏବଂ ଚିହ୍ନଟ କରନ୍ତୁ।</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">ଲିଗାସି ଟେକ୍ନୋଲୋଜି ଇଭେଣ୍ଟଗୁଡ଼ିକ ହେଉଥିବା ଆପଣ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର URLର ଏକ ସୀମିତ ତାଲିକା</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ଟାବ ସେୟାର କରାଯିବ}other{{NUM_TABS} ଟାବ ସେୟାର କରାଯିବ}}</translation>
 <translation id="2357481397660644965">ଆପଣଙ୍କର ଡିଭାଇସ୍ <ph name="DEVICE_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି ଏବଂ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ <ph name="ACCOUNT_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
+<translation id="2358479643736965923">ଏହି ଟାବରେ ଆପଣଙ୍କ Google AI ସର୍ଚ୍ଚ ଉତ୍ତର ଦେଖନ୍ତୁ</translation>
 <translation id="2359629602545592467">ଏକାଧିକ</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="236000571258713023">ଗାଡ଼ି</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">Walletରେ ଇଭେଣ୍ଟ ଟିକେଟ ସେଭ କରନ୍ତୁ</translation>
 <translation id="2925454999967523701">'ଡକ୍ୟୁମେଣ୍ଟ ତିଆରି କରନ୍ତୁ' ବଟନ, ଶୀଘ୍ର ଏକ ନୂଆ Google Doc ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="2925673989565098301">ବିତରଣ ପଦ୍ଧତି</translation>
+<translation id="2927328994673424423">2 ସପ୍ତାହ ପୂର୍ବେ</translation>
 <translation id="2928426578619531300">ୟୁଜରଙ୍କ ଆଫିଲିଏସନ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}}</translation>
 <translation id="2930531075747147366">ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସରୁ ଟାବ</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">ଏହି ଟାବକୁ ସ୍ୱିଚ କରନ୍ତୁ।</translation>
 <translation id="3144458715650412431">ଟେଷ୍ଟ ନୀତି ଲାଗୁ କରାଯାଇଛି। chrome://policy/testରେ ସେଗୁଡ଼ିକୁ ସମୀକ୍ଷା କରି ରିସେଟ କରନ୍ତୁ। ଆଡମିନ ନୀତି ଲାଗୁ କରାଯିବ ନାହିଁ।</translation>
 <translation id="3145945101586104090">ପ୍ରତିକ୍ରିୟା ଡିକୋଡ୍ କରିବାରେ ବିଫଳ ହେଲା</translation>
-<translation id="3149865382039202168"><ph name="GOOGLE_WALLET_TITLE" />ରେ ଆପଣଙ୍କ ସୂଚନା ସେଭ କରି ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ଫର୍ମଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପରି କାର୍ଯ୍ୟଗୁଡ଼ିକ ଶୀଘ୍ର କରନ୍ତୁ। ଆପଣ <ph name="ACCOUNT" /> ପାଇଁ ଆପଣଙ୍କ ପ୍ରାଇଭେଟ ପାସ ସେଟିଂସରେ <ph name="HOW_INFO_IS_USED_LINK" />କୁ ନିୟନ୍ତ୍ରଣ କରିପାରିବେ। <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">ଅସ୍ଥାୟୀ ସର୍ଭର ତ୍ରୁଟି</translation>
 <translation id="3150889484970506196">'ସିଟ ତିଆରି କରନ୍ତୁ' ବଟନ, ଶୀଘ୍ର ଏକ ନୂଆ Google Sheet ତିଆରି କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="3154506275960390542">ଏହି ପୃଷ୍ଠାରେ ଏକ ଫର୍ମ ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି ଯାହା ହୁଏତ ସୁରକ୍ଷିତରୂପେ ଦାଖଲ ହୋଇନପାରେ। ଆପଣ ପଠାଇଥିବା ଡାଟା ଟ୍ରାଞ୍ଜିଟ୍ ସମୟରେ ଅନ୍ୟମାନଙ୍କ ଦ୍ଵାରା ଦେଖାଯାଇପାରେ କିମ୍ବା ସର୍ଭର୍ ଯେଉଁ ଡାଟା ପ୍ରାପ୍ତ କରୁଛି ସେଥିରେ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଏକ ଆକ୍ରମଣକାରୀଙ୍କ ଦ୍ଵାରା ରୂପାନ୍ତରିତ କରାଯାଇପାରେ।</translation>
@@ -1519,7 +1519,6 @@
 <translation id="3558335486599406178">Google Walletରେ IBAN ସେଭ କରାଯାଇଛି</translation>
 <translation id="3558573058928565255">ଦିନ ସମୟ</translation>
 <translation id="3559897352860026926">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ତାଙ୍କ <ph name="CLOUD_PROVIDER" /> କନଫିଗରେସନ ସେଟିଂସ ଯାଞ୍ଚ କରିବାକୁ କୁହନ୍ତୁ।</translation>
-<translation id="3560824484345057728">ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="3566021033012934673">ଆପଣଙ୍କର ସଂଯୋଗ ବ୍ୟକ୍ତିଗତ ନୁହେଁ</translation>
 <translation id="3566336457819493938">215 x 315 ଇଞ୍ଚ</translation>
 <translation id="3566681680543111735">ଭେରିଏସନ ଷ୍ଟ୍ରିଂ</translation>
@@ -2161,7 +2160,6 @@
 <translation id="4603727370377253901">ଫ୍ଲାଇଟ ରିଜର୍ଭେସନ</translation>
 <translation id="4607608436550361748">Chrome ଟିପ୍ସ ଦେଖନ୍ତୁ</translation>
 <translation id="460848736049414407">ଆଡମିନଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି</translation>
-<translation id="4610279718074907952">ଏହି ସାଇଟ <ph name="SET_OWNER" />ଙ୍କ ଦ୍ୱାରା ପରିଭାଷିତ ହୋଇଥିବା ଏକ ଗୋଷ୍ଠୀରେ ଅଛି, ଯାହା ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିପାରିବ</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> ମାଧ୍ୟମରେ <ph name="MERCHANT_ORIGIN" />ରେ ଆପଣଙ୍କ ଅର୍ଡରକୁ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରିବାରେ ଏକ ତ୍ରୁଟି ହୋଇଛି।</translation>
 <translation id="4612904677925722054">ଏହି ସାଇଟରେ ପ୍ରାପ୍ତ ବୟସ୍କଙ୍କ ପାଇଁ ବିଷୟବସ୍ତୁ ଥାଇପାରେ। ଏହି ୱେବସାଇଟ ଭିଜିଟ କରିବା ତୁମ ପାଇଁ ଠିକ ବୋଲି ଜଣେ ବାପା କିମ୍ବା ମା ବା ଅଭିଭାବକ କହିବା ଆବଶ୍ୟକ।</translation>
 <translation id="4613873770449493819">URL ଏକ <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ଡୋମେନକୁ ପଏଣ୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
@@ -3706,7 +3704,6 @@
 <translation id="7173338713290252554">ସମଗ୍ର ୱେବରେ ମୂଲ୍ୟ ଇତିହାସ</translation>
 <translation id="7174545416324379297">ମିଶ୍ରଣ କରାଯାଇଛି</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ଓ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />ଅଧିକ}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ଓ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />ଅଧିକ}}</translation>
-<translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7181261019481237103">ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="7182878459783632708">କୌଣସି ନୀତି ସେଟ୍ କରାଯାଇ ନାହିଁ</translation>
 <translation id="7186833457841277072">ଏନଭେଲପ (ଇଙ୍କଜେଟ)</translation>
@@ -4172,7 +4169,6 @@
 <translation id="7932579305932748336">କୋଟ୍</translation>
 <translation id="79338296614623784">ଏକ ବୈଧ ଫୋନ୍ ନମ୍ଵର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଚଳାଇବାକୁ ଚାହୁଁଛି। ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ପରିଚୟ Google ଦ୍ୱାରା ଯାଞ୍ଚ ହେବ।</translation>
-<translation id="7935318582918952113">DOM ଡିଷ୍ଟିଲର୍</translation>
 <translation id="7935520077478121175">ମୋସନ ସେନ୍ସରଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="7937163678541954811">ଦ୍ରୁତ ଚେକଆଉଟ ପାଇଁ ଏହି କାର୍ଡର CVCକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇ ଆପଣଙ୍କ ଡିଭାଇସରେ ସେଭ କରାଯିବ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ରେ ସମୟ ସୀମା ସମାପ୍ତ ହେବ</translation>
@@ -4220,7 +4216,6 @@
 <translation id="7999482381722829925">ସାଧାରଣତଃ ଅଣଦେଖା ହୋଇଥିବା ସ୍ପଟଗୁଡ଼ିକୁ ଟାର୍ଗେଟ କରି ରୁମ-ଅନୁସାରେ ଏକ ପ୍ରାଥମିକତା ଦିଆଯାଇଥିବା, ଗଭୀର ଭାବେ ସଫେଇ କରିବାର ଚେକଲିଷ୍ଟ ତିଆରି କର</translation>
 <translation id="8001912761979890298">ଏହି ସର୍ଭର ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ପ୍ରମାଣିତ କରିପାରିଲା ନାହିଁ କାରଣ ଏହା ଏକ ସିକ୍ୟୁରିଟି ସାର୍ଟିଫିକେଟ ବ୍ୟବହାର କରୁଛି ଯାହା Chromium କିମ୍ବା ୱେବ ଟ୍ରାଫିକ ଏନକ୍ରିପସନ ପାଇଁ ଆପଣଙ୍କର ସିଷ୍ଟମ କନଫିଗରେସନ ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ଏକ ଭୁଲ କନଫିଗରେସନ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କ କନେକ୍ସନକୁ ବାଧା ଦେଉଥିବା ଯୋଗୁଁ ହୋଇଥାଇପାରେ। <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />ସାର୍ଟିଫିକେଟ ଭ୍ୟୁ କରନ୍ତୁ<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">ମେମୋରୀ ଖାଲି କରିବା ପାଇଁ ଅନ୍ୟାନ୍ୟ ଟାବ୍ ବା ପ୍ରୋଗ୍ରାମ୍‌ଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="8002230960325005199">ଏକ ନୂଆ ଟାବରେ ସମ୍ବନ୍ଧିତ ସାଇଟଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
 <translation id="8009225694047762179">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ</translation>
@@ -4261,7 +4256,6 @@
 <translation id="8079976827192572403">ବିପଦଜନକ ସାଇଟ</translation>
 <translation id="8086971161893892807">ଡ୍ରାଫ୍ଟ</translation>
 <translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" />ରେ ଆପଣଙ୍କ ପେମେଣ୍ଟକୁ ପରିଚାଳନା କରିବା ପାଇଁ <ph name="APP_ORIGIN" /> ଲୋଡ କରାଯାଉଛି।</translation>
-<translation id="8088680233425245692">ନିବନ୍ଧ ଦେଖିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="808894953321890993">ପାସ୍‌ୱାର୍ଡ ବଦଳାନ୍ତୁ</translation>
 <translation id="8091372947890762290">ଏହାକୁ ସର୍ଭର୍‌ରେ ସକ୍ରିୟ କରିବାକୁ ହେବ</translation>
 <translation id="8092254339843485299">6 x 8 ଇଞ୍ଚ</translation>
@@ -4900,7 +4894,6 @@
 <translation id="9199905725844810519">ପ୍ରିଣ୍ଟିଂକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="9204089334327209740">ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହେବା ପରେ ଆପଣ <ph name="CLOUD_PROVIDER" />ରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ। ଟ୍ରାସରେ ଥିବା ଯେ କୌଣସି ଫାଇଲ ସମେତ ସ୍ଥାନୀୟ ଷ୍ଟୋରେଜକୁ ସ୍ୱତଃ କାଢ଼ି ଦିଆଯିବ।</translation>
 <translation id="9205078245616868884">ଆପଣଙ୍କର ଡାଟା ଆପଣଙ୍କ ପାସ୍‌ଫ୍ରେଜ୍ ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଛି। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହା ଲେଖନ୍ତୁ।</translation>
-<translation id="9207861905230894330">ନିବନ୍ଧ ଯୋଗ କରିହେଲା ନାହିଁ।</translation>
 <translation id="9209339767782560829">ଆପଣଙ୍କ ଲଗଇନ ସାର୍ଟିଫିକେଟ ବ୍ୟବହାର କରିବାରେ ଏକ ସମସ୍ୟା ହୋଇଛି।</translation>
 <translation id="9210152531668884481">ମୁଁ ରାଜି ଅଛି</translation>
 <translation id="9213433120051936369">ଏପିଏରେନ୍ସ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>

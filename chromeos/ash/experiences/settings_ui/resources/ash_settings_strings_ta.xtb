@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்!</translation>
 <translation id="1149483087970735785">உதவிக்கான தொழில்நுட்பம்</translation>
 <translation id="1150490752229770117"><ph name="DEVICE_TYPE" /> சாதனத்தின் மென்பொருளுக்கும் பாதுகாப்பிற்கும் தானாக செய்யப்படும் கடைசிப் புதுப்பிப்பு இதுதான். வருங்கால புதுப்பிப்புகளைப் பெற புதிய வகை சாதனங்களுக்கு மாறுங்கள். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS - ஓர் அறிமுகம்</translation>
 <translation id="1155816283571436363">உங்கள் மொபைலுடன் இணைக்கிறது</translation>
 <translation id="1160800016654917722">சாளரம் கீழே இடதுபுறம் நகர்த்தப்பட்டது</translation>
 <translation id="1164015913575846413">alt + கிளிக்</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">லான்ச்சர் + வலது அம்புக்குறி</translation>
 <translation id="1280332775949918163">சாளரத்தை நகர்த்து</translation>
+<translation id="1285625592773741684">தற்போது டேட்டா உபயோக அமைப்பு ‘மொபைல் டேட்டா’ என அமைக்கப்பட்டுள்ளது</translation>
 <translation id="1285815028662278915">உங்கள் மொபைல் டேட்டா திட்டத்தில் ஹாட்ஸ்பாட்டைப் பயன்படுத்த முடியாது. <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">சூரிய அஸ்தமனத்தின் போது, நைட் லைட் விருப்பம் தானாக இயக்கப்படும்</translation>
 <translation id="1288300545283011870">பேச்சுப் பண்புகள்</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">பாதுகாப்பாக இருப்பதற்கு இது நீட்டிப்புகளை முடக்கி உங்கள் அமைப்புகளை மீட்டமைக்கும். பக்கங்கள், ஃபைல்கள், குக்கீகள் ஆகியவை அப்படியே இருக்கும். <ph name="LINK_BEGIN" />மேலும் தெரிந்துகொள்ளுங்கள்<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">முழுத்திரைப் பெரிதாக்கி</translation>
 <translation id="1539727654733007771">மொபைல் நெட்வொர்க்குகள் எதுவும் அமைக்கப்படவில்லை. புதிய <ph name="BEGIN_LINK" />சுயவிவரத்தைப்<ph name="END_LINK" /> பதிவிறக்கவும்.</translation>
+<translation id="1547295885616600893">கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromeOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="1547808936554660006">பவர்வாஷ் செய்வதால் நிறுவப்பட்டுள்ள eSIM சுயவிவரங்கள் அகற்றப்படாது எனப் புரிந்துகொண்டேன்</translation>
 <translation id="1549275686094429035">ARC இயக்கப்பட்டது</translation>
 <translation id="1554640914375980459">அறிவிப்புகளைப் பெறும்போது திரையை ஒளிரச் செய்யும். நீங்கள் ஒளி உணர்திறன் பாதிப்புடையவர் என்றால் ஃபிளாஷ் அறிவிப்புகளை எச்சரிக்கையுடன் பயன்படுத்துங்கள்.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">இருப்பிடத்தைக் கண்டறிய, வைஃபை அல்லது மொபைல் நெட்வொர்க்குகளைப் பயன்படுத்து</translation>
 <translation id="1650407365859096313">புதிய பக்கத்தில் திறக்கும், அனுமதி: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">'அருகிலுள்ளவற்றுடன் பகிர்தல்' அம்சத்தை இயக்கு</translation>
+<translation id="1662146548738125461">ChromeOS Flex - ஓர் அறிமுகம்</translation>
 <translation id="1663698992894057019">சமீபத்திய பாதுகாப்பு மற்றும் மென்பொருள் புதுப்பிப்புகளைப் பெற புதிய Chromebookகிற்கு மாறுங்கள்</translation>
 <translation id="1665328953287874063">கடவுச்சொல் அல்லது பின்னைப் பயன்படுத்தி <ph name="DEVICE_TYPE" /> ஐ அன்லாக் செய்யுங்கள்</translation>
 <translation id="1667842670298352129">குறிப்பிட்ட வார்த்தைகளைச் சத்தமாக வாசிக்க வைத்துக் கேட்கலாம். முதலில், திரையின் கீழ்ப்பகுதியில் உள்ள பேசும் திரை ஐகானைத் தேர்ந்தெடுத்தபின் வார்த்தையை ஹைலைட் செய்யவும். இந்தக் கீபோர்டு ஷார்ட்கட்டையும் பயன்படுத்தலாம்: வார்த்தையை ஹைலைட் செய்தபின், Search + S அழுத்தவும்.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">குறிப்பு: கைரேகையானது வலிமையான கடவுச்சொல் அல்லது பின்னை விடப் பாதுகாப்புக் குறைவாக இருக்கக்கூடும்.</translation>
 <translation id="1724801751621173132">உள்ளீட்டு முறை</translation>
 <translation id="1741190788710022490">சூழலுக்கேற்பச் சார்ஜ் செய்தல்</translation>
+<translation id="1745732479023874451">தொடர்புகளை நிர்வகியுங்கள்</translation>
 <translation id="1751335846119670066">படிக்க எனக்கு உதவு</translation>
 <translation id="1755601632425835748">உரையின் அளவு</translation>
 <translation id="1761402971842586829"><ph name="REMAPPING_OPTION" />க்கு <ph name="BUTTON_NAME" /> ரீமேப் செய்யப்பட்டது.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">வேண்டாம், ஒரு ஸ்விட்ச் மட்டும் போதும்</translation>
 <translation id="1842681835432895345">மிரர் பயன்முறையில் இந்தத் திரையைச் சேர்க்க வேண்டாம்</translation>
 <translation id="1848219224579402567">மூடியிருக்கும் போது, வெளியேறு</translation>
+<translation id="185970820835152459">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை நிர்வகிக்கலாம். Chromium உலாவி, Play Store, Gmail மற்றும் பலவற்றில் உங்கள் Google கணக்குகள் பயன்படுத்தப்படும். வேறு ஒருவரின் (எ.கா. குடும்ப உறுப்பினர்) கணக்கைச் சேர்க்க விரும்பினால் உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் ஒரு புதிய பயனரைச் சேர்க்கவும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">அதிக நீலம்</translation>
 <translation id="1866589962721094893">இந்த Chromebookகில் உள்ள USB சாதனங்களின் கட்டுப்பாட்டை Android ஆப்ஸிற்கு வழங்கலாம். USB சாதனத்தை ஒவ்வொரு முறை நீங்கள் செருகும்போதும் அனுமதி கேட்கப்படும். Android ஆப்ஸ் ஒவ்வொன்றும் தனிப்பட்ட முறையில் கூடுதல் அனுமதிகளைக் கேட்கும்.</translation>
 <translation id="1877377290348678128">லேபிள் (விருப்பத்திற்குரியது)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">ஒலி</translation>
 <translation id="2097950021134740304">சந்தா அகற்றப்படுவதை ரத்துசெய்யும்</translation>
 <translation id="2104166991923847969">ஹாட்ஸ்பாட்டைத் தானாக ஆஃப் செய்</translation>
+<translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromeOS Flex உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="2114995631896158695">சிம் கார்டு செருகப்படவில்லை</translation>
 <translation id="2121825465123208577">அளவு மாற்று</translation>
 <translation id="2127372758936585790">குறைந்த சக்திகொண்ட சார்ஜர்</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ஐ அகற்றும்</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2363475280045770326">உள்ளமைவைச் சேமிப்பதில் பிழை ஏற்பட்டது</translation>
+<translation id="236939127352773362">பகிர முயலும் சாதனங்கள் அருகில் இருக்கும்போது</translation>
 <translation id="237336063998926520">இருப்பிடத்தைத் தீர்மானிக்க, உங்கள் IP முகவரியைப் பயன்படுத்தவும்</translation>
 <translation id="2373499590298659902">மவுஸ் பட்டனை அழுத்திப் பிடிக்க “0” பட்டனைப் பயன்படுத்தவும்</translation>
 <translation id="2375406435414127095">உங்கள் ஃபோனுடன் இணைத்தல்</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">VPN இணைக்கப்படவில்லை எனில் டிராஃபிக்கைத் தடு</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">'இருப்பிடத் துல்லியம்' ஆப்ஸிற்கும் சேவைகளுக்கும் மிகத் துல்லியமான இருப்பிடத்தை வழங்குகிறது. இதைச் செய்ய, உங்கள் சாதனத்தில் உள்ள வயர்லெஸ் சிக்னல்கள் மற்றும் சாதன சென்சார்கள் தொடர்பான தகவல்களை Google அவ்வப்போது செயலாக்கி திரளாக்க முறையில் தொகுக்கப்படும் வயர்லெஸ் சிக்னல் இருப்பிடங்கள் தரவிற்கு வழங்கும். பயனர்களின் தேவைகளைப் பூர்த்திசெய்ய வேண்டும் என்று Google மற்றும் மூன்றாம் தரப்பினருக்குள்ள நியாயமான நலநோக்கங்களின் அடிப்படையில், இருப்பிடத் துல்லியம், இருப்பிடம் சார்ந்த சேவைகள் ஆகியவற்றை மேம்படுத்தவும், பொதுவாக Googleளின் சேவைகளை மேம்படுத்தவும், வழங்கவும், பராமரிக்கவும் உங்களை அடையாளம் கண்டறியாத வகையில் இவை பயன்படுத்தப்படுகின்றன.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">பிரிண்ட் வெளியே வரும் டிரே கிட்டத்தட்ட நிரம்பிவிட்டது</translation>
 <translation id="3390013585654699824">ஆப்ஸ் விவரங்கள்</translation>
 <translation id="3390740059150071453">இடதுபுறம் பார்த்தல்</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">மின்னஞ்சல் முகவரி</translation>
 <translation id="3701028563242674350">மவுஸ் கர்சரைப் பெரிதாக்க அதை அசைத்தல்</translation>
 <translation id="3703699162703116302">டிக்கெட் புதுப்பிக்கப்பட்டது</translation>
+<translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromeOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="370649949373421643">Wi-fi ஐ இயக்கு</translation>
 <translation id="370665806235115550">ஏற்றுகிறது…</translation>
 <translation id="3707163604290651814">தற்போது <ph name="NAME" /> ஆக உள்நுழைந்துள்ளீர்கள்</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">பிரிண்ட் சேவையகத்தில் <ph name="NUM_PRINTERS" /> பிரிண்டர்கள் உள்ளன</translation>
 <translation id="371370241367527062">முன்பக்க மைக்ரோஃபோன்</translation>
 <translation id="37143699183660101">கர்சரின் நிலைத்தன்மை</translation>
+<translation id="3716540481907974026">ChromeOS Flex பதிப்பு</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">தவறான பின். மீண்டும் முயல்க.</translation>
 <translation id="3728681439294129328">நெட்வொர்க் முகவரியை உள்ளமை</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">டைப் செய்யும் வார்த்தைக்கு அடிக்கோடிடு</translation>
 <translation id="3789841737615482174">நிறுவுக</translation>
 <translation id="379509625511193653">ஆஃப்</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">Alt + மேல்நோக்கிய அம்புக்குறி</translation>
 <translation id="3798670284305777884">ஸ்பீக்கர் (அகம்)</translation>
 <translation id="3799128412641261490">ஸ்விட்ச் அணுகலுக்கான அமைப்புகள்</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">உள்ளமைந்த கீபோர்டு</translation>
 <translation id="3917644013202553949">உங்கள் ஃபைல்களை ஒத்திசைக்க போதுமான சேமிப்பகம் இல்லை. சேமிப்பிடத்தைக் காலியாக்கவும்.</translation>
 <translation id="3919229493046408863">சாதனங்கள் அருகில் இருக்கும்போது அறிவிப்பை முடக்கு</translation>
+<translation id="3923184630988645767">டேட்டா உபயோகம்</translation>
 <translation id="3923494859158167397">மொபைல் நெட்வொர்க்குகள் எதுவும் அமைக்கப்படவில்லை</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">இந்தச் சாதனத்தில் உள்ள பிற பயனர்களும் இந்த நெட்வொர்க்கைப் பயன்படுத்தலாம்</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">'விரைவான பதில்கள்' அம்சம் வழங்கும் விளக்கம்</translation>
 <translation id="3994075804072562819">USB சாதனங்களின் கட்டுப்பாட்டை <ph name="SPECIFIC_NAME" />க்கு வழங்கலாம்.</translation>
 <translation id="3994530503403062649">டேப்லெட்டில் உள்ள பட்டன்களை அமைத்தல்</translation>
+<translation id="3997429360543082038">ChromiumOS - ஓர் அறிமுகம்</translation>
 <translation id="4001540981461989979">மவுஸை நகர்த்தும்போது கர்சரை ஹைலைட் செய்</translation>
 <translation id="4005817994523282006">நேர மண்டலம் கண்டறிதல் முறை</translation>
+<translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromiumOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">பதிப்பு விவரங்களை நகலெடு</translation>
 <translation id="4028467762035011525">உள்ளீட்டு முறைகளைச் சேர்</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">கடைசியாகப் பயன்படுத்திய உள்ளீட்டு முறைக்கு மாற, <ph name="KEY_CODES" /> பட்டன்களை அழுத்தவும்.</translation>
 <translation id="4051177682900543628">Search + வலது அம்புக்குறி</translation>
 <translation id="405181879009056822">ChromeOS அமைப்புகள்</translation>
+<translation id="4054070260844648638">அனைவருக்கும் காட்டப்படும்</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">உங்கள் நெட்வொர்க்கில் கிடைக்கின்ற பிரிண்டர்களைப் பார்க்க இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="4068776064906523561">சேமித்த கைரேகைகள்</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, தரம் <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">மேலும் ஸ்டைலஸ் பயன்பாடுகளைக் கண்டறிக</translation>
 <translation id="4248401726442101648">கேமரா எதுவும் இணைக்கப்படவில்லை</translation>
+<translation id="424864128008805179">Chrome இலிருந்து வெளியேறவா?</translation>
 <translation id="4249116869350613769">பேட்டரி சேமிப்பான்</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
 <translation id="425411422794688815">ஏதோ தவறாகிவிட்டது. உங்கள் மொபைல் அன்லாக் செய்யப்பட்டு அருகில் இருப்பதையும் அதில் புளூடூத், வைஃபை ஆகியவை இயக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google கணக்கு}other{<ph name="EXTRA_ACCOUNTS" /> Google கணக்குகள்}}</translation>
 <translation id="4314497418046265427">உங்கள் மொபைலை <ph name="DEVICE_TYPE" /> உடன் இணைத்து மிகவும் ஆக்கப்பூர்வமான பணிகளைச் செய்யுங்கள்</translation>
 <translation id="4314561087119792062">புதிய ஆக்சஸ் பாயிண்ட் நேமைச் சேர்</translation>
+<translation id="4314815835985389558">ஒத்திசைவை நிர்வகிக்கும் பக்கம்</translation>
 <translation id="4320177379694898372">இணைய இணைப்பு இல்லை</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">சேமிப்பகமும் ஆற்றலும்</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">பரிந்துரைகளின் எண்ணிக்கை</translation>
 <translation id="4606933160360542263">பிரத்தியேக பட்டன் சேர்க்கை: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">இடது மவுஸ் பட்டன் தேர்ந்தெடுக்கப்பட்டிருக்கும்போது இரு கிளிக் செய்ய “/” பட்டனைப் பயன்படுத்தவும்</translation>
+<translation id="4613863813562375431">ChromiumOS பதிப்பு</translation>
 <translation id="461661862154729886">மின்சக்தி மூலம்</translation>
 <translation id="4617880081511131945">இணைப்பை ஏற்படுத்த முடியவில்லை</translation>
 <translation id="4620757807254334872">மவுஸ்</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">நெட்வொர்க் பெயர் சேவையகங்களை உள்ளமை</translation>
 <translation id="4779083564647765204">பெரிதாக்கு</translation>
 <translation id="4779766576531456629">eSIM மொபைல் நெட்வொர்க்கின் பெயரை மாற்றுதல்</translation>
+<translation id="4789550509729954245">அருகிலுள்ள சாதனங்கள் பகிரும்போது அறிவிப்பைக் காட்டும்</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint ஆக்ஸிலரேஷனை இயக்கு</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" /> ஆப்ஸில் இருந்து நிறுவப்பட்ட ஆப்ஸ்</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">சாளரத்தை டாக் செய்</translation>
 <translation id="4964673849688379040">சரிபார்க்கிறது...</translation>
 <translation id="4967571733817147990">மவுஸ் பட்டன்களைப் பிரத்தியேகமாக்குதல்</translation>
+<translation id="4970880042055371251">ChromeOS பதிப்பு</translation>
 <translation id="4972129977812092092">பிரிண்டரின் தகவலை மாற்று</translation>
 <translation id="4975771730019223894">ஆப்ஸ் பேட்ஜிங்</translation>
 <translation id="4979263087381759787">டெவெலப்பர் விருப்பங்கள்</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">இதைச் செய்வதால் இந்த Chromebookகில் Google Driveவிற்கான அணுகல் அகற்றப்படும். ஆஃப்லைனில் கிடைக்கக்கூடிய ஃபைல்கள் உட்பட அனைத்திற்குமான அணுகலும் அகற்றப்படும்.</translation>
 <translation id="5196790039230503600">இந்தச் சைகையைச் செய்துவிட்டு, ஃபைலை நீங்கள் நகர்த்த விரும்பும் இடத்தைக் காட்ட தலையை நகர்த்தவும். அந்த இடத்திற்கு நகர்த்த சைகையை மீண்டும் செய்யவும்.</translation>
 <translation id="5197255632782567636">இணையம்</translation>
+<translation id="5205484256512407285">பரிமாற்றத்திற்கு எப்போதும் மொபைல் டேட்டாவைப் பயன்படுத்தாது</translation>
 <translation id="5207949376430453814">உரைச் சுட்டியைத் தனிப்படுத்து</translation>
 <translation id="5208926629108082192">சாதன மொபைல் நெட்வொர்க் தகவல்</translation>
 <translation id="5208988882104884956">அரை அகலம்</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">ChromeOS சிஸ்டம் ஆப்ஸ்</translation>
 <translation id="5334113802138581043">மைக்ரோஃபோன் அணுகல்</translation>
 <translation id="5336689872433667741">கர்சர் மற்றும் டச்பேட்</translation>
+<translation id="5337926771328966926">தற்போதைய சாதனத்தின் பெயர் <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">கண்டறிதல் மற்றும் உபயோகத் தரவை அனுப்பு</translation>
 <translation id="5369694795837229225">Linux டெவெலப்மெண்ட் சூழலை அமைத்தல்</translation>
 <translation id="5377367976106153749">கேமரா அணுகலை இயக்க வேண்டுமா?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">இந்த அமைப்புகளை உரிமையாளர் மட்டுமே திருத்த முடியும்:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">கேஸ்</translation>
+<translation id="5840680448799937675">ஃபைல்கள்  எப்போதுமே ஆஃப்லைனில் பகிரப்படும்</translation>
 <translation id="5841270259333717135">ஈத்தர்நெட்டை உள்ளமை</translation>
 <translation id="5842497610951477805">புளூடூத்தை இயக்கு</translation>
 <translation id="5846200638699387931">ரிலேஷன் சின்டாக்ஸ் பிழை: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Microsoft ஃபைல்களை Google Driveவிற்கு நகலெடுக்கும் முன் அல்லது நகர்த்தும் முன் கேள்</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
 <translation id="594048410531370124">அறியப்படாத பட்டன். <ph name="RESPONSE" /> ஏதேனும் ஒரு பட்டனை அழுத்தவும்.</translation>
+<translation id="5942779427914696408">சாதனத்தின் தெரிவுநிலை</translation>
 <translation id="5945192511027649793">டச்பேடை முடக்கு</translation>
 <translation id="5947651424015173580">மவுஸை இருமுறை கிளிக் செய்தல்</translation>
 <translation id="594993197557058302">1-4 மாடிஃபையர் பட்டன்களையும் (ctrl, alt, shift, search அல்லது லான்ச்சர்) மேலும் ஒரு பட்டனையும் அழுத்தவும். ஒரேயொரு பட்டனையும் நீங்கள் தேர்ந்தெடுக்கலாம்.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">சைகையை ஒதுக்கலாம்</translation>
 <translation id="5968022600320704045">முடிவுகள் எதுவுமில்லை</translation>
 <translation id="5969728632630673489">கீபோர்டு ஷார்ட்கட் குறித்த அறிவிப்பு மூடப்பட்டது</translation>
+<translation id="5979353814339191480">டேட்டா பிளான், மொபைல் நெட்வொர்க் டாங்கிள் போன்றவற்றுடன் கூடிய அல்லது போர்டபிள் ஹாட்ஸ்பாட்டுடன் இணைந்துள்ள Chromebookக்குகளுக்கு இந்த விருப்பம் பயன்படுத்தப்படும்</translation>
 <translation id="5985556342298151179">உங்கள் சாதன நிர்வாகி Chrome ஆப்ஸை நிறுவியுள்ளார்.</translation>
 <translation id="5986442691296752186">USB சாதனங்களின் கட்டுப்பாட்டை Linux ஆப்ஸிற்கு வழங்கலாம்.</translation>
 <translation id="598810097218913399">ஒதுக்கீட்டை அகற்று</translation>
 <translation id="5988563937187882754">வலதுபுறம் பார்த்தல்</translation>
+<translation id="5990266201903445068">வைஃபையில் மட்டும்</translation>
 <translation id="5992225669837656567">அனைத்து மவுஸ்களும் துண்டிக்கப்பட்டன</translation>
 <translation id="5999630716831179808">குரல்கள்</translation>
 <translation id="6002458620803359783">விருப்பமான குரல்கள்</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">முதன்மை TrackPoint பட்டன்</translation>
 <translation id="6048747414605857443">ChromeVox, பேசும் திரை ஆகியவற்றுக்கான எழுத்திலிருந்து பேச்சுக்கான குரல்களைத் தேர்ந்தெடுக்கலாம் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="6050189528197190982">கிரேஸ்கேல்</translation>
+<translation id="6054961935262556546">தெரிவுநிலையை மாற்று</translation>
 <translation id="6059276912018042191">சமீபத்திய Chrome தாவல்கள்</translation>
 <translation id="6059925163896151826">USB சாதனங்கள்</translation>
 <translation id="6064764629679333574">குறைவான ஆடியோ தெளிவுத்திறனை உயர் தெளிவுத்திறனாக அதிகரித்து புளூடூத் மைக் ஒலியின் தரத்தை மேம்படுத்துங்கள்.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Microsoft ஃபைல்களை Microsoft OneDriveவிற்கு நகலெடுக்கும் முன் அல்லது நகர்த்தும் முன் கேள்</translation>
 <translation id="6265687851677020761">போர்ட்டை அகற்று</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> உடன் இணைக்கிறது</translation>
+<translation id="6268381023930128611">Chromium இலிருந்து வெளியேறவா?</translation>
 <translation id="6270309713620950855">ஒலியடக்குவதற்கான நட்ஜ்</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> உடன் இணைக்கிறது</translation>
 <translation id="628352644014831790">4 வினாடிகள்</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">அடுத்த உள்ளீட்டு முறைக்கு மாற <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> விசைகளை அழுத்தவும்</translation>
 <translation id="6463488491707167747">இந்த அகராதியை நீக்கு</translation>
 <translation id="6463596731306859179">தேவையில்லாத பாப்-அப்கள் அல்லது எதிர்பாராத பிற பிழைகளைப் பெறுகிறீர்களா? சில சமயங்களில், நீங்கள் நிறுவும் ஆப்ஸ் மற்றும் நீட்டிப்புகள் உங்களுக்குத் தெரியப்படுத்தாமல் உங்களின் ChromeOS அமைப்புகளை மாற்றலாம்.</translation>
+<translation id="6465841119675156448">இணைய இணைப்பு இல்லாமல்</translation>
 <translation id="6467377768028664108">உங்கள் <ph name="DEVICE_TYPE" />:</translation>
 <translation id="6469557521904094793">செல்லுலார் நெட்வொர்க்கை இயக்கு</translation>
 <translation id="6470120577693311302">ஃபிளாஷ் அறிவிப்புகள்</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">எஃபெக்ட் முறை</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">தேர்வு ஷார்ட்கட்</translation>
+<translation id="6632473616050862500">கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromeOS Flex உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="6646476869708241165">‘துரித இணைப்பு’ அம்சத்தை முடக்கு</translation>
 <translation id="6647690760956378579">இயல்பான குரல் மாதிரி</translation>
 <translation id="6650072551060208490">இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">வெளிப்புற சேமிப்பக சாதனங்கள் இங்கே தோன்றும்.</translation>
 <translation id="6776729248872343918">துரித இணைப்பு அம்சத்தை இயக்கு</translation>
 <translation id="6777845730143344223">Passpoint சந்தா குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
+<translation id="6779406956731413166">கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromiumOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="6783036716881942511">இந்தச் சாதனத்தை அகற்றவா?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive அமைப்புகள்</translation>
 <translation id="6785915470941880363">பின்னோக்கிய ஸ்க்ரோலிங் <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">உரையிலிருந்து பேச்சுக்கான குரல் அமைப்புகள்</translation>
 <translation id="7282547042039404307">சீரானது</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">பயன்பாடு மற்றும் பாதுகாப்பு குறித்த முக்கியத் தகவல்</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> கடவுச்சொல்லை அமைக்கலாம்</translation>
 <translation id="7304030187361489308">அதிகமானது</translation>
 <translation id="7308643132139167865">இணையதள மொழிகள்</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">சமீபத்திய படங்கள்</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" />ல் <ph name="BLOCKED_APPS_SIZE" /> ஆப்ஸ் தடுக்கப்பட்டுள்ளது</translation>
+<translation id="7423425410216218516"><ph name="MINUTES" /> நிமிடங்களுக்குச் சாதனம் காட்டப்படும்</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> ஐ அகற்றும்</translation>
 <translation id="7425037327577270384">எனக்கு எழுத உதவு</translation>
 <translation id="7429415133937917139">திரையின் மேலிருக்கும் ChromeVox பேனலில், புதுப்பிக்கக்கூடிய பிரெய்ல் காட்சியின்
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">கைரேகை அமைப்புகள்</translation>
 <translation id="7578692661782707876">உறுதிப்படுத்தல் குறியீட்டை உள்ளிடுக.</translation>
 <translation id="7582582252461552277">இந்த நெட்வொர்க்குக்கு முன்னுரிமை வழங்குக</translation>
+<translation id="7582844466922312471">மொபைல் தரவு</translation>
 <translation id="7587806318633605613">பரிந்துரைப் பதிவுகள்</translation>
 <translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7592060599656252486">சில நிறுத்தற்குறிகள்</translation>
 <translation id="7602173054665172958">அச்சுப் பணி நிர்வாகம்</translation>
 <translation id="7605163396341021431">இந்த Chromebookகில் உள்ள USB சாதனங்களின் கட்டுப்பாட்டை Android ஆப்ஸிற்கு வழங்கலாம்</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android விருப்பத்தேர்வுகள்</translation>
 <translation id="7611713099524036757">மெட்டா</translation>
 <translation id="7612655942094160088">இணைக்கப்பட்ட மொபைல் அம்சங்களை இயக்கும்.</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">பாதுகாப்பான இணைப்புகளைப் பயன்படுத்தி தளங்களைத் தேடு</translation>
 <translation id="7634337648687970851">தற்சமயம் அகத் தரவு மீட்டெடுப்பு ஆதரிக்கப்படவில்லை.</translation>
 <translation id="7640256527901510478">உங்கள் சாதனத்தின் IMEI <ph name="IMEI_NUMBER" /> மற்றும் வரிசை எண் <ph name="SERIAL_NUMBER" />. சேவையைச் செயல்படுத்த இந்த எண்களைப் பயன்படுத்தலாம்.</translation>
+<translation id="7640308610547854367">நீங்கள் ChromeOSஸின் முந்தைய பதிப்பிற்குத் திரும்பிவிட்டீர்கள். புதுப்பிப்புகளைப் பெற, அடுத்த பதிப்பு கிடைக்கும் வரை காத்திருக்கவும்.</translation>
 <translation id="7641513591566880111">புதிய சுயவிவரப் பெயர்</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> சேர்க்கப்பட்டார்</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (உரிமையாளர்)</translation>
 <translation id="7648048654005891115">விசைவரைபட நடை</translation>
 <translation id="7649070708921625228">உதவி</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{ஒரு கைரேகை பதிவுசெய்யப்பட்டுள்ளது}other{{COUNT} கைரேகைகள் பதிவுசெய்யப்பட்டுள்ளன}}</translation>
+<translation id="7650677314924139716">தற்போது டேட்டா உபயோக அமைப்பு ‘வைஃபையில் மட்டும்’ என அமைக்கப்பட்டுள்ளது</translation>
 <translation id="7651400349472467012">உடனடி ஹாட்ஸ்பாட் வசதி கிடைக்கிறது</translation>
 <translation id="7651784568388208829">ஃபோன் ஹப் பணித் தொடர்ச்சி</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">மொழிபெயர்ப்பு</translation>
 <translation id="7915457674565721553">பெற்றோர் கட்டுப்பாடுகளை அமைக்க இணையத்துடன் இணைக்கவும்</translation>
+<translation id="7917876797003313048">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை நிர்வகிக்கலாம். Chrome உலாவி, Play Store, Gmail மற்றும் பலவற்றில் உங்கள் Google கணக்குகள் பயன்படுத்தப்படும். வேறு ஒருவரின் (எ.கா. குடும்ப உறுப்பினர்) கணக்கைச் சேர்க்க விரும்பினால் உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் ஒரு புதிய பயனரைச் சேர்க்கவும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />வி</translation>
 <translation id="7920482456679570420">எழுத்துப் பிழை சரிபார்ப்பான் அம்சம் தவிர்க்கவேண்டும் என நீங்கள் விரும்பும் சொற்களைச் சேர்க்கவும்</translation>
 <translation id="7921347341284348270">இந்த நிர்வகிக்கப்படும் கணக்கில் உங்கள் மொபைல் அறிவிப்புகளைப் பார்க்க முடியாது. வேறொரு கணக்கு மூலம் மீண்டும் முயலவும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">கர்சர் அமைப்புகள் மீட்டமைக்கப்பட்டன</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>
 <translation id="8439506636278576865">பக்கங்களை இந்த மொழியில் மொழிபெயர்ப்பதற்கான அனுமதி</translation>
+<translation id="8449347986464073209">நீக்கிவிட்டு வெளியேறு</translation>
 <translation id="8451512073679317615">அசிஸ்டண்ட்</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> உடன் இணைக்கப்பட்டது</translation>
 <translation id="8473540203671727883">மவுஸை நகர்த்துகையில் கர்சர் காட்டும் உரையைப் பேசு</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">ஒலியளவு முடக்கப்பட்டுள்ளது. ஒலியளவை இயக்கும்.</translation>
 <translation id="888256071122006425">மவுஸ் மற்றும் டச்பேட் அமைப்புகள்</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />தற்போதைய அமைப்புகளைப்<ph name="END_LINK" /> பற்றி கருத்து தெரிவிப்பதன் மூலம், Chromeமை இன்னும் சிறந்ததாக்க உதவுங்கள்.</translation>
+<translation id="8890170499370378450">மொபைல் டேட்டா கட்டணங்கள் விதிக்கப்படலாம்</translation>
 <translation id="8890529496706615641">சுயவிவரப் பெயரை மாற்ற முடியவில்லை. மீண்டும் முயலவும் அல்லது தொழில்நுட்ப உதவியைப் பெற சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="8894761918470382415">பெரிஃபெரல்களுக்கான தரவு அணுகல் பாதுகாப்பு</translation>
 <translation id="8896830132794747524">மவுஸை வேகமாக நகர்த்தினால் கர்சர் இன்னும் வேகமாக நகர்த்தப்படும்</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> துண்டிக்கப்பட்டது</translation>
 <translation id="8980345560318123814">கருத்து அறிக்கைகள்</translation>
 <translation id="8981825781894055334">காகிதம் குறைவாக உள்ளது</translation>
+<translation id="8984694057134206124">அருகிலுள்ள அனைவருக்கும் <ph name="MINUTES" /> நிமிடங்களுக்கு உங்கள் சாதனம் காட்டப்படும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">கண்டறிதல் வரம்பு</translation>
 <translation id="8986362086234534611">மற</translation>
 <translation id="8991694323904646277">கேமரா இல்லை</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">Google Playவையும் Android ஆப்ஸையும் அகற்று</translation>
 <translation id="910000385680858937">அனுமதிக்கப்பட்டுள்ளது – <ph name="PERMISSION_DETAILS" />. உங்கள் சாதனத்தில் மைக்ரோஃபோனை இணைக்கவும்.</translation>
 <translation id="9100416672768993722">கடைசியாகப் பயன்படுத்திய உள்ளீட்டு முறைக்கு மாற, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> விசைகளை அழுத்தவும்</translation>
+<translation id="9108072915170399168">தற்போது டேட்டா உபயோக அமைப்பு ‘இணைய இணைப்பு இல்லாமல்’ என அமைக்கப்பட்டுள்ளது</translation>
 <translation id="9108294543511800041">இப்போது, உங்கள் மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா, அறிவிப்புகள் ஆகியவற்றைப் பார்க்கலாம்</translation>
 <translation id="9109122242323516435">இடத்தைக் காலியாக்க, சாதனத்தின் சேமிப்பகத்தில் இருந்து கோப்புகளை நீக்கவும்.</translation>
 <translation id="9111330022786356709">உங்கள் மவுஸில் பட்டன்களைச் சேருங்கள் அல்லது கண்டறியுங்கள்</translation>

@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="201759455285471444">Kembangkan kumpulan tab.</translation>
 <translation id="2022431790688770637">Urus cadangan Gemini</translation>
+<translation id="2023265063803387188">Gemini tidak tersedia dalam Mod inkognito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buka grid tab</translation>
 <translation id="2044681667265133332">Akaun <ph name="USER_EMAIL" /> diurus oleh <ph name="HOSTED_DOMAIN" />, yang boleh melihat sesetengah maklumat. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Berhenti</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" tidak dibenarkan untuk mengakses kamera anda</translation>
 <translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Bayaran Ansuran</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nama</translation>
 <translation id="386224966259596343">Anda akan berpeluang menyimpan maklumat ini pada Wallet apabila anda mengisi borang yang berkaitan pada masa hadapan.</translation>
 <translation id="3868495844258915202">Tunjukkan URL penuh</translation>
+<translation id="3870931306085184145">Tiada kata laluan yang disimpan untuk <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Tunjukkan Caranya</translation>
 <translation id="3878657761594430423">Penangkap helaian</translation>
 <translation id="3884810423191119660">Simpan kata laluan dengan selamat supaya anda dapat log masuk ke laman dan apl dengan mudah</translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Hentikan muat turun?</translation>
 <translation id="4796496140132859135">Kumpulan tab. Dikuncupkan.</translation>
 <translation id="4800912004582762296">Mengklik</translation>
+<translation id="4800930308997591052">Beralih kepada <ph name="EMAIL" /> untuk berkongsi tab antara peranti anda dengan lancar dan mendapatkan kata laluan, penanda halaman dan pelbagai lagi daripada Google Account anda.</translation>
 <translation id="4802185666270672526">Sembunyikan Minta Laman Desktop</translation>
 <translation id="4803185665210547709">Diurus oleh organisasi anda.
 <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
@@ -1311,7 +1313,6 @@
 <translation id="5061202435354361813">Tingkatkan penyemakan imbas anda</translation>
 <translation id="5062321486222145940">Pasang Google Drive</translation>
 <translation id="5067540696062462445">Muat turun</translation>
-<translation id="5070314445039955096">Kebenaran "<ph name="SITE_DOMAIN" />" akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} daripada {count} kaedah pembayaran}other{{position} daripada {count} kaedah pembayaran}}</translation>
 <translation id="5075939510584558547">Simpan tanpa penyulitan</translation>
 <translation id="5076534614343816664">Penjejakan harga</translation>
@@ -1410,7 +1411,6 @@
 <translation id="5351613737248079168">Anda perlu log masuk untuk menggunakan Level Up</translation>
 <translation id="5352128922772839949">Simpan fail</translation>
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" dibenarkan untuk menggunakan mikrofon anda apabila anda melawati laman ini</translation>
 <translation id="5359436665022446585">Pembukaan pautan yang lebih baik</translation>
 <translation id="536067926684072644">Tunjukkan Penanda Halaman</translation>
 <translation id="5364647308446127983">{count,plural, =1{Tidak dapat mengimport {count} kunci laluan}other{Tidak dapat mengimport {count} kunci laluan}}</translation>
@@ -1484,6 +1484,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5612225021788368236">Tutup promosi penyemak imbas lalai</translation>
 <translation id="561269594905823128">Ketik <ph name="BEGIN_BOLD" />Pilih fail anda<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Isih mengikut yang terbaharu</translation>
+<translation id="561349411957324076">Diselesaikan</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>
 <translation id="5617769621178348890">Buka pada Apl Fail</translation>
 <translation id="5619871095170816857">Kad ini menunjukkan tab terbuka terakhir yang anda gunakan merentas semua peranti yang disegerakkan dalam tempoh 24 jam yang lalu.</translation>
@@ -2148,6 +2149,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7618220760967055820">Pilih butang yang ditunjukkan pada bar alat</translation>
 <translation id="7620522820075868385">Batal</translation>
 <translation id="762078666799342162">Anda boleh melihat muat turun terdahulu anda dalam <ph name="BEGIN_LINK" />Fail<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Sambung semula dari tempat anda berhenti pada komputer anda</translation>
 <translation id="7638584964844754484">Frasa laluan tidak betul</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Kata laluan yang terjejas}=1{{COUNT} kata laluan yang terjejas}other{{COUNT} kata laluan yang terjejas}}</translation>
 <translation id="7640669552036055091">Tab daripada Android</translation>
@@ -2333,7 +2335,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> akaun</translation>
 <translation id="8161614462829037225">Buka kunci dengan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Panjang</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" dibenarkan untuk menggunakan kamera anda apabila anda melawati laman ini</translation>
 <translation id="8182037667962849780">{count,plural, =1{Untuk {website_1}}=2{Untuk {website_1}, {website_2}}=3{Untuk {website_1}, {website_2} dan 1 lagi}other{Untuk {website_1}, {website_2} dan {more_count} lagi}}</translation>
 <translation id="8184895727539791845">Untuk membolehkan Gemini menggunakan kamera anda, hidupkan Kamera dalam tetapan iOS</translation>
 <translation id="8185076488803799132">Import</translation>
@@ -2504,7 +2505,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8674716540979958118">Anda mempunyai kata laluan yang terjejas.</translation>
 <translation id="8679900250380464358">Tambahkan pada Senarai Bacaan</translation>
 <translation id="8680787084697685621">Butiran log masuk akaun sudah lapuk.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" tidak dibenarkan untuk mengakses mikrofon anda</translation>
 <translation id="8690752723634292147">Sahkan pemadaman</translation>
 <translation id="8692107307702113268">Kata laluan melebihi 1000 aksara</translation>
 <translation id="8692689525339542358">Dapatkan perlindungan daripada laman, muat turun dan sambungan yang berbahaya.</translation>

@@ -3156,7 +3156,7 @@ PAC 樣式的字串：
 
       如果將這項政策設為「允許登入瀏覽器」，則使用者可以登入瀏覽器。在 <ph name="IOS_NAME" /> 以外的所有平台上，使用者會在登入 Gmail 等 Google 網路服務後自動登入瀏覽器。登入瀏覽器後，使用者的帳戶資訊會保留在瀏覽器。不過，<ph name="PRODUCT_NAME" /> 同步功能不會因此預設為開啟，使用者必須另外選擇啟用這項功能。啟用這項政策後，使用者將無法關閉允許登入瀏覽器的設定。如要控管是否提供 <ph name="PRODUCT_NAME" /> 同步功能，請使用 <ph name="SYNC_POLICY_NAME" /> 政策。
 
-      如果將這項政策設為「強制登入瀏覽器」，使用者會看到選取帳戶的對話方塊，而且必須選擇帳戶並登入才能使用瀏覽器。這樣可以確保系統在與該帳戶關聯的所有受管理帳戶中套用並強制執行相關政策。在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。啟用這項政策後，未登入的現有設定檔會遭到鎖定，無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/?p=force_browser_signin。在 <ph name="ANDROID_NAME" /> 上，這個選項自第 153 版起支援；在更早的版本中，系統將改為使用「允許登入瀏覽器」。
+      如果將這項政策設為「強制登入瀏覽器」，使用者會看到選取帳戶的對話方塊，而且必須選擇帳戶並登入才能使用瀏覽器。這樣可以確保系統會對所有受管理帳戶套用並強制執行與帳戶關聯的政策。在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。啟用這項政策後，未登入的現有設定檔會遭到鎖定，無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/?p=force_browser_signin。在 <ph name="ANDROID_NAME" /> 上，這個選項自第 153 版起支援；在更早的版本中，系統將改為使用「允許登入瀏覽器」。
 
       如果不設定這項政策，使用者可自行決定是否在 <ph name="PRODUCT_NAME" /> 設定中啟用瀏覽器登入選項。</translation>
 <translation id="2976033779241323433">根據預設系統經驗法則啟用觸控虛擬鍵盤</translation>
@@ -4150,14 +4150,6 @@ SwiftShader 曾在沒有 GPU 加速功能的系統 (例如無頭系統或虛擬�
 <translation id="366494444808132420">允許整合 Gemini。</translation>
 <translation id="3665437376055221832">只在沒有任何符合自動選取政策的憑證時提示使用者。</translation>
 <translation id="3671773704245936868">停用鍵盤焦點醒目顯示功能</translation>
-<translation id="367258298235646178">允許管理員自訂資料遺失防護 (DLP) 規則套用的浮水印外觀，包括設定填滿/外框不透明度、定義字型大小，以及設定時間戳記時區。
-如果未設定這項政策或部分值，Chrome 會採用預設浮水印行為。
-電腦版的預設值如下：填滿不透明度為 4、外框不透明度為 6、字型大小為 24。iOS 版的預設值如下：填滿不透明度為 10、外框不透明度為 15、字型大小為 16。在所有平台上，時間戳記時區預設為「user_device」(使用者裝置的當地時區)。
-
-「填滿不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
-「外框不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
-「字型大小」以點為指定單位。
-「時間戳記時區」指定用於設定浮水印時間戳記格式的 IANA 時區 ID (例如「America/Toronto」)，支援 Chrome 152 以上版本。這個 ID 採用 IANA 時區資料庫 (https://www.iana.org/time-zones) 中的名稱。</translation>
 <translation id="3674010627788940405">不支援 CORS 非萬用字元要求標頭。</translation>
 <translation id="3675248815331229366">設定這項政策後，你可以使用網址模式清單，指定哪些網站不得存取使用者的地理位置，也不能要求使用者授予這項權限。
 
@@ -4535,7 +4527,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="390296766888987595">只有在使用者或應用程式提出要求時，才顯示螢幕小鍵盤時。</translation>
 <translation id="3903313632842363082">停用裝置使用者回報功能</translation>
 <translation id="3904304709151553598">停用裝置風扇資訊回報功能</translation>
-<translation id="3905883021371603181">啟用系統音訊回音消除功能</translation>
 <translation id="3907683835264956726">在螢幕鎖定畫面上啟用線上使用者登入功能。如果將這項政策設為 True，<ph name="POLICY" /> 等政策會觸發螢幕鎖定畫面上的線上重新驗證功能。
       當使用者停留在螢幕鎖定畫面上，或下次在符合條件後鎖定螢幕時，系統會立即強制執行重新驗證。
       如果將這項政策設為 False 或不予設定，使用者一律可以使用本機憑證解鎖螢幕。</translation>
@@ -4636,7 +4627,6 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="3989635538409502728">登出</translation>
 <translation id="3989829840000169163">封鎖瀏覽器的舊版擴充點</translation>
 <translation id="3990391739475801018">裝置將停用省電模式。</translation>
-<translation id="3990834929384096140">不強制啟用系統音訊回音消除功能</translation>
 <translation id="3994043824457743421">在新分頁顯示中間版位公告</translation>
 <translation id="399433537808390819">不要讓使用者使用整合桌面模式</translation>
 <translation id="3995880046827722248">資訊清單 v2 已停用</translation>
@@ -5929,12 +5919,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
       不過，如果裝置未正確導入 TLS，使用 TLS 1.3 早期資料時可能無法正常運作，並且中斷連線。如果遇到這種情況，系統管理員應向供應商洽詢解決之道。
 
       這項政策只是用於控管這項功能的暫時解決方案，日後將會移除。你可以在測試問題時啟用這項政策，並在問題解決後停用。</translation>
-<translation id="4800438168909332958">啟用系統音訊回音消除功能 (AEC)。系統 AEC 是音訊回音消除工具 (即音訊處理模組)，可移除來自麥克風訊號的系統音訊回授 (回音)。
-這項政策只是臨時解決方案，並將在系統音訊回音消除功能推出後移除。
-
-  如果將這項政策設為 True，系統將一律啟用系統音訊回音消除功能。
-
-  如果將這項政策設為 False 或未設定，系統仍會根據推出計畫啟用系統音訊回音消除功能，但這項政策將無法強制啟用這項功能。</translation>
 <translation id="4800865664096110749">針對受管理設定檔的網址清單啟用「<ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />」認證流程</translation>
 <translation id="4801512016965057443">允許行動數據漫遊</translation>
 <translation id="4801647366128872782">指定可提供舊版技術報表的網址</translation>
@@ -12598,7 +12582,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 連接器的設定政策</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>
-<translation id="9091741086777905807">用於設定浮水印時間戳記格式的 IANA 時區 ID (例如「America/Toronto」)，支援 Chrome 152 以上版本。預設值為「user_device」。</translation>
 <translation id="9094681501120769194">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 檢視器是否使用獨立處理程序 iframe (OOPIF)。這個架構更為簡潔，且更易於新增功能，因此將成為未來的 PDF 檢視器架構。現有的 GuestView PDF 檢視器架構過時且複雜，即將遭到淘汰。
 
 如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 可以採用 OOPIF PDF 檢視器架構。在啟用或未設定的狀態下，預設行為將由 <ph name="PRODUCT_NAME" /> 決定。

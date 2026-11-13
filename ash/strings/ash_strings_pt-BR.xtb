@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Algumas sugestões</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
 <translation id="1129383337808748948">Atualizar <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Precisa ter pelo menos uma letra ou símbolo</translation>
 <translation id="1142002900084379065">Fotos recentes</translation>
 <translation id="114221662579355151">Essa ação libera o acesso à câmera para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todos os apps e sites com essa permissão. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="1145593918056169051">A impressora parou</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Abrir nova guia em uma nova janela</translation>
 <translation id="1536604384701784949">Antes de usar <ph name="USER_EMAIL_ADDRESS" />, você precisa desconectar todas as contas. Para fazer isso, selecione "Cancelar" e volte à seção anterior. Em seguida, abra a área de status no horário, selecione "Sair" e faça login na conta <ph name="USER_EMAIL_ADDRESS_2" /> novamente.</translation>
 <translation id="15373452373711364">Cursor grande do mouse</translation>
+<translation id="1538808328818992871">Precisa ter pelo menos <ph name="MIN_LENGTH" /> caracteres</translation>
 <translation id="1545331255323159851">Visualize fotos, mídia e notificações recentes do smartphone</translation>
 <translation id="1546492247443594934">Espaço de trabalho 2</translation>
 <translation id="1546930421365146760">Peça ao administrador para configurar este dispositivo no Google Admin Console.</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Clique para ver mais opções</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="1557622599341396706">Mostrar nome do espaço de trabalho</translation>
+<translation id="1568242747239041185">Precisa ter dois dos seguintes: letras maiúsculas, letras minúsculas, números ou símbolos</translation>
 <translation id="1569384531973824928">Essa ação libera o acesso para todos os apps e sites com as permissões de câmera e microfone. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="1570235441606255261">Instalador do Steam</translation>
 <translation id="1571697193564730395">Alternar "Não perturbe". <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Fechar o Google Tarefas</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2215920961700443347">Sem Internet. Conecte-se à Internet e tente de novo.</translation>
+<translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2223384056430485343">Em uma tela dividida</translation>
 <translation id="2224075387478458881">A gravação de tela não é permitida quando conteúdo protegido está visível</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Teclas do mouse pausadas</translation>
 <translation id="2268731132310444948">Etapa <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> do tour. Depois que o acesso rápido for ativado, uma barra de pesquisa aprimorada vai aparecer. Comece a digitar para pesquisar arquivos, apps e muito mais. Você também pode receber respostas para perguntas sobre o <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Desconectar todos</translation>
+<translation id="2273432041732361925">Não pode ter quatro ou mais caracteres repetidos ou sequenciais</translation>
 <translation id="2276987123919776440">15min</translation>
 <translation id="2278668501808246459">Iniciando o administrador de contêiner</translation>
 <translation id="2282073721614284166">Abrir link na guia</translation>
@@ -1056,6 +1061,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4072805772816336153">Tente novamente mais tarde</translation>
 <translation id="4077623680826964850">Tempo limite ao inicializar ou reconectar à VM.</translation>
 <translation id="4086921558679520050">Ativar a chave do microfone do dispositivo</translation>
+<translation id="4093173301198419723">Precisa ter letras maiúsculas, minúsculas, números e símbolos</translation>
 <translation id="4099874310852108874">Ocorreu um erro de rede.</translation>
 <translation id="4101772068965291327">Abrir página inicial</translation>
 <translation id="4102906002417106771">Reiniciar para executar o Powerwash</translation>
@@ -1277,6 +1283,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4668936527507421457">O PIN só pode usar números</translation>
 <translation id="4672539464599646374">Economia de bateria ativada</translation>
 <translation id="4673427585974421255">Deixar ativado</translation>
+<translation id="467510802200863975">As senhas não são iguais</translation>
 <translation id="4677040906536311086">Planilha Google</translation>
 <translation id="468019262817532242">Ninguém pode compartilhar com você</translation>
 <translation id="468293128311738995">Apps do smartphone</translation>
@@ -1300,6 +1307,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4746798685375253449">{0,plural, =1{Reverta o dispositivo para a versão anterior em até 1 dia}one{Reverta o dispositivo para a versão anterior em até # dia}other{Reverta o dispositivo para a versão anterior em até # dias}}</translation>
 <translation id="4747410141429390146">Desbloqueie para acessar as notificações</translation>
 <translation id="4752784485658729358">São permitidos apenas seis espaços de trabalho. Remova um deles para salvar outro.</translation>
+<translation id="4753084533826742808">Precisa ter no mínimo 1 caractere</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + seta para cima</translation>
 <translation id="4762573482154983647">Ocultar apps</translation>
@@ -1436,6 +1444,7 @@ Também é possível usar o atalho do teclado. Primeiro, destaque o texto e depo
 <translation id="5144005092084035179">Trocar a entrada de áudio?</translation>
 <translation id="5145464978649806571">Se você se afastar do dispositivo, a tela vai ser bloqueada automaticamente. Quando estiver em frente ao dispositivo, a tela vai ficar ativada por mais tempo. Se a tela de bloqueio estiver desativada, o dispositivo vai ser suspenso em vez de bloqueado.</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
+<translation id="5148285448107770349">A senha deve ter pelo menos oito caracteres</translation>
 <translation id="5150070631291639005">Config. de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
 <translation id="5158206172605340248">Menu de acentos dispensado.</translation>
@@ -1556,6 +1565,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi para baixar uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).</translation>
 <translation id="547979256943495781">Estante à direita</translation>
 <translation id="5482873136202102190">e mais</translation>
+<translation id="5486261815000869482">Confirmar senha</translation>
 <translation id="5491186829646618080">Atualizações de firmware disponíveis</translation>
 <translation id="5503884284981862082">Abrir/fechar o Google Assistente</translation>
 <translation id="550391772491508736">Retomar transmissão</translation>
@@ -1817,6 +1827,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6199775032047436064">Recarregar página atual</translation>
 <translation id="6200515304866777730">O app não oferece suporte</translation>
+<translation id="6209589022625766110">Precisa ter pelo menos oito caracteres e incluir pelo menos dois destes: letras maiúsculas, letras minúsculas, números ou símbolos. Não pode ter repetição de caracteres ou sequências de quatro ou mais.</translation>
 <translation id="6210042900243040400">Conectar o dispositivo <ph name="NAME" /> salvo anteriormente em <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">Por 10min</translation>
 <translation id="6213808132343683860">Fazer uma captura ou gravação de tela parcial</translation>
@@ -1851,6 +1862,7 @@ Nenhum dispositivo conectado.</translation>
 <translation id="6297986260307280218">Envie dados de uso e diagnóstico. Ajude a melhorar sua experiência com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também vão ajudar apps e parceiros do Google, por exemplo, os desenvolvedores Android. Essa <ph name="BEGIN_LINK1" />configuração<ph name="END_LINK1" /> é aplicada pelo proprietário. que pode optar por enviar dados de uso e diagnóstico deste dispositivo para o Google. Se a configuração Atividade Adicional na Web e de Apps estiver ativada, esses dados poderão ser salvos na sua Conta do Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Personalize este dispositivo no app</translation>
 <translation id="6298962879096096191">Usar o Google Play para instalar apps do Android</translation>
+<translation id="6300478323573969040">Precisa ter pelo menos 12 caracteres e incluir letras maiúsculas, minúsculas, números e símbolos. Não pode ter repetição de caracteres ou sequências de quatro ou mais.</translation>
 <translation id="6304076460080088478">Feche ou minimize as janelas anônimas para pesquisar sobre o que está na tela com o Google Lens</translation>
 <translation id="6309219492973062892">Clicar ou tocar nos ícones de estante 1 a 8</translation>
 <translation id="6315170314923504164">Voz</translation>
@@ -2023,7 +2035,6 @@ Nova instalação</translation>
 <translation id="6782919488259222803">Pesquisar a página atual</translation>
 <translation id="6783348167101855071">Alça inferior direita selecionada, use as teclas de seta para mover</translation>
 <translation id="6786750046913594791">Fechar pasta</translation>
-<translation id="6792262051831399889">Indisponível</translation>
 <translation id="6792351896138862473">Não é possível abrir o aplicativo de quiosque incompatível. Notifique seu administrador sobre esse problema.</translation>
 <translation id="679368458793552943">Aumentar o zoom quando a lupa estiver ativada</translation>
 <translation id="6794287755901682422">Este item tem: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2466,6 +2477,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
 <translation id="8063363226185507157">Configurações de acessibilidade sincronizadas</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8079538659226626406">Compartilhamento de tela</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>
@@ -2629,6 +2641,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8555757996376137129">Remover o espaço de trabalho atual</translation>
 <translation id="8558521694042102707">A IA generativa pode cometer erros, inclusive sobre pessoas. Por isso, é importante checar as respostas.</translation>
 <translation id="8559845965695780508">Editado por <ph name="USER" /></translation>
+<translation id="8567946600191652875">Precisa ter no mínimo seis caracteres e ao menos uma letra ou símbolo</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito da tela.</translation>
 <translation id="8581946341807941670">Pressione <ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> e clique em um link</translation>
@@ -2802,7 +2815,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9034924485347205037">Arquivos do Linux</translation>
 <translation id="9037818663270399707">Sua conexão não é particular em todo o tráfego de rede</translation>
 <translation id="9047624247355796468">Abrir configurações de <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">O Bluetooth está indisponível</translation>
 <translation id="9050999376345823055">Pressione "." para soltar</translation>
 <translation id="906458777597946297">Maximizar janela</translation>
 <translation id="9065203028668620118">Editar</translation>

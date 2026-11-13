@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">شما آماده‌اید!</translation>
 <translation id="1149483087970735785">فناوری یاری‌رسان</translation>
 <translation id="1150490752229770117">این آخرین به‌روزرسانی خودکار نرم‌افزار و امنیتی برای این <ph name="DEVICE_TYPE" /> است. برای دریافت به‌روزرسانی‌های بعدی، به مدل جدیدتری ارتقا دهید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">‏درباره ChromeOS</translation>
 <translation id="1155816283571436363">درحال متصل شدن به تلفن</translation>
 <translation id="1160800016654917722">پنجره به پایین سمت چپ منتقل شد</translation>
 <translation id="1164015913575846413">دگرساز + کلیک</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">۱۶ برابر</translation>
 <translation id="1275936815032730048">راه‌انداز + راست‌بَر</translation>
 <translation id="1280332775949918163">پنجره چفت‌شده</translation>
+<translation id="1285625592773741684">مصرف داده اکنون روی «داده تلفن همراه» تنظیم شده است</translation>
 <translation id="1285815028662278915">ممکن است داده تلفن همراه شما از نقطه اتصال پشتیبانی نکند. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">«نور شب» هنگام غروب آفتاب به‌طور خودکار روشن می‌شود</translation>
 <translation id="1288300545283011870">مشخصات گفتار</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">با این کار افزونه‌ها غیرفعال خواهد شد و تنظیماتتان به تنظیمات پیش‌فرض ایمن بازنشانی می‌شود. زبانه‌ها، فایل‌ها، و کوکی‌ها حفظ خواهند شد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">ذره‌بین تمام‌صفحه</translation>
 <translation id="1539727654733007771">هیچ شبکه تلفن همراهی راه‌اندازی نشده است. <ph name="BEGIN_LINK" />نمایه<ph name="END_LINK" /> جدیدی بارگیری کنید.</translation>
+<translation id="1547295885616600893">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="1547808936554660006">‏می‌دانم که نمایه‌های سیم‌کارت داخلی نصب‌شده با Powerwash برداشته نخواهند شد</translation>
 <translation id="1549275686094429035">‏زمان اجرای برنامه ویژه (ARC) فعال شد</translation>
 <translation id="1554640914375980459">وقتی اعلان دریافت می‌کنید صفحه چشمک می‌زند. اگر به نور حساس هستید، بااحتیاط از اعلان‌های چشمک‌زن استفاده کنید.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">‏از Wi-Fi یا شبکه‌های تلفن همراه برای تعیین مکان استفاده شود</translation>
 <translation id="1650407365859096313">در زبانه جدیدی باز می‌شود، اجازه روی <ph name="PERMISSION_STATE" /> تنظیم شده است</translation>
 <translation id="1652326691684645429">فعال کردن «هم‌رسانی با اطراف»</translation>
+<translation id="1662146548738125461">‏درباره ChromeOS Flex</translation>
 <translation id="1663698992894057019">‏برای دریافت آخرین ویژگی‌های امنیتی و نرم‌افزاری، دستگاهتان را به Chromebook جدیدی ارتقا دهید.</translation>
 <translation id="1665328953287874063">برای باز کردن قفل <ph name="DEVICE_TYPE" />، از گذرواژه یا پین استفاده کنید</translation>
 <translation id="1667842670298352129">‏نوشتار موردنظرتان بلند خوانده می‌شود. ابتدا نماد «انتخاب برای شنیدن» را در پایین صفحه‌نمایش انتخاب کنید، سپس نوشتار را برجسته کنید. همچنین می‌توانید از «میان‌بر صفحه‌کلید» استفاده کنید: نوشتار موردنظر را برجسته کنید، سپس کلیدهای «جستجو + S» را فشار دهید.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">توجه: ممکن است امنیت اثر انگشت شما از یک گذرواژه یا پین قوی کمتر باشد.</translation>
 <translation id="1724801751621173132">حالت ورودی</translation>
 <translation id="1741190788710022490">شارژ تطبیقی</translation>
+<translation id="1745732479023874451">مدیریت مخاطبین</translation>
 <translation id="1751335846119670066">کمک گرفتن در خواندن</translation>
 <translation id="1755601632425835748">اندازه نوشتار</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> به <ph name="REMAPPING_OPTION" /> بازنگاری شد.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">نه، همان ۱ کلید کافی است</translation>
 <translation id="1842681835432895345">کنار گذاشتن این نمایشگر از حالت قرینه</translation>
 <translation id="1848219224579402567">خروج از سیستم، وقتی دستگاه بسته می‌شود</translation>
+<translation id="185970820835152459">‏می‌توانید «حساب‌های Google» خودتان را که به سیستم آن‌ها وارد شده‌اید مدیریت کنید. از «حساب‌های Google» شما در مرورگر Chromium، «فروشگاه Play»، ‏Gmail، و محصولات دیگر استفاده می‌شود. اگر می‌خواهید حساب فرد دیگری را اضافه کنید (مثلاً یکی از اعضای خانواده)، به‌جای این کار، شخص جدیدی را به <ph name="DEVICE_TYPE" /> خود اضافه کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">سردتر</translation>
 <translation id="1866589962721094893">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند. هربار دستگاه USB را وصل کنید، اجازه درخواست خواهد شد. هرکدام از برنامه‌های Android به‌صورت جداگانه اجازه‌های اضافی درخواست خواهند کرد.</translation>
 <translation id="1877377290348678128">برچسب (اختیاری)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">صدا</translation>
 <translation id="2097950021134740304">لغو فراموش کردن اشتراک</translation>
 <translation id="2104166991923847969">خاموش شدن خودکار نقطه اتصال</translation>
+<translation id="2106831557840787829">‏ارائه ChromeOS Flex با <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مانند <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزاری Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="2114995631896158695">سیم کارتی وارد نشده است</translation>
 <translation id="2121825465123208577">تغییر اندازه</translation>
 <translation id="2127372758936585790">شارژر برق ضعیف</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">حذف <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2363475280045770326">خطایی در ذخیره کردن پیکربندی روی داد</translation>
+<translation id="236939127352773362">وقتی دستگاه‌ها در حال هم‌رسانی با اطراف باشند</translation>
 <translation id="237336063998926520">‏استفاده از نشانی IP برای تعیین مکان</translation>
 <translation id="2373499590298659902">از «0» برای فشار دادن و نگه داشتن دکمه موشواره استفاده کنید</translation>
 <translation id="2375406435414127095">اتصال به تلفن</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">‏مسدود کردن ترافیک بدون VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">‏«دقت مکان» مکان دقیق‌تری برای برنامه‌ها و سرویس‌ها ارائه می‌دهد. برای انجام این کار، Google به‌صورت دوره‌ای اطلاعات مربوط به حسگرهای دستگاه و سیگنال‌های بی‌سیم دستگاه شما را برای انبوه‌سپاری کردن مکان‌های سیگنال بی‌سیم پردازش می‌کند. از این اطلاعات بدون شناسایی شما برای بهبود دقت مکان و خدمات مکان‌مبنا و به‌طورکلی بهبود، ارائه، و حفظ سرویس‌های Google براساس منافع مشروع Google و اشخاص طرف سوم به‌منظور برآورده کردن نیازهای کاربران استفاده می‌شود.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">سینی خروجی تقریباً پر است</translation>
 <translation id="3390013585654699824">جزئیات برنامه</translation>
 <translation id="3390740059150071453">نگاه کردن به چپ</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">آدرس ايميل</translation>
 <translation id="3701028563242674350">تکان دادن مکان‌نمای موشواره برای بزرگ‌تر کردن آن</translation>
 <translation id="3703699162703116302">بلیت بازآوری شد</translation>
+<translation id="3703994572283698466">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مثل <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="370649949373421643">‏فعال کردن Wi-Fi</translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3707163604290651814">درحال‌حاضر به‌عنوان <ph name="NAME" /> به سیستم وارد شده‌اید</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> چاپگر از سرور چاپ پیدا شد</translation>
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="37143699183660101">پایداری مکان‌نما</translation>
+<translation id="3716540481907974026">‏نسخه ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">پین اشتباه است. امتحان مجدد</translation>
 <translation id="3728681439294129328">پیکربندی نشانی شبکه</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">نمایش زیرخط هنگام نوشتن متن</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="379509625511193653">خاموش</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">دگرساز + بالابر</translation>
 <translation id="3798670284305777884">بلندگو (داخلی)</translation>
 <translation id="3799128412641261490">تنظیمات دسترسی کلیدی</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">صفحه‌کلید داخلی</translation>
 <translation id="3917644013202553949">فضای ذخیره‌سازی کافی برای همگام‌سازی فایل‌ها وجود ندارد. فضای موردنیاز را آزاد کنید.</translation>
 <translation id="3919229493046408863">خاموش کردن اعلان وقتی دستگاه‌ها دراطراف هستند</translation>
+<translation id="3923184630988645767">مصرف داده</translation>
 <translation id="3923494859158167397">هیچ شبکه تلفن همراهی راه‌اندازی نشده است</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">دیگر کاربران این دستگاه نیز می‌توانند از این شبکه استفاده کنند</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">تعریف «پاسخ‌های سریع»</translation>
 <translation id="3994075804072562819">‏به <ph name="SPECIFIC_NAME" /> امکان داده می‌شود دستگاه‌های USB را کنترل کند.</translation>
 <translation id="3994530503403062649">مکان‌یابی دکمه‌های رایانه لوحی</translation>
+<translation id="3997429360543082038">‏درباره ChromiumOS</translation>
 <translation id="4001540981461989979">برجسته کردن مکان‌نمای موشواره هنگام حرکت</translation>
 <translation id="4005817994523282006">روش تشخیص منطقه زمانی</translation>
+<translation id="4019629340646866719">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مثل <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزار Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">کپی کردن جزئیات ساخت</translation>
 <translation id="4028467762035011525">افزودن روش‌های ورودی</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">برای رفتن به آخرین روش ورودی استفاده‌شده، کلیدهای <ph name="KEY_CODES" /> را فشار دهید</translation>
 <translation id="4051177682900543628">جستجو + کلید راست‌بَر</translation>
 <translation id="405181879009056822">‏تنظیمات ChromeOS</translation>
+<translation id="4054070260844648638">نمایان برای همه</translation>
 <translation id="4058720513957747556">‏AppSocket ‏(TCP/IP)</translation>
 <translation id="4066207411788646768">لطفاً اتصالتان را بررسی کنید تا چاپگرهای موجود در شبکه را ببینید.</translation>
 <translation id="4068776064906523561">اثرانگشت‌های ذخیره‌شده</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />، درجه <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">پیدا کردن برنامه‌های قلم بیشتر</translation>
 <translation id="4248401726442101648">دوربین وصل نیست</translation>
+<translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4249116869350613769">بهینه‌سازی باتری</translation>
 <translation id="4250229828105606438">نماگرفت</translation>
 <translation id="425411422794688815">‏مشکلی پیش آمد. مطمئن شوید تلفنتان همین اطراف باشد و قفل آن باز و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{‏۱ «حساب Google»}one{‏<ph name="EXTRA_ACCOUNTS" /> «حساب Google»}other{‏<ph name="EXTRA_ACCOUNTS" /> «حساب Google»}}</translation>
 <translation id="4314497418046265427">با اتصال تلفن به <ph name="DEVICE_TYPE" />، بازده بیشتری داشته باشید</translation>
 <translation id="4314561087119792062">افزودن نام نقطه دسترسی جدید</translation>
+<translation id="4314815835985389558">مدیریت همگام‌سازی</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
 <translation id="4321179778687042513">مهار</translation>
 <translation id="4325433082696797523">فضای ذخیره‌سازی و شارژ</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">تعداد پیشنهادات</translation>
 <translation id="4606933160360542263">ترکیب سفارشی کلید: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">وقتی دکمه سمت چپ موشواره انتخاب شده است، از «/» برای دوکلیک کردن استفاده کنید</translation>
+<translation id="4613863813562375431">‏نسخه ChromiumOS</translation>
 <translation id="461661862154729886">منبع انرژی</translation>
 <translation id="4617880081511131945">امکان برقراری اتصال وجود ندارد</translation>
 <translation id="4620757807254334872">موشواره</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">پیکربندی سرورهای نام شبکه</translation>
 <translation id="4779083564647765204">بزرگ‌نمایی</translation>
 <translation id="4779766576531456629">تغییر دادن نام شبکه تلفن همراه سیم‌کارت داخلی</translation>
+<translation id="4789550509729954245">نمایش اعلان هنگامی‌که دستگاه‌های اطراف درحال هم‌رسانی هستند</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">‏فعال کردن شتاب TrackPoint</translation>
 <translation id="479664067938200069">برنامه‌های نصب‌شده از <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">متصل کردن پنجره</translation>
 <translation id="4964673849688379040">درحال بررسی...</translation>
 <translation id="4967571733817147990">سفارشی‌سازی دکمه‌های موشواره</translation>
+<translation id="4970880042055371251">‏نسخه ChromeOS</translation>
 <translation id="4972129977812092092">ویرایش چاپگر</translation>
 <translation id="4975771730019223894">نشان‌گذاری برنامه</translation>
 <translation id="4979263087381759787">گزینه‌های توسعه‌دهندگان</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">‏با این کار، دسترسی به Google Drive در این Chromebook، ازجمله دسترسی به فایل‌هایی که به‌صورت آفلاین دردسترس قرار گرفته‌اند برداشته می‌شود</translation>
 <translation id="5196790039230503600">از اشاره استفاده کنید، سپس با تکان دادن سرتان محلی را که می‌خواهید مورد در آنجا رها شود نشان دهید. برای رها کردن مورد، دوباره از اشاره استفاده کنید.</translation>
 <translation id="5197255632782567636">اینترنت</translation>
+<translation id="5205484256512407285">برای انتقال هرگز از داده تلفن همراه استفاده نمی‌شود</translation>
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="5208926629108082192">اطلاعات شبکه تلفن همراه دستگاه</translation>
 <translation id="5208988882104884956">نیم‌عرض</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">‏برنامه سیستم ChromeOS</translation>
 <translation id="5334113802138581043">دسترسی میکروفون</translation>
 <translation id="5336689872433667741">مکان‌نما و صفحه لمسی</translation>
+<translation id="5337926771328966926">نام دستگاه فعلی <ph name="DEVICE_NAME" /> است</translation>
 <translation id="5340900621595888432">ارسال داده‌های استفاده و تشخیص خرابی</translation>
 <translation id="5369694795837229225">‏راه‌اندازی محیط برنامه‌نویسی Linux</translation>
 <translation id="5377367976106153749">دسترسی به دوربین روشن شود؟</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">این تنظیمات فقط توسط مالک قابل تغییر هستند:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">قاب</translation>
+<translation id="5840680448799937675">فایل‌ها همیشه درحالت آفلاین هم‌رسانی می‌شود</translation>
 <translation id="5841270259333717135">پیکربندی اترنت</translation>
 <translation id="5842497610951477805">فعال کردن بلوتوث</translation>
 <translation id="5846200638699387931">خطای دستوری رابطه: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">‏پرسیدن پیش از کپی یا منتقل کردن فایل‌های Microsoft به Google Drive</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
 <translation id="594048410531370124">کلید تشخیص داده نشد. برای <ph name="RESPONSE" />، یکی از کلیدها را فشار دهید.</translation>
+<translation id="5942779427914696408">رؤیت‌پذیری دستگاه</translation>
 <translation id="5945192511027649793">غیرفعال کردن صفحه لمسی</translation>
 <translation id="5947651424015173580">دوکلیک با موشواره</translation>
 <translation id="594993197557058302">‏کلیدهای توصیف‌گر ‎۱-۴ (مهار، دگرساز، تبدیل، جستجو، یا راه‌انداز) و ۱ کلید دیگر را فشار دهید. همچنین می‌توانید یک کلید تکی را انتخاب کنید.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">تخصیص اشاره</translation>
 <translation id="5968022600320704045">بدون نتیجه جستجو</translation>
 <translation id="5969728632630673489">اعلان میان‌برهای صفحه‌کلید رد شد</translation>
+<translation id="5979353814339191480">‏این گزینه برای دستگاه‌های Chromebook که قفل سخت‌افزاری شبکه تلفن همراه یا طرح داده دارند یا هنگام اشتراک‌گذاری اینترنت با نقطه اتصال قابل‌حمل اعمال می‌شود.</translation>
 <translation id="5985556342298151179">‏برنامه Chrome را سرپرست دستگاهتان نصب کرده است.</translation>
 <translation id="5986442691296752186">‏به برنامه‌های Linux امکان داده می‌شود دستگاه‌های USB را کنترل کنند.</translation>
 <translation id="598810097218913399">برداشتن تخصیص</translation>
 <translation id="5988563937187882754">نگاه کردن به راست</translation>
+<translation id="5990266201903445068">‏فقط Wi-Fi</translation>
 <translation id="5992225669837656567">همه میکروفون‌ها قطع ارتباط شده است</translation>
 <translation id="5999630716831179808">صداها</translation>
 <translation id="6002458620803359783">صداهای برگزیده</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">‏دکمه TrackPoint اصلی</translation>
 <translation id="6048747414605857443">‏انتخاب و سفارشی کردن صداهای نوشتار به گفتار برای ChromeVox و «انتخاب برای شنیدن»</translation>
 <translation id="6050189528197190982">سیاه‌وسفید</translation>
+<translation id="6054961935262556546">تغییر رؤیت‌پذیری</translation>
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6059925163896151826">‏دستگاه‌های USB</translation>
 <translation id="6064764629679333574">بهبود کیفیت صدای میکروفون بلوتوث با ارتقای کیفیت صدای کم‌وضوح به صدای پروضوح.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Microsoft OneDrive سؤال شود</translation>
 <translation id="6265687851677020761">برداشتن درگاه</translation>
 <translation id="6266532094411434237">درحال متصل شدن به <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">‏از Chromium خارج می‌شوید؟</translation>
 <translation id="6270309713620950855">تذکر میکروفون خاموش</translation>
 <translation id="6274089201566806618">درحال متصل شدن به <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">۴ ثانیه</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">برای رفتن به روش ورودی بعدی، کلیدهای <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />مهار<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />تبدیل<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />فاصله<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> را فشار دهید</translation>
 <translation id="6463488491707167747">حذف این واژه‌نامه</translation>
 <translation id="6463596731306859179">‏بالاپرهای ناخواسته یا رفتارهای غیرمنتظره دیگر مشاهده می‌کنید؟ گاهی اوقات، برنامه‌ها و افزونه‌هایی که نصب می‌کنید می‌توانند بدون اطلاع شما تنظیمات ChromeOS را تغییر دهند.</translation>
+<translation id="6465841119675156448">بدون اینترنت</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> شما سپس می‌تواند این کارها را بکند:</translation>
 <translation id="6469557521904094793">روشن کردن شبکه تلفن همراه</translation>
 <translation id="6470120577693311302">اعلان‌های چشمک‌زن</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">حالت جلوه</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">میان‌بر انتخاب</translation>
+<translation id="6632473616050862500">‏ارائه ChromeOS Flex به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6646476869708241165">خاموش کردن «جفت‌سازی سریع»</translation>
 <translation id="6647690760956378579">پیش‌نمایش صدای طبیعی</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> می‌خواهد تأیید کند این فرد شما هستید</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">دستگاه‌های دردسترس اینجا نمایش داده می‌شوند.</translation>
 <translation id="6776729248872343918">فعال کردن «جفت‌سازی سریع»</translation>
 <translation id="6777845730143344223">‏درباره اشتراک‌های Passpoint بیشتر بدانید</translation>
+<translation id="6779406956731413166">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6783036716881942511">این دستگاه فراموش شود؟</translation>
 <translation id="6783667414610055871">‏تنظیمات Microsoft OneDrive</translation>
 <translation id="6785915470941880363">پیمایش معکوس <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">تنظیمات صدای نوشتار به گفتار</translation>
 <translation id="7282547042039404307">روان</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">اطلاعات مهم درباره استفاده و ایمنی</translation>
 <translation id="7303485269821975179">گذرواژه <ph name="DEVICE_TYPE" /> تنظیم کنید</translation>
 <translation id="7304030187361489308">بالا</translation>
 <translation id="7308643132139167865">زبان‌های وب‌سایت</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">عکس‌های اخیر</translation>
 <translation id="7414464185801331860">۱۸ برابر</translation>
 <translation id="7417435070053325657">‫<ph name="BLOCKED_APPS_SIZE" /> برنامه از <ph name="APPS_LIST_SIZE" /> برنامه مسدود شده است</translation>
+<translation id="7423425410216218516">«رؤیت‌پذیری» به‌مدت <ph name="MINUTES" /> دقیقه روشن است</translation>
 <translation id="7423513079490750513">حذف <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">کمک به نوشتن</translation>
 <translation id="7429415133937917139">‏خروجی نمایشگر بریل قابل‌بازخوانی را در
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">تنظیمات اثر انگشت</translation>
 <translation id="7578692661782707876">لطفاً کد تأییدتان را وارد کنید.</translation>
 <translation id="7582582252461552277">این شبکه ارجحیت دارد</translation>
+<translation id="7582844466922312471">داده‌های تلفن همراه</translation>
 <translation id="7587806318633605613">سابقه پیشنهاد</translation>
 <translation id="7590883480672980941">تنظیمات ورودی</translation>
 <translation id="7592060599656252486">برخی</translation>
 <translation id="7602173054665172958">مدیریت چاپ</translation>
 <translation id="7605163396341021431">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">‏اولویت‌های Android</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612655942094160088">فعال کردن ویژگی‌های تلفن مرتبط.</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">استفاده از اتصال ایمن برای جستجوی سایت‌ها</translation>
 <translation id="7634337648687970851">درحال‌حاضر از بازیابی داده‌های محلی پشتیبانی نمی‌شود.</translation>
 <translation id="7640256527901510478">‏شماره IMEI دستگاه شما <ph name="IMEI_NUMBER" /> و شماره سریال آن <ph name="SERIAL_NUMBER" /> است. می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد.</translation>
+<translation id="7640308610547854367">‏به نسخه قبلی ChromeOS بازگشتید. برای دریافت به‌روزرسانی، منتظر بمانید تا نسخه بعدی دردسترس قرار گیرد.</translation>
 <translation id="7641513591566880111">نام نمایه جدید</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> اضافه شد</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (مالک)</translation>
 <translation id="7648048654005891115">‏شیوه keymap</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{۱ اثر انگشت تنظیم شده است}one{{COUNT} اثر انگشت تنظیم شده است}other{{COUNT} اثر انگشت تنظیم شده است}}</translation>
+<translation id="7650677314924139716">‏تنظیم کنونی مصرف داده روی «فقط هنگام استفاده از Wi-Fi» است</translation>
 <translation id="7651400349472467012">نقطه اتصال فوری دردسترس است</translation>
 <translation id="7651784568388208829">ادامه کار «مرکز کنترل تلفن»</translation>
 <translation id="7658239707568436148">لغو</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">ترجمه</translation>
 <translation id="7915457674565721553">برای راه‌اندازی کنترل‌های والدین، به اینترنت متصل شوید</translation>
+<translation id="7917876797003313048">‏می‌توانید «حساب‌های Google» خودتان را که به سیستم آن‌ها وارد شده‌اید مدیریت کنید. از «حساب‌های Google» شما در مرورگر Chrome، «فروشگاه Play»، ‏Gmail، و محصولات دیگر استفاده می‌شود. اگر می‌خواهید حساب فرد دیگری را اضافه کنید (مثلاً یکی از اعضای خانواده)، به‌جای این کار، شخص جدیدی را به <ph name="DEVICE_TYPE" /> خود اضافه کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /></translation>
 <translation id="7920482456679570420">واژه‌هایی را که نیازی به غلط‌گیری املا ندارند اضافه کنید</translation>
 <translation id="7921347341284348270">نمی‌توانید اعلان‌های تلفنتان را در این حساب مدیریت‌شده مشاهده کنید. با حساب دیگری دوباره امتحان کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">بازنشانی کردن تنظیمات مکان‌نما</translation>
 <translation id="8437209419043462667">امریکایی</translation>
 <translation id="8439506636278576865">ترجمه صفحات نوشته شده به این زبان پیشنهاد داده شود</translation>
+<translation id="8449347986464073209">حذف و خروج از سیستم</translation>
 <translation id="8451512073679317615">دستیار</translation>
 <translation id="8455775311562941553">به <ph name="HOST_DEVICE_NAME" /> متصل است</translation>
 <translation id="8473540203671727883">خواندن نوشتار زیر نشانگر موشواره</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">صدا خاموش است. صدا را روشن کنید.</translation>
 <translation id="888256071122006425">تنظیمات موشواره و صفحه لمسی</translation>
 <translation id="8885449336974696155">‏با گزارش کردن <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن ChromeOS کمک کنید</translation>
+<translation id="8890170499370378450">ممکن است هزینه داده تلفن همراه اعمال شود</translation>
 <translation id="8890529496706615641">نام نمایه تغییر نکرد. لطفاً دوباره امتحان کنید یا برای دریافت پشتیبانی فنی، با شرکت مخابراتی خود تماس بگیرید.</translation>
 <translation id="8894761918470382415">محافظت از دسترسی به داده‌ها برای لوازم جانبی</translation>
 <translation id="8896830132794747524">با حرکات سریع‌تر موشواره، مکان‌نما بیشتر حرکت خواهد کرد</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> قطع ارتباط شده است</translation>
 <translation id="8980345560318123814">گزارش‌های بازخورد</translation>
 <translation id="8981825781894055334">کاغذ کم است</translation>
+<translation id="8984694057134206124">به‌مدت <ph name="MINUTES" /> دقیقه برای همه افراد نمایان خواهید بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">آستانه تشخیص</translation>
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="8991694323904646277">دوربین متصل نیست</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">‏حذف Google Play و برنامه‌های Android</translation>
 <translation id="910000385680858937">مجاز است – <ph name="PERMISSION_DETAILS" />. میکروفونی را به دستگاهتان وصل کنید.</translation>
 <translation id="9100416672768993722">برای رفتن به آخرین روش ورودی استفاده‌شده، کلیدهای <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />مهار<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />فاصله<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> را فشار دهید</translation>
+<translation id="9108072915170399168">تنظیم کنونی مصرف داده روی «بدون اینترنت» است</translation>
 <translation id="9108294543511800041">اکنون می‌توانید عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="9109122242323516435">برای آزاد کردن فضا، فایل‌ها را در حافظه دستگاه حذف کنید.</translation>
 <translation id="9111330022786356709">افزودن یا پیدا کردن دکمه‌های روی موشواره</translation>

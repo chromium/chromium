@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Պատրա՛ստ է:</translation>
 <translation id="1149483087970735785">Օժանդակ տեխնոլոգիա</translation>
 <translation id="1150490752229770117">Սա ծրագրային և անվտանգության կարգավորումների վերջին ավտոմատ թարմացումն է այս <ph name="DEVICE_TYPE" /> սարքի համար։ Հետագա թարմացումները ստանալու համար անցեք ավելի նոր մոդելի։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS-ի մասին</translation>
 <translation id="1155816283571436363">Միացում հեռախոսին</translation>
 <translation id="1160800016654917722">Պատուհանը տեղափոխվեց ներքև և ձախ</translation>
 <translation id="1164015913575846413">alt + սեղմում</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">գործարկիչ + աջ սլաք</translation>
 <translation id="1280332775949918163">Կապել պատուհանը</translation>
+<translation id="1285625592773741684">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Բջջային ինտերնետ»</translation>
 <translation id="1285815028662278915">Ձեր բջջային ինտերնետը կարող է չաջակցել թեժ կետի օգտագործումը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Մութն ընկնելուն պես գիշերային ռեժիմը ավտոմատ կմիանա</translation>
 <translation id="1288300545283011870">Ձայնի կարգավորումներ</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Ընդլայնումները կանջատվեն, և կվերականգնվեն անվտանգ կանխադրված կարգավորումները։ Ներդիրները, ֆայլերը և քուքիները կպահպանվեն։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Լիաէկրան խոշորացույց</translation>
 <translation id="1539727654733007771">Բջջային ցանց կարգավորված չէ։ Ներբեռնեք նոր <ph name="BEGIN_LINK" />պրոֆիլ<ph name="END_LINK" />։</translation>
+<translation id="1547295885616600893">ChromeOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա։</translation>
 <translation id="1547808936554660006">Ես հասկանում եմ, որ eSIM-ի տեղադրված պրոֆիլները չեն հեռացվի Powerwash գործառույթն օգտագործելու դեպքում</translation>
 <translation id="1549275686094429035">ARC-ն միացված է</translation>
 <translation id="1554640914375980459">Էկրանը թարթում է, երբ ծանուցումներ եք ստանում։ Զգուշորեն օգտագործեք թարթող ծանուցումները, եթե լուսազգայուն եք։</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Տեղորոշելու համար օգտագործել Wi‑Fi կամ բջջային ցանցեր</translation>
 <translation id="1650407365859096313">Բացվում է նոր ներդիրում։ Թույլտվության տեսակը՝ <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Միացնել մոտակա սարքերի հետ փոխանակումը</translation>
+<translation id="1662146548738125461">ChromeOS Flex-ի մասին</translation>
 <translation id="1663698992894057019">Ձեռք բերեք Chromebook-ի նոր մոդելը՝ անվտանգության և ծրագրային թարմացումներ ստանալու համար</translation>
 <translation id="1665328953287874063">Օգտագործեք գաղտնաբառ կամ PIN կոդ՝ ձեր սարքը (<ph name="DEVICE_TYPE" />) ապակողպելու համար</translation>
 <translation id="1667842670298352129">Հնչեցրեք ընդգծված տեքստը։ Նախ էկրանի ներքևում սեղմեք «Ընտրեք և լսեք» պատկերակը, ապա ընդգծեք տեքստը։ Նաև կարող եք օգտագործել ստեղնային դյուրանցում. ընդգծեք տեքստը, ապա սեղմեք Որոնում + S։</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Նկատի ունեցեք, որ ապակողպման հուսալի գաղտնաբառը կամ PIN կոդը կարող է մատնահետքից ավելի ապահով լինել:</translation>
 <translation id="1724801751621173132">Ներածման ռեժիմ</translation>
 <translation id="1741190788710022490">Հարմարվող լիցքավորում</translation>
+<translation id="1745732479023874451">Կառավարել կոնտակտները</translation>
 <translation id="1751335846119670066">Օգնիր ինձ կարդալ</translation>
 <translation id="1755601632425835748">Տեքստի չափսը</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />ն այժմ աշխատում է որպես «<ph name="REMAPPING_OPTION" />» կոճակ։</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Ոչ, կարիք չկա</translation>
 <translation id="1842681835432895345">Չօգտագործել այս էկրանը հայելու ռեժիմում</translation>
 <translation id="1848219224579402567">Դուրս գալ հաշվից, երբ սարքի կափարիչը փակ է</translation>
+<translation id="185970820835152459">Դուք կարող եք կառավարել ձեր Google հաշիվները, որոնցում մուտք եք գործել։ Դրանք օգտագործվում են Chromium դիտարկիչում, Play Խանութում, Gmail-ում և այլ ծառայություններում։ Եթե ուզում եք ընտանեկան խմբի անդամի կամ մեկ ուրիշի համար հաշիվ ավելացնել, <ph name="DEVICE_TYPE" /> սարքում ավելացրեք նոր օգտատեր։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Սառը</translation>
 <translation id="1866589962721094893">Android հավելվածներին թույլ տվեք կառավարել USB սարքերն այս Chromebook-ում։ Թույլտվության հարցումը կարվի ամեն անգամ, երբ դուք USB սարք միացնեք։ Առանձին Android հավելվածներ կհայցեն լրացուցիչ թույլտվություններ։</translation>
 <translation id="1877377290348678128">Պիտակ (կամընտիր)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Ձայն</translation>
 <translation id="2097950021134740304">Չեղարկել բաժանորդագրությունից հրաժարումը</translation>
 <translation id="2104166991923847969">Ավտոմատ անջատել թեժ կետը</translation>
+<translation id="2106831557840787829">ChromeOS Flex-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="2114995631896158695">SIM քարտ տեղադրված չէ</translation>
 <translation id="2121825465123208577">Չափափոխել</translation>
 <translation id="2127372758936585790">Մարտկոցի լիցքը սպառվում է</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Հեռացնել <ph name="USER_NAME" />-ին</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2363475280045770326">Չհաջողվեց պահել կարգավորումները</translation>
+<translation id="236939127352773362">Երբ մոտակա սարքերը միմյանց հետ տվյալներ են փոխանակում</translation>
 <translation id="237336063998926520">Օգտագործեք ձեր IP հասցեն՝ տեղորոշման համար</translation>
 <translation id="2373499590298659902">Օգտագործեք «0» ստեղնը՝ մկնիկի որևէ կոճակ սեղմելու և պահելու համար</translation>
 <translation id="2375406435414127095">Միացրեք ձեր հեռախոսը</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Արգելափակել առանց VPN-ի թրաֆիկը</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Տեղորոշման ճշգրտությունը տեղադրության ավելի ճշգրիտ տվյալներ է տրամադրում հավելվածների և ծառայությունների համար։ Այդ նպատակով Google-ը պարբերաբար մշակում է սարքի սենսորների և սարքից ստացվող անլար ազդանշանների մասին տեղեկությունները՝ անլար ազդանշանների գտնվելու վայրերի մասին տվյալներ հավաքելու համար։ Դրանք օգտագործվում են առանց ձեզ նույնականացնելու և միտված են բարելավելու տեղադրության ճշգրտությունը և տեղադրության տվյալների հիման վրա աշխատող ծառայությունները, ինչպես նաև լավացնելու, տրամադրելու և աջակցելու Google-ի ծառայությունները՝ ելնելով Google-ի և երրորդ կողմերի օրինական շահերից՝ օգտատերերի կարիքները սպասարկելու համար։</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Տպիչի ելքային դարակը գրեթե լցված է</translation>
 <translation id="3390013585654699824">Հավելվածի մասին</translation>
 <translation id="3390740059150071453">Նայեք ձախ</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Էլ․ հասցե</translation>
 <translation id="3701028563242674350">Թափահարեք մկնիկի նշորդը՝ այն մեծացնելու համար</translation>
 <translation id="3703699162703116302">Տոմսը թարմացված է</translation>
+<translation id="3703994572283698466">ChromeOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="370649949373421643">Միացնել Wi-Fi-ը</translation>
 <translation id="370665806235115550">Բեռնում…</translation>
 <translation id="3707163604290651814">Դուք մուտք եք գործել որպես <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Տպման սերվերում գտնվել է <ph name="NUM_PRINTERS" /> տպիչ</translation>
 <translation id="371370241367527062">Առջևի խոսափող</translation>
 <translation id="37143699183660101">Նշորդի կայունությունը</translation>
+<translation id="3716540481907974026">ChromeOS Flex-ի տարբերակը</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN կոդը սխալ է։ Նորից փորձեք</translation>
 <translation id="3728681439294129328">Կարգավորել ցանցի հասցեն</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Կոմպոզիցիայի տեքստի համար ցուցադրել ներքևի գծիկ</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="379509625511193653">Անջատված է</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + վերև սլաք</translation>
 <translation id="3798670284305777884">Բարձրախոս (ներքին)</translation>
 <translation id="3799128412641261490">Switch Access-ի կարգավորումներ</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Ներկառուցված ստեղնաշար</translation>
 <translation id="3917644013202553949">Ձեր ֆայլերը համաժամացնելու համար բավարար տարածք չկա։ Փորձեք տարածք ազատել։</translation>
 <translation id="3919229493046408863">Անջատել ծանուցումը, երբ մոտակա սարքեր գտնվեն</translation>
+<translation id="3923184630988645767">Թրաֆիկի օգտագործում</translation>
 <translation id="3923494859158167397">Բջջային ցանց կարգավորված չէ</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Այս ցանցը հասանելի է սարքի այլ օգտատերերին</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Արագ պատասխաններ․ սահմանումներ</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />-ին թույլ տվեք կառավարել USB սարքերը։</translation>
 <translation id="3994530503403062649">Գտեք պլանշետի կոճակները</translation>
+<translation id="3997429360543082038">ChromiumOS-ի մասին</translation>
 <translation id="4001540981461989979">Ընդգծել մկնիկի նշորդը, երբ այն շարժվում է</translation>
 <translation id="4005817994523282006">Ժամային գոտու որոշման եղանակ</translation>
+<translation id="4019629340646866719">ChromiumOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Պատճենել կառուցման տվյալները</translation>
 <translation id="4028467762035011525">Ավելացնել ներածման մեթոդներ</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Ներածման նախորդ եղանակին անցնելու համար սեղմեք <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">որոնում + աջ սլաք</translation>
 <translation id="405181879009056822">ChromeOS-ի կարգավորումներ</translation>
+<translation id="4054070260844648638">Բոլորին տեսանելի</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Միացեք համացանցին, որպեսզի կարողանաք տեսնել ձեր ցանցում հասանելի տպիչները</translation>
 <translation id="4068776064906523561">Պահված մատնահետքեր</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, մակարդակ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Որոնել ստիլուսի համար այլ հավելվածներ</translation>
 <translation id="4248401726442101648">Տեսախցիկ միացված չէ</translation>
+<translation id="424864128008805179">Դուրս գա՞լ Chrome-ից:</translation>
 <translation id="4249116869350613769">Մարտկոցի տնտեսում</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="425411422794688815">Սխալ առաջացավ։ Համոզվեք, որ ձեր հեռախոսը մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google հաշիվ}one{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}other{<ph name="EXTRA_ACCOUNTS" /> Google հաշիվ}}</translation>
 <translation id="4314497418046265427">Աշխատեք ավելի արդյունավետ՝ միացնելով հեռախոսը <ph name="DEVICE_TYPE" /> սարքին</translation>
 <translation id="4314561087119792062">Ավելացնել մուտքի կետի նոր անվանում</translation>
+<translation id="4314815835985389558">Համաժամացման կառավարում</translation>
 <translation id="4320177379694898372">Համացանցի կապակցում չկա</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Հիշողություն և սնուցում</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Հուշումների թիվը</translation>
 <translation id="4606933160360542263">Ստեղների հատուկ համադրություն՝ <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Երբ ընտրված է մկնիկի ձախ կոճակը, օգտագործեք «/» ստեղնը՝ երկու անգամ սեղմելու համար</translation>
+<translation id="4613863813562375431">ChromiumOS-ի տարբերակը</translation>
 <translation id="461661862154729886">Էներգիայի աղբյուր</translation>
 <translation id="4617880081511131945">Հնարավոր չէ կապ հաստատել</translation>
 <translation id="4620757807254334872">մկնիկ</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">Կարգավորել DNS-ների հասցեները</translation>
 <translation id="4779083564647765204">Խոշորացում</translation>
 <translation id="4779766576531456629">Վերանվանել eSIM-ի բջջային ցանցը</translation>
+<translation id="4789550509729954245">Ցույց տալ ծանուցում, երբ մոտակա սարքերը ֆայլերով են փոխանակվում</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Միացնել TrackPoint-ի արագացումը</translation>
 <translation id="479664067938200069">Տեղադրված հավելվածներ <ph name="APP_NAME" /> հավելվածից</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">Ամրացնել պատուհանը</translation>
 <translation id="4964673849688379040">Ստուգում…</translation>
 <translation id="4967571733817147990">Անհատականացնել մկնիկի կոճակները</translation>
+<translation id="4970880042055371251">ChromeOS-ի տարբերակը</translation>
 <translation id="4972129977812092092">Փոփոխել տպիչի տվյալները</translation>
 <translation id="4975771730019223894">Նշանակների ավելացում հավելվածներին</translation>
 <translation id="4979263087381759787">Ծրագրավորողի ընտրանքներ</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">Google Drive-ը, ինչպես նաև բոլոր օֆլայն ֆայլերը այս Chromebook-ում անհասանելի կդառնան</translation>
 <translation id="5196790039230503600">Օգտագործեք այս ժեստը, ապա գլխով ցույց տվեք, թե ուր է պետք տեղափոխել տարրը։ Գործողությունն ավարտելու համար կրկնեք ժեստը։</translation>
 <translation id="5197255632782567636">Համացանց</translation>
+<translation id="5205484256512407285">Փոխանցելու համար երբեք չօգտագործել բջջային ինտերնետ</translation>
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="5208926629108082192">Տեղեկություններ սարքի բջջային ցանցի մասին</translation>
 <translation id="5208988882104884956">Կիսալայնք</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">ChromeOS-ի համակարգային հավելված</translation>
 <translation id="5334113802138581043">Խոսափողի հասանելիություն</translation>
 <translation id="5336689872433667741">Նշորդ և հպահարթակ</translation>
+<translation id="5337926771328966926">Սարքի ընթացիկ անունն է <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Ուղարկել դիագնոստիկ և օգտագործման տվյալներ</translation>
 <translation id="5369694795837229225">Կարգավորել Լինուքսի մշակման միջավայրը</translation>
 <translation id="5377367976106153749">Միացնե՞լ տեսախցիկի օգտագործման թույլտվությունը</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">Այս կարգավորումները կարող են միայն փոփոխվել սեփականատիրոջ կողմից՝</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Պատյան</translation>
+<translation id="5840680448799937675">Ֆայլերը միշտ կփոխանցվեն անցանց ռեժիմում</translation>
 <translation id="5841270259333717135">Կարգավորել Ethernet-ը</translation>
 <translation id="5842497610951477805">Միացնել/անջատել Bluetooth-ը</translation>
 <translation id="5846200638699387931">Հարաբերությունների շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Թույլտվություն հարցնել նախքան Google Drive-ում Microsoft ֆայլեր պատճենելը կամ տեղափոխելը</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="594048410531370124">Անհայտ ստեղն։ Սեղմեք որևէ ստեղն՝ <ph name="RESPONSE" /> համար։</translation>
+<translation id="5942779427914696408">Սարքի տեսանելիությունը</translation>
 <translation id="5945192511027649793">Անջատել հպահարթակը</translation>
 <translation id="5947651424015173580">Կրկնակի սեղմել մկնիկի ձախ կոճակը</translation>
 <translation id="594993197557058302">Սեղմեք 4 կերպափոխիչ ստեղներից մեկը (ctrl, alt, shift, որոնում կամ գործարկիչ) ու ևս 1 ստեղն։ Կարող եք նաև մեկ ստեղն ընտրել։</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">Նշանակել ժեստ</translation>
 <translation id="5968022600320704045">Որոնման արդյունքներ չկան</translation>
 <translation id="5969728632630673489">Ստեղնային դյուրանցման ծանուցումը փակվեց</translation>
+<translation id="5979353814339191480">Այս պարամետրը կիրառվում է Chromebook սարքերում, որոնք ունեն բջջային ինտերնետի սակագնային պլան կամ մոդեմ, ինչպես նաև շարժական թեժ կետին միանալիս։</translation>
 <translation id="5985556342298151179">Սարքի ադմինիստրատորի կողմից Chrome հավելված է տեղադրվել։</translation>
 <translation id="5986442691296752186">Linux հավելվածներին թույլ տվեք կառավարել USB սարքերը։</translation>
 <translation id="598810097218913399">Հեռացնել նշանակումը</translation>
 <translation id="5988563937187882754">Նայեք աջ</translation>
+<translation id="5990266201903445068">Միայն Wi-Fi</translation>
 <translation id="5992225669837656567">Բոլոր մկնիկներն անջատվել են</translation>
 <translation id="5999630716831179808">Ձայներ</translation>
 <translation id="6002458620803359783">Նախընտրելի ձայներ</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">TrackPoint-ի հիմնական կոճակ</translation>
 <translation id="6048747414605857443">Ընտրեք և անհատականացրեք տեքստի հնչեցման ձայները ChromeVox-ի և «Ընտրեք և լսեք» գործառույթի համար</translation>
 <translation id="6050189528197190982">Գորշասանդղակ</translation>
+<translation id="6054961935262556546">Փոխել տեսանելիության կարգավորումները</translation>
 <translation id="6059276912018042191">Վերջերս բացված Chrome-ի ներդիրներ</translation>
 <translation id="6059925163896151826">USB սարքեր</translation>
 <translation id="6064764629679333574">Բարելավեք Bluetooth խոսափողի ձայնի որակը՝ աուդիոյի լուծաչափը ցածրից դարձնելով բարձր։</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Թույլտվություն հարցնել նախքան Microsoft OneDrive-ում Microsoft ֆայլեր պատճենելը կամ տեղափոխելը</translation>
 <translation id="6265687851677020761">Հեռացնել միացքը</translation>
 <translation id="6266532094411434237">Միացում <ph name="DEVICE" /> սարքին</translation>
+<translation id="6268381023930128611">Դուրս գա՞լ Chromium-ից:</translation>
 <translation id="6270309713620950855">Ձայնն անջատված լինելու մասին հիշեցում</translation>
 <translation id="6274089201566806618">Միացում «<ph name="HOST_DEVICE_NAME" />» սարքին</translation>
 <translation id="628352644014831790">4 վայրկյան</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">Ներածման հաջորդ եղանակին անցնելու համար սեղմեք <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />բացատ<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Ջնջե՞լ այս բառարանը</translation>
 <translation id="6463596731306859179">Անսպասելիորեն ելնող պատուհաննե՞ր են հայտնվում, կամ ձեր սարքն անսովո՞ր է աշխատում։ Ձեր տեղադրած որոշ հավելվածներ և ընդլայնումներ կարող են առանց ձեր իմացության փոխել ChromeOS-ի կարգավորումները։</translation>
+<translation id="6465841119675156448">Առանց ինտերնետի</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> սարքն այժմ կարող է՝</translation>
 <translation id="6469557521904094793">Միացնել բջջային ցանցը</translation>
 <translation id="6470120577693311302">Թարթող ծանուցումներ</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">Էֆեկտների ռեժիմ</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Ընտրարկման դյուրանցում</translation>
+<translation id="6632473616050862500">ChromeOS Flex-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա։</translation>
 <translation id="6646476869708241165">Անջատել արագ զուգակցումը</translation>
 <translation id="6647690760956378579">Բնական ձայնի նախնական ունկնդրում</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">Այստեղ կցուցադրվեն հասանելի սարքերը</translation>
 <translation id="6776729248872343918">Միացնել արագ զուգակցումը</translation>
 <translation id="6777845730143344223">Իմանալ ավելին Passpoint բաժանորդագրությունների մասին</translation>
+<translation id="6779406956731413166">ChromiumOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա։</translation>
 <translation id="6783036716881942511">Հեռացնե՞լ այս սարքը</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-ի կարգավորումներ</translation>
 <translation id="6785915470941880363">Հակառակ ուղղությամբ ոլորում։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">Տեքստի հնչեցման կարգա­վորումներ</translation>
 <translation id="7282547042039404307">Հարթ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Կարևոր տեղեկություններ օգտագործման և անվտանգության մասին</translation>
 <translation id="7303485269821975179">Կարգավորեք գաղտնաբառ <ph name="DEVICE_TYPE" /> սարքի համար</translation>
 <translation id="7304030187361489308">Բարձր</translation>
 <translation id="7308643132139167865">Կայքերի լեզուներ</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">Վերջին լուսանկարները</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" /> հավելվածից <ph name="BLOCKED_APPS_SIZE" />-ն արգելափակված է</translation>
+<translation id="7423425410216218516">Սարքի տեսանելիությունը միացված է <ph name="MINUTES" /> րոպեով</translation>
 <translation id="7423513079490750513">Հեռացնել (<ph name="INPUT_METHOD_NAME" />)</translation>
 <translation id="7425037327577270384">Օգնիր ինձ գրել</translation>
 <translation id="7429415133937917139">Նմանակում է թարմացվող բրայլյան էկրանի արտածումը
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">Մատնահետքի կարգավորումներ</translation>
 <translation id="7578692661782707876">Մուտքագրեք ձեր հաստատման կոդը</translation>
 <translation id="7582582252461552277">Նախընտրել այս ցանցը</translation>
+<translation id="7582844466922312471">Բջջային մոդեմ</translation>
 <translation id="7587806318633605613">Հուշումների պատմություն</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
 <translation id="7592060599656252486">Որոշ նշաններ</translation>
 <translation id="7602173054665172958">Տպելու առաջադրանքների կառավարում</translation>
 <translation id="7605163396341021431">Android հավելվածներին թույլ տվեք կառավարել USB սարքերն այս Chromebook-ում</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android-ի կարգավորումներ</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612655942094160088">Միացնել կապակցված հեռախոսի գործառույթները։</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">Ապահով միացումներ օգտագործեք՝ կայքեր որոնելու համար</translation>
 <translation id="7634337648687970851">Սարքի տվյալների վերականգնումն այս պահին չի աջակցվում։</translation>
 <translation id="7640256527901510478">Ձեր սարքի IMEI կոդն է <ph name="IMEI_NUMBER" />, և սերիական համարն է <ph name="SERIAL_NUMBER" />։ Դրանց միջոցով կարող եք ակտիվացնել ծառայությունը։</translation>
+<translation id="7640308610547854367">Դուք վերականգնել եք ChromeOS-ի նախորդ տարբերակը։ Թարմացումներ ստանալու համար սպասեք մինչև հաջորդ տարբերակը հասանելի լինի։</translation>
 <translation id="7641513591566880111">Նոր պրոֆիլի անունը</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> օգտատերն ավելացվեց</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (սեփականատեր)</translation>
 <translation id="7648048654005891115">Ստեղնաշարի դասավորության ոճը</translation>
 <translation id="7649070708921625228">Օգնություն</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Կարգավորվել է 1 մատնահետք}one{Կարգավորվել է {COUNT} մատնահետք}other{Կարգավորվել է {COUNT} մատնահետք}}</translation>
+<translation id="7650677314924139716">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Միայն Wi-Fi»</translation>
 <translation id="7651400349472467012">Ակնթարթային թեժ կետ է հասանելի</translation>
 <translation id="7651784568388208829">Առաջադրանքների շարունակում հեռախոսի կառավարման կենտրոնում</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Լինուքս</translation>
 <translation id="7912974581251770345">Թարգմանություն</translation>
 <translation id="7915457674565721553">Ծնողական վերահսկողությունը կարգավորելու համար միացեք համացանցին</translation>
+<translation id="7917876797003313048">Դուք կարող եք կառավարել ձեր Google հաշիվները, որոնցում մուտք եք գործել։ Դրանք օգտագործվում են Chrome դիտարկիչում, Play Խանութում, Gmail-ում և այլ ծառայություններում։ Եթե ուզում եք ընտանեկան խմբի անդամի կամ մեկ ուրիշի համար հաշիվ ավելացնել, <ph name="DEVICE_TYPE" /> սարքում ավելացրեք նոր օգտատեր։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> վ</translation>
 <translation id="7920482456679570420">Ավելացրեք բառեր, որոնք անհրաժեշտ է բաց թողնել ուղղագրությունը ստուգելիս</translation>
 <translation id="7921347341284348270">Դուք չեք կարող դիտել ձեր հեռախոսի ծանուցումները այս կառավարվող հաշվում։ Նորից փորձեք՝ օգտագործելով այլ հաշիվ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">Նշորդի կարգավորումները զրոյացվել են</translation>
 <translation id="8437209419043462667">ԱՄՆ</translation>
 <translation id="8439506636278576865">Առաջարկել թարգմանել էջերն այս լեզվով</translation>
+<translation id="8449347986464073209">Ջնջել և դուրս գալ</translation>
 <translation id="8451512073679317615">օգնական</translation>
 <translation id="8455775311562941553">Միացած է <ph name="HOST_DEVICE_NAME" /> սարքին</translation>
 <translation id="8473540203671727883">Հնչեցնել նշորդի տակի տեքստը</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">Ձայնն անջատված է։ Միացնել ձայնը։</translation>
 <translation id="888256071122006425">Մկնիկի և հպահարթակի կարգավորումներ</translation>
 <translation id="8885449336974696155">Օգնեք լավացնել ChromeOS-ը՝ հաղորդելով <ph name="BEGIN_LINK" />ընթացիկ կարգավորումների<ph name="END_LINK" /> մասին</translation>
+<translation id="8890170499370378450">Բջջային ինտերնետի համար կարող է վճար գանձվել</translation>
 <translation id="8890529496706615641">Չհաջողվեց վերանվանել պրոֆիլը։ Նորից փորձեք կամ դիմեք օպերատորին՝ տեխնիկական աջակցման համար։</translation>
 <translation id="8894761918470382415">Տվյալների հասանելիության պաշտպանություն արտաքին սարքերի համար</translation>
 <translation id="8896830132794747524">Մկնիկի հետ ավելի արագ շարժումները կտեղափոխեն կուրսորն ավելի հեռու</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> սարքն անջատվել է</translation>
 <translation id="8980345560318123814">Հաշվետվություններ</translation>
 <translation id="8981825781894055334">Թուղթը սպառվում է</translation>
+<translation id="8984694057134206124">Ձեր սարքը <ph name="MINUTES" /> րոպե տեսանելի կլինի բոլոր օգտատերերին։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Հայտնաբերման շեմ</translation>
 <translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="8991694323904646277">Տեսախցիկ չկա</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">Հեռացնել Google Play-ը և Android հավելվածները</translation>
 <translation id="910000385680858937">Թույլատրված է – <ph name="PERMISSION_DETAILS" />։ Ձեր սարքին խոսափող միացրեք։</translation>
 <translation id="9100416672768993722">Ներածման նախորդ եղանակին անցնելու համար սեղմեք <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />բացատ<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Առանց ինտերնետի»</translation>
 <translation id="9108294543511800041">Այժմ դուք կարող եք դիտել ձեր հեռախոսի վերջին լուսանկարները, մեդիաֆայլերն ու ծանուցումները</translation>
 <translation id="9109122242323516435">Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք:</translation>
 <translation id="9111330022786356709">Ավելացրեք կամ գտեք կոճակներ ձեր մկնիկի վրա</translation>

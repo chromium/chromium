@@ -726,7 +726,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Subir informe</translation>
 <translation id="2212735316055980242">No se encontró la política.</translation>
-<translation id="2213606439339815911">Recuperando entradas…</translation>
 <translation id="2213612003795704869">Se imprime la página</translation>
 <translation id="2214086901479959524">Actualiza Chrome para seguir usando tus grupos de pestañas compartidos</translation>
 <translation id="2214453882118345682">Compra, identifica y traduce lo que ves con la cámara.</translation>
@@ -823,6 +822,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2356941001189392209">Una lista limitada de las URLs de las páginas que visitas, en las que se producen eventos tecnológicos heredados</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Se compartirá 1 pestaña}other{Se compartirán {NUM_TABS} pestañas}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> y <ph name="ACCOUNT_MANAGER" /> administran tu dispositivo y tu cuenta, respectivamente.</translation>
+<translation id="2358479643736965923">Consulta la respuesta de tu búsqueda con IA de Google en esta pestaña</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="236000571258713023">Vehículos</translation>
@@ -1141,6 +1141,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2925032407415783182">Guarda la entrada para el evento en la Billetera</translation>
 <translation id="2925454999967523701">Botón Crear documento: actívalo para crear un nuevo documento de Google rápidamente</translation>
 <translation id="2925673989565098301">Método de entrega</translation>
+<translation id="2927328994673424423">Hace 2 semanas</translation>
 <translation id="2928426578619531300">Usuario afiliado</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}}</translation>
 <translation id="2930531075747147366">Pestaña de tu otro dispositivo</translation>
@@ -1275,7 +1276,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3141337053413339205">Cambiar a esta pestaña.</translation>
 <translation id="3144458715650412431">Se aplicaron las políticas de prueba. Revísalas y restablécelas en chrome://policy/test. No se aplicarán las políticas de administración.</translation>
 <translation id="3145945101586104090">Se produjo un error al decodificar respuesta.</translation>
-<translation id="3149865382039202168">Guarda tu información en la <ph name="GOOGLE_WALLET_TITLE" /> y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes controlar <ph name="HOW_INFO_IS_USED_LINK" /> en la configuración de pases privados de <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Error temporal del servidor</translation>
 <translation id="3150889484970506196">Botón Crear hoja de cálculo: actívalo para crear una hoja de cálculo de Google nueva rápidamente</translation>
 <translation id="3154506275960390542">Esta página incluye un formulario cuyo envío no es seguro. Es posible que otras personas vean los datos que envíes mientras están en tránsito o que un atacante los modifique antes de que los reciba el servidor.</translation>
@@ -1522,7 +1522,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3558335486599406178">Se guardó el IBAN en la Billetera de Google</translation>
 <translation id="3558573058928565255">Hora del día</translation>
 <translation id="3559897352860026926">Pídele a tu administrador que verifique su configuración de <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">Ver sitios relacionados</translation>
 <translation id="3566021033012934673">La conexión no es privada</translation>
 <translation id="3566336457819493938">215 × 315 mm</translation>
 <translation id="3566681680543111735">Copiar cadena de variantes</translation>
@@ -2165,7 +2164,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4603727370377253901">Reservas de vuelos</translation>
 <translation id="4607608436550361748">Ver sugerencias para Chrome</translation>
 <translation id="460848736049414407">Bloqueada por el administrador</translation>
-<translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="4612631413844865947">Se produjo un error al procesar tu pedido en <ph name="MERCHANT_ORIGIN" /> a través de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Es posible que este sitio incluya contenido para mayores de edad. Debes contar con el permiso de tu madre, padre o tutor para poder visitar este sitio web.</translation>
 <translation id="4613873770449493819">La URL debe dirigir a un dominio de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3712,7 +3710,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="7173338713290252554">Historial de precios en la Web</translation>
 <translation id="7174545416324379297">Combinados</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}other{<ph name="SHIPPING_OPTION_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> más}}</translation>
-<translation id="7180611975245234373">Actualizar</translation>
 <translation id="7181261019481237103">Abrir ventana de incógnito</translation>
 <translation id="7182878459783632708">No hay políticas establecidas.</translation>
 <translation id="7186833457841277072">Sobre (inyección de tinta)</translation>
@@ -4178,7 +4175,6 @@ Detalles adicionales:
 <translation id="7932579305932748336">Recubrimiento</translation>
 <translation id="79338296614623784">Ingresa un número de teléfono válido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> desea reproducir contenido protegido. Google verificará la identidad de tu dispositivo.</translation>
-<translation id="7935318582918952113">Filtro de DOM</translation>
 <translation id="7935520077478121175">Se permiten los sensores de movimiento</translation>
 <translation id="7937163678541954811">Se encriptará el CVC de esta tarjeta y se guardará en tu dispositivo para agilizar las confirmaciones de compras</translation>
 <translation id="7937554595067888181">Fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4226,7 +4222,6 @@ Detalles adicionales:
 <translation id="7999482381722829925">Crea una lista de tareas de limpieza profunda priorizada, habitación por habitación, que se centre en los lugares que se suelen pasar por alto</translation>
 <translation id="8001912761979890298">Este servidor no pudo probar que su dominio sea <ph name="DOMAIN" /> porque usa un certificado de seguridad que no es de confianza para Chromium o la configuración del sistema para la encriptación del tráfico web. Es posible que se deba a una configuración incorrecta o a que un atacante haya interceptado tu conexión. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ver certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Prueba cerrar las demás pestañas o programas para liberar memoria.</translation>
-<translation id="8002230960325005199">Ver sitios relacionados en una pestaña nueva</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Administrar contraseñas</translation>
@@ -4267,7 +4262,6 @@ Detalles adicionales:
 <translation id="8079976827192572403">Sitio peligroso</translation>
 <translation id="8086971161893892807">Borrador</translation>
 <translation id="8087558780672230449">Cargando <ph name="APP_ORIGIN" /> para administrar tu pago en <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Error al visualizar artículo</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8091372947890762290">La activación está pendiente en el servidor.</translation>
 <translation id="8092254339843485299">15.2 × 20.3 cm (6 × 8 in)</translation>
@@ -4908,7 +4902,6 @@ Detalles adicionales:
 <translation id="9199905725844810519">No se permite imprimir este contenido</translation>
 <translation id="9204089334327209740">Una vez que se complete la carga, podrás modificar tus archivos en <ph name="CLOUD_PROVIDER" />. El almacenamiento local, que incluye los archivos de la papelera, se quitará automáticamente.</translation>
 <translation id="9205078245616868884">Tus datos están encriptados con tu frase de contraseña para sincronización. Debes ingresarla para iniciar la sincronización.</translation>
-<translation id="9207861905230894330">Error al agregar artículo</translation>
 <translation id="9209339767782560829">Se produjo un error al usar tu certificado de acceso.</translation>
 <translation id="9210152531668884481">Aceptar</translation>
 <translation id="9213433120051936369">Personalizar el aspecto</translation>

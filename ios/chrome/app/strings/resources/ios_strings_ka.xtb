@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">პაროლების სანახავად, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
 <translation id="201759455285471444">ჩანართების ჯგუფის გაფართოება.</translation>
 <translation id="2022431790688770637">Gemini-ს შემოთავაზებების მართვა</translation>
+<translation id="2023265063803387188">Gemini მიუწვდომელია ინკოგნიტო რეჟიმში</translation>
 <translation id="2031515492007104071">დონის ამაღლება</translation>
 <translation id="2044394949148788042">გახსენით ჩანართების ბადე</translation>
 <translation id="2044681667265133332">ანგარიშს <ph name="USER_EMAIL" /> მართავს <ph name="HOSTED_DOMAIN" /> და მან შეიძლება ნახოს გარკვეული ინფორმაცია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">შეწყვეტა</translation>
 <translation id="2666092431469916601">ზედა</translation>
 <translation id="2669454659051515572">ჩამოტვირთული ფაილების ნახვას შეძლებს ამ მოწყობილობის ნებისმიერი მომხმარებელი</translation>
-<translation id="2671316366021598595">„<ph name="SITE_DOMAIN" />“-ს არ აქვს თქვენს კამერაზე წვდომის უფლება</translation>
 <translation id="2671423594960767771">ჯგუფის გაზიარება</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">გადახდა დროში განაწილებით</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="386224966259596343">შესაბამისი ფორმის შევსებისას, მომავალში, გექნებათ შესაძლებლობა, შეინახოთ ეს ინფორმაცია საფულეში.</translation>
 <translation id="3868495844258915202">სრული URL-ის ჩვენება</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" />-ისთვის შენახული პაროლები არ არის</translation>
 <translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
 <translation id="3878657761594430423">ფურცლის შემგროვებელი</translation>
 <translation id="3884810423191119660">უსაფრთხოდ შეინახეთ პაროლები, რომ მარტივად შეხვიდეთ საიტებსა და აპებში</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">გააუმჯობესეთ დათვალიერების გამოცდილება</translation>
 <translation id="5062321486222145940">Google Drive-ის ინსტალაცია</translation>
 <translation id="5067540696062462445">ჩამოტვირთვები</translation>
-<translation id="5070314445039955096">საიტის (<ph name="SITE_DOMAIN" />) ნებართვები გადაყენდება და გახდება „გამორთული“, როცა ამ საიტს დატოვებთ</translation>
 <translation id="507187271399539513">{count,plural, =1{{count}-დან {position} გადახდის მეთოდი}other{{count}-დან {position} გადახდის მეთოდი}}</translation>
 <translation id="5075939510584558547">დაშიფვრის გარეშე შენახვა</translation>
 <translation id="5076534614343816664">ფასისთვის თვალის მიდევნება</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Up-ის გამოსაყენებლად საჭიროა ავტორიზაცია</translation>
 <translation id="5352128922772839949">ფაილის შენახვა</translation>
 <translation id="5355191726083956201">გაძლიერებული დაცვა ჩართულია</translation>
-<translation id="5355871759168485600">„<ph name="SITE_DOMAIN" />“-ს აქვს თქვენი მიკროფონის გამოყენების ნებართვა, როდესაც ამ საიტს ეწვევით</translation>
 <translation id="5359436665022446585">ბმულის გახსნის უკეთესი გამოცდილება</translation>
 <translation id="536067926684072644">სანიშნეების ჩვენება</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} წვდომის გასაღების იმპორტი ვერ მოხერხდა}other{{count} წვდომის გასაღების იმპორტი ვერ მოხერხდა}}</translation>
@@ -1484,6 +1483,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5612225021788368236">ნაგულისხმევი ბრაუზერის პრომოს დახურვა</translation>
 <translation id="561269594905823128">შეეხეთ: <ph name="BEGIN_BOLD" />თქვენი ფაილის არჩევა<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">დალაგება უახლესის მიხედვით</translation>
+<translation id="561349411957324076">დასრულებულია</translation>
 <translation id="5614553682702429503">გსურთ პაროლის შენახვა?</translation>
 <translation id="5617769621178348890">ფაილების აპში გახსნა</translation>
 <translation id="5619871095170816857">ამ ბარათზე ნაჩვენებია გასული 24 საათის განმავლობაში თქვენს ყველა სინქრონიზებულ მოწყობილობაზე თქვენ მიერ ბოლოს გამოყენებული გახსნილი ჩანართი.</translation>
@@ -2333,7 +2333,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ანგარიში</translation>
 <translation id="8161614462829037225">განსაბლოკად გამოყენებული იყოს <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">სიგრძე</translation>
-<translation id="8181328232274170248">„<ph name="SITE_DOMAIN" />“-ს აქვს თქვენი კამერის გამოყენების უფლება, როდესაც ამ საიტს ეწვევით</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}-ისთვის}=2{{website_1}-ისა და {website_2}-ისთვის}=3{{website_1}-ის, {website_2}-ისა და 1 სხვისთვის}other{{website_1}-ის, {website_2}-ისა და {more_count} სხვისთვის}}</translation>
 <translation id="8184895727539791845">Gemini-სთვის თქვენი კამერის გამოყენების ნებართვის მისაცემად ჩართეთ კამერა iOS-ის პარამეტრებში</translation>
 <translation id="8185076488803799132">იმპორტი</translation>
@@ -2504,7 +2503,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8674716540979958118">გატეხილი პაროლები გაქვთ</translation>
 <translation id="8679900250380464358">საკითხავ სიაში დამატება</translation>
 <translation id="8680787084697685621">ანგარიშზე შესვლის დეტალები მოძველებულია.</translation>
-<translation id="868648444055742370">„<ph name="SITE_DOMAIN" />“-ს არ აქვს თქვენს მიკროფონზე წვდომის უფლება</translation>
 <translation id="8690752723634292147">წაშლის დასტური</translation>
 <translation id="8692107307702113268">პაროლის სიგრძე აღემატება 1000 სიმბოლოს</translation>
 <translation id="8692689525339542358">ისარგებლეთ დაცვით სახიფათო საიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან.</translation>

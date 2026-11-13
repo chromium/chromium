@@ -563,7 +563,6 @@
 <translation id="2664621323652615289">Gelditu</translation>
 <translation id="2666092431469916601">Goiko elementua</translation>
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" webguneak ez du kamera erabiltzeko baimenik</translation>
 <translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Ordaindu epeka</translation>
@@ -913,6 +912,7 @@
 <translation id="3858860766373142691">Izena</translation>
 <translation id="386224966259596343">Inprimaki egoki bat betetzen duzun hurrengoan, informazioa Wallet-en gordetzeko aukera izango duzu.</translation>
 <translation id="3868495844258915202">Erakutsi URL osoa</translation>
+<translation id="3870931306085184145">Ez dago gordeta <ph name="DOMAIN" /> domeinuaren pasahitzik</translation>
 <translation id="3875783148670536197">Erakutsi nola</translation>
 <translation id="3878657761594430423">Orri-hartzailea</translation>
 <translation id="3884810423191119660">Gorde pasahitzak segurtasunez, webgune eta aplikazioetan saioa erraz hasteko</translation>
@@ -1311,7 +1311,6 @@
 <translation id="5061202435354361813">Arakatu sarea are hobeto</translation>
 <translation id="5062321486222145940">Instalatu Google Drive</translation>
 <translation id="5067540696062462445">Deskargak</translation>
-<translation id="5070314445039955096"><ph name="SITE_DOMAIN" /> webgunearen baimenak desaktibatu egingo dira webgunetik irteten zarenean</translation>
 <translation id="507187271399539513">{count,plural, =1{Ordainketa-metodo {count}etik {position}garrena}other{{count} ordainketa-metodotatik {position}garrena}}</translation>
 <translation id="5075939510584558547">Gorde enkriptatu gabe</translation>
 <translation id="5076534614343816664">Prezioen jarraipena</translation>
@@ -1410,7 +1409,6 @@
 <translation id="5351613737248079168">Saioa hasita eduki behar duzu mailaz igotzeko eginbidea erabiltzeko</translation>
 <translation id="5352128922772839949">Gorde fitxategia</translation>
 <translation id="5355191726083956201">Babes hobetua aktibatuta dago</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" webguneak mikrofonoa erabil dezake webgune hau bisitatzen duzun bakoitzean</translation>
 <translation id="5359436665022446585">Estekak irekitzeko modu hobea</translation>
 <translation id="536067926684072644">Erakutsi laster-markak</translation>
 <translation id="5364647308446127983">{count,plural, =1{Ezin izan da inportatu {count} sarbide-gako}other{Ezin izan dira inportatu {count} sarbide-gako}}</translation>
@@ -1484,6 +1482,7 @@
 <translation id="5612225021788368236">Itxi arakatzaile lehenetsiaren promozioa</translation>
 <translation id="561269594905823128">Sakatu <ph name="BEGIN_BOLD" />Hautatu fitxategia<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenatu berrienetatik zaharrenetara</translation>
+<translation id="561349411957324076">Osatu da</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
 <translation id="5617769621178348890">Ireki Files aplikazioan</translation>
 <translation id="5619871095170816857">Azken 24 orduetan sinkronizatutako gailu guztietan erabili dituzun azken fitxa irekiak erakusten ditu txartel honek.</translation>
@@ -2333,7 +2332,6 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kontu</translation>
 <translation id="8161614462829037225">Desblokeatu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> erabilita</translation>
 <translation id="8173034266693057059">Luzera</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" webguneak kamera erabil dezake webgune hau bisitatzen duzun bakoitzean</translation>
 <translation id="8182037667962849780">{count,plural, =1{Webgunea: {website_1}}=2{Webguneak: {website_1} eta {website_2}}=3{Webguneak: {website_1}, {website_2} eta beste bat}other{Webguneak: {website_1}, {website_2} eta beste {more_count}}}</translation>
 <translation id="8184895727539791845">Gemini-k kamera erabili ahal dezan, aktibatu Camera (kamera) iOS-en ezarpenetan</translation>
 <translation id="8185076488803799132">Import (inportatu)</translation>
@@ -2504,7 +2502,6 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="8674716540979958118">Arriskuan dauden pasahitz batzuk dauzkazu.</translation>
 <translation id="8679900250380464358">Gehitu irakurketa-zerrendan</translation>
 <translation id="8680787084697685621">Kontuan saioa hasteko xehetasunak zaharkituta daude.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" webguneak ez du mikrofonoa erabiltzeko baimenik</translation>
 <translation id="8690752723634292147">Berretsi ezabatu nahi duzula</translation>
 <translation id="8692107307702113268">Pasahitzak 1.000 karaktere baino gehiago ditu</translation>
 <translation id="8692689525339542358">Babestu zeure burua webgune, deskarga eta luzapen arriskutsuen aurrean.</translation>

@@ -4336,14 +4336,6 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
 <translation id="366494444808132420">Consenti le integrazioni di Gemini.</translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
 <translation id="3671773704245936868">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
-<translation id="367258298235646178">Consente agli amministratori di personalizzare l'aspetto delle filigrane applicate dalle regole di Prevenzione della perdita di dati (DLP). Ciò include la possibilità di impostare l'opacità del riempimento e del contorno, definire le dimensioni del carattere e configurare il fuso orario del timestamp.
-Se questa policy o alcuni valori non vengono configurati, Chrome utilizzerà il comportamento predefinito per le filigrane.
-I valori predefiniti sul computer sono: opacità del riempimento a 4, opacità del contorno a 6 e dimensioni del carattere a 24. Su iOS, i valori predefiniti sono: opacità del riempimento a 10, opacità del contorno a 15, dimensioni del carattere a 16. Su tutte le piattaforme, il fuso orario del timestamp è configurato per impostazione predefinita su "user_device" (fuso orario del dispositivo locale dell'utente).
-
-"Opacità riempimento" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
-"Opacità contorno" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
-Le "Dimensioni carattere" sono espresse in punti.
-"Fuso orario timestamp" specifica l'identificatore del fuso orario IANA (ad es. "America/Toronto") utilizzato per formattare i timestamp delle filigrane (supportato a partire da Chrome 152 e versioni successive), in base ai nomi definiti nel database dei fusi orari IANA (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">Le intestazioni delle richieste CORS senza caratteri jolly non sono supportate.</translation>
 <translation id="3675248815331229366">La configurazione della policy consente di impostare un elenco di pattern URL che specificano i siti che non possono accedere alla localizzazione dell'utente e non possono nemmeno richiedere l'autorizzazione dell'utente per questo scopo.
 
@@ -4725,7 +4717,6 @@ La policy può essere combinata con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLAT
 <translation id="390296766888987595">Mostra la tastiera sullo schermo solo se richiesto dall'utente o dall'applicazione.</translation>
 <translation id="3903313632842363082">Disattiva i report sugli utenti del dispositivo</translation>
 <translation id="3904304709151553598">Disattiva i report sulle informazioni relative alla ventola del dispositivo</translation>
-<translation id="3905883021371603181">Attiva la cancellazione dell'eco per l'audio di sistema</translation>
 <translation id="3907683835264956726">Consente l'accesso online degli utenti in una schermata di blocco. Se la policy viene impostata su true, la riautenticazione online nella schermata di blocco viene attivata, ad esempio, tramite la policy <ph name="POLICY" />.
       La riautenticazione viene applicata subito quando è visualizzata la schermata di blocco o la volta successiva che l'utente blocca lo schermo dopo che viene soddisfatta la condizione.
       Se la policy viene impostata su false o non viene impostata, gli utenti possono sbloccare in qualsiasi momento lo schermo con le proprie credenziali locali.</translation>
@@ -4826,7 +4817,6 @@ Nota: se l'impostazione non restituisce metodi di autenticazione supportati sia 
 <translation id="3989635538409502728">Esci</translation>
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
 <translation id="3990391739475801018">La modalità Risparmio energetico viene disattivata.</translation>
-<translation id="3990834929384096140">Non forzare l'applicazione della cancellazione dell'eco per l'audio di sistema</translation>
 <translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="399433537808390819">Non rendere la modalità Desktop unificato disponibile per l'utente</translation>
 <translation id="3995880046827722248">Manifest v2 disabilitato</translation>
@@ -6163,12 +6153,6 @@ Per maggiori informazioni, consulta l'articolo del Centro assistenza all'indiriz
       Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente e disconnettersi quando è in uso TLS 1.3 Early Data. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
 
       Questa policy è una misura temporanea per controllare la funzionalità e verrà rimossa in seguito. Potrebbe essere abilitata per consentirti di testare i problemi e disabilitata durante la risoluzione di questi ultimi.</translation>
-<translation id="4800438168909332958">Consente di attivare la funzionalità di cancellazione dell'eco per l'audio di sistema (AEC). La funzionalità AEC di sistema è un sistema di cancellazione dell'eco acustico, ovvero un modulo di elaborazione audio che rimuove la riproduzione dell'audio di sistema (eco) dal segnale del microfono.
-Questa policy è temporanea e verrà rimossa non appena verrà lanciata la funzionalità di cancellazione dell'eco per l'audio di sistema.
-
-  Se questa policy viene impostata su true, la cancellazione dell'eco per l'audio di sistema sarà sempre attiva.
-
-  Se questa policy viene impostata su false o se non viene configurata, la cancellazione dell'eco per l'audio di sistema potrebbe comunque essere attivata in base al relativo piano di lancio, ma non verrà applicata in modo forzato da questa policy.</translation>
 <translation id="4800865664096110749">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL sui profili gestiti</translation>
 <translation id="4801512016965057443">Consenti roaming dati mobile</translation>
 <translation id="4801647366128872782">Specifica gli URL che consentono la generazione di report sulla tecnologia precedente</translation>
@@ -12001,6 +11985,12 @@ I certificati devono essere codificati in base64.</translation>
 La configurazione della policy consente di controllare i report sulla telemetria dei siti web per gli URL nella lista consentita.
 Se la policy non viene configurata, la telemetria dei siti web non verrà segnalata.
 Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns/. Per questa policy sono consentiti solo gli schemi di URL HTTP e HTTPS.</translation>
+<translation id="8392016343898518010">Questa policy è deprecata e non ha più alcun effetto a partire dalla versione M159, poiché la funzionalità Contenuti suggeriti è stata rimossa.
+
+Prima della versione M159, questa funzionalità attivava i suggerimenti sui nuovi contenuti da esplorare, tra cui app, pagine web e altro ancora.
+Se questa policy veniva impostata su True, i suggerimenti sui nuovi contenuti da esplorare venivano attivati.
+Se questa policy veniva impostata su False, i suggerimenti sui nuovi contenuti da esplorare venivano disattivati.
+Se questa policy non veniva configurata, i suggerimenti sui nuovi contenuti da esplorare venivano disattivati per gli utenti gestiti e attivati per gli altri utenti.</translation>
 <translation id="8392478748777481636">Questa policy è stata deprecata e non è supportata. Utilizza la policy <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Solo policy piattaforma</translation>
 <translation id="8395350646076131800">Timeout di inattività della schermata di blocco utente del salvaschermo.</translation>
@@ -13118,7 +13108,6 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 <translation id="9087652369391570821">Policy di configurazione per il connettore OnFileTransfer di Chrome Enterprise</translation>
 <translation id="9088433379343318874">Abilita il provider di contenuti dell'utente supervisionato</translation>
 <translation id="9088444059179765143">Configura il metodo di rilevamento automatico del fuso orario</translation>
-<translation id="9091741086777905807">Identificatore del fuso orario IANA (ad es. "America/Toronto") utilizzato per formattare i timestamp della filigrana (supportato a partire da Chrome 152 e versioni successive). Il valore predefinito è 'user_device'.</translation>
 <translation id="9094681501120769194">Consente di stabilire se il visualizzatore PDF in <ph name="PRODUCT_NAME" /> utilizza un iframe out-of-process (OOPIF). In futuro, questa sarà la nuova architettura di visualizzazione di PDF, in quanto è più semplice e semplificherà l'aggiunta di nuove funzionalità. Il visualizzatore PDF GuestView esistente è un'architettura obsoleta e complessa che verrà ritirata.
 
 Se questa policy viene attivata o se non viene configurata, <ph name="PRODUCT_NAME" /> potrà usare l'architettura del visualizzatore PDF OOPIF. Se la policy viene attivata o se non viene configurata, il comportamento predefinito verrà deciso da <ph name="PRODUCT_NAME" />.

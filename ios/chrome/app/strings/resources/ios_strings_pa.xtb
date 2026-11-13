@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">ਪਾਸਵਰਡਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕਿਸੇ ਪਾਸਕੋਡ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="201759455285471444">ਟੈਬ ਗਰੁੱਪ ਦਾ ਵਿਸਤਾਰ ਕਰੋ।</translation>
 <translation id="2022431790688770637">Gemini ਦੇ ਸੁਝਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="2023265063803387188">Gemini ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="2031515492007104071">ਅਗਲਾ ਪੱਧਰ</translation>
 <translation id="2044394949148788042">ਟੈਬ GRid ਖੋਲ੍ਹੋ</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="HOSTED_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵੱਲੋਂ ਕੁਝ ਜਾਣਕਾਰੀ ਨੂੰ ਦੇਖਿਆ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">ਬੰਦ ਕਰੋ</translation>
 <translation id="2666092431469916601">ਟੌਪ</translation>
 <translation id="2669454659051515572">ਇਸ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲਾ ਕੋਈ ਵੀ ਵਿਅਕਤੀ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖ ਸਕਦਾ ਹੈ</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="2671423594960767771">ਗਰੁੱਪ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="386224966259596343">ਅਗਲੀ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਕੋਈ ਢੁਕਵਾਂ ਫ਼ਾਰਮ ਭਰੋਗੇ, ਤਾਂ ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦਾ ਮੌਕਾ ਹੋਵੇਗਾ।</translation>
 <translation id="3868495844258915202">ਪੂਰਾ URL ਦਿਖਾਓ</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" /> ਲਈ ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
 <translation id="3875783148670536197">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
 <translation id="3878657761594430423">ਸ਼ੀਟ ਗ੍ਰੈਬਰ</translation>
 <translation id="3884810423191119660">ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਰੱਖਿਅਤ ਕਰੋ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋ</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਅਗਲੇ ਪੱਧਰ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="5062321486222145940">Google Drive ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="5067540696062462445">ਡਾਊਨਲੋਡ</translation>
-<translation id="5070314445039955096">ਤੁਹਾਡੇ ਇਸ ਸਾਈਟ ਨੂੰ ਛੱਡਣ 'ਤੇ "<ph name="SITE_DOMAIN" />" ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਬੰਦ 'ਤੇ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="507187271399539513">{count,plural, =1{{count} ਭੁਗਤਾਨ ਵਿਧੀ ਵਿੱਚੋਂ {position}}one{{count} ਭੁਗਤਾਨ ਵਿਧੀ ਵਿੱਚੋਂ {position}}other{{count} ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਵਿੱਚੋਂ {position}}}</translation>
 <translation id="5075939510584558547">ਇਨਕ੍ਰਿਪਸ਼ਨ ਤੋਂ ਬਿਨਾਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5076534614343816664">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Up ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਪਵੇਗਾ</translation>
 <translation id="5352128922772839949">ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5355191726083956201">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
-<translation id="5355871759168485600">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ "<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="5359436665022446585">ਲਿੰਕ ਖੋਲ੍ਹਣ ਦਾ ਬਿਹਤਰ ਤਰੀਕਾ</translation>
 <translation id="536067926684072644">ਬੁੱਕਮਾਰਕ ਦਿਖਾਓ</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} ਪਾਸਕੀ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ}one{{count} ਪਾਸਕੀ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ}other{{count} ਪਾਸਕੀਆਂ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ}}</translation>
@@ -1484,6 +1483,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="5612225021788368236">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਪ੍ਰੋਮੋ ਬੰਦ ਕਰੋ</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />ਆਪਣੀ ਫ਼ਾਈਲ ਚੁਣੋ<ph name="END_BOLD" /> 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5613297089029360427">ਨਵੀਨਤਮ ਮੁਤਾਬਲ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
+<translation id="561349411957324076">ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="5614553682702429503">ਕੀ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5617769621178348890">Files ਐਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5619871095170816857">ਇਹ ਕਾਰਡ ਪਿਛਲੇ 24 ਘੰਟਿਆਂ ਦੇ ਅੰਦਰ ਤੁਹਾਡੇ ਸਾਰੇ ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਵਿੱਚ ਤੁਹਾਡੀ ਪਿਛਲੀ ਵਾਰ ਵਰਤੀ ਗਈ ਖੁੱਲ੍ਹੀ ਟੈਬ ਨੂੰ ਦਿਖਾਉਂਦਾ ਹੈ।</translation>
@@ -2333,7 +2333,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ਖਾਤੇ</translation>
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ਨਾਲ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="8173034266693057059">ਲੰਬਾਈ</translation>
-<translation id="8181328232274170248">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ "<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} ਲਈ}=2{{website_1}, {website_2} ਲਈ}=3{{website_1}, {website_2} ਅਤੇ 1 ਹੋਰ ਲਈ}one{{website_1}, {website_2} ਅਤੇ {more_count} ਹੋਰ ਲਈ}other{{website_1}, {website_2} ਅਤੇ {more_count} ਹੋਰ ਲਈ}}</translation>
 <translation id="8184895727539791845">Gemini ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੇਣ ਲਈ, iOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਕੈਮਰਾ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8185076488803799132">ਆਯਾਤ ਕਰੋ</translation>
@@ -2504,7 +2503,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8674716540979958118">ਤੁਹਾਡੇ ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡ ਹਨ।</translation>
 <translation id="8679900250380464358">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8680787084697685621">ਖਾਤਾ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ।</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="8690752723634292147">ਮਿਟਾਉਣ ਦੀ ਤਸਦੀਕ ਕਰੋ</translation>
 <translation id="8692107307702113268">ਪਾਸਵਰਡ 1000 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਦਾ ਹੈ</translation>
 <translation id="8692689525339542358">ਖਤਰਨਾਕ ਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>

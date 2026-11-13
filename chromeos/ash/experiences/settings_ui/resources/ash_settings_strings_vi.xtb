@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Bạn đã hoàn tất!</translation>
 <translation id="1149483087970735785">Công nghệ hỗ trợ</translation>
 <translation id="1150490752229770117">Đây là bản tự động cập nhật bảo mật và phần mềm mới nhất cho <ph name="DEVICE_TYPE" /> này. Để nhận các bản cập nhật trong tương lai, hãy nâng cấp lên mẫu thiết bị mới hơn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Giới thiệu về ChromeOS</translation>
 <translation id="1155816283571436363">Đang kết nối với điện thoại của bạn</translation>
 <translation id="1160800016654917722">Đã di chuyển cửa sổ xuống dưới và sang bên trái</translation>
 <translation id="1164015913575846413">alt + nhấp chuột</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">trình chạy + mũi tên phải</translation>
 <translation id="1280332775949918163">Di chuyển cửa sổ</translation>
+<translation id="1285625592773741684">Chế độ sử dụng dữ liệu hiện tại là Dữ liệu di động</translation>
 <translation id="1285815028662278915">Gói dữ liệu di động của bạn có thể không hỗ trợ điểm phát sóng. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Chế độ Ánh sáng đêm sẽ tự động bật khi trời tối</translation>
 <translation id="1288300545283011870">Thuộc tính giọng nói</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Tính năng này sẽ tắt các tiện ích và đặt lại chế độ cài đặt về chế độ mặc định, tức là chế độ an toàn. Thẻ, tệp và cookie sẽ được giữ nguyên. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Phóng to toàn bộ màn hình</translation>
 <translation id="1539727654733007771">Bạn chưa thiết lập mạng di động nào. Hãy tải một <ph name="BEGIN_LINK" />hồ sơ<ph name="END_LINK" /> mới xuống.</translation>
+<translation id="1547295885616600893">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="1547808936554660006">Tôi hiểu rằng các hồ sơ eSIM đã cài đặt sẽ không bị xóa bằng chức năng Powerwash</translation>
 <translation id="1549275686094429035">Đã bật ARC</translation>
 <translation id="1554640914375980459">Nháy sáng màn hình khi bạn nhận được thông báo. Hãy thận trọng khi sử dụng tính năng nháy sáng khi có thông báo nếu bạn nhạy cảm với ánh sáng.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Sử dụng Wi‑Fi hoặc mạng di động để xác định vị trí</translation>
 <translation id="1650407365859096313">Mở trong thẻ mới, trạng thái cấp quyền hiện tại là <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Bật tính năng Chia sẻ lân cận</translation>
+<translation id="1662146548738125461">Giới thiệu về ChromeOS Flex</translation>
 <translation id="1663698992894057019">Nâng cấp lên Chromebook mới để nhận bản cập nhật bảo mật và phần mềm mới nhất</translation>
 <translation id="1665328953287874063">Sử dụng mật khẩu hoặc mã PIN để mở khoá <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="1667842670298352129">Nghe văn bản cụ thể được đọc thành tiếng. Trước tiên, hãy chọn biểu tượng Chọn để nói ở cuối màn hình, sau đó bôi đen phần văn bản bạn muốn nghe. Bạn cũng có thể dùng phím tắt: Bôi đen văn bản rồi nhấn tổ hợp phím Tìm kiếm + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Lưu ý: Vân tay của bạn có thể kém an toàn hơn so với việc dùng mã PIN hoặc mật khẩu mạnh.</translation>
 <translation id="1724801751621173132">Chế độ nhập</translation>
 <translation id="1741190788710022490">Sạc thích ứng</translation>
+<translation id="1745732479023874451">Quản lý danh bạ</translation>
 <translation id="1751335846119670066">Giúp tôi đọc</translation>
 <translation id="1755601632425835748">Cỡ chữ</translation>
 <translation id="1761402971842586829">Đã liên kết lại <ph name="BUTTON_NAME" /> với <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Không, chỉ dùng 1 công tắc</translation>
 <translation id="1842681835432895345">Loại trừ màn hình này khỏi chế độ phản chiếu</translation>
 <translation id="1848219224579402567">Đăng xuất khi đóng nắp</translation>
+<translation id="185970820835152459">Bạn có thể quản lý các Tài khoản Google đã đăng nhập của mình. Tài khoản Google của bạn được sử dụng cho trình duyệt Chromium, Cửa hàng Play, Gmail, v.v. Nếu bạn muốn thêm tài khoản cho người khác, chẳng hạn như thành viên gia đình, hãy thêm người dùng mới trên chiếc <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Mát hơn</translation>
 <translation id="1866589962721094893">Cấp cho ứng dụng Android quyền kiểm soát thiết bị USB trên Chromebook này. Hệ thống sẽ yêu cầu cấp quyền mỗi lần bạn cắm thiết bị USB. Từng ứng dụng Android sẽ yêu cầu cấp thêm quyền.</translation>
 <translation id="1877377290348678128">Nhãn (không bắt buộc)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Âm thanh</translation>
 <translation id="2097950021134740304">Huỷ yêu cầu xoá gói thuê bao</translation>
 <translation id="2104166991923847969">Tự động tắt điểm phát sóng</translation>
+<translation id="2106831557840787829">ChromeOS Flex có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Chưa lắp thẻ SIM</translation>
 <translation id="2121825465123208577">Đổi kích thước</translation>
 <translation id="2127372758936585790">Bộ sạc công suất thấp</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Xóa <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2363475280045770326">Có lỗi xảy ra khi lưu cấu hình</translation>
+<translation id="236939127352773362">Khi các thiết bị ở gần đang chia sẻ</translation>
 <translation id="237336063998926520">Sử dụng địa chỉ IP của bạn để xác định vị trí</translation>
 <translation id="2373499590298659902">Dùng phím "0" để nhấn và giữ nút chuột</translation>
 <translation id="2375406435414127095">Kết nối với điện thoại của bạn</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Chặn lưu lượng truy cập không qua VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Chế độ Độ chính xác của vị trí cung cấp thông tin chính xác hơn về vị trí cho các ứng dụng và dịch vụ. Để thực hiện việc này, Google định kỳ xử lý thông tin về cảm biến thiết bị và tín hiệu không dây từ thiết bị của bạn nhằm thu thập dữ liệu vị trí dựa trên tín hiệu không dây từ đám đông. Những thông tin này sẽ được sử dụng theo cách không xác định danh tính của bạn nhằm cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí. Ngoài ra, những thông tin này còn dùng để cải thiện, cung cấp và duy trì các dịch vụ của Google nói chung căn cứ trên lợi ích chính đáng của Google và bên thứ ba nhằm phục vụ nhu cầu của người dùng.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Khay giấy ra sắp đầy</translation>
 <translation id="3390013585654699824">Chi tiết ứng dụng</translation>
 <translation id="3390740059150071453">Nhìn sang trái</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Địa chỉ email</translation>
 <translation id="3701028563242674350">Lắc con trỏ chuột để tăng kích thước</translation>
 <translation id="3703699162703116302">Đã làm mới phiếu</translation>
+<translation id="3703994572283698466">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Bật Wi-Fi</translation>
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3707163604290651814">Hiện đăng nhập với tên <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Tìm thấy <ph name="NUM_PRINTERS" /> máy in trên máy chủ máy in</translation>
 <translation id="371370241367527062">Micrô mặt trước</translation>
 <translation id="37143699183660101">Độ ổn định của con trỏ</translation>
+<translation id="3716540481907974026">Phiên bản ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Mã PIN không chính xác. Hãy thử lại</translation>
 <translation id="3728681439294129328">Định cấu hình địa chỉ mạng</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Hiện dấu gạch chân khi soạn văn bản</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="379509625511193653">Đang tắt</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3796215473395753611">alt + mũi tên lên</translation>
 <translation id="3798670284305777884">Loa (bên trong)</translation>
 <translation id="3799128412641261490">Cài đặt tính năng Tiếp cận bằng công tắc</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Bàn phím tích hợp</translation>
 <translation id="3917644013202553949">Bộ nhớ không đủ để đồng bộ hoá tệp. Hãy thử giải phóng dung lượng.</translation>
 <translation id="3919229493046408863">Tắt thông báo khi có thiết bị ở gần</translation>
+<translation id="3923184630988645767">Chế độ sử dụng dữ liệu</translation>
 <translation id="3923494859158167397">Bạn chưa thiết lập mạng di động nào</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Những người dùng khác trên thiết bị này cũng có thể sử dụng mạng này</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Tính năng tra định nghĩa của Thông tin nhanh</translation>
 <translation id="3994075804072562819">Cấp cho <ph name="SPECIFIC_NAME" /> quyền kiểm soát thiết bị USB.</translation>
 <translation id="3994530503403062649">Tìm các nút trên máy tính bảng của bạn</translation>
+<translation id="3997429360543082038">Giới thiệu về ChromiumOS</translation>
 <translation id="4001540981461989979">Làm nổi bật con trỏ chuột khi di chuyển</translation>
 <translation id="4005817994523282006">Phương pháp phát hiện múi giờ</translation>
+<translation id="4019629340646866719">ChromiumOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Sao chép thông tin chi tiết về bản dựng</translation>
 <translation id="4028467762035011525">Thêm phương thức nhập</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Để chuyển sang phương thức nhập mà bạn dùng gần đây nhất, hãy nhấn <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">tìm kiếm + mũi tên phải</translation>
 <translation id="405181879009056822">Chế độ cài đặt ChromeOS</translation>
+<translation id="4054070260844648638">Hiển thị với mọi người</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Vui lòng kiểm tra kết nối của bạn để xem các máy in hiện có trong mạng</translation>
 <translation id="4068776064906523561">Vân tay đã lưu</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, Hạng <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Tìm thêm ứng dụng bút cảm ứng</translation>
 <translation id="4248401726442101648">Chưa kết nối máy ảnh nào</translation>
+<translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4249116869350613769">Trình tiết kiệm pin</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="425411422794688815">Đã xảy ra lỗi. Hãy đảm bảo điện thoại của bạn ở gần, đã mở khoá, đang bật Bluetooth và Wi-Fi.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Tài khoản Google}other{<ph name="EXTRA_ACCOUNTS" /> Tài khoản Google}}</translation>
 <translation id="4314497418046265427">Làm việc năng suất hơn khi kết nối điện thoại với <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Thêm tên mới cho Điểm truy cập</translation>
+<translation id="4314815835985389558">Quản lý dữ liệu đồng bộ hóa</translation>
 <translation id="4320177379694898372">Không có kết nối Internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Bộ nhớ và nguồn điện</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Số ý kiến đề xuất</translation>
 <translation id="4606933160360542263">Tổ hợp phím tuỳ chỉnh: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Khi nút chuột trái được chọn, hãy dùng dấu "/" để nhấp đúp</translation>
+<translation id="4613863813562375431">Phiên bản ChromiumOS</translation>
 <translation id="461661862154729886">Nguồn điện</translation>
 <translation id="4617880081511131945">Không thiết lập được kết nối</translation>
 <translation id="4620757807254334872">chuột</translation>
@@ -1136,6 +1155,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4777943778632837590">Định cấu hình các máy chủ định danh trong mạng</translation>
 <translation id="4779083564647765204">Thu phóng</translation>
 <translation id="4779766576531456629">Đổi tên mạng di động của eSIM</translation>
+<translation id="4789550509729954245">Hiện thông báo khi ở gần các thiết bị đang chia sẻ</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Bật tính năng tăng tốc TrackPoint</translation>
 <translation id="479664067938200069">Các ứng dụng mà <ph name="APP_NAME" /> đã cài đặt</translation>
@@ -1196,6 +1216,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4964544790384916627">Ghim cửa sổ</translation>
 <translation id="4964673849688379040">Đang kiểm tra...</translation>
 <translation id="4967571733817147990">Tuỳ chỉnh nút trên chuột</translation>
+<translation id="4970880042055371251">Phiên bản ChromeOS</translation>
 <translation id="4972129977812092092">Chỉnh sửa máy in</translation>
 <translation id="4975771730019223894">Huy hiệu ứng dụng</translation>
 <translation id="4979263087381759787">Tuỳ chọn cho nhà phát triển</translation>
@@ -1275,6 +1296,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5193978546360574373">Thao tác này sẽ xoá quyền truy cập vào Google Drive trên Chromebook này, bao gồm cả quyền truy cập vào các tệp có thể sử dụng khi không có mạng</translation>
 <translation id="5196790039230503600">Dùng cử chỉ, rồi di chuyển đầu để cho biết bạn muốn thả mục ở đâu. Dùng lại cử chỉ này để thả mục.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Không bao giờ dùng dữ liệu di động để chuyển</translation>
 <translation id="5207949376430453814">Đánh dấu điểm chèn văn bản</translation>
 <translation id="5208926629108082192">Thông tin về mạng di động của thiết bị</translation>
 <translation id="5208988882104884956">Nửa độ rộng</translation>
@@ -1307,6 +1329,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5331568967879689647">Ứng dụng hệ thống trên ChromeOS</translation>
 <translation id="5334113802138581043">Quyền truy cập micrô</translation>
 <translation id="5336689872433667741">Con trỏ và bàn di chuột</translation>
+<translation id="5337926771328966926">Thiết bị hiện có tên là <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Gửi dữ liệu chẩn đoán và dữ liệu sử dụng</translation>
 <translation id="5369694795837229225">Thiết lập môi trường phát triển Linux</translation>
 <translation id="5377367976106153749">Bật quyền sử dụng máy ảnh?</translation>
@@ -1444,6 +1467,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5833726373896279253">Chỉ chủ sở hữu mới có thể sửa đổi các chế độ cài đặt này:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Hộp đựng</translation>
+<translation id="5840680448799937675">Tệp sẽ luôn được chia sẻ mà không dùng Internet</translation>
 <translation id="5841270259333717135">Định cấu hình Ethernet</translation>
 <translation id="5842497610951477805">Bật Bluetooth</translation>
 <translation id="5846200638699387931">Lỗi cú pháp về mối quan hệ: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5924438086390153180">Hỏi trước khi sao chép hoặc di chuyển tệp Microsoft sang Google Drive</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="594048410531370124">Không nhận dạng được phím. Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Phạm vi hiển thị của thiết bị</translation>
 <translation id="5945192511027649793">Tắt bàn di chuột</translation>
 <translation id="5947651424015173580">Nhấp đúp chuột</translation>
 <translation id="594993197557058302">Nhấn 1 – 4 phím bổ trợ (ctrl, alt, shift, tìm kiếm hoặc trình chạy) và 1 phím khác. Bạn cũng có thể chọn một phím duy nhất.</translation>
@@ -1491,10 +1516,12 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5961545272769624207">Chỉ định một cử chỉ</translation>
 <translation id="5968022600320704045">Không có kết quả tìm kiếm nào</translation>
 <translation id="5969728632630673489">Đã đóng thông báo phím tắt</translation>
+<translation id="5979353814339191480">Tùy chọn này áp dụng cho những Chromebook có khóa cứng mạng di động/gói dữ liệu hoặc áp dụng khi chia sẻ Internet với một điểm phát sóng di động</translation>
 <translation id="5985556342298151179">Ứng dụng Chrome do quản trị viên thiết bị của bạn cài đặt.</translation>
 <translation id="5986442691296752186">Cấp cho ứng dụng Linux quyền kiểm soát thiết bị USB.</translation>
 <translation id="598810097218913399">Xóa công tắc được gán</translation>
 <translation id="5988563937187882754">Nhìn sang phải</translation>
+<translation id="5990266201903445068">Chỉ Wi-Fi</translation>
 <translation id="5992225669837656567">Tất cả chuột đã bị ngắt kết nối</translation>
 <translation id="5999630716831179808">Giọng nói</translation>
 <translation id="6002458620803359783">Giọng nói ưu tiên</translation>
@@ -1509,6 +1536,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6045114302329202345">Nút TrackPoint chính</translation>
 <translation id="6048747414605857443">Chọn và tuỳ chỉnh giọng nói của tính năng chuyển văn bản sang lời nói cho ChromeVox và tính năng Chọn để nói</translation>
 <translation id="6050189528197190982">Thang độ xám</translation>
+<translation id="6054961935262556546">Thay đổi chế độ hiển thị</translation>
 <translation id="6059276912018042191">Các thẻ Chrome mở gần đây</translation>
 <translation id="6059925163896151826">Thiết bị USB</translation>
 <translation id="6064764629679333574">Nâng cấp âm thanh có độ phân giải thấp lên độ phân giải cao để cải thiện chất lượng âm thanh của micrô Bluetooth.</translation>
@@ -1567,6 +1595,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6265159465845424232">Hỏi trước khi sao chép hoặc di chuyển tệp Microsoft sang Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Xóa cổng</translation>
 <translation id="6266532094411434237">Đang kết nối với <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Đăng xuất khỏi Chromium?</translation>
 <translation id="6270309713620950855">Tắt tiếng thông báo nhắc nhở</translation>
 <translation id="6274089201566806618">Đang kết nối với <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 giây</translation>
@@ -1618,6 +1647,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6453921811609336127">Để chuyển sang phương thức nhập tiếp theo, hãy nhấn tổ hợp phím <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Phím cách<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Xoá từ điển này</translation>
 <translation id="6463596731306859179">Bạn thấy cửa sổ bật lên không mong muốn hoặc hành vi ngoài dự kiến khác? Đôi khi, các ứng dụng và tiện ích mà bạn cài đặt có thể âm thầm thay đổi chế độ cài đặt của ChromeOS.</translation>
+<translation id="6465841119675156448">Không dùng Internet</translation>
 <translation id="6467377768028664108">Khi đó, <ph name="DEVICE_TYPE" /> của bạn có thể:</translation>
 <translation id="6469557521904094793">Bật Mạng di động</translation>
 <translation id="6470120577693311302">Nháy sáng khi có thông báo</translation>
@@ -1668,6 +1698,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6626581113916585374">Chế độ hiệu ứng</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Phím tắt chọn</translation>
+<translation id="6632473616050862500">ChromeOS Flex có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="6646476869708241165">Tắt tính năng Ghép nối nhanh</translation>
 <translation id="6647690760956378579">Nghe thử giọng nói tự nhiên</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
@@ -1711,6 +1742,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6775163072363532304">Các thiết bị hiện có sẽ xuất hiện ở đây.</translation>
 <translation id="6776729248872343918">Bật tính năng Ghép nối nhanh</translation>
 <translation id="6777845730143344223">Tìm hiểu thêm về gói thuê bao Passpoint</translation>
+<translation id="6779406956731413166">ChromiumOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="6783036716881942511">Xoá thiết bị này?</translation>
 <translation id="6783667414610055871">Cài đặt Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Cuộn ngược <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -1846,6 +1878,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7280649757394340890">Cài đặt giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="7282547042039404307">Mượt mà</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
 <translation id="7303485269821975179">Thiết lập mật khẩu của <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Cao</translation>
 <translation id="7308643132139167865">Ngôn ngữ cho trang web</translation>
@@ -1875,6 +1908,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7409599290172516453">Ảnh gần đây</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> ứng dụng bị chặn</translation>
+<translation id="7423425410216218516">Chế độ hiển thị này sẽ bật trong <ph name="MINUTES" /> phút</translation>
 <translation id="7423513079490750513">Xóa <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Giúp tôi viết</translation>
 <translation id="7429415133937917139">Mô phỏng đầu ra của màn hình chữ nổi có thể làm mới
@@ -1922,11 +1956,13 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7578137152457315135">Các tùy chọn xác thực bằng vân tay</translation>
 <translation id="7578692661782707876">Vui lòng nhập mã xác nhận của bạn.</translation>
 <translation id="7582582252461552277">Thích mạng này</translation>
+<translation id="7582844466922312471">Dữ liệu di động</translation>
 <translation id="7587806318633605613">Nhật ký đề xuất</translation>
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
 <translation id="7592060599656252486">Một vài</translation>
 <translation id="7602173054665172958">Quản lý lệnh in</translation>
 <translation id="7605163396341021431">Cấp cho ứng dụng Android quyền kiểm soát thiết bị USB trên Chromebook này</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Các tùy chọn Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Các tính năng trên điện thoại đã kết nối bật.</translation>
@@ -1937,12 +1973,14 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7632437836497571618">Sử dụng kết nối bảo mật để tra cứu các trang web</translation>
 <translation id="7634337648687970851">Chúng tôi hiện chưa hỗ trợ tính năng khôi phục dữ liệu cục bộ.</translation>
 <translation id="7640256527901510478">Số IMEI thiết bị của bạn là <ph name="IMEI_NUMBER" /> và số sê-ri thiết bị là <ph name="SERIAL_NUMBER" />. Những số này có thể được dùng để giúp kích hoạt dịch vụ.</translation>
+<translation id="7640308610547854367">Bạn đã quay về phiên bản trước của ChromeOS. Để tải bản cập nhật, vui lòng chờ cho đến khi có phiên bản tiếp theo.</translation>
 <translation id="7641513591566880111">Tên hồ sơ mới</translation>
 <translation id="764178579712141045">Đã thêm <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (chủ sở hữu)</translation>
 <translation id="7648048654005891115">Kiểu sơ đồ bàn phím</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Đã thiết lập 1 vân tay}other{Đã thiết lập {COUNT} vân tay}}</translation>
+<translation id="7650677314924139716">Chế độ sử dụng dữ liệu hiện tại là Chỉ Wi-Fi</translation>
 <translation id="7651400349472467012">Có điểm phát sóng tức thì</translation>
 <translation id="7651784568388208829">Tiếp tục công việc trong Trung tâm điều khiển điện thoại</translation>
 <translation id="7658239707568436148">Huỷ</translation>
@@ -2033,6 +2071,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Bản dịch</translation>
 <translation id="7915457674565721553">Hãy kết nối Internet để thiết lập quyền kiểm soát của cha mẹ</translation>
+<translation id="7917876797003313048">Bạn có thể quản lý các Tài khoản Google đã đăng nhập của mình. Tài khoản Google của bạn sẽ được sử dụng cho trình duyệt Chrome, Cửa hàng Play, Gmail, v.v. Nếu bạn muốn thêm tài khoản cho người khác, chẳng hạn như thành viên gia đình, hãy thêm người dùng mới trên chiếc <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> giây</translation>
 <translation id="7920482456679570420">Thêm các từ mà bạn muốn tính năng kiểm tra lỗi chính tả bỏ qua</translation>
 <translation id="7921347341284348270">Bạn không xem được thông báo của điện thoại trên tài khoản được quản lý này. Hãy thử một tài khoản khác. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -2197,6 +2236,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="8431977087510901105">Đã đặt lại chế độ cài đặt con trỏ</translation>
 <translation id="8437209419043462667">Hoa Kỳ</translation>
 <translation id="8439506636278576865">Đề xuất dịch trang bằng ngôn ngữ này</translation>
+<translation id="8449347986464073209">Xoá và đăng xuất</translation>
 <translation id="8451512073679317615">trợ lý</translation>
 <translation id="8455775311562941553">Đã kết nối với <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Đọc to văn bản bên dưới con trỏ chuột</translation>
@@ -2322,6 +2362,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="8872774989979382243">Âm lượng đang tắt. Hãy bật âm lượng.</translation>
 <translation id="888256071122006425">Cài đặt chuột và bàn di chuột</translation>
 <translation id="8885449336974696155">Hãy báo cáo <ph name="BEGIN_LINK" />chế độ cài đặt hiện tại<ph name="END_LINK" /> để giúp chúng tôi cải thiện ChromeOS</translation>
+<translation id="8890170499370378450">Nhà mạng có thể tính phí dữ liệu di động</translation>
 <translation id="8890529496706615641">Không thể đổi tên hồ sơ. Vui lòng thử lại hoặc liên hệ với nhà mạng của bạn để được hỗ trợ kỹ thuật.</translation>
 <translation id="8894761918470382415">Ngăn thiết bị ngoại vi truy cập vào dữ liệu</translation>
 <translation id="8896830132794747524">Bạn di chuột càng nhanh, con trỏ di chuyển càng xa</translation>
@@ -2347,6 +2388,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> đã bị ngắt kết nối</translation>
 <translation id="8980345560318123814">Báo cáo phản hồi</translation>
 <translation id="8981825781894055334">Sắp hết giấy</translation>
+<translation id="8984694057134206124">Tất cả mọi người sẽ nhìn thấy bạn trong <ph name="MINUTES" /> phút. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Ngưỡng phát hiện</translation>
 <translation id="8986362086234534611">Quên</translation>
 <translation id="8991694323904646277">Không có máy ảnh</translation>
@@ -2393,6 +2435,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="9098860402274800697">Xoá Google Play và các ứng dụng Android</translation>
 <translation id="910000385680858937">Được phép – <ph name="PERMISSION_DETAILS" />. Hãy kết nối micrô với thiết bị của bạn.</translation>
 <translation id="9100416672768993722">Để chuyển sang phương thức nhập mà bạn dùng gần đây nhất, hãy nhấn tổ hợp phím <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Phím cách<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Chế độ sử dụng dữ liệu hiện tại là Không dùng Internet</translation>
 <translation id="9108294543511800041">Giờ đây, bạn có thể xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại của mình.</translation>
 <translation id="9109122242323516435">Để giải phóng dung lượng, hãy xóa tệp khỏi bộ nhớ thiết bị.</translation>
 <translation id="9111330022786356709">Thêm hoặc định vị nút trên chuột</translation>

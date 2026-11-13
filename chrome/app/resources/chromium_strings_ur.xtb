@@ -77,9 +77,9 @@
 <translation id="18552579716432081">‏براؤزنگ ڈیٹا کو اپنے Google اکاؤنٹ میں برقرار رکھتے ہوئے، صرف اس آلہ سے اسے حذف کرنے کیلئے، <ph name="BEGIN_LINK" />Chromium سے سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
 <translation id="1857749206890802997">‏چلتے پھرتے نئے ٹیب گروپس کھولنے یا تخلیق کرنے کے لیے اپنے فون پر Chromium ڈاؤن لوڈ کریں۔</translation>
 <translation id="1858576284142106424">‏تلاش کی AI وضع بند کریں</translation>
-<translation id="185970820835152459">‏آپ اپنے سائن ان کردہ Google اکاؤنٹس کا نظم کر سکتے ہیں۔ آپ کے Google اکاؤنٹس Chromium براؤزر، Play اسٹور، Gmail اور مزید کے لیے استعمال ہوتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں جیسے آپ کی فیملی کا کوئی ممبر تو اس کی بجائے اپنے <ph name="DEVICE_TYPE" /> میں ایک نیا شخص شامل کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">تصاویر کا استعمال کر کے تلاش کے ساتھ تلاش کریں</translation>
 <translation id="1863837059069884561">‏‫<ph name="EXISTING_USER" /> پہلے سے ہی سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کے لیے، اپنی پروفائل میں Chromium میں بطور <ph name="USER_EMAIL_ADDRESS" /> سائن ان کریں۔ آپ کو <ph name="DEVICE" /> سے اپنے بُک مارکس اور مزید چیزیں بھی مل جائیں گی۔</translation>
+<translation id="1871615898038944731">آپ کا <ph name="DEVICE_TYPE" /> اپ ٹو ڈیٹ ہے</translation>
 <translation id="1880495786739455486">آپ براؤز کرتے وقت سوالات پوچھنے کے لیے سائیڈ پینل میں تلاش کو دوبارہ کھول سکتے ہیں</translation>
 <translation id="1880677175115548835">متن منتخب کریں</translation>
 <translation id="188102464690227119">ٹول بار پر موجود "سائیڈ پینل میں تلاش کریں" بٹن اب ایک نئے آئیکن کے ساتھ دستیاب ہے۔ سائیڈ پینل میں تلاش کے ساتھ براؤزنگ کے دوران سوالات پوچھنے کے لیے اس پر کلک کریں۔</translation>
@@ -191,7 +191,6 @@
 <translation id="3003694935412297923">سبھی ٹاسکس</translation>
 <translation id="3012615494352020668">{count,plural, =1{‏آپ کے Google اکاؤنٹ میں کچھ ڈیٹا کو محفوظ کرنے اور آپ کے تمام آلات پر اس کا استعمال کرنے سے پہلے Chromium کو اس بات کی توثیق کرنے کی ضرورت ہے کہ یہ آپ ہی ہیں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا (1 آئٹم) حذف ہو جائے گا۔}other{‏آپ کے Google اکاؤنٹ میں کچھ ڈیٹا کو محفوظ کرنے اور آپ کے تمام آلات پر اس کا استعمال کرنے سے پہلے Chromium کو اس بات کی توثیق کرنے کی ضرورت ہے کہ یہ آپ ہی ہیں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا ({count} آئٹمز) حذف ہو جائے گا۔}}</translation>
 <translation id="3013473503895162900">‏<ph name="URL" /> کو Chromium میں ایک نئے ٹیب میں کھولیں۔</translation>
-<translation id="302551344979399011">‏AI اختراعات جیسی مہارتیں آپ کے Google اکاؤنٹ میں محفوظ ہوتی ہیں اور ان کا نظم Chrome Sync سے علیحدہ طور پر کیا جاتا ہے</translation>
 <translation id="3032219013429286568">‏اپنے تمام آلات پر اپنی ایکسٹینشنز اور مزید حاصل کرنے کے لیے، Chromium میں سائن ان کریں</translation>
 <translation id="3032787606318309379">‏Chromium میں شامل کیا جا رہا ہے…</translation>
 <translation id="3038232873781883849">انسٹال ہونے کا انتظار ہے...</translation>
@@ -277,10 +276,8 @@
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3971865010372729242">‏جب آپ ایڈریس بار یا تلاش کے خانے میں ٹائپ کرتے ہیں تو Chromium آپ کی تنظیم کی تلاش، AI اور ایجنٹ ٹولز کو تجاویز حاصل کرنے کے لیے بھیجتا ہے۔</translation>
 <translation id="3975724895399328945">‏&amp;Google Chrome for Testing کے بارے میں</translation>
-<translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>
 <translation id="399788104667917863">ٹول بار پر پن کریں</translation>
 <translation id="4016217212818346953">پاس ورڈ مینیجر کے ساتھ محفوظ رہیں</translation>
-<translation id="4019629340646866719">‏ChromiumOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="4022972681110646219">اسکرین پر موجود مواد کا ترجمہ کریں</translation>
 <translation id="4023601594785368013">اصل زبان: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">‏کسی بھی ایپ سے Chromium میں لنکس کھولیں۔ اس کے علاوہ آسان رسائی کے لیے، یہ آپ کے ٹاسک بار میں پن ہو جاتا ہے۔</translation>
@@ -337,7 +334,6 @@
 <translation id="459535195905078186">‏Chromium ایپس</translation>
 <translation id="4598116752460667024">فہرست سے کوئی بھی پروسیس تلاش کریں۔</translation>
 <translation id="4602691126289526388">تلاش کے ساتھ براؤز کرتے وقت آسانی سے سوالات پوچھیں</translation>
-<translation id="4613863813562375431">‏ChromiumOS ورژن</translation>
 <translation id="4621240073146040695">‏تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے Chromium کو دوبارہ شروع کریں۔</translation>
 <translation id="4625064703209785397">‏‫Chromium کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chromium کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے</translation>
 <translation id="4626321472657185181">‏‫Chromium کے ساتھ تلاش کھولیں</translation>
@@ -372,6 +368,7 @@
 <translation id="5171868502429358653">‏Chromium میں سائن ان کریں</translation>
 <translation id="5174969993834422967">آپ عام طور پر اطلاعات کو مسدود کرتے ہیں۔ اس سائٹ کو آپ کو مطلع کرنے کی اجازت دینے کے لیے، اپنے مقام بار کے دائیں کونے میں نوٹیفکیشن آئیکن پر کلک کریں۔</translation>
 <translation id="5174983315706567306">ڈسک میں کافی اسپیس نہیں ہے۔</translation>
+<translation id="5184662919967270437">آپ کے آلے کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="5187123684706427865">‏‫Chromium اکاؤنٹ میں دوبارہ تصدیق درکار ہے</translation>
 <translation id="5231355151045086930">‏Chromium سے سائن آؤٹ کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -421,6 +418,8 @@
 <translation id="5623402015214259806">{0,plural, =0{‏Chromium کا اپ ڈیٹ دستیاب ہے}=1{‏Chromium کا اپ ڈیٹ دستیاب ہے}other{‏Chromium کا اپ ڈیٹ # دن سے دستیاب ہے}}</translation>
 <translation id="5643865575100044307">‏جب آپ Chromium کو بند کرتے ہیں تو ہمیشہ اپنے آلے سے سائٹ کا ڈیٹا حذف کریں</translation>
 <translation id="5653831366781983928">‏براہ کرم ابھی Chromium کو ری اسٹارٹ کریں</translation>
+<translation id="565409517765894456">‏مستقبل کے Chromium اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 ورژن 1809 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 10 کا پرانا ورژن استعمال کر رہا ہے۔</translation>
+<translation id="5669863904928111203">‏ChromeOS پرانا ہے</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏Chromium کو اس زبان میں ڈسپلے کریں</translation>
 <translation id="569897634095159764">انٹرنیٹ سے منسلک ہونے سے قاصر۔ پراکسی سرور کیلئے تصدیق درکار ہے۔</translation>
@@ -441,6 +440,7 @@
 <translation id="5896077214220653386">‏‫Chromium میں Gemini Enterprise</translation>
 <translation id="5900507321340749588">‏فراڈ کا پتہ لگانے جیسی خصوصیات کو تقویت دینے کے لیے، Chromium ایسے AI ماڈلز کا استعمال کر سکتا ہے جو براہ راست آپ کے آلے پر چلتے ہیں۔ اس کے آف ہونے پر، ہو سکتا ہے یہ خصوصیات کام نہ کریں۔ <ph name="BEGIN_LINK" />آلہ پر AI کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان</translation>
+<translation id="5906655207909574370">تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے اپنا آلہ دوبارہ شروع کریں۔</translation>
 <translation id="5924017743176219022">انٹرنیٹ سے منسلک کیا جا رہا ہے…</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
 <translation id="5949225980829865667">‏اپنے سبھی آلات پر یہ بُک مارک اور مزید حاصل کرنے کے لیے، Chromium میں سائن ان کریں</translation>
@@ -522,6 +522,7 @@
 <translation id="6600016381025017075">اس صفحہ پر کچھ بھی تلاش کریں</translation>
 <translation id="6613594504749178791">‏آپ کی تبدیلیاں Chromium کو اگلی بار آپ کے دوبارہ شروع کرنے کے وقت نافذ ہوں گی۔</translation>
 <translation id="6637908313088374648">‏‫Windows کے شروع ہونے پر Chromium اب لانچ ہوتا ہے تاکہ آپ فوری طور پر براؤزنگ شروع کر سکیں۔ آپ اسے ترتیبات میں آف کر سکتے ہیں۔</translation>
+<translation id="6644846457769259194">آپ کے آلہ کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">‏Chromium کو آپ کے اطراف کا 3D نقشہ تخلیق کرنے کے لیے کیمرے کی اجازت درکار ہے</translation>
 <translation id="6669284030132180248">‏اگر آپ اپنے بُک مارکس کو اپنے Google اکاؤنٹ میں بھی محفوظ کرتے ہیں تو آپ Chromium میں پروڈکٹ کی قیمتوں کو ٹریک کر سکتے ہیں اور قیمت میں گراوٹ ہونے پر اطلاع حاصل کر سکتے ہیں</translation>
 <translation id="6676384891291319759">انٹرنیٹ تک رسائی حاصل کریں</translation>
@@ -538,7 +539,6 @@
 <translation id="674891594898436429">اس ٹیب میں فعال تلاش کو برخاست کریں</translation>
 <translation id="6751374565094704799">‏‫Chromium کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chromium کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے۔ یہ ترتیب آن ہے۔</translation>
 <translation id="6754665438209053659">{count,plural, =1{‏آپ کا کچھ Chromium ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔ سائن آؤٹ کرنے سے پہلے چند منٹ انتظار کرنے کی کوشش کریں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا (1 آئٹم) حذف ہو جائے گا۔}other{‏آپ کا کچھ Chromium ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔ سائن آؤٹ کرنے سے پہلے چند منٹ انتظار کرنے کی کوشش کریں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا ({count} آئٹمز) حذف ہو جائے گا۔}}</translation>
-<translation id="6779406956731413166">‏ChromeOS اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن ہو پایا ہے۔</translation>
 <translation id="6804256634866838775">فعال تلاش کو برخاست کریں</translation>
 <translation id="6818170431027022139">‫<ph name="USER_NAME_OR_EMAIL" />۔ ممبرشپ۔</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
@@ -587,7 +587,6 @@
 <translation id="7204669035546236137">‏‫Chromium میں Gemini کے ساتھ، آپ جہاں ہیں وہیں سے کچھ بھی پوچھیں</translation>
 <translation id="7213008767289637091">‏کسی بھی وقت تیزی سے پہنچنے کے لیے Chromium کو اپنے ڈاک میں رکھیں</translation>
 <translation id="7213407614656404070">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر کلک کرتے وقت Chromium استعمال کریں</translation>
-<translation id="7213435258745128111">‏‫Chromium میں Google تلاش</translation>
 <translation id="7216228761061470870">‏جب آپ ڈیسک ٹاپ پر تصاویر کا استعمال کر کے تلاش کا استعمال کرتے ہیں، تو صفحہ کا عنوان، URL اور مواد بشمول PDFs سرور کو بھیجے جاتے ہیں</translation>
 <translation id="7223968959479464213">‏ٹاسک مینیجر - Chromium</translation>
 <translation id="7226331818892775989">‏‫Chromium سے باہر کے مواد کے بارے میں پوچھیں، جیسے دیگر ایپس یا فائلز</translation>
@@ -679,6 +678,7 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="8077498902115777962">‏ایپس کے لیے Chromium کو پس منظر میں چلنے سے غیرفعال کریں</translation>
 <translation id="80790299200510644">تصاویر کا استعمال کر کے تلاش</translation>
 <translation id="8086881907087796310">انسٹالیشن ناکام ہو گئی کیونکہ آپ کا کمپیوٹر ہارڈ ویئر کے کم از کم تقاضوں کو پورا نہیں کرتا ہے۔</translation>
+<translation id="8095439028686936591">‏ChromeOS اپ ٹو ڈیٹ ہے</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> - Google Chrome for Testing</translation>
 <translation id="8105840573057009683">‏Chromium کو اس سائٹ کے لیے مقام کی اجازت درکار ہے</translation>
 <translation id="8107060931443639922">‏اگلی بار جب آپ اپنے <ph name="DEVICE_TYPE" /> پر Chromium کھولیں گے تو آپ کو قیمت کی ٹریکنگ کے الرٹس کو فعال کرنے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>

@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
 <translation id="201759455285471444">Ανάπτυξη ομάδας καρτελών.</translation>
 <translation id="2022431790688770637">Διαχείριση προτάσεων Gemini</translation>
+<translation id="2023265063803387188">Το Gemini δεν είναι διαθέσιμο στην Κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Άνοιγμα του πλέγματος καρτελών</translation>
 <translation id="2044681667265133332">Η διαχείριση του λογαριασμού <ph name="USER_EMAIL" /> γίνεται από τον τομέα <ph name="HOSTED_DOMAIN" />, ο οποίος μπορεί να βλέπει ορισμένες πληροφορίες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Διακοπή</translation>
 <translation id="2666092431469916601">Κορυφή</translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
-<translation id="2671316366021598595">Ο ιστότοπος "<ph name="SITE_DOMAIN" />" δεν επιτρέπεται να έχει πρόσβαση στην κάμερά σας</translation>
 <translation id="2671423594960767771">Κοινοποίηση ομάδας</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Πληρωμή σε βάθος χρόνου</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="386224966259596343">Θα έχετε την ευκαιρία να αποθηκεύσετε αυτές τις πληροφορίες στο Πορτοφόλι την επόμενη φορά που θα συμπληρώσετε μια σχετική φόρμα.</translation>
 <translation id="3868495844258915202">Εμφάνιση πλήρους URL</translation>
+<translation id="3870931306085184145">Δεν υπάρχουν αποθηκευμένοι κωδικοί πρόσβασης για τον τομέα <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Οδηγίες</translation>
 <translation id="3878657761594430423">Συλλέκτης φύλλων</translation>
 <translation id="3884810423191119660">Αποθηκεύστε με ασφάλεια κωδικούς πρόσβασης, ώστε να μπορείτε να συνδέεστε εύκολα σε ιστοτόπους και εφαρμογές</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Αναβαθμίστε την περιήγησή σας</translation>
 <translation id="5062321486222145940">Εγκατάσταση Google Drive</translation>
 <translation id="5067540696062462445">Λήψεις</translation>
-<translation id="5070314445039955096">Οι άδειες για τον ιστότοπο <ph name="SITE_DOMAIN" /> θα απενεργοποιηθούν μόλις αποχωρήσετε από τον ιστότοπο</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} από {count} τρόπο πληρωμής}other{{position} από {count} τρόπους πληρωμής}}</translation>
 <translation id="5075939510584558547">Αποθήκευση χωρίς κρυπτογράφηση</translation>
 <translation id="5076534614343816664">Παρακολούθηση τιμής</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Πρέπει να είστε συνδεδεμένοι για να χρησιμοποιήσετε το Level Up</translation>
 <translation id="5352128922772839949">Αποθήκευση αρχείου</translation>
 <translation id="5355191726083956201">Η Βελτιωμένη προστασία είναι ενεργή</translation>
-<translation id="5355871759168485600">Ο ιστότοπος "<ph name="SITE_DOMAIN" />" επιτρέπεται να χρησιμοποιεί το μικρόφωνό σας κάθε φορά που τον επισκέπτεστε</translation>
 <translation id="5359436665022446585">Καλύτερο άνοιγμα συνδέσμων</translation>
 <translation id="536067926684072644">Εμφάνιση σελιδοδεικτών</translation>
 <translation id="5364647308446127983">{count,plural, =1{Δεν ήταν δυνατή η εισαγωγή {count} κλειδιού πρόσβασης}other{Δεν ήταν δυνατή η εισαγωγή {count} κλειδιών πρόσβασης}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">Κλείσιμο προώθησης προεπιλεγμένου προγράμματος περιήγησης</translation>
 <translation id="561269594905823128">Πατήστε <ph name="BEGIN_BOLD" />Επιλογή αρχείου<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ταξινόμηση με βάση την πιο πρόσφατη</translation>
+<translation id="561349411957324076">Ολοκληρώθηκε</translation>
 <translation id="5614553682702429503">Αποθήκευση κωδικού πρόσβασης;</translation>
 <translation id="5617769621178348890">Άνοιγμα στην εφαρμογή Αρχεία</translation>
 <translation id="5619871095170816857">Αυτή η κάρτα εμφανίζει την τελευταία ανοιχτή καρτέλα που χρησιμοποιήσατε σε όλες τις συγχρονισμένες συσκευές σας τις τελευταίες 24 ώρες.</translation>
@@ -2334,7 +2334,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> λογαριασμοί</translation>
 <translation id="8161614462829037225">Ξεκλείδωμα με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Μήκος</translation>
-<translation id="8181328232274170248">Ο ιστότοπος "<ph name="SITE_DOMAIN" />" επιτρέπεται να χρησιμοποιεί την κάμερά σας κάθε φορά που τον επισκέπτεστε</translation>
 <translation id="8182037667962849780">{count,plural, =1{Για το {website_1}}=2{Για τα {website_1}, {website_2}}=3{Για τα {website_1}, {website_2} και 1 ακόμη}other{Για τα {website_1}, {website_2} και {more_count} ακόμη}}</translation>
 <translation id="8184895727539791845">Για να επιτρέψετε στο Gemini να χρησιμοποιεί την κάμερά σας, ενεργοποιήστε την Κάμερα στις ρυθμίσεις του iOS</translation>
 <translation id="8185076488803799132">Εισαγωγή</translation>
@@ -2505,7 +2504,6 @@
 <translation id="8674716540979958118">Έχετε παραβιασμένους κωδικούς πρόσβασης.</translation>
 <translation id="8679900250380464358">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="8680787084697685621">Τα στοιχεία σύνδεσης λογαριασμού έχουν λήξει.</translation>
-<translation id="868648444055742370">Ο ιστότοπος "<ph name="SITE_DOMAIN" />" δεν επιτρέπεται να έχει πρόσβαση στο μικρόφωνό σας</translation>
 <translation id="8690752723634292147">Επιβεβαίωση διαγραφής</translation>
 <translation id="8692107307702113268">Ο κωδικός πρόσβασης υπερβαίνει τους 1.000 χαρακτήρες</translation>
 <translation id="8692689525339542358">Προστατευτείτε από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις.</translation>
@@ -2651,6 +2649,7 @@
 <translation id="91023216973987714">Τρόποι πληρωμής</translation>
 <translation id="9106655997975673326">Από <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Έλεγχος για παραβιασμένους κωδικούς πρόσβασης</translation>
+<translation id="9115035712231910133">Συνημμένη εικόνα {title}</translation>
 <translation id="9119764377203471454">Δεν είναι δυνατή η προσθήκη συνημμένων</translation>
 <translation id="9124387962554796433">Η Google μπορεί να χρησιμοποιήσει το ιστορικό σας για την εξατομίκευση της Αναζήτησης και άλλων υπηρεσιών Google.</translation>
 <translation id="9124978074365039456">Αγοράστε, μεταφράστε και προσδιορίστε ό,τι βλέπετε χρησιμοποιώντας την κάμερα και το gallery φωτογραφιών</translation>

@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Spremni ste!</translation>
 <translation id="1149483087970735785">Tehnologija za pomoć osobama s invaliditetom</translation>
 <translation id="1150490752229770117">To je posljednje automatsko ažuriranje softvera i sigurnosno ažuriranje za uređaj <ph name="DEVICE_TYPE" />. Da dobijete buduća ažuriranja, nadogradite uređaj na noviji model. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">O ChromeOS-u</translation>
 <translation id="1155816283571436363">Povezivanje s telefonom</translation>
 <translation id="1160800016654917722">Prozor je pomaknut nadolje i ulijevo</translation>
 <translation id="1164015913575846413">Alt + klik</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16 x</translation>
 <translation id="1275936815032730048">pokretač + strelica udesno</translation>
 <translation id="1280332775949918163">Premjesti prozor</translation>
+<translation id="1285625592773741684">Trenutna postavka prijenosa podataka je Prijenos podataka na mobilnoj mreži</translation>
 <translation id="1285815028662278915">Prijenos podataka na mobilnoj mreži možda ne podržava pristupnu tačku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Noćno svjetlo će se automatski uključiti po zalasku sunca</translation>
 <translation id="1288300545283011870">Svojstva govora</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Ovim će se onemogućiti ekstenzije i postavke vratiti na sigurne zadane. Zadržat će se kartice, fajlovi i kolačići. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Povećalo za cijeli ekran</translation>
 <translation id="1539727654733007771">Nije postavljena nijedna mobilna mreža. Preuzmite novi <ph name="BEGIN_LINK" />profil.<ph name="END_LINK" /></translation>
+<translation id="1547295885616600893">ChromeOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Razumijem da se instalirani profili eSIM-a neće ukloniti ako se izvrši Powerwash</translation>
 <translation id="1549275686094429035">ARC je omogućen</translation>
 <translation id="1554640914375980459">Ekran blica kada primite obavještenje. Oprezno koristite obavještenja blicanjem ako ste osjetljivi na svjetlost.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Koristi WiFi, Bluetooth ili mobilnu mrežu za određivanje lokacije</translation>
 <translation id="1650407365859096313">Otvaranje u novoj kartici; odobrenje je <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Omogući Dijeljenje u blizini</translation>
+<translation id="1662146548738125461">O ChromeOS Flexu</translation>
 <translation id="1663698992894057019">Pređite na novi Chromebook za najnovije sigurnosne i softverske funkcije</translation>
 <translation id="1665328953287874063">Koristite lozinku ili PIN da otključate svoj uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Slušajte određeni tekst koji se čita naglas. Najprije odaberite ikonu Odaberite za govor na dnu ekrana, a zatim istaknite tekst. Možete koristiti i prečicu na tastaturi: Istaknite tekst, a zatim pritisnite tipku za pretraživanje + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Napomena: Otisak prsta može biti manje siguran od jake lozinke ili PIN-a.</translation>
 <translation id="1724801751621173132">Način rada unosa</translation>
 <translation id="1741190788710022490">Prilagodljivo punjenje</translation>
+<translation id="1745732479023874451">Upravljajte kontaktima</translation>
 <translation id="1751335846119670066">Pomoć u čitanju</translation>
 <translation id="1755601632425835748">Veličina teksta</translation>
 <translation id="1761402971842586829">Dugme <ph name="BUTTON_NAME" /> je ponovo mapirano na opciju <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Ne, ostavi 1 prekidač</translation>
 <translation id="1842681835432895345">Isključi ovaj ekran u načinu ogledala</translation>
 <translation id="1848219224579402567">Odjavi me kada se poklopac zatvori</translation>
+<translation id="185970820835152459">Možete upravljati Google računima na koje ste prijavljeni. Vaši Google računi se koriste za preglednik Chromium, Play trgovinu, Gmail i drugo. Ako želite dodati račun za nekog drugog, kao što je član porodice, umjesto računa dodajte novu osobu na svoj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Hladnije</translation>
 <translation id="1866589962721094893">Omogućite Android aplikacijama da upravljaju USB uređajima na ovom Chromebooku. Tražit će se odobrenje svaki put kada priključite USB uređaj. Zasebne Android aplikacije će tražiti dodatna odobrenja.</translation>
 <translation id="1877377290348678128">Oznaka (nije obavezno)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2097950021134740304">Otkazivanje zaboravljanja pretplate</translation>
 <translation id="2104166991923847969">Automatski isključi pristupnu tačku</translation>
+<translation id="2106831557840787829">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">SIM kartica nije umetnuta</translation>
 <translation id="2121825465123208577">Promijeni veličinu</translation>
 <translation id="2127372758936585790">Punjač niskog napona</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Uklanjanje korisnika <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2363475280045770326">Došlo je do greške prilikom pohranjivanja konfiguracije</translation>
+<translation id="236939127352773362">Kada uređaji dijele u blizini</translation>
 <translation id="237336063998926520">Upotreba vaše IP adrese radi određivanja lokacije</translation>
 <translation id="2373499590298659902">Koristite "0" da pritisnete i zadržite dugme miša</translation>
 <translation id="2375406435414127095">Povežite na telefon</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blokiraj saobraćaj bez VPN-a</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Preciznost lokacije pruža precizniju lokaciju za aplikacije i usluge. Google u tu svrhu periodično obrađuje informacije o senzorima uređaja i bežičnim signalima koje uređaj šalje da prikupi lokacije bežičnih signala u vidu podrške internet javnosti. Ove informacije se koriste bez vaše identifikacije radi poboljšanja preciznosti lokacije i usluga zasnovanih na lokaciji te općeg poboljšanja, pružanja i održavanja Googleovih usluga na osnovu legitimnih interesa Googlea i trećih strana da ispunjavaju potrebe korisnika.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Ladica za izlaz papira je skoro puna</translation>
 <translation id="3390013585654699824">Detalji o aplikaciji</translation>
 <translation id="3390740059150071453">Pogled ulijevo</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Adresa e-pošte</translation>
 <translation id="3701028563242674350">Povećavanje kursora miša protresanjem</translation>
 <translation id="3703699162703116302">Tiket je osvježen</translation>
+<translation id="3703994572283698466">ChromeOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Omogući WiFi</translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3707163604290651814">Trenutno ste prijavljeni kao <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Na serveru za štampanje je pronađen sljedeći broj štampača: <ph name="NUM_PRINTERS" /></translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="37143699183660101">Stabilnost kursora</translation>
+<translation id="3716540481907974026">Verzija ChromeOS Flexa</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Pogrešan PIN. Pokušajte ponovo</translation>
 <translation id="3728681439294129328">Konfiguriraj adresu mreže</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Podvlači tekst sastava</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="379509625511193653">Isključeno</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">Alt i strelica nagore</translation>
 <translation id="3798670284305777884">Zvučnik (interni)</translation>
 <translation id="3799128412641261490">Postavke Pristupa pomoću prekidača</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
 <translation id="3917644013202553949">Nema dovoljno prostora za pohranu da se fajlovi sinhroniziraju. Pokušajte osloboditi prostor.</translation>
 <translation id="3919229493046408863">Isključite obavještenja kada su uređaji u blizini</translation>
+<translation id="3923184630988645767">Prijenos podataka</translation>
 <translation id="3923494859158167397">Nije postavljena nijedna mobilna mreža</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Ovu mrežu mogu koristiti i drugi korisnici na ovom uređaju</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definicija Brzih odgovora</translation>
 <translation id="3994075804072562819">Omogućite aplikaciji <ph name="SPECIFIC_NAME" /> da upravlja USB uređajima.</translation>
 <translation id="3994530503403062649">Pronađite dugmad na tabletu</translation>
+<translation id="3997429360543082038">O ChromiumOS-u</translation>
 <translation id="4001540981461989979">Isticanje kursora miša prilikom pomicanja</translation>
 <translation id="4005817994523282006">Način prepoznavanja vremenske zone</translation>
+<translation id="4019629340646866719">ChromiumOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopiraj detalje verzije</translation>
 <translation id="4028467762035011525">Dodajte načine unosa</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Da prebacite na način unosa koji ste posljednji put koristili, pritisnite <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">tipka za pretraživanje + strelica udesno</translation>
 <translation id="405181879009056822">Postavke ChromeOS-a</translation>
+<translation id="4054070260844648638">Vidljiv svakome</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Provjerite vezu da vidite dostupne štampače na svojoj mreži</translation>
 <translation id="4068776064906523561">Sačuvani otisci prstiju</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />. stepen</translation>
 <translation id="4244238649050961491">Pronađite još aplikacija za upotrebu digitalne olovke</translation>
 <translation id="4248401726442101648">Nije povezana nijedna kamera</translation>
+<translation id="424864128008805179">Odjaviti se iz Chromea?</translation>
 <translation id="4249116869350613769">Ušteda baterije</translation>
 <translation id="4250229828105606438">Snimak ekrana</translation>
 <translation id="425411422794688815">Nešto nije uredu. Provjerite nalazi li se telefon u blizini, je li otključan i jesu li uključeni Bluetooth i WiFi.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google račun}one{<ph name="EXTRA_ACCOUNTS" /> Google račun}few{<ph name="EXTRA_ACCOUNTS" /> Google računa}other{<ph name="EXTRA_ACCOUNTS" /> Google računa}}</translation>
 <translation id="4314497418046265427">Budite produktivniji kada povežete telefon i uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Dodajte novi Naziv pristupne tačke</translation>
+<translation id="4314815835985389558">Upravljanje sinhronizacijom</translation>
 <translation id="4320177379694898372">Nema internetske veze</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Pohrana i napajanje</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Broj prijedloga</translation>
 <translation id="4606933160360542263">Prilagođena kombinacija tipki: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Kada je odabrano lijevo dugme miša, koristite "/" da dvaput kliknete</translation>
+<translation id="4613863813562375431">Verzija ChromiumOS-a</translation>
 <translation id="461661862154729886">Izvor energije</translation>
 <translation id="4617880081511131945">Nije moguće uspostaviti vezu</translation>
 <translation id="4620757807254334872">miš</translation>
@@ -1136,6 +1155,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4777943778632837590">Konfiguriraj servere mrežnih naziva</translation>
 <translation id="4779083564647765204">Uvećaj</translation>
 <translation id="4779766576531456629">Promijeni naziv eSIM mobilne mreže</translation>
+<translation id="4789550509729954245">Prikaz obavještenja kada uređaji dijele u blizini</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Omogući ubrzanje TrackPointa</translation>
 <translation id="479664067938200069">Instalirane aplikacije iz aplikacije <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4964544790384916627">Priključi prozor</translation>
 <translation id="4964673849688379040">Provjera u tijeku...</translation>
 <translation id="4967571733817147990">Prilagodite dugmad miša</translation>
+<translation id="4970880042055371251">Verzija ChromeOS-a</translation>
 <translation id="4972129977812092092">Uredi štampač</translation>
 <translation id="4975771730019223894">Označavanje aplikacija</translation>
 <translation id="4979263087381759787">Opcije za razvojne programere</translation>
@@ -1275,6 +1296,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5193978546360574373">Ovim će se ukloniti pristup Google Disku na Chromebooku, uključujući pristup bilo kojim fajlovima koji su dostupni offline</translation>
 <translation id="5196790039230503600">Izvršite pokret, a zatim pomicanjem glave pokažite gdje želite ispustiti stavku. Ponovo izvršite pokret da je ispustite.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Nikada ne koristi prenos podataka na mobilnoj mreži za prenos</translation>
 <translation id="5207949376430453814">Istakni kursor u tekstu</translation>
 <translation id="5208926629108082192">Informacije o mobilnoj mreži uređaja</translation>
 <translation id="5208988882104884956">Poluširina</translation>
@@ -1307,6 +1329,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5331568967879689647">Sistemska aplikacija ChromeOS-a</translation>
 <translation id="5334113802138581043">Pristup mikrofonu</translation>
 <translation id="5336689872433667741">Kursor i dodirna podloga</translation>
+<translation id="5337926771328966926">Trenutni naziv uređaja je <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Pošaljite dijagnostiku i podatke o korištenju</translation>
 <translation id="5369694795837229225">Postavi Linuxovo okruženje za razvoj</translation>
 <translation id="5377367976106153749">Uključiti pristup kameri?</translation>
@@ -1444,6 +1467,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5833726373896279253">Ove postavke može promijeniti samo vlasnik.</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Maska</translation>
+<translation id="5840680448799937675">Fajlovi će se uvijek dijeliti van mreže</translation>
 <translation id="5841270259333717135">Konfigurirajte ethernet</translation>
 <translation id="5842497610951477805">Omogućavanje Bluetootha</translation>
 <translation id="5846200638699387931">Sintaksička greška odnosa: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5924438086390153180">Pitaj prije kopiranja ili premještanja Microsoft fajlova na Google Disk</translation>
 <translation id="5939518447894949180">Vrati na zadano</translation>
 <translation id="594048410531370124">Tipka nije prepoznata. Pritisnite bilo koju tipku da <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Vidljivost uređaja</translation>
 <translation id="5945192511027649793">Onemogućite dodirnu podlogu</translation>
 <translation id="5947651424015173580">Dvostruki klik mišem</translation>
 <translation id="594993197557058302">Pritisnite modifikacijske tipke 1 – 4 (ctrl, alt, shift, tipku za pretraživanje ili pokretač) i još 1 tipku. Također možete odabrati samo jednu tipku.</translation>
@@ -1491,10 +1516,12 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5961545272769624207">Dodijelite pokret</translation>
 <translation id="5968022600320704045">Nema rezultata pretraživanja</translation>
 <translation id="5969728632630673489">Obavještenje o prečici tastature je odbačeno</translation>
+<translation id="5979353814339191480">Ova opcija se primjenjuje na Chromebook računare s paketom prijenosa podataka ili ključem za mobilnu mrežu ili prilikom dijeljenja internetske veze putem prijenosne pristupne tačke.</translation>
 <translation id="5985556342298151179">Chromeova aplikacija koju je instalirao administrator uređaja.</translation>
 <translation id="5986442691296752186">Omogućite Linux aplikacijama da upravljaju USB uređajima.</translation>
 <translation id="598810097218913399">Ukloni dodjelu</translation>
 <translation id="5988563937187882754">Pogled udesno</translation>
+<translation id="5990266201903445068">Samo WiFi</translation>
 <translation id="5992225669837656567">Veza svih miševa je prekinuta</translation>
 <translation id="5999630716831179808">Glasovi</translation>
 <translation id="6002458620803359783">Preferirani glasovi</translation>
@@ -1509,6 +1536,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6045114302329202345">Primarno dugme TrackPointa</translation>
 <translation id="6048747414605857443">Odaberite i prilagodite glasove za pretvaranje teksta u govor za ChromeVox i Odaberite za govor</translation>
 <translation id="6050189528197190982">Nijanse sive</translation>
+<translation id="6054961935262556546">Promijeni vidljivost</translation>
 <translation id="6059276912018042191">Nedavne kartice Chromea</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6064764629679333574">Poboljšajte kvalitet zvuka Bluetooth mikrofona nadograđivanjem zvuka niske rezolucije na visoku rezoluciju.</translation>
@@ -1567,6 +1595,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6265159465845424232">Pitaj prije kopiranja ili premještanja Microsoft fajlova na Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Ukloni priključak</translation>
 <translation id="6266532094411434237">Povezivanje s uređajem <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Odjaviti se iz Chromiuma?</translation>
 <translation id="6270309713620950855">Isključi zvuk podsjećanja</translation>
 <translation id="6274089201566806618">Povezivanje s uređajem <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekunde</translation>
@@ -1618,6 +1647,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6453921811609336127">Da prebacite na sljedeći način unosa, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />tipku za razmak<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Izbrišite ovaj rječnik</translation>
 <translation id="6463596731306859179">Prikazuju li vam se neželjeni skočni prozori ili primjećujete drugo neočekivano ponašanje? Aplikacije i ekstenzije koje instalirate ponekad mogu promijeniti postavke ChromeOS-a bez vašeg znanja.</translation>
+<translation id="6465841119675156448">Bez interneta</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> potom može:</translation>
 <translation id="6469557521904094793">Uključi mobilnu mrežu</translation>
 <translation id="6470120577693311302">Obavještenja blicanjem</translation>
@@ -1668,6 +1698,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6626581113916585374">Način rada za efekte</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Prečac odabira</translation>
+<translation id="6632473616050862500">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Isključi Brzo uparivanje</translation>
 <translation id="6647690760956378579">Pregled prirodnog glasa</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
@@ -1711,6 +1742,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6775163072363532304">Ovdje će se prikazati dostupni uređaji.</translation>
 <translation id="6776729248872343918">Omogući Brzo uparivanje</translation>
 <translation id="6777845730143344223">Više informacija o pretplatama na Passpoint</translation>
+<translation id="6779406956731413166">ChromiumOS omogućava dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Zaboraviti ovaj uređaj?</translation>
 <translation id="6783667414610055871">Postavke Microsoft OneDrivea</translation>
 <translation id="6785915470941880363">Klizanje unazad <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7280649757394340890">Postavke glasa za pretvaranje teksta u govor</translation>
 <translation id="7282547042039404307">Glatko</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Važne informacije o korištenju i sigurnosti</translation>
 <translation id="7303485269821975179">Postavite lozinku za uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Visoko</translation>
 <translation id="7308643132139167865">Jezici web lokacija</translation>
@@ -1873,6 +1906,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7409599290172516453">Nedavne fotografije</translation>
 <translation id="7414464185801331860">18 x</translation>
 <translation id="7417435070053325657">Blokirano: <ph name="BLOCKED_APPS_SIZE" /> od <ph name="APPS_LIST_SIZE" /> aplikacije/a</translation>
+<translation id="7423425410216218516">Vidljivost je uključena na <ph name="MINUTES" /> min</translation>
 <translation id="7423513079490750513">Uklonite <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Pomozi mi da napišem</translation>
 <translation id="7429415133937917139">Simulira izlaz Brailleovog ekrana koji je moguće osvježiti
@@ -1920,11 +1954,13 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7578137152457315135">Postavke otiska prsta</translation>
 <translation id="7578692661782707876">Unesite kôd za potvrdu.</translation>
 <translation id="7582582252461552277">Preferiraj ovu mrežu</translation>
+<translation id="7582844466922312471">Prenos podataka na mobilnoj mreži</translation>
 <translation id="7587806318633605613">Historija prijedloga</translation>
 <translation id="7590883480672980941">Postavke unosa</translation>
 <translation id="7592060599656252486">Neki</translation>
 <translation id="7602173054665172958">Upravljanje štampanjem</translation>
 <translation id="7605163396341021431">Omogućite Android aplikacijama da upravljaju USB uređajima na ovom Chromebooku</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Postavke Androida</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Omogućavanje funkcija povezanog telefona.</translation>
@@ -1935,12 +1971,14 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7632437836497571618">Koristi sigurne veze za traženje web lokacija</translation>
 <translation id="7634337648687970851">Oporavak lokalnih podataka trenutno nije podržan.</translation>
 <translation id="7640256527901510478">IMEI uređaja je <ph name="IMEI_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Ovi brojevi mogu pomoći prilikom aktiviranja usluge.</translation>
+<translation id="7640308610547854367">Vratili ste prethodnu verziju ChromeOS-a. Da dobijate ažuriranja, pričekajte dok sljedeća verzija ne bude dostupna.</translation>
 <translation id="7641513591566880111">Naziv novog profila</translation>
 <translation id="764178579712141045">Korisnik <ph name="USER_EMAIL" /> je dodat</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlasnik)</translation>
 <translation id="7648048654005891115">Stil Keymap</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Postavljen je 1 otisak prsta}one{Postavljen je {COUNT} otisak prsta}few{Postavljena su {COUNT} otiska prsta}other{Postavljeno je {COUNT} otisaka prsta}}</translation>
+<translation id="7650677314924139716">Trenutna postavka prenosa podataka je Samo WiFi</translation>
 <translation id="7651400349472467012">Dostupna je instant pristupna tačka</translation>
 <translation id="7651784568388208829">Phone Hub nastavak zadatka</translation>
 <translation id="7658239707568436148">Otkaži</translation>
@@ -2031,6 +2069,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Prijevod</translation>
 <translation id="7915457674565721553">Povežite se na internet da postavite roditeljski nadzor</translation>
+<translation id="7917876797003313048">Možete upravljati Google računima na koje ste prijavljeni. Google računi se koriste za preglednik Chrome, Play trgovinu, Gmail i drugo. Ako želite dodati račun za nekog drugog, kao što je član porodice, umjesto računa dodajte novu osobu na svoj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Dodajte riječi koje želite da provjera pravopisa preskoči</translation>
 <translation id="7921347341284348270">Ne možete pregledati obavještenja telefona na ovom upravljanom računu. Pokušajte ponovo s drugim računom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="8431977087510901105">Vraćanje postavki kursora na zadano</translation>
 <translation id="8437209419043462667">SAD</translation>
 <translation id="8439506636278576865">Ponudi prijevod stranica na ovom jeziku</translation>
+<translation id="8449347986464073209">Izbriši i odjavi</translation>
 <translation id="8451512073679317615">asistent</translation>
 <translation id="8455775311562941553">Povezano je s uređajem <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Izgovaraj tekst koji se nalazi ispod kursora miša</translation>
@@ -2320,6 +2360,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="8872774989979382243">Zvuk je isključen. Uključivanje zvuka.</translation>
 <translation id="888256071122006425">Postavke miša i dodirne podloge</translation>
 <translation id="8885449336974696155">Pomozite nam da poboljšamo ChromeOS izvještavanjem o <ph name="BEGIN_LINK" />trenutnim postavkama<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Mogu nastati troškovi prenosa podataka na mobilnoj mreži</translation>
 <translation id="8890529496706615641">Promjena naziva profila nije uspjela. Pokušajte ponovo ili kontaktirajte svog mobilnog operatora za tehničku podršku.</translation>
 <translation id="8894761918470382415">Zaštita pristupa podacima za periferne uređaje</translation>
 <translation id="8896830132794747524">Brži pokreti miša će pomjerati kursor dalje</translation>
@@ -2345,6 +2386,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="8978939272793553320">Veza uređaja <ph name="DEVICE_NAME" /> je prekinuta</translation>
 <translation id="8980345560318123814">Izvještaji o povratnim informacijama</translation>
 <translation id="8981825781894055334">Ima malo papira</translation>
+<translation id="8984694057134206124">Svakome ćete biti vidljivi <ph name="MINUTES" /> min. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Prag otkrivanja</translation>
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8991694323904646277">Nema kamere</translation>
@@ -2391,6 +2433,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="9098860402274800697">Uklonite Google Play i Android aplikacije</translation>
 <translation id="910000385680858937">Dozvoljeno – <ph name="PERMISSION_DETAILS" />. Povežite mikrofon s uređajem.</translation>
 <translation id="9100416672768993722">Da prebacite na način unosa koji ste posljednji put koristili, pritisnite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />tipku za razmak<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Trenutna postavka prenosa podataka je Bez interneta</translation>
 <translation id="9108294543511800041">Sada možete pregledati nedavne fotografije, medijski sadržaj i obavještenja telefona</translation>
 <translation id="9109122242323516435">Da oslobodite prostor, izbrišite fajlove iz pohrane na uređaju.</translation>
 <translation id="9111330022786356709">Dodajte ili pronađite dugmad na mišu</translation>

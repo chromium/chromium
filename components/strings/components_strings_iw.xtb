@@ -457,6 +457,7 @@
 <translation id="1746531169546376413">0 מעלות</translation>
 <translation id="1747777564644667857">טיסה</translation>
 <translation id="1748225549612934682">צריך לקצר את הטקסט כדי לקבל עזרה בכתיבה</translation>
+<translation id="1748985883817578907"><ph name="FULL_NAME" /> – <ph name="EMAIL" /></translation>
 <translation id="1752021286346845558">תיבת דואר 8</translation>
 <translation id="1753706481035618306">מספר דף</translation>
 <translation id="1756026472674246267">פתיחת הקישור בכרטיסייה חדשה</translation>
@@ -725,7 +726,6 @@
 <translation id="22081806969704220">מגש 3</translation>
 <translation id="2210794033760923560">העלאת הדוח</translation>
 <translation id="2212735316055980242">לא נמצאה מדיניות</translation>
-<translation id="2213606439339815911">מאחזר רשומות...</translation>
 <translation id="2213612003795704869">הדף מודפס</translation>
 <translation id="2214086901479959524">‏צריך לעדכן את Chrome כדי להמשיך להשתמש בקבוצות של הכרטיסיות המשותפות</translation>
 <translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
@@ -1175,6 +1175,7 @@
 <translation id="2980742331521553164">‏כדי שתהליך התשלום יהיה מהיר יותר, קוד האימות (CVC) של הכרטיס הזה יוצפן ויישמר בחשבון Google שלך</translation>
 <translation id="2983666748527428214">פתיחת כרטיסייה פרטית</translation>
 <translation id="2985398929374701810">עליך להזין כתובת חוקית</translation>
+<translation id="2985848978986605722">כדי לנווט בין קישורי המקורות, צריך להשתמש במקשי החצים שמאלה או ימינה.</translation>
 <translation id="2986485254770343131">מתבצעת שמירה של קבצי המצלמה</translation>
 <translation id="2987034854559945715">אין תכונות תואמות</translation>
 <translation id="2989742184762224133">שתי סיכות הידוק בחלק העליון</translation>
@@ -1273,7 +1274,6 @@
 <translation id="3141337053413339205">החלפה לכרטיסייה הזו.</translation>
 <translation id="3144458715650412431">‏מדיניות הבדיקה הוחלה. ניתן לבדוק ולאפס אותה בכתובת chrome://policy/test. המדיניות של האדמין לא תוחל.</translation>
 <translation id="3145945101586104090">פענוח התגובה נכשל</translation>
-<translation id="3149865382039202168">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, צריך לשמור את הפרטים ב-<ph name="GOOGLE_WALLET_TITLE" />. אפשר לשלוט ב<ph name="HOW_INFO_IS_USED_LINK" /> בהגדרות הכרטיס הפרטי בכתובת <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">שגיאת שרת זמנית</translation>
 <translation id="3150889484970506196">‏הכפתור ליצירת גיליון, מפעילים אותו כדי ליצור במהירות גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="3154506275960390542">דף זה כולל טופס שעשוי להישלח באופן לא מאובטח. הנתונים ששולחים יהיו גלויים במהלך ההעברה, וקיימת סכנה שמישהו ישנה את הפרטים שהשרת יקבל.</translation>
@@ -1519,7 +1519,6 @@
 <translation id="3558335486599406178">‏מספר ה-IBAN נשמר ב-Google Wallet</translation>
 <translation id="3558573058928565255">שעות היום</translation>
 <translation id="3559897352860026926">צריך לבקש מהאדמין לאמת את ההגדרות האישיות ב-<ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">הצגת האתרים הקשורים</translation>
 <translation id="3566021033012934673">החיבור שלך לא פרטי</translation>
 <translation id="3566336457819493938">‏215x315 מ"מ</translation>
 <translation id="3566681680543111735">העתקת מחרוזת הווריאציות</translation>
@@ -1593,6 +1592,7 @@
 <translation id="3671540257457995106">לאפשר את שינוי הגודל?</translation>
 <translation id="3672568546897166916">שגיאה ב-<ph name="ERROR_PATH" />: ‏<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">גליל שלישי</translation>
+<translation id="3675778643732456976">‫<ph name="SUGGESTION_TEXT" />‏, פתיחה בחלונית הצדדית</translation>
 <translation id="3676592649209844519">מזהה מכשיר:</translation>
 <translation id="3677008721441257057">‏התכוונת לכתובת &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">לא ניתן היה לחתום על הבקשה</translation>
@@ -2161,7 +2161,6 @@
 <translation id="4603727370377253901">הזמנת מקומות בטיסה</translation>
 <translation id="4607608436550361748">‏הצגת טיפים לשימוש ב-Chrome</translation>
 <translation id="460848736049414407">הכתובת נחסמה על ידי האדמין</translation>
-<translation id="4610279718074907952">האתר הזה שייך לקבוצת אתרים שיש להם הרשאה לראות את הפעילות שלך. הקבוצה הוגדרה על ידי <ph name="SET_OWNER" /></translation>
 <translation id="4612631413844865947">הייתה שגיאה בעיבוד ההזמנה שלך באתר <ph name="MERCHANT_ORIGIN" /> דרך <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">יכול להיות שהאתר הזה מכיל תוכן למבוגרים בלבד. כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס.</translation>
 <translation id="4613873770449493819">‏כתובת ה-URL חייבת להפנות לדומיין של <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
@@ -3713,7 +3712,6 @@ Del</translation>
 <translation id="7173338713290252554">היסטוריית המחירים באינטרנט</translation>
 <translation id="7174545416324379297">משולבת</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ועוד <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">רענון</translation>
 <translation id="7181261019481237103">פתיחת חלון אנונימי</translation>
 <translation id="7182878459783632708">לא הוגדרה מדיניות</translation>
 <translation id="7186833457841277072">Envelope (Inkjet)</translation>
@@ -4179,7 +4177,6 @@ Del</translation>
 <translation id="7932579305932748336">ציפוי</translation>
 <translation id="79338296614623784">עליך להזין מספר טלפון חוקי</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> רוצה להפעיל תוכן מוגן. זהות המכשיר שלך תאומת על-ידי Google.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">יש הרשאה להשתמש בחיישני התנועה</translation>
 <translation id="7937163678541954811">‏כדי שתהליך התשלום יהיה מהיר יותר, קוד האימות (CVC) של הכרטיס הזה יוצפן ויישמר במכשיר שלך</translation>
 <translation id="7937554595067888181">בתוקף עד <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4227,7 +4224,6 @@ Del</translation>
 <translation id="7999482381722829925">תיצור רשימת משימות לניקוי יסודי של כל החדרים בבית, לפי סדר עדיפויות, עם דגש על מקומות שנוטים לפספס</translation>
 <translation id="8001912761979890298">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" /> כי הוא משתמש באישור אבטחה שלא נחשב לאמין לפי Chromium או לפי הגדרות המערכת שלך להצפנת תעבורת אינטרנט. יכול להיות שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />לצפייה באישור<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">מומלץ לסגור כרטיסיות או תוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
-<translation id="8002230960325005199">הצגת האתרים הקשורים בכרטיסייה חדשה</translation>
 <translation id="8003046808285812021">'<ph name="SEARCH_TERMS" />'</translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8009225694047762179">ניהול סיסמאות</translation>
@@ -4268,7 +4264,6 @@ Del</translation>
 <translation id="8079976827192572403">אתר מסוכן</translation>
 <translation id="8086971161893892807">טיוטה</translation>
 <translation id="8087558780672230449">האפליקציה <ph name="APP_ORIGIN" /> נטענת כדי לעבד את התשלום ב-<ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">הצגת הפריט נכשלה.</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8091372947890762290">ההפעלה ממתינה בשרת</translation>
 <translation id="8092254339843485299">‏6x8 אינץ'</translation>
@@ -4908,7 +4903,6 @@ Del</translation>
 <translation id="9199905725844810519">ההדפסה חסומה</translation>
 <translation id="9204089334327209740">אחרי שההעלאה תסתיים, אפשר יהיה לשנות את הקבצים ב-<ph name="CLOUD_PROVIDER" />. הקבצים באחסון המקומי, כולל הקבצים באשפה, יוסרו באופן אוטומטי.</translation>
 <translation id="9205078245616868884">הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
-<translation id="9207861905230894330">הוספת הפריט נכשלה.</translation>
 <translation id="9209339767782560829">הייתה בעיה בשימוש באישור ההתחברות שלך.</translation>
 <translation id="9210152531668884481">אני בעניין</translation>
 <translation id="9213433120051936369">התאמה אישית של המראה</translation>

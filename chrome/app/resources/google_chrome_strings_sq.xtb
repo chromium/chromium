@@ -20,7 +20,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1142745911746664600">Chrome nuk mund të përditësohet</translation>
 <translation id="1148360048981192980">Herën tjetër që të hapësh Chrome në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="1150418667633096194">Butoni "Paneli anësor i 'Kërko në Google'" në shiritin e veglave ka një ikonë të re. Kliko tek ai për të bërë pyetje ndërkohë që shfleton me panelin anësor të "Kërko në Google".</translation>
-<translation id="1152920704813762236">Rreth ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Hape në Chrome</translation>
 <translation id="1157952955648710254">Mbyll panelin anësor të "Kërko në Google"</translation>
 <translation id="1157985233335035034">Gjuhët e fundit</translation>
@@ -57,7 +56,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1507198376417198979">Personalizo profilin tënd të ri të Chrome</translation>
 <translation id="1518627427551567882">Kjo faqe është e mbrojtur</translation>
 <translation id="15408169957028265">Rihap "Kërko në Google" në Chrome</translation>
-<translation id="1547295885616600893">ChromeOS mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Përfundon detyrën e theksuar.</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1587223624401073077">Google Chrome po përdor kamerën tënde.</translation>
@@ -78,7 +76,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1632241302126471515">Kërko me Chrome Canary</translation>
 <translation id="1640672724030957280">Po shkarkohet...</translation>
 <translation id="1651617469580841801">Kur përdor "Lenten e Google", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te Google. <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
 <translation id="1674870198290878346">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="1682634494516646069">Google Chrome nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
@@ -99,6 +96,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1843347690926158494">Kërko në këtë skedë me "Lenten e Google"</translation>
 <translation id="1849248141818021764">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, do të të duhet të <ph name="BEGIN_LINK" />fshish të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="1867503717113754604">Identifikohu në Chrome me "Llogarinë tënde të Google" për të përdorur <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
+<translation id="1871615898038944731">Pajisja jote <ph name="DEVICE_TYPE" /> është e përditësuar</translation>
 <translation id="1873233029667955273">Google Chrome nuk është shfletuesi i parazgjedhur</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
@@ -106,6 +104,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1880677175115548835">Përzgjidh tekstin</translation>
 <translation id="1896602904211344018">Merr aplikacionin e Chrome</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
+<translation id="1925069572871307609">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10, versioni 1809 ose një version i mëvonshëm. Ky kompjuter përdor një version më të vjetër të Windows 10.</translation>
 <translation id="1979600810166324878">Qëndro më i sigurt në lëvizje me "Shfletimin e sigurt të përmirësuar" në Chrome për iOS</translation>
 <translation id="2001586581944147178">Bëj që personat që kanë qasje në trafikun tënd të internetit ta kenë më të vështirë të shikojnë sajtet që viziton ti. Chrome përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajt në sistemin e emrave të domeneve (DNS).</translation>
 <translation id="2018879682492276940">Instalimi nuk u krye. Provo përsëri.</translation>
@@ -118,7 +117,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2091012649849228750">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
 <translation id="2096213354152647998">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION" />".</translation>
-<translation id="2106831557840787829">ChromeOS Flex mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Çaktivizo ekzekutimin e Chrome në sfond për aplikacionet</translation>
 <translation id="2111985952714409792">Për të marrë shtesat e tua etj në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="2120620239521071941">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
@@ -145,6 +143,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2307973900865360088">Mbaje në "Stacion"</translation>
 <translation id="2309047409763057870">Ky është instalim dytësor i Google Chrome dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="2345992953227471816">Chrome vuri re se këto shtesa përmbajnë softuer keqdashës:</translation>
+<translation id="2350411688004301551">Kalo te Gemini Enterprise</translation>
 <translation id="2358140144860869442">Për të marrë listën tënde të leximit etj. në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2403703063067034158">Gabim në nisje: aktualisht po ekzekutohet një shembull tjetër i konfigurimit; provo përsëri më vonë.</translation>
@@ -155,6 +154,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu faqeshënuesit e tu etj. nga <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2513154137948333830">Nevojitet rindezja: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">organizata jote</translation>
 <translation id="2521391734665471391">Mbyll "Modalitetin e IA-së" të "Kërko në Google"</translation>
 <translation id="2523492931736391680">Puna jote e sigurt në Chrome</translation>
 <translation id="2534365042754120737">Për të mbrojtur të dhënat e tua, lejo që Chrome të heqë lejet nga sajtet që nuk i ke vizituar së fundi. Kjo nuk i ndalon njoftimet.</translation>
@@ -201,6 +201,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2876628302275096482">Mëso më shumë se <ph name="BEGIN_LINK" />si Chrome i mban private të dhënat e tua<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2888126860611144412">Rreth Chrome</translation>
+<translation id="2898830646167954300">Kalo përsëri tek asistenti yt i pamenaxhuar i Gemini</translation>
 <translation id="2915996080311180594">Rinise më vonë</translation>
 <translation id="2926952073016206995">Chrome ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="2945997411976714835">Gabim gjatë instalimit: Nisja e procesit të instaluesit dështoi.</translation>
@@ -211,7 +212,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2994465299455873643">Ofron shërbime enkriptimi dhe një mënyrë të sigurt për të rikuperuar <ph name="BROWSER_NAME" /> nëse vjetrohet. Nëse ky shërbim është i çaktivizuar, <ph name="BROWSER_NAME" /> mund të humbasë qasjen në të dhënat e enkriptuara dhe <ph name="BROWSER_NAME" /> mund të mos jetë në gjendje të vetërikuperohet.</translation>
 <translation id="3003694935412297923">Të gjitha detyrat</translation>
 <translation id="3019382870990049182">Nis sërish për të përditësuar Chrome OS Flex</translation>
-<translation id="3034219227076811559">"Kërko në Google" në Chrome</translation>
 <translation id="3037190258341683404">Mund ta gozhdosh "Kërko në Google" në Chrome për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="3037517125981011456">Shfaq kërkesa për t'u identifikuar në Chrome</translation>
 <translation id="3037838751736561277">Google Chrome është në modalitetin e sfondit.</translation>
@@ -235,6 +235,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3140883423282498090">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
 <translation id="3161522574479303604">Të gjitha gjuhët</translation>
+<translation id="3183555099201190073">Qasu te "Kërko" nga çdo skedë</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu faqeshënuesit etj. në të gjitha pajisjet e tua.</translation>
 <translation id="319199214552513804">Për të marrë këtë shtesë dhe më shumë në të gjithë kompjuterët e tu, identifikohu në Chrome</translation>
 <translation id="3196187562065225381">Chrome e bllokoi këtë shkarkim sepse skedari është i rrezikshëm</translation>
@@ -279,8 +280,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
 <translation id="3673813398384385993">Chrome vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
 <translation id="3697952514309507634">Profilet e tjera të Chrome</translation>
-<translation id="3703994572283698466">ChromeOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="3716540481907974026">Versioni i Chrome OS Flex</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{Ofrohet një përditësim i ri për Chrome dhe do të zbatohet sapo ta nisësh sërish. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{Ofrohet një përditësim i ri për Chrome dhe do të zbatohet sapo ta nisësh sërish. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="3718181793972440140">Kjo do të fshijë 1 artikull nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome rekomandon që ta heqësh atë. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" />}other{Chrome rekomandon që t'i heqësh ato. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" />}}</translation>
@@ -289,7 +288,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3772152698251011058">Raportoje këtë sajt te Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi në identifikim.</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="383455301564000773">Do të kalosh në Windows 11? Shkarko Chrome në OneDrive që të jesh gati që ditën e parë.</translation>
 <translation id="383928141529488001">Google Chrome ka nevojë për qasje te Bluetooth-i për të eksploruar pajisjet me Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -312,10 +310,12 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4022972681110646219">Përkthe ekranin</translation>
 <translation id="4023601594785368013">Gjuha origjinale: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">I integruar në Chrome për të të ndihmuar të krijosh, ruash dhe plotësosh automatikisht fjalëkalime të forta. Shto shkurtoren për qasje të lehtë.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Anëtarësim në Google.</translation>
 <translation id="4035053306113201399">ChromeOS ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="4053720452172726777">Personalizo dhe kontrollo Google Chrome</translation>
 <translation id="408393047846373801">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chrome. Ky fjalëkalim do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
 <translation id="4102173024714616627">Shtesat janë veçori shtesë që të lejojnë të personalizosh Chrome. Nga ruajtja e organizimit e deri te thjeshtimi i detyrave të përditshme, shtesat të ndihmojnë të personalizosh Chrome.</translation>
+<translation id="4103543596018881622">"Kërko në Google" në Chrome u gozhdua te shiriti i veglave!</translation>
 <translation id="4110895483821904099">Konfiguro profilin tënd të ri të Chrome</translation>
 <translation id="4111566860456076004">Chrome nuk mund të verifikojë se nga vjen kjo shtesë dhe ajo mund të jetë e pasigurt. Hiqe atë nga Chrome që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet personale.</translation>
 <translation id="4148957013307229264">Po instalohet...</translation>
@@ -393,7 +393,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="495931528404527476">Në Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë tënde janë të papërditësuara.</translation>
 <translation id="4970761609246024540">Mirë se vjen në profilet e Chrome</translation>
-<translation id="4970880042055371251">Versioni i ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliko te “Menaxheri i fjalëkalimeve i Google”</translation>
 <translation id="5043786843026425788">Mëso më shumë rreth kërkimit me "Lenten e Google" në Chrome</translation>
@@ -416,6 +415,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 <translation id="5174969993834422967">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko tek ikona e njoftimit në këndin e djathtë të shiritit të vendndodhjes.</translation>
 <translation id="5174983315706567306">Nuk ka hapësirë të mjaftueshme në disk.</translation>
 <translation id="5179933070463113976">Për të përdorur Gemini në Chrome, duhet të jesh i identifikuar në Chrome me "Llogarinë tënde të Google"</translation>
+<translation id="5184662919967270437">Po përditëson pajisjen</translation>
 <translation id="5190467473654176081">Personalizo Chrome për t'i dhënë një pamje të re</translation>
 <translation id="5201744974236816379">Përditësimi i Chrome</translation>
 <translation id="5234764350956374838">Hiq</translation>
@@ -426,6 +426,7 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 <translation id="5320351714793324716">Nëse lejon kukit, Chrome mund t'i përdorë ato gjatë ngarkimit paraprak</translation>
 <translation id="5321325624576443340">"Lentja e Google" nuk ofrohet. Provo përsëri më vonë.</translation>
 <translation id="5334309298019785904">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
+<translation id="5336664042114176802">Mund të kalosh tek asistenti i Gemini i lidhur fillimisht me "Llogarinë tënde të Google" dhe që nuk menaxhohet nga <ph name="DOMAIN" />. Përgjigjet nuk do të bazohen më në skedarët ose shërbimet e menaxhuara nga <ph name="DOMAIN" /> dhe historiku i bisedave nuk do të transferohet. Mund të mos jetë i përshtatshëm për t'u përdorur për punë. Ndërrimi kërkon nisjen sërish të Chrome.</translation>
 <translation id="5346389065299425353">Thelloje kërkimin duke shtuar disa skeda, skedarë dhe vegla</translation>
 <translation id="5353252989841766347">Eksporto fjalëkalimet nga Chrome</translation>
 <translation id="5368118228313795342">Kodi shtesë: <ph name="EXTRA_CODE" />.</translation>
@@ -452,6 +453,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5649156266046089790">Me profilet e Chrome, mund t'i ndash të gjitha gjërat e tua të Chrome. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar.</translation>
 <translation id="566568153320186256">Chrome kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove të videove. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e energjisë"<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">ChromeOS është i papërditësuar</translation>
 <translation id="567202749201779594">Pastro të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="568656514202614970">Me sukses! Tani mund të bësh me lehtësi pyetje ndërkohë që shfleton me panelin anësor të "Kërko në Google"</translation>
@@ -474,6 +476,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5894164573378901688">Për të përdorur Gemini në Chrome, identifikohu me një "Llogari tjetër të Google"</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - identifikimi në rrjet</translation>
+<translation id="5906655207909574370">Pothuajse i përditësuar! Rinise pajisjen për të përfunduar përditësimin.</translation>
 <translation id="5924017743176219022">Po lidhet me internetin...</translation>
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
@@ -529,6 +532,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6326175484149238433">Hiqe nga Chrome</translation>
 <translation id="6334815226785304306">Bëje Google Chrome shfletuesin e parazgjedhur dhe gozhdoje te shiriti i veglave</translation>
 <translation id="6339888439788291743">Ikonë e re, e njëjta shkurtore: Kliko për të bërë pyetje ndërkohë që shfleton me "Modalitetin e IA-së" të "Kërko në Google".</translation>
+<translation id="6349304688246983183">Bëj me lehtësi pyetje ndërkohë që shfleton me "Kërko në Google"</translation>
 <translation id="63540178978900677">Chrome nuk është më shfletuesi yt i parazgjedhur. Të bëhet Chrome shfletuesi i parazgjedhur?</translation>
 <translation id="6357670763064300993">Gemini Enterprise në Chrome</translation>
 <translation id="6360449101159168105">Kur kjo skedë ishte joaktive, memoria u lirua që Chrome të vazhdojë të jetë i shpejtë. Mund të zgjedhësh që ta përjashtosh gjithmonë këtë sajt nga caktimi si joaktiv.</translation>
@@ -542,6 +546,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6438015621983209660">Zgjero "Shfletimin e sigurt të përmirësuar" me Chrome në telefonin tënd</translation>
 <translation id="6442774133615368941">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde në aplikacionin e Chrome për iOS</translation>
 <translation id="6446105560007692480">për të kërkuar me Chrome ose për të personalizuar te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Ky shfletues i menaxhuar mund të përdorë një asistent të Gemini të konfiguruar për punë nga <ph name="DOMAIN" />. Ai mund të gjejë informacione dhe të japë përgjigje të bazuara në skedarët e organizatës dhe shërbimet e miratuara. Përdorimi i tij me një profil personal mund të mos rekomandohet. Historiku i bisedës nuk do të transferohet. Ndërrimi kërkon nisjen sërish të Chrome.</translation>
 <translation id="6448835208126432197">Për të zgjedhur një pjesë të ekranit në Gemini në Chrome, përdor shkurtoren e tastierës.</translation>
 <translation id="6473905796280459355">Shko te faqja "Rreth Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
@@ -562,8 +567,8 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6612152958212564387">Nuk po dërgon statistika të përdorimit dhe raporte të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mbaji fjalëkalimet, faqeshënuesit dhe historikun të sinkronizuar në mënyrë të përsosur në pajisje duke caktuar Chrome si shfletuesin tënd të parazgjedhur.</translation>
 <translation id="6632012506031284914">për të kërkuar me Chrome.</translation>
-<translation id="6632473616050862500">Chrome OS Flex mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Ndryshimet në këtë cilësim do të zbatohen pasi Chrome të riniset.</translation>
+<translation id="6644846457769259194">Po përditëson pajisjen (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">Do të identifikohesh në Chrome?</translation>
 <translation id="6664219008737641504">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="SETTINGS_LINK" /> të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
@@ -627,7 +632,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7285990705317078173">Shkarko Chrome në telefon për të monitoruar çmimet dhe për të marrë sinjalizime kur ka rënie çmimi në ndonjë sajt</translation>
 <translation id="7288567540154601580">Skedat dhe shtesat</translation>
 <translation id="7290997427370476749">Nga butoni "Paneli i 'Kërko në Google'" në shiritin e veglave, mund të rihapësh panelin e "Kërko në Google" për të bërë pyetje ndërkohë që shfleton</translation>
-<translation id="7296210096911315575">Informacione të rëndësishme për përdorimin dhe sigurinë</translation>
 <translation id="7299899569525778554">Kërko nga desktopi</translation>
 <translation id="7302361266603927550">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google". Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="7306401458628386911">Fillo të shfletosh menjëherë: Chrome tani mund të niset kur të niset Windows.</translation>
@@ -660,9 +664,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7572537927358445944">Joaktive • Chrome nuk mund të verifikojë se nga vjen kjo shtesë</translation>
 <translation id="7583399374488819119">Instaluesi i <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Mund të përdorësh Chrome sa herë që klikon te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
-<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7627609214560473136">Për të mbrojtur të dhënat e tua, lejo që Chrome të heqë lejet nga sajtet që nuk i ke vizituar së fundi.</translation>
-<translation id="7629898584100520089">Novacionet e IA-së, si p.sh. aftësitë, ruhen në "Llogarinë tënde të Google" dhe menaxhohen veçmas nga "Sinkronizimi i Chrome"</translation>
 <translation id="7641148173327520642">Administratori i sistemit ka konfiguruar Google Chrome që të hapë <ph name="ALTERNATIVE_BROWSER_NAME" /> për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7651907282515937834">Logoja e Chrome Enterprise</translation>
@@ -702,7 +704,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7904213866086517086">Rihap "Kërko në Google" në panelin anësor</translation>
 <translation id="7904985524660297937">Provo Gemini në Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" për shkak të një gabimi gjatë identifikimit</translation>
-<translation id="7917876797003313048">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chrome, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
 <translation id="7951272445806340501">Chrome OS Flex ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="7959172989483770734">Menaxho profilet e Chrome</translation>
@@ -717,9 +718,11 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="80471789339884597">Faleminderit që e instalove. Duhet të rinisësh të gjithë shfletuesit e tu përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8064965390968184078">1. Kliko <ph name="BUTTON_LABEL" /> më poshtë Kliko <ph name="BUTTON_2" /> te cilësimet e Windows Kliko <ph name="BUTTON_3" /> në njoftimin e Windows për të gozhduar Chrome te shiriti i detyrave për qasje të shpejtë</translation>
+<translation id="8066474819446975249">Nis sërish Chrome për ta ndërruar</translation>
 <translation id="8074398340364918139">Për të kërkuar një veçori ose shtesë specifike të Chrome, shkruaj shkurtoren e saj në shiritin e adresave, të ndjekur nga tasti i zgjedhur i tastierës</translation>
 <translation id="8077579734294125741">Profilet e tjera të Chrome</translation>
 <translation id="8086881907087796310">Instalimi dështoi sepse kompjuteri yt nuk i përmbush kërkesat minimale për harduerin.</translation>
+<translation id="8095439028686936591">ChromeOS është i përditësuar</translation>
 <translation id="8110438089258398864">Mund ta rihapësh "Modalitetin e IA-së të 'Kërko në Google'" për të bërë pyetje ndërkohë që shfleton</translation>
 <translation id="8113883687556086139">Verifiko që je ti për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Chrome po personalizohet...</translation>
@@ -846,6 +849,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>
 <translation id="9138603949443464873">Për të zbatuar ndryshimet, rinis Chrome</translation>
 <translation id="9148058034647219655">Dil</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Anëtarësim në Google.</translation>
 <translation id="922152298093051471">Personalizo Chrome</translation>
 <translation id="93760716455950538">Rinis Chrome OS Flex</translation>
 <translation id="945522503751344254">Dërgo komente</translation>

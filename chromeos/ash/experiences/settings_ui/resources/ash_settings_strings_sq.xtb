@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Je gati!</translation>
 <translation id="1149483087970735785">Teknologjia ndihmëse</translation>
 <translation id="1150490752229770117">Ky është përditësimi i fundit automatik i softuerit dhe i sigurisë për këtë pajisje <ph name="DEVICE_TYPE" />. Për të marrë përditësime të ardhshme, përmirësoje në një model më të ri. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Rreth ChromeOS</translation>
 <translation id="1155816283571436363">Po lidhet me telefonin tënd</translation>
 <translation id="1160800016654917722">Dritarja u zhvendos poshtë dhe në të majtë</translation>
 <translation id="1164015913575846413">alt + kliko</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">nisësi + shigjeta djathtas</translation>
 <translation id="1280332775949918163">Vendos dritaren</translation>
+<translation id="1285625592773741684">Cilësimi aktual i përdorimit të të dhënave është "Të dhënat celulare"</translation>
 <translation id="1285815028662278915">Të dhënat e tua celulare mund të mos e mbështesin zonën e qasjes për internet. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">"Drita e natës" do të aktivizohet automatikisht kur të perëndojë dielli</translation>
 <translation id="1288300545283011870">Karakteristikat e ligjërimit</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Kjo do të çaktivizojë shtesat dhe do t'i rivendosë cilësimet te parazgjedhjet e sigurta. Skedat, skedarët dhe kukit do të ruhen. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Zmadhuesi i ekranit të plotë</translation>
 <translation id="1539727654733007771">Nuk ka asnjë rrjet celular të konfiguruar. Shkarko një <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> të ri.</translation>
+<translation id="1547295885616600893">ChromeOS mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Unë e kuptoj që profilet e instaluara të kartës eSIM nuk do të hiqen nga Powerwash</translation>
 <translation id="1549275686094429035">ARC-ja është aktivizuar</translation>
 <translation id="1554640914375980459">Ndiz blicin e ekranit kur merr njoftime. Përdori me kujdes njoftimet me blic nëse je i ndjeshëm ndaj dritës.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Përdor Wi‑Fi ose rrjetet celulare për të përcaktuar vendndodhjen</translation>
 <translation id="1650407365859096313">Hapet në skedë të re. Leja është "<ph name="PERMISSION_STATE" />"</translation>
 <translation id="1652326691684645429">Aktivizo "Ndarjen në afërsi"</translation>
+<translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
 <translation id="1663698992894057019">Përmirësoje me një pajisje të re Chromebook për sigurinë dhe softuerët më të fundit</translation>
 <translation id="1665328953287874063">Përdor një fjalëkalim ose kod PIN për ta shkyçur pajisjen <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Dëgjoje tekstin specifik të lexuar me zë të lartë. Në fillim zgjidh ikonën e veçorisë "Zgjidh që të thuhet" në fund të ekranit dhe më pas thekso tekstin. Mund të përdorësh një shkurtore të tastierës: Thekso tekstin dhe më pas shtyp "Kërko" + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Shënim. Gjurma jote e gishtit mund të jetë më pak e sigurt se një fjalëkalim ose një kod PIN i fortë.</translation>
 <translation id="1724801751621173132">Modaliteti i hyrjes</translation>
 <translation id="1741190788710022490">Karikim me përshtatje</translation>
+<translation id="1745732479023874451">Menaxho kontaktet</translation>
 <translation id="1751335846119670066">Më ndihmo të lexoj</translation>
 <translation id="1755601632425835748">Madhësia e tekstit</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> u rilidh me <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Jo, qëndro me 1 çelës</translation>
 <translation id="1842681835432895345">Përjashtoje këtë ekran nga modaliteti i pasqyrës</translation>
 <translation id="1848219224579402567">Dil nga llogaria kur mbyllet kapaku</translation>
+<translation id="185970820835152459">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chromium, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Më freskët</translation>
 <translation id="1866589962721094893">Jepu aplikacioneve për Android kontrollin mbi pajisjet USB në këtë Chromebook. Do të kërkohet leje sa herë që lidh një pajisje USB. Aplikacionet individuale për Android do të kërkojnë leje shtesë.</translation>
 <translation id="1877377290348678128">Etiketa (opsionale)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Tingulli</translation>
 <translation id="2097950021134740304">Anulo harrimin e abonimit</translation>
 <translation id="2104166991923847969">Çaktivizo automatikisht zonën e qasjes për internet</translation>
+<translation id="2106831557840787829">ChromeOS Flex mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Nuk është futur një kartë SIM</translation>
 <translation id="2121825465123208577">Ndrysho madhësinë</translation>
 <translation id="2127372758936585790">Ngarkues me fuqi të ulët</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Hiqe <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2363475280045770326">Gabim gjatë ruajtjes së konfigurimit</translation>
+<translation id="236939127352773362">Kur pajisjet shpërndajnë në afërsi</translation>
 <translation id="237336063998926520">Përdor adresën tënde të IP-së për të përcaktuar vendndodhjen</translation>
 <translation id="2373499590298659902">Përdor “0” për të shtypur një buton të miut dhe mbaje shtypur</translation>
 <translation id="2375406435414127095">Lidhu me telefonin</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blloko trafikun pa rrjetin VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">"Saktësia e vendndodhjes" ofron vendndodhje më të saktë për aplikacionet dhe shërbimet. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga pajisja jote për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa të të identifikuar ty për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur në përgjithësi shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Tabakaja e daljes është pothuajse plot</translation>
 <translation id="3390013585654699824">Detajet e aplikacioneve</translation>
 <translation id="3390740059150071453">Shiko në të majtë</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Adresë mail-i</translation>
 <translation id="3701028563242674350">Tund kursorin e miut për ta bërë më të madh</translation>
 <translation id="3703699162703116302">Bileta u rifreskua</translation>
+<translation id="3703994572283698466">ChromeOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Aktivizo Wi-Fi</translation>
 <translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3707163604290651814">Aktualisht i identifikuar si <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">U gjetën <ph name="NUM_PRINTERS" /> printerë nga serveri i printimit</translation>
 <translation id="371370241367527062">Mikrofoni i përparmë</translation>
 <translation id="37143699183660101">Qëndrueshmëria e kursorit</translation>
+<translation id="3716540481907974026">Versioni i Chrome OS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Kodi PIN është i pasaktë. Provo përsëri</translation>
 <translation id="3728681439294129328">Konfiguro adresën e rrjetit</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Shfaq nënvizimin për tekstin e hartimit</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="379509625511193653">Joaktiv</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + shigjeta lart</translation>
 <translation id="3798670284305777884">Altoparlanti (i brendshëm)</translation>
 <translation id="3799128412641261490">Cilësimet e qasjes me çelës</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Tastiera e integruar</translation>
 <translation id="3917644013202553949">Nuk ka hapësirë ruajtëse të mjaftueshme për të sinkronizuar skedarët e tu. Provo të lirosh hapësirën.</translation>
 <translation id="3919229493046408863">Çaktivizo njoftimet kur pajisjet janë në afërsi</translation>
+<translation id="3923184630988645767">Përdorimi i të dhënave</translation>
 <translation id="3923494859158167397">Nuk ka asnjë rrjet celular të konfiguruar</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Përdoruesit e tjerë në këtë pajisje mund ta përdorin po ashtu këtë rrjet</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Përkufizimi për përgjigjet e shpejta</translation>
 <translation id="3994075804072562819">Jepi <ph name="SPECIFIC_NAME" /> kontrollin mbi pajisjet USB.</translation>
 <translation id="3994530503403062649">Lokalizo butonat në tabletin tënd</translation>
+<translation id="3997429360543082038">Rreth ChromiumOS</translation>
 <translation id="4001540981461989979">Thekso kursorin e miut gjatë lëvizjes</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
+<translation id="4019629340646866719">ChromiumOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopjo të dhënat e ndërtimit</translation>
 <translation id="4028467762035011525">Shto mënyrat e hyrjes</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Për të kaluar te metoda e hyrjes e përdorur për herë të fundit, shtyp <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">kërko + shigjeta djathtas</translation>
 <translation id="405181879009056822">Cilësimet e ChromeOS</translation>
+<translation id="4054070260844648638">E dukshme për të gjithë</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Kontrollo lidhjen për të parë printerët e disponueshëm në rrjetin tënd</translation>
 <translation id="4068776064906523561">Gjurmët e ruajtura të gishtave</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, shkalla <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Gjej më shumë aplikacione të stilolapsit</translation>
 <translation id="4248401726442101648">Nuk ka asnjë kamerë të lidhur</translation>
+<translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4249116869350613769">Kursyesi i baterisë</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="425411422794688815">Ndodhi një gabim. Sigurohu që telefoni yt të jetë në afërsi, i shkyçur dhe që Bluetooth-i dhe Wi-Fi të jenë aktivizuar.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 "Llogari e Google"}other{<ph name="EXTRA_ACCOUNTS" /> "Llogari të Google"}}</translation>
 <translation id="4314497418046265427">Rrit produktivitetin kur lidh telefonin me <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Shto një emër të ri të pikës së qasjes</translation>
+<translation id="4314815835985389558">Menaxho sinkronizimin</translation>
 <translation id="4320177379694898372">Nuk ka lidhje me internetin</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Hapësira ruajtëse dhe energjia</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Numri i sugjerimeve</translation>
 <translation id="4606933160360542263">Kombinimi i personalizuar i tasteve: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Kur butoni i majtë i miut është i zgjedhur, përdor “/” për të klikuar dy herë</translation>
+<translation id="4613863813562375431">Versioni i ChromiumOS</translation>
 <translation id="461661862154729886">Burimi i energjisë</translation>
 <translation id="4617880081511131945">Nuk mund të vendoset lidhja</translation>
 <translation id="4620757807254334872">miu</translation>
@@ -1136,6 +1155,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4777943778632837590">Konfiguro serverët e emrave të rrjetit</translation>
 <translation id="4779083564647765204">Zmadho</translation>
 <translation id="4779766576531456629">Riemërto rrjetin celular të eSIM</translation>
+<translation id="4789550509729954245">Shfaq njoftimet kur pajisjet ndajnë në afërsi</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktivizo përshpejtimin e TrackPoint</translation>
 <translation id="479664067938200069">Aplikacionet e instaluara nga <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4964544790384916627">Poziciono dritaren</translation>
 <translation id="4964673849688379040">Po kontrollon...</translation>
 <translation id="4967571733817147990">Personalizo butonat e miut</translation>
+<translation id="4970880042055371251">Versioni i ChromeOS</translation>
 <translation id="4972129977812092092">Redakto printerin</translation>
 <translation id="4975771730019223894">Distinktivi i aplikacionit</translation>
 <translation id="4979263087381759787">Opsionet e zhvilluesit</translation>
@@ -1275,6 +1296,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5193978546360574373">Kjo do të heqë qasjen te "Disku i Google" në këtë Chromebook, duke përfshirë qasjen te çdo skedar që është bërë i disponueshëm offline</translation>
 <translation id="5196790039230503600">Përdor gjestin dhe më pas lëviz kokën për të treguar se ku dëshiron ta lëshosh artikullin. Përdor përsëri gjestin për ta lëshuar atë.</translation>
 <translation id="5197255632782567636">Interneti</translation>
+<translation id="5205484256512407285">Mos përdor asnjëherë të dhënat celulare për të transferuar</translation>
 <translation id="5207949376430453814">Thekso kursorin e tekstit</translation>
 <translation id="5208926629108082192">Informacionet e rrjetit celular të pajisjes</translation>
 <translation id="5208988882104884956">Me gjysmë gjerësie</translation>
@@ -1307,6 +1329,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5331568967879689647">Aplikacioni i sistemit ChromeOS</translation>
 <translation id="5334113802138581043">Qasja te mikrofoni</translation>
 <translation id="5336689872433667741">Kursori dhe blloku me prekje</translation>
+<translation id="5337926771328966926">Emri i pajisjes aktuale është <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Dërgo të dhënat e përdorimit dhe të dhënat diagnostikuese</translation>
 <translation id="5369694795837229225">Konfiguro mjedisin e zhvillimit të Linux</translation>
 <translation id="5377367976106153749">Të aktivizohet qasja te kamera?</translation>
@@ -1444,6 +1467,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5833726373896279253">Këto cilësime mund të modifikohen vetëm nga zotëruesi:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Kasa</translation>
+<translation id="5840680448799937675">Skedarët do të ndahen gjithmonë offline</translation>
 <translation id="5841270259333717135">Konfiguro eternetin</translation>
 <translation id="5842497610951477805">Aktivizo Bluetooth-in</translation>
 <translation id="5846200638699387931">Gabim i sintaksës së marrëdhënies: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5924438086390153180">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te "Disku i Google"</translation>
 <translation id="5939518447894949180">Rivendos</translation>
 <translation id="594048410531370124">Tast i panjohur. Shtyp një tast çfarëdo për të <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Dukshmëria e pajisjes</translation>
 <translation id="5945192511027649793">Çaktivizo bllokun me prekje</translation>
 <translation id="5947651424015173580">Kliko dy herë butonin majtas të miut</translation>
 <translation id="594993197557058302">Shtyp 1-4 taste modifikues (Ctrl, Alt, Shift, kërkimi ose nisësi) dhe 1 tast tjetër. Mund të zgjedhësh po ashtu vetëm një tast.</translation>
@@ -1491,10 +1516,12 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5961545272769624207">Cakto një gjest</translation>
 <translation id="5968022600320704045">Asnjë rezultat kërkimi</translation>
 <translation id="5969728632630673489">Njoftimi për shkurtoren e tastierës u shpërfill</translation>
+<translation id="5979353814339191480">Ky opsion zbatohet për pajisjet Chromebook me plan të dhënash ose paketë celulare rrjeti ose kur ndahet interneti me një zonë të lëvizshme për qasje për internet</translation>
 <translation id="5985556342298151179">Aplikacioni i Chrome është instaluar nga administratori i pajisjes.</translation>
 <translation id="5986442691296752186">Jepu aplikacioneve për Linux kontrollin mbi pajisjet USB.</translation>
 <translation id="598810097218913399">Hiqe caktimin</translation>
 <translation id="5988563937187882754">Shiko në të djathtë</translation>
+<translation id="5990266201903445068">Vetëm Wi-Fi</translation>
 <translation id="5992225669837656567">Të gjithë minjtë janë shkëputur</translation>
 <translation id="5999630716831179808">Zërat</translation>
 <translation id="6002458620803359783">Zërat e preferuar</translation>
@@ -1509,6 +1536,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6045114302329202345">Butoni kryesor i TrackPoint</translation>
 <translation id="6048747414605857443">Zgjidh dhe personalizo zërat e tekstit në ligjërim për ChromeVox dhe "Zgjidh që të thuhet"</translation>
 <translation id="6050189528197190982">Shkalla gri</translation>
+<translation id="6054961935262556546">Ndrysho shikueshmërinë</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
 <translation id="6064764629679333574">Përmirëso cilësinë e tingullit të mikrofonit me Bluetooth duke e përmirësuar audion me rezolucion të ulët në audio me rezolucion të lartë.</translation>
@@ -1567,6 +1595,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6265159465845424232">Pyet përpara se të kopjosh ose zhvendosësh skedarët e Microsoft te OneDrive</translation>
 <translation id="6265687851677020761">Hiq portën</translation>
 <translation id="6266532094411434237">Po lidhet me <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
 <translation id="6270309713620950855">Shtyrja e vendosjes në heshtje</translation>
 <translation id="6274089201566806618">Po lidhet me <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekonda</translation>
@@ -1618,6 +1647,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6453921811609336127">Për të kaluar te metoda tjetër e hyrjes, shtyp <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Hapësirë<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Fshi këtë fjalor</translation>
 <translation id="6463596731306859179">Po merr dritare kërcyese të padëshiruara ose sjellje të tjera të papritura? Ndonjëherë, aplikacionet dhe shtesat që instalon mund të ndryshojnë cilësimet e ChromeOS pa të të informuar.</translation>
+<translation id="6465841119675156448">Pa internet</translation>
 <translation id="6467377768028664108">Më pas, <ph name="DEVICE_TYPE" /> mund:</translation>
 <translation id="6469557521904094793">Aktivizo "Rrjetin celular"</translation>
 <translation id="6470120577693311302">Njoftimet me blic</translation>
@@ -1668,6 +1698,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6626581113916585374">Modaliteti i efektit</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Shkurtorja e zgjedhjes</translation>
+<translation id="6632473616050862500">Chrome OS Flex mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Çaktivizo "Çiftimin e shpejtë"</translation>
 <translation id="6647690760956378579">Pamja paraprake me zë të natyrshëm</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
@@ -1711,6 +1742,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6775163072363532304">Pajisjet e ofruara do të shfaqen këtu.</translation>
 <translation id="6776729248872343918">Aktivizo "Çiftimin e shpejtë"</translation>
 <translation id="6777845730143344223">Mëso më shumë për abonimet e Passpoint</translation>
+<translation id="6779406956731413166">ChromiumOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Të harrohet kjo pajisje?</translation>
 <translation id="6783667414610055871">Cilësimet e Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Lëvizja në të kundërt <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7280649757394340890">Cilësimet e zërit për tekstin në ligjërim</translation>
 <translation id="7282547042039404307">I qetë</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Informacione të rëndësishme për përdorimin dhe sigurinë</translation>
 <translation id="7303485269821975179">Konfiguro një fjalëkalim për <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">I lartë</translation>
 <translation id="7308643132139167865">Gjuhët e faqeve të internetit</translation>
@@ -1873,6 +1906,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7409599290172516453">Fotografitë e fundit</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Të bllokuara: <ph name="BLOCKED_APPS_SIZE" /> nga <ph name="APPS_LIST_SIZE" /> aplikacione</translation>
+<translation id="7423425410216218516">Shikueshmëria është aktive për <ph name="MINUTES" /> minuta</translation>
 <translation id="7423513079490750513">Hiq <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Më ndihmo të shkruaj</translation>
 <translation id="7429415133937917139">Simulon daljen e një ekrani brejl të rifreskueshëm
@@ -1920,11 +1954,13 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7578137152457315135">Cilësimet e gjurmës së gishtit</translation>
 <translation id="7578692661782707876">Fut kodin tënd të konfirmimit.</translation>
 <translation id="7582582252461552277">Prefero këtë rrjet</translation>
+<translation id="7582844466922312471">Të dhëna celulare</translation>
 <translation id="7587806318633605613">Historiku i sugjerimeve</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7592060599656252486">Disa</translation>
 <translation id="7602173054665172958">Menaxhimi i printimit</translation>
 <translation id="7605163396341021431">Jepu aplikacioneve për Android kontrollin mbi pajisjet USB në këtë Chromebook</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7608810328871051088">Preferencat e Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Aktivizo veçoritë e telefonit të lidhur.</translation>
@@ -1935,12 +1971,14 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="7632437836497571618">Përdor lidhjet e sigurta për të kërkuar për sajtet</translation>
 <translation id="7634337648687970851">Rikuperimi i të dhënave lokale nuk mbështetet aktualisht.</translation>
 <translation id="7640256527901510478">Numri IMEI i pajisjes sate është <ph name="IMEI_NUMBER" />, ndërsa numri i serisë së pajisjes është <ph name="SERIAL_NUMBER" />. Këta numra mund të përdoren për të ndihmuar në aktivizimin e shërbimit.</translation>
+<translation id="7640308610547854367">U ktheve prapa te një version i mëparshëm i ChromeOS. Për të marrë përditësimet, prit deri sa të ofrohet versioni tjetër.</translation>
 <translation id="7641513591566880111">Emri i profilit të ri</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> u shtua</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (zotëruesi)</translation>
 <translation id="7648048654005891115">Stili i hartës eksperimentale</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 gjurmë gishti u konfigurua}other{{COUNT} gjurmë gishti u konfiguruan}}</translation>
+<translation id="7650677314924139716">Cilësimi aktual i përdorimit të të dhënave është "Vetëm Wi-Fi"</translation>
 <translation id="7651400349472467012">Ofrohet zona e qasjes për internet në çast</translation>
 <translation id="7651784568388208829">Vazhdimi i detyrës nëpërmjet Phone Hub</translation>
 <translation id="7658239707568436148">Anulo</translation>
@@ -2031,6 +2069,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Përkthimi</translation>
 <translation id="7915457674565721553">Lidhu në internet për të konfiguruar kontrollet prindërore</translation>
+<translation id="7917876797003313048">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chrome, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920482456679570420">Shto fjalët që dëshiron të kapërcejë kontrolli drejtshkrimor</translation>
 <translation id="7921347341284348270">Nuk mund t'i shikosh njoftimet e telefonit tënd në këtë llogari të menaxhuar. Provoje përsëri me një llogari tjetër. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="8431977087510901105">Rivendosja e cilësimeve të kursorit</translation>
 <translation id="8437209419043462667">Amerikane</translation>
 <translation id="8439506636278576865">Ofro të përkthesh faqet në këtë gjuhë</translation>
+<translation id="8449347986464073209">Fshi dhe dil</translation>
 <translation id="8451512073679317615">asistenti</translation>
 <translation id="8455775311562941553">U lidh me <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Lexo me zë tekstin poshtë miut</translation>
@@ -2320,6 +2360,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="8872774989979382243">Volumi është joaktiv. Aktivizo volumin.</translation>
 <translation id="888256071122006425">Cilësimet e miut dhe të bllokut me prekje</translation>
 <translation id="8885449336974696155">Ndihmo në përmirësimin e Chrome duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Mund të shkaktohen tarifa për të dhënat celulare</translation>
 <translation id="8890529496706615641">Profili nuk mund të riemërtohej. Provo përsëri ose kontakto me operatorin celular për mbështetje teknike.</translation>
 <translation id="8894761918470382415">Mbrojtja e qasjes te të dhënat për pajisjet periferike</translation>
 <translation id="8896830132794747524">Lëvizjet më të shpejta me miun do ta zhvendosin më larg kursorin</translation>
@@ -2345,6 +2386,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> është shkëputur</translation>
 <translation id="8980345560318123814">Raportet mbi reagimet</translation>
 <translation id="8981825781894055334">Ka pak letër</translation>
+<translation id="8984694057134206124">Do të jesh i dukshëm për të gjithë për <ph name="MINUTES" /> minuta. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Pragu i zbulimit</translation>
 <translation id="8986362086234534611">Harro</translation>
 <translation id="8991694323904646277">Nuk ka kamerë</translation>
@@ -2391,6 +2433,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="9098860402274800697">Hiq Google Play dhe aplikacionet për Android</translation>
 <translation id="910000385680858937">Lejohet - <ph name="PERMISSION_DETAILS" />. Lidh një mikrofon me pajisjen tënde.</translation>
 <translation id="9100416672768993722">Për të kaluar te metoda e hyrjes e përdorur për herë të fundit, shtyp <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Hapësirë<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Cilësimi aktual i përdorimit të të dhënave është "Pa internet"</translation>
 <translation id="9108294543511800041">Tani mund të shikosh njoftimet, mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="9109122242323516435">Për të liruar hapësirë, fshi skedarë nga hapësira ruajtëse e pajisjes.</translation>
 <translation id="9111330022786356709">Shto ose lokalizo butonat në miun tënd</translation>

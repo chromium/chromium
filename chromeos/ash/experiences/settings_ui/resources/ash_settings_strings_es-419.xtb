@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Todo listo</translation>
 <translation id="1149483087970735785">Tecnología de accesibilidad</translation>
 <translation id="1150490752229770117">Esta es la última actualización automática de software y seguridad para el dispositivo <ph name="DEVICE_TYPE" />. Si quieres recibir futuras actualizaciones, obtén un modelo más nuevo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Acerca de ChromeOS</translation>
 <translation id="1155816283571436363">Se está estableciendo conexión con tu teléfono</translation>
 <translation id="1160800016654917722">La ventana se movió hacia abajo y hacia la izquierda</translation>
 <translation id="1164015913575846413">Alt + clic</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">Selector + flecha hacia la derecha</translation>
 <translation id="1280332775949918163">Ajustar ventana</translation>
+<translation id="1285625592773741684">La configuración de uso de datos actual es Datos móviles</translation>
 <translation id="1285815028662278915">Es posible que los datos móviles no admitan el hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">La Luz nocturna se activará automáticamente al atardecer</translation>
 <translation id="1288300545283011870">Propiedades de voz</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Esta acción inhabilitará las extensiones y restablecerá tu configuración a valores predeterminados seguros. Se conservarán las pestañas, los archivos y las cookies. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="1539727654733007771">No se configuró ninguna red móvil. Descarga un <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> nuevo.</translation>
+<translation id="1547295885616600893">ChromeOS es posible gracias al <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1547808936554660006">Entiendo que, cuando se aplique la función Powerwash, no se quitarán los perfiles de eSIM instalados</translation>
 <translation id="1549275686094429035">ARC habilitado</translation>
 <translation id="1554640914375980459">Ilumina la pantalla cuando recibes notificaciones. Si eres sensible a la luz, ten cuidado al usar las notificaciones con flash.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Usar Wi-Fi o redes móviles para determinar la ubicación</translation>
 <translation id="1650407365859096313">Se abre en una pestaña nueva. Permiso: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Habilitar Compartir con Nearby</translation>
+<translation id="1662146548738125461">Acerca de ChromeOS Flex</translation>
 <translation id="1663698992894057019">Cambia tu Chromebook por una nueva para obtener la seguridad y el software más recientes</translation>
 <translation id="1665328953287874063">Usa una contraseña o un PIN para desbloquear tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Escucha un texto específico en voz alta. Primero, elige el ícono de Seleccionar para pronunciar en la parte inferior de la pantalla y, luego, destaca el texto. También puedes usar una combinación de teclas: destaca el texto y, luego, presiona Búsqueda + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Nota: La huella dactilar puede ser menos segura que un PIN o una contraseña eficaz.</translation>
 <translation id="1724801751621173132">Modo de entrada de texto</translation>
 <translation id="1741190788710022490">Carga adaptable</translation>
+<translation id="1745732479023874451">Administrar contactos</translation>
 <translation id="1751335846119670066">Help me read</translation>
 <translation id="1755601632425835748">Tamaño del texto</translation>
 <translation id="1761402971842586829">Se reasignó <ph name="BUTTON_NAME" /> a <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">No, conservar 1 interruptor</translation>
 <translation id="1842681835432895345">Excluir esta pantalla en modo de espejo</translation>
 <translation id="1848219224579402567">Salir cuando se cierra la tapa</translation>
+<translation id="185970820835152459">Puedes administrar las Cuentas de Google a las que accediste. Tus Cuentas de Google se usan en el navegador Chromium, Play Store, Gmail y otros servicios. Si quieres agregar una cuenta de otra persona, como la de un miembro de la familia, agrega a una persona nueva a tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Frío</translation>
 <translation id="1866589962721094893">Otorga a las apps para Android control sobre los dispositivos USB en esta Chromebook. Se solicitará permiso cada vez que conectes un dispositivo USB. Las apps para Android individuales solicitarán permisos adicionales.</translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
@@ -287,7 +293,7 @@
 <translation id="1938351510777341717">Tecla externa Comando</translation>
 <translation id="1940546824932169984">Dispositivos conectados</translation>
 <translation id="1941553344801134989">Versión: <ph name="APP_VERSION" /></translation>
-<translation id="1944921356641260203">Actualización encontrada</translation>
+<translation id="1944921356641260203">Se encontró una actualización</translation>
 <translation id="1948528728718281125">Se permite el acceso a la cámara para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
 <translation id="1949584741547056205">Respuestas rápidas</translation>
 <translation id="1951012854035635156">Asistente</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Sonido</translation>
 <translation id="2097950021134740304">No olvidar la suscripción</translation>
 <translation id="2104166991923847969">Desactivar el hotspot automáticamente</translation>
+<translation id="2106831557840787829">ChromeOS Flex funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">No se insertó ninguna tarjeta SIM</translation>
 <translation id="2121825465123208577">Ajustar tamaño</translation>
 <translation id="2127372758936585790">Carga lenta</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Quitar <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2363475280045770326">Se produjo un error al guardar la configuración</translation>
+<translation id="236939127352773362">Cuando hay dispositivos cercanos compartiendo contenido</translation>
 <translation id="237336063998926520">Usar tu dirección IP para determinar la ubicación</translation>
 <translation id="2373499590298659902">Usa “0” para presionar y mantener presionado un botón del mouse</translation>
 <translation id="2375406435414127095">Conéctate a tu teléfono</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Bloquear tráfico sin VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en la ubicación, además de mejorar, proporcionar y mantener los servicios de Google en general en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">La bandeja de salida está casi completa</translation>
 <translation id="3390013585654699824">Detalles de la app</translation>
 <translation id="3390740059150071453">Mirar a la izquierda</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Dirección de correo electrónico</translation>
 <translation id="3701028563242674350">Agitar el cursor del mouse para agrandarlo</translation>
 <translation id="3703699162703116302">Se actualizó el ticket</translation>
+<translation id="3703994572283698466">ChromeOS funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Habilitar Wi-Fi</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3707163604290651814">Accediste como <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Se encontraron <ph name="NUM_PRINTERS" /> impresoras en el servidor de impresión</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="37143699183660101">Estabilidad del cursor</translation>
+<translation id="3716540481907974026">Versión de ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">El PIN es incorrecto. Vuelve a intentarlo</translation>
 <translation id="3728681439294129328">Configurar la dirección de red</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Mostrar subrayado en el texto redactado</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="379509625511193653">No</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">Alt + flecha hacia arriba</translation>
 <translation id="3798670284305777884">Bocina (interna)</translation>
 <translation id="3799128412641261490">Configuración de Accesibilidad con interruptores</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3917644013202553949">No hay suficiente espacio de almacenamiento para sincronizar los archivos. Intenta liberar espacio.</translation>
 <translation id="3919229493046408863">Desactivar notificaciones cuando haya dispositivos cercanos</translation>
+<translation id="3923184630988645767">Uso de datos</translation>
 <translation id="3923494859158167397">No se configuró ninguna red móvil.</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Otros usuarios de este dispositivo también pueden usar esta red</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definición de Respuestas rápidas</translation>
 <translation id="3994075804072562819">Otorga a <ph name="SPECIFIC_NAME" /> el control de los dispositivos USB.</translation>
 <translation id="3994530503403062649">Encuentra los botones de la tablet</translation>
+<translation id="3997429360543082038">Acerca de Chromium OS</translation>
 <translation id="4001540981461989979">Destacar el cursor del mouse cuando se mueve</translation>
 <translation id="4005817994523282006">Método de detección de la zona horaria</translation>
+<translation id="4019629340646866719">Chromium OS funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Copiar detalles de la compilación</translation>
 <translation id="4028467762035011525">Agregar métodos de entrada</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Para cambiar al último método de entrada que utilizaste, presiona <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Búsqueda + flecha hacia la derecha</translation>
 <translation id="405181879009056822">Configuración de ChromeOS</translation>
+<translation id="4054070260844648638">Visible para todos</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Revisa la conexión para ver las impresoras disponibles en tu red</translation>
 <translation id="4068776064906523561">Huellas digitales guardadas</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, grado <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Encontrar más apps para la pluma stylus</translation>
 <translation id="4248401726442101648">No hay ninguna cámara conectada</translation>
+<translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4249116869350613769">Ahorro de batería</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425411422794688815">Se produjo un error. Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Cuenta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Cuentas de Google}}</translation>
 <translation id="4314497418046265427">Conecta tu teléfono a <ph name="DEVICE_TYPE" /> para mejorar tu productividad</translation>
 <translation id="4314561087119792062">Agregar nuevo nombre de punto de acceso</translation>
+<translation id="4314815835985389558">Administrar sincronización</translation>
 <translation id="4320177379694898372">Sin conexión a Internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Almacenamiento y energía</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Número de sugerencias</translation>
 <translation id="4606933160360542263">Combinación de teclas personalizada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Cuando se selecciona el botón izquierdo del mouse, usa “/” para hacer doble clic</translation>
+<translation id="4613863813562375431">Versión de Chromium OS</translation>
 <translation id="461661862154729886">Fuente de energía</translation>
 <translation id="4617880081511131945">No se puede establecer la conexión</translation>
 <translation id="4620757807254334872">mouse</translation>
@@ -1136,6 +1155,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4777943778632837590">Configurar los servidores de nombres de la red</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779766576531456629">Cambiar el nombre de la Red móvil por eSIM</translation>
+<translation id="4789550509729954245">Mostrar notificación cuando hay dispositivos cercanos compartiendo contenido</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Habilitar la aceleración del TrackPoint</translation>
 <translation id="479664067938200069">Aplicaciones instaladas desde <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4964544790384916627">Anclar ventana</translation>
 <translation id="4964673849688379040">Verificando…</translation>
 <translation id="4967571733817147990">Personalizar los botones del mouse</translation>
+<translation id="4970880042055371251">Versión de ChromeOS</translation>
 <translation id="4972129977812092092">Editar impresora</translation>
 <translation id="4975771730019223894">Insignias de apps</translation>
 <translation id="4979263087381759787">Opciones para desarrolladores</translation>
@@ -1275,6 +1296,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5193978546360574373">Esta acción quitará el acceso a Google Drive en esta Chromebook, incluido el acceso a todos los archivos que estén disponibles sin conexión</translation>
 <translation id="5196790039230503600">Usa el gesto y, luego, mueve la cabeza para mostrar dónde quieres soltar el elemento. Vuelve a usar el gesto para soltarlo.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">No usar nunca los datos móviles para transferir contenido</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="5208926629108082192">Información sobre la red móvil del dispositivo</translation>
 <translation id="5208988882104884956">Ancho medio</translation>
@@ -1307,6 +1329,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5331568967879689647">App del sistema de ChromeOS</translation>
 <translation id="5334113802138581043">Acceso al micrófono</translation>
 <translation id="5336689872433667741">Cursor y panel táctil</translation>
+<translation id="5337926771328966926">El nombre actual del dispositivo es <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Enviar datos de uso y diagnóstico</translation>
 <translation id="5369694795837229225">Configurar el entorno de desarrollo de Linux</translation>
 <translation id="5377367976106153749">¿Deseas activar el acceso a la cámara?</translation>
@@ -1444,6 +1467,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5833726373896279253">Esta configuración sólo puede ser modificada por el propietario:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Caso</translation>
+<translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Activación de Bluetooth</translation>
 <translation id="5846200638699387931">Error de sintaxis relacional: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5924438086390153180">Preguntar antes de copiar o mover archivos de Microsoft a Google Drive</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594048410531370124">No se reconoce el interruptor. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Visibilidad del dispositivo</translation>
 <translation id="5945192511027649793">Inhabilitar Panel táctil</translation>
 <translation id="5947651424015173580">Hacer doble clic con el mouse</translation>
 <translation id="594993197557058302">Presiona entre 1 y 4 teclas modificadoras (Ctrl, Alt, Mayúsculas, Búsqueda o Selector) y 1 tecla más. También puedes seleccionar una sola tecla.</translation>
@@ -1491,10 +1516,12 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5961545272769624207">Asignar un gesto</translation>
 <translation id="5968022600320704045">La búsqueda no arrojó resultados.</translation>
 <translation id="5969728632630673489">Se descartó la notificación de combinaciones de teclas</translation>
+<translation id="5979353814339191480">Esta opción se aplica a las Chromebooks que tienen un plan de datos o una llave de red móvil, o que se conectan mediante un hotspot portátil</translation>
 <translation id="5985556342298151179">El administrador de tu dispositivo instaló la app de Chrome.</translation>
 <translation id="5986442691296752186">Otorga a las apps de Linux control sobre los dispositivos USB.</translation>
 <translation id="598810097218913399">Quitar la asignación</translation>
 <translation id="5988563937187882754">Mirar a la derecha</translation>
+<translation id="5990266201903445068">Solo Wi-Fi</translation>
 <translation id="5992225669837656567">Se desconectaron todos los mouses</translation>
 <translation id="5999630716831179808">Voces</translation>
 <translation id="6002458620803359783">Voces preferidas</translation>
@@ -1509,6 +1536,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6045114302329202345">Botón principal de TrackPoint</translation>
 <translation id="6048747414605857443">Selecciona y personaliza las voces de texto a voz para ChromeVox y Seleccionar para pronunciar.</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
+<translation id="6054961935262556546">Cambiar visibilidad</translation>
 <translation id="6059276912018042191">Pestañas recientes de Chrome</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6064764629679333574">Aumenta el audio de baja resolución a alta resolución para mejorar la calidad de sonido del micrófono Bluetooth.</translation>
@@ -1567,6 +1595,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6265159465845424232">Preguntar antes de copiar o mover archivos de Microsoft a Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Quitar puerto</translation>
 <translation id="6266532094411434237">Conectando a <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">¿Salir de Chromium?</translation>
 <translation id="6270309713620950855">Aviso de micrófono silenciado</translation>
 <translation id="6274089201566806618">Estableciendo conexión con <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 segundos</translation>
@@ -1618,6 +1647,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6453921811609336127">Para cambiar al siguiente método de entrada, presiona <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Mayúsculas<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Barra espaciadora<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Borra este diccionario</translation>
 <translation id="6463596731306859179">¿Aparecen ventanas emergentes no deseadas o notas algún otro comportamiento inesperado? A veces, las apps y extensiones que instalas pueden cambiar la configuración de ChromeOS sin que te des cuenta.</translation>
+<translation id="6465841119675156448">Sin Internet</translation>
 <translation id="6467377768028664108">Tu <ph name="DEVICE_TYPE" /> te permitirá lo siguiente:</translation>
 <translation id="6469557521904094793">Activar la red móvil</translation>
 <translation id="6470120577693311302">Notificaciones con flash</translation>
@@ -1668,6 +1698,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6626581113916585374">Modo de efecto</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Acceso directo de selección</translation>
+<translation id="6632473616050862500">ChromeOS Flex funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6646476869708241165">Desactivar Vinculación rápida</translation>
 <translation id="6647690760956378579">Vista previa de la voz natural</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
@@ -1711,6 +1742,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6775163072363532304">Aquí aparecerán los dispositivos disponibles.</translation>
 <translation id="6776729248872343918">Habilitar Vinculación rápida</translation>
 <translation id="6777845730143344223">Más información sobre las suscripciones a Passpoint</translation>
+<translation id="6779406956731413166">Chromium OS es posible gracias a los <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicionales.</translation>
 <translation id="6783036716881942511">¿Deseas olvidar este dispositivo?</translation>
 <translation id="6783667414610055871">Configuración de Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Desplazamiento inverso <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7280649757394340890">Configuración de la voz en la función de texto a voz</translation>
 <translation id="7282547042039404307">Fluida</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7303485269821975179">Establece una contraseña para <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Alto</translation>
 <translation id="7308643132139167865">Idiomas de sitios web</translation>
@@ -1873,6 +1906,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7409599290172516453">Fotos recientes</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Apps bloqueadas: <ph name="BLOCKED_APPS_SIZE" /> de <ph name="APPS_LIST_SIZE" /></translation>
+<translation id="7423425410216218516">La visibilidad está activada durante <ph name="MINUTES" /> minutos.</translation>
 <translation id="7423513079490750513">Quitar <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Ayúdame a escribir</translation>
 <translation id="7429415133937917139">Simula el resultado de una pantalla braille que se actualiza
@@ -1920,11 +1954,13 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7578137152457315135">Configuración de la huella dactilar</translation>
 <translation id="7578692661782707876">Ingresa tu código de confirmación.</translation>
 <translation id="7582582252461552277">Preferir esta red</translation>
+<translation id="7582844466922312471">Datos para celulares</translation>
 <translation id="7587806318633605613">Historial de sugerencias</translation>
 <translation id="7590883480672980941">Configuración de entradas</translation>
 <translation id="7592060599656252486">Algunos</translation>
 <translation id="7602173054665172958">Administración de impresiones</translation>
 <translation id="7605163396341021431">Permitir que las apps para Android controlen dispositivos USB en esta Chromebook</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Preferencias de Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Habilita las funciones del teléfono conectado.</translation>
@@ -1935,12 +1971,14 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7632437836497571618">Usar conexiones seguras para buscar sitios</translation>
 <translation id="7634337648687970851">Por el momento, no se admite la recuperación de datos locales.</translation>
 <translation id="7640256527901510478">El IMEI de tu dispositivo es <ph name="IMEI_NUMBER" /> y el número de serie es <ph name="SERIAL_NUMBER" />. Estos números se pueden usar para activar el servicio.</translation>
+<translation id="7640308610547854367">Volviste a una versión anterior de ChromeOS. Para obtener actualizaciones, espera hasta que esté disponible la próxima versión.</translation>
 <translation id="7641513591566880111">Nuevo nombre del perfil</translation>
 <translation id="764178579712141045">Se agregó <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario/a)</translation>
 <translation id="7648048654005891115">Estilo de mapa de teclas</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Se configuró 1 huella digital}other{Se configuraron {COUNT} huellas digitales}}</translation>
+<translation id="7650677314924139716">La configuración de uso de datos actual es Solo Wi-Fi</translation>
 <translation id="7651400349472467012">Hotspot instantáneo disponible</translation>
 <translation id="7651784568388208829">Continuación de tareas con Phone Hub</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -2031,6 +2069,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Traducción</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar los controles parentales</translation>
+<translation id="7917876797003313048">Puedes administrar las Cuentas de Google a las que accediste. Tus Cuentas de Google se usan en el navegador Chrome, Play Store, Gmail y otros servicios. Si quieres agregar una cuenta de otra persona, como la de un miembro de la familia, agrega a una persona nueva a tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Agrega las palabras que quieras que el corrector ortográfico omita</translation>
 <translation id="7921347341284348270">No puedes ver notificaciones en tu teléfono en esta cuenta administrada. Vuelve a intentarlo con otra cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="8431977087510901105">Se restableció la configuración del cursor</translation>
 <translation id="8437209419043462667">Inglés (Estados Unidos)</translation>
 <translation id="8439506636278576865">Ofrecer la traducción de páginas en este idioma</translation>
+<translation id="8449347986464073209">Borrar y salir</translation>
 <translation id="8451512073679317615">asistente</translation>
 <translation id="8455775311562941553">Conectado con <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Pronunciar el texto cuando pasas el puntero del mouse</translation>
@@ -2320,6 +2360,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="8872774989979382243">El volumen está desactivado. Activar el volumen.</translation>
 <translation id="888256071122006425">Configuración del mouse y el panel táctil</translation>
 <translation id="8885449336974696155">Informa tu <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudarnos a mejorar ChromeOS</translation>
+<translation id="8890170499370378450">Es posible que se apliquen cargos por el uso de datos móviles</translation>
 <translation id="8890529496706615641">No se pudo cambiar el nombre del perfil. Vuelve a intentarlo o comunícate con tu proveedor para solicitarle asistencia técnica.</translation>
 <translation id="8894761918470382415">Protección de acceso a datos desde periféricos</translation>
 <translation id="8896830132794747524">Los movimientos más rápidos con el mouse desplazarán el cursor más lejos</translation>
@@ -2345,6 +2386,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="8978939272793553320">Se desconectó <ph name="DEVICE_NAME" /></translation>
 <translation id="8980345560318123814">Informes de comentarios</translation>
 <translation id="8981825781894055334">Poco papel</translation>
+<translation id="8984694057134206124">Estarás visible para todas las personas durante <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Umbral de detección</translation>
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="8991694323904646277">No hay cámara</translation>
@@ -2391,6 +2433,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="9098860402274800697">Quitar Google Play y las apps para Android</translation>
 <translation id="910000385680858937">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Conecta un micrófono a tu dispositivo.</translation>
 <translation id="9100416672768993722">Para cambiar al último método de entrada que utilizaste, presiona <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Barra espaciadora<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">La configuración de uso de datos actual es Sin Internet</translation>
 <translation id="9108294543511800041">Ahora puedes ver las notificaciones, el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="9109122242323516435">Para liberar espacio, borra archivos del almacenamiento del dispositivo.</translation>
 <translation id="9111330022786356709">Agrega o ubica botones en el mouse</translation>

@@ -21,6 +21,7 @@
 <translation id="1185134272377778587">Giới thiệu về Chromium</translation>
 <translation id="1186645291482254714">Nhận thông báo theo dõi giá từ Chromium trên điện thoại</translation>
 <translation id="1203500561924088507">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1208896746806402915">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Tìm kiếm trong bảng điều khiển bên.</translation>
 <translation id="1232234696885483911">Khi bạn mở tính năng Tìm kiếm hình ảnh, thì tiêu đề, URL và nội dung của trang, bao gồm cả tệp PDF, sẽ được tự động gửi đến máy chủ. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chromium. Để thay đổi chế độ cài đặt này, hãy chuyển đến phần "Tài khoản của bạn trong Chromium".</translation>
 <translation id="1244381985120794049">Hiện Gemini trong Chromium trên thanh trình đơn của máy Mac</translation>
@@ -29,6 +30,7 @@
 <translation id="1265577313130862557">Chromium đã chặn tệp tải xuống này vì đây là tệp nguy hiểm</translation>
 <translation id="126567311906253476">Khi đăng nhập vào các dịch vụ của Google như Gmail hoặc YouTube bằng <ph name="USER_EMAIL" />, bạn có thể tự động được đăng nhập vào Chromium bằng cùng một tài khoản</translation>
 <translation id="1290883685122687410">Lỗi thiết lập: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
+<translation id="1304670607231413751">Nút "Tìm kiếm trong Chrome" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Tìm kiếm trong Chrome.</translation>
 <translation id="1315551408014407711">Thiết lập hồ sơ Chromium mới</translation>
 <translation id="132092532143527429">Dùng thử với Gemini trong Chromium</translation>
 <translation id="1324107359134968521">Chromium cần có quyền truy cập Bluetooth để tìm 
@@ -48,6 +50,7 @@
 <translation id="154404805518949443">Đăng nhập vào Chromium</translation>
 <translation id="1547469039832541117">Kết thúc tác vụ được làm nổi bật.</translation>
 <translation id="1562320819937089394">Ghim Chromium</translation>
+<translation id="1572572333538561328">Mở lại Chế độ AI của Tìm kiếm</translation>
 <translation id="1574377791422810894">Công cụ đảm bảo an toàn của Chromium</translation>
 <translation id="1594928384848033697">Chromium muốn xoá dữ liệu của bạn trong Trình quản lý mật khẩu. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
@@ -72,10 +75,13 @@
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="18552579716432081">Để xoá dữ liệu duyệt web chỉ trên thiết bị này mà không xoá trong Tài khoản Google, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chromium<ph name="END_LINK" />.</translation>
 <translation id="1857749206890802997">Tải Chromium xuống điện thoại để mở hoặc tạo nhóm thẻ mới trong khi di chuyển.</translation>
-<translation id="185970820835152459">Bạn có thể quản lý các Tài khoản Google đã đăng nhập của mình. Tài khoản Google của bạn được sử dụng cho trình duyệt Chromium, Cửa hàng Play, Gmail, v.v. Nếu bạn muốn thêm tài khoản cho người khác, chẳng hạn như thành viên gia đình, hãy thêm người dùng mới trên chiếc <ph name="DEVICE_TYPE" /> của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
+<translation id="1858576284142106424">Đóng Chế độ AI của Tìm kiếm</translation>
 <translation id="1862852878885210965">Tìm kiếm bằng tính năng Tìm kiếm hình ảnh</translation>
 <translation id="1863837059069884561"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng dấu trang và nhiều dữ liệu khác trên <ph name="DEVICE" />.</translation>
+<translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> của bạn đã cập nhật</translation>
+<translation id="1880495786739455486">Bạn có thể mở lại Tìm kiếm trong bảng điều khiển bên để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="1880677175115548835">Chọn văn bản</translation>
+<translation id="188102464690227119">Nút "Tìm kiếm trong bảng điều khiển bên" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Tìm kiếm trong bảng điều khiển bên.</translation>
 <translation id="1896836275755235458">Chromium sẽ tiết kiệm pin bằng cách hạn chế hoạt động trong nền và hiệu ứng hình ảnh, chẳng hạn như hiệu ứng cuộn mượt mà và tốc độ khung hình của video. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm pin<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Dịch vụ Trình cập nhật Chromium</translation>
 <translation id="1911763535808217981">Bằng việc tắt tính năng này, bạn có thể đăng nhập vào các trang web của Google, chẳng hạn như Gmail mà không cần đăng nhập vào Chromium</translation>
@@ -108,6 +114,7 @@
 <translation id="2185166961232948079">Chromium – Đăng nhập vào mạng – <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Lỗi khi kiểm tra bản cập nhật: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Xoá tài khoản khỏi Chromium</translation>
+<translation id="2199625713624030299">Đóng Tìm kiếm trong Chrome</translation>
 <translation id="2209877494277346829">Cô lập Chromium khỏi các ứng dụng khác</translation>
 <translation id="2210502920229141283">An toàn hơn khi di chuyển nhờ tính năng Duyệt web an toàn có tăng cường bảo vệ trên Chromium cho iOS</translation>
 <translation id="2210682093923538346">Đây là trang web nguy hiểm. Chromium đã xoá quyền thông báo.</translation>
@@ -118,6 +125,7 @@
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium đề xuất tạm dừng thẻ làm chậm trình duyệt của bạn}other{Chromium đề xuất tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="2307973900865360088">Ghim vào thanh Dock</translation>
 <translation id="2313870531055795960">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chromium. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang.</translation>
+<translation id="2350411688004301551">Chuyển sang Gemini Enterprise</translation>
 <translation id="2356070529366658676">Yêu cầu</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2361918034042471035">Tiện ích "<ph name="EXTENSION_NAME" />" muốn bạn đăng nhập vào Chromium</translation>
@@ -136,6 +144,7 @@
 <translation id="2483889755041906834">Trong Chromium</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
 <translation id="2513154137948333830">Yêu cầu khởi động lại: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">tổ chức của bạn</translation>
 <translation id="2542968102051442371">Chọn văn bản bằng tính năng Tìm kiếm hình ảnh</translation>
 <translation id="2554739539410784893">Chromium đang cố gắng thay thế các mật khẩu hiện tại. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="2572494885440352020">Trình trợ giúp của Chromium</translation>
@@ -167,6 +176,7 @@
 <translation id="2847479871509788944">Xóa khỏi Chromium...</translation>
 <translation id="2850691299438350830">Giúp bạn an toàn trên Chrome và có thể dùng để cải thiện mức độ bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="2885378588091291677">Trình quản lý tác vụ</translation>
+<translation id="2898830646167954300">Chuyển về trợ lý Gemini không được quản lý</translation>
 <translation id="2910007522516064972">Giới thiệu về &amp;Chromium</translation>
 <translation id="2915996080311180594">Khởi động lại sau</translation>
 <translation id="2933336679234709858">Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chromium vào Tài khoản Google của bạn.</translation>
@@ -180,7 +190,6 @@
 <translation id="3003694935412297923">Tất cả tác vụ</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}other{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
 <translation id="3013473503895162900">Mở <ph name="URL" /> trong một thẻ mới trên Chromium.</translation>
-<translation id="302551344979399011">Các phát kiến về AI, chẳng hạn như kỹ năng, được lưu vào Tài khoản Google của bạn và được quản lý riêng với tính năng đồng bộ hoá Chromium</translation>
 <translation id="3032219013429286568">Để sử dụng tiện ích và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
 <translation id="3032787606318309379">Đang thêm vào Chromium...</translation>
 <translation id="3038232873781883849">Đang chờ cài đặt...</translation>
@@ -203,6 +212,7 @@
 <translation id="3155163173539279776">Chạy lại Chromium</translation>
 <translation id="3161522574479303604">Tất cả ngôn ngữ</translation>
 <translation id="3179665906251668410">Mở đường liên kết trong cửa sổ ẩn danh của Chromium</translation>
+<translation id="3183555099201190073">Truy cập Tìm kiếm từ thẻ bất kỳ</translation>
 <translation id="3185330573522821672">Tùy chỉnh hồ sơ mới của bạn trên Chromium</translation>
 <translation id="3189205223539394158">Bạn có thể tiếp tục trò chuyện với Chế độ AI mà không cần chuyển đổi giữa các thẻ. Để bắt đầu, hãy đăng nhập vào Chromium. Bạn cũng có thể sử dụng mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình.</translation>
 <translation id="3234316605225071811">Sau đó, Chromium có thể hỏi xem bạn có muốn sử dụng thông tin đã lưu để tự động điền vào biểu mẫu hay không</translation>
@@ -242,6 +252,7 @@
 <translation id="3713809861844741608">Mở đường liên kết trong thẻ mới của Chromium</translation>
 <translation id="3728124580182886854">Liên kết Chromium và các dịch vụ khác của Google cho mục đích cá nhân hoá và các mục đích khác</translation>
 <translation id="3729187154190517324">Mở rộng phạm vi tìm kiếm bằng cách thêm nhiều thẻ, tệp và công cụ bằng nút "Thêm một thẻ và các nội dung khác".</translation>
+<translation id="3751920144677881410">Từ nút "Bảng điều khiển bên của Tìm kiếm" trên thanh công cụ, bạn có thể mở lại bảng điều khiển bên của Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="3788675262216168505">Quản lý hồ sơ trên Chromium</translation>
 <translation id="3790262771324122253">Tìm hiểu lý do Chromium chặn một số nội dung tải xuống</translation>
 <translation id="379589255253486813">Chromium sẽ thông báo cho bạn nếu có vấn đề cần bạn xem xét</translation>
@@ -255,6 +266,7 @@
 <translation id="388648406173476553">Tùy chỉnh và kiểm soát Chromium. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3909353120217047026">Tiện ích này vi phạm chính sách của Cửa hàng Chrome trực tuyến và có thể không an toàn. Hãy xoá khỏi Chromium để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web bạn truy cập nữa.</translation>
+<translation id="3909954316701345612">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Tìm kiếm.</translation>
 <translation id="3941890832296813527">Lỗi cài đặt: Tên tệp của trình cài đặt không hợp lệ hoặc không được hỗ trợ.</translation>
 <translation id="3945058413678539331">Chromium đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="3950481960271781644">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
@@ -263,15 +275,14 @@
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3971865010372729242">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chromium sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm, AI và công cụ hỗ trợ của tổ chức bạn để đưa ra đề xuất.</translation>
 <translation id="3975724895399328945">Giới thiệu về &amp;Google Chrome for Testing</translation>
-<translation id="3997429360543082038">Giới thiệu về ChromiumOS</translation>
 <translation id="399788104667917863">Ghim vào thanh công cụ</translation>
 <translation id="4016217212818346953">Giữ an toàn với Trình quản lý mật khẩu</translation>
-<translation id="4019629340646866719">ChromiumOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Dịch màn hình</translation>
 <translation id="4023601594785368013">Ngôn ngữ gốc: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Mở đường liên kết trong Chromium từ ứng dụng bất kỳ. Ngoài ra, Chromium sẽ được ghim vào thanh tác vụ để bạn dễ dàng truy cập.</translation>
 <translation id="4036079820698952681">Giúp cải thiện Chromium bằng cách báo cáo <ph name="BEGIN_LINK" />cài đặt hiện tại<ph name="END_LINK" /></translation>
 <translation id="4055805654398742145">Trình quản lý mật khẩu</translation>
+<translation id="4062925381179797083">Nút "Bảng điều khiển Tìm kiếm" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Tìm kiếm.</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chromium sau 1 phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}other{Tổ chức sẽ tự động đóng Chromium sau # phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}}</translation>
 <translation id="4118474109249235144">Chế độ ẩn danh của Chromium</translation>
 <translation id="4122186850977583290">Chuyển đến trang Giới thiệu về Chromium</translation>
@@ -321,7 +332,7 @@
 <translation id="4594305310729380060">Vào Trình quản lý mật khẩu trên thiết bị này</translation>
 <translation id="459535195905078186">Ứng dụng Chromium</translation>
 <translation id="4598116752460667024">Tìm quy trình bất kỳ trong danh sách.</translation>
-<translation id="4613863813562375431">Phiên bản ChromiumOS</translation>
+<translation id="4602691126289526388">Dễ dàng đặt câu hỏi trong khi duyệt web bằng Tìm kiếm</translation>
 <translation id="4621240073146040695">Gần được cập nhật! Hãy khởi chạy lại Chromium để hoàn tất cập nhật.</translation>
 <translation id="4625064703209785397">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium</translation>
 <translation id="4626321472657185181">Mở tính năng Tìm kiếm bằng Chromium</translation>
@@ -351,14 +362,19 @@
 <translation id="4950660488495335294">Với các hồ sơ trên Chromium, bạn có thể tách biệt mọi nội dung của mình khi dùng trình duyệt này. Hãy tạo hồ sơ cho bạn bè và gia đình hoặc phân tách nội dung công việc với nội dung giải trí.</translation>
 <translation id="4992938037305302429">Tài khoản của bạn trong Chromium</translation>
 <translation id="5123973130450702873">Chromium cần có quyền theo dõi cử chỉ tay của bạn</translation>
+<translation id="5139546603444206048">Bạn có thể chuyển sang trợ lý Gemini ban đầu được liên kết với Tài khoản Google của bạn và không do <ph name="DOMAIN" /> quản lý. Câu trả lời sẽ không còn dựa trên các tệp hoặc dịch vụ do <ph name="DOMAIN" /> quản lý và nhật ký trò chuyện của bạn sẽ không được chuyển sang tài khoản mới. Tính năng này có thể không phù hợp để dùng cho công việc. Bạn cần chạy lại Chromium để chuyển đổi.</translation>
 <translation id="5141988424377517949">Gần đây bạn không truy cập trang web này. Chromium đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Đăng nhập vào Chromium</translation>
 <translation id="5174969993834422967">Bạn thường chặn các thông báo. Để trang web này có thể gửi thông báo cho bạn, hãy nhấp vào biểu tượng thông báo ở góc bên phải của thanh vị trí.</translation>
 <translation id="5174983315706567306">Dung lượng ổ đĩa không đủ.</translation>
+<translation id="5184662919967270437">Đang cập nhật thiết bị của bạn</translation>
 <translation id="5187123684706427865">Tài khoản Chromium cần được xác thực lại</translation>
 <translation id="5231355151045086930">Đăng xuất khỏi Chromium</translation>
 <translation id="5234764350956374838">Đóng</translation>
+<translation id="5248765037108226189">Bạn có thể mở lại Tìm kiếm trong Chrome để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="5249261924633168472">Mở đường liên kết trong cửa sổ ẩn d&amp;anh của Chromium</translation>
+<translation id="5251599664870628153">Nút "Bảng điều khiển bên của Tìm kiếm" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Tìm kiếm.</translation>
+<translation id="5254294706894496832">Bạn có thể ghim bảng điều khiển Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="5277894862589591112">Để áp dụng các mục thay đổi của bạn, hãy chạy lại Chromium</translation>
 <translation id="5289287148052354622">Tải ứng dụng Chromium</translation>
 <translation id="5294316920224716406">Khi bạn duyệt web ở Chế độ ẩn danh, Chromium sẽ cảnh báo bạn trước khi tải một trang web bằng kết nối không an toàn</translation>
@@ -387,6 +403,7 @@
 <translation id="5496810170689441661">Chromium đang cố gắng chỉnh sửa mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
 <translation id="5527463683072221100">Mở tệp PDF trong Chromium</translation>
+<translation id="5557035028197464376">Đã ghim Tìm kiếm trong Chrome vào thanh công cụ!</translation>
 <translation id="555970465369471303">Để đảm bảo an toàn, Chromium sẽ tắt tính năng tối ưu hoá JavaScript khi bạn truy cập vào một trang web lần đầu tiên.
 
 Nếu trang này không hoạt động như mong đợi, hãy thử cho phép tính năng tối ưu hoá.</translation>
@@ -400,9 +417,12 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5623402015214259806">{0,plural, =0{Đã có bản cập nhật Chromium}=1{Đã có bản cập nhật Chromium}other{Đã có bản cập nhật Chromium từ # ngày trước}}</translation>
 <translation id="5643865575100044307">Luôn xoá dữ liệu trang web khỏi thiết bị của bạn khi bạn đóng Chromium</translation>
 <translation id="5653831366781983928">Vui lòng khởi động lại Chromium ngay bây giờ</translation>
+<translation id="565409517765894456">Để nhận các bản cập nhật Chromium sau này, bạn cần có Windows 10 phiên bản 1809 trở lên. Máy tính này đang sử dụng một phiên bản Windows 10 cũ.</translation>
+<translation id="5669863904928111203">ChromeOS chưa được cập nhật</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Hiển thị Chromium bằng ngôn ngữ này</translation>
 <translation id="569897634095159764">Không thể kết nối với Internet. Máy chủ proxy yêu cầu xác thực.</translation>
+<translation id="5762954990778294910">Từ nút "Bảng điều khiển Tìm kiếm" trên thanh công cụ, bạn có thể mở lại bảng điều khiển Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="5768371961535086509">Chromium giải phóng bộ nhớ khỏi các thẻ không hoạt động. Nhờ đó, các thẻ đang hoạt động và ứng dụng khác sẽ được sử dụng nhiều tài nguyên máy tính hơn, còn Chromium thì hoạt động nhanh chóng. Các thẻ không hoạt động sẽ tự động hoạt động trở lại khi bạn quay lại các thẻ đó. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm bộ nhớ<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="SETTINGS_LINK" /> dữ liệu Chromium trong tài khoản của bạn</translation>
 <translation id="5802618941556161431">Đặt Chromium làm trình duyệt mặc định để mật khẩu, dấu trang và nhật ký của bạn được đồng bộ hoá liền mạch trên mọi thiết bị.</translation>
@@ -410,6 +430,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5817952762723416573">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium. Chế độ cài đặt này đang tắt.</translation>
 <translation id="5821520528363214608">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy cập nhật Chromium</translation>
 <translation id="5824893331272123205">Không tải được bảng điều khiển này, hãy thử lại</translation>
+<translation id="5840880340010374616">Đóng bảng điều khiển Tìm kiếm</translation>
 <translation id="5862307444128926510">Chào mừng bạn đến với Chromium</translation>
 <translation id="5871205389137001634">Nhấp để thoát khỏi chế độ Tìm kiếm hình ảnh</translation>
 <translation id="5883558403894052917">Chromium nhận thấy rằng các mục này chứa phần mềm độc hại:</translation>
@@ -418,6 +439,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5896077214220653386">Gemini Enterprise trong Chromium</translation>
 <translation id="5900507321340749588">Để hỗ trợ các tính năng như phát hiện lừa đảo, Chromium có thể sử dụng các mô hình AI chạy trực tiếp trên thiết bị của bạn. Khi chế độ này tắt, các tính năng này có thể không hoạt động. <ph name="BEGIN_LINK" />Tìm hiểu thêm về AI trên thiết bị<ph name="END_LINK" /></translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng</translation>
+<translation id="5906655207909574370">Gần được cập nhật! Hãy khởi động lại thiết bị của bạn để hoàn tất cập nhật.</translation>
 <translation id="5924017743176219022">Đang kết nối Internet...</translation>
 <translation id="5941711191222866238">Thu nhỏ</translation>
 <translation id="5949225980829865667">Để sử dụng dấu trang này và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
@@ -425,12 +447,15 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5960071705175224773">Một ứng dụng lạ đã thay đổi chế độ cài đặt của bạn</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chromium sau 1 phút bạn không dùng đến.}other{Tổ chức sẽ tự động đóng Chromium sau # phút bạn không dùng đến.}}</translation>
 <translation id="5990360079535151574">Từ nút "Thao tác theo ngữ cảnh" trên thanh công cụ, bạn có thể mở lại Thao tác theo ngữ cảnh để đặt câu hỏi trong khi duyệt web</translation>
+<translation id="5996342273201332056">Bạn có thể ghim bảng điều khiển bên của Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="6009821354356307391">Đặt câu hỏi nối tiếp</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6058380562449900225">Để bảo vệ dữ liệu của bạn, hãy cho phép Chromium loại bỏ quyền khỏi các trang web mà gần đây bạn không truy cập. Bạn sẽ vẫn nhận được thông báo.</translation>
 <translation id="6063093106622310249">&amp;Mở trong Chromium</translation>
 <translation id="6069027071882229820">Sao chép dưới dạng hình ảnh</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> đã được thêm vào Chromium</translation>
+<translation id="6076631285161795690">Từ nút "Tìm kiếm trong Chrome" trên thanh công cụ, bạn có thể mở lại Tìm kiếm trong Chrome để đặt câu hỏi trong khi duyệt web</translation>
+<translation id="6090632163254655665">Mở lại bảng điều khiển bên của Tìm kiếm</translation>
 <translation id="6096348254544841612">Tùy chỉnh và kiểm soát Chromium. Đã có bản cập nhật.</translation>
 <translation id="6107893135096467929">Bật • Chromium không thể xác minh nguồn gốc của tiện ích này</translation>
 <translation id="611228897408671387">Tài khoản của bạn trong Chromium</translation>
@@ -471,7 +496,9 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6403826409255603130">Chromium là trình duyệt web chạy các trang web và ứng dụng với tốc độ cực nhanh. Đây là một trình duyệt web nhanh, ổn định và dễ sử dụng. Duyệt web trở nên an toàn hơn với tính năng bảo vệ chống lại phần mềm độc hại và lừa đảo được tích hợp sẵn vào Chromium.</translation>
 <translation id="6414624068245092115">Xác minh danh tính của bạn để đảm bảo bạn luôn sử dụng và lưu dữ liệu Chromium trong Tài khoản Google</translation>
 <translation id="642132557830635295">Chromium sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến</translation>
+<translation id="6434631832954028336">Mở lại bảng điều khiển Tìm kiếm</translation>
 <translation id="6436260184216827876">Không dùng được tính năng Tìm kiếm hình ảnh. Hãy thử lại sau.</translation>
+<translation id="6436991218539695041">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Tìm kiếm trong Chrome.</translation>
 <translation id="6442900851116057561">Khởi động lại ChromiumOS</translation>
 <translation id="6443470774889161065">Chromium tải trước thêm nhiều trang mà bạn có thể sẽ truy cập để những trang đó tải nhanh hơn khi bạn truy cập</translation>
 <translation id="6450948450282634257">Tải Chromium xuống điện thoại để theo dõi giá và nhận thông báo khi có chương trình giảm giá trên bất cứ trang web nào</translation>
@@ -482,6 +509,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6475912303565314141">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chromium.</translation>
 <translation id="6510925080656968729">Gỡ cài đặt Chromium</translation>
 <translation id="651535675648445253">Phím tắt mở ra trong Chromium</translation>
+<translation id="6534946732446042463">Bạn có thể mở lại bảng điều khiển bên của Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="6539122709674868420">Tổ chức của bạn sẽ đóng Chromium khi Chromium không được dùng đến trong <ph name="TIMEOUT_DURATION" />. Dữ liệu duyệt web đã bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.</translation>
 <translation id="6556755379298048869">Tìm kiếm bằng phím tắt.</translation>
 <translation id="6563921047760808519">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chromium bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
@@ -493,6 +521,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6600016381025017075">Tìm nội dung bất kỳ trên trang này</translation>
 <translation id="6613594504749178791">Các thay đổi của bạn sẽ có hiệu lực vào lần tới khi bạn chạy lại Chromium.</translation>
 <translation id="6637908313088374648">Chromium hiện khởi chạy khi Windows khởi động để bạn có thể bắt đầu duyệt web ngay lập tức. Bạn có thể tắt lựa chọn này trong phần cài đặt.</translation>
+<translation id="6644846457769259194">Đang cập nhật thiết bị của bạn (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="665732753414869868">Chromium cần có quyền truy cập camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="6669284030132180248">Nếu cũng lưu dấu trang trong Tài khoản Google, bạn có thể theo dõi giá sản phẩm trong Chromium và nhận thông báo khi sản phẩm giảm giá</translation>
 <translation id="6676384891291319759">Truy cập Internet</translation>
@@ -509,7 +538,6 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="674891594898436429">Đóng phiên tìm kiếm đang diễn ra trong thẻ này</translation>
 <translation id="6751374565094704799">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium. Chế độ cài đặt này đang bật.</translation>
 <translation id="6754665438209053659">{count,plural, =1{Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}other{Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
-<translation id="6779406956731413166">ChromiumOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="6804256634866838775">Đóng phiên tìm kiếm đang diễn ra</translation>
 <translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />. Gói thành viên.</translation>
 <translation id="6831043979455480757">Dịch</translation>
@@ -546,6 +574,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="7037186623849853406">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ biệt lập của bạn sẽ không mở lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7047386856539490735">Những kết quả này có hữu ích không?</translation>
+<translation id="7056949952597412593">Từ nút "Tìm kiếm trong bảng điều khiển bên" trên thanh công cụ, bạn có thể mở lại Tìm kiếm trong bảng điều khiển bên để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="705851970750939768">Cập nhật Chromium</translation>
 <translation id="7067091210845072982">Chromium sẽ cố gắng mô tả cho bạn những hình ảnh không có nội dung mô tả hữu ích. Để tạo nội dung mô tả, các hình ảnh sẽ được gửi đến Google.</translation>
 <translation id="7141270731789036260">Tuỳ chỉnh Chrome for Testing</translation>
@@ -557,7 +586,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="7204669035546236137">Hỏi bất cứ điều gì và từ bất cứ đâu với Gemini trong Chromium</translation>
 <translation id="7213008767289637091">Ghim Chromium vào thanh Dock để truy cập nhanh chóng bất kỳ lúc nào</translation>
 <translation id="7213407614656404070">Dùng Chromium mỗi khi bạn nhấp vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
-<translation id="7213435258745128111">Google Tìm kiếm trong Chromium</translation>
 <translation id="7216228761061470870">Khi bạn sử dụng tính năng Tìm kiếm hình ảnh trên máy tính thì nội dung, URL và tiêu đề của trang, bao gồm cả tệp PDF, sẽ được gửi đến máy chủ</translation>
 <translation id="7223968959479464213">Trình quản lý tác vụ - Chromium</translation>
 <translation id="7226331818892775989">Hỏi về nội dung bên ngoài Chromium, chẳng hạn như các ứng dụng hoặc tệp khác</translation>
@@ -594,10 +622,14 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7467949745582939695">Chạy lại Chromium?</translation>
 <translation id="7483335560992089831">Không thể cài đặt phiên bản Chromium giống với phiên bản hiện đang chạy. Hãy đóng Chromium và thử lại.</translation>
 <translation id="751935028865900641">Các trang web có thể sẽ hoạt động như dự kiến. Khi đóng tất cả các cửa sổ Chromium, bạn sẽ bị đăng xuất khỏi hầu hết các trang web, ngoại trừ Tài khoản Google nếu bạn đã đăng nhập vào Chromium.</translation>
+<translation id="7527373353833064142">Bạn có thể mở lại bảng điều khiển Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium sẽ khởi động lại sau 1 phút}other{Chromium sẽ khởi động lại sau # phút}}</translation>
 <translation id="7565444033145385702">Để bảo vệ dữ liệu của bạn, hãy cho phép Chromium loại bỏ quyền của các trang web mà gần đây bạn không truy cập.</translation>
+<translation id="7582826101081069259">Mở lại Tìm kiếm trong Chrome</translation>
 <translation id="7583104404158659071">Tự động khởi chạy Chromium để bắt đầu duyệt web ngay lập tức.</translation>
 <translation id="7583399374488819119">Trình cài đặt <ph name="COMPANY_NAME" /></translation>
+<translation id="7583487342282700781">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Tìm kiếm.</translation>
+<translation id="7603292664535326725">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Tìm kiếm</translation>
 <translation id="761356813943268536">Chromium đang sử dụng máy ảnh và micrô của bạn.</translation>
 <translation id="7622753900276619808">Giờ đây, bạn có thể sử dụng nhiều tính năng hơn trong Chromium</translation>
 <translation id="7624307931717240213">Chúng tôi sử dụng thông tin để cải thiện dịch vụ này. Vui lòng xem Chính sách quyền riêng tư và Điều khoản dịch vụ.</translation>
@@ -632,16 +664,20 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7934340546140346950">Chromium tự động nâng cấp các kết nối không an toàn lên HTTPS mỗi khi có thể</translation>
 <translation id="7937630085815544518">Bạn đã đăng nhập vào Chromium là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7944602660083060118"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể truy cập dấu trang và nhiều dữ liệu khác trên mọi thiết bị của mình.</translation>
+<translation id="7947655529129620297">Bạn có thể ghim Tìm kiếm trong bảng điều khiển bên để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="7975919845073681630">Đây là cài đặt thứ cấp của Chromium và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="7997934263947464652">Các tiện ích, ứng dụng và giao diện không rõ nguồn gốc có thể làm hại thiết bị của bạn. Chromium đề xuất bạn chỉ nền cài đặt những mục nói trên qua <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
+<translation id="8008233848513969696">Đóng bảng điều khiển bên của Tìm kiếm</translation>
 <translation id="8013436988911883588">Sau khi Chromium có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.</translation>
+<translation id="8014387184082426885">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Tìm kiếm</translation>
 <translation id="8031714377769448844">Ghim Chromium vào thanh tác vụ để truy cập nhanh bất cứ lúc nào</translation>
 <translation id="80471789339884597">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại tất cả trình duyệt trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8054112667659782652">Luôn hiện lối tắt Tìm kiếm hình ảnh</translation>
 <translation id="8077498902115777962">Tắt Chromium đối với các ứng dụng chạy trong nền</translation>
 <translation id="80790299200510644">Tìm kiếm hình ảnh</translation>
 <translation id="8086881907087796310">Cài đặt không thành công vì máy tính của bạn không đáp ứng được các yêu cầu tối thiểu về phần cứng.</translation>
+<translation id="8095439028686936591">ChromeOS đã được cập nhật</translation>
 <translation id="8096472344908884505"><ph name="PAGE_TITLE" /> – Google Chrome for Testing</translation>
 <translation id="8105840573057009683">Chromium cần có quyền truy cập thông tin vị trí đối với trang web này</translation>
 <translation id="8107060931443639922">Lần tới, khi mở Chromium trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc bật thông báo theo dõi giá.</translation>
@@ -649,6 +685,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8130609355518033382">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="8133124826068723441">ChromiumOS không thể đồng bộ hoá dữ liệu của bạn vì miền của bạn không dùng được tính năng Đồng bộ hoá.</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
+<translation id="8158143604667288086">Bạn có thể ghim Tìm kiếm trong Chrome để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="8161503455832158203">Mở Gemini trong Chromium bằng một phím tắt.</translation>
 <translation id="8164014945047474187">Điều khoản dịch vụ bổ sung của Chromium</translation>
 <translation id="8172503648109091906">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
@@ -686,6 +723,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8447525028100794994">Tìm hiểu thêm về cách tìm kiếm bằng tính năng Tìm kiếm hình ảnh trong Chromium</translation>
 <translation id="8453117565092476964">Tệp lưu trữ trình cài đặt bị hỏng hoặc không hợp lệ. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="8471947159125090285">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy xác minh danh tính của bạn</translation>
+<translation id="8473541503127475913">Chạy lại Chromium để chuyển đổi</translation>
 <translation id="8482493977473846331">Hiện lời nhắc đăng nhập vào Chromium</translation>
 <translation id="8493179195440786826">Chromium đã lỗi thời</translation>
 <translation id="850264194101621529">Cảm ơn bạn đã chọn Chromium làm trình duyệt mặc định!</translation>
@@ -699,6 +737,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="8619360774459241877">Đang khởi động Chromium...</translation>
 <translation id="8624541899164515475">Trang Cài đặt, mở trong thẻ mới.</translation>
+<translation id="8647316383949836607">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng Tìm kiếm trong bảng điều khiển bên</translation>
 <translation id="8648201657708811153">Bạn không thể đặt Google Chrome for Testing làm trình duyệt mặc định.</translation>
 <translation id="8676101123715131330">Tìm kiếm bằng Chromium ở bất cứ đâu</translation>
 <translation id="8697124171261953979">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chromium hoặc tìm kiếm từ Thanh địa chỉ.</translation>
@@ -720,6 +759,8 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8891709362986793894">Tổ chức của bạn yêu cầu bạn đăng nhập vào Chromium</translation>
 <translation id="8906384069222226849">Chromium yêu cầu Windows 10 phiên bản 1809 trở lên.</translation>
 <translation id="8907580949721785412">Chromium đang cố gắng hiển thị mật khẩu. Nhập mật khẩu Windows của bạn để cho phép thực hiện việc này.</translation>
+<translation id="8910309838319708610">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng Chế độ AI của Tìm kiếm</translation>
+<translation id="8915682436012075700">Trình duyệt được quản lý này có thể sử dụng trợ lý Gemini được thiết lập <ph name="DOMAIN" /> cho công việc. Trợ lý này có thể tìm kiếm thông tin và đưa ra câu trả lời dựa trên các tệp và dịch vụ đã được phê duyệt của tổ chức này. Bạn không nên sử dụng tính năng này với hồ sơ cá nhân. Nhật ký trò chuyện sẽ không được chuyển sang tài khoản mới. Bạn cần chạy lại Chromium để chuyển đổi.</translation>
 <translation id="8932992523185907506">Chromium không còn là trình duyệt mặc định của bạn. Đặt Chromium làm trình duyệt mặc định?</translation>
 <translation id="8941642502866065432">Không thể cập nhật Chromium</translation>
 <translation id="8944232836376404813">Hành động này sẽ:
@@ -755,6 +796,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="9148058034647219655">Thoát</translation>
 <translation id="9155105544013854680">Tiếp tục từ nơi bạn đã dừng lại: Chromium có thể khôi phục các thẻ của bạn mỗi khi bạn khởi động lại. Để bật tính năng này, hãy chuyển đến</translation>
 <translation id="9158494823179993217">Quản trị viên hệ thống của bạn đã định cấu hình Chromium để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="9165824416732784256">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi trong khi duyệt web bằng Tìm kiếm trong Chrome</translation>
 <translation id="9185526690718004400">Chạy lại để cập nhật &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Biến Chromium thành trình duyệt của riêng bạn</translation>

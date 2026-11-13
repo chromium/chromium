@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">시도해 볼 수 있는 몇 가지 방법</translation>
 <translation id="112308213915226829">앱 표시줄 자동 숨김</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> 새로고침</translation>
+<translation id="1139368021151541038">1개 이상의 문자 또는 기호를 포함해야 합니다.</translation>
 <translation id="1142002900084379065">최근 사진</translation>
 <translation id="114221662579355151">카메라 액세스 권한이 있는 <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> 등 모든 앱과 웹사이트에서 카메라에 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="1145593918056169051">프린터가 중지됨</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">새 창에서 새 탭 열기</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> 계정을 사용하려면 모든 계정에서 로그아웃해야 합니다. 로그아웃하려면 취소를 선택하여 뒤로 돌아가세요. 그런 다음 시간을 선택하여 상태 영역을 열고 로그아웃을 선택합니다. 그리고 <ph name="USER_EMAIL_ADDRESS_2" /> 계정으로 로그인하면 됩니다.</translation>
 <translation id="15373452373711364">큰 마우스 커서</translation>
+<translation id="1538808328818992871"><ph name="MIN_LENGTH" />자 이상(영문 기준)이어야 합니다.</translation>
 <translation id="1545331255323159851">휴대전화의 최근 사진, 미디어, 알림 보기</translation>
 <translation id="1546492247443594934">데스크 2</translation>
 <translation id="1546930421365146760">관리자에게 Google 관리 콘솔에서 이 기기를 설정해달라고 요청하세요.</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">더 많은 옵션을 확인하려면 클릭하세요.</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1557622599341396706">데스크 이름 표시</translation>
+<translation id="1568242747239041185">대문자, 소문자, 숫자, 기호 중 2가지 이상을 포함해야 합니다.</translation>
 <translation id="1569384531973824928">카메라 및 마이크 액세스 권한이 있는 모든 앱과 웹사이트에서 액세스할 수 있게 됩니다. 웹페이지를 새로고침하거나 앱을 다시 시작해야 할 수도 있습니다.</translation>
 <translation id="1570235441606255261">Steam 설치 프로그램</translation>
 <translation id="1571697193564730395">방해 금지 모드를 전환합니다. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Google Tasks 접기</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2215920961700443347">인터넷에 연결되어 있지 않습니다. 인터넷에 연결한 후 다시 시도해 주세요.</translation>
+<translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222841058024245321">데스크 7</translation>
 <translation id="2223384056430485343">화면 분할 시</translation>
 <translation id="2224075387478458881">보호된 콘텐츠가 보일 때는 화면 녹화를 할 수 없습니다.</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">마우스 키 일시중지됨</translation>
 <translation id="2268731132310444948">둘러보기 <ph name="TOTAL_STEPS" />단계 중 <ph name="STEP" />단계입니다. 런처가 활성화되면 향상된 검색창이 표시됩니다. 입력을 시작하여 파일, 앱 등을 검색할 수 있습니다. <ph name="PRODUCT_NAME" />에 대한 질문의 답변을 얻을 수도 있습니다.</translation>
 <translation id="2268813581635650749">모두 로그아웃</translation>
+<translation id="2273432041732361925">4개 이상의 반복되는 문자 또는 시퀀스가 없어야 합니다.</translation>
 <translation id="2276987123919776440">15분</translation>
 <translation id="2278668501808246459">컨테이너 관리자 시작 중</translation>
 <translation id="2282073721614284166">탭에서 링크 열기</translation>
@@ -1056,6 +1061,7 @@
 <translation id="4072805772816336153">나중에 다시 시도해 보세요.</translation>
 <translation id="4077623680826964850">VM을 부팅하거나 VM에 다시 연결할 때 시간이 초과되었습니다.</translation>
 <translation id="4086921558679520050">기기의 마이크 스위치를 켜세요</translation>
+<translation id="4093173301198419723">대문자, 소문자, 숫자, 기호를 포함해야 합니다.</translation>
 <translation id="4099874310852108874">네트워크 오류가 발생했습니다.</translation>
 <translation id="4101772068965291327">홈페이지</translation>
 <translation id="4102906002417106771">다시 시작하여 파워워시</translation>
@@ -1276,6 +1282,7 @@
 <translation id="4668936527507421457">PIN은 숫자만 사용해야 합니다</translation>
 <translation id="4672539464599646374">절전 모드 사용 설정됨</translation>
 <translation id="4673427585974421255">계속 사용</translation>
+<translation id="467510802200863975">비밀번호가 일치하지 않습니다.</translation>
 <translation id="4677040906536311086">Google 시트</translation>
 <translation id="468019262817532242">나와 공유할 수 있는 사용자 없음</translation>
 <translation id="468293128311738995">휴대전화 앱</translation>
@@ -1299,6 +1306,7 @@
 <translation id="4746798685375253449">{0,plural, =1{하루 안에 기기를 이전 버전으로 업데이트하세요}other{#일 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
 <translation id="4747410141429390146">알림을 보려면 잠금 해제하세요.</translation>
 <translation id="4752784485658729358">데스크는 6개까지만 저장할 수 있습니다. 새 데스크를 저장하려면 이전 데스크를 삭제하세요.</translation>
+<translation id="4753084533826742808">1자 이상(영문 기준)이어야 합니다.</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + 위쪽 화살표</translation>
 <translation id="4762573482154983647">앱 숨기기</translation>
@@ -1435,6 +1443,7 @@
 <translation id="5144005092084035179">오디오 입력을 전환할까요?</translation>
 <translation id="5145464978649806571">기기를 자리에 두고 일어나면 화면이 자동으로 잠깁니다. 기기 앞에 있는 동안에는 화면의 절전모드 해제 상태가 더 오래 유지됩니다. 잠금 화면을 사용하고 있지 않은 경우 기기가 잠기지 않고 절전 모드로 전환됩니다.</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
+<translation id="5148285448107770349">비밀번호는 8자 이상이어야 합니다.</translation>
 <translation id="5150070631291639005">개인 정보 보호 설정</translation>
 <translation id="5155897006997040331">읽기 속도</translation>
 <translation id="5158206172605340248">발음 구별 부호 메뉴를 닫았습니다.</translation>
@@ -1555,6 +1564,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다. 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="547979256943495781">오른쪽에 앱 표시줄 표시</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">비밀번호 확인</translation>
 <translation id="5491186829646618080">펌웨어 업데이트 사용 가능</translation>
 <translation id="5503884284981862082">Google 어시스턴트 열기/닫기</translation>
 <translation id="550391772491508736">전송 재개</translation>
@@ -1815,6 +1825,7 @@
 <translation id="6198252989419008588">PIN 변경</translation>
 <translation id="6199775032047436064">현재 페이지 새로고침</translation>
 <translation id="6200515304866777730">앱에서 지원되지 않음</translation>
+<translation id="6209589022625766110">8자 이상(영문 기준)이어야 하며 대문자, 소문자, 숫자 또는 기호 중 2가지 이상을 포함해야 합니다. 4개 이상의 반복되는 문자 또는 시퀀스가 없어야 합니다.</translation>
 <translation id="6210042900243040400">이전에 <ph name="EMAIL" />에 저장된 <ph name="NAME" /> 연결</translation>
 <translation id="6212580734499190393">10분 동안</translation>
 <translation id="6213808132343683860">부분 스크린샷 찍기 또는 화면 녹화</translation>
@@ -1849,6 +1860,7 @@
 <translation id="6297986260307280218">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />측정항목에 관해 자세히 알아보기<ph name="BEGIN_LINK2_END" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">앱에서 이 기기 맞춤설정</translation>
 <translation id="6298962879096096191">Google Play를 사용하여 Android 앱을 설치합니다.</translation>
+<translation id="6300478323573969040">12자 이상(영문 기준)이어야 하며 대문자, 소문자, 숫자, 기호를 포함해야 합니다. 4개 이상의 반복되는 문자 또는 시퀀스가 없어야 합니다.</translation>
 <translation id="6304076460080088478">시크릿 창을 닫거나 최소화하여 Google 렌즈로 화면을 검색하세요</translation>
 <translation id="6309219492973062892">앱 표시줄 아이콘 1-8 클릭 또는 탭</translation>
 <translation id="6315170314923504164">음성</translation>
@@ -2021,7 +2033,6 @@
 <translation id="6782919488259222803">현재 페이지 검색</translation>
 <translation id="6783348167101855071">선택된 오른쪽 하단 핸들, 화살표 키를 사용하여 이동</translation>
 <translation id="6786750046913594791">폴더 닫기</translation>
-<translation id="6792262051831399889">사용 불가</translation>
 <translation id="6792351896138862473">지원되지 않는 키오스크 앱은 실행할 수 없습니다. 이 문제에 관해 관리자에게 알리세요.</translation>
 <translation id="679368458793552943">돋보기 사용 설정 시 확대</translation>
 <translation id="6794287755901682422">하위 할 일에 포함된 항목: <ph name="GLANCEABLES_TASK_ITEM_METADATA" /></translation>
@@ -2464,6 +2475,7 @@
 <translation id="8052898407431791827">클립보드에 복사됨</translation>
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>
 <translation id="8063363226185507157">동기화된 접근성 설정</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8079538659226626406">화면 공유</translation>
 <translation id="8083540854303889870">저장된 항목</translation>
@@ -2627,6 +2639,7 @@
 <translation id="8555757996376137129">현재 데스크를 삭제합니다.</translation>
 <translation id="8558521694042102707">생성형 AI는 인물 등에 관한 정보 제공 시 실수를 할 수 있으니 다시 한번 확인하세요.</translation>
 <translation id="8559845965695780508"><ph name="USER" />님이 수정함</translation>
+<translation id="8567946600191652875">6자 이상(영문 기준)이어야 하며, 1개 이상의 문자 또는 기호를 포함해야 합니다.</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">메뉴가 화면 오른쪽 하단으로 이동했습니다.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 키를 누른 상태에서 링크 클릭</translation>
@@ -2800,7 +2813,6 @@
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9037818663270399707">연결이 일부 네트워크 트래픽에 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
-<translation id="9050012935252397793">블루투스를 사용할 수 없음</translation>
 <translation id="9050999376345823055">'.'를 눌러 해제</translation>
 <translation id="906458777597946297">창 최대화</translation>
 <translation id="9065203028668620118">수정</translation>

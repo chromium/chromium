@@ -184,8 +184,7 @@
 <translation id="5190139289262548459">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。</translation>
 <translation id="5209238444239954363">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="5305440589062022504">在 Chrome 中開啟密碼管理工具</translation>
-<translation id="5310957470610282541">部分 Chrome 資料尚未儲存到 Google 帳戶，
-請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
+<translation id="5310957470610282541">部分 Chrome 資料尚未儲存到 Google 帳戶。請稍待幾分鐘後再登出，如果現在登出，系統將刪除這些資料。</translation>
 <translation id="5342685492141499976">你的資料會儲存到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具</translation>
 <translation id="5389212809648216794">另一個應用程式正在使用你的相機，因此 Google Chrome 無法使用</translation>
 <translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
@@ -308,7 +307,7 @@
 <translation id="7660356333829433649">歡迎返回這裡查看更多實用提示，瞭解如何充分發揮 Chrome 的效用。</translation>
 <translation id="7662994914830945754">登入帳戶並開啟同步功能後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="767157537088426800">登入這個網站和 Chrome，即可在所有裝置上存取密碼和其他內容</translation>
-<translation id="7693590760643069321">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
+<translation id="7693590760643069321">輕觸訊息、文件和其他應用程式中的連結時，可透過 Chrome 開啟。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
 <translation id="7707877166818730835">在 Chrome 中開啟我的最新分頁</translation>
 <translation id="7747746207470479571">使用 Chrome 做為自動填寫來源，輕鬆存取密碼和通行密鑰</translation>
@@ -376,7 +375,7 @@
 <translation id="8850736900032787670">如要接收符合興趣的個人化內容，請登入 Chrome。</translation>
 <translation id="8855781063981781621">如要停用 Chrome 的鎖定模式，請在 iPad 上將該模式關閉。</translation>
 <translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
-<translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
+<translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
 <translation id="8874688701962049679">可協助你充分運用 Chrome 的各項提示。</translation>
 <translation id="8897749957032330183">密碼會儲存至這部裝置的 Google 密碼管理工具。</translation>
 <translation id="898288749595466683">無需再複製網址！將 Chrome 設為預設瀏覽器，即可直接載入網頁。</translation>

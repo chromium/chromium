@@ -1008,6 +1008,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4925120120285606924"><ph name="CURRENT_DATE_ISO" /> pantaila-argazkia</translation>
 <translation id="4926901776383726965">Konexiorik gabe ikusteko edo beste aplikazio batzuetan partekatzeko irudiak eta fitxategiak gorde ditzakezu</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 laster-marka eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan.}other{# laster-marka eta beste elementu batzuk gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan.}}</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4943703118917034429">Errealitate birtuala</translation>
 <translation id="4943872375798546930">Ez dago emaitzarik</translation>
 <translation id="4957722034734105353">Lortu informazio gehiago…</translation>
@@ -1061,6 +1062,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5142281402488957685">Istorio berririk dagoen ikusi nahi baduzu, tiratu beherantz freskatzeko</translation>
 <translation id="5144385790872094440">Bisitatzen dituzun orrietako batzuk aurrez kargatzen dira. Baliteke orriak Google-ren zerbitzarien bidez aurrez kargatzea esteka Google-ren webgune edo aplikazio batean badago.</translation>
 <translation id="5152843274749979095">Ez dago aplikazio bateragarririk instalatuta</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5161262286013276579">Ireki da sarbide-gakoa berresteko orria</translation>
 <translation id="5163361352003913350">Orain <ph name="NAME" /> dago hautatuta. Aukeratu kontu bat.</translation>
@@ -1144,6 +1146,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5494920125229734069">Hautatu guztiak</translation>
 <translation id="549660026907543296">Sartu <ph name="MEMBER_FULL_NAME" /> gisa</translation>
 <translation id="5517326820028369152">Pantailaren behealdean ainguratutako orria, azkenaldiko jarduerak dituena</translation>
+<translation id="5519516356611866228">Aldaketekin</translation>
 <translation id="5526281268548144413">Ezin dira itxi leiho batean baino gehiagotan</translation>
 <translation id="5532536403031755365">Gehitu babes-geruza gehigarri bat sareko mehatxuen aurrean, Babes hobetua erabilita</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Ireki laster-marka}other{Ireki guztiak (#)}}</translation>
@@ -1406,6 +1409,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6482749332252372425">Ezin izan da deskargatu <ph name="FILE_NAME" />, memoria beteta dagoelako.</translation>
 <translation id="6486420406192123355">PDF fitxategi hau konexio ez-seguru bat darabilen webgune batekoa da</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Deskargatu da fitxategia}other{# deskarga amaitu dira}}</translation>
+<translation id="6502991525169604759">Aldaketarik gabe</translation>
 <translation id="6508722015517270189">Berrabiarazi Chrome</translation>
 <translation id="6513924416597632811">Kopiatu bilaketa-emaitzen orrirako esteka: <ph name="SEARCH_QUERY" />. Iturburua: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Egiaztatu</translation>
@@ -1684,7 +1688,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7493994139787901920"><ph name="VERSION" /> (azken eguneratzea: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Itxaron, mesedez…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" /> fitxa, ainguratuta, audioa desaktibatuta</translation>
-<translation id="7500851014030446046">PDFa deskargatzen</translation>
 <translation id="7501135638693251872">Laster-marka guztiak</translation>
 <translation id="7504076214066136798">Ezin dira gorde aldaketak</translation>
 <translation id="7507207699631365376">Ikusi hornitzailearen <ph name="BEGIN_LINK" />pribatutasun-gidalerroak<ph name="END_LINK" /></translation>
@@ -2018,6 +2021,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8725066075913043281">Saiatu berriro</translation>
 <translation id="8727043961453758442">Atera ahalik eta etekin handiena Chrome-ri</translation>
 <translation id="8728810647305130936">Ireki fitxa berriak</translation>
+<translation id="8730621377337864115">Eginda</translation>
 <translation id="8731268612289859741">Segurtasun-kodea</translation>
 <translation id="8738163682604285902">Irakurtzeko modua ikusi nahi duzu?</translation>
 <translation id="8746155870861185046">Partekatu nabarmendutako edukia</translation>

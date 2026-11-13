@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Anda telah bersedia!</translation>
 <translation id="1149483087970735785">Teknologi bantuan</translation>
 <translation id="1150490752229770117">Ini ialah kemas kini perisian dan keselamatan yang terakhir untuk <ph name="DEVICE_TYPE" /> ini. Untuk mendapatkan kemas kini pada masa akan datang, tingkatkan kepada model yang lebih baharu. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Perihal ChromeOS</translation>
 <translation id="1155816283571436363">Menyambung kepada telefon anda</translation>
 <translation id="1160800016654917722">Tetingkap dialihkan ke bawah dan ke kiri</translation>
 <translation id="1164015913575846413">Alt + klik</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">pelancar + anak panah ke kanan</translation>
 <translation id="1280332775949918163">Sentap tetingkap</translation>
+<translation id="1285625592773741684">Tetapan penggunaan data semasa ialah Data Mudah Alih</translation>
 <translation id="1285815028662278915">Data mudah alih anda mungkin tidak menyokong tempat liputan. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Cahaya Malam akan dihidupkan secara automatik pada waktu matahari terbenam</translation>
 <translation id="1288300545283011870">Sifat Pertuturan</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Tindakan ini akan melumpuhkan sambungan dan menetapkan semula tetapan anda kepada lalai selamat. Tab, fail dan kuki akan dikekalkan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Penggadang skrin penuh</translation>
 <translation id="1539727654733007771">Tiada rangkaian mudah alih disediakan. Muat turun <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> baharu.</translation>
+<translation id="1547295885616600893">Chrome OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="1547808936554660006">Saya faham bahawa profil eSIM yang dipasang tidak akan dialih keluar oleh Powerwash</translation>
 <translation id="1549275686094429035">ARC Didayakan</translation>
 <translation id="1554640914375980459">Denyarkan skrin apabila anda menerima pemberitahuan. Gunakan pemberitahuan denyar dengan berhati-hati jika anda sensitif terhadap cahaya.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Gunakan Wi-Fi atau rangkaian mudah alih untuk menentukan lokasi</translation>
 <translation id="1650407365859096313">Dibuka dalam tab baharu, Kebenaran ditetapkan kepada <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Dayakan Kongsi Berdekatan</translation>
+<translation id="1662146548738125461">Perihal Chrome OS Flex</translation>
 <translation id="1663698992894057019">Tingkatkan kepada Chromebook baharu untuk mendapatkan kemaskinian keselamatan dan perisian terkini</translation>
 <translation id="1665328953287874063">Gunakan kata laluan atau PIN untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1667842670298352129">Dengar teks tertentu dibaca dengan suara lantang. Mula-mula, pilih ikon Pilih untuk bercakap di bahagian bawah skrin anda, kemudian serlahkan teks. Anda juga boleh menggunakan pintasan papan kekunci: Serlahkan teks, kemudian tekan Cari + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Nota: Cap jari anda mungkin kurang selamat berbanding kata laluan atau PIN yang kukuh.</translation>
 <translation id="1724801751621173132">Mod input</translation>
 <translation id="1741190788710022490">Pengecasan mudah suai</translation>
+<translation id="1745732479023874451">Urus kenalan</translation>
 <translation id="1751335846119670066">Bantu saya baca</translation>
 <translation id="1755601632425835748">Saiz teks</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> dipetakan semula kepada <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Tidak, kekal dengan 1 suis</translation>
 <translation id="1842681835432895345">Kecualikan paparan ini dalam mod cermin</translation>
 <translation id="1848219224579402567">Log keluar apabila penutup ditutup</translation>
+<translation id="185970820835152459">Anda boleh mengurus Google Account anda yang dilog masuk. Google Account anda digunakan untuk penyemak imbas Chromium, Play Store, Gmail dan pelbagai lagi. Jika anda ingin menambah akaun untuk orang lain, seperti ahli keluarga, tambahkan sahaja orang baharu pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Dingin</translation>
 <translation id="1866589962721094893">Beri Apl Android kawalan terhadap peranti USB pada Chromebook ini. Kebenaran akan diminta setiap kali anda memalamkan peranti USB. Setiap Apl Android akan meminta kebenaran tambahan.</translation>
 <translation id="1877377290348678128">Label (pilihan)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Bunyi</translation>
 <translation id="2097950021134740304">Batalkan tindakan melupakan langganan</translation>
 <translation id="2104166991923847969">Matikan tempat liputan secara automatik</translation>
+<translation id="2106831557840787829">ChromeOS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" />tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Tiada kad SIM dimasukkan</translation>
 <translation id="2121825465123208577">Ubah saiz</translation>
 <translation id="2127372758936585790">Pengecas berkuasa rendah</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Alih keluar <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2363475280045770326">Ralat semasa menyimpan konfigurasi</translation>
+<translation id="236939127352773362">Apabila peranti sedang dikongsi berdekatan</translation>
 <translation id="237336063998926520">Gunakan alamat IP anda untuk menentukan lokasi</translation>
 <translation id="2373499590298659902">Gunakan “0” untuk menekan dan menahan butang tetikus</translation>
 <translation id="2375406435414127095">Sambung ke telefon anda</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Sekat trafik tanpa VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Ketepatan Lokasi menyediakan lokasi yang lebih tepat untuk apl dan perkhidmatan. Untuk berbuat demikian, Google memproses maklumat tentang penderia peranti dan isyarat wayarles secara berkala daripada peranti anda untuk mengumpulkan lokasi isyarat wayarles. Maklumat ini digunakan tanpa mengenal pasti identiti anda untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi serta secara amnya untuk meningkatkan, menyediakan dan mengekalkan perkhidmatan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Dulang output hampir penuh</translation>
 <translation id="3390013585654699824">Butiran apl</translation>
 <translation id="3390740059150071453">Lihat ke kiri</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Alamat e-mel</translation>
 <translation id="3701028563242674350">Goncang kursor tetikus untuk menjadikan kursor lebih besar</translation>
 <translation id="3703699162703116302">Tiket dimuat semula</translation>
+<translation id="3703994572283698466">Chrome OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Dayakan Wi-Fi</translation>
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="3707163604290651814">Pada masa ini dilog masuk sebagai <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Menjumpai <ph name="NUM_PRINTERS" /> pencetak daripada pelayan cetak</translation>
 <translation id="371370241367527062">Mikrofon depan</translation>
 <translation id="37143699183660101">Kestabilan kursor</translation>
+<translation id="3716540481907974026">Versi Chrome OS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN salah. Cuba lagi</translation>
 <translation id="3728681439294129328">Konfigurasikan alamat rangkaian</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Tunjukkan garis bawah untuk teks pengarangan</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="379509625511193653">Mati</translation>
+<translation id="3795971588916395511">Chrome OS Google</translation>
 <translation id="3796215473395753611">alt + anak panah ke atas</translation>
 <translation id="3798670284305777884">Pembesar suara (dalaman)</translation>
 <translation id="3799128412641261490">Tetapan akses suis</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Papan Kekunci Terbina Dalam</translation>
 <translation id="3917644013202553949">Storan tidak mencukupi untuk menyegerakkan fail anda. Cuba kosongkan ruang.</translation>
 <translation id="3919229493046408863">Matikan pemberitahuan apabila terdapat peranti berdekatan</translation>
+<translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3923494859158167397">Tiada rangkaian mudah alih disediakan</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Pengguna lain pada peranti ini boleh menggunakan rangkaian ini juga</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Jawapan Segera takrif</translation>
 <translation id="3994075804072562819">Berikan <ph name="SPECIFIC_NAME" /> kawalan terhadap peranti USB.</translation>
 <translation id="3994530503403062649">Cari butang pada tablet anda</translation>
+<translation id="3997429360543082038">Perihal Chromium OS</translation>
 <translation id="4001540981461989979">Serlahkan kursor tetikus semasa bergerak</translation>
 <translation id="4005817994523282006">Kaedah pengesanan zon waktu</translation>
+<translation id="4019629340646866719">Chromium OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Salin butiran binaan</translation>
 <translation id="4028467762035011525">Tambah kaedah masukan</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Untuk bertukar kepada kaedah input yang terakhir digunakan, tekan <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Search + anak panah ke kanan</translation>
 <translation id="405181879009056822">Tetapan ChromeOS</translation>
+<translation id="4054070260844648638">Kelihatan kepada semua orang</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Sila periksa sambungan anda untuk melihat pencetak yang tersedia dalam rangkaian anda</translation>
 <translation id="4068776064906523561">Cap jari disimpan</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, Gred <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Dapatkan lagi apl stilus</translation>
 <translation id="4248401726442101648">Tiada kamera disambungkan</translation>
+<translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4249116869350613769">Penjimat bateri</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="425411422794688815">Ada masalah. Pastikan telefon anda berada berdekatan, dibuka kunci dan Bluetooth serta Wi-Fi dihidupkan.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}other{<ph name="EXTRA_ACCOUNTS" /> Google Account}}</translation>
 <translation id="4314497418046265427">Jadi lebih produktif apabila anda menyambungkan telefon ke <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="4314561087119792062">Tambahkan Nama titik capaian baharu</translation>
+<translation id="4314815835985389558">Urus penyegerakan</translation>
 <translation id="4320177379694898372">Tiada sambungan Internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Storan dan kuasa</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Bilangan cadangan</translation>
 <translation id="4606933160360542263">Gabungan kekunci tersuai: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Apabila butang tetikus kiri dipilih, gunakan “/” untuk klik dua kali</translation>
+<translation id="4613863813562375431">Versi Chromium OS</translation>
 <translation id="461661862154729886">Sumber tenaga</translation>
 <translation id="4617880081511131945">Tidak dapat mewujudkan sambungan</translation>
 <translation id="4620757807254334872">tetikus</translation>
@@ -1136,6 +1155,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4777943778632837590">Konfigurasikan pelayan nama rangkaian</translation>
 <translation id="4779083564647765204">Zum</translation>
 <translation id="4779766576531456629">Namakan semula rangkaian Selular eSIM</translation>
+<translation id="4789550509729954245">Tunjukkan pemberitahuan apabila peranti sedang dikongsi berdekatan</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Dayakan pemecutan TrackPoint</translation>
 <translation id="479664067938200069">Aplikasi yang dipasang daripada <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4964544790384916627">Dok tetingkap</translation>
 <translation id="4964673849688379040">Menyemak...</translation>
 <translation id="4967571733817147990">Sesuaikan butang tetikus</translation>
+<translation id="4970880042055371251">Versi Chrome OS</translation>
 <translation id="4972129977812092092">Edit pencetak</translation>
 <translation id="4975771730019223894">Pelencanaan apl</translation>
 <translation id="4979263087381759787">Pilihan Pembangun</translation>
@@ -1275,6 +1296,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5193978546360574373">Tindakan ini akan mengalih keluar akses kepada Google Drive pada Chromebook ini, termasuk akses kepada sebarang fail yang telah dijadikan tersedia di luar talian</translation>
 <translation id="5196790039230503600">Gunakan gerak isyarat, kemudian gerakkan kepala anda untuk menunjukkan lokasi yang mahu disasarkan untuk melepaskan item itu. Gunakan gerak isyarat itu sekali lagi untuk melepaskan item.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Jangan sekali-kali menggunakan data mudah alih untuk memindahkan fail</translation>
 <translation id="5207949376430453814">Serlahkan karet teks</translation>
 <translation id="5208926629108082192">Maklumat rangkaian mudah alih peranti</translation>
 <translation id="5208988882104884956">Kelebaran separa</translation>
@@ -1307,6 +1329,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5331568967879689647">Apl Sistem Chrome OS</translation>
 <translation id="5334113802138581043">Akses mikrofon</translation>
 <translation id="5336689872433667741">Kursor dan pad sentuh</translation>
+<translation id="5337926771328966926">Nama semasa peranti ialah <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Hantar data diagnostik dan penggunaan</translation>
 <translation id="5369694795837229225">Sediakan persekitaran pembangunan Linux</translation>
 <translation id="5377367976106153749">Hidupkan akses kamera?</translation>
@@ -1444,6 +1467,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5833726373896279253">Tetapan ini hanya boleh diubah suai oleh pemilik:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Sarung</translation>
+<translation id="5840680448799937675">Fail akan sentiasa dikongsi di luar talian</translation>
 <translation id="5841270259333717135">Konfigurasikan Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth didayakan</translation>
 <translation id="5846200638699387931">Ralat sintaks hubungan: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5924438086390153180">Tanya sebelum menyalin atau menggerakkan fail Microsoft kepada Google Drive</translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
 <translation id="594048410531370124">Kekunci tidak dikenali. Tekan sebarang kekunci untuk <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Keterlihatan peranti</translation>
 <translation id="5945192511027649793">Lumpuhkan Pad Sentuh</translation>
 <translation id="5947651424015173580">Klik dua kali tetikus</translation>
 <translation id="594993197557058302">Tekan kekunci pengubah suai 1-4 (Ctrl, Alt, Shift, carian atau pelancar) dan 1 kekunci lagi. Anda juga boleh memilih satu kekunci.</translation>
@@ -1491,10 +1516,12 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5961545272769624207">Tetapkan gerak isyarat</translation>
 <translation id="5968022600320704045">Tiada hasil carian</translation>
 <translation id="5969728632630673489">Notis pintasan papan kekunci diketepikan</translation>
+<translation id="5979353814339191480">Pilihan ini digunakan untuk Chromebook yang mempunyai pelan data atau anak kunci rangkaian mudah alih, atau apabila ditambatkan kepada tempat liputan mudah alih</translation>
 <translation id="5985556342298151179">Apl Chrome yang dipasang oleh pentadbir peranti anda.</translation>
 <translation id="5986442691296752186">Beri Apl Linux kawalan terhadap peranti USB.</translation>
 <translation id="598810097218913399">Alih keluar penguntukan</translation>
 <translation id="5988563937187882754">Lihat ke kanan</translation>
+<translation id="5990266201903445068">Wi-Fi sahaja</translation>
 <translation id="5992225669837656567">Semua tetikus telah diputuskan sambungan</translation>
 <translation id="5999630716831179808">Suara</translation>
 <translation id="6002458620803359783">Suara Pilihan</translation>
@@ -1509,6 +1536,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6045114302329202345">Butang TrackPoint utama</translation>
 <translation id="6048747414605857443">Pilih dan sesuaikan suara teks kepada pertuturan untuk ChromeVox dan Pilih untuk bercakap</translation>
 <translation id="6050189528197190982">Skala Kelabu</translation>
+<translation id="6054961935262556546">Tukar keterlihatan</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6059925163896151826">Peranti USB</translation>
 <translation id="6064764629679333574">Tingkatkan kualiti bunyi mikrofon Bluetooth dengan meningkatkan audio resolusi rendah kepada audio resolusi tinggi.</translation>
@@ -1567,6 +1595,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6265159465845424232">Tanya sebelum menyalin atau menggerakkan fail Microsoft kepada Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Alih keluar port</translation>
 <translation id="6266532094411434237">Menyambung kepada <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Log keluar daripada Chromium?</translation>
 <translation id="6270309713620950855">Sigung redam</translation>
 <translation id="6274089201566806618">Menyambung kepada <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 saat</translation>
@@ -1618,6 +1647,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6453921811609336127">Untuk bertukar kepada kaedah masukan yang seterusnya, tekan <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Ruang<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Padamkan kamus ini</translation>
 <translation id="6463596731306859179">Anda mendapat tetingkap timbul atau gelagat lain yang tidak dikehendaki? Kadangkala apl dan sambungan yang dipasang boleh menukar tetapan ChromeOS anda tanpa pengetahuan anda.</translation>
+<translation id="6465841119675156448">Tanpa Internet</translation>
 <translation id="6467377768028664108">Kemudian <ph name="DEVICE_TYPE" /> anda boleh:</translation>
 <translation id="6469557521904094793">Hidupkan Rangkaian selular</translation>
 <translation id="6470120577693311302">Pemberitahuan denyar</translation>
@@ -1668,6 +1698,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6626581113916585374">Mod kesan</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Pemilihan pintasan</translation>
+<translation id="6632473616050862500">Chrome OS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6646476869708241165">Matikan Ganding Pantas</translation>
 <translation id="6647690760956378579">Pratonton suara semula jadi</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingin mengesahkan orang itu ialah anda</translation>
@@ -1711,6 +1742,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6775163072363532304">Peranti yang tersedia akan dipaparkan di sini.</translation>
 <translation id="6776729248872343918">Dayakan Ganding Pantas</translation>
 <translation id="6777845730143344223">Ketahui lebih lanjut tentang langganan Passpoint</translation>
+<translation id="6779406956731413166">Chromium OS berjaya dilaksanakan dengan adanya <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6783036716881942511">Lupakan peranti ini?</translation>
 <translation id="6783667414610055871">Tetapan Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Penatalan songsang <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7280649757394340890">Tetapan suara Teks ke Pertuturan</translation>
 <translation id="7282547042039404307">Lancar</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Maklumat penggunaan dan keselamatan penting</translation>
 <translation id="7303485269821975179">Sediakan kata laluan <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Tinggi</translation>
 <translation id="7308643132139167865">Bahasa laman web</translation>
@@ -1873,6 +1906,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7409599290172516453">Foto Baru-baru Ini</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> daripada <ph name="APPS_LIST_SIZE" /> apl disekat</translation>
+<translation id="7423425410216218516">Keterlihatan dihidupkan selama <ph name="MINUTES" /> minit</translation>
 <translation id="7423513079490750513">Alih keluar <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Bantu saya tulis</translation>
 <translation id="7429415133937917139">Menyerupai output paparan braille yang boleh dimuat semula
@@ -1920,11 +1954,13 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7578137152457315135">Tetapan cap jari</translation>
 <translation id="7578692661782707876">Sila masukkan kod pengesahan anda.</translation>
 <translation id="7582582252461552277">Lebih suka rangkaian ini</translation>
+<translation id="7582844466922312471">Data Mudah Alih</translation>
 <translation id="7587806318633605613">Sejarah Cadangan</translation>
 <translation id="7590883480672980941">Tetapan input</translation>
 <translation id="7592060599656252486">Sedikit</translation>
 <translation id="7602173054665172958">Pengurusan cetak</translation>
 <translation id="7605163396341021431">Beri Apl Android kawalan terhadap peranti USB pada Chromebook ini</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7608810328871051088">Pilihan Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Dayakan ciri telefon yang disambungkan.</translation>
@@ -1935,12 +1971,14 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7632437836497571618">Gunakan sambungan selamat untuk mencari laman</translation>
 <translation id="7634337648687970851">Pemulihan data setempat tidak disokong pada masa ini.</translation>
 <translation id="7640256527901510478">IMEI peranti anda ialah <ph name="IMEI_NUMBER" /> dan nombor siri peranti ialah <ph name="SERIAL_NUMBER" />. Nombor ini boleh digunakan untuk mengaktifkan perkhidmatan.</translation>
+<translation id="7640308610547854367">Anda telah berbalik kepada versi ChromeOS terdahulu. Untuk mendapatkan kemaskinian, tunggu sehingga versi seterusnya tersedia.</translation>
 <translation id="7641513591566880111">Nama profil baharu</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> ditambahkan</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
 <translation id="7648048654005891115">Gaya peta punca</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 cap jari telah disediakan}other{{COUNT} cap jari telah disediakan}}</translation>
+<translation id="7650677314924139716">Tetapan penggunaan data semasa ialah Wi-Fi sahaja</translation>
 <translation id="7651400349472467012">Tempat liputan segera tersedia</translation>
 <translation id="7651784568388208829">Penyambungan tugas Hab Telefon</translation>
 <translation id="7658239707568436148">Batal</translation>
@@ -2031,6 +2069,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Terjemahan</translation>
 <translation id="7915457674565721553">Sambung ke Internet untuk menyediakan kawalan ibu bapa</translation>
+<translation id="7917876797003313048">Anda boleh mengurus Google Account anda yang dilog masuk. Google Account anda digunakan untuk penyemak imbas Chrome, Play Store, Gmail dan pelbagai lagi. Jika anda ingin menambah akaun untuk orang lain, seperti ahli keluarga, tambahkan sahaja orang baharu pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920482456679570420">Tambah perkataan yang perlu dilangkau oleh semak ejaan</translation>
 <translation id="7921347341284348270">Anda tidak boleh melihat pemberitahuan telefon anda pada akaun terurus ini. Cuba lagi dengan akaun lain. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="8431977087510901105">Penetapan semula tetapan kursor</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8439506636278576865">Tawaran untuk menterjemahkan halaman dalam bahasa ini</translation>
+<translation id="8449347986464073209">Padam dan Log Keluar</translation>
 <translation id="8451512073679317615">assistant</translation>
 <translation id="8455775311562941553">Disambungkan kepada <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Sebutkan teks di bawah tetikus</translation>
@@ -2320,6 +2360,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="8872774989979382243">Kelantangan dimatikan. Hidupkan kelantangan.</translation>
 <translation id="888256071122006425">Tetapan tetikus dan pad sentuh</translation>
 <translation id="8885449336974696155">Bantu jadikan ChromeOS lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Mungkin dikenakan caj data mudah alih</translation>
 <translation id="8890529496706615641">Profil tidak dapat dinamakan semula. Sila cuba lagi atau hubungi pembawa anda untuk mendapatkan sokongan teknikal.</translation>
 <translation id="8894761918470382415">Perlindungan akses data untuk persisian</translation>
 <translation id="8896830132794747524">Gerakan tetikus yang lebih cepat akan menggerakkan kursor lebih jauh</translation>
@@ -2345,6 +2386,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> telah diputuskan sambungan</translation>
 <translation id="8980345560318123814">Laporan maklum malas</translation>
 <translation id="8981825781894055334">Kertas hampir habis</translation>
+<translation id="8984694057134206124">Anda akan kelihatan kepada semua orang selama <ph name="MINUTES" /> minit. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Ambang pengesanan</translation>
 <translation id="8986362086234534611">Lupa</translation>
 <translation id="8991694323904646277">Tiada kamera</translation>
@@ -2391,6 +2433,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="9098860402274800697">Alih keluar Google Play dan apl Android</translation>
 <translation id="910000385680858937">Dibenarkan – <ph name="PERMISSION_DETAILS" />. Sambungkan mikrofon kepada peranti anda.</translation>
 <translation id="9100416672768993722">Untuk bertukar kepada kaedah masukan yang terakhir digunakan, tekan <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Ruang<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Tetapan penggunaan data semasa ialah Tanpa internet</translation>
 <translation id="9108294543511800041">Kini anda dapat melihat foto, media dan pemberitahuan terbaharu telefon anda</translation>
 <translation id="9109122242323516435">Untuk mengosongkan ruang, padamkan fail daripada storan peranti.</translation>
 <translation id="9111330022786356709">Tambahkan atau cari butang pada tetikus anda</translation>

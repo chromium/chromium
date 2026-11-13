@@ -20,7 +20,6 @@
 <translation id="1142745911746664600">‏Chrome اپ ڈیٹ نہیں ہو سکتا</translation>
 <translation id="1148360048981192980">‏اگلی بار جب آپ اپنے <ph name="DEVICE_TYPE" /> پر Chrome کھولیں گے تو آپ کو Google پاس ورڈ مینیجر استعمال کرنے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>
 <translation id="1150418667633096194">‏ٹول بار پر موجود "Google تلاش سائیڈ پینل" بٹن اب ایک نئے آئیکن کے ساتھ دستیاب ہے۔ ‫Google تلاش سائیڈ پینل کے ساتھ براؤز کرتے وقت سوالات پوچھنے کے لیے اس پر کلک کریں۔</translation>
-<translation id="1152920704813762236">‏ChromeOS کے بارے میں</translation>
 <translation id="1154147086299354128">‏Chrome میں &amp;کھولیں</translation>
 <translation id="1157952955648710254">‏Google تلاش کے سائیڈ پینل کو بند کریں</translation>
 <translation id="1157985233335035034">حالیہ زبانیں</translation>
@@ -57,7 +56,6 @@
 <translation id="1507198376417198979">‏اپنی نئی Chrome پروفائل کو حسب ضرورت بنائیں</translation>
 <translation id="1518627427551567882">یہ صفحہ محفوظ ہے</translation>
 <translation id="15408169957028265">‏‫Chrome میں Google تلاش کو دوبارہ کھولیں</translation>
-<translation id="1547295885616600893">‏ChromeOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے۔</translation>
 <translation id="1547469039832541117">نمایاں کردہ ٹاسک کو بند کرتا ہے۔</translation>
 <translation id="1553358976309200471">‏Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="1587223624401073077">‏Google Chrome آپ کا کیمرا استعمال کر رہا ہے۔</translation>
@@ -78,7 +76,6 @@
 <translation id="1632241302126471515">‏‫Chrome Canary کے ساتھ تلاش کریں</translation>
 <translation id="1640672724030957280">ڈاؤن لوڈ ہو رہی ہے…</translation>
 <translation id="1651617469580841801">‏جب آپ Google لینز کا استعمال کرتے ہیں تو صفحہ کا عنوان، URL اور مواد بشمول PDFs ‏Google کو بھیجے جاتے ہیں۔ <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">‏ChromeOS Flex کا تعارف</translation>
 <translation id="1674870198290878346">‏لنک کو Chrome &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="1682634494516646069">‏Google Chrome اپنے ڈیٹا ڈائریکٹری کو پڑھ یا اس میں لکھ نہیں سکتا ہے:
 
@@ -99,6 +96,7 @@
 <translation id="1843347690926158494">‏‫Google لینز کے ساتھ اس ٹیب کو تلاش کریں</translation>
 <translation id="1849248141818021764">‏صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف<ph name="END_LINK" /> کرنا ہوگا۔</translation>
 <translation id="1867503717113754604">‏<ph name="START_GLIC_STYLING" />‫Gemini<ph name="END_GLIC_STYLING" /> استعمال کرنے کے لیے اپنے Google اکاؤنٹ سے Chrome میں سائن ان کریں</translation>
+<translation id="1871615898038944731">آپ کا <ph name="DEVICE_TYPE" /> اپ ٹو ڈیٹ ہے</translation>
 <translation id="1873233029667955273">‏Google Chrome آپ کا ڈیفالٹ براؤزر نہیں ہے</translation>
 <translation id="1874309113135274312">‏Google Chrome بی ٹا (mDNS-In)</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
@@ -106,6 +104,7 @@
 <translation id="1880677175115548835">متن منتخب کریں</translation>
 <translation id="1896602904211344018">‏‫Chrome ایپ حاصل کریں</translation>
 <translation id="1919130412786645364">‏Chrome میں سائن ان کی اجازت دیں</translation>
+<translation id="1925069572871307609">‏مستقبل کے Google Chrome اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 ورژن 1809 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 10 کا پرانا ورژن استعمال کر رہا ہے۔</translation>
 <translation id="1979600810166324878">‏‫iOS کے لیے Chrome پر بہتر کردہ محفوظ براؤزنگ کے ساتھ دوران سفر زیادہ محفوظ رہیں</translation>
 <translation id="2001586581944147178">‏آپ کے انٹرنیٹ ٹریفک تک رسائی والے لوگوں کے لیے یہ دیکھنا مشکل بنائیں کہ آپ کون سی سائٹس ملاحظہ کرتے ہیں۔ Chrome ‏DNS (ڈومین ناموں کے نظام) میں سائٹ کا IP پتہ تلاش کرنے کے لیے ایک محفوظ کنکشن کا استعمال کرتا ہے۔</translation>
 <translation id="2018879682492276940">انسٹالیشن ناکام ہو گئی۔ دوبارہ کوشش کریں۔</translation>
@@ -118,7 +117,6 @@
 <translation id="2091012649849228750">‏مستقبل کے Google Chrome اپ ڈیٹس حاصل کرنے کے لیے، آپ کو Windows 10 یا اس کے بعد کے ورژن کی ضرورت ہوگی۔ یہ کمپیوٹر Windows 8 استعمال کر رہا ہے۔</translation>
 <translation id="2094919256425865063">‏بہر حال Chrome بند کریں؟</translation>
 <translation id="2096213354152647998">‏آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔ ‫Chrome نے <ph name="PERMISSION" /> کو ہٹا دیا۔</translation>
-<translation id="2106831557840787829">‏hromeOS Flex کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="2108778574543343055">‏ایپس کے لیے Chrome کا پس منظر میں چلنا غیر فعال کریں</translation>
 <translation id="2111985952714409792">‏اپنے تمام آلات پر اپنی ایکسٹینشنز اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="2120620239521071941">‏یہ اس آلہ سے <ph name="ITEMS_COUNT" /> آئٹمز کو حذف کر دے گا۔ بعد میں اپنے ڈیٹا کی بازیافت کرنے کیلئے، Chrome میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
@@ -214,7 +212,6 @@
 <translation id="2994465299455873643">مرموز کاری کی سروسز اور <ph name="BROWSER_NAME" /> کے پرانے ہونے پر اسے بازیاب کرنے کا محفوظ طریقہ فراہم کرتا ہے۔ اگر یہ سروس غیر فعال کر دی جائے، تو <ph name="BROWSER_NAME" /> مرموز کردہ ڈیٹا تک رسائی سے محروم ہو سکتا ہے اور ممکن ہے <ph name="BROWSER_NAME" /> اپنی بازیافت پر قادر نہ ہو۔</translation>
 <translation id="3003694935412297923">سبھی ٹاسکس</translation>
 <translation id="3019382870990049182">‏ChromeOS Flex&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
-<translation id="3034219227076811559">‏‫Chrome میں Google تلاش</translation>
 <translation id="3037190258341683404">‏براؤز کرتے وقت سوالات پوچھنے کے لیے آپ Chrome میں Google تلاش کو پن کر سکتے ہیں</translation>
 <translation id="3037517125981011456">‏Chrome میں سائن ان کرنے کے لیے پرامپٹس دکھاتا ہے</translation>
 <translation id="3037838751736561277">‏Google Chrome پس منظر وضع میں ہے۔</translation>
@@ -283,8 +280,6 @@
 <translation id="3667616615096815454">انسٹال کرنے سے قاصر، ایپلیکیشن سرور کے لیے نامعلوم ہے۔</translation>
 <translation id="3673813398384385993">‏Chrome کو پتا چلا ہے کہ "<ph name="EXTENSION_NAME" />" میلوئیر پر مشتمل ہے</translation>
 <translation id="3697952514309507634">‏دیگر Chrome پروفائلز</translation>
-<translation id="3703994572283698466">‏ChromeOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
-<translation id="3716540481907974026">‏ChromeOS Flex ورژن</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{‏Chrome کیلئے ایک نیا اپ ڈیٹ دستیاب ہے اور جیسے ہی آپ اسے بند کر کے دوبارہ چلائیں گے اسے لاگو کر دیا جائے گا۔ پوشیدگی یا الگ تھلگ ونڈو کھلی ہے۔ آپ کے بند کر کے دوبارہ چلانے کے بعد یہ دوبارہ نہیں کھلے گی۔}other{‏Chrome کیلئے ایک نیا اپ ڈیٹ دستیاب ہے اور جیسے ہی آپ اسے بند کر کے دوبارہ چلائیں گے اسے لاگو کر دیا جائے گا۔ تمام پروفائلز میں # پوشیدگی اور الگ تھلگ ونڈوز کھلی ہیں۔ آپ کے بند کر کے دوبارہ چلانے کے بعد وہ دوبارہ نہیں کھلیں گے۔}}</translation>
 <translation id="3718181793972440140">‏یہ اس آلہ سے 1 آئٹم کو حذف کر دے گا۔ بعد میں اپنا ڈیٹا بازیافت کرنے کیلئے Chrome میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{‏‫Chrome تجویز کرتا ہے کہ آپ اسے ہٹا دیں۔ <ph name="BEGIN_LINK" />تعاون یافتہ ایکسٹینشنز کے بارے میں مزید جانیں<ph name="END_LINK" />}other{‏‫Chrome تجویز کرتا ہے کہ آپ انہیں ہٹا دیں۔ <ph name="BEGIN_LINK" />تعاون یافتہ ایکسٹینشنز کے بارے میں مزید جانیں<ph name="END_LINK" />}}</translation>
@@ -293,7 +288,6 @@
 <translation id="3772152698251011058">‏‫Google کو اس سائٹ کی اطلاع دیں</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" />‎</translation>
 <translation id="3785324443014631273">‏ChromeOS Flex سائن ان میں ایک خرابی کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="383455301564000773">‏‫Windows 11 میں اپ گریڈ کر رہے ہیں؟ ‫Chrome کو OneDrive میں ڈاؤن لوڈ کریں تاکہ آپ پہلے دن سے ہی تیار ہوں۔</translation>
 <translation id="383928141529488001">‏‫Google Chrome کو بلوٹوتھ آلات دریافت کرنے کے لیے بلوٹوتھ تک رسائی درکار ہے۔ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -399,7 +393,6 @@
 <translation id="495931528404527476">‏Chrome میں</translation>
 <translation id="4969674060580488087">‏ChromeOS Flex آپ کے اکاؤنٹ کی سائن ان تفصیلات پرانی ہونے کی وجہ سے آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا۔</translation>
 <translation id="4970761609246024540">‏Chrome کی پروفائلز میں خوش آمدید</translation>
-<translation id="4970880042055371251">‏ChromeOS ورژن</translation>
 <translation id="4990567037958725628">‏Google Chrome کینیری</translation>
 <translation id="5003967926796347400">‏"Google پاس ورڈ مینیجر" پر کلک کریں</translation>
 <translation id="5043786843026425788">‏‫Chrome میں Google لینز کی مدد سے تلاش کرنے کے بارے میں مزید جانیں</translation>
@@ -422,6 +415,7 @@
 <translation id="5174969993834422967">آپ عام طور پر اطلاعات کو مسدود کرتے ہیں۔ اس سائٹ کو آپ کو مطلع کرنے کی اجازت دینے کے لیے، اپنے مقام بار کے دائیں کونے میں نوٹیفکیشن آئیکن پر کلک کریں۔</translation>
 <translation id="5174983315706567306">ڈسک میں کافی اسپیس نہیں ہے۔</translation>
 <translation id="5179933070463113976">‏‫Chrome میں Gemini استعمال کرنے کے لیے، آپ کا اپنے Google اکاؤنٹ سے Chrome میں سائن ان ہونا ضروری ہے</translation>
+<translation id="5184662919967270437">آپ کے آلے کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="5190467473654176081">‏‫Chrome کو نئی شکل دینے کے لیے اسے حسب ضرورت بنائیں</translation>
 <translation id="5201744974236816379">‏Chrome اپ ڈیٹ</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -459,6 +453,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="5649156266046089790">‏‫Chrome کی پروفائلز کی مدد سے، آپ Chrome کی اپنی سبھی چیزوں کو الگ کر سکتے ہیں۔ دوستوں اور فیملی کیلئے پروفائلز تخلیق کریں یا کام اور تفریح کو الگ کریں۔</translation>
 <translation id="565744775970812598">‏<ph name="FILE_NAME" /> خطرناک ہو سکتی ہے، اس لیے Chrome نے اسے مسدود کر دیا ہے۔</translation>
 <translation id="566568153320186256">‏‫Chrome ہموار اسکرولنگ اور ویڈیو فریم ریٹس جیسی پس منظر کی سرگرمی اور ویژوئل ایفیکٹس کو محدود کر کے بیٹری پاور کی بچت کرتا ہے۔ <ph name="BEGIN_LINK" />اپنے انرجی سیور کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">‏ChromeOS پرانا ہے</translation>
 <translation id="567202749201779594">‏اپنے اکاؤنٹ میں Chrome کا ڈیٹا صاف کریں</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{‏آپ کے منتظم کا کہنا ہے کہ آپ اس اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں}=1{‏آپ کے منتظم کا کہنا ہے کہ آپ اس اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏آپ کے منتظم کا کہنا ہے کہ آپ اس اپ ڈیٹ کو لاگو کرنے کیلئے Chrome کو بند کر کے دوبارہ چلائیں۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="568656514202614970">‏کامیاب! اب آپ Google تلاش کے سائیڈ پینل کے ذریعے براؤزنگ کے دوران آسانی سے سوالات پوچھ سکتے ہیں</translation>
@@ -481,6 +476,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="5894164573378901688">‏‫Chrome میں Gemini استعمال کرنے کے لیے، ایک مختلف Google اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان</translation>
+<translation id="5906655207909574370">تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے اپنا آلہ دوبارہ شروع کریں۔</translation>
 <translation id="5924017743176219022">انٹرنیٹ سے منسلک کیا جا رہا ہے…</translation>
 <translation id="5941711191222866238">چھوٹا کریں</translation>
 <translation id="5941830788786076944">‏Google Chrome کو ڈیفالٹ براؤزر بنائیں</translation>
@@ -571,8 +567,8 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6612152958212564387">‏آپ Google کو استعمال کے اعداد و شمار اور کریش رپورٹس نہیں بھیج رہے ہیں۔ <ph name="BEGIN_LINK" />نظم کریں<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">‏‫Chrome کو اپنے ڈیفالٹ براؤزر کے طور پر سیٹ کر کے اپنے پاس ورڈز، بُک مارکس اور سرگزشت کو آلات پر مکمل طور پر مطابقت پذیر رکھیں۔</translation>
 <translation id="6632012506031284914">‏‫Chrome کے ساتھ تلاش کرنے کے لیے۔</translation>
-<translation id="6632473616050862500">‏ChromeOS Flex کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے۔</translation>
 <translation id="6634299872736643004">‏اس ترتیب پر تبدیلیوں کا اطلاق Chrome ری سٹارٹ ہونے کے بعد ہوگا۔</translation>
+<translation id="6644846457769259194">آپ کے آلہ کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">‏Chrome میں سائن ان کریں؟</translation>
 <translation id="6664219008737641504">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو <ph name="SETTINGS_LINK" />۔</translation>
 <translation id="6676384891291319759">انٹرنیٹ تک رسائی حاصل کریں</translation>
@@ -636,7 +632,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7285990705317078173">‏قیمتوں کو ٹریک کرنے اور کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کرنے کے لیے اپنے فون پر Chrome ڈاؤن لوڈ کریں</translation>
 <translation id="7288567540154601580">ٹیبز اور ایکسٹینشز</translation>
 <translation id="7290997427370476749">‏ٹول بار پر "Google تلاش پینل" بٹن سے، آپ براؤز کرتے وقت سوالات پوچھنے کے لیے Google تلاش پینل کو دوبارہ کھول سکتے ہیں</translation>
-<translation id="7296210096911315575">استعمال اور حفاظت سے متعلق اہم معلومات</translation>
 <translation id="7299899569525778554">ڈیسک ٹاپ سے تلاش کریں</translation>
 <translation id="7302361266603927550">‏آپ کا کچھ Chrome ڈیٹا ابھی تک آپ کے Google اکاؤنٹ میں محفوظ نہیں ہوا ہے۔ سائن آؤٹ کرنے سے پہلے کچھ منٹ انتظار کر کے دیکھیں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="7306401458628386911">‏فوری طور پر براؤزنگ شروع کریں: Windows شروع ہونے پر Chrome اب لانچ ہو سکتا ہے۔</translation>
@@ -669,9 +664,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7572537927358445944">‏آف • Chrome اس بات کی تصدیق نہیں کر سکتا کہ یہ ایکسٹینشن کہاں سے آتی ہے</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> انسٹالر</translation>
 <translation id="7596160425942761210">‏آپ ہر بار پیغامات، دستاویزات اور دیگر ایپس میں موجود لنکس پر کلک کرتے وقت Chrome کا استعمال کر سکتے ہیں</translation>
-<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">‏اپنے ڈیٹا کی حفاظت کے لیے، Chrome کو ان سائٹس سے اجازتیں ہٹانے کی اجازت دیں جنہیں آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔</translation>
-<translation id="7629898584100520089">‏AI اختراعات جیسی مہارتیں آپ کے Google اکاؤنٹ میں محفوظ ہوتی ہیں اور ان کا نظم Chrome Sync سے علیحدہ طور پر کیا جاتا ہے</translation>
 <translation id="7641148173327520642">‏آپ کے سسٹم کے منتظم نے <ph name="TARGET_URL_HOSTNAME" /> تک رسائی حاصل کرنے کیلئے Google Chrome کو <ph name="ALTERNATIVE_BROWSER_NAME" /> کھولنے کیلئے کنفیگر کیا ہے۔</translation>
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7651907282515937834">‏Chrome انٹرپرائز کا لوگو</translation>
@@ -711,7 +704,6 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7904213866086517086">‏سائیڈ پینل میں Google تلاش کو دوبارہ کھولیں</translation>
 <translation id="7904985524660297937">‏‫Gemini کو Google Chrome میں آزمائیں</translation>
 <translation id="7905880575591690197">‏سائن ان کرنے میں ایک خرابی کی وجہ سے ChromeOS آپ کے Google اکاؤنٹ میں Chrome ڈیٹا کو محفوظ نہیں کر سکا</translation>
-<translation id="7917876797003313048">‏آپ اپنے سائن ان کردہ Google اکاؤنٹس کا نظم کر سکتے ہیں۔ آپ کے Google اکاؤنٹس Chrome براؤزر، Play اسٹور، Gmail اور مزید کے لیے استعمال ہوتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں جیسے آپ کی فیملی کا کوئی ممبر تو اس کی بجائے اپنے <ph name="DEVICE_TYPE" /> میں ایک نیا شخص شامل کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">‏Chrome نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ یہ فائل فریب والی ہے اور آپ کے آلے میں غیر متوقع تبدیلیاں کر سکتی ہے</translation>
 <translation id="7951272445806340501">‏اپ ڈیٹ کو لاگو کرنے کے لیے ChromeOS Flex کو ری سٹارٹ کرنے کی ضرورت ہے۔</translation>
 <translation id="7959172989483770734">‏Chrome کی پروفائلز کا نظم کریں</translation>
@@ -732,6 +724,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="8074398340364918139">‏کسی مخصوص Chrome خصوصیت یا ایکسٹینشن کو تلاش کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں، اس کے بعد اپنی منتخب کردہ کی بورڈ کلید دبائیں</translation>
 <translation id="8077579734294125741">‏دیگر Chrome پروفائلز</translation>
 <translation id="8086881907087796310">انسٹالیشن ناکام ہو گئی کیونکہ آپ کا کمپیوٹر ہارڈ ویئر کے کم از کم تقاضوں کو پورا نہیں کرتا ہے۔</translation>
+<translation id="8095439028686936591">‏ChromeOS اپ ٹو ڈیٹ ہے</translation>
 <translation id="8110438089258398864">‏آپ براؤز کرتے وقت سوالات پوچھنے کے لیے Google تلاش AI وضع کو دوبارہ کھول سکتے ہیں</translation>
 <translation id="8113883687556086139">‏اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں Chrome ڈیٹا کا استعمال کرنے اور محفوظ کرنے کیلئے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="8115695070094288807">‏‫Chrome کو اپنے لحاظ سے سیٹ کرنا...</translation>

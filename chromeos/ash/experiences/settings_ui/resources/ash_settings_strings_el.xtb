@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Είστε έτοιμοι!</translation>
 <translation id="1149483087970735785">Τεχνολογία υποβοήθησης</translation>
 <translation id="1150490752229770117">Αυτή είναι η τελευταία αυτόματη ενημέρωση λογισμικού και ασφαλείας για αυτήν τη συσκευή <ph name="DEVICE_TYPE" />. Για να λαμβάνετε μελλοντικές ενημερώσεις, αναβαθμίστε σε νεότερο μοντέλο. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Σχετικά με το ChromeOS</translation>
 <translation id="1155816283571436363">Γίνεται σύνδεση με το τηλέφωνό σας…</translation>
 <translation id="1160800016654917722">Το παράθυρο μετακινήθηκε προς τα κάτω και προς τα αριστερά</translation>
 <translation id="1164015913575846413">alt + κλικ</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">λειτουργία εκκίνησης εφαρμογών + δεξί βέλος</translation>
 <translation id="1280332775949918163">Έλξη παραθύρου</translation>
+<translation id="1285625592773741684">Η τρέχουσα ρύθμιση χρήσης δεδομένων είναι Δεδομένα κινητής τηλεφωνίας.</translation>
 <translation id="1285815028662278915">Τα δεδομένα κινητής τηλεφωνίας ενδέχεται να μην υποστηρίζουν σημείο πρόσβασης Wi-Fi. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Ο Νυχτερινός φωτισμός θα ενεργοποιηθεί αυτόματα.</translation>
 <translation id="1288300545283011870">Ιδιότητες ομιλίας</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Με αυτή την ενέργεια, θα απενεργοποιηθούν οι επεκτάσεις και θα γίνει επαναφορά των ρυθμίσεών σας στις ασφαλείς προεπιλογές. Οι καρτέλες, τα αρχεία και τα cookie θα διατηρηθούν. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Μεγεθυντικός φακός πλήρους οθόνης</translation>
 <translation id="1539727654733007771">Δεν έχουν ρυθμιστεί δίκτυα κινητής τηλεφωνίας. Κατεβάστε ένα νέο <ph name="BEGIN_LINK" />προφίλ.<ph name="END_LINK" /></translation>
+<translation id="1547295885616600893">Το Chrome OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Κατανοώ ότι τα εγκατεστημένα προφίλ eSIM δεν θα καταργηθούν από το powerwash</translation>
 <translation id="1549275686094429035">Το ARC ενεργοποιήθηκε</translation>
 <translation id="1554640914375980459">Η οθόνη αναβοσβήνει κατά τη λήψη ειδοποιήσεων. Αν έχετε ευαισθησία στο φως, να χρησιμοποιείτε τις ειδοποιήσεις με λάμψη προσεκτικά.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Χρήση Wi‑Fi ή δικτύων κινητής τηλεφωνίας για καθορισμό τοποθεσίας</translation>
 <translation id="1650407365859096313">Ανοίγει σε νέα καρτέλα, έχει οριστεί η επιλογή <ph name="PERMISSION_STATE" /> για την άδεια</translation>
 <translation id="1652326691684645429">Ενεργοποίηση Κοινοποίησης κοντά</translation>
+<translation id="1662146548738125461">Σχετικά με το ChromeOS Flex</translation>
 <translation id="1663698992894057019">Κάντε αναβάθμιση σε ένα νέο Chromebook για τις πιο πρόσφατες εκδόσεις λειτουργιών ασφάλειας και λογισμικού.</translation>
 <translation id="1665328953287874063">Χρησιμοποιήστε έναν κωδικό πρόσβασης ή ένα PIN για να ξεκλειδώσετε τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Ακούστε την εκφώνηση συγκεκριμένου κειμένου. Αρχικά, επιλέξτε το εικονίδιο "Επιλέξτε για αυτόματη ανάγνωση" στο κάτω μέρος της οθόνης σας και, στη συνέχεια, επισημάνετε το κείμενο. Μπορείτε επίσης να χρησιμοποιήσετε μια συντόμευση πληκτρολογίου: Επισημάνετε το κείμενο και, στη συνέχεια, πατήστε Αναζήτηση + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Σημείωση: Το δακτυλικό σας αποτύπωμα μπορεί να είναι λιγότερο ασφαλές από έναν δυνατό κωδικό πρόσβασης ή αριθμό PIN.</translation>
 <translation id="1724801751621173132">Λειτουργία εισαγωγής</translation>
 <translation id="1741190788710022490">Προσαρμοστική φόρτιση</translation>
+<translation id="1745732479023874451">Διαχείριση επαφών</translation>
 <translation id="1751335846119670066">Βοήθησέ με να διαβάσω</translation>
 <translation id="1755601632425835748">Μέγεθος κειμένου</translation>
 <translation id="1761402971842586829">Το κουμπί <ph name="BUTTON_NAME" /> αντιστοιχίστηκε εκ νέου στην επιλογή <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Όχι, διατήρηση ενός διακόπτη</translation>
 <translation id="1842681835432895345">Εξαίρεση αυτής της οθόνης στη λειτουργία κατοπτρισμού</translation>
 <translation id="1848219224579402567">Αποσύνδεση όταν το καπάκι είναι κλειστό</translation>
+<translation id="185970820835152459">Μπορείτε να διαχειριστείτε τους συνδεδεμένους Λογαριασμούς σας Google. Οι Λογαριασμοί σας Google χρησιμοποιούνται για το πρόγραμμα περιήγησης Chromium, το Play Store, το Gmail κ.ά. Εάν θέλετε να προσθέσετε έναν λογαριασμό για κάποιο άλλο άτομο, όπως για ένα μέλος της οικογένειας, προσθέστε, αντ' αυτού, ένα νέο άτομο στη συσκευή σας <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Ψυχρότερο</translation>
 <translation id="1866589962721094893">Να δοθεί στις εφαρμογές Android ο έλεγχος των συσκευών USB σε αυτό το Chromebook. Θα ζητείται άδεια κάθε φορά που συνδέετε μια συσκευή USB. Οι μεμονωμένες εφαρμογές Android θα ζητούν πρόσθετες άδειες.</translation>
 <translation id="1877377290348678128">Ετικέτα (προαιρετικό)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Ήχος</translation>
 <translation id="2097950021134740304">Ακύρωση κατάργησης απομνημόνευσης συνδρομής</translation>
 <translation id="2104166991923847969">Αυτόματη απενεργοποίηση σημείου πρόσβασης Wi-Fi</translation>
+<translation id="2106831557840787829">Το ChromeOS Flex υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Δεν έχει εισαχθεί κάρτα SIM</translation>
 <translation id="2121825465123208577">Προσαρμογή μεγέθους</translation>
 <translation id="2127372758936585790">Χαμηλή ισχύς φορτιστή</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Κατάργηση <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2363475280045770326">Παρουσιάστηκε σφάλμα κατά την αποθήκευση της διαμόρφωσης</translation>
+<translation id="236939127352773362">Όταν συσκευές που βρίσκονται κοντά σας κάνουν κοινοποίηση</translation>
 <translation id="237336063998926520">Χρήση της διεύθυνσης IP για την εξακρίβωση της τοποθεσίας σας</translation>
 <translation id="2373499590298659902">Χρησιμοποιήστε το πλήκτρο "0" για να πατήσετε παρατεταμένα ένα κουμπί του ποντικιού</translation>
 <translation id="2375406435414127095">Συνδεθείτε στο τηλέφωνό σας</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Αποκλεισμός επισκεψιμότητας χωρίς VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Η Ακρίβεια τοποθεσίας παρέχει ακριβέστερη τοποθεσία για εφαρμογές και υπηρεσίες. Για να γίνει αυτό, η Google επεξεργάζεται κατά περιόδους πληροφορίες σχετικά με αισθητήρες συσκευής και ασύρματα σήματα από τη συσκευή σας, ώστε να συνεισφέρει στις τοποθεσίες ασύρματων σημάτων βάσει crowdsourcing. Αυτές οι πληροφορίες χρησιμοποιούνται χωρίς να σας ταυτοποιούν για τη βελτίωση της ακρίβειας τοποθεσίας και των υπηρεσιών με βάση την τοποθεσία, καθώς και για τη γενικότερη βελτίωση, την παροχή και τη διατήρηση των υπηρεσιών της Google με βάση τα έννομα συμφέροντα της Google και τρίτων μερών, προκειμένου να εξυπηρετούνται οι ανάγκες των χρηστών.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Ο δίσκος εξόδου είναι σχεδόν γεμάτος</translation>
 <translation id="3390013585654699824">Λεπτομέρειες εφαρμογής</translation>
 <translation id="3390740059150071453">Κοιτάξτε αριστερά</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="3701028563242674350">Κούνημα του δείκτη ποντικιού για να μεγαλώσει</translation>
 <translation id="3703699162703116302">Έγινε ανανέωση του εισιτηρίου</translation>
+<translation id="3703994572283698466">Το Chrome OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Ενεργοποίηση Wi-Fi</translation>
 <translation id="370665806235115550">Φόρτωση...</translation>
 <translation id="3707163604290651814">Αυτήν τη στιγμή είστε συνδεδεμένοι ως <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Βρέθηκαν <ph name="NUM_PRINTERS" /> εκτυπωτές από τον διακομιστή εκτύπωσης.</translation>
 <translation id="371370241367527062">Μπροστινό μικρόφωνο</translation>
 <translation id="37143699183660101">Σταθερότητα δείκτη</translation>
+<translation id="3716540481907974026">Έκδοση ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Εσφαλμένο PIN. Δοκιμάστε ξανά</translation>
 <translation id="3728681439294129328">Διαμόρφωση διεύθυνσης δικτύου</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Εμφάνιση υπογράμμισης για κείμενο σύνταξης</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
 <translation id="379509625511193653">Ανενεργό</translation>
+<translation id="3795971588916395511">Λειτουργικό σύστημα Chrome OS</translation>
 <translation id="3796215473395753611">alt + πάνω βέλος</translation>
 <translation id="3798670284305777884">Ηχείο (εσωτερικό)</translation>
 <translation id="3799128412641261490">Ρυθμίσεις Πρόσβασης με διακόπτη</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Ενσωματωμένο πληκτρολόγιο</translation>
 <translation id="3917644013202553949">Δεν υπάρχει αρκετός αποθηκευτικός χώρος για τον συγχρονισμό των αρχείων σας. Δοκιμάστε να ελευθερώσετε χώρο.</translation>
 <translation id="3919229493046408863">Απενεργοποίηση της ειδοποίησης όταν υπάρχουν συσκευές κοντά σας.</translation>
+<translation id="3923184630988645767">Χρήση δεδομένων</translation>
 <translation id="3923494859158167397">Δεν έχουν ρυθμιστεί δίκτυα κινητής τηλεφωνίας</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Άλλοι χρήστες της συσκευής μπορούν επίσης να χρησιμοποιούν αυτό το δίκτυο</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Ορισμός Γρήγορων απαντήσεων</translation>
 <translation id="3994075804072562819">Να δοθεί στο <ph name="SPECIFIC_NAME" /> ο έλεγχος των συσκευών USB.</translation>
 <translation id="3994530503403062649">Εντοπισμός κουμπιών στο tablet σας</translation>
+<translation id="3997429360543082038">Σχετικά με το Chromium OS</translation>
 <translation id="4001540981461989979">Επισήμανση δείκτη ποντικιού κατά τη μετακίνηση</translation>
 <translation id="4005817994523282006">Μέθοδος ανίχνευσης ζώνης ώρας</translation>
+<translation id="4019629340646866719">Το Chromium OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Αντιγραφή λεπτομερειών έκδοσης</translation>
 <translation id="4028467762035011525">Προσθήκη μεθόδων εισαγωγής</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Για εναλλαγή στη μέθοδο εισαγωγής που χρησιμοποιήθηκε πιο πρόσφατα, πατήστε <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">αναζήτηση + δεξί βέλος</translation>
 <translation id="405181879009056822">Ρυθμίσεις ChromeOS</translation>
+<translation id="4054070260844648638">Ορατό σε όλους</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Ελέγξτε τη σύνδεσή σας για να δείτε διαθέσιμους εκτυπωτές στο δίκτυό σας.</translation>
 <translation id="4068776064906523561">Αποθηκευμένα δακτυλικά αποτυπώματα</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, Βαθμίδα <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Εύρεση περισσότερων εφαρμογών γραφίδας</translation>
 <translation id="4248401726442101648">Δεν υπάρχει συνδεδεμένη κάμερα</translation>
+<translation id="424864128008805179">Αποσύνδεση από το Chrome;</translation>
 <translation id="4249116869350613769">Εξοικονόμηση μπαταρίας</translation>
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
 <translation id="425411422794688815">Προέκυψε πρόβλημα. Βεβαιωθείτε ότι το τηλέφωνό σας βρίσκεται σε κοντινή απόσταση, ότι είναι ξεκλειδωμένο και ότι το Bluetooth και το Wi-Fi είναι ενεργοποιημένα.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Λογαριασμός Google}other{<ph name="EXTRA_ACCOUNTS" /> Λογαριασμοί Google}}</translation>
 <translation id="4314497418046265427">Βελτιώστε την παραγωγικότητά σας κατά τη σύνδεση του τηλεφώνου σας με τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Προσθήκη νέου ονόματος σημείου πρόσβασης</translation>
+<translation id="4314815835985389558">Διαχείριση συγχρονισμού</translation>
 <translation id="4320177379694898372">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Αποθηκευτικός χώρος και ισχύς</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Αριθμός προτάσεων</translation>
 <translation id="4606933160360542263">Προσαρμοσμένος συνδυασμός πλήκτρων: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Όταν έχει επιλεχθεί το αριστερό κουμπί του ποντικιού, χρησιμοποιήστε το πλήκτρο "/" για να κάνετε διπλό κλικ</translation>
+<translation id="4613863813562375431">Έκδοση Chromium OS</translation>
 <translation id="461661862154729886">Πηγή ενέργειας</translation>
 <translation id="4617880081511131945">Δεν είναι δυνατή η δημιουργία σύνδεσης</translation>
 <translation id="4620757807254334872">ποντίκι</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">Διαμόρφωση διακομιστών ονομάτων δικτύου</translation>
 <translation id="4779083564647765204">Μεγέθυνση</translation>
 <translation id="4779766576531456629">Μετονομασία δικτύου κινητής τηλεφωνίας eSIM</translation>
+<translation id="4789550509729954245">Εμφάνιση ειδοποίησης όταν συσκευές που βρίσκονται σε κοντινή απόσταση κοινοποιούν περιεχόμενο</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Ενεργοποίηση επιτάχυνσης TrackPoint</translation>
 <translation id="479664067938200069">Εγκατεστημένες εφαρμογές από την εφαρμογή <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">Αγκύρωση παραθύρου</translation>
 <translation id="4964673849688379040">Γίνεται έλεγχος…</translation>
 <translation id="4967571733817147990">Προσαρμογή κουμπιών ποντικιού</translation>
+<translation id="4970880042055371251">Έκδοση Chrome OS</translation>
 <translation id="4972129977812092092">Επεξεργασία εκτυπωτή</translation>
 <translation id="4975771730019223894">Προσθήκη σήματος σε εφαρμογές</translation>
 <translation id="4979263087381759787">Επιλογές για προγραμματιστές</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">Αυτή η ενέργεια θα καταργήσει την πρόσβαση στο Google Drive σε αυτό το Chromebook, συμπεριλαμβανομένης της πρόσβασης σε τυχόν αρχεία που έχουν γίνει διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="5196790039230503600">Χρησιμοποιήστε την κίνηση και, στη συνέχεια, κουνήστε το κεφάλι σας, για να δείξετε πού θέλετε να αποθέσετε το στοιχείο. Χρησιμοποιήστε ξανά την κίνηση, για να το αφήσετε.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Να μην χρησιμοποιούνται ποτέ δεδομένα κινητής τηλεφωνίας για μεταφορά.</translation>
 <translation id="5207949376430453814">Επισήμανση δρομέα κειμένου</translation>
 <translation id="5208926629108082192">Πληροφορίες δικτύου κινητής τηλεφωνίας συσκευής</translation>
 <translation id="5208988882104884956">Μισού πλάτους</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">Εφαρμογή συστήματος Chrome OS</translation>
 <translation id="5334113802138581043">Πρόσβαση μικροφώνου</translation>
 <translation id="5336689872433667741">Δείκτης και επιφάνεια αφής</translation>
+<translation id="5337926771328966926">Το τρέχον όνομα συσκευής είναι <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Αποστολή διαγνωστικών στοιχείων και δεδομένων χρήσης</translation>
 <translation id="5369694795837229225">Ρύθμιση περιβάλλοντος ανάπτυξης Linux</translation>
 <translation id="5377367976106153749">Ενεργοποίηση πρόσβασης στην κάμερα;</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">Οι ρυθμίσεις αυτές μπορούν να τροποποιηθούν μόνο από τον κάτοχο:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Θήκη</translation>
+<translation id="5840680448799937675">Θα γίνεται πάντα κοινοποίηση των αρχείων εκτός σύνδεσης.</translation>
 <translation id="5841270259333717135">Διαμόρφωση ethernet</translation>
 <translation id="5842497610951477805">Ενεργοποίηση Bluetooth</translation>
 <translation id="5846200638699387931">Σφάλμα σύνταξης σχέσης: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Να γίνεται ερώτηση πριν από την αντιγραφή ή τη μετακίνηση αρχείων Microsoft στο Google Drive</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="594048410531370124">Μη αναγνωρισμένο πλήκτρο. Πατήστε οποιοδήποτε πλήκτρο για <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Ορατότητα συσκευής</translation>
 <translation id="5945192511027649793">Απενεργοποίηση επιφάνειας αφής</translation>
 <translation id="5947651424015173580">Διπλό κλικ με το ποντίκι</translation>
 <translation id="594993197557058302">Πατήστε 1-4 πλήκτρα τροποποίησης (ctrl, alt, shift, αναζήτηση ή λειτουργία εκκίνησης εφαρμογών) και 1 ακόμα πλήκτρο. Μπορείτε επίσης να επιλέξετε ένα μεμονωμένο πλήκτρο.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">Εκχώρηση κίνησης</translation>
 <translation id="5968022600320704045">Δεν υπάρχουν αποτελέσματα αναζήτησης</translation>
 <translation id="5969728632630673489">Η ειδοποίηση συντομεύσεων πληκτρολογίου παραβλέφθηκε.</translation>
+<translation id="5979353814339191480">Αυτή η επιλογή ισχύει για Chromebook με πρόγραμμα δεδομένων ή κλειδί πρόσβασης δικτύου κινητής τηλεφωνίας ή κατά τον διαμοιρασμό σε φορητό σημείο πρόσβασης Wi-Fi.</translation>
 <translation id="5985556342298151179">Η εφαρμογή Chrome εγκαταστάθηκε από τον διαχειριστή της συσκευής σας.</translation>
 <translation id="5986442691296752186">Να δοθεί στις εφαρμογές Linux ο έλεγχος των συσκευών USB.</translation>
 <translation id="598810097218913399">Κατάργηση ανάθεσης</translation>
 <translation id="5988563937187882754">Κοιτάξτε δεξιά</translation>
+<translation id="5990266201903445068">Μόνο Wi-Fi</translation>
 <translation id="5992225669837656567">Όλα τα ποντίκια αποσυνδέθηκαν</translation>
 <translation id="5999630716831179808">Φωνές</translation>
 <translation id="6002458620803359783">Προτιμώμενες φωνές</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">Κύριο κουμπί TrackPoint</translation>
 <translation id="6048747414605857443">Επιλέξτε και προσαρμόστε τις φωνές της λειτουργίας μετατροπής κειμένου σε ομιλία για το ChromeVox και για τη λειτουργία Επιλέξτε για αυτόματη ανάγνωση.</translation>
 <translation id="6050189528197190982">Κλίμακα του γκρι</translation>
+<translation id="6054961935262556546">Αλλαγή ορατότητας</translation>
 <translation id="6059276912018042191">Πρόσφατες καρτέλες Chrome</translation>
 <translation id="6059925163896151826">Συσκευές USB</translation>
 <translation id="6064764629679333574">Βελτιώστε την ποιότητα ήχου του μικροφώνου Bluetooth αναβαθμίζοντας τον ήχο από χαμηλή ανάλυση σε υψηλή ανάλυση.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Να γίνεται ερώτηση πριν από την αντιγραφή ή τη μετακίνηση αρχείων Microsoft στο Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Κατάργηση θύρας</translation>
 <translation id="6266532094411434237">Σύνδεση με τη συσκευή <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Θέλετε να αποσυνδεθείτε από το Chromium;</translation>
 <translation id="6270309713620950855">Υπενθύμιση σίγασης</translation>
 <translation id="6274089201566806618">Σύνδεση στη συσκευή <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 δευτερόλεπτα</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">Για εναλλαγή στην επόμενη μέθοδο εισαγωγής, πατήστε <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Πλήκτρο διαστήματος<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Διαγραφή αυτού του λεξικού</translation>
 <translation id="6463596731306859179">Λαμβάνετε ανεπιθύμητα αναδυόμενα παράθυρα ή παρατηρείτε άλλου είδους μη αναμενόμενη συμπεριφορά; Ορισμένες φορές, οι εφαρμογές και οι επεκτάσεις που εγκαθιστάτε μπορούν να αλλάξουν τις ρυθμίσεις του ChromeOS χωρίς να το γνωρίζετε.</translation>
+<translation id="6465841119675156448">Χωρίς διαδίκτυο</translation>
 <translation id="6467377768028664108">H συσκευή <ph name="DEVICE_TYPE" /> θα μπορεί να κάνει τα εξής:</translation>
 <translation id="6469557521904094793">Ενεργοποίηση δικτύου κινητής τηλεφωνίας</translation>
 <translation id="6470120577693311302">Ειδοποιήσεις με λάμψη</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">Λειτουργία εφέ</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Συντόμευση πληκτρολογίου επιλογής</translation>
+<translation id="6632473616050862500">Το ChromeOS Flex υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοιχτού κώδικα<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Κλείσιμο Γρήγορης σύζευξης</translation>
 <translation id="6647690760956378579">Προεπισκόπηση φυσικής φωνής</translation>
 <translation id="6650072551060208490">Το <ph name="ORIGIN_NAME" /> θέλει να επαληθεύσει την ταυτότητά σας.</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">Οι διαθέσιμες συσκευές θα εμφανίζονται εδώ.</translation>
 <translation id="6776729248872343918">Ενεργοποίηση Γρήγορης σύζευξης</translation>
 <translation id="6777845730143344223">Μάθετε περισσότερα σχετικά με τις συνδρομές Passpoint</translation>
+<translation id="6779406956731413166">Το Chromium OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Να διαγραφεί αυτή η συσκευή;</translation>
 <translation id="6783667414610055871">Ρυθμίσεις Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Αντίστροφη κύλιση <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">Ρυθμίσεις φωνής μετατροπής κειμένου σε ομιλία</translation>
 <translation id="7282547042039404307">Ομαλή</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Σημαντικές πληροφορίες χρήσης και ασφάλειας</translation>
 <translation id="7303485269821975179">Ρύθμιση κωδικού πρόσβασης για τη συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Υψηλός</translation>
 <translation id="7308643132139167865">Γλώσσες ιστοτόπου</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">Πρόσφατες φωτογραφίες</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Αποκλείστηκαν <ph name="BLOCKED_APPS_SIZE" /> από <ph name="APPS_LIST_SIZE" /> εφαρμογές</translation>
+<translation id="7423425410216218516">Η ορατότητα είναι ενεργή για <ph name="MINUTES" /> λεπτά.</translation>
 <translation id="7423513079490750513">Κατάργηση <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Βοήθησέ με να γράψω</translation>
 <translation id="7429415133937917139">Προσομοιώνει την έξοδο μιας οθόνης μπράιγ με δυνατότητα ανανέωσης
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">Ρυθμίσεις δακτυλικού αποτυπώματος</translation>
 <translation id="7578692661782707876">Εισαγάγετε τον κωδικό επιβεβαίωσης.</translation>
 <translation id="7582582252461552277">Προτίμηση αυτού του δικτύου</translation>
+<translation id="7582844466922312471">Δεδομένων Κινητής Συσκευής</translation>
 <translation id="7587806318633605613">Ιστορικό προτάσεων</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7592060599656252486">Ορισμένα</translation>
 <translation id="7602173054665172958">Διαχείριση εκτυπώσεων</translation>
 <translation id="7605163396341021431">Να δοθεί στις εφαρμογές Android ο έλεγχος των συσκευών USB σε αυτό το Chromebook</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Προτιμήσεις Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Ενεργοποίηση λειτουργιών συνδεδεμένου τηλεφώνου.</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">Χρήση ασφαλών συνδέσεων για την αναζήτηση ιστοτόπων</translation>
 <translation id="7634337648687970851">Η ανάκτηση τοπικών δεδομένων δεν υποστηρίζεται προς το παρόν.</translation>
 <translation id="7640256527901510478">Το IMEI της συσκευής σας είναι <ph name="IMEI_NUMBER" /> και ο σειριακός αριθμός της συσκευής είναι <ph name="SERIAL_NUMBER" />. Αυτοί οι αριθμοί μπορούν να χρησιμοποιηθούν για βοήθεια σχετικά με την ενεργοποίηση της υπηρεσίας.</translation>
+<translation id="7640308610547854367">Κάνατε επαναφορά σε μια προηγούμενη έκδοση του ChromeOS. Για να λάβετε ενημερώσεις, περιμένετε μέχρι να είναι διαθέσιμη η επόμενη έκδοση.</translation>
 <translation id="7641513591566880111">Νέο όνομα προφίλ</translation>
 <translation id="764178579712141045">Προστέθηκε ο χρήστης <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (κάτοχος)</translation>
 <translation id="7648048654005891115">Στιλ αντιστοίχισης πλήκτρων</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Ρύθμιση 1 δακτυλικού αποτυπώματος}other{Ρύθμιση {COUNT} δακτυλικών αποτυπωμάτων}}</translation>
+<translation id="7650677314924139716">Η τρέχουσα ρύθμιση χρήσης δεδομένων είναι Μόνο Wi-Fi.</translation>
 <translation id="7651400349472467012">Διατίθεται σημείο πρόσβασης Wi-Fi</translation>
 <translation id="7651784568388208829">Συνέχιση εργασίας Phone Hub</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Μετάφραση</translation>
 <translation id="7915457674565721553">Συνδεθείτε στο διαδίκτυο για να ρυθμίσετε τους γονικούς ελέγχους</translation>
+<translation id="7917876797003313048">Μπορείτε να διαχειριστείτε τους συνδεδεμένους Λογαριασμούς σας Google. Οι Λογαριασμοί σας Google χρησιμοποιούνται για το πρόγραμμα περιήγησης Chrome, το Play Store, το Gmail κ.ά. Εάν θέλετε να προσθέσετε έναν λογαριασμό για κάποιο άλλο άτομο, όπως για ένα μέλος της οικογένειας, προσθέστε, αντ' αυτού, ένα νέο άτομο στη συσκευή σας <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> δ.</translation>
 <translation id="7920482456679570420">Προσθέστε λέξεις που θέλετε να παραβλέπονται κατά τον ορθογραφικό έλεγχο.</translation>
 <translation id="7921347341284348270">Δεν είναι δυνατή η προβολή των ειδοποιήσεων του τηλεφώνου σας στον συγκεκριμένο διαχειριζόμενο λογαριασμό. Δοκιμάστε ξανά με διαφορετικό λογαριασμό. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">Επαναφορά ρυθμίσεων δείκτη</translation>
 <translation id="8437209419043462667">ΗΠΑ</translation>
 <translation id="8439506636278576865">Ερώτηση για τη μετάφραση σελίδων σε αυτήν τη γλώσσα</translation>
+<translation id="8449347986464073209">Διαγραφή και αποσύνδεση</translation>
 <translation id="8451512073679317615">βοηθός</translation>
 <translation id="8455775311562941553">Συνδέθηκε στη συσκευή <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Εκφώνηση κειμένου κάτω από τον δείκτη του ποντικιού.</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">Η ένταση ήχου είναι απενεργοποιημένη. Ενεργοποιήστε την ένταση ήχου.</translation>
 <translation id="888256071122006425">Ρυθμίσεις ποντικιού και επιφάνειας αφής</translation>
 <translation id="8885449336974696155">Συμβάλετε στη βελτίωση του ChromeOS, αναφέροντας τις <ph name="BEGIN_LINK" />τρέχουσες ρυθμίσεις<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Μπορεί να επιφέρει χρεώσεις δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="8890529496706615641">Δεν ήταν δυνατή η μετονομασία του προφίλ. Δοκιμάστε ξανά ή επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για τεχνική υποστήριξη.</translation>
 <translation id="8894761918470382415">Προστασία πρόσβασης δεδομένων για περιφερειακά</translation>
 <translation id="8896830132794747524">Οι πιο γρήγορες κινήσεις με το ποντίκι θα μετακινούν τον δείκτη πιο μακριά</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320">Ο λογαριασμός <ph name="DEVICE_NAME" /> αποσυνδέθηκε</translation>
 <translation id="8980345560318123814">Αναφορές σχολίων</translation>
 <translation id="8981825781894055334">Δεν υπάρχει αρκετό χαρτί</translation>
+<translation id="8984694057134206124">Η συσκευή σας θα είναι ορατή σε όλους για <ph name="MINUTES" /> λεπτά. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Όριο ανίχνευσης</translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
 <translation id="8991694323904646277">Δεν υπάρχει κάμερα</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">Κατάργηση εφαρμογών Google Play και Android</translation>
 <translation id="910000385680858937">Επιτρέπεται – <ph name="PERMISSION_DETAILS" />. Συνδέστε ένα μικρόφωνο στη συσκευή σας.</translation>
 <translation id="9100416672768993722">Για εναλλαγή στη μέθοδο εισαγωγής που χρησιμοποιήθηκε πιο πρόσφατα, πατήστε <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Πλήκτρο διαστήματος<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Η τρέχουσα ρύθμιση χρήσης δεδομένων είναι Χωρίς διαδίκτυο.</translation>
 <translation id="9108294543511800041">Μπορείτε πλέον να βλέπετε τις πρόσφατες φωτογραφίες, τα μέσα και τις ειδοποιήσεις του τηλεφώνου σας.</translation>
 <translation id="9109122242323516435">Για να αποδεσμεύσετε χώρο, διαγράψτε αρχεία από τον αποθηκευτικό χώρο της συσκευής.</translation>
 <translation id="9111330022786356709">Προσθήκη ή εντοπισμός κουμπιών στο ποντίκι</translation>

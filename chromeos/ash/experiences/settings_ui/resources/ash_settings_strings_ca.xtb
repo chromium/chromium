@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Ja esteu a punt</translation>
 <translation id="1149483087970735785">Tecnologia assistencial</translation>
 <translation id="1150490752229770117">Aquesta actualització de programari i seguretat és l'última que rebràs per a aquest <ph name="DEVICE_TYPE" />. Per obtenir actualitzacions en el futur, canvia el dispositiu per un model més nou. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Sobre ChromeOS</translation>
 <translation id="1155816283571436363">S'està connectant al telèfon</translation>
 <translation id="1160800016654917722">La finestra s'ha mogut cap avall i cap a l'esquerra</translation>
 <translation id="1164015913575846413">Alt+clic</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">menú d'aplicacions+fletxa dreta</translation>
 <translation id="1280332775949918163">Acobla la finestra</translation>
+<translation id="1285625592773741684">L'opció de configuració d'ús de dades actual és Dades mòbils</translation>
 <translation id="1285815028662278915">És possible que les teves dades mòbils no siguin compatibles amb el punt d'accés Wi‐Fi. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">La funció Llum nocturna s'activarà automàticament al vespre</translation>
 <translation id="1288300545283011870">Propietats de la veu</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Les extensions es desactivaran i la configuració es restablirà als valors predeterminats segurs. Les pestanyes, els fitxers i les galetes es conservaran. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="1539727654733007771">No hi ha cap xarxa mòbil configurada. Baixa un <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> nou.</translation>
+<translation id="1547295885616600893">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Entenc que els perfils eSIM instal·lats no se suprimiran en fer un executar la funció Powerwash</translation>
 <translation id="1549275686094429035">L'ARC està activat</translation>
 <translation id="1554640914375980459">Il·lumina la pantalla quan reps notificacions. Utilitza les notificacions amb flaix amb precaució si ets sensible a la llum.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Utilitza una xarxa Wi‑Fi o mòbil per determinar la ubicació</translation>
 <translation id="1650407365859096313">S'obre en una pestanya nova. El permís és <ph name="PERMISSION_STATE" />.</translation>
 <translation id="1652326691684645429">Activa Compartició Nearby</translation>
+<translation id="1662146548738125461">Sobre ChromeOS Flex</translation>
 <translation id="1663698992894057019">Actualitza a un Chromebook nou per gaudir de la seguretat i el programari més recents</translation>
 <translation id="1665328953287874063">Utilitza una contrasenya o un PIN per desbloquejar el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Escolta un text concret en veu alta. Primer, selecciona la icona Escolta la selecció, a la part inferior de la pantalla. A continuació, marca el text. També pots utilitzar les tecles de drecera: marca el text i, tot seguit, prem Cerca+S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Nota: és possible que fer servir una empremta digital sigui menys segur que utilitzar una contrasenya segura o un PIN.</translation>
 <translation id="1724801751621173132">Mode d'introducció de text</translation>
 <translation id="1741190788710022490">Càrrega intel·ligent</translation>
+<translation id="1745732479023874451">Gestiona els contactes</translation>
 <translation id="1751335846119670066">Ajuda'm a llegir</translation>
 <translation id="1755601632425835748">Mida del text</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> s'ha remapat a <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">No, només vull 1 interruptor</translation>
 <translation id="1842681835432895345">Exclou aquesta pantalla en mode de mirall</translation>
 <translation id="1848219224579402567">Tanca la sessió quan es tanqui la tapa</translation>
+<translation id="185970820835152459">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chromium, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Més fred</translation>
 <translation id="1866589962721094893">Dona a les aplicacions d'Android el control sobre els dispositius USB en aquest Chromebook. El permís se sol·licitarà cada cop que endollis un dispositiu USB. Cada aplicació d'Android demanarà permisos addicionals.</translation>
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">So</translation>
 <translation id="2097950021134740304">Cancel·la per oblidar la subscripció</translation>
 <translation id="2104166991923847969">Desactiva el punt d'accés Wi-Fi automàticament</translation>
+<translation id="2106831557840787829">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l'<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">No hi ha cap targeta SIM inserida</translation>
 <translation id="2121825465123208577">Canvia la mida</translation>
 <translation id="2127372758936585790">Carregador de baix consum</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Suprimeix <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2363475280045770326">Hi ha hagut un error en desar la configuració</translation>
+<translation id="236939127352773362">Quan algun dispositiu estigui compartint contingut a prop</translation>
 <translation id="237336063998926520">Utilitza la teva adreça IP per determinar la ubicació</translation>
 <translation id="2373499590298659902">Utilitza la tecla 0 per mantenir premut un botó del ratolí</translation>
 <translation id="2375406435414127095">Connecta't al telèfon</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Bloqueja el trànsit sense VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">La precisió de la ubicació proporciona una ubicació més precisa per a aplicacions i serveis. Per fer-ho, Google tracta periòdicament la informació sobre els sensors i els senyals sense fil del teu dispositiu a fi d'obtenir col·lectivament les ubicacions dels senyals sense fil. Aquestes dades s'utilitzen sense identificar-te persona per millorar la precisió de la ubicació i els serveis basats en la ubicació. També s'utilitzen per millorar, proporcionar i mantenir els serveis de Google segons els interessos legítims de Google i de tercers a fi de satisfer les necessitats dels usuaris.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">La safata de sortida és quasi plena</translation>
 <translation id="3390013585654699824">Detalls de l'aplicació</translation>
 <translation id="3390740059150071453">Mirar a l'esquerra</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Adreça electrònica</translation>
 <translation id="3701028563242674350">Mou ràpidament el cursor del ratolí per fer-lo més gran</translation>
 <translation id="3703699162703116302">El tiquet s'ha actualitzat</translation>
+<translation id="3703994572283698466">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Activa la Wi-Fi</translation>
 <translation id="370665806235115550">S'està carregant...</translation>
 <translation id="3707163604290651814">Has iniciat la sessió com a <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">S'han trobat <ph name="NUM_PRINTERS" /> impressores al servidor d'impressió</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="37143699183660101">Estabilitat del cursor</translation>
+<translation id="3716540481907974026">Versió de ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">El PIN no és correcte. Torna-ho a provar.</translation>
 <translation id="3728681439294129328">Configura l'adreça de la xarxa</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Mostra el subratllat per al text de la composició</translation>
 <translation id="3789841737615482174">Instal·la</translation>
 <translation id="379509625511193653">Desactivat</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3796215473395753611">Alt+fletxa amunt</translation>
 <translation id="3798670284305777884">Altaveu (intern)</translation>
 <translation id="3799128412641261490">Configuració d'Accés amb interruptors</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Teclat integrat</translation>
 <translation id="3917644013202553949">No hi ha prou emmagatzematge per sincronitzar els fitxers. Prova d'alliberar espai.</translation>
 <translation id="3919229493046408863">Desactiva la notificació quan hi hagi dispositius a prop</translation>
+<translation id="3923184630988645767">Ús de dades</translation>
 <translation id="3923494859158167397">No hi ha cap xarxa mòbil configurada</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Els altres usuaris d'aquest dispositiu també poden fer servir aquesta xarxa</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definició de Respostes ràpides</translation>
 <translation id="3994075804072562819">Dona a <ph name="SPECIFIC_NAME" /> el control sobre els dispositius USB.</translation>
 <translation id="3994530503403062649">Localitza botons a la tauleta</translation>
+<translation id="3997429360543082038">Sobre Chromium OS</translation>
 <translation id="4001540981461989979">Marca el cursor del ratolí quan es mogui</translation>
 <translation id="4005817994523282006">Mètode de detecció de la zona horària</translation>
+<translation id="4019629340646866719">Chromium OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Copia els detalls de la compilació</translation>
 <translation id="4028467762035011525">Afegeix mètodes d'introducció de text</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Per canviar al darrer mètode d'introducció de text utilitzat, prem <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">Cerca+fletxa dreta</translation>
 <translation id="405181879009056822">Configuració de ChromeOS</translation>
+<translation id="4054070260844648638">Visible per a tothom</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Comprova la connexió per veure les impressores disponibles a la xarxa</translation>
 <translation id="4068776064906523561">Empremtes digitals desades</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, grau <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Cerca més aplicacions de llapis òptic</translation>
 <translation id="4248401726442101648">No hi ha cap càmera connectada</translation>
+<translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4249116869350613769">Estalvi de bateria</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425411422794688815">S'ha produït un error. Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi-Fi activats.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Compte de Google}other{<ph name="EXTRA_ACCOUNTS" /> Comptes de Google}}</translation>
 <translation id="4314497418046265427">Augmenta la teva productivitat connectant el telèfon al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Afegeix un nou nom del punt d'accés</translation>
+<translation id="4314815835985389558">Gestiona la sincronització</translation>
 <translation id="4320177379694898372">No hi ha connexió a Internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Emmagatzematge i potència</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Nombre de suggeriments</translation>
 <translation id="4606933160360542263">Combinació de tecles personalitzada: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Amb el botó esquerre del ratolí seleccionat, utilitza la tecla / per fer doble clic</translation>
+<translation id="4613863813562375431">Versió de Chromium OS</translation>
 <translation id="461661862154729886">Font d'energia</translation>
 <translation id="4617880081511131945">No es pot establir la connexió</translation>
 <translation id="4620757807254334872">ratolí</translation>
@@ -1136,6 +1155,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4777943778632837590">Configura els servidors de noms de la xarxa</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779766576531456629">Canvia el nom de la xarxa mòbil de l'eSIM</translation>
+<translation id="4789550509729954245">Mostra una notificació quan hi hagi dispositius compartint contingut a prop</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Activa l'acceleració TrackPoint</translation>
 <translation id="479664067938200069">Aplicacions instal·lades des de <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4964544790384916627">Acobla la finestra</translation>
 <translation id="4964673849688379040">S'està comprovant…</translation>
 <translation id="4967571733817147990">Personalitza els botons del ratolí</translation>
+<translation id="4970880042055371251">Versió de Chrome OS</translation>
 <translation id="4972129977812092092">Edita la impressora</translation>
 <translation id="4975771730019223894">Cercles a les aplicacions</translation>
 <translation id="4979263087381759787">Opcions per a desenvolupadors</translation>
@@ -1275,6 +1296,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5193978546360574373">Aquesta acció suprimirà l'accés a Google Drive en aquest Chromebook, inclòs l'accés a qualsevol fitxer que estigui disponible sense connexió</translation>
 <translation id="5196790039230503600">Fes el gest i, a continuació, mou el cap per mostrar on vols deixar anar l'element. Torna a fer el gest per deixar-lo anar.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Mai no utilitzis dades mòbils per fer transferències</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="5208926629108082192">Informació de la xarxa mòbil del dispositiu</translation>
 <translation id="5208988882104884956">Amplada mitjana</translation>
@@ -1307,6 +1329,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5331568967879689647">Aplicació del sistema Chrome OS</translation>
 <translation id="5334113802138581043">Accés al micròfon</translation>
 <translation id="5336689872433667741">Cursor i ratolí tàctil</translation>
+<translation id="5337926771328966926">El nom actual del dispositiu és <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Envia dades de diagnòstic i d'ús</translation>
 <translation id="5369694795837229225">Configura un entorn de desenvolupament de Linux</translation>
 <translation id="5377367976106153749">Vols activar l'accés a la càmera?</translation>
@@ -1444,6 +1467,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5833726373896279253">Només el propietari d'aquesta configuració la pot modificar:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Cas</translation>
+<translation id="5840680448799937675">Els fitxers es compartiran sempre sense connexió</translation>
 <translation id="5841270259333717135">Configura Ethernet</translation>
 <translation id="5842497610951477805">Activa el Bluetooth</translation>
 <translation id="5846200638699387931">Error de sintaxi de la relació: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5924438086390153180">Pregunta abans de copiar o moure fitxers de Microsoft a Google Drive</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="594048410531370124">La tecla no s'ha reconegut. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Visibilitat del dispositiu</translation>
 <translation id="5945192511027649793">Desactiva el ratolí tàctil</translation>
 <translation id="5947651424015173580">Fes doble clic amb el ratolí</translation>
 <translation id="594993197557058302">Prem les tecles modificadores de l'1 al 4 (Ctrl, Alt, Maj, cerca o menú d'aplicacions) i una tecla més. També pots seleccionar una sola tecla.</translation>
@@ -1491,10 +1516,12 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5961545272769624207">Assigna un gest</translation>
 <translation id="5968022600320704045">No hi ha cap resultat de la cerca</translation>
 <translation id="5969728632630673489">S'ha ignorat l'avís sobre les tecles de drecera</translation>
+<translation id="5979353814339191480">Aquesta opció s'aplica als dispositius Chromebook amb un pla de dades o un adaptador de xarxa mòbil, o quan es comparteix la xarxa amb un punt d'accés Wi-Fi</translation>
 <translation id="5985556342298151179">L'administrador del dispositiu ha instal·lat l'aplicació de Chrome.</translation>
 <translation id="5986442691296752186">Dona a les aplicacions de Linux el control sobre els dispositius USB.</translation>
 <translation id="598810097218913399">Suprimeix l'assignació</translation>
 <translation id="5988563937187882754">Mirar a la dreta</translation>
+<translation id="5990266201903445068">Només Wi‑Fi</translation>
 <translation id="5992225669837656567">S'han desconnectat tots els ratolins</translation>
 <translation id="5999630716831179808">Veus</translation>
 <translation id="6002458620803359783">Veus preferides</translation>
@@ -1509,6 +1536,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="6045114302329202345">Botó TrackPoint principal</translation>
 <translation id="6048747414605857443">Selecciona i personalitza les veus de text a parla per a ChromeVox i Escolta la selecció</translation>
 <translation id="6050189528197190982">Escala de grisos</translation>
+<translation id="6054961935262556546">Canvia la visibilitat</translation>
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>
 <translation id="6059925163896151826">Dispositius USB</translation>
 <translation id="6064764629679333574">Millora la qualitat del so del micròfon Bluetooth augmentant a alta resolució l'àudio de baixa resolució.</translation>
@@ -1567,6 +1595,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="6265159465845424232">Pregunta abans de copiar o moure fitxers de Microsoft a Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Suprimeix el port</translation>
 <translation id="6266532094411434237">S'està connectant a <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
 <translation id="6270309713620950855">Toc de micròfon silenciat</translation>
 <translation id="6274089201566806618">S'està connectant a <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 segons</translation>
@@ -1618,6 +1647,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="6453921811609336127">Per canviar al mètode d'introducció de text següent, prem <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Maj<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Espai<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Suprimeix aquest diccionari</translation>
 <translation id="6463596731306859179">Veus finestres emergents no desitjades o cap altre comportament inesperat? De vegades, les aplicacions i les extensions que instal·les poden canviar la configuració de ChromeOS sense que te n'assabentis.</translation>
+<translation id="6465841119675156448">Sense Internet</translation>
 <translation id="6467377768028664108">Aleshores, el teu dispositiu <ph name="DEVICE_TYPE" /> pot fer el següent:</translation>
 <translation id="6469557521904094793">Activa la xarxa mòbil</translation>
 <translation id="6470120577693311302">Notificacions amb flaix</translation>
@@ -1668,6 +1698,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="6626581113916585374">Mode d'efecte</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630452975878488444">Drecera de selecció</translation>
+<translation id="6632473616050862500">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional.</translation>
 <translation id="6646476869708241165">Desactiva Vinculació ràpida</translation>
 <translation id="6647690760956378579">Escolta la veu natural</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
@@ -1711,6 +1742,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="6775163072363532304">Els dispositius disponibles es mostraran aquí.</translation>
 <translation id="6776729248872343918">Activa Vinculació ràpida</translation>
 <translation id="6777845730143344223">Més informació sobre les subscripcions a Passpoint</translation>
+<translation id="6779406956731413166">Chromium OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Vols oblidar aquest dispositiu?</translation>
 <translation id="6783667414610055871">Configuració de Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Desplaçament invers <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="7280649757394340890">Configuració de la veu de text a parla</translation>
 <translation id="7282547042039404307">Suau</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Informació important d'ús i de seguretat</translation>
 <translation id="7303485269821975179">Estableix una contrasenya per a <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Alt</translation>
 <translation id="7308643132139167865">Idiomes del lloc web</translation>
@@ -1873,6 +1906,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="7409599290172516453">Fotos recents</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> de <ph name="APPS_LIST_SIZE" /> aplicacions bloquejades</translation>
+<translation id="7423425410216218516">La visibilitat estarà activada durant <ph name="MINUTES" /> minuts</translation>
 <translation id="7423513079490750513">Suprimeix <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Ajuda'm a escriure</translation>
 <translation id="7429415133937917139">Simula la sortida d'una pantalla braille que es pugui actualitzar
@@ -1920,11 +1954,13 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="7578137152457315135">Configuració de l'empremta digital</translation>
 <translation id="7578692661782707876">Introdueix el teu codi de confirmació.</translation>
 <translation id="7582582252461552277">Estableix aquesta xarxa com a preferida</translation>
+<translation id="7582844466922312471">Dades mòbils</translation>
 <translation id="7587806318633605613">Historial de suggeriments</translation>
 <translation id="7590883480672980941">Configuració d'introducció de text</translation>
 <translation id="7592060599656252486">Parcial</translation>
 <translation id="7602173054665172958">Gestió de la impressió</translation>
 <translation id="7605163396341021431">Dona a les aplicacions d'Android el control sobre els dispositius USB en aquest Chromebook</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Preferències d'Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Activa la funció de telèfon connectat.</translation>
@@ -1935,12 +1971,14 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="7632437836497571618">Utilitza connexions segures per cercar llocs web</translation>
 <translation id="7634337648687970851">Actualment no s'admet la recuperació de dades locals.</translation>
 <translation id="7640256527901510478">L'IMEI del dispositiu és <ph name="IMEI_NUMBER" /> i el número de sèrie, <ph name="SERIAL_NUMBER" />. Aquests números es poden utilitzar per activar el servei.</translation>
+<translation id="7640308610547854367">Has tornat a una versió anterior de ChromeOS. Per obtenir actualitzacions, espera que la versió següent estigui disponible.</translation>
 <translation id="7641513591566880111">Nom nou del perfil</translation>
 <translation id="764178579712141045">S'ha afegit <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietari)</translation>
 <translation id="7648048654005891115">Estil del mapa de tecles</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Configuració d'1 empremta digital}other{Configuració de {COUNT} empremtes digitals}}</translation>
+<translation id="7650677314924139716">L'opció de configuració d'ús de dades actual és només Wi-Fi</translation>
 <translation id="7651400349472467012">Punt d'accés Wi‐Fi instantani disponible</translation>
 <translation id="7651784568388208829">Continuació de tasques a El meu telèfon</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
@@ -2031,6 +2069,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Traducció</translation>
 <translation id="7915457674565721553">Connecta't a Internet per configurar els controls parentals</translation>
+<translation id="7917876797003313048">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chrome, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Afegeix paraules que vulguis que el corrector ortogràfic passi per alt</translation>
 <translation id="7921347341284348270">No pots veure les notificacions del telèfon en aquest compte gestionat. Torna-ho a provar amb un altre compte. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="8431977087510901105">La configuració del cursor s'ha restablert</translation>
 <translation id="8437209419043462667">Nord-americà</translation>
 <translation id="8439506636278576865">Proposa'm traduir pàgines en aquest idioma</translation>
+<translation id="8449347986464073209">Suprimeix i tanca la sessió</translation>
 <translation id="8451512073679317615">Assistent</translation>
 <translation id="8455775311562941553">Connectat a <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Llegeix el text que hi ha a sota del cursor del ratolí</translation>
@@ -2320,6 +2360,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="8872774989979382243">El volum està desactivat. Activa'l.</translation>
 <translation id="888256071122006425">Configuració del ratolí i del ratolí tàctil</translation>
 <translation id="8885449336974696155">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar ChromeOS</translation>
+<translation id="8890170499370378450">És possible que s'apliquin càrrecs per ús de dades mòbils</translation>
 <translation id="8890529496706615641">No s'ha pogut canviar el nom del perfil. Torna-ho a provar o contacta amb el teu operador per rebre assistència tècnica.</translation>
 <translation id="8894761918470382415">Protecció d'accés a les dades per a perifèrics</translation>
 <translation id="8896830132794747524">Els moviments ràpids amb el ratolí mouen el cursor més lluny</translation>
@@ -2345,6 +2386,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="8978939272793553320">S'ha desconnectat <ph name="DEVICE_NAME" /></translation>
 <translation id="8980345560318123814">Informes de suggeriments</translation>
 <translation id="8981825781894055334">S'està quedant sense paper</translation>
+<translation id="8984694057134206124">Tothom podrà veure el teu dispositiu durant <ph name="MINUTES" /> minuts. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Llindar de detecció</translation>
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="8991694323904646277">Càmera no disponible</translation>
@@ -2391,6 +2433,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="9098860402274800697">Suprimeix Google Play i les aplicacions d'Android</translation>
 <translation id="910000385680858937">Concedit: <ph name="PERMISSION_DETAILS" />. Connecta un micròfon al dispositiu.</translation>
 <translation id="9100416672768993722">Per canviar a l'últim mètode d'introducció de text utilitzat, prem <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Espai<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">L'opció de configuració d'ús de dades actual és Sense Internet</translation>
 <translation id="9108294543511800041">Ara pots consultar les notificacions, els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="9109122242323516435">Per alliberar espai, suprimeix fitxers de l'emmagatzematge del dispositiu.</translation>
 <translation id="9111330022786356709">Afegeix o localitza botons al ratolí</translation>

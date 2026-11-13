@@ -206,6 +206,7 @@
 <translation id="1807709131360304325">ଏକ ନୂଆ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />କୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିପାରିବ ନାହିଁ</translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, ରେକର୍ଡ କରୁଥିବା ଟାବ</translation>
+<translation id="1817594121551034302">ଠିକଣା ବାର ସର୍ଟକଟ</translation>
 <translation id="1819443852740954262">ସବୁ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1820408774134375111">ସାଇନ ଇନ ବଟମ ସିଟ</translation>
 <translation id="1824902652744048041">ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁରେ ଟାପ କରନ୍ତୁ</translation>
@@ -830,6 +831,7 @@
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, ପିକଚର-ଇନ-ପିକଚର ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="4285846616383034558">କୁକୀ, କେଶେ ଏବଂ ଅନ୍ୟ ସାଇଟ ଡାଟା</translation>
+<translation id="429016203314124112">ଆପଣ ବାଛିଥିବା ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ Chromeରେ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରାଯିବ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ସେଟିଂସରେ ସ୍କ୍ରିନ ଲକ ଚାଲୁ କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">ଆପଣଙ୍କ ଫୋନ</translation>
 <translation id="4295640788982898778">ଆପଣଙ୍କ ଏକ୍ସଟେନସନଗୁଡ଼ିକୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଛି, କିନ୍ତୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଗୁଡ଼ିକ ସେଭ କରିଥିବା ଯେ କୌଣସି ଡାଟା ଡିଲିଟ ହୋଇପାରେ</translation>
@@ -984,6 +986,7 @@
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ଟାବ ଗ୍ରୁପକୁ ବନ୍ଦ କରି ସେଭ କରାଯାଇଛି</translation>
 <translation id="4835385943915508971">Chrome ପାଖରେ ଅନୁରୋଧ କରାଯାଇଥିବା ସମ୍ବଳକୁ ଆକ୍ସେସ୍‌ ନାହିଁ।</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ଟାବର ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।}other{<ph name="TAB_COUNT_MANY" /> ଟାବର ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।}}</translation>
+<translation id="48431900345921167"><ph name="ACCOUNT_EMAIL" /> ପାଇଁ କିଛି ସର୍ଭିସେସ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4849731766219625109">ଆପଣଙ୍କ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="4860895144060829044">କଲ୍ କରନ୍ତୁ</translation>
@@ -1008,6 +1011,7 @@
 <translation id="4925120120285606924">ସ୍କ୍ରିନସଟ୍ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ଅଫଲାଇନରେ ଭ୍ୟୁ କରିବାକୁ କିମ୍ବା ଅନ୍ୟ ଆପ୍ସରେ ସେୟାର କରିବା ପାଇଁ ଆପଣ ଇମେଜ ଏବଂ ଫାଇଲଗୁଡ଼ିକୁ ସେଭ କରିପାରିବେ</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}other{# ବୁକମାର୍କ ଏବଂ ଅନ୍ୟ ଆଇଟମକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}}</translation>
+<translation id="4932733599132424254">ତାରିଖ</translation>
 <translation id="4943703118917034429">ଭର୍ଚୁଆଲ୍ ରିଅଲିଟି</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4957722034734105353">ଅଧିକ ଜାଣନ୍ତୁ...</translation>
@@ -1042,6 +1046,7 @@
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ୱିଣ୍ଡୋ ଚୟନ କରାଯାଇଛି}other{<ph name="WINDOW_COUNT_NORMAL" /> ୱିଣ୍ଡୋ ଚୟନ କରାଯାଇଛି}}</translation>
 <translation id="5058506215037547387">ପୃଷ୍ଠାର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="506254248375231072">କୌଣସି ଟାବ୍ ନାହିଁ</translation>
+<translation id="5065494736868031814">ଟୁଲବାରରେ</translation>
 <translation id="5075939510584558547">ଏନକ୍ରିପସନ ବିନା ସେଭ କରନ୍ତୁ</translation>
 <translation id="5078638979202084724">ସମସ୍ତ ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="5085038751173179818">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବା ପାଇଁ ଏହି ସାଇଟ ଏବଂ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
@@ -1061,6 +1066,7 @@
 <translation id="5142281402488957685">ନୂଆ ଷ୍ଟୋରୀଗୁଡ଼ିକ ପାଇଁ ରିଫ୍ରେସ୍ କରିବାକୁ ତଳକୁ ଟାଣନ୍ତୁ</translation>
 <translation id="5144385790872094440">ଆପଣ ଭିଜିଟ କରୁଥିବା କିଛି ପୃଷ୍ଠାକୁ ପ୍ରିଲୋଡ କରାଯାଇଛି। ପୃଷ୍ଠାଗୁଡ଼ିକୁ କୌଣସି Google ସାଇଟ କିମ୍ବା ଆପରୁ ଲିଙ୍କ କରାଯାଇଥିଲେ, Google ସର୍ଭରଗୁଡ଼ିକ ମାଧ୍ୟମରେ ସେଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରାଯାଇପାରେ।</translation>
 <translation id="5152843274749979095">କୌଣସି ସମର୍ଥିତ ଆପ୍ ଇନ୍‌ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">ଟାଇଟେଲ୍ ଆବଶ୍ୟକ</translation>
 <translation id="5161262286013276579">ପାସକୀ ସୁନିଶ୍ଚିତକରଣ ସିଟ ଖୋଲା ଅଛି</translation>
 <translation id="5163361352003913350"><ph name="NAME" />କୁ ବର୍ତ୍ତମାନ ଚୟନ କରାଯାଇଛି। ଏକ ଆକାଉଣ୍ଟ ବାଛନ୍ତୁ।</translation>
@@ -1144,6 +1150,7 @@
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ଭାବେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="5517326820028369152">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ ବଟମ ସିଟ</translation>
+<translation id="5519516356611866228">ଆପଣଙ୍କ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସହିତ</translation>
 <translation id="5526281268548144413">ଏକାଧିକ ୱିଣ୍ଡୋରେ ବନ୍ଦ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5532536403031755365">ଉନ୍ନତ ସୁରକ୍ଷା ସହିତ ଅନଲାଇନ ବିପଦ ବିରୁଦ୍ଧରେ ସୁରକ୍ଷାର ଏକ ଅତିରିକ୍ତ ଲେୟର ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{ବୁକମାର୍କ ଖୋଲନ୍ତୁ}other{ସବୁ (#) ଖୋଲନ୍ତୁ}}</translation>
@@ -1256,6 +1263,7 @@
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="5995726099713306770">ପୃଷ୍ଠାକୁ ପୁଣି ଡାଉନଲୋଡ୍ କରିବେ କି?</translation>
 <translation id="6000066717592683814">Googleକୁ ଡିଫଲ୍ଟ ଭାବେ ରଖନ୍ତୁ</translation>
+<translation id="6000860861660592745">ପସନ୍ଦକୁ ସେଭ କରାଯାଇଛି</translation>
 <translation id="6002122790816966947">ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="6011308810877101166">ସର୍ଚ୍ଚ ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="6013305291643746595">ସବୁଠାରୁ ପୁରୁଣା ଅନୁସାରେ ସର୍ଟ କରାଯାଉଛି</translation>
@@ -1282,6 +1290,7 @@
 <translation id="6095578583683628124">ଯଦି Google ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ମଧ୍ୟ ହୋଇଥାଏ, ତେବେ ଆପଣ ଆହୁରି ଭଲ, ପ୍ରାସଙ୍ଗିକ ପରାମର୍ଶ ଦେଖିବେ</translation>
 <translation id="6104768972315313991">ଜେନେରେଟ କରାଯାଇଥିବା QR କୋଡ</translation>
 <translation id="610630277578876674">ମେସେଜ ଏବଂ ଆହୁରି ଅନେକ କିଛିରେ ଶୀଘ୍ର ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
+<translation id="6110067234345111822">ଆପଣଙ୍କ ଅଞ୍ଚଳରେ ଏକ ଆଇନ ଆଧାରରେ, ଆପଣ Chrome ପାଇଁ ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବାଛିବା ଆବଶ୍ୟକ</translation>
 <translation id="6112702117600201073">ପୃଷ୍ଠା ରିଫ୍ରେସ୍ ହେଉଛି</translation>
 <translation id="612221930823678863">କ୍ୱେରୀ ସ୍ଥାନରେ <ph name="QUERY" /> ସହିତ URL</translation>
 <translation id="6122831415929794347">ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ କରିବେ?</translation>
@@ -1406,6 +1415,7 @@
 <translation id="6482749332252372425">ଷ୍ଟୋରେଜ୍ ସ୍ଥାନ ଅଭାବ ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହେଲା ନାହିଁ।</translation>
 <translation id="6486420406192123355">ଏହି PDF ଫାଇଲଟି ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରୁଥିବା ଗୋଟିଏ ସାଇଟରୁ ଆସିଛି</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରାଯାଇଛି}other{#ଟି ଡାଉନଲୋଡ୍ ସମୂର୍ଣ୍ଣ ହୋଇଛି}}</translation>
+<translation id="6502991525169604759">ଆପଣଙ୍କ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ବିନା</translation>
 <translation id="6508722015517270189">Chrome ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="6513924416597632811">ଏହା ପାଇଁ ସର୍ଚ୍ଚ ଫଳାଫଳ ପୃଷ୍ଠାକୁ ଲିଙ୍କ କପି କରନ୍ତୁ: <ph name="SEARCH_QUERY" />। ସୋର୍ସ: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">ଯାଞ୍ଚ କରନ୍ତୁ</translation>
@@ -1447,6 +1457,7 @@
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6669390930482049506">ମୋତେ ସୂଚିତ କରନ୍ତୁ</translation>
+<translation id="6670742294143102726">ଆପଣଙ୍କ ସର୍ଚ୍ଚରେ ଯୋଗ କରିବା ପାଇଁ ଗୋଟିଏ କିମ୍ବା ଅଧିକ ଟାବ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6671495933530132209">ଛବି କପି କରନ୍ତୁ</translation>
 <translation id="6672697278890207089">ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଲେଖନ୍ତୁ</translation>
 <translation id="6675622031235530028">ବାହାରି ଯିବା ପାଇଁ Ctrl+Qକୁ ଧରି ରଖନ୍ତୁ</translation>
@@ -1578,6 +1589,7 @@
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />କୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7121179479711575744">Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="7130633106249192408">ଏହି ଡିଭାଇସରୁ ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="7134511521562699550">ଠିକଣା ବାରରେ</translation>
 <translation id="7136694880210472378">ଡିଫଲ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}other{# ସାଇଟ ପାଇଁ ଅନୁମତିଗୁଡ଼ିକର ସମୀକ୍ଷା କରାଯାଇଛି}}</translation>
 <translation id="7138678301420049075">ଅନ୍ୟ</translation>
@@ -1610,6 +1622,7 @@
 <translation id="7196455519852483601">ଆପଣ ଆପଣଙ୍କର କିଛି କିମ୍ବା ସମସ୍ତ ଇତିହାସ, କୁକୀ, ସାଇଟ ଡାଟା ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ଡିଲିଟ କରିପାରିବେ</translation>
 <translation id="7197682514647286393">ବ୍ରାଉଜିଂ ଡାଟା ଶୀଘ୍ର ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="719791532916917144">କୀବୋର୍ଡ ସର୍ଟକଟ୍</translation>
+<translation id="7198747540865146057">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ବାଛନ୍ତୁ</translation>
 <translation id="7203150201908454328">ପ୍ରସାରିତ ହୋଇଛି</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" />ଟି ଟାବକୁ ନୂଆ ପୃଷ୍ଠପଟ ଟାବଗୁଡ଼ିକ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।</translation>
 <translation id="7217781228893594884">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକ ଲକ ହୋଇଯିବ</translation>
@@ -1684,7 +1697,6 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> ଅପ୍‌ଡେଟ୍ କରାଯାଇଛି)</translation>
 <translation id="7498271377022651285">ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ମ୍ୟୁଟ କରାଯାଇଥିବା ଟାବ</translation>
-<translation id="7500851014030446046">PDFକୁ ଡାଉନଲୋଡ କରାଯାଉଛି</translation>
 <translation id="7501135638693251872">ସମସ୍ତ ବୁକମାର୍କ</translation>
 <translation id="7504076214066136798">ଏଡିଟଗୁଡ଼ିକୁ ସେଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7507207699631365376">ଏହି ପ୍ରଦାନକାରୀଙ୍କର <ph name="BEGIN_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_LINK" /> ଦେଖନ୍ତୁ</translation>
@@ -1920,6 +1932,7 @@
 <translation id="8368001212524806591">ମୂଲ୍ୟ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ଟାବ ଗ୍ରୁପ}other{<ph name="TAB_GROUPS_MANY" /> ଟାବ ଗ୍ରୁପ}}</translation>
 <translation id="8387617938027387193">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="8392241619862061825">Gemini ସର୍ଟକଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="8393700583063109961">ମେସେଜ୍‌ ପଠାନ୍ତୁ</translation>
 <translation id="8398389123831319859">ଇନକଗ୍ନିଟୋକୁ ସୁଇଚ କରିବା ପାଇଁ ଦୁଇଥର ଟାପ କରି ଧରି ରଖନ୍ତୁ</translation>
 <translation id="8401904657382223224">ହୋଷ୍ଟ ଅନୁସାରେ ଫିଲ୍ଟର କରନ୍ତୁ</translation>
@@ -2001,6 +2014,7 @@
 <translation id="8639963783467694461">ଅଟୋଫିଲ ସେଟିଂସ</translation>
 <translation id="8642256427178803328">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ କରନ୍ତୁକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8644482734962137770">Chromeକୁ ବ୍ୟବହାର କରିବା ପାଇଁ Gemini ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
+<translation id="8653883575875371543">ଟୁଲବାରରେ Gemini ଦେଖାନ୍ତୁ</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" />ରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="8664979001105139458">ଫାଇଲ୍‌ର ନାମ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="8676276370198826499"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ସାଇନ ଅପ କରନ୍ତୁ</translation>
@@ -2018,6 +2032,7 @@
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8727043961453758442">Chromeରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଆନ୍ତୁ</translation>
 <translation id="8728810647305130936">ନୂଆ ଟାବଗୁଡ଼ିକ ଖୋଲନ୍ତୁ</translation>
+<translation id="8730621377337864115">ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="8731268612289859741">ସୁରକ୍ଷା କୋଡ</translation>
 <translation id="8738163682604285902">ରିଡିଂ ମୋଡକୁ ଭ୍ୟୁ କରିବେ?</translation>
 <translation id="8746155870861185046">ହାଇଲାଇଟ୍ ସେୟାର୍ କରନ୍ତୁ</translation>

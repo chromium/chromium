@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Så er du klar</translation>
 <translation id="1149483087970735785">Hjælpeteknologi</translation>
 <translation id="1150490752229770117">Dette er den sidste automatiske software- og sikkerhedsopdatering for denne <ph name="DEVICE_TYPE" />. Opgrader til en nyere model for at få fremtidige opdateringer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1155816283571436363">Opretter forbindelse til din telefon</translation>
 <translation id="1160800016654917722">Vinduet blev flyttet nedad og til venstre</translation>
 <translation id="1164015913575846413">Alt + klik</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">appliste + højrepil</translation>
 <translation id="1280332775949918163">Inddel vindue</translation>
+<translation id="1285625592773741684">Den aktuelle indstilling for dataforbrug er Mobildata</translation>
 <translation id="1285815028662278915">Dine mobildata understøtter muligvis ikke hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Nattelys tændes automatisk ved solnedgang</translation>
 <translation id="1288300545283011870">Taleegenskaber</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Dette deaktiverer udvidelser og nulstiller dine indstillinger, så du får de sikre standardindstillinger. Faner, filer og cookies bevares. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Forstørrelse af fuld skærm</translation>
 <translation id="1539727654733007771">Der er ikke konfigureret et mobilnetværk. Download en ny <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">ChromeOS er lavet ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Jeg forstår, at installerede eSIM-kortprofiler ikke fjernes ved udførelse af en powerwash</translation>
 <translation id="1549275686094429035">ARC-kompatibel</translation>
 <translation id="1554640914375980459">Blink med skærmens lys, når du modtager notifikationer. Vær forsigtig med at bruge lysnotifikationer, hvis du er lysfølsom.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Brug Wi-Fi eller mobilnetværk til at fastslå placeringen</translation>
 <translation id="1650407365859096313">Åbner på en ny fane. Tilladelsen er <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Slå Deling tæt på til</translation>
+<translation id="1662146548738125461">Om ChromeOS Flex</translation>
 <translation id="1663698992894057019">Opgrader til en ny Chromebook for at få den nyeste sikkerhed og software</translation>
 <translation id="1665328953287874063">Brug en adgangskode eller pinkode til at låse din <ph name="DEVICE_TYPE" /> op</translation>
 <translation id="1667842670298352129">Få oplæst en bestemt tekst. Start med at vælge ikonet for Tekstoplæsning nederst på skærmen, og fremhæv derefter teksten. Du kan også bruge en tastaturgenvej: Fremhæv tekst, og tryk derefter på søgetasten+S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Bemærk! Adgang via fingeraftryk kan være mindre sikkert end adgang via en stærk adgangskode eller pinkode.</translation>
 <translation id="1724801751621173132">Input-tilstand</translation>
 <translation id="1741190788710022490">Adaptiv opladning</translation>
+<translation id="1745732479023874451">Administrer kontakter</translation>
 <translation id="1751335846119670066">Hjælp mig med at læse</translation>
 <translation id="1755601632425835748">Tekststørrelse</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> blev omdefineret til <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Nej. 1 kontakt er nok</translation>
 <translation id="1842681835432895345">Ekskluder denne skærm i Spejl-tilstand</translation>
 <translation id="1848219224579402567">Log ud, når låget er lukket</translation>
+<translation id="185970820835152459">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chromium-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Kølig</translation>
 <translation id="1866589962721094893">Giv Android-apps kontrol over USB-enheder på denne Chromebook. Der anmodes om tilladelsen, hver gang du tilslutter en USB-enhed. Individuelle Android-apps anmoder om yderligere tilladelser.</translation>
 <translation id="1877377290348678128">Etiket (valgfrit)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Lyd</translation>
 <translation id="2097950021134740304">Glem ikke abonnementet alligevel</translation>
 <translation id="2104166991923847969">Deaktiver hotspot automatisk</translation>
+<translation id="2106831557840787829">ChromeOS Flex leveres ved hjælp af ekstra <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Der er ikke indsat et SIM-kort</translation>
 <translation id="2121825465123208577">Tilpas størrelse</translation>
 <translation id="2127372758936585790">Oplader ved lav kraft</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Fjern <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2363475280045770326">Konfigurationen kunne ikke gemmes</translation>
+<translation id="236939127352773362">Når enheder deler indhold i nærheden</translation>
 <translation id="237336063998926520">Brug din IP-adresse til at fastslå placeringen</translation>
 <translation id="2373499590298659902">Brug "0" til at holde en museknap nede</translation>
 <translation id="2375406435414127095">Opret forbindelse til din telefon</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Bloker trafik uden VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Lokationsnøjagtighed giver apps og tjenester mere nøjagtige lokationer. Google muliggør dette ved jævnligt at behandle oplysninger om enhedssensorer og trådløse signaler fra din enhed for at crowdsource lokationer med trådløse signaler. Disse signaler anvendes uden at identificere dig med henblik på at forbedre lokationsnøjagtighed og lokationsbaserede tjenester samt for at forbedre, levere og vedligeholde Googles tjenester baseret på Googles og tredjeparters legitime interesser i at opfylde brugernes behov.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Papirbakken er næsten fuld</translation>
 <translation id="3390013585654699824">Info om appen</translation>
 <translation id="3390740059150071453">Kig til venstre</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Mailadresse</translation>
 <translation id="3701028563242674350">Ryst musemarkøren for at gøre den større</translation>
 <translation id="3703699162703116302">Billetten blev opdateret</translation>
+<translation id="3703994572283698466">ChromeOS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Aktivér Wi-Fi</translation>
 <translation id="370665806235115550">Indlæser...</translation>
 <translation id="3707163604290651814">Du er i øjeblikket logget ind som <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Der blev fundet <ph name="NUM_PRINTERS" /> printere på printerserveren</translation>
 <translation id="371370241367527062">Mikrofon på forsiden</translation>
 <translation id="37143699183660101">Markørstabilitet</translation>
+<translation id="3716540481907974026">ChromeOS Flex-version</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Forkert pinkode. Prøv igen</translation>
 <translation id="3728681439294129328">Konfigurer netværksadresse</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Vis understregning for sammensætningstekst</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="379509625511193653">Fra</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">Alt + pil op</translation>
 <translation id="3798670284305777884">Højttaler (indbygget)</translation>
 <translation id="3799128412641261490">Indstillinger for kontaktadgang</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Indbygget tastatur</translation>
 <translation id="3917644013202553949">Der er ikke nok lagerplads til at synkronisere dine filer. Prøv at frigøre plads.</translation>
 <translation id="3919229493046408863">Deaktiver notifikationer fra enheder i nærheden</translation>
+<translation id="3923184630988645767">Dataforbrug</translation>
 <translation id="3923494859158167397">Der er ikke konfigureret nogen mobilnetværk</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Andre brugere på denne enhed kan også bruge dette netværk</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definition i Hurtig info</translation>
 <translation id="3994075804072562819">Giv <ph name="SPECIFIC_NAME" /> kontrol over USB-enheder.</translation>
 <translation id="3994530503403062649">Identificer knapperne på din tablet</translation>
+<translation id="3997429360543082038">Om Chromium OS</translation>
 <translation id="4001540981461989979">Fremhæv musemarkøren ved bevægelse</translation>
 <translation id="4005817994523282006">Metode til registrering af tidszone</translation>
+<translation id="4019629340646866719">Chromium OS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopiér buildoplysninger</translation>
 <translation id="4028467762035011525">Tilføj indtastningsmetoder</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Du kan skifte til den senest anvendte indtastningsmetode ved at trykke på <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">søgetasten + højrepil</translation>
 <translation id="405181879009056822">Indstillinger for ChromeOS</translation>
+<translation id="4054070260844648638">Kan ses af alle</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Tjek din forbindelse for at se tilgængelige printere på dit netværk.</translation>
 <translation id="4068776064906523561">Gemte fingeraftryk</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, grade <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Find flere apps til styluspenne</translation>
 <translation id="4248401726442101648">Der er ikke tilsluttet noget kamera</translation>
+<translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4249116869350613769">Batterispare­funktion</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425411422794688815">Noget gik galt. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-konto}one{<ph name="EXTRA_ACCOUNTS" /> Google-konto}other{<ph name="EXTRA_ACCOUNTS" /> Google-konti}}</translation>
 <translation id="4314497418046265427">Øg din produktivitet, når du knytter din telefon til din <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Tilføj nyt Adgangspunkt</translation>
+<translation id="4314815835985389558">Administrer synkronisering</translation>
 <translation id="4320177379694898372">Ingen internetforbindelse</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Lagerplads og strøm</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Antal forslag</translation>
 <translation id="4606933160360542263">Tilpasset tastekombination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Når venstre museknap er valgt, kan du bruge "/" til at dobbeltklikke</translation>
+<translation id="4613863813562375431">Chromium OS-version</translation>
 <translation id="461661862154729886">Energikilde</translation>
 <translation id="4617880081511131945">Der kan ikke oprettes forbindelse</translation>
 <translation id="4620757807254334872">mus</translation>
@@ -1136,6 +1155,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4777943778632837590">Konfigurer navneservere for netværk</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779766576531456629">Omdøb eSIM-kortmobilnetværk</translation>
+<translation id="4789550509729954245">Vis en notifikation, når enheder i nærheden deler indhold</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktivér TrackPoint-acceleration</translation>
 <translation id="479664067938200069">Installerede apps fra <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4964544790384916627">Fastgør vindue</translation>
 <translation id="4964673849688379040">Kontrollerer...</translation>
 <translation id="4967571733817147990">Tilpas museknapper</translation>
+<translation id="4970880042055371251">ChromeOS-version</translation>
 <translation id="4972129977812092092">Rediger printer</translation>
 <translation id="4975771730019223894">Appbadges</translation>
 <translation id="4979263087381759787">Indstillinger for udviklere</translation>
@@ -1275,6 +1296,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5193978546360574373">Dette fjerner adgangen til Google Drev på denne Chromebook, herunder adgang til filer, som er blevet gjort tilgængelige offline</translation>
 <translation id="5196790039230503600">Brug bevægelsen, og bevæg derefter dit hoved for at vise, hvor du vil slippe elementet. Brug bevægelsen igen for at slippe det.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Brug aldrig mobildata til overførsler</translation>
 <translation id="5207949376430453814">Fremhæv tekstmarkør</translation>
 <translation id="5208926629108082192">Oplysninger om enhedens mobilnetværk</translation>
 <translation id="5208988882104884956">Halv bredde</translation>
@@ -1307,6 +1329,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5331568967879689647">ChromeOS-systemapp</translation>
 <translation id="5334113802138581043">Mikrofonadgang</translation>
 <translation id="5336689872433667741">Markør og touchplade</translation>
+<translation id="5337926771328966926">Navnet på den aktuelle enhed er <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Send diagnostik- og brugsdata</translation>
 <translation id="5369694795837229225">Konfigurer Linux-udviklingsmiljø</translation>
 <translation id="5377367976106153749">Vil du aktivere kameraadgang?</translation>
@@ -1444,6 +1467,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5833726373896279253">Disse indstillinger kan kun ændres af ejeren:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Etui</translation>
+<translation id="5840680448799937675">Filer deles altid offline</translation>
 <translation id="5841270259333717135">Konfigurer Ethernet</translation>
 <translation id="5842497610951477805">Aktivering af Bluetooth</translation>
 <translation id="5846200638699387931">Fejl i relationens syntaks: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5924438086390153180">Spørg, før der kopieres eller flyttes Microsoft-filer til Google Drev</translation>
 <translation id="5939518447894949180">Nulstil</translation>
 <translation id="594048410531370124">Tasten kunne ikke genkendes. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Enhedens synlighed</translation>
 <translation id="5945192511027649793">Deaktiver touchplade</translation>
 <translation id="5947651424015173580">Dobbeltklik på musen</translation>
 <translation id="594993197557058302">Tryk på 1-4 ændringstaster (Ctrl, Alt, Shift, søgetasten eller applistetasten) og 1 anden tast. Du kan også vælge en enkelt tast.</translation>
@@ -1491,10 +1516,12 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5961545272769624207">Tildel en bevægelse</translation>
 <translation id="5968022600320704045">Ingen søgeresultater</translation>
 <translation id="5969728632630673489">Meddelelsen med tastaturgenveje blev lukket</translation>
+<translation id="5979353814339191480">Denne valgmulighed gælder for Chromebooks med dataabonnement eller en dongle til mobilnetværk eller for netdeling med et mobilt hotspot</translation>
 <translation id="5985556342298151179">Chrome-app, der er installeret af din enhedsadministrator.</translation>
 <translation id="5986442691296752186">Giv Linux-apps kontrol over USB-enheder.</translation>
 <translation id="598810097218913399">Fjern tildeling</translation>
 <translation id="5988563937187882754">Kig til højre</translation>
+<translation id="5990266201903445068">Kun Wi-Fi</translation>
 <translation id="5992225669837656567">Forbindelsen til alle musene er blevet afbrudt</translation>
 <translation id="5999630716831179808">Stemmer</translation>
 <translation id="6002458620803359783">Foretrukne stemmer</translation>
@@ -1509,6 +1536,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6045114302329202345">Primær TrackPoint-knap</translation>
 <translation id="6048747414605857443">Vælg og tilpas oplæsningsstemmer til ChromeVox og Tekstoplæsning</translation>
 <translation id="6050189528197190982">Gråtone</translation>
+<translation id="6054961935262556546">Skift synlighed</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6059925163896151826">USB-enheder</translation>
 <translation id="6064764629679333574">Optimer kvaliteten af Bluetooth-mikrofonlyden ved at opskalere lyd i lav opløsning til høj opløsning.</translation>
@@ -1567,6 +1595,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6265159465845424232">Spørg, før der kopieres eller flyttes Microsoft-filer til Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjern port</translation>
 <translation id="6266532094411434237">Der oprettes forbindelse til <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Vil du logge ud af Chromium?</translation>
 <translation id="6270309713620950855">Slå lyden for påmindelser fra</translation>
 <translation id="6274089201566806618">Der oprettes forbindelse til <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekunder</translation>
@@ -1618,6 +1647,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6453921811609336127">Du kan skifte til næste indtastningsmetode ved at trykke på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />mellemrum<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Slet denne ordbog</translation>
 <translation id="6463596731306859179">Oplever du uønskede pop op-vinduer eller anden uventet adfærd? I nogle tilfælde kan de apps og udvidelser, du installerer, ændre dine ChromeOS-indstillinger, uden du ved det.</translation>
+<translation id="6465841119675156448">Uden internet</translation>
 <translation id="6467377768028664108">Din <ph name="DEVICE_TYPE" /> kan derefter:</translation>
 <translation id="6469557521904094793">Aktivér mobilnetværk</translation>
 <translation id="6470120577693311302">Lysnotifikationer</translation>
@@ -1668,6 +1698,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6626581113916585374">Effekttilstand</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630452975878488444">Valggenvej</translation>
+<translation id="6632473616050862500">ChromeOS Flex leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Slå Hurtig parring fra</translation>
 <translation id="6647690760956378579">Eksempel på naturlig stemme</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
@@ -1711,6 +1742,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6775163072363532304">Tilgængelige enheder vises her.</translation>
 <translation id="6776729248872343918">Aktivér Hurtig parring</translation>
 <translation id="6777845730143344223">Få flere oplysninger om Passpoint-abonnementer</translation>
+<translation id="6779406956731413166">Chromium OS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Skal denne enhed glemmes?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive-indstillinger</translation>
 <translation id="6785915470941880363">Omvendt rulning <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7280649757394340890">Taleindstillinger for oplæsning</translation>
 <translation id="7282547042039404307">Problemfri</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
 <translation id="7303485269821975179">Konfigurer en adgangskode til <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Højt</translation>
 <translation id="7308643132139167865">Sprog på websites</translation>
@@ -1873,6 +1906,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7409599290172516453">Seneste billeder</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> af <ph name="APPS_LIST_SIZE" /> apps er blokeret</translation>
+<translation id="7423425410216218516">Synlighed er aktiveret i <ph name="MINUTES" /> minutter</translation>
 <translation id="7423513079490750513">Fjern <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Hjælp mig med at skrive</translation>
 <translation id="7429415133937917139">Simulerer outputtet fra en brailleskærm, der kan opdateres,
@@ -1920,11 +1954,13 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7578137152457315135">Indstillinger for fingeraftryk</translation>
 <translation id="7578692661782707876">Angiv din verificeringskode.</translation>
 <translation id="7582582252461552277">Foretræk dette netværk</translation>
+<translation id="7582844466922312471">Mobildata</translation>
 <translation id="7587806318633605613">Forslagshistorik</translation>
 <translation id="7590883480672980941">Indstillinger for indtastning</translation>
 <translation id="7592060599656252486">Udvalgte</translation>
 <translation id="7602173054665172958">Udskriftsstyring</translation>
 <translation id="7605163396341021431">Giv Android-apps kontrol over USB-enheder på denne Chromebook</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android-præferencer</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Aktivering af tilknyttede telefonfunktioner.</translation>
@@ -1935,12 +1971,14 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7632437836497571618">Brug sikre forbindelser til at slå websites op</translation>
 <translation id="7634337648687970851">Gendannelse af lokale data understøttes ikke i øjeblikket.</translation>
 <translation id="7640256527901510478">Din enheds IMEI-nummer er <ph name="IMEI_NUMBER" />, og enhedens serienummer er <ph name="SERIAL_NUMBER" />. Disse numre kan bruges til at aktivere tjenesten.</translation>
+<translation id="7640308610547854367">Du er gået tilbage til en tidligere version af ChromeOS. Vent, indtil den næste version bliver tilgængelig, før du får opdateringer.</translation>
 <translation id="7641513591566880111">Nyt profilnavn</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> er tilføjet</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ejer)</translation>
 <translation id="7648048654005891115">Tastaturoversigt</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingeraftryk er konfigureret}one{{COUNT} fingeraftryk er konfigureret}other{{COUNT} fingeraftryk er konfigureret}}</translation>
+<translation id="7650677314924139716">Den aktuelle indstilling for dataforbrug er Kun Wi-Fi</translation>
 <translation id="7651400349472467012">Automatisk hotspot er tilgængeligt</translation>
 <translation id="7651784568388208829">Fortsættelse af opgave i Telefonstyring</translation>
 <translation id="7658239707568436148">Annuller</translation>
@@ -2031,6 +2069,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Oversættelse</translation>
 <translation id="7915457674565721553">Opret forbindelse til internettet for at konfigurere børnesikring</translation>
+<translation id="7917876797003313048">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chrome-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920482456679570420">Tilføj ord, som stavekontrollen skal springe over</translation>
 <translation id="7921347341284348270">Du kan ikke se din telefons notifikationer på denne administrerede konto. Prøv igen med en anden konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="8431977087510901105">Indstillingerne for markøren er nulstillet</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8439506636278576865">Tilbyd at oversætte sider på dette sprog</translation>
+<translation id="8449347986464073209">Slet, og log ud</translation>
 <translation id="8451512073679317615">assistent</translation>
 <translation id="8455775311562941553">Forbundet til <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Oplæs teksten under markøren</translation>
@@ -2320,6 +2360,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="8872774989979382243">Lyden er slået fra. Slå lyden til.</translation>
 <translation id="888256071122006425">Indstillinger for mus og touchplade</translation>
 <translation id="8885449336974696155">Vær med til at gøre ChromeOS bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Der opkræves muligvis mobildatagebyrer</translation>
 <translation id="8890529496706615641">Navnet på profilen kunne ikke ændres. Prøv igen, eller kontakt dit mobilselskab for at få teknisk support.</translation>
 <translation id="8894761918470382415">Beskyttelse af dataadgang for eksterne enheder</translation>
 <translation id="8896830132794747524">Hurtigere bevægelser med musen flytter markøren længere</translation>
@@ -2345,6 +2386,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="8978939272793553320">Forbindelsen til <ph name="DEVICE_NAME" /> er blevet afbrudt</translation>
 <translation id="8980345560318123814">Feedbackrapporter</translation>
 <translation id="8981825781894055334">Lavt papirniveau</translation>
+<translation id="8984694057134206124">Du vil være synlig for alle i <ph name="MINUTES" /> minutter. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Registreringsgrænse</translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8991694323904646277">Der er intet kamera</translation>
@@ -2391,6 +2433,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="9098860402274800697">Fjern Google Play- og Android-apps</translation>
 <translation id="910000385680858937">Tilladt – <ph name="PERMISSION_DETAILS" />. Forbind en mikrofon til din enhed.</translation>
 <translation id="9100416672768993722">Du kan skifte til den seneste anvendte indtastningsmetode ved at trykke på <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />mellemrum<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Den aktuelle indstilling for dataforbrug er Uden internet</translation>
 <translation id="9108294543511800041">Du kan nu se din telefons seneste billeder, medier og notifikationer</translation>
 <translation id="9109122242323516435">Slet filer fra lageret på din enhed for at frigøre plads.</translation>
 <translation id="9111330022786356709">Tilføj eller find knapper på din mus</translation>

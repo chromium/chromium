@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">ನೀವು ಎಲ್ಲ ರೀತಿಯಲ್ಲಿಯೂ ಸಿದ್ಧರಾಗಿರುವಿರಿ!</translation>
 <translation id="1149483087970735785">ಸಹಾಯಕ ತಂತ್ರಜ್ಞಾನ</translation>
 <translation id="1150490752229770117">ಈ <ph name="DEVICE_TYPE" /> ಗಾಗಿ, ಇದು ಕೊನೆಯ ಸ್ವಯಂಚಾಲಿತ ಸಾಫ್ಟ್‌ವೇರ್ ಹಾಗೂ ಸುರಕ್ಷತಾ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ. ನಂತರದ ದಿನಗಳಲ್ಲಿ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ಹೊಸ ಮಾಡೆಲ್‌ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS ಕುರಿತು</translation>
 <translation id="1155816283571436363">ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1160800016654917722">ವಿಂಡೋವನ್ನು ಕೆಳಕ್ಕೆ ಮತ್ತು ಎಡಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="1164015913575846413">alt + ಕ್ಲಿಕ್</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">ಲಾಂಚರ್ + ರೈಟ್ ಆ್ಯರೋ</translation>
 <translation id="1280332775949918163">ಸ್ನ್ಯಾಪ್ ವಿಂಡೋ</translation>
+<translation id="1285625592773741684">ಪ್ರಸ್ತುತ ಡೇಟಾ ಬಳಕೆಯ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಮೊಬೈಲ್ ಡೇಟಾಗೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="1285815028662278915">ನಿಮ್ಮ ಮೊಬೈಲ್ ಡೇಟಾ ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಬೆಂಬಲಿಸದೇ ಇರಬಹುದು. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">ನೈಟ್ ಲೈಟ್ ಸೂರ್ಯಾಸ್ತದ ಸಮಯದಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಆಗುತ್ತದೆ</translation>
 <translation id="1288300545283011870">ಧ್ವನಿ ಗುಣಲಕ್ಷಣಗಳು</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">ಇದು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತ ಡೀಫಾಲ್ಟ್‌ಗಳಿಗೆ ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ. ಟ್ಯಾಬ್‌ಗಳು, ಫೈಲ್‌ಗಳು ಮತ್ತು ಕುಕೀಗಳನ್ನು ಸಂರಕ್ಷಿಸಲಾಗುತ್ತದೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
 <translation id="1539727654733007771">ಯಾವುದೇ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗಿಲ್ಲ. ಹೊಸ <ph name="BEGIN_LINK" />ಪ್ರೊಫೈಲ್<ph name="END_LINK" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
+<translation id="1547295885616600893">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌ನಿಂದ<ph name="END_LINK_CROS_OSS" /> ChromeOS ನ ರಚನೆ ಸಾಧ್ಯವಾಗಿದೆ.</translation>
 <translation id="1547808936554660006">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಪವರ್‌ವಾಷ್‌‌ ತೆಗೆದುಹಾಕಲಾಗುವುದಿಲ್ಲ ಎಂಬುದನ್ನು ನಾನು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ</translation>
 <translation id="1549275686094429035">ARC ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
 <translation id="1554640914375980459">ನೀವು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಿದಾಗ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಫ್ಲ್ಯಾಶ್ ಮಾಡಿ. ನಿಮಗೆ ಬೆಳಕಿನಿಂದ ಕಿರಿಕಿರಿಯಾದರೆ, ಫ್ಲ್ಯಾಶ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಎಚ್ಚರಿಕೆಯಿಂದ ಬಳಸಿ.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">ಸ್ಥಳವನ್ನು ನಿರ್ಧರಿಸಲು ವೈ-ಫೈ ಅಥವಾ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ​​ಬಳಸಿ</translation>
 <translation id="1650407365859096313">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ, ಅನುಮತಿ <ph name="PERMISSION_STATE" /> ನಲ್ಲಿದೆ</translation>
 <translation id="1652326691684645429">Nearby ಶೇರ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="1662146548738125461">ChromeOS Flex ಕುರಿತು</translation>
 <translation id="1663698992894057019">ಇತ್ತೀಚಿನ ಭದ್ರತೆ ಮತ್ತು ಸಾಫ್ಟ್‌ವೇರ್‌ಗಾಗಿ ಹೊಸ Chromebook ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="1665328953287874063">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಪಾಸ್‌ವರ್ಡ್ ಅಥವಾ ಪಿನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1667842670298352129">ನಿರ್ದಿಷ್ಠ ಪಠ್ಯವನ್ನು ಗಟ್ಟಿಯಾಗಿ ಓದುವುದನ್ನು ಆಲಿಸಿ ಮೊದಲು, ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಐಕಾನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ. ನೀವು ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಸಹ ಬಳಸಬಹುದು: ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ, ನಂತರ Search + S ಅನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">ಗಮನಿಸಿ: ಬಲವಾದ ಪ್ಯಾಟರ್ನ್ ಅಥವಾ ಪಿನ್‌ಗಿಂತ ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಕಡಿಮೆ ಸುರಕ್ಷಿತವಾಗಿರಬಹುದು.</translation>
 <translation id="1724801751621173132">ಇನ್‌ಪುಟ್ ಮೋಡ್</translation>
 <translation id="1741190788710022490">ಅಡಾಪ್ಟಿವ್ ಚಾರ್ಜಿಂಗ್</translation>
+<translation id="1745732479023874451">ಸಂಪರ್ಕಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1751335846119670066">ಓದಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="1755601632425835748">ಪಠ್ಯದ ಗಾತ್ರ</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> ಅನ್ನು <ph name="REMAPPING_OPTION" /> ಗೆ ಮರು ಮ್ಯಾಪ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">ಇಲ್ಲ, ಕೇವಲ 1 ಸ್ವಿಚ್ ಬಳಸಿ</translation>
 <translation id="1842681835432895345">ಮಿರರ್ ಮೋಡ್‌ನಲ್ಲಿ ಈ ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಹೊರಗಿಡಬಹುದು</translation>
 <translation id="1848219224579402567">ಲಿಡ್‌ ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
+<translation id="185970820835152459">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ Google ಖಾತೆಗಳನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು. ನಿಮ್ಮ Google ಖಾತೆಗಳನ್ನು Chromium ಬ್ರೌಸರ್, Play Store ‌‌, Gmail ಹಾಗೂ ಮುಂತಾದವುಗಳಲ್ಲಿ ಬಳಸಲಾಗುತ್ತದೆ. ಕುಟುಂಬದ ಸದಸ್ಯರಂತಹ ಬೇರೊಬ್ಬರಿಗೆ ನೀವು ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಬಯಸಿದರೆ, ಬದಲಿಗೆ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">ಕೂಲರ್</translation>
 <translation id="1866589962721094893">ಈ Chromebook ನಲ್ಲಿ USB ಸಾಧನಗಳ ಮೇಲೆ Android ಆ್ಯಪ್‌ಗಳ ನಿಯಂತ್ರಣವನ್ನು ನೀಡಿ. ಪ್ರತಿ ಬಾರಿ ನೀವು USB ಸಾಧನವನ್ನು ಪ್ಲಗ್ ಇನ್ ಮಾಡಿದಾಗಲೆಲ್ಲಾ ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗುತ್ತದೆ. ಪ್ರತ್ಯೇಕ Android ಆ್ಯಪ್‌ಗಳು ಹೆಚ್ಚುವರಿ ಅನುಮತಿಗಳನ್ನು ಕೇಳುತ್ತವೆ.</translation>
 <translation id="1877377290348678128">ಲೇಬಲ್ (ಐಚ್ಛಿಕ)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">ಶಬ್ಧ</translation>
 <translation id="2097950021134740304">ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ಮರೆಯುವುದನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="2104166991923847969">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಫ್ ಮಾಡಿ</translation>
+<translation id="2106831557840787829">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromeOS Flex ರಚನೆ ಸಾಧ್ಯವಾಯಿತು, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್‌ನ<ph name="END_LINK_LINUX_OSS" /> ರಚನೆಯೂ ಅದರಿಂದಲೇ ಸಾಧ್ಯವಾಯಿತು.</translation>
 <translation id="2114995631896158695">ಯಾವುದೇ ಸಿಮ್ ಕಾರ್ಡ್ ಸೇರಿಸಿಲ್ಲ</translation>
 <translation id="2121825465123208577">ಮರುಗಾತ್ರ</translation>
 <translation id="2127372758936585790">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2363475280045770326">ಕಾನ್ಫಿಗರೇಶನ್ ಸೇವ್ ಮಾಡುವಾಗ ದೋಷ ಉಂಟಾಗಿದೆ</translation>
+<translation id="236939127352773362">ಸಮೀಪದಲ್ಲಿರುವ ಸಾಧನಗಳಿಂದ ಹಂಚಿಕೊಳ್ಳುವಾಗ</translation>
 <translation id="237336063998926520">ಸ್ಥಳವನ್ನು ನಿರ್ಧರಿಸಲು ನಿಮ್ಮ ಐಪಿ ವಿಳಾಸವನ್ನು ಬಳಸಿ</translation>
 <translation id="2373499590298659902">ಮೌಸ್ ಬಟನ್ ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಲು "0" ಕೀಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2375406435414127095">ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">VPN ಬಳಸದೇ ಟ್ರಾಫಿಕ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">ಸ್ಥಳದ ನಿಖರತೆಯು ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೇವೆಗಳಿಗೆ ಹೆಚ್ಚು ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ಒದಗಿಸುತ್ತದೆ. ಇದನ್ನು ಮಾಡಲು, ನಿಮ್ಮ ಸಾಧನದಿಂದ ಕ್ರೌಡ್‌ಸೋರ್ಸ್ ವೈರ್‌ಲೆಸ್ ಸಿಗ್ನಲ್ ಸ್ಥಳಗಳಿಗೆ ಸಾಧನದ ಸೆನ್ಸರ್‌ಗಳು ಮತ್ತು ವೈರ್‌ಲೆಸ್ ಸಿಗ್ನಲ್‌ಗಳ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು Google ನಿಯತಕಾಲಿಕವಾಗಿ ಪ್ರಾಸೆಸ್ ಮಾಡುತ್ತದೆ. ಸ್ಥಳದ ನಿಖರತೆ ಮತ್ತು ಸ್ಥಳ ಆಧಾರಿತ ಸೇವೆಗಳನ್ನು ಸುಧಾರಿಸಲು ಮತ್ತು ಬಳಕೆದಾರರ ಅಗತ್ಯಗಳನ್ನು ಪೂರೈಸಲು Google ನ ಮತ್ತು ಥರ್ಡ್ ಪಾರ್ಟಿಗಳ ಕಾನೂನುಬದ್ಧ ಆಸಕ್ತಿಗಳ ಆಧಾರದ ಮೇಲೆ Google ನ ಸೇವೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಒದಗಿಸಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು ನಿಮ್ಮನ್ನು ಗುರುತಿಸದೆಯೇ ಇವುಗಳನ್ನು ಬಳಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">ಔಟ್‌ಪುಟ್ ಟ್ರೇ ಬಹುತೇಕ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="3390013585654699824">ಆ್ಯಪ್‌ ವಿವರಗಳು</translation>
 <translation id="3390740059150071453">ಎಡಕ್ಕೆ ನೋಡುವುದು</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">ಇಮೇಲ್ ವಿಳಾಸ</translation>
 <translation id="3701028563242674350">ಮೌಸ್ ಕರ್ಸರ್ ಅನ್ನು ದೊಡ್ಡದಾಗಿಸಲು ಅದನ್ನು ಅಲುಗಾಡಿಸಿ</translation>
 <translation id="3703699162703116302">ಟಿಕೆಟ್ ಅನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="3703994572283698466">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromeOS ರಚನೆ ಸಾಧ್ಯವಾಯಿತು, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್‌ನ<ph name="END_LINK_LINUX_OSS" /> ರಚನೆಯೂ ಅದರಿಂದಲೇ ಸಾಧ್ಯವಾಯಿತು.</translation>
 <translation id="370649949373421643">ವೈ-ಫೈ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="370665806235115550">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
 <translation id="3707163604290651814">ಪ್ರಸ್ತುತವಾಗಿ <ph name="NAME" /> ಅವರ ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">ಪ್ರಿಂಟ್ ಸರ್ವರ್‌ನಿಂದ <ph name="NUM_PRINTERS" /> ಪ್ರಿಂಟರ್‌ಗಳು ಕಂಡುಬಂದಿವೆ</translation>
 <translation id="371370241367527062">ಮುಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="37143699183660101">ಕರ್ಸರ್ ಸ್ಥಿರತೆ</translation>
+<translation id="3716540481907974026">ChromeOS Flex ಆವೃತ್ತಿ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">ಪಿನ್ ತಪ್ಪಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="3728681439294129328">ನೆಟ್‌ವರ್ಕ್ ವಿಳಾಸವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">ಸಂಯೋಜನೆಯ ಪಠ್ಯಕ್ಕೆ ಅಂಡರ್‌ಲೈನ್ ತೋರಿಸಿ</translation>
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="379509625511193653">ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="3798670284305777884">ಸ್ಪೀಕರ್ (ಆಂತರಿಕ)</translation>
 <translation id="3799128412641261490">ಪ್ರವೇಶದ ವಿಧಾನವನ್ನು ಬದಲಿಸುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">ಅಂತರ್ನಿರ್ಮಿತ ಕೀಬೋರ್ಡ್</translation>
 <translation id="3917644013202553949">ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆ ಇಲ್ಲ. ಸ್ಪೇಸ್ ಅನ್ನು ಮುಕ್ತಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3919229493046408863">ಸಾಧನಗಳು ಸಮೀಪದಲ್ಲಿರುವಾಗ ಅಧಿಸೂಚನೆಯನ್ನು ಆಫ್ ಮಾಡಿ</translation>
+<translation id="3923184630988645767">ಡೇಟಾ ಬಳಕೆ</translation>
 <translation id="3923494859158167397">ಯಾವುದೇ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">ಈ ಸಾಧನದಲ್ಲಿರುವ ಇತರ ಬಳಕೆದಾರರು ಸಹ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">ತ್ವರಿತ ಉತ್ತರಗಳು ವಿವರಣೆ</translation>
 <translation id="3994075804072562819">USB ಸಾಧನಗಳ ಮೇಲೆ <ph name="SPECIFIC_NAME" /> ನಿಯಂತ್ರಣ ನೀಡಿ.</translation>
 <translation id="3994530503403062649">ನಿಮ್ಮ ಟ್ಯಾಬ್ಲೆಟ್‌ನಲ್ಲಿ ಬಟನ್‌ಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ</translation>
+<translation id="3997429360543082038">ChromiumOS ಕುರಿತು</translation>
 <translation id="4001540981461989979">ಮೌಸ್ ಕರ್ಸರ್ ಚಲಿಸುವಾಗ ಅದನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="4005817994523282006">ಸಮಯವಲಯ ಪತ್ತೆಹಚ್ಚುವಿಕೆ ವಿಧಾನ</translation>
+<translation id="4019629340646866719">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ನ ರಚನೆ, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್<ph name="END_LINK_LINUX_OSS" /> ರಚನೆ ಸಹ ಸಾಧ್ಯವಾಯಿತು.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">ಬಿಲ್ಡ್ ವಿವರಗಳನ್ನು ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="4028467762035011525">ಇನ್‌ಪುಟ್ ವಿಧಾನಗಳನ್ನು ಸೇರಿಸಿ</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">ಕೊನೆಯದಾಗಿ ಬಳಸಿದ ಇನ್‌ಪುಟ್ ವಿಧಾನಕ್ಕೆ ಬದಲಾಯಿಸಲು, <ph name="KEY_CODES" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="4051177682900543628">ಹುಡುಕಾಟ + ರೈಟ್ ಆ್ಯರೋ</translation>
 <translation id="405181879009056822">ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="4054070260844648638">ಪ್ರತಿಯೊಬ್ಬರಿಗೂ ಕಾಣಿಸುತ್ತದೆ</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುವ ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ನೋಡಲು, ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4068776064906523561">ಸೇವ್ ಮಾಡಿದ ಬೆರಳಚ್ಚುಗಳು</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, ಗ್ರೇಡ್‌ <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">ಇನ್ನಷ್ಟು ಸ್ಟೈಲಸ್ ಅಪ್ಲಿಕೇಶನ್‌‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="4248401726442101648">ಯಾವುದೇ ಕ್ಯಾಮರಾ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
+<translation id="424864128008805179">Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4249116869350613769">ಬ್ಯಾಟರಿ ಸೇವರ್</translation>
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
 <translation id="425411422794688815">ಏನೋ ತಪ್ಪಾಗಿದೆ. ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google ಖಾತೆ}one{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}other{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}}</translation>
 <translation id="4314497418046265427">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ನಿಮ್ಮ ಫೋನ್ ಕನೆಕ್ಟ್ ಮಾಡಿದಾಗ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4314561087119792062">ಹೊಸ ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="4314815835985389558">ಸಿಂಕ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4320177379694898372">ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">ಸಂಗ್ರಹಣೆ ಮತ್ತು ಪವರ್</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">ಸಲಹೆಗಳ ಸಂಖ್ಯೆ</translation>
 <translation id="4606933160360542263">ಕಸ್ಟಮ್ ಕೀ ಸಂಯೋಜನೆ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">ಎಡ ಮೌಸ್ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿದಾಗ, ಡಬಲ್‌-ಕ್ಲಿಕ್ ಮಾಡಲು "/" ಕೀಯನ್ನು ಬಳಸಿ</translation>
+<translation id="4613863813562375431">ChromiumOS ಆವೃತ್ತಿ</translation>
 <translation id="461661862154729886">ಶಕ್ತಿಯ ಮೂಲ</translation>
 <translation id="4617880081511131945">ಸಂಪರ್ಕವನ್ನು ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4620757807254334872">ಮೌಸ್</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">ನೆಟ್‌ವರ್ಕ್ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="4779083564647765204">ಝೂಮ್</translation>
 <translation id="4779766576531456629">eSIM ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಮರುಹೆಸರಿಸಿ</translation>
+<translation id="4789550509729954245">ಸಾಧನಗಳು ಸಮೀಪದಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳುತ್ತಿರುವಾಗ ಅಧಿಸೂಚನೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint ವೇಗವರ್ಧಕ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" /> ನಿಂದ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಆ್ಯಪ್‌ಗಳು</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">ಡಾಕ್ ವಿಂಡೋ</translation>
 <translation id="4964673849688379040">ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4967571733817147990">ಮೌಸ್ ಬಟನ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
+<translation id="4970880042055371251">ChromeOS ಆವೃತ್ತಿ</translation>
 <translation id="4972129977812092092">ಪ್ರಿಂಟರ್‌ ಅನ್ನು ಎಡಿಟ್‌ ಮಾಡಿ</translation>
 <translation id="4975771730019223894">ಆ್ಯಪ್ ಬ್ಯಾಡ್ಜಿಂಗ್</translation>
 <translation id="4979263087381759787">ಡೆವಲಪರ್ ಆಯ್ಕೆಗಳು</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುವ ಎಲ್ಲಾ ಫೈಲ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಒಳಗೊಂಡಂತೆ, ಈ Chromebook ನಿಂದ Google Drive ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಇದು ತೆಗೆದುಹಾಕುತ್ತದೆ</translation>
 <translation id="5196790039230503600">ಜೆಸ್ಚರ್ ಬಳಸಿ, ನಂತರ ನೀವು ಐಟಂ ಅನ್ನು ಎಲ್ಲಿ ಬಿಡಲು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ತೋರಿಸಲು ನಿಮ್ಮ ತಲೆಯನ್ನು ಸರಿಸಿ. ಅದನ್ನು ಬಿಡಲು ಮತ್ತೊಮ್ಮೆ ಜೆಸ್ಚರ್ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="5197255632782567636">ಇಂಟರ್ನೆಟ್</translation>
+<translation id="5205484256512407285">ವರ್ಗಾವಣೆ ಮಾಡಲು ಎಂದಿಗೂ ಮೊಬೈಲ್ ಡೇಟಾ ಬಳಸಬೇಡಿ</translation>
 <translation id="5207949376430453814">ಪಠ್ಯದಲ್ಲಿ ಕೆರೆಟ್ ಅನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="5208926629108082192">ಸಾಧನದ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ</translation>
 <translation id="5208988882104884956">ಅರೆಅಗಲ</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">ChromeOS ಸಿಸ್ಟಂ ಆ್ಯಪ್</translation>
 <translation id="5334113802138581043">ಮೈಕ್ರೊಫೋನ್ ಆ್ಯಕ್ಸೆಸ್</translation>
 <translation id="5336689872433667741">ಕರ್ಸರ್ ಮತ್ತು ಟಚ್‌ಪ್ಯಾಡ್</translation>
+<translation id="5337926771328966926">ಪ್ರಸ್ತುತ ಸಾಧನದ ಹೆಸರು <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಮತ್ತು ಬಳಕೆಯ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="5369694795837229225">Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="5377367976106153749">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮಾಲೀಕರಿಂದ ಮಾತ್ರ ನವೀಕರಿಸಬಹುದಾಗಿದೆ:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">ಕೇಸ್</translation>
+<translation id="5840680448799937675">ಫೈಲ್‌ಗಳನ್ನು ಯಾವಾಗಲೂ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ</translation>
 <translation id="5841270259333717135">ಇಥರ್ನೆಟ್ ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
 <translation id="5842497610951477805">ಬ್ಲೂಟೂತ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5846200638699387931">ರಿಲೇಶನ್ ಸಿಂಟ್ಯಾಕ್ಸ್ ದೋಷ: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Microsoft ಫೈಲ್‌ಗಳನ್ನು Google Drive ಗೆ ಕಾಪಿ ಮಾಡುವ ಅಥವಾ ಸರಿಸುವ ಮೊದಲು ಕೇಳಿ</translation>
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
 <translation id="594048410531370124">ಗುರುತಿಸದ ಕೀ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದೇ ಕೀ ಅನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="5942779427914696408">ಸಾಧನದ ಗೋಚರತೆ</translation>
 <translation id="5945192511027649793">ಟಚ್‌ಪ್ಯಾಡ್‌ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5947651424015173580">ಮೌಸ್‌ ಅನ್ನು ಡಬಲ್‌-ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="594993197557058302">1-4 ಮಾರ್ಪಡಿಸುವ ಕೀಗಳನ್ನು (ctrl, alt, shift, ಹುಡುಕಾಟ ಅಥವಾ ಲಾಂಚರ್) ಮತ್ತು ಇನ್ನೂ 1 ಕೀ ಅನ್ನು ಒತ್ತಿ. ನೀವು ಒಂದೇ ಕೀ ಅನ್ನು ಸಹ ಆಯ್ಕೆಮಾಡಬಹುದು.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">ಜೆಸ್ಚರ್ ಅನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="5968022600320704045">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="5969728632630673489">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಸೂಚನೆಯನ್ನು ವಜಾಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="5979353814339191480">ಡೇಟಾ ಪ್ಲಾನ್ ಅಥವಾ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಡಾಂಗಲ್ ಹೊಂದಿರುವ Chromebooks ಗೆ ಅಥವಾ ಪೋರ್ಟಬಲ್ ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಟೆಥರ್ ಮಾಡುವಾಗ ಈ ಆಯ್ಕೆಯು ಅನ್ವಯಿಸುತ್ತದೆ</translation>
 <translation id="5985556342298151179">ನಿಮ್ಮ ಸಾಧನ ನಿರ್ವಾಹಕರಿಂದ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾದ Chrome ಆ್ಯಪ್.</translation>
 <translation id="5986442691296752186">USB ಸಾಧನಗಳ ಮೇಲೆ Linux ಆ್ಯಪ್‌ಗಳ ನಿಯಂತ್ರಣವನ್ನು ನೀಡಿ.</translation>
 <translation id="598810097218913399">ಕಾರ್ಯನಿಯೋಜನೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="5988563937187882754">ಬಲಗಡೆ ನೋಡುವುದು</translation>
+<translation id="5990266201903445068">ವೈ-ಫೈ ಮಾತ್ರ</translation>
 <translation id="5992225669837656567">ಎಲ್ಲಾ ಮೈಸ್ ಅನ್ನು ಡಿಸ್‌ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5999630716831179808">ಧ್ವನಿಗಳು</translation>
 <translation id="6002458620803359783">ಆದ್ಯತೆಯ ಧ್ವನಿಗಳು</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">ಪ್ರಾಥಮಿಕ TrackPoint ಬಟನ್</translation>
 <translation id="6048747414605857443">ChromeVox ಮತ್ತು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿಗಾಗಿ ಟೆಕ್ಸ್ಟ್-ಟು-ಸ್ಪೀಚ್ ಧ್ವನಿಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="6050189528197190982">ಗ್ರೇಸ್ಕೇಲ್</translation>
+<translation id="6054961935262556546">ಗೋಚರತೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6059276912018042191">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6059925163896151826">USB ಸಾಧನಗಳು</translation>
 <translation id="6064764629679333574">ಕಡಿಮೆ ರೆಸಲ್ಯೂಷನ್‌‌ ಆಡಿಯೊವನ್ನು ಹೆಚ್ಚಿನ ರೆಸಲ್ಯೂಷನ್‌‌ಗೆ ಹೆಚ್ಚಿಸುವ ಮೂಲಕ ಬ್ಲೂಟೂತ್ ಮೈಕ್ ಸೌಂಡ್ ಗುಣಮಟ್ಟವನ್ನು ಸುಧಾರಿಸಿ.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Microsoft ಫೈಲ್‌ಗಳನ್ನು Microsoft OneDrive ಗೆ ಕಾಪಿ ಮಾಡುವ ಅಥವಾ ಸರಿಸುವ ಮೊದಲು ಕೇಳಿ</translation>
 <translation id="6265687851677020761">ಪೋರ್ಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> ಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತಿದೆ</translation>
+<translation id="6268381023930128611">Chromium ನಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6270309713620950855">ನಡ್ಜ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="628352644014831790">4 ಸೆಕೆಂಡುಗಳು</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">ಮುಂದಿನ ಇನ್‌ಪುಟ್ ವಿಧಾನಕ್ಕೆ ಬದಲಾಯಿಸಲು, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />ಸ್ಪೇಸ್<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ಒತ್ತಿರಿ</translation>
 <translation id="6463488491707167747">ಈ ನಿಘಂಟನ್ನು ಅಳಿಸಿ</translation>
 <translation id="6463596731306859179">ಅನಗತ್ಯ ಪಾಪ್-ಅಪ್‌ಗಳು ಅಥವಾ ಇತರ ಅನಿರೀಕ್ಷಿತ ನಡವಳಿಕೆಯನ್ನು ಪಡೆಯುತ್ತಿದ್ದೀರಾ? ಕೆಲವೊಮ್ಮೆ, ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ನಿಮಗೆ ತಿಳಿಯದಂತೆಯೇ ನಿಮ್ಮ ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
+<translation id="6465841119675156448">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆಯೇ</translation>
 <translation id="6467377768028664108">ನಂತರ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಹೀಗೆ ಮಾಡಬಹುದು:</translation>
 <translation id="6469557521904094793">ಸೆಲ್ಯುಲರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6470120577693311302">ಫ್ಲ್ಯಾಶ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">ಎಫೆಕ್ಟ್‌ ಮೋಡ್‌</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">ಶಾರ್ಟ್‌ಕಟ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="6632473616050862500">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌ನಿಂದ<ph name="END_LINK_CROS_OSS" /> ChromeOS Flex ನ ರಚನೆ ಸಾಧ್ಯವಾಗಿದೆ.</translation>
 <translation id="6646476869708241165">ಶೀಘ್ರ ಜೋಡಿಯಾಗಿಸುವಿಕೆಯನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="6647690760956378579">ಸ್ವಾಭಾವಿಕ ಧ್ವನಿ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="6650072551060208490">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">ಲಭ್ಯವಿರುವ ಸಾಧನಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="6776729248872343918">ಶೀಘ್ರ ಜೋಡಿಯಾಗಿಸುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6777845730143344223">Passpoint ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="6779406956731413166">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ಮಾಡಲು ಸಾಧ್ಯ.</translation>
 <translation id="6783036716881942511">ಈ ಸಾಧನವನ್ನು ಮರೆತಿದ್ದೀರಾ?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6785915470941880363">ಹಿಮ್ಮುಖ ಸ್ಕ್ರಾಲಿಂಗ್ <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">ಪಠ್ಯದಿಂದ ಧ್ವನಿಯ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7282547042039404307">ನಯವಾದ</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">ಬಳಕೆ ಮತ್ತು ಸುರಕ್ಷತೆ ಕುರಿತಾದ ಪ್ರಮುಖ ಮಾಹಿತಿ</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೆಟಪ್‌ ಮಾಡಿ</translation>
 <translation id="7304030187361489308">ಅಧಿಕ</translation>
 <translation id="7308643132139167865">ವೆಬ್‌ಸೈಟ್ ಭಾಷೆಗಳು</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> ನ <ph name="APPS_LIST_SIZE" /> ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="7423425410216218516">ಗೋಚರತೆ <ph name="MINUTES" /> ನಿಮಿಷಗಳವರೆಗೆ ಆನ್ ಇರುತ್ತದೆ</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7425037327577270384">ನನಗೆ ಬರೆಯಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="7429415133937917139">ಸ್ಕ್ರೀನ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ChromeVox ಫಲಕದಲ್ಲಿರುವ, ರಿಫ್ರೆಶ್ ಮಾಡಬಹುದಾದ ಬ್ರೈಲ್ ಡಿಸ್‌ಪ್ಲೇ ಔಟ್‌ಪುಟ್ ಅನ್ನು ಅನುಕರಿಸುತ್ತದೆ</translation>
@@ -1919,11 +1953,13 @@
 <translation id="7578137152457315135">ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7578692661782707876">ನಿಮ್ಮ ದೃಢೀಕರಣದ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="7582582252461552277">ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಆದ್ಯತೆ ನೀಡಿ</translation>
+<translation id="7582844466922312471">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
 <translation id="7587806318633605613">ಸಲಹೆಯ ಇತಿಹಾಸ</translation>
 <translation id="7590883480672980941">ಇನ್‌ಪುಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7592060599656252486">ಕೆಲವು</translation>
 <translation id="7602173054665172958">ಮುದ್ರಣ ನಿರ್ವಹಣೆ</translation>
 <translation id="7605163396341021431">ಈ Chromebook ನಲ್ಲಿ USB ಸಾಧನಗಳ ಮೇಲೆ Android ಆ್ಯಪ್‌ಗಳ ನಿಯಂತ್ರಣವನ್ನು ನೀಡಿ</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android ಆದ್ಯತೆಗಳು</translation>
 <translation id="7611713099524036757">ಮೆಟಾ</translation>
 <translation id="7612655942094160088">ಸಂಪರ್ಕಿತ ಫೋನ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
@@ -1934,12 +1970,14 @@
 <translation id="7632437836497571618">ಸೈಟ್‌ಗಳನ್ನು ಹುಡುಕಲು ಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="7634337648687970851">ಪ್ರಸ್ತುತ ಸ್ಥಳೀಯ ಡೇಟಾ ರಿಕವರಿಯನ್ನು ಬೆಂಬಲಿಸಲಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="7640256527901510478">ನಿಮ್ಮ ಸಾಧನದ IMEI ಸಂಖ್ಯೆ <ph name="IMEI_NUMBER" /> ಮತ್ತು ಸಾಧನದ ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" /> ಆಗಿದೆ. ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಲು ಈ ಸಂಖ್ಯೆಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="7640308610547854367">ನೀವು ChromeOS ನ ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗಿದ್ದೀರಿ. ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ಮುಂದಿನ ಆವೃತ್ತಿಯು ಲಭ್ಯವಾಗುವವರೆಗೆ ಕಾಯಿರಿ.</translation>
 <translation id="7641513591566880111">ಹೊಸ ಪ್ರೊಫೈಲ್ ಹೆಸರು</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ಮಾಲೀಕರು)</translation>
 <translation id="7648048654005891115">ಕೀಮ್ಯಾಪ್ ಶೈಲಿ</translation>
 <translation id="7649070708921625228">ಸಹಾಯ</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ}one{{COUNT} ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ}other{{COUNT} ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7650677314924139716">ಪ್ರಸ್ತುತ ಡೇಟಾ ಬಳಕೆಯ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ವೈ-ಫೈ ಮಾತ್ರ ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="7651400349472467012">ಇನ್‌ಸ್ಟಂಟ್ ಹಾಟ್‌ಸ್ಪಾಟ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="7651784568388208829">ಫೋನ್ ಹಬ್ ಕಾರ್ಯ ಮುಂದುವರಿಕೆ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
@@ -2030,6 +2068,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">ಅನುವಾದ</translation>
 <translation id="7915457674565721553">ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಲು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
+<translation id="7917876797003313048">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದ Google ಖಾತೆಗಳನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು. ನಿಮ್ಮ Google ಖಾತೆಗಳನ್ನು Chrome ಬ್ರೌಸರ್, Play Store ‌‌, Gmail ಹಾಗೂ ಮುಂತಾದವುಗಳಲ್ಲಿ ಬಳಸಲಾಗುತ್ತದೆ. ಕುಟುಂಬದ ಸದಸ್ಯರಂತಹ ಬೇರೊಬ್ಬರಿಗೆ ನೀವು ಖಾತೆಯನ್ನು ಸೇರಿಸಲು ಬಯಸಿದರೆ, ಬದಲಿಗೆ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಹೊಸ ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />ಸೆ</translation>
 <translation id="7920482456679570420">ನೀವು ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಸ್ಕಿಪ್ ಮಾಡಲು ಬಯಸುವ ಪದಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7921347341284348270">ಈ ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ಖಾತೆಯ ಮೂಲಕ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -2194,6 +2233,7 @@
 <translation id="8431977087510901105">ಕರ್ಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8439506636278576865">ಪುಟಗಳನ್ನು ಈ ಭಾಷೆಯಲ್ಲಿ ಅನುವಾದ ಮಾಡಲು ಅವಕಾಶ</translation>
+<translation id="8449347986464073209">ಅಳಿಸಿ ಮತ್ತು ಸೈನ್ ಔಟ್ ಆಗಿ</translation>
 <translation id="8451512073679317615">ಸಹಾಯಕ</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="8473540203671727883">ಮೌಸ್ ಕರ್ಸರ್‌ನ ಕೆಳಗಿರುವ ಪಠ್ಯವನ್ನು ಓದಿ</translation>
@@ -2319,6 +2359,7 @@
 <translation id="8872774989979382243">ವಾಲ್ಯೂಮ್ ಆಫ್ ಆಗಿದೆ. ವಾಲ್ಯೂಮ್ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="888256071122006425">ಮೌಸ್ ಮತ್ತು ಟಚ್‌ಪ್ಯಾಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />ಪ್ರಸ್ತುತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> ವರದಿ ಮಾಡುವ ಮೂಲಕ ChromeOS ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
+<translation id="8890170499370378450">ಮೊಬೈಲ್ ಡೇಟಾ ಶುಲ್ಕಗಳನ್ನು ತೆರಬೇಕಾಗಬಹುದು</translation>
 <translation id="8890529496706615641">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮರುಹೆಸರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ತಾಂತ್ರಿಕ ಬೆಂಬಲಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8894761918470382415">ಬಾಹ್ಯ ಸಾಧನಗಳ ಡೇಟಾ ಆ್ಯಕ್ಸೆಸ್ ರಕ್ಷಣೆ</translation>
 <translation id="8896830132794747524">ನಿಮ್ಮ ಮೌಸ್‌ನ ವೇಗವಾದ ಮೂವ್‌ಗಳು ಕರ್ಸರ್ ಅನ್ನು ದೂರಕ್ಕೆ ತಳ್ಳುತ್ತವೆ</translation>
@@ -2344,6 +2385,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="8980345560318123814">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿಗಳು</translation>
 <translation id="8981825781894055334">ಪೇಪರ್ ಕಡಿಮೆಯಿವೆ</translation>
+<translation id="8984694057134206124">ನೀವು <ph name="MINUTES" /> ನಿಮಿಷಗಳವರೆಗೆ ಎಲ್ಲರಿಗೂ ಕಾಣಿಸುತ್ತೀರಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">ಪತ್ತೆ ಮಾಡುವಿಕೆಯ ಥ್ರೆಶೋಲ್ಡ್</translation>
 <translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>
 <translation id="8991694323904646277">ಯಾವುದೇ ಕ್ಯಾಮರಾ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
@@ -2390,6 +2432,7 @@
 <translation id="9098860402274800697">Google Play ಮತ್ತು Android ಆ್ಯಪ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="910000385680858937">ಅನುಮತಿಸಲಾಗಿದೆ – <ph name="PERMISSION_DETAILS" />. ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಮೈಕ್ರೊಫೋನ್ ಕನೆಕ್ಟ್‌ಮಾಡಿ.</translation>
 <translation id="9100416672768993722">ಕೊನೆಯದಾಗಿ ಬಳಸಿದ ಇನ್‌ಪುಟ್ ವಿಧಾನಕ್ಕೆ ಬದಲಾಯಿಸಲು, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />ಸ್ಪೇಸ್<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> ಒತ್ತಿರಿ</translation>
+<translation id="9108072915170399168">ಪ್ರಸ್ತುತ ಡೇಟಾ ಬಳಕೆಯ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆಯೇ ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="9108294543511800041">ನೀವು ಈಗ ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು, ಮೀಡಿಯಾ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="9109122242323516435">ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಲು, ಸಾಧನ ಸಂಗ್ರಹಣೆಯಿಂದ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಿ.</translation>
 <translation id="9111330022786356709">ನಿಮ್ಮ ಮೌಸ್‌ನಲ್ಲಿ ಬಟನ್‌ಗಳನ್ನು ಸೇರಿಸಿ ಅಥವಾ ಪತ್ತೆ ಮಾಡಿ</translation>

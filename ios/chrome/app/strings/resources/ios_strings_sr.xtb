@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
 <translation id="2022431790688770637">Управљај Gemini предлозима</translation>
+<translation id="2023265063803387188">Gemini није доступан у режиму без архивирања</translation>
 <translation id="2031515492007104071">Виши ниво</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Заустави</translation>
 <translation id="2666092431469916601">Врх</translation>
 <translation id="2669454659051515572">Свако ко користи овај уређај може да види преузете фајлове</translation>
-<translation id="2671316366021598595">Домену <ph name="SITE_DOMAIN" /> није дозвољено да приступа камери</translation>
 <translation id="2671423594960767771">Дели групу</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Плаћање на рате</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Назив</translation>
 <translation id="386224966259596343">Моћи ћете да сачувате ове информације у Новчанику следећи пут када попуните одговарајући образац.</translation>
 <translation id="3868495844258915202">Прегледајте комплетан URL</translation>
+<translation id="3870931306085184145">Нема сачуваних лозинки за <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3878657761594430423">Алатка за померање листа</translation>
 <translation id="3884810423191119660">Безбедно чувајте лозинке да бисте се лако пријављивали на сајтове и у апликације</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Подигните прегледање на виши ниво</translation>
 <translation id="5062321486222145940">Инсталирај Google диск</translation>
 <translation id="5067540696062462445">Преузимања</translation>
-<translation id="5070314445039955096">Дозволе за <ph name="SITE_DOMAIN" /> ће се ресетовати и искључити када напустите овај сајт</translation>
 <translation id="507187271399539513">{count,plural, =1{{position}. од {count} начина плаћања}one{{position}. од {count} начина плаћања}few{{position}. од {count} начина плаћања}other{{position}. од {count} начина плаћања}}</translation>
 <translation id="5075939510584558547">Сачувајте без шифровања</translation>
 <translation id="5076534614343816664">Праћење цена</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Морате да будете пријављени да бисте користили Level Up</translation>
 <translation id="5352128922772839949">Сачувајте фајл</translation>
 <translation id="5355191726083956201">Побољшана заштита је укључена</translation>
-<translation id="5355871759168485600"><ph name="SITE_DOMAIN" /> може да користи микрофон кад год отворите овај сајт</translation>
 <translation id="5359436665022446585">Боље отварање линкова</translation>
 <translation id="536067926684072644">Прикажи обележиваче</translation>
 <translation id="5364647308446127983">{count,plural, =1{Увоз {count} приступног кључа није успео}one{Увоз {count} приступног кључа није успео}few{Увоз {count} приступна кључа није успео}other{Увоз {count} приступних кључева није успео}}</translation>
@@ -1484,6 +1483,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5612225021788368236">Затвори промоцију подразумеваног прегледача</translation>
 <translation id="561269594905823128">Додирните <ph name="BEGIN_BOLD" />Изабери фајл<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Сортирај према најновијем</translation>
+<translation id="561349411957324076">Довршено</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
 <translation id="5617769621178348890">Отвори у апликацији Фајлови</translation>
 <translation id="5619871095170816857">Ова картица приказује последњу коришћену отворену картицу на свим синхронизованим уређајима у последња 24 сата.</translation>
@@ -2333,7 +2333,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> налога</translation>
 <translation id="8161614462829037225">Откључај помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Дужина</translation>
-<translation id="8181328232274170248"><ph name="SITE_DOMAIN" /> може да користи камеру кад год отворите овај сајт</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и још 1}one{За {website_1}, {website_2} и још {more_count}}few{За {website_1}, {website_2} и још {more_count}}other{За {website_1}, {website_2} и још {more_count}}}</translation>
 <translation id="8184895727539791845">Да бисте дозволили Gemini-ју да користи камеру, укључите опцију Камера у подешавањима iOS-а</translation>
 <translation id="8185076488803799132">Import (Увези)</translation>
@@ -2504,7 +2503,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8674716540979958118">Имате угрожене лозинке.</translation>
 <translation id="8679900250380464358">Додај на Листу за читање</translation>
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
-<translation id="868648444055742370">Домену <ph name="SITE_DOMAIN" /> није дозвољено да приступа микрофону</translation>
 <translation id="8690752723634292147">Потврда брисања</translation>
 <translation id="8692107307702113268">Лозинка премашује 1000 знакова</translation>
 <translation id="8692689525339542358">Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>

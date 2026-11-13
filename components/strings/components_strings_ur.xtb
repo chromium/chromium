@@ -726,7 +726,6 @@
 <translation id="22081806969704220">ٹرے 3</translation>
 <translation id="2210794033760923560">رپورٹ اپ لوڈ کریں</translation>
 <translation id="2212735316055980242">پالیسی نہیں ملی</translation>
-<translation id="2213606439339815911">اندراجات کی بازیافت کی جا رہی ہے…</translation>
 <translation id="2213612003795704869">صفحہ پرنٹ کردہ ہے</translation>
 <translation id="2214086901479959524">‏اپنے مشترکہ ٹیب گروپس کا استعمال جاری رکھنے کے لیے Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="2214453882118345682">خریداری کریں، ترجمہ کریں اور جو آپ اپنے کیمرا سے کیا دیکھتے ہیں اس کی شناخت کریں۔</translation>
@@ -1277,7 +1276,6 @@
 <translation id="3141337053413339205">اس ٹیب پر سوئچ کریں۔</translation>
 <translation id="3144458715650412431">‏ٹیسٹ سے متعلق پالیسیاں لاگو کر دی گئی ہیں۔ chrome://policy/test پر ان کا جائزہ لیں ساتھ ہی انہیں ری سیٹ بھی کریں۔ منتظم کی پالیسیاں لاگو نہیں کی جائیں گی۔</translation>
 <translation id="3145945101586104090">جواب کو ڈیکوڈ کرنے میں ناکام</translation>
-<translation id="3149865382039202168">‏اپنی معلومات کو <ph name="GOOGLE_WALLET_TITLE" /> محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کے لیے اپنی پرائیویٹ پاس کی ترتیبات میں <ph name="HOW_INFO_IS_USED_LINK" /> کو کنٹرول کر سکتے ہیں۔ <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">سرور کی عارضی خرابی</translation>
 <translation id="3150889484970506196">‏شیٹ تخلیق کریں بٹن، تیزی سے نئی Google Sheet تخلیق کرنے کے لیے فعال کریں</translation>
 <translation id="3154506275960390542">اس صفحے میں ایسا فارم شامل ہے جو ممکن ہے بہ حفاظت جمع نہ ہو۔ دوسرے لوگ ٹرانزٹ کے دوران آپ کی جانب سے بھیجا جانے والا ڈیٹا دیکھ سکتے ہیں یا سرور کو موصول ہونے والے ڈیٹا میں کسی حملہ آور کے ذریعے ترمیم کی جا سکتی ہے۔</translation>
@@ -1524,7 +1522,6 @@
 <translation id="3558335486599406178">‏‫IBAN کو Google والٹ میں محفوظ کیا گیا</translation>
 <translation id="3558573058928565255">دن کا وقت</translation>
 <translation id="3559897352860026926">اپنی <ph name="CLOUD_PROVIDER" /> کنفیگریشن کی ترتیبات کی تصدیق کرنے کیلئے اپنے منتظم سے درخواست کریں۔</translation>
-<translation id="3560824484345057728">متعلقہ سائٹس دیکھیں</translation>
 <translation id="3566021033012934673">آپ کا کنکشن نجی نہیں ہے</translation>
 <translation id="3566336457819493938">‏‎215 x 315 ملی میٹر</translation>
 <translation id="3566681680543111735">تغیرات کی سٹرنگ کو کاپی کریں</translation>
@@ -2167,7 +2164,6 @@
 <translation id="4603727370377253901">فلائیٹ کے ریزرویشنز</translation>
 <translation id="4607608436550361748">‏Chrome کی تجاویز دیکھیں</translation>
 <translation id="460848736049414407">منتظم کے ذریعے مسدود کردہ</translation>
-<translation id="4610279718074907952">یہ سائٹ ایک گروپ میں موجود ہے، جس کی وضاحت <ph name="SET_OWNER" /> نے کی ہے، جو آپ کی سرگرمی دیکھ سکتی ہے</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> کے ذریعے <ph name="MERCHANT_ORIGIN" /> پر آپ کے آرڈر پر کارروائی کرنے میں ایک خرابی پیش آ گئی۔</translation>
 <translation id="4612904677925722054">اس سائٹ پر بالغانہ مواد ہو سکتا ہے۔ والدین یا سرپرست کو یہ کہنا ہوگا کہ آپ کیلئے یہ ویب سائٹ دیکھنا ٹھیک ہے۔</translation>
 <translation id="4613873770449493819">‏‫URL کو <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ڈومین کی طرف پوائنٹ کرنا چاہیے۔</translation>
@@ -3714,7 +3710,6 @@
 <translation id="7173338713290252554">ویب پر قیمت کی سرگزشت</translation>
 <translation id="7174545416324379297">ضم کردہ</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}other{<ph name="SHIPPING_OPTION_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> مزید}}</translation>
-<translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7181261019481237103">پوشیدگی ونڈو کھولیں</translation>
 <translation id="7182878459783632708">کوئی پالیسیاں سیٹ نہیں ہیں</translation>
 <translation id="7186833457841277072">لفافہ (انک جیٹ)</translation>
@@ -4180,7 +4175,6 @@
 <translation id="7932579305932748336">کوٹ</translation>
 <translation id="79338296614623784">ایک درست فون نمبر درج کریں</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> تحفظ یافتہ مواد چلانا چاہتا ہے۔ Google آپ کے آلے کی شناخت کی توثیق کرے گا۔</translation>
-<translation id="7935318582918952113">‏DOM ڈسٹلر</translation>
 <translation id="7935520077478121175">موشن سینسرز کی اجازت ہے</translation>
 <translation id="7937163678541954811">‏اس کارڈ کے CVC کو مرموز کیا جائے گا اور تیز چیک آؤٹ کے لیے آپ کے آلے میں محفوظ کیا جائے گا</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> کو میعاد ختم ہو جائے گی</translation>
@@ -4228,7 +4222,6 @@
 <translation id="7999482381722829925">عام طور پر نظر انداز کیے جانے والے مقامات کو ہدف بناتے ہوئے، کمرہ بہ کمرہ گہری صفائی کی ترجیحی چیک لسٹ بنائیں</translation>
 <translation id="8001912761979890298">‏یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے کیونکہ یہ ایک سیکیورٹی سرٹیفکیٹ استعمال کر رہا ہے جس پر Chromium یا آپ کے سسٹم کے کنفیگریشن کو ویب ٹریفک کی مرموز کاری کے لیے بھروسہ نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔ <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />سرٹیفکیٹ دیکھیں<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">میموری خالی کرنے کیلئے دیگر ٹیبز یا پروگرامز کو بند کرنے کی کوشش کریں۔</translation>
-<translation id="8002230960325005199">ایک نئے ٹیب میں متعلقہ سائٹس دیکھیں</translation>
 <translation id="8003046808285812021">"<ph name="SEARCH_TERMS" />"</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8009225694047762179">پاسورڈز کا نظم کریں</translation>
@@ -4269,7 +4262,6 @@
 <translation id="8079976827192572403">خطرناک سائٹ</translation>
 <translation id="8086971161893892807">مسودہ</translation>
 <translation id="8087558780672230449">‫<ph name="MERCHANT_ORIGIN" /> پر آپ کی ادائیگی کو ہینڈل کرنے کے لیے <ph name="APP_ORIGIN" /> لوڈ ہو رہا ہے۔</translation>
-<translation id="8088680233425245692">مضمون دیکھنے میں ناکام:</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8091372947890762290">فعالیت سرور پر زیر التواء ہے</translation>
 <translation id="8092254339843485299">‏‎6 x 8 انچ</translation>
@@ -4909,7 +4901,6 @@
 <translation id="9199905725844810519">پرنٹنگ مسدود ہے</translation>
 <translation id="9204089334327209740">اپ لوڈ مکمل ہونے کے بعد، آپ <ph name="CLOUD_PROVIDER" /> میں اپنی فائلز میں ترمیم کر سکتے ہیں۔ مقامی اسٹوریج بشمول کوڑے دان میں موجود کسی بھی فائل کو خودکار طور پر ہٹا دیا جائے گا۔</translation>
 <translation id="9205078245616868884">آپ کے ڈیٹا کی آپ کے مطابقت پذیر پاس فریز کے ساتھ مرموز کاری کی گئی ہے۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
-<translation id="9207861905230894330">مضمون شامل کرنے میں ناکام ہوگیا۔</translation>
 <translation id="9209339767782560829">آپ کا لاگ ان سرٹیفکیٹ استعمال کرنے میں ایک مسئلہ تھا۔</translation>
 <translation id="9210152531668884481">میں تیار ہوں</translation>
 <translation id="9213433120051936369">ہیئت حسب ضرورت بنائیں</translation>

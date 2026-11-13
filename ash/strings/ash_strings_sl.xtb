@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Nekaj stvari, ki jih lahko preizkusite</translation>
 <translation id="112308213915226829">Samodejno skrivanje police</translation>
 <translation id="1129383337808748948">Osvežitev: <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Vsebovati mora vsaj eno črko ali simbol</translation>
 <translation id="1142002900084379065">Nedavne fotografije</translation>
 <translation id="114221662579355151">To omogoča dostop do fotoaparata za aplikaciji <ph name="APP1_NAME" /> in <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za kamero. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="1145593918056169051">Tiskalnik se je ustavil</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Odpiranje novega zavihka v novem oknu</translation>
 <translation id="1536604384701784949">Če želite uporabljati <ph name="USER_EMAIL_ADDRESS" />, se morate najprej odjaviti iz vseh računov. Če se želite odjaviti, izberite »Prekliči«, da se vrnete. Nato izberite čas, če želite odpreti območje stanja, in izberite »Odjava«. Nato se znova prijavite v <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Velik miškin kazalec</translation>
+<translation id="1538808328818992871">Vsebovati mora vsaj toliko znakov: <ph name="MIN_LENGTH" /></translation>
 <translation id="1545331255323159851">Ogled nedavnih fotografij, predstavnosti in obvestil telefona</translation>
 <translation id="1546492247443594934">Namizje 2</translation>
 <translation id="1546930421365146760">Skrbnika prosite, da to napravo nastavi v Googlovi skrbniški konzoli.</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="1557622599341396706">Pokaži ime namizja</translation>
+<translation id="1568242747239041185">Vsebovati mora dve od teh vrst znakov: velike črke, male črke, številke ali simbole</translation>
 <translation id="1569384531973824928">To omogoča dostop za vse aplikacije in spletna mesta, ki imajo dovoljenje za kamero in mikrofon. Morda boste morali osvežiti spletno stran ali znova zagnati aplikacijo.</translation>
 <translation id="1570235441606255261">Namestitveni program za storitev Steam</translation>
 <translation id="1571697193564730395">Preklop načina »Ne moti«. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Strnitev Google Opravil</translation>
 <translation id="2208323208084708176">Način enotnega namizja</translation>
 <translation id="2215920961700443347">Ni internetne povezave. Vzpostavite internetno povezavo in poskusite znova.</translation>
+<translation id="2220572644011485463">Koda PIN ali geslo</translation>
 <translation id="2222841058024245321">Namizje 7</translation>
 <translation id="2223384056430485343">Na razdeljenem zaslonu</translation>
 <translation id="2224075387478458881">Snemanje zaslona ni dovoljeno, ko je vidna zaščitena vsebina.</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Tipke za miško so začasno zaustavljene</translation>
 <translation id="2268731132310444948"><ph name="STEP" />. korak predstavitve od <ph name="TOTAL_STEPS" />. Ko je zaganjalnik aktiviran, se prikaže izboljšana vrstica za iskanje. Začnete lahko vnašati, če želite iskati datoteke, aplikacije in drugo. Prejmete lahko tudi odgovore na vprašanja glede naprave <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Odjava vseh</translation>
+<translation id="2273432041732361925">Ne sme vsebovati ponavljajočih se znakov ali zaporedij štirih ali več znakov</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2278668501808246459">Zagon upravitelja vsebnikov</translation>
 <translation id="2282073721614284166">Odpiranje povezave na zavihku</translation>
@@ -1056,6 +1061,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4072805772816336153">Poskusite znova pozneje</translation>
 <translation id="4077623680826964850">Časovna omejitev pri zagonu ali vnovični vzpostavitvi povezave z navideznim računalnikom.</translation>
 <translation id="4086921558679520050">Vklopite fizično stikalo za mikrofon v napravi</translation>
+<translation id="4093173301198419723">Vsebovati mora velike črke, male črke, številke in simbole</translation>
 <translation id="4099874310852108874">Prišlo je do napake omrežja.</translation>
 <translation id="4101772068965291327">Odpri domačo stran</translation>
 <translation id="4102906002417106771">Znova zaženite za izvedbo Powerwasha</translation>
@@ -1279,6 +1285,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4668936527507421457">Koda PIN mora vsebovati samo številke</translation>
 <translation id="4672539464599646374">Varčevanje z energijo baterije je vklopljeno</translation>
 <translation id="4673427585974421255">Pusti vklopljeno</translation>
+<translation id="467510802200863975">Gesli se ne ujemata</translation>
 <translation id="4677040906536311086">Google Preglednica</translation>
 <translation id="468019262817532242">Nihče ne more deliti z vami</translation>
 <translation id="468293128311738995">Aplikacije iz telefona</translation>
@@ -1302,6 +1309,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4746798685375253449">{0,plural, =1{Posodobite napravo na prejšnjo različico v enem dnevu}one{Posodobite napravo na prejšnjo različico v # dnevu}two{Posodobite napravo na prejšnjo različico v # dnevih}few{Posodobite napravo na prejšnjo različico v # dneh}other{Posodobite napravo na prejšnjo različico v # dneh}}</translation>
 <translation id="4747410141429390146">Če si želite ogledati obvestila, odklenite zaslon.</translation>
 <translation id="4752784485658729358">Dovoljenih je samo 6 shranjenih namizij. Če želite shraniti novo, odstranite eno.</translation>
+<translation id="4753084533826742808">Vsebovati mora vsaj 1 znak</translation>
 <translation id="4759238208242260848">Prenosi</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + puščica gor</translation>
 <translation id="4762573482154983647">Skrij aplikacije</translation>
@@ -1438,6 +1446,7 @@ Uporabite lahko tudi bližnjično tipko. Najprej označite besedilo in nato prit
 <translation id="5144005092084035179">Želite preklopiti zvočni vhod?</translation>
 <translation id="5145464978649806571">Če se odmaknete od naprave, se bo zaslon samodejno zaklenil. Ko ste pred napravo, se zaslon dalj časa ne bo zaklenil. Če je zaklepanje zaslona onemogočeno, se naprava ne bo zaklenila, ampak bo preklopila v stanje pripravljenosti.</translation>
 <translation id="5147567197700016471">Odklenjeno</translation>
+<translation id="5148285448107770349">Geslo mora imeti najmanj 8 znakov</translation>
 <translation id="5150070631291639005">Nastavitve zasebnosti</translation>
 <translation id="5155897006997040331">Hitrost branja</translation>
 <translation id="5158206172605340248">Meni z naglasnimi znamenji je opuščen.</translation>
@@ -1558,6 +1567,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5474859849784484111">Domena <ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).</translation>
 <translation id="547979256943495781">Polica na desni</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Potrditev gesla</translation>
 <translation id="5491186829646618080">Na voljo so posodobitve vdelane programske opreme</translation>
 <translation id="5503884284981862082">Odpiranje/zapiranje Pomočnika Google</translation>
 <translation id="550391772491508736">Nadaljuj predvajanje</translation>
@@ -1821,6 +1831,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6198252989419008588">Spremeni PIN</translation>
 <translation id="6199775032047436064">Znova naloži trenutno stran</translation>
 <translation id="6200515304866777730">Aplikacija ne podpira</translation>
+<translation id="6209589022625766110">Vsebovati mora najmanj 8 znakov ter vsaj dve od naslednjih vrst znakov: velike črke, male črke, številke ali simboli. Ne sme vsebovati ponavljajočih se znakov ali zaporedij štirih ali več znakov.</translation>
 <translation id="6210042900243040400">Vzpostavite povezavo z napravo <ph name="NAME" />, ki je že shranjena v računu <ph name="EMAIL" />.</translation>
 <translation id="6212580734499190393">Za 10 min</translation>
 <translation id="6213808132343683860">Ustvarjanje delnega posnetka zaslona ali snemanja zaslona</translation>
@@ -1855,6 +1866,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6297986260307280218">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To <ph name="BEGIN_LINK1" />nastavitev<ph name="END_LINK1" /> je uveljavil lastnik naprave. Lastnik bo morda izbral, da se za to napravo pošiljajo diagnostični podatki in podatki o uporabi Googlu. Če ste vklopili nastavitev dodatne dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google. <ph name="BEGIN_LINK2" />Preberite več o meritvah<ph name="BEGIN_LINK2_END" />Več o tem<ph name="END_LINK2" />.</translation>
 <translation id="6298183524022479114">Prilagodite to napravo v aplikaciji</translation>
 <translation id="6298962879096096191">Uporaba Googla Play za nameščanje aplikacij za Android</translation>
+<translation id="6300478323573969040">Vsebovati mora najmanj 12 znakov ter velike in male črke, številke in simbole. Ne sme vsebovati ponavljajočih se znakov ali zaporedij štirih ali več znakov.</translation>
 <translation id="6304076460080088478">Zaprite ali pomanjšajte anonimna okna, če želite iskati po zaslonu z Googlom Lens</translation>
 <translation id="6309219492973062892">Klik ali dotik ikone polic od 1 do 8</translation>
 <translation id="6315170314923504164">Glasovne nastavitve</translation>
@@ -2027,7 +2039,6 @@ Nova namestitev</translation>
 <translation id="6782919488259222803">Iskanje po trenutni strani</translation>
 <translation id="6783348167101855071">Izbrana spodnja desna ročica, uporabite puščične tipke za premikanje</translation>
 <translation id="6786750046913594791">Zapri mapo</translation>
-<translation id="6792262051831399889">Ni na voljo</translation>
 <translation id="6792351896138862473">Nepodprte aplikacije za kiosk ni mogoče zagnati. O tej težavi obvestite skrbnika.</translation>
 <translation id="679368458793552943">Povečava, ko je lupa vklopljena</translation>
 <translation id="6794287755901682422">Ta element ima: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2470,6 +2481,7 @@ Nova namestitev</translation>
 <translation id="8052898407431791827">Kopirano v odložišče</translation>
 <translation id="8054466585765276473">Izračunavanje časa trajanja akumulatorja.</translation>
 <translation id="8063363226185507157">Sinhronizirane nastavitve dostopnosti</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8079538659226626406">Deljenje zaslona</translation>
 <translation id="8083540854303889870">Shranjeno za pozneje</translation>
@@ -2633,6 +2645,7 @@ Nova namestitev</translation>
 <translation id="8555757996376137129">Odstranitev trenutnega namizja</translation>
 <translation id="8558521694042102707">Generativna umetna inteligenca se lahko zmoti, tudi o ljudeh, zato preverite odgovore.</translation>
 <translation id="8559845965695780508">Uredil: <ph name="USER" /></translation>
+<translation id="8567946600191652875">Vsebovati mora vsaj 6 znakov ter vsaj eno črko ali simbol</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Meni je bil premaknjen v spodnji desni kot zaslona.</translation>
 <translation id="8581946341807941670">Pritisnite <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> in kliknite povezavo</translation>
@@ -2806,7 +2819,6 @@ Nova namestitev</translation>
 <translation id="9034924485347205037">Datoteke za Linux</translation>
 <translation id="9037818663270399707">Vaša povezava ni zasebna za ves omrežni promet</translation>
 <translation id="9047624247355796468">Odpri nastavitve za <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Bluetooth ni na voljo</translation>
 <translation id="9050999376345823055">Pritisnite ».«, če želite sprostiti</translation>
 <translation id="906458777597946297">Povečanje okna</translation>
 <translation id="9065203028668620118">Uredi</translation>

@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Handa ka na!</translation>
 <translation id="1149483087970735785">Pantulong na teknolohiya</translation>
 <translation id="1150490752229770117">Ito ang huling pag-update ng software at seguridad para sa ganitong <ph name="DEVICE_TYPE" />. Para makakuha ng mga update sa hinaharap, mag-upgrade sa mas bagong modelo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Tungkol sa ChromeOS</translation>
 <translation id="1155816283571436363">Pagkonekta sa iyong telepono</translation>
 <translation id="1160800016654917722">Inilipat ang window pababa at pakaliwa</translation>
 <translation id="1164015913575846413">alt + pag-click</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">launcher + pakanang arrow</translation>
 <translation id="1280332775949918163">I-snap ang window</translation>
+<translation id="1285625592773741684">Mobile Data ang kasalukuyang setting ng paggamit ng data</translation>
 <translation id="1285815028662278915">Posibleng hindi sinusuportahan ng iyong mobile data ang hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Awtomatikong mag-o-on ang Night Light sa paglubog ng araw</translation>
 <translation id="1288300545283011870">Mga Property ng Pagsasalita</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Idi-disable nito ang mga extension at ire-reset ang iyong mga setting sa mga ligtas na default. Mapapanatili ang mga tab, file, at cookies. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Fullscreen magnifier</translation>
 <translation id="1539727654733007771">Walang naka-set up na mobile network. Mag-download ng bagong <ph name="BEGIN_LINK" />profile.<ph name="END_LINK" /></translation>
+<translation id="1547295885616600893">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS.</translation>
 <translation id="1547808936554660006">Nauunawaan kong hindi aalisin ng Powerwash ang mga naka-install na profile ng eSIM.</translation>
 <translation id="1549275686094429035">Naka-enable ang ARC</translation>
 <translation id="1554640914375980459">I-flash ang screen kapag nakatanggap ka ng mga notification. Mag-ingat sa paggamit ng mga flash notification kung sensitibo ka sa ilaw.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Gumamit ng Wi‑Fi o mga mobile network upang matukoy ang lokasyon</translation>
 <translation id="1650407365859096313">Magbubukas sa bagong tab, <ph name="PERMISSION_STATE" /> ang pahintulot</translation>
 <translation id="1652326691684645429">I-enable ang Nearby Share</translation>
+<translation id="1662146548738125461">Tungkol sa ChromeOS Flex</translation>
 <translation id="1663698992894057019">Mag-upgrade sa bagong Chromebook para sa pinakabagong seguridad at software</translation>
 <translation id="1665328953287874063">Gumamit ng password o PIN para i-unlock ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Marinig na binabasa nang malakas ang partikular na text. Una, piliin ang icon na Select-to-speak sa ibaba ng iyong screen, pagkatapos ay i-highlight ang text. Puwede ka ring gumamit ng keyboard shortcut: Mag-highlight ng text, pagkatapos ay pindutin ang Search + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Tandaan: Maaaring hindi gaanong ligtas ang iyong fingerprint kaysa sa isang mahirap hulaang password o PIN.</translation>
 <translation id="1724801751621173132">Pamamaraan ng pag-input</translation>
 <translation id="1741190788710022490">Adaptive na pag-charge</translation>
+<translation id="1745732479023874451">Pamahalaan ang mga contact</translation>
 <translation id="1751335846119670066">Tulungan akong magbasa</translation>
 <translation id="1755601632425835748">Laki ng text</translation>
 <translation id="1761402971842586829">Na-remap ang <ph name="BUTTON_NAME" /> sa <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Hindi, 1 switch lang muna ang gamitin</translation>
 <translation id="1842681835432895345">Huwag isama ang screen na ito sa mirror mode</translation>
 <translation id="1848219224579402567">Mag-sign out kapag isinara ang takip</translation>
+<translation id="185970820835152459">Puwede mong pamahalaan ang iyong mga naka-sign in na Google Account. Ginagamit ang iyong mga Google Account para sa Chromium browser, Play Store, Gmail, at higit pa. Kung gusto mong magdagdag ng account para sa ibang tao, tulad ng miyembro ng pamilya, magdagdag na lang ng bagong tao sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Cooler</translation>
 <translation id="1866589962721094893">Bigyan ang mga Android app ng kontrol sa mga USB device sa Chromebook na ito. Magre-request ng pahintulot sa tuwing magsasaksak ka ng USB device. Hihiling ang mga indibidwal na Android app ng mga karagdagang pahintulot.</translation>
 <translation id="1877377290348678128">Label (opsyonal)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Tunog</translation>
 <translation id="2097950021134740304">Kanselahin ang pagkalimot sa subscription</translation>
 <translation id="2104166991923847969">Awtomatikong i-off ang hotspot</translation>
+<translation id="2106831557840787829">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS Flex, pati na rin ang <ph name="BEGIN_LINK_LINUX_OSS" />environment sa pag-develop ng Linux <ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Walang nakalagay na SIM card</translation>
 <translation id="2121825465123208577">Baguhin ang laki</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Alisin si <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2363475280045770326">Error sa pag-save ng configuration</translation>
+<translation id="236939127352773362">Kapag nagbabahagi ang mga device sa malapit</translation>
 <translation id="237336063998926520">Gamitin ang iyong IP address upang malaman ang lokasyon</translation>
 <translation id="2373499590298659902">Gamitin ang “0” para pindutin nang matagal ang button ng mouse</translation>
 <translation id="2375406435414127095">Kumonekta sa iyong telepono</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">I-block ang trapiko nang walang VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Nagbibigay ang Katumpakan ng Lokasyon ng mas tumpak na lokasyon para sa mga app at serbisyo. Para magawa ito, pana-panahong pinoproseso ng Google ang impormasyon tungkol sa mga sensor ng device at wireless na signal mula sa iyong device para i-crowdsource ang mga lokasyon ng wireless na signal. Ginagamit ang mga ito nang hindi ibinibigay ang pagkakakilanlan mo para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon, at para mapahusay, maibigay, at mapanatili sa pangkalahatan ang mga serbisyo ng Google batay sa mga lehitimong interes ng Google at mga third party para matugunan ang mga pangangailangan ng mga user.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Malapit nang mapuno ang tray para sa output</translation>
 <translation id="3390013585654699824">Mga detalye ng app</translation>
 <translation id="3390740059150071453">Tumingin sa kaliwa</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Email address</translation>
 <translation id="3701028563242674350">I-shake ang cursor ng mouse para palakihin ito</translation>
 <translation id="3703699162703116302">Na-refresh ang ticket</translation>
+<translation id="3703994572283698466">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS, pati na rin ang <ph name="BEGIN_LINK_LINUX_OSS" />environment sa pag-develop ng Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Paganahin ang Wi-Fi</translation>
 <translation id="370665806235115550">Naglo-load...</translation>
 <translation id="3707163604290651814">Kasalukuyang naka-sign in bilang <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">May nakitang <ph name="NUM_PRINTERS" /> (na) printer mula sa server sa pag-print</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="37143699183660101">Stability ng cursor</translation>
+<translation id="3716540481907974026">Bersyon ng ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Mali ang PIN. Subukan ulit</translation>
 <translation id="3728681439294129328">I-configure ang network address</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Ipakita ang underline para sa text ng komposisyon</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="379509625511193653">Naka-off</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + pataas na arrow</translation>
 <translation id="3798670284305777884">Speaker (internal)</translation>
 <translation id="3799128412641261490">Mga setting ng switch access</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Built-in na Keyboard</translation>
 <translation id="3917644013202553949">Walang sapat na storage para ma-sync ang iyong mga file. Subukang magbakante ng space.</translation>
 <translation id="3919229493046408863">I-off ang notification kapag nasa malapit ang mga device</translation>
+<translation id="3923184630988645767">Paggamit ng data</translation>
 <translation id="3923494859158167397">Walang naka-set up na mobile network</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Magagamit din ng ibang user sa device na ito ang network na ito</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Kahulugan ng Instant na Impormasyon</translation>
 <translation id="3994075804072562819">Bigyan ang <ph name="SPECIFIC_NAME" /> ng kontrol sa mga USB device.</translation>
 <translation id="3994530503403062649">Magtakda ng mga button sa iyong tablet</translation>
+<translation id="3997429360543082038">Tungkol sa ChromiumOS</translation>
 <translation id="4001540981461989979">I-highlight ang cursor ng mouse kapag gumagalaw</translation>
 <translation id="4005817994523282006">Paraan ng pagtukoy ng time zone</translation>
+<translation id="4019629340646866719">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromiumOS, pati na rin ang <ph name="BEGIN_LINK_LINUX_OSS" />environment sa pag-develop ng Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopyahin ang mga detalye ng build</translation>
 <translation id="4028467762035011525">Magdagdag ng mga pamamaraan ng pag-input</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Para lumipat sa huling ginamit na pamamaraan ng pag-input, pindutin ang <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">search + pakanang arrow</translation>
 <translation id="405181879009056822">Mga Setting ng ChromeOS</translation>
+<translation id="4054070260844648638">Makikita ng lahat ng tao</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Pakisuri ang iyong koneksyon para makita ang mga available na printer sa network mo</translation>
 <translation id="4068776064906523561">Mga naka-save na fingerprint</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, Baitang <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Maghanap ng higit pang app ng stylus</translation>
 <translation id="4248401726442101648">Walang nakakonektang camera</translation>
+<translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4249116869350613769">Pantipid ng baterya</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425411422794688815">Nagkaproblema. Tiyaking nasa malapit at naka-unlock ang iyong telepono, at naka-on ang Bluetooth at Wi-Fi</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Account}one{<ph name="EXTRA_ACCOUNTS" /> Google Account}other{<ph name="EXTRA_ACCOUNTS" /> na Google Account}}</translation>
 <translation id="4314497418046265427">Maging mas produktibo kapag ikinonekta mo ang iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="4314561087119792062">Magdagdag ng bagong Access point name</translation>
+<translation id="4314815835985389558">Pamahalaan ang pag-sync</translation>
 <translation id="4320177379694898372">Walang koneksyon sa internet</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Storage at power</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Bilang ng suhestyon</translation>
 <translation id="4606933160360542263">Custom na kumbinasyon ng key: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Kapag pinili ang kaliwang button ng mouse, gamitin ang “/” para mag-double click</translation>
+<translation id="4613863813562375431">Bersyon ng ChromiumOS</translation>
 <translation id="461661862154729886">Energy source</translation>
 <translation id="4617880081511131945">Hindi makakonekta</translation>
 <translation id="4620757807254334872">mouse</translation>
@@ -1136,6 +1155,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4777943778632837590">I-configure ang mga name server ng network</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779766576531456629">I-rename ang Cellular network ng eSIM</translation>
+<translation id="4789550509729954245">Magpakita ng notification kapag nagbabahagi ang mga kalapit na device</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">I-enable ang pag-accelerate ng TrackPoint</translation>
 <translation id="479664067938200069">Mga naka-install na application mula sa <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4964544790384916627">I-dock ang window</translation>
 <translation id="4964673849688379040">Sinusuri...</translation>
 <translation id="4967571733817147990">I-customize ang mga button sa mouse</translation>
+<translation id="4970880042055371251">Bersyon ng ChromeOS</translation>
 <translation id="4972129977812092092">I-edit ang printer</translation>
 <translation id="4975771730019223894">Pag-badge ng app</translation>
 <translation id="4979263087381759787">Mga Opsyon ng Developer</translation>
@@ -1275,6 +1296,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5193978546360574373">Aalisin nito ang access sa Google Drive sa Chromebook na ito, kabilang ang access sa anumang file na ginawang available offline</translation>
 <translation id="5196790039230503600">Gamitin ang galaw, at pagkatapos ay galawin ang iyong ulo para ipakita kung saan mo gustong i-drop ang item. Gamitin ulit ang galaw para i-drop ito.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Huwag gumamit ng mobile data para maglipat</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="5208926629108082192">Impormasyon ng mobile network ng device</translation>
 <translation id="5208988882104884956">Halfwidth</translation>
@@ -1307,6 +1329,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5331568967879689647">App ng System ng ChromeOS</translation>
 <translation id="5334113802138581043">Access sa mikropono</translation>
 <translation id="5336689872433667741">Cursor at touchpad</translation>
+<translation id="5337926771328966926">Ang <ph name="DEVICE_NAME" /> ang kasalukuyang device</translation>
 <translation id="5340900621595888432">Ipadala ang data ng diagnostic at paggamit</translation>
 <translation id="5369694795837229225">I-set up ang environment sa pag-develop ng Linux</translation>
 <translation id="5377367976106153749">I-on ang access sa camera?</translation>
@@ -1444,6 +1467,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5833726373896279253">Mababago lang ang mga setting na ito ng may-ari:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Case</translation>
+<translation id="5840680448799937675">Palaging ibabahagi offline ang mga file</translation>
 <translation id="5841270259333717135">I-configure ang Ethernet</translation>
 <translation id="5842497610951477805">I-enable ang Bluetooth</translation>
 <translation id="5846200638699387931">Error sa syntax sa kaugnayan: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5924438086390153180">Magtanong bago kumopya o maglipat ng mga Microsoft file sa Google Drive</translation>
 <translation id="5939518447894949180">I-reset</translation>
 <translation id="594048410531370124">Hindi kilalang key. Pumindot ng anumang key para <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Visibility ng device</translation>
 <translation id="5945192511027649793">I-disable ang Touchpad</translation>
 <translation id="5947651424015173580">I-double click ang mouse</translation>
 <translation id="594993197557058302">Pumindot ng 1-4 na modifier key (ctrl, alt, shift, maghanap, o launcher) at 1 pang key. Puwede ka ring pumili ng iisang key.</translation>
@@ -1491,10 +1516,12 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5961545272769624207">Magtalaga ng galaw</translation>
 <translation id="5968022600320704045">Walang resulta ng paghahanap</translation>
 <translation id="5969728632630673489">Na-dismiss ang abiso sa keyboard shortcut</translation>
+<translation id="5979353814339191480">Nalalapat ang opsyong ito sa mga Chromebook na may data plan o dongle ng mobile network, o kapag nagte-tether sa isang portable hotspot</translation>
 <translation id="5985556342298151179">Na-install ang Chrome app ng administrator ng iyong device.</translation>
 <translation id="5986442691296752186">Bigyan ang mga Linux app ng kontrol sa mga USB device.</translation>
 <translation id="598810097218913399">Alisin ang pagkakatalaga</translation>
 <translation id="5988563937187882754">Tumingin sa kanan</translation>
+<translation id="5990266201903445068">Wi-Fi lang</translation>
 <translation id="5992225669837656567">Nadiskonekta ang lahat ng mouse</translation>
 <translation id="5999630716831179808">Mga Boses</translation>
 <translation id="6002458620803359783">Mga Gustong Boses</translation>
@@ -1509,6 +1536,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6045114302329202345">Pangunahing button ng TrackPoint</translation>
 <translation id="6048747414605857443">Pumili at mag-customize ng mga boses ng text-to-speech para sa ChromeVox at Select-to-speak</translation>
 <translation id="6050189528197190982">Grayscale</translation>
+<translation id="6054961935262556546">Baguhin ang visibility</translation>
 <translation id="6059276912018042191">Mga kamakailang tab ng Chrome</translation>
 <translation id="6059925163896151826">Mga USB device</translation>
 <translation id="6064764629679333574">Pagandahin ang kalidad ng tunog ng Bluetooth na mikropono sa pamamagitan ng pag-upscale sa high-res mula sa low-res.</translation>
@@ -1567,6 +1595,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6265159465845424232">Magtanong bago kumopya o maglipat ng mga Microsoft file sa Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Alisin ang port</translation>
 <translation id="6266532094411434237">Kumokonekta sa <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="6270309713620950855">Nudge sa pag-mute</translation>
 <translation id="6274089201566806618">Kumokonekta sa <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 na segundo</translation>
@@ -1618,6 +1647,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6453921811609336127">Para lumipat sa susunod na pamamaraan ng pag-input, pindutin ang <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">I-delete ang diksyunaryong ito</translation>
 <translation id="6463596731306859179">Nakakatanggap ng mga hindi gustong pop-up, o iba pang hindi inaasahang gawi? Kung minsan, puwedeng mabago ng mga app at extension na ini-install mo ang mga setting ng iyong ChromeOS nang hindi mo alam.</translation>
+<translation id="6465841119675156448">Nang walang internet</translation>
 <translation id="6467377768028664108">Magagawa ng iyong <ph name="DEVICE_TYPE" /> na:</translation>
 <translation id="6469557521904094793">I-on ang Cellular network</translation>
 <translation id="6470120577693311302">Mga flash notification</translation>
@@ -1668,6 +1698,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6626581113916585374">Effect mode</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Shortcut sa pagpipilian</translation>
+<translation id="6632473616050862500">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS Flex.</translation>
 <translation id="6646476869708241165">I-off ang Mabilis na Pagpares</translation>
 <translation id="6647690760956378579">Preview ng natural na boses</translation>
 <translation id="6650072551060208490">Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
@@ -1711,6 +1742,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6775163072363532304">Lalabas dito ang mga available na device.</translation>
 <translation id="6776729248872343918">I-enable ang Mabilis na Pagpares</translation>
 <translation id="6777845730143344223">Matuto pa tungkol sa mga subscription sa Passpoint</translation>
+<translation id="6779406956731413166">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromiumOS.</translation>
 <translation id="6783036716881942511">Kalimutan ang device na ito?</translation>
 <translation id="6783667414610055871">Mga setting ng Microsoft OneDrive</translation>
 <translation id="6785915470941880363">Reverse na pag-scroll <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="7280649757394340890">Mga setting ng boses ng Text-to-Speech</translation>
 <translation id="7282547042039404307">Pantay</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Mahalagang impormasyon sa paggamit at kaligtasan</translation>
 <translation id="7303485269821975179">Mag-set up ng password ng <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Mataas</translation>
 <translation id="7308643132139167865">Mga wika ng website</translation>
@@ -1873,6 +1906,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="7409599290172516453">Mga Pinakabagong Larawan</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> sa <ph name="APPS_LIST_SIZE" /> (na) app ang naka-block</translation>
+<translation id="7423425410216218516">Naka-on ang visibility sa loob ng <ph name="MINUTES" /> (na) minuto</translation>
 <translation id="7423513079490750513">Alisin ang <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Tulungan akong magsulat</translation>
 <translation id="7429415133937917139">Ginagaya ang output ng isang nare-refresh na braille display
@@ -1920,11 +1954,13 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="7578137152457315135">Mga setting ng fingerprint</translation>
 <translation id="7578692661782707876">Pakilagay ang iyong code sa pagkumpirma.</translation>
 <translation id="7582582252461552277">Gustuhin ang network na ito</translation>
+<translation id="7582844466922312471">Data ng Mobile</translation>
 <translation id="7587806318633605613">History ng suhestyon</translation>
 <translation id="7590883480672980941">Mga setting ng input</translation>
 <translation id="7592060599656252486">Ilan</translation>
 <translation id="7602173054665172958">Pamamahala ng pag-print</translation>
 <translation id="7605163396341021431">Bigyan ang mga Android app ng kontrol sa mga USB device sa Chromebook na ito</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Mga kagustuhan sa Android</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Nag-e-enable sa mga feature ng nakakonektang telepono.</translation>
@@ -1935,12 +1971,14 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="7632437836497571618">Gumamit ng mga secure na koneksyon para maghanap ng mga site</translation>
 <translation id="7634337648687970851">Kasalukuyang hindi sinusuportahan ang pag-recover ng lokal na data.</translation>
 <translation id="7640256527901510478">Ang iyong device IMEI ay <ph name="IMEI_NUMBER" /> at ang serial ng device ay <ph name="SERIAL_NUMBER" />. Puwedeng gamitin ang mga numerong ito para makatulong na ma-activate ang serbisyo.</translation>
+<translation id="7640308610547854367">Na-revert ka sa isang lumang bersyon ng ChromeOS. Para makakuha ng mga update, maghintay hanggang maging available ang susunod na bersyon.</translation>
 <translation id="7641513591566880111">Bagong pangalan ng profile</translation>
 <translation id="764178579712141045">Idinagdag si <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (may-ari)</translation>
 <translation id="7648048654005891115">Estilo ng Keymap</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingerprint ang na-set up}one{{COUNT} fingerprint ang na-set up}other{{COUNT} na fingerprint ang na-set up}}</translation>
+<translation id="7650677314924139716">Wi-Fi lang ang kasalukuyang setting ng paggamit ng data</translation>
 <translation id="7651400349472467012">Available ang instant na hotspot</translation>
 <translation id="7651784568388208829">Pagpapatuloy ng gawain sa Phone Hub</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
@@ -2031,6 +2069,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Pagsasalin</translation>
 <translation id="7915457674565721553">Kumonekta sa internet para i-set up ang mga kontrol ng magulang</translation>
+<translation id="7917876797003313048">Puwede mong pamahalaan ang iyong mga naka-sign in na Google Account. Ginagamit ang iyong mga Google Account para sa Chrome browser, Play Store, Gmail, at higit pa. Kung gusto mong magdagdag ng account para sa ibang tao, tulad ng miyembro ng pamilya, magdagdag na lang ng bagong tao sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />s</translation>
 <translation id="7920482456679570420">Magdagdag ng mga salitang gusto mong laktawan ng pang-check ng pagbabaybay</translation>
 <translation id="7921347341284348270">Hindi mo makikita ang mga notification ng telepono mo sa pinamamahalaang account na ito. Subukan ulit gamit ang ibang account. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -2196,6 +2235,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8439506636278576865">Mag-alok na magsalin ng mga page sa wikang ito
 </translation>
+<translation id="8449347986464073209">I-delete at Mag-sign Out</translation>
 <translation id="8451512073679317615">assistant</translation>
 <translation id="8455775311562941553">Nakakonekta sa <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Bigkasin ang text na hino-hover ng cursor</translation>
@@ -2321,6 +2361,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="8872774989979382243">Naka-off ang volume. I-on ang volume.</translation>
 <translation id="888256071122006425">Mga setting ng mouse at touchpad</translation>
 <translation id="8885449336974696155">Tumulong na mas mapahusay ang ChromeOS sa pamamagitan ng pag-uulat sa <ph name="BEGIN_LINK" />mga kasalukuyang setting<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Puwedeng magkaroon ng mga singil sa mobile data</translation>
 <translation id="8890529496706615641">Hindi puwedeng i-rename ang profile. Pakisubukan ulit o makipag-ugnayan sa iyong carrier para sa technical support.</translation>
 <translation id="8894761918470382415">Proteksyon sa pag-access ng data para sa mga peripheral</translation>
 <translation id="8896830132794747524">Magagalaw nang mas malayo ang cursor kapag mas mabilis ang paggalaw ng iyong mouse</translation>
@@ -2346,6 +2387,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="8978939272793553320">Nadiskonekta ang <ph name="DEVICE_NAME" /></translation>
 <translation id="8980345560318123814">Mga ulat ng feedback</translation>
 <translation id="8981825781894055334">Kaunti na ang papel</translation>
+<translation id="8984694057134206124">Makikita ka ng lahat sa loob ng <ph name="MINUTES" /> (na) minuto. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Threshold sa pag-detect</translation>
 <translation id="8986362086234534611">Kalimutan</translation>
 <translation id="8991694323904646277">Walang camera</translation>
@@ -2392,6 +2434,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="9098860402274800697">Alisin ang Google Play at mga Android app</translation>
 <translation id="910000385680858937">Pinapayagan – <ph name="PERMISSION_DETAILS" />. Magkonekta ng mikropono sa iyong device.</translation>
 <translation id="9100416672768993722">Para lumipat sa huling ginamit na pamamaraan ng pag-input, pindutin ang <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Walang internet ang kasalukuyang setting ng paggamit ng data</translation>
 <translation id="9108294543511800041">Puwede mo nang tingnan ang mga pinakabagong larawan, media, at notification ng iyong telepono</translation>
 <translation id="9109122242323516435">Upang magbakante ng espasyo, mag-delete ng mga file mula sa storage ng device.</translation>
 <translation id="9111330022786356709">Magdagdag o magtakda ng mga button sa iyong mouse</translation>

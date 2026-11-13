@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Bạn có thể thử các ví dụ sau</translation>
 <translation id="112308213915226829">Tự động ẩn kệ</translation>
 <translation id="1129383337808748948">Làm mới <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Phải có ít nhất một chữ cái hoặc ký hiệu</translation>
 <translation id="1142002900084379065">Ảnh gần đây</translation>
 <translation id="114221662579355151">Nếu bạn bật, <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> và tất cả ứng dụng cũng như trang web có quyền truy cập máy ảnh sẽ có thể sử dụng máy ảnh. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="1145593918056169051">Máy in đã dừng</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Mở thẻ mới trong cửa sổ mới</translation>
 <translation id="1536604384701784949">Để sử dụng <ph name="USER_EMAIL_ADDRESS" />, trước tiên bạn cần đăng xuất khỏi tất cả tài khoản. Để đăng xuất, hãy chọn Huỷ để quay lại. Tiếp theo, hãy chọn thời gian để mở khu vực trạng thái rồi chọn Đăng xuất. Sau đó, hãy đăng nhập lại vào <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Con trỏ chuột lớn</translation>
+<translation id="1538808328818992871">Phải có ít nhất <ph name="MIN_LENGTH" /> ký tự</translation>
 <translation id="1545331255323159851">Xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="1546492247443594934">Không gian làm việc 2</translation>
 <translation id="1546930421365146760">Hãy yêu cầu quản trị viên thiết lập thiết bị này trong Bảng điều khiển dành cho quản trị viên của Google</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Nhấp để xem các tùy chọn khác</translation>
 <translation id="1555130319947370107">Xanh dương</translation>
 <translation id="1557622599341396706">Hiện tên không gian làm việc</translation>
+<translation id="1568242747239041185">Phải có 2 trong số các loại ký tự sau: chữ cái viết hoa, chữ cái viết thường, số hoặc ký hiệu</translation>
 <translation id="1569384531973824928">Nếu bạn bật, tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
 <translation id="1570235441606255261">Trình cài đặt Steam</translation>
 <translation id="1571697193564730395">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Thu gọn Google Tasks</translation>
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
 <translation id="2215920961700443347">Không có Internet. Vui lòng kết nối Internet rồi thử lại.</translation>
+<translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222841058024245321">Không gian làm việc 7</translation>
 <translation id="2223384056430485343">Ở chế độ chia đôi màn hình</translation>
 <translation id="2224075387478458881">Không thể sử dụng chức năng ghi màn hình khi có nội dung được bảo vệ</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Đã tạm dừng phím điều khiển chuột</translation>
 <translation id="2268731132310444948">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Sau khi kích hoạt Trình chạy, bạn sẽ thấy thanh tìm kiếm nâng cao. Bạn có thể nhập thông tin vào đó để tìm tệp, ứng dụng, v.v. Bạn cũng có thể tìm được câu trả lời cho các câu hỏi về <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Đăng xuất tất cả</translation>
+<translation id="2273432041732361925">Mật khẩu không được có ký tự lặp lại hoặc chuỗi từ 4 ký tự trở lên</translation>
 <translation id="2276987123919776440">15 phút</translation>
 <translation id="2278668501808246459">Đang khởi động dịch vụ quản lý vùng chứa</translation>
 <translation id="2282073721614284166">Mở đường liên kết trong thẻ</translation>
@@ -1056,6 +1061,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4072805772816336153">Thử lại sau</translation>
 <translation id="4077623680826964850">Thời gian chờ khi khởi động hoặc kết nối lại với máy ảo.</translation>
 <translation id="4086921558679520050">Bật công tắc micrô thực trên thiết bị</translation>
+<translation id="4093173301198419723">Phải có chữ cái viết hoa, chữ cái viết thường, số và ký hiệu</translation>
 <translation id="4099874310852108874">Đã xảy ra lỗi mạng.</translation>
 <translation id="4101772068965291327">Mở trang chủ</translation>
 <translation id="4102906002417106771">Khởi động lại để sử dụng chức năng powerwash</translation>
@@ -1276,6 +1282,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4668936527507421457">Mã PIN chỉ được chứa số</translation>
 <translation id="4672539464599646374">Đã bật Trình tiết kiệm pin</translation>
 <translation id="4673427585974421255">Tiếp tục bật</translation>
+<translation id="467510802200863975">Mật khẩu không khớp</translation>
 <translation id="4677040906536311086">Google Trang tính</translation>
 <translation id="468019262817532242">Không ai có thể chia sẻ với bạn</translation>
 <translation id="468293128311738995">Ứng dụng từ điện thoại của bạn</translation>
@@ -1299,6 +1306,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4746798685375253449">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 ngày}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # ngày}}</translation>
 <translation id="4747410141429390146">Vui lòng mở khoá để xem thông báo</translation>
 <translation id="4752784485658729358">Chỉ được lưu tối đa 6 không gian làm việc. Hãy xoá một không gian làm việc nếu muốn lưu một không gian làm việc mới.</translation>
+<translation id="4753084533826742808">Phải có ít nhất 1 ký tự</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + mũi tên lên</translation>
 <translation id="4762573482154983647">Ẩn ứng dụng</translation>
@@ -1435,6 +1443,7 @@ Bạn cũng có thể dùng phím tắt. Hãy đánh dấu phần văn bản b�
 <translation id="5144005092084035179">Chuyển đầu vào âm thanh?</translation>
 <translation id="5145464978649806571">Nếu bạn rời khỏi thiết bị, màn hình của thiết bị sẽ tự động khoá. Khi bạn ở đối diện thiết bị, màn hình sẽ kéo dài thời gian không khoá. Nếu bạn không sử dụng màn hình khoá, thiết bị sẽ ngủ mà không khoá.</translation>
 <translation id="5147567197700016471">Đã mở khóa</translation>
+<translation id="5148285448107770349">Mật khẩu phải có ít nhất 8 ký tự</translation>
 <translation id="5150070631291639005">Cài đặt quyền riêng tư</translation>
 <translation id="5155897006997040331">Tốc độ đọc</translation>
 <translation id="5158206172605340248">Trình đơn dấu phụ đã đóng.</translation>
@@ -1555,6 +1564,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay bây giờ và tải bản cập nhật xuống, hoặc tải xuống từ đường kết nối có đo lượng dữ liệu (bạn có thể mất phí).</translation>
 <translation id="547979256943495781">Giá ở bên phải</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Xác nhận mật khẩu</translation>
 <translation id="5491186829646618080">Đã có bản cập nhật chương trình cơ sở</translation>
 <translation id="5503884284981862082">Mở/đóng Trợ lý Google</translation>
 <translation id="550391772491508736">Tiếp tục truyền</translation>
@@ -1815,6 +1825,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6198252989419008588">Thay đổi mã PIN</translation>
 <translation id="6199775032047436064">Tải lại trang hiện tại</translation>
 <translation id="6200515304866777730">Không được ứng dụng hỗ trợ</translation>
+<translation id="6209589022625766110">Mật khẩu phải có ít nhất 8 ký tự và bao gồm ít nhất 2 trong số các loại ký tự sau: chữ cái viết hoa, chữ cái viết thường, số hoặc ký hiệu. Mật khẩu không được có ký tự lặp lại hoặc chuỗi từ 4 ký tự trở lên.</translation>
 <translation id="6210042900243040400">Kết nối <ph name="NAME" /> (trước đó đã được lưu vào <ph name="EMAIL" />)</translation>
 <translation id="6212580734499190393">Trong 10 phút</translation>
 <translation id="6213808132343683860">Chụp hoặc ghi một phần màn hình</translation>
@@ -1849,6 +1860,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6297986260307280218">Gửi dữ liệu sử dụng và dữ liệu chẩn đoán. Giúp cải thiện trải nghiệm của bạn trên Android bằng cách tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và dữ liệu về mức sử dụng ứng dụng cho Google. Dữ liệu này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ giúp ích cho các ứng dụng và đối tác của Google, chẳng hạn như nhà phát triển Android. <ph name="BEGIN_LINK1" />Chế độ cài đặt<ph name="END_LINK1" /> này do chủ sở hữu thực thi. Chủ sở hữu có thể chọn gửi dữ liệu chẩn đoán và dữ liệu sử dụng của thiết bị này cho Google. Nếu bạn bật chế độ cài đặt Hoạt động bổ sung trên web và ứng dụng thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. <ph name="BEGIN_LINK2" />Tìm hiểu thêm về các chỉ số<ph name="BEGIN_LINK2_END" />Tìm hiểu thêm<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Tuỳ chỉnh thiết bị này trong ứng dụng</translation>
 <translation id="6298962879096096191">Sử dụng Google Play để cài đặt các ứng dụng Android</translation>
+<translation id="6300478323573969040">Mật khẩu phải có ít nhất 12 ký tự và bao gồm chữ cái viết hoa, chữ cái viết thường, số và ký hiệu. Mật khẩu không được có ký tự lặp lại hoặc chuỗi từ 4 ký tự trở lên.</translation>
 <translation id="6304076460080088478">Đóng hoặc thu nhỏ cửa sổ ẩn danh để tìm thông tin về nội dung trên màn hình bằng Google Ống kính</translation>
 <translation id="6309219492973062892">Nhấp hoặc nhấn vào các biểu tượng từ 1 – 8 trên kệ</translation>
 <translation id="6315170314923504164">Thoại</translation>
@@ -2021,7 +2033,6 @@ Mới cài đặt</translation>
 <translation id="6782919488259222803">Tìm kiếm trên trang hiện tại</translation>
 <translation id="6783348167101855071">Ô điều khiển dưới cùng bên phải đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="6786750046913594791">Đóng thư mục</translation>
-<translation id="6792262051831399889">Không có</translation>
 <translation id="6792351896138862473">Không thể khởi chạy ứng dụng kiosk không được hỗ trợ. Hãy thông báo cho quản trị viên của bạn về vấn đề này.</translation>
 <translation id="679368458793552943">Phóng to khi kính lúp đang bật</translation>
 <translation id="6794287755901682422">Mục này có: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ Mới cài đặt</translation>
 <translation id="8052898407431791827">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="8054466585765276473">Đang tính toán thời lượng pin.</translation>
 <translation id="8063363226185507157">Chế độ cài đặt hỗ trợ tiếp cận đã đồng bộ hoá</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8079538659226626406">Chia sẻ màn hình</translation>
 <translation id="8083540854303889870">Lưu để dùng sau</translation>
@@ -2627,6 +2639,7 @@ Mới cài đặt</translation>
 <translation id="8555757996376137129">Xoá không gian làm việc hiện tại</translation>
 <translation id="8558521694042102707">AI tạo sinh có thể có sai sót (kể cả thông tin về con người), vậy nên bạn cần xác minh thông tin.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> đã chỉnh sửa</translation>
+<translation id="8567946600191652875">Phải có ít nhất 6 ký tự và có ít nhất một chữ cái hoặc ký hiệu</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Đã di chuyển trình đơn vào góc dưới cùng bên phải màn hình.</translation>
 <translation id="8581946341807941670">Nhấn phím <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> rồi nhấp vào một đường liên kết</translation>
@@ -2800,7 +2813,6 @@ Mới cài đặt</translation>
 <translation id="9034924485347205037">Tệp Linux</translation>
 <translation id="9037818663270399707">Đường kết nối của bạn không ở chế độ riêng tư đối với một số lưu lượng truy cập mạng</translation>
 <translation id="9047624247355796468">Mở tùy chọn cài đặt cho <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Không có Bluetooth</translation>
 <translation id="9050999376345823055">Nhấn "." để nhả chuột</translation>
 <translation id="906458777597946297">Phóng to cửa sổ</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>

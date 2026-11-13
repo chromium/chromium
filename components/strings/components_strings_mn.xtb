@@ -726,7 +726,6 @@
 <translation id="22081806969704220">Гарах цаасны тавиур 3</translation>
 <translation id="2210794033760923560">Тайлан байршуулах</translation>
 <translation id="2212735316055980242">Тохиргоо олдсонгүй</translation>
-<translation id="2213606439339815911">Оролтыг оруулж байна...</translation>
 <translation id="2213612003795704869">Хуудсыг хэвлэсэн</translation>
 <translation id="2214086901479959524">Дундын табын бүлгээ үргэлжлүүлэн ашиглахын тулд Chrome-г шинэчилнэ үү</translation>
 <translation id="2214453882118345682">Камераа ашиглан дэлгүүр хэсэж, орчуулж, тодорхойлоорой.</translation>
@@ -823,6 +822,7 @@
 <translation id="2356941001189392209">Уламжлалт технологийн үйл явдлууд тохиолдож буй таны зочилсон хуудаснуудын URL-н хязгаарлагдмал жагсаалт</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 таб хуваалцана}other{{NUM_TABS} таб хуваалцана}}</translation>
 <translation id="2357481397660644965">Таны төхөөрөмжийг <ph name="DEVICE_MANAGER" />, харин бүртгэлийг тань <ph name="ACCOUNT_MANAGER" /> удирддаг.</translation>
+<translation id="2358479643736965923">Энэ таб дээр Google-н ХОУ-ы хайлтын хариултаа харна уу</translation>
 <translation id="2359629602545592467">Олон</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="236000571258713023">Тээврийн хэрэгсэл</translation>
@@ -1141,6 +1141,7 @@
 <translation id="2925032407415783182">Арга хэмжээний тасалбарыг Wallet-д хадгалах</translation>
 <translation id="2925454999967523701">Документ үүсгэх товчлуур, шинэ Google Док шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="2925673989565098301">Хүргэлтийн төрөл</translation>
+<translation id="2927328994673424423">2 долоо хоногийн өмнө</translation>
 <translation id="2928426578619531300">Хэрэглэгчтэй холбоотой</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Таны нөгөө төхөөрөмжийн таб</translation>
@@ -1275,7 +1276,6 @@
 <translation id="3141337053413339205">Энэ таб руу сэлгэнэ үү.</translation>
 <translation id="3144458715650412431">Туршилтын бодлогуудыг хэрэглэсэн. Chrome://policy/test дээрээс тэдгээрийг шалгаж шинэчилнэ үү. Админы бодлогуудыг хэрэглээгүй.</translation>
 <translation id="3145945101586104090">Хариуг шифрлэж чадсангүй</translation>
-<translation id="3149865382039202168">Мэдээллээ <ph name="GOOGLE_WALLET_TITLE" />-д хадгалаад, Google-н бүтээгдэхүүнүүд дээрх маягтыг бөглөх зэрэг зүйлсийг илүү хурдан хийгээрэй. Та <ph name="ACCOUNT" />-н хувийн картын тохиргооноосоо <ph name="HOW_INFO_IS_USED_LINK" />-г хянах боломжтой. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Серверийн түр хугацааны алдаа</translation>
 <translation id="3150889484970506196">Хүснэгт үүсгэх товчлуур, шинэ Google Хүснэгтийг шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="3154506275960390542">Энэ хуудас нь илгээхэд аюултай байж болзошгүй маягтыг агуулдаг. Таны илгээх өгөгдлийг шилжүүлэх зуур бусад хүмүүс харах, халдагч этгээд серверийн хүлээн авах зүйлийг өөрчлөх боломжтой.</translation>
@@ -1522,7 +1522,6 @@
 <translation id="3558335486599406178">IBAN-г Google Wallet-д хадгалсан</translation>
 <translation id="3558573058928565255">Өдөр цаг</translation>
 <translation id="3559897352860026926">Администратораасаа <ph name="CLOUD_PROVIDER" />-н тохируулгын тохиргоогоо баталгаажуулахыг хүснэ үү.</translation>
-<translation id="3560824484345057728">Холбоотой сайтуудыг харах</translation>
 <translation id="3566021033012934673">Таны холболт хаалттай бус байна</translation>
 <translation id="3566336457819493938">215 x 315 мм</translation>
 <translation id="3566681680543111735">Хувилбаруудын мөрийг хуулах</translation>
@@ -2165,7 +2164,6 @@
 <translation id="4603727370377253901">Нислэгийн захиалга</translation>
 <translation id="4607608436550361748">Chrome-н зөвлөгөөг харах</translation>
 <translation id="460848736049414407">Админ блоклосон</translation>
-<translation id="4610279718074907952">Энэ сайт <ph name="SET_OWNER" />-с тодорхойлсон бүлэгт байгаа бөгөөд таны үйл ажиллагааг харах боломжтой</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" />-р <ph name="MERCHANT_ORIGIN" /> дээрх таны захиалгыг боловсруулахад алдаа гарлаа.</translation>
 <translation id="4612904677925722054">Энэ сайт насанд хүрэгчдийн контенттой байж болзошгүй. Эцэг эх, асран хамгаалагч таныг энэ вебсайтад зочилж БОЛНО гэж хэлэх ёстой.</translation>
 <translation id="4613873770449493819">URL нь <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-н домэйныг заах ёстой.</translation>
@@ -3710,7 +3708,6 @@
 <translation id="7173338713290252554">Веб дээрх үнийн түүх</translation>
 <translation id="7174545416324379297">Нэгтгэсэн</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7181261019481237103">Нууцлалтай цонхыг нээх</translation>
 <translation id="7182878459783632708">Журам тохируулаагүй</translation>
 <translation id="7186833457841277072">Дугтуй (бэхэн)</translation>
@@ -4176,7 +4173,6 @@
 <translation id="7932579305932748336">Хамгаалалтын өнгөлгөө хийх</translation>
 <translation id="79338296614623784">Зөв утасны дугаар оруулна уу</translation>
 <translation id="7934414805353235750"><ph name="URL" /> хамгаалсан агуулгыг тоглуулах хүсэлтэй байна. Таны төхөөрөмжийн таниулбарыг Google-с баталгаажуулна.</translation>
-<translation id="7935318582918952113">DOM цэвэршүүлэгч</translation>
 <translation id="7935520077478121175">Хөдөлгөөн мэдрэгчийг зөвшөөрсөн</translation>
 <translation id="7937163678541954811">Энэ картын Карт баталгаажуулалтын кодыг шифрлэх бөгөөд илүү хурдан тооцоо хийхэд зориулж таны төхөөрөмжид хадгална</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />-д дуусна</translation>
@@ -4224,7 +4220,6 @@
 <translation id="7999482381722829925">Нийтлэг орхигддог хэсгүүдэд чиглэсэн, өрөө бүрээр нь ангилсан гүн цэвэрлэгээний дараалал бүхий шалгах хуудас үүсгэнэ үү</translation>
 <translation id="8001912761979890298">Энэ сервер веб урсгалын шифрлэлтэд Chromium, таны системийн тохируулгын итгэмжлээгүй аюулгүй байдлын сертификат ашиглаж байгаа тул <ph name="DOMAIN" /> домэйн болохоо баталж чадсангүй. Энэ нь буруу тохируулга, халдагч таны холболтыг саатуулж байгаагаас үүдсэн байж болзошгүй. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Сертификатыг үзэх<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Санах ойн багтаамжийг нэмэгдүүлэхийн тулд бусад таб, эсвэл программыг хаана уу.</translation>
-<translation id="8002230960325005199">Холбоотой сайтуудыг шинэ табд харна уу</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
 <translation id="8009225694047762179">Нууц үгийг удирдах</translation>
@@ -4265,7 +4260,6 @@
 <translation id="8079976827192572403">Аюултай сайт</translation>
 <translation id="8086971161893892807">Ноорог</translation>
 <translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" /> дээр таны төлбөрийг зохицуулахын тулд <ph name="APP_ORIGIN" />-г ачаалж байна.</translation>
-<translation id="8088680233425245692">Өгүүллийг үзэх үйлдэл амжилтгүй болсон байна.</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8091372947890762290">Сервер дээр идэвхжүүлэхийг хүлээж байна</translation>
 <translation id="8092254339843485299">6 x 8 инч</translation>
@@ -4905,7 +4899,6 @@
 <translation id="9199905725844810519">Хэвлэхийг блоклосон байна</translation>
 <translation id="9204089334327209740">Байршуулж дууссаны дараа та <ph name="CLOUD_PROVIDER" /> дахь файлуудаа өөрчлөх боломжтой. Хогийн саван дахь аливаа файл зэрэг дотоод хадгалах санг автоматаар хасна.</translation>
 <translation id="9205078245616868884">Таны өгөгдлийг таны синк хийх нэвтрэх үгтэй шифрлэсэн. Синкийг эхлүүлэхийн тулд үүнийг оруулна уу.</translation>
-<translation id="9207861905230894330">Өгүүллийг нэмэх явц амжилтгүй боллоо.</translation>
 <translation id="9209339767782560829">Таны нэвтрэх сертификатыг ашиглахад асуудал гарлаа.</translation>
 <translation id="9210152531668884481">Би зөвшөөрч байна</translation>
 <translation id="9213433120051936369">Харагдах байдлыг өөрчлөх</translation>

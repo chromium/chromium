@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="201759455285471444">Розгорнути групу вкладок.</translation>
 <translation id="2022431790688770637">Керувати пропозиціями Gemini</translation>
+<translation id="2023265063803387188">Сервіс Gemini недоступний в анонімному режимі</translation>
 <translation id="2031515492007104071">Новий рівень</translation>
 <translation id="2044394949148788042">Відкрийте сітку вкладок</translation>
 <translation id="2044681667265133332">Обліковим записом <ph name="USER_EMAIL" /> керує адміністратор домену <ph name="HOSTED_DOMAIN" />, який може переглядати певну інформацію. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Зупинити</translation>
 <translation id="2666092431469916601">Верх</translation>
 <translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
-<translation id="2671316366021598595">Сайт <ph name="SITE_DOMAIN" /> не має доступу до вашої камери</translation>
 <translation id="2671423594960767771">Поділитися групою</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Придбання з оплатою пізніше</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="386224966259596343">Ви зможете зберегти цю інформацію в Гаманці наступного разу, коли заповнюватимете відповідну форму.</translation>
 <translation id="3868495844258915202">Показати повну URL-адресу</translation>
+<translation id="3870931306085184145">Немає збережених паролів для <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Докладніше</translation>
 <translation id="3878657761594430423">Маркер панелі</translation>
 <translation id="3884810423191119660">Надійно зберігайте паролі, щоб легко входити в облікові записи на сайтах і в додатках</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Ефективніше користуйтеся вебпереглядачем</translation>
 <translation id="5062321486222145940">Установити Google Диск</translation>
 <translation id="5067540696062462445">Завантаження</translation>
-<translation id="5070314445039955096">Коли ви залишите сайт <ph name="SITE_DOMAIN" />, усі дозволи для нього буде скинуто</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} з {count} способу оплати}one{{position} з {count} способу оплати}few{{position} з {count} способів оплати}many{{position} з {count} способів оплати}other{{position} з {count} способу оплати}}</translation>
 <translation id="5075939510584558547">Зберегти без шифрування</translation>
 <translation id="5076534614343816664">Відстеження цін</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Щоб перейти на вищий рівень, потрібно ввійти в обліковий запис</translation>
 <translation id="5352128922772839949">Зберегти файл</translation>
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
-<translation id="5355871759168485600">Сайт <ph name="SITE_DOMAIN" /> може використовувати ваш мікрофон, коли ви відвідуєте його</translation>
 <translation id="5359436665022446585">Зручніше відкривайте посилання</translation>
 <translation id="536067926684072644">Показати закладки</translation>
 <translation id="5364647308446127983">{count,plural, =1{Не вдалось імпортувати {count} ключ доступу}one{Не вдалось імпортувати {count} ключ доступу}few{Не вдалось імпортувати {count} ключі доступу}many{Не вдалось імпортувати {count} ключів доступу}other{Не вдалось імпортувати {count} ключа доступу}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">Закрити пропозицію щодо вебпереглядача за умовчанням</translation>
 <translation id="561269594905823128">Натисніть <ph name="BEGIN_BOLD" />Вибрати файл<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Сортувати за категорією "Останні"</translation>
+<translation id="561349411957324076">Завершено</translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
 <translation id="5617769621178348890">Відкрити в додатку Файли</translation>
 <translation id="5619871095170816857">На цій картці показано вкладку, яку ви востаннє відкривали на всіх синхронізованих пристроях протягом останніх 24 годин.</translation>
@@ -2333,7 +2333,6 @@
 <translation id="8157532349231307196">Облікових записів: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Розблокувати за допомогою такого методу автентифікації: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Довжина</translation>
-<translation id="8181328232274170248">Сайт <ph name="SITE_DOMAIN" /> може використовувати вашу камеру, коли ви відвідуєте його</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для веб-сайту {website_1}}=2{Для веб-сайтів {website_1} і {website_2}}=3{Для {website_1}, {website_2} і ще 1 веб-сайту}one{Для {website_1}, {website_2} і ще {more_count} веб-сайту}few{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}many{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}other{Для {website_1}, {website_2} і ще {more_count} веб-сайту}}</translation>
 <translation id="8184895727539791845">Щоб дозволити Gemini використовувати вашу камеру, увімкніть її в налаштуваннях iOS</translation>
 <translation id="8185076488803799132">Імпорт</translation>
@@ -2504,7 +2503,6 @@
 <translation id="8674716540979958118">У вас є зламані паролі.</translation>
 <translation id="8679900250380464358">Додати в список читання</translation>
 <translation id="8680787084697685621">Дані для входу в обліковий запис застаріли.</translation>
-<translation id="868648444055742370">Сайт <ph name="SITE_DOMAIN" /> не має доступу до вашого мікрофона</translation>
 <translation id="8690752723634292147">Підтвердьте видалення</translation>
 <translation id="8692107307702113268">Пароль містить більше ніж 1000 символів</translation>
 <translation id="8692689525339542358">Захистіть себе від небезпечних сайтів, завантажень і розширень.</translation>
@@ -2650,6 +2648,7 @@
 <translation id="91023216973987714">Способи оплати</translation>
 <translation id="9106655997975673326">З пристрою "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Перевіряйте, чи були ваші паролі зламані</translation>
+<translation id="9115035712231910133">Вкладене зображення "{title}"</translation>
 <translation id="9119764377203471454">Не вдалося долучити файли</translation>
 <translation id="9124387962554796433">Google може використовувати вашу історію для персоналізації Пошуку й інших сервісів Google.</translation>
 <translation id="9124978074365039456">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти навколо за допомогою камери й фотогалереї</translation>

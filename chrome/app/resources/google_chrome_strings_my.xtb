@@ -20,7 +20,6 @@
 <translation id="1142745911746664600">Chrome ကို အပ်ဒိတ်လုပ်၍ မရခြင်း</translation>
 <translation id="1148360048981192980">နောက်တစ်ကြိမ်တွင် သင်၏ <ph name="DEVICE_TYPE" /> ၌ Chrome ဖွင့်သောအခါ Google Password Manager သုံးရန် တိုက်တွန်းချက်ကို မြင်ရပါမည်။</translation>
 <translation id="1150418667633096194">ကိရိယာဘားရှိ “Google Search ဘေးအကန့်” ခလုတ်တွင် သင်္ကေတအသစ် ရှိသည်။ ဘရောက်စ်လုပ်နေစဉ် Google Search ဘေးအကန့်ဖြင့် မေးခွန်းများမေးရန် ၎င်းကိုနှိပ်ပါ။</translation>
-<translation id="1152920704813762236">ChromeOS အကြောင်း</translation>
 <translation id="1154147086299354128">&amp;Chrome တွင် ဖွင့်ရန်</translation>
 <translation id="1157952955648710254">Google Search ဘေးအကန့် ပိတ်ရန်</translation>
 <translation id="1157985233335035034">မကြာသေးမီက ဘာသာစကားများ</translation>
@@ -57,7 +56,6 @@
 <translation id="1507198376417198979">သင့် Chrome ပရိုဖိုင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="1518627427551567882">ဤစာမျက်နှာကို ကာကွယ်ထားသည်</translation>
 <translation id="15408169957028265">‘Chrome ရှိ Google Search’ ပြန်ဖွင့်ရန်</translation>
-<translation id="1547295885616600893">ChromeOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
 <translation id="1547469039832541117">မြင်သာအောင်လုပ်ထားသော လုပ်ဆောင်ချက်ကို အဆုံးသတ်ပေးသည်။</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
@@ -78,7 +76,6 @@
 <translation id="1632241302126471515">Chrome Canary ဖြင့် ရှာရန်</translation>
 <translation id="1640672724030957280">ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
 <translation id="1651617469580841801">Google Lens သုံးသောအခါ PDF များအပါအဝင် စာမျက်နှာခေါင်းစဉ်၊ URL နှင့် အကြောင်းအရာတို့ကို Google သို့ ပို့သည်။ <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">ChromeOS Flex အကြောင်း</translation>
 <translation id="1674870198290878346">Chrome ရုပ်ဖျက်ဝင်းဒိုးတွင် လင့်ခ်ကို ဖွင့်ခြင်း</translation>
 <translation id="1682634494516646069">Google Chrome သည် ၎င်း၏ဒေတာဒါရိုက်ထရီသို့ မဖတ်နိုင် မရေးနိုင်ပါ:
 
@@ -99,6 +96,7 @@
 <translation id="1843347690926158494">Google Lens သုံး၍ ဤတဘ်ကို ရှာရန်</translation>
 <translation id="1849248141818021764">သင်၏ စကားဝှက်စာသိသူသာ အသွင်ဝှက်ထားသော ဒေတာကို ဖတ်နိုင်သည်။ စကားဝှက်စာကို Google သို့ ပေးပို့ခြင်း (သို့) သိမ်းဆည်းခြင်းမရှိပါ။ သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chrome ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> သုံးရန် သင့် Google Account ဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> ကို အပ်ဒိတ်လုပ်ပြီးသားဖြစ်သည်</translation>
 <translation id="1873233029667955273">Google Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်ပါ</translation>
 <translation id="1874309113135274312">Google Chrome စမ်းသပ် (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome မှာ ဟောင်းသွားပြီ</translation>
@@ -106,6 +104,7 @@
 <translation id="1880677175115548835">စာသား ရွေးမည်</translation>
 <translation id="1896602904211344018">Chrome အက်ပ် ရယူရန်</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
+<translation id="1925069572871307609">နောက်ပိုင်းထွက်မည့် Google Chrome အပ်ဒိတ်များ ရယူရန် Windows 10 ဗားရှင်း 1809 နှင့်အထက် လိုအပ်မည်။ ဤကွန်ပျူတာသည် Windows 10 ဗားရှင်းအဟောင်းကို သုံးနေသည်။</translation>
 <translation id="1979600810166324878">iOS အတွက် Chrome တွင် ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ဖြင့် သွားရင်းလာရင်း ပိုလုံခြုံနိုင်သည်</translation>
 <translation id="2001586581944147178">သင်မည်သည့်ဝဘ်ဆိုက်များ ဝင်ကြည့်ကြောင်း သင့်အင်တာနက် ဒေတာစီးဆင်းမှုကို သုံးခွင့်ရှိသူများ မြင်နိုင်ရန် ခက်ခဲစေသည်။ Chrome သည် DNS (ဒိုမိန်းအမည်ပေးစနစ်) အတွင်းရှိ ဝဘ်ဆိုက်တစ်ခု၏ IP လိပ်စာကို ရှာရာတွင် လုံခြုံသော ချိတ်ဆက်မှု အသုံးပြုသည်။</translation>
 <translation id="2018879682492276940">ထည့်သွင်းမှု မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -118,7 +117,6 @@
 <translation id="2091012649849228750">နောင်လာမည့် Google Chrome အပ်ဒိတ်များ ရယူရန် Windows 10 နှင့်အထက် လိုအပ်မည်။ ဤကွန်ပျူတာက Windows 8 သုံးနေသည်။</translation>
 <translation id="2094919256425865063">Chrome ကို မည်သို့ပင်ဖြစ်စေ ပိတ်လိုပါသလား။</translation>
 <translation id="2096213354152647998">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION" /> ကို ဖယ်ရှားလိုက်သည်။</translation>
-<translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS Flex ကို ရေးဆွဲထားသည်။</translation>
 <translation id="2108778574543343055">အက်ပ်များအတွက် နောက်ခံတွင် ပွင့်နေသည့် Chrome ကို ပိတ်ခြင်း</translation>
 <translation id="2111985952714409792">သင့်စက်အားလုံးတွင် နောက်ဆက်တွဲနှင့် အခြားအရာများ ရယူရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2120620239521071941">၎င်းသည် ဤစက်ပစ္စည်းမှ အကြောင်းအရာ <ph name="ITEMS_COUNT" /> ခုကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
@@ -145,6 +143,7 @@
 <translation id="2307973900865360088">အထိုင်တွင် ဆက်ထားရန်</translation>
 <translation id="2309047409763057870">ဤသည်မှာ Google Chrome ကို အရန်သဘော ထည့်သွင်းခြင်းဖြစ်ပြီး သင်၏မူရင်းဘရောင်ဇာအဖြစ် ၎င်းကို အသုံးပြု၍မရနိုင်ပါ။</translation>
 <translation id="2345992953227471816">ဤနောက်ဆက်တွဲများတွင် မဲလ်ဝဲပါဝင်သည်ကို Chrome ကတွေ့ထားသည်-</translation>
+<translation id="2350411688004301551">Gemini Enterprise သို့ ပြောင်းရန်</translation>
 <translation id="2358140144860869442">သင့်စက်အားလုံးတွင် ဖတ်ရန်စာရင်းနှင့် အခြားအရာများ ရယူရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2403703063067034158">စတင်မှုဆိုင်ရာ အမှားအယွင်း- အခြားစနစ်ထည့်သွင်းမှုတစ်ခု လုပ်ဆောင်နေပါသဖြင့် နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -155,6 +154,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> သည် လက်မှတ်ထိုးဝင်ပြီးဖြစ်သည်။ သင်၏ ဘရောက်စ်လုပ်ခြင်းကို ခွဲခြားထားရန်အတွက် သင့်ကိုယ်ပိုင်ပရိုဖိုင်တွင် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ <ph name="DEVICE" /> မှ သင့်လိပ်စာနှင့် အခြားအရာများကိုလည်း ရရှိပါမည်။</translation>
 <translation id="2485422356828889247">ဖြုတ်ရန်</translation>
 <translation id="2513154137948333830">ပြန်လည်စတင်ရမည်- <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">သင်၏အဖွဲ့အစည်း</translation>
 <translation id="2521391734665471391">Google Search AI မုဒ် ပိတ်ရန်</translation>
 <translation id="2523492931736391680">Chrome တွင် သင့်အလုပ်ကို လုံခြုံအောင် ထားရှိခြင်း</translation>
 <translation id="2534365042754120737">သင့်ဒေတာကို ကာကွယ်ရန် လတ်တလော သင်ဝင်ကြည့်ထားခြင်း မရှိသော ဝဘ်ဆိုက်များမှ ခွင့်ပြုချက်များကို Chrome အား ဖယ်ရှားခွင့်ပြုပါ။ အကြောင်းကြားချက်များ ရပ်မသွားပါ။</translation>
@@ -201,6 +201,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome က သင့်ဒေတာကို သီးသန့်ထားပေးပုံ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2885378588091291677">အလုပ် မန်နေဂျာ</translation>
 <translation id="2888126860611144412">Chrome အကြောင်း</translation>
+<translation id="2898830646167954300">သင်၏ စီမံမထားသော Gemini လက်ထောက်သို့ ပြန်ပြောင်းရန်</translation>
 <translation id="2915996080311180594">နောက်မှ ပြန်စရန်</translation>
 <translation id="2926952073016206995">Chrome သည် ဤဝဘ်ဆိုက်အတွက် ကင်မရာခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="2945997411976714835">ထည့်သွင်းမှုအမှား- ထည့်သွင်းစနစ်လုပ်ဆောင်မှုကို စ၍မရပါ။</translation>
@@ -211,7 +212,6 @@
 <translation id="2994465299455873643">ဟောင်းနေပါက <ph name="BROWSER_NAME" /> ကို ပြန်လည်ရယူရန်အတွက် အသွင်ဝှက်ခြင်း ဝန်ဆောင်မှုနှင့် လုံခြုံသောနည်းလမ်း ပံ့ပိုးသည်။ ဤဝန်ဆောင်မှုကို ပိတ်ထားပါက <ph name="BROWSER_NAME" /> သည် အသွင်ဝှက်ထားသော ဒေတာ သုံးခွင့်ဆုံးရှုံးနိုင်မည့်အပြင် <ph name="BROWSER_NAME" /> က သူ့အလိုလို ပြန်လည်ရယူနိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3003694935412297923">လုပ်ဆောင်စရာ အားလုံး</translation>
 <translation id="3019382870990049182">ChromeOS Flex အပ်ဒိတ်လုပ်ရန်အတွက် ပြန်ဖွင့်ရန်</translation>
-<translation id="3034219227076811559">Chrome ရှိ Google Search</translation>
 <translation id="3037190258341683404">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ‘Chrome ရှိ Google Search’ ကို ပင်ထိုးထားနိုင်သည်</translation>
 <translation id="3037517125981011456">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်</translation>
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
@@ -235,6 +235,7 @@
 <translation id="3140883423282498090">သင် ပြောင်းလဲခဲ့သည်များမျာ သင်က Google Chrome ကို နောက်တစ်ကြိမ် ပြန်ဖွင့်စဉ် အကျိုးသက်ရောက် လာကြပါမည်။</translation>
 <translation id="3149510190863420837">Chrome အက်ပ်များ</translation>
 <translation id="3161522574479303604">ဘာသာစကားများ အားလုံး</translation>
+<translation id="3183555099201190073">မည်သည့်တဘ်မှမဆို Search သုံးခြင်း</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> သည် လက်မှတ်ထိုးဝင်ပြီးဖြစ်သည်။ သင်၏ ဘရောက်စ်လုပ်ခြင်းကို ခွဲခြားထားရန်အတွက် သင့်ကိုယ်ပိုင်ပရိုဖိုင်တွင် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ သင့်စက်ပစ္စည်းအားလုံးတွင် ဝဘ်လိပ်စာနှင့် အခြားအရာများကိုလည်း ရရှိပါမည်။</translation>
 <translation id="319199214552513804">ကွန်ပျူတာအားလုံးတွင် ဤနောက်ဆက်တွဲနှင့် အခြားအရာများ ရယူရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="3196187562065225381">ဖိုင်သည် အန္တရာယ်ရှိသဖြင့် Chrome က ဤဒေါင်းလုဒ်ကို ပိတ်ထားသည်</translation>
@@ -279,8 +280,6 @@
 <translation id="3667616615096815454">ဤဆာဗာတွင် အပလီကေးရှင်းကို မသိသဖြင့် ထည့်သွင်း၍မရပါ။</translation>
 <translation id="3673813398384385993">“<ph name="EXTENSION_NAME" />” တွင် မဲလ်ဝဲပါဝင်သည်ကို Chrome ကတွေ့ထားသည်</translation>
 <translation id="3697952514309507634">အခြား Chrome ပရိုဖိုင်များ</translation>
-<translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS ကို ရေးဆွဲထားသည်။</translation>
-<translation id="3716540481907974026">ChromeOS Flex ဗားရှင်း</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{Chrome အတွက် အပ်ဒိတ်အသစ်ရနိုင်ပြီဖြစ်ပြီး ပြန်ဖွင့်လိုက်သည်နှင့် ထည့်သွင်းသွားပါမည်။ ‘ရုပ်ဖျက်’ (သို့) ‘သီးခြားဝင်းဒိုး’ ဖွင့်ထားသည်။ ပြန်ဖွင့်ပြီးနောက် ၎င်း ပြန်ပွင့်မည်မဟုတ်ပါ။}other{Chrome အတွက် အပ်ဒိတ်အသစ်ရနိုင်ပြီဖြစ်ပြီး ပြန်ဖွင့်လိုက်သည်နှင့် ထည့်သွင်းသွားပါမည်။ ပရိုဖိုင်များတွင် ‘ရုပ်ဖျက်’ နှင့် ‘သီးခြားဝင်းဒိုး’ # ခု ဖွင့်ထားသည်။ ပြန်ဖွင့်ပြီးနောက် ၎င်းတို့ ပြန်ပွင့်မည်မဟုတ်ပါ။}}</translation>
 <translation id="3718181793972440140">၎င်းသည် ဤစက်ပစ္စည်းမှ အကြောင်းအရာ ၁ ခုကို ဖျက်လိုက်ပါမည်။ သင့်ဒေတာကို နောက်မှ ပြန်ယူရန် Chrome သို့ <ph name="USER_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{၎င်းကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။ <ph name="BEGIN_LINK" />ပံ့ပိုးထားသည့် နောက်ဆက်တွဲများအကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" />}other{၎င်းတို့ကို ဖယ်ရှားရန် Chrome က အကြံပြုပါသည်။ <ph name="BEGIN_LINK" />ပံ့ပိုးထားသည့် နောက်ဆက်တွဲများအကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" />}}</translation>
@@ -289,7 +288,6 @@
 <translation id="3772152698251011058">ဤဝဘ်ဆိုက်ကို Google သို့ တိုင်ကြားရန်</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">လက်မှတ်ထိုးဝင်စဉ် အမှားဖြစ်သွားသောကြောင့် ChromeOS Flex က သင့်ဒေတာကို စင့်ခ်လုပ်၍မရပါ။</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
 <translation id="383455301564000773">Windows 11 သို့ အဆင့်မြှင့်တော့မလား။ စတင်အသုံးပြုကတည်းက အသင့်ဖြစ်နေစေရန် Chrome ကို OneDrive သို့ ဒေါင်းလုဒ်လုပ်ပါ။</translation>
 <translation id="383928141529488001">Google Chrome သည် ဘလူးတုသ်သုံးစက်များကို ရှာဖွေရန်
@@ -313,10 +311,12 @@
 <translation id="4022972681110646219">ဖန်သားပြင်ကို ဘာသာပြန်ရန်</translation>
 <translation id="4023601594785368013">မူရင်းဘာသာစကား- <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">လုံခြုံမှုမြင့်သည့် စကားဝှက်များ ပြုလုပ်၊ သိမ်းဆည်းပြီး အော်တိုဖြည့်ရာတွင် သင့်အားကူညီပေးရန် Chrome တွင် ထည့်သွင်းထားသည်။ အလွယ်တကူ သုံးနိုင်ရန် ဖြတ်လမ်းထည့်ပါ။</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />၊ <ph name="EMAIL" />။ Google စာရင်းသွင်းမှု။</translation>
 <translation id="4035053306113201399">အပ်ဒိတ်ထည့်သွင်းရန် ChromeOS ကို ပြန်စရမည်။</translation>
 <translation id="4053720452172726777">Google Chrome ကို စိတ်ကြိုက် ပြုပြင်ရန် နှင့် ထိန်းချုပ်ရန်</translation>
 <translation id="408393047846373801">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများရယူရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ လက်မှတ်ထိုးဝင်ပြီးလျှင် ဤစကားဝှက်ကို သင့် Google Account တွင် သိမ်းပါမည်။</translation>
 <translation id="4102173024714616627">နောက်ဆက်တွဲများသည် Chrome ကို စိတ်ကြိုက်ပြင်ဆင်ခွင့်ပြုသည့် အပိုပရိုဂရမ်များဖြစ်သည်။ စနစ်တကျဖြစ်စေရန် စီစဉ်ခြင်းမှ နေ့စဉ်လုပ်ဆောင်စရာများကို လွယ်ကူစေခြင်းအထိ နောက်ဆက်တွဲများသည် Chrome ကို သင့်ကိုယ်ပိုင်ဖြစ်အောင် ကူညီပေးသည်။</translation>
+<translation id="4103543596018881622">‘Chrome ရှိ Google Search’ ကို ကိရိယာဘားတွင် ပင်ထိုးလိုက်ပါပြီ။</translation>
 <translation id="4110895483821904099">သင်၏ Chrome ပရိုဖိုင်အသစ်ကို စနစ်ထည့်သွင်းပါ</translation>
 <translation id="4111566860456076004">Chrome သည် ဤနောက်ဆက်တွဲ လာသည့်နေရာကို စိစစ်၍မရပါ။ ၎င်းသည် မလုံခြုံနိုင်ပါ။ ၎င်းကို Chrome မှ ဖယ်ရှားခြင်းဖြင့် ကိုယ်ရေးအချက်အလက်များအပါအဝင် သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များရှိ သင့်ဒေတာများကို ၎င်းက မြင်နိုင်၊ ပြောင်းနိုင်တော့မည်မဟုတ်ပါ။</translation>
 <translation id="4148957013307229264">တပ်ဆင်နေ...</translation>
@@ -394,7 +394,6 @@
 <translation id="495931528404527476">Chrome ထဲမှာ</translation>
 <translation id="4969674060580488087">သင့်အကောင့် လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ အသေးစိတ်အချက်များ ဟောင်းသွားသဖြင့် ChromeOS Flex က သင့်ဒေတာကို စင့်ခ်လုပ်၍မရပါ။</translation>
 <translation id="4970761609246024540">Chrome ပရိုဖိုင်များမှ ကြိုဆိုပါသည်</translation>
-<translation id="4970880042055371251">ChromeOS ဗားရှင်း</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">“Google Password Manager” ကို နှိပ်ပါ</translation>
 <translation id="5043786843026425788">Chrome တွင် Google Lens ဖြင့် ရှာဖွေခြင်းအကြောင်း ပိုလေ့လာရန်</translation>
@@ -417,6 +416,7 @@
 <translation id="5174969993834422967">သင်သည် ပုံမှန်အားဖြင့် အကြောင်းကြားချက်များ ပိတ်ထားတတ်သည်။ ဤဝဘ်ဆိုက်ကို အကြောင်းကြားခွင့်ပြုရန်အတွက် သင့်တည်နေရာပြဘား၏ ညာဘက်ထောင့်ရှိ အကြောင်းကြားချက် သင်္ကေတကို နှိပ်ပါ။</translation>
 <translation id="5174983315706567306">ဒစ်ခ်နေရာ မလုံလောက်ပါ။</translation>
 <translation id="5179933070463113976">Chrome ရှိ Gemini ကို သုံးရန် သင့် Google Account ဖြင့် Chrome သို့ လက်မှတ်ထိုးဝင်ရမည်</translation>
+<translation id="5184662919967270437">သင့်စက်ပစ္စည်းကို အပ်ဒိတ်လုပ်နေသည်</translation>
 <translation id="5190467473654176081">Chrome ကို အသွင်သစ်ပြုလုပ်ရန် စိတ်ကြိုက်ပြင်ဆင်ပါ</translation>
 <translation id="5201744974236816379">Chrome အပ်ဒိတ်</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
@@ -427,6 +427,7 @@
 <translation id="5320351714793324716">ကွတ်ကီးများကို ခွင့်ပြုပါက ကြိုဖွင့်သောအခါ Chrome က ၎င်းတို့ကို သုံးနိုင်သည်</translation>
 <translation id="5321325624576443340">Google Lens ကို အသုံးမပြုနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5334309298019785904">သင့်ဒိုမိန်းအတွက် ‘စင့်ခ်လုပ်ခြင်း’ မရနိုင်သဖြင့် ChromeOS က သင့်ဒေတာကို စင့်ခ်လုပ်၍မရပါ။</translation>
+<translation id="5336664042114176802">သင်၏ Google Account နှင့် မူလကတည်းက ချိတ်ဆက်ထားပြီး <ph name="DOMAIN" /> မှ စီမံမထားသော Gemini လက်ထောက်သို့ ပြောင်းနိုင်သည်။ အဖြေများသည် <ph name="DOMAIN" /> မှ စီမံထားသော ဖိုင် (သို့) ဝန်ဆောင်မှုများကို အခြေခံထားခြင်းမရှိတော့ပါ။ သင်၏ ချတ်မှတ်တမ်းကိုလည်း လွှဲပြောင်းမည်မဟုတ်ပါ။ အလုပ်အတွက် သုံးရန် မသင့်တော်နိုင်ပါ။ ပြောင်းရန်အတွက် Chrome ကို ပြန်ဖွင့်ရမည်။</translation>
 <translation id="5346389065299425353">တဘ်၊ ဖိုင်နှင့် တူးလ်များစွာ ထည့်ခြင်းဖြင့် အသေးစိတ် ရှာဖွေနိုင်သည်</translation>
 <translation id="5353252989841766347">Chrome မှစကားဝှက်များကို ထုတ်ယူပါ</translation>
 <translation id="5368118228313795342">အပိုကုဒ်- <ph name="EXTRA_CODE" />။</translation>
@@ -453,6 +454,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5649156266046089790">သင်၏ Chrome လုပ်ဆောင်ချက်အားလုံးကို Chrome ပရိုဖိုင်များဖြင့် သီးသန့်ခွဲခြားနိုင်သည်။ မိသားစုနှင့် မိတ်ဆွေများအတွက် ပရိုဖိုင်များ ပြုလုပ်ပါ (သို့) အလုပ်နှင့် ပျော်စရာအကြား ခွဲခြားအသုံးပြုပါ။</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> သည် အန္တရာယ်ရှိနိုင်သောကြောင့် Chrome က ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="566568153320186256">ချောမွေ့စွာလှိမ့်ခြင်းနှင့် ဗီဒီယိုဖရိမ်ပြနှုန်းများကဲ့သို့ နောက်ခံလုပ်ဆောင်ချက်နှင့် ပြသမှုဆိုင်ရာ အထူးပြုလုပ်ချက်များကို ကန့်သတ်ခြင်းဖြင့် Chrome သည် ဘက်ထရီပါဝါကို ချွေတာသည်။ <ph name="BEGIN_LINK" />‘စွမ်းအင်ချွေတာစနစ်’ အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">ChromeOS သည် အပ်ဒိတ်မဖြစ်ပါ</translation>
 <translation id="567202749201779594">သင့်အကောင့်ရှိ Chrome ဒေတာ ရှင်းထုတ်ရန်</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်လည်စတင်ရန် သင်၏စီမံခန့်ခွဲသူက တောင်းဆိုထားပါသည်}=1{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်လည်စတင်ရန် သင်၏စီမံခန့်ခွဲသူက တောင်းဆိုထားပါသည်။ သင်၏ရုပ်ဖျက် ဝင်ဒိုးကို ပြန်ဖွင့်မည် မဟုတ်ပါ။}other{ဤအပ်ဒိတ်ကို အသုံးပြုနိုင်ရန်အတွက် Chrome ကို ပြန်လည်စတင်ရန် သင်၏စီမံခန့်ခွဲသူက တောင်းဆိုထားပါသည်။ သင်၏ရုပ်ဖျက် ဝင်ဒိုး # ခုကို ပြန်ဖွင့်မည် မဟုတ်ပါ။}}</translation>
 <translation id="568656514202614970">အောင်မြင်သွားပါပြီ။ ဘရောက်စ်လုပ်နေစဉ် Google Search ဘေးအကန့်ဖြင့် မေးခွန်းများ အလွယ်တကူ မေးနိုင်ပါပြီ</translation>
@@ -475,6 +477,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5894164573378901688">Chrome တွင် Gemini သုံးရန် အခြား Google Account ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း</translation>
+<translation id="5906655207909574370">အပ်ဒိတ်ပြီးရန် အနည်းငယ်သာလိုပါသည်။ အပ်ဒိတ်လုပ်ခြင်းကို အဆုံးသတ်ရန် သင့်စက်ပစ္စည်းကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5924017743176219022">အင်တာနက် ချိတ်ဆက်နေသည်…</translation>
 <translation id="5941711191222866238">အနည်းဆုံး လုပ်ရန်</translation>
 <translation id="5941830788786076944">Google Chrome ကို ပုံသေ ဘရောင်ဇာ ပြုလုပ်ပါ။</translation>
@@ -530,6 +533,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6326175484149238433">Chrome ထဲမှ ဖယ်ရှားပစ်ရန်</translation>
 <translation id="6334815226785304306">Google Chrome ကို မူရင်းဘရောင်ဇာအဖြစ် ပြုလုပ်ပြီး Taskbar တွင် ပင်ထိုးရန်</translation>
 <translation id="6339888439788291743">သင်္ကေတအသစ်၊ ဖြတ်လမ်းလင့်ခ်အဟောင်း- ဘရောက်စ်လုပ်နေစဉ် ‘Google Search AI မုဒ်’ ဖြင့် မေးခွန်းများမေးရန် နှိပ်ပါ။</translation>
+<translation id="6349304688246983183">ရှာဖွေကြည့်ရှုနေစဉ် Google Search ဖြင့် မေးခွန်းများ အလွယ်တကူမေးနိုင်သည်</translation>
 <translation id="63540178978900677">Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်တော့ပါ။ Chrome ကို မူရင်းဘရောင်ဇာ သတ်မှတ်မလား</translation>
 <translation id="6357670763064300993">Chrome ရှိ Gemini Enterprise</translation>
 <translation id="6360449101159168105">Chrome မြန်ဆန်စေရန်အတွက် ဤတဘ် အသုံးမပြုစဉ် မှတ်ဉာဏ်ကို နေရာလွတ်ပြုလုပ်ထားသည်။ ဤဝဘ်ဆိုက်ကို အသုံးမပြုသည့်စာရင်းမှ အမြဲဖယ်ထုတ်ထားရန် ရွေးနိုင်သည်။</translation>
@@ -543,6 +547,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6438015621983209660">သင့်ဖုန်းတွင် Chrome ဖြင့် ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ကို တိုးချဲ့ရယူပါ</translation>
 <translation id="6442774133615368941">Chrome iOS အက်ပ်တွင် မြင်ရသောအရာများကို သင့်ကင်မရာဖြင့် ဝယ်ယူ၊ ဘာသာပြန်၊ ခွဲခြားဖော်ထုတ်နိုင်သည်</translation>
 <translation id="6446105560007692480">Chrome ဖြင့် ရှာရန် (သို့) <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် စိတ်ကြိုက်လုပ်ရန်</translation>
+<translation id="6447943657065463998">ဤစီမံထားသော ဘရောင်ဇာသည် အလုပ်အတွက် <ph name="DOMAIN" /> မှ စနစ်ထည့်သွင်းထားသော Gemini လက်ထောက်ကို သုံးနိုင်သည်။ ၎င်းသည် အချက်အလက်ရှာနိုင်ပြီး အဖွဲ့အစည်း၏ ဖိုင်များနှင့် အတည်ပြုထားသော ဝန်ဆောင်မှုများကို အခြေခံထားသော အဖြေများ ပေးနိုင်သည်။ ၎င်းကို ကိုယ်ပိုင်ပရိုဖိုင်ဖြင့် သုံးရန် အကြံမပြုပါ။ ချတ်မှတ်တမ်းကို လွှဲပြောင်းမည်မဟုတ်ပါ။ ပြောင်းရန်အတွက် Chrome ကို ပြန်ဖွင့်ရမည်။</translation>
 <translation id="6448835208126432197">Chrome ရှိ Gemini တွင် စခရင်၏ အစိတ်အပိုင်းကို ရွေးရန် လက်ကွက်ဖြတ်လမ်းများ သုံးပါ။</translation>
 <translation id="6473905796280459355">‘Chrome အကြောင်း’ စာမျက်နှာသို့ သွားရန်</translation>
 <translation id="6481963882741794338">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်းနှင့် အခြားရည်ရွယ်ချက်များအတွက် Chrome နှင့် အခြား Google ဝန်ဆောင်မှုများကို လင့်ခ်ချိတ်ပါ</translation>
@@ -563,8 +568,8 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6612152958212564387">သင်သည် သုံးစွဲမှုဆိုင်ရာ အချက်အလက် ကိန်းဂဏန်းများနှင့် ပျက်စီးမှု အစီရင်ခံစာများကို Google သို့ ပို့မနေပါ။ <ph name="BEGIN_LINK" />စီမံရန်<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chrome ကို မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ခြင်းဖြင့် စက်များတွင် သင့်စကားဝှက်၊ လိပ်စာနှင့် မှတ်တမ်းများကို အပြည့်အဝ စင့်ခ်လုပ်ထားနိုင်သည်။</translation>
 <translation id="6632012506031284914">Chrome ဖြင့် ရှာရန်။</translation>
-<translation id="6632473616050862500"><ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS Flex ကို ရေးဆွဲထားသည်။</translation>
 <translation id="6634299872736643004">Chrome ပြန်စလိုက်သည်နှင့် ဤဆက်တင်၌ အပြောင်းအလဲများ သက်ရောက်ပါမည်။</translation>
+<translation id="6644846457769259194">သင့်စက်ပစ္စည်းကို အပ်ဒိတ်လုပ်နေသည် (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">Chrome သို့ လက်မှတ်ထိုးဝင်မလား။</translation>
 <translation id="6664219008737641504">သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက သင့်အကောင့်ရှိ Chrome ဒေတာကို <ph name="SETTINGS_LINK" /> ပါ</translation>
 <translation id="6676384891291319759">အင်တာနက် ရယူရန်</translation>
@@ -628,7 +633,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7285990705317078173">ဈေးနှုန်းများ ခြေရာခံရန်နှင့် ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူရန် သင့်ဖုန်းတွင် Chrome ဒေါင်းလုဒ်လုပ်ပါ</translation>
 <translation id="7288567540154601580">တဘ်များနှင့် နောက်ဆက်တွဲများ</translation>
 <translation id="7290997427370476749">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ကိရိယာဘားရှိ “Google Search အကန့်” ခလုတ်မှတစ်ဆင့် ‘Google Search အကန့်’ ကို ပြန်ဖွင့်နိုင်သည်</translation>
-<translation id="7296210096911315575">အရေးကြီး အသုံးပြုခြင်းနှင့် အန္တရာယ်ကင်း အချက်အလက်များ</translation>
 <translation id="7299899569525778554">ဒက်စ်တော့မှ ရှာဖွေခြင်း</translation>
 <translation id="7302361266603927550">သင်၏ Chrome ဒေတာအချို့ကို သင့် Google Account တွင် မသိမ်းရသေးပါ။ မထွက်မီ အချိန်အနည်းငယ် စောင့်ပါ။ ယခု ထွက်သွားပါက ဤဒေတာကို ဖျက်ပါမည်။</translation>
 <translation id="7306401458628386911">ချက်ချင်း စတင်ဘရောက်စ်လုပ်ပါ- Windows စတင်သည့်အခါ Chrome ကို စတင်နိုင်ပါပြီ။</translation>
@@ -661,9 +665,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7572537927358445944">ပိတ် • Chrome သည် ဤနောက်ဆက်တွဲ လာသည့်နေရာကို စိစစ်၍မရပါ</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ထည့်သွင်းသည့်ဖိုင်</translation>
 <translation id="7596160425942761210">မက်ဆေ့ဂျ်၊ မှတ်တမ်းနှင့် အခြားအက်ပ်များရှိ လင့်ခ်များကို နှိပ်သည့်အခါတိုင်း Chrome သုံးနိုင်သည်</translation>
-<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">သင့်ဒေတာကို ကာကွယ်ရန် လတ်တလော သင်ဝင်ကြည့်ထားခြင်း မရှိသော ဝဘ်ဆိုက်များမှ ခွင့်ပြုချက်များကို Chrome အား ဖယ်ရှားခွင့်ပြုပါ။</translation>
-<translation id="7629898584100520089">စွမ်းရည်များကဲ့သို့သော AI တီထွင်ဆန်းသစ်မှုများကို သင်၏ Google Account တွင် သိမ်းထားပြီး Chrome စင့်ခ်နှင့် သီးခြားစီမံပါသည်</translation>
 <translation id="7641148173327520642">သင့်စနစ်စီမံခန့်ခွဲသူသည် <ph name="TARGET_URL_HOSTNAME" /> သို့ ဝင်ကြည့်ရန်အတွက် <ph name="ALTERNATIVE_BROWSER_NAME" /> ဖွင့်ရန် Google Chrome ကို စီစဉ်သတ်မှတ်ထားသည်။</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7651907282515937834">Chrome လုပ်ငန်းသုံး သင်္ကေတ</translation>
@@ -703,7 +705,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7904213866086517086">ဘေးအကန့်ရှိ Google Search ပြန်ဖွင့်ရန်</translation>
 <translation id="7904985524660297937">Google Chrome တွင် Gemini စမ်းသုံးပါ</translation>
 <translation id="7905880575591690197">လက်မှတ်ထိုးဝင်စဉ် အမှားဖြစ်သွားသောကြောင့် ChromeOS သည် သင်၏ Google Account တွင် Chrome ဒေတာကို သိမ်း၍မရလိုက်ပါ</translation>
-<translation id="7917876797003313048">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံနိုင်သည်။ Chrome ဘရောင်ဇာ၊ Play Store၊ Gmail စသည်တို့အတွက် သင်၏ Google Account များကို သုံးသည်။ မိသားစုဝင်ကဲ့သို့ တစ်စုံတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက ၎င်းအစား ထိုပုဂ္ဂိုလ်အသစ်ကို သင့် <ph name="DEVICE_TYPE" /> တွင် ထည့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">ဖိုင်သည် လှည့်စားနိုင်ပြီး သင့်စက်ကို မမျှော်လင့်ထားသည့် အပြောင်းအလဲများ ပြုလုပ်နိုင်သဖြင့် Chrome က ဤဒေါင်းလုဒ်ကို ပိတ်ထားသည်</translation>
 <translation id="7951272445806340501">အပ်ဒိတ်ထည့်သွင်းရန် ChromeOS Flex ကို ပြန်စရမည်။</translation>
 <translation id="7959172989483770734">Chrome ပရိုဖိုင်များ စီမံရန်</translation>
@@ -719,9 +720,11 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">၁။ အောက်ရှိ <ph name="BUTTON_LABEL" /> ကို နှိပ်ပါ
 ၂။ သင့် Windows ဆက်တင်များတွင် <ph name="BUTTON_2" /> ကို နှိပ်ပါ အမြန်သုံးခွင့်အတွက် Chrome ကို သင့် Taskbar တွင် ပင်ထိုးရန် Windows အကြောင်းကြားချက်ရှိ <ph name="BUTTON_3" /> ကို နှိပ်ပါ</translation>
+<translation id="8066474819446975249">ပြောင်းရန် Chrome ကို ပြန်ဖွင့်ပါ</translation>
 <translation id="8074398340364918139">Chrome ၏ အင်္ဂါရပ် (သို့) နောက်ဆက်တွဲတစ်ခုကို ရှာရန် လိပ်စာဘားတွင် ၎င်း၏ဖြတ်လမ်းလင့်ခ်ကို ရိုက်ထည့်ပြီးနောက် သင်ရွေးထားသော ကီးဘုတ်ခလုတ်ကို နှိပ်ပါ</translation>
 <translation id="8077579734294125741">အခြား Chrome ပရိုဖိုင်များ</translation>
 <translation id="8086881907087796310">သင့်ကွန်ပျူတာသည် ဟာ့ဒ်ဝဲပိုင်း အနည်းဆုံးသတ်မှတ်ချက်နှင့် ကိုက်ညီမှုမရှိသောကြောင့် ထည့်သွင်း၍မရပါ။</translation>
+<translation id="8095439028686936591">ChromeOS သည် အပ်ဒိတ်ဖြစ်နေသည်</translation>
 <translation id="8110438089258398864">ဘရောက်စ်လုပ်နေစဉ် မေးခွန်းများမေးရန် ‘Google Search AI မုဒ်’ ကို ပြန်ဖွင့်နိုင်သည်</translation>
 <translation id="8113883687556086139">သင်၏အကောင့် <ph name="ACCOUNT_EMAIL" /> တွင် Chrome ဒေတာ သုံးရန်နှင့် သိမ်းရန်အတွက် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="8115695070094288807">Chrome ကို သင့်စိတ်ကြိုက် ပြုလုပ်နေသည်...</translation>
@@ -848,6 +851,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="911206726377975832">သင့်အသုံးပြုမှု ဒေတာအားလဲ ဖျက်မည်လား?</translation>
 <translation id="9138603949443464873">သင့်အပြောင်းအလဲများ ထည့်သွင်းရန် Chrome ကို ပြန်စတင်ပါ</translation>
 <translation id="9148058034647219655">ထွက်</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />။ Google စာရင်းသွင်းမှု။</translation>
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="93760716455950538">ChromeOS Flex ကို ပြန်စပါ</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>

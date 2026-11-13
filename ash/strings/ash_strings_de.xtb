@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Probiere diese Beispielrechnungen aus</translation>
 <translation id="112308213915226829">Ablage autom. ausblenden</translation>
 <translation id="1129383337808748948">„<ph name="CONTENT_TITLE" />“ aktualisieren</translation>
+<translation id="1139368021151541038">Muss mindestens einen Buchstaben oder ein Symbol enthalten</translation>
 <translation id="1142002900084379065">Aktuelle Fotos</translation>
 <translation id="114221662579355151">Dadurch erhalten „<ph name="APP1_NAME" />“, „<ph name="APP2_NAME" />“ sowie alle Apps und Websites mit Kameraberechtigung Zugriff auf die Kamera. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
 <translation id="1145593918056169051">Drucker hat aufgehört</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Neuen Tab in neuem Fenster öffnen</translation>
 <translation id="1536604384701784949">Wenn du <ph name="USER_EMAIL_ADDRESS" /> verwenden möchtest, musst du dich zuerst von allen Konten abmelden. Wähle „Abbrechen“ aus, um zurückzugehen und dich abzumelden. Wähle dann die Zeitanzeige aus, um den Statusbereich zu öffnen, und dann „Abmelden“. Melde dich dann noch einmal im Konto <ph name="USER_EMAIL_ADDRESS_2" /> an.</translation>
 <translation id="15373452373711364">Großer Cursor</translation>
+<translation id="1538808328818992871">Muss mindestens <ph name="MIN_LENGTH" /> Zeichen lang sein</translation>
 <translation id="1545331255323159851">Letzte Fotos, Medien und Benachrichtigungen auf deinem Smartphone anzeigen</translation>
 <translation id="1546492247443594934">Desktop 2</translation>
 <translation id="1546930421365146760">Bitte deinen Administrator darum, dieses Gerät in der Google Admin-Konsole einzurichten</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Für weitere Optionen klicken</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1557622599341396706">Desktopnamen anzeigen</translation>
+<translation id="1568242747239041185">Muss mindestens zwei der folgenden Elemente enthalten: Großbuchstaben, Kleinbuchstaben, Ziffern oder Symbole</translation>
 <translation id="1569384531973824928">Dadurch erhalten alle Apps und Websites mit Kamera- und Mikrofonberechtigung Zugriff. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
 <translation id="1570235441606255261">Steam-Installationsprogramm</translation>
 <translation id="1571697193564730395">„Bitte nicht stören“ aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Google Tasks minimieren</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2215920961700443347">Kein Internet. Stell eine Internetverbindung her und versuche es noch einmal.</translation>
+<translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
 <translation id="2223384056430485343">In einem Splitscreen</translation>
 <translation id="2224075387478458881">Die Bildschirmaufzeichnung ist blockiert, wenn geschützte Inhalte sichtbar sind</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Tastaturmaus deaktiviert</translation>
 <translation id="2268731132310444948">Einführung: Schritt <ph name="STEP" /> von <ph name="TOTAL_STEPS" />. Sobald der Launcher aktiviert ist, wird eine erweiterte Suchleiste angezeigt. Du kannst mit der Eingabe beginnen, um z. B. nach deinen Dateien und Apps zu suchen. Du kannst auch Antworten auf Fragen zu deinem <ph name="PRODUCT_NAME" /> erhalten.</translation>
 <translation id="2268813581635650749">Alle abmelden</translation>
+<translation id="2273432041732361925">Darf keine sich wiederholenden Zeichen oder Sequenzen von 4 oder mehr Zeichen enthalten</translation>
 <translation id="2276987123919776440">15 Min.</translation>
 <translation id="2278668501808246459">Container-Manager wird gestartet</translation>
 <translation id="2282073721614284166">Link auf Tab öffnen</translation>
@@ -1056,6 +1061,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4072805772816336153">Versuch es später noch einmal</translation>
 <translation id="4077623680826964850">Zeitüberschreitung beim Starten oder beim Wiederherstellen der Verbindung zur VM.</translation>
 <translation id="4086921558679520050">Physischen Mikrofonschalter auf deinem Gerät aktivieren</translation>
+<translation id="4093173301198419723">Muss Groß- und Kleinbuchstaben, Ziffern und Symbole enthalten</translation>
 <translation id="4099874310852108874">Ein Netzwerkfehler ist aufgetreten.</translation>
 <translation id="4101772068965291327">Startseite öffnen</translation>
 <translation id="4102906002417106771">Für Powerwash neu starten</translation>
@@ -1276,6 +1282,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4668936527507421457">PIN darf nur Ziffern enthalten</translation>
 <translation id="4672539464599646374">Energiesparmodus aktiviert</translation>
 <translation id="4673427585974421255">Aktiviert lassen</translation>
+<translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
 <translation id="4677040906536311086">Google-Tabelle</translation>
 <translation id="468019262817532242">Niemand kann Inhalte mit dir teilen</translation>
 <translation id="468293128311738995">Apps von deinem Smartphone</translation>
@@ -1299,6 +1306,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4746798685375253449">{0,plural, =1{Innerhalb von einem Tag Rollback des Geräts auf eine frühere Version durchführen}other{Innerhalb von # Tagen Rollback des Geräts auf eine frühere Version durchführen}}</translation>
 <translation id="4747410141429390146">Bitte entsperren, um Benachrichtigungen zu sehen</translation>
 <translation id="4752784485658729358">Es sind maximal 6 gespeicherte Desktops zulässig. Entferne einen Desktop, um einen neuen zu speichern.</translation>
+<translation id="4753084533826742808">Muss mindestens 1 Zeichen lang sein</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + Aufwärtspfeil</translation>
 <translation id="4762573482154983647">Apps ausblenden</translation>
@@ -1435,6 +1443,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5144005092084035179">Audioeingabe wechseln?</translation>
 <translation id="5145464978649806571">Wenn du dich von deinem Gerät entfernst, wird der Bildschirm automatisch gesperrt. Wenn du dich vor deinem Gerät befindest, bleibt er länger aktiv. Wenn du keinen Sperrbildschirm verwendest, wird dein Gerät stattdessen in den Ruhemodus versetzt.</translation>
 <translation id="5147567197700016471">Entsperrt</translation>
+<translation id="5148285448107770349">Passwort muss aus mindestens 8 Zeichen bestehen</translation>
 <translation id="5150070631291639005">Datenschutzeinstellungen</translation>
 <translation id="5155897006997040331">Lesegeschwindigkeit</translation>
 <translation id="5158206172605340248">Akzent-Menü geschlossen.</translation>
@@ -1555,6 +1564,7 @@ Keine Geräte verbunden.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> erfordert, dass du dein Gerät jetzt mit dem WLAN verbindest und ein Update herunterlädst. Das Update kann auch über eine kostenpflichtige Verbindung heruntergeladen werden (hierfür können zusätzliche Gebühren anfallen).</translation>
 <translation id="547979256943495781">Ablage rechts</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Passwort bestätigen</translation>
 <translation id="5491186829646618080">Firmwareupdates verfügbar</translation>
 <translation id="5503884284981862082">Google Assistant öffnen/schließen</translation>
 <translation id="550391772491508736">Stream fortsetzen</translation>
@@ -1815,6 +1825,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6199775032047436064">Aktuelle Seite neu laden</translation>
 <translation id="6200515304866777730">Wird von der App nicht unterstützt</translation>
+<translation id="6209589022625766110">Muss mindestens 8 Zeichen lang sein und mindestens zwei der folgenden Elemente enthalten: Großbuchstaben, Kleinbuchstaben, Ziffern oder Symbole. Darf keine sich wiederholenden Zeichen oder Sequenzen von 4 oder mehr Zeichen enthalten.</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> verbinden, wurde(n) bereits in <ph name="EMAIL" /> gespeichert</translation>
 <translation id="6212580734499190393">Für 10 Min.</translation>
 <translation id="6213808132343683860">Screenshot oder Bildschirmaufzeichnung eines Bildschirmausschnitts erstellen</translation>
@@ -1849,6 +1860,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6297986260307280218">Nutzungs- und Diagnosedaten senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google hilfreich, beispielsweise für Android-Entwickler. Diese <ph name="BEGIN_LINK1" />Einstellung<ph name="END_LINK1" /> wird vom Inhaber erzwungen. Der Inhaber kann festlegen, ob Diagnose- und Nutzungsdaten von diesem Gerät an Google gesendet werden. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen zu Messwerten<ph name="BEGIN_LINK2_END" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Dieses Gerät in der App anpassen</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
+<translation id="6300478323573969040">Muss mindestens 12 Zeichen lang sein sowie Groß- und Kleinbuchstaben, Ziffern und Symbole enthalten. Darf keine sich wiederholenden Zeichen oder Sequenzen von 4 oder mehr Zeichen enthalten.</translation>
 <translation id="6304076460080088478">Inkognitofenster schließen oder minimieren, um mit Google Lens auf dem Bildschirm zu suchen</translation>
 <translation id="6309219492973062892">Auf die Symbole 1 bis 8 in der Ablage klicken oder tippen</translation>
 <translation id="6315170314923504164">Stimme</translation>
@@ -2021,7 +2033,6 @@ Neuinstallation</translation>
 <translation id="6782919488259222803">Auf aktueller Seite suchen</translation>
 <translation id="6783348167101855071">Ziehpunkt rechts unten ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
 <translation id="6786750046913594791">Ordner schließen</translation>
-<translation id="6792262051831399889">Nicht verfügbar</translation>
 <translation id="6792351896138862473">Die Kiosk-App kann nicht gestartet werden, weil sie nicht unterstützt wird. Bitte informiere deinen Administrator.</translation>
 <translation id="679368458793552943">Heranzoomen, wenn die Lupe aktiviert ist</translation>
 <translation id="6794287755901682422">Dieser Artikel hat: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
 <translation id="8063363226185507157">Synchronisierte Einstellungen für Bedienungshilfen</translation>
+<translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079538659226626406">Bildschirmfreigabe</translation>
 <translation id="8083540854303889870">Für später gespeichert</translation>
@@ -2627,6 +2639,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8555757996376137129">Aktuellen Desktop entfernen</translation>
 <translation id="8558521694042102707">Generative KI kann Fehler machen, auch bei Informationen über Personen, überprüfe daher die Antworten.</translation>
 <translation id="8559845965695780508">Von <ph name="USER" /> bearbeitet</translation>
+<translation id="8567946600191652875">Muss mindestens 6 Zeichen lang sein und mindestens einen Buchstaben oder ein Symbol enthalten</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Menü wurde nach rechts unten auf dem Bildschirm verschoben.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /> + <ph name="MODIFIER_2" /> drücken und auf einen Link klicken</translation>
@@ -2800,7 +2813,6 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="9034924485347205037">Linux-Dateien</translation>
 <translation id="9037818663270399707">Deine Verbindung ist für den gesamten Netzwerkverkehr nicht privat</translation>
 <translation id="9047624247355796468">Einstellungen für <ph name="NETWORK_NAME" /> öffnen</translation>
-<translation id="9050012935252397793">Bluetooth ist nicht verfügbar</translation>
 <translation id="9050999376345823055">Zum Loslassen die Punkt-Taste („.“) drücken</translation>
 <translation id="906458777597946297">Fenster maximieren</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>

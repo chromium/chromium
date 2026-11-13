@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de separadores.</translation>
 <translation id="2022431790688770637">Gerir sugestões do Gemini</translation>
+<translation id="2023265063803387188">O Gemini não está disponível no modo de navegação anónima</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Abra a grelha de separadores</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerida por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Parar</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
-<translation id="2671316366021598595">O site "<ph name="SITE_DOMAIN" />" não tem autorização para aceder à sua câmara</translation>
 <translation id="2671423594960767771">Partilhar grupo</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pagar em prestações</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nome</translation>
 <translation id="386224966259596343">Vai ter a oportunidade de guardar estas informações na Carteira da próxima vez que preencher um formulário relevante.</translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
+<translation id="3870931306085184145">Nenhuma palavra-passe guardada para <ph name="DOMAIN" />.</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
 <translation id="3878657761594430423">Controlo da página</translation>
 <translation id="3884810423191119660">Guarde as palavras-passe em segurança para poder iniciar sessão facilmente em sites e apps</translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Quer parar a transferência?</translation>
 <translation id="4796496140132859135">Grupo de separadores Reduzido.</translation>
 <translation id="4800912004582762296">A clicar</translation>
+<translation id="4800930308997591052">Mude para <ph name="EMAIL" /> para partilhar separadores facilmente entre os seus dispositivos e aceder às suas palavras-passe, marcadores e muito mais a partir da sua Conta Google.</translation>
 <translation id="4802185666270672526">Ocultar Pedir site para computador</translation>
 <translation id="4803185665210547709">Gerido pela sua organização.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1311,7 +1313,6 @@
 <translation id="5061202435354361813">Melhore a sua navegação</translation>
 <translation id="5062321486222145940">Instalar o Google Drive</translation>
 <translation id="5067540696062462445">Transferências</translation>
-<translation id="5070314445039955096">As autorizações de "<ph name="SITE_DOMAIN" />" serão repostas para desativadas quando sair deste site</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} de {count} método de pagamento}other{{position} de {count} métodos de pagamento}}</translation>
 <translation id="5075939510584558547">Guarde sem encriptação</translation>
 <translation id="5076534614343816664">Acompanhamento de preço</translation>
@@ -1410,7 +1411,6 @@
 <translation id="5351613737248079168">Tem de ter sessão iniciada para usar o Level Up</translation>
 <translation id="5352128922772839949">Guardar ficheiro</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
-<translation id="5355871759168485600">O site "<ph name="SITE_DOMAIN" />" tem autorização para usar o seu microfone sempre que visitar este site</translation>
 <translation id="5359436665022446585">Melhor abertura de links</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
 <translation id="5364647308446127983">{count,plural, =1{Não foi possível importar {count} chave de acesso}other{Não foi possível importar {count} chaves de acesso}}</translation>
@@ -1484,6 +1484,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5612225021788368236">Fechar promoção do navegador predefinido</translation>
 <translation id="561269594905823128">Toque em <ph name="BEGIN_BOLD" />Selecionar ficheiro<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por mais recente</translation>
+<translation id="561349411957324076">Concluído</translation>
 <translation id="5614553682702429503">Guardar a palavra-passe?</translation>
 <translation id="5617769621178348890">Abrir na app Files</translation>
 <translation id="5619871095170816857">Este cartão mostra o último separador aberto usado em todos os seus dispositivos sincronizados nas últimas 24 horas.</translation>
@@ -2148,6 +2149,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7618220760967055820">Escolha o botão que é apresentado na barra de ferramentas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="762078666799342162">Pode ver as transferências anteriores na app <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Continue a partir do ponto onde ficou no computador</translation>
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Palavras-passe comprometidas}=1{{COUNT} palavra-passe comprometida}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="7640669552036055091">Separadores do Android</translation>
@@ -2333,7 +2335,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
 <translation id="8161614462829037225">Desbloquear com <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Comprimento</translation>
-<translation id="8181328232274170248">O site "<ph name="SITE_DOMAIN" />" tem autorização para usar a sua câmara sempre que visitar este site</translation>
 <translation id="8182037667962849780">{count,plural, =1{De {website_1}}=2{De {website_1}, {website_2}}=3{De {website_1}, {website_2} e mais 1}other{De {website_1}, {website_2} e mais {more_count}}}</translation>
 <translation id="8184895727539791845">Para permitir que o Gemini use a câmara, ative a Câmara nas definições do iOS</translation>
 <translation id="8185076488803799132">Importar</translation>
@@ -2504,7 +2505,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8674716540979958118">Tem palavras-passe comprometidas.</translation>
 <translation id="8679900250380464358">Adicionar à Lista de leitura</translation>
 <translation id="8680787084697685621">Os detalhes de início de sessão na conta estão desactualizados.</translation>
-<translation id="868648444055742370">O site "<ph name="SITE_DOMAIN" />" não tem autorização para aceder ao seu microfone</translation>
 <translation id="8690752723634292147">Confirmar eliminação</translation>
 <translation id="8692107307702113268">A palavra-passe tem mais de 1000 carateres</translation>
 <translation id="8692689525339542358">Proteja-se contra transferências, extensões e sites perigosos.</translation>
@@ -2650,6 +2650,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="91023216973987714">Métodos de pagamento</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Verifique a existência de palavras-passe comprometidas.</translation>
+<translation id="9115035712231910133">Imagem anexada {title}</translation>
 <translation id="9119764377203471454">Não é possível adicionar anexos</translation>
 <translation id="9124387962554796433">A Google pode utilizar o seu histórico para personalizar a Pesquisa e outros serviços Google.</translation>
 <translation id="9124978074365039456">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos</translation>

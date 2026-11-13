@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="201759455285471444">Utöka flikgruppen.</translation>
 <translation id="2022431790688770637">Hantera Gemini-förslag</translation>
+<translation id="2023265063803387188">Gemini är inte tillgänglig i inkognitoläget</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Öppna rutnätet med flikar</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> hanteras av <ph name="HOSTED_DOMAIN" />, som kanska kan se viss information. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Stopp</translation>
 <translation id="2666092431469916601">Överst</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
-<translation id="2671316366021598595"><ph name="SITE_DOMAIN" /> har inte åtkomst till kameran</translation>
 <translation id="2671423594960767771">Dela grupp</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Betalning över tid</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Namn</translation>
 <translation id="386224966259596343">Du får möjlighet att spara dessa uppgifter i Wallet nästa gång du fyller i ett relevant formulär.</translation>
 <translation id="3868495844258915202">Visa fullständig webbadress</translation>
+<translation id="3870931306085184145">Det finns inga sparade lösenord för <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Visa hur man gör</translation>
 <translation id="3878657761594430423">Arkplockare</translation>
 <translation id="3884810423191119660">Spara lösenord på ett säkert sätt så att du enkelt kan logga in på webbplatser och i appar</translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">Vill du avbryta nedladdningen?</translation>
 <translation id="4796496140132859135">Flikgrupp. Komprimerad.</translation>
 <translation id="4800912004582762296">Klickar</translation>
+<translation id="4800930308997591052">Byt till <ph name="EMAIL" /> för att smidigt dela flikar mellan dina enheter och få dina lösenord, bokmärken med mera från Google-kontot.</translation>
 <translation id="4802185666270672526">Dölj Begär webbplats för dator</translation>
 <translation id="4803185665210547709">Hanteras av organisationen.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
@@ -1311,7 +1313,6 @@
 <translation id="5061202435354361813">Ta surfandet till nästa nivå</translation>
 <translation id="5062321486222145940">Installera Google Drive</translation>
 <translation id="5067540696062462445">Nedladdningar</translation>
-<translation id="5070314445039955096">Behörigheterna för <ph name="SITE_DOMAIN" /> inaktiveras igen när du lämnar webbplatsen</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} av {count} betalningsmetod}other{{position} av {count} betalningsmetoder}}</translation>
 <translation id="5075939510584558547">Spara utan kryptering</translation>
 <translation id="5076534614343816664">Prisbevakning</translation>
@@ -1410,7 +1411,6 @@
 <translation id="5351613737248079168">Du måste vara inloggad för att använda Level Up</translation>
 <translation id="5352128922772839949">Spara fil</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
-<translation id="5355871759168485600"><ph name="SITE_DOMAIN" /> får använda mikrofonen när du besöker den här webbplatsen</translation>
 <translation id="5359436665022446585">Öppna länkar lättare</translation>
 <translation id="536067926684072644">Visa bokmärken</translation>
 <translation id="5364647308446127983">{count,plural, =1{Det gick inte att importera {count} nyckel}other{Det gick inte att importera {count} nycklar}}</translation>
@@ -1484,6 +1484,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5612225021788368236">Stäng kampanj för standardwebbläsare</translation>
 <translation id="561269594905823128">Tryck på <ph name="BEGIN_BOLD" />Välj fil<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sortera efter senaste</translation>
+<translation id="561349411957324076">Klart</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5617769621178348890">Öppna i appen Filer</translation>
 <translation id="5619871095170816857">På kortet visas din senast använda flik på alla dina synkroniserade enheter under de senaste 24 timmarna.</translation>
@@ -2148,6 +2149,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7618220760967055820">Välj vilken knapp som ska visas i verktygsfältet</translation>
 <translation id="7620522820075868385">Avbryt</translation>
 <translation id="762078666799342162">Du kan se dina tidigare nedladdningar i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
+<translation id="7636034359405891151">Fortsätt där du slutade på datorn</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{Utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="7640669552036055091">Flikar från Android</translation>
@@ -2333,7 +2335,6 @@ Du kan starta om när som helst.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konton</translation>
 <translation id="8161614462829037225">Lås upp med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Längd</translation>
-<translation id="8181328232274170248"><ph name="SITE_DOMAIN" /> får använda kameran när du besöker den här webbplatsen</translation>
 <translation id="8182037667962849780">{count,plural, =1{För {website_1}}=2{För {website_1}, {website_2}}=3{För {website_1}, {website_2} och 1 till}other{För {website_1}, {website_2} och {more_count} till}}</translation>
 <translation id="8184895727539791845">Aktivera Kamera i iOS-inställningarna om du vill ge Gemini åtkomst till kameran</translation>
 <translation id="8185076488803799132">Importera</translation>
@@ -2504,7 +2505,6 @@ Du kan starta om när som helst.</translation>
 <translation id="8674716540979958118">Du har utsatta lösenord.</translation>
 <translation id="8679900250380464358">Lägg till i läslistan</translation>
 <translation id="8680787084697685621">Inloggningsuppgifterna för kontot är inte aktuella.</translation>
-<translation id="868648444055742370"><ph name="SITE_DOMAIN" /> har inte åtkomst till mikrofonen</translation>
 <translation id="8690752723634292147">Bekräfta borttagning</translation>
 <translation id="8692107307702113268">Lösenordet är längre än 1 000 tecken</translation>
 <translation id="8692689525339542358">Få skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
@@ -2650,6 +2650,7 @@ Du kan starta om när som helst.</translation>
 <translation id="91023216973987714">Betalningsmetoder</translation>
 <translation id="9106655997975673326">Från <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Sök efter utsatta lösenord</translation>
+<translation id="9115035712231910133">Bifogad bild {title}</translation>
 <translation id="9119764377203471454">Det gick inte att lägga till bilagor</translation>
 <translation id="9124387962554796433">Google kan anpassa Sök och andra Google-tjänster utifrån historiken.</translation>
 <translation id="9124978074365039456">Köp, översätt och identifiera det du ser med hjälp av kameran och fotogalleriet</translation>

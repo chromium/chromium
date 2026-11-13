@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Để xem mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="201759455285471444">Mở rộng nhóm thẻ.</translation>
 <translation id="2022431790688770637">Quản lý đề xuất của Gemini</translation>
+<translation id="2023265063803387188">Không thể sử dụng Gemini ở chế độ ẩn danh</translation>
 <translation id="2031515492007104071">Tăng cấp</translation>
 <translation id="2044394949148788042">Mở lưới thẻ</translation>
 <translation id="2044681667265133332">Tài khoản <ph name="USER_EMAIL" /> do <ph name="HOSTED_DOMAIN" /> quản lý. Họ có thể xem một số thông tin. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Dừng</translation>
 <translation id="2666092431469916601">Trên cùng</translation>
 <translation id="2669454659051515572">Bất cứ ai sử dụng thiết bị này đều có thể xem các tệp đã tải xuống</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" không được phép truy cập vào camera</translation>
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Thanh toán dần</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Tên</translation>
 <translation id="386224966259596343">Lần tới khi bạn điền vào biểu mẫu liên quan, bạn sẽ có thể lưu thông tin này vào Wallet.</translation>
 <translation id="3868495844258915202">Hiện URL đầy đủ</translation>
+<translation id="3870931306085184145">Chưa lưu mật khẩu nào cho <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Xem cách làm</translation>
 <translation id="3878657761594430423">Thanh kéo trang</translation>
 <translation id="3884810423191119660">Lưu mật khẩu an toàn để bạn có thể dễ dàng đăng nhập vào các trang web và ứng dụng</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Nâng tầm trải nghiệm duyệt web</translation>
 <translation id="5062321486222145940">Cài đặt Google Drive</translation>
 <translation id="5067540696062462445">Tệp đã tải xuống</translation>
-<translation id="5070314445039955096">Các quyền của "<ph name="SITE_DOMAIN" />" sẽ được đặt lại thành tắt khi bạn rời khỏi trang web này</translation>
 <translation id="507187271399539513">{count,plural, =1{Phương thức thanh toán {position}/{count}}other{Phương thức thanh toán {position}/{count}}}</translation>
 <translation id="5075939510584558547">Lưu mà không mã hoá</translation>
 <translation id="5076534614343816664">Theo dõi giá</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Bạn phải đăng nhập để dùng Level Up</translation>
 <translation id="5352128922772839949">Lưu tệp</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" được phép sử dụng micrô bất cứ khi nào bạn truy cập vào trang web này</translation>
 <translation id="5359436665022446585">Mở đường liên kết nhanh hơn</translation>
 <translation id="536067926684072644">Hiện dấu trang</translation>
 <translation id="5364647308446127983">{count,plural, =1{Không nhập được {count} khoá truy cập}other{Không nhập được {count} khoá truy cập}}</translation>
@@ -1484,6 +1483,7 @@
 <translation id="5612225021788368236">Đóng thông báo quảng bá về trình duyệt mặc định</translation>
 <translation id="561269594905823128">Nhấn vào <ph name="BEGIN_BOLD" />Chọn tệp của bạn<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sắp xếp theo mới nhất</translation>
+<translation id="561349411957324076">Hoàn tất</translation>
 <translation id="5614553682702429503">Lưu mật khẩu?</translation>
 <translation id="5617769621178348890">Mở trong ứng dụng Files</translation>
 <translation id="5619871095170816857">Thẻ này hiển thị thẻ đang mở mà bạn sử dụng gần đây nhất trong vòng 24 giờ qua trên tất cả thiết bị đã đồng bộ hoá.</translation>
@@ -1715,12 +1715,12 @@
 <translation id="6324054713176642683">Chọn trong số các giao diện, màu sắc hoặc tải ảnh của bạn lên.</translation>
 <translation id="6327249202318869726">Gemini đã bị tắt cho tài khoản của bạn. Hãy liên hệ với quản trị viên của bạn để biết thêm thông tin.</translation>
 <translation id="6331836477476466332">Một trình duyệt an toàn hơn, mạnh mẽ hơn cho bạn</translation>
-<translation id="6337234675334993532">Mã hóa</translation>
+<translation id="6337234675334993532">Mã hoá</translation>
 <translation id="6337711171050747395">Hiển thị các lựa chọn thanh toán dần khi thanh toán</translation>
 <translation id="633809752005859102">Đã xảy ra sự cố nào đó. Chúng tôi sẽ xem xét vấn đề đó.</translation>
 <translation id="6339793034470834130">Để sử dụng Trình kiểm tra web, hãy kết nối với Safari trên máy tính bằng cáp và truy cập iPhone từ trình đơn Phát triển. Bạn có thể bật trình đơn phát triển trong mục Nâng cao của phần cài đặt Safari trên máy tính.</translation>
 <translation id="6340285871011301182">Không thể dịch một phần.</translation>
-<translation id="6340526405444716530">Cá nhân hóa</translation>
+<translation id="6340526405444716530">Cá nhân hoá</translation>
 <translation id="6341140761912903432">Khi đăng nhập bằng tài khoản được quản lý, bạn có thể tách biệt hoạt động duyệt web liên quan đến tổ chức (trong đó có các thẻ, nhật ký và mật khẩu) với hoạt động duyệt web khác của mình.
 
        Dữ liệu duyệt web hiện có sẽ được lưu giữ riêng biệt. Để sử dụng dữ liệu đó, hãy đăng xuất khỏi tài khoản được quản lý.</translation>
@@ -2333,7 +2333,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> tài khoản</translation>
 <translation id="8161614462829037225">Mở khoá bằng <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Chiều dài</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" được phép sử dụng camera bất cứ khi nào bạn truy cập vào trang web này</translation>
 <translation id="8182037667962849780">{count,plural, =1{Cho {website_1}}=2{Cho {website_1}, {website_2}}=3{Cho {website_1}, {website_2} và 1 trang web khác}other{Cho {website_1}, {website_2} và {more_count} trang web khác}}</translation>
 <translation id="8184895727539791845">Để cho phép Gemini sử dụng camera của bạn, hãy bật Camera trong phần cài đặt của iOS</translation>
 <translation id="8185076488803799132">Nhập</translation>
@@ -2504,7 +2503,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8674716540979958118">Bạn có mật khẩu bị lộ.</translation>
 <translation id="8679900250380464358">Thêm vào Danh sách đọc</translation>
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" không được phép truy cập vào micrô</translation>
 <translation id="8690752723634292147">Xác nhận xoá</translation>
 <translation id="8692107307702113268">Mật khẩu dài hơn 1000 ký tự</translation>
 <translation id="8692689525339542358">Bảo vệ bạn trước các trang web, tệp tải xuống và tiện ích nguy hiểm.</translation>

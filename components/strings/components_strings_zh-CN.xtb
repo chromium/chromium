@@ -688,7 +688,7 @@
 <translation id="2154144347038514978">在设备上自动启动</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2155260325161282517">5 x 7 英寸</translation>
-<translation id="2156467141257470387">您可在各 Google 产品中使用已保存的地址。这不会更改现有工作地址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="2156467141257470387">已保存的地址可在各 Google 产品中通用。这不会更改现有工作地址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="2157640075051554492">价格跟踪通知</translation>
 <translation id="2158964559178498011">自动填充功能可在更多位置使用 - 按两次 Ctrl 键即可查找并填充信息</translation>
 <translation id="2161656808144014275">文字</translation>
@@ -726,7 +726,6 @@
 <translation id="22081806969704220">纸匣 3</translation>
 <translation id="2210794033760923560">上传报告</translation>
 <translation id="2212735316055980242">找不到策略</translation>
-<translation id="2213606439339815911">正在获取条目…</translation>
 <translation id="2213612003795704869">打印页面</translation>
 <translation id="2214086901479959524">更新 Chrome，即可继续使用共享标签页分组</translation>
 <translation id="2214453882118345682">打开相机，轻松购物、实时翻译、拍照识物。</translation>
@@ -926,7 +925,7 @@
 <translation id="2524461107774643265">添加更多信息</translation>
 <translation id="2524962131655207565"><ph name="BEGIN_BOLD" />为提供以上选项，系统会将结账页中的内容分享给 Google。<ph name="END_BOLD" />付款方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如需运行此应用，请重新启用独立式 Web 应用 (IWA) 开发者模式</translation>
-<translation id="2526280916094749336">您可在各 Google 产品中使用已保存的地址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="2526280916094749336">已保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
 <translation id="2529899080962247600">此字段最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，在达到这一上限后添加的所有条目都将被忽略。</translation>
 <translation id="2530042584066815841">锁定和使用鼠标</translation>
@@ -1275,7 +1274,6 @@
 <translation id="3141337053413339205">切换到这个标签页。</translation>
 <translation id="3144458715650412431">已应用测试政策。如需查看政策或重新设置，请访问 chrome://policy/test。系统不会应用管理员政策。</translation>
 <translation id="3145945101586104090">无法对响应解码</translation>
-<translation id="3149865382039202168">在 <ph name="GOOGLE_WALLET_TITLE" />中保存信息可以提升效率，例如在不同 Google 产品中快速填写表单。您可以在 <ph name="ACCOUNT" /> 的私人凭证设置中控制 <ph name="HOW_INFO_IS_USED_LINK" />。<ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">服务器临时错误</translation>
 <translation id="3150889484970506196">“创建表格”按钮，激活它即可快速创建新的 Google 表格</translation>
 <translation id="3154506275960390542">此页包含一个可能无法安全提交的表单。他人可能会在传输过程中查看您所发送的数据；攻击者也可能会修改这些数据，从而改变服务器收到的内容。</translation>
@@ -1518,7 +1516,6 @@
 <translation id="3558335486599406178">IBAN 已保存到 Google 钱包</translation>
 <translation id="3558573058928565255">日间</translation>
 <translation id="3559897352860026926">请让您的管理员验证其“<ph name="CLOUD_PROVIDER" />”配置设置。</translation>
-<translation id="3560824484345057728">查看相关网站</translation>
 <translation id="3566021033012934673">您的连接不是私密连接</translation>
 <translation id="3566336457819493938">215 x 315 毫米</translation>
 <translation id="3566681680543111735">复制变体字符串</translation>
@@ -2160,7 +2157,6 @@
 <translation id="4603727370377253901">航班预订</translation>
 <translation id="4607608436550361748">查看 Chrome 使用窍门</translation>
 <translation id="460848736049414407">已被管理员屏蔽</translation>
-<translation id="4610279718074907952">此网站属于由 <ph name="SET_OWNER" /> 定义的群组，该群组可查看您的活动记录</translation>
 <translation id="4612631413844865947">通过 <ph name="PAYMENT_APP_ORIGIN" /> 处理您在 <ph name="MERCHANT_ORIGIN" /> 上的订单时出错。</translation>
 <translation id="4612904677925722054">此网站可能含有少儿不宜的内容。你必须获得家长或监护人的同意，才能访问此网站。</translation>
 <translation id="4613873770449493819">网址必须指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 网域。</translation>
@@ -2417,7 +2413,7 @@
 <translation id="5018422839182700155">无法打开此网页</translation>
 <translation id="5018802455907704660">16 x 20 英寸</translation>
 <translation id="5019198164206649151">后备存储状态不佳</translation>
-<translation id="5019293549442035120">您可在各 Google 产品中使用已保存的地址。此地址将保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
+<translation id="5019293549442035120">已保存的地址可在各 Google 产品中通用。此地址将保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
 <translation id="5019819206251569004">移动传感器和光传感器</translation>
 <translation id="5019952743397118625">已设置 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不会控制开发者模式在扩展程序页面上的使用情况。</translation>
 <translation id="502075697789439404">文件已下载</translation>
@@ -2997,7 +2993,7 @@
 <translation id="5984570616552610254">室内湿度</translation>
 <translation id="598637245381783098">无法打开付款应用</translation>
 <translation id="5989320800837274978">固定代理服务器和 .pac 脚本网址均未指定。</translation>
-<translation id="5989917734461988169">您可在各 Google 产品中使用已保存的地址。这不会更改现有住址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="5989917734461988169">已保存的地址可在各 Google 产品中通用。这不会更改现有住址。此地址将保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="5992691462791905444">工程 Z 型折</translation>
 <translation id="5995727681868049093">在您的 Google 账号中管理自己的信息、隐私和安全</translation>
 <translation id="5997247540087773573">您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，Google 密码管理工具建议您立即更改此密码并检查您已保存的所有密码。</translation>
@@ -3045,7 +3041,7 @@
 <translation id="6051898664905071243">页数：</translation>
 <translation id="605237284704429106">正在填充 IBAN</translation>
 <translation id="6052557981901634648">制定计划</translation>
-<translation id="6053584886670442526">您可在各 Google 产品中使用已保存的地址。此地址会保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
+<translation id="6053584886670442526">已保存的地址可在各 Google 产品中通用。此地址已保存至您的 Google 账号：<ph name="ACCOUNT" />。</translation>
 <translation id="6055392876709372977">PKCS #1，带有 RSA 加密的 SHA-256</translation>
 <translation id="6055982527635883756">信封（存档用）</translation>
 <translation id="6059925163896151826">USB 设备</translation>
@@ -3706,7 +3702,6 @@
 <translation id="7173338713290252554">网上的既往价格</translation>
 <translation id="7174545416324379297">已合并</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 种送货方式}}</translation>
-<translation id="7180611975245234373">刷新</translation>
 <translation id="7181261019481237103">打开无痕式窗口</translation>
 <translation id="7182878459783632708">未设置任何政策</translation>
 <translation id="7186833457841277072">信封（喷墨纸）</translation>
@@ -4172,7 +4167,6 @@
 <translation id="7932579305932748336">涂层</translation>
 <translation id="79338296614623784">请输入有效的电话号码</translation>
 <translation id="7934414805353235750"><ph name="URL" /> 想播放受保护的内容。Google 将对您的设备进行身份验证。</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">允许使用移动传感器</translation>
 <translation id="7937163678541954811">此卡的银行卡验证码 (CVC) 将会被加密并保存到您的设备上，以便您更快捷地结账</translation>
 <translation id="7937554595067888181">到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4220,7 +4214,6 @@
 <translation id="7999482381722829925">帮我按房间制定一份全屋深度清洁清单，并按优先级对各项内容进行排序，重点关注平常打扫时容易忽视的地方</translation>
 <translation id="8001912761979890298">此服务器无法证明其所在网域是 <ph name="DOMAIN" />，因为它使用的安全证书不受 Chromium 或您系统的网站流量加密配置所信任。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。<ph name="BEGIN_VIEW_CERTIFICATE_LINK" />查看证书<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">请尝试关闭其他标签页或程序以释放内存。</translation>
-<translation id="8002230960325005199">在新标签页中查看相关网站</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8009225694047762179">管理密码</translation>
@@ -4261,7 +4254,6 @@
 <translation id="8079976827192572403">危险网站</translation>
 <translation id="8086971161893892807">草稿</translation>
 <translation id="8087558780672230449">正在加载“<ph name="APP_ORIGIN" />”，以便在<ph name="MERCHANT_ORIGIN" />上处理您的付款。</translation>
-<translation id="8088680233425245692">无法查看文章。</translation>
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8091372947890762290">正等待在服务器上激活</translation>
 <translation id="8092254339843485299">6 x 8 英寸</translation>
@@ -4901,7 +4893,6 @@
 <translation id="9199905725844810519">打印功能已被禁用</translation>
 <translation id="9204089334327209740">上传完成后，您可以在<ph name="CLOUD_PROVIDER" />中修改文件。本地存储空间（包括回收站中的所有文件）将被自动移除。</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
-<translation id="9207861905230894330">无法添加文章。</translation>
 <translation id="9209339767782560829">使用您的登录证书时出现问题。</translation>
 <translation id="9210152531668884481">保存</translation>
 <translation id="9213433120051936369">自定义外观</translation>

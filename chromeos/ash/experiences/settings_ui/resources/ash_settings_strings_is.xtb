@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Allt er til reiðu!</translation>
 <translation id="1149483087970735785">Hjálpartækni</translation>
 <translation id="1150490752229770117">Þetta er síðasta sjálfvirka hugbúnaðar- og öryggisuppfærslan fyrir þetta <ph name="DEVICE_TYPE" /> tæki. Uppfærðu í nýrri útgáfu til að fá frekari uppfærslur. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Um ChromeOS</translation>
 <translation id="1155816283571436363">Tengist símanum þínum</translation>
 <translation id="1160800016654917722">Gluggi færðist niður og til vinstri</translation>
 <translation id="1164015913575846413">alt + smella</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">ræsilykill + ör til hægri</translation>
 <translation id="1280332775949918163">Smelligluggi</translation>
+<translation id="1285625592773741684">Núverandi stilling gagnanotkunar er „Farsímagögn“</translation>
 <translation id="1285815028662278915">Farsímagögnin þín styðja hugsanlega ekki heitan reit. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Kveikir sjálfkrafa á næturljósi við sólsetur</translation>
 <translation id="1288300545283011870">Eiginleikar fyrir tal</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Þetta slekkur á viðbótum og endurstillir tækið á öruggar, sjálfgefnar stillingar. Flipar, skrár og fótspor varðveitast. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Stækkunargler á öllum skjánum</translation>
 <translation id="1539727654733007771">Ekkert farsímakerfi er uppsett. Sækja nýjan <ph name="BEGIN_LINK" />prófíl.<ph name="END_LINK" /></translation>
+<translation id="1547295885616600893">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Ég skil að djúphreinsun fjarlægir ekki eSIM-prófíla sem settir hafa verið upp</translation>
 <translation id="1549275686094429035">ARC er virkt</translation>
 <translation id="1554640914375980459">Láttu skjáinn blikka þegar tilkynningar berast. Notaðu flass-tilkynningar af varkárni ef þú ert viðkvæm(ur) fyrir ljósi.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Nota Wi-Fi eða farsímakerfi til að ákvarða staðsetningu</translation>
 <translation id="1650407365859096313">Opnast í nýjum flipa, heimild: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Kveikja á Nærdeilingu</translation>
+<translation id="1662146548738125461">Um ChromeOS Flex</translation>
 <translation id="1663698992894057019">Skiptu yfir í nýja Chromebook-tölvu til að fá nýjustu öryggis- og hugbúnaðaruppfærslurnar</translation>
 <translation id="1665328953287874063">Notaðu aðgangsorð eða PIN-númer til að opna <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">Heyra tiltekinn texta í upplestri. Veldu fyrst táknið „Textaupplestur“ neðst á skjánum og yfirstrikaðu síðan textann. Þú getur einnig notað flýtilykil: Yfirstrikaðu textann og ýttu síðan á Search + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Athugaðu: Fingrafar kann að vera ótraustari aðferð en sterkt aðgangsorð eða PIN-númer.</translation>
 <translation id="1724801751621173132">Innfærsluaðferð</translation>
 <translation id="1741190788710022490">Breytileg hleðsla</translation>
+<translation id="1745732479023874451">Stjórna tengiliðum</translation>
 <translation id="1751335846119670066">Hjálpaðu mér að lesa</translation>
 <translation id="1755601632425835748">Textastærð</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> endurvarpað á <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Nei, halda áfram með einn rofa</translation>
 <translation id="1842681835432895345">Útiloka þennan skjá í spegilstillingu</translation>
 <translation id="1848219224579402567">Skrá út þegar lokið er sett niður</translation>
+<translation id="185970820835152459">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chromium vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Kaldara</translation>
 <translation id="1866589962721094893">Leyfa Android-forritum að stjórna USB-tækjum í þessari Chromebook. Beðið verður um heimild í hvert sinn sem þú stingur USB-tæki í samband. Hvert og eitt Android-forrit mun biðja um viðbótarheimildir.</translation>
 <translation id="1877377290348678128">Merki (valfrjálst)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Hljóð</translation>
 <translation id="2097950021134740304">Hætta við að gleyma áskrift</translation>
 <translation id="2104166991923847969">Slökkva sjálfkrafa á heitum reit</translation>
+<translation id="2106831557840787829">ChromeOS Flex á tilvist sína að þakka öðrum<ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">Ekkert SIM-kort sett inn</translation>
 <translation id="2121825465123208577">Breyta stærð</translation>
 <translation id="2127372758936585790">Afllítið hleðslutæki</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Fjarlægja <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2363475280045770326">Villa við að vista stillingar</translation>
+<translation id="236939127352773362">Þegar nálæg tæki eru að deila</translation>
 <translation id="237336063998926520">Nota IP-töluna þína til að ákvarða staðsetningu</translation>
 <translation id="2373499590298659902">Notaðu „0“ til að halda inni músarhnappi</translation>
 <translation id="2375406435414127095">Tengstu við símann þinn</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Loka á umferð án VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Staðsetningarnákvæmni veitir forritum og þjónustu aðgang að nákvæmari staðsetningum. Til að gera þetta vinnur Google af og til úr upplýsingum um skynjara tækisins og þráðlaus merki úr tækinu þínu fyrir hópvistun á staðsetningum þráðlausra merkja. Upplýsingarnar eru notaðar án þess að auðkenna þig til að bæta staðsetningarnákvæmni og staðsetningarbundna þjónustu og til að bæta, veita og viðhalda þjónustu Google almennt, byggt á lögmætum hagsmunum Google og þriðju aðila er varða þarfir notenda.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Prentbakkinn er næstum fullur</translation>
 <translation id="3390013585654699824">Upplýsingar um forrit</translation>
 <translation id="3390740059150071453">Líttu til vinstri</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Netfang</translation>
 <translation id="3701028563242674350">Hristu músarbendilinn til að stækka hann</translation>
 <translation id="3703699162703116302">Miði endurnýjaður</translation>
+<translation id="3703994572283698466">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">Kveikja á Wi-Fi</translation>
 <translation id="370665806235115550">Hleður...</translation>
 <translation id="3707163604290651814">Skráð(ur) inn sem <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> prentarar fundust á prentþjóninum</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
 <translation id="37143699183660101">Stöðugleiki bendils</translation>
+<translation id="3716540481907974026">ChromeOS Flex útgáfa</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Rangt PIN-númer. Reyndu aftur</translation>
 <translation id="3728681439294129328">Stilla vistfang netkerfis</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Sýna undirstrikun þegar texti er skrifaður</translation>
 <translation id="3789841737615482174">Setja upp</translation>
 <translation id="379509625511193653">Slökkt</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + ör upp</translation>
 <translation id="3798670284305777884">Hátalari (innbyggður)</translation>
 <translation id="3799128412641261490">Stillingar rofaaðgangs</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Innbyggt lyklaborð</translation>
 <translation id="3917644013202553949">Ekki er nægilegt geymslurými til að samstilla skrárnar þínar. Prófaðu að losa um geymslurými.</translation>
 <translation id="3919229493046408863">Slökkva á tilkynningu þegar tæki eru nálæg</translation>
+<translation id="3923184630988645767">Gagnanotkun</translation>
 <translation id="3923494859158167397">Ekkert farsímakerfi er uppsett</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Aðrir notendur þessa tækis geta einnig notað þetta net</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Skilgreining skjótra svara</translation>
 <translation id="3994075804072562819">Leyfa <ph name="SPECIFIC_NAME" /> að stjórna USB-tækjum.</translation>
 <translation id="3994530503403062649">Finndu hnappana á spjaldtölvunni</translation>
+<translation id="3997429360543082038">Um ChromiumOS</translation>
 <translation id="4001540981461989979">Merkja músarbendilinn þegar hann hreyfist</translation>
 <translation id="4005817994523282006">Aðferð við val á tímabelti</translation>
+<translation id="4019629340646866719">ChromiumOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið <ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Afrita ítaratriði smíðar</translation>
 <translation id="4028467762035011525">Bæta við innfærsluaðferðum</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Ýttu á <ph name="KEY_CODES" /> til að skipta yfir í innfærsluaðferðina sem var notuð síðast</translation>
 <translation id="4051177682900543628">leitarlykill + ör til hægri</translation>
 <translation id="405181879009056822">ChromeOS-stillingar</translation>
+<translation id="4054070260844648638">Sýnilegt öllum</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Athugaðu tenginguna til að sjá tiltæka prentara á netinu þínu</translation>
 <translation id="4068776064906523561">Vistuð fingraför</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, gráða <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Finna fleiri pennaforrit</translation>
 <translation id="4248401726442101648">Engin myndavél tengd</translation>
+<translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4249116869350613769">Rafhlöðusparnaður</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="425411422794688815">Eitthvað fór úrskeiðis. Gakktu úr skugga um að síminn sé nálægt þér, ólæstur og með kveikt á Bluetooth og WiFi.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google-reikningur}one{<ph name="EXTRA_ACCOUNTS" /> Google-reikningur}other{<ph name="EXTRA_ACCOUNTS" /> Google reikningar}}</translation>
 <translation id="4314497418046265427">Auktu afköstin með því að tengja símann þinn við <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Bæta við heiti nýs aðgangsstaðar</translation>
+<translation id="4314815835985389558">Stjórna samstillingu</translation>
 <translation id="4320177379694898372">Engin nettenging</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Geymslurými og orka</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Fjöldi tillagna</translation>
 <translation id="4606933160360542263">Sérsniðin lyklasamsetning: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Þegar vinstri músarhnappur er valinn skaltu nota „/“ til að tvísmella</translation>
+<translation id="4613863813562375431">Útgáfa ChromiumOS</translation>
 <translation id="461661862154729886">Orkugjafi</translation>
 <translation id="4617880081511131945">Ekki er hægt að koma á tengingu</translation>
 <translation id="4620757807254334872">mús</translation>
@@ -1136,6 +1155,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4777943778632837590">Stilla nafnaþjóna netkerfis</translation>
 <translation id="4779083564647765204">Aðdráttur</translation>
 <translation id="4779766576531456629">Endurnefna eSIM-farsímakerfi</translation>
+<translation id="4789550509729954245">Birta tilkynningu þegar tæki eru að deila í næsta nágrenni</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Kveikja á TrackPoint-hröðun</translation>
 <translation id="479664067938200069">Uppsett forrit frá <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4964544790384916627">Festigluggi</translation>
 <translation id="4964673849688379040">Kannar...</translation>
 <translation id="4967571733817147990">Sérsníða músarhnappa</translation>
+<translation id="4970880042055371251">Útgáfa ChromeOS</translation>
 <translation id="4972129977812092092">Breyta prentara</translation>
 <translation id="4975771730019223894">Merking forrita</translation>
 <translation id="4979263087381759787">Forritunarkostir</translation>
@@ -1275,6 +1296,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5193978546360574373">Þetta mun fjarlægja aðgang að Google Drive í þessari Chromebook-tölvu, þar á meðal aðgang að hvers kyns skrám sem hafa verið gerðar aðgengilegar án nettengingar</translation>
 <translation id="5196790039230503600">Notaðu bendinguna og færðu svo höfuðið til að sýna hvar þú vilt sleppa atriðinu. Notaðu bendinguna aftur til að sleppa því.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Aldrei nota farsímagögn við flutning</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="5208926629108082192">Upplýsingar um farsímakerfi tækis</translation>
 <translation id="5208988882104884956">Hálf breidd</translation>
@@ -1307,6 +1329,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5331568967879689647">Kerfisforrit ChromeOS</translation>
 <translation id="5334113802138581043">Aðgangur að hljóðnema</translation>
 <translation id="5336689872433667741">Bendill og snertiflötur</translation>
+<translation id="5337926771328966926">Núverandi heiti tækis er <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Senda notkunar- og greiningargögn</translation>
 <translation id="5369694795837229225">Setja upp Linux-forritunarumhverfi</translation>
 <translation id="5377367976106153749">Viltu kveikja á aðgangi að myndavél?</translation>
@@ -1444,6 +1467,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5833726373896279253">Einungis eigandinn getur breytt þessum stillingum:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Hulstur</translation>
+<translation id="5840680448799937675">Skrám verður alltaf deilt án nettengingar</translation>
 <translation id="5841270259333717135">Stilla Ethernet</translation>
 <translation id="5842497610951477805">Virkjun á Bluetooth</translation>
 <translation id="5846200638699387931">Málskipunarvilla tengsla: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5924438086390153180">Spyrja áður en Microsoft-skrár eru afritaðar eða fluttar yfir á Google Drive</translation>
 <translation id="5939518447894949180">Endurstilla</translation>
 <translation id="594048410531370124">Óþekktur lykill. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Sýnileiki tækis</translation>
 <translation id="5945192511027649793">Slökkva á snertifleti</translation>
 <translation id="5947651424015173580">Tvísmellur á mús</translation>
 <translation id="594993197557058302">Ýttu á 1–4 breytilykla (ctrl, alt, shift, leitarlykil eða ræsilykil) og 1 lykil í viðbót. Einnig er hægt að velja stakan lykil.</translation>
@@ -1491,10 +1516,12 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5961545272769624207">Velja bendingu</translation>
 <translation id="5968022600320704045">Engar leitarniðurstöður</translation>
 <translation id="5969728632630673489">Tilkynning um flýtilykil hunsuð</translation>
+<translation id="5979353814339191480">Þessi valmöguleiki á við Chromebook tölvur með gagnaáskrift eða netpung eða þegar tjóðrað er við færanlegan heitan reit</translation>
 <translation id="5985556342298151179">Chrome-forrit sem stjórnandi tækisins setti upp.</translation>
 <translation id="5986442691296752186">Leyfa Linux-forritum að stjórna USB-tækjum.</translation>
 <translation id="598810097218913399">Fjarlægja úthlutun</translation>
 <translation id="5988563937187882754">Líttu til hægri</translation>
+<translation id="5990266201903445068">Wi-Fi eingöngu</translation>
 <translation id="5992225669837656567">Allar mýs voru aftengdar</translation>
 <translation id="5999630716831179808">Raddir</translation>
 <translation id="6002458620803359783">Valdar raddir</translation>
@@ -1509,6 +1536,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6045114302329202345">Aðal TrackPoint-hnappur</translation>
 <translation id="6048747414605857443">Velja og sérsníða raddir talgervils fyrir ChromeVox og textaupplestur</translation>
 <translation id="6050189528197190982">Grátónar</translation>
+<translation id="6054961935262556546">Breyta sýnileika</translation>
 <translation id="6059276912018042191">Nýlegir Chrome flipar</translation>
 <translation id="6059925163896151826">USB-tæki</translation>
 <translation id="6064764629679333574">Auktu hljómgæði Bluetooth-hljóðnemans með því að skipta úr lágri upplausn í háa upplausn.</translation>
@@ -1567,6 +1595,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6265159465845424232">Spyrja áður en Microsoft-skrár eru afritaðar eða fluttar yfir á Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Fjarlægja tengi</translation>
 <translation id="6266532094411434237">Tengist <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Skrá út af Chromium?</translation>
 <translation id="6270309713620950855">Hnipping þegar slökkt er á hljóði</translation>
 <translation id="6274089201566806618">Tengist <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekúndur</translation>
@@ -1618,6 +1647,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6453921811609336127">Til að skipta yfir í næstu innfærsluaðferð skaltu ýta á <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Bilslá<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Eyða þessari orðabók</translation>
 <translation id="6463596731306859179">Færðu óumbeðna sprettiglugga eða annarskonar óvænta virkni? Í einhverjum tilfellum geta forrit og viðbætur sem þú setur upp breytt ChromeOS-stillingunum þínum án þinnar vitundar.</translation>
+<translation id="6465841119675156448">Án nettengingar</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> getur þá:</translation>
 <translation id="6469557521904094793">Kveikja á farsímakerfi</translation>
 <translation id="6470120577693311302">Flass-tilkynningar</translation>
@@ -1668,6 +1698,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6626581113916585374">Áhrifastilling</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Flýtilykill vals</translation>
+<translation id="6632473616050862500">ChromeOS Flex á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Slökkva á hraðpörun</translation>
 <translation id="6647690760956378579">Forskoðun á eðlilegri rödd</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill staðfesta að þetta sért þú</translation>
@@ -1711,6 +1742,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6775163072363532304">Tiltæk tæki birtast hér.</translation>
 <translation id="6776729248872343918">Kveikja á hraðpörun</translation>
 <translation id="6777845730143344223">Nánar um áskriftir að Aðgangspunkti</translation>
+<translation id="6779406956731413166">ChromiumOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Gleyma þessu tæki?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive stillingar</translation>
 <translation id="6785915470941880363">Öfug fletting <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7280649757394340890">Raddstillingar talgervils</translation>
 <translation id="7282547042039404307">Samfellt</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7303485269821975179">Velja aðgangsorð fyrir <ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">Mikil</translation>
 <translation id="7308643132139167865">Tungumál vefsvæða</translation>
@@ -1873,6 +1906,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7409599290172516453">Nýlegar myndir</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Lokað á <ph name="BLOCKED_APPS_SIZE" /> af <ph name="APPS_LIST_SIZE" /> forritum</translation>
+<translation id="7423425410216218516">Kveikt er á sýnileika í <ph name="MINUTES" /> mínútur</translation>
 <translation id="7423513079490750513">Fjarlægja <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Rithjálp</translation>
 <translation id="7429415133937917139">Hermir eftir úttaki blindraletursskjás sem hægt er að endurnýja
@@ -1920,11 +1954,13 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7578137152457315135">Fingrafarastillingar</translation>
 <translation id="7578692661782707876">Sláðu inn staðfestingarkóðann.</translation>
 <translation id="7582582252461552277">Kjósa þetta net</translation>
+<translation id="7582844466922312471">Farsímagögn</translation>
 <translation id="7587806318633605613">Tillöguferill</translation>
 <translation id="7590883480672980941">Inntaksstillingar</translation>
 <translation id="7592060599656252486">Sumt</translation>
 <translation id="7602173054665172958">Prentstjórnun</translation>
 <translation id="7605163396341021431">Leyfa Android-forritum að stjórna USB-tækjum í þessari Chromebook</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android kjörstillingar</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Kveikja á tengdum eiginleikum í síma</translation>
@@ -1935,12 +1971,14 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7632437836497571618">Notaðu öruggar tengingar til að leita að vefsvæðum</translation>
 <translation id="7634337648687970851">Endurheimt staðbundinna gagna er ekki studd eins og stendur.</translation>
 <translation id="7640256527901510478">IMEI-númer tækis er <ph name="IMEI_NUMBER" /> og raðnúmer tækis er <ph name="SERIAL_NUMBER" />. Hægt er að nota þessi númer til að hjálpa til við virkjun þjónustu.</translation>
+<translation id="7640308610547854367">Þú fórst til baka í eldri útgáfu ChromeOS. Til að fá uppfærslur skaltu bíða þar til næsta útgáfa er tiltæk.</translation>
 <translation id="7641513591566880111">Nýtt prófílheiti</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> bætt við</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigandi)</translation>
 <translation id="7648048654005891115">Lyklakort</translation>
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingrafar skráð}one{{COUNT} fingrafar skráð}other{{COUNT} fingraför skráð}}</translation>
+<translation id="7650677314924139716">Núverandi stilling gagnanotkunar er einungis Wi-Fi</translation>
 <translation id="7651400349472467012">Heitur reitur í skyndi er tiltækur</translation>
 <translation id="7651784568388208829">Áframhaldandi verk símstöðvar</translation>
 <translation id="7658239707568436148">Hætta við</translation>
@@ -2031,6 +2069,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Þýðing</translation>
 <translation id="7915457674565721553">Tengstu við internetið til að setja upp barnalæsingu</translation>
+<translation id="7917876797003313048">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chrome vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920482456679570420">Bættu við orðum sem þú vilt að villuleitin sleppi</translation>
 <translation id="7921347341284348270">Þú getur ekki skoðað tilkynningar símans á þessum stýrða reikningi. Prófaðu aftur með öðrum reikningi. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="8431977087510901105">Stillingar bendils endurstilltar</translation>
 <translation id="8437209419043462667">Bandarískt</translation>
 <translation id="8439506636278576865">Bjóðast til að þýða síður á þessu tungumáli</translation>
+<translation id="8449347986464073209">Eyða og skrá út</translation>
 <translation id="8451512073679317615">aðstoðarmaður</translation>
 <translation id="8455775311562941553">Tengt við <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Textaupplestur á því sem er undir músarbendli</translation>
@@ -2320,6 +2360,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="8872774989979382243">Slökkt er á hljóði. Kveikja á hljóði.</translation>
 <translation id="888256071122006425">Stillingar músar og snertiflatar</translation>
 <translation id="8885449336974696155">Hjálpaðu okkur að bæta ChromeOS með því að tilkynna um <ph name="BEGIN_LINK" />núverandi stillingar<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Kann að hafa í för með sér gjöld fyrir farsímagögn</translation>
 <translation id="8890529496706615641">Ekki var hægt að endurnefna prófíl. Reyndu aftur eða hafðu samband við símafyrirtækið þitt til að fá tæknilega aðstoð.</translation>
 <translation id="8894761918470382415">Gagnaaðgangsvörn fyrir jaðartæki</translation>
 <translation id="8896830132794747524">Hraðari hreyfingar með músinni hreyfa bendilinn lengra</translation>
@@ -2345,6 +2386,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="8978939272793553320">Búið er að aftengja <ph name="DEVICE_NAME" /></translation>
 <translation id="8980345560318123814">Ábendingaskýrslur</translation>
 <translation id="8981825781894055334">Lítið eftir af pappír</translation>
+<translation id="8984694057134206124">Þú verður sýnileg(ur) öllum í <ph name="MINUTES" /> mínútur. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Greiningarmörk</translation>
 <translation id="8986362086234534611">Gleyma</translation>
 <translation id="8991694323904646277">Engin myndavél</translation>
@@ -2391,6 +2433,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="9098860402274800697">Fjarlægja Google Play og Android-forrit</translation>
 <translation id="910000385680858937">Leyft – <ph name="PERMISSION_DETAILS" />. Tengdu hljóðnema við tækið.</translation>
 <translation id="9100416672768993722">Til að skipta yfir í innfærsluaðferðina sem var notuð síðast skaltu ýta á <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Bilslá<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Núverandi stilling gagnanotkunar er „Án nettengingar“</translation>
 <translation id="9108294543511800041">Nú geturðu séð nýlegar myndir, margmiðlunarefni og tilkynningar símans</translation>
 <translation id="9109122242323516435">Eyddu skrám úr geymslu tækisins til að losa um pláss.</translation>
 <translation id="9111330022786356709">Bættu við eða staðsettu hnappa á músinni</translation>

@@ -1011,6 +1011,7 @@
 <translation id="4925120120285606924">រូបថតអេក្រង់ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">អ្នកអាច​រក្សាទុក​រូបភាព និង​ឯកសារ ដើម្បីមើល​ពេលគ្មានអ៊ីនធឺណិត ឬ​ចែករំលែក​នៅក្នុង​កម្មវិធី​ផ្សេងទៀត</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{ចំណាំ 1 និង​ធាតុផ្សេងទៀត​ត្រូវបាន​រក្សាទុក​តែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។ ដើម្បីប្រើ​ពួកវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូមរក្សាទុក​ពួកវា​នៅក្នុង​គណនី Google របស់អ្នក។}other{ចំណាំ # និង​ធាតុផ្សេងទៀត​ត្រូវបាន​រក្សាទុក​តែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ។ ដើម្បីប្រើ​ពួកវា​នៅលើ​ឧបករណ៍​ផ្សេងទៀត​របស់អ្នក សូមរក្សាទុក​ពួកវា​នៅក្នុង​គណនី Google របស់អ្នក។}}</translation>
+<translation id="4932733599132424254">កាលបរិច្ឆេទ</translation>
 <translation id="4943703118917034429">VR</translation>
 <translation id="4943872375798546930">គ្មានលទ្ធផលទេ</translation>
 <translation id="4957722034734105353">ស្វែងយល់បន្ថែម...</translation>
@@ -1065,6 +1066,7 @@
 <translation id="5142281402488957685">ដើម្បីមើល​អត្ថបទ​ថ្មីៗ សូមទាញចុះ​ក្រោម ដើម្បី​ផ្ទុកឡើងវិញ</translation>
 <translation id="5144385790872094440">ទំព័រមួយចំនួន​ដែលអ្នកចូលមើល​ត្រូវបានផ្ទុកជាមុន។ ទំព័រ​អាចត្រូវបាន​ផ្ទុកជាមុន​តាមរយៈ​ម៉ាស៊ីនមេ Google នៅពេលភ្ជាប់​ពីកម្មវិធី ឬ​គេហទំព័រ Google។</translation>
 <translation id="5152843274749979095">មិន​មាន​ការ​ដំឡើង​កម្មវិធី​ដែលស្គាល់ទេ</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">ត្រូវមានចំណងជើង</translation>
 <translation id="5161262286013276579">បានបើក​សន្លឹក​បញ្ជាក់​កូដសម្ងាត់</translation>
 <translation id="5163361352003913350">បច្ចុប្បន្ន បានជ្រើសរើស <ph name="NAME" />។ ជ្រើសរើស​គណនី។</translation>
@@ -1148,6 +1150,7 @@
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
 <translation id="549660026907543296">ចូលរួមក្នុងនាមជា <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">សន្លឹក​ខាងក្រោម​សកម្មភាពថ្មីៗ</translation>
+<translation id="5519516356611866228">ជាមួយការផ្លាស់ប្ដូររបស់អ្នក</translation>
 <translation id="5526281268548144413">មិនអាចបិទ​នៅលើ​វិនដូ​ច្រើន​បានទេ</translation>
 <translation id="5532536403031755365">បញ្ចូល​ស្រទាប់​ការពារបន្ថែម​ប្រឆាំងនឹង​ការគំរាមកំហែង​លើអ៊ីនធឺណិត​តាមរយៈ​ការការពារ​កម្រិត​ខ្ពស់</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{បើកចំណាំ}other{បើកទាំងអស់ (#)}}</translation>
@@ -1412,6 +1415,7 @@
 <translation id="6482749332252372425">ការដោនឡូត <ph name="FILE_NAME" /> បានបរាជ័យដោយសារខ្វះទំហំផ្ទុក។</translation>
 <translation id="6486420406192123355">ឯកសារ PDF នេះមានប្រភពមកពីគេហទំព័រ​ដែលប្រើការ​តភ្ជាប់ដែលគ្មានសុវត្ថិភាព</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{បានទាញយកឯកសារ}other{បាន​បញ្ចប់ការទាញយក #}}</translation>
+<translation id="6502991525169604759">ដោយគ្មានការផ្លាស់ប្ដូររបស់អ្នក</translation>
 <translation id="6508722015517270189">ចាប់ផ្តើម Chrome ឡើងវិញ</translation>
 <translation id="6513924416597632811">ចម្លង​តំណ​ទៅកាន់​ទំព័រ​លទ្ធផល​ស្វែងរក​សម្រាប់៖ <ph name="SEARCH_QUERY" />។ ប្រភព៖ <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">ផ្ទៀងផ្ទាត់</translation>
@@ -1434,7 +1438,6 @@
 <translation id="6573096386450695060">អនុញ្ញាត​ជា​និច្ច</translation>
 <translation id="657480975869429144">មាន​កំណែ Chrome ថ្មី​ហើយ</translation>
 <translation id="658099107946526506">ការពារការរុករកលក្ខណៈឯកជនរបស់អ្នកដោយប្រើកូដ pin ដើម្បីទប់ស្កាត់ការចូលប្រើដែលមិនចង់បាន</translation>
-<translation id="65829135876155327">រយៈពេល</translation>
 <translation id="6583199322650523874">ចំណាំទំព័របច្ចុប្បន្ននេះ</translation>
 <translation id="6588043302623806746">ប្រើ DNS សុវត្ថិភាព</translation>
 <translation id="6590471736817333463">សន្សំសំចៃទិន្នន័យ​បានរហូតដល់ 60%</translation>
@@ -1694,7 +1697,6 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (បានធ្វើបច្ចុប្បន្នភាព <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">សូមរង់ចាំ...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, ផ្ទាំង​ដែល​បានបិទ​សំឡេង និងបានខ្ទាស់</translation>
-<translation id="7500851014030446046">កំពុងទាញយក PDF</translation>
 <translation id="7501135638693251872">ចំណាំទាំងអស់</translation>
 <translation id="7504076214066136798">មិនអាច​រក្សាទុក​ការកែ​បានទេ</translation>
 <translation id="7507207699631365376">មើល<ph name="BEGIN_LINK" />គោលការណ៍ឯកជនភាព<ph name="END_LINK" />របស់ក្រុមហ៊ុនផ្ដល់សេវានេះ</translation>
@@ -1835,7 +1837,6 @@
 <translation id="8036587585440959897">កម្មវិធីបន្ថែម​មួយចំនួន​អាចបញ្ចូល​ម៉ាស៊ីន​ស្វែងរក​ទៅក្នុង Chrome។</translation>
 <translation id="8037750541064988519">នៅសល់ <ph name="DAYS" /> ថ្ងៃទៀត</translation>
 <translation id="8037801708772278989">ទើបបាន​ពិនិត្យមើល​អម្បាញ់មិញ</translation>
-<translation id="8038975372993801438">ត្រងតាម​រយៈពេល</translation>
 <translation id="804335162455518893">រកមិន​ឃើញកាត SD ទេ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{ផ្ទាំងឯកជន <ph name="TAB_COUNT_ONE" />}other{ផ្ទាំងឯកជន <ph name="TAB_COUNT_NORMAL" />}}</translation>
 <translation id="8051695050440594747">ទំនេរ <ph name="MEGABYTES" /> MB</translation>
@@ -2031,6 +2032,7 @@
 <translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>
 <translation id="8727043961453758442">ទទួល​បាន​អត្ថប្រយោជន៍​ច្រើន​បំផុត​ពី Chrome</translation>
 <translation id="8728810647305130936">បើកផ្ទាំងថ្មីៗ</translation>
+<translation id="8730621377337864115">រួចរាល់</translation>
 <translation id="8731268612289859741">លេខ​កូដ​សុវត្ថិភាព</translation>
 <translation id="8738163682604285902">មើល​មុខងារអាន​ឬ?</translation>
 <translation id="8746155870861185046">ចែករំលែករំលេច</translation>

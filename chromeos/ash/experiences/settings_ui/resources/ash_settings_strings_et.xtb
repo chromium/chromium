@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Teil on kõik seadistatud!</translation>
 <translation id="1149483087970735785">Tugitehnoloogia</translation>
 <translation id="1150490752229770117">See on seadme <ph name="DEVICE_TYPE" /> viimane automaatne tarkvara- ja turbevärskendus. Tulevaste värskenduste hankimiseks võtke kasutusele uuem mudel. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Teave ChromeOS-i kohta</translation>
 <translation id="1155816283571436363">Telefoniga ühenduse loomine</translation>
 <translation id="1160800016654917722">Aken teisaldati allapoole ja vasakule</translation>
 <translation id="1164015913575846413">alt + klõpsamine</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16-kordne</translation>
 <translation id="1275936815032730048">käivitaja + paremnool</translation>
 <translation id="1280332775949918163">Akna tõmbamine</translation>
+<translation id="1285625592773741684">Praegune andmekasutuse seade on Mobiilne andmeside</translation>
 <translation id="1285815028662278915">Teie mobiilse andmeside pakett ei pruugi kuumkohta toetada. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Funktsioon Öövalgus lülitub automaatselt sisse päikeseloojangul</translation>
 <translation id="1288300545283011870">Kõne atribuudid</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">See keelab laiendused ja lähtestab seaded ohututele vaikeväärtustele. Vahelehed, failid ja küpsised säilitatakse. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Täisekraani luup</translation>
 <translation id="1539727654733007771">Ühtegi mobiilsidevõrku pole seadistatud. Laadige alla uus <ph name="BEGIN_LINK" />profiil<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">Chrome OS on võimalik tänu <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvarale<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Mõistan, et Powerwash ei eemalda installitud eSIM-i profiile</translation>
 <translation id="1549275686094429035">ARC on lubatud</translation>
 <translation id="1554640914375980459">Märguande saamisel hakkab seadme ekraan vilkuma. Kui olete valgustundlik, olge vilkuvate märguannete kasutamisel ettevaatlik.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Asukoha määramine WiFi- või mobiilsidevõrgu abil</translation>
 <translation id="1650407365859096313">Avaneb uuel vahelehel, luba on <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Läheduses jagamise lubamine</translation>
+<translation id="1662146548738125461">Teave Chrome OS Flexi kohta</translation>
 <translation id="1663698992894057019">Parima turvalisuse ja uusima tarkvara saamiseks hankige uus Chromebook</translation>
 <translation id="1665328953287874063">Kasutage seadme <ph name="DEVICE_TYPE" /> avamiseks parooli või PIN-koodi</translation>
 <translation id="1667842670298352129">Konkreetne tekst loetakse ette. Kõigepealt valige ekraani allosas funktsiooni Vali ja kuula ikoon ning seejärel tõstke tekst esile. Samuti võite kasutada klaviatuuri otseteed: tõstke tekst esile, seejärel vajutage klahvikombinatsiooni Otsing + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Märkus. Sõrmejälg võib olla vähem turvaline kui tugev parool või PIN-kood.</translation>
 <translation id="1724801751621173132">Sisestusrežiim</translation>
 <translation id="1741190788710022490">Kohanduv laadimine</translation>
+<translation id="1745732479023874451">Kontaktide haldamine</translation>
 <translation id="1751335846119670066">Aita mul lugeda</translation>
 <translation id="1755601632425835748">Teksti suurus</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> uuesti vastendatud järgmisega: <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Ei, säilita üks lüliti</translation>
 <translation id="1842681835432895345">Välista see ekraan peegelrežiimist</translation>
 <translation id="1848219224579402567">Logi välja, kui kaas on suletud</translation>
+<translation id="185970820835152459">Saate oma sisselogitud Google'i kontosid hallata. Teie Google'i kontosid kasutatakse Chromiumi brauseris, Play poes, Gmailis ja mujal. Kui soovite lisada konto kellegi teise (näiteks pereliikme) jaoks, lisage selle asemel oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Külmem</translation>
 <translation id="1866589962721094893">Selles Chromebookis antakse Androidi rakendustele kontroll USB-seadmete üle. Luba taotletakse iga kord, kui USB-seadme ühendate. Individuaalsed Androidi rakendused küsivad lisalube.</translation>
 <translation id="1877377290348678128">Silt (valikuline)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Heli</translation>
 <translation id="2097950021134740304">Tühista tellimuse unustamine</translation>
 <translation id="2104166991923847969">Lülita kuumkoht automaatselt välja</translation>
+<translation id="2106831557840787829">Chrome OS Flexi ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2114995631896158695">SIM-kaarti pole sisestatud</translation>
 <translation id="2121825465123208577">Muuda suurust</translation>
 <translation id="2127372758936585790">Väikese energiakuluga laadija</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Eemaldage <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2363475280045770326">Viga seadistuse salvestamisel</translation>
+<translation id="236939127352773362">Kui seadmed läheduses jagavad</translation>
 <translation id="237336063998926520">Asukoha määramiseks IP-aadressi kasutamine</translation>
 <translation id="2373499590298659902">Kasutage hiirenupu pikalt vajutamiseks klahvi „0“</translation>
 <translation id="2375406435414127095">Looge ühendus telefoniga</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blokeeri liiklus ilma VPN-ita</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Asukohatäpsus pakub rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja teie seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse teie isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste üldiseks täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Väljastussalv on peaaegu täis</translation>
 <translation id="3390013585654699824">Rakenduse üksikasjad</translation>
 <translation id="3390740059150071453">Vasakule vaatamine</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">E-posti aadress</translation>
 <translation id="3701028563242674350">Hiirekursori suurendamiseks raputage seda</translation>
 <translation id="3703699162703116302">Piletit värskendati</translation>
+<translation id="3703994572283698466">Chrome OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="370649949373421643">Luba WiFi</translation>
 <translation id="370665806235115550">Laadimine...</translation>
 <translation id="3707163604290651814">Olete praegu sisse logitud kasutajana <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Prindiserverist leiti <ph name="NUM_PRINTERS" /> printerit</translation>
 <translation id="371370241367527062">Eesmine mikrofon</translation>
 <translation id="37143699183660101">Kursori stabiilsus</translation>
+<translation id="3716540481907974026">Chrome OS Flexi versioon</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Vale PIN-kood. Proovige uuesti</translation>
 <translation id="3728681439294129328">Võrguaadressi seadistamine</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Kuva teksti sisestamisel alljoon</translation>
 <translation id="3789841737615482174">Installi</translation>
 <translation id="379509625511193653">Väljas</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3796215473395753611">alt + ülesnool</translation>
 <translation id="3798670284305777884">Kõlar (sisemine)</translation>
 <translation id="3799128412641261490">Lülitiga juurdepääsu seaded</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Sisseehitatud klaviatuur</translation>
 <translation id="3917644013202553949">Failide sünkroonimiseks pole piisavalt salvestusruumi. Proovige ruumi vabastada.</translation>
 <translation id="3919229493046408863">Lülita märguanne välja, kui seadmed on läheduses</translation>
+<translation id="3923184630988645767">Andmekasutus</translation>
 <translation id="3923494859158167397">Ühtegi mobiilsidevõrku pole seadistatud</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Teised selle seadme kasutajad saavad samuti seda võrku kasutada</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definitsioon kiirvastustes</translation>
 <translation id="3994075804072562819">Üksusele <ph name="SPECIFIC_NAME" /> antakse kontroll USB-seadmete üle.</translation>
 <translation id="3994530503403062649">Leidke oma tahvelarvuti nupud</translation>
+<translation id="3997429360543082038">Teave &amp;Chromium OS-i kohta</translation>
 <translation id="4001540981461989979">Hiirekursori esiletõstmine liigutamisel</translation>
 <translation id="4005817994523282006">Ajavööndi tuvastamismeetod</translation>
+<translation id="4019629340646866719">Chromium OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopeeri järgu üksikasjad</translation>
 <translation id="4028467762035011525">Sisestusmeetodite lisamine</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Viimati kasutatud sisestusmeetodile liikumiseks vajutage klahvikombinatsiooni <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">otsing + paremnool</translation>
 <translation id="405181879009056822">ChromeOS-i seaded</translation>
+<translation id="4054070260844648638">Nähtav kõigile</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Kontrollige oma ühendust, et näha teie võrgus saadaolevaid printereid</translation>
 <translation id="4068776064906523561">Salvestatud sõrmejäljed</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />. tase</translation>
 <translation id="4244238649050961491">Otsi rohkem elektronpliiatsi rakendusi</translation>
 <translation id="4248401726442101648">Ühtegi kaamerat pole ühendatud</translation>
+<translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
 <translation id="4249116869350613769">Akusäästja</translation>
 <translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="425411422794688815">Midagi läks valesti. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google'i konto}other{<ph name="EXTRA_ACCOUNTS" /> Google'i kontot}}</translation>
 <translation id="4314497418046265427">Olge produktiivsem, ühendades oma telefoni seadmega <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Lisage uus pääsupunkti nimi</translation>
+<translation id="4314815835985389558">Sünkroonimise haldamine</translation>
 <translation id="4320177379694898372">Interneti-ühendus puudub</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Salvestusruum ja toide</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Soovituste arv</translation>
 <translation id="4606933160360542263">Kohandatud klahvikombinatsioon: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Kui valitud on vasak hiirenupp, kasutage topeltklikkimiseks klahvi „/“</translation>
+<translation id="4613863813562375431">Chromium OS-i versioon</translation>
 <translation id="461661862154729886">Energiaallikas</translation>
 <translation id="4617880081511131945">Ei saa ühendust luua</translation>
 <translation id="4620757807254334872">hiir</translation>
@@ -1136,6 +1155,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4777943778632837590">Võrgu nimeserverite seadistamine</translation>
 <translation id="4779083564647765204">Suumi</translation>
 <translation id="4779766576531456629">eSIM-i mobiilsidevõrgu ümbernimetamine</translation>
+<translation id="4789550509729954245">Kuva märguanne, kui seadmed läheduses jagavad</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Luba näpuhiire kiirendus</translation>
 <translation id="479664067938200069">Installitud rakendused rakendusest <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4964544790384916627">Akna dokkimine</translation>
 <translation id="4964673849688379040">Kontrollimine ...</translation>
 <translation id="4967571733817147990">Hiirenuppude kohandamine</translation>
+<translation id="4970880042055371251">Chrome OS-i versioon</translation>
 <translation id="4972129977812092092">Printeri muutmine</translation>
 <translation id="4975771730019223894">Rakenduse ikooni märguandetäpp</translation>
 <translation id="4979263087381759787">Arendaja valikud</translation>
@@ -1275,6 +1296,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5193978546360574373">See eemaldab selle Chromebooki juurdepääsu Google Drive'ile, sh juurdepääsu kõikidele failidele, mis on võrguväliselt kättesaadavaks tehtud</translation>
 <translation id="5196790039230503600">Kasutage liigutust ja seejärel liigutage pead, et näidata, kuhu soovite üksuse pukseerida. Pukseerimiseks kasutage liigutust uuesti.</translation>
 <translation id="5197255632782567636">Internet</translation>
+<translation id="5205484256512407285">Mobiilset andmesidet ei kasutata ülekandmiseks kunagi</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
 <translation id="5208926629108082192">Seadme mobiilsidevõrgu teave</translation>
 <translation id="5208988882104884956">Poolaius</translation>
@@ -1307,6 +1329,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5331568967879689647">Chrome OS-i süsteemirakendus</translation>
 <translation id="5334113802138581043">Juurdepääs mikrofonile</translation>
 <translation id="5336689872433667741">Kursor ja puuteplaat</translation>
+<translation id="5337926771328966926">Seadme praegune nimi on <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Saada diagnostika- ja kasutusandmeid</translation>
 <translation id="5369694795837229225">Linuxi arenduskeskkonna seadistamine</translation>
 <translation id="5377367976106153749">Kas lülitada juurdepääs kaamerale sisse?</translation>
@@ -1444,6 +1467,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5833726373896279253">Neid seadeid saab muuta ainult omanik:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Ümbris</translation>
+<translation id="5840680448799937675">Faile jagatakse alati võrguühenduseta</translation>
 <translation id="5841270259333717135">Etherneti seadistamine</translation>
 <translation id="5842497610951477805">Bluetoothi lubamine</translation>
 <translation id="5846200638699387931">Seosesüntaksi viga: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5924438086390153180">Küsi enne Microsofti failide kopeerimist või teisaldamist Google Drive'i</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
 <translation id="594048410531370124">Tundmatu klahv. Vajutage ükskõik millist klahvi, et <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Seadme nähtavus</translation>
 <translation id="5945192511027649793">Puuteplaadi keelamine</translation>
 <translation id="5947651424015173580">Hiire topeltklõps</translation>
 <translation id="594993197557058302">Vajutage 1–4 muuteklahvi (Ctrl, Alt, tõstu-, otsingu- või käivitajaklahv) ja veel ühte klahvi. Saate valida ka ühe klahvi.</translation>
@@ -1491,10 +1516,12 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5961545272769624207">Määrake liigutus</translation>
 <translation id="5968022600320704045">Otsingutulemused puuduvad</translation>
 <translation id="5969728632630673489">Klaviatuuri otsetee teatisest loobuti</translation>
+<translation id="5979353814339191480">See valik rakendub Chromebookidele, millel on andmesidepakett või mobiilsidevõrgu tongel, või kui võrguühendust jagatakse mobiilse kuumkohaga</translation>
 <translation id="5985556342298151179">Chrome'i rakenduse installis teie seadme administraator.</translation>
 <translation id="5986442691296752186">Linuxi rakendustele antakse kontroll USB-seadmete üle.</translation>
 <translation id="598810097218913399">Tühista määrang</translation>
 <translation id="5988563937187882754">Paremale vaatamine</translation>
+<translation id="5990266201903445068">Ainult WiFi</translation>
 <translation id="5992225669837656567">Kõik hiired on lahti ühendatud</translation>
 <translation id="5999630716831179808">Hääled</translation>
 <translation id="6002458620803359783">Eelistatud hääled</translation>
@@ -1509,6 +1536,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6045114302329202345">Peamine TrackPointi nupp</translation>
 <translation id="6048747414605857443">Valige ChromeVoxi ja kõnesünteesi jaoks hääled ning kohandage neid</translation>
 <translation id="6050189528197190982">Hallskaala</translation>
+<translation id="6054961935262556546">Muuda nähtavust</translation>
 <translation id="6059276912018042191">Hiljutised Chrome'i vahelehed</translation>
 <translation id="6059925163896151826">USB-seadmed</translation>
 <translation id="6064764629679333574">Parandage Bluetoothi mikrofoni heli kvaliteeti, skaleerides madala eraldusvõimega heli kõrge eraldusvõimega.</translation>
@@ -1567,6 +1595,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6265159465845424232">Küsi enne Microsofti failide kopeerimist või teisaldamist Microsoft OneDrive'i</translation>
 <translation id="6265687851677020761">Eemalda port</translation>
 <translation id="6266532094411434237">Ühendamine seadmega <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
 <translation id="6270309713620950855">Müksamise tühistamine</translation>
 <translation id="6274089201566806618">Ühendamine seadmega <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekundit</translation>
@@ -1618,6 +1647,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6453921811609336127">Järgmisele sisestusmeetodile lülitamiseks vajutage klahvikombinatsiooni <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Tõstuklahv<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Tühik<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Kustuta see sõnaraamat</translation>
 <translation id="6463596731306859179">Kas saate soovimatuid hüpikuid või kogete muud ootamatut käitumist? Mõnikord võivad installitud rakendused ja laiendused muuta ChromeOS-i seadeid teie teadmata.</translation>
+<translation id="6465841119675156448">Interneti-ühenduseta</translation>
 <translation id="6467377768028664108">Seade <ph name="DEVICE_TYPE" /> saab seejärel teha järgmist.</translation>
 <translation id="6469557521904094793">Mobiilsidevõrgu sisselülitamine</translation>
 <translation id="6470120577693311302">Vilkuvad märguanded</translation>
@@ -1668,6 +1698,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6626581113916585374">Efekti režiim</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Valiku otsetee</translation>
+<translation id="6632473616050862500">Chrome OS Flexi aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Lülita kiirsidumine välja</translation>
 <translation id="6647690760956378579">Loomuliku hääle eelkuulamine</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> soovib kinnitada, et see olete teie</translation>
@@ -1711,6 +1742,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6775163072363532304">Saadaolevad seadmed kuvatakse siin.</translation>
 <translation id="6776729248872343918">Luba kiirsidumine</translation>
 <translation id="6777845730143344223">Lisateave Passpointi tellimuste kohta</translation>
+<translation id="6779406956731413166">Chromium OS-i aluseks on täiendav <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Kas unustada see seade?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive'i seaded</translation>
 <translation id="6785915470941880363">Tagurpidi kerimine (<ph name="LINK_BEGIN" />lisateave<ph name="LINK_END" />)</translation>
@@ -1844,6 +1876,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7280649757394340890">Kõnesünteesi hääle seaded</translation>
 <translation id="7282547042039404307">Ühtlane</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Tähtis kasutus- ja ohutusteave</translation>
 <translation id="7303485269821975179">Seadme <ph name="DEVICE_TYPE" /> parooli seadistamine</translation>
 <translation id="7304030187361489308">Kõrge</translation>
 <translation id="7308643132139167865">Veebisaidi keeled</translation>
@@ -1873,6 +1906,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7409599290172516453">Hiljutised fotod</translation>
 <translation id="7414464185801331860">18-kordne</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> rakendus(t) <ph name="APPS_LIST_SIZE" />-st on blokeeritud</translation>
+<translation id="7423425410216218516">Nähtavus on <ph name="MINUTES" /> minutiks sisse lülitatud</translation>
 <translation id="7423513079490750513">Eemalda <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Aita mul kirjutada</translation>
 <translation id="7429415133937917139">Simuleerib ekraani ülaosas oleval ChromeVoxi paneelil
@@ -1920,11 +1954,13 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7578137152457315135">Sõrmejälje seaded</translation>
 <translation id="7578692661782707876">Sisestage oma kinnituskood.</translation>
 <translation id="7582582252461552277">Eelista seda võrku</translation>
+<translation id="7582844466922312471">Mobiili andmeside</translation>
 <translation id="7587806318633605613">Soovituste ajalugu</translation>
 <translation id="7590883480672980941">Sisendi seaded</translation>
 <translation id="7592060599656252486">Mõni</translation>
 <translation id="7602173054665172958">Printimise haldamine</translation>
 <translation id="7605163396341021431">Selles Chromebookis antakse Androidi rakendustele kontroll USB-seadmete üle</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7608810328871051088">Androidi eelistused</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Ühendatud telefoni funktsioonide lubamine.</translation>
@@ -1935,12 +1971,14 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7632437836497571618">Kasutage saitide otsimiseks turvalisi ühendusi</translation>
 <translation id="7634337648687970851">Kohalike andmete taastamist praegu ei toetata.</translation>
 <translation id="7640256527901510478">Teie seadme IMEI on <ph name="IMEI_NUMBER" /> ja seadme seerianumber on <ph name="SERIAL_NUMBER" />. Need numbrid on abiks teenuse aktiveerimisel.</translation>
+<translation id="7640308610547854367">Te ennistasite ChromeOS-i eelmise versiooni. Värskenduste saamiseks oodake, kuni järgmine versioon on saadaval.</translation>
 <translation id="7641513591566880111">Profiili uus nimi</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> lisati</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (omanik)</translation>
 <translation id="7648048654005891115">Klahvitabeli stiil</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 sõrmejälg on seadistatud}other{{COUNT} sõrmejälge on seadistatud}}</translation>
+<translation id="7650677314924139716">Praegune andmekasutuse seade on Ainult WiFi</translation>
 <translation id="7651400349472467012">Vahetu kuumkoht on saadaval</translation>
 <translation id="7651784568388208829">Phone Hubi kaudu ülesande jätkamine</translation>
 <translation id="7658239707568436148">Tühista</translation>
@@ -2031,6 +2069,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Tõlge</translation>
 <translation id="7915457674565721553">Vanemliku järelevalve seadistamiseks looge Interneti-ühendus</translation>
+<translation id="7917876797003313048">Saate oma sisselogitud Google'i kontosid hallata. Teie Google'i kontosid kasutatakse Chrome'i brauseris, Play poes, Gmailis ja mujal. Kui soovite lisada konto kellegi teise (näiteks pereliikme) jaoks, lisage selle asemel oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Lisage sõnad, mille soovite lasta õigekirjakontrollil vahele jätta</translation>
 <translation id="7921347341284348270">Te ei saa sellel hallatud kontol oma telefoni märguandeid vaadata. Proovige uuesti mõne teise kontoga. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="8431977087510901105">Kursori seaded on lähtestatud</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8439506636278576865">Paku selles keeles olevate lehtede tõlkimist</translation>
+<translation id="8449347986464073209">Kustuta ja logi välja</translation>
 <translation id="8451512073679317615">assistent</translation>
 <translation id="8455775311562941553">Ühendatud seadmega <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Hiirekursori all oleva teksti ettelugemine</translation>
@@ -2320,6 +2360,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="8872774989979382243">Heli on välja lülitatud. Lülitage heli sisse.</translation>
 <translation id="888256071122006425">Hiire ja puuteplaadi seaded</translation>
 <translation id="8885449336974696155">Aidake ChromeOS-i paremaks muuta, teavitades meid <ph name="BEGIN_LINK" />praegustest seadetest<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Võib põhjustada mobiilse andmeside tasusid</translation>
 <translation id="8890529496706615641">Profiili nime ei saanud muuta. Proovige uuesti või võtke tehnilise toe saamiseks ühendust operaatoriga.</translation>
 <translation id="8894761918470382415">Andmetele juurdepääsu kaitse välisseadmete jaoks</translation>
 <translation id="8896830132794747524">Hiire kiirem liigutamine viib kursori kaugemale</translation>
@@ -2345,6 +2386,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> on lahti ühendatud</translation>
 <translation id="8980345560318123814">Tagasiside aruanded</translation>
 <translation id="8981825781894055334">Paber hakkab otsa saama</translation>
+<translation id="8984694057134206124">Olete <ph name="MINUTES" /> minutit kõigile nähtav. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Tuvastamise lävi</translation>
 <translation id="8986362086234534611">Unusta</translation>
 <translation id="8991694323904646277">Kaamerat pole</translation>
@@ -2391,6 +2433,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="9098860402274800697">Google Play ja Androidi rakenduste eemaldamine</translation>
 <translation id="910000385680858937">Lubatud – <ph name="PERMISSION_DETAILS" />. Ühendage oma seadmega mikrofon.</translation>
 <translation id="9100416672768993722">Viimati kasutatud sisestusmeetodile lülitamiseks vajutage klahvikombinatsiooni <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Tühik<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Praegune andmekasutuse seade on Interneti-ühenduseta</translation>
 <translation id="9108294543511800041">Saate nüüd vaadata oma telefoni hiljutisi fotosid, meediat ja märguandeid</translation>
 <translation id="9109122242323516435">Ruumi vabastamiseks kustutage seadme salvestusruumist faile.</translation>
 <translation id="9111330022786356709">Hiirenuppude lisamine või nende asukoha leidmine</translation>

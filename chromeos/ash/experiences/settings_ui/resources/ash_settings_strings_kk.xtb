@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Барлығын орнаттыңыз!</translation>
 <translation id="1149483087970735785">Көмекші технология</translation>
 <translation id="1150490752229770117">Бұл – <ph name="DEVICE_TYPE" /> құрылғысына арналған бағдарламалық құрал мен қауіпсіздік жүйесінің жаңартуы. Бұдан кейін де жаңартулар алғыңыз келсе, жаңа үлгіге өтіңіз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS туралы</translation>
 <translation id="1155816283571436363">Телефоныңызбен байланыс орнатылып жатыр</translation>
 <translation id="1160800016654917722">Терезе төмен және солға жылжытылды</translation>
 <translation id="1164015913575846413">alt + басу</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">іске қосу тақтасы пернесі + оң бағыт пернесі</translation>
 <translation id="1280332775949918163">Терезені жылжыту</translation>
+<translation id="1285625592773741684">Қазіргі дерек трафигінің параметрі: "Мобильдік интернет"</translation>
 <translation id="1285815028662278915">Мобильдік интернетте хотспотқа қолдау көрсетілмеуі мүмкін. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Күн батқанда, түнгі шам автоматты түрде қосылады</translation>
 <translation id="1288300545283011870">Дауыс сипаттары</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Кеңейтімдер өшіріледі және параметрлер қауіпсіз әдепкі мәндеріне қайтарылады. Қойындылар, файлдар мен cookie файлдары сақталады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Толық экран ұлғайтқышы</translation>
 <translation id="1539727654733007771">Ешқандай мобильдік желі реттелмеген. Жаңа <ph name="BEGIN_LINK" />профильді<ph name="END_LINK" /> жүктеп алыңыз.</translation>
+<translation id="1547295885616600893">ChromeOS жүйесі <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="1547808936554660006">Powerwash функциясы орнатылған eSIM профильдерін өшірмейтінін түсінемін.</translation>
 <translation id="1549275686094429035">ARC қосылды</translation>
 <translation id="1554640914375980459">Хабарландыру келгенін экран жарқылы арқылы біле аласыз. Жарыққа сезімтал болсаңыз, жарқылды хабарландыруларды абайлап қолданыңыз.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Орынды анықтау үшін Wi‑Fi немесе мобильдік желілерді пайдалану</translation>
 <translation id="1650407365859096313">Жаңа қойындыдан ашады. Рұқсат күйі: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Nearby Share функциясын қосу</translation>
+<translation id="1662146548738125461">ChromeOS Flex туралы ақпарат</translation>
 <translation id="1663698992894057019">Соңғы қауіпсіздік пен бағдарламалық құрал үшін жаңа Chromebook жүйесіне жаңартыңыз.</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> құлпын ашу үшін құпия сөзді немесе PIN кодын пайдаланыңыз</translation>
 <translation id="1667842670298352129">Дауыстап оқылатын мәтінді тыңдаңыз. Алдымен экранның төменгі жағындағы Select to Speak белгішесін басыңыз, одан кейін мәтінді ерекшелеңіз. Сондай-ақ перне тіркесімін пайдалана аласыз: мәтінді ерекшелеп, "Іздеу" + S перне тіркесімін басыңыз.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Ескертпе: саусақ ізінің қауіпсіздік деңгейі күрделі өрнек не PIN кодына қарағанда төменірек болуы мүмкін.</translation>
 <translation id="1724801751621173132">Енгізу режимі</translation>
 <translation id="1741190788710022490">Бейімдеп зарядтау</translation>
+<translation id="1745732479023874451">Контактілерді басқару</translation>
 <translation id="1751335846119670066">Оқуға көмек керек</translation>
 <translation id="1755601632425835748">Мәтін өлшемі</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> түймесіне қайта тағайындалды.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Жоқ, 1 ауыстырғыш жетеді</translation>
 <translation id="1842681835432895345">Айна режимінде бұл дисплейді өшіру</translation>
 <translation id="1848219224579402567">Қақпағы жабылғанда, жүйеден шығу</translation>
+<translation id="185970820835152459">Кірген Google аккаунттарыңызды басқара аласыз. Google аккаунттарыңыз Chromium браузері, Play Store, Gmail және тағы басқа қызметтерде пайдаланылады. Егер отбасы мүшесі сияқты әлдебіреудің аккаунтын қосқыңыз келсе, жаңа пайдаланушыны <ph name="DEVICE_TYPE" /> құрылғыңызға қосыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Салқындатқыш</translation>
 <translation id="1866589962721094893">Android қолданбаларына осы Chromebook-та USB құрылғыларын басқаруға мүмкіндік беру. Рұқсат USB құрылғысын жалғаған сайын сұралады. Жеке Android қолданбалары қосымша рұқсаттар сұрайды.</translation>
 <translation id="1877377290348678128">Белгі (міндетті емес)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Дыбыс</translation>
 <translation id="2097950021134740304">Жазылымды ұмытудан бас тарту</translation>
 <translation id="2104166991923847969">Хотспотты автоматты түрде өшіру</translation>
+<translation id="2106831557840787829">ChromeOS Flex операциялық жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="2114995631896158695">Ешқандай SIM картасы салынбаған.</translation>
 <translation id="2121825465123208577">Өлшемін өзгерту</translation>
 <translation id="2127372758936585790">Төмен қуатты зарядтағыш</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Пайдаланушыны (<ph name="USER_NAME" />) өшіру</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2363475280045770326">Конфигурацияны сақтау кезінде қате пайда болды.</translation>
+<translation id="236939127352773362">Маңайда құрылғылар контент бөлісіп жатқанда</translation>
 <translation id="237336063998926520">Орналасқан жерді IP мекенжайы арқылы анықтау</translation>
 <translation id="2373499590298659902">Тінтуір түймесін басып тұру үшін "0" пернесін басыңыз.</translation>
 <translation id="2375406435414127095">Телефоныңызға жалғаңыз</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Трафикті VPN-сіз бөгеу</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Локация дәлдігі параметрі қолданбалар мен қызметтердің орналасқан жерін дәлірек көрсетеді. Ол үшін Google сымсыз сигнал локацияларын анықтау мақсатында құрылғының датчиктері мен сымсыз сигналдары туралы ақпаратты өңдеп отырады. Оларды қолдану кезінде жеке басыңыз туралы мәлімет берілмейді. Локация дәлдігін және локацияға негізделген қызметтерді жақсарту, сондай-ақ пайдаланушылардың қажеттіліктерін қанағаттандыру мақсатында Google-дың және үшінші тараптардың заңды мүдделеріне сүйене отырып, Google қызметтерін жалпылама жақсарту, ұсыну және жүргізу үшін пайдаланылады.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Шығыс науасы толуға жақын.</translation>
 <translation id="3390013585654699824">Қолданба туралы мәлімет</translation>
 <translation id="3390740059150071453">Сол жаққа қараңыз.</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">Электрондық пошта мекенжайы</translation>
 <translation id="3701028563242674350">Тінтуір курсорын үлкейту үшін оны сілку</translation>
 <translation id="3703699162703116302">Билет жаңартылды.</translation>
+<translation id="3703994572283698466">ChromeOS жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="370649949373421643">Wi‑Fi желісін қосу</translation>
 <translation id="370665806235115550">Жүктеліп жатыр…</translation>
 <translation id="3707163604290651814">Аккаунтқа <ph name="NAME" /> ретінде кірдіңіз.</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Басып шығару серверінен <ph name="NUM_PRINTERS" /> принтер табылды.</translation>
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="37143699183660101">Курсор тұрақтылығы</translation>
+<translation id="3716540481907974026">ChromeOS Flex нұсқасы</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN коды дұрыс емес. Әрекетті қайталаңыз.</translation>
 <translation id="3728681439294129328">Желі мекенжайын конфигурациялау</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Композиция мәтінінің астын сызуын көрсету</translation>
 <translation id="3789841737615482174">Орнату</translation>
 <translation id="379509625511193653">Өшірулі</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + жоғары бағыт пернесі</translation>
 <translation id="3798670284305777884">Динамик (ішкі)</translation>
 <translation id="3799128412641261490">Switch Access параметрлері</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Ендірілген пернетақта</translation>
 <translation id="3917644013202553949">Файлдарыңызды синхрондау үшін жад жеткіліксіз. Орын босатып көріңіз.</translation>
 <translation id="3919229493046408863">Маңайда құрылғылар пайда болғанда хабарландыруды өшіру</translation>
+<translation id="3923184630988645767">Деректер трафигі</translation>
 <translation id="3923494859158167397">Ешқандай мобильдік желі реттелмеген.</translation>
 <translation id="3924145049010392604">Мета</translation>
 <translation id="3925926055063465902">Осы құрылғыдағы басқа пайдаланушылар да осы желіні пайдалана алады</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Жылдам жауаптар ұсынған анықтама</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> қолданбасына USB құрылғыларын басқаруға мүмкіндік беру.</translation>
 <translation id="3994530503403062649">Планшеттен түймелерді табыңыз</translation>
+<translation id="3997429360543082038">ChromiumOS туралы</translation>
 <translation id="4001540981461989979">Жылжытқанда тінтуір курсорын бөлектеу</translation>
 <translation id="4005817994523282006">Уақыт белдеуін анықтау әдісі</translation>
+<translation id="4019629340646866719">ChromiumOS жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Құрама туралы мәліметтерді көшіру</translation>
 <translation id="4028467762035011525">Енгізу әдісін қосу</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Соңғы пайдаланылған енгізу әдісіне ауысу үшін <ph name="KEY_CODES" /> пернелерін басыңыз.</translation>
 <translation id="4051177682900543628">іздеу + оң бағыт пернесі</translation>
 <translation id="405181879009056822">ChromeOS параметрлері</translation>
+<translation id="4054070260844648638">Барлығына көрсетіледі</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Желідегі қолжетімді принтерлерді көру үшін байланысты тексеріңіз.</translation>
 <translation id="4068776064906523561">Сақталған саусақ іздері</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />-дәреже</translation>
 <translation id="4244238649050961491">Басқа да стилус қолданбаларын табу</translation>
 <translation id="4248401726442101648">Ешқандай камера жалғанбады</translation>
+<translation id="424864128008805179">Chrome жүйесінен шығасыз ба?</translation>
 <translation id="4249116869350613769">Батареяны үнемдеу режимі</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="425411422794688815">Бірдеңе дұрыс болмады. Телефоныңыз жаныңызда болуы, оның құлпы ашық болуы және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google аккаунты}other{<ph name="EXTRA_ACCOUNTS" /> Google аккаунты}}</translation>
 <translation id="4314497418046265427">Телефонды <ph name="DEVICE_TYPE" /> құрылғысына жалғап, жұмыс өнімділігін арттырыңыз</translation>
 <translation id="4314561087119792062">Жаңа кіру нүктесінің атауын қосу</translation>
+<translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4320177379694898372">Интернет байланысы жоқ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Сақтау орны және қуат</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Ұсыныстар саны</translation>
 <translation id="4606933160360542263">Арнаулы пернелер тіркесімі: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Тінтуірдің сол жақ түймесі таңдалған кезде, екі рет басу үшін "/" пернесін басыңыз.</translation>
+<translation id="4613863813562375431">ChromiumOS нұсқасы</translation>
 <translation id="461661862154729886">Қуат көзі</translation>
 <translation id="4617880081511131945">Байланыс орнату мүмкін емес</translation>
 <translation id="4620757807254334872">тінтуір</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">Желілік атаулар серверлерін конфигурациялау</translation>
 <translation id="4779083564647765204">Масштабтау</translation>
 <translation id="4779766576531456629">eSIM ұялы байланыс желісінің атауын өзгерту</translation>
+<translation id="4789550509729954245">Маңайдағы құрылғылар деректерді бөлісіп жатқан кезде, хабарландыруларды көрсету</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint жылдамдатуын қосу</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" /> қолданбасынан орнатылған қолданбалар</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">Терезені бекіту</translation>
 <translation id="4964673849688379040">Тексеруде...</translation>
 <translation id="4967571733817147990">Тінтуір түймелерін бейімдеу</translation>
+<translation id="4970880042055371251">ChromeOS нұсқасы</translation>
 <translation id="4972129977812092092">Принтер ақпаратын өзгерту</translation>
 <translation id="4975771730019223894">Қолданбаға танымбелгі қою</translation>
 <translation id="4979263087381759787">Developer Options</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">Бұл осы Chromebook құрылғысындағы Google Drive қызметін пайдалану рұқсатын, оның ішінде офлайн режимде қолжетімді болған файлдарды пайдалану рұқсатын өшіреді.</translation>
 <translation id="5196790039230503600">Қимылды қолданып, басыңызбен элементті апару керек жерді көрсетіңіз. Элементті қою үшін қимылды қайтадан қолданыңыз.</translation>
 <translation id="5197255632782567636">Интернет</translation>
+<translation id="5205484256512407285">Тасымалдау үшін ешқашан мобильдік интернетті пайдаланбау</translation>
 <translation id="5207949376430453814">Мәтін курсорын ерекшелеу</translation>
 <translation id="5208926629108082192">Құрылғының мобильді желісі туралы ақпарат</translation>
 <translation id="5208988882104884956">Жартылай енді</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">ChromeOS жүйе қолданбасы</translation>
 <translation id="5334113802138581043">Микрофонды пайдалану</translation>
 <translation id="5336689872433667741">Курсор және сенсорлық тақта</translation>
+<translation id="5337926771328966926">Қазіргі құрылғының атауы — <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Диагностика және пайдалану туралы деректі жіберу</translation>
 <translation id="5369694795837229225">Linux әзірлеуші ортасын реттеу</translation>
 <translation id="5377367976106153749">Камераны пайдалану рұқсатын қосу керек пе?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">Бұл параметрлерді тек иеленуші ғана өзгерте алады:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Қап</translation>
+<translation id="5840680448799937675">Файлдар әрдайым офлайн режимде бөлісіледі.</translation>
 <translation id="5841270259333717135">Ethernet желісін конфигурациялау</translation>
 <translation id="5842497610951477805">Bluetooth қосу</translation>
 <translation id="5846200638699387931">Қатынас синтаксисінің қатесі: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Microsoft файлдарын Google Drive-ға көшіру немесе тасымалдау алдында сұрау</translation>
 <translation id="5939518447894949180">Қалпына келтіру</translation>
 <translation id="594048410531370124">Перне анықталмады. <ph name="RESPONSE" /> үшін кез келген пернені басыңыз.</translation>
+<translation id="5942779427914696408">Құрылғының көрінуі</translation>
 <translation id="5945192511027649793">Сенсорлық тақтаны өшіру</translation>
 <translation id="5947651424015173580">Тінтуірдің сол жақ түймесін екі рет басу</translation>
 <translation id="594993197557058302">1–4 өзгерткіш перне (ctrl, alt, shift, іздеу немесе іске қосу тақтасы пернесін) мен тағы 1 пернені басыңыз. Бір перне таңдауға да болады.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">Қимыл тағайындау</translation>
 <translation id="5968022600320704045">Іздеу нәтижелері жоқ.</translation>
 <translation id="5969728632630673489">Перне тіркесімі туралы хабарландыру жабылды.</translation>
+<translation id="5979353814339191480">Бұл опция мобильдік интернет тарифі немесе мобильдік интернеті бар Chromebooks құрылғыларына немесе портативтік хотспотқа қосылған кезде қолданылады.</translation>
 <translation id="5985556342298151179">Құрылғы әкімшісі орнатқан Chrome қолданбасы.</translation>
 <translation id="5986442691296752186">Linux қолданбаларына USB құрылғыларын басқаруға мүмкіндік беру.</translation>
 <translation id="598810097218913399">Тағайындауды өшіру</translation>
 <translation id="5988563937187882754">Оң жаққа қараңыз.</translation>
+<translation id="5990266201903445068">Тек Wi-Fi</translation>
 <translation id="5992225669837656567">Барлық тышқан ажыратылды.</translation>
 <translation id="5999630716831179808">Дауыстар</translation>
 <translation id="6002458620803359783">Ұнайтын дауыстар</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">Негізгі TrackPoint түймесі</translation>
 <translation id="6048747414605857443">ChromeVox және Select to Speak үшін мәтінді дыбыстап айту дауыстарын таңдау және бейімдеу</translation>
 <translation id="6050189528197190982">Сұр шкаласы</translation>
+<translation id="6054961935262556546">Көрсетілуін өзгерту</translation>
 <translation id="6059276912018042191">Соңғы Chrome қойындылары</translation>
 <translation id="6059925163896151826">USB құрылғылары</translation>
 <translation id="6064764629679333574">Аудионың төмен ажыратымдылығын жоғары деңгейге көтеру арқылы Bluetooth микрофонының сапасын жақсартады.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Microsoft файлдарын Microsoft OneDrive-ға көшіру немесе тасымалдау алдында сұрау</translation>
 <translation id="6265687851677020761">Портты өшіру</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> құрылғысына жалғануда</translation>
+<translation id="6268381023930128611">Chromium жүйесінен шығасыз ба?</translation>
 <translation id="6270309713620950855">Еске салғыш дыбысын өшіру</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> құрылғысына қосылып жатыр</translation>
 <translation id="628352644014831790">4 секунд</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">Келесі енгізу әдісіне ауысу үшін <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> пернелерін басыңыз.</translation>
 <translation id="6463488491707167747">Бұл сөздікті жою</translation>
 <translation id="6463596731306859179">Қажетсіз қалқымалы терезелер көрсетіле бере ме не күтпеген әрекеттер орын ала ма? Орнатылған қолданбалар мен кеңейтімдер кейде ChromeOS параметрлерін сіздің хабарыңызсыз өзгертуі мүмкін.</translation>
+<translation id="6465841119675156448">Интернетсіз</translation>
 <translation id="6467377768028664108">Мұндайда <ph name="DEVICE_TYPE" /> құрылғысы келесілерді орындай алады:</translation>
 <translation id="6469557521904094793">Ұялы байланыс желісін қосу</translation>
 <translation id="6470120577693311302">Жарқылды хабарландырулар</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">Әсер режимі</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Таңбашаны таңдау</translation>
+<translation id="6632473616050862500">ChromeOS Flex операциялық жүйесі <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="6646476869708241165">Fast Pair функциясын өшіру</translation>
 <translation id="6647690760956378579">Табиғи дауыстың алғы нұсқасы</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">Қолжетімді құрылғылар осы жерде пайда болады.</translation>
 <translation id="6776729248872343918">Fast Pair функциясын қосу</translation>
 <translation id="6777845730143344223">Passpoint жазылымдары туралы толық ақпарат</translation>
+<translation id="6779406956731413166">ChromiumOS қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="6783036716881942511">Бұл құрылғыны ұмыту керек пе?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive параметрлері</translation>
 <translation id="6785915470941880363">Кері айналдыру туралы <ph name="LINK_BEGIN" />қосымша ақпарат<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">Мәтінді дыбысқа түрлендіру дауыстық параметрлері</translation>
 <translation id="7282547042039404307">Тегіc</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Пайдалану және қауіпсіздік туралы маңызды ақпарат</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> құпия сөзін орнату</translation>
 <translation id="7304030187361489308">Жоғары</translation>
 <translation id="7308643132139167865">Веб-сайт тілдері</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">Жақын уақытта жасалған фотосуреттер</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> қолданба блокталды.</translation>
+<translation id="7423425410216218516">Көріну мүмкіндігі <ph name="MINUTES" /> минутқа қосулы.</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> контентін өшіру</translation>
 <translation id="7425037327577270384">Жазуға көмектесіңіз</translation>
 <translation id="7429415133937917139">Экранның жоғарғы жағындағы ChromeVox панелінде жаңартуға болатын    Брайль дисплейі пайда болады.</translation>
@@ -1919,11 +1953,13 @@
 <translation id="7578137152457315135">Саусақ ізі параметрлері</translation>
 <translation id="7578692661782707876">Растау кодыңызды енгізіңіз.</translation>
 <translation id="7582582252461552277">Осы желіні таңдау</translation>
+<translation id="7582844466922312471">Ұялы деректер</translation>
 <translation id="7587806318633605613">Ұсыныс тарихы</translation>
 <translation id="7590883480672980941">Енгізу параметрлері</translation>
 <translation id="7592060599656252486">Кейбір</translation>
 <translation id="7602173054665172958">Басып шығаруды басқару</translation>
 <translation id="7605163396341021431">Android қолданбаларына осы Chromebook-та USB құрылғыларын басқаруға мүмкіндік беру</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android параметрлері</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Жалғанған телефон функцияларын қосу.</translation>
@@ -1934,12 +1970,14 @@
 <translation id="7632437836497571618">Сайттарды іздеу үшін қауіпсіз байланыстарды пайдалану</translation>
 <translation id="7634337648687970851">Қазіргі уақытта жергілікті деректерді қалпына келтіруге қолдау көрсетілмейді.</translation>
 <translation id="7640256527901510478">Құрылғыңыздың IMEI нөмірі: <ph name="IMEI_NUMBER" /> және құрылғының сериялық нөмірі: <ph name="SERIAL_NUMBER" />. Қызметті белсендіру үшін осы нөмірлерді пайдалануға болады.</translation>
+<translation id="7640308610547854367">ChromeOS алдыңғы нұсқасына қайтарылдыңыз. Жаңартуларды алу үшін келесі нұсқа қолжетімді болғанша күтіңіз.</translation>
 <translation id="7641513591566880111">Жаңа профиль атауы</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> қосылды</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (иесі)</translation>
 <translation id="7648048654005891115">Пернетақта схемасының стилі</translation>
 <translation id="7649070708921625228">Анықтама</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 саусақ ізі орнатылды.}other{{COUNT} саусақ ізі орнатылды.}}</translation>
+<translation id="7650677314924139716">Қазіргі дерек трафигінің параметрі: "Тек Wi-Fi"</translation>
 <translation id="7651400349472467012">Лездік хотспот қолжетімді</translation>
 <translation id="7651784568388208829">Phone Hub тапсырмасын жалғастыру</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
@@ -2030,6 +2068,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Аударма</translation>
 <translation id="7915457674565721553">Ата-ана бақылауын реттеу үшін интернетке қосылыңыз.</translation>
+<translation id="7917876797003313048">Кірген Google аккаунттарыңызды басқара аласыз. Google аккаунттарыңыз Chrome браузері, Play Store, Gmail және тағы басқа қызметтерде пайдаланылады. Егер отбасы мүшесі сияқты әлдебіреудің аккаунтын қосқыңыз келсе, жаңа пайдаланушыны <ph name="DEVICE_TYPE" /> құрылғыңызға қосыңыз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> с</translation>
 <translation id="7920482456679570420">Емлесін тексеруді қажет етпейтін сөздерді қосыңыз</translation>
 <translation id="7921347341284348270">Осы басқарылатын аккаунтта телефоныңыздың хабарландыруларын көре алмайсыз. Басқа аккаунтты пайдаланып көріңіз. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -2194,6 +2233,7 @@
 <translation id="8431977087510901105">Курсор параметрлерін бастапқы қалпына келтіру</translation>
 <translation id="8437209419043462667">АҚШ</translation>
 <translation id="8439506636278576865">Беттерді осы тілге аудару ұсынысы</translation>
+<translation id="8449347986464073209">Жою және шығу</translation>
 <translation id="8451512073679317615">assistant</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> құрылғысына жалғанған.</translation>
 <translation id="8473540203671727883">Тінтуірдің астындағы мәтінді дауыстап оқу</translation>
@@ -2319,6 +2359,7 @@
 <translation id="8872774989979382243">Дыбыс деңгейі өшірулі. Дыбыс деңгейін қосыңыз.</translation>
 <translation id="888256071122006425">Тінтуір және сенсорлық тақта параметрлері</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />Ағымдағы параметрлерді<ph name="END_LINK" /> хабарлау арқылы ChromeOS жүйесін жақсартуға көмектесіңіз</translation>
+<translation id="8890170499370378450">Мобильдік интернет ақысы алынуы мүмкін.</translation>
 <translation id="8890529496706615641">Профиль аты өзгертілмеді. Әрекетті қайталаңыз немесе техникалық қолдау үшін операторыңызға хабарласыңыз.</translation>
 <translation id="8894761918470382415">Сыртқы жабдықтардағы деректерді пайдалануды қорғау</translation>
 <translation id="8896830132794747524">Тінтуірді жылдамырақ қозғалтса, курсор алысырақ жылжиды.</translation>
@@ -2344,6 +2385,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> ажыратылды.</translation>
 <translation id="8980345560318123814">Пікір есептері</translation>
 <translation id="8981825781894055334">Қағаз азайды.</translation>
+<translation id="8984694057134206124">Құрылғыңыз барлығына <ph name="MINUTES" /> минут бойы көрінеді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Анықтау шегі</translation>
 <translation id="8986362086234534611">Ұмыту</translation>
 <translation id="8991694323904646277">Камера жоқ</translation>
@@ -2390,6 +2432,7 @@
 <translation id="9098860402274800697">Google Play және Android қолданбаларын өшіру</translation>
 <translation id="910000385680858937">Рұқсат етілген (<ph name="PERMISSION_DETAILS" />). Құрылғыға микрофон жалғаңыз.</translation>
 <translation id="9100416672768993722">Соңғы пайдаланылған енгізу әдісін ауыстыру үшін <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> пернелерін басыңыз.</translation>
+<translation id="9108072915170399168">Қазіргі дерек трафигінің параметрі: "Интернетсіз"</translation>
 <translation id="9108294543511800041">Енді телефондағы соңғы фотосуреттерді, медиафайлдар мен хабарландыруларды көре аласыз</translation>
 <translation id="9109122242323516435">Орынды босату үшін құрылғы жадынан файлдарды жойыңыз.</translation>
 <translation id="9111330022786356709">Тінтуірдегі түймелерді қосу немесе табу</translation>

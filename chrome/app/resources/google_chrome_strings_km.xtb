@@ -20,7 +20,6 @@
 <translation id="1142745911746664600">មិនអាចដំឡើងជំនាន់ Chrome បានទេ</translation>
 <translation id="1148360048981192980">នៅពេល​អ្នកបើក Chrome នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក​នៅលើកក្រោយ អ្នក​នឹងឃើញ​សារតម្រុយដែលប្រាប់ឱ្យ​ប្រើ​កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់។</translation>
 <translation id="1150418667633096194">ប៊ូតុង "ផ្ទាំងចំហៀង​នៃម៉ាស៊ីនស្វែងរក​នៅលើ Google" នៅលើ​របារឧបករណ៍​មានរូបតំណាង​ថ្មី។ ចុចវា​ដើម្បី​សួរសំណួរ នៅពេល​អ្នករុករក​ដោយប្រើ​ផ្ទាំងចំហៀងនៃ​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google។</translation>
-<translation id="1152920704813762236">អំពី ChromeOS</translation>
 <translation id="1154147086299354128">&amp;​បើក​នៅក្នុង Chrome</translation>
 <translation id="1157952955648710254">បិទផ្ទាំង​ចំហៀងនៃម៉ាស៊ីនស្វែងរកនៅលើ Google</translation>
 <translation id="1157985233335035034">ភាសា​ថ្មីៗ</translation>
@@ -57,7 +56,6 @@
 <translation id="1507198376417198979">ប្ដូរកម្រងព័ត៌មាន Chrome ថ្មីរបស់អ្នកតាមបំណង</translation>
 <translation id="1518627427551567882">ទំព័រនេះ​ត្រូវបាន​ការពារ</translation>
 <translation id="15408169957028265">បើកឡើងវិញនូវ​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google ក្នុង Chrome</translation>
-<translation id="1547295885616600893">ChromeOS អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម។</translation>
 <translation id="1547469039832541117">បញ្ចប់​កិច្ចការ​ដែលបាន​រំលេច។</translation>
 <translation id="1553358976309200471">ធ្វើបច្ចុប្បន្នភាព Chrome</translation>
 <translation id="1587223624401073077">Google Chrome កំពុងប្រើកាមេរ៉ារបស់អ្នក។</translation>
@@ -78,7 +76,6 @@
 <translation id="1632241302126471515">ស្វែងរក​ដោយប្រើ Chrome Canary</translation>
 <translation id="1640672724030957280">កំពុងទាញ​យក...</translation>
 <translation id="1651617469580841801">នៅពេលអ្នកប្រើ Google Lens នោះចំណងជើងទំព័រ, URL និងខ្លឹមសារ រួមទាំង PDF នឹងត្រូវបានបញ្ជូនទៅ Google។ <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">អំពី ChromeOS Flex</translation>
 <translation id="1674870198290878346">បើក​តំណ​នៅក្នុងវិនដូ​ឯកជន Chrome</translation>
 <translation id="1682634494516646069">Google Chrome មិនអាចអាន និងសរសេរទៅថតឯកសារទិន្នន័យរបស់វាបានទេ៖
 
@@ -99,6 +96,7 @@
 <translation id="1843347690926158494">ស្វែងរក​លើផ្ទាំងនេះ​ដោយប្រើ Google Lens</translation>
 <translation id="1849248141818021764">មាន​តែ​អ្នក​ដែលមាន​ឃ្លា​សម្ងាត់​របស់​អ្នក​ប៉ុណ្ណោះ​ទើប​អាច​អាន​ទិន្នន័យ​ដែល​បានអ៊ីនគ្រីប​របស់​អ្នកបាន។ ឃ្លា​សម្ងាត់​មិន​ត្រូវ​បាន​ផ្ញើ ឬ​រក្សាទុក​ដោយ Google ទេ។ ប្រសិនបើអ្នក​ភ្លេចឃ្លា​សម្ងាត់​របស់អ្នក ឬ​ចង់ប្ដូរ​ការកំណត់​នេះ អ្នក​នឹងត្រូវ<ph name="BEGIN_LINK" />លុប​ទិន្នន័យ Chrome នៅក្នុង​គណនី​របស់អ្នក<ph name="END_LINK" />។</translation>
 <translation id="1867503717113754604">ចូល Chrome ដោយប្រើ​គណនី Google របស់អ្នក ដើម្បីប្រើ <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
+<translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> របស់អ្នក​ជា​កំណែថ្មី​ហើយ</translation>
 <translation id="1873233029667955273">Google Chrome មិនមែន​ជា​កម្មវិធី​រុករក​តាមអ៊ីនធឺណិត​លំនាំដើម​របស់អ្នក​ទេ</translation>
 <translation id="1874309113135274312">Google Chrome បេតា (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ហួសសម័យហើយ</translation>
@@ -106,6 +104,7 @@
 <translation id="1880677175115548835">ជ្រើសរើស​អត្ថបទ</translation>
 <translation id="1896602904211344018">យក​កម្មវិធី Chrome</translation>
 <translation id="1919130412786645364">អនុញ្ញាត​ការចូល Chrome</translation>
+<translation id="1925069572871307609">ដើម្បី​ទទួលបាន​កំណែថ្មីៗ​របស់ Google Chrome នាពេលអនាគត អ្នកនឹង​ត្រូវការ Windows 10 កំណែ 1809 ឡើងទៅ។ កុំព្យូទ័រនេះ​កំពុងប្រើ​កំណែចាស់​របស់ Windows 10។</translation>
 <translation id="1979600810166324878">កាន់តែមាន​សុវត្ថិភាព​នៅពេល​ធ្វើដំណើរ​តាមរយៈ​ការរុករក​ដោយសុវត្ថិភាពបន្ថែម​នៅលើ Chrome សម្រាប់ iOS</translation>
 <translation id="2001586581944147178">ធ្វើឱ្យ​កាន់តែ​ពិបាក​សម្រាប់​អ្នកផ្សេង​ដែលមាន​សិទ្ធិចូលមើល​ចរាចរណ៍​អ៊ីនធឺណិត​របស់អ្នក​ក្នុងការ​មើលឃើញ​គេហទំព័រ​ដែលអ្នក​ចូលមើល។ Chrome ប្រើ​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព ដើម្បី​រកមើល​អាសយដ្ឋាន IP របស់​គេហទំព័រ​នៅក្នុង DNS (ប្រព័ន្ធ​ឈ្មោះ​ដូមែន)។</translation>
 <translation id="2018879682492276940">ការដំឡើង​មិនបាន​សម្រេចទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
@@ -118,7 +117,6 @@
 <translation id="2091012649849228750">ដើម្បីទទួលបានកំណែថ្មីរបស់ Google Chrome នាពេលខាងមុខ អ្នកនឹងត្រូវការ Windows 10 ឬកំណែក្រោយនេះ។ កុំព្យូទ័រ​នេះ​កំពុងប្រើ Windows 8។</translation>
 <translation id="2094919256425865063">នៅ​តែ​ចង់​ចាក​ចេញពី Chrome ឬ?</translation>
 <translation id="2096213354152647998">អ្នក​មិនបាន​ចូលមើល​នាពេល​ថ្មីៗនេះទេ។ Chrome បានដក​ការអនុញ្ញាត​ឱ្យប្រើ<ph name="PERMISSION" />ចេញ។</translation>
-<translation id="2106831557840787829">ChromeOS Flex អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម ដូច<ph name="BEGIN_LINK_LINUX_OSS" />មជ្ឈដ្ឋាន​អភិវឌ្ឍ Linux<ph name="END_LINK_LINUX_OSS" />។</translation>
 <translation id="2108778574543343055">បិទ​មិនឱ្យ Chrome ដំណើរការ​នៅផ្ទៃខាងក្រោយ​សម្រាប់​កម្មវិធី</translation>
 <translation id="2111985952714409792">ដើម្បីយក​កម្មវិធីបន្ថែម​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក សូម​ចូលគណនី Chrome</translation>
 <translation id="2120620239521071941">វា​នឹង​លុប​ធាតុ​ <ph name="ITEMS_COUNT" /> ចេញ​ពី​ឧបករណ៍​នេះ។ ដើម្បី​ទាញ​យក​ទិន្នន័យ​របស់អ្នក​មកវិញ​នៅ​ពេល​ក្រោយ សូម​ចូល​ទៅ​កាន់ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
@@ -214,7 +212,6 @@
 <translation id="2994465299455873643">ផ្ដល់​សេវាកម្ម​អ៊ីនគ្រីប និង​វិធីដ៏មាន​សុវត្ថិភាព​សម្រាប់​ស្ដារ <ph name="BROWSER_NAME" /> ឡើងវិញ ប្រសិនបើ​វាហួស​សម័យ។ ប្រសិនបើ​បិទ​សេវាកម្មនេះ <ph name="BROWSER_NAME" /> អាច​បាត់បង់​សិទ្ធិចូលប្រើ​ទិន្នន័យ​ដែលបាន​អ៊ីនគ្រីប ហើយ <ph name="BROWSER_NAME" /> ប្រហែល​មិនអាច​ស្ដារ​ខ្លួនវា​ឡើងវិញ​បានទេ។</translation>
 <translation id="3003694935412297923">កិច្ចការ​ទាំងអស់</translation>
 <translation id="3019382870990049182">ចាប់​ផ្តើមឡើងវិញ ដើម្បីដំឡើងកំណែ &amp;ChromeOS Flex</translation>
-<translation id="3034219227076811559">ម៉ាស៊ីនស្វែងរកនៅលើ Google ក្នុង Chrome</translation>
 <translation id="3037190258341683404">អ្នកអាច​ខ្ទាស់​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google ក្នុង Chrome ដើម្បី​សួរសំណួរ នៅពេល​អ្នករុករក</translation>
 <translation id="3037517125981011456">បង្ហាញ​សារសម្រាប់​ចូល Chrome</translation>
 <translation id="3037838751736561277">Google Chrome នៅក្នុងរបៀបផ្ទៃខាងក្រោយ។</translation>
@@ -283,8 +280,6 @@
 <translation id="3667616615096815454">មិនអាច​ដំឡើង​បានទេ ម៉ាស៊ីនមេ​មិនស្គាល់​កម្មវិធីនេះឡើយ។</translation>
 <translation id="3673813398384385993">Chrome បានរកឃើញថា "<ph name="EXTENSION_NAME" />" មាន​កម្មវិធីគ្រោះថ្នាក់</translation>
 <translation id="3697952514309507634">កម្រង​ព័ត៌មាន Chrome ផ្សេងទៀត</translation>
-<translation id="3703994572283698466">ChromeOS អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម ដូច<ph name="BEGIN_LINK_LINUX_OSS" />មជ្ឈដ្ឋាន​អភិវឌ្ឍ Linux<ph name="END_LINK_LINUX_OSS" />។</translation>
-<translation id="3716540481907974026">កំណែ ChromeOS Flex</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{មានកំណែថ្មី​សម្រាប់ Chrome ហើយកំណែថ្មីនេះ​នឹង​ត្រូវបានដំឡើងភ្លាមៗ បន្ទាប់ពី​អ្នក​ចាប់​ផ្ដើមឡើងវិញ។ មានផ្ទាំង​ឯកជន ឬ​ផ្ទាំងដាច់ដោយឡែក​ដែលបើក។ ផ្ទាំងនោះនឹង​មិនបើក​ឡើងវិញទេ បន្ទាប់ពី​អ្នកចាប់​ផ្ដើមឡើងវិញ។}other{មានកំណែថ្មី​សម្រាប់ Chrome ហើយកំណែថ្មីនេះ​នឹង​ត្រូវបានដំឡើងភ្លាមៗ បន្ទាប់ពី​អ្នក​ចាប់​ផ្ដើមឡើងវិញ។ មាន​ផ្ទាំងដាច់ដោយឡែក និង​ផ្ទាំងឯកជន # ដែលបើក​នៅលើ​កម្រងព័ត៌មាននានា។ ផ្ទាំងទាំងនោះ​នឹង​មិនបើក​ឡើងវិញទេ បន្ទាប់ពី​អ្នកចាប់​ផ្ដើមឡើងវិញ។}}</translation>
 <translation id="3718181793972440140">វា​នឹង​លុប​ធាតុ 1 ចេញ​ពី​ឧបករណ៍​នេះ។ ដើម្បី​ទាញ​យក​ទិន្នន័យ​របស់អ្នក​មកវិញ​នៅ​ពេល​ក្រោយ សូម​ចូល​ទៅ​កាន់ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome ណែនាំ​ឱ្យអ្នកដក​កម្មវិធីបន្ថែមនេះ​ចេញ។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម​អំពី​កម្មវិធីបន្ថែម​ដែលអាច​ប្រើបាន<ph name="END_LINK" />}other{Chrome ណែនាំ​ឱ្យអ្នកដក​កម្មវិធីបន្ថែម​ទាំងនេះ​ចេញ។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែម​អំពី​កម្មវិធីបន្ថែម​ដែលអាច​ប្រើបាន<ph name="END_LINK" />}}</translation>
@@ -293,7 +288,6 @@
 <translation id="3772152698251011058">រាយការណ៍គេហទំព័រនេះទៅ Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារមានបញ្ហាក្នុងការចូលគណនី។</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">គ្រប់គ្រង</translation>
 <translation id="383455301564000773">កំពុង​ដំឡើង​កំណែ​ទៅ Windows 11 ឬ? សូម​ទាញយក Chrome ទៅ OneDrive ដើម្បី​ឱ្យអ្នក​អាចត្រៀមខ្លួន​រួចរាល់​ចាប់ពី​ថ្ងៃទីមួយ។</translation>
 <translation id="383928141529488001">Google Chrome ត្រូវការសិទ្ធិចូលប្រើប៊្លូធូស ដើម្បីរុករកឧបករណ៍​ប៊្លូធូស។ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -399,7 +393,6 @@
 <translation id="495931528404527476">នៅក្នុង Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារព័ត៌មានលម្អិតអំពីការចូលគណនីរបស់អ្នកហួសសម័យហើយ។</translation>
 <translation id="4970761609246024540">សូមស្វាគមន៍​មកកាន់កម្រង​ព័ត៌មាន Chrome</translation>
-<translation id="4970880042055371251">កំណែ ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">ចុច “កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់”</translation>
 <translation id="5043786843026425788">ស្វែងយល់បន្ថែម​អំពី​ការស្វែងរក​ដោយប្រើ Google Lens នៅក្នុង Chrome</translation>
@@ -422,6 +415,7 @@
 <translation id="5174969993834422967">ជាធម្មតា អ្នកទប់ស្កាត់​ការជូនដំណឹង។ ដើម្បីឱ្យ​គេហទំព័រនេះ​ជូនដំណឹង​ដល់អ្នក សូមចុច​រូប​តំណាងការជូនដំណឹង​នៅជ្រុងខាងស្ដាំ​នៃរបារ​ទីតាំង​របស់អ្នក។</translation>
 <translation id="5174983315706567306">មិនមានទំហំ​ថាស​គ្រប់គ្រាន់ទេ។</translation>
 <translation id="5179933070463113976">ដើម្បីប្រើ Gemini ក្នុង Chrome អ្នក​ត្រូវចូល Chrome ដោយប្រើ​គណនី Google របស់អ្នក</translation>
+<translation id="5184662919967270437">កំពុងអាប់ដេតឧបករណ៍របស់អ្នក</translation>
 <translation id="5190467473654176081">ប្ដូរ Chrome តាមបំណង ដើម្បីផ្ដល់​រូបរាងថ្មី​ដល់វា</translation>
 <translation id="5201744974236816379">កំណែថ្មី Chrome</translation>
 <translation id="5234764350956374838">ច្រានចោល</translation>
@@ -459,6 +453,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="5649156266046089790">តាមរយៈកម្រង​ព័ត៌មាន Chrome អ្នកអាច​បែងចែក​អ្វីៗ​ទាំងអស់​របស់អ្នកនៅលើ Chrome បាន។ បង្កើត​កម្រងព័ត៌មាន​សម្រាប់​មិត្តភក្ដិ និង​គ្រួសារ ឬបែងចែក​រវាងការងារ និង​ការកម្សាន្ត។</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> អាចបង្កគ្រោះថ្នាក់ ដូច្នេះ Chrome បានរារាំងវា។</translation>
 <translation id="566568153320186256">Chrome សន្សំ​ថាមពល​ថ្ម​ដោយ​ដាក់កំហិត​សកម្មភាព​ផ្ទៃខាងក្រោយ និង​បែបផែន​ដែលមើលឃើញ ដូចជា​ការរំកិលយ៉ាងរលូន និង​អត្រាហ្វ្រេមវីដេអូជាដើម។ <ph name="BEGIN_LINK" />ស្វែងយល់​បន្ថែមអំពី​មុខងារសន្សំសំចៃថាមពល<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">ChromeOS ហួសសម័យហើយ</translation>
 <translation id="567202749201779594">សម្អាត​ទិន្នន័យ Chrome នៅក្នុង​គណនី​របស់អ្នក</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{អ្នក​គ្រប់គ្រង​របស់អ្នក​ស្នើឱ្យអ្នក​ចាប់ផ្ដើម Chrome ឡើងវិញ​ ដើម្បីប្រើ​កំណែថ្មីនេះ}=1{អ្នក​គ្រប់គ្រង​របស់អ្នក​ស្នើឱ្យអ្នក​ចាប់ផ្ដើម Chrome ឡើងវិញ​ ដើម្បីប្រើកំណែថ្មីនេះ។ ផ្ទាំងឯកជនរបស់អ្នក​នឹង​មិនបើកឡើងវិញទេ។}other{អ្នក​គ្រប់គ្រង​របស់អ្នក​ស្នើឱ្យអ្នក​ចាប់ផ្ដើម Chrome ឡើងវិញ​ ដើម្បីប្រើកំណែថ្មីនេះ។ ផ្ទាំងឯកជន # របស់អ្នក​នឹងមិន​បើកឡើងវិញទេ។}}</translation>
 <translation id="568656514202614970">ជោគជ័យហើយ! ឥឡូវនេះ អ្នកអាច​សួរសំណួរ​យ៉ាងងាយស្រួល នៅពេល​អ្នករុករក​ដោយប្រើ​ផ្ទាំងចំហៀងនៃ​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google</translation>
@@ -481,6 +476,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="5894164573378901688">ដើម្បីប្រើ Gemini ក្នុង Chrome សូមចូល​ដោយប្រើ​គណនី Google ផ្សេង</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ការចូល​បណ្ដាញ</translation>
+<translation id="5906655207909574370">ការអាប់ដេតជិតបញ្ចប់ហើយ! ចាប់ផ្តើមឧបករណ៍របស់អ្នកឡើងវិញដើម្បីបញ្ចប់ការអាប់ដេត។</translation>
 <translation id="5924017743176219022">កំពុងភ្ជាប់អ៊ីនធឺណិត...</translation>
 <translation id="5941711191222866238">បង្រួម</translation>
 <translation id="5941830788786076944">ដាក់ Google Chrome ជាកម្មវិធីរុករកលំនាំដើម</translation>
@@ -571,8 +567,8 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6612152958212564387">អ្នកមិនកំពុងផ្ញើស្ថិតិ​ប្រើប្រាស់ និង​របាយការណ៍អំពី​ការគាំង​ទៅ Google ទេ។ <ph name="BEGIN_LINK" />គ្រប់គ្រង<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">បន្តធ្វើ​សមកាលកម្ម​ពាក្យសម្ងាត់ ចំណាំ និង​ប្រវត្តិ​របស់អ្នក​បានយ៉ាងល្អ​ឥតខ្ចោះ​នៅលើ​ឧបករណ៍​នានា​ដោយកំណត់ Chrome ជា​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​លំនាំដើម​របស់អ្នក។</translation>
 <translation id="6632012506031284914">ដើម្បីស្វែងរកដោយប្រើ Chrome។</translation>
-<translation id="6632473616050862500">ChromeOS Flex អាចបង្កើតឡើងបានដោយ<ph name="BEGIN_LINK_CROS_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_CROS_OSS" />បន្ថែម។</translation>
 <translation id="6634299872736643004">ការផ្លាស់ប្ដូរ​ចំពោះ​ការកំណត់នេះ​នឹង​ត្រូវបាន​អនុវត្ត​បន្ទាប់ពី Chrome ចាប់ផ្ដើម​ឡើងវិញ។</translation>
+<translation id="6644846457769259194">កំពុងអាប់ដេតឧបករណ៍របស់អ្នក (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">ចូលគណនីលើ Chrome ឬ?</translation>
 <translation id="6664219008737641504">ប្រសិនបើអ្នក​ភ្លេចឃ្លាសម្ងាត់​របស់អ្នក ឬ​ចង់ប្ដូរ​ការកំណត់​នេះ សូម<ph name="SETTINGS_LINK" />​ទិន្នន័យ Chrome នៅក្នុង​គណនី​របស់អ្នក</translation>
 <translation id="6676384891291319759">ចូលប្រើអ៊ីនធឺណិត</translation>
@@ -636,7 +632,6 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7285990705317078173">ទាញយក Chrome នៅលើ​ទូរសព្ទ​របស់អ្នក​ដើម្បី​តាមដានតម្លៃ និង​ទទួលបាន​ការជូនដំណឹង នៅពេលដែល​មានការធ្លាក់ថ្លៃ​នៅលើ​គេហទំព័រ​ណាមួយ</translation>
 <translation id="7288567540154601580">ផ្ទាំង និង​កម្មវិធី​បន្ថែម</translation>
 <translation id="7290997427370476749">ពីប៊ូតុង "ផ្ទាំងម៉ាស៊ីនស្វែងរកនៅលើ Google" នៅលើរបារឧបករណ៍ អ្នកអាចបើកឡើងវិញនូវផ្ទាំងម៉ាស៊ីនស្វែងរកនៅលើ Google ដើម្បីសួរសំណួរ ពេលអ្នករុករក</translation>
-<translation id="7296210096911315575">ព័ត៌មាន​សុវត្ថិភាព និងការប្រើប្រាស់សំខាន់</translation>
 <translation id="7299899569525778554">ស្វែងរកពីកុំព្យូទ័រ</translation>
 <translation id="7302361266603927550">ទិន្នន័យ Chrome មួយចំនួនរបស់អ្នក​មិនទាន់ត្រូវបានរក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក​ទេ។ សូមសាកល្បង​រង់ចាំ​បន្តិច មុនពេល​ចេញពី​គណនី។ ប្រសិនបើអ្នក​ចេញពីគណនី​ឥឡូវនេះ ទិន្នន័យនេះ​នឹងត្រូវបាន​លុប។</translation>
 <translation id="7306401458628386911">ចាប់ផ្ដើមរុករកភ្លាមៗ៖ ឥឡូវនេះ Chrome អាចចាប់ផ្ដើម នៅពេល Windows ចាប់ផ្ដើម។</translation>
@@ -669,9 +664,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7572537927358445944">បិទ • Chrome មិនអាចផ្ទៀងផ្ទាត់ប្រភពរបស់កម្មវិធីបន្ថែម​នេះបានទេ</translation>
 <translation id="7583399374488819119">កម្មវិធីដំឡើង <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">អ្នក​អាចប្រើ Chrome រាល់ពេល​ដែលអ្នកចុចលើ​តំណ​នៅក្នុងសារ ឯកសារ និងកម្មវិធី​ផ្សេងទៀត</translation>
-<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">ដើម្បីការពារទិន្នន័យរបស់អ្នក សូមឱ្យ Chrome ដកការអនុញ្ញាតចេញពីគេហទំព័រដែលអ្នកមិនបានចូលមើលថ្មីៗនេះ។</translation>
-<translation id="7629898584100520089">ការច្នៃប្រឌិត AI ថ្មី ដូចជា​ជំនាញ ត្រូវបាន​រក្សាទុក​ទៅក្នុង​គណនី Google របស់អ្នក និង​ត្រូវបាន​គ្រប់គ្រង​ដាច់ដោយឡែក​ពី Chrome សមកាលកម្ម</translation>
 <translation id="7641148173327520642">អ្នក​គ្រប់គ្រង​ប្រព័ន្ធ​របស់អ្នក​បានកំណត់រចនាសម្ព័ន្ធ Google Chrome ឱ្យ​បើក <ph name="ALTERNATIVE_BROWSER_NAME" /> ដើម្បី​ចូលប្រើ <ph name="TARGET_URL_HOSTNAME" /> ។</translation>
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7651907282515937834">និមិត្តសញ្ញា​ក្រុមហ៊ុន Chrome</translation>
@@ -711,7 +704,6 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7904213866086517086">បើក​ម៉ាស៊ីន​ស្វែងរក​នៅលើ Google នៅក្នុង​ផ្ទាំង​ចំហៀង​ឡើងវិញ</translation>
 <translation id="7904985524660297937">សាកល្បង​ប្រើ Gemini ក្នុង Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS មិនអាច​រក្សាទុក​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក​បានទេ ដោយសារតែ​មានបញ្ហា​ក្នុងការ​ចូលគណនី</translation>
-<translation id="7917876797003313048">អ្នកអាចគ្រប់គ្រង​គណនី Google ដែលអ្នកចូល។ គណនី Google របស់អ្នក​ត្រូវបានប្រើ​សម្រាប់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome, Play Store, Gmail និងអ្វីៗជាច្រើនទៀត។ ប្រសិនបើអ្នក​ចង់បញ្ចូល​គណនីសម្រាប់​អ្នកផ្សេងទៀត​ដូចជា សមាជិកគ្រួសារជាដើម សូមបញ្ចូលមនុស្សថ្មី​ទៅក្នុង <ph name="DEVICE_TYPE" /> របស់អ្នក​ជំនួសវិញ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome បានទប់ស្កាត់​ការទាញយកនេះ ដោយសារ​ឯកសារនេះ​មានលក្ខណៈ​បោកប្រាស់ និង​អាចធ្វើការផ្លាស់ប្ដូរ​ដែលមិនបានរំពឹងទុក​ចំពោះ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="7951272445806340501">ChromeOS Flex ត្រូវការចាប់ផ្ដើមឡើងវិញ ដើម្បីប្រើកំណែថ្មី។</translation>
 <translation id="7959172989483770734">គ្រប់គ្រង​កម្រងព័ត៌មាន Chrome</translation>
@@ -732,6 +724,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8074398340364918139">ដើម្បីស្វែងរកកម្មវិធីបន្ថែម ឬមុខងារ Chrome ជាក់លាក់ សូមវាយបញ្ចូលផ្លូវកាត់របស់វានៅក្នុងរបារអាសយដ្ឋាន បន្ទាប់មកប្រើគ្រាប់ចុចក្ដារចុចដែលអ្នកបានជ្រើសរើស</translation>
 <translation id="8077579734294125741">កម្រង​ព័ត៌មាន Chrome ផ្សេងទៀត</translation>
 <translation id="8086881907087796310">ការដំឡើង​មិនបានសម្រេចទេ ដោយសារ​កុំព្យូទ័រ​របស់អ្នក​មិនបំពេញតាម​លក្ខខណ្ឌតម្រូវ​ហាតវែរ​អប្បបរមា។</translation>
+<translation id="8095439028686936591">ChromeOS មាន​កំណែថ្មីបំផុតហើយ</translation>
 <translation id="8110438089258398864">អ្នកអាចបើកមុខងារ AI នៅក្នុង​ម៉ាស៊ីនស្វែងរកនៅលើ Google ឡើងវិញ ដើម្បីសួរសំណួរ ពេលអ្នករុករក</translation>
 <translation id="8113883687556086139">ផ្ទៀងផ្ទាត់​ថាជាអ្នក ដើម្បីប្រើ និង​រក្សាទុក​ទិន្នន័យ Chrome នៅក្នុង​គណនី​របស់អ្នក <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">កំពុង​ធ្វើឱ្យ Chrome ក្លាយជា​របស់អ្នក...</translation>

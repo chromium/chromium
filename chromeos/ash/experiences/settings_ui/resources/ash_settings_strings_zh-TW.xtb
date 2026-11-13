@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">大功告成！</translation>
 <translation id="1149483087970735785">輔助技術</translation>
 <translation id="1150490752229770117">這是這部 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟體和安全性。如要取得後續更新，請升級為較新的型號。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">關於 ChromeOS</translation>
 <translation id="1155816283571436363">正在連線到你的手機</translation>
 <translation id="1160800016654917722">視窗已向左下方移動</translation>
 <translation id="1164015913575846413">Alt 鍵 + 滑鼠左鍵</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16 倍</translation>
 <translation id="1275936815032730048">啟動鍵 + 向右鍵</translation>
 <translation id="1280332775949918163">將視窗移到一側</translation>
+<translation id="1285625592773741684">目前的數據用量設定是使用行動數據</translation>
 <translation id="1285815028662278915">你的行動數據可能不支援無線基地台。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">夜燈功能將於日落時自動開啟</translation>
 <translation id="1288300545283011870">語音屬性</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">這麼做會停用擴充功能，並將設定重設為安全預設值。系統會保留分頁、檔案和 Cookie。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="1539727654733007771">尚未設定行動網路。請下載新的<ph name="BEGIN_LINK" />設定檔<ph name="END_LINK" />。</translation>
+<translation id="1547295885616600893">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 設定檔</translation>
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1554640914375980459">收到通知時閃爍螢幕。如果你畏光，請謹慎使用閃光燈通知。</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">使用 Wi-Fi 或行動網路判斷所在位置</translation>
 <translation id="1650407365859096313">在新分頁中開啟，權限為<ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">啟用鄰近分享功能</translation>
+<translation id="1662146548738125461">關於 ChromeOS Flex</translation>
 <translation id="1663698992894057019">如要收到最新的安全性和軟體更新，請改用新款 Chromebook</translation>
 <translation id="1665328953287874063">使用密碼或 PIN 碼解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">讓系統大聲朗讀特定文字內容。請先選取畫面底部的「隨選朗讀」圖示，然後顯目顯示所需文字。你也可以使用鍵盤快速鍵：醒目顯示文字，然後按下搜尋鍵 + S 鍵。</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">注意：使用高強度的密碼或 PIN 碼會比感應指紋來得安全。</translation>
 <translation id="1724801751621173132">輸入模式</translation>
 <translation id="1741190788710022490">自動調節充電</translation>
+<translation id="1745732479023874451">管理聯絡人</translation>
 <translation id="1751335846119670066">幫我讀</translation>
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />已重新對應到「<ph name="REMAPPING_OPTION" />」。</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">否，只使用 1 個切換工具</translation>
 <translation id="1842681835432895345">在鏡像模式中排除這個螢幕</translation>
 <translation id="1848219224579402567">蓋上機蓋時登出帳戶</translation>
+<translation id="185970820835152459">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chromium 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">冷色調</translation>
 <translation id="1866589962721094893">授權 Android 應用程式控管這台 Chromebook 上的 USB 裝置。每次插入 USB 裝置時，系統都會要求權限。個別 Android 應用程式會要求額外權限。</translation>
 <translation id="1877377290348678128">標籤 (選填)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">音訊</translation>
 <translation id="2097950021134740304">取消清除訂閱</translation>
 <translation id="2104166991923847969">自動關閉熱點</translation>
+<translation id="2106831557840787829">ChromeOS Flex 藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
 <translation id="2114995631896158695">未插入 SIM 卡</translation>
 <translation id="2121825465123208577">調整大小</translation>
 <translation id="2127372758936585790">低功率充電器</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">移除「<ph name="USER_NAME" />」</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2363475280045770326">儲存設定時發生錯誤</translation>
+<translation id="236939127352773362">當附近的裝置正在分享內容時</translation>
 <translation id="237336063998926520">使用你的 IP 位址判定所在位置</translation>
 <translation id="2373499590298659902">按下「0」表示按住滑鼠按鍵</translation>
 <translation id="2375406435414127095">連線至你的手機</translation>
@@ -703,6 +711,7 @@
 <translation id="338323348408199233">封鎖沒有 VPN 連線的流量</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">「定位精確度」可為各種應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 整體的服務，以滿足使用者需求。</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">輸出紙匣幾乎已滿</translation>
 <translation id="3390013585654699824">應用程式詳細資料</translation>
 <translation id="3390740059150071453">往左看</translation>
@@ -808,6 +817,7 @@
 <translation id="3699624789011381381">電子郵件地址</translation>
 <translation id="3701028563242674350">快速晃動滑鼠游標即可放大</translation>
 <translation id="3703699162703116302">已更新票證</translation>
+<translation id="3703994572283698466">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="370649949373421643">啟用 Wi-Fi</translation>
 <translation id="370665806235115550">載入中…</translation>
 <translation id="3707163604290651814">目前登入帳戶：<ph name="NAME" /></translation>
@@ -815,6 +825,7 @@
 <translation id="3711945201266135623">在印表機伺服器上找到 <ph name="NUM_PRINTERS" /> 台印表機</translation>
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="37143699183660101">游標穩定度</translation>
+<translation id="3716540481907974026">ChromeOS Flex 版本</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN 碼不正確，請再試一次</translation>
 <translation id="3728681439294129328">設定網路位址</translation>
@@ -836,6 +847,7 @@
 <translation id="3786834302860277193">輸入組合文字時顯示底線</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="379509625511193653">關閉</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3796215473395753611">alt + 向上鍵</translation>
 <translation id="3798670284305777884">喇叭 (內部)</translation>
 <translation id="3799128412641261490">切換控制功能設定</translation>
@@ -875,6 +887,7 @@
 <translation id="3903187154317825986">內建鍵盤</translation>
 <translation id="3917644013202553949">儲存空間不足，無法同步處理檔案。請嘗試釋出空間。</translation>
 <translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
+<translation id="3923184630988645767">數據用量</translation>
 <translation id="3923494859158167397">尚未設定行動網路</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">這部裝置的其他使用者也可以使用這個網路</translation>
@@ -900,8 +913,10 @@
 <translation id="3984862166739904574">快速解答功能的定義</translation>
 <translation id="3994075804072562819">授權「<ph name="SPECIFIC_NAME" />」控制 USB 裝置。</translation>
 <translation id="3994530503403062649">點選平板電腦上的按鈕</translation>
+<translation id="3997429360543082038">關於 Chromium OS</translation>
 <translation id="4001540981461989979">移動時醒目顯示滑鼠游標</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
+<translation id="4019629340646866719">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">複製版本詳細資料</translation>
 <translation id="4028467762035011525">新增輸入法</translation>
@@ -916,6 +931,7 @@
 <translation id="4050931325744810690">如要切換到上次使用的輸入法，請按下 <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">搜尋鍵 + 向右鍵</translation>
 <translation id="405181879009056822">ChromeOS 設定</translation>
+<translation id="4054070260844648638">向所有人顯示</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">如要查看網路中的可用印表機，請檢查你的連線狀態</translation>
 <translation id="4068776064906523561">已儲存的指紋</translation>
@@ -971,6 +987,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />，第 <ph name="GRADE" /> 級</translation>
 <translation id="4244238649050961491">尋找其他觸控筆應用程式</translation>
 <translation id="4248401726442101648">未連上任何攝影機</translation>
+<translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4249116869350613769">省電模式</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="425411422794688815">發生錯誤，請確認你的手機在附近，且已解鎖及開啟藍牙功能和 Wi-Fi。</translation>
@@ -1000,6 +1017,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 個 Google 帳戶}other{<ph name="EXTRA_ACCOUNTS" /> 個 Google 帳戶}}</translation>
 <translation id="4314497418046265427">將手機連接 <ph name="DEVICE_TYPE" />，提升工作效率</translation>
 <translation id="4314561087119792062">新增存取點名稱</translation>
+<translation id="4314815835985389558">管理同步資料</translation>
 <translation id="4320177379694898372">沒有網際網路連線</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4325433082696797523">儲存空間與電源</translation>
@@ -1086,6 +1104,7 @@
 <translation id="4600071396330666617">建議數量</translation>
 <translation id="4606933160360542263">自訂按鍵組合：<ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">選取滑鼠左鍵後，按下「/」表示按兩下</translation>
+<translation id="4613863813562375431">Chromium OS 版本</translation>
 <translation id="461661862154729886">電源</translation>
 <translation id="4617880081511131945">無法建立連線</translation>
 <translation id="4620757807254334872">滑鼠</translation>
@@ -1135,6 +1154,7 @@
 <translation id="4777943778632837590">設定網路名稱伺服器</translation>
 <translation id="4779083564647765204">縮放</translation>
 <translation id="4779766576531456629">重新命名 eSIM 的行動網路</translation>
+<translation id="4789550509729954245">鄰近裝置分享內容時顯示通知</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">啟用 TrackPoint 加速功能</translation>
 <translation id="479664067938200069">「<ph name="APP_NAME" />」安裝的應用程式</translation>
@@ -1195,6 +1215,7 @@
 <translation id="4964544790384916627">將視窗移到底部</translation>
 <translation id="4964673849688379040">檢查中...</translation>
 <translation id="4967571733817147990">自訂滑鼠按鈕</translation>
+<translation id="4970880042055371251">Chrome OS 版本</translation>
 <translation id="4972129977812092092">編輯印表機資訊</translation>
 <translation id="4975771730019223894">應用程式標記</translation>
 <translation id="4979263087381759787">開發人員選項</translation>
@@ -1274,6 +1295,7 @@
 <translation id="5193978546360574373">這麼做會移除這部 Chromebook 的 Google 雲端硬碟存取權，包括已設為可離線存取的所有檔案存取權</translation>
 <translation id="5196790039230503600">做出表情再移動頭部，指定要放下項目的位置。再次做出表情即可放下該項目。</translation>
 <translation id="5197255632782567636">網際網路</translation>
+<translation id="5205484256512407285">一律不使用行動數據進行傳輸</translation>
 <translation id="5207949376430453814">醒目顯示文字插入點</translation>
 <translation id="5208926629108082192">裝置行動網路資訊</translation>
 <translation id="5208988882104884956">半形</translation>
@@ -1306,6 +1328,7 @@
 <translation id="5331568967879689647">Chrome OS 系統應用程式</translation>
 <translation id="5334113802138581043">麥克風存取權</translation>
 <translation id="5336689872433667741">游標和觸控板</translation>
+<translation id="5337926771328966926">目前的裝置名稱為「<ph name="DEVICE_NAME" />」</translation>
 <translation id="5340900621595888432">傳送診斷和使用資料</translation>
 <translation id="5369694795837229225">設定 Linux 開發環境</translation>
 <translation id="5377367976106153749">要允許存取攝影機嗎？</translation>
@@ -1443,6 +1466,7 @@
 <translation id="5833726373896279253">你必須是擁有者，才能修改這些設定：</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /><ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">充電盒</translation>
+<translation id="5840680448799937675">一律在離線時分享檔案</translation>
 <translation id="5841270259333717135">設定乙太網路</translation>
 <translation id="5842497610951477805">啟用藍牙</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
@@ -1479,6 +1503,7 @@
 <translation id="5924438086390153180">先詢問我，再將 Microsoft 檔案複製或移動到 Google 雲端硬碟</translation>
 <translation id="5939518447894949180">重設</translation>
 <translation id="594048410531370124">無法辨識的按鍵。按下任意鍵即可<ph name="RESPONSE" />。</translation>
+<translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5945192511027649793">停用觸控板</translation>
 <translation id="5947651424015173580">按兩下滑鼠左鍵</translation>
 <translation id="594993197557058302">請按下 1 到 4 個輔助鍵 (Ctrl、Alt、Shift、搜尋鍵或啟動鍵) 和另外 1 個按鍵，也可以選取單一鍵。</translation>
@@ -1490,10 +1515,12 @@
 <translation id="5961545272769624207">指派表情</translation>
 <translation id="5968022600320704045">找不到相符的搜尋結果</translation>
 <translation id="5969728632630673489">已關閉鍵盤快速鍵通知</translation>
+<translation id="5979353814339191480">這個選項適用於符合下列任一條件的 Chromebook：使用數據方案、行動網路連接器，或透過網路共用功能使用可攜式無線基地台</translation>
 <translation id="5985556342298151179">由裝置管理員安裝的 Chrome 應用程式。</translation>
 <translation id="5986442691296752186">授權 Linux 應用程式控制 USB 裝置。</translation>
 <translation id="598810097218913399">移除指派設定</translation>
 <translation id="5988563937187882754">往右看</translation>
+<translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5992225669837656567">所有滑鼠均已中斷連線</translation>
 <translation id="5999630716831179808">語音</translation>
 <translation id="6002458620803359783">聲音偏好</translation>
@@ -1508,6 +1535,7 @@
 <translation id="6045114302329202345">主要 TrackPoint 按鈕</translation>
 <translation id="6048747414605857443">為 ChromeVox 和隨選朗讀功能選取及自訂文字轉語音的聲音</translation>
 <translation id="6050189528197190982">灰階</translation>
+<translation id="6054961935262556546">變更瀏覽權限</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
 <translation id="6064764629679333574">將低解析度音訊提升至高解析度，來改善藍牙麥克風音質。</translation>
@@ -1566,6 +1594,7 @@
 <translation id="6265159465845424232">先詢問我，再將 Microsoft 檔案複製或移動到 Microsoft OneDrive</translation>
 <translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6266532094411434237">正在連線到 <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6270309713620950855">將自動提醒設為靜音</translation>
 <translation id="6274089201566806618">正在連線至「<ph name="HOST_DEVICE_NAME" />」</translation>
 <translation id="628352644014831790">4 秒</translation>
@@ -1617,6 +1646,7 @@
 <translation id="6453921811609336127">如要切換至下一個輸入法，請按下 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> 鍵</translation>
 <translation id="6463488491707167747">刪除這個字典</translation>
 <translation id="6463596731306859179">看到擾人的彈出式視窗或其他異常行為嗎？你安裝的應用程式和擴充功能有時可能會擅自變更 ChromeOS 設定。</translation>
+<translation id="6465841119675156448">不使用網際網路</translation>
 <translation id="6467377768028664108">你的 <ph name="DEVICE_TYPE" /> 將可以：</translation>
 <translation id="6469557521904094793">開啟行動數據網路</translation>
 <translation id="6470120577693311302">閃光燈通知</translation>
@@ -1667,6 +1697,7 @@
 <translation id="6626581113916585374">特效模式</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /> 鍵</translation>
 <translation id="6630452975878488444">選項快速鍵</translation>
+<translation id="6632473616050862500">ChromeOS Flex 藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世。</translation>
 <translation id="6646476869708241165">關閉快速配對</translation>
 <translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
@@ -1710,6 +1741,7 @@
 <translation id="6775163072363532304">可用的裝置會顯示在這裡。</translation>
 <translation id="6776729248872343918">啟用快速配對</translation>
 <translation id="6777845730143344223">進一步瞭解 Passpoint 訂閱</translation>
+<translation id="6779406956731413166">Chromium OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="6783036716881942511">要刪除此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6785915470941880363">反向捲動。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -1843,6 +1875,7 @@
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
 <translation id="7282547042039404307">流暢</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7303485269821975179">設定 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="7304030187361489308">高</translation>
 <translation id="7308643132139167865">網站語言</translation>
@@ -1872,6 +1905,7 @@
 <translation id="7409599290172516453">最近的相片</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7417435070053325657">已封鎖 <ph name="BLOCKED_APPS_SIZE" /> 個應用程式 (共 <ph name="APPS_LIST_SIZE" /> 個)</translation>
+<translation id="7423425410216218516">分享設定在 <ph name="MINUTES" /> 分鐘內為開啟狀態</translation>
 <translation id="7423513079490750513">移除<ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">幫我寫</translation>
 <translation id="7429415133937917139">在 ChromeVox 面板的畫面頂端
@@ -1919,11 +1953,13 @@
 <translation id="7578137152457315135">指紋設定</translation>
 <translation id="7578692661782707876">請輸入確認碼。</translation>
 <translation id="7582582252461552277">偏好使用這個網路</translation>
+<translation id="7582844466922312471">行動數據</translation>
 <translation id="7587806318633605613">建議字詞記錄</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7592060599656252486">部分</translation>
 <translation id="7602173054665172958">列印管理</translation>
 <translation id="7605163396341021431">授權 Android 應用程式控制這台 Chromebook 上的 USB 裝置</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android 偏好設定</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612655942094160088">啟用已連結的手機功能。</translation>
@@ -1934,12 +1970,14 @@
 <translation id="7632437836497571618">使用安全連線查詢網站</translation>
 <translation id="7634337648687970851">目前不支援本機資料復原。</translation>
 <translation id="7640256527901510478">裝置 IMEI 為 <ph name="IMEI_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
+<translation id="7640308610547854367">你已還原為舊版 ChromeOS。要等到下一個版本發布，才能取得更新內容。</translation>
 <translation id="7641513591566880111">新設定檔名稱</translation>
 <translation id="764178579712141045">已新增 <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7648048654005891115">按鍵對映樣式</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{已設定 1 枚指紋}other{已設定 {COUNT} 枚指紋}}</translation>
+<translation id="7650677314924139716">目前的數據用量設定是僅限 Wi-Fi</translation>
 <translation id="7651400349472467012">有可用的即時無線基地台</translation>
 <translation id="7651784568388208829">Phone Hub 工作接續</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -2030,6 +2068,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">翻譯</translation>
 <translation id="7915457674565721553">如要設定家長監護功能，請連線至網際網路</translation>
+<translation id="7917876797003313048">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920482456679570420">新增要讓拼字檢查功能略過的字詞</translation>
 <translation id="7921347341284348270">無法透過這個受管理的帳戶查看手機的通知，請改用其他帳戶重試。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -2194,6 +2233,7 @@
 <translation id="8431977087510901105">游標設定已重設</translation>
 <translation id="8437209419043462667">美式配置</translation>
 <translation id="8439506636278576865">翻譯這個語言的網頁</translation>
+<translation id="8449347986464073209">刪除並登出</translation>
 <translation id="8451512073679317615">小幫手</translation>
 <translation id="8455775311562941553">已連線到「<ph name="HOST_DEVICE_NAME" />」</translation>
 <translation id="8473540203671727883">請讀出滑鼠游標下方的文字</translation>
@@ -2319,6 +2359,7 @@
 <translation id="8872774989979382243">音量已關閉。開啟音量。</translation>
 <translation id="888256071122006425">滑鼠和觸控板設定</translation>
 <translation id="8885449336974696155">歡迎回報<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，讓 ChromeOS 更臻完善</translation>
+<translation id="8890170499370378450">可能需要支付行動數據傳輸費用</translation>
 <translation id="8890529496706615641">無法重新命名設定檔。請再試一次，或是向電信業者尋求技術支援。</translation>
 <translation id="8894761918470382415">周邊裝置的資料存取權防護功能</translation>
 <translation id="8896830132794747524">滑鼠動得越快，游標就移得越遠</translation>
@@ -2344,6 +2385,7 @@
 <translation id="8978939272793553320">「<ph name="DEVICE_NAME" />」已中斷連線</translation>
 <translation id="8980345560318123814">使用狀況報告</translation>
 <translation id="8981825781894055334">紙張即將用盡</translation>
+<translation id="8984694057134206124">所有人都看得到你的裝置，這個狀態將持續 <ph name="MINUTES" /> 分鐘。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">偵測門檻</translation>
 <translation id="8986362086234534611">清除</translation>
 <translation id="8991694323904646277">找不到相機</translation>
@@ -2390,6 +2432,7 @@
 <translation id="9098860402274800697">移除 Google Play 和 Android 應用程式</translation>
 <translation id="910000385680858937">已允許 – <ph name="PERMISSION_DETAILS" />。請將麥克風連接到裝置。</translation>
 <translation id="9100416672768993722">如要切換到上次使用的輸入法，請按下 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> 鍵</translation>
+<translation id="9108072915170399168">目前的數據用量設定是不使用網際網路</translation>
 <translation id="9108294543511800041">你現在可以查看手機最近的相片、媒體和通知</translation>
 <translation id="9109122242323516435">如要釋出空間，請刪除裝置儲存空間內的檔案</translation>
 <translation id="9111330022786356709">新增或點選滑鼠按鈕</translation>

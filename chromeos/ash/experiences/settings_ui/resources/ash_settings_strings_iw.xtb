@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">הכל מוכן!</translation>
 <translation id="1149483087970735785">טכנולוגיה מסייעת</translation>
 <translation id="1150490752229770117">זהו העדכון האוטומטי האחרון של התוכנה והאבטחה עבור מכשיר ה-<ph name="DEVICE_TYPE" /> הזה. כדי לקבל עדכונים עתידיים, יש לשדרג לדגם חדש יותר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">‏מידע על ChromeOS</translation>
 <translation id="1155816283571436363">מתבצע חיבור לטלפון שלך</translation>
 <translation id="1160800016654917722">החלון הועבר למטה ושמאלה</translation>
 <translation id="1164015913575846413">‏Alt + לחיצה</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">מרכז האפליקציות + חץ ימינה</translation>
 <translation id="1280332775949918163">הצמדת חלון</translation>
+<translation id="1285625592773741684">ההגדרה הנוכחית של השימוש בחבילת הגלישה היא 'נתונים סלולריים'</translation>
 <translation id="1285815028662278915">יכול להיות שחבילת הגלישה שלך לא כוללת תמיכה בנקודה לשיתוף אינטרנט. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">תאורת הלילה תידלק באופן אוטומטי בשעת השקיעה</translation>
 <translation id="1288300545283011870">תכונות דיבור</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">‏הפעולה הזו תשבית תוספים ותאפס את ההגדרות לברירות מחדל בטוחות. הכרטיסיות, הקבצים וקובצי ה-Cookie יישמרו. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">מגדיל למסך מלא</translation>
 <translation id="1539727654733007771">לא הוגדרו רשתות סלולריות. ניתן להוריד <ph name="BEGIN_LINK" />פרופיל<ph name="END_LINK" /> חדש.</translation>
+<translation id="1547295885616600893">‏<ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת מאפשרת את השימוש ב-ChromeOS.</translation>
 <translation id="1547808936554660006">‏ברור לי שפרופילי ה-eSIM שהותקנו לא יוסרו על ידי Powerwash</translation>
 <translation id="1549275686094429035">‏ARC מופעל</translation>
 <translation id="1554640914375980459">המסך יהבהב כשיתקבלו התראות. אם יש לכם רגישות לאור, לא בטוח שהתכונה הזאת מתאימה לכם.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">‏קביעת מיקום באמצעות Wi-Fi או רשתות סלולריות</translation>
 <translation id="1650407365859096313">פתיחה בכרטיסייה חדשה, ההרשאה היא <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">הפעלה של 'שיתוף מהיר'</translation>
+<translation id="1662146548738125461">‏מידע על ChromeOS Flex</translation>
 <translation id="1663698992894057019">‏כדאי לשדרג למכשיר Chromebook חדש כדי לקבל את גרסאות התוכנה והאבטחה העדכניות</translation>
 <translation id="1665328953287874063">צריך להשתמש בסיסמה או בקוד אימות כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" /></translation>
 <translation id="1667842670298352129">‏האזנה להקראת טקסט ספציפי. קודם לוחצים על סמל ההקראה בתחתית המסך ואז מדגישים את הטקסט. אפשר גם להשתמש במקשי הקיצור: מדגישים טקסט ומקישים על מקש החיפוש + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">הערה: ייתכן ששימוש בטביעת אצבע יעניק פחות אבטחה מסיסמה או מקוד אימות חזקים.</translation>
 <translation id="1724801751621173132">שיטת הקלט</translation>
 <translation id="1741190788710022490">טעינה דינמית</translation>
+<translation id="1745732479023874451">ניהול אנשי קשר</translation>
 <translation id="1751335846119670066">עזרה בקריאה</translation>
 <translation id="1755601632425835748">גודל טקסט</translation>
 <translation id="1761402971842586829">בוצע מיפוי מחדש של <ph name="BUTTON_NAME" /> לאפשרות <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">לא, מספיק לי מתג אחד</translation>
 <translation id="1842681835432895345">לא לכלול את המסך הזה במצב השתקפות במראה</translation>
 <translation id="1848219224579402567">יציאה מהחשבון כשמכסה סגור</translation>
+<translation id="185970820835152459">‏יש לך אפשרות לנהל את חשבונות Google שאליהם נכנסת. כדי ליהנות מחיבור לחשבון בדפדפן Chromium, בחנות Play, ב-‏Gmail ובשירותים נוספים, עליך להיכנס עם חשבונות Google שלך. כדי להוסיף חשבון של מישהו אחר, כמו חבר/ה בקבוצה המשפחתית, יש להוסיף משתמש חדש ל-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">קריר יותר</translation>
 <translation id="1866589962721094893">‏אפליקציות ל-Android יוכלו לשלוט בהתקני USB ב-Chromebook הזה. בכל פעם שיחובר התקן USB, תישלח בקשה להרשאה. אפליקציות נפרדות ל-Android ישלחו בקשות להרשאות נוספות.</translation>
 <translation id="1877377290348678128">תווית (אופציונלי)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">צליל</translation>
 <translation id="2097950021134740304">ביטול המחיקה של המינוי</translation>
 <translation id="2104166991923847969">השבתה אוטומטית של הנקודה לשיתוף אינטרנט</translation>
+<translation id="2106831557840787829">‏השימוש ב-ChromeOS Flex מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2114995631896158695">‏אין כרטיס SIM</translation>
 <translation id="2121825465123208577">שינוי גודל</translation>
 <translation id="2127372758936585790">מטען בעל מתח נמוך</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">הסרה של <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2363475280045770326">שגיאה בשמירת ההגדרה</translation>
+<translation id="236939127352773362">בזמן שיתוף ממכשירים קרובים</translation>
 <translation id="237336063998926520">‏שימוש בכתובת ה-IP לאיתור המיקום</translation>
 <translation id="2373499590298659902">משתמשים במקש "0" כדי ללחוץ לחיצה ארוכה על כפתור העכבר</translation>
 <translation id="2375406435414127095">התחברות לטלפון</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">‏חסימה של תנועת גולשים ללא VPN</translation>
 <translation id="3385092118218578224">%<ph name="DISPLAY_ZOOM" /></translation>
 <translation id="3385172418915595177">‏ההגדרה 'קביעת מיקום יותר מדויקת' מספקת מיקום מדויק יותר לאפליקציות ולשירותים. כדי לעשות את זה, Google מעבדת מדי פעם נתונים על חיישני מכשיר ואותות אלחוטיים מהמכשיר שלך כדי לתמוך במיקור המונים של מיקומי אותות אלחוטיים. השימוש בנתונים האלה נעשה בלי לזהות אותך כדי לשפר את מידת הדיוק של המיקום ואת האיכות של השירותים מבוססי-המיקום. כמו כן, הנתונים משמשים כדי לשפר, לספק ולתחזק באופן כללי את השירותים של Google על סמך האינטרסים הלגיטימיים של Google ושל צדדים שלישיים כדי לשרת את צורכי המשתמשים.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">מגש הפלט כמעט מלא</translation>
 <translation id="3390013585654699824">פרטי האפליקציה</translation>
 <translation id="3390740059150071453">מביטים שמאלה</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">כתובת אימייל</translation>
 <translation id="3701028563242674350">כדי להגדיל את סמן העכבר, צריך לנער אותו</translation>
 <translation id="3703699162703116302">הכרטיס עבר רענון</translation>
+<translation id="3703994572283698466">‏השימוש ב-ChromeOS מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנות קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספות כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="370649949373421643">‏הפעלת Wi-Fi</translation>
 <translation id="370665806235115550">בטעינה...</translation>
 <translation id="3707163604290651814">החשבון המחובר עכשיו הוא <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">נמצאו <ph name="NUM_PRINTERS" /> מדפסות המשויכות לשרת ההדפסה</translation>
 <translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="37143699183660101">יציבות הסמן</translation>
+<translation id="3716540481907974026">‏הגרסה של ChromeOS Flex</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">קוד האימות שגוי. יש לנסות שוב</translation>
 <translation id="3728681439294129328">הגדרת כתובת הרשת</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">הצגת קו תחתון לטקסט מוקלד</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="379509625511193653">כבוי</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">‏Alt + חץ למעלה</translation>
 <translation id="3798670284305777884">רמקול (פנימי)</translation>
 <translation id="3799128412641261490">הגדרות גישה באמצעות מתג</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">מקלדת מובנית</translation>
 <translation id="3917644013202553949">אין מספיק נפח אחסון לסנכרון הקבצים. כדאי לפנות מקום.</translation>
 <translation id="3919229493046408863">השבתת ההתראות כשמזוהים מכשירים קרובים</translation>
+<translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
 <translation id="3923494859158167397">לא הוגדרו רשתות סלולריות</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">גם משתמשים אחרים במכשיר הזה יכולים להשתמש ברשת הזו</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">הגדרה של תשובות מהירות</translation>
 <translation id="3994075804072562819">‏מתן שליטה ל-<ph name="SPECIFIC_NAME" /> על התקני USB.</translation>
 <translation id="3994530503403062649">איתור כפתורים בטאבלט</translation>
+<translation id="3997429360543082038">‏מידע על ChromiumOS</translation>
 <translation id="4001540981461989979">להדגיש את סמן העכבר כשהוא זז</translation>
 <translation id="4005817994523282006">שיטה לזיהוי אזור זמן</translation>
+<translation id="4019629340646866719">‏השימוש ב-ChromiumOS מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנות קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספות כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">‏העתקת פרטי build</translation>
 <translation id="4028467762035011525">הוספה של שיטות קלט</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">כדי לעבור לשיטת הקלט שבה נעשה שימוש לאחרונה, לוחצים על <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">חיפוש + חץ ימינה</translation>
 <translation id="405181879009056822">‏הגדרות ChromeOS</translation>
+<translation id="4054070260844648638">גלוי לכולם</translation>
 <translation id="4058720513957747556">‎AppSocket (TCP/IP)‎</translation>
 <translation id="4066207411788646768">יש לפתור בעיות בחיבור כדי לראות מדפסות זמינות ברשת</translation>
 <translation id="4068776064906523561">טביעות אצבע שמורות</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, רמה <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">חיפוש עוד אפליקציות לשימוש בסטיילוס</translation>
 <translation id="4248401726442101648">לא מחוברת מצלמה</translation>
+<translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4249116869350613769">חיסכון בסוללה</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="425411422794688815">‏משהו השתבש. צריך לוודא שהטלפון נמצא בסביבה ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{‏חשבון Google אחד}one{‏<ph name="EXTRA_ACCOUNTS" /> חשבונות Google}two{‏<ph name="EXTRA_ACCOUNTS" /> חשבונות Google}other{‏<ph name="EXTRA_ACCOUNTS" /> חשבונות Google}}</translation>
 <translation id="4314497418046265427">אפשר לשפר את הפרודוקטיביות על ידי חיבור הטלפון אל <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">‏הוספת שם חדש של נקודת גישה (APN)</translation>
+<translation id="4314815835985389558">ניהול הסנכרון</translation>
 <translation id="4320177379694898372">אין חיבור לאינטרנט</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">אחסון וחשמל</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">מספר ההצעות</translation>
 <translation id="4606933160360542263">שילוב מקשים מותאם אישית: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">כשבוחרים בכפתור השמאלי של העכבר, משתמשים במקש ”/” כדי ללחוץ לחיצה כפולה</translation>
+<translation id="4613863813562375431">‏גרסת ChromiumOS</translation>
 <translation id="461661862154729886">מקור חשמל</translation>
 <translation id="4617880081511131945">לא ניתן ליצור חיבור</translation>
 <translation id="4620757807254334872">עכבר</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">הגדרת שרתי שמות של הרשת</translation>
 <translation id="4779083564647765204">מרחק מתצוגה</translation>
 <translation id="4779766576531456629">‏שינוי שם של הרשת הסלולרית של eSIM</translation>
+<translation id="4789550509729954245">הצגת התראות כשמתבצע שיתוף על ידי מכשירים קרובים</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">‏הפעלת האצה של TrackPoint</translation>
 <translation id="479664067938200069">אפליקציות להתקנה מ-<ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">קיבוע חלון</translation>
 <translation id="4964673849688379040">בבדיקה...</translation>
 <translation id="4967571733817147990">התאמה אישית של כפתורי העכבר</translation>
+<translation id="4970880042055371251">‏גרסת ChromeOS</translation>
 <translation id="4972129977812092092">עריכת מדפסת</translation>
 <translation id="4975771730019223894">תיוג אפליקציות</translation>
 <translation id="4979263087381759787">אפשרויות למפתחים</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">‏הפעולה הזו תסיר את הגישה ל-Google Drive מה-Chromebook הזה, כולל גישה לקבצים שזמינים במצב אופליין</translation>
 <translation id="5196790039230503600">מבצעים את התנועה, ואז מזיזים את הראש כדי להראות איפה רוצים לשחרר את הפריט. כדי לשחרר את הפריט, משתמשים בתנועה שוב.</translation>
 <translation id="5197255632782567636">אינטרנט</translation>
+<translation id="5205484256512407285">אף פעם אין להשתמש בנתונים סלולריים להעברה</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="5208926629108082192">פרטי הרשת הסלולרית של המכשיר</translation>
 <translation id="5208988882104884956">חצי רוחב</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">‏אפליקציית מערכת של ChromeOS</translation>
 <translation id="5334113802138581043">גישה למיקרופון</translation>
 <translation id="5336689872433667741">סמן ולוח מגע</translation>
+<translation id="5337926771328966926">השם הנוכחי של המכשיר הוא <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">שליחה של נתוני אבחון ונתוני שימוש במכשיר</translation>
 <translation id="5369694795837229225">‏הגדרה של סביבת הפיתוח של Linux</translation>
 <translation id="5377367976106153749">להפעיל את הגישה למצלמה?</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">רק הבעלים יכולים לשנות את ההגדרות האלה:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">כיסוי</translation>
+<translation id="5840680448799937675">קבצים ישותפו תמיד במצב אופליין</translation>
 <translation id="5841270259333717135">‏הגדרת Ethernet</translation>
 <translation id="5842497610951477805">‏הפעלה של Bluetooth</translation>
 <translation id="5846200638699387931">שגיאה בתחביר המציין את הקשר: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">‏צריך לשאול לפני שמעתיקים או מעבירים קובצי Microsoft ל-Google Drive</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="594048410531370124">מתג לא מזוהה. יש להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">הרשאות גישה למכשיר</translation>
 <translation id="5945192511027649793">השבתת לוח המגע</translation>
 <translation id="5947651424015173580">לחיצה כפולה בעכבר</translation>
 <translation id="594993197557058302">‏מקישים על 1-4 מקשי צירוף (Ctrl,‏ Alt,‏ Shift, מקש החיפוש או מרכז האפליקציות) ועוד מקש אחד. אפשר גם לבחור מקש יחיד.</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">הקצאת תנועה</translation>
 <translation id="5968022600320704045">אין תוצאות חיפוש</translation>
 <translation id="5969728632630673489">ההודעה לגבי מקשי הקיצור נסגרה</translation>
+<translation id="5979353814339191480">‏אפשרות זו רלוונטית למכשירי Chromebook עם חבילת גלישה או מתאם רשת סלולרית, או בזמן שיתוף אינטרנט באמצעות נקודה לשיתוף אינטרנט בנייד</translation>
 <translation id="5985556342298151179">‏אפליקציית Chrome שהותקנה על ידי האדמין של המכשיר.</translation>
 <translation id="5986442691296752186">‏אפליקציות Linux יוכלו לשלוט בהתקני USB.</translation>
 <translation id="598810097218913399">הסרת ההקצאה</translation>
 <translation id="5988563937187882754">מביטים ימינה</translation>
+<translation id="5990266201903445068">‏Wi-Fi בלבד</translation>
 <translation id="5992225669837656567">כל העכברים נותקו</translation>
 <translation id="5999630716831179808">קולות</translation>
 <translation id="6002458620803359783">קולות מועדפים</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">‏כפתור TrackPoint ראשי</translation>
 <translation id="6048747414605857443">‏בחירה והתאמה אישית של הקולות בהמרת טקסט לדיבור בתכונות ChromeVox והקראה</translation>
 <translation id="6050189528197190982">גווני אפור</translation>
+<translation id="6054961935262556546">שינוי הרשאות הגישה</translation>
 <translation id="6059276912018042191">‏כרטיסיות Chrome אחרונות</translation>
 <translation id="6059925163896151826">‏התקני USB</translation>
 <translation id="6064764629679333574">‏אפשר לשפר את איכות הצליל של מיקרופון ה-Bluetooth באמצעות שינוי הרזולוציה מנמוכה לגבוהה.</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">‏צריך לשאול לפני שמעתיקים או מעבירים קובצי Microsoft ל-Microsoft OneDrive</translation>
 <translation id="6265687851677020761">הסרת היציאה</translation>
 <translation id="6266532094411434237">מתבצעת התחברות אל <ph name="DEVICE" /></translation>
+<translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="6270309713620950855">השתקת הנדנוד</translation>
 <translation id="6274089201566806618">מתבצע חיבור אל <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 שניות</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">‏כדי לעבור לשיטת הקלט הבאה, יש להקיש על <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl‏<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />רווח<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">מחיקת המילון הזה</translation>
 <translation id="6463596731306859179">‏מופיעים לך חלונות קופצים בלתי רצויים או שמת לב להתנהגות בלתי צפויה אחרת? לפעמים האפליקציות והתוספים שהתקנת יכולים לשנות את ההגדרות של ChromeOS ללא ידיעתך.</translation>
+<translation id="6465841119675156448">ללא אינטרנט</translation>
 <translation id="6467377768028664108">ל-<ph name="DEVICE_TYPE" /> שלך תהיה אפשרות:</translation>
 <translation id="6469557521904094793">הפעלת רשת סלולרית</translation>
 <translation id="6470120577693311302">הבהוב על התראות</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">מצב האפקט</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">קיצור דרך של בחירה</translation>
+<translation id="6632473616050862500">‏השימוש ב-ChromeOS Flex מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת.</translation>
 <translation id="6646476869708241165">כיבוי ההתאמה המהירה</translation>
 <translation id="6647690760956378579">תצוגה מקדימה של הקול הטבעי</translation>
 <translation id="6650072551060208490">כדי להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">כאן יופיעו מכשירים זמינים.</translation>
 <translation id="6776729248872343918">הפעלת ההתאמה המהירה</translation>
 <translation id="6777845730143344223">‏מידע נוסף על מינויים ל-Passpoint</translation>
+<translation id="6779406956731413166">‏<ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת מאפשרת את השימוש ב-ChromiumOS.</translation>
 <translation id="6783036716881942511">להסיר את המכשיר הזה?</translation>
 <translation id="6783667414610055871">‏ההגדרות של Microsoft OneDrive</translation>
 <translation id="6785915470941880363">גלילה הפוכה <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">הגדרות קול של המרת טקסט לדיבור</translation>
 <translation id="7282547042039404307">חלקה</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
 <translation id="7303485269821975179">הגדרת סיסמה ל-<ph name="DEVICE_TYPE" /></translation>
 <translation id="7304030187361489308">גבוה</translation>
 <translation id="7308643132139167865">שפות לאתרים</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">תמונות אחרונות</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">‫<ph name="BLOCKED_APPS_SIZE" /> מתוך <ph name="APPS_LIST_SIZE" /> אפליקציות חסומות</translation>
+<translation id="7423425410216218516">הרשאות הגישה פועלות למשך <ph name="MINUTES" /> דקות</translation>
 <translation id="7423513079490750513">הסרת <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">עזרה בכתיבה</translation>
 <translation id="7429415133937917139">‏מדמה את הפלט של צג ברייל ניתן לרענון
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">הגדרות של טביעות אצבעות</translation>
 <translation id="7578692661782707876">יש להזין את קוד האימות שלך.</translation>
 <translation id="7582582252461552277">העדפת הרשת הזו</translation>
+<translation id="7582844466922312471">נתונים סלולריים</translation>
 <translation id="7587806318633605613">היסטוריית הצעות</translation>
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7592060599656252486">חלק</translation>
 <translation id="7602173054665172958">ניהול הדפסה</translation>
 <translation id="7605163396341021431">‏אפליקציות ל-Android יוכלו לשלוט בהתקני USB ב-Chromebook הזה</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">‏העדפות Android</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612655942094160088">הפעלת תכונות הטלפון המקושר.</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">שימוש בחיבורים מאובטחים לחיפוש אתרים</translation>
 <translation id="7634337648687970851">בשלב זה, אין תמיכה בשחזור נתונים מקומיים.</translation>
 <translation id="7640256527901510478">‏ה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" /> והמספר הסידורי של המכשיר הוא <ph name="SERIAL_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
+<translation id="7640308610547854367">‏בחרת לחזור לגרסה קודמת של ChromeOS. כדי לקבל עדכונים, עליך להמתין עד שהגרסה הבאה תהיה זמינה.</translation>
 <translation id="7641513591566880111">השם של הפרופיל החדש</translation>
 <translation id="764178579712141045">הוספת את <ph name="USER_EMAIL" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (בעלים)</translation>
 <translation id="7648048654005891115">סגנון מפת מקשים</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{הוגדרה טביעת אצבע אחת}one{הוגדרו {COUNT} טביעות אצבע}two{הוגדרו {COUNT} טביעות אצבע}other{הוגדרו {COUNT} טביעות אצבע}}</translation>
+<translation id="7650677314924139716">‏ההגדרה הנוכחית של שימוש בחבילת הגלישה היא 'Wi-Fi בלבד'</translation>
 <translation id="7651400349472467012">‏הנקודה לשיתוף אינטרנט (Hotspot) מיידי זמינה</translation>
 <translation id="7651784568388208829">‏המשך משימה ב-Phone Hub</translation>
 <translation id="7658239707568436148">ביטול</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">תרגום</translation>
 <translation id="7915457674565721553">יש להתחבר לאינטרנט כדי להגדיר בקרת הורים</translation>
+<translation id="7917876797003313048">‏יש לך אפשרות לנהל את חשבונות Google שאליהם נכנסת. כדי ליהנות מחיבור לחשבון בדפדפן Chrome, בחנות Play, ב-‏Gmail ובשירותים נוספים, עליך להיכנס עם חשבונות Google שלך. כדי להוסיף חשבון של מישהו אחר, כמו חבר/ה בקבוצה המשפחתית, יש להוסיף משתמש חדש ל-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> שנ'</translation>
 <translation id="7920482456679570420">הוספת מילים שיש לדלג עליהן בבדיקות איות</translation>
 <translation id="7921347341284348270">אין לך אפשרות לצפות בהתראות של הטלפון בחשבון המנוהל הזה. כדאי לנסות שוב מחשבון אחר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">הגדרות הסמן אופסו</translation>
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8439506636278576865">הצעות לתרגום דפים שנכתבו בשפה זו</translation>
+<translation id="8449347986464073209">מחיקה ויציאה מהחשבון</translation>
 <translation id="8451512073679317615">אסיסטנט</translation>
 <translation id="8455775311562941553">מחובר אל <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">הקראת הטקסט שנמצא מתחת לסמן של העכבר</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">השמע כבוי. הפעלת השמע.</translation>
 <translation id="888256071122006425">הגדרות העכבר ולוח המגע</translation>
 <translation id="8885449336974696155">‏דיווח על <ph name="BEGIN_LINK" />ההגדרות הנוכחיות<ph name="END_LINK" /> כדי לעזור לשפר את ChromeOS</translation>
+<translation id="8890170499370378450">ייתכנו חיובים בגין שימוש בנתונים סלולריים</translation>
 <translation id="8890529496706615641">לא ניתן היה לשנות את שם הפרופיל. יש לנסות שוב, או לפנות לספק לקבלת תמיכה טכנית.</translation>
 <translation id="8894761918470382415">הגנת גישה לנתונים עבור ציוד היקפי</translation>
 <translation id="8896830132794747524">תנועות מהירות יותר עם העכבר יזיזו את הסמן רחוק יותר</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320">המכשיר <ph name="DEVICE_NAME" /> נותק</translation>
 <translation id="8980345560318123814">דוחות משוב</translation>
 <translation id="8981825781894055334">הנייר אוזל</translation>
+<translation id="8984694057134206124">המכשיר יהיה גלוי לכולם למשך <ph name="MINUTES" /> דקות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">הסף לזיהוי</translation>
 <translation id="8986362086234534611">לשכוח</translation>
 <translation id="8991694323904646277">אין מצלמה</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">‏הסרת Google Play והאפליקציות ל-Android</translation>
 <translation id="910000385680858937">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך לחבר מיקרופון למכשיר.</translation>
 <translation id="9100416672768993722">‏כדי לעבור לשיטת הקלט שבה נעשה שימוש לאחרונה, יש להקיש על <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />רווח<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">ההגדרה הנוכחית של השימוש בחבילת הגלישה היא 'ללא אינטרנט'</translation>
 <translation id="9108294543511800041">עכשיו יש לך אפשרות לראות את התמונות, המדיה וההתראות האחרונות שבטלפון</translation>
 <translation id="9109122242323516435">כדי לפנות נפח אחסון, יש למחוק קבצים מאחסון המכשיר.</translation>
 <translation id="9111330022786356709">הוספה או זיהוי כפתורים בעכבר</translation>

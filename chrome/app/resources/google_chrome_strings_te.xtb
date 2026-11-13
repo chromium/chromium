@@ -18,7 +18,6 @@
 <translation id="1142745911746664600">Chromeను అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="1148360048981192980">మీరు నెక్స్ట్ టైమ్ మీ <ph name="DEVICE_TYPE" />‌లో Chromeను తెరిచినప్పుడు, Google Password Managerను ట్రై చేయమని మీకొక ప్రాంప్ట్ కనిపిస్తుంది.</translation>
 <translation id="1150418667633096194">టూల్‌బార్‌లోని "Google Search సైడ్ ప్యానెల్" బటన్‌కు కొత్త చిహ్నం ఉంది. మీరు Google Search సైడ్ ప్యానెల్‌తో బ్రౌజ్ చేస్తున్నప్పుడు ప్రశ్నలు అడగడానికి దాన్ని క్లిక్ చేయండి.</translation>
-<translation id="1152920704813762236">ChromeOS గురించి</translation>
 <translation id="1154147086299354128">&amp;Chromeలో తెరువు</translation>
 <translation id="1157952955648710254">Google Search సైడ్ ప్యానెల్‌ను మూసివేయండి</translation>
 <translation id="1157985233335035034">ఇటీవలి భాషలు</translation>
@@ -55,7 +54,6 @@
 <translation id="1507198376417198979">మీ కొత్త Chrome ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="1518627427551567882">ఈ పేజీకి ప్రొటెక్షన్ జోడించబడింది</translation>
 <translation id="15408169957028265">Chromeలో Google Searchను మళ్లీ తెరవండి</translation>
-<translation id="1547295885616600893">ChromeOS అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="1547469039832541117">హైలైట్ అయిన టాస్క్‌ను ముగిస్తుంది.</translation>
 <translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
@@ -76,7 +74,6 @@
 <translation id="1632241302126471515">Chrome కెనరీతో సెర్చ్ చేయండి</translation>
 <translation id="1640672724030957280">డౌన్‌లోడ్ చేయబడుతోంది...</translation>
 <translation id="1651617469580841801">మీరు Google Lensను ఉపయోగించడం ద్వారా, PDFలతో పాటు పేజీ టైటిల్, URL, ఇంకా కంటెంట్ Googleకు పంపబడతాయి. <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">ChromeOS Flex గురించి</translation>
 <translation id="1674870198290878346">Chrome అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="1682634494516646069">Google Chrome దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">మీరు అడ్రస్ బార్ లేదా సెర్చ్ బాక్స్‌లో టైప్ చేసినప్పుడు, Chrome మీరు టైప్ చేసే దాన్ని మీ సంస్థకు సంబంధించిన సెర్చ్, AI, ఇంకా ఏజెంట్ టూల్స్‌కు పంపి, మీకు సూచనలను అందిస్తుంది.</translation>
@@ -95,6 +92,7 @@
 <translation id="1843347690926158494">Google Lensతో ఈ ట్యాబ్‌ను సెర్చ్ చేయండి</translation>
 <translation id="1849248141818021764">మీ రహస్య పదబంధం ఉన్న కొంతమంది మాత్రమే ఎన్‌క్రిప్ట్ చేసిన మీ డేటాను చదవగలరు. రహస్య పదబంధం Googleకు పంపబడదు లేదా Googleలో స్టోర్ అవ్వదు. మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, మీరు <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించాల్సి ఉంటుంది<ph name="END_LINK" />.</translation>
 <translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />ని ఉపయోగించడానికి మీ Google ఖాతాతో Chromeకు సైన్ ఇన్ చేయండి</translation>
+<translation id="1871615898038944731">మీ <ph name="DEVICE_TYPE" /> తాజాగా ఉంది</translation>
 <translation id="1873233029667955273">Google Chrome మీ ఆటోమేటిక్ బ్రౌజర్ కాదు</translation>
 <translation id="1874309113135274312">Google Chrome బీటా (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome కాలం చెల్లినది</translation>
@@ -102,6 +100,7 @@
 <translation id="1880677175115548835">టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="1896602904211344018">Chrome యాప్‌ను పొందండి</translation>
 <translation id="1919130412786645364">Chrome సైన్-ఇన్‌ని అనుమతించండి</translation>
+<translation id="1925069572871307609">భవిష్యత్తులో Google Chrome అప్‌డేట్‌లను పొందడానికి, మీకు Windows 10 వెర్షన్ 1809 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ Windows 10 పాత వెర్షన్‌ను ఉపయోగిస్తోంది.</translation>
 <translation id="1979600810166324878">iOS కోసం Chromeలో మెరుగైన సురక్షిత బ్రౌజింగ్‌కు సంబంధించి ప్రయాణంలో సురక్షితంగా ఉండండి</translation>
 <translation id="2001586581944147178">మీ ఇంటర్నెట్ ట్రాఫిక్‌కు యాక్సెస్ ఉన్న వ్యక్తులు మీరు బ్రౌజ్ చేసే సైట్‌లను చూడటం కష్టతరం చేయండి. DNS (డొమైన్ నేమ్ సిస్టమ్)లో సైట్ IP అడ్రస్‌ను చూసేందుకు Chrome సురక్షితమైన కనెక్షన్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="2018879682492276940">ఇన్‌స్టాల్ చేయడం విఫలమైంది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
@@ -114,7 +113,6 @@
 <translation id="2091012649849228750">భవిష్యత్తు Google Chrome అప్‌డేట్‌లను పొందడానికి, మీకు Windows 10 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ Windows 8ను ఉపయోగిస్తోంది.</translation>
 <translation id="2094919256425865063">ఏదేమైనా Chromeని మూసివేయాలా?</translation>
 <translation id="2096213354152647998">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION" />‌ను తీసివేసింది.</translation>
-<translation id="2106831557840787829">ChromeOS Flex అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="2108778574543343055">యాప్‌లకు సంబంధించి బ్యాక్‌గ్రౌండ్‌లో రన్ అవుతున్న Chromeను డిజేబుల్ చేయండి</translation>
 <translation id="2111985952714409792">మీ అన్ని డివైజ్‌లలో మీ ఎక్స్‌టెన్షన్‌లను, ఇంకా మరిన్నింటిని పొందడానికి Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2120620239521071941">ఇది ఈ పరికరం నుండి <ph name="ITEMS_COUNT" /> అంశాలను తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
@@ -141,6 +139,7 @@
 <translation id="2307973900865360088">డాక్‌లో ఉంచండి</translation>
 <translation id="2309047409763057870">ఇది Google Chrome యొక్క రెండవ ఇన‌స్ట‌లేష‌న్. దీన్ని మీ డిఫాల్ట్ బ్రౌజర్‌గా చేయడం సాధ్యపడదు.</translation>
 <translation id="2345992953227471816">ఈ ఎక్స్‌టెన్షన్‌లు మాల్‌వేర్‌ను కలిగి ఉన్నట్టుగా Chrome కనుగొన్నది:</translation>
+<translation id="2350411688004301551">Gemini Enterpriseకు మారండి</translation>
 <translation id="2358140144860869442">మీ డివైజ్‌లన్నింటిలో మీ చదవాల్సిన లిస్ట్‌ను, మరిన్నింటిని పొందడానికి, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2403703063067034158">స్టార్టప్ ఎర్రర్: ప్రస్తుతం వేరొక సెటప్ రన్ అవుతోంది, దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -151,6 +150,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> ఇప్పటికే సైన్ ఇన్ అయి ఉన్నారు. మీ బ్రౌజింగ్ వివరాలను విడిగా ఉంచుకోవడానికి, <ph name="USER_EMAIL_ADDRESS" />గా మీ స్వంత ప్రొఫైల్‌తో Chromeకి సైన్ ఇన్ చేయండి. మీరు <ph name="DEVICE" /> నుండి మీ బుక్‌మార్క్‌లను, అలాగే మరిన్ని వివరాలను కూడా పొందుతారు.</translation>
 <translation id="2485422356828889247">అన్ఇన్‌స్టాల్ చేయి</translation>
 <translation id="2513154137948333830">రీబూట్ అవసరం: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">మీ సంస్థ</translation>
 <translation id="2521391734665471391">Google Search AI మోడ్‌ను మూసివేయండి</translation>
 <translation id="2523492931736391680">Chromeలో మీ వర్క్ సురక్షితంగా ఉంటుంది</translation>
 <translation id="2534365042754120737">మీ డేటాను సురక్షితంగా ఉంచడానికి, మీరు ఇటీవల ఉపయోగించని సైట్‌లకు అనుమతులను తీసివేయడానికి Chromeకు అనుమతినివ్వండి. నోటిఫికేషన్‌లు అందుతూనే ఉంటాయి.</translation>
@@ -197,6 +197,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome మీ డేటాను ఎలా ప్రైవేట్‌గా ఉంచుతుంది<ph name="END_LINK" /> అనే దాని గురించి మరింత తెలుసుకోండి</translation>
 <translation id="2885378588091291677">విధి సంచాలకులు</translation>
 <translation id="2888126860611144412">Chrome పరిచయం</translation>
+<translation id="2898830646167954300">మీ మేనేజ్ చేయని Gemini అసిస్టెంట్‌కు తిరిగి మారండి</translation>
 <translation id="2915996080311180594">తర్వాత రీస్టార్ట్ చేయండి</translation>
 <translation id="2926952073016206995">ఈ సైట్ కోసం Chromeకు కెమెరా అనుమతి అవసరం</translation>
 <translation id="2945997411976714835">ఇన్‌స్టలేషన్ ఎర్రర్: ఇన్‌స్టాలర్ ప్రాసెస్‌ను ప్రారంభించడంలో విఫలమైంది.</translation>
@@ -207,7 +208,6 @@
 <translation id="2994465299455873643"><ph name="BROWSER_NAME" /> గడువు ముగిసినట్లయితే తిరిగి రికవర్ అయ్యేందుకు ఎన్‌క్రిప్షన్ సర్వీస్‌లను, సురక్షితమైన మార్గాన్ని అందిస్తుంది. ఈ సర్వీస్ నిలిపివేయబడితే, ఎన్‌క్రిప్ట్ చేసిన డేటాకు <ph name="BROWSER_NAME" /> యాక్సెస్‌ను కోల్పోవచ్చు, అలాగే <ph name="BROWSER_NAME" /> స్వయంగా రికవర్ కాలేకపోవచ్చు.</translation>
 <translation id="3003694935412297923">అన్ని టాస్క్‌లు</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flexను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
-<translation id="3034219227076811559">Chromeలో Google Search</translation>
 <translation id="3037190258341683404">మీరు బ్రౌజ్ చేస్తున్నప్పుడు ప్రశ్నలు అడిగేందుకు Chromeలో Google Searchను పిన్ చేయవచ్చు</translation>
 <translation id="3037517125981011456">Chromeకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపిస్తుంది</translation>
 <translation id="3037838751736561277">Google Chrome నేపథ్య మోడ్‌లో ఉంది.</translation>
@@ -231,6 +231,7 @@
 <translation id="3140883423282498090">మీ మార్పులు మీరు Google Chromeను మళ్లీ ప్రారంభించినప్పుడు ప్రభావాన్ని చూపుతాయి.</translation>
 <translation id="3149510190863420837">Chrome యాప్‌లు</translation>
 <translation id="3161522574479303604">అన్ని భాషలు</translation>
+<translation id="3183555099201190073">ఏ ట్యాబ్ నుండి అయినా Searchను యాక్సెస్ చేయండి</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> ఇప్పటికే సైన్ ఇన్ అయి ఉన్నారు. మీ బ్రౌజింగ్ వివరాలను విడిగా ఉంచుకోవడానికి, <ph name="USER_EMAIL_ADDRESS" />గా మీ స్వంత ప్రొఫైల్‌తో Chromeకి సైన్ ఇన్ చేయండి. మీరు మీ అన్ని డివైజ్‌లలో మీ బుక్‌మార్క్‌లను, అలాగే మరిన్ని వివరాలను కూడా పొందుతారు.</translation>
 <translation id="319199214552513804">మీ కంప్యూటర్‌లన్నింటిలో ఈ ఎక్స్‌టెన్షన్‌తో పాటు మరిన్నింటిని పొందడానికి Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3196187562065225381">ఫైల్ ప్రమాదకరంగా ఉన్నందున Chrome ఈ డౌన్‌లోడ్‌ను బ్లాక్ చేసింది</translation>
@@ -275,8 +276,6 @@
 <translation id="3667616615096815454">ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు, అప్లికేషన్‌ను సర్వర్ గుర్తించలేదు.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />"లో మాల్‌వేర్ ఉన్నట్టుగా Chrome కనుగొన్నది</translation>
 <translation id="3697952514309507634">ఇతర Chrome ప్రొఫైల్స్</translation>
-<translation id="3703994572283698466">ChromeOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
-<translation id="3716540481907974026">ChromeOS Flex వెర్షన్</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{Chromeకు కొత్త అప్‌డేట్ అందుబాటులో ఉంది, మీరు రీ-లాంచ్ చేసిన వెంటనే అది వర్తిస్తుంది. అజ్ఞాత లేదా ఐసోలేటెడ్ విండో తెరిచి ఉంది. మీరు రీ-లాంచ్ చేసిన తర్వాత అది మళ్లీ తెరుచుకోదు.}other{Chromeకు కొత్త అప్‌డేట్ అందుబాటులో ఉంది, మీరు రీ-లాంచ్ చేసిన వెంటనే అది వర్తిస్తుంది. ప్రొఫైల్స్ అంతటా # అజ్ఞాత, ఐసోలేటెడ్ విండోలు తెరిచి ఉన్నాయి. మీరు రీ-లాంచ్ చేసిన తర్వాత అవి మళ్లీ తెరుచుకోవు}}</translation>
 <translation id="3718181793972440140">ఇది ఈ పరికరం నుండి 1 అంశాన్ని తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{మీరు దాన్ని తీసివేయవలసిందిగా Chrome సిఫార్సు చేస్తోంది. <ph name="BEGIN_LINK" />సపోర్ట్ చేసే ఎక్స్‌టెన్షన్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK" />}other{మీరు వాటిని తీసివేయవలసిందిగా Chrome సిఫార్సు చేస్తోంది. <ph name="BEGIN_LINK" />సపోర్ట్ చేసే ఎక్స్‌టెన్షన్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK" />}}</translation>
@@ -285,7 +284,6 @@
 <translation id="3772152698251011058">ఈ సైట్‌ను Googleకు రిపోర్ట్ చేయండి</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">సైన్ ఇన్ చేయడంలో ఎర్రర్ కారణంగా ChromeOS Flex మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
 <translation id="383455301564000773">Windows 11కు అప్‌గ్రేడ్ అవుతున్నారా? మొదటి రోజు నుండే మీరు సిద్ధంగా ఉండటానికి, Chromeను OneDriveకు డౌన్‌లోడ్ చేసుకోండి.</translation>
 <translation id="383928141529488001">బ్లూటూత్ పరికరాలను అన్వేషించడానికి 
@@ -309,10 +307,12 @@
 <translation id="4022972681110646219">స్క్రీన్‌ను అనువదించండి</translation>
 <translation id="4023601594785368013">అసలు భాష: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">స్ట్రాంగ్ పాస్‌వర్డ్‌లను క్రియేట్ చేయడంలో, సేవ్ చేయడంలో, ఆటోఫిల్ చేయడంలో మీకు సహాయపడటానికి ఇది Chromeలో బిల్ట్ అయి ఉంటుంది. సులభంగా యాక్సెస్ చేయడానికి షార్ట్‌కట్‌ను జోడించండి.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google మెంబర్‌షిప్.</translation>
 <translation id="4035053306113201399">అప్‌డేట్‌ను వర్తింపచేయడానికి ChromeOSను రీస్టార్ట్ చేయాలి.</translation>
 <translation id="4053720452172726777">Google Chromeను అనుకూలంగా మార్చండి మరియు నియంత్రించండి</translation>
 <translation id="408393047846373801">మీ పరికరాలన్నిటిలో మీ పాస్‌వర్డ్‌లను, ఇంకా మరిన్నింటిని పొందడానికి Chromeకు సైన్ ఇన్ చేయండి. ఈ పాస్‌వర్డ్, మీరు సైన్ ఇన్ చేసిన తర్వాత మీ Google ఖాతాలో సేవ్ అవుతుంది.</translation>
 <translation id="4102173024714616627">ఎక్స్‌టెన్షన్‌లు అనేవి Chromeను అనుకూలంగా మార్చడానికి మిమ్మల్ని అనుమతించే యాడ్-ఆన్‌లు. ఆర్గనైజ్డ్‌గా ఉండటం నుండి, రోజువారీ టాస్క్‌లను సింప్లిఫై చేయడం వరకు, Chromeను మీ స్వంతం చేసుకోవడంలో ఎక్స్‌టెన్షన్‌లు మీకు సహాయపడతాయి.</translation>
+<translation id="4103543596018881622">Chromeలో Google Search టూల్‌బార్‌కు పిన్ చేయబడింది!</translation>
 <translation id="4110895483821904099">మీ కొత్త Chrome ప్రొఫైల్‍ను సెట్-అప్ చేయండి</translation>
 <translation id="4111566860456076004">ఈ ఎక్స్‌టెన్షన్ ఎక్కడ నుండి వచ్చిందో Chrome వెరిఫై చేయడం సాధ్యం కాదు, ఇది సురక్షితం కాకపోవచ్చు. Chrome నుండి దాన్ని తీసివేయండి, తద్వారా ఇది వ్యక్తిగత సమాచారంతో సహా మీరు సందర్శించే సైట్‌లలోని మీ డేటాను ఇకపై చూడలేదు, మార్చలేదు.</translation>
 <translation id="4148957013307229264">వ్యవస్థాపిస్తోంది...</translation>
@@ -390,7 +390,6 @@
 <translation id="495931528404527476">Chromeలో</translation>
 <translation id="4969674060580488087">మీ ఖాతా సైన్ ఇన్ వివరాల గడువు ముగిసినందున, ChromeOS Flex మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="4970761609246024540">Chrome ప్రొఫైళ్లకు స్వాగతం</translation>
-<translation id="4970880042055371251">ChromeOS వెర్షన్</translation>
 <translation id="4990567037958725628">Google Chrome కేనరీ</translation>
 <translation id="5003967926796347400">“Google Password Manager”ను క్లిక్ చేయండి</translation>
 <translation id="5043786843026425788">Chromeలో Google Lensతో సెర్చ్ చేయడం గురించి మరింత తెలుసుకోండి</translation>
@@ -411,6 +410,7 @@
 <translation id="5174969993834422967">మీరు సాధారణంగా నోటిఫికేషన్‌లను బ్లాక్ చేస్తుంటారు. ఈ సైట్ నుండి నోటిఫికేషన్‌లను పొందాలంటే, మీ లొకేషన్ బార్ కుడి మూలన ఉన్న నోటిఫికేషన్ చిహ్నాన్ని క్లిక్ చేయండి.</translation>
 <translation id="5174983315706567306">తగినంత డిస్క్ స్పేస్ లేదు.</translation>
 <translation id="5179933070463113976">Chromeలో Geminiని ఉపయోగించడానికి, మీ Google ఖాతాతో మీరు Chromeకు సైన్ ఇన్ చేసి ఉండాలి</translation>
+<translation id="5184662919967270437">మీ డివైజ్‌ను అప్‌డేట్ చేస్తోంది</translation>
 <translation id="5190467473654176081">Chromeకు కొత్త రూపాన్ని అందించడానికి దాన్ని అనుకూలంగా మార్చండి</translation>
 <translation id="5201744974236816379">Chrome అప్‌డేట్</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>
@@ -421,6 +421,7 @@
 <translation id="5320351714793324716">మీరు కుక్కీలను అనుమతిస్తే, ప్రీలోడింగ్ చేసేటప్పుడు Chrome వాటిని ఉపయోగించవచ్చు</translation>
 <translation id="5321325624576443340">Google Lens అందుబాటులో లేదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5334309298019785904">మీ డొమైన్ కోసం సింక్ అందుబాటులో లేనందున ChromeOS మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
+<translation id="5336664042114176802">మీరు ఒరిజినల్‌గా మీ Google ఖాతాతో అనుసంధానమైన, <ph name="DOMAIN" /> ద్వారా మేనేజ్ చేయని Gemini అసిస్టెంట్‌కు మారవచ్చు. సమాధానాలు ఇకపై <ph name="DOMAIN" /> మేనేజ్ చేసే ఫైల్స్ లేదా సర్వీస్‌లపై ఆధారపడి ఉండవు, అలాగే మీ చాట్ హిస్టరీ కూడా బదిలీ కాదు. ఇది పని కోసం ఉపయోగించడానికి తగినది కాకపోవచ్చు. స్విచ్ అవ్వడానికి Chromeను రీ-లాంచ్ చేయాలి.</translation>
 <translation id="5346389065299425353">పలు ట్యాబ్‌లు, ఫైల్స్, టూల్స్‌ను జోడించడం ద్వారా మీ సెర్చ్‌ను మరింత లోతుగా చేయండి</translation>
 <translation id="5353252989841766347">Chrome నుండి పాస్‌వర్డ్‌లను ఎగుమతి చేయండి</translation>
 <translation id="5368118228313795342">అదనపు కోడ్: <ph name="EXTRA_CODE" />.</translation>
@@ -445,6 +446,7 @@
 <translation id="5649156266046089790">Chrome ప్రొఫైళ్లతో, మీ Chrome సంబంధిత అంశాలన్నింటినీ విభజించవచ్చు. ఫ్రెండ్స్, ఫ్యామిలీ కోసం ప్రొఫైళ్లను క్రియేట్ చేయండి, లేదా ఆఫీస్, వినోదం మధ్య ప్రొఫైళ్లను విభజించి ఉపయోగించండి.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> హానికరం కావచ్చు, కావున Chrome దాన్ని బ్లాక్ చేసింది.</translation>
 <translation id="566568153320186256">Chrome బ్యాక్‌గ్రౌండ్ యాక్టివిటీని, స్మూత్ స్క్రోలింగ్, వీడియో ఫ్రేమ్ రేట్‌ల వంటి విజువల్ ఎఫెక్ట్‌లను పరిమితం చేయడం ద్వారా బ్యాటరీ పవర్‌ను ఆదా చేస్తుంది. <ph name="BEGIN_LINK" />ఎనర్జీ సేవర్ గురించి మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">ChromeOS వెర్షన్ గడువు ముగిసింది</translation>
 <translation id="567202749201779594">మీ ఖాతాలో Chrome డేటాను క్లియర్ చేయండి</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{ఈ అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు}=1{ఈ అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ అజ్ఞాత విండో మళ్లీ తెరవబడదు.}other{ఈ అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ # అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.}}</translation>
 <translation id="568656514202614970">విజయవంతమైంది! ఇకపై మీరు Google Search సైడ్ ప్యానెల్‌తో బ్రౌజ్ చేస్తున్నప్పుడే సులభంగా ప్రశ్నలు అడగవచ్చు</translation>
@@ -467,6 +469,7 @@
 <translation id="5894164573378901688">Chromeలో Geminiని ఉపయోగించడానికి, వేరే Google ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - నెట్‌వర్క్ సైన్ ఇన్</translation>
+<translation id="5906655207909574370">దాదాపు తాజాగా ఉంది! అప్‌డేట్‌ను పూర్తి చేయడానికి మీ డివైజ్‌ను రీస్టార్ట్ చేయండి.</translation>
 <translation id="5924017743176219022">ఇంటర్నెట్‌కు కనెక్ట్ చేస్తోంది...</translation>
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
@@ -522,6 +525,7 @@
 <translation id="6326175484149238433">Chrome నుండి తీసివేయండి</translation>
 <translation id="6334815226785304306">Google Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసి, టాస్క్‌బార్‌కు పిన్ చేయండి</translation>
 <translation id="6339888439788291743">కొత్త చిహ్నం, అదే షార్ట్‌కట్: మీరు Google Search AI మోడ్‌తో బ్రౌజ్ చేస్తున్నప్పుడు ప్రశ్నలు అడగడానికి క్లిక్ చేయండి.</translation>
+<translation id="6349304688246983183">మీరు Google Searchతో బ్రౌజ్ చేస్తున్నప్పుడు సులభంగా ప్రశ్నలు అడగండి</translation>
 <translation id="63540178978900677">Chrome ఇకపై మీ ఆటోమేటిక్ బ్రౌజర్ కాదు. Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయాలా?</translation>
 <translation id="6357670763064300993">Chromeలో Gemini Enterprise</translation>
 <translation id="6360449101159168105">ఈ ట్యాబ్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, Chromeను వేగంగా ఉంచడానికి మెమరీ ఖాళీ చేయబడింది. మీరు ఏ సమయంలోనైనా ఈ సైట్ ఇన్‌యాక్టివ్‌గా ఉండకుండా మినహాయించడాన్ని ఎంచుకోవచ్చు.</translation>
@@ -535,6 +539,7 @@
 <translation id="6438015621983209660">మీ ఫోన్‌లో Chromeతో మెరుగైన సురక్షిత బ్రౌజింగ్‌ను విస్తరించండి</translation>
 <translation id="6442774133615368941">Chrome iOS యాప్‌లో మీ కెమెరాతో మీరు చూసే వాటిని షాపింగ్ చేయండి, అనువదించండి, అలాగే గుర్తించండి</translation>
 <translation id="6446105560007692480">Chromeతో సెర్చ్ చేయడానికి లేదా <ph name="BEGIN_LINK" />సెట్టింగ్స్‌<ph name="END_LINK" />లో అనుకూలంగా మార్చడానికి</translation>
+<translation id="6447943657065463998">ఈ మేనేజ్ చేయబడే బ్రౌజర్ <ph name="DOMAIN" /> ద్వారా పని కోసం సెటప్ చేసిన Gemini అసిస్టెంట్‌ను ఉపయోగించవచ్చు. ఇది సమాచారాన్ని కనుగొనగలదు, సంస్థ ఫైల్స్, ఆమోదించబడిన సర్వీస్‌ల ఆధారంగా సమాధానాలను అందించగలదు. దీన్ని వ్యక్తిగత ప్రొఫైల్‌తో ఉపయోగించడం సిఫార్సు చేయబడకపోవచ్చు. చాట్ హిస్టరీ క్యారీ ఓవర్ కాదు. స్విచ్ అవ్వడానికి Chromeను రీ-లాంచ్ చేయాలి.</translation>
 <translation id="6448835208126432197">Chromeలోని Geminiలో స్క్రీన్ మీద మీకు కావాల్సిన భాగాన్ని ఎంచుకోవడానికి, కీబోర్డ్ షార్ట్‌కట్‌ను ఉపయోగించండి.</translation>
 <translation id="6473905796280459355">Chrome పేజీ వివరాలకు వెళ్లండి</translation>
 <translation id="6481963882741794338">వ్యక్తిగతీకరణ, ఇతర ప్రయోజనాల కోసం Chrome, ఇతర Google సర్వీస్‌లను లింక్ చేయండి</translation>
@@ -555,8 +560,8 @@
 <translation id="6612152958212564387">మీరు వినియోగ గణాంకాలను, క్రాష్ రిపోర్ట్‌లను Googleకు పంపడం లేదు. <ph name="BEGIN_LINK" />మేనేజ్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chromeను మీ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేసుకోవడం ద్వారా, మీ పాస్‌వర్డ్‌లను, బుక్‌మార్క్‌లను, హిస్టరీని డివైజ్‌లన్నింటిలో పర్‌ఫెక్ట్‌గా సింక్ చేసి ఉంచుకోండి.</translation>
 <translation id="6632012506031284914">Chromeతో సెర్చ్ చేయడానికి.</translation>
-<translation id="6632473616050862500">ChromeOS Flex అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="6634299872736643004">Chrome రీస్టార్ట్ అయిన తర్వాత ఈ సెట్టింగ్‌కు మార్పులు వర్తింపజేయడం జరుగుతుంది.</translation>
+<translation id="6644846457769259194">మీ పరికరం అప్‌డేట్ చేయబడుతోంది (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">Chromeకు సైన్ ఇన్ చేయాలా?</translation>
 <translation id="6664219008737641504">మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, మీ ఖాతాలోని Chrome డేటాను <ph name="SETTINGS_LINK" /></translation>
 <translation id="6676384891291319759">ఇంటర్నెట్‌ను యాక్సెస్ చేయండి</translation>
@@ -620,7 +625,6 @@
 <translation id="7285990705317078173">ధరలను ట్రాక్ చేయడానికి, ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు అలర్ట్‌లను పొందడానికి మీ ఫోన్‌లో Chromeను డౌన్‌లోడ్ చేసుకోండి</translation>
 <translation id="7288567540154601580">ట్యాబ్‌లు, ఎక్స్‌టెన్షన్‌లు</translation>
 <translation id="7290997427370476749">టూల్‌బార్‌లోని "Google Search ప్యానెల్" బటన్ నుండి, మీరు బ్రౌజ్ చేస్తున్నప్పుడు ప్రశ్నలు అడగడానికి Google Search ప్యానెల్‌ను మళ్లీ తెరవవచ్చు</translation>
-<translation id="7296210096911315575">ముఖ్యమైన వినియోగ, భద్రతా సమాచారం</translation>
 <translation id="7299899569525778554">డెస్క్‌టాప్ నుండి సెర్చ్ చేయండి</translation>
 <translation id="7302361266603927550">మీ Chrome డేటాలో కొంత భాగం ఇంకా మీ Google ఖాతాలో సేవ్ కాలేదు. సైన్ అవుట్ చేయడానికి ముందు, కొన్ని నిమిషాలు వేచి ఉండటానికి ట్రై చేయండి. మీరు ఇప్పుడు సైన్ అవుట్ చేస్తే, ఈ డేటా తొలగించబడుతుంది.</translation>
 <translation id="7306401458628386911">తక్షణమే బ్రౌజింగ్ ప్రారంభించండి: Windows ప్రారంభమైనప్పుడు Chrome ఇప్పుడు లాంచ్ అవ్వగలదు.</translation>
@@ -653,9 +657,7 @@
 <translation id="7572537927358445944">ఆఫ్‌లో ఉంది • ఈ ఎక్స్‌టెన్షన్ ఎక్కడ నుండి వచ్చిందో Chromem వెరిఫై చేయలేదు</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ఇన్‌స్టాలర్</translation>
 <translation id="7596160425942761210">మెసేజ్‌ల్లో, డాక్యుమెంట్‌ల్లో, ఇతర యాప్‌ల్లో మీరు లింక్‌లను క్లిక్ చేసేటప్పుడు చేసినప్పుడల్లా Chromeను ఉపయోగించవచ్చు</translation>
-<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">మీ డేటాను సురక్షితంగా ఉంచడానికి, మీరు ఇటీవల ఉపయోగించని సైట్‌లకు అనుమతులను తీసివేయడానికి Chromeకు అనుమతినివ్వండి.</translation>
-<translation id="7629898584100520089">స్కిల్స్ (సూచనల సెట్) వంటి AI ఇన్నోవేషన్‌లు (ఆవిష్కరణలు) మీ Google ఖాతాలో సేవ్ అవుతాయి, Chrome సింక్ నుండి విడిగా మేనేజ్ అవుతాయి</translation>
 <translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Google Chromeను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేశారు.</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7651907282515937834">Chrome ఎంటర్‌ప్రైజ్ లోగో</translation>
@@ -695,7 +697,6 @@
 <translation id="7904213866086517086">సైడ్ ప్యానెల్‌లో Google Searchను మళ్లీ తెరవండి</translation>
 <translation id="7904985524660297937">Google Chromeలో Geminiని ట్రై చేయండి</translation>
 <translation id="7905880575591690197">సైన్-ఇన్ చేయడంలో ఎర్రర్ వచ్చింది. అందువల్ల ChromeOS మీ Google ఖాతాలో Chrome డేటాను సేవ్ చేయలేకపోయింది</translation>
-<translation id="7917876797003313048">మీరు సైన్ ఇన్ చేసిన Google ఖాతాలను మీరు మేనేజ్ చేయవచ్చు. Chrome బ్రౌజర్, Play Store, Gmail, ఇంకా మరిన్నింటి కోసం మీ Google ఖాతాలు ఉపయోగించబడతాయి. ఫ్యామిలీ మెంబర్ వంటి వారి కోసం మీరు ఖాతాను జోడించాలనుకుంటే, బదులుగా కొత్త వ్యక్తిని మీ <ph name="DEVICE_TYPE" />కు జోడించండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">ఫైల్ మోసపూరితమైనది అలాగే మీ పరికరానికి ఊహించని మార్పులు చేసే అవకాశం ఉన్నందున Chrome ఈ డౌన్‌లోడ్‌ను బ్లాక్ చేసింది</translation>
 <translation id="7951272445806340501">అప్‌డేట్‌ను వర్తింపచేయడానికి ChromeOS Flexను రీస్టార్ట్ చేయాలి.</translation>
 <translation id="7959172989483770734">Chrome ప్రొఫైళ్లను మేనేజ్ చేయండి</translation>
@@ -712,9 +713,11 @@
 <translation id="8064965390968184078">1. దిగువున <ph name="BUTTON_LABEL" /> ఆప్షన్‌ను క్లిక్ చేయండి
 2. మీ Windows సెట్టింగ్‌లలో <ph name="BUTTON_2" />‌ను క్లిక్ చేయండి
 3. క్విక్ యాక్సెస్ కోసం Chromeను మీ టాస్క్‌బార్‌కు పిన్ చేయడానికి, Windows నోటిఫికేషన్‌లో <ph name="BUTTON_3" />‌ను క్లిక్ చేయండి</translation>
+<translation id="8066474819446975249">మారడానికి Chromeను రీ-లాంచ్ చేయండి</translation>
 <translation id="8074398340364918139">నిర్దిష్ట Chrome ఫీచర్‌ను లేదా ఎక్స్‌టెన్షన్‌ను సెర్చ్ చేయడానికి, అడ్రస్ బార్‌లో దాని షార్ట్‌కట్‌ను టైప్ చేసి, ఆపై మీరు ఎంచుకున్న కీబోర్డ్ కీని టైప్ చేయండి</translation>
 <translation id="8077579734294125741">ఇతర Chrome ప్రొఫైల్స్</translation>
 <translation id="8086881907087796310">మీ కంప్యూటర్ కనీస హార్డ్‌వేర్ అవసరాలకు అనుగుణంగా లేనందున ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
+<translation id="8095439028686936591">ChromeOS అప్‌డేట్ అయ్యి ఉంది</translation>
 <translation id="8110438089258398864">మీరు బ్రౌజ్ చేస్తున్నప్పుడు ప్రశ్నలు అడగడానికి Google Search AI మోడ్‌ను మళ్లీ తెరవవచ్చు</translation>
 <translation id="8113883687556086139">మీ ఖాతా <ph name="ACCOUNT_EMAIL" />‌లో Chrome డేటాను ఉపయోగించింది, సేవ్ చేసింది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="8115695070094288807">మీరు కోరుకున్న విధంగా Chrome వ్యక్తిగతీకరించబడుతోంది...</translation>
@@ -841,6 +844,7 @@
 <translation id="911206726377975832">మీ బ్రౌజింగ్ డేటాను కూడా తొలగించాలా?</translation>
 <translation id="9138603949443464873">మీ మార్పులను వర్తింపజేయడానికి, Chromeని పునఃప్రారంభించండి</translation>
 <translation id="9148058034647219655">నిష్క్రమించండి</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google మెంబర్‌షిప్.</translation>
 <translation id="922152298093051471">Chromeను అనుకూలంగా మార్చండి</translation>
 <translation id="93760716455950538">ChromeOS Flexను రీస్టార్ట్ చేయండి</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>

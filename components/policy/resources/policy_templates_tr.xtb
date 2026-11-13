@@ -4376,14 +4376,6 @@ HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 <translation id="366494444808132420">Gemini entegrasyonlarına izin ver.</translation>
 <translation id="3665437376055221832">Yalnızca otomatik seçimle eşleşen sertifika olmadığında kullanıcıdan seçim yapmasını iste.</translation>
 <translation id="3671773704245936868">Klavye odağını vurgulamayı devre dışı bırak</translation>
-<translation id="367258298235646178">Yöneticilere, Veri Kaybını Önleme (DLP) kuralları tarafından uygulanan filigranların görünümünü özelleştirme olanağı tanır. Dolgu/çizgi opaklığının ayarlanması, yazı tipi boyutunun belirlenmesi ve zaman damgası saat diliminin ayarlanması buna dahildir.
-Bu politika veya bazı değerler ayarlanmazsa Chrome, varsayılan filigran davranışını kullanır.
-Masaüstünde varsayılan değerler şunlardır: dolgu opaklığı 4, çizgi opaklığı 6, yazı tipi boyutu 24. iOS'te varsayılan değerler şunlardır: dolgu opaklığı 10, çizgi opaklığı 15, yazı tipi boyutu 16. Tüm platformlarda zaman damgası saat dilimi varsayılan olarak "user_device" (kullanıcının yerel cihaz saat dilimi) şeklinde ayarlanır.
-
-"Dolgu Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
-"Çizgi Opaklığı", 0 (tamamen şeffaf) ile 100 (tamamen opak) arasında bir yüzdedir.
-"Yazı Tipi Boyutu" değeri punto cinsinden belirtilir.
-"Zaman Damgası Saat Dilimi", filigran zaman damgalarını biçimlendirmek için kullanılan IANA saat dilimi tanımlayıcısını (ör. "Amerika/Toronto") (Chrome 152 ve sonraki sürümlerde desteklenir) belirtir. Bu tanımlayıcı, IANA Saat Dilimi Veritabanı'ndaki ( https://www.iana.org/time-zones ) adları kullanır.</translation>
 <translation id="3674010627788940405">CORS joker karakter olmayan istek başlıklarını destekleme.</translation>
 <translation id="3675248815331229366">Bu politikayı ayarlayarak kullanıcının coğrafi konumuna erişmesine izin verilmeyen ve bunu yapmak için kullanıcı izni istemesi engellenen sitelerin belirtildiği URL kalıplarının listesini oluşturabilirsiniz.
 
@@ -4765,7 +4757,6 @@ Politika, <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_POLICY_NAME" /
 <translation id="390296766888987595">Dokunmatik klavyeyi yalnızca kullanıcı veya uygulama istekte bulunursa göster.</translation>
 <translation id="3903313632842363082">Cihaz kullanıcılarının raporlamasını devre dışı bırak</translation>
 <translation id="3904304709151553598">Cihazın fan bilgileri raporlamasını devre dışı bırak</translation>
-<translation id="3905883021371603181">Sistem ses yankısı giderme özelliğini etkinleştir</translation>
 <translation id="3907683835264956726">Kilit ekranında kullanıcının online oturum açma işlemini etkinleştirir. Politika true (doğru) değerine ayarlanırsa <ph name="POLICY" />, kilit ekranında yeniden online kimlik doğrulamayı tetikler.
       Yeniden kimlik doğrulama, kilit ekranı açıkken hemen ya da koşulun sağlanmasının ardından kullanıcı ekranını ilk kilitlediği zaman gerçekleşir.
       Politika false (yanlış) değerine ayarlanır ya da ayarlanmadan bırakılırsa kullanıcılar yerel kimlik bilgileriyle ekran kilitlerini açabilir.</translation>
@@ -4867,7 +4858,6 @@ Not: Bu ayar sonucunda ana makine ve istemci tarafında her iki tarafın destekl
 <translation id="3989635538409502728">Çıkış</translation>
 <translation id="3989829840000169163">Tarayıcıdaki Eski Uzantı Noktalarını Engelle</translation>
 <translation id="3990391739475801018">Pil Tasarrufu Modu devre dışı bırakılır.</translation>
-<translation id="3990834929384096140">Sistem ses yankısı giderme özelliğini zorunlu kılma</translation>
 <translation id="3994043824457743421">Yeni sekme sayfasında orta aralık duyurusunu göster</translation>
 <translation id="399433537808390819">Birleşik Masaüstü modunu kullanıcının erişimine açma</translation>
 <translation id="3995880046827722248">Manifest v2 devre dışı</translation>
@@ -6191,14 +6181,6 @@ Daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=chrome_sugg
       Ancak TLS'yi doğru şekilde uygulamayan cihazlar TLS 1.3 Early Data'yı kullanılırken düzgün çalışmayabilir ve bağlantısı kesilebilir. Bu sorunla karşılaşan yöneticiler durumun düzeltilmesi için satıcıyla iletişime geçmelidir.
 
       Bu politika, özelliği kontrol etmek için geçici bir çözüm olup daha sonra kaldırılacaktır. Sorunları test edebilmeniz için politika etkinleştirilebilir ve sorunlar çözülürken devre dışı bırakılabilir.</translation>
-<translation id="4800438168909332958">Sistem ses yankısı giderme (AEC) özelliğini etkinleştirin. Sistem AEC, akustik yankı giderme sistemidir.
-Diğer bir deyişle, oynatılan sistem sesini (yankı) mikrofon sinyalinden kaldıran bir ses işleme modülüdür.
-Bu politika geçici olup sistem ses yankısı giderme özelliği kullanıma sunulduğunda kaldırılacaktır.
-
-  Bu politika Doğru değerine ayarlanırsa sistem ses yankısı giderme özelliği her zaman etkin olur.
-
-  Bu politika Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa sistem ses yankısı giderme özelliği,
-  kullanıma sunma planına göre hâlâ etkinleştirilebilir ancak bu politika tarafından zorunlu kılınmaz.</translation>
 <translation id="4800865664096110749">Yönetilen Profillerde URL listesi için <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> onay akışını etkinleştir</translation>
 <translation id="4801512016965057443">Mobil veri dolaşımına izin ver</translation>
 <translation id="4801647366128872782">Eski teknoloji raporuna izin veren URL'leri belirtir</translation>
@@ -12056,6 +12038,12 @@ Sertifikalar, base64 kodlu olmalıdır.</translation>
 Politikanın ayarlanması, izin verilenler listesine eklenmiş URL'ler için web sitesi telemetri raporlamasını kontrol eder.
 Politika ayarlanmazsa web sitesi telemetrileri raporlanmaz.
 Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz. Bu politika için yalnızca HTTP ve HTTPS URL'si şemalarına izin verilir.</translation>
+<translation id="8392016343898518010">Önerilen içerik özelliği kaldırıldığı için bu politikanın desteği sonlandırılmıştır ve M159 sürümünden itibaren herhangi bir etkisi olmayacaktır.
+
+M159'dan önce bu özellik, uygulamalar ve web sayfaları gibi keşfedilecek yeni içerik önerilerini etkinleştiriyordu.
+Bu politika Doğru değerine ayarlandığında, keşfedilecek yeni içerik önerileri etkinleştiriliyordu.
+Bu politika Yanlış değerine ayarlandığında, keşfedilecek yeni içerik önerileri devre dışı bırakılıyordu.
+Bu politika ayarlanmadan bırakıldığında, keşfedilecek yeni içerik önerileri, yönetilen kullanıcı hesapları için devre dışı bırakılırken diğer kullanıcılar için etkinleştiriliyordu.</translation>
 <translation id="8392478748777481636">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />" politikasını kullanın.</translation>
 <translation id="8393850527597048037">Sadece Platform</translation>
 <translation id="8395350646076131800">Kullanıcı ekran koruyucusu kilit ekranı boşta kalma zaman aşımı.</translation>
@@ -13164,7 +13152,6 @@ Not: Cihazın yeniden başlatılması, önbelleğin temizlenmesine neden olur. G
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise Connector için yapılandırma politikası</translation>
 <translation id="9088433379343318874">Denetlenen kullanıcı içerik sağlayıcısını etkinleştirme</translation>
 <translation id="9088444059179765143">Otomatik saat dilimi algılama yöntemini yapılandır</translation>
-<translation id="9091741086777905807">Filigran zaman damgalarını biçimlendirmek için kullanılan IANA saat dilimi tanımlayıcısı (ör. "Amerika/Toronto") (Chrome 152 ve sonraki sürümlerde desteklenir). Varsayılan değer "user_device"dir.</translation>
 <translation id="9094681501120769194"><ph name="PRODUCT_NAME" /> ürünündeki PDF görüntüleyicinin işlem dışı iFrame (OOPIF) kullanıp kullanmayacağını kontrol eder. Bu mimari, daha basit olduğu ve yeni özelliklerin eklenmesini kolaylaştırdığı için gelecekte yeni PDF görüntüleyici mimarisi olarak kullanılacaktır. Mevcut GuestView PDF görüntüleyici, desteği sonlandırılmakta olan eski ve karmaşık bir mimaridir.
 
 Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, OOPIF PDF görüntüleyici mimarisini kullanabilir. Politika, Etkin değerine ayarlandıktan veya ayarlanmadan bırakıldıktan sonra varsayılan davranış, <ph name="PRODUCT_NAME" /> tarafından belirlenir.

@@ -87,6 +87,7 @@
 <translation id="1081893794570042235">{COUNT,plural, =1{Ni fydd eich ffenestr Anhysbys yn agor ar ôl i chi ail-lansio}zero{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}two{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}few{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}many{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}other{Ni fydd eich {COUNT} ffenestr Anhysbys yn ailagor ar ôl i chi ail-lansio}}</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 Tab}zero{<ph name="GROUP_TITLE" /> - # Tab}two{<ph name="GROUP_TITLE" /> - # Tab}few{<ph name="GROUP_TITLE" /> - # Tab}many{<ph name="GROUP_TITLE" /> - # Tab}other{<ph name="GROUP_TITLE" /> - # Tab}}</translation>
 <translation id="1082398631555931481">Mae <ph name="THIRD_PARTY_TOOL_NAME" /> eisiau adfer eich gosodiadau Chrome i'r gosodiadau gwreiddiol. Bydd hyn yn ailosod eich tudalen hafan, eich tudalen tab newydd a'ch peiriant chwilio, yn analluogi'ch estyniadau, ac yn dadbinio pob tab. Bydd hefyd yn clirio data dros dro a data sydd wedi'u storio eraill, megis cwcis, cynnwys a data gwefan.</translation>
+<translation id="1082423423253606499">Ewch i Google Wallet i ychwanegu neu reoli <ph name="BEGIN_LINK_PAYMENT_METHODS" />dulliau talu<ph name="END_LINK_PAYMENT_METHODS" /> a <ph name="BEGIN_LINK_PASSES" />phasys<ph name="END_LINK_PASSES" /></translation>
 <translation id="1083050113196701330">Gwiriad diweddaru wedi'i gwblhau'n llwyddiannus. Nid oedd unrhyw ddiweddariad ar gael</translation>
 <translation id="1083980330680874079">Paneli Chrome</translation>
 <translation id="1084096383128641877">Ni fydd tynnu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="DOMAIN" />. Newidiwch eich cyfrinair neu dilëwch eich cyfrif ar <ph name="DOMAIN_LINK" /> i'w gadw'n ddiogel rhag eraill.</translation>
@@ -151,7 +152,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1137589305610962734">data dros dro</translation>
 <translation id="1137673463384776352">Agor y ddolen yn <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Hysbysiad Newydd}zero{# Hysbysiad Newydd}two{# Hysbysiad Newydd}few{# Hysbysiad Newydd}many{# Hysbysiad Newydd}other{# Hysbysiad Newydd}}</translation>
-<translation id="1139368021151541038">Rhaid cael o leiaf un llythyren neu symbol</translation>
 <translation id="1140317858355046628">Os byddwch yn ei ddileu, bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, a bydd yn cael ei ddileu o bob dyfais.</translation>
 <translation id="1140351953533677694">Cael mynediad at eich dyfeisiau Bluetooth a Chyfresol</translation>
 <translation id="1142713751288681188">Math o bapur</translation>
@@ -237,6 +237,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1215411991991485844">Ychwanegwyd ap cefndir newydd</translation>
 <translation id="121586831132481915">Diffodd tabiau ehangu awtomatig</translation>
 <translation id="1216628023580643945">Rhowch enw i'ch sgil</translation>
+<translation id="1216649545251458081">Gallwch barhau i ddefnyddio Gemini yn Chrome, ond ni fydd bellach yn dod o hyd i wybodaeth a reolir gan eich sefydliad nac yn cyfeirio ati. Mae'n bosib na fydd eich hanes sgwrsio yn cael ei drosglwyddo.</translation>
 <translation id="1216891999012841486">Dysgu rhagor am ddatrys gwallau diweddaru</translation>
 <translation id="1217117837721346030">Lawrlwytho ffeil amheus</translation>
 <translation id="1217437913373100941">Tab newydd yn <ph name="GROUP_NAME" /></translation>
@@ -285,6 +286,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1256143630373008432">Methodd yr hunan brawf</translation>
 <translation id="1257336506558170607">Allforio tystysgrif a ddewiswyd</translation>
 <translation id="1258491128795710625">Beth sy'n newydd</translation>
+<translation id="1259453023447377372">Grŵp tabiau sydd wedi'i gadw</translation>
 <translation id="1260451001046713751">Caniatáu ffenestri naid ac ailgyfeiriadau gan <ph name="HOST" /> bob amser</translation>
 <translation id="1262395978737369974">Caniateir defnyddio optimeiddio JavaScript bob amser</translation>
 <translation id="1262564987698748643">Gall gwefannau ofyn am ddiystyru eich mewnbwn bysellfwrdd</translation>
@@ -298,6 +300,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1274721046703404848">Rheoli'r cysylltiad rhwng gwasanaethau Search ac apiau Google Workspace, megis Google Drive</translation>
 <translation id="1274997165432133392">Cwcis a data gwefan eraill</translation>
 <translation id="1277020343994096713">Creu PIN newydd sy'n wahanol i'ch PIN presennol</translation>
+<translation id="1277738741297162935">Gweld yn Rheolwr Cyfrineiriau Google</translation>
 <translation id="1279024913354609713">Peidio â chaniatáu</translation>
 <translation id="127946606521051357">Mae dyfais gerllaw yn rhannu</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Methu ag agor y ffeil}zero{Methu ag agor y ffeiliau}two{Methu ag agor y ffeiliau}few{Methu ag agor y ffeiliau}many{Methu ag agor y ffeiliau}other{Methu ag agor y ffeiliau}}</translation>
@@ -308,7 +311,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1284277788676816155">Peidio â chaniatáu cadw data</translation>
 <translation id="1285320974508926690">Peidio byth â chyfieithu'r wefan hon</translation>
 <translation id="1285484354230578868">Storio data yn eich cyfrif Google Drive</translation>
-<translation id="1285625592773741684">Y gosodiad defnydd data presennol yw Data Symudol</translation>
 <translation id="1286901453440314450">Tystysgrifau Annibynadwy</translation>
 <translation id="1288235441231062220">Uchafswm o <ph name="MAX_CHARS" /> nod wedi'i gyrraedd</translation>
 <translation id="1293264513303784526">Dyfais USB-C (porth chwith)</translation>
@@ -399,7 +401,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1396120028054416908">Nôl i <ph name="FOLDER_TITLE" /></translation>
 <translation id="1396139853388185343">Bu gwall wrth osod yr argraffydd</translation>
 <translation id="1398853756734560583">Mwyhau</translation>
-<translation id="1401216725754314428">Dysgu rhagor am wefannau cysylltiedig mewn tab newydd</translation>
 <translation id="1402426911829176748">Wrthi'n cysylltu â'ch dyfais</translation>
 <translation id="1405779994569073824">Wedi torri.</translation>
 <translation id="1407135791313364759">Agor pob un</translation>
@@ -528,7 +529,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1530466164747090379">Mae gan <ph name="FILE_NAME" /> ddata sensitif neu beryglus</translation>
 <translation id="1531275250079031713">Dangos y deialog 'Ychwanegu Wi-Fi newydd'</translation>
 <translation id="1536754031901697553">Wrthi'n datgysylltu...</translation>
-<translation id="1538808328818992871">Rhaid cael o leiaf <ph name="MIN_LENGTH" /> nod</translation>
 <translation id="1539248305642687917">Peidiwch â gadael i wefannau ddiystyru eich mewnbwn bysellfwrdd</translation>
 <translation id="1540265419569299117">Gwasanaeth Ap ChromeOS</translation>
 <translation id="1541346352678737112">Heb ganfod rhwydwaith</translation>
@@ -563,7 +563,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1567069630205219514">Cynyddwch faint y ffenestr i ailddechrau sgwrsio</translation>
 <translation id="1567579616025300478">Ni chaniateir i'r wefan hon gadw data ar eich dyfais.</translation>
 <translation id="1567993339577891801">Consol JavaScript</translation>
-<translation id="1568242747239041185">Rhaid cael dau o'r canlynol: priflythrennau, llythrennau bach, rhifau neu symbolau</translation>
 <translation id="157005186601751931">Agor tab yn yr ap</translation>
 <translation id="1570990174567554976">Crëwyd y Ffolder nodau tudalen '<ph name="BOOKMARK_TITLE" />'.</translation>
 <translation id="1571041387761170095">Dim cyfrineiriau gwan neu rai sydd wedi'u hailddefnyddio</translation>
@@ -662,6 +661,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1664497218584335032">Mae'r wefan eisiau agor y ddolen hon mewn ap.</translation>
 <translation id="166454475160289583">Ni chaniateir diystyru mewnbwn eich bysellfwrdd</translation>
 <translation id="1665859804801131136">Mynegiadaeth</translation>
+<translation id="1666704368140506043">Cynnwys sarhaus</translation>
 <translation id="1668231044084098661"><ph name="TASK_TITLE" />: Cwblhaodd Gemini eich tasg, gallwch ei gweld yn Chrome</translation>
 <translation id="1668804837842452164">Cadw i <ph name="BRAND" /> ar gyfer <ph name="EMAIL" /></translation>
 <translation id="1670070366970670971">Is-ffrâm PDF: <ph name="SUBFRAME_SITE" /></translation>
@@ -754,6 +754,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="17513872634828108">Tabiau agored</translation>
 <translation id="175196451752279553">A&amp;ilagor tab a gaewyd</translation>
 <translation id="1753557900380512635">Mewnol</translation>
+<translation id="1753621899753387273">Gofyn i Gemini am y dudalen hon a “<ph name="SELECTION" />”</translation>
 <translation id="1753905327828125965">Yr Ymwelwyd â Nhw'r Mwyaf</translation>
 <translation id="1755601632425835748">Maint y testun</translation>
 <translation id="1756963401828337401">Dewiswch sgrîn i'w dal</translation>
@@ -874,9 +875,9 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1871098866036088250">Agor mewn porwr Chrome</translation>
 <translation id="1871131409931646355">Hanes Lawrlwytho Llawn</translation>
 <translation id="187145082678092583">Llai o apiau</translation>
-<translation id="1871615898038944731">Mae eich <ph name="DEVICE_TYPE" /> yn gyfoes</translation>
 <translation id="1872846000961079826">Yn ystod y newid cyfrinair, anfonir cynnwys o dudalennau cyfrinair a gwybodaeth gysylltiedig i Google a gall bodau dynol eu hadolygu i wella ansawdd y nodwedd hon</translation>
 <translation id="1873513359268939357">Calendr Outlook</translation>
+<translation id="1873841881061248761">Mae eich sefydliad wedi diweddaru polisïau ac yn gofyn i chi ail-lansio Chrome i barhau i ddefnyddio Gemini Enterprise yn Chrome</translation>
 <translation id="1873920700418191231">Caniatáu caniatâd eto ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Caniateir i ddangos unrhyw hysbysebion</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Symud tab i ffenestr arall}zero{Symud tabiau i ffenestr arall}two{Symud tabiau i ffenestr arall}few{Symud tabiau i ffenestr arall}many{Symud tabiau i ffenestr arall}other{Symud tabiau i ffenestr arall}}</translation>
@@ -1217,7 +1218,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2218515861914035131">Gludo fel testun plaen</translation>
 <translation id="2219007152108311874">Gofyn ar Bob Ymweliad</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
-<translation id="2220572644011485463">PIN neu gyfrinair</translation>
 <translation id="222201875806112242">Ffynhonnell cyfryngau ddienw</translation>
 <translation id="2224337661447660594">Dim rhyngrwyd</translation>
 <translation id="2224444042887712269">Mae'r gosodiad hwn yn perthyn i <ph name="OWNER_EMAIL" />.</translation>
@@ -1275,7 +1275,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2271452184061378400">Mae eich grwpiau tabiau yn cael eu cadw yma</translation>
 <translation id="2271986192355138465">Dysgu sut i osod apiau gwe</translation>
 <translation id="2272570998639520080">Gwydr Martini</translation>
-<translation id="2273432041732361925">Rhaid peidio â chael nodau neu ddilyniannau sy'n ailadrodd o 4 neu fwy</translation>
 <translation id="2275352532065325930">Safle chwilio tabiau</translation>
 <translation id="227763434929139750">Peidio â chaniatáu i wefannau ddefnyddio synwyryddion symudiad neu olau</translation>
 <translation id="2278193750452754829">Caniateir estyniadau ar y wefan hon. Dewiswch i agor y ddewislen</translation>
@@ -1324,6 +1323,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2327920026543055248">Rhowch nod <ph name="CHARACTER" /> o <ph name="TOTAL" /></translation>
 <translation id="2328474416100889417">Bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, a bydd yr holl ddolenni gwahoddiad yn cael eu diffodd</translation>
 <translation id="2328773543844041445">Ehangu tabiau yn awtomatig wrth hofran</translation>
+<translation id="232936259653692697">Gofynnwch unrhyw beth i Gemini wrth i chi bori, a chael atebion wedi'u seilio ar ffeiliau a gwasanaethau ar draws eich sefydliad, i gyd gyda diogelwch lefel menter</translation>
 <translation id="2330182457402792918">Dewis ffeiliau y gall y wefan hon eu darllen</translation>
 <translation id="2332131598580221120">Gweld yn Chrome Web Store</translation>
 <translation id="2332515770639153015">Mae Gwell Pori'n Ddiogel ymlaen</translation>
@@ -1363,7 +1363,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2365507699358342471">Gall y wefan hon weld testun a lluniau sydd wedi'u copïo i'r clipfwrdd.</translation>
 <translation id="2367972762794486313">Dangos apiau</translation>
 <translation id="2369058545741334020">Agor yn y modd darllen</translation>
-<translation id="236939127352773362">Pan fydd dyfeisiau yn rhannu gerllaw</translation>
 <translation id="2371076942591664043">Agor ar ôl &amp;gorffen</translation>
 <translation id="2373666622366160481">Ffitio i'r papur</translation>
 <translation id="2376122016044804363">Cadarnhad wedi'i gopïo i'r clipfwrdd</translation>
@@ -1545,6 +1544,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2546302722632337735">Peidio â chaniatáu i wefannau ddefnyddio dynodwyr i chwarae cynnwys gwarchodedig</translation>
 <translation id="2548347166720081527">Caniateir <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Ailosod storfa dros dro proffil eSIM</translation>
+<translation id="2549960622681003635">{COUNT,plural, =1{Gweld 1 tab arall}zero{Gweld # tab arall}two{Gweld # dab arall}few{Gweld # tab arall}many{Gweld # tab arall}other{Gweld # tab arall}}</translation>
 <translation id="2549985041256363841">Dechrau recordio</translation>
 <translation id="2550212893339833758">Cof sydd wedi'i gyfnewid</translation>
 <translation id="2550596535588364872">Caniatáu i <ph name="EXTENSION_NAME" /> agor <ph name="FILE_NAME" />?</translation>
@@ -1563,6 +1563,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2575247648642144396">Bydd yr eicon hwn yn weladwy pan fydd yr estyniad yn gallu gweithredu ar y dudalen bresennol. Defnyddiwch yr estyniad hwn drwy glicio ar yr eicon neu drwy bwyso <ph name="EXTENSION_SHORTCUT" />.</translation>
 <translation id="2575407791320728464">URL annilys. Gwnewch yn siŵr ei bod wedi'i fformatio'n gywir.</translation>
 <translation id="2575441894380764255">Ni chaniateir dangos hysbysebion ymwthiol neu gamarweiniol</translation>
+<translation id="2575502321843437554">Ddim yn ymgysylltu digon</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Bydd y ddyfais hon yn cael ei chadw am 1 flwyddyn a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}zero{Bydd y ddyfais hon yn cael ei chadw am {YEARS} blynedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}two{Bydd y ddyfais hon yn cael ei chadw am {YEARS} flynedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}few{Bydd y ddyfais hon yn cael ei chadw am {YEARS} o flynyddoedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}many{Bydd y ddyfais hon yn cael ei chadw am {YEARS} o flynyddoedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}other{Bydd y ddyfais hon yn cael ei chadw am {YEARS} o flynyddoedd a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}}</translation>
 <translation id="2577981599306533385">Bydd <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) yn colli mynediad at y grŵp tabiau '<ph name="GROUP_NAME" />' ar unwaith, ac ni fydd yn gallu rhyngweithio â chi ar draws gwasanaethau Google mwyach.</translation>
 <translation id="2580889980133367162">Caniatáu i <ph name="HOST" /> lawrlwytho mwy nag un ffeil bob amser</translation>
@@ -1590,6 +1591,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2610780100389066815">Llofnodi Rhestr Ymddiried Microsoft</translation>
 <translation id="261114180663074524">Mewngofnodwch i'ch cyfrif Microsoft ac yna rhowch gynnig arall arni</translation>
 <translation id="2611885296070244383">Meic (mewnol)</translation>
+<translation id="2612346259364350954">Defnyddiwch gynnwys y dudalen i egluro testun sydd wedi'i amlygu</translation>
 <translation id="2612676031748830579">Rhif y cerdyn</translation>
 <translation id="261305050785128654">Rhowch wybod i wefannau am yr ieithoedd rydych yn eu siarad. Byddant yn dangos cynnwys yn yr ieithoedd hynny, pan fo modd.</translation>
 <translation id="2613210758071148851">Peidio â chaniatáu unrhyw estyniadau ar <ph name="RESTRICTED_SITE" /></translation>
@@ -1634,6 +1636,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2642206811783203764">Bob amser ar <ph name="SITE_NAME" /></translation>
 <translation id="2643379881528582459">Os bydd Chromium yn dod o hyd i un o'ch cyfrineiriau mewn achos o doriad data cyhoeddus, gall gynnig newid eich cyfrinair ar eich rhan os ydych wedi mewngofnodi</translation>
 <translation id="2643698698624765890">Rheoli eich estyniadau drwy glicio Estyniadau yn y ddewislen Windows.</translation>
+<translation id="2643831649507982404"><ph name="BEGIN_BOLD" />Mae tabiau'n cael eu rhannu i gael atebion mwy perthnasol.<ph name="END_BOLD" /> Mae Google yn defnyddio cynnwys ac URL tabiau a rennir. Mae eich tab presennol yn cael ei rannu mewn sgyrsiau newydd. Gallwch newid y gosodiad hwn unrhyw bryd.</translation>
 <translation id="2643967675101729581">Dyddiad Gorffen:</translation>
 <translation id="2645047101481282803">Rheolir eich dyfais gan <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Wrthi'n castio'r tab hwn i <ph name="DEVICE_NAME" /></translation>
@@ -1789,6 +1792,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2785975315093449168">GTK</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
+<translation id="2790090628764536480">Mae tabiau'n cael eu rhannu i gael atebion mwy perthnasol. Mae Google yn defnyddio cynnwys ac URL tabiau a rennir. Mae eich tab presennol yn cael ei rannu mewn sgyrsiau newydd. Gallwch newid y gosodiad hwn unrhyw bryd. Mae data eich sefydliad yn breifat ac yn ddiogel. Ni fydd yn cael ei ddefnyddio i wella modelau AI cynhyrchiol.</translation>
 <translation id="2790112944253231361">Wedi newid y tab hwn</translation>
 <translation id="2792697226874849938">Llun cyfyngiad</translation>
 <translation id="2794977172822818797">Ychwanegu gwefannau presennol</translation>
@@ -1847,6 +1851,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="284581348330507117">Crëwch gyfrineiriau unigryw</translation>
 <translation id="284884486564166077">Chwilio unrhyw lun gyda Lens</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
+<translation id="2849926636739429924">Rhagor o ddewisiadau ar gyfer <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="285033512555869047">Wedi cau</translation>
 <translation id="2851291081585704741">Rydych chi all-lein</translation>
 <translation id="285237063405807022">(wrthi'n llwytho)</translation>
@@ -1905,6 +1910,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2907798539022650680">Wedi methu â chysylltu â '<ph name="NAME" />': <ph name="DETAILS" />
     Neges gweinydd: <ph name="SERVER_MSG" /></translation>
 <translation id="2908162660801918428">Ychwanegu Oriel Cyfryngau yn ôl Cyfeiriadur</translation>
+<translation id="2909334296570021569">Agor grŵp tabiau</translation>
 <translation id="2909487040556589351">Cael Chrome ar eich dyfais symudol</translation>
 <translation id="2910678330803525229">Gallwch ddechrau pori bellach</translation>
 <translation id="2912247081180973411">Cau'r ffenestri</translation>
@@ -1955,6 +1961,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2964387589834028666">Cyffrous</translation>
 <translation id="2966705348606485669">Rhagor o opsiynau ar gyfer ffolder nodau tudalen <ph name="FOLDER_TITLE" /></translation>
 <translation id="2967926928600500959">Bydd cyfeiriadau URL sy'n cyfateb i'r rheolau hyn yn cael eu gorfodi i agor mewn porwr penodol.</translation>
+<translation id="2968862786921219863"><ph name="CONTEXT" /> - <ph name="VALUE" /></translation>
 <translation id="2969411787010981955">Mae data wedi'u hallforio i'r lleoliad a ddewiswyd</translation>
 <translation id="2970766364519518369">Gall cysylltiadau a ddewisir rannu â chi pan fyddant gerllaw. Bydd gofyn i chi gymeradwyo'r ceisiadau hyn. Ni fydd angen i chi gymeradwyo rhannu rhwng dyfeisiau sydd wedi'u mewngofnodi i <ph name="USER_EMAIL" />.</translation>
 <translation id="2970982365449313350">Chrome gyda'r Cyfrif Google hwn</translation>
@@ -2044,6 +2051,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="304169924727249890">Ymuno â Grŵp Tabiau gyda <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3043016484125065343">Mewngofnodi er mwyn gweld eich nodau tudalen</translation>
 <translation id="3043581297103810752">Gan <ph name="ORIGIN" /></translation>
+<translation id="3043977478651331629">Dewisiadau ar gyfer <ph name="SECTION_NAME" /></translation>
 <translation id="3044066905368192931">Gwella gydag AI</translation>
 <translation id="3045447014237878114">Gwnaeth y wefan hon lawrlwytho nifer o ffeiliau yn awtomatig</translation>
 <translation id="304644035656848980">Rhagolwg o'ch meicroffon</translation>
@@ -2120,6 +2128,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3124950826511066429">Gosodiadau sy'n effeithio ar sut mae awtolenwi yn gweithio ar draws gwahanol fathau o wybodaeth</translation>
 <translation id="3125361247594231799">Pinio ar gyfer y tro nesaf</translation>
 <translation id="3129173833825111527">Ymyl chwith</translation>
+<translation id="3130976918283115695">Dulliau adnabod, pasbortau, a thrwyddedau gyrru</translation>
 <translation id="313205617302240621">Wedi anghofio'ch cyfrinair?</translation>
 <translation id="3132896062549112541">Rheol</translation>
 <translation id="3132996321662585180">Adnewyddu'n ddyddiol</translation>
@@ -2154,6 +2163,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3163085718713826852">Rhowch gyfrinair tystysgrif</translation>
 <translation id="3163201441334626963">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan y gwerthwr <ph name="VENDOR_ID" /></translation>
 <translation id="3164329792803560526">Wrthi'n rhannu'r tab hwn i <ph name="APP_NAME" /></translation>
+<translation id="3164924738522238507">Cartref, gwaith, a rhagor</translation>
 <translation id="316542773973815724">Llywio</translation>
 <translation id="3165734944977250074">Nid oes modd symud y ffeil oherwydd nad yw'n bodoli mwyach</translation>
 <translation id="3166256634240273583">Defnyddiwch Google Search yn uniongyrchol o far cyfeiriad eich porwr a phan fyddwch yn agor tab newydd.</translation>
@@ -2215,6 +2225,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3223109931751684474">Tynnu mynediad at eich codau pas ar y ddyfais hon</translation>
 <translation id="3224803532980286809">Dim ond yr hyn sy'n weladwy i chi y bydd Google yn ei weld</translation>
 <translation id="3225084153129302039">Rhithffurf porffor diofyn</translation>
+<translation id="3225741048815287955"><ph name="BEGIN_BOLD_1" />Mae tabiau'n cael eu rhannu i gael atebion mwy perthnasol.<ph name="END_BOLD_1" /> Mae Google yn defnyddio cynnwys ac URL tabiau a rennir. Mae eich tab presennol yn cael ei rannu mewn sgyrsiau newydd. Gallwch newid y gosodiad hwn unrhyw bryd. <ph name="BEGIN_BOLD_2" />Mae data eich sefydliad yn breifat ac yn ddiogel.<ph name="END_BOLD_2" /> Ni fydd yn cael ei ddefnyddio i wella modelau AI cynhyrchiol.</translation>
 <translation id="3226249862705569834">Synwyryddion yn cael eu defnyddio</translation>
 <translation id="3227137524299004712">Meicroffon</translation>
 <translation id="3227701057281907159">Wrthi'n patsio</translation>
@@ -2222,6 +2233,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Tynnwch neu amnewidiwch ef gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}zero{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}two{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}few{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}many{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Tynnwch neu amnewidiwch nhw gydag estyniadau tebyg o <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Gwiriwch y dyddiad</translation>
 <translation id="3232168089952388105">Rhannu gwybodaeth am eich dyfais?</translation>
+<translation id="3232217591415188687">Nid yw oriel sgiliau Chrome yn cael ei chefnogi ar gyfer Gemini Enterprise ar hyn o bryd. Gallwch barhau i greu sgiliau ac archwilio'r rhai a reolir gan eich sefydliad yn yr ap Gemini Enterprise.</translation>
 <translation id="323251815203765852">Creadigol</translation>
 <translation id="323262942975422760">Rhagor o opsiynau i olygu neu ddileu <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3233577317461669428">Ni chanfuwyd unrhyw ddyfais arall</translation>
@@ -2404,6 +2416,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3402255108239926910">Dewiswch rithffurf</translation>
 <translation id="3402276740728396499">Dangos wedi'i Bentyrru</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
+<translation id="3402919263942402995">Nid yw oriel sgiliau Chrome yn cael ei chefnogi ar gyfer Gemini Enterprise ar hyn o bryd. Gallwch barhau i greu sgiliau ac archwilio'r rhai a reolir gan eich sefydliad yn yr <ph name="BEGIN_LINK" />ap Gemini Enterprise<ph name="END_LINK" />.</translation>
 <translation id="3404065873681873169">Ni chadwyd unrhyw gyfrineiriau ar gyfer y wefan hon</translation>
 <translation id="3405664148539009465">Personoleiddio ffontiau</translation>
 <translation id="3405763860805964263">...</translation>
@@ -2495,6 +2508,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3490695139702884919">Wrthi'n lawrlwytho... <ph name="PERCENT" />%</translation>
 <translation id="3491678231052507920">Mae gwefannau fel arfer yn defnyddio eich dyfeisiau a data realiti rhithwir i roi mynediad i chi at sesiynau VR</translation>
 <translation id="3493069561299219311">Agor mewn ffenestr &amp;Ynysig</translation>
+<translation id="3493899379487634969">Beth aeth o'i le?</translation>
 <translation id="3496213124478423963">Pellhau</translation>
 <translation id="3496692428582464972">Ffynonellau data i'w casglu</translation>
 <translation id="3496995426334945408">Mae gwefannau fel arfer yn defnyddio JavaScript i ddangos nodweddion rhyngweithiol, megis gemau fideo neu ffurflenni gwe</translation>
@@ -2533,6 +2547,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3526034519184079374">Methu â Darllen na Newid Data Gwefan</translation>
 <translation id="3527085408025491307">Ffolder</translation>
 <translation id="3527473647192919613">Ffenestr Ynysig Newydd</translation>
+<translation id="3527740693434122323">Cardiau credyd a debyd, IBANau, a chardiau teyrngarwch</translation>
 <translation id="3528498924003805721">Targedau llwybrau byr</translation>
 <translation id="35296112145429559">Pinio Botymau Sgrolio</translation>
 <translation id="3530919970074558307">Dadffocysu'r Grŵp</translation>
@@ -2641,6 +2656,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3624583033347146597">Dewiswch eich dewisiadau cwci trydydd parti</translation>
 <translation id="3627588569887975815">Agor y ddolen mewn ffenestr anhy&amp;sbys</translation>
 <translation id="3627671146180677314">Amser Adnewyddu Tystysgrif Netscape</translation>
+<translation id="3628853654317797767">Wrthi'n nôl cynnwys y dudalen</translation>
 <translation id="3629630597033136279">Wedi'i diffodd • Nid yw'r estyniad hwn wedi cyhoeddi arferion preifatrwydd, megis sut mae'n casglu a defnyddio data</translation>
 <translation id="3629657562876345602">Adolygu Gwybodaeth Bwysig</translation>
 <translation id="3629664892718440872">Cofiwch y dewis hwn</translation>
@@ -2778,6 +2794,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3745306754941902605">Cegin</translation>
 <translation id="3748424433435232460">Mae cyfrinair ar gyfer y cyfrif hwn eisoes wedi'i gadw ar y ddyfais hon</translation>
 <translation id="3748466028423001972">Cyfnewid gyda'r wedd waelod</translation>
+<translation id="3750406842345107892">Anfonir cynnwys ac URL y dudalen rydych chi arni, a'r testun sydd wedi'i amlygu, at Google i gynhyrchu esboniad</translation>
 <translation id="3752115502500640407">Rhannu copi o'ch cyfrinair ar gyfer <ph name="WEBSITE" /></translation>
 <translation id="3753412199586870466">Agor panel ochr</translation>
 <translation id="3753585830134123417">Wedi newid maint y ffenestri i'r chwith</translation>
@@ -2872,7 +2889,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Mae estyniad wedi'i gymeradwyo}zero{# estyniad wedi'u cymeradwyo}two{# estyniad wedi'u cymeradwyo}few{# estyniad wedi'u cymeradwyo}many{# estyniad wedi'u cymeradwyo}other{# estyniad wedi'u cymeradwyo}}</translation>
 <translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
-<translation id="3824757763656550700">Mewngofnodwch i weld tabiau o ddyfeisiau eraill</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Cofiwch fy newis ar gyfer y math hwn o ffeil: <ph name="FILE_TYPES" />}zero{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}two{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}few{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}many{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}other{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}}</translation>
 <translation id="3825235932371054736">{NUM_TABS,plural, =1{Trwsio'r Tab hwn}zero{Trwsio'r Tabiau hyn}two{Trwsio'r Tabiau hyn}few{Trwsio'r Tabiau hyn}many{Trwsio'r Tabiau hyn}other{Trwsio'r Tabiau hyn}}</translation>
 <translation id="3825512074963838982">Gweld</translation>
@@ -2901,6 +2917,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3850989673553106152">Newidiwyd y cyfrinair</translation>
 <translation id="3851428669031642514">Llwythwch sgriptiau anniogel</translation>
 <translation id="3851464569313827017">Mae <ph name="SITE_ETLD_PLUS_ONE" /> yn plannu cynnwys o<ph name="IFRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="385245682397782972">Dewch o hyd i'ch holl grwpiau tabiau yn y botwm chwilio tabiau yn y stribed tab fertigol</translation>
 <translation id="3853549894831560772">Mae <ph name="DEVICE_NAME" /> wedi'i droi ymlaen</translation>
 <translation id="3854348409770521214">Peintiad Olew</translation>
 <translation id="3854976556788175030">Mae'r hambwrdd allbwn yn llawn</translation>
@@ -2928,6 +2945,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3870931306085184145">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw ar gyfer <ph name="DOMAIN" /></translation>
 <translation id="3871311639805275356">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> (1 Tab)}zero{<ph name="GROUP_TITLE" /> (# Tab)}two{<ph name="GROUP_TITLE" /> (# Dab)}few{<ph name="GROUP_TITLE" /> (# Tab)}many{<ph name="GROUP_TITLE" /> (# Tab)}other{<ph name="GROUP_TITLE" /> (# Tab)}}</translation>
 <translation id="3871350334636688135">Ar ôl 24 awr, bydd eich gweinyddwr yn cynnal diweddariad untro fydd yn dileu eich data lleol ar ôl ailddechrau eich dyfais. Cadwch unrhyw ddata lleol sydd eu hangen arnoch i storfa cwmwl o fewn 24 awr.</translation>
+<translation id="3872216204881482120">Serennog</translation>
 <translation id="3872991219937722530">Crëwch ragor o le ar y disg neu bydd y ddyfais yn dod yn anymatebol.</translation>
 <translation id="3873121930618553927">Defnyddio asiantau codio AI i adeiladu estyniadau? Gosodwch y <ph name="BEGIN_LINK" /><ph name="CHROME_EXTENSIONS" /> a'r <ph name="WEB_STORE_SKILL" /><ph name="END_LINK" /> i ddysgu'ch asiant codio am y diweddariadau API diweddaraf ac arferion gorau.</translation>
 <translation id="3873423927483480833">Dangos PIN</translation>
@@ -2971,7 +2989,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3920938867981797493">Polisïau diweddaru</translation>
 <translation id="3921132130819999051">Gadewch i Chrome bori i chi</translation>
 <translation id="3922823422695198027">Mae apiau eraill wedi'u gosod i agor yr un dolenni â <ph name="APP_NAME" />. Bydd hyn yn analluogi <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> a <ph name="APP_NAME_4" /> rhag agor dolenni a gefnogir.</translation>
-<translation id="3923184630988645767">Defnydd data</translation>
 <translation id="3923676227229836009">Caniateir i'r dudalen hon weld ffeiliau</translation>
 <translation id="3923958273791212723">Rhybuddion am broblemau perfformiad</translation>
 <translation id="3924487862883651986">Yn anfon cyfeiriadau URL i Pori'n Ddiogel i'w gwirio. Hefyd yn anfon sampl fach o dudalennau, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i helpu i ddarganfod bygythiadau newydd. Mae'n cysylltu'r data hyn dros dro â'ch Cyfrif Google pan fyddwch wedi mewngofnodi, i'ch amddiffyn ar draws apiau Google.</translation>
@@ -3101,7 +3118,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4052120076834320548">Bach iawn</translation>
 <translation id="4053028343167125998">Datglowch <ph name="TOKEN_NAME" /> i fewnforio'r dystysgrif cleient.</translation>
 <translation id="4053833479432165765">&amp;Gosod tudalen fel ap...</translation>
-<translation id="4054070260844648638">Yn weladwy i bawb</translation>
 <translation id="4056908315660577142">Rydych wedi cyrraedd y terfyn amser y mae eich rhiant wedi'i osod ar gyfer yr ap <ph name="APP_NAME" /> yn Chrome. Gallwch ei ddefnyddio am <ph name="TIME_LIMIT" /> yfory.</translation>
 <translation id="4057041477816018958"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /></translation>
 <translation id="405733379999213678">Parhau i ganiatáu i'r wefan hon reoli ac ailraglennu eich dyfeisiau MIDI</translation>
@@ -3130,7 +3146,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <ph name="EXTENSION_FILE" /></translation>
 <translation id="4089235344645910861">Mae'r gosodiadau wedi'u cadw. Wedi dechrau cysoni.</translation>
 <translation id="4092709865241032354">I helpu Rheolwr Cyfrineiriau Google gadw eich gwybodaeth fewngofnodi, ychwanegwch eich enw defnyddiwr ar gyfer y wefan hon</translation>
-<translation id="4093173301198419723">Rhaid cael priflythrennau, llythrennau bach, rhifau a symbolau</translation>
 <translation id="4093955363990068916">Ffeil leol:</translation>
 <translation id="4095264805865317199">Agor UI Gweithredu Symudol</translation>
 <translation id="4095425503313512126">Mae pori a chwilio yn gyflymach</translation>
@@ -3248,6 +3263,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4230659518013393045">Mae teitl y dudalen, URL, a chynnwys eich tab cyfredol yn cael eu rhannu â Google i roi atebion mwy perthnasol i chi. Gallwch ychwanegu neu dynnu tabiau wrth i chi bori.</translation>
 <translation id="4232376164796433044">Cyfrineiriau ac Awtolenwi</translation>
 <translation id="4235200303672858594">Sgrîn gyfan</translation>
+<translation id="4235638340861052804">Dewch o hyd i'ch holl grwpiau tabiau yn chwilio tabiau yma</translation>
 <translation id="4236163961381003811">Darganfod rhagor o estyniadau</translation>
 <translation id="4241140145060464825">Cynnwys Ap</translation>
 <translation id="4242245038391716252">Wedi'i lawrlwytho gan estyniad: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
@@ -3334,7 +3350,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="431127643228811252">Mae gwedd hollt yn ei gwneud hi'n haws amldasgio</translation>
 <translation id="4311284648179069796">Ni chaniateir darllen a newid</translation>
 <translation id="4312866146174492540">Rhwystro (diofyn)</translation>
-<translation id="4314815835985389558">Rheoli'r cysoni</translation>
 <translation id="4316850752623536204">Gwefan Datblygwyr</translation>
 <translation id="4317820549299924617">Nid oedd y dilysiad yn llwyddiannus</translation>
 <translation id="4319441675152393296">Cliciwch ar eicon yr estyniad hwn i ddarllen a newid <ph name="HOST" /></translation>
@@ -3448,6 +3463,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4421932782753506458">Gwlanog</translation>
 <translation id="4423376891418188461">Adfer Gosodiadau</translation>
 <translation id="4424262960694990728">Angen gweithredu</translation>
+<translation id="4425149324548788773">My Drive</translation>
 <translation id="442528696198546304">Bydd cyfrineiriau, codau pas, a data eraill yn cael eu dileu yn barhaol o <ph name="BRAND" /></translation>
 <translation id="4426268963847471040">Dileu <ph name="FILE_NAME" /></translation>
 <translation id="4426508677408162512">Pob Nod tudalen</translation>
@@ -3495,6 +3511,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4479424953165245642">Rheoli apiau Kiosk</translation>
 <translation id="4481467543947557978">gweithiwr gwasanaeth</translation>
 <translation id="4482990632723642375">Tab a Gaewyd yn Ddiweddar</translation>
+<translation id="4487416356987296988">Ewch i Google Wallet i reoli <ph name="BEGIN_LINK1" />data a dewisiadau preifatrwydd<ph name="END_LINK1" /> neu reoli <ph name="BEGIN_LINK2" />dulliau talu<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />phasys<ph name="END_LINK3" /></translation>
 <translation id="4488257340342212116">Wedi'i ganiatáu defnyddio'ch camera</translation>
 <translation id="4490798467014431984">Ni chaniateir estyniadau ar y wefan hon</translation>
 <translation id="449126573531210296">Amgryptio cyfrineiriau sydd wedi'u cysoni gyda'ch Cyfrif Google</translation>
@@ -3554,6 +3571,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4550926046134589611">Bydd rhai dolenni a gefnogir yn dal i agor yn <ph name="APP_NAME" />.</translation>
 <translation id="4551379727767354516">Eich themâu AI diweddar</translation>
 <translation id="4551763574344810652">Pwyswch <ph name="MODIFIER_KEY_DESCRIPTION" /> i ddadwneud</translation>
+<translation id="4552721860956824254">Sain wedi'i distewi</translation>
 <translation id="4553807334824079753">Mae fersiwn newydd o'r ap hwn yn ofynnol</translation>
 <translation id="4555769855065597957">Cysgod</translation>
 <translation id="4556072422434361369">Mae <ph name="SENDER_NAME" /> wedi rhannu cyfrinair gyda chi ar gyfer <ph name="WEBSITE_NAME" />. Gallwch ei ddefnyddio yn y ffurflen mewngofnodi.</translation>
@@ -3672,7 +3690,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4672759829555593783">Agor <ph name="FILE_NAME" /> nawr</translation>
 <translation id="4673785607287397025">Bu trafferth wrth gysylltu. Gwnewch yn siŵr bod eich Chromecast a'ch cyfrifiadur ar yr un rhwydwaith, a rhowch gynnig arall arni.</translation>
 <translation id="4675065861091108046">Yn Flaenorol, Gwnaethoch Ddewis Caniatáu Pob Estyniad ar <ph name="ORIGIN" /></translation>
-<translation id="467510802200863975">Nid yw'r cyfrineiriau'n cyfateb</translation>
 <translation id="4676219265718114723">Gadawyd y broses gyda'r cod <ph name="EXIT_CODE" /></translation>
 <translation id="4676616966096505747">Nid yw rhai data wedi'u cadw yn eich cyfrif eto</translation>
 <translation id="4677772697204437347">Cof GPU</translation>
@@ -3753,7 +3770,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4750394297954878236">Awgrymiadau</translation>
 <translation id="475088594373173692">Defnyddiwr cyntaf</translation>
 <translation id="4751925628341802838">I gael eich hanes o'ch dyfeisiau eraill, mewngofnodwch a chysoni eich hanes a'ch tabiau i <ph name="EMAIL" />. Byddwch hefyd yn cael eich estyniadau a rhagor ar eich holl ddyfeisiau. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
-<translation id="4753084533826742808">Rhaid cael o leiaf 1 nod</translation>
 <translation id="4754590344707355551">Gwella eich porwr gydag estyniadau</translation>
 <translation id="4756130875344525429">I gael eich hanes o <ph name="DEVICE" />, mewngofnodwch a chysonwch eich hanes a'ch tabiau i <ph name="EMAIL" />. Byddwch hefyd yn cael eich gwybodaeth sydd wedi'i chadw a rhagor ar eich holl ddyfeisiau. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="4756378406049221019">Stopio/Ail-lwytho</translation>
@@ -3791,7 +3807,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4786430656008801173">AI ar y ddyfais</translation>
 <translation id="4787471921443575924">Golygu cod pas ar gyfer enw defnyddiwr: <ph name="USER_EMAIL" /></translation>
 <translation id="4789348252524569426">Methu â gosod ffeiliau llais. Mae angen diweddaru eich dyfais. Ailgychwynnwch eich dyfais a rhowch gynnig arall arni.</translation>
-<translation id="4789550509729954245">Dangos hysbysiad pan fydd dyfeisiau yn rhannu gerllaw</translation>
 <translation id="4791793693640849493">Cadw eitemau yn y cyfrif</translation>
 <translation id="4794910597689955457">Symud <ph name="NUM_OF_FILES" /> ffeil i <ph name="CLOUD_PROVIDER" /> i'w hagor?</translation>
 <translation id="479536056609751218">Tudalen we, HTML yn Unig</translation>
@@ -3963,6 +3978,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="4949898053053527676">Mae'n ymddangos nad oes unrhyw ganlyniadau chwilio ar gyfer eich chwiliad</translation>
 <translation id="4949954144207118092">Agor mewn tab <ph name="APP_NAME" /> presennol</translation>
 <translation id="4950100687509657457">Creu proffil</translation>
+<translation id="4951243490849567729">Rheoli sgiliau yn yr ap Gemini Enterprise</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="495170559598752135">Gweithrediadau</translation>
 <translation id="4951966678293618079">Peidio byth â chadw cyfrineiriau ar gyfer y wefan hon</translation>
@@ -4147,7 +4163,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5146235736676876345">Dewiswch un eich hun</translation>
 <translation id="5147113439721488265">Argymhelliad</translation>
 <translation id="5148020348702787234">I anfon dolenni, cadarnhewch mai chi sydd yno. Gallwch anfon dolenni pan fyddwch wedi mewngofnodi i'r un Cyfrif Google ar y ddwy ddyfais.</translation>
-<translation id="5148285448107770349">Rhaid i gyfrinair fod o leiaf 8 nod</translation>
 <translation id="5149602533174716626">Copïo Ffrâm Fideo</translation>
 <translation id="5150254825601720210">Enw Gweinydd SSL Tystysgrif Netscape</translation>
 <translation id="5151354047782775295">Crëwch ragor o le ar y disg neu mae'n bosib y bydd rhai data yn cael eu dileu yn awtomatig</translation>
@@ -4183,7 +4198,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5183344263225877832">Ailosod pob caniatâd dyfais HID?</translation>
 <translation id="5184063094292164363">&amp;Consol JavaScript</translation>
 <translation id="5184329579814168207">Agor yn Chrome</translation>
-<translation id="5184662919967270437">Wrthi'n diweddaru'ch dyfais</translation>
 <translation id="5185500136143151980">Dim rhyngrwyd</translation>
 <translation id="5186362203408605578">Defnyddiwch ddyfais arall trwy sganio'r cod QR</translation>
 <translation id="5186788525428341874">Gallwch ddefnyddio'r cod pas hwn i fewngofnodi'n gyflymach ar draws eich dyfeisiau. Bydd yn cael ei gadw i'r Rheolwr Cyfrineiriau Google ar gyfer <ph name="ACCOUNT_NAME" />.</translation>
@@ -4207,7 +4221,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5204282224596194174">Cyfrinair adfer ar gyfer <ph name="USER_EMAIL" /></translation>
 <translation id="5204584298075822291">Crebachu Tabiau</translation>
 <translation id="5204967432542742771">Rhowch eich cyfrinair</translation>
-<translation id="5205484256512407285">Peidiwch byth â defnyddio data symudol i drosglwyddo</translation>
 <translation id="520568280985468584">Ychwanegwyd rhwydwaith yn llwyddiannus. Gall gymryd sawl munud i'ch rhwydwaith symudol weithredu.</translation>
 <translation id="5206980963892466043">Mae ein <ph name="BEGIN_LINK_TERMS" />Telerau<ph name="END_LINK_TERMS" />, <ph name="BEGIN_LINK_LOCATION_TERMS" />Telerau Lleoliad Corea<ph name="END_LINK_LOCATION_TERMS" />, a'n <ph name="BEGIN_LINK_PRIVACY" />Hysbysiad Preifatrwydd<ph name="END_LINK_PRIVACY" /> yn berthnasol.</translation>
 <translation id="520840839826327499">Mae <ph name="SERVICE_NAME" /> eisiau gwirio a ydych yn defnyddio dyfais ChromeOS cymwys.</translation>
@@ -4324,7 +4337,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5317781812114905957">Cyfarwyddiadau</translation>
 <translation id="5319712128756744240">Paru dyfais newydd</translation>
-<translation id="5320135788267874712">Enw dyfais newydd</translation>
 <translation id="532247166573571973">Mae'n bosib bod y gweinydd yn anghyraeddadwy. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="5324300749339591280">Rhestr apiau</translation>
 <translation id="5327248766486351172">Enw</translation>
@@ -4338,7 +4350,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5337035808300170502">Maint gwirioneddol</translation>
 <translation id="5337207153202941678">Diffodd yr amlygu</translation>
 <translation id="5337771866151525739">Wedi'i osod gan drydydd parti.</translation>
-<translation id="5337926771328966926">Enw presennol y ddyfais yw <ph name="DEVICE_NAME" /></translation>
 <translation id="5340787663756381836">&amp;Canfod a golygu</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Dde)</translation>
 <translation id="534449933710420173">Ffolder ddienw</translation>
@@ -4370,6 +4381,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5379140238605961210">Parhau i rwystro mynediad at y meicroffon</translation>
 <translation id="5382591305415226340">Rheoli dolenni a gefnogir</translation>
 <translation id="5384401776498845256">Pwy all rannu gyda chi</translation>
+<translation id="5386856927586721327">Gofynnwch am eich sgrîn gyda <ph name="LENS_ICON" />Google Lens</translation>
 <translation id="5387116558048951800">Golygu <ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="538822246583124912">Mae'r polisi menter wedi newid. Cafodd botwm Arbrofion ei ychwanegu at y bar offer. Cliciwch y botwm i agor deialog i alluogi arbrofion.</translation>
 <translation id="5388719243178419614">Methu ag uwchlwytho. Wedi methu â phrosesu'r ffeil delwedd.</translation>
@@ -4478,7 +4490,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5483005706243021437">Aros Yma</translation>
 <translation id="5485435764083510385">Iaith capsiwn a ffefrir</translation>
 <translation id="5486071940327595306">Mae'n bosib y bydd angen math gwahanol o ddyfais neu un mwy newydd ar <ph name="WEBSITE" /></translation>
-<translation id="5486261815000869482">Cadarnhewch eich cyfrinair</translation>
 <translation id="5486561344817861625">Efelychu Ailgychwyn y Porwr</translation>
 <translation id="5486748931874756433">Bydd y newid hwn yn dod i rym pan fyddwch yn derbyn y diweddariad nesaf ac yn ailgychwyn eich <ph name="DEVICE_TYPE" />. Ni ellir gwrthdroi'r newid hwn ac mae'n berthnasol i holl ddefnyddwyr y ddyfais hon.</translation>
 <translation id="5487214759202665349">Defnyddio'r cyfeiriad hwn ar eich iPhone</translation>
@@ -4649,7 +4660,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5663918299073387939">Mae gwefannau fel arfer yn gofyn am reoli ac ailraglennu dyfeisiau MIDI i greu cerddoriaeth, golygu cerddoriaeth, neu ddiweddaru cadarnwedd dyfeisiau</translation>
 <translation id="5666911576871845853">&amp;Ychwanegu proffil newydd</translation>
 <translation id="566956875537427204">Agor Chat</translation>
-<translation id="5669863904928111203">Mae ChromeOS yn hen</translation>
 <translation id="5671641761787789573">Rhwystrwyd lluniau</translation>
 <translation id="5672475067418064339">Yn y bar cyfeiriad, defnyddiwch yr allwedd hon gyda'ch holl lwybrau byr</translation>
 <translation id="567587836466137939">Bydd y ddyfais hon yn cael diweddariadau meddalwedd a diogelwch awtomatig tan <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
@@ -4755,6 +4765,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5796485699458186843">Tab Anhysbys &amp;newydd</translation>
 <translation id="5796656350463724">Arddullio tab</translation>
 <translation id="5796956053441619942">Nid yw'r URL o'r ddyfais o bell yn cael ei gefnogi</translation>
+<translation id="5797148980414822942">Chwilio nodweddion a gweithredoedd Chrome</translation>
 <translation id="5798079537501238810">Gall gwefannau osod trinyddion taliadau</translation>
 <translation id="5798086737841799234">Rhowch y cod cadarnhau</translation>
 <translation id="5798574502832537664">Cael diffiniad neu ddysgu rhagor am bwnc trwy ddewis testun ar dudalen</translation>
@@ -4779,7 +4790,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5821565227679781414">Creu Llwybr Byr</translation>
 <translation id="5826993284769733527">Lled-dryloyw</translation>
 <translation id="5827266244928330802">Safari</translation>
-<translation id="5827591412833386477">Dangos gwefannau yn yr un grŵp</translation>
 <translation id="5827835011646404677">Mae sgiliau'n cael eu cadw i'ch Cyfrif Google</translation>
 <translation id="5828181959764767444">Machlud haul</translation>
 <translation id="5828545842856466741">Ychwanegu proffil...</translation>
@@ -4798,7 +4808,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="583673505367439042">Gall gwefannau ofyn am olygu ffeiliau a ffolderi ar eich dyfais</translation>
 <translation id="5836999627049108525">Iaith i Gyfieithu ohoni</translation>
 <translation id="5840658767386246331">Chwilio gyda Google</translation>
-<translation id="5840680448799937675">Bydd ffeiliau bob amser yn cael eu rhannu all-lein</translation>
 <translation id="5841338463993781099">Cadw yn y cyfrif?</translation>
 <translation id="5844284118433003733">Pan fyddwch wedi mewngofnodi, mae'r data hyn wedi'u cysylltu â'ch Cyfrif Google i'ch diogelu ar draws gwasanaethau Google, er enghraifft cynyddu diogelwch yn Gmail ar ôl digwyddiad diogelwch.</translation>
 <translation id="5844685625984052392">Awgrym</translation>
@@ -4859,7 +4868,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5902400038326841449">Mae Rheolwr Cyfrineiriau Google wedi'i ddiffodd</translation>
 <translation id="5902892210366342391">Gweld rhybuddion cyn mynd i wefannau anniogel yn y modd Anhysbys</translation>
 <translation id="5906457147959147328">Parhau i ganiatáu i'r wefan hon ddefnyddio dynodwyr i chwarae cynnwys gwarchodedig</translation>
-<translation id="5906655207909574370">Bron yn gyfoes! Ailgychwyn eich dyfais i orffen diweddaru.</translation>
 <translation id="5906732635754427568">Bydd data sy'n gysylltiedig â'r ap hwn yn cael eu tynnu o'r ddyfais hon.</translation>
 <translation id="5910363049092958439">Ca&amp;dw Llun Fel...</translation>
 <translation id="5911030830365207728">Google Translate</translation>
@@ -4915,6 +4923,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> oriau brig)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Agor pob un mewn &amp;ffenest newydd}=1{Agor mewn &amp;ffenest newydd}two{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}few{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}many{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}other{Agor pob un ({COUNT}) mewn &amp;ffenest newydd}}</translation>
 <translation id="5964247741333118902">Cynnwys wedi'i fewnblannu</translation>
+<translation id="5965409657393819302">Problem dechnegol</translation>
 <translation id="5965607173855879702">Wrthi'n dileu data...</translation>
 <translation id="5966067139745999860">Wedi symud <ph name="SHORTCUT_TITLE" /> i safle <ph name="SHORTCUT_POSITION" /> o <ph name="TOTAL_SHORTCUTS" />.</translation>
 <translation id="5966511985653515929">Mae data gwefan yn cael eu dileu o'ch dyfais pan fyddwch yn cau pob ffenestr</translation>
@@ -4927,7 +4936,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5971861540200650391">Cuddio am <ph name="MODULE_TITLE" /> awr</translation>
 <translation id="597235323114979258">Gweld rhagor o gyrchfannau</translation>
 <translation id="5972543790327947908">Bydd rhai dolenni a gefnogir yn dal i agor yn <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> neu <ph name="APP_NAME_3" />.</translation>
-<translation id="5972559880616357748">Rhagor o gamau gweithredu ar gyfer <ph name="SITE_GROUP" /></translation>
 <translation id="5972708806901999743">Symud i'r brig</translation>
 <translation id="5973041996755340290">Dechreuodd "<ph name="CLIENT_NAME" />" dadfygio'r porwr hwn</translation>
 <translation id="5973605538625120605">Newid PIN</translation>
@@ -4937,7 +4945,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5978277834170881274">&amp;Defnyddio gwirio sillafu sylfaenol</translation>
 <translation id="597889390120790610">Dysgu rhagor am y llwybr byr dewis</translation>
 <translation id="5979084224081478209">Gwirio cyfrineiriau</translation>
-<translation id="5979353814339191480">Mae'r dewis hwn yn berthnasol i Chromebooks â chynllun data neu ddongl rhwydwaith symudol, neu pan fyddwch yn rhannu cysylltiad â phoethfan cludadwy</translation>
 <translation id="5979421442488174909">&amp;Cyfieithu i <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">I greu nodau tudalen, cliciwch y seren yn y bar cyfeiriad</translation>
 <translation id="5982578203375898585">Dangos lawrlwythiadau pan fyddant wedi gorffen</translation>
@@ -4946,7 +4953,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="5984222099446776634">Ymwelwyd yn Ddiweddar</translation>
 <translation id="598426658342593742">Symudwch eich tabiau i'r ochr</translation>
 <translation id="5987624353990540124">{COUNT,plural, =1{Ni fydd eich ffenestr Ynysig yn agor ar ôl i chi ail-lansio}zero{Ni fydd eich {COUNT} ffenestr Ynysig yn ailagor ar ôl i chi ail-lansio}two{Ni fydd eich {COUNT} ffenestr Ynysig yn ailagor ar ôl i chi ail-lansio}few{Ni fydd eich {COUNT} ffenestr Ynysig yn ailagor ar ôl i chi ail-lansio}many{Ni fydd eich {COUNT} ffenestr Ynysig yn ailagor ar ôl i chi ail-lansio}other{Ni fydd eich {COUNT} ffenestr Ynysig yn ailagor ar ôl i chi ail-lansio}}</translation>
-<translation id="5990266201903445068">Wi-Fi yn unig</translation>
 <translation id="5990386583461751448">Cyfieithwyd</translation>
 <translation id="5991039386730545918">Defnyddir eich thema lliw tudalen dewisol dim ond tra bod cyferbyniad uchel y system ymlaen</translation>
 <translation id="5992652489368666106">Dim ffin</translation>
@@ -4999,7 +5005,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6052976518993719690">Awdurdod Ardystio SSL</translation>
 <translation id="6054284857788651331">Grŵp Tabiau a Gaewyd yn Ddiweddar</translation>
 <translation id="6054819000749443354">Agor y Gosodiadau System</translation>
-<translation id="6054961935262556546">Newid gwelededd</translation>
 <translation id="6056710589053485679">Ail-lwytho arferol</translation>
 <translation id="6057312498756061228">Mae'r ffeil hon yn rhy fawr ar gyfer gwiriad diogelwch. Gallwch agor ffeiliau hyd at 50 MB.</translation>
 <translation id="6057381398996433816">Mae'r wefan hon wedi'i rhwystro rhag defnyddio synwyryddion symudiad a golau.</translation>
@@ -5079,6 +5084,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6135826623269483856">Ni chaniateir i reoli ffenestri ar eich holl sgriniau</translation>
 <translation id="6136287496450963112">Nid yw eich allwedd ddiogelwch yn cael ei amddiffyn gan PIN. I reoli olion bysedd, crëwch PIN yn gyntaf.</translation>
 <translation id="6136637346277431354">Ychwanegu tabiau a rhagor</translation>
+<translation id="6138948698908944955">Nid yw Gemini Enterprise yn Chrome ar gael oherwydd polisïau eich sefydliad.</translation>
 <translation id="6140948187512243695">Dangos y manylion</translation>
 <translation id="6141988275892716286">Cadarnhau lawrlwytho</translation>
 <translation id="6142784636114866877">Ehangu Tabiau (<ph name="KEYBOARD_SHORTCUT" />)</translation>
@@ -5158,7 +5164,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6207795130974856324">Wrthi'n aros am eich help</translation>
 <translation id="6207937957461833379">Gwlad / Rhanbarth</translation>
 <translation id="6208521041562685716">Wrthi'n gweithredu data symudol</translation>
-<translation id="6209589022625766110">Rhaid iddo fod o leiaf 8 nod o hyd a chynnwys o leiaf ddau o'r canlynol: priflythrennau, llythrennau bach, rhifau neu symbolau. Rhaid peidio â chael nodau neu ddilyniannau sy'n ailadrodd o 4 neu fwy.</translation>
 <translation id="6210282067670792090">Yn y bar cyfeiriad, defnyddiwch y llwybr byr bysellfwrdd hwn gyda llwybrau byr ar gyfer peiriannau chwilio a chwilio gwefan</translation>
 <translation id="6211409961905616543">Gall gwefannau ddefnyddio synwyryddion symudiad a golau</translation>
 <translation id="6211659910592825123">Gwiriwch eich camera</translation>
@@ -5171,6 +5176,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6215039389782910006">{1,plural, =1{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl 1 funud o anweithgarwch}zero{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}two{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # funud o anweithgarwch}few{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}many{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}other{I gadw'ch cyfrineiriau'n ddiogel, mae <ph name="BRAND" /> yn cloi ar ôl # munud o anweithgarwch}}</translation>
 <translation id="6216239400972191926">Gwefan ac apiau sydd wedi'u gwrthod</translation>
 <translation id="6216696360484424239">Mewngofnodi'n awtomatig</translation>
+<translation id="6218961554829577610">Ddim yn hoffi'r llais</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{Methu â chopïo ffeil i <ph name="CLOUD_PROVIDER" />}zero{Methu â chopïo ffeiliau i <ph name="CLOUD_PROVIDER" />}two{Methu â chopïo ffeiliau i <ph name="CLOUD_PROVIDER" />}few{Methu â chopïo ffeiliau i <ph name="CLOUD_PROVIDER" />}many{Methu â chopïo ffeiliau i <ph name="CLOUD_PROVIDER" />}other{Methu â chopïo ffeiliau i <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="62229737360959019">Mae tabiau a agorwyd o sgwrs neu dab a rennir hefyd yn cael eu rhannu â Gemini. Yn y modd Byw, dim ond y tab presennol sy'n cael ei rannu yn ddiofyn.</translation>
 <translation id="622537739776246443">Bydd y proffil yn cael ei ddileu</translation>
@@ -5252,7 +5258,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6295855836753816081">Wrthi'n cadw...</translation>
 <translation id="6298456705131259420">Yn effeithio ar y gwefannau a restrir yma. Mae mewnosod “[*.]” cyn enw parth yn creu eithriad ar gyfer y parth cyfan. Er enghraifft, bydd ychwanegu "[*.]google.com" yn golygu y bydd cwcis trydydd parti yn gallu bod yn weithredol ar gyfer mail.google.com, oherwydd ei fod yn rhan o google.com.</translation>
 <translation id="6300177430812514606">Ni chaniateir gorffen anfon na derbyn data</translation>
-<translation id="6300478323573969040">Rhaid iddo fod o leiaf 12 nod o hyd a chynnwys priflythrennau, llythrennau bach, rhifau a symbolau. Rhaid peidio â chael nodau neu ddilyniannau sy'n ailadrodd o 4 neu fwy.</translation>
 <translation id="630065524203833229">Gadael</translation>
 <translation id="6302411260734295784">Rhagor o ddewisiadau</translation>
 <translation id="6303023592034094909">Mae fersiwn newydd o'r ap hwn ar gael</translation>
@@ -5295,7 +5300,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6345566021391290381">Mae cyfrineiriau a rennir gyda chi ar gyfer <ph name="WEBSITE_NAME" />. Gallwch eu defnyddio yn y ffurflen mewngofnodi.</translation>
 <translation id="6345878117466430440">Marcio fel wedi'i darllen</translation>
 <translation id="6346952829206698721">Gludo o'r clipfwrdd</translation>
-<translation id="6347010704471250799">Dangos hysbysiad</translation>
 <translation id="634792071306410644">Ni all unrhyw un rannu â chi nes i chi wneud eich hun yn weladwy</translation>
 <translation id="6349101878882523185">Gosod <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Rheoli eich dyfeisiau</translation>
@@ -5412,7 +5416,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6463668944631062248">Derbyn cais castio ar eich <ph name="DEVICE_NAME" /></translation>
 <translation id="6463795194797719782">&amp;Golygu</translation>
 <translation id="6464825623202322042">Y ddyfais hon</translation>
-<translation id="6465841119675156448">Heb ryngrwyd</translation>
 <translation id="6466258437571594570">Mae gwefannau yn cael eu rhwystro rhag torri ar eich traws pan fyddant yn gofyn am anfon hysbysiadau</translation>
 <translation id="6466936665940546351">Cadarnhewch mai chi sydd yno i ychwanegu cyfrineiriau a'u cael ar bob dyfais gyda'ch Cyfrif Google</translation>
 <translation id="6467230443178397264">Sganio <ph name="FILE_NAME" /></translation>
@@ -5428,7 +5431,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6479881432656947268">Ewch i Chrome Web Store</translation>
 <translation id="6480327114083866287">Rheolir gan <ph name="MANAGER" /></translation>
 <translation id="6480532238409319936">Methodd y weithred ddiweddaru</translation>
-<translation id="6481749622989211463">Rhannu ffeiliau a mwy gyda dyfeisiau cyfagos. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="6483485061007832714">Agor lawrlwythiad</translation>
 <translation id="6483727753854114405">{NUM_GROUPS,plural, =1{Cadw'r grŵp tabiau?}zero{Cadw'r grwpiau tabiau?}two{Cadw'r grwpiau tabiau?}few{Cadw'r grwpiau tabiau?}many{Cadw'r grwpiau tabiau?}other{Cadw'r grwpiau tabiau?}}</translation>
 <translation id="6486301003991593638">I reoli codau pas, defnyddiwch fersiwn mwy diweddar o Windows</translation>
@@ -5483,6 +5485,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="6542417422899025860">Tynnu'r rhan fwyaf o wybodaeth bersonol yn awtomatig</translation>
 <translation id="6548240707386871455">Llwybr byr awtolenwi gwell</translation>
 <translation id="654871471440386944">Troi pori caret ymlaen?</translation>
+<translation id="6549689063733911810">Diweddar</translation>
 <translation id="6550675742724504774">Dewisiadau</translation>
 <translation id="6550790536557204077"><ph name="BEGIN_LINK" />Rheolir eich proffil<ph name="END_LINK" /> gan <ph name="MANAGER" /></translation>
 <translation id="6550891580932862748">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Ni fydd eich gosodiadau Pori'n Ddiogel mewn cynhyrchion Google eraill yn cael eu heffeithio.</translation>
@@ -5599,7 +5602,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="664271268954513498">Gwerth Polisi</translation>
 <translation id="664290675870910564">Dewis Rhwydwaith</translation>
 <translation id="6643016212128521049">Clirio</translation>
-<translation id="6644846457769259194">Yn diweddaru eich dyfais (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646579314269804020">Rhannu gosodiadau Wi-Fi rhwng eich dyfeisiau.</translation>
 <translation id="6646696210740573446">Yn anfon rhan o'r URL sydd wedi'i dwyllo at Google drwy weinydd preifatrwydd sy'n cuddio eich cyfeiriad IP. Os yw gwefan yn ceisio dwyn eich cyfrinair, neu pan fyddwch yn lawrlwytho ffeil niweidiol, gall Chrome hefyd anfon cyfeiriadau URL, gan gynnwys darnau o gynnwys tudalen, i Google.</translation>
 <translation id="6647228709620733774">URL Dirymu Awdurdod Ardystio Netscape</translation>
@@ -5821,7 +5823,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6847125920277401289">Gwnewch le a pharhau</translation>
 <translation id="6850286078059909152">Lliw'r testun</translation>
 <translation id="6850925512806464982">Bydd pawb yn colli mynediad at y grŵp tabiau hwn ar unwaith, a bydd yn cael ei ddileu o bob dyfais</translation>
-<translation id="6851346504162963984">{MEMBERS,plural, =1{1 wefan yng ngrŵp <ph name="RWS_OWNER" />}zero{{MEMBERS} gwefan yng ngrŵp <ph name="RWS_OWNER" />}two{{MEMBERS} wefan yng ngrŵp <ph name="RWS_OWNER" />}few{{MEMBERS} gwefan yng ngrŵp <ph name="RWS_OWNER" />}many{{MEMBERS} gwefan yng ngrŵp <ph name="RWS_OWNER" />}other{{MEMBERS} gwefan yng ngrŵp <ph name="RWS_OWNER" />}}</translation>
 <translation id="6851497530878285708">Ap sydd wedi'i Alluogi</translation>
 <translation id="6853118789186721762">Anfonwyd atgoffwr i'ch <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853767770825049629"><ph name="DROPDOWN_NAME" /> blwyddyn</translation>
@@ -5916,6 +5917,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6934597021412437058">Gallwch nawr ddefnyddio gwedd hollt i gymharu, amldasgio, a rhagor</translation>
 <translation id="6941514251635934269">Gofyn am y ddogfen hon</translation>
 <translation id="694168622559714949">Mae eich gweinyddwr wedi gosod iaith ddiofyn na ellir ei haddasu.</translation>
+<translation id="6941953303876950920">Mae angen ail-lansio i barhau i bori gyda Gemini</translation>
 <translation id="6944750221184785444">Methu â gosod y proffil hwn. I gael cymorth technegol, cysylltwch â'ch cludydd.</translation>
 <translation id="6944854424004126054">Adfer ffenestr</translation>
 <translation id="6945221475159498467">Dewis</translation>
@@ -5998,6 +6000,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7015135594296285641">Caniatáu estyniadau</translation>
 <translation id="7017219178341817193">Ychwanegu tudalen newydd</translation>
 <translation id="7017354871202642555">Methu â gosod modd ar ôl gosod y ffenestr.</translation>
+<translation id="7020606255631609371">Mae newid yn gofyn am ail-lansio Chrome.</translation>
 <translation id="7020810150082302220">Newidiwyd eich porwr diofyn</translation>
 <translation id="7020961208013161090">Estyniadau a sgiliau</translation>
 <translation id="7022562585984256452">Mae eich tudalen hafan wedi'i gosod.</translation>
@@ -6134,6 +6137,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7171000599584840888">Ychwanegu Proffil…</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{Ychwanegu'r tab i grŵp newydd}zero{Ychwanegu'r tabiau i grŵp newydd}two{Ychwanegu'r tabiau i grŵp newydd}few{Ychwanegu'r tabiau i grŵp newydd}many{Ychwanegu'r tabiau i grŵp newydd}other{Ychwanegu'r tabiau i grŵp newydd}}</translation>
 <translation id="7173114856073700355">Agor y Gosodiadau</translation>
+<translation id="7174348311127742156">Gwybodaeth am hediadau, rhifau teithiwr hysbys a rhifau unioni cam, cerbydau</translation>
 <translation id="7175353351958621980">Wedi'i lwytho o:</translation>
 <translation id="7176515069119047423">{NUM_TABS,plural, =1{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tab wedi'i binio}zero{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tabiau sydd wedi'u pinio}two{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tabiau sydd wedi'u pinio}few{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tab wedi'i binio}many{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tabiau sydd wedi'u pinio}other{Pwyswch <ph name="SHORTCUT_TEXT" /> eto i gau'r tab wedi'i binio}}</translation>
 <translation id="7177659256878428843">Trosi grŵp tabiau yn ffolder nodau tudalen</translation>
@@ -6241,6 +6245,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7273110280511444812">atodwyd ddiwethaf ar <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Rhwystro <ph name="HOST" /> rhag rheoli ac ailraglennu eich dyfeisiau MIDI bob amser</translation>
 <translation id="7275950084263610253">Caniateir iddo gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol</translation>
+<translation id="7277103236771772124">Ail-lansiwch i ddechrau pori gyda Gemini Enterprise</translation>
 <translation id="727952162645687754">Gwall lawrlwytho</translation>
 <translation id="7280265656690268844">Mae optimeiddio JavaScript wedi'i ddiffodd</translation>
 <translation id="7280683802406059877">Addasu llwybr byr bysellfwrdd</translation>
@@ -6382,6 +6387,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7396845648024431313">Bydd <ph name="APP_NAME" /> yn lansio cychwyn system ac yn parhau i redeg yn y cefndir hyd yn oed ar ôl i chi gau pob ffenestr <ph name="PRODUCT_NAME" /> arall.</translation>
 <translation id="7399045143794278225">Addasu'r cysoni</translation>
 <translation id="7399616692258236448">Mae ceisiadau lleoliad yn cael eu rhwystro'n awtomatig ar gyfer pob gwefan ac eithrio'r rhai rydych yn eu caniatáu</translation>
+<translation id="7399746352569282594">Cau gwedd hollt: <ph name="FIRST_TAB_TITLE" />, <ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">Gwiriad Diogelwch</translation>
 <translation id="7400059772197434086">wedi'i rhwystro rhag defnyddio eich gwybodaeth ar</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -6414,7 +6420,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7421293530411019405">Gadael grŵp tabiau?</translation>
 <translation id="7421925624202799674">&amp;Gweld Ffynhonnell y Dudalen</translation>
 <translation id="7422192691352527311">Dewisiadau...</translation>
-<translation id="7423425410216218516">Mae gwelededd ymlaen am <ph name="MINUTES" /> o funudau</translation>
 <translation id="7424818322350938336">Ychwanegwyd y rhwydwaith</translation>
 <translation id="7425037327577270384">Helpu fi i ysgrifennu</translation>
 <translation id="7427348830195639090">Tudalen Gefndir: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6429,7 +6434,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7433957986129316853">Cadw</translation>
 <translation id="7434100547946193426">Apiau eraill</translation>
 <translation id="7434509671034404296">Datblygwr</translation>
-<translation id="743760275071945925">preifat, anhysbys, yn ddirgel, cyfrinach, diogelwch, amddiffyniad olrhain, cwcis, clir, storfa dros dro</translation>
 <translation id="7439519621174723623">Ychwanegwch enw dyfais i barhau</translation>
 <translation id="7440404390546433462">Google Search</translation>
 <translation id="7441736921018636843">I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ail-osodwch gysoni<ph name="END_LINK" /> i dynnu eich cyfrinymadrodd cysoni</translation>
@@ -6558,7 +6562,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="757941033127302446">Wedi mewngofnodi</translation>
 <translation id="7580311608678791180">Agor o far tasgau Windows</translation>
 <translation id="7581462281756524039">Offeryn glanhau</translation>
-<translation id="7582844466922312471">Data Symudol</translation>
 <translation id="7583948862126372804">Cyfrif</translation>
 <translation id="7585106857920830898">Wrthi'n gwirio gyda pholisïau diogelwch eich sefydliad...</translation>
 <translation id="7585490016012953607">Cyfrinair adfer - wedi'i gadw dros dro am hyd at 3 mis</translation>
@@ -6608,7 +6611,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7636175154537919400">De-gliciwch i guddio tabiau eraill dros dro</translation>
 <translation id="7636346903338549690">Gwefannau a ganiateir i ddefnyddio cwcis trydydd parti</translation>
 <translation id="7637593984496473097">Nid oes digon o le ar y disg</translation>
-<translation id="7640308610547854367">Rydych wedi dychwelyd i fersiwn flaenorol o ChromeOS. I gael diweddariadau, arhoswch nes bod y fersiwn nesaf ar gael.</translation>
 <translation id="7641720519047586765">Cafodd y cod pas hwn ei ddileu o'r wefan hon</translation>
 <translation id="7645993210569143154">dolen, bwrdd gwaith, eicon, nod tudalen, sgrîn hafan, drive, hafan, lansio</translation>
 <translation id="7646425900255826066">Gallwch gadw cyfrineiriau gyda Rheolwr Cyfrineiriau Google pan fyddwch wedi mewngofnodi i Chrome</translation>
@@ -6620,7 +6622,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7649954700951153978">Atgoffa fi ar iOS</translation>
 <translation id="7650141368285545431">Defnyddio cod pas o ddyfais arall</translation>
 <translation id="7650178491875594325">Adfer data lleol</translation>
-<translation id="7650677314924139716">Y gosodiad defnyddio data presennol yw Wi-Fi yn unig</translation>
 <translation id="7650721582841150356">Ail-lansio'n ddiweddarach...</translation>
 <translation id="7651182181030187705">I gael y nod tudalen hwn ar eich holl ddyfeisiau, cadarnhewch mai chi sydd yno</translation>
 <translation id="7651754152638505879">Tasg wedi'i Seibio</translation>
@@ -6716,7 +6717,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="7751260505918304024">Dangos pob un</translation>
 <translation id="7752832973194460442">Gwybodaeth Ap Android</translation>
 <translation id="7754704193130578113">Gofyn ble i gadw pob ffeil cyn ei lawrlwytho</translation>
-<translation id="7757592200364144203">Newid enw'r ddyfais</translation>
 <translation id="7757739382819740102">Gall cysylltiadau gerllaw rannu gyda chi. Bydd angen cymeradwyaeth.</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">Ychwanegu chwiliad gwefan</translation>
@@ -6837,6 +6837,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="7876243839304621966">Tynnu pob un</translation>
 <translation id="7877212753140190672">Gofyn am y llun hwn</translation>
 <translation id="7877451762676714207">Gwall gweinydd anhysbys. Rhowch gynnig arall arni, neu cysylltwch â gweinyddwr y gweinydd.</translation>
+<translation id="7878848322697986074">Nid yw Gemini Enterprise ar gael ar gyfer Gemini yn Chrome</translation>
 <translation id="7879172417209159252">Methu â defnyddio'r estyniad</translation>
 <translation id="7879631849810108578">Wedi gosod llwybr byr: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">Byddwn yn dileu data lleol pan fyddwch yn ailgychwyn</translation>
@@ -6850,6 +6851,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="7892384782944609022">Methu â pharu. Dewiswch ddyfais i roi cynnig arall arni.</translation>
 <translation id="7893008570150657497">Cael mynediad at luniau, cerddoriaeth a chyfryngau eraill o'ch cyfrifiadur</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Diofyn)</translation>
+<translation id="78946041517601018">Gyriannau cyffredin</translation>
 <translation id="7896292361319775586">Cadw <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Peidio â chaniatáu i wefannau lawrlwytho mwy nag un ffeil yn awtomatig</translation>
 <translation id="789859328812452250">Dangos Bob Tro</translation>
@@ -6925,6 +6927,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="7953236668995583915">Ail-lwythwch y dudalen hon i gymhwyso'ch gosodiadau diweddaraf ar y wefan hon</translation>
 <translation id="7953955868932471628">Rheoli llwybrau byr</translation>
 <translation id="7955105108888461311">Gofyn yn bersonol</translation>
+<translation id="7955672267519272700">Cau <ph name="TAB_TITLE" /></translation>
 <translation id="7956918070009672177">Does dim lleisiau <ph name="LANGUAGE" /> ar eich dyfais. Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="7957074856830851026">Gweld gwybodaeth am y ddyfais, megis ei rhif cyfresol neu rif adnabod ased</translation>
 <translation id="7958157896921135832">Cynyddu maint y ffont</translation>
@@ -6944,6 +6947,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="797394244396603170">Dewiswch y ddyfais yr hoffech rannu ffeiliau â hi</translation>
 <translation id="7974713334845253259">Lliw diofyn</translation>
 <translation id="7977029776654598145">Pan gaiff ei ddefnyddio</translation>
+<translation id="7978100757563451333">Mae tabiau'n cael eu rhannu i gael atebion mwy perthnasol. Mae Google yn defnyddio cynnwys ac URL tabiau a rennir. Mae eich tab presennol yn cael ei rannu mewn sgyrsiau newydd. Gallwch newid y gosodiad hwn unrhyw bryd.</translation>
 <translation id="7978412674231730200">Allwedd breifat</translation>
 <translation id="7978450511781612192">Bydd hyn yn eich allgofnodi o'ch Cyfrifon Google. Ni fydd eich nodau tudalen, eich hanes, eich cyfrineiriau, a rhagor yn cael eu cysoni mwyach.</translation>
 <translation id="7980066177668669492">ASCII sylfaen 64 wedi'i hencodio, nifer o dystysgrifau</translation>
@@ -6978,7 +6982,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8011372169388649948">Mae '<ph name="BOOKMARK_TITLE" />' wedi'i symud.</translation>
 <translation id="8013181884974864006">Tasgau Cyd-destunol</translation>
 <translation id="8013462234418290522">Mewngofnodwch i gael eich gwybodaeth sydd wedi'i chadw a rhagor o'ch <ph name="DEVICE" /></translation>
-<translation id="8013534738634318212">Mae'r gwefannau hyn mewn grŵp a ddiffinnir gan <ph name="RWS_OWNER" />. Gall gwefannau mewn grŵp weld eich gweithgarwch yn y grŵp.</translation>
 <translation id="8013993649590906847">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chrome yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
 <translation id="8014154204619229810">Mae'r rhaglen diweddaru wrthi'n rhedeg. Ail-lwythwch mewn munud i wirio eto.</translation>
 <translation id="8015021949830563076">Mae'r nodwedd hon yn defnyddio AI, yn cael ei datblygu'n gynnar, ac ni fydd bob amser yn ei chael yn iawn</translation>
@@ -7031,6 +7034,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8050191834453426339">Dilysu eto</translation>
 <translation id="8051193500142930381">Ni fydd nodweddion sydd angen camera yn gweithio</translation>
 <translation id="8052218774860457016">Rheoli cysoni porwr</translation>
+<translation id="8052486280100280398"><ph name="DESCRIPTION" /> Mae <ph name="BEGIN_LINK1" />Telerau Google<ph name="END_LINK1" /> a'r <ph name="BEGIN_LINK2" />Hysbysiad Preifatrwydd Apiau Gemini<ph name="END_LINK2" /> yn berthnasol.</translation>
 <translation id="8052898407431791827">Wedi'i gopïo i'r clipfwrdd</translation>
 <translation id="8052944601017749068">Mewnforio i <ph name="CERT_GROUP" /></translation>
 <translation id="8053390638574070785">Ail-lwytho'r Dudalen hon</translation>
@@ -7071,7 +7075,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8090686009202681725">Creu thema gydag AI</translation>
 <translation id="8092792048365451089">Gweithrediad wedi'i gwblhau gyda chanlyniad: <ph name="OUTCOME" /></translation>
 <translation id="8094536695728193970">Bricyll</translation>
-<translation id="8095439028686936591">Mae ChromeOS yn gyfredol</translation>
 <translation id="809792523045608178">Mae <ph name="IDS_SHORT_PRODUCT_NAME" /> yn defnyddio gosodiadau dirprwyol o estyniad</translation>
 <translation id="8100057926383586173">Agor gosodiadau iaith</translation>
 <translation id="8100230553590752325">Defnyddiwch gyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais</translation>
@@ -7084,6 +7087,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8104412594956510627">I gael eich hanes o <ph name="DEVICE" />, cysonwch eich hanes. Gallwch stopio cysoni unrhyw bryd yn y gosodiadau. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="8104778744208707085">Angen eich sylw</translation>
 <translation id="8105273883928376822">Mewngofnodwch i barhau.</translation>
+<translation id="8106045200081704138">Rhannwyd â fi</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> aelod</translation>
 <translation id="8108853197309181986">Rydych mewn Ffenestr Ynysig</translation>
 <translation id="8109109153262930486">Rhithffurf diofyn</translation>
@@ -7416,7 +7420,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8447409163267621480">Cynnwys naill ai Ctrl neu Alt</translation>
 <translation id="8449008133205184768">Gludo a Chopïo Arddull</translation>
 <translation id="8449036207308062757">Rheoli'r storfa</translation>
-<translation id="8449347986464073209">Dileu ac Allgofnodi</translation>
 <translation id="8449836157089738489">Agor pob un mewn grŵp tabiau newydd</translation>
 <translation id="8449869326050867919">Wedi rhannu cyfrinair</translation>
 <translation id="8453400752347156012">Mae'r nod tudalen hwn wedi'i gadw i'r ddyfais hon yn unig. Os byddwch yn ei gadw i "<ph name="ACCOUNT_FOLDER" />", bydd y nod tudalen hwn hefyd yn cael ei gadw yn eich cyfrif.</translation>
@@ -7535,7 +7538,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8564894539416715395">Tudalen tab newydd</translation>
 <translation id="8565021320663436446">Tynnu <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8566916288687510520">Cyfrinair newydd wedi'i dderbyn</translation>
-<translation id="8567946600191652875">Rhaid iddo fod o leiaf 6 nod o hyd a chael o leiaf un llythyren neu symbol</translation>
 <translation id="8569682776816196752">Ni chanfuwyd unrhyw gyrchfannau</translation>
 <translation id="857026972772582291">Polisïau <ph name="APP_NAME" /></translation>
 <translation id="8571213806525832805">Y 4 wythnos diwethaf</translation>
@@ -7631,6 +7633,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
         <ph name="BREAK" />
         Gallwch reoli gosodiadau o'r ddewislen cardiau neu weld rhagor o ddewisiadau yn Customize Chrome.</translation>
 <translation id="8661290697478713397">Agor y Ddolen mewn Ffenestr Anh&amp;ysbys</translation>
+<translation id="8661971538508849701"><ph name="TITLE" />: <ph name="DESCRIPTION" /></translation>
 <translation id="8662474268934425487">Mewngofnodi i <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8662911384982557515">Newid eich tudalen hafan i: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Ni all Chrome osod papur wal.</translation>
@@ -7707,6 +7710,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
 <translation id="8725178340343806893">Ffefrynnau/Nodau Tudalen</translation>
 <translation id="87254326763805752">Cadarnhau cod pas</translation>
+<translation id="8725492688185786791">Gofynnwch i Gemini am unrhyw beth wrth i chi bori, a chael atebion wedi'u seilio ar ffeiliau a gwasanaethau ar draws eich sefydliad</translation>
 <translation id="8727751378406387165">Anfon <ph name="BEGIN_LINK1" />metaddata awtolenwi<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (ni fydd eich data awtolenwi yn cael eu rhannu)</translation>
@@ -7741,6 +7745,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8755175579224030324">Gwneud tasgau sy'n ymwneud â diogelwch ar gyfer eich sefydliad, megis rheoli tystysgrifau ac allweddi sydd wedi'u storio ar y ddyfais</translation>
 <translation id="8755376271068075440">&amp;Mwy</translation>
 <translation id="8755584192133371929">Dewiswch dab i'w rannu</translation>
+<translation id="8756370108715456837">Ddim yn ffeithiol gywir</translation>
 <translation id="8756969031206844760">Diweddaru'r cyfrinair?</translation>
 <translation id="876161309768861172">Methu â'ch mewngofnodi, rhowch gynnig arall arni</translation>
 <translation id="8763927697961133303">Dyfais USB</translation>
@@ -7862,7 +7867,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="8888459276890791557">Gallwch binio'r panel ochr hwn i gael mynediad hawdd</translation>
 <translation id="8889294078294184559">Wrth i chi barhau i bori, gall gwefannau wirio gyda Chrome a chadarnhau gyda gwefan flaenorol rydych wedi ymweld â hi eich bod yn debygol o fod yn berson go iawn</translation>
 <translation id="8889651696183044030">Gall <ph name="ORIGIN" /> olygu'r ffeiliau a'r ffolderi canlynol</translation>
-<translation id="8890170499370378450">Mae'n bosib y codir taliadau data symudol</translation>
 <translation id="8890516388109605451">Ffynonellau</translation>
 <translation id="8892168913673237979">Barod i fynd!</translation>
 <translation id="8892246501904593980">Gweler eich holl nodau tudalen yn Nodau Tudalen a Rhestrau</translation>
@@ -7890,7 +7894,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="8916476537757519021">Is-ffrâm Anhysbys: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Wrthi'n gosod ap...</translation>
-<translation id="891931289445130855">Dileu data a chaniatadau</translation>
 <translation id="8919468987486771003">Methu ag uwchlwytho. Uwchlwythiad ffeil wedi methu'r gwiriadau dilysu.</translation>
 <translation id="8920133120839850939">Dewiswch y tab Mwy o Ystumiau, yna trowch Sweipio rhwng tudalennau ymlaen i lywio yn ôl ac ymlaen</translation>
 <translation id="8923880975836399332">Gwyrddlas Tywyll</translation>
@@ -7956,7 +7959,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="8982043802480025357">Wrth agor ffeiliau Word, Excel, a PowerPoint, bydd y ffeiliau'n symud i Microsoft OneDrive cyn agor yn Microsoft 365</translation>
 <translation id="8983018820925880511">Bydd y proffil newydd hwn yn cael ei reoli gan <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Gall <ph name="ORIGIN" /> olygu <ph name="FILENAME" /></translation>
-<translation id="8984694057134206124">Byddwch yn weladwy i bawb am <ph name="MINUTES" /> o funudau. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="8985661493893822002">Cysylltwch i'r rhyngrwyd i fewngofnodi i'ch <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8985661571449404298">Ffeil anniogel wedi'i lawrlwytho</translation>
 <translation id="8986494364107987395">Anfon ystadegau defnydd ac adroddiadau damweiniau at Google yn awtomatig</translation>
@@ -8085,7 +8087,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="9107096627210171112">Cyfieithu...</translation>
 <translation id="9107624673674616016">Pensil Lliw</translation>
 <translation id="9108035152087032312">Enw &amp;ffenestr...</translation>
-<translation id="9108072915170399168">Y gosodiad defnyddio data presennol yw Heb y rhyngrwyd</translation>
 <translation id="9108674852930645435">Archwilio beth sy'n newydd ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="9109283579179481106">Cysylltwch â rhwydwaith symudol</translation>
 <translation id="9110739391922513676">Gosodwch Microsoft 365 i agor ffeiliau</translation>
@@ -8253,6 +8254,7 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="988320949174893488">Rhewi achlysurol</translation>
 <translation id="988978206646512040">Ni chaniateir cyfrinymadrodd gwag</translation>
 <translation id="989111665033316622">Wedi'i ddiffodd (analluogi ffocysu llinell)</translation>
+<translation id="989803194494387374">Amlygwch y testun rydych chi am ei gyfieithu</translation>
 <translation id="992032470292211616">Gall estyniadau, apiau a themâu niweidio'ch dyfais. Ydych chi'n siŵr eich bod am barhau?</translation>
 <translation id="992256792861109788">Pinc</translation>
 <translation id="994289308992179865">&amp;Dolen</translation>

@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">次をお試しください</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> を更新する</translation>
+<translation id="1139368021151541038">1 つ以上の文字または記号を使用してください</translation>
 <translation id="1142002900084379065">最近の写真</translation>
 <translation id="114221662579355151">カメラへのアクセス権を持つ <ph name="APP1_NAME" />、<ph name="APP2_NAME" />、およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="1145593918056169051">プリンタが停止しました</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">新しいタブを新しいウィンドウで開く</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> を使用するには、すべてのアカウントからログアウトする必要があります。ログアウトするには、[キャンセル] を選択して元に戻ります。次に時刻を選択してステータス領域を開き、[ログアウト] を選択します。最後にもう一度 <ph name="USER_EMAIL_ADDRESS_2" /> にログインします。</translation>
 <translation id="15373452373711364">大きいマウスカーソル</translation>
+<translation id="1538808328818992871"><ph name="MIN_LENGTH" /> 文字以上で指定してください</translation>
 <translation id="1545331255323159851">スマートフォンの最近の写真、メディア、通知を表示する</translation>
 <translation id="1546492247443594934">デスク 2</translation>
 <translation id="1546930421365146760">管理者に Google 管理コンソールでこのデバイスをセットアップするよう依頼してください</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">クリックするとその他のオプションが表示されます</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1557622599341396706">デスク名を表示</translation>
+<translation id="1568242747239041185">英字（大文字と小文字）、数字、または記号の少なくとも 2 種類を使用してください</translation>
 <translation id="1569384531973824928">カメラとマイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
 <translation id="1570235441606255261">Steam インストーラ</translation>
 <translation id="1571697193564730395">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Google ToDo リストを折りたたむ</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2215920961700443347">インターネットに接続されていません。インターネットに接続してから、もう一度お試しください。</translation>
+<translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222841058024245321">デスク 7</translation>
 <translation id="2223384056430485343">分割画面表示</translation>
 <translation id="2224075387478458881">保護されたコンテンツが表示されているときは、画面を録画できません</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">マウスキーを一時停止しました</translation>
 <translation id="2268731132310444948">ステップ <ph name="STEP" />/<ph name="TOTAL_STEPS" />。ランチャーを有効にすると強化された検索バーが表示されます。ファイルやアプリなどの名前の入力を始めると、検索結果が返されます。<ph name="PRODUCT_NAME" /> に関する質問の回答を見ることもできます。</translation>
 <translation id="2268813581635650749">すべてログアウト</translation>
+<translation id="2273432041732361925">4 文字以上の反復または連続する文字は使用できません</translation>
 <translation id="2276987123919776440">15 分</translation>
 <translation id="2278668501808246459">コンテナ マネージャーを起動しています</translation>
 <translation id="2282073721614284166">タブでリンクを開く</translation>
@@ -1056,6 +1061,7 @@
 <translation id="4072805772816336153">しばらくしてからもう一度お試しください</translation>
 <translation id="4077623680826964850">VM の起動時または VM への再接続時にタイムアウトしました。</translation>
 <translation id="4086921558679520050">デバイスの物理的なマイクスイッチをオンにする</translation>
+<translation id="4093173301198419723">英字（大文字と小文字）、数字、および記号を使用してください</translation>
 <translation id="4099874310852108874">ネットワークエラーが発生しました。</translation>
 <translation id="4101772068965291327">ホームページを開く</translation>
 <translation id="4102906002417106771">再起動して Powerwash を実行</translation>
@@ -1276,6 +1282,7 @@
 <translation id="4668936527507421457">PIN には数字のみ使用してください</translation>
 <translation id="4672539464599646374">バッテリー セーバーがオンになりました</translation>
 <translation id="4673427585974421255">ON のまま</translation>
+<translation id="467510802200863975">パスワードが一致しません</translation>
 <translation id="4677040906536311086">Google スプレッドシート</translation>
 <translation id="468019262817532242">誰もあなたと共有できません</translation>
 <translation id="468293128311738995">スマートフォンのアプリ</translation>
@@ -1299,6 +1306,7 @@
 <translation id="4746798685375253449">{0,plural, =1{1 日以内にデバイスを以前のバージョンに更新してください}other{# 日以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="4747410141429390146">通知を表示するには、ロックを解除してください</translation>
 <translation id="4752784485658729358">保存できるデスクは 6 つまでです。新しいデスクを保存するには、デスクを削除してください。</translation>
+<translation id="4753084533826742808">1 文字以上で指定してください</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />+上矢印</translation>
 <translation id="4762573482154983647">アプリを非表示</translation>
@@ -1435,6 +1443,7 @@
 <translation id="5144005092084035179">オーディオ入力を切り替えますか？</translation>
 <translation id="5145464978649806571">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を無効にしている場合、デバイスはロックされずにスリープ状態になります。</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
+<translation id="5148285448107770349">パスワードは 8 文字以上で指定してください</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
 <translation id="5158206172605340248">アクセント記号のメニューを閉じました。</translation>
@@ -1555,6 +1564,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> が、アップデートを今すぐダウンロードするよう求めています。Wi-Fi に接続するか、現在の従量制接続でのダウンロードを許可してください（通信料が発生することがあります）。</translation>
 <translation id="547979256943495781">シェルフは右側にあります</translation>
 <translation id="5482873136202102190">、その他</translation>
+<translation id="5486261815000869482">パスワードの確認入力</translation>
 <translation id="5491186829646618080">利用可能なファームウェアのアップデートがあります</translation>
 <translation id="5503884284981862082">Google アシスタントを起動または終了します</translation>
 <translation id="550391772491508736">キャストを再開</translation>
@@ -1815,6 +1825,7 @@
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6199775032047436064">現在のページを再読み込みする</translation>
 <translation id="6200515304866777730">アプリが対応していません</translation>
+<translation id="6209589022625766110">英字（大文字と小文字）、数字、または記号の少なくとも 2 種類を使用して、8 文字以上で指定してください。4 文字以上の反復または連続する文字は使用できません。</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> に保存済みの <ph name="NAME" /> に接続します</translation>
 <translation id="6212580734499190393">10 分間</translation>
 <translation id="6213808132343683860">部分的なスクリーンショットを撮影、または画面を録画します</translation>
@@ -1849,6 +1860,7 @@
 <translation id="6297986260307280218">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。<ph name="BEGIN_LINK2" />統計情報の詳細<ph name="BEGIN_LINK2_END" />詳細<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">アプリでこのデバイスをカスタマイズ</translation>
 <translation id="6298962879096096191">Google Play を使用して Android アプリをインストールします</translation>
+<translation id="6300478323573969040">英字（大文字と小文字）、数字、および記号を使用して、12 文字以上で指定してください。4 文字以上の反復または連続する文字は使用できません。</translation>
 <translation id="6304076460080088478">Google レンズで画面を検索するには、シークレット ウィンドウを閉じるか最小化します</translation>
 <translation id="6309219492973062892">シェルフ アイコン 1～8 をクリックまたはタップします</translation>
 <translation id="6315170314923504164">音声</translation>
@@ -2021,7 +2033,6 @@
 <translation id="6782919488259222803">現在のページを検索する</translation>
 <translation id="6783348167101855071">選択した右下のハンドル、矢印キーを使用して移動します</translation>
 <translation id="6786750046913594791">フォルダを閉じる</translation>
-<translation id="6792262051831399889">使用不可</translation>
 <translation id="6792351896138862473">サポートされていないためキオスクアプリを起動できません。管理者にこの問題を報告してください。</translation>
 <translation id="679368458793552943">拡大鏡がオンのときにズームインします</translation>
 <translation id="6794287755901682422">このアイテムには <ph name="GLANCEABLES_TASK_ITEM_METADATA" /> があります。</translation>
@@ -2465,6 +2476,7 @@
 <translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8054466585765276473">バッテリーの残り時間を計算しています。</translation>
 <translation id="8063363226185507157">同期されたユーザー補助設定</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8079538659226626406">画面共有</translation>
 <translation id="8083540854303889870">後で実行するために保存</translation>
@@ -2628,6 +2640,7 @@
 <translation id="8555757996376137129">現在のデスクを削除する</translation>
 <translation id="8558521694042102707">生成 AI は間違った情報（人物に関する情報など）を表示することがあるため、生成された回答は再確認するようにしてください。</translation>
 <translation id="8559845965695780508"><ph name="USER" /> さんが編集</translation>
+<translation id="8567946600191652875">少なくとも 1 つの文字または記号を使用して、6 文字以上で指定してください</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">メニューは画面右下に移動しました。</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" />+<ph name="MODIFIER_2" /> キーを押しながらリンクをクリックする</translation>
@@ -2800,7 +2813,6 @@
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9037818663270399707">この接続ではすべてのネットワーク トラフィックのプライバシーが保護されません</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
-<translation id="9050012935252397793">Bluetooth は使用できません</translation>
 <translation id="9050999376345823055">離すには「.」を押します</translation>
 <translation id="906458777597946297">ウィンドウを最大化</translation>
 <translation id="9065203028668620118">編集</translation>

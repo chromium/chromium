@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Próbálja ki</translation>
 <translation id="112308213915226829">Polc automatikus elrejtése</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> frissítése</translation>
+<translation id="1139368021151541038">Legalább egy betűt vagy szimbólumot tartalmaznia kell</translation>
 <translation id="1142002900084379065">Nemrégiben feltöltött fotók</translation>
 <translation id="114221662579355151">Ezzel engedélyezi a kamerához való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, valamint a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="1145593918056169051">A nyomtató leállt</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Új lap megnyitása új ablakban</translation>
 <translation id="1536604384701784949">A(z) <ph name="USER_EMAIL_ADDRESS" /> használatához előbb ki kell jelentkeznie az összes fiókból. A kijelentkezéshez válassza a Mégse gombot. Ezzel visszalép az előző képernyőre. Ezután válassza az órát az állapotsor megnyitásához, majd válassza a Kijelentkezés lehetőséget. Végül jelentkezzen be újra a(z) <ph name="USER_EMAIL_ADDRESS_2" /> e-mail-címmel.</translation>
 <translation id="15373452373711364">Nagy egérmutató</translation>
+<translation id="1538808328818992871">Legalább <ph name="MIN_LENGTH" /> karaktert kell tartalmaznia</translation>
 <translation id="1545331255323159851">A telefonján lévő fotók, médiatartalmak és értesítések megtekintése</translation>
 <translation id="1546492247443594934">2. asztal</translation>
 <translation id="1546930421365146760">Kérje meg a rendszergazdát, hogy állítsa be ezt az eszközt a Google Felügyeleti Konzolban</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Kattintson további lehetőségekért</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="1557622599341396706">Asztal nevének megjelenítése</translation>
+<translation id="1568242747239041185">A következők közül kettőt tartalmaznia kell: nagybetűk, kisbetűk, számok vagy szimbólumok</translation>
 <translation id="1569384531973824928">Ezzel engedélyezi a hozzáférést a kamera- és mikrofonengedéllyel rendelkező összes alkalmazás és webhely számára. Előfordulhat, hogy frissítenie kell a weboldalt, vagy újra kell indítania az alkalmazást.</translation>
 <translation id="1570235441606255261">Steam-telepítő</translation>
 <translation id="1571697193564730395">A Ne zavarjanak mód ki- vagy bekapcsolása. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">A Google Tasks összecsukása</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
 <translation id="2215920961700443347">Nincs internetkapcsolat. Csatlakozzon az internethez, és próbálja újra.</translation>
+<translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2222841058024245321">7. asztal</translation>
 <translation id="2223384056430485343">Osztott képernyőn</translation>
 <translation id="2224075387478458881">Nem engedélyezett felvétel készítése a képernyőről, ha védett tartalom látható rajta</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Egérgombok használata szüneteltetve</translation>
 <translation id="2268731132310444948">A bemutató <ph name="STEP" />. lépése az összesen <ph name="TOTAL_STEPS" /> lépésből. Az Indító aktiválása után bővített keresősáv jelenik meg. Fájlok, alkalmazások és egyebek kereséséhez elkezdhet gépelni. Ugyanitt <ph name="PRODUCT_NAME" /> eszközével kapcsolatos kérdéseire is választ kaphat.</translation>
 <translation id="2268813581635650749">Összes kiléptetése</translation>
+<translation id="2273432041732361925">Nem tartalmazhat ismétlődő karaktereket vagy négy vagy több karakterből álló sorozatokat</translation>
 <translation id="2276987123919776440">15 perc</translation>
 <translation id="2278668501808246459">A tárolókezelő indítása</translation>
 <translation id="2282073721614284166">Link megnyitása lapon</translation>
@@ -1057,6 +1062,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4072805772816336153">Próbálja újra később</translation>
 <translation id="4077623680826964850">Időtúllépés történt az indításkor vagy a VM-hez való újbóli csatlakozáskor.</translation>
 <translation id="4086921558679520050">A fizikai mikrofon kapcsolójának bekapcsolása az eszközön</translation>
+<translation id="4093173301198419723">Tartalmaznia kell nagybetűket, kisbetűket, számokat és szimbólumokat</translation>
 <translation id="4099874310852108874">Hálózati hiba történt.</translation>
 <translation id="4101772068965291327"> megnyitása</translation>
 <translation id="4102906002417106771">Újraindítás a powerwash megkezdéséhez</translation>
@@ -1277,6 +1283,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4668936527507421457">A PIN-kód csak számokat tartalmazhat</translation>
 <translation id="4672539464599646374">Akkumulátorkímélő mód bekapcsolva</translation>
 <translation id="4673427585974421255">Bekapcsolva hagyom</translation>
+<translation id="467510802200863975">A jelszavak nem egyeznek</translation>
 <translation id="4677040906536311086">Google-táblázat</translation>
 <translation id="468019262817532242">Senki sem oszthat meg Önnel tartalmakat</translation>
 <translation id="468293128311738995">Alkalmazások a telefonjáról</translation>
@@ -1300,6 +1307,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4746798685375253449">{0,plural, =1{Eszköz frissítése az előző verzióra 1 napon belül}other{Eszköz frissítése az előző verzióra # napon belül}}</translation>
 <translation id="4747410141429390146">Oldja fel a zárolást az értesítések megtekintéséhez</translation>
 <translation id="4752784485658729358">Csak hat mentett asztal engedélyezett. Távolítsa el valamelyiket, ha új asztalt szeretne menteni.</translation>
+<translation id="4753084533826742808">Legalább egy karaktert tartalmaznia kell</translation>
 <translation id="4759238208242260848">Letöltések</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + felfelé nyíl</translation>
 <translation id="4762573482154983647">Alkalmazások elrejtése</translation>
@@ -1436,6 +1444,7 @@ Használhatja a billentyűparancsot is. Először jelölje ki a szöveget, majd 
 <translation id="5144005092084035179">Hangbemenetet szeretne váltani?</translation>
 <translation id="5145464978649806571">Ha eltávolodik az eszközétől, a képernyőt automatikusan lezárja a rendszer. Amikor az eszköze előtt tartózkodik, a képernyő hosszabb ideig nem kapcsol ki. Ha a lezárási képernyő le van tiltva, akkor eszköze lezárás helyett alvó módba lép.</translation>
 <translation id="5147567197700016471">Feloldva</translation>
+<translation id="5148285448107770349">A jelszónak legalább 8 karakterből kell állnia.</translation>
 <translation id="5150070631291639005">Adatvédelmi beállítások</translation>
 <translation id="5155897006997040331">Olvasás sebessége</translation>
 <translation id="5158206172605340248">Ékezetmenü bezárva.</translation>
@@ -1556,6 +1565,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="5474859849784484111">A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével most Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ez esetben a szolgáltató díjat számíthat fel).</translation>
 <translation id="547979256943495781">A polc a jobb oldalon található</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Jelszó megerősítése</translation>
 <translation id="5491186829646618080">Firmware-frissítések állnak rendelkezésre</translation>
 <translation id="5503884284981862082">A Google Segéd megnyitása vagy bezárása</translation>
 <translation id="550391772491508736">Átküldés újraindítása</translation>
@@ -1816,6 +1826,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6198252989419008588">PIN-kód megváltoztatása</translation>
 <translation id="6199775032047436064">A jelenlegi oldal újratöltése</translation>
 <translation id="6200515304866777730">Nem támogatja az alkalmazás</translation>
+<translation id="6209589022625766110">Legalább nyolc karakterből kell állnia, és legalább kettőt tartalmaznia kell a következők közül: nagybetűk, kisbetűk, számok vagy szimbólumok. Nem tartalmazhat ismétlődő karaktereket vagy négy vagy több karakterből álló sorozatokat.</translation>
 <translation id="6210042900243040400">A(z) <ph name="EMAIL" /> fiókhoz korábban mentett <ph name="NAME" /> csatlakoztatása</translation>
 <translation id="6212580734499190393">10 percig</translation>
 <translation id="6213808132343683860">Részleges képernyőkép vagy képernyőfelvétel készítése</translation>
@@ -1850,6 +1861,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6297986260307280218">Használati és diagnosztikai adatok küldése. Segítsen az Android-élmény továbbfejlesztésében azzal, hogy automatikusan diagnosztikai, valamint eszköz- és alkalmazáshasználati adatokat küld a Google-nak. Az adatok a rendszer- és alkalmazásstabilitás javításában, valamint más fejlesztésekben segítenek. Bizonyos összesített adatok a Google-alkalmazásoknak és -partnereknek, például az Android-fejlesztőknek is segítenek. Ezt a <ph name="BEGIN_LINK1" />beállítást<ph name="END_LINK1" /> kötelezővé tette az eszköz tulajdonosa. A tulajdonos dönthet úgy, hogy elküldi az eszközzel kapcsolatos diagnosztikai és használati adatokat a Google-nak. Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva, akkor a rendszer ezeket az adatokat mentheti az Ön Google-fiókjába. <ph name="BEGIN_LINK2" />További információ a mutatókról<ph name="BEGIN_LINK2_END" />További információ<ph name="END_LINK2" />.</translation>
 <translation id="6298183524022479114">Eszköz személyre szabása az alkalmazásban</translation>
 <translation id="6298962879096096191">A Google Play használata Android-alkalmazások telepítésére</translation>
+<translation id="6300478323573969040">Legalább 12 karakterből kell állnia, valamint tartalmaznia kell nagybetűket, kisbetűket, számokat és szimbólumokat. Nem tartalmazhat ismétlődő karaktereket vagy négy vagy több karakterből álló sorozatokat.</translation>
 <translation id="6304076460080088478">Zárja be, vagy állítsa kis méretűre az inkognitó ablakokat, hogy keresni tudjon a képernyőn a Google Lens segítségével</translation>
 <translation id="6309219492973062892">Kattintson vagy koppintson a polcon lévő ikonokra (1–8)</translation>
 <translation id="6315170314923504164">Hang</translation>
@@ -2022,7 +2034,6 @@ Frissen telepítve</translation>
 <translation id="6782919488259222803">Keresés az aktuális oldalon</translation>
 <translation id="6783348167101855071">A jobb alsó fogópont kiválasztva, a nyílbillentyűkkel mozgathatja</translation>
 <translation id="6786750046913594791">Mappa bezárása</translation>
-<translation id="6792262051831399889">Nem áll rendelkezésre</translation>
 <translation id="6792351896138862473">Nem lehet elindítani a nem támogatott kioszkalkalmazást. Értesítse a rendszergazdát a problémáról.</translation>
 <translation id="679368458793552943">Nagyítás, ha a nagyító be van kapcsolva</translation>
 <translation id="6794287755901682422">Ehhez az elemhez a következők tartoznak: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2465,6 +2476,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8052898407431791827">Vágólapra másolva</translation>
 <translation id="8054466585765276473">Akkumulátor-időtartam kiszámítása.</translation>
 <translation id="8063363226185507157">A kisegítő lehetőségek beállításai szinkronizálódnak</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Lapok</translation>
 <translation id="8079538659226626406">Képernyőmegosztás</translation>
 <translation id="8083540854303889870">Későbbre mentett</translation>
@@ -2628,6 +2640,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8555757996376137129">Jelenlegi asztal eltávolítása</translation>
 <translation id="8558521694042102707">A generatív AI hibázhat (többek között személyekkel kapcsolatban is), ezért ellenőrizze a válaszait.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> szerkesztve</translation>
+<translation id="8567946600191652875">Legalább hat karakterből kell állnia, és legalább egy betűt vagy szimbólumot tartalmaznia kell</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">A menü a képernyő jobb alsó sarkába került.</translation>
 <translation id="8581946341807941670">Nyomja le a(z) <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> billentyűkombinációt, majd kattintson a kívánt linkre</translation>
@@ -2801,7 +2814,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9037818663270399707">Az Ön kapcsolata nem privát az összes hálózati forgalomnál</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> beállításainak megnyitása</translation>
-<translation id="9050012935252397793">A Bluetooth nem áll rendelkezésre</translation>
 <translation id="9050999376345823055">A feloldáshoz nyomja meg a „.” billentyűt</translation>
 <translation id="906458777597946297">Ablak teljes méretre állítása</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>

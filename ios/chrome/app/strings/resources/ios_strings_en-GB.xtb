@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
 <translation id="2022431790688770637">Manage Gemini suggestions</translation>
+<translation id="2023265063803387188">Gemini is not available in Incognito mode</translation>
 <translation id="2031515492007104071">Level up</translation>
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="2044681667265133332">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which may be able to view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Stop</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
-<translation id="2671316366021598595">"<ph name="SITE_DOMAIN" />" is not allowed to access your camera</translation>
 <translation id="2671423594960767771">Share group</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Pay over time</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Name</translation>
 <translation id="386224966259596343">You'll have the chance to save this info to Wallet the next time that you fill in a relevant form.</translation>
 <translation id="3868495844258915202">Show full URL</translation>
+<translation id="3870931306085184145">No saved passwords for <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Show me how</translation>
 <translation id="3878657761594430423">Sheet grabber</translation>
 <translation id="3884810423191119660">Securely save passwords so that you can easily sign in to sites and apps</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Level up your browsing</translation>
 <translation id="5062321486222145940">Install Google Drive</translation>
 <translation id="5067540696062462445">Downloads</translation>
-<translation id="5070314445039955096">'<ph name="SITE_DOMAIN" />' permissions will reset to off when you leave this site</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} of {count} payment method}other{{position} of {count} payment methods}}</translation>
 <translation id="5075939510584558547">Save without encryption</translation>
 <translation id="5076534614343816664">Price tracking</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">You have to be signed in to use Level Up</translation>
 <translation id="5352128922772839949">Save file</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
-<translation id="5355871759168485600">"<ph name="SITE_DOMAIN" />" is allowed to use your microphone whenever you visit this site</translation>
 <translation id="5359436665022446585">Better link opening</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
 <translation id="5364647308446127983">{count,plural, =1{Couldn't import {count} passkey}other{Couldn't import {count} passkeys}}</translation>
@@ -1484,6 +1483,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5612225021788368236">Close default browser promo</translation>
 <translation id="561269594905823128">Tap <ph name="BEGIN_BOLD" />Select your file<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sort by latest</translation>
+<translation id="561349411957324076">Completed</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5617769621178348890">Open in Files app</translation>
 <translation id="5619871095170816857">This card shows your last used open tab across all your synced devices within the last 24 hours.</translation>
@@ -2333,7 +2333,6 @@ You can restart at any time.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8161614462829037225">Unlock with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Length</translation>
-<translation id="8181328232274170248">"<ph name="SITE_DOMAIN" />" is allowed to use your camera whenever you visit this site</translation>
 <translation id="8182037667962849780">{count,plural, =1{For {website_1}}=2{For {website_1}, {website_2}}=3{For {website_1}, {website_2}, and one more}other{For {website_1}, {website_2}, and {more_count} more}}</translation>
 <translation id="8184895727539791845">To let Gemini use your camera, turn on Camera in iOS settings</translation>
 <translation id="8185076488803799132">Import</translation>
@@ -2504,7 +2503,6 @@ You can restart at any time.</translation>
 <translation id="8674716540979958118">You have compromised passwords.</translation>
 <translation id="8679900250380464358">Add to reading list</translation>
 <translation id="8680787084697685621">Account sign-in details are out of date.</translation>
-<translation id="868648444055742370">"<ph name="SITE_DOMAIN" />" is not allowed to access your microphone</translation>
 <translation id="8690752723634292147">Confirm deletion</translation>
 <translation id="8692107307702113268">Password is more than 1,000 characters</translation>
 <translation id="8692689525339542358">Get protection from dangerous sites, downloads and extensions.</translation>
@@ -2650,6 +2648,7 @@ You can restart at any time.</translation>
 <translation id="91023216973987714">Payment methods</translation>
 <translation id="9106655997975673326">From "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Check for compromised passwords</translation>
+<translation id="9115035712231910133">Attached image {title}</translation>
 <translation id="9119764377203471454">Unable to add attachments</translation>
 <translation id="9124387962554796433">Google may use your history to personalise Search and other Google services.</translation>
 <translation id="9124978074365039456">Shop, translate and identify what you see using your camera and photo gallery</translation>

@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Parollarni ko‘rish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="201759455285471444">Varaqlar guruhini yoyish.</translation>
 <translation id="2022431790688770637">Gemini takliflarini boshqarish</translation>
+<translation id="2023265063803387188">Gemini Inkognito rejimida ishlamaydi</translation>
 <translation id="2031515492007104071">Darajani oshirish</translation>
 <translation id="2044394949148788042">Varaqlar jadvalida ochish</translation>
 <translation id="2044681667265133332">Bu hisobni (<ph name="USER_EMAIL" />) <ph name="HOSTED_DOMAIN" /> boshqaradi va ayrim maʼlumotlarga ruxsat olishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Toʻxtatish</translation>
 <translation id="2666092431469916601">Tepaga</translation>
 <translation id="2669454659051515572">Bu qurilmaning barcha foydalanuvchilar yuklab olingan fayllarni koʻra oladi</translation>
-<translation id="2671316366021598595">“<ph name="SITE_DOMAIN" />” saytiga kameradan foydalanish taqiqlangan</translation>
 <translation id="2671423594960767771">Guruhni ulashish</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Keyinroq toʻlash</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Ism</translation>
 <translation id="386224966259596343">Keyingi safar tegishli shaklni toʻldirganingizda bu maʼlumotni Walletga saqlash imkoniga ega boʻlasiz.</translation>
 <translation id="3868495844258915202">Toʻliq URL manzil</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" /> uchun saqlangan parollar yo‘q</translation>
 <translation id="3875783148670536197">Koʻrsatish</translation>
 <translation id="3878657761594430423">Sahifadan belgilash</translation>
 <translation id="3884810423191119660">Sayt va ilovalarga oson kirish uchun parollarni xavfsiz saqlang</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Internetni kezishni yangi bosqichga olib chiqing</translation>
 <translation id="5062321486222145940">Google Drive’ni o‘rnatish</translation>
 <translation id="5067540696062462445">Yuklanmalar</translation>
-<translation id="5070314445039955096">Bu sayt yopilganda “<ph name="SITE_DOMAIN" />” ruxsatlari asliga qaytariladi</translation>
 <translation id="507187271399539513">{count,plural, =1{Toʻlov usuli: {position}/{count}}other{Toʻlov usuli: {position}/{count}}}</translation>
 <translation id="5075939510584558547">Shifrlamay saqlash</translation>
 <translation id="5076534614343816664">Narx kuzatuvi</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Up funksiyasidan foydalanish uchun hisobingizga kiring</translation>
 <translation id="5352128922772839949">Faylni saqlash</translation>
 <translation id="5355191726083956201">Kengaytirilgan himoya yoniq</translation>
-<translation id="5355871759168485600">“<ph name="SITE_DOMAIN" />” saytiga kirganingizda sayt mikrofoningizdan foydalanishiga ruxsat berilgan</translation>
 <translation id="5359436665022446585">Havolalarni yanada qulay ochish</translation>
 <translation id="536067926684072644">Bukmarklarni chiqarish</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} ta kirish kaliti import qilinmadi}other{{count} ta kirish kaliti import qilinmadi}}</translation>
@@ -1484,6 +1483,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5612225021788368236">Birlamchi brauzer tanituvini yopish</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />Faylni tanlang<ph name="END_BOLD" /> ustiga bosing</translation>
 <translation id="5613297089029360427">Oxirgilar asosida saralash</translation>
+<translation id="561349411957324076">Tugallandi</translation>
 <translation id="5614553682702429503">Parol saqlansinmi?</translation>
 <translation id="5617769621178348890">Fayllar ilovasida ochish</translation>
 <translation id="5619871095170816857">Bu bildirgi oxirgi 24 soat ichida sinxronlangan barcha qurilmalarda oxirgi ochilgan varaqni chiqaradi.</translation>
@@ -2333,7 +2333,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ta hisob</translation>
 <translation id="8161614462829037225">Qulfni <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
 <translation id="8173034266693057059">Uzunligi</translation>
-<translation id="8181328232274170248">“<ph name="SITE_DOMAIN" />” saytiga kirganingizda sayt kamerangizdan foydalanishiga ruxsat berilgan</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} uchun}=2{{website_2} va {website_1} uchun}=3{{website_1}, {website_2} va yana 1 ta sayt uchun}other{{website_1}, {website_2} va yana {more_count} ta sayt uchun}}</translation>
 <translation id="8184895727539791845">Gemini kameradan foydalanishi uchun iOS sozlamalarida Kamerani yoqing</translation>
 <translation id="8185076488803799132">Import qilish</translation>
@@ -2504,7 +2503,6 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8674716540979958118">Oshkor boʻlgan parollaringiz bor</translation>
 <translation id="8679900250380464358">Saqlangan sahifalarga kiritish</translation>
 <translation id="8680787084697685621">Hisob haqidagi ma’lumotlar eskirgan.</translation>
-<translation id="868648444055742370">“<ph name="SITE_DOMAIN" />” saytiga mikrofondan foydalanish taqiqlangan</translation>
 <translation id="8690752723634292147">Oʻchirishni tasdiqlash</translation>
 <translation id="8692107307702113268">Parolda 1000 tadan ortiq belgi kiritildi</translation>
 <translation id="8692689525339542358">Xavfli saytlar, yuklanmalar va kengaytmalardan himoyalaning.</translation>

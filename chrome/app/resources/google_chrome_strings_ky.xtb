@@ -20,7 +20,6 @@
 <translation id="1142745911746664600">Chrome жаңырбай жатат</translation>
 <translation id="1148360048981192980">Кийинки жолу <ph name="DEVICE_TYPE" /> түзмөгүңүздө Chrome'ду ачканыңызда Сырсөздөрдү башкаргычты колдонуу сунушталат.</translation>
 <translation id="1150418667633096194">Куралдар тилкесиндеги "Google Издөө каптал панели" баскычынын жаңы сүрөтчөсү бар. Google Издөөнүн капталдагы тилкеси менен сайттарды карап жатып, суроолорду берүү үчүн аны басыңыз.</translation>
-<translation id="1152920704813762236">ChromeOS жөнүндө</translation>
 <translation id="1154147086299354128">&amp;Chrome'до ачуу</translation>
 <translation id="1157952955648710254">Google Издөөнүн капталдагы тилкесин жабыңыз</translation>
 <translation id="1157985233335035034">Жакында колдонулган тилдер</translation>
@@ -57,7 +56,6 @@
 <translation id="1507198376417198979">Жаңы Chrome профилиңизди жекелештириңиз</translation>
 <translation id="1518627427551567882">Бул барак корголгон</translation>
 <translation id="15408169957028265">Google Издөөнү Chrome'до кайра ачуу</translation>
-<translation id="1547295885616600893">ChromeOS тутуму кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
 <translation id="1547469039832541117">Бөлүнүп көрсөтүлгөн тапшырманы бүтүрөт.</translation>
 <translation id="1553358976309200471">Chrome'ду жаңыртуу</translation>
 <translation id="1587223624401073077">Google Chrome камераңызды колдонуп жатат.</translation>
@@ -78,7 +76,6 @@
 <translation id="1632241302126471515">Chrome Canary менен издөө</translation>
 <translation id="1640672724030957280">Жүктөлүп алынууда...</translation>
 <translation id="1651617469580841801">Google Lens'ти колдонгонуңузда беттин аталышы, URL жана андагы нерселер, ошондой эле PDF файлдары серверге жөнөтүлөт. <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">ChromeOS Flex жөнүндө маалымат</translation>
 <translation id="1674870198290878346">Шилтемени Chrome'дун жашы&amp;руун терезесинде ачуу</translation>
 <translation id="1682634494516646069">Google Chrome дайындар каталогун окуп, ага жаза албайт:
 
@@ -99,6 +96,7 @@
 <translation id="1843347690926158494">Бул өтмөктү Google Lens аркылуу издөө</translation>
 <translation id="1849248141818021764">Сыр сүйлөмүңүздү билген адам гана шифрленген маалыматыңызды окуй алат. Сыр сүйлөм Google'га жөнөтүлбөйт же анда сакталбайт. Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, <ph name="BEGIN_LINK" />аккаунтуңуздагы Chrome маалыматын өчүрүшүңүз керек болот<ph name="END_LINK" />.</translation>
 <translation id="1867503717113754604"><ph name="START_GLIC_STYLING" />Gemini'ды<ph name="END_GLIC_STYLING" /> колдонуу үчүн Chrome'го Google аккаунтуңуз менен кириңиз</translation>
+<translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> түзмөгүңүз жаңырган</translation>
 <translation id="1873233029667955273">Google Chrome сиздин демейки серепчиңиз эмес</translation>
 <translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome эскирип калган.</translation>
@@ -106,6 +104,7 @@
 <translation id="1880677175115548835">Текстти тандоо</translation>
 <translation id="1896602904211344018">Chrome колдонмосун жүктөп алуу</translation>
 <translation id="1919130412786645364">Chrome'го кирүүгө уруксат берүү</translation>
+<translation id="1925069572871307609">Google Chrome жаңыртууларын алып туруу үчүн Windows 10 версиясынын 1809 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 10'дун эски версиясы колдонулууда.</translation>
 <translation id="1979600810166324878">iOS үчүн Chrome'до Өркүндөтүлгөн коопсуз серептөө менен жолдо коопсуздугуңузду камсыздаңыз</translation>
 <translation id="2001586581944147178">Интернет трафигиңизге кирүү мүмкүнчүлүгү бар адамдар кайсы сайттарга баш бакканыңызды көрбөй тургандай кылыңыз. DNS'тен (Домендердин аталыштарынын тутуму) сайттын IP дарегин издөө үчүн Chrome коопсуз байланышты колдонот.</translation>
 <translation id="2018879682492276940">Орнотулбай калды. Кайталап көрүңүз.</translation>
@@ -118,7 +117,6 @@
 <translation id="2091012649849228750">Google Chrome жаңыртууларын алып туруу үчүн Windows 10 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 8 версиясы колдонулууда.</translation>
 <translation id="2094919256425865063">Баары бир Chrome'ду токтотосузбу?</translation>
 <translation id="2096213354152647998">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION" /> өчүрдү.</translation>
-<translation id="2106831557840787829">ChromeOS Flex тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="2108778574543343055">Колдонмолор үчүн фондо иштеген Chrome'ду өчүрүү</translation>
 <translation id="2111985952714409792">Кеңейтүүлөрдү жана башкаларды бардык түзмөктөрүңүздө колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="2120620239521071941">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
@@ -145,6 +143,7 @@
 <translation id="2307973900865360088">Dock панелине кадап коюу</translation>
 <translation id="2309047409763057870">Бул Chromium'дун кошумча орнотулушу болгондуктан, аны демейки серепчиңиз катары тандай албайсыз.</translation>
 <translation id="2345992953227471816">Chrome төмөнкү кеңейтүүлөрдө кесепеттүү программанын болгонун аныктады:</translation>
+<translation id="2350411688004301551">Gemini Enterprise кызматына которулуу</translation>
 <translation id="2358140144860869442">Окуу тизмеңизди жана башка нерселерди бардык түзмөктөрүңүздө көрүү үчүн Chrome'го кириңиз</translation>
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2403703063067034158">Ишке киргизүү катасы: Башка тууралоо процесси жүрүп жатат. Кийинчерээк кайталап көрүңүз.</translation>
@@ -155,6 +154,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу үчүн <ph name="USER_EMAIL_ADDRESS" /> катары өз профилиңизден Chrome'го кириңиз. Ошондой эле, <ph name="DEVICE" /> аккаунтуңуздагы кыстармаларды жана башка нерселерди аласыз.</translation>
 <translation id="2485422356828889247">Орнотуудан чыгаруу</translation>
 <translation id="2513154137948333830">Өчүрүп-күйгүзүү талап кылынат: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">уюмуңуз</translation>
 <translation id="2521391734665471391">Google Издөөдөгү ЖИ режимин жабуу</translation>
 <translation id="2523492931736391680">Chrome'догу ишиңиз коопсуз</translation>
 <translation id="2534365042754120737">Маалыматыңызды коргоо үчүн Chrome'га сиз жакында кирбеген сайттардан уруксаттарды алып салууга макулдугуңузду бериңиз. Билдирмелер өчүрүлбөйт.</translation>
@@ -201,6 +201,7 @@
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome маалыматыңызды кантип купуя сактаары тууралуу<ph name="END_LINK" /> көбүрөөк билип алыңыз</translation>
 <translation id="2885378588091291677">Тапшырмаларды башкаргыч</translation>
 <translation id="2888126860611144412">Chrome тууралуу</translation>
+<translation id="2898830646167954300">Башкарылбаган Gemini жардамчыңызга кайтыңыз</translation>
 <translation id="2915996080311180594">Кийинчерээк өчүрүп күйгүзүү</translation>
 <translation id="2926952073016206995">Chrome'го бул сайтта камераны колдонууга уруксат бериңиз</translation>
 <translation id="2945997411976714835">Орнотуу катасы: Орнотуу процесси башталган жок.</translation>
@@ -211,7 +212,6 @@
 <translation id="2994465299455873643">Шифрлөө кызматтарын көрсөтүп, <ph name="BROWSER_NAME" /> эскирип калганда аны калыбына келтирүүнүн коопсуз жолун сунуштайт. Бул кызмат өчүрүлсө, <ph name="BROWSER_NAME" /> шифрленген маалыматты көрө албай, ал эми <ph name="BROWSER_NAME" /> өз алдынча калыбына келбей калышы мүмкүн.</translation>
 <translation id="3003694935412297923">Бардык жасалчу иштер</translation>
 <translation id="3019382870990049182">ChromeOS Flex системасын жаңыртуу үчүн кайра иштетүү</translation>
-<translation id="3034219227076811559">Chrome'догу Google Издөө</translation>
 <translation id="3037190258341683404">Сайттарды карап жатканда суроолорду берүү үчүн Google Издөөнү Chrome'го кадап койсоңуз болот</translation>
 <translation id="3037517125981011456">Chrome'го кирүү үчүн билдирмелерди көрсөтөт</translation>
 <translation id="3037838751736561277">Google Chrome фондук режимде.</translation>
@@ -235,6 +235,7 @@
 <translation id="3140883423282498090">Өзгөртүүлөрүңүз Google Chrome кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
 <translation id="3149510190863420837">Chrome колдонмолору</translation>
 <translation id="3161522574479303604">Бардык тилдер</translation>
+<translation id="3183555099201190073">Издөө кызматын каалаган өтмөктөн ачыңыз</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу үчүн <ph name="USER_EMAIL_ADDRESS" /> катары өз профилиңизден Chrome'го кириңиз. Мындан тышкары, кыстармаларыңызды жана башкаларды бардык түзмөктөрүңүздө колдоно аласыз.</translation>
 <translation id="319199214552513804">Бул кеңейтүүнү жана башкаларды бардык компьютерлериңизде колдонуу үчүн Chrome'го кириңиз</translation>
 <translation id="3196187562065225381">Файл кооптуу болгондуктан, Chrome бул жүктөп алууну бөгөттөдү</translation>
@@ -279,8 +280,6 @@
 <translation id="3667616615096815454">Колдонмо сервер үчүн белгисиз болгондуктан, аны орнотуу мүмкүн эмес.</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
 <translation id="3697952514309507634">Башка Chrome профилдери</translation>
-<translation id="3703994572283698466">ChromeOS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
-<translation id="3716540481907974026">ChromeOS Flex версиясы</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{Chrome үчүн жаңыртуу бар. Түзмөгүңүз өчүрүлүп-күйгүзүлгөндөн кийин ал колдонулуп баштайт. Жашыруун же Окчундатылган терезе ачык. Кайра иштеткенден кийин ал ачылбайт.}other{Chrome үчүн жаңыртуу бар. Түзмөгүңүз өчүрүлүп-күйгүзүлгөндөн кийин ал колдонулуп баштайт. Профилдерде # жашыруун жана окчундатылган терезе ачык. Кайра иштеткенден кийин алар ачылбайт.}}</translation>
 <translation id="3718181793972440140">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome аны өчүрүүнү сунуштайт. <ph name="BEGIN_LINK" />Колдоого алынган кеңейтүүлөр жөнүндө кеңири маалымат<ph name="END_LINK" />}other{Chrome аларды өчүрүүнү сунуштайт. <ph name="BEGIN_LINK" />Колдоого алынган кеңейтүүлөр жөнүндө кеңири маалымат<ph name="END_LINK" />}}</translation>
@@ -289,7 +288,6 @@
 <translation id="3772152698251011058">Бул сайт тууралуу Google'га кабарлоо</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Кирүү катасынан улам, ChromeOS Flex дайын-даректериңизди шайкештештире алган жок.</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
 <translation id="383455301564000773">Windows 11 версиясына жаңыртасызбы? Алгачкы күндөн баштап даяр болуу үчүн Chrome'ду OneDrive'га жүктөп алыңыз.</translation>
 <translation id="383928141529488001">Google Chrome 
@@ -313,10 +311,12 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4022972681110646219">Экрандагы нерсени которуу</translation>
 <translation id="4023601594785368013">Баштапкы тил: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Chrome'го алдын ала орнотулган жана татаал сырсөздөрдү түзүүгө, сактоого жана автотолтурууга жардам берет. Оңой кирүү үчүн ыкчам баскычты кошуңуз.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google'га катталуу.</translation>
 <translation id="4035053306113201399">Жаңыртууну колдонуу үчүн ChromeOS өчүрүлүп күйгүзүлүшү керек.</translation>
 <translation id="4053720452172726777">Google Chrome'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
 <translation id="408393047846373801">Бардык түзмөктөрүңүздө сырсөздөрдү жана башка нерселерди алуу үчүн Chrome'го кириңиз. Киргенден кийин бул сырсөз Google аккаунтуңузда сакталат.</translation>
 <translation id="4102173024714616627">Кеңейтүүлөр — Chrome'ду ыңгайлаштырууга мүмкүндүк берген толуктоолор. Кеңейтүүлөр Chrome'ду өзүңүзгө ылайыкташтырууга, иреттүү болууга жана күнүмдүк иштерди жеңилдетүүгө жардам берет.</translation>
+<translation id="4103543596018881622">Chrome'догу Google Издөө куралдар тилкесине кадалды.</translation>
 <translation id="4110895483821904099">Жаңы Chrome профилин жөндөп алыңыз</translation>
 <translation id="4111566860456076004">Chrome бул кеңейтүү кайдан алынганын текшере албайт, андыктан ал кооптуу болушу мүмкүн. Сиз кирген сайттардагы маалыматтарыңызды, анын ичинде жеке маалыматыңызды мындан ары көрүп жана өзгөртпөшү үчүн аны Chrome'дон алып салыңыз.</translation>
 <translation id="4148957013307229264">Орнотулууда…</translation>
@@ -394,7 +394,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="495931528404527476">Chrome ичинде</translation>
 <translation id="4969674060580488087">Аккаунтуңуздун кирүү чоо-жайы эскирип калгандыктан, ChromeOS Flex дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="4970761609246024540">Chrome профилдерине кош келиңиз</translation>
-<translation id="4970880042055371251">ChromeOS версиясы</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">“Сырсөздөрдү башкаргычты” чыкылдатыңыз</translation>
 <translation id="5043786843026425788">Chrome'до Google Lens аркылуу издөө жөнүндө кеңири маалымат</translation>
@@ -417,6 +416,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5174969993834422967">Адатта сиз билдирмелерге тыюу саласыз. Бул сайттан билдирмелерди алуу үчүн дарек тилкесинин оң бурчундагы билдирменин сүрөтчөсүн басыңыз.</translation>
 <translation id="5174983315706567306">Дискте орун аз.</translation>
 <translation id="5179933070463113976">Chrome'догу Gemini'ды колдонуу үчүн Chrome'го Google аккаунтуңуз менен киришиңиз керек</translation>
+<translation id="5184662919967270437">Түзмөгүңүз жаңыртылууда</translation>
 <translation id="5190467473654176081">Chrome'ду ыңгайлаштырып, анын көрүнүшүн жаңыртыңыз</translation>
 <translation id="5201744974236816379">Chrome жаңыртуусу</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
@@ -427,6 +427,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5320351714793324716">Cookie файлдарына уруксат берсеңиз, Chrome аларды алдын ала жүктөө үчүн колдонушу мүмкүн</translation>
 <translation id="5321325624576443340">Google Lens жеткиликтүү эмес. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="5334309298019785904">ChromeOS дайын-даректериңизди шайкештештире алган жок, себеби домениңизде Шайкештештирүү аракети жеткиликтүү эмес.</translation>
+<translation id="5336664042114176802">Google аккаунтуңуз менен байланышкан жана <ph name="DOMAIN" /> тарабынан башкарылбаган Gemini жардамчысына которула аласыз. Жооптор мындан ары <ph name="DOMAIN" /> тарабынан башкарылган файлдарга же кызматтарга негизделбейт жана сүйлөшүүлөр таржымалыңыз өткөрүлбөйт. Аны жумуш үчүн колдонууга ылайыксыз болушу мүмкүн. Которулуу үчүн Chrome'ду кайра иштетүү талап кылынат.</translation>
 <translation id="5346389065299425353">Бир нече өтмөк, файл жана куралды кошуп, издөөңүздү кеңейтиңиз</translation>
 <translation id="5353252989841766347">Chrome'дон сырсөздөрдү экспорттоо</translation>
 <translation id="5368118228313795342">Кошумча код: <ph name="EXTRA_CODE" />.</translation>
@@ -453,6 +454,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="5649156266046089790">Chrome профилдери менен Chrome'догу маалыматты өзүнчө сактай аласыз. Досторуңуз менен үй-бүлөңүз үчүн профилдерди түзүңүз же жумуш менен эс алууну бири-бири менен аралаштырбаңыз.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> файлы кооптуу болушу мүмкүн, ошондуктан Chrome аны бөгөттөп койду.</translation>
 <translation id="566568153320186256">Chrome жылма сыдыруу жана видеодогу кадрлардын жыштыгы сыяктуу визуалдык кубулуштарды жана фондогу аракеттерди чектөө менен батареянын кубатын үнөмдөйт. <ph name="BEGIN_LINK" />Кубатты үнөмдөгүч жөнүндө кеңири маалымат алыңыз<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">ChromeOS эскирип калган</translation>
 <translation id="567202749201779594">Аккаунтуңуздагы Chromе маалыматын өчүрүңүз</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Администраторуңуз бул жаңыртууну колдонуу үчүн Chrome'ду кайра иштетүүнү суранууда}=1{Администраторуңуз бул жаңыртууну колдонуу үчүн Chrome'ду кайра иштетүүнү суранууда. Жашыруун терезеңиз кайра ачылбайт.}other{Администраторуңуз бул жаңыртууну колдонуу үчүн Chrome'ду кайра иштетүүнү суранууда. # жашыруун терезеңиз кайра ачылбайт.}}</translation>
 <translation id="568656514202614970">Ийгилик! Эми капталдагы тилкедеги Google Издөө менен сайттарды карап жатып, суроолорду оңой бере аласыз</translation>
@@ -475,6 +477,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="5894164573378901688">Chrome'догу Gemini'ды колдонуу үчүн башка Google аккаунту менен кириңиз</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Тармакка кирүү</translation>
+<translation id="5906655207909574370">Жаңырганы калды! Жаңыртууну аягына чыгаруу үчүн түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="5924017743176219022">Интернетке туташууда...</translation>
 <translation id="5941711191222866238">Кичирейтүү</translation>
 <translation id="5941830788786076944">Google Chrome'ду демейки серепчи кылуу</translation>
@@ -530,6 +533,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6326175484149238433">Chrome'дон алып салуу</translation>
 <translation id="6334815226785304306">Google Chrome'ду демейки серепчи кылып, тапшырмалар тактасына кадап коюңуз</translation>
 <translation id="6339888439788291743">Жаңы сүрөтчө, ошол эле ыкчам баскыч: Google Издөөдөгү ЖИ режиминде сайттарды карап жатып, суроолорду берүү үчүн чыкылдатыңыз.</translation>
+<translation id="6349304688246983183">Google Издөө кызматында сайттарды карап жатып, суроолорду оңой бериңиз</translation>
 <translation id="63540178978900677">Chrome мындан ары демейки серепчиңиз эмес. Chrome демейки серепчиңиз болсунбу?</translation>
 <translation id="6357670763064300993">Chrome'догу Gemini Enterprise</translation>
 <translation id="6360449101159168105">Бул өтмөк жигерсиз болуп турганда, Chrome'дун тез бойдон кармоо үчүн эстутум бошотулган. Бул сайтты жигерсиз абалда болуудан ар дайым чыгара аласыз.</translation>
@@ -543,6 +547,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6438015621983209660">Телефонуңуздагы Chrome менен Өркүндөтүлгөн коопсуз серептөөнү колдонуңуз</translation>
 <translation id="6442774133615368941">Chrome iOS колдонмосунда камера аркылуу соода кылып, тексттерди которуп жана көргөн нерсеңизди аныктаңыз</translation>
 <translation id="6446105560007692480">Chrome менен издөө же <ph name="BEGIN_LINK" />Параметрлерден<ph name="END_LINK" /> тууралоо үчүн</translation>
+<translation id="6447943657065463998">Бул башкарылган серепчи <ph name="DOMAIN" /> тарабынан жумуш үчүн туураланган Gemini жардамчысын колдоно алат. Ал уюмдун файлдарына жана уруксат берилген кызматтарга негизделген маалыматты таап, жооп бере алат. Аны жеке профиль менен колдонуу сунушталбайт. Сүйлөшүүлөрдүн таржымалы өткөрүлбөйт. Которулуу үчүн Chrome'ду кайра иштетүү талап кылынат.</translation>
 <translation id="6448835208126432197">Chrome'догу Gemini'да экрандын бир бөлүгүн тандоо үчүн баскычтардын айкалышын колдонуңуз.</translation>
 <translation id="6473905796280459355">"Chrome жөнүндө" барагына өтүү</translation>
 <translation id="6481963882741794338">Chrome жана башка Google кызматтарын жекелештирүү жана башка максаттар үчүн байланыштырыңыз</translation>
@@ -563,8 +568,8 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6612152958212564387">Google'га колдонуу статистикасын жана каталар жөнүндө кабарларды жөнөтпөй жатасыз. <ph name="BEGIN_LINK" />Башкаруу<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chrome'ду демейки серепчи катары коюп, сырсөздөрүңүздү, кыстармаларыңызды жана таржымалыңызды түзмөктөрдө шайкештирип туруңуз.</translation>
 <translation id="6632012506031284914">Chrome менен издөө үчүн.</translation>
-<translation id="6632473616050862500">ChromeOS Flex тутуму кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
 <translation id="6634299872736643004">Бул параметрлерге өзгөртүүлөр Chrome өчүрүлүп күйгүзүлгөндө киргизилет.</translation>
+<translation id="6644846457769259194">Түзмөгүңүз жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">Chrome'го киресизби?</translation>
 <translation id="6664219008737641504">Эгер сыр сүйлөмүңүздү унутуп калсаңыз же бул параметрди өзгөрткүңүз келсе, аккаунтуңуздагы Chrome маалыматын <ph name="SETTINGS_LINK" /></translation>
 <translation id="6676384891291319759">Интернетке кирүү</translation>
@@ -628,7 +633,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7285990705317078173">Бааларга көз салып, каалаган сайтта баа төмөндөгөндө билдирмелерди алуу үчүн телефонуңузга Chrome'ду жүктөп алыңыз</translation>
 <translation id="7288567540154601580">Өтмөктөр жана кеңейтүүлөр</translation>
 <translation id="7290997427370476749">Серептеп жатканда суроолорду берүү үчүн куралдар тилкесиндеги "Google Издөө панели" баскычынан Google Издөө панелин кайра ачсаңыз болот</translation>
-<translation id="7296210096911315575">Колдонуу жана коопсуздук тууралуу маанилүү маалымат</translation>
 <translation id="7299899569525778554">Компьютерден издөө</translation>
 <translation id="7302361266603927550">Chrome'догу айрым маалымат Google аккаунтуңузга сактала элек. Аккаунттан чыгуудан мурда бир нече мүнөт күтө туруңуз. Эгер азыр чыгып кетсеңиз, бул маалымат өчүрүлөт.</translation>
 <translation id="7306401458628386911">Дароо серептөө: Эми Windows иштегенде Chrome'ду да иштетсе болот.</translation>
@@ -661,9 +665,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7572537927358445944">Өчүк • Chrome бул кеңейтүү кайдан алынганын текшере албайт</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> орноткучу</translation>
 <translation id="7596160425942761210">Эми билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду Chrome'до ача аласыз.</translation>
-<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Маалыматыңызды коргоо үчүн Chrome'га сиз жакында кирбеген сайттардан уруксаттарды алып салууга макулдугуңузду бериңиз.</translation>
-<translation id="7629898584100520089">Жөндөмдөр сыяктуу ЖИ инновациялары Google аккаунтуңузга сакталып, Chrome'ду шайкештирүүдөн өзүнчө тескелет</translation>
 <translation id="7641148173327520642">Тутумуңуздун администратору Google Chrome'ду <ph name="TARGET_URL_HOSTNAME" /> доменин <ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу ачууга конфигуациялады.</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7651907282515937834">Chrome ишкана логотиби</translation>
@@ -703,7 +705,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7904213866086517086">Google Издөөнү капталдагы тилкеде кайра ачуу</translation>
 <translation id="7904985524660297937">Google Chrome'догу Gemini'ды колдонуп көрүү</translation>
 <translation id="7905880575591690197">Кирип жатканда ката кеткендиктен, ChromeOS Google аккаунтуңузга Chrome'догу нерселерди сактай алган жок</translation>
-<translation id="7917876797003313048">Кирип турган Google аккаунттарыңызды башкара аласыз. Google аккаунттарыңыз Chrome серепчисинде, Play Store'до, Gmail'де жана башка жерлерде колдонулат. Эгер кимдир бирөөнүн, мисалы, үй-бүлөлүк топтун мүчөсүнүн аккаунтун кошкуңуз келсе, жаңы адамды <ph name="DEVICE_TYPE" /> түзмөгүнө кошуп коюңуз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Файл адаштыруучу болуп, түзмөгүңүзгө күтүлбөгөн өзгөртүүлөрдү киргизиши мүмкүн болгондуктан, Chrome бул жүктөп алууну бөгөттөдү</translation>
 <translation id="7951272445806340501">Жаңыртууну колдонуу үчүн ChromeOS Flex өчүрүлүп күйгүзүлүшү керек.</translation>
 <translation id="7959172989483770734">Chrome профилдерин тескөө</translation>
@@ -720,9 +721,11 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8064965390968184078">1. Төмөндөгү <ph name="BUTTON_LABEL" /> баскычын чыкылдатыңыз
 2. Windows параметрлеринен <ph name="BUTTON_2" /> баскычын чыкылдатыңыз
 3. Ыкчам ачуу максатында Chrome'ду тапшырмалар тактасына кадоо үчүн Windows билдирмесиндеги <ph name="BUTTON_3" /> баскычын чыкылдатыңыз</translation>
+<translation id="8066474819446975249">Которулуу үчүн Chrome'ду кайра иштетиңиз</translation>
 <translation id="8074398340364918139">Chrome'дун белгилүү бир функциясын же кеңейтүүсүн издөө үчүн дарек тилкесине анын ыкчам баскычын, андан соң тандалган ыкчам баскычты териңиз</translation>
 <translation id="8077579734294125741">Башка Chrome профилдери</translation>
 <translation id="8086881907087796310">Компьютериңиз аппараттык камсыздоого коюлган минималдуу талаптарга жооп бербегендиктер, орнотулбай калды.</translation>
+<translation id="8095439028686936591">ChromeOS жаңыртылган</translation>
 <translation id="8110438089258398864">Сайттарды карап жатканда суроолорду оңой берүү үчүн Google Издөөдөгү ЖИ режимин кайра ачсаңыз болот</translation>
 <translation id="8113883687556086139">Аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) Chrome маалыматын сактоо жана колдонуу үчүн өзүңүздү ырастаңыз</translation>
 <translation id="8115695070094288807">Chrome'ду тууралап алуу...</translation>
@@ -849,6 +852,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="911206726377975832">Серептөө дайын-даректериңизди өчүрөсүзбү?</translation>
 <translation id="9138603949443464873">Өзгөртүүлөрдү киргизүү үчүн Chrome'ду кайра иштетиңиз</translation>
 <translation id="9148058034647219655">Чыгуу</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google'га катталуу.</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>
 <translation id="93760716455950538">ChromeOS Flex'ти өчүрүп күйгүзүү</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>

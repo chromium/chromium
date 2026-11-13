@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Izinto ezimbalwa ongazizama</translation>
 <translation id="112308213915226829">Fihla ngokuzenzakalela ishelufu</translation>
 <translation id="1129383337808748948">Vuselela okuthi <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Kumele okungenani kube nohlamvu olulodwa noma uphawu</translation>
 <translation id="1142002900084379065">Izithobe zakamumva</translation>
 <translation id="114221662579355151">Lokhu kuvumela ukufinyelela kwekhamera ku-<ph name="APP1_NAME" />, <ph name="APP2_NAME" /> nakuwo wonke ama-app namawebhusayithi anemvume yekhamera Ungase udinge ukuvuselela ikhasi lewebhu noma uqale kabusha i-app.</translation>
 <translation id="1145593918056169051">Iphrinta imile</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Vula ithebhu entsha efasiteleni elisha</translation>
 <translation id="1536604384701784949">Ukusebenzisa i-<ph name="USER_EMAIL_ADDRESS" /> kudingeka ukuthi uphume ngemvume kuqala kuwo wonke ama-akhawunti. Ukuze uphume ngemvume, khetha okuthi Khansela ukuze ubuyele emuva. Bese ukhetha isikhathi sokuvula indawo yesimo bese ukhetha okuthi Phuma ngemvume. Bese ungena ngemvume futhi ku-<ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Isikhombisi esikhulu segundane</translation>
+<translation id="1538808328818992871">Okungenani akube izinhlamvu ezi-<ph name="MIN_LENGTH" /></translation>
 <translation id="1545331255323159851">Buka izithombe, imidiya, kanye nezaziso zefoni yakho zakamuva</translation>
 <translation id="1546492247443594934">Itafula 2</translation>
 <translation id="1546930421365146760">Cela umlawuli wakho ukuthi asethe le divayisi kukhonsoli ye-Google Yokuphatha</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Chofoza ukuze uthole okunye okungakhethwa</translation>
 <translation id="1555130319947370107">Okuluhlaza okwesibhakabhaka</translation>
 <translation id="1557622599341396706">Bonisa igama ledeski</translation>
+<translation id="1568242747239041185">Kumele kube nokubili kokulandelayo: osonhlamvukazi, izinhlamvu ezincane, izinombolo, noma izimpawu</translation>
 <translation id="1569384531973824928">Lokhu kuvumela ukufinyelela kwawo wonke ama-app namawebhusayithi anemvume yekhamera nemakrofoni. Ungase udinge ukuvuselela ikhasi lewebhu noma uqale kabusha i-app.</translation>
 <translation id="1570235441606255261">Isifaki somfutho</translation>
 <translation id="1571697193564730395">Guqula okuthi Ungaphazamisi. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Goqa iGoogle Tasks</translation>
 <translation id="2208323208084708176">Imodi ehlanganisiwe yedeskithophu</translation>
 <translation id="2215920961700443347">Ayikho i-inthanethi. Xhuma ku-inthanethi uphinde uzame futhi.</translation>
+<translation id="2220572644011485463">Iphinikhodi noma iphasiwedi</translation>
 <translation id="2222841058024245321">Itafula 7</translation>
 <translation id="2223384056430485343">Ekuhlukaniseni isikrini</translation>
 <translation id="2224075387478458881">Ukurekhoda isikrini akuvumelekile lapho okuqukethwe okuvikelekile kungabonakali</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Okhiye bemawusi bamisiwe</translation>
 <translation id="2268731132310444948">Uhambo lwesinyathelo esingu-<ph name="STEP" /> kwezingu-<ph name="TOTAL_STEPS" />. Uma Isiqalisi sesenziwe sasebenza, uzothola isikhala sokusesha esigqanyisiwe. Ungaqala ukuthayipha ukuze useshe amafayela, ama-app, nokwengeziwe kwakho. Ungakwazi futhi ukuthola izimpendulo zemibuzo emayelana nokuthi <ph name="PRODUCT_NAME" /> kwakho.</translation>
 <translation id="2268813581635650749">Phuma kuwo wonke</translation>
+<translation id="2273432041732361925">Akufanele kube nezinhlamvu eziphindayo noma ukulandelana kwezinhlamvu ezi-4 noma ngaphezulu</translation>
 <translation id="2276987123919776440">15imiz</translation>
 <translation id="2278668501808246459">Iqalisa umphathi wesiqukathi</translation>
 <translation id="2282073721614284166">Vula ilinki kuthebhu</translation>
@@ -1056,6 +1061,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="4072805772816336153">Zama futhi emuva kwesikhathi</translation>
 <translation id="4077623680826964850">Isikhathi sokuvala lapho uqalisa phansi noma uphinda ukuxhuma ku-VM.</translation>
 <translation id="4086921558679520050">Vula iswishi yemakrofoni ephathekayo kudivayisi yakho</translation>
+<translation id="4093173301198419723">Kumele kube nosonhlamvukazi, izinhlamvu ezincane, izinombolo, nezimpawu</translation>
 <translation id="4099874310852108874">Iphutha lenethiwekhi livelile.</translation>
 <translation id="4101772068965291327">Vula ikhasi lasekhaya</translation>
 <translation id="4102906002417106771">Qala kabusha ku-powerwash</translation>
@@ -1277,6 +1283,7 @@ Kuxhunywe idivayisi engu-1.</translation>
 <translation id="4668936527507421457">Iphinikhodi kumelwe isebenzise izinombolo kuphela</translation>
 <translation id="4672539464599646374">Isilondolozi Sebhethri sivuliwe</translation>
 <translation id="4673427585974421255">Qhubeka</translation>
+<translation id="467510802200863975">Amaphasiwedi awafani</translation>
 <translation id="4677040906536311086">Google Sheet</translation>
 <translation id="468019262817532242">Akekho ongabelana nawe</translation>
 <translation id="468293128311738995">Ama-app asefonini yakho</translation>
@@ -1300,6 +1307,7 @@ Kuxhunywe idivayisi engu-1.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Buyekeza idivayisi ibe uhlobo lwangaphambilini lungakapheli usuku}one{Buyekeza idivayisi ibe uhlobo lwangaphambilini zingakapheli izinsuku ezingu-#}other{Buyekeza idivayisi ibe uhlobo lwangaphambilini zingakapheli izinsuku ezingu-#}}</translation>
 <translation id="4747410141429390146">Sicela uvule ukuze ubuke izaziso</translation>
 <translation id="4752784485658729358">Kuvunyelwe amatafula alondoloziwe ayisi-6 kuphela. Susa itafula ukuze ulondoloze elisha.</translation>
+<translation id="4753084533826742808">Kumele kube uhlamvu okungenani olu-1</translation>
 <translation id="4759238208242260848">Ukulanda</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + umcibisholo waphezulu</translation>
 <translation id="4762573482154983647">Fihla ama-app</translation>
@@ -1436,6 +1444,7 @@ Ungaphinde futhi usebenzise isinqamuleli sekhibhodi. Okokuqala, gqamisa umbhalo,
 <translation id="5144005092084035179">Shintsha okufakwayo komsindo?</translation>
 <translation id="5145464978649806571">Uma usuka kudivayisi yakho, isikrini sakho sizokhiya ngokuzenzakalelayo. Uma uphambi kwedivayisi yakho, isikrini sakho sizohlala sivuliwe isikhathi eside. Uma isikrini sokukhiya sikhutshaziwe, idivayisi yakho izolala esikhundleni sokukhiywa.</translation>
 <translation id="5147567197700016471">Kuvuliwe</translation>
+<translation id="5148285448107770349">Iphasiwedi kumele okungenani ibe nezinhlamvu ezingu-8</translation>
 <translation id="5150070631291639005">Izilungiselelo zobumfihlo</translation>
 <translation id="5155897006997040331">Isivinini sokufunda</translation>
 <translation id="5158206172605340248">Imenyu yezimpawu zesigqi ichithiwe.</translation>
@@ -1556,6 +1565,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="5474859849784484111">I-<ph name="MANAGER" /> idinga ukuba uxhume ku-Wi-Fi manje futhi ulande isibuyekezi. Noma, ulande ngokuxhuma okwenziwe imitha (kungaba nezinkokhelo).</translation>
 <translation id="547979256943495781">Iselufu kwesokudla</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Qinisekisa iphasiwedi</translation>
 <translation id="5491186829646618080">Izibuyekezo ze-firmware ziyatholakala</translation>
 <translation id="5503884284981862082">Vula/vala i-Google assistant</translation>
 <translation id="550391772491508736">Qhubeka nokusakaza</translation>
@@ -1817,6 +1827,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="6198252989419008588">Guqula iphinikhodi</translation>
 <translation id="6199775032047436064">Phinda ulayishe ikhasi lamanje</translation>
 <translation id="6200515304866777730">Akusekelwa i-app</translation>
+<translation id="6209589022625766110">Iphasiwedi kufanele ibe yizinhlamvu okungenani eziyi-8 futhi ihlanganise okungenani okubili kokulandelayo: izinhlamvu ezinkulu, izinhlamvu ezincane, izinombolo, noma izimpawu. Akufanele ibe nezinhlamvu eziphindayo noma ukulandelana kwezinhlamvu ezi-4 noma ngaphezulu.</translation>
 <translation id="6210042900243040400">Xhuma i-<ph name="NAME" /> elondolozwe ngokwedlule ku-<ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">Imizuzu engu-10</translation>
 <translation id="6213808132343683860">Thatha isithombe-skrini esiyingxenye noma ukurekhoda kwesikrini</translation>
@@ -1851,6 +1862,7 @@ Awekho amadivayisi axhunyiwe.</translation>
 <translation id="6297986260307280218">Thumela idatha yokusetshenziswa neyokuxilonga. Siza ukuthuthukisa umuzwa wakho we-Android ngokuthumela ngokuzenzakalela idatha yokuxilonga, yedivayisi, neyokusetshenziswa kwe-app ku-Google. Lokhu kuzosiza isistimu nokuzinza kwe-app nokunye ukuthuthukiswa. Enye idatha yosilinganisozinga izophinda isize ama-app we-Google nozakwethu, abafana nonjiniyela be-Android. Leli <ph name="BEGIN_LINK1" />sethingi<ph name="END_LINK1" /> liphoqelelwa umnikazi. Umnikazi angakhetha ukuthumela idatha yokuxilonga neyokusetshenziswa yale divayisi ku-Google. Uma isethingi lakho elingeziwe Lomsebenzi Wewebhu nowe-App livuliwe, le datha ingalondolozwa ku-Google Account yakho. <ph name="BEGIN_LINK2" />Funda kabanzi mayelana nama-metric<ph name="BEGIN_LINK2_END" />Funda Kabanzi<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Yenza ngendlela oyifisayo le divayisi ku-app</translation>
 <translation id="6298962879096096191">Sebenzisa i-Google Play ukuze ufake izinhlelo zokusebenza ze-Android</translation>
+<translation id="6300478323573969040">Kufanele okungenani kube nezinhlamvu eziyi-12 futhi kube nezinhlamvu ezinkulu, izinhlamvu ezincane, izinombolo, nezimpawu. Akufanele ibe nezinhlamvu eziphindayo noma ukulandelana kwezinhlamvu ezi-4 noma ngaphezulu.</translation>
 <translation id="6304076460080088478">Vala noma unciphise amawindi e-Incognito ukuze useshe isikrini sakho ngeGoogle Lens</translation>
 <translation id="6309219492973062892">Chofoza noma thepha izithonjana zeshelufu elingu-1-8</translation>
 <translation id="6315170314923504164">Izwi</translation>
@@ -2023,7 +2035,6 @@ Ukufaka okusha</translation>
 <translation id="6782919488259222803">Sesha ikhasi lamanje</translation>
 <translation id="6783348167101855071">Ukhethe isibambi esingezansi kwesokudla, sebenzisa okhiye bomcibisholo ukuze uhambise</translation>
 <translation id="6786750046913594791">Vala ifolda</translation>
-<translation id="6792262051831399889">Ayitholakali</translation>
 <translation id="6792351896138862473">Ayikwazi ukuqalisa ama-app e-kiosk angasekelwa. Yazisa umlawuli wakho ngale nkinga.</translation>
 <translation id="679368458793552943">Sondeza isithombe uma isikhulisi sivuliwe</translation>
 <translation id="6794287755901682422">Le nto inalokhu: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2466,6 +2477,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8052898407431791827">Kukopishelwe kuklibhodi</translation>
 <translation id="8054466585765276473">Ibala isikhathi sebhethri</translation>
 <translation id="8063363226185507157">Amasethingi okungena avunyelanisiwe</translation>
+<translation id="8064015586118426197">I-ChromeOS Flex</translation>
 <translation id="8076492880354921740">Okwamathebhu</translation>
 <translation id="8079538659226626406">Ukwabelana Isikrini</translation>
 <translation id="8083540854303889870">Kulondolozelwe kamuva</translation>
@@ -2629,6 +2641,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8555757996376137129">Susa ideski lamanje</translation>
 <translation id="8558521694042102707">I-AI ekhiqizayo ingawenza amaphutha, okuhlanganisa amaphutha ngabantu, ngakho qinisekisa.</translation>
 <translation id="8559845965695780508">U-<ph name="USER" /> uhlelile</translation>
+<translation id="8567946600191652875">Kumele okungenani kube nezinhlamvu eziyi-6 nohlamvu okungenani olulodwa noma uphawu</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Imenyu iyiswe phansi ekhoneni elingakwesokudla sesikrini.</translation>
 <translation id="8581946341807941670">Cindezela okuthi <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> uphinde uchofoze ilinki</translation>
@@ -2802,7 +2815,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="9034924485347205037">Amafayela e-Linux</translation>
 <translation id="9037818663270399707">Ukuxhuma kwakho akusi yimfihlo kuyo yonke ithrafikhi yenethiwekhi</translation>
 <translation id="9047624247355796468">Vula izilungiselelo ze-<ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">IBluetooth ayitholakali</translation>
 <translation id="9050999376345823055">Cindezela "." ukuze ukhulule</translation>
 <translation id="906458777597946297">Yenza iwindi libe likhulu</translation>
 <translation id="9065203028668620118">Hlela</translation>

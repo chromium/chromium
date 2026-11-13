@@ -206,6 +206,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1807709131360304325">Otevřít nové okno</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> již nemůže nadále používat <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1815975907734103433"><ph name="TAB_TITLE" />, nahrávající karta</translation>
+<translation id="1817594121551034302">Zkratka adresního řádku</translation>
 <translation id="1819443852740954262">Otevřít vše v anonymním okně</translation>
 <translation id="1820408774134375111">Spodní panel pro přihlášení</translation>
 <translation id="1824902652744048041">Klepněte na Vymazat údaje o prohlížení</translation>
@@ -830,6 +831,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, anonymní karta s obrazem v obraze</translation>
 <translation id="4285498937028063278">Odepnout</translation>
 <translation id="4285846616383034558">Soubory cookie, mezipaměť a další data webů</translation>
+<translation id="429016203314124112">Vybraný vyhledávač se bude v Chromu používat jako výchozí</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Zapněte v nastavení systému Android zámek obrazovky<ph name="END_LINK" /></translation>
 <translation id="4293154608148215505">váš telefon</translation>
 <translation id="4295640788982898778">Vaše rozšíření jsou uložena ve vašem účtu Google, ale veškerá jejich data uložená na tomto zařízení, mohou být smazána.</translation>
@@ -984,6 +986,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4822710610088666676">Skupina karet <ph name="TAB_GROUP_TITLE" /> byla zavřena a uložena</translation>
 <translation id="4835385943915508971">Chrome k požadovanému zdroji nemá přístup.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Obnovit skupinu karet s <ph name="TAB_COUNT_ONE" /> kartou v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}few{Obnovit skupinu karet se <ph name="TAB_COUNT_MANY" /> kartami v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}many{Obnovit skupinu karet s <ph name="TAB_COUNT_MANY" /> karty v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}other{Obnovit skupinu karet s <ph name="TAB_COUNT_MANY" /> kartami v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.}}</translation>
+<translation id="48431900345921167">Některé služby nejsou pro účet <ph name="ACCOUNT_EMAIL" /> k dispozici</translation>
 <translation id="4849731766219625109">Použít účet <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Zobrazit</translation>
 <translation id="4860895144060829044">Volat</translation>
@@ -1008,6 +1011,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4925120120285606924">Snímek obrazovky <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Obrázky a soubory si můžete uložit k prohlížení offline nebo sdílení v jiných aplikacích</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 záložka a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}few{# záložky a další položky jsou uložené jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}many{# záložky a dalších položek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}other{# záložek a dalších položek je uloženo jen na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}}</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4943703118917034429">Virtuální realita</translation>
 <translation id="4943872375798546930">Žádné výsledky</translation>
 <translation id="4957722034734105353">Další informace...</translation>
@@ -1042,6 +1046,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Je vybráno <ph name="WINDOW_COUNT_ONE" /> okno}few{Jsou vybrána <ph name="WINDOW_COUNT_NORMAL" /> okna}many{Je vybráno <ph name="WINDOW_COUNT_NORMAL" /> okna}other{Je vybráno <ph name="WINDOW_COUNT_NORMAL" /> oken}}</translation>
 <translation id="5058506215037547387">Zobrazit náhled stránky</translation>
 <translation id="506254248375231072">Žádné karty</translation>
+<translation id="5065494736868031814">Na liště</translation>
 <translation id="5075939510584558547">Uložit bez šifrování</translation>
 <translation id="5078638979202084724">Přidat do záložek všechny karty</translation>
 <translation id="5085038751173179818">Když se na tento web a do Chromu přihlásíte, budete mít své záložky a další položky k dispozici na všech svých zařízeních</translation>
@@ -1061,6 +1066,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5142281402488957685">Přetažením dolů načtete nové příběhy</translation>
 <translation id="5144385790872094440">Některé stránky, které navštěvujete, se načítají předběžně. Pokud na stránky odkazuje web nebo aplikace Google, mohou se předběžně načíst prostřednictvím serverů Google.</translation>
 <translation id="5152843274749979095">Nejsou nainstalovány žádné podporované aplikace</translation>
+<translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5161254044473106830">Je požadován název</translation>
 <translation id="5161262286013276579">Byla otevřena tabulka k potvrzení přístupového klíče</translation>
 <translation id="5163361352003913350">Momentálně vybráno: <ph name="NAME" />. Vyberte účet.</translation>
@@ -1144,6 +1150,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="549660026907543296">Přidat se jako <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Spodní panel s nedávnou aktivitou</translation>
+<translation id="5519516356611866228">S vašimi změnami</translation>
 <translation id="5526281268548144413">Nelze zavřít ve více oknech</translation>
 <translation id="5532536403031755365">Aktivujte si další vrstvu zabezpečení proti online hrozbám prostřednictvím vylepšené ochrany</translation>
 <translation id="5540127996007641535">{NUM_BOOKMARKS,plural, =1{Otevřít záložku}few{Otevřít vše (#)}many{Otevřít vše (#)}other{Otevřít vše (#)}}</translation>
@@ -1256,6 +1263,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5992182727984874868"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože jste tento web v poslední době nenavštívili</translation>
 <translation id="5995726099713306770">Stáhnout stránku znovu?</translation>
 <translation id="6000066717592683814">Ponechat Google</translation>
+<translation id="6000860861660592745">Volba byla uložena</translation>
 <translation id="6002122790816966947">Vaše zařízení</translation>
 <translation id="6011308810877101166">Vylepšovat návrhy ve vyhledávání</translation>
 <translation id="6013305291643746595">Řazení od nejstarších</translation>
@@ -1282,6 +1290,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6095578583683628124">Pokud je Google zároveň váš výchozí vyhledávač, budou se zobrazovat lepší, kontextově relevantní návrhy</translation>
 <translation id="6104768972315313991">Vygenerovaný QR kód</translation>
 <translation id="610630277578876674">Rychle otevírejte odkazy ve zprávách a podobně</translation>
+<translation id="6110067234345111822">V souladu s právními předpisy ve vaší oblasti si musíte vybrat vyhledávač pro Chrome</translation>
 <translation id="6112702117600201073">Obnovování stránky</translation>
 <translation id="612221930823678863">Adresa URL se zástupným symbolem <ph name="QUERY" /> místo dotazu</translation>
 <translation id="6122831415929794347">Vypnout Bezpečné prohlížení?</translation>
@@ -1406,6 +1415,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6482749332252372425">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu nedostatku místa v úložišti.</translation>
 <translation id="6486420406192123355">Tento soubor PDF pochází z webu, který používá nezabezpečené připojení</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Byl stažen jeden soubor}few{Byly staženy # soubory}many{Bylo staženo # souboru}other{Bylo staženo # souborů}}</translation>
+<translation id="6502991525169604759">Bez vašich změn</translation>
 <translation id="6508722015517270189">Restartujte Chrome</translation>
 <translation id="6513924416597632811">Zkopírovat odkaz na stránku s výsledky vyhledávání pro dotaz <ph name="SEARCH_QUERY" />. Zdroj: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Ověřit</translation>
@@ -1447,6 +1457,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6659594942844771486">Tabulátor</translation>
 <translation id="666731172850799929">Otevřít v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Chci dostávat oznámení</translation>
+<translation id="6670742294143102726">Vyberte jednu nebo více karet, které chcete přidat do vyhledávání</translation>
 <translation id="6671495933530132209">Zkopírovat obrázek</translation>
 <translation id="6672697278890207089">Zadejte přístupové heslo</translation>
 <translation id="6675622031235530028">Ukončíte podržením Ctrl+Q</translation>
@@ -1578,6 +1589,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7119984597597798764">Zavřít <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7121179479711575744">Přihlásit se do Chromu</translation>
 <translation id="7130633106249192408">Vymazat z tohoto zařízení údaje o prohlížení</translation>
+<translation id="7134511521562699550">V adresním řádku</translation>
 <translation id="7136694880210472378">Nastavit jako výchozí</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Byla zkontrolována oprávnění 1 webu}few{Byla zkontrolována oprávnění # webů}many{Byla zkontrolována oprávnění # webu}other{Byla zkontrolována oprávnění # webů}}</translation>
 <translation id="7138678301420049075">Ostatní</translation>
@@ -1610,6 +1622,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7196455519852483601">Můžete smazat část nebo celou svou historii, soubory cookie, data webů a další položky</translation>
 <translation id="7197682514647286393">Rychlé vymazání údajů o prohlížení</translation>
 <translation id="719791532916917144">Klávesová zkratka</translation>
+<translation id="7198747540865146057">Výběr výchozího vyhledávače</translation>
 <translation id="7203150201908454328">Rozbaleno</translation>
 <translation id="7207760545532569765">Obnovit <ph name="TAB_COUNT" /> karet jako nové karty na pozadí.</translation>
 <translation id="7217781228893594884">Když Chrome opustíte, anonymní karty se uzamknou</translation>
@@ -1684,7 +1697,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7493994139787901920"><ph name="VERSION" /> (aktualizováno <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Čekejte prosím…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, připnutá ztlumená karta</translation>
-<translation id="7500851014030446046">Stahování PDF</translation>
 <translation id="7501135638693251872">Všechny záložky</translation>
 <translation id="7504076214066136798">Úpravy nelze uložit</translation>
 <translation id="7507207699631365376">Zobrazit <ph name="BEGIN_LINK" />zásady ochrany soukromí<ph name="END_LINK" /> tohoto poskytovatele</translation>
@@ -1920,6 +1932,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8368001212524806591">Sledovat cenu</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> skupina karet}few{<ph name="TAB_GROUPS_MANY" /> skupiny karet}many{<ph name="TAB_GROUPS_MANY" /> skupiny karet}other{<ph name="TAB_GROUPS_MANY" /> skupin karet}}</translation>
 <translation id="8387617938027387193">Potvrďte, že jste to vy</translation>
+<translation id="8392241619862061825">Zobrazit zkratku Gemini</translation>
 <translation id="8393700583063109961">Odeslat zprávu</translation>
 <translation id="8398389123831319859">Dvojitým klepnutím a podržením přejdete do anonymního režimu</translation>
 <translation id="8401904657382223224">Filtrovat podle hostitele</translation>
@@ -2001,6 +2014,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8639963783467694461">Nastavení automatického vyplňování</translation>
 <translation id="8642256427178803328">Zapněte možnost Při zavření Chromu zamknout anonymní karty</translation>
 <translation id="8644482734962137770">Gemini potřebuje oprávnění k používání Chromu</translation>
+<translation id="8653883575875371543">Zobrazovat Gemini na liště</translation>
 <translation id="8662474268934425487">Přihlášení na web <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="8664979001105139458">Název souboru již existuje</translation>
 <translation id="8676276370198826499">Zaregistrujte se na webu <ph name="SITE_ETLD_PLUS_ONE" /> pomocí služby <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -2018,6 +2032,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8727043961453758442">Využití všech funkcí Chromu</translation>
 <translation id="8728810647305130936">Otevřít nové karty</translation>
+<translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731268612289859741">Bezpečnostní kód</translation>
 <translation id="8738163682604285902">Zobrazit režim čtení?</translation>
 <translation id="8746155870861185046">Sdílet zvýraznění</translation>

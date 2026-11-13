@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Tam hazırsınız!</translation>
 <translation id="1149483087970735785">Yardımçı texnologiya</translation>
 <translation id="1150490752229770117">Bu, <ph name="DEVICE_TYPE" /> cihazı üçün sonuncu avtomatik proqram təminatı və təhlükəsizlik güncəlləməsidir. Növbəti güncəlləmələri əldə etmək üçün cihazı yeni modelə təkmilləşdirin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS haqqında</translation>
 <translation id="1155816283571436363">Telefonunuza qoşulur</translation>
 <translation id="1160800016654917722">Pəncərə aşağıda sola köçürüldü</translation>
 <translation id="1164015913575846413">alt + klik</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">başladıcı + sağ ox</translation>
 <translation id="1280332775949918163">Pəncərəni əlavə edin</translation>
+<translation id="1285625592773741684">Cari data istifadəsi ayarı: Mobil Data</translation>
 <translation id="1285815028662278915">Mobil datanız hotspotu dəstəkləməyə bilər. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Gecə İşığı qürub vaxtı avtomatik aktiv ediləcək</translation>
 <translation id="1288300545283011870">Nitq Funksiyaları</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Artırmalar deaktiv ediləcək və ayarlar təhlükəsiz defoltlara sıfırlanacaq. Tab, fayl və kukilər saxlanacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Tam ekran miqyası</translation>
 <translation id="1539727654733007771">Mobil şəbəkə ayarlanmayıb. Yeni <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> endirin.</translation>
+<translation id="1547295885616600893">ChromeOS əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı ilə<ph name="END_LINK_CROS_OSS" /> mümkün oldu.</translation>
 <translation id="1547808936554660006">Başa düşürəm ki, formatladıqda quraşdırılmış eSIM profilləri silinməyəcək</translation>
 <translation id="1549275686094429035">ARC Aktivdir</translation>
 <translation id="1554640914375980459">Bildirişlər aldıqda ekranda fləş yanır. İşığa həssassınızsa, fləş bildirişlərindən ehtiyatla istifadə edin.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Məkanı aşkarlamaq üçün Wi‑Fi və ya mobil şəbəkə istifadə edin</translation>
 <translation id="1650407365859096313">Yeni tabda açılır. İcazə: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Yaxındakılarla Paylaşmanı aktivləşdirin</translation>
+<translation id="1662146548738125461">ChromeOS Flex haqqında</translation>
 <translation id="1663698992894057019">Ən son təhlükəsizlik və proqram təminatı üçün yeni Chromebook-a təkmilləşdirin</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün parol və ya PIN istifadə edin</translation>
 <translation id="1667842670298352129">Xüsusi mətnin ucadan səsləndirilməsinə qulaq asın. Əvvəlcə ekranınızın aşağısındakı "Seçib danışın" ikonasını seçin, sonra mətni vurğulayın. Həmçinin klaviatura qısa yolundan istifadə edə bilərsiniz: Mətni vurğulayın, sonra Axtarış + S düyməsini basın.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Nəzərə alın ki, barmaq izi güclü qrafik açar və ya PIN-dən güvənsiz ola bilər.</translation>
 <translation id="1724801751621173132">Daxiletmə rejimi</translation>
 <translation id="1741190788710022490">Adaptiv şarj</translation>
+<translation id="1745732479023874451">Kontaktları idarə edin</translation>
 <translation id="1751335846119670066">Oxumağa kömək et</translation>
 <translation id="1755601632425835748">Mətn ölçüsü</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> olaraq yenidən müəyyənləşdirildi.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Xeyr, 1 keçid kifayətdir</translation>
 <translation id="1842681835432895345">Bu displeyi güzgü rejimində istisna edin</translation>
 <translation id="1848219224579402567">Qapaq bağlı olan zaman hesabdan çıxın</translation>
+<translation id="185970820835152459">Daxil olunmuş Google Hesablarını idarə edə bilərsiniz. Google Hesablarınız Chromium brauzeri, Play Market, Gmail və digər xidmətlər üçün istifadə olunur. Ailə üzvü kimi başqası üçün bir hesab əlavə etmək istəyirsinizsə, əvəzində <ph name="DEVICE_TYPE" /> cihazınıza yeni bir şəxs əlavə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Daha soyuq</translation>
 <translation id="1866589962721094893">Android tətbiqlərinə bu Chromebook-da USB cihazları üzərində nəzarət imkanı verin. USB cihazını hər dəfə qoşduqda icazə tələb olunacaq. Fərdi Android tətbiqləri əlavə icazələr tələb edəcək.</translation>
 <translation id="1877377290348678128">Etiket (istəyə görə)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Səs</translation>
 <translation id="2097950021134740304">Abunənin unudulmasını ləğv edin</translation>
 <translation id="2104166991923847969">Hotspot avtomatik deaktiv edilsin</translation>
+<translation id="2106831557840787829">ChromeOS Flex <ph name="BEGIN_LINK_LINUX_OSS" />Linux tərtibat mühiti<ph name="END_LINK_LINUX_OSS" /> kimi əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı<ph name="END_LINK_CROS_OSS" /> ilə əlçatan edilib.</translation>
 <translation id="2114995631896158695">SİM kart daxil edilməyib</translation>
 <translation id="2121825465123208577">Ölçüsünü dəyişin</translation>
 <translation id="2127372758936585790">Gücü az şarjer</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574"><ph name="USER_NAME" /> silin</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2363475280045770326">Konfiqurasiyanı yadda saxlayarkən xəta oldu</translation>
+<translation id="236939127352773362">Cihazlar yaxınlıqda paylaşdıqda</translation>
 <translation id="237336063998926520">Məkanı müəyyən etmək üçün IP ünvanından istifadə edin</translation>
 <translation id="2373499590298659902">Maus düyməsini basmaq üçün "0" düyməsindən istifadə edin və saxlayın</translation>
 <translation id="2375406435414127095">Telefonunuzu qoşun</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">VPN'siz trafiki blok edin</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Məkan Dəqiqliyi tətbiq və xidmətlər üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar kimliyinizi müəyyən etmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, həmçinin ümumilikdə Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq kimi məqsədlər üçün istifadə edilir.</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">Çıxış bölməsi dolmaq üzrədir</translation>
 <translation id="3390013585654699824">Tətbiq detalları</translation>
 <translation id="3390740059150071453">Sola baxın</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">E-poçt ünvanı</translation>
 <translation id="3701028563242674350">Maus kursorunu böyütmək üçün silkələyin</translation>
 <translation id="3703699162703116302">Bilet yeniləndi</translation>
+<translation id="3703994572283698466">ChromeOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux tərtibat mühiti<ph name="END_LINK_LINUX_OSS" /> kimi əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı<ph name="END_LINK_CROS_OSS" /> ilə əlçatan edilib.</translation>
 <translation id="370649949373421643">Wi-Fi aktiv edin</translation>
 <translation id="370665806235115550">Yüklənir...</translation>
 <translation id="3707163604290651814">Hazırda <ph name="NAME" /> hesabı ilə daxil olunub</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Çap serverindən <ph name="NUM_PRINTERS" /> printer tapıldı</translation>
 <translation id="371370241367527062">Ön mikrofon</translation>
 <translation id="37143699183660101">Kursor sabitliyi</translation>
+<translation id="3716540481907974026">ChromeOS Flex versiyası</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">Yanlış PIN. Yenidən cəhd edin</translation>
 <translation id="3728681439294129328">Şəbəkə ünvanını konfiqurasiya edin</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Yazı mətni üçün altdan xətt göstərilsin</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="379509625511193653">Deaktiv</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">alt + yuxarı ox</translation>
 <translation id="3798670284305777884">Spiker (daxili)</translation>
 <translation id="3799128412641261490">Düymə ilə giriş ayarları</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Quraşdırılmış klaviatura</translation>
 <translation id="3917644013202553949">Faylları sinxronlaşdırmaq üçün yetərli yaddaş yoxdur. Yer boşaldın.</translation>
 <translation id="3919229493046408863">Cihazlar yaxınlıqda olduqda bildirişi deaktiv edin</translation>
+<translation id="3923184630988645767">Data istifadəsi</translation>
 <translation id="3923494859158167397">Mobil şəbəkələr ayarlanmayıb</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Bu cihazdakı digər istifadəçilər də bu şəbəkədən istifadə edə bilər</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Sürətli Cavabların izahı</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> üçün USB cihazları üzərində nəzarət imkanı verin.</translation>
 <translation id="3994530503403062649">Planşetdə düymələrin yerini tapın</translation>
+<translation id="3997429360543082038">ChromiumOS haqqında</translation>
 <translation id="4001540981461989979">Hərəkət edərkən maus kursoru vurğulansın</translation>
 <translation id="4005817994523282006">Saat qurşağının aşkarlanması üsulu</translation>
+<translation id="4019629340646866719">ChromiumOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux tərtibat mühiti<ph name="END_LINK_LINUX_OSS" /> kimi əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı<ph name="END_LINK_CROS_OSS" /> ilə əlçatan edilib.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Versiya detallarını kopyalayın</translation>
 <translation id="4028467762035011525">Daxiletmə metodlarını əlavə edin</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Son istifadə edilən daxiletmə metoduna keçmək üçün basın: <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">axtarış + sağ ox</translation>
 <translation id="405181879009056822">ChromeOS Ayarları</translation>
+<translation id="4054070260844648638">Hər kəsə görünür</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Şəbəkədə əlçatan printerlərə baxmaq üçün bağlantını yoxlayın</translation>
 <translation id="4068776064906523561">Yadda saxlanmış barmaq izləri</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, Dərəcə <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">Daha çox stiloqraf tətbiqləri axtarın</translation>
 <translation id="4248401726442101648">Kamera qoşulmayıb</translation>
+<translation id="424864128008805179">Chrome'dan çıxılsın?</translation>
 <translation id="4249116869350613769">Enerjiyə qənaət</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="425411422794688815">Xəta baş verdi. Telefonunuzun yaxınlıqda, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi-ın yandırılmış olduğuna əmin olun.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Hesabı}other{<ph name="EXTRA_ACCOUNTS" /> Google Hesabı}}</translation>
 <translation id="4314497418046265427">Telefonunuzu <ph name="DEVICE_TYPE" /> cihazına qoşduğunuz zaman daha məhsuldar olun</translation>
 <translation id="4314561087119792062">Yeni Giriş nöqtəsi adı (APN) əlavə edin</translation>
+<translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
 <translation id="4320177379694898372">İnternet bağlantısı yoxdur</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Yaddaş və enerji</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Təklif sayı</translation>
 <translation id="4606933160360542263">Fərdi düymə kombinasiyası: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Sol maus düyməsi seçildikdə iki dəfə toxunmaq üçün "/" düyməsindən istifadə edin</translation>
+<translation id="4613863813562375431">ChromiumOS versiyası</translation>
 <translation id="461661862154729886">Enerji mənbəyi</translation>
 <translation id="4617880081511131945">Bağlantı qurmaq mümkün deyil</translation>
 <translation id="4620757807254334872">maus</translation>
@@ -1136,6 +1155,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4777943778632837590">Şəbəkə adı serverlərini konfiqurasiya edin</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779766576531456629">eSIM Mobil şəbəkəsinin adını dəyişin</translation>
+<translation id="4789550509729954245">Cihazlar yaxınlıqda paylaşım edərkən bildiriş göstərin</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint sürətlənməsini aktiv edin</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" /> tətbiqindən quraşdırılan tətbiqlər</translation>
@@ -1196,6 +1216,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4964544790384916627">Pəncərəni bərkidin</translation>
 <translation id="4964673849688379040">Yoxlanılır...</translation>
 <translation id="4967571733817147990">Maus düymələrini fərdiləşdirin</translation>
+<translation id="4970880042055371251">ChromeOS versiyası</translation>
 <translation id="4972129977812092092">Printeri redaktə edin</translation>
 <translation id="4975771730019223894">Tətbiq nişanlanması</translation>
 <translation id="4979263087381759787">Developer Seçimləri</translation>
@@ -1275,6 +1296,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5193978546360574373">Chromebook-da Google Diskə giriş, o cümlədən oflayn əlçatan olan fayllara giriş silinəcək</translation>
 <translation id="5196790039230503600">Jestdən istifadə edin, sonra elementi buraxmaq istədiyiniz yeri göstərmək üçün başınızı hərəkət etdirin. Buraxmaq üçün yenidən jestdən istifadə edin.</translation>
 <translation id="5197255632782567636">internet</translation>
+<translation id="5205484256512407285">Ötürmək üçün heç vaxt mobil data istifadə etməyin</translation>
 <translation id="5207949376430453814">Mətn karetini vurğulayın</translation>
 <translation id="5208926629108082192">Cihazın mobil şəbəkə məlumatı</translation>
 <translation id="5208988882104884956">Yarım-en</translation>
@@ -1307,6 +1329,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5331568967879689647">ChromeOS Sistem Tətbiqi</translation>
 <translation id="5334113802138581043">Mikrofona giriş</translation>
 <translation id="5336689872433667741">Kursor və taçped</translation>
+<translation id="5337926771328966926">Cari cihaz adı: <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Diaqnostika və istifadə datasını göndərin</translation>
 <translation id="5369694795837229225">Linux tərtibat mühitini ayarlayın</translation>
 <translation id="5377367976106153749">Kamera girişi aktiv edilsin?</translation>
@@ -1444,6 +1467,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5833726373896279253">Bu ayarlar yalnız sahibi tərəfindən dəyişdirilə bilər:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Qutu</translation>
+<translation id="5840680448799937675">Fayllar həmişə oflayn paylaşılacaq</translation>
 <translation id="5841270259333717135">Ethernet şəbəkəsini konfiqurasiya edin</translation>
 <translation id="5842497610951477805">Bluetooth'un aktiv edilməsi</translation>
 <translation id="5846200638699387931">Əlaqə sintaksis xətası: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5924438086390153180">Microsoft fayllarını Google Diskə kopyalamazdan və ya köçürməzdən əvvəl soruşulsun</translation>
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="594048410531370124">Tanınmayan düymə. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>
+<translation id="5942779427914696408">Cihazın görünmə dərəcəsi</translation>
 <translation id="5945192511027649793">Taçpedi deaktiv edin</translation>
 <translation id="5947651424015173580">Mausla iki dəfə toxunun</translation>
 <translation id="594993197557058302">1-4 dəyişdirici düymələrini (ctrl, alt, shift, axtarış və ya başladıcı) və daha 1 düyməni basın. Tək düymə də seçə bilərsiniz.</translation>
@@ -1491,10 +1516,12 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5961545272769624207">Jest təyin edin</translation>
 <translation id="5968022600320704045">Axtarış nəticəsi yoxdur</translation>
 <translation id="5969728632630673489">Klaviatura qısayolu bildirişi qapadılıb</translation>
+<translation id="5979353814339191480">Bu parametr mobil internet və ya USB-modem tarif planına malik Chromebook cihazlarına, həmçinin mobil hotspota qoşulanda tətbiq olunur.</translation>
 <translation id="5985556342298151179">Chrome tətbiqi cihaz administratoru tərəfindən quraşdırıldı.</translation>
 <translation id="5986442691296752186">Linux tətbiqlərinə USB cihazları üzərində nəzarət imkanı verin.</translation>
 <translation id="598810097218913399">Təyinatı silin</translation>
 <translation id="5988563937187882754">Sağa baxın</translation>
+<translation id="5990266201903445068">Yalnız Wi-Fi</translation>
 <translation id="5992225669837656567">Mauslar ayrılıb</translation>
 <translation id="5999630716831179808">Səslər</translation>
 <translation id="6002458620803359783">Seçilmiş Səslər</translation>
@@ -1509,6 +1536,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6045114302329202345">Əsas TrackPoint düyməsi</translation>
 <translation id="6048747414605857443">ChromeVox və Seçib danış üçün nitq sintezi səslərini seçin və fərdiləşdirin</translation>
 <translation id="6050189528197190982">Boz çalar</translation>
+<translation id="6054961935262556546">Görünmə dərəcəsini dəyişin</translation>
 <translation id="6059276912018042191">Son Chrome tabları</translation>
 <translation id="6059925163896151826">USB cihazları</translation>
 <translation id="6064764629679333574">Aşağıkeyfiyyətli səsi yuxarı dəqiqliyə yüksəltməklə Bluetooth mikrofon səsinin keyfiyyətini yaxşılaşdırın.</translation>
@@ -1567,6 +1595,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6265159465845424232">Microsoft fayllarını Microsoft OneDrive-a kopyalamazdan və ya köçürməzdən əvvəl soruşulsun</translation>
 <translation id="6265687851677020761">Portu çıxarın</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> cihazına qoşulur</translation>
+<translation id="6268381023930128611">Chromium'dan çıxılsın?</translation>
 <translation id="6270309713620950855">Xatırlatma bildirişini susdurun</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> cihazına qoşulur</translation>
 <translation id="628352644014831790">4 saniyə</translation>
@@ -1618,6 +1647,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6453921811609336127">Növbəti giriş metoduna keçmək üçün buna basın: <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Boşluq<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Bu lüğəti silin</translation>
 <translation id="6463596731306859179">Arzuolunmaz popap və ya digər gözlənilməz əməliyyatlar görürsünüz? Bəzən quraşdırdığınız tətbiq və artırmalar məlumatınız olmadan ChromeOS ayarlarını dəyişə bilər.</translation>
+<translation id="6465841119675156448">İnternet olmadan</translation>
 <translation id="6467377768028664108">O zaman <ph name="DEVICE_TYPE" /> cihazı bunları edə biləcək:</translation>
 <translation id="6469557521904094793">Mobil şəbəkəni aktiv edin</translation>
 <translation id="6470120577693311302">Fləş bildirişlər</translation>
@@ -1668,6 +1698,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6626581113916585374">Təsir rejimi</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Seçim qısayolu</translation>
+<translation id="6632473616050862500">ChromeOS Flex əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqramı<ph name="END_LINK_CROS_OSS" /> ilə əlçatan edilib.</translation>
 <translation id="6646476869708241165">Sürətli Birləşdirməni deaktiv edin</translation>
 <translation id="6647690760956378579">Təbii səs önizləməsi</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> siz olduğunuzu təsdiqləmək istəyir</translation>
@@ -1711,6 +1742,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6775163072363532304">Əlçatan cihazlar burada görünəcək.</translation>
 <translation id="6776729248872343918">Sürətli Birləşdirməni aktiv edin</translation>
 <translation id="6777845730143344223">Keçid nöqtəsi abunələri haqqında ətraflı</translation>
+<translation id="6779406956731413166">ChromiumOS əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı ilə<ph name="END_LINK_CROS_OSS" /> mümkün oldu.</translation>
 <translation id="6783036716881942511">Bu cihaz unudulsun?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ayarları</translation>
 <translation id="6785915470941880363">Tərs sürüşdürmə <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7280649757394340890">Mətndən-Nitqə səs ayarları</translation>
 <translation id="7282547042039404307">Problemsiz</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Mühüm istifadə və təhlükəsizlik məlumatı</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> parolu ayarlayın</translation>
 <translation id="7304030187361489308">Yüksək</translation>
 <translation id="7308643132139167865">Vebsayt dilləri</translation>
@@ -1873,6 +1906,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7409599290172516453">Son Fotolar</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> tətbiq bloklandı</translation>
+<translation id="7423425410216218516">Görünmə <ph name="MINUTES" /> dəqiqə ərzində aktiv olacaq</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> silin</translation>
 <translation id="7425037327577270384">Yazmağa kömək edin</translation>
 <translation id="7429415133937917139">Ekranın yuxarısındakı ChromeVox panelində
@@ -1920,11 +1954,13 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7578137152457315135">Barmaq izi ayarları</translation>
 <translation id="7578692661782707876">Təsdiq kodunuzu daxil edin.</translation>
 <translation id="7582582252461552277">Bu şəbəkəyə üstünlük verin</translation>
+<translation id="7582844466922312471">Mobil data</translation>
 <translation id="7587806318633605613">Təklif tarixçəsi</translation>
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7592060599656252486">Bəzi</translation>
 <translation id="7602173054665172958">Çap idarəetməsi</translation>
 <translation id="7605163396341021431">Android tətbiqlərinə bu Chromebook-da USB cihazları üzərində nəzarət imkanı verin</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android tərcihləri</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612655942094160088">Qoşulmuş telefon funksiyalarının aktivləşdirilməsi.</translation>
@@ -1935,12 +1971,14 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7632437836497571618">Sayt axtarmaq üçün güvənli bağlantı istifadə edin</translation>
 <translation id="7634337648687970851">Lokal data bərpası hazırda dəstəklənmir.</translation>
 <translation id="7640256527901510478">Cihazın IMEI nömrəsi: <ph name="IMEI_NUMBER" />. Cihazın seriya nömrəsi: <ph name="SERIAL_NUMBER" />. Bu nömrələr xidməti aktivləşdirmək üçün istifadə edilə bilər.</translation>
+<translation id="7640308610547854367">Əvvəlki ChromeOS versiyasına qayıtdınız. Güncəllənmələr üçün növbəti versiyanı gözləyin.</translation>
 <translation id="7641513591566880111">Yeni profil adı</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> əlavə edildi</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (sahib)</translation>
 <translation id="7648048654005891115">Keymap üslubu</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{1 barmaq izi quraşdırması}other{{COUNT} barmaq izi quraşdırması}}</translation>
+<translation id="7650677314924139716">Cari data istifadəsi ayarı: yalnız Wi-Fi</translation>
 <translation id="7651400349472467012">Ani hotspot əlçatandır</translation>
 <translation id="7651784568388208829">Telefon Mərkəzi tapşırığının davamı</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
@@ -2031,6 +2069,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Tərcümə</translation>
 <translation id="7915457674565721553">Valideyn nəzarətləri quraşdırmaq üçün internetə qoşulun</translation>
+<translation id="7917876797003313048">Daxil olunmuş Google Hesablarını idarə edə bilərsiniz. Google Hesablarınız Chrome brauzeri, Play Market, Gmail və digər xidmətlər üçün istifadə olunur. Ailə üzvü kimi başqası üçün bir hesab əlavə etmək istəyirsinizsə, əvəzində <ph name="DEVICE_TYPE" /> cihazınıza yeni bir şəxs əlavə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />san</translation>
 <translation id="7920482456679570420">Orfoqrafiya yoxlayıcısının ötürməsini istədiyiniz sözləri əlavə edin</translation>
 <translation id="7921347341284348270">Bu idarə olunan hesabda telefonunuzun bildirişlərinə baxa bilməzsiniz. Fərqli hesabla yenidən cəhd edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="8431977087510901105">Kursor ayarları sıfırlaması</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8439506636278576865">Bu dildə səhifə tərcümələri təklif edin</translation>
+<translation id="8449347986464073209">Silin və çıxın</translation>
 <translation id="8451512073679317615">assistent</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> cihazına qoşulub</translation>
 <translation id="8473540203671727883">Mətni maus ilə səsləndirin</translation>
@@ -2320,6 +2360,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="8872774989979382243">Səs səviyyəsi deaktivdir. Səs səviyyəsini aktiv edin.</translation>
 <translation id="888256071122006425">Maus və taçped ayarları</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />Cari ayarları<ph name="END_LINK" /> bildirməklə ChromeOS-u təkmilləşdirin</translation>
+<translation id="8890170499370378450">Mobil data xərcləri tutula bilər</translation>
 <translation id="8890529496706615641">Profilin adını dəyişmək mümkün olmadı. Yenidən cəhd edin və ya texniki dəstək üçün operatorunuz ilə əlaqə saxlayın.</translation>
 <translation id="8894761918470382415">Kənar cihazların data girişinə qarşı müdafiə</translation>
 <translation id="8896830132794747524">Mausu cəld işlətmək kursoru tez hərəkət etdirəcək</translation>
@@ -2345,6 +2386,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> ayrılıb</translation>
 <translation id="8980345560318123814">Rəy hesabatları</translation>
 <translation id="8981825781894055334">Kağız azdır</translation>
+<translation id="8984694057134206124"><ph name="MINUTES" /> dəqiqə ərzində hər kəs sizi görəcək. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Aşkarlama həddi</translation>
 <translation id="8986362086234534611">Unudun</translation>
 <translation id="8991694323904646277">Kamera yoxdur</translation>
@@ -2391,6 +2433,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="9098860402274800697">Google Play və Android tətbiqlərini silin</translation>
 <translation id="910000385680858937">İcazə verilib – <ph name="PERMISSION_DETAILS" />. Cihaza mikrofon qoşun.</translation>
 <translation id="9100416672768993722">Son istifadə edilən giriş metoduna keçmək üçün buna basın: <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Boşluq<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Cari data istifadəsi ayarı: İnternet olmadan</translation>
 <translation id="9108294543511800041">İndi telefonunuzun son fotolarına, mediasına və bildirişlərinə baxa bilərsiniz</translation>
 <translation id="9109122242323516435">Yaddaşı boşaltmaq üçün faylları silin.</translation>
 <translation id="9111330022786356709">Mausda düymələr əlavə edin və ya yerlərini müəyyənləşdirin</translation>

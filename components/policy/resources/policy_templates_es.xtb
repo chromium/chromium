@@ -4287,14 +4287,6 @@ Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KE
 <translation id="366494444808132420">Permitir integraciones de Gemini.</translation>
 <translation id="3665437376055221832">Pedirle al usuario que realice una acción solo si no hay ningún certificado que coincida con la selección automática.</translation>
 <translation id="3671773704245936868">Inhabilitar el resaltado del foco del teclado</translation>
-<translation id="367258298235646178">Permite a los administradores personalizar el aspecto de las marcas de agua aplicadas por las reglas de Prevención de la pérdida de datos (DLP). Esto incluye establecer la opacidad del relleno o del contorno, definir el tamaño de la fuente y configurar la zona horaria de la marca de tiempo.
-Si no se definen esta política o algunos valores, Chrome usará su comportamiento predeterminado para las marcas de agua.
-Los valores predeterminados en ordenadores son: opacidad del relleno 4, opacidad del contorno 6 y tamaño de la fuente 24. En iOS, los valores predeterminados son: opacidad del relleno 10, opacidad del contorno 15 y tamaño de la fuente 16. En todas las plataformas, la zona horaria de la marca de tiempo se define de forma predeterminada como "user_device" (zona horaria local del dispositivo del usuario).
-
-La opacidad del relleno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
-La opacidad del contorno es un porcentaje que va del 0 (totalmente transparente) al 100 (totalmente opaco).
-El tamaño de la fuente se especifica en puntos.
-La zona horaria de la marca de tiempo especifica el identificador de zona horaria de la IANA (por ejemplo, "America/Toronto") que se usa para dar formato a las marcas de tiempo en marcas de agua (disponibles a partir de Chrome 152), que sigue los nombres de la base de datos de zonas horarias de la IANA (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitud CORS sin comodín.</translation>
 <translation id="3675248815331229366">Si se define esta política, podrás establecer una lista de patrones de URL que especifiquen qué sitios no pueden acceder a la geolocalización del usuario ni solicitarle permiso para hacerlo.
 
@@ -4676,7 +4668,6 @@ Esta política se puede combinar con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLA
 <translation id="390296766888987595">Mostrar el teclado en pantalla solamente si el usuario o la aplicación lo solicita.</translation>
 <translation id="3903313632842363082">Inhabilitar los informes sobre los usuarios del dispositivo</translation>
 <translation id="3904304709151553598">Inhabilitar los informes sobre el ventilador del dispositivo</translation>
-<translation id="3905883021371603181">Habilitar la cancelación del eco de audio del sistema</translation>
 <translation id="3907683835264956726">Habilita el inicio de sesión online del usuario en una pantalla de bloqueo. Si se asigna el valor "verdadero" a esta política, se activará la reautenticación online en la pantalla de bloqueo (por ejemplo, mediante la política <ph name="POLICY" />).
       La reautenticación se aplicará inmediatamente al acceder a la pantalla de bloqueo o la siguiente vez que un usuario bloquee la pantalla después de cumplir la condición.
       Si se asigna el valor "falso" a esta política o no se le asigna ninguno, los usuarios siempre podrán desbloquear la pantalla con sus credenciales locales.</translation>
@@ -4778,7 +4769,6 @@ Nota: Si el ajuste implica que ni el host ni el cliente admitan métodos de aute
 <translation id="3989635538409502728">Cerrar sesión</translation>
 <translation id="3989829840000169163">Bloquea los puntos de extensión antiguos del navegador</translation>
 <translation id="3990391739475801018">El modo Ahorro de batería se inhabilitará.</translation>
-<translation id="3990834929384096140">No implementar obligatoriamente la cancelación del eco de audio del sistema</translation>
 <translation id="3994043824457743421">Mostrar el anuncio del espacio intermedio en la página Nueva pestaña</translation>
 <translation id="399433537808390819">Hacer que el modo Escritorio unificado no esté disponible para el usuario</translation>
 <translation id="3995880046827722248">Manifest V2 está inhabilitado</translation>
@@ -6102,12 +6092,6 @@ Para obtener más información, consulta este artículo del Centro de Ayuda: htt
       Sin embargo, es posible que los dispositivos que no implementen correctamente TLS no funcionen bien y se desconecten cuando se use TLS 1.3 Early Data. Si eso ocurre, los administradores deben ponerse en contacto con el proveedor para solucionarlo.
 
       Esta política es una medida temporal para controlar la función y se eliminará más adelante. La política se puede habilitar para permitirte hacer pruebas y detectar problemas, o inhabilitar mientras se resuelven problemas.</translation>
-<translation id="4800438168909332958">Habilita la función de cancelación del eco de audio (AEC) del sistema. La función AEC del sistema es un cancelador de eco acústico, es decir, un módulo de procesamiento de audio que elimina la resonancia de audio del sistema (eco) de la señal del micrófono.
-Esta política es temporal y se eliminará en cuanto se lance la cancelación del eco de audio del sistema.
-
-  Si se asigna el valor true a esta política, la cancelación del eco de audio del sistema siempre estará habilitada.
-
-  Aunque se asigne el valor false a esta política o no se defina, es posible que la cancelación del eco del sistema se habilite en función del plan de lanzamiento, pero esta política no la implementará obligatoriamente.</translation>
 <translation id="4800865664096110749">Habilitar el flujo de atestación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de URLs en perfiles gestionados</translation>
 <translation id="4801512016965057443">Permitir el roaming de datos móviles</translation>
 <translation id="4801647366128872782">Especifica las URLs que permiten el informe de tecnología antigua</translation>
@@ -11919,6 +11903,12 @@ Los certificados deben estar codificados en Base64.</translation>
 Si se define esta política, se controlarán los informes de telemetría de sitios web sobre URLs incluidas en la lista de URLs permitidas.
 Si no se define, no se enviará ningún informe de telemetría de sitios web.
 Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. Esta política solo admite esquemas de URL HTTP y HTTPS.</translation>
+<translation id="8392016343898518010">Esta política está obsoleta y no se aplica desde la versión M159 porque la función de contenido sugerido se ha retirado.
+
+Antes de la versión M159, esta función habilitaba sugerencias de contenido nuevo por descubrir, como aplicaciones, páginas web y otras opciones.
+Si se asignaba el valor True a esta política, se habilitaban las sugerencias de contenido nuevo por descubrir.
+Si se le asignaba el valor False, se inhabilitaban las sugerencias de contenido nuevo por descubrir.
+Si no se le asignaba ningún valor, las sugerencias de contenido nuevo por descubrir se inhabilitaban para los usuarios gestionados y se habilitaban para el resto de los usuarios.</translation>
 <translation id="8392478748777481636">Esta política está obsoleta y no se admite. Usa la política <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="8393850527597048037">Solo en la plataforma</translation>
 <translation id="8395350646076131800">Tiempo de espera por inactividad para el salvapantallas del usuario en la pantalla de bloqueo.</translation>
@@ -13013,7 +13003,6 @@ Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de lo
 <translation id="9087652369391570821">Política de configuración del conector OnFileTransfer de Chrome Enterprise Connectors</translation>
 <translation id="9088433379343318874">Habilitar el proveedor de contenido de usuarios supervisados</translation>
 <translation id="9088444059179765143">Configura el método de detección automática de la zona horaria</translation>
-<translation id="9091741086777905807">Identificador de zona horaria de la IANA (por ejemplo, "America/Toronto") que se usa para dar formato a las marcas de tiempo en las marcas de agua (disponibles a partir de Chrome 152). El valor predeterminado es "user_device".</translation>
 <translation id="9094681501120769194">Controla si el visor de PDFs de <ph name="PRODUCT_NAME" /> usa un iframe fuera de proceso (OOPIF). Esta será la nueva arquitectura del visor de PDF en el futuro, ya que es más sencilla y facilita la incorporación de nuevas funciones. El visor de PDFs GuestView actual usa una arquitectura compleja y obsoleta que va a dejar de estar disponible.
 
 Si se habilita esta política o no se define, <ph name="PRODUCT_NAME" /> podrá usar la arquitectura del visor de PDFs OOPIF. Cuando se habilite o no se defina, <ph name="PRODUCT_NAME" /> decidirá el comportamiento predeterminado.

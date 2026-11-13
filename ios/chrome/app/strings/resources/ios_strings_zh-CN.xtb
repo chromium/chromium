@@ -460,7 +460,7 @@
 <translation id="233375395665273385">删除数据并退出账号</translation>
 <translation id="2350463587705616331">深褐色背景颜色</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
-<translation id="2353784052777482798">{COUNT,plural, =1{您可将用于登录 {DOMAIN_ONE} 的密码保存到您的 Google 账号 {EMAIL}。}=2{您可将用于登录 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密码保存到您的 Google 账号 {EMAIL}。}=3{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}other{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}}</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{您可将 {DOMAIN_ONE} 的登录密码保存到您的 Google 账号 {EMAIL}。}=2{您可将 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的登录密码保存到您的 Google 账号 {EMAIL}。}=3{您可将 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的登录密码保存到您的 Google 账号 {EMAIL}。}other{您可将 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的登录密码保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="2353953000228441783">默认网站视图</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359043044084662842">翻译</translation>
@@ -563,7 +563,6 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">顶部</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
-<translation id="2671316366021598595">“<ph name="SITE_DOMAIN" />”无法使用您的摄像头</translation>
 <translation id="2671423594960767771">共享分组</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">分期付款</translation>
@@ -595,7 +594,7 @@
 <translation id="2761898608071930085">使用其他账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
 <translation id="2766178952536179189">{COUNT,plural, =1{最多可添加 1 张图片}other{最多可添加 {COUNT} 张图片}}</translation>
-<translation id="2772667768515195373">您可在各 Google 产品中使用已保存的地址。此地址会保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
+<translation id="2772667768515195373">已保存的地址可在各 Google 产品中通用。此地址已保存至您的 Google 账号：<ph name="USER_EMAIL" />。</translation>
 <translation id="2773344962924806829">邮件通知</translation>
 <translation id="2781331604911854368">已开启</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -796,7 +795,7 @@
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3472469028191701821">在新标签页中打开</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
-<translation id="3474624961160222204">继续用“<ph name="NAME" />”的账号登录</translation>
+<translation id="3474624961160222204">以“<ph name="NAME" />”的身份继续</translation>
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3481315707647070701">直观呈现，随心修改</translation>
@@ -852,7 +851,7 @@
 <translation id="3631443864840848029">请确保您保存的是此网站当前的密码。</translation>
 <translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
 <translation id="3642060527569456384">标签页分组会自动保存并在您的所有设备上更新。</translation>
-<translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
+<translation id="3643338347976071250">{count,plural, =1{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}other{有 {count} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}}</translation>
 <translation id="3657176844107584515"><ph name="EMAIL" />，Google 会员。</translation>
 <translation id="3659297405161482746">未找到任何支付方式</translation>
 <translation id="3662966164093827811">{count,plural, =1{已选择 1 个}other{已选择 # 个}}</translation>
@@ -867,7 +866,7 @@
 <translation id="3695446226812920698">如何解决</translation>
 <translation id="3700134753671613714">登录帐号即可将您的书签同步到您的所有设备上。</translation>
 <translation id="3701167022068948696">立即修正</translation>
-<translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {EMAIL}。}}</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {EMAIL}。}other{有 {COUNT} 个密码会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="3709621342136814217">在此处选择字体、字号等</translation>
 <translation id="371230970611282515">预测危险事件并在此类事件发生前向您发出警告。</translation>
 <translation id="372115889256123713">缓存文件</translation>
@@ -913,6 +912,7 @@
 <translation id="3858860766373142691">名称</translation>
 <translation id="386224966259596343">下次您填写相关表单时，可选择将此信息保存到 Google 钱包。</translation>
 <translation id="3868495844258915202">显示完整网址</translation>
+<translation id="3870931306085184145">尚未保存任何用于登录 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="3875783148670536197">操作步骤</translation>
 <translation id="3878657761594430423">动作条抓取器</translation>
 <translation id="3884810423191119660">安全保存密码，轻松登录网站和应用</translation>
@@ -1020,7 +1020,7 @@
 <translation id="4183350924949589798">想提升安全性？</translation>
 <translation id="4184063163998877398">{count,plural, =1{有 {count} 个安全系数低的密码}other{有 {count} 个安全系数低的密码}}</translation>
 <translation id="4196758674971560031">您创建的标签页分组会保存在“标签页分组”部分，并在您的所有设备上更新。</translation>
-<translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号 {email}。}}</translation>
+<translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}}</translation>
 <translation id="4207873326995387292">浏览器信息</translation>
 <translation id="421070604241073551">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上。</translation>
 <translation id="4224534474590365556">要关闭超过 99 个闲置标签页吗？</translation>
@@ -1311,7 +1311,6 @@
 <translation id="5061202435354361813">升级浏览体验</translation>
 <translation id="5062321486222145940">安装Google云端硬盘</translation>
 <translation id="5067540696062462445">下载内容</translation>
-<translation id="5070314445039955096">您离开“<ph name="SITE_DOMAIN" />”后，这个网站的权限将重置为停用</translation>
 <translation id="507187271399539513">{count,plural, =1{第 {position} 种建议支付方式，共 {count} 种}other{第 {position} 种建议支付方式，共 {count} 种}}</translation>
 <translation id="5075939510584558547">直接保存，不加密</translation>
 <translation id="5076534614343816664">价格跟踪</translation>
@@ -1410,7 +1409,6 @@
 <translation id="5351613737248079168">您必须登录账号，才能使用 Level Up</translation>
 <translation id="5352128922772839949">保存文件</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
-<translation id="5355871759168485600">每当您访问“<ph name="SITE_DOMAIN" />”时，此网站都可以使用您的麦克风</translation>
 <translation id="5359436665022446585">更快捷的链接打开方式</translation>
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5364647308446127983">{count,plural, =1{无法导入 {count} 个通行密钥}other{无法导入 {count} 个通行密钥}}</translation>
@@ -1484,6 +1482,7 @@
 <translation id="5612225021788368236">关闭默认浏览器宣传内容</translation>
 <translation id="561269594905823128">点按<ph name="BEGIN_BOLD" />选择文件<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">按新近度排序</translation>
+<translation id="561349411957324076">已完成</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
 <translation id="5617769621178348890">在“文件”应用中打开</translation>
 <translation id="5619871095170816857">此卡片会显示过去 24 小时内您在所有同步设备上最后使用的处于打开状态的标签页。</translation>
@@ -1866,7 +1865,7 @@
 <translation id="6722638373100589752">如需自动填充您的信息，请在 Google 钱包设置中开启“在各项 Google 产品和服务中使用卡券”</translation>
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
 <translation id="6724024423419410528">颜色</translation>
-<translation id="672735642903863329">在您的所有设备上同步书签、密码等信息。</translation>
+<translation id="672735642903863329">在所有设备上获取保存的书签、密码等信息。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
@@ -1959,7 +1958,7 @@
 <translation id="6998251471716094661">跟踪商品价格，并在有网站降价时收到提醒</translation>
 <translation id="7004032350256606903">贵单位要求您进行无痕浏览。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="7005768247344091502">在“设置”中设为默认选项…</translation>
+<translation id="7005768247344091502">前往“设置”设为默认…</translation>
 <translation id="7007970306646738803">选择如何处理此设备上现有的浏览数据，例如标签页、历史记录和密码。</translation>
 <translation id="701134422972919485">此网站的麦克风使用权</translation>
 <translation id="7012978439516925343">验证您的身份以创建通行密钥</translation>
@@ -2333,7 +2332,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> 个账号</translation>
 <translation id="8161614462829037225">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
 <translation id="8173034266693057059">长度</translation>
-<translation id="8181328232274170248">每当您访问“<ph name="SITE_DOMAIN" />”时，此网站都可以使用您的摄像头</translation>
 <translation id="8182037667962849780">{count,plural, =1{对于 {website_1}}=2{对于 {website_1}、{website_2}}=3{对于 {website_1}、{website_2} 和另外 1 个}other{对于 {website_1}、{website_2} 个另外 {more_count} 个}}</translation>
 <translation id="8184895727539791845">如要允许 Gemini 使用摄像头，请在 iOS 设置中开启相机权限</translation>
 <translation id="8185076488803799132">导入</translation>
@@ -2414,7 +2412,7 @@
 <translation id="8407831512155324054">您的密码看起来安全系数较高</translation>
 <translation id="8414283596511250978">再也不必担心忘记密码</translation>
 <translation id="8415120635186642416">研究任何内容</translation>
-<translation id="842523302461531262">在“设置”中设为默认选项…</translation>
+<translation id="842523302461531262">前往“设置”设为默认…</translation>
 <translation id="8428045167754449968">市/镇</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8428634594422941299">知道了</translation>
@@ -2504,7 +2502,6 @@
 <translation id="8674716540979958118">您有已泄露的密码。</translation>
 <translation id="8679900250380464358">添加到阅读清单</translation>
 <translation id="8680787084697685621">账号登录详细信息已过期。</translation>
-<translation id="868648444055742370">“<ph name="SITE_DOMAIN" />”无法使用您的麦克风</translation>
 <translation id="8690752723634292147">确认删除</translation>
 <translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
 <translation id="8692689525339542358">保护您免受危险的网站、下载内容和扩展程序的侵害。</translation>
@@ -2650,6 +2647,7 @@
 <translation id="91023216973987714">支付方式</translation>
 <translation id="9106655997975673326">来自“<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
+<translation id="9115035712231910133">已附加图片“{title}”</translation>
 <translation id="9119764377203471454">无法添加附件</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9124978074365039456">打开相机和图库，轻松购物、实时翻译、拍照识物</translation>

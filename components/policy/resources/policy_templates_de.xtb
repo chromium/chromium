@@ -4249,14 +4249,6 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
 <translation id="366494444808132420">Gemini-Integrationen zulassen.</translation>
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
 <translation id="3671773704245936868">„Objekt mit Tastaturfokus hervorheben“ deaktivieren</translation>
-<translation id="367258298235646178">Ermöglicht Administratoren, das Erscheinungsbild von Wasserzeichen anzupassen, die durch Regeln zum Schutz vor Datenverlust (Data Loss Prevention, DLP) angewendet werden. Dazu gehört auch das Festlegen der Füllungsdeckkraft, der Konturdeckkraft, der Schriftgröße und der Zeitzone für den Zeitstempel.
-Wenn diese Richtlinie oder einige Werte nicht konfiguriert sind, verwendet Chrome die Standardwerte für Wasserzeichen.
-Die Standardwerte auf Desktop-Computern sind: Füllungsdeckkraft bei 4, Konturdeckkraft bei 6 und Schriftgröße bei 24. Unter iOS sind die Standardwerte: Füllungsdeckkraft bei 10, Konturdeckkraft bei 15 und Schriftgröße bei 16. Auf allen Plattformen ist die Zeitzone des Zeitstempels standardmäßig auf „user_device“ (Zeitzone des lokalen Geräts des Nutzers) festgelegt.
-
-Die „Füllungsdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
-Die „Konturdeckkraft“ ist ein Prozentwert von 0 (völlig durchsichtig) bis 100 (völlig undurchsichtig).
-Der Wert für „Schriftgröße“ wird in Punkten angegeben.
-Die „Zeitstempel-Zeitzone“ gibt die IANA-Zeitzonen-ID (z. B. America/Toronto) an, die zum Formatieren von Zeitstempeln in Wasserzeichen verwendet wird (ab Chrome 152 unterstützt). Sie entspricht den Namen in der IANA-Zeitzonendatenbank (https://www.iana.org/time-zones).</translation>
 <translation id="3674010627788940405">CORS-Anfrageheader ohne Platzhalter nicht unterstützen.</translation>
 <translation id="3675248815331229366">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die Websites angeben, die nicht auf den Standort des Nutzers zugreifen dürfen und auch keine Nutzerberechtigung dafür anfordern können.
 
@@ -4637,7 +4629,6 @@ Die Richtlinie kann mit <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_
 <translation id="390296766888987595">Bildschirmtastatur nur anzeigen, wenn der Nutzer oder die Anwendung sie anfordert.</translation>
 <translation id="3903313632842363082">Melden der Nutzer auf Geräten deaktivieren</translation>
 <translation id="3904304709151553598">Melden der Lüfterinformationen auf Geräten deaktivieren</translation>
-<translation id="3905883021371603181">Echounterdrückung des Systems aktivieren</translation>
 <translation id="3907683835264956726">Ermöglicht Nutzern, sich online über einen Sperrbildschirm anzumelden. Wenn diese Richtlinie auf "True" gesetzt ist, wird die erneute Online-Authentifizierung auf dem Sperrbildschirm beispielsweise durch <ph name="POLICY" /> ausgelöst.
       Falls der Bildschirm gesperrt ist, wird die erneute Authentifizierung umgehend erzwungen; andernfalls wird sie erzwungen, wenn der Nutzer das nächste Mal nach dem Erfüllen der Bedingung den Bildschirm sperrt.
       Wenn diese Richtlinie auf "False" gesetzt oder nicht konfiguriert ist, können Nutzer den Bildschirm jederzeit mit ihren lokalen Anmeldedaten entsperren.</translation>
@@ -4739,7 +4730,6 @@ Hinweis: Wenn in den Einstellungen keine gegenseitig unterstützten Authentifizi
 <translation id="3989635538409502728">Abmelden</translation>
 <translation id="3989829840000169163">Alte Erweiterungspunkte des Browsers blockieren</translation>
 <translation id="3990391739475801018">Der Energiesparmodus wird deaktiviert.</translation>
-<translation id="3990834929384096140">Echounterdrückung des Systems nicht erzwingen</translation>
 <translation id="3994043824457743421">Information im mittleren Slot auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="399433537808390819">Nutzern keinen Zugriff auf den Unified Desktop-Modus gewähren</translation>
 <translation id="3995880046827722248">Manifest V2 ist deaktiviert</translation>
@@ -6028,12 +6018,6 @@ Weitere Informationen findest du im Hilfeartikel unter https://support.google.co
       Auf Geräten, auf denen TLS nicht korrekt implementiert wird, kann es jedoch zu Fehlfunktionen und Verbindungsabbrüchen kommen, wenn TLS 1.3 Early Data verwendet wird. Administratoren sollten in solchen Fällen den Anbieter fragen, wie sich das Problem beheben lässt.
 
       Diese Richtlinie ist eine vorübergehende Maßnahme zur Steuerung der Funktion und wird danach entfernt. Sie kann aktiviert werden, um zu prüfen, ob Probleme auftreten, und lässt sich zum Beheben etwaiger Probleme deaktivieren.</translation>
-<translation id="4800438168909332958">Mit dieser Richtlinie kann die Echounterdrückungsfunktion des Systems, kurz System-AEC (Audio Echo Cancellation), aktiviert werden. Die System-AEC dient zur Unterdrückung des akustischen Echos, ist also ein Audioverarbeitungsmodul, das die Audiowiedergabe des Systems (Echo) aus dem Mikrofonsignal entfernt.
-Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der System-AEC entfernt.
-
-  Wenn die Richtlinie auf „true“ gesetzt ist, ist die System-AEC immer aktiviert.
-
-  Ist sie auf „false“ gesetzt oder nicht konfiguriert, wird die System-AEC möglicherweise trotzdem auf Grundlage ihres Einführungsplans aktiviert, jedoch nicht durch diese Richtlinie erzwungen.</translation>
 <translation id="4800865664096110749">Attestierungsablauf <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs in verwalteten Profilen aktivieren</translation>
 <translation id="4801512016965057443">Mobilfunk-Roaming zulassen</translation>
 <translation id="4801647366128872782">Gibt URLs an, die Berichte zu Legacy-Technologien zulassen</translation>
@@ -12859,7 +12843,6 @@ Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für Nutz
 <translation id="9087652369391570821">Konfigurationsrichtlinie für den Chrome Enterprise Connector „OnFileTransfer”</translation>
 <translation id="9088433379343318874">Contentanbieter für betreute Nutzer aktivieren</translation>
 <translation id="9088444059179765143">Methode für die automatische Erkennung der Zeitzone konfigurieren</translation>
-<translation id="9091741086777905807">IANA-Zeitzonen-ID (z. B. 'America/Toronto') zum Formatieren von Zeitstempeln in Wasserzeichen (ab Chrome 152 unterstützt). Standardmäßig 'user_device'.</translation>
 <translation id="9094681501120769194">Legt fest, ob der PDF-Viewer in <ph name="PRODUCT_NAME" /> einen Out-of-Process-iFrame (OOPIF) verwendet. Dies wird in Zukunft die neue Architektur für den PDF-Viewer sein, da sie einfacher ist und das Hinzufügen neuer Funktionen erleichtert. Der vorhandene PDF-Viewer von GuestView ist eine veraltete, komplexe Architektur, die eingestellt wird.
 
 Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> die OOPIF-Architektur für den PDF-Viewer verwenden. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das Standardverhalten von <ph name="PRODUCT_NAME" /> festgelegt.

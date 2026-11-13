@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Paroolide nägemiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="201759455285471444">Vahelehegrupi laiendamine.</translation>
 <translation id="2022431790688770637">Gemini soovituste haldamine</translation>
+<translation id="2023265063803387188">Gemini pole inkognito režiimis saadaval</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Avage vahelehtede ruudustik</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> haldab <ph name="HOSTED_DOMAIN" />, millel võib olla võimalik teatud teavet vaadata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Peatamine</translation>
 <translation id="2666092431469916601">Üles</translation>
 <translation id="2669454659051515572">Kõik inimesed, kes seda seadet kasutavad, näevad allalaaditud faile</translation>
-<translation id="2671316366021598595">Saidil „<ph name="SITE_DOMAIN" />“ ei ole lubatud teie kaamerale juurde pääseda.</translation>
 <translation id="2671423594960767771">Jaga gruppi</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Järelmaks</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="386224966259596343">Teil on võimalus see teave Walletisse salvestada järgmine kord, kui täidate asjakohase vormi.</translation>
 <translation id="3868495844258915202">Kuva kogu URL</translation>
+<translation id="3870931306085184145">Domeeni <ph name="DOMAIN" /> jaoks pole paroole salvestatud</translation>
 <translation id="3875783148670536197">Kuva juhised</translation>
 <translation id="3878657761594430423">Lehepüüdja (sheet grabber)</translation>
 <translation id="3884810423191119660">Salvestage paroolid turvaliselt, et saaksite hõlpsasti saitidele ja rakendustesse sisse logida.</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Viige sirvimine uuele tasemele</translation>
 <translation id="5062321486222145940">Installi Google Drive</translation>
 <translation id="5067540696062462445">Allalaadimised</translation>
-<translation id="5070314445039955096">Saidi „<ph name="SITE_DOMAIN" />“ load lähtestatakse väljalülitatud olekusse, kui saidilt lahkute</translation>
 <translation id="507187271399539513">{count,plural, =1{Makseviis {position}, kokku {count} makseviis}other{Makseviis {position}, kokku {count} makseviisi}}</translation>
 <translation id="5075939510584558547">Ilma krüpteerimata salvestamine</translation>
 <translation id="5076534614343816664">Hinnajälgimine</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Programmi Level Up kasutamiseks peate olema sisse logitud.</translation>
 <translation id="5352128922772839949">Faili salvestamine</translation>
 <translation id="5355191726083956201">Täiustatud kaitse on sisse lülitatud</translation>
-<translation id="5355871759168485600">Saidil „<ph name="SITE_DOMAIN" />“ on lubatud teie mikrofoni kasutada iga kord, kui seda saiti külastate.</translation>
 <translation id="5359436665022446585">Parem linkide avamine</translation>
 <translation id="536067926684072644">Järjehoidjate kuvamine</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} pääsuvõtit ei saanud importida}other{{count} pääsuvõtit ei saanud importida}}</translation>
@@ -1484,6 +1483,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5612225021788368236">Sule vaikebrauseri reklaam</translation>
 <translation id="561269594905823128">Puudutage valikut <ph name="BEGIN_BOLD" />Select your file<ph name="END_BOLD" />.</translation>
 <translation id="5613297089029360427">Sordi uusimate järgi</translation>
+<translation id="561349411957324076">Lõpetatud</translation>
 <translation id="5614553682702429503">Kas salvestada parool?</translation>
 <translation id="5617769621178348890">Avage rakenduses Failid</translation>
 <translation id="5619871095170816857">Sellel kaardil kuvatakse teie viimati kasutatud avatud vahekaart kõigis teie sünkroonitud seadmetes viimase 24 tunni jooksul.</translation>
@@ -2333,7 +2333,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kontot</translation>
 <translation id="8161614462829037225">Ava meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Pikkus</translation>
-<translation id="8181328232274170248">Saidil „<ph name="SITE_DOMAIN" />“ on lubatud teie kaamerat kasutada iga kord, kui seda saiti külastate.</translation>
 <translation id="8182037667962849780">{count,plural, =1{Saidi {website_1} jaoks}=2{Saitide {website_1} ja {website_2} jaoks}=3{Saitide {website_1} ja {website_2} ning veel ühe jaoks}other{Saitide {website_1} ja {website_2} ning veel {more_count} jaoks}}</translation>
 <translation id="8184895727539791845">Et lubada Geminil teie kaamerat kasutada, lülitage iOS-i seadetes sisse kaameraluba.</translation>
 <translation id="8185076488803799132">Impordi</translation>
@@ -2504,7 +2503,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8674716540979958118">Teil on ohustatud paroole.</translation>
 <translation id="8679900250380464358">Lisa lugemisloendisse</translation>
 <translation id="8680787084697685621">Konto sisselogimisüksikasjad on aegunud.</translation>
-<translation id="868648444055742370">Saidil „<ph name="SITE_DOMAIN" />“ ei ole lubatud teie mikrofonile juurde pääseda.</translation>
 <translation id="8690752723634292147">Kinnita kustutamine</translation>
 <translation id="8692107307702113268">Parool on pikem kui 1000 tähemärki</translation>
 <translation id="8692689525339542358">Kaitske end ohtlike saitide, allalaadimiste ja laienduste eest.</translation>
@@ -2650,6 +2648,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="91023216973987714">Makseviisid</translation>
 <translation id="9106655997975673326">Seadmest <ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">Ohustatud paroolide otsimine</translation>
+<translation id="9115035712231910133">Manustatud pilt {title}</translation>
 <translation id="9119764377203471454">Manuseid ei saa lisada.</translation>
 <translation id="9124387962554796433">Google võib kasutada teie ajalugu otsingu ja muude Google'i teenuste isikupärastamiseks.</translation>
 <translation id="9124978074365039456">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat ja fotogaleriid</translation>

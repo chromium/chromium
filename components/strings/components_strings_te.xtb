@@ -721,7 +721,6 @@
 <translation id="22081806969704220">ట్రే 3</translation>
 <translation id="2210794033760923560">రిపోర్ట్‌ను అప్‌లోడ్ చేయండి</translation>
 <translation id="2212735316055980242">విధానం కనుగొనబడలేదు</translation>
-<translation id="2213606439339815911">నమోదులను పొందుతోంది...</translation>
 <translation id="2213612003795704869">పేజీ ప్రింట్ చేయబడింది</translation>
 <translation id="2214086901479959524">Chromeను అప్‌డేట్ చేసి, షేర్ చేసిన మీ ట్యాబ్ గ్రూప్‌లను ఉపయోగించడం కొనసాగించండి</translation>
 <translation id="2214453882118345682">షాపింగ్ చేయండి, అనువదించండి, మీ కెమెరాతో మీరు చూసే వాటిని గుర్తించండి.</translation>
@@ -818,6 +817,7 @@
 <translation id="2356941001189392209">లెగసీ టెక్నాలజీ ఈవెంట్‌లు జరుగుతున్న చోట మీరు చూసే పేజీల URLలకు సంబంధించిన పరిమిత లిస్ట్</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ట్యాబ్‌ను షేర్ చేస్తుంది}other{{NUM_TABS} ట్యాబ్‌లను షేర్ చేస్తుంది}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> మీ డివైజ్‌ను మేనేజ్ చేస్తోంది, <ph name="ACCOUNT_MANAGER" /> మీ ఖాతాను మేనేజ్ చేస్తోంది.</translation>
+<translation id="2358479643736965923">ఈ ట్యాబ్‌లో మీ Google AI సెర్చ్ సమాధానాన్ని చూడండి</translation>
 <translation id="2359629602545592467">అనేకం</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="236000571258713023">వాహనాలు</translation>
@@ -1136,6 +1136,7 @@
 <translation id="2925032407415783182">ఈవెంట్ టికెట్‌ను Walletకు సేవ్ చేయండి</translation>
 <translation id="2925454999967523701">'డాక్యుమెంట్‌ను క్రియేట్ చేయండి' బటన్, కొత్త Google డాక్‌ను క్విక్‌గా క్రియేట్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="2925673989565098301">డెలివరీ పద్ధతి</translation>
+<translation id="2927328994673424423">2 వారాల క్రితం</translation>
 <translation id="2928426578619531300">యూజర్‌ను అనుబంధించడం జరిగింది</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">మీ ఇతర పరికరం నుండి పొందిన ట్యాబ్</translation>
@@ -1270,7 +1271,6 @@
 <translation id="3141337053413339205">ఈ ట్యాబ్‌కు మారండి.</translation>
 <translation id="3144458715650412431">టెస్ట్ పాలసీలు వర్తింపజేయబడ్డాయి. chrome://policy/testలో వాటిని రివ్యూ చేసి, రీసెట్ చేయండి. అడ్మిన్ పాలసీలు వర్తించవు.</translation>
 <translation id="3145945101586104090">ప్రతిస్పందనను డీకోడ్ చేయడంలో విఫలమైంది</translation>
-<translation id="3149865382039202168">మీ సమాచారాన్ని <ph name="GOOGLE_WALLET_TITLE" />‌లో సేవ్ చేసి, Google ప్రోడక్ట్‌లలో ఫారమ్‌లను ఫిల్ చేయడం వంటి పనులను వేగంగా పూర్తి చేయండి. మీరు <ph name="ACCOUNT" /> కోసం మీ ప్రైవేట్ పాస్ సెట్టింగ్‌లలో <ph name="HOW_INFO_IS_USED_LINK" />‌ను కంట్రోల్ చేయవచ్చు. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">తాత్కాలిక సర్వర్ ఎర్రర్</translation>
 <translation id="3150889484970506196">'షీట్‌ను క్రియేట్ చేయండి' బటన్, కొత్త Google షీట్‌ను క్విక్‌గా క్రియేట్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="3154506275960390542">ఈ పేజీలో ఉన్న ఫారమ్‌ను సురక్షితంగా సమర్పించలేకపోవచ్చు. బదిలీ చేయబడే సమయంలో మీరు పంపే డేటాను ఇతరులు చూడవచ్చు లేదా సర్వర్ స్వీకరించే డేటాను మార్చడం కోసం హ్యాకర్‌లు దీనిని ఎడిట్ చేయవచ్చు.</translation>
@@ -1516,7 +1516,6 @@
 <translation id="3558335486599406178">IBAN Google Walletలో సేవ్ అయింది</translation>
 <translation id="3558573058928565255">రోజు, సమయం</translation>
 <translation id="3559897352860026926">అడ్మినిస్ట్రేటర్ వారికి సంబంధించిన <ph name="CLOUD_PROVIDER" /> కాన్ఫిగరేషన్ సెట్టింగ్‌లను వెరిఫై చేయమని మీ అడ్మినిస్ట్రేటర్‌ను అడగండి.</translation>
-<translation id="3560824484345057728">సంబంధిత సైట్‌లను చూడండి</translation>
 <translation id="3566021033012934673">మీ కనెక్షన్ ప్రైవేట్ కాదు</translation>
 <translation id="3566336457819493938">215 x 315 మి.మీ.</translation>
 <translation id="3566681680543111735">వేరియేషన్‌ల స్ట్రింగ్‌ను కాపీ చేయండి</translation>
@@ -2159,7 +2158,6 @@
 <translation id="4603727370377253901">విమానం రిజర్వేషన్‌లు</translation>
 <translation id="4607608436550361748">Chrome చిట్కాలను చూడండి</translation>
 <translation id="460848736049414407">అడ్మిన్ బ్లాక్ చేశారు</translation>
-<translation id="4610279718074907952">ఈ సైట్ <ph name="SET_OWNER" /> ద్వారా నిర్వచించబడిన గ్రూప్‌లో ఉంది, అది మీ యాక్టివిటీని చూడగలదు</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> ద్వారా <ph name="MERCHANT_ORIGIN" />‌లో మీ ఆర్డర్‌ను ప్రాసెస్ చేయడంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="4612904677925722054">ఈ సైట్‌లో పెద్దవారికి మాత్రమే తగిన కంటెంట్ ఉండవచ్చు. ఈ వెబ్‌సైట్‌ను సందర్శించడానికి, తల్లి/తండ్రి లేదా గార్డియన్ తప్పనిసరిగా మిమ్మల్ని అనుమతించాలి.</translation>
 <translation id="4613873770449493819">URL తప్పనిసరిగా <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> డొమైన్‌ను సూచించాలి.</translation>
@@ -3706,7 +3704,6 @@
 <translation id="7173338713290252554">వెబ్ అంతటా గల ధర హిస్టరీ</translation>
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7181261019481237103">అజ్ఞాత విండోను తెరువు</translation>
 <translation id="7182878459783632708">విధానాలను సెట్ చేయలేదు</translation>
 <translation id="7186833457841277072">ఎన్వలప్ (ఇంక్‌జెట్)</translation>
@@ -4172,7 +4169,6 @@
 <translation id="7932579305932748336">కోటు</translation>
 <translation id="79338296614623784">చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి</translation>
 <translation id="7934414805353235750"><ph name="URL" /> రక్షిత కంటెంట్‌ను ప్లే చేయాలనుకుంటోంది. మీ పరికర గుర్తింపును Google ధృవీకరిస్తుంది.</translation>
-<translation id="7935318582918952113">DOM డిస్టిల్లర్</translation>
 <translation id="7935520077478121175">మోషన్ సెన్సార్‌లను అనుమతించడం జరిగింది</translation>
 <translation id="7937163678541954811">వేగవంతమైన చెక్అవుట్ కోసం ఈ కార్డ్ CVC ఎన్‌క్రిప్ట్ చేయబడుతుంది, మీ పరికరంలో సేవ్ చేయబడుతుంది</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />న గడువు ముగుస్తుంది</translation>
@@ -4220,7 +4216,6 @@
 <translation id="7999482381722829925">సాధారణంగా మిస్ అయ్యే స్పాట్‌లను టార్గెట్ చేస్తూ, ప్రాధాన్యత క్రమంలో, రూమ్ వారీగా డీప్ క్లీనింగ్ చెక్‌లిస్ట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="8001912761979890298">ఈ సర్వర్, వెబ్ ట్రాఫిక్ ఎన్‌క్రిప్షన్ కోసం Chromium లేదా మీ సిస్టమ్ కాన్ఫిగరేషన్ విశ్వసించని సెక్యూరిటీ సర్టిఫికెట్‌ను ఉపయోగిస్తున్నందున, అది <ph name="DOMAIN" /> అని నిరూపించలేకపోయింది. తప్పుగా కాన్ఫిగర్ చేసినందున లేదా దాడి చేసేవారు మీ కనెక్షన్‌కు అంతరాయం కలిగించినందున ఇలా జరిగి ఉండవచ్చు. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />సర్టిఫికెట్‌ను చూడండి<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">మెమరీని ఖాళీ చేయడానికి ఇతర ట్యాబ్‌లు లేదా ప్రోగ్రామ్‌లను మూసివేయడాన్ని ప్రయత్నించండి.</translation>
-<translation id="8002230960325005199">కొత్త ట్యాబ్‌లో సంబంధిత సైట్‌లను చూడండి</translation>
 <translation id="8003046808285812021">“<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
 <translation id="8009225694047762179">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
@@ -4261,7 +4256,6 @@
 <translation id="8079976827192572403">హానికరమైన సైట్</translation>
 <translation id="8086971161893892807">డ్రాఫ్ట్</translation>
 <translation id="8087558780672230449"><ph name="MERCHANT_ORIGIN" />‌లో మీ పేమెంట్‌ను హ్యాండిల్ చేయడానికి <ph name="APP_ORIGIN" /> లోడ్ అవుతోంది.</translation>
-<translation id="8088680233425245692">కథనాన్ని వీక్షించడంలో విఫలమైంది.</translation>
 <translation id="808894953321890993">పాస్‌వర్డ్‌ను మార్చు</translation>
 <translation id="8091372947890762290">సర్వర్‌లో యాక్టివేషన్ పెండింగ్‌లో ఉంది</translation>
 <translation id="8092254339843485299">6 x 8 అంగుళాలు</translation>
@@ -4901,7 +4895,6 @@
 <translation id="9199905725844810519">ప్రింటింగ్ బ్లాక్ చేయబడింది</translation>
 <translation id="9204089334327209740">అప్‌లోడ్ పూర్తయిన తర్వాత, మీరు మీ ఫైల్స్‌ను <ph name="CLOUD_PROVIDER" />లో సవరించవచ్చు. ట్రాష్‌లోని ఏవైనా ఫైల్స్‌తో సహా లోకల్ స్టోరేజ్ ఆటోమేటిక్‌గా తీసివేయబడుతుంది.</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
-<translation id="9207861905230894330">కథనాన్ని జోడించడంలో విఫలమైంది.</translation>
 <translation id="9209339767782560829">మీ లాగిన్ సర్టిఫికెట్‌ను ఉపయోగించడంలో సమస్య ఏర్పడింది.</translation>
 <translation id="9210152531668884481">నేను ఆమోదిస్తున్నాను</translation>
 <translation id="9213433120051936369">కనిపించే తీరును అనుకూలంగా మార్చండి</translation>

@@ -4434,14 +4434,6 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
 <translation id="366494444808132420">Permitir integrações com o Gemini.</translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
 <translation id="3671773704245936868">Desativar destaque de foco do teclado</translation>
-<translation id="367258298235646178">Permite que admins personalizem a aparência das marcas-d'água aplicadas pelas regras de Prevenção Contra Perda de Dados (DLP, na sigla em inglês). Isso inclui configurar a opacidade do preenchimento/contorno, o tamanho da fonte e o fuso horário do carimbo de data/hora.
-Se a política ou alguns valores não forem definidos, o Chrome vai usar o comportamento padrão de marca-d'água.
-Os valores padrão no computador são: opacidade do preenchimento em 4, opacidade do contorno em 6 e tamanho da fonte em 24. No iOS, os valores padrão são: opacidade do preenchimento em 10, opacidade do contorno em 15 e tamanho da fonte em 16. Em todas as plataformas, o fuso horário do carimbo de data/hora é definido como "user_device" (fuso horário local do dispositivo do usuário).
-
-A "Opacidade do preenchimento" é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
-A "Opacidade do contorno" é uma porcentagem de 0 (totalmente transparente) a 100 (totalmente opaco).
-O "Tamanho da fonte" é definido em pontos.
-O "Fuso horário do carimbo de data/hora" especifica o identificador da IANA (por exemplo, "America/Toronto") usado para formatar marcas-d'água com carimbo de data/hora (disponível a partir do Chrome 152), seguindo os nomes no banco de dados dessa organização (https://www.iana.org/time-zones, site em inglês).</translation>
 <translation id="3674010627788940405">Não oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
 <translation id="3675248815331229366">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não têm permissão para acessar a geolocalização do usuário e também não podem pedir permissão do usuário para fazer isso.
 
@@ -4823,7 +4815,6 @@ A política pode ser combinada com <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATF
 <translation id="390296766888987595">Mostrar o teclado na tela apenas se o usuário ou aplicativo pedir.</translation>
 <translation id="3903313632842363082">Desativar relatórios sobre os usuários do dispositivo</translation>
 <translation id="3904304709151553598">Desativar relatórios de informações do ventilador do dispositivo</translation>
-<translation id="3905883021371603181">Ativar o cancelamento de eco do áudio do sistema</translation>
 <translation id="3907683835264956726">Permite o login do usuário on-line em uma tela de bloqueio. Se a política for definida como verdadeira, a reautenticação on-line na tela de bloqueio será acionada, por exemplo, pela <ph name="POLICY" />.
       A reautenticação será aplicada imediatamente na tela de bloqueio ou na próxima vez que o usuário bloquear a tela, a partir do momento em que a autenticação atual expirar.
       Se a política for definida como falsa ou for deixada sem definição, o usuário sempre poderá desbloquear a tela com as próprias credenciais locais.</translation>
@@ -4925,7 +4916,6 @@ Observação: se a configuração resultar em métodos de autenticação aceitos
 <translation id="3989635538409502728">Sair</translation>
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
 <translation id="3990391739475801018">O modo de economia de bateria vai ser desativado.</translation>
-<translation id="3990834929384096140">Não aplicar o cancelamento de eco do áudio do sistema</translation>
 <translation id="3994043824457743421">Mostrar o aviso abaixo da caixa de pesquisa na página "Nova guia"</translation>
 <translation id="399433537808390819">Não disponibilizar o Modo área de trabalho unificada para o usuário</translation>
 <translation id="3995880046827722248">O Manifest v2 está desativado</translation>
@@ -6281,14 +6271,6 @@ Para mais informações, consulte o artigo da Central de Ajuda: https://support.
       No entanto, os dispositivos que não implementam corretamente o TLS talvez não funcionem direito e se desconectem quando o TLS 1.3 Early Data estiver em uso. Se isso ocorrer, os administradores precisarão entrar em contato com o fornecedor para que seja feita uma correção.
 
       Essa política é uma medida temporária para controlar o recurso e será removida depois. Ela pode ser ativada em testes para ver se há problemas e desativada enquanto eles são resolvidos.</translation>
-<translation id="4800438168909332958">Ativar o recurso de cancelamento de eco do áudio do sistema (AEC, na sigla em inglês). O AEC do sistema é um cancelamento de eco acústico,
-ou seja, um módulo de processamento de áudio que remove a reprodução de áudio do sistema (eco) do sinal do microfone.
-Esta política é temporária e será removida assim que o cancelamento de eco de áudio do sistema for lançado.
-
-  Se esta política for definida como "true", o cancelamento de eco de áudio do sistema sempre ficará ativado.
-
-  Se a política for definida como "false" ou deixada sem definição, o cancelamento de eco de áudio do sistema ainda poderá ser
-  ativado com base no plano de lançamento, mas não será aplicado por essa política.</translation>
 <translation id="4800865664096110749">Ativar o fluxo de atestado do <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs em perfis gerenciados</translation>
 <translation id="4801512016965057443">Permitir roaming de dados móveis</translation>
 <translation id="4801647366128872782">Especifica os URLs que permitem o relatório de tecnologia legada</translation>
@@ -12292,6 +12274,12 @@ Os certificados precisam ser codificados em Base64.</translation>
 A definição da política controla a geração de relatórios de telemetria do site para URLs da lista de permissões.
 Se não definida, nenhuma telemetria do site será informada.
 Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns/. Apenas esquemas de URL HTTP e HTTPS são permitidos para esta política.</translation>
+<translation id="8392016343898518010">Esta política foi descontinuada e não tem efeito a partir da versão M159 porque o recurso de conteúdo sugerido foi removido.
+
+Antes da versão M159, esse recurso ativava sugestões de novos conteúdos a conhecer, incluindo apps, páginas da web e muito mais.
+Se esta política fosse definida como verdadeira, as sugestões de novos conteúdos a conhecer seriam ativadas.
+Se esta política fosse definida como falsa, as sugestões de novos conteúdos a conhecer seriam desativadas.
+Se esta política não for definida, as sugestões de novos conteúdos a conhecer serão desativadas para usuários gerenciados e ativadas para outros usuários.</translation>
 <translation id="8392478748777481636">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Somente de plataforma</translation>
 <translation id="8395350646076131800">Tempo limite de inatividade do protetor da tela de bloqueio do usuário.</translation>
@@ -13428,7 +13416,6 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 <translation id="9087652369391570821">Política de configuração para o conector OnFileTransfer do Chrome Enterprise</translation>
 <translation id="9088433379343318874">Ativar o provedor de conteúdo de usuário supervisionado</translation>
 <translation id="9088444059179765143">Configurar o método de detecção automática de fuso horário</translation>
-<translation id="9091741086777905807">Identificador de fuso horário da IANA, como "America/Toronto", usado para formatar marcas-d'água com carimbo de data/hora (compatível a partir do Chrome 152). O padrão é "user_device".</translation>
 <translation id="9094681501120769194">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> usa um iframe fora do processo (OOPIF, na sigla em inglês). Essa será a nova arquitetura do visualizador de PDF no futuro, porque é mais simples e facilita a adição de novos recursos. O visualizador de PDF do GuestView atual é uma arquitetura complexa e desatualizada que está sendo descontinuada.
 
 Quando esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá usar a arquitetura do visualizador de PDF OOPIF. Se a política for ativada ou deixada sem definição, o comportamento padrão será decidido pelo <ph name="PRODUCT_NAME" />.

@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">A few things to try</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1129383337808748948">Refresh <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Must have at least one letter or symbol</translation>
 <translation id="1142002900084379065">Recent photos</translation>
 <translation id="114221662579355151">This allows camera access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the camera permission. You may need to refresh the web page or restart the app.</translation>
 <translation id="1145593918056169051">Printer has stopped</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Open new tab in new window</translation>
 <translation id="1536604384701784949">To use <ph name="USER_EMAIL_ADDRESS" /> you need to sign out of all accounts first. To sign out, select Cancel to go back. Then select the time to open the status area and select Sign out. Then sign in to <ph name="USER_EMAIL_ADDRESS_2" /> again.</translation>
 <translation id="15373452373711364">Large mouse cursor</translation>
+<translation id="1538808328818992871">Must be at least <ph name="MIN_LENGTH" /> characters</translation>
 <translation id="1545331255323159851">View your phone's recent photos, media and notifications</translation>
 <translation id="1546492247443594934">Desk 2</translation>
 <translation id="1546930421365146760">Ask your administrator to set up this device in the Google Admin console</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Click for more options</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1557622599341396706">Show desk name</translation>
+<translation id="1568242747239041185">Must have two of the following: uppercase letters, lowercase letters, numbers or symbols</translation>
 <translation id="1569384531973824928">This allows access for all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.</translation>
 <translation id="1570235441606255261">Steam installer</translation>
 <translation id="1571697193564730395">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Collapse Google Tasks</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2215920961700443347">No Internet. Connect to the Internet and try again.</translation>
+<translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
 <translation id="2223384056430485343">In a split screen</translation>
 <translation id="2224075387478458881">Screen recording is not allowed when protected content is visible</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Mouse keys paused</translation>
 <translation id="2268731132310444948">Tour step <ph name="STEP" /> of <ph name="TOTAL_STEPS" />. Once Launcher is activated, you'll get an enhanced search bar. You can start typing to search for your files, apps and more. You can also get answers to questions about your <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Sign out all</translation>
+<translation id="2273432041732361925">Must not have repeated characters or sequences of four or more</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2278668501808246459">Starting the container manager</translation>
 <translation id="2282073721614284166">Open link in tab</translation>
@@ -1056,6 +1061,7 @@ Connect your device to power.</translation>
 <translation id="4072805772816336153">Try again later</translation>
 <translation id="4077623680826964850">Timeout when booting or reconnecting to VM.</translation>
 <translation id="4086921558679520050">Turn on physical mic switch on your device</translation>
+<translation id="4093173301198419723">Must have uppercase letters, lowercase letters, numbers and symbols</translation>
 <translation id="4099874310852108874">Network error occurred.</translation>
 <translation id="4101772068965291327">Open home page</translation>
 <translation id="4102906002417106771">Restart to Powerwash</translation>
@@ -1276,6 +1282,7 @@ One device connected.</translation>
 <translation id="4668936527507421457">PIN must use numbers only</translation>
 <translation id="4672539464599646374">Battery Saver turned on</translation>
 <translation id="4673427585974421255">Keep on</translation>
+<translation id="467510802200863975">Passwords do not match</translation>
 <translation id="4677040906536311086">Google Sheet</translation>
 <translation id="468019262817532242">No one can share with you</translation>
 <translation id="468293128311738995">Apps from your phone</translation>
@@ -1299,6 +1306,7 @@ One device connected.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Update device to previous version within a day}other{Update device to previous version within # days}}</translation>
 <translation id="4747410141429390146">Please unlock to view notifications</translation>
 <translation id="4752784485658729358">Only six saved desks allowed. Remove a desk to save a new one.</translation>
+<translation id="4753084533826742808">Must be at least one character</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + up arrow</translation>
 <translation id="4762573482154983647">Hide apps</translation>
@@ -1435,6 +1443,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5144005092084035179">Switch audio input?</translation>
 <translation id="5145464978649806571">If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If lock screen is disabled, your device will sleep instead of lock.</translation>
 <translation id="5147567197700016471">Unlocked</translation>
+<translation id="5148285448107770349">Password must be at least 8 characters</translation>
 <translation id="5150070631291639005">Privacy settings</translation>
 <translation id="5155897006997040331">Reading speed</translation>
 <translation id="5158206172605340248">Accent marks menu dismissed.</translation>
@@ -1555,6 +1564,7 @@ No devices connected.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).</translation>
 <translation id="547979256943495781">Shelf on right</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Confirm password</translation>
 <translation id="5491186829646618080">Firmware updates available</translation>
 <translation id="5503884284981862082">Open/close Google Assistant</translation>
 <translation id="550391772491508736">Resume casting</translation>
@@ -1815,6 +1825,7 @@ No devices connected.</translation>
 <translation id="6198252989419008588">Change PIN</translation>
 <translation id="6199775032047436064">Reload current page</translation>
 <translation id="6200515304866777730">Not supported by app</translation>
+<translation id="6209589022625766110">Must be at least eight characters and have at least two of the following: uppercase letters, lowercase letters, numbers or symbols. Must not have repeated characters or sequences of four or more.</translation>
 <translation id="6210042900243040400">Connect <ph name="NAME" /> previously saved to <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">For 10 min</translation>
 <translation id="6213808132343683860">Take partial screenshot or screen recording</translation>
@@ -1849,6 +1860,7 @@ No devices connected.</translation>
 <translation id="6297986260307280218">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Learn more about metrics<ph name="BEGIN_LINK2_END" />Learn more<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Customise this device in app</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
+<translation id="6300478323573969040">Must be at least 12 characters and have uppercase letters, lowercase letters, numbers and symbols. Must not have repeated characters or sequences of four or more.</translation>
 <translation id="6304076460080088478">Close or minimise Incognito windows to search your screen with Google Lens</translation>
 <translation id="6309219492973062892">Click or tap shelf icons 1–8</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -2021,7 +2033,6 @@ New install</translation>
 <translation id="6782919488259222803">Search current page</translation>
 <translation id="6783348167101855071">Selected bottom-right handle, use arrow keys to move</translation>
 <translation id="6786750046913594791">Close folder</translation>
-<translation id="6792262051831399889">Unavailable</translation>
 <translation id="6792351896138862473">Can't launch unsupported kiosk app. Notify your administrator about this issue.</translation>
 <translation id="679368458793552943">Zoom in when magnifier is on</translation>
 <translation id="6794287755901682422">This item has: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
 <translation id="8063363226185507157">Synced accessibility settings</translation>
+<translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079538659226626406">Screen Share</translation>
 <translation id="8083540854303889870">Saved for later</translation>
@@ -2627,6 +2639,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8555757996376137129">Remove current desk</translation>
 <translation id="8558521694042102707">Generative AI can make mistakes, including about people, so double-check it.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> edited</translation>
+<translation id="8567946600191652875">Must be at least six characters and have at least one letter or symbol</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8581946341807941670">Press <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> and click a link</translation>
@@ -2800,7 +2813,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9034924485347205037">Linux files</translation>
 <translation id="9037818663270399707">Your connection is not private for all network traffic</translation>
 <translation id="9047624247355796468">Open settings for <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Bluetooth is unavailable</translation>
 <translation id="9050999376345823055">Press '.' to release</translation>
 <translation id="906458777597946297">Maximise window</translation>
 <translation id="9065203028668620118">Edit</translation>

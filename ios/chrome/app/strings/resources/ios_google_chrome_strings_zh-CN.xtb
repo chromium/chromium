@@ -187,7 +187,7 @@
 <translation id="5209238444239954363">Chrome 无法检查是否有更新，请稍后重试。</translation>
 <translation id="5305440589062022504">在 Chrome 中打开密码管理工具</translation>
 <translation id="5310957470610282541">部分 Chrome 数据尚未保存到您的 Google 账号。
-请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>
+请稍等几分钟再退出账号。如果现在退出，这些数据将被删除。</translation>
 <translation id="5342685492141499976">您的数据将保存到 <ph name="USER_EMAIL" /> 的 Google 密码管理工具中</translation>
 <translation id="5389212809648216794">由于另一个应用正在使用您的相机，因此 Google Chrome 无法使用</translation>
 <translation id="5395376160638294582">请确保您可以一直使用 Google 账号中的 Chrome 数据</translation>
@@ -308,7 +308,7 @@
 <translation id="7660356333829433649">欢迎回来查看更多实用提示，了解如何充分利用 Chrome。</translation>
 <translation id="7662994914830945754">要查看您在其他设备上用 Chrome 打开的标签页，请登录账号并开启同步功能</translation>
 <translation id="767157537088426800">登录此网站和 Chrome，即可在自己的所有设备上获取密码等信息</translation>
-<translation id="7693590760643069321">现在，每当点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
+<translation id="7693590760643069321">设置后，每当点按消息、文档和其他应用中的链接时，都会直接通过 Chrome 打开。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
 <translation id="7707877166818730835">在 Chrome 中打开我最近打开的标签页</translation>
 <translation id="7747746207470479571">使用 Chrome 的自动填充功能，轻松获取您的密码和通行密钥</translation>

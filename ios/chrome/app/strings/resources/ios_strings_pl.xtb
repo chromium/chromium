@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="201759455285471444">Rozwiń grupę kart.</translation>
 <translation id="2022431790688770637">Zarządzaj sugestiami Gemini</translation>
+<translation id="2023265063803387188">Gemini jest niedostępny w trybie incognito</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Otwieranie siatki kart</translation>
 <translation id="2044681667265133332">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Zatrzymaj</translation>
 <translation id="2666092431469916601">Do góry</translation>
 <translation id="2669454659051515572">Pobrane pliki może zobaczyć każdy użytkownik tego urządzenia</translation>
-<translation id="2671316366021598595">„<ph name="SITE_DOMAIN" />” nie ma dostępu do aparatu</translation>
 <translation id="2671423594960767771">Udostępnij grupę</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Płatności w ratach</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="386224966259596343">Przy następnym wypełnianiu odpowiedniego formularza będziesz mieć możliwość zapisania tych informacji w Portfelu.</translation>
 <translation id="3868495844258915202">Pokaż pełny URL</translation>
+<translation id="3870931306085184145">Brak zapisanych haseł do <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
 <translation id="3878657761594430423">Uchwyt arkusza</translation>
 <translation id="3884810423191119660">Bezpiecznie zapisuj hasła, aby łatwo logować się na stronach i w aplikacjach</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Kolejny poziom przeglądania</translation>
 <translation id="5062321486222145940">Zainstaluj Dysk Google</translation>
 <translation id="5067540696062462445">Pobrane</translation>
-<translation id="5070314445039955096">Uprawnienia „<ph name="SITE_DOMAIN" />” zostaną wyłączone, gdy opuścisz tę stronę</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} z {count} formy płatności}few{{position} z {count} form płatności}many{{position} z {count} form płatności}other{{position} z {count} formy płatności}}</translation>
 <translation id="5075939510584558547">Zapisz bez szyfrowania</translation>
 <translation id="5076534614343816664">Śledzenie cen</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Aby korzystać z programu Level Up, musisz się zalogować</translation>
 <translation id="5352128922772839949">Zapisz plik</translation>
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
-<translation id="5355871759168485600">„<ph name="SITE_DOMAIN" />” może używać mikrofonu za każdym razem, gdy odwiedzasz tę witrynę</translation>
 <translation id="5359436665022446585">Lepsze otwieranie linków</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
 <translation id="5364647308446127983">{count,plural, =1{Nie udało się zaimportować {count} klucza dostępu}few{Nie udało się zaimportować {count} kluczy dostępu}many{Nie udało się zaimportować {count} kluczy dostępu}other{Nie udało się zaimportować {count} klucza dostępu}}</translation>
@@ -1484,6 +1483,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5612225021788368236">Zamknij promocję przeglądarki domyślnej</translation>
 <translation id="561269594905823128">Kliknij <ph name="BEGIN_BOLD" />Wybierz plik<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sortuj od najnowszego</translation>
+<translation id="561349411957324076">Ukończono</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
 <translation id="5617769621178348890">Otwórz w aplikacji Pliki</translation>
 <translation id="5619871095170816857">Ta karta pokazuje ostatnio używaną otwartą kartę z minionych 24 godzin ze wszystkich zsynchronizowanych urządzeń.</translation>
@@ -2333,7 +2333,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kont(a)</translation>
 <translation id="8161614462829037225">Odblokuj za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Długość</translation>
-<translation id="8181328232274170248">„<ph name="SITE_DOMAIN" />” może używać aparatu, gdy odwiedzasz tę witrynę</translation>
 <translation id="8182037667962849780">{count,plural, =1{Do witryny {website_1}}=2{Do witryn {website_1}, {website_2}}=3{Do witryn {website_1}, {website_2} i jeszcze 1}few{Do witryn {website_1}, {website_2} i jeszcze {more_count}}many{Do witryn {website_1}, {website_2} i jeszcze {more_count}}other{Do witryn {website_1}, {website_2} i jeszcze {more_count}}}</translation>
 <translation id="8184895727539791845">Aby zezwolić Gemini na korzystanie z aparatu, włącz go w ustawieniach iOS</translation>
 <translation id="8185076488803799132">Importuj</translation>
@@ -2504,7 +2503,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8674716540979958118">Masz przejęte hasła.</translation>
 <translation id="8679900250380464358">Dodaj do listy Do przeczytania</translation>
 <translation id="8680787084697685621">Dane logowania na konto są nieaktualne.</translation>
-<translation id="868648444055742370">„<ph name="SITE_DOMAIN" />” nie ma dostępu do mikrofonu</translation>
 <translation id="8690752723634292147">Potwierdź usunięcie</translation>
 <translation id="8692107307702113268">Hasło ma ponad 1000 znaków</translation>
 <translation id="8692689525339542358">Uzyskaj ochronę przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami.</translation>
@@ -2650,6 +2648,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="91023216973987714">Formy płatności</translation>
 <translation id="9106655997975673326">Z urządzenia „<ph name="SOURCE_DEVICE" />”</translation>
 <translation id="9107664647686727385">Sprawdź, czy nie przejęto haseł</translation>
+<translation id="9115035712231910133">Załączony obraz {title}</translation>
 <translation id="9119764377203471454">Nie udało się dodać załączników</translation>
 <translation id="9124387962554796433">Google może korzystać z Twojej historii, żeby personalizować wyniki wyszukiwania i działanie innych usług Google.</translation>
 <translation id="9124978074365039456">Kupuj, tłumacz i rozpoznawaj to, co widzisz, za pomocą aparatu i galerii zdjęć</translation>

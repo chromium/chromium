@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">အဆင်သင့်ဖြစ်ပြီ!</translation>
 <translation id="1149483087970735785">ပံ့ပိုးမှု နည်းပညာ</translation>
 <translation id="1150490752229770117">၎င်းက ဤ <ph name="DEVICE_TYPE" /> အတွက် နောက်ဆုံးထုတ် ဆော့ဖ်ဝဲနှင့် လုံခြုံရေးဆိုင်ရာ အလိုအလျောက်အပ်ဒိတ် ဖြစ်သည်။ နောင်လာမည့်အပ်ဒိတ်များ ရယူရန် မော်ဒယ်အသစ်သို့ အဆင့်မြှင့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">ChromeOS အကြောင်း</translation>
 <translation id="1155816283571436363">သင်၏ဖုန်းသို့ ချိတ်ဆက်နေသည်</translation>
 <translation id="1160800016654917722">ဝင်းဒိုးကို အောက်၊ ဘယ်ဘက်သို့ ရွှေ့လိုက်သည်</translation>
 <translation id="1164015913575846413">Alt + ကလစ်</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">၁၆ ဆ</translation>
 <translation id="1275936815032730048">Launcher + ညာညွှန်မြား</translation>
 <translation id="1280332775949918163">ဝင်းဒိုးကို ရွှေ့ရန်</translation>
+<translation id="1285625592773741684">လက်ရှိ ဒေတာသုံးစွဲမှုဆက်တင်သည် 'မိုဘိုင်းဒေတာ' ဖြစ်သည်</translation>
 <translation id="1285815028662278915">သင့်မိုဘိုင်းဒေတာသည် ဟော့စပေါ့ကို ပံ့ပိုးမှုမရှိနိုင်ပါ။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">နေဝင်ချိန်တွင် Night Light အလိုအလျောက် ပွင့်ပါမည်</translation>
 <translation id="1288300545283011870">စကားပြောသံ အချက်အလက်များ</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">၎င်းက နောက်ဆက်တွဲများကို ပိတ်ပြီး သင့်ဆက်တင်များကို မူလသိမ်းထားသည်များသို့ ပြင်ဆင်သတ်မှတ်ပါမည်။ တဘ်၊ ဖိုင်နှင့် ကွတ်ကီးများကို သိမ်းထားပါမည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="1539727654733007771">မိုဘိုင်းကွန်ရက် စနစ်ထည့်သွင်းမထားပါ။ <ph name="BEGIN_LINK" />ပရိုဖိုင်<ph name="END_LINK" /> အသစ်ကို ဒေါင်းလုဒ်လုပ်ပါ။</translation>
+<translation id="1547295885616600893">ChromeOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
 <translation id="1547808936554660006">Powerwash သည် ထည့်သွင်းထားသော eSIM ပရိုဖိုင်များကို ဖယ်ရှားမည်မဟုတ်ကြောင်း ကျွန်ုပ်နားလည်ပါသည်</translation>
 <translation id="1549275686094429035">ARC ဖွင့်ထားသည်</translation>
 <translation id="1554640914375980459">အကြောင်းကြားချက်များရပါက ဖန်သားပြင် ဖျတ်ခနဲပွင့်သွားမည်။ သင်သည် အလင်းဒဏ် မခံနိုင်သူဖြစ်ပါက အလင်းရောင်ဖြင့် အကြောင်းကြားချက်များကို သတိထား၍ သုံးပါ။</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">တည်နေရာ သိရှိနိုင်ရန် Wi-Fi၊ ဘလူးတုသ် သို့မဟုတ် မိုဘိုင်းကွန်ရက်များကို အသုံးပြုပါ</translation>
 <translation id="1650407365859096313">တဘ်အသစ်တွင် ဖွင့်သည်။ ခွင့်ပြုချက်မှာ <ph name="PERMISSION_STATE" /> ဖြစ်သည်</translation>
 <translation id="1652326691684645429">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ကို ဖွင့်ရန်</translation>
+<translation id="1662146548738125461">ChromeOS Flex အကြောင်း</translation>
 <translation id="1663698992894057019">နောက်ဆုံးထုတ် လုံခြုံရေးနှင့် ဆော့ဖ်ဝဲအတွက် Chromebook အသစ် ရယူပါ</translation>
 <translation id="1665328953287874063">သင့် <ph name="DEVICE_TYPE" /> ကို ဖွင့်ရန် စကားဝှက် (သို့) ပင်နံပါတ် သုံးပါ</translation>
 <translation id="1667842670298352129">သတ်မှတ်စာသားကို အသံထွက်ဖတ်ပေးသည်။ ဖန်သားပြင်အောက်ခြေတွင် ‘စကားပြောရွေးခြင်း’ သင်္ကေတကို ဦးစွာရွေးပြီး စာသားကို မြင်သာအောင်လုပ်ပါ။ လက်ကွက်ဖြတ်လမ်းကိုလည်း သုံးနိုင်သည်- စာသားကို မြင်သာအောင်လုပ်ပြီး Search + S ကို နှိပ်ပါ။</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">မှတ်ချက်− သင့်လက်ဗွေသည် ခိုင်မာသည့် စကားဝှက် သို့မဟုတ် ပင်နံပါတ်ထက် လုံခြုံရေး ပိုအားနည်းနိုင်ပါသည်။</translation>
 <translation id="1724801751621173132">လက်ကွက်ထည့်သွင်းနည်း</translation>
 <translation id="1741190788710022490">အလိုက်သင့်အားသွင်းခြင်း</translation>
+<translation id="1745732479023874451">အဆက်အသွယ်များ စီမံခန့်ခွဲရန်</translation>
 <translation id="1751335846119670066">ကူဖတ်ပေးပါ</translation>
 <translation id="1755601632425835748">စာသား အရွယ်အစား</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> က <ph name="REMAPPING_OPTION" /> သို့ နေရာပြန်ချထားသည်။</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">အသွင်တူခလုတ် 1 ခုသာ သုံးရန်</translation>
 <translation id="1842681835432895345">ကြည့်မှန်မုဒ်တွင် ဤဖန်သားပြင်ကို ဖယ်ထုတ်ရန်</translation>
 <translation id="1848219224579402567">အဖုံးပိတ်လိုက်သည့်အခါ ထွက်ရန်</translation>
+<translation id="185970820835152459">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံနိုင်သည်။ Chromium ဘရောင်ဇာ၊ Play Store၊ Gmail စသည်တို့အတွက် သင်၏ Google Account များကို သုံးသည်။ မိသားစုဝင်ကဲ့သို့ တစ်စုံတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက ၎င်းအစား ထိုပုဂ္ဂိုလ်အသစ်ကို သင့် <ph name="DEVICE_TYPE" /> တွင် ထည့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">ပိုအေးသည့် အရောင်</translation>
 <translation id="1866589962721094893">Android အက်များကို ဤ Chromebook ပေါ်တွင် USB စက်များ သုံးခွင့်ပြုနိုင်သည်။ USB စက် ပလတ်ထိုးသည့် အကြိမ်တိုင်း ခွင့်ပြုချက်တောင်းပါမည်။ Android အက်ပ်တစ်ခုချင်းစီက ထပ်ဆောင်းခွင့်ပြုချက်များ တောင်းပါမည်။</translation>
 <translation id="1877377290348678128">အညွှန်း (ချန်လှပ်နိုင်သည်)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">အသံ</translation>
 <translation id="2097950021134740304">မေ့နေသော စာရင်းသွင်းမှုကို ပယ်ဖျက်ရန်</translation>
 <translation id="2104166991923847969">ဟော့စပေါ့ကို အလိုအလျောက် ပိတ်ခြင်း</translation>
+<translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS Flex ကို ရေးဆွဲထားသည်။</translation>
 <translation id="2114995631896158695">ဆင်းမ်ကတ် ထည့်မထားပါ</translation>
 <translation id="2121825465123208577">အရွယ်အစားပြောင်းရန်</translation>
 <translation id="2127372758936585790">ပါဝါနိမ့် အားသွင်းစက်</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574"><ph name="USER_NAME" /> ကို ဖယ်ရှားရန်</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2363475280045770326">စီစဉ်သတ်မှတ်ချက်သိမ်းရာတွင် အမှားရှိသည်</translation>
+<translation id="236939127352773362">စက်များကို အနီးတွင် မျှဝေထားချိန်</translation>
 <translation id="237336063998926520">တည်နေရာကို သိရှိနိုင်ရန် သင်၏ IP လိပ်စာကို အသုံးပြုပါ</translation>
 <translation id="2373499590298659902">မောက်စ်ခလုတ် နှိပ်ထားရန် “0” ကိုသုံးပါ</translation>
 <translation id="2375406435414127095">သင့်ဖုန်းသို့ ချိတ်ဆက်ခြင်း</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">VPN မသုံးသည့် ဒေတာစီးဆင်းမှုကို ပိတ်ထားရန်</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">‘တည်နေရာတိကျမှန်ကန်မှု’ သည် အက်ပ်နှင့် ဝန်ဆောင်မှုများအတွက် ပိုမိုတိကျသော တည်နေရာကို ပေးသည်။ ထိုသို့လုပ်ဆောင်ရန် Google သည် သင့်စက်မှ စက်အာရုံခံကိရိယာနှင့် ကြိုးမဲ့အချက်ပြမှုများအကြောင်း အချက်အလက်များကို လူထုအရင်းအမြစ်ကို အသုံးချထားသော ကြိုးမဲ့အချက်ပြမှု တည်နေရာများသို့ အခါအားလျော်စွာ စီမံပို့ဆောင်သည်။ တည်နေရာတိကျမှန်ကန်မှုနှင့် တည်နေရာအခြေခံ ဝန်ဆောင်မှုများ ပိုမိုကောင်းမွန်စေရန်၊ အသုံးပြုသူများ၏ လိုအပ်ချက်များကို ဖြည့်ဆည်းပေးရန် Google ၏ ဝန်ဆောင်မှုများနှင့် ပြင်ပအဖွဲ့အစည်းများ၏ တရားဝင် အကျိုးခံစားခွင့်များအပေါ် အခြေခံထားသော Google ဝန်ဆောင်မှုများကို ပုံမှန်အားဖြင့် မွမ်းမံရန်၊ ပံ့ပိုးရန်၊ ထိန်းသိမ်းရန် သင်ဖြစ်ကြောင်း ပုဂ္ဂိုလ်ရေးအရ ခွဲခြားဖော်ထုတ်ခြင်းမရှိဘဲ ၎င်းတို့ကို အသုံးပြုသည်။</translation>
+<translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3388094447051599208">အထွက်ဗန်း ပြည့်လုနီးနေပါပြီ</translation>
 <translation id="3390013585654699824">အက်ပ်အသေးစိတ်</translation>
 <translation id="3390740059150071453">ဘယ်ဘက်သို့ကြည့်ပါ</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">အီးမေးလ် လိပ်စာ</translation>
 <translation id="3701028563242674350">မောက်စ်ကာဆာကို ပိုကြီးအောင်လုပ်ရန် လှုပ်ပါ</translation>
 <translation id="3703699162703116302">လက်မှတ်ကို ပြန်လည်စတင်ထားသည်</translation>
+<translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS ကို ရေးဆွဲထားသည်။</translation>
 <translation id="370649949373421643">ကြိုးမဲ့ ဖွင့်ပေးရန်</translation>
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
 <translation id="3707163604290651814">လက်ရှိတွင် <ph name="NAME" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်</translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">ပရင်တာဆာဗာတွင် ပရင်တာ <ph name="NUM_PRINTERS" /> ခု တွေ့သည်</translation>
 <translation id="371370241367527062">အရှေ့မိုက်ခရိုဖုန်း</translation>
 <translation id="37143699183660101">ကာဆာ တည်ငြိမ်မှု</translation>
+<translation id="3716540481907974026">ChromeOS Flex ဗားရှင်း</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">ပင်နံပါတ် မမှန်ပါ။ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="3728681439294129328">ကွန်ရက်လိပ်စာကို စီစဉ်သတ်မှတ်ရန်</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">ရေးသည့်စာသားတွင် အောက်မျဉ်းဆွဲရန်</translation>
 <translation id="3789841737615482174">တပ်ဆင်ရန်</translation>
 <translation id="379509625511193653">ပိတ်</translation>
+<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3796215473395753611">Alt + အပေါ်ညွှန်မြား</translation>
 <translation id="3798670284305777884">စပီကာ (စက်တွင်း)</translation>
 <translation id="3799128412641261490">ခလုတ်သုံးခြင်း ဆက်တင်များ</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">အသင့်ပါ ကီးဘုတ်</translation>
 <translation id="3917644013202553949">သင့်ဖိုင်များစင့်ခ်လုပ်ရန် သိုလှောင်ခန်းနေရာ မလုံလောက်ပါ။ နေရာရှင်းကြည့်ပါ။</translation>
 <translation id="3919229493046408863">အနီးတစ်ဝိုက်တွင် စက်များရှိပါက အကြောင်းကြားချက်ကို ပိတ်ပါ</translation>
+<translation id="3923184630988645767">ဒေတာသုံးစွဲမှု</translation>
 <translation id="3923494859158167397">မိုဘိုင်းကွန်ရက် စနစ်ထည့်သွင်းမထားပါ</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">ဤစက်ပေါ်ရှိ အခြားအသုံးပြုသူများကလည်း ဤကွန်ရက်ကို သုံးနိုင်ပါသည်</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">‘အမြန်အဖြေများ’ အဓိပ္ပာယ်ဖွင့်ဆိုခြင်း</translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> ကို USB စက်များ သုံးခွင့်ပြုနိုင်သည်။</translation>
 <translation id="3994530503403062649">သင့်တက်ဘလက်တွင် ခလုတ်များကို ရှာပါ</translation>
+<translation id="3997429360543082038">ChromiumOS အကြောင်း</translation>
 <translation id="4001540981461989979">ရွှေ့သည့်အခါ မောက်စ်ကာဆာကို မြင်သာစေရန်</translation>
 <translation id="4005817994523282006">စံတော်ချိန် သိရှိနိုင်မှု နည်းလမ်း</translation>
+<translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်<ph name="END_LINK_LINUX_OSS" /> တွင် <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromiumOS ကို ရေးဆွဲထားသည်။</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">တည်ဆောက်ပုံအသေးစိတ်ကို မိတ္တူကူးရန်</translation>
 <translation id="4028467762035011525">လက်ကွက်များ ထည့်ရန်</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">နောက်ဆုံးသုံးထားသော လက်ကွက်သို့ ပြောင်းရန် <ph name="KEY_CODES" /> နှိပ်ပါ</translation>
 <translation id="4051177682900543628">Search + ညာညွှန်မြား</translation>
 <translation id="405181879009056822">ChromeOS ဆက်တင်များ</translation>
+<translation id="4054070260844648638">လူတိုင်း မြင်နိုင်သည်</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">သင့်ကွန်ရက်အတွင်း ရနိုင်သည့် ပုံနှိပ်စက်များကို ကြည့်ရန် သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="4068776064906523561">သိမ်းဆည်းထားသည့် လက်ဗွေများ</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, အဆင့် <ph name="GRADE" /></translation>
 <translation id="4244238649050961491">နောက်ထပ် စတိုင်လပ်စ်အက်ပ်များကို ရှာဖွေရန်</translation>
 <translation id="4248401726442101648">ချိတ်ဆက်ထားသောကင်မရာ မရှိပါ</translation>
+<translation id="424864128008805179">Chrome မှထွက်မလား။</translation>
 <translation id="4249116869350613769">ဘက်ထရီ အားထိန်း</translation>
 <translation id="4250229828105606438">မျက်နှာပြင် လျှပ်တပြက်ပုံ</translation>
 <translation id="425411422794688815">တစ်ခုခု မှားသွားသည်။ သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး လော့ခ်ပွင့်နေကာ ဘလူးတုသ်နှင့် Wi-Fi ဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{Google Account 1 ခု}other{Google Account <ph name="EXTRA_ACCOUNTS" /> ခု}}</translation>
 <translation id="4314497418046265427">သင့်ဖုန်းနှင့် <ph name="DEVICE_TYPE" /> ကို ချိတ်ဆက်သည့်အခါ အလုပ်ပိုပြီးမြောက်နိုင်သည်</translation>
 <translation id="4314561087119792062">APN အချိတ်အဆက်အသစ် ထည့်ရန်</translation>
+<translation id="4314815835985389558">စင့်ခ်ကို စီမံရန်</translation>
 <translation id="4320177379694898372">အင်တာနက် ချိတ်ဆက်မှု မရှိ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">သိုလှောင်ခန်းနှင့် ပါဝါ</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">အကြံပြုချက် အရေအတွက်</translation>
 <translation id="4606933160360542263">စိတ်ကြိုက် ကီးပေါင်းစပ်မှု- <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">ဘယ်ဘက် မောက်စ်ခလုတ်ရွေးထားပြီးနောက် နှစ်ချက်နှိပ်ရန် “/” ကိုသုံးပါ</translation>
+<translation id="4613863813562375431">ChromiumOS ဗားရှင်း</translation>
 <translation id="461661862154729886">စွမ်းအင် ရင်းမြစ်</translation>
 <translation id="4617880081511131945">ချိတ်ဆက်၍မရပါ</translation>
 <translation id="4620757807254334872">မောက်စ်</translation>
@@ -1136,6 +1155,7 @@
 <translation id="4777943778632837590">ကွန်ရက်အမည်ဆာဗာများ စီစဉ်သတ်မှတ်ရန်</translation>
 <translation id="4779083564647765204">ဇူးမ်</translation>
 <translation id="4779766576531456629">eSIM ဆယ်လူလာကွန်ရက် အမည်ပြောင်းရန်</translation>
+<translation id="4789550509729954245">အနီးတွင် မျှဝေနေသောစက်များရှိပါက အကြောင်းကြားချက်ပြပါ</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint အရှိန်မြှင့်တင်မှု ဖွင့်ရန်</translation>
 <translation id="479664067938200069"><ph name="APP_NAME" /> မှ ထည့်သွင်းထားသော အပလီကေးရှင်းများ</translation>
@@ -1196,6 +1216,7 @@
 <translation id="4964544790384916627">ဝင်းဒိုးကို နေရာချရန်</translation>
 <translation id="4964673849688379040">စစ်ဆေးနေ...</translation>
 <translation id="4967571733817147990">မောက်စ် ခလုတ်များ စိတ်ကြိုက်လုပ်ရန်</translation>
+<translation id="4970880042055371251">ChromeOS ဗားရှင်း</translation>
 <translation id="4972129977812092092">ပရင်တာကို တည်းဖြတ်ရန်</translation>
 <translation id="4975771730019223894">အက်ပ်သင်္ကေတ</translation>
 <translation id="4979263087381759787">ဆော့ဖ်ဝဲအင်ဂျင်နီယာ ရွေးချယ်စရာများ</translation>
@@ -1275,6 +1296,7 @@
 <translation id="5193978546360574373">၎င်းက အော့ဖ်လိုင်းရနိုင်သည့်ဖိုင်များသုံးခွင့်အပါအဝင် ဤ Chromebook ရှိ Google Drive သုံးခွင့်ကို ဖယ်ရှားပါမည်</translation>
 <translation id="5196790039230503600">လက်ဟန်သုံးပါ။ ထို့နောက် ဦးခေါင်းကို လှုပ်၍ ဖိုင်ချလိုသောနေရာကို ပြပါ။ ၎င်းကို ချရန် လက်ဟန်ထပ်သုံးပါ။</translation>
 <translation id="5197255632782567636">အင်တာနက်</translation>
+<translation id="5205484256512407285">ပြောင်းရွှေ့ရန်အတွက် မိုဘိုင်းဒေတာကို ဘယ်တော့မှမသုံးပါ</translation>
 <translation id="5207949376430453814">စာရိုက်ထည့်ရန်အကွက်ကို မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="5208926629108082192">စက်၏ မိုဘိုင်းကွန်ရက် အချက်အလက်</translation>
 <translation id="5208988882104884956">အလျား တစ်ဝက်</translation>
@@ -1307,6 +1329,7 @@
 <translation id="5331568967879689647">ChromeOS စနစ်အက်ပ်</translation>
 <translation id="5334113802138581043">မိုက်ခရိုဖုန်းသုံးခွင့်</translation>
 <translation id="5336689872433667741">ကာဆာနှင့် တာ့ချ်ပက်</translation>
+<translation id="5337926771328966926">လက်ရှိစက်ပစ္စည်းအမည်သည် <ph name="DEVICE_NAME" /> ဖြစ်သည်</translation>
 <translation id="5340900621595888432">အမှားရှာဖွေမှုနှင့် သုံးစွဲမှုဒေတာပို့ရန်</translation>
 <translation id="5369694795837229225">Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်ကို စနစ်ထည့်သွင်းရန်</translation>
 <translation id="5377367976106153749">ကင်မရာသုံးခွင့် ဖွင့်မလား။</translation>
@@ -1444,6 +1467,7 @@
 <translation id="5833726373896279253">ဒီဆက်တင်များကို ပိုင်ရှင်သာ မွမ်းမံနိုင်သည်:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">ဘူး</translation>
+<translation id="5840680448799937675">ဖိုင်များကို အမြဲတမ်း အော့ဖ်လိုင်း မျှဝေပါမည်</translation>
 <translation id="5841270259333717135">အီသာနက် စီစဉ်သတ်မှတ်ရန်</translation>
 <translation id="5842497610951477805">ဘလူးတုသ်ကို ဖွင့်ရန်</translation>
 <translation id="5846200638699387931">ဆက်နွယ်မှု ဝါကျဖွဲ့စည်းပုံ အမှားအယွင်း- <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@
 <translation id="5924438086390153180">Microsoft ဖိုင်များကို Google Drive သို့ မိတ္တူမကူးမီ (သို့) မရွှေ့မီ မေးပါ</translation>
 <translation id="5939518447894949180">ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="594048410531370124">ကီးကို မသိပါ။ <ph name="RESPONSE" /> အတွက် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
+<translation id="5942779427914696408">စက်၏ မြင်နိုင်မှု</translation>
 <translation id="5945192511027649793">တာ့ချ်ပက် ပိတ်ရန်</translation>
 <translation id="5947651424015173580">မောက်စ်ကို နှစ်ချက်နှိပ်ရန်</translation>
 <translation id="594993197557058302">၁-၄ မွမ်းမံခလုတ်များ (Ctrl၊ Alt၊ Shift၊ ရှာရန်ခလုတ် သို့မဟုတ် Launcher) နှင့် ကီးနောက် ၁ ခုကို နှိပ်ပါ။ ကီးတစ်ခုတည်းကိုလည်း ရွေးနိုင်သည်။</translation>
@@ -1491,10 +1516,12 @@
 <translation id="5961545272769624207">လက်ဟန် သတ်မှတ်ရန်</translation>
 <translation id="5968022600320704045">ရှာဖွေမှု ရလဒ်များ မရှိပါ</translation>
 <translation id="5969728632630673489">လက်ကွက်ဖြတ်လမ်း သတိပေးချက်ကို ပယ်လိုက်သည်</translation>
+<translation id="5979353814339191480">ဒေတာအစီအစဉ် (သို့) မိုဘိုင်းကွန်ရက် ဒွန်ဂယ်ပါသော Chromebook များ (သို့) ဟော့စပေါ့သို့ မိုဘိုင်းသုံး၍ ချိတ်ဆက်သည့်အခါ ဤရွေးချယ်မှု သက်ရောက်ပါသည်</translation>
 <translation id="5985556342298151179">သင့်စက်ပစ္စည်း စီမံခန့်ခွဲသူက ထည့်သွင်းထားသည့် Chrome အက်ပ်။</translation>
 <translation id="5986442691296752186">Linux အက်ပ်များကို USB စက်များ သုံးခွင့်ပြုနိုင်သည်။</translation>
 <translation id="598810097218913399">သတ်မှတ်မှုကို ဖယ်ရှားရန်</translation>
 <translation id="5988563937187882754">ညာဘက်သို့ကြည့်ပါ</translation>
+<translation id="5990266201903445068">Wi-Fi ဖြင့်သာ</translation>
 <translation id="5992225669837656567">မောက်စ်အားလုံး ချိတ်ဆက်မှုဖြုတ်လိုက်သည်</translation>
 <translation id="5999630716831179808">အသံများ</translation>
 <translation id="6002458620803359783">အသုံးပြုလိုသည့် စကားသံများ</translation>
@@ -1509,6 +1536,7 @@
 <translation id="6045114302329202345">ပင်မ TrackPoint ခလုတ်</translation>
 <translation id="6048747414605857443">ChromeVox နှင့် ‘စကားပြောရွေးခြင်း’ တို့အတွက် စာမှ စကား အသံများကို ရွေးချယ်ပြီး စိတ်ကြိုက်ပြင်ဆင်နိုင်သည်</translation>
 <translation id="6050189528197190982">ဖြူမဲစကေး</translation>
+<translation id="6054961935262556546">မြင်နိုင်မှုကို ပြောင်းရန်</translation>
 <translation id="6059276912018042191">လတ်တလော Chrome တဘ်များ</translation>
 <translation id="6059925163896151826">USB စက်ပစ္စည်းများ</translation>
 <translation id="6064764629679333574">အရည်အသွေးနိမ့်အသံကို အရည်အသွေးမြင့်အသံသို့ မြှင့်တင်ခြင်းဖြင့် ဘလူးတုသ်မိုက်၏ အသံအရည်အသွေး ပိုကောင်းအောင်လုပ်နိုင်သည်။</translation>
@@ -1567,6 +1595,7 @@
 <translation id="6265159465845424232">Microsoft ဖိုင်များကို Microsoft OneDrive သို့ မိတ္တူမကူးမီ (သို့) မရွှေ့မီ မေးပါ</translation>
 <translation id="6265687851677020761">ပို့တ်ဖယ်ရှားရန်</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> သို့ ချိတ်ဆက်နေသည်</translation>
+<translation id="6268381023930128611">Chromium မှထွက်မလား။</translation>
 <translation id="6270309713620950855">သတိပေးနှိုးဆော်ချက် အသံပိတ်ရန်</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> သို့ ချိတ်ဆက်နေသည်</translation>
 <translation id="628352644014831790">၄ စက္ကန့်</translation>
@@ -1618,6 +1647,7 @@
 <translation id="6453921811609336127">နောက်လက်ကွက်သို့ ပြောင်းရန် <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> နှိပ်ပါ</translation>
 <translation id="6463488491707167747">ဤအဘိဓာန်ကို ဖျက်ရန်</translation>
 <translation id="6463596731306859179">မလိုလားသော ပေါ့ပ်အပ် (သို့) မမျှော်လင့်ထားသော အပြုအမူများ ရရှိနေသလား။ တစ်ခါတစ်ရံတွင် သင်ထည့်သွင်းထားသော အက်ပ်နှင့် နောက်ဆက်တွဲများသည် သင့် ChromeOS ဆက်တင်များကို သင်မသိဘဲ ပြောင်းနိုင်သည်။</translation>
+<translation id="6465841119675156448">အင်တာနက် မသုံးဘဲ</translation>
 <translation id="6467377768028664108">သင့် <ph name="DEVICE_TYPE" /> ပြုလုပ်နိုင်သည်များ-</translation>
 <translation id="6469557521904094793">ဆယ်လူလာကွန်ရက် ဖွင့်ရန်</translation>
 <translation id="6470120577693311302">အလင်းရောင်ဖြင့် အကြောင်းကြားချက်များ</translation>
@@ -1668,6 +1698,7 @@
 <translation id="6626581113916585374">အထူးပြုလုပ်ချက်မုဒ်</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">ဖြတ်လမ်း ရွေးချယ်မည်</translation>
+<translation id="6632473616050862500"><ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS Flex ကို ရေးဆွဲထားသည်။</translation>
 <translation id="6646476869708241165">အမြန်တွဲချိတ်ခြင်း ပိတ်ရန်</translation>
 <translation id="6647690760956378579">သဘာဝဆန်သည့်အသံ အစမ်းကြည့်ရှုခြင်း</translation>
 <translation id="6650072551060208490">သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
@@ -1711,6 +1742,7 @@
 <translation id="6775163072363532304">အသုံးပြုနိုင်သော ကိရိယာများကို ဤနေရာတွင် တွေ့ရပါမည်။</translation>
 <translation id="6776729248872343918">အမြန်တွဲချိတ်ခြင်း ဖွင့်ရန်</translation>
 <translation id="6777845730143344223">‘ဖြတ်သန်းခွင့်ပြုမှတ်’ စာရင်းသွင်းမှုများအကြောင်း ပိုမိုလေ့လာရန်</translation>
+<translation id="6779406956731413166">ChromiumOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
 <translation id="6783036716881942511">ဤစက်ကို မေ့ပစ်မလား။</translation>
 <translation id="6783667414610055871">Microsoft OneDrive ဆက်တင်များ</translation>
 <translation id="6785915470941880363">ပြောင်းပြန်လှိမ့်ခြင်း <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@
 <translation id="7280649757394340890">စာ-မှ-စကား အသံဆက်တင်များ</translation>
 <translation id="7282547042039404307">ချောမွေ့</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">အရေးကြီး အသုံးပြုခြင်းနှင့် အန္တရာယ်ကင်း အချက်အလက်များ</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> စကားဝှက် စနစ်ထည့်သွင်းနိုင်သည်</translation>
 <translation id="7304030187361489308">မြင့်သော</translation>
 <translation id="7308643132139167865">ဝဘ်ဆိုက် ဘာသာစကားများ</translation>
@@ -1873,6 +1906,7 @@
 <translation id="7409599290172516453">လတ်တလော ဓာတ်ပုံများ</translation>
 <translation id="7414464185801331860">၁၈ ဆ</translation>
 <translation id="7417435070053325657">အက်ပ် <ph name="APPS_LIST_SIZE" /> ခုအနက် <ph name="BLOCKED_APPS_SIZE" /> ခုကို ပိတ်ထားသည်</translation>
+<translation id="7423425410216218516"><ph name="MINUTES" /> မိနစ် မြင်နိုင်သည်</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> ဖယ်ရှားရန်</translation>
 <translation id="7425037327577270384">ကူရေးပေးပါ</translation>
 <translation id="7429415133937917139">ဖန်သားပြင်၏ ထိပ်ပိုင်းရှိ ChromeVox အကန့်တွင်
@@ -1920,11 +1954,13 @@
 <translation id="7578137152457315135">လက်ဗွေ ဆက်တင်များ</translation>
 <translation id="7578692661782707876">မှန်ကြောင်းအတည်ပြုကုဒ် ထည့်ပါ။</translation>
 <translation id="7582582252461552277">ဒီကွန်ရက်ကို ပိုနှစ်ခြိုက်</translation>
+<translation id="7582844466922312471">မိုဘိုင်း ဒေတာ</translation>
 <translation id="7587806318633605613">အကြံပြုချက်မှတ်တမ်း</translation>
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
 <translation id="7592060599656252486">အချို့</translation>
 <translation id="7602173054665172958">ပရင့်ထုတ်ရန် စီမံခန့်ခွဲမှု</translation>
 <translation id="7605163396341021431">Android အက်များကို ဤ Chromebook ပေါ်တွင် USB စက်များ သုံးခွင့်ပြုနိုင်သည်</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">Android စိတ်ကြိုက်ရွေးချယ်မှုများ</translation>
 <translation id="7611713099524036757">မက်တာ</translation>
 <translation id="7612655942094160088">ချိတ်ဆက်ထားသော ဖုန်းဝန်ဆောင်မှုများ ဖွင့်ရန်။</translation>
@@ -1935,12 +1971,14 @@
 <translation id="7632437836497571618">ဝဘ်ဆိုက်များရှာဖွေရန်အတွက် လုံခြုံသော ချိတ်ဆက်မှုများသုံးရန်</translation>
 <translation id="7634337648687970851">စက်တွင်း ဒေတာပြန်လည်ရယူခြင်းကို လက်ရှိတွင် ပံ့ပိုးမထားပါ။</translation>
 <translation id="7640256527901510478">သင့်စက် IMEI မှာ <ph name="IMEI_NUMBER" /> ဖြစ်ပြီး စက်အမှတ်စဉ်မှာ <ph name="SERIAL_NUMBER" /> ဖြစ်သည်။ ဝန်ဆောင်မှုစတင်ရာ၌ ကူညီရန် ဤနံပါတ်များကို သုံးနိုင်သည်။</translation>
+<translation id="7640308610547854367">သင်သည် ChromeOS ၏ ယခင်ဗားရှင်းသို့ ပြန်ပြောင်းလိုက်သည်။ အပ်ဒိတ်များရယူရန် လာမည့်ဗားရှင်း ရနိုင်သည်အထိ စောင့်ပါ။</translation>
 <translation id="7641513591566880111">ပရိုဖိုင်အမည် အသစ်</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> ကို ထည့်ပြီးပြီ</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ပိုင်ရှင်)</translation>
 <translation id="7648048654005891115">ကီးတွဲသည့်စတိုင်</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{လက်ဗွေ 1 ခု စနစ်ထည့်သွင်းထားသည်}other{လက်ဗွေ {COUNT} ခု စနစ်ထည့်သွင်းထားသည်}}</translation>
+<translation id="7650677314924139716">လက်ရှိဒေတာအသုံးပြုမှု ဆက်တင်သည် Wi-Fi သီးသန့်ဖြစ်သည်</translation>
 <translation id="7651400349472467012">တစ်မုဟုတ် ဟော့စပေါ့ ရနိုင်သည်</translation>
 <translation id="7651784568388208829">ဖုန်းစင်တာ လုပ်ဆောင်စရာ ရှေ့ဆက်ခြင်း</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
@@ -2031,6 +2069,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">ဘာသာပြန်ဆိုခြင်း</translation>
 <translation id="7915457674565721553">မိဘ အထိန်းအချုပ်များ ထည့်သွင်းရန် အင်တာနက်သို့ ချိတ်ဆက်ပါ</translation>
+<translation id="7917876797003313048">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံနိုင်သည်။ Chrome ဘရောင်ဇာ၊ Play Store၊ Gmail စသည်တို့အတွက် သင်၏ Google Account များကို သုံးသည်။ မိသားစုဝင်ကဲ့သို့ တစ်စုံတစ်ယောက်အတွက် အကောင့်ထည့်လိုပါက ၎င်းအစား ထိုပုဂ္ဂိုလ်အသစ်ကို သင့် <ph name="DEVICE_TYPE" /> တွင် ထည့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" />စက္ကန့်</translation>
 <translation id="7920482456679570420">စာလုံးပေါင်းစစ်ဆေးခြင်း ကျော်သွားစေလိုသည့် စာလုံးများ ထည့်နိုင်သည်</translation>
 <translation id="7921347341284348270">ဤစီမံခန့်ခွဲထားသည့်အကောင့်တွင် သင့်ဖုန်း၏ အကြောင်းကြားချက်များကို ကြည့်၍မရပါ။ အခြားအကောင့်ဖြင့် ထပ်စမ်းကြည့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@
 <translation id="8431977087510901105">ကာဆာဆက်တင်များ ပြင်ဆင်သတ်မှတ်လိုက်ပါပြီ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8439506636278576865">ဒီဘာသာစကားဖြင့် စာမျက်နှာများကို ဘာသာပြန်ပေးရန် ကမ်းလှမ်းပါ</translation>
+<translation id="8449347986464073209">ဖျက်ပြီး ထွက်ရန်</translation>
 <translation id="8451512073679317615">အကူအညီ</translation>
 <translation id="8455775311562941553"><ph name="HOST_DEVICE_NAME" /> သို့ ချိတ်ဆက်ပြီးပါပြီ</translation>
 <translation id="8473540203671727883">မောက်စ်အောက်ရှိ စာသားကို အသံထွက်ဖတ်ရန်</translation>
@@ -2320,6 +2360,7 @@
 <translation id="8872774989979382243">အသံပိတ်ထားသည်။ အသံဖွင့်ရန်။</translation>
 <translation id="888256071122006425">မောက်စ်နှင့် တာ့ချ်ပက် ဆက်တင်များ</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />လက်ရှိဆက်တင်များ<ph name="END_LINK" /> ကို အကြောင်းကြားခြင်းဖြင့် ChromeOS ပိုမိုကောင်းမွန်လာစေရန် ကူညီပါ</translation>
+<translation id="8890170499370378450">မိုဘိုင်းဒေတာ အသုံးပြုခ ကျသင့်နိုင်သည်</translation>
 <translation id="8890529496706615641">ပရိုဖိုင်ကို အမည်ပြောင်း၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) နည်းပညာအကူအညီအတွက် သင့်ဝန်ဆောင်မှုပေးသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="8894761918470382415">ချိတ်ဆက်ပစ္စည်းများအတွက် ဒေတာသုံးခွင့် အကာအကွယ်</translation>
 <translation id="8896830132794747524">သင့်မောက်စ်ကို ပိုမြန်မြန်ရွှေ့ပါက ကာဆာ ပိုဝေးဝေးရောက်သည်</translation>
@@ -2345,6 +2386,7 @@
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> ချိတ်ဆက်မှုဖြုတ်လိုက်သည်</translation>
 <translation id="8980345560318123814">တုံ့ပြန်ချက် အစီရင်ခံစာများ</translation>
 <translation id="8981825781894055334">စာရွက် နည်းနေသည်</translation>
+<translation id="8984694057134206124">သင့်ကို လူတိုင်းက <ph name="MINUTES" /> မိနစ်ကြာ မြင်နိုင်မည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">သိရှိခြင်း သတ်မှတ်ချက်</translation>
 <translation id="8986362086234534611">မေ့ပစ်လိုက်ပါ</translation>
 <translation id="8991694323904646277">ကင်မရာ မရှိပါ</translation>
@@ -2391,6 +2433,7 @@
 <translation id="9098860402274800697">Google Play နှင့် Android အက်ပ်များ ဖယ်ရှားရန်</translation>
 <translation id="910000385680858937">ခွင့်ပြုထားသည် - <ph name="PERMISSION_DETAILS" />။ မိုက်ခရိုဖုန်းကို သင့်စက်နှင့် ချိတ်ဆက်ရန်။</translation>
 <translation id="9100416672768993722">နောက်ဆုံးသုံးထားသော လက်ကွက်သို့ ပြောင်းရန် <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> နှိပ်ပါ</translation>
+<translation id="9108072915170399168">လက်ရှိဒေတာသုံးစွဲမှုဆက်တင်သည် အင်တာနက်မရှိဘဲသုံးရန်ဖြစ်သည်</translation>
 <translation id="9108294543511800041">သင့်ဖုန်း၏ လတ်တလော ဓာတ်ပုံ၊ မီဒီယာနှင့် အကြောင်းကြားချက်များကို ယခု ကြည့်နိုင်ပြီ</translation>
 <translation id="9109122242323516435">နေရာလွတ်ပြုလုပ်ရန် စက်ပစ္စည်းသိုလှောင်ခန်းမှ ဖိုင်များကို ဖျက်ပါ။</translation>
 <translation id="9111330022786356709">သင့်မောက်စ်တွင် ခလုတ်များ ထည့်ပါ (သို့) ရှာပါ</translation>

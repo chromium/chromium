@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">للاطّلاع على كلمات المرور، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="201759455285471444">توسيع مجموعة علامات التبويب</translation>
 <translation id="2022431790688770637">‏إدارة اقتراحات Gemini</translation>
+<translation id="2023265063803387188">‏‫Gemini غير متاح في "وضع التصفّح المتخفي"</translation>
 <translation id="2031515492007104071">‏الانتقال إلى مستوى أعلى (Level Up)</translation>
 <translation id="2044394949148788042">فتح شبكة علامات التبويب</translation>
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -460,7 +461,7 @@
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
 <translation id="2350463587705616331">لون خلفية بني داكن</translation>
 <translation id="2351097562818989364">تم إعادة ضبط إعداداتك للترجمة.</translation>
-<translation id="2353784052777482798">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بنطاق {DOMAIN_ONE} في حسابك على Google ({EMAIL}).}=2{‏يمكنك حفظ كلمتَي المرور الخاصتين بالنطاقين {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google ({EMAIL}).}=3{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}zero{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}few{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقات أخرى في حسابك على Google ({EMAIL}).}many{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقًا آخر في حسابك على Google ({EMAIL}).}other{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}}</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بنطاق {DOMAIN_ONE} في حسابك على Google (‏{EMAIL}).}=2{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقين {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google (‏{EMAIL}).}=3{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google (‏{EMAIL}).}zero{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google (‏{EMAIL}).}few{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقات أخرى في حسابك على Google (‏{EMAIL}).}many{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقًا آخر في حسابك على Google (‏{EMAIL}).}other{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google (‏{EMAIL}).}}</translation>
 <translation id="2353953000228441783">العرض التلقائي للمواقع الإلكترونية</translation>
 <translation id="235789365079050412">‏سياسة خصوصية Google</translation>
 <translation id="2359043044084662842">الترجمة</translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">إيقاف</translation>
 <translation id="2666092431469916601">في الأعلى</translation>
 <translation id="2669454659051515572">يمكن لأي شخص يستخدم هذا الجهاز الاطّلاع على الملفات التي تم تنزيلها</translation>
-<translation id="2671316366021598595">لا يُسمح لـ "<ph name="SITE_DOMAIN" />" بالوصول إلى الكاميرا</translation>
 <translation id="2671423594960767771">مشاركة المجموعة</translation>
 <translation id="2672512470874391563">‫"<ph name="OWNER_NAME" />" • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">التقسيط</translation>
@@ -852,7 +852,7 @@
 <translation id="3631443864840848029">يُرجى التأكد من حفظ كلمة المرور الحالية لهذا الموقع الإلكتروني.</translation>
 <translation id="3641456520301071208">السماح للمواقع الإلكترونية بطلب معرفة موقعك الجغرافي</translation>
 <translation id="3642060527569456384">يتم تلقائيًا حفظ مجموعات علامات التبويب وتعديلها على جميع أجهزتك.</translation>
-<translation id="3643338347976071250">{count,plural, =1{‏تم حفظ كلمة مرور واحدة ({count}) على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}zero{‏تم حفظ {count} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}two{‏تم حفظ كلمتَي مرور ({count}) على هذا الجهاز فقط. لاستخدامهما على أجهزتك الأخرى، يمكنك حفظهما في حسابك على Google، {email}.}few{‏تم حفظ {count} كلمات مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}many{‏تم حفظ {count} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}other{‏تم حفظ {count} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}}</translation>
+<translation id="3643338347976071250">{count,plural, =1{‏تم حفظ كلمة مرور واحدة ({count}) على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}zero{‏تم حفظ {count} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}two{‏تم حفظ كلمتَي مرور ({count}) على هذا الجهاز فقط. لاستخدامهما على أجهزتك الأخرى، يمكنك حفظهما في حسابك على Google (‏{email}).}few{‏تم حفظ {count} كلمات مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}many{‏تم حفظ {count} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}other{‏تم حفظ {count} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}}</translation>
 <translation id="3657176844107584515">‏‫<ph name="EMAIL" />، اشتراك Google</translation>
 <translation id="3659297405161482746">لا تتوفّر أي طرق دفع</translation>
 <translation id="3662966164093827811">{count,plural, =1{تم اختيار حساب واحد}zero{تم اختيار # حساب}two{تم اختيار حسابَين}few{تم اختيار # حسابات}many{تم اختيار # حسابًا}other{تم اختيار # حساب}}</translation>
@@ -867,7 +867,7 @@
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
 <translation id="3700134753671613714">سجّل الدخول للحصول على الإشارات المرجعية في جميع أجهزتك.</translation>
 <translation id="3701167022068948696">إصلاح الخطأ الآن</translation>
-<translation id="3708944822379815019">{COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة ({COUNT}) على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {EMAIL}.}zero{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {EMAIL}.}two{‏تم حفظ كلمتَي مرور ({COUNT}) على هذا الجهاز فقط. لاستخدامهما على أجهزتك الأخرى، يمكنك حفظهما في حسابك على Google، {EMAIL}.}few{‏تم حفظ {COUNT} كلمات مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {EMAIL}.}many{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {EMAIL}.}other{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {EMAIL}.}}</translation>
+<translation id="3708944822379815019">{COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة ({COUNT}) على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{EMAIL}).}zero{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{EMAIL}).}two{‏تم حفظ كلمتَي مرور ({COUNT}) على هذا الجهاز فقط. لاستخدامهما على أجهزتك الأخرى، يمكنك حفظهما في حسابك على Google (‏{EMAIL}).}few{‏تم حفظ {COUNT} كلمات مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{EMAIL}).}many{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{EMAIL}).}other{‏تم حفظ {COUNT} كلمة مرور على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{EMAIL}).}}</translation>
 <translation id="3709621342136814217">يمكنك اختيار الخط وحجم النص وغير ذلك هنا</translation>
 <translation id="371230970611282515">توقّع الأحداث الخطيرة قبل حدوثها والتحذير منها</translation>
 <translation id="372115889256123713">الملفات المُخزّنة مؤقتًا</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="386224966259596343">‏ستتاح لك فرصة حفظ هذه المعلومات في "محفظة Google" عند ملء نموذج ذي صلة في المرة القادمة.</translation>
 <translation id="3868495844258915202">‏عرض عناوين URL بالكامل</translation>
+<translation id="3870931306085184145">ليست هناك أي كلمات مرور محفوظة لاسم النطاق <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
 <translation id="3878657761594430423">أداة تعديل حجم الورقة</translation>
 <translation id="3884810423191119660">يمكنك حفظ كلمات المرور بأمان لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة</translation>
@@ -1020,7 +1021,7 @@
 <translation id="4183350924949589798">هل تريد الحصول على مزيد من الأمان؟</translation>
 <translation id="4184063163998877398">{count,plural, =1{هناك كلمة مرور واحدة ({count}) ضعيفة}zero{هناك {count} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({count}) ضعيفتان}few{هناك {count} كلمات مرور ضعيفة}many{هناك {count} كلمة مرور ضعيفة}other{هناك {count} كلمة مرور ضعيفة}}</translation>
 <translation id="4196758674971560031">يتم حفظ مجموعات علامات التبويب التي أنشأتها في قسم "مجموعة علامات التبويب" على الكمبيوتر المكتبي، ومزامنتها على جميع أجهزتك.</translation>
-<translation id="4197456013861852807">{count,plural, =1{‏تم حفظ عنصر واحد ({count}) على هذا الجهاز فقط. لاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google، {email}.}zero{‏تم حفظ {count} عنصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}two{‏تم حفظ عنصرَين ({count}) على هذا الجهاز فقط. لاستخدامهما على أجهزتك الأخرى، يمكنك حفظهما في حسابك على Google، {email}.}few{‏تم حفظ {count} عناصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}many{‏تم حفظ {count} عنصرًا على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}other{‏تم حفظ {count} عنصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google، {email}.}}</translation>
+<translation id="4197456013861852807">{count,plural, =1{‏تم حفظ عنصر واحد ({count}) على هذا الجهاز فقط. لاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google (‏{email}).}zero{‏تم حفظ {count} عنصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}two{‏تم حفظ عنصرَين ({count}) على هذا الجهاز فقط. لاستخدامهما على أجهزتك الأخرى، يمكنك حفظهما في حسابك على Google (‏{email}).}few{‏تم حفظ {count} عناصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}many{‏تم حفظ {count} عنصرًا على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}other{‏تم حفظ {count} عنصر على هذا الجهاز فقط. لاستخدامها على أجهزتك الأخرى، يمكنك حفظها في حسابك على Google (‏{email}).}}</translation>
 <translation id="4207873326995387292">معلومات المتصفِّح</translation>
 <translation id="421070604241073551">‏عند تفعيل هذا الخيار، يتم حفظ البيانات في حسابك على Google. وعند إيقافه، سيتم حفظ البيانات على هذا الجهاز فقط.</translation>
 <translation id="4224534474590365556">هل تريد إغلاق أكثر من 99 علامة تبويب غير نشطة؟</translation>
@@ -1213,6 +1214,7 @@
 <translation id="479628432297359449">هل تريد إيقاف عملية التنزيل؟</translation>
 <translation id="4796496140132859135">مجموعة علامات تبويب مصغَّرة</translation>
 <translation id="4800912004582762296">جارٍ النقر</translation>
+<translation id="4800930308997591052">‏يمكنك التبديل إلى حساب <ph name="EMAIL" /> لمشاركة علامات التبويب بسلاسة بين أجهزتك والوصول إلى كلمات المرور والإشارات المرجعية وغيرها من حسابك على Google.</translation>
 <translation id="4802185666270672526">إخفاء خيار "طلب موقع إلكتروني متوافق مع أجهزة الكمبيوتر المكتبي"</translation>
 <translation id="4803185665210547709">تتم إدارة المتصفِّح من خلال مؤسستك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -1311,7 +1313,6 @@
 <translation id="5061202435354361813">تجربة تصفّح أفضل</translation>
 <translation id="5062321486222145940">‏تثبيت Google Drive</translation>
 <translation id="5067540696062462445">عمليات التنزيل</translation>
-<translation id="5070314445039955096">بعد مغادرة الموقع الإلكتروني "<ph name="SITE_DOMAIN" />"، سيتم إيقاف جميع أذوناته.</translation>
 <translation id="507187271399539513">{count,plural, =1{‫{position} من إجمالي طريقة دفع واحدة ({count})}zero{‫{position} من إجمالي {count} طريقة دفع}two{‫{position} من إجمالي طريقتَي دفع ({count})}few{‫{position} من إجمالي {count} طُرق دفع}many{‫{position} من إجمالي {count} طريقة دفع}other{‫{position} من إجمالي {count} طريقة دفع}}</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
 <translation id="5076534614343816664">تتبُّع الأسعار</translation>
@@ -1410,7 +1411,6 @@
 <translation id="5351613737248079168">‏يجب تسجيل الدخول لاستخدام برنامج Level Up</translation>
 <translation id="5352128922772839949">حفظ الملف</translation>
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
-<translation id="5355871759168485600">يُسمح لـ "<ph name="SITE_DOMAIN" />" باستخدام الميكروفون خلال زياراتك إلى هذا الموقع الإلكتروني</translation>
 <translation id="5359436665022446585">طريقة أفضل لفتح الروابط</translation>
 <translation id="536067926684072644">عرض الإشارات المرجعية</translation>
 <translation id="5364647308446127983">{count,plural, =1{تعذَّر استيراد مفتاح مرور واحد ({count})}zero{تعذَّر استيراد {count} مفاتيح مرور}two{تعذَّر استيراد مفتاحَي مرور ({count})}few{تعذَّر استيراد {count} مفاتيح مرور}many{تعذَّر استيراد {count} مفتاح مرور}other{تعذَّر استيراد {count} مفتاح مرور}}</translation>
@@ -1482,6 +1482,7 @@
 <translation id="5612225021788368236">إغلاق الرسالة الترويجية عن المتصفّح التلقائي</translation>
 <translation id="561269594905823128">‏انقر على <ph name="BEGIN_BOLD" />اختيار الملف (Select your file)<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">الترتيب حسب الأحدث</translation>
+<translation id="561349411957324076">تمّ حفظ الصفحة</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
 <translation id="5617769621178348890">‏الفتح في تطبيق Files</translation>
 <translation id="5619871095170816857">تعرض هذه البطاقة آخر علامة تبويب مفتوحة تم استخدامها على جميع الأجهزة التي تمت مزامنتها خلال آخر 24 ساعة.</translation>
@@ -1740,7 +1741,7 @@
 <translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="6374514103145916800">طرح سؤال</translation>
 <translation id="6381241974485088375">يمكنك متى شئت تخصيص صفحة "علامة تبويب جديدة" من هنا</translation>
-<translation id="6383719166112032471">‏فتح عنوان URL…</translation>
+<translation id="6383719166112032471">فتح موقع…</translation>
 <translation id="6387994324662817823">‏يتم حفظ كلمات المرور ضمن "مدير كلمات المرور في Google" على هذا الجهاز فقط.</translation>
 <translation id="6393156038355142111">اقتراح كلمة مرور قوية</translation>
 <translation id="6404422529625928907">‏فتح في Google Drive</translation>
@@ -2146,6 +2147,7 @@
 <translation id="7618220760967055820">اختيار الزر الذي يظهر في شريط الأدوات</translation>
 <translation id="7620522820075868385">إلغاء</translation>
 <translation id="762078666799342162">يمكنك الانتقال إلى تطبيق <ph name="BEGIN_LINK" />الملفات<ph name="END_LINK" /> للاطّلاع على ما نزّلته سابقًا</translation>
+<translation id="7636034359405891151">فرصتك للمتابعة من حيث توقفت على الكمبيوتر</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7639276194483401980">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{هناك كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق}two{هناك كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق}few{هناك {COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="7640669552036055091">‏علامات التبويب من Android</translation>
@@ -2331,7 +2333,6 @@
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> حساب</translation>
 <translation id="8161614462829037225">الفتح باستخدام "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="8173034266693057059">الطول</translation>
-<translation id="8181328232274170248">يُسمح لـ "<ph name="SITE_DOMAIN" />" باستخدام الكاميرا خلال زياراتك لهذا الموقع الإلكتروني</translation>
 <translation id="8182037667962849780">{count,plural, =1{معلومات تسجيل الدخول إلى موقع إلكتروني واحد ({website_1})}=2{معلومات تسجيل الدخول إلى {website_1} و{website_2}}=3{معلومات تسجيل الدخول إلى {website_1} و{website_2} وموقع إلكتروني آخر}zero{معلومات تسجيل الدخول إلى {website_1} و{website_2} و{more_count} موقع إلكتروني آخر}few{معلومات تسجيل الدخول إلى {website_1} و{website_2} و{more_count} مواقع إلكترونية أخرى}many{معلومات تسجيل الدخول إلى {website_1} و{website_2} و{more_count} موقعًا إلكترونيًا آخر}other{معلومات تسجيل الدخول إلى {website_1} و{website_2} و{more_count} موقع إلكتروني آخر}}</translation>
 <translation id="8184895727539791845">‏للسماح لـ Gemini باستخدام الكاميرا، يجب تفعيل إذن الوصول إليها في إعدادات iOS</translation>
 <translation id="8185076488803799132">استيراد</translation>
@@ -2503,7 +2504,6 @@
 <translation id="8674716540979958118">لديك كلمات مرور محتمَل تعرّضها للاختراق.</translation>
 <translation id="8679900250380464358">الإضافة إلى "قائمة القراءة"</translation>
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
-<translation id="868648444055742370">لا يُسمح لـ "<ph name="SITE_DOMAIN" />" بالوصول إلى الميكروفون</translation>
 <translation id="8690752723634292147">تأكيد الحذف</translation>
 <translation id="8692107307702113268">عدد أحرف كلمة المرور يزيد عن 1,000 حرف.</translation>
 <translation id="8692689525339542358">يمكنك حماية متصفّحك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>

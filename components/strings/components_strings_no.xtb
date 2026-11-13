@@ -726,7 +726,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="22081806969704220">Skuff 3</translation>
 <translation id="2210794033760923560">Last opp rapport</translation>
 <translation id="2212735316055980242">Innstillingene ble ikke funnet</translation>
-<translation id="2213606439339815911">Henter oppføringer …</translation>
 <translation id="2213612003795704869">Siden er skrevet ut</translation>
 <translation id="2214086901479959524">Oppdater Chrome for å fortsette å bruke de delte fanegruppene dine</translation>
 <translation id="2214453882118345682">Handle, oversett og identifiser det du ser, med kameraet.</translation>
@@ -823,6 +822,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2356941001189392209">En begrenset liste over nettadressene til sider du besøker som bruker hendelser fra eldre teknologi</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Deler 1 fane}other{Deler {NUM_TABS} faner}}</translation>
 <translation id="2357481397660644965">Enheten administreres av <ph name="DEVICE_MANAGER" />, og kontoen administreres av <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Se AI-svaret for Google-søket på denne fanen</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="236000571258713023">Kjøretøy</translation>
@@ -1141,6 +1141,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2925032407415783182">Lagre arrangementsbilletten i Wallet</translation>
 <translation id="2925454999967523701">Knappen «Opprett dokument» – aktiver for å opprette et nytt Google-dokument raskt</translation>
 <translation id="2925673989565098301">Leveringsmåte</translation>
+<translation id="2927328994673424423">For 2 uker siden</translation>
 <translation id="2928426578619531300">Brukeren er tilknyttet</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}}</translation>
 <translation id="2930531075747147366">Fane fra den andre enheten din</translation>
@@ -1275,7 +1276,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3141337053413339205">Bytt til denne fanen.</translation>
 <translation id="3144458715650412431">Testretningslinjer er tatt i bruk. Gjennomgå og tilbakestill dem på chrome://policy/test. Retningslinjer for administrator tas ikke i bruk.</translation>
 <translation id="3145945101586104090">Kunne ikke avkode responsen</translation>
-<translation id="3149865382039202168">Lagre informasjonen din i <ph name="GOOGLE_WALLET_TITLE" /> for å få ting gjort raskere, for eksempel å fylle ut skjemaer i ulike Google-produkter. Du kan kontrollere <ph name="HOW_INFO_IS_USED_LINK" />, i innstillingene for private kort for <ph name="ACCOUNT" />. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Midlertidig tjenerfeil</translation>
 <translation id="3150889484970506196">Knappen «Opprett regneark» – aktiver for å opprette et nytt Google-regneark raskt</translation>
 <translation id="3154506275960390542">Denne siden inneholder et skjema som kanskje ikke sendes på en sikker måte. Data du sender, kan bli sett av andre mens de overføres, eller de kan endres av en angriper slik at tjeneren mottar noe annet enn det du sender.</translation>
@@ -1521,7 +1521,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3558335486599406178">IBAN er lagret i Google Wallet</translation>
 <translation id="3558573058928565255">Dagtid</translation>
 <translation id="3559897352860026926">Be administratoren din om å sjekke konfigurasjonsinnstillingene for <ph name="CLOUD_PROVIDER" />.</translation>
-<translation id="3560824484345057728">Se relaterte nettsteder</translation>
 <translation id="3566021033012934673">Tilkoblingen din er ikke privat</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3566681680543111735">Kopier variasjonsstrengen</translation>
@@ -2164,7 +2163,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4603727370377253901">Flybestillinger</translation>
 <translation id="4607608436550361748">Se Chrome-tips</translation>
 <translation id="460848736049414407">Blokkert av administrator</translation>
-<translation id="4610279718074907952">Dette nettstedet er med i en gruppe som er definert av <ph name="SET_OWNER" /> og kan se aktiviteten din</translation>
 <translation id="4612631413844865947">Det oppsto en feil under behandling av bestillingen din på <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Dette nettstedet kan ha innhold for voksne. En forelder eller foresatt må gi deg lov til å besøke dette nettstedet.</translation>
 <translation id="4613873770449493819">Nettadressen må føre til et <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-domene.</translation>
@@ -3711,7 +3709,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7173338713290252554">Prishistorikk på nettet</translation>
 <translation id="7174545416324379297">Slått sammen</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}other{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}}</translation>
-<translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7181261019481237103">Åpne et inkognitovindu</translation>
 <translation id="7182878459783632708">Ingen retningslinjer er angitt</translation>
 <translation id="7186833457841277072">Konvolutt (blekk)</translation>
@@ -4176,7 +4173,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7932579305932748336">Belegg</translation>
 <translation id="79338296614623784">Angi et gyldig telefonnummer</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vil spille av beskyttet innhold. Identiteten til enheten din blir bekreftet av Google.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Bevegelsessensorer er tillatt</translation>
 <translation id="7937163678541954811">Verifiseringskoden for kortet blir kryptert og lagret på enheten din for raskere betaling</translation>
 <translation id="7937554595067888181">Utløper <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4224,7 +4220,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7999482381722829925">Lag en prioritert sjekkliste for grundig rengjøring av hvert rom, med fokus på steder som ofte blir oversett</translation>
 <translation id="8001912761979890298">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />, fordi den bruker et sikkerhetssertifikat som ikke er klarert av Chromium eller systemkonfigurasjonen din for kryptering av nettrafikk. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Vis sertifikatet<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Prøv å lukke andre faner eller programmer for å frigjøre minne.</translation>
-<translation id="8002230960325005199">Se relaterte nettsteder på en ny fane</translation>
 <translation id="8003046808285812021">«<ph name="SEARCH_TERMS" />»</translation>
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8009225694047762179">Administrer passord</translation>
@@ -4265,7 +4260,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="8079976827192572403">Farlig nettsted</translation>
 <translation id="8086971161893892807">Utkast</translation>
 <translation id="8087558780672230449">Laster inn <ph name="APP_ORIGIN" /> for å håndtere betalingen din på <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Kunne ikke åpne artikkelen.</translation>
 <translation id="808894953321890993">Endre passord</translation>
 <translation id="8091372947890762290">Aktivering venter på tjeneren</translation>
 <translation id="8092254339843485299">6 x 8 tommer</translation>
@@ -4905,7 +4899,6 @@ Mer informasjon:
 <translation id="9199905725844810519">Utskrift er blokkert</translation>
 <translation id="9204089334327209740">Når opplastingen er fullført, kan du endre filene dine i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inkludert eventuelle filer i papirkurven, fjernes automatisk.</translation>
 <translation id="9205078245616868884">Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn for å starte synkroniseringen.</translation>
-<translation id="9207861905230894330">Kunne ikke legge til artikkelen.</translation>
 <translation id="9209339767782560829">Det var et problem med påloggingssertifikatet ditt.</translation>
 <translation id="9210152531668884481">Jeg er med</translation>
 <translation id="9213433120051936369">Tilpass utseendet</translation>

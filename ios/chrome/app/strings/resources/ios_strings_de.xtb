@@ -518,6 +518,7 @@
 <translation id="2524699375503213836">Daten aus Safari importieren</translation>
 <translation id="2526166285241366046">Passwort speichern</translation>
 <translation id="2529021024822217800">Alle öffnen</translation>
+<translation id="2536421147135705892">Standortbestimmung zulassen?</translation>
 <translation id="2536991091671391962">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="2538103551183528357">Ausgeblendetes Passwort</translation>
 <translation id="2538705697765638552">Wenn du deine Informationen speicherst, kannst du viele Dinge schneller erledigen, z. B. Formulare in Google-Produkten ausfüllen. Du kannst deine Informationen für <ph name="USER_EMAIL" /> in Google Wallet verwalten.</translation>
@@ -562,7 +563,6 @@
 <translation id="2664621323652615289">Beenden</translation>
 <translation id="2666092431469916601">Oben</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
-<translation id="2671316366021598595">„<ph name="SITE_DOMAIN" />“ darf nicht auf deine Kamera zugreifen</translation>
 <translation id="2671423594960767771">Gruppe freigeben</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">In Raten zahlen</translation>
@@ -912,6 +912,7 @@
 <translation id="3858860766373142691">Name</translation>
 <translation id="386224966259596343">Du kannst diese Informationen in Wallet speichern, wenn du das nächste Mal ein entsprechendes Formular ausfüllst.</translation>
 <translation id="3868495844258915202">Vollständige URL anzeigen</translation>
+<translation id="3870931306085184145">Keine gespeicherten Passwörter für <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">So gehts</translation>
 <translation id="3878657761594430423">Sheet Grabber</translation>
 <translation id="3884810423191119660">Hier kannst du Passwörter sicher speichern, damit du dich einfacher auf Websites und in Apps anmelden kannst</translation>
@@ -1310,7 +1311,6 @@
 <translation id="5061202435354361813">Surfe jetzt auf einem neuen Level</translation>
 <translation id="5062321486222145940">Google Drive installieren</translation>
 <translation id="5067540696062462445">Downloads</translation>
-<translation id="5070314445039955096">Die Berechtigungen für „<ph name="SITE_DOMAIN" />“ werden zurückgesetzt und damit deaktiviert, wenn du diese Website verlässt.</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} von {count} Zahlungsmethode}other{{position} von {count} Zahlungsmethoden}}</translation>
 <translation id="5075939510584558547">Ohne Verschlüsselung speichern</translation>
 <translation id="5076534614343816664">Preis-Tracking</translation>
@@ -1335,6 +1335,7 @@
 <translation id="5128788795241319992">Neues Menü ansehen</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5137568953923142260">Einmal zulassen</translation>
+<translation id="5139344197062265975">Du kannst dein Mikrofon verwenden, um dich mit Gemini zu unterhalten. Wenn du mit Gemini sprichst, werden die Audiodaten im Gemini-Verlauf gespeichert (sofern aktiviert). Deine Daten werden nicht zur Verbesserung generativer KI-Modelle verwendet.</translation>
 <translation id="5141363746588976328">Karte „Preissenkungen auf deinen Tabs“ ausblenden</translation>
 <translation id="514154868070499296">Schriftart: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Tab-Wechsler beenden</translation>
@@ -1408,7 +1409,6 @@
 <translation id="5351613737248079168">Du musst angemeldet sein, um die Vorteile des Level Up-Programms nutzen zu können</translation>
 <translation id="5352128922772839949">Datei speichern</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
-<translation id="5355871759168485600">„<ph name="SITE_DOMAIN" />“ darf dein Mikrofon verwenden, wenn du diese Website besuchst</translation>
 <translation id="5359436665022446585">Besseres Öffnen von Links</translation>
 <translation id="536067926684072644">Lesezeichen einblenden</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} Passkey konnte nicht importiert werden}other{{count} Passkeys konnten nicht importiert werden}}</translation>
@@ -1482,6 +1482,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5612225021788368236">Werbung für Standardbrowser schließen</translation>
 <translation id="561269594905823128">Tippe auf <ph name="BEGIN_BOLD" />Datei auswählen<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Neueste zuerst</translation>
+<translation id="561349411957324076">Abgeschlossen</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5617769621178348890">In der App „Dateien“ öffnen</translation>
 <translation id="5619871095170816857">Auf dieser Karte wird der Tab angezeigt, den du zuletzt auf einem deiner synchronisierten Geräte in den letzten 24 Stunden verwendest hast.</translation>
@@ -1568,7 +1569,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5888889603768021126">Angemeldet mit</translation>
 <translation id="5889333064153755823">Browserdaten löschen</translation>
 <translation id="5896576662943111387">Entwickelt für iOS</translation>
-<translation id="5897749768294722429">Synchronisiere Tabs und Verlauf, um bereits besuchte Websites schnell wieder aufzurufen.</translation>
+<translation id="5897749768294722429">Synchronisiere Tabs und den Verlauf, um bereits besuchte Websites schnell wieder aufzurufen.</translation>
 <translation id="5898848375214731122">Gewicht (Masse)</translation>
 <translation id="5899314093904173337">Um diesen Inhalt mit Leuten in deiner Nähe zu teilen, bitte sie, den QR-Code mit ihrer Kamera oder einer entsprechenden App zu scannen.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} neuer Tab}other{{count} neue Tabs}}</translation>
@@ -1604,6 +1605,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6000893618966378846">Löschen der Browserdaten abgeschlossen</translation>
 <translation id="6004988584831654445">Fertig! Du wirst benachrichtigt, wenn neue Aufgaben anstehen.</translation>
 <translation id="6006672969046233841">Neuer Tab</translation>
+<translation id="6006758170939001741">Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />, die <ph name="BEGIN_LINK" />Standortnutzungsbedingungen für Korea<ph name="END_LINK" /> und unsere <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />. Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK" /></translation>
 <translation id="6011308810877101166">Suchvorschläge verbessern</translation>
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
 <translation id="6014801569448771146">Passwörter prüfen</translation>
@@ -2134,6 +2136,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
 <translation id="7598439272585186139">Mehr Sicherheit</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
+<translation id="760230853074995500">Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK" /></translation>
 <translation id="7603308509262646847"><ph name="NAME" /> als Karteninhaber automatisch einfügen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronisierung funktioniert nicht</translation>
@@ -2328,7 +2331,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> Konten</translation>
 <translation id="8161614462829037225">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="8173034266693057059">Länge</translation>
-<translation id="8181328232274170248">„<ph name="SITE_DOMAIN" />“ darf deine Kamera verwenden, wenn du diese Website besuchst</translation>
 <translation id="8182037667962849780">{count,plural, =1{Für {website_1}}=2{Für {website_1} und {website_2}}=3{Für {website_1}, {website_2} und 1 weitere}other{Für {website_1}, {website_2} und {more_count} weitere}}</translation>
 <translation id="8184895727539791845">Wenn Gemini deine Kamera verwenden soll, musst du die Kamera in den iOS-Einstellungen aktivieren</translation>
 <translation id="8185076488803799132">Importieren</translation>
@@ -2499,7 +2501,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="8674716540979958118">Du nutzt kompromittierte Passwörter.</translation>
 <translation id="8679900250380464358">Zur Leseliste hinzufügen</translation>
 <translation id="8680787084697685621">Die Anmeldeinformationen für dieses Konto sind veraltet.</translation>
-<translation id="868648444055742370">„<ph name="SITE_DOMAIN" />“ darf nicht auf dein Mikrofon zugreifen</translation>
 <translation id="8690752723634292147">Löschen bestätigen</translation>
 <translation id="8692107307702113268">Das Passwort enthält mehr als 1.000 Zeichen</translation>
 <translation id="8692689525339542358">Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
@@ -2628,6 +2629,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="9066097352053395362">„Lesezeichen bearbeiten“ ausblenden</translation>
 <translation id="9070824521421603770">Du wirst abgemeldet und Tabs werden geschlossen</translation>
 <translation id="9072837124205571418">Tabgruppen von allen Geräten</translation>
+<translation id="9073322251019919253">Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Chats werden geprüft und zum Trainieren generativer KI-Modelle verwendet. Du kannst deinen <ph name="BEGIN_LINK" />Verlauf verwalten<ph name="END_LINK" />, einschließlich <ph name="BEGIN_LINK" />Informationen zu deinem Standort<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Hier findest du weitere Informationen zu möglichen Einstellungen.<ph name="END_LINK" /> Es gelten unsere <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Datenschutzhinweise<ph name="END_LINK" />.</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="908365381820697818">Jetzt kannst du Informationen aus Gmail und mehr suchen und einfügen</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>

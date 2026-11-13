@@ -18,7 +18,6 @@
 <translation id="1142745911746664600">Chrome kan ikke opdateres</translation>
 <translation id="1148360048981192980">Næste gang du åbner Chrome på din <ph name="DEVICE_TYPE" />, får du en meddelelse om at bruge Google Adgangskodeadministrator.</translation>
 <translation id="1150418667633096194">Knappen "Sidepanel i Google Søgning" på værktøjslinjen har fået et nyt ikon. Klik på det for at stille spørgsmål, mens du browser, med sidepanelet i Google Søgning.</translation>
-<translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1154147086299354128">Åbn i Chr&amp;ome</translation>
 <translation id="1157952955648710254">Luk Google Søgning-sidepanelet</translation>
 <translation id="1157985233335035034">Seneste sprog</translation>
@@ -55,7 +54,6 @@
 <translation id="1507198376417198979">Tilpas din nye Chrome-profil</translation>
 <translation id="1518627427551567882">Denne side er beskyttet</translation>
 <translation id="15408169957028265">Genåbn Google Søgning i Chrome</translation>
-<translation id="1547295885616600893">ChromeOS er lavet ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547469039832541117">Afslutter den fremhævede opgave.</translation>
 <translation id="1553358976309200471">Opdater Chrome</translation>
 <translation id="1587223624401073077">Google Chrome bruger dit kamera.</translation>
@@ -76,7 +74,6 @@
 <translation id="1632241302126471515">Søg med Chrome Canary</translation>
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1651617469580841801">Når du bruger Google Lens, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
-<translation id="1662146548738125461">Om ChromeOS Flex</translation>
 <translation id="1674870198290878346">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke læse og skrive i sin egen datamappe: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Når du skriver i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
@@ -95,6 +92,7 @@
 <translation id="1843347690926158494">Søg på denne fane med Google Lens</translation>
 <translation id="1849248141818021764">Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1867503717113754604">Log ind i Chrome med din Google-konto for at bruge <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
+<translation id="1871615898038944731">Din <ph name="DEVICE_TYPE" /> er opdateret</translation>
 <translation id="1873233029667955273">Google Chrome er ikke din standardbrowser</translation>
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
@@ -102,6 +100,7 @@
 <translation id="1880677175115548835">Vælg tekst</translation>
 <translation id="1896602904211344018">Hent Chrome-appen</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
+<translation id="1925069572871307609">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 version 1809 eller nyere. Denne computer anvender en ældre version af Windows 10.</translation>
 <translation id="1979600810166324878">Øg sikkerheden på farten med Udvidet beskyttet browsing i Chrome til iOS</translation>
 <translation id="2001586581944147178">Gør det sværere for brugere med adgang til din internettrafik at se, hvilke websites du besøger. Chrome anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="2018879682492276940">Installationen mislykkedes. Prøv igen.</translation>
@@ -114,7 +113,6 @@
 <translation id="2091012649849228750">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
 <translation id="2094919256425865063">Vil du slutte Chrome alligevel?</translation>
 <translation id="2096213354152647998">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION" />.</translation>
-<translation id="2106831557840787829">ChromeOS Flex leveres ved hjælp af ekstra <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Deaktiver, at Chrome-apps kører i baggrunden</translation>
 <translation id="2111985952714409792">Log ind i Chrome for at få adgang til dine udvidelser m.m. på alle dine enheder</translation>
 <translation id="2120620239521071941">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
@@ -141,6 +139,7 @@
 <translation id="2307973900865360088">Behold på applinje</translation>
 <translation id="2309047409763057870">Dette er en sekundær installation af Google Chrome, og den kan ikke gøres til din standardbrowser.</translation>
 <translation id="2345992953227471816">Chrome har registreret malware i disse udvidelser:</translation>
+<translation id="2350411688004301551">Skift til Gemini Enterprise</translation>
 <translation id="2358140144860869442">Log ind i Chrome for at få adgang til din læseliste m.m. på alle dine enheder</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2403703063067034158">Opstartsfejl: En anden konfigurationsinstans kører i øjeblikket. Prøv igen senere.</translation>
@@ -151,6 +150,7 @@
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine bogmærker og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2513154137948333830">Genstart er påkrævet: <ph name="INSTALL_SUCCESS" /></translation>
+<translation id="251329670120169391">din organisation</translation>
 <translation id="2521391734665471391">Luk AI-tilstand i Google Søgning</translation>
 <translation id="2523492931736391680">Dit arbejde beskyttes i Chrome</translation>
 <translation id="2534365042754120737">Du kan beskytte dine data ved at lade Chrome fjerne tilladelser fra websites, du ikke har besøgt for nylig. Dette forhindrer ikke notifikationer.</translation>
@@ -197,6 +197,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="2876628302275096482">Se, <ph name="BEGIN_LINK" />hvordan Chrome beskytter dine data<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
+<translation id="2898830646167954300">Skift tilbage til din ikke-administrerede Gemini-assistent</translation>
 <translation id="2915996080311180594">Genstart senere</translation>
 <translation id="2926952073016206995">Chrome skal have kameratilladelse for at bruge dette website</translation>
 <translation id="2945997411976714835">Installationsfejl: Installationsprocessen kunne ikke startes.</translation>
@@ -207,7 +208,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="2994465299455873643">Leverer krypteringstjenester og en sikker måde at gendanne <ph name="BROWSER_NAME" /> på, hvis den forældes. Hvis denne tjeneste deaktiveres, mister <ph name="BROWSER_NAME" /> muligvis adgangen til krypterede data, og <ph name="BROWSER_NAME" /> kan muligvis ikke gendanne sig selv.</translation>
 <translation id="3003694935412297923">Alle opgaver</translation>
 <translation id="3019382870990049182">Genstart for at opdatere &amp;ChromeOS Flex</translation>
-<translation id="3034219227076811559">Google Søgning i Chrome</translation>
 <translation id="3037190258341683404">Du kan fastgøre Google Søgning i Chrome, så du kan stille spørgsmål, mens du browser</translation>
 <translation id="3037517125981011456">Viser anmodninger om at logge ind i Chrome</translation>
 <translation id="3037838751736561277">Google Chrome kører i baggrunden.</translation>
@@ -231,6 +231,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3140883423282498090">Dine ændringer træder i kraft, næste gang du åbner Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
 <translation id="3161522574479303604">Alle sprog</translation>
+<translation id="3183555099201190073">Tilgå Søgning fra en hvilken som helst fane</translation>
 <translation id="318555301233810762"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine bogmærker og meget mere på alle dine enheder.</translation>
 <translation id="319199214552513804">Log ind i Chrome for at få denne udvidelse m.m. på alle dine computere</translation>
 <translation id="3196187562065225381">Chrome har blokeret denne download, fordi filen er skadelig</translation>
@@ -275,8 +276,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3667616615096815454">Appen kan ikke installeres. Serveren kender ikke appen.</translation>
 <translation id="3673813398384385993">Chrome har registreret malware i "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3697952514309507634">Andre Chrome-profiler</translation>
-<translation id="3703994572283698466">ChromeOS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="3716540481907974026">ChromeOS Flex-version</translation>
 <translation id="371672359236374684">{COUNT,plural, =1{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Der er et åbent inkognitovindue eller isoleret vindue. Det åbnes ikke igen, når du har genstartet.}one{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Der er # inkognitovindue og isoleret vindue åbent på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}other{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Der er # inkognitovinduer og isolerede vinduer åbne på tværs af profilerne. De åbnes ikke igen, når du har genstartet.}}</translation>
 <translation id="3718181793972440140">Denne handling sletter ét element på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" />}one{Chrome anbefaler, at du fjerner den. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" />}other{Chrome anbefaler, at du fjerner dem. <ph name="BEGIN_LINK" />Få flere oplysninger om understøttede udvidelser<ph name="END_LINK" />}}</translation>
@@ -285,7 +284,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3772152698251011058">Rapportér dette website til Google</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex kunne ikke synkronisere dine data på grund af en fejl under login.</translation>
-<translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="383455301564000773">Opgraderer du til Windows 11? Download Chrome til OneDrive, så du er klar fra dag ét.</translation>
 <translation id="383928141529488001">Google Chrome skal have adgang til Bluetooth for at finde 
@@ -309,10 +307,12 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="4022972681110646219">Oversæt skærmen</translation>
 <translation id="4023601594785368013">Originalsprog: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Indbygget i Chrome for at hjælpe dig med at oprette, gemme og automatisk udfylde stærke adgangskoder. Tilføj genvejen for at få nem adgang.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Google-medlemskab.</translation>
 <translation id="4035053306113201399">ChromeOS skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="4053720452172726777">Tilpas Google Chrome</translation>
 <translation id="408393047846373801">For at kunne se dine adgangskoder m.m. på alle dine enheder skal du logge ind på Chrome. Denne adgangskode gemmes på din Google-konto, når du er logget ind.</translation>
 <translation id="4102173024714616627">Udvidelser er tilføjelser, der giver dig mulighed for at tilpasse Chrome. Udvidelser hjælper dig med at organisere og forenkle hverdagens opgaver ved at tilpasse Chrome efter dine behov.</translation>
+<translation id="4103543596018881622">Google Søgning i Chrome er fastgjort til værktøjslinjen.</translation>
 <translation id="4110895483821904099">Konfigurer din nye Chrome-profil</translation>
 <translation id="4111566860456076004">Chrome kan ikke verificere, hvor denne udvidelse kommer fra, og den kan derfor være skadelig. Du bør fjerne udvidelsen fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
 <translation id="4148957013307229264">Installerer...</translation>
@@ -390,7 +390,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="495931528404527476">I Chrome</translation>
 <translation id="4969674060580488087">ChromeOS Flex kunne ikke synkronisere dine data, da loginoplysningerne for din konto er forældede.</translation>
 <translation id="4970761609246024540">Velkommen til Chrome-profiler</translation>
-<translation id="4970880042055371251">ChromeOS-version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klik på "Google Adgangs­kode­admin­istrator"</translation>
 <translation id="5043786843026425788">Få flere oplysninger om at søge med Google Lens i Chrome</translation>
@@ -411,6 +410,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5174969993834422967">Du blokerer som regel notifikationer. Klik på notifikationsikonet i højre hjørne af din adresselinje for at give websitet tilladelse til at sende notifikationer.</translation>
 <translation id="5174983315706567306">Der er ikke nok diskplads.</translation>
 <translation id="5179933070463113976">Hvis du vil bruge Gemini i Chrome, skal du være logget ind i Chrome med din Google-konto</translation>
+<translation id="5184662919967270437">Opdaterer din enhed</translation>
 <translation id="5190467473654176081">Tilpas Chrome for at give browseren et nyt udseende</translation>
 <translation id="5201744974236816379">Chrome-opdatering</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -421,6 +421,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5320351714793324716">Hvis du tillader cookies, kan Chrome bruge dem under forudindlæsning</translation>
 <translation id="5321325624576443340">Google Lens er ikke tilgængelig. Prøv igen senere.</translation>
 <translation id="5334309298019785904">ChromeOS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængelig for dit domæne.</translation>
+<translation id="5336664042114176802">Du kan skifte til den Gemini-assistent, der oprindeligt var knyttet til din Google-konto, og som ikke administreres af <ph name="DOMAIN" />. Svarene vil ikke længere være baseret på filer eller tjenester, der administreres af <ph name="DOMAIN" />, og din chathistorik overføres ikke. Den er muligvis ikke egnet til arbejdsbrug. Hvis du vil skifte, skal du genstarte Chrome.</translation>
 <translation id="5346389065299425353">Gør din søgning mere dybdegående ved at tilføje flere faner, filer og værktøjer</translation>
 <translation id="5353252989841766347">Eksportér adgangskoder fra Chrome</translation>
 <translation id="5368118228313795342">Ekstra kode: <ph name="EXTRA_CODE" />.</translation>
@@ -445,6 +446,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5649156266046089790">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Opret profiler til venner og familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være skadelig, så Chrome har blokeret den.</translation>
 <translation id="566568153320186256">Chrome sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
+<translation id="5669863904928111203">ChromeOS er forældet</translation>
 <translation id="567202749201779594">Ryd Chrome-dataene på din konto</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering}=1{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator anmoder om, at du genstarter Chrome for at anvende denne opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="568656514202614970">Sådan! Nu kan du nemt stille spørgsmål, mens du browser, med Google Søgning i sidepanelet</translation>
@@ -467,6 +469,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5894164573378901688">Hvis du vil bruge Gemini i Chrome, skal du logge ind med en anden Google-konto</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Login på netværk</translation>
+<translation id="5906655207909574370">Næsten opdateret. Genstart din enhed for at afslutte opdateringen.</translation>
 <translation id="5924017743176219022">Opretter forbindelse til internettet…</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gør Google Chrome til din standardbrowser</translation>
@@ -522,6 +525,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6326175484149238433">Fjern fra Chrome</translation>
 <translation id="6334815226785304306">Gør Google Chrome til din standardbrowser, og fastgør den til proceslinjen</translation>
 <translation id="6339888439788291743">Nyt ikon, samme genvej: Klik for at stille spørgsmål, mens du browser, med AI-tilstand i Google Søgning.</translation>
+<translation id="6349304688246983183">Stil nemt spørgsmål, mens du browser, med Google Søgning</translation>
 <translation id="63540178978900677">Chrome er ikke længere din standardbrowser. Vil du gøre Chrome til din standardbrowser?</translation>
 <translation id="6357670763064300993">Gemini Enterprise i Chrome</translation>
 <translation id="6360449101159168105">Mens denne fane var inaktiv, blev der frigjort hukommelse for at sikre, at Chrome kører hurtigt. Du kan vælge, at dette website altid skal være inaktivt.</translation>
@@ -535,6 +539,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6438015621983209660">Udvid anvendelsen af Udvidet beskyttet browsing med Chrome på din telefon</translation>
 <translation id="6442774133615368941">Køb, oversæt og identificer det, du ser gennem dit kamera, i Chrome-appen til iOS</translation>
 <translation id="6446105560007692480">for at søge med Chrome eller tilpasse i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /></translation>
+<translation id="6447943657065463998">Denne administrerede browser kan bruge en Gemini-assistent, der er konfigureret til arbejdsbrug af <ph name="DOMAIN" />. Den kan finde oplysninger og give svar, der er baseret på organisationens filer og godkendte tjenester. Det anbefales ikke at bruge den med en personlig profil. Chathistorikken overføres ikke. Hvis du vil skifte, skal du genstarte Chrome.</translation>
 <translation id="6448835208126432197">Brug tastaturgenvejen til at markere en del af skærmen i Gemini i Chrome.</translation>
 <translation id="6473905796280459355">Gå til siden Om Chrome</translation>
 <translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
@@ -555,8 +560,8 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6612152958212564387">Du sender ikke brugsstatistik og nedbrudsrapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hold dine adgangskoder, dine bogmærker og din historik perfekt synkroniseret på alle enheder ved at angive Chrome som din standardbrowser.</translation>
 <translation id="6632012506031284914">for at søge med Chrome.</translation>
-<translation id="6632473616050862500">ChromeOS Flex leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Ændringerne af denne indstilling anvendes, når Chrome genstartes.</translation>
+<translation id="6644846457769259194">Opdaterer din enhed (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6660596345553328257">Vil du logge ind i Chrome?</translation>
 <translation id="6664219008737641504">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="SETTINGS_LINK" /> Chrome-dataene på din konto</translation>
 <translation id="6676384891291319759">Få adgang til internettet</translation>
@@ -620,7 +625,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7285990705317078173">Download Chrome på din telefon for at overvåge priser og få underretninger, når prisen falder på et website</translation>
 <translation id="7288567540154601580">Faner og udvidelser</translation>
 <translation id="7290997427370476749">Via knappen "Google Søgning-panelet" på værktøjslinjen kan du genåbne Google Søgning-panelet for at stille spørgsmål, mens du browser</translation>
-<translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
 <translation id="7299899569525778554">Søg fra computeren</translation>
 <translation id="7302361266603927550">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="7306401458628386911">Begynd at browse med det samme: Chrome kan nu åbnes, når Windows starter.</translation>
@@ -653,9 +657,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7572537927358445944">Fra • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
 <translation id="7596160425942761210">Du kan bruge Chrome, hver gang du klikker på links i beskeder, dokumenter og andre apps</translation>
-<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7627609214560473136">Du kan beskytte dine data ved at lade Chrome fjerne tilladelser fra websites, du ikke har besøgt for nylig.</translation>
-<translation id="7629898584100520089">AI-innovationer som f.eks. færdigheder gemmes på din Google-konto og administreres separat via Chrome-synkronisering</translation>
 <translation id="7641148173327520642">Din systemadministrator har konfigureret Google Chrome til at åbne <ph name="ALTERNATIVE_BROWSER_NAME" /> for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
@@ -695,7 +697,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7904213866086517086">Genåbn Google Søgning i sidepanelet</translation>
 <translation id="7904985524660297937">Prøv Gemini i Google Chrome</translation>
 <translation id="7905880575591690197">ChromeOS kunne ikke gemme Chrome-data på din Google-konto på grund af en fejl under login</translation>
-<translation id="7917876797003313048">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chrome-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome har blokeret denne download, fordi filen er vildledende og kan foretage uventede ændringer på din enhed</translation>
 <translation id="7951272445806340501">ChromeOS Flex skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="7959172989483770734">Administrer Chrome-profiler</translation>
@@ -712,9 +713,11 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="8064965390968184078">1. Klik på <ph name="BUTTON_LABEL" /> nedenfor
 2. Klik på <ph name="BUTTON_2" /> i dine Windows-indstillinger
 3. Klik på <ph name="BUTTON_3" /> i Windows-notifikationen for at fastgøre Chrome til proceslinjen, så du hurtigt kan tilgå browseren</translation>
+<translation id="8066474819446975249">Genstart Chrome for at skifte</translation>
 <translation id="8074398340364918139">Hvis du vil søge efter en bestemt Chrome-funktion eller -udvidelse, skal du angive genvejen til den i adresselinjen efterfulgt af din valgte tastaturtast</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen mislykkedes, fordi din computer ikke opfylder minimumskravene til hardware.</translation>
+<translation id="8095439028686936591">ChromeOS er opdateret</translation>
 <translation id="8110438089258398864">Du kan genåbne AI-tilstand i Google Søgning for at stille spørgsmål, mens du browser</translation>
 <translation id="8113883687556086139">Verificer din identitet for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Tilpasser Chrome…</translation>
@@ -841,6 +844,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="911206726377975832">Slet også dine browserdata</translation>
 <translation id="9138603949443464873">Åbn Chrome igen for at anvende ændringerne</translation>
 <translation id="9148058034647219655">Afslut</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Google-medlemskab.</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
 <translation id="93760716455950538">Genstart ChromeOS Flex</translation>
 <translation id="945522503751344254">Send feedback</translation>

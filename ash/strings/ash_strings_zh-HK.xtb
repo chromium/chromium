@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">你可嘗試</translation>
 <translation id="112308213915226829">自動隱藏捷徑列</translation>
 <translation id="1129383337808748948">重新整理<ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">必須有至少一個字母或符號</translation>
 <translation id="1142002900084379065">最近的相片</translation>
 <translation id="114221662579355151">此操作會允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」以及所有具備相機權限的應用程式和網站存取相機。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="1145593918056169051">打印機已停止運作</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">在新視窗中開啟新分頁</translation>
 <translation id="1536604384701784949">您需要先登出所有帳戶，才能使用 <ph name="USER_EMAIL_ADDRESS" />。如要登出，請選取 [取消] 以返回。然後選取時間以開啟狀態區，並選取 [登出]。然後，再次登入 <ph name="USER_EMAIL_ADDRESS_2" />。</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
+<translation id="1538808328818992871">必須有至少 <ph name="MIN_LENGTH" /> 個字元</translation>
 <translation id="1545331255323159851">查看手機最近的相片、媒體和通知</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">請要求管理員在 Google 管理控制台設定此裝置</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">點擊即可取得更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1557622599341396706">顯示桌面名稱</translation>
+<translation id="1568242747239041185">必須有下列兩種字元：大楷字母、小楷字母、數字或符號</translation>
 <translation id="1569384531973824928">此操作會允許所有具備相機和麥克風權限的應用程式和網站存取。系統可能會要求你重新整理網頁或重新啟動應用程式。</translation>
 <translation id="1570235441606255261">Steam 安裝程式</translation>
 <translation id="1571697193564730395">切換「請勿騷擾」模式。<ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">收合 Google Tasks</translation>
 <translation id="2208323208084708176">統一桌面模式</translation>
 <translation id="2215920961700443347">沒有互聯網連線。請連接互聯網，然後再試一次。</translation>
+<translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2223384056430485343">喺分割螢幕</translation>
 <translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">滑鼠鍵已暫停</translation>
 <translation id="2268731132310444948">導覽步驟 <ph name="STEP" />，共 <ph name="TOTAL_STEPS" /> 個步驟。「啟動器」啟動後，搜尋列的功能就會更強大。你可輸入文字搜尋檔案、應用程式等內容，亦可尋找與 <ph name="PRODUCT_NAME" /> 相關的問題解答。</translation>
 <translation id="2268813581635650749">登出所有使用者</translation>
+<translation id="2273432041732361925">不得有重複字元或者連續 4 個或以上的字元</translation>
 <translation id="2276987123919776440">15 分鐘</translation>
 <translation id="2278668501808246459">正在啟動容器管理員</translation>
 <translation id="2282073721614284166">在分頁中開啟連結</translation>
@@ -1056,6 +1061,7 @@
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="4077623680826964850">啟動或重新連接虛擬機器逾時。</translation>
 <translation id="4086921558679520050">開啟裝置上的實體麥克風開關</translation>
+<translation id="4093173301198419723">必須有大楷字母、小楷字母、數字和符號</translation>
 <translation id="4099874310852108874">網絡發生錯誤。</translation>
 <translation id="4101772068965291327">開啟首頁</translation>
 <translation id="4102906002417106771">重新啟動即可進行 Powerwash</translation>
@@ -1276,6 +1282,7 @@
 <translation id="4668936527507421457">只能在 PIN 中使用數字</translation>
 <translation id="4672539464599646374">已開啟「慳電模式」</translation>
 <translation id="4673427585974421255">保持開啟</translation>
+<translation id="467510802200863975">密碼不相符</translation>
 <translation id="4677040906536311086">Google 試算表</translation>
 <translation id="468019262817532242">沒有人可與你分享內容</translation>
 <translation id="468293128311738995">手機應用程式</translation>
@@ -1299,6 +1306,7 @@
 <translation id="4746798685375253449">{0,plural, =1{在 1 天內將裝置更新為先前的版本}other{在 # 天內將裝置更新為先前的版本}}</translation>
 <translation id="4747410141429390146">如要查看通知，請解鎖裝置</translation>
 <translation id="4752784485658729358">只允許儲存 6 個桌面。請移除一個桌面以儲存新桌面。</translation>
+<translation id="4753084533826742808">必須有至少 1 個字元</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" />鍵 + 向上箭咀鍵</translation>
 <translation id="4762573482154983647">隱藏應用程式</translation>
@@ -1434,6 +1442,7 @@
 <translation id="5144005092084035179">要切換音訊輸入裝置嗎？</translation>
 <translation id="5145464978649806571">如果您不在裝置前方，系統會自動鎖定螢幕；如果您回到裝置前方時，系統就會解除鎖定螢幕。如果停用螢幕鎖定，則裝置會進入休眠狀態，而不是鎖定螢幕。</translation>
 <translation id="5147567197700016471">已解鎖</translation>
+<translation id="5148285448107770349">密碼不可少於 8 個字元</translation>
 <translation id="5150070631291639005">私隱設定</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
 <translation id="5158206172605340248">閂咗重音符號選單。</translation>
@@ -1554,6 +1563,7 @@
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。</translation>
 <translation id="547979256943495781">捷徑列喺螢幕右邊</translation>
 <translation id="5482873136202102190">和另外</translation>
+<translation id="5486261815000869482">確認密碼</translation>
 <translation id="5491186829646618080">有可用的韌體更新</translation>
 <translation id="5503884284981862082">開啟/關閉「Google 助理」</translation>
 <translation id="550391772491508736">繼續投放</translation>
@@ -1814,6 +1824,7 @@
 <translation id="6198252989419008588">變更 PIN</translation>
 <translation id="6199775032047436064">重新載入目前網頁</translation>
 <translation id="6200515304866777730">應用程式不支援</translation>
+<translation id="6209589022625766110">必須有至少 8 個字元及下列至少兩種字元：大楷字母、小楷字母、數字或符號。不得有重複字元或者連續 4 個或以上的字元。</translation>
 <translation id="6210042900243040400">連線至 <ph name="EMAIL" /> 先前儲存的 <ph name="NAME" /></translation>
 <translation id="6212580734499190393">10 分鐘</translation>
 <translation id="6213808132343683860">擷取部分螢幕截圖或進行部分螢幕錄影</translation>
@@ -1848,6 +1859,7 @@
 <translation id="6297986260307280218">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善你的 Android 使用體驗。這些資料將有助改善系統和應用程式的穩定性及其他功能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。擁有者可選擇是否將此裝置的診斷和使用情況資料傳送給 Google。如果已開啟「其他網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至你的 Google 帳戶。<ph name="BEGIN_LINK2" />進一步瞭解數據<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">在應用程式中自訂此裝置</translation>
 <translation id="6298962879096096191">使用 Google Play 安裝 Android 應用程式</translation>
+<translation id="6300478323573969040">必須有至少 12 個字元，其中包含大楷字母、小楷字母、數字和符號。不得有重複字元或者連續 4 個或以上的字元。</translation>
 <translation id="6304076460080088478">請關閉或最小化無痕式視窗，才能使用「Google 智能鏡頭」搜尋畫面內容</translation>
 <translation id="6309219492973062892">點擊或輕按捷徑列圖示 1-8</translation>
 <translation id="6315170314923504164">語音</translation>
@@ -2019,7 +2031,6 @@
 <translation id="6782919488259222803">搜尋目前頁面</translation>
 <translation id="6783348167101855071">揀咗右下方嘅控點，用箭咀掣就可以移動</translation>
 <translation id="6786750046913594791">關閉資料夾</translation>
-<translation id="6792262051831399889">無法使用</translation>
 <translation id="6792351896138862473">無法啟動不受支援的 Kiosk 應用程式，請通知管理員有關問題。</translation>
 <translation id="679368458793552943">放大鏡開啟時放大</translation>
 <translation id="6794287755901682422">呢個項目有：<ph name="GLANCEABLES_TASK_ITEM_METADATA" />。</translation>
@@ -2462,6 +2473,7 @@
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
 <translation id="8063363226185507157">同步的無障礙設定</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8079538659226626406">分享螢幕畫面</translation>
 <translation id="8083540854303889870">已儲存以供日後使用</translation>
@@ -2625,6 +2637,7 @@
 <translation id="8555757996376137129">移除目前的桌面</translation>
 <translation id="8558521694042102707">生成式 AI 可能會出錯 (包括人物資料)，請加以複查。</translation>
 <translation id="8559845965695780508"><ph name="USER" />已編輯</translation>
+<translation id="8567946600191652875">必須有至少 6 個字元及至少一個字母或符號</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">已經將選單移去螢幕右下角。</translation>
 <translation id="8581946341807941670">按 <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> 鍵，然後按一下連結</translation>
@@ -2798,7 +2811,6 @@
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9037818663270399707">您的連線有部分網絡流量不屬於私人連線</translation>
 <translation id="9047624247355796468">打開<ph name="NETWORK_NAME" />設定</translation>
-<translation id="9050012935252397793">藍牙無法使用</translation>
 <translation id="9050999376345823055">按下「.」即可放開</translation>
 <translation id="906458777597946297">將視窗放到最大</translation>
 <translation id="9065203028668620118">編輯</translation>

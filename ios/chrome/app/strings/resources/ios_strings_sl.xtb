@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="201759455285471444">Razširitev skupine zavihkov.</translation>
 <translation id="2022431790688770637">Upravljanje Geminijevih predlogov</translation>
+<translation id="2023265063803387188">Gemini ni na voljo v anonimnem načinu</translation>
 <translation id="2031515492007104071">Prehod na višjo stopnjo</translation>
 <translation id="2044394949148788042">Odprite mrežo zavihkov</translation>
 <translation id="2044681667265133332">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Ustavi</translation>
 <translation id="2666092431469916601">Na vrh</translation>
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
-<translation id="2671316366021598595">Spletno mesto »<ph name="SITE_DOMAIN" />« nima dovoljenja za dostop do fotoaparata</translation>
 <translation id="2671423594960767771">Deli skupino</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Plačilo na obroke</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Ime</translation>
 <translation id="386224966259596343">Te podatke boste lahko shranili v Denarnico, ko boste naslednjič izpolnili ustrezen obrazec.</translation>
 <translation id="3868495844258915202">Prikaz polnega URL-ja</translation>
+<translation id="3870931306085184145">Ni shranjenih gesel za <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Postopek</translation>
 <translation id="3878657761594430423">Orodje za prijemanje listov</translation>
 <translation id="3884810423191119660">Varno shranite gesla, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Izboljšajte brskanje</translation>
 <translation id="5062321486222145940">Namesti Google Drive</translation>
 <translation id="5067540696062462445">Prenosi</translation>
-<translation id="5070314445039955096">Dovoljenja za spletno mesto »<ph name="SITE_DOMAIN" />« bodo ponastavljena na izklopljena, ko zapustite to spletno mesto</translation>
 <translation id="507187271399539513">{count,plural, =1{{position} od {count} plačilnega sredstva}one{{position} od {count} plačilnega sredstva}two{{position} od {count} plačilnih sredstev}few{{position} od {count} plačilnih sredstev}other{{position} od {count} plačilnih sredstev}}</translation>
 <translation id="5075939510584558547">Shrani brez šifriranja</translation>
 <translation id="5076534614343816664">Spremljanje cen</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Če želite uporabljati program Level Up, morate biti prijavljeni</translation>
 <translation id="5352128922772839949">Shrani datoteko</translation>
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
-<translation id="5355871759168485600">Spletno mesto »<ph name="SITE_DOMAIN" />« lahko uporablja mikrofon, kadar koli obiščete to spletno mesto</translation>
 <translation id="5359436665022446585">Priročnejše odpiranje povezav</translation>
 <translation id="536067926684072644">Prikaz zaznamkov</translation>
 <translation id="5364647308446127983">{count,plural, =1{{count} ključa za dostop ni bilo mogoče uvoziti}one{{count} ključa za dostop ni bilo mogoče uvoziti}two{{count} ključev za dostop ni bilo mogoče uvoziti}few{{count} ključev za dostop ni bilo mogoče uvoziti}other{{count} ključev za dostop ni bilo mogoče uvoziti}}</translation>
@@ -1484,6 +1483,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5612225021788368236">Zapiranje promocije privzetega brskalnika</translation>
 <translation id="561269594905823128">Dotaknite se možnosti <ph name="BEGIN_BOLD" />Izbira datoteke<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Razvrsti glede na najnovejše</translation>
+<translation id="561349411957324076">Dokončano</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
 <translation id="5617769621178348890">Odpri v aplikaciji Datoteke</translation>
 <translation id="5619871095170816857">Na tej kartici je prikazan nazadnje uporabljen odprti zavihek v vseh sinhroniziranih napravah v zadnjih 24 urah.</translation>
@@ -2333,7 +2333,6 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8157532349231307196">Število računov: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8161614462829037225">Odklepanje s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Dolžina</translation>
-<translation id="8181328232274170248">Spletno mesto »<ph name="SITE_DOMAIN" />« lahko uporablja fotoaparat, kadar koli obiščete to spletno mesto</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za {website_1}}=2{Za {website_1}, {website_2}}=3{Za {website_1}, {website_2} in še 1}one{Za {website_1}, {website_2} in še {more_count}}two{Za {website_1}, {website_2} in še {more_count}}few{Za {website_1}, {website_2} in še {more_count}}other{Za {website_1}, {website_2} in še {more_count}}}</translation>
 <translation id="8184895727539791845">Če želite, da Gemini uporablja vaš fotoaparat, v nastavitvah sistema iOS vklopite fotoaparat</translation>
 <translation id="8185076488803799132">Uvozi</translation>
@@ -2504,7 +2503,6 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8674716540979958118">Imate ogrožena gesla.</translation>
 <translation id="8679900250380464358">Dodaj na bralni seznam</translation>
 <translation id="8680787084697685621">Podrobnosti prijave v račun so zastarele.</translation>
-<translation id="868648444055742370">Spletno mesto »<ph name="SITE_DOMAIN" />« nima dovoljenja za dostop do mikrofona</translation>
 <translation id="8690752723634292147">Potrdite brisanje</translation>
 <translation id="8692107307702113268">Geslo vsebuje več kot 1000 znakov.</translation>
 <translation id="8692689525339542358">Zagotovite si zaščito pred nevarnimi spletnimi mesti, prenosi in razširitvami.</translation>

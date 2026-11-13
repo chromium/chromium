@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Deneyebileceğiniz birkaç işlem</translation>
 <translation id="112308213915226829">Rafı otomatik gizle</translation>
 <translation id="1129383337808748948">Yenile: <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">En az bir harf veya sembol içermelidir</translation>
 <translation id="1142002900084379065">Yeni eklenen fotoğraflar</translation>
 <translation id="114221662579355151">Bu işlem, <ph name="APP1_NAME" /> ve <ph name="APP2_NAME" /> uygulamalarının yanı sıra kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="1145593918056169051">Yazıcı durdu</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Yeni sekmeyi yeni pencerede aç</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> adresini kullanabilmeniz için önce tüm hesapların oturumunu kapatmanız gerekir. Oturumu kapatmak için İptal'i seçerek geri dönün. Ardından durum alanını açmak için saati seçip Oturumu kapat'ı seçin. Sonra, <ph name="USER_EMAIL_ADDRESS_2" /> hesabında tekrar oturum açın.</translation>
 <translation id="15373452373711364">Büyük fare imleci</translation>
+<translation id="1538808328818992871">En az <ph name="MIN_LENGTH" /> karakter olmalı</translation>
 <translation id="1545331255323159851">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve bildirimleri görün</translation>
 <translation id="1546492247443594934">Çalışma Masası 2</translation>
 <translation id="1546930421365146760">Yöneticinizden bu cihazı Google Yönetici Konsolu'nda kurmasını isteyin</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Daha fazla seçenek için tıklayın</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="1557622599341396706">Masa adını göster</translation>
+<translation id="1568242747239041185">Büyük harf, küçük harf, rakam veya sembol seçeneklerinden ikisini içermelidir</translation>
 <translation id="1569384531973824928">Bu işlem, kamera ve mikrofon izni olan tüm uygulamaların ve web sitelerinin erişmesine izin verir. Web sayfasını yenilemeniz veya uygulamayı yeniden başlatmanız gerekebilir.</translation>
 <translation id="1570235441606255261">Steam yükleyici</translation>
 <translation id="1571697193564730395">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Google Görevler'i daraltın</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2215920961700443347">İnternet yok. İnternete bağlanıp tekrar deneyin.</translation>
+<translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222841058024245321">Masa 7</translation>
 <translation id="2223384056430485343">Bölünmüş ekranda</translation>
 <translation id="2224075387478458881">Ekranda korunan içerik varken ekran kaydı almaya izin verilmez</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Fare tuşları duraklatıldı</translation>
 <translation id="2268731132310444948">Tur adımı <ph name="STEP" />/<ph name="TOTAL_STEPS" />. Başlatıcı etkinleştirildiğinde gelişmiş bir arama çubuğu görürsünüz. Dosyalarınız, uygulamalarınız ve diğer öğelerinizi aramak için yazmaya başlayabilirsiniz. <ph name="PRODUCT_NAME" /> cihazınızla ilgili sorularınıza da yanıt alabilirsiniz.</translation>
 <translation id="2268813581635650749">Tüm oturumları kapat</translation>
+<translation id="2273432041732361925">Tekrarlanan karakterler veya 4 ya da daha fazla karakterden oluşan diziler içermemelidir</translation>
 <translation id="2276987123919776440">15 dk.</translation>
 <translation id="2278668501808246459">Kapsayıcı yöneticisi başlatılıyor</translation>
 <translation id="2282073721614284166">Bağlantıyı sekmede aç</translation>
@@ -1056,6 +1061,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4072805772816336153">Daha sonra tekrar deneyin</translation>
 <translation id="4077623680826964850">Sanal makineyi başlatırken veya sanal makineye yeniden bağlanırken zaman aşımı meydana geldi.</translation>
 <translation id="4086921558679520050">Cihazınızda fiziksel mikrofon anahtarını açın</translation>
+<translation id="4093173301198419723">Büyük harf, küçük harf, rakam ve sembol içermelidir</translation>
 <translation id="4099874310852108874">Ağ hatası oluştu.</translation>
 <translation id="4101772068965291327">Ana sayfayı aç</translation>
 <translation id="4102906002417106771">Powerwash için yeniden başlat</translation>
@@ -1276,6 +1282,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4668936527507421457">PIN yalnızca sayılardan oluşmalıdır</translation>
 <translation id="4672539464599646374">Pil Tasarrufu açıldı</translation>
 <translation id="4673427585974421255">Açık bırak</translation>
+<translation id="467510802200863975">Şifreler eşleşmiyor</translation>
 <translation id="4677040906536311086">Google E-Tablosu</translation>
 <translation id="468019262817532242">Hiç kimse sizinle içerik paylaşamaz</translation>
 <translation id="468293128311738995">Telefonunuzdaki uygulamalar</translation>
@@ -1299,6 +1306,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Cihazı bir gün içinde önceki sürüme güncelleyin}other{Cihazı # gün içinde önceki sürüme güncelleyin}}</translation>
 <translation id="4747410141429390146">Bildirimleri görmek için lütfen kilidi açın</translation>
 <translation id="4752784485658729358">Kayıtlı masa sayısı 6 ile sınırlıdır. Yeni masa kaydetmek için mevcut bir masayı kaldırın.</translation>
+<translation id="4753084533826742808">En az 1 karakter olmalıdır</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + yukarı ok</translation>
 <translation id="4762573482154983647">Uygulamaları gizleyin</translation>
@@ -1435,6 +1443,7 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5144005092084035179">Ses girişi değiştirilsin mi?</translation>
 <translation id="5145464978649806571">Cihazınızdan uzaklaşırsanız ekranınız otomatik olarak kilitlenir. Cihazınızın önünde olduğunuz sürece ekranınız daha uzun süre uyanık kalır. Kilit ekranı devre dışı bırakılırsa cihazınız kilitlenmek yerine uyku moduna geçer.</translation>
 <translation id="5147567197700016471">Kilitli değil</translation>
+<translation id="5148285448107770349">Şifre en az 8 karakter olmalıdır</translation>
 <translation id="5150070631291639005">Gizlilik ayarları</translation>
 <translation id="5155897006997040331">Okuma hızı</translation>
 <translation id="5158206172605340248">Aksan işaretleri menüsü kapatıldı.</translation>
@@ -1460,7 +1469,7 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5207949376430453814">Metin imlecini vurgula</translation>
 <translation id="5208059991603368177">Açık</translation>
 <translation id="5216991270656129561">Saat <ph name="TIME" /> olana kadar kapalı</translation>
-<translation id="5222676887888702881">Çıkış</translation>
+<translation id="5222676887888702881">Oturumu kapat</translation>
 <translation id="5228195526683428788">Bölünmüş ekran ayırıcı</translation>
 <translation id="5229343007215035173">Gizlilik ekranını açın/kapatın</translation>
 <translation id="5229860525743792999"><ph name="ITEM_LABEL" /> öğesini, önerilen gruptan kaldırın</translation>
@@ -1555,6 +1564,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" />, şimdi kablosuz ağa bağlanarak bir güncelleme indirmenizi gerektiriyor. İsterseniz sayaçlı bir bağlantı üzerinden indirebilirsiniz (bunun için ödeme alınabilir).</translation>
 <translation id="547979256943495781">Raf, ekranın sağ tarafında</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Şifreyi onaylayın</translation>
 <translation id="5491186829646618080">Donanım yazılımı güncellemeleri mevcut</translation>
 <translation id="5503884284981862082">Google Asistan'ı açın/kapatın</translation>
 <translation id="550391772491508736">Yayını devam ettir</translation>
@@ -1815,6 +1825,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6198252989419008588">PIN'i değiştir</translation>
 <translation id="6199775032047436064">Geçerli sayfayı yeniden yükle</translation>
 <translation id="6200515304866777730">Uygulama tarafından desteklenmiyor</translation>
+<translation id="6209589022625766110">Büyük harf, küçük harf, rakam veya sembol seçeneklerinden en az ikisini içerecek şekilde en az 8 karakter olmalıdır Tekrarlanan karakterler veya 4 ya da daha fazla karakterden oluşan diziler içermemelidir.</translation>
 <translation id="6210042900243040400">Önceden <ph name="EMAIL" /> hesabına kaydedilmiş <ph name="NAME" /> cihazını bağlayın</translation>
 <translation id="6212580734499190393">10 dk. süreyle</translation>
 <translation id="6213808132343683860">Kısmi ekran görüntüsü veya ekran kaydı alın</translation>
@@ -1849,6 +1860,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6297986260307280218">Kullanım ve teşhis verilerini gönder. Teşhis, cihaz ve uygulama kullanımı verilerini otomatik olarak Google'a göndererek Android deneyiminizin iyileştirilmesine yardımcı olun. Bu veriler, sistem ve uygulama kararlılığı ile diğer özellikleri iyileştirmeye yardımcı olur. Bazı birleştirilmiş veriler, Google uygulamalarına ve iş ortaklarına da (ör. Android geliştiricileri) yardımcı olur. Bu <ph name="BEGIN_LINK1" />ayar<ph name="END_LINK1" />, cihazın sahibi tarafından zorunlu kılınmıştır. Cihazın sahibi bu cihazın teşhis ve kullanım verilerini Google'a göndermeyi seçebilir. Ek Web ve Uygulama Etkinliği ayarınız açıksa bu veriler Google Hesabınıza kaydedilebilir. <ph name="BEGIN_LINK2" />Metrikler hakkında daha fazla bilgi<ph name="BEGIN_LINK2_END" />Daha Fazla Bilgi<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Bu cihazı uygulamada özelleştirin</translation>
 <translation id="6298962879096096191">Android uygulamalarını yüklemek için Google Play'i kullanın</translation>
+<translation id="6300478323573969040">Büyük ve küçük harfler, rakamlar ve semboller içerecek şekilde en az 12 karakterden oluşmalıdır. Tekrarlanan karakterler veya 4 ya da daha fazla karakterden oluşan diziler içermemelidir.</translation>
 <translation id="6304076460080088478">Google Lens ile ekranınızda arama yapmak için gizli pencereleri kapatın veya küçültün</translation>
 <translation id="6309219492973062892">Raf simgelerine (1-8) dokunun veya tıklayın</translation>
 <translation id="6315170314923504164">Ses</translation>
@@ -2021,7 +2033,6 @@ Yeni yüklenmiş</translation>
 <translation id="6782919488259222803">Geçerli sayfada ara</translation>
 <translation id="6783348167101855071">Sağ alt tutma yeri seçildi, taşımak için ok tuşlarını kullanın</translation>
 <translation id="6786750046913594791">Klasörü kapat</translation>
-<translation id="6792262051831399889">Yok</translation>
 <translation id="6792351896138862473">Desteklenmeyen kiosk uygulaması başlatılamıyor. Bu sorunu yöneticinize bildirin.</translation>
 <translation id="679368458793552943">Büyüteç açıkken yakınlaştırın</translation>
 <translation id="6794287755901682422">Bu öğenin meta verileri: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8052898407431791827">Panoya kopyalandı</translation>
 <translation id="8054466585765276473">Pilin süresi hesaplanıyor.</translation>
 <translation id="8063363226185507157">Senkronize edilmiş erişilebilirlik ayarları</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
 <translation id="8079538659226626406">Ekran Paylaşımı</translation>
 <translation id="8083540854303889870">Daha sonrası için kaydedilenler</translation>
@@ -2627,6 +2639,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8555757996376137129">Geçerli masayı kaldır</translation>
 <translation id="8558521694042102707">Üretken yapay zeka, kişiler de dahil olmak üzere farklı konular hakkında yanlış bilgi verebildiğinden yanıtlarını doğrulayın.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> düzenledi</translation>
+<translation id="8567946600191652875">En az bir harf veya sembol içerecek şekilde en az 6 karakter olmalıdır</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Menü, ekranın sağ alt köşesine taşındı.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> tuşunu basılı tutarken bağlantıyı tıklayın</translation>
@@ -2800,7 +2813,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9037818663270399707">Bağlantınız tüm ağ trafiği için gizli değil</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ayarlarını aç</translation>
-<translation id="9050012935252397793">Bluetooth kullanılamıyor</translation>
 <translation id="9050999376345823055">Bırakmak için "." öğesine basın</translation>
 <translation id="906458777597946297">Pencereyi ekranı kaplayacak şekilde büyüt</translation>
 <translation id="9065203028668620118">Düzenle</translation>

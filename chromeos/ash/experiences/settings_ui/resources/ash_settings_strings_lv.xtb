@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Gatavs!</translation>
 <translation id="1149483087970735785">Atbalsta tehnoloģija</translation>
 <translation id="1150490752229770117">Šis ir pēdējais automātiskais programmatūras un drošības atjauninājums šai ierīcei (<ph name="DEVICE_TYPE" />). Lai saņemtu turpmākus atjauninājumus, veiciet jaunināšanu uz jaunāku modeli. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Par ChromeOS</translation>
 <translation id="1155816283571436363">Notiek savienojuma izveide ar tālruni</translation>
 <translation id="1160800016654917722">Logs ir pārvietots uz leju un pa kreisi</translation>
 <translation id="1164015913575846413">Alt + klikšķis</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16x</translation>
 <translation id="1275936815032730048">palaidēja taustiņš + labā bultiņa</translation>
 <translation id="1280332775949918163">Loga pārnešana</translation>
+<translation id="1285625592773741684">Pašreizējais datu lietojuma iestatījums ir “Mobilie dati”</translation>
 <translation id="1285815028662278915">Iespējams, jūsu mobilo datu plāns neatbalsta tīklāju. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="1288037062697528143">Nakts režīms tiks automātiski ieslēgts saulrietā.</translation>
 <translation id="1288300545283011870">Runas rekvizīti</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Tādējādi tiks atspējoti paplašinājumi un jūsu iestatījumi tiks atiestatīti uz drošām noklusējuma vērtībām. Cilnes, faili un sīkfaili tiks saglabāti. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="1537254971476575106">Pilnekrāna lupa</translation>
 <translation id="1539727654733007771">Nav iestatīts neviens mobilais tīkls. Lejupielādējiet jaunu <ph name="BEGIN_LINK" />profilu<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">Chrome OS darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Es saprotu, ka, izmantojot funkciju Powerwash, instalētie eSIM profili netiks noņemti</translation>
 <translation id="1549275686094429035">ARC iespējots</translation>
 <translation id="1554640914375980459">Kad saņemsiet paziņojumus, ekrāns mirgos. Ja esat jutīgs pret gaismu, izmantojiet zibpaziņojumus apdomīgi.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Izmantot Wi‑Fi vai mobilos tīklus, lai noteiktu atrašanās vietu</translation>
 <translation id="1650407365859096313">Tiks atvērta jauna cilne. Atļaujas statuss: <ph name="PERMISSION_STATE" /></translation>
 <translation id="1652326691684645429">Iespējot funkciju Kopīgošana tuvumā</translation>
+<translation id="1662146548738125461">Par Chrome OS Flex</translation>
 <translation id="1663698992894057019">Izmantojiet jaunu Chromebook datoru, lai iegūtu jaunākās drošības funkcijas un programmatūru</translation>
 <translation id="1665328953287874063"><ph name="DEVICE_TYPE" /> jāatbloķē, izmantojot paroli vai PIN</translation>
 <translation id="1667842670298352129">Noklausieties konkrētu tekstu. Vispirms ekrāna apakšdaļā atlasiet ikonu “Atlasīt, lai izrunātu” un pēc tam iezīmējiet tekstu. Varat arī izmantot īsinājumtaustiņus: iezīmējiet tekstu un pēc tam nospiediet meklēšanas taustiņu + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Piezīme. Jūsu pirksta nospiedums var būt mazāk drošs nekā sarežģīta parole vai PIN.</translation>
 <translation id="1724801751621173132">Ievades režīms</translation>
 <translation id="1741190788710022490">Adaptīvā uzlāde</translation>
+<translation id="1745732479023874451">Pārvaldīt kontaktpersonas</translation>
 <translation id="1751335846119670066">Palīdzība lasīšanā</translation>
 <translation id="1755601632425835748">Teksta lielums</translation>
 <translation id="1761402971842586829">Poga “<ph name="BUTTON_NAME" />” ir pārkartēta uz iespēju “<ph name="REMAPPING_OPTION" />”.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Nē, saglabāt vienu slēdzi</translation>
 <translation id="1842681835432895345">Izslēgt šim displejam spoguļa režīmu</translation>
 <translation id="1848219224579402567">Izrakstīties, kad vāks tiek aizvērts</translation>
+<translation id="185970820835152459">Varat pārvaldīt Google kontus, kuros esat pierakstījies. Jūsu Google konti tiek izmantoti pārlūkā Chromium, Play veikalā, pakalpojumā Gmail un citur. Ja vēlaties pievienot kontu kādam citam, piemēram, ģimenes loceklim, pievienojiet jaunu personu savai <ph name="DEVICE_TYPE" /> ierīcei. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="1864400682872660285">Vēsāks</translation>
 <translation id="1866589962721094893">Atļaujiet Android lietotnēm kontrolēt USB ierīces šajā Chromebook datorā. Atļauja tiks pieprasīta ikreiz, kad pievienosiet USB ierīci. Noteiktas Android lietotnes pieprasīs papildu atļaujas.</translation>
 <translation id="1877377290348678128">Iezīme (neobligāti)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Signāls</translation>
 <translation id="2097950021134740304">Atcelt abonementa aizmiršanu</translation>
 <translation id="2104166991923847969">Automātiski izslēgt tīklāju</translation>
+<translation id="2106831557840787829">Chrome OS Flex, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2114995631896158695">Nav ievietota SIM karte</translation>
 <translation id="2121825465123208577">Mainīt lielumu</translation>
 <translation id="2127372758936585790">Lādētājs ar mazu strāvas padevi</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Noņemt <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2363475280045770326">Saglabājot konfigurāciju, radās kļūda.</translation>
+<translation id="236939127352773362">Kad citās ierīcēs tiek veikta kopīgošana tuvumā</translation>
 <translation id="237336063998926520">Izmantot jūsu IP adresi, lai noteiktu atrašanās vietu</translation>
 <translation id="2373499590298659902">Lai nospiestu un turētu peles pogu, izmantojiet taustiņu “0”</translation>
 <translation id="2375406435414127095">Savienošana ar tālruni</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Bloķēt datplūsmu bez VPN savienojuma</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">Iestatījums “Atrašanās vietas precizitāte” lietotnēm un pakalpojumiem nodrošina precīzāku atrašanās vietu informāciju. Šim nolūkam Google periodiski apstrādā informāciju par ierīces sensoriem un no jūsu ierīces saņemtos bezvadu signālus, lai ar kolektīvo pakalpojumu palīdzību noteiktu bezvadu signālu atrašanās vietas. Neidentificējot jūs, šie dati tiek izmantoti, lai uzlabotu atrašanās vietu precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī kopumā uzlabotu, nodrošinātu un uzturētu Google pakalpojumus saskaņā ar Google un trešo pušu likumīgām interesēm sniegt lietotāja vajadzībām atbilstošus pakalpojumus.</translation>
+<translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3388094447051599208">Izvades paliktnis ir gandrīz pilns</translation>
 <translation id="3390013585654699824">Lietotnes informācija</translation>
 <translation id="3390740059150071453">Paskatīties pa kreisi</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">E-pasta adrese</translation>
 <translation id="3701028563242674350">Pakratīt, lai peles kursors tiktu palielināts</translation>
 <translation id="3703699162703116302">Biļete atsvaidzināta</translation>
+<translation id="3703994572283698466">Chrome OS, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="370649949373421643">Iespējot Wi-Fi</translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
 <translation id="3707163604290651814">Pašlaik pierakstījies kā <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Atrasti <ph name="NUM_PRINTERS" /> printeri no drukas servera.</translation>
 <translation id="371370241367527062">Priekšējais mikrofons</translation>
 <translation id="37143699183660101">Kursora stabilitāte</translation>
+<translation id="3716540481907974026">Chrome OS Flex versija</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN nav pareizs. Mēģiniet vēlreiz.</translation>
 <translation id="3728681439294129328">Tīkla adreses konfigurēšana</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Rādīt pasvītrojumu rakstītajam tekstam</translation>
 <translation id="3789841737615482174">Instalēt</translation>
 <translation id="379509625511193653">Izslēgts</translation>
+<translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3796215473395753611">Alt + augšupvērstā bultiņa</translation>
 <translation id="3798670284305777884">Skaļrunis (iebūvētais)</translation>
 <translation id="3799128412641261490">Slēdžu piekļuves iestatījumi</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Iebūvētā tastatūra</translation>
 <translation id="3917644013202553949">Krātuvē nepietiek vietas, lai sinhronizētu failus. Mēģiniet atbrīvot vietu.</translation>
 <translation id="3919229493046408863">Izslēgt paziņojumus par tuvumā esošām ierīcēm</translation>
+<translation id="3923184630988645767">Datu lietojums</translation>
 <translation id="3923494859158167397">Nav iestatīts neviens mobilais tīkls</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Šo tīklu var izmantot arī citi šīs ierīces lietotāji.</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Definīcija no funkcijas Ātrās atbildes</translation>
 <translation id="3994075804072562819">Atļaujiet <ph name="SPECIFIC_NAME" /> kontrolēt USB ierīces.</translation>
 <translation id="3994530503403062649">Atrodiet pogas uz planšetdatora</translation>
+<translation id="3997429360543082038">Par Chromium OS</translation>
 <translation id="4001540981461989979">Izcelt peles kursoru, kad tas tiek pārvietots</translation>
 <translation id="4005817994523282006">Laika joslas noteikšanas metode</translation>
+<translation id="4019629340646866719">Chromium OS, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopēt versijas informāciju</translation>
 <translation id="4028467762035011525">Pievienot ievades metodes</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Lai pārietu pie pēdējās izmantotās ievades metodes, nospiediet <ph name="KEY_CODES" />.</translation>
 <translation id="4051177682900543628">meklēšanas taustiņš+labā bultiņa</translation>
 <translation id="405181879009056822">ChromeOS iestatījumi</translation>
+<translation id="4054070260844648638">Redzams visiem</translation>
 <translation id="4058720513957747556">AppSocket (TCP/IP)</translation>
 <translation id="4066207411788646768">Lūdzu, pārbaudiet savienojumu, lai skatītu tīklā pieejamos printerus.</translation>
 <translation id="4068776064906523561">Saglabātie pirkstu nospiedumi</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" />. pakāpe</translation>
 <translation id="4244238649050961491">Atrast citas skārienekrāna pildspalvas lietotnes</translation>
 <translation id="4248401726442101648">Nav pievienota kamera</translation>
+<translation id="424864128008805179">Vai izrakstīties no pārlūka Chrome?</translation>
 <translation id="4249116869350613769">Akumulatora enerģijas taupīšanas režīms</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
 <translation id="425411422794688815">Radās problēma. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google konts}zero{<ph name="EXTRA_ACCOUNTS" /> Google kontu}one{<ph name="EXTRA_ACCOUNTS" /> Google konts}other{<ph name="EXTRA_ACCOUNTS" /> Google konti}}</translation>
 <translation id="4314497418046265427">Tālruņa savienošana ar <ph name="DEVICE_TYPE" /> datoru produktīvākam darbam</translation>
 <translation id="4314561087119792062">Pievienot jaunu piekļuves punkta nosaukumu</translation>
+<translation id="4314815835985389558">Sinhronizācijas pārvaldība</translation>
 <translation id="4320177379694898372">Nav interneta savienojuma.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Krātuve un barošana</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Ieteikumu skaits</translation>
 <translation id="4606933160360542263">Pielāgota taustiņu kombinācija: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Lai veiktu dubultklikšķi, ja ir atlasīta peles kreisā poga, izmantojiet taustiņu “/”</translation>
+<translation id="4613863813562375431">Chromium OS versija</translation>
 <translation id="461661862154729886">Barošanas avots</translation>
 <translation id="4617880081511131945">Nevar izveidot savienojumu</translation>
 <translation id="4620757807254334872">pele</translation>
@@ -1136,6 +1155,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4777943778632837590">Tīkla nosaukuma serveru konfigurēšana</translation>
 <translation id="4779083564647765204">Tālummaiņa</translation>
 <translation id="4779766576531456629">Pārdēvēt eSIM mobilo tīklu</translation>
+<translation id="4789550509729954245">Rādīt paziņojumu, ka ierīcēs tiek veikta kopīgošana tuvumā</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Iespējot TrackPoint paātrinājumu</translation>
 <translation id="479664067938200069">Lietojumprogrammas, ko instalēja lietotne <ph name="APP_NAME" /></translation>
@@ -1196,6 +1216,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4964544790384916627">Loga dokošana</translation>
 <translation id="4964673849688379040">Notiek pārbaude...</translation>
 <translation id="4967571733817147990">Peles pogu pielāgošana</translation>
+<translation id="4970880042055371251">Chrome OS versija</translation>
 <translation id="4972129977812092092">Printera rediģēšana</translation>
 <translation id="4975771730019223894">Lietotnes paziņojumu emblēma</translation>
 <translation id="4979263087381759787">Izstrādātājiem paredzētās opcijas</translation>
@@ -1275,6 +1296,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5193978546360574373">Tādējādi tiks noņemta piekļuve pakalpojumam Google disks šajā Chromebook datorā, tostarp piekļuve visiem failiem, kas padarīti pieejami bezsaistē.</translation>
 <translation id="5196790039230503600">Izmantojiet žestu un pēc tam kustiniet galvu, lai parādītu, kur vēlaties nomest vienumu. Lai nomestu vienumu, vēlreiz izmantojiet žestu.</translation>
 <translation id="5197255632782567636">Internets</translation>
+<translation id="5205484256512407285">Nekad neizmantot pārsūtīšanai mobilos datus</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
 <translation id="5208926629108082192">Ierīces mobilā tīkla informācija</translation>
 <translation id="5208988882104884956">Pusplatuma</translation>
@@ -1307,6 +1329,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5331568967879689647">Chrome OS sistēmas lietotne</translation>
 <translation id="5334113802138581043">Piekļuve mikrofonam</translation>
 <translation id="5336689872433667741">Kursors un skārienpaliktnis</translation>
+<translation id="5337926771328966926">Pašreizējais ierīces nosaukums: <ph name="DEVICE_NAME" /></translation>
 <translation id="5340900621595888432">Sūtīt diagnostikas un lietojuma datus</translation>
 <translation id="5369694795837229225">Iestatīt Linux izstrādes vidi</translation>
 <translation id="5377367976106153749">Vai ieslēgt piekļuvi kamerai?</translation>
@@ -1444,6 +1467,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5833726373896279253">Šos iestatījumus drīkst mainīt tikai īpašnieks:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> — <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Futrālis</translation>
+<translation id="5840680448799937675">Faili vienmēr tiks kopīgoti bezsaistē.</translation>
 <translation id="5841270259333717135">Konfigurēt tīklu Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth iespējošana</translation>
 <translation id="5846200638699387931">Saistību sintakses kļūda: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5924438086390153180">Jautāt pirms Microsoft failu kopēšanas vai pārvietošanas uz Google disku</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="594048410531370124">Taustiņš nav atpazīts. Nospiediet jebkuru taustiņu, lai <ph name="RESPONSE" />.</translation>
+<translation id="5942779427914696408">Ierīces redzamība</translation>
 <translation id="5945192511027649793">Atspējot skārienpaliktni</translation>
 <translation id="5947651424015173580">Veikt dubultklikšķi ar peli</translation>
 <translation id="594993197557058302">Nospiediet 1–4 modificētājtaustiņus (Ctrl, Alt, Shift, meklēšanas vai palaidēja taustiņu) un vēl vienu taustiņu. Varat arī atlasīt vienu taustiņu.</translation>
@@ -1491,10 +1516,12 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5961545272769624207">Piešķirt žestu</translation>
 <translation id="5968022600320704045">Nav meklēšanas rezultātu</translation>
 <translation id="5969728632630673489">Paziņojums par īsinājumtaustiņiem ir noraidīts.</translation>
+<translation id="5979353814339191480">Šī opcija attiecas uz Chromebook datoriem ar datu plānu vai mobilā tīkla sargspraudni, vai arī piesaisti pārnēsājamam tīklājam.</translation>
 <translation id="5985556342298151179">Chrome lietotne, kuru instalēja jūsu ierīces administrators.</translation>
 <translation id="5986442691296752186">Atļaujiet Linux lietotnēm kontrolēt USB ierīces.</translation>
 <translation id="598810097218913399">Atcelt piešķiršanu</translation>
 <translation id="5988563937187882754">Paskatīties pa labi.</translation>
+<translation id="5990266201903445068">Tikai Wi-Fi</translation>
 <translation id="5992225669837656567">Visas peles ir atvienotas</translation>
 <translation id="5999630716831179808">Balss veidi</translation>
 <translation id="6002458620803359783">Vēlamās balsis</translation>
@@ -1509,6 +1536,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6045114302329202345">Galvenā TrackPoint poga</translation>
 <translation id="6048747414605857443">Atlasiet un pielāgojiet balsis teksta pārvēršanai runā funkcijās ChromeVox un “Atlasīt, lai izrunātu”.</translation>
 <translation id="6050189528197190982">Pelēktoņi</translation>
+<translation id="6054961935262556546">Mainīt redzamību</translation>
 <translation id="6059276912018042191">Nesen atvērtās Chrome cilnes</translation>
 <translation id="6059925163896151826">USB ierīces</translation>
 <translation id="6064764629679333574">Uzlabojiet Bluetooth mikrofona skaņas kvalitāti, zemas izšķirtspējas audio iestatot augstu izšķirtspēju.</translation>
@@ -1567,6 +1595,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6265159465845424232">Jautāt pirms Microsoft failu kopēšanas vai pārvietošanas uz pakalpojumu Microsoft OneDrive</translation>
 <translation id="6265687851677020761">Noņemt portu</translation>
 <translation id="6266532094411434237">Notiek savienojuma izveide ar ierīci “<ph name="DEVICE" />”…</translation>
+<translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="6270309713620950855">Atgādinājums par izslēgtu skaņu</translation>
 <translation id="6274089201566806618">Notiek savienojuma izveide ar šādu ierīci: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="628352644014831790">4 sekundes</translation>
@@ -1618,6 +1647,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6453921811609336127">Lai pārietu pie nākamās ievades metodes, nospiediet <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />atstarpes taustiņu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Šīs vārdnīcas dzēšana</translation>
 <translation id="6463596731306859179">Vai tiek rādīti nevēlami uznirstošie logi vai tiek veiktas citas neparedzētas darbības? Dažkārt instalētās lietotnes un paplašinājumi var mainīt jūsu ChromeOS iestatījumus bez jūsu ziņas.</translation>
+<translation id="6465841119675156448">Bez interneta savienojuma</translation>
 <translation id="6467377768028664108">Pēc tam <ph name="DEVICE_TYPE" /> datorā varēsiet veikt tālāk norādītās darbības.</translation>
 <translation id="6469557521904094793">Mobilā tīkla ieslēgšana</translation>
 <translation id="6470120577693311302">Zibpaziņojumi</translation>
@@ -1668,6 +1698,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6626581113916585374">Efektu režīms</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /></translation>
 <translation id="6630452975878488444">Atlases saīsne</translation>
+<translation id="6632473616050862500">Chrome OS Flex darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Izslēgt ātro savienošanu pārī</translation>
 <translation id="6647690760956378579">Dabiskās balss priekšskatījums</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
@@ -1711,6 +1742,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6775163072363532304">Šeit tiks parādītas pieejamās ierīces.</translation>
 <translation id="6776729248872343918">Iespējot ātro savienošanu pārī</translation>
 <translation id="6777845730143344223">Uzzināt vairāk par Passpoint abonementiem</translation>
+<translation id="6779406956731413166">Chromium OS darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Vai aizmirst šo ierīci?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive iestatījumi</translation>
 <translation id="6785915470941880363">Ritināšana pretējā virzienā <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="7280649757394340890">Balss iestatījumi teksta pārvēršanai runā</translation>
 <translation id="7282547042039404307">Vienmērīgs</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>
 <translation id="7303485269821975179">Iestatīt <ph name="DEVICE_TYPE" /> paroli</translation>
 <translation id="7304030187361489308">Augsts</translation>
 <translation id="7308643132139167865">Vietņu valodas</translation>
@@ -1873,6 +1906,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="7409599290172516453">Jaunākie fotoattēli</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7417435070053325657">Bloķēto lietotņu skaits: <ph name="BLOCKED_APPS_SIZE" /> no <ph name="APPS_LIST_SIZE" /></translation>
+<translation id="7423425410216218516">Redzamība ir ieslēgta uz <ph name="MINUTES" /> minūtēm.</translation>
 <translation id="7423513079490750513">Noņemt valodu <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Palīdzība rakstīšanā</translation>
 <translation id="7429415133937917139">Simulē atsvaidzināma Braila displeja izvadi
@@ -1920,11 +1954,13 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="7578137152457315135">Pirkstu nospiedumu iestatījumi</translation>
 <translation id="7578692661782707876">Ievadiet savu apstiprinājuma kodu.</translation>
 <translation id="7582582252461552277">Dot priekšroku šim tīklam</translation>
+<translation id="7582844466922312471">Mobile Data</translation>
 <translation id="7587806318633605613">Ieteikumu vēsture</translation>
 <translation id="7590883480672980941">Ievades iestatījumi</translation>
 <translation id="7592060599656252486">Dažas</translation>
 <translation id="7602173054665172958">Drukāšanas pārvaldība</translation>
 <translation id="7605163396341021431">Atļaujiet Android lietotnēm kontrolēt USB ierīces šajā Chromebook datorā.</translation>
+<translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7608810328871051088">Android iestatījumi</translation>
 <translation id="7611713099524036757">modificētājtaustiņš</translation>
 <translation id="7612655942094160088">Iespējot pievienotā tālruņa funkcijas.</translation>
@@ -1935,12 +1971,14 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="7632437836497571618">Izmantot drošus savienojumus vietņu uzmeklēšanai</translation>
 <translation id="7634337648687970851">Lokālo datu atkopšana pašlaik netiek atbalstīta.</translation>
 <translation id="7640256527901510478">Jūsu ierīces IMEI ir <ph name="IMEI_NUMBER" />, un ierīces sērijas numurs ir <ph name="SERIAL_NUMBER" />. Šos numurus var izmantot, lai aktivizētu pakalpojumu.</translation>
+<translation id="7640308610547854367">Jūs atjaunojāt iepriekšējo ChromeOS versiju. Atjauninājumus varēsiet saņemt, kad tiks izlaista nākamā versija.</translation>
 <translation id="7641513591566880111">Jauns profila nosaukums</translation>
 <translation id="764178579712141045">Lietotājs <ph name="USER_EMAIL" /> ir pievienots</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (īpašnieks)</translation>
 <translation id="7648048654005891115">Taustiņu piesaistes stils</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Ir iestatīts viens pirksta nospiedums}zero{Ir iestatīti {COUNT} pirkstu nospiedumi}one{Ir iestatīts {COUNT} pirkstu nospiedums}other{Ir iestatīti {COUNT} pirkstu nospiedumi}}</translation>
+<translation id="7650677314924139716">Pašreizējais datu lietojuma iestatījums ir “Tikai Wi-Fi”.</translation>
 <translation id="7651400349472467012">Pieejams tūlītējais tīklājs</translation>
 <translation id="7651784568388208829">Tālruņa centrmezgla uzdevuma turpinājums</translation>
 <translation id="7658239707568436148">Atcelt</translation>
@@ -2031,6 +2069,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Tulkošana</translation>
 <translation id="7915457674565721553">Lai iestatītu vecāku kontroli, izveidojiet savienojumu ar internetu.</translation>
+<translation id="7917876797003313048">Varat pārvaldīt Google kontus, kuros esat pierakstījies. Jūsu Google konti tiek izmantoti pārlūkā Chrome, Play veikalā, pakalpojumā Gmail un citur. Ja vēlaties pievienot kontu kādam citam, piemēram, ģimenes loceklim, pievienojiet jaunu personu savai <ph name="DEVICE_TYPE" /> ierīcei. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920482456679570420">Pievienojiet vārdus, kurus pareizrakstības pārbaudē izlaist</translation>
 <translation id="7921347341284348270">Šajā pārvaldītajā kontā nevar skatīt tālruņa paziņojumus. Mēģiniet vēlreiz, izmantojot citu kontu. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
@@ -2195,6 +2234,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="8431977087510901105">Kursora iestatījumi ir atiestatīti</translation>
 <translation id="8437209419043462667">ASV</translation>
 <translation id="8439506636278576865">Piedāvāt tulkot lapas šajā valodā</translation>
+<translation id="8449347986464073209">Dzēst un izrakstīties</translation>
 <translation id="8451512073679317615">asistents</translation>
 <translation id="8455775311562941553">Izveidots savienojums ar: <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="8473540203671727883">Izrunāt tekstu, virs kura novietots kursors</translation>
@@ -2320,6 +2360,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="8872774989979382243">Skaņa ir izslēgta. Ieslēdziet skaņu.</translation>
 <translation id="888256071122006425">Peles un skārienpaliktņa iestatījumi</translation>
 <translation id="8885449336974696155">Palīdziet uzlabot ChromeOS, ziņojot par <ph name="BEGIN_LINK" />pašreizējiem iestatījumiem<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Var rasties izmaksas par mobilo datu pārraidi</translation>
 <translation id="8890529496706615641">Nevarēja pārdēvēt profilu. Lūdzu, mēģiniet vēlreiz vai sazinieties ar mobilo sakaru operatoru, lai saņemtu tehnisko atbalstu.</translation>
 <translation id="8894761918470382415">Datu piekļuves aizsardzība perifērajām ierīcēm</translation>
 <translation id="8896830132794747524">Ātrākas kustības ar peli pārvietos kursoru tālāk</translation>
@@ -2345,6 +2386,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="8978939272793553320"><ph name="DEVICE_NAME" /> ir atvienota</translation>
 <translation id="8980345560318123814">Atsauksmju pārskati</translation>
 <translation id="8981825781894055334">Maz papīra.</translation>
+<translation id="8984694057134206124">Jūsu ierīce visiem būs redzama <ph name="MINUTES" /> minūte. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8985561265504464578">Noteikšanas slieksnis</translation>
 <translation id="8986362086234534611">Aizmirst</translation>
 <translation id="8991694323904646277">Nav kameras</translation>
@@ -2391,6 +2433,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="9098860402274800697">Noņemt Google Play un Android lietotnes</translation>
 <translation id="910000385680858937">Piekļuve atļauta — <ph name="PERMISSION_DETAILS" />. Pievienojiet ierīcei mikrofonu.</translation>
 <translation id="9100416672768993722">Lai pārietu pie pēdējās izmantotās ievades metodes, nospiediet <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />atstarpes taustiņu<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Pašreizējais datu lietojuma iestatījums ir “Bez interneta savienojuma”.</translation>
 <translation id="9108294543511800041">Tagad varat skatīt tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus.</translation>
 <translation id="9109122242323516435">Lai atbrīvotu vietu, izdzēsiet failus no šīs ierīces.</translation>
 <translation id="9111330022786356709">Pievienojiet vai atrodiet peles pogas</translation>

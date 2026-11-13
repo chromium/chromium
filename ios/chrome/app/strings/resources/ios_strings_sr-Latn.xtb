@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="201759455285471444">Proširite grupu kartica.</translation>
 <translation id="2022431790688770637">Upravljaj Gemini predlozima</translation>
+<translation id="2023265063803387188">Gemini nije dostupan u režimu bez arhiviranja</translation>
 <translation id="2031515492007104071">Viši nivo</translation>
 <translation id="2044394949148788042">Otvorite mrežu za kartice</translation>
 <translation id="2044681667265133332">Nalogom <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, koji može da pregleda određene informacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Zaustavi</translation>
 <translation id="2666092431469916601">Vrh</translation>
 <translation id="2669454659051515572">Svako ko koristi ovaj uređaj može da vidi preuzete fajlove</translation>
-<translation id="2671316366021598595">Domenu <ph name="SITE_DOMAIN" /> nije dozvoljeno da pristupa kameri</translation>
 <translation id="2671423594960767771">Deli grupu</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Plaćanje na rate</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="386224966259596343">Moći ćete da sačuvate ove informacije u Novčaniku sledeći put kada popunite odgovarajući obrazac.</translation>
 <translation id="3868495844258915202">Pregledajte kompletan URL</translation>
+<translation id="3870931306085184145">Nema sačuvanih lozinki za <ph name="DOMAIN" /></translation>
 <translation id="3875783148670536197">Pokaži mi kako</translation>
 <translation id="3878657761594430423">Alatka za pomeranje lista</translation>
 <translation id="3884810423191119660">Bezbedno čuvajte lozinke da biste se lako prijavljivali na sajtove i u aplikacije</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Podignite pregledanje na viši nivo</translation>
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
 <translation id="5067540696062462445">Preuzimanja</translation>
-<translation id="5070314445039955096">Dozvole za <ph name="SITE_DOMAIN" /> će se resetovati i isključiti kada napustite ovaj sajt</translation>
 <translation id="507187271399539513">{count,plural, =1{{position}. od {count} načina plaćanja}one{{position}. od {count} načina plaćanja}few{{position}. od {count} načina plaćanja}other{{position}. od {count} načina plaćanja}}</translation>
 <translation id="5075939510584558547">Sačuvajte bez šifrovanja</translation>
 <translation id="5076534614343816664">Praćenje cena</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Morate da budete prijavljeni da biste koristili Level Up</translation>
 <translation id="5352128922772839949">Sačuvajte fajl</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
-<translation id="5355871759168485600"><ph name="SITE_DOMAIN" /> može da koristi mikrofon kad god otvorite ovaj sajt</translation>
 <translation id="5359436665022446585">Bolje otvaranje linkova</translation>
 <translation id="536067926684072644">Prikaži obeleživače</translation>
 <translation id="5364647308446127983">{count,plural, =1{Uvoz {count} pristupnog ključa nije uspeo}one{Uvoz {count} pristupnog ključa nije uspeo}few{Uvoz {count} pristupna ključa nije uspeo}other{Uvoz {count} pristupnih ključeva nije uspeo}}</translation>
@@ -1484,6 +1483,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5612225021788368236">Zatvori promociju podrazumevanog pregledača</translation>
 <translation id="561269594905823128">Dodirnite <ph name="BEGIN_BOLD" />Izaberi fajl<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Sortiraj prema najnovijem</translation>
+<translation id="561349411957324076">Dovršeno</translation>
 <translation id="5614553682702429503">Želite li da sačuvate lozinku?</translation>
 <translation id="5617769621178348890">Otvori u aplikaciji Fajlovi</translation>
 <translation id="5619871095170816857">Ova kartica prikazuje poslednju korišćenu otvorenu karticu na svim sinhronizovanim uređajima u poslednja 24 sata.</translation>
@@ -2333,7 +2333,6 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> naloga</translation>
 <translation id="8161614462829037225">Otključaj pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Dužina</translation>
-<translation id="8181328232274170248"><ph name="SITE_DOMAIN" /> može da koristi kameru kad god otvorite ovaj sajt</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za {website_1}}=2{Za {website_1} i {website_2}}=3{Za {website_1}, {website_2} i još 1}one{Za {website_1}, {website_2} i još {more_count}}few{Za {website_1}, {website_2} i još {more_count}}other{Za {website_1}, {website_2} i još {more_count}}}</translation>
 <translation id="8184895727539791845">Da biste dozvolili Gemini-ju da koristi kameru, uključite opciju Kamera u podešavanjima iOS-a</translation>
 <translation id="8185076488803799132">Import (Uvezi)</translation>
@@ -2504,7 +2503,6 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8674716540979958118">Imate ugrožene lozinke.</translation>
 <translation id="8679900250380464358">Dodaj na Listu za čitanje</translation>
 <translation id="8680787084697685621">Detalji za prijavljivanje na nalog su zastareli.</translation>
-<translation id="868648444055742370">Domenu <ph name="SITE_DOMAIN" /> nije dozvoljeno da pristupa mikrofonu</translation>
 <translation id="8690752723634292147">Potvrda brisanja</translation>
 <translation id="8692107307702113268">Lozinka premašuje 1000 znakova</translation>
 <translation id="8692689525339542358">Dobijte zaštitu od opasnih sajtova, preuzimanja i dodataka.</translation>

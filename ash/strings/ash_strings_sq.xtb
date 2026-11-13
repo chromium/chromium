@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">Disa gjëra për të provuar</translation>
 <translation id="112308213915226829">Fshih raftin automatikisht</translation>
 <translation id="1129383337808748948">Rifresko "<ph name="CONTENT_TITLE" />"</translation>
+<translation id="1139368021151541038">Duhet të ketë të paktën një shkronjë ose simbol</translation>
 <translation id="1142002900084379065">Fotot e fundit</translation>
 <translation id="114221662579355151">Kjo lejon qasjen te kamera për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="1145593918056169051">Printeri ka ndaluar</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Hape skedën e re në një dritare të re</translation>
 <translation id="1536604384701784949">Për të përdorur <ph name="USER_EMAIL_ADDRESS" /> duhet të dalësh nga të gjitha llogaritë përpara. Për të dalë, zgjidh "Anulo" për t'u kthyer mbrapa. Pastaj zgjidh kohën për të hapur zonën e statusit dhe zgjidh "Dil". Pastaj identifikohu përsëri në <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Kursor i madh</translation>
+<translation id="1538808328818992871">Duhet të ketë të paktën <ph name="MIN_LENGTH" /> karaktere</translation>
 <translation id="1545331255323159851">Shiko njoftimet, median dhe fotografitë më të fundit të telefonit tënd</translation>
 <translation id="1546492247443594934">Tavolina e punës 2</translation>
 <translation id="1546930421365146760">Kërkoji administratorit ta konfigurojë këtë pajisje te "Paneli i administratorit të Google"</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Kliko për opsione të tjera</translation>
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1557622599341396706">Shfaq emrin e tavolinës së punës</translation>
+<translation id="1568242747239041185">Duhet të ketë dy nga sa më poshtë: shkronja të mëdha, shkronja të vogla, numra ose simbole</translation>
 <translation id="1569384531973824928">Kjo lejon qasjen për të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
 <translation id="1570235441606255261">Instaluesi i Steam</translation>
 <translation id="1571697193564730395">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Palos Google Tasks</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
 <translation id="2215920961700443347">Nuk ka internet. Lidhu me rrjetin dhe provo përsëri.</translation>
+<translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222841058024245321">Tavolina e punës 7</translation>
 <translation id="2223384056430485343">Në një ekran të ndarë</translation>
 <translation id="2224075387478458881">Regjistrimi i ekranit nuk lejohet kur përmbajtja e mbrojtur është e dukshme</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Tastet e miut u vendosën në pauzë</translation>
 <translation id="2268731132310444948">Hapi <ph name="STEP" /> nga <ph name="TOTAL_STEPS" /> i turneut. Pasi të aktivizohet "Nisësi", do të marrësh një shirit të përmirësuar të kërkimit. Mund të fillosh të shkruash për të kërkuar për skedarët, aplikacionet etj. Mund të marrësh po ashtu përgjigje për pyetjet në lidhje me <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2268813581635650749">Dil nga të gjitha</translation>
+<translation id="2273432041732361925">Nuk duhet të ketë karaktere të përsëritura ose sekuenca me 4 ose më shumë</translation>
 <translation id="2276987123919776440">15 min.</translation>
 <translation id="2278668501808246459">Po fillon menaxheri i kontejnerit</translation>
 <translation id="2282073721614284166">Hape lidhjen në skedë</translation>
@@ -1056,6 +1061,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4072805772816336153">Provo përsëri më vonë</translation>
 <translation id="4077623680826964850">Koha skadoi gjatë ndezjes ose rilidhjes me VM.</translation>
 <translation id="4086921558679520050">Aktivizo çelësin fizik të mikrofonit në pajisjen tënde</translation>
+<translation id="4093173301198419723">Duhet të ketë shkronja të mëdha, shkronja të vogla, numra dhe simbole</translation>
 <translation id="4099874310852108874">Ndodhi një gabim i rrjetit.</translation>
 <translation id="4101772068965291327">Hap faqen kryesore</translation>
 <translation id="4102906002417106771">Rivendose për të kryer powerwash</translation>
@@ -1276,6 +1282,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4668936527507421457">Kodi PIN duhet të përdorë vetëm numra</translation>
 <translation id="4672539464599646374">"Kursyesi i baterisë" u aktivizua</translation>
 <translation id="4673427585974421255">Mbaje aktiv</translation>
+<translation id="467510802200863975">Fjalëkalimet nuk përputhen</translation>
 <translation id="4677040906536311086">Fletë e Google</translation>
 <translation id="468019262817532242">Asnjë nuk mund të ndajë me ty</translation>
 <translation id="468293128311738995">Aplikacionet nga telefoni yt</translation>
@@ -1299,6 +1306,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4746798685375253449">{0,plural, =1{Kalo pajisjen në versionin e mëparshëm brenda një dite}other{Kalo pajisjen në versionin e mëparshëm brenda # ditësh}}</translation>
 <translation id="4747410141429390146">Shkyçe për të parë njoftimet</translation>
 <translation id="4752784485658729358">Lejohen vetëm 6 tavolina të ruajtura pune. Hiq një tavolinë pune për të ruajtur një të re.</translation>
+<translation id="4753084533826742808">Duhet të ketë të paktën 1 karakter</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + shigjeta lart</translation>
 <translation id="4762573482154983647">Fshi aplikacionet</translation>
@@ -1435,6 +1443,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5144005092084035179">Të ndryshohet hyrja e audios?</translation>
 <translation id="5145464978649806571">Nëse largohesh nga pajisja, ekrani do të kyçet automatikisht. Kur je përpara pajisjes, ekrani do të qëndrojë zgjuar më gjatë. Nëse ekrani i kyçjes çaktivizohet, pajisja jote do të vendoset në gjumë në vend që të kyçet.</translation>
 <translation id="5147567197700016471">Shkyçur</translation>
+<translation id="5148285448107770349">Fjalëkalimi duhet të ketë të paktën 8 karaktere</translation>
 <translation id="5150070631291639005">Cilësimet e privatësisë</translation>
 <translation id="5155897006997040331">Shpejtësia e leximit</translation>
 <translation id="5158206172605340248">Menyja e shenjave të theksimit u hoq.</translation>
@@ -1555,6 +1564,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi tani dhe të shkarkosh një përditësim. Ndryshe, shkarko nga një lidhje me matje (mund të zbatohen tarifa).</translation>
 <translation id="547979256943495781">Rafti në të djathtë</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Konfirmo fjalëkalimin</translation>
 <translation id="5491186829646618080">Ofrohen përditësime të firmuerit</translation>
 <translation id="5503884284981862082">Hap/mbyll "Asistentin e Google"</translation>
 <translation id="550391772491508736">Vazhdo transmetimin</translation>
@@ -1815,6 +1825,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6198252989419008588">Ndrysho kodin PIN</translation>
 <translation id="6199775032047436064">Ringarko faqen aktuale</translation>
 <translation id="6200515304866777730">Nuk mbështetet nga aplikacioni</translation>
+<translation id="6209589022625766110">Duhet të ketë të paktën 8 karaktere dhe të ketë të paktën dy nga sa më poshtë: shkronja të mëdha, shkronja të vogla, numra ose simbole Nuk duhet të ketë karaktere të përsëritura ose sekuenca me 4 ose më shumë.</translation>
 <translation id="6210042900243040400">Lidh pajisjen <ph name="NAME" /> që është ruajtur më parë te <ph name="EMAIL" /></translation>
 <translation id="6212580734499190393">Për 10 min.</translation>
 <translation id="6213808132343683860">Nxirr regjistrimin e ekranit ose pamjen e pjesshme të ekranit</translation>
@@ -1849,6 +1860,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6297986260307280218">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo me përmirësimin e përvojës sate të Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Zotëruesi mund të zgjedhë të dërgojë te Google të dhënat e diagnostikimit dhe të përdorimit për këtë pajisje. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google". <ph name="BEGIN_LINK2" />Mëso më shumë rreth metrikës<ph name="BEGIN_LINK2_END" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Personalizo këtë pajisje në aplikacion</translation>
 <translation id="6298962879096096191">Përdor Google Play për të instaluar aplikacionet e Android</translation>
+<translation id="6300478323573969040">Duhet të ketë të paktën 12 karaktere dhe të ketë shkronja të mëdha, shkronja të vogla, numra dhe simbole. Nuk duhet të ketë karaktere të përsëritura ose sekuenca me 4 ose më shumë.</translation>
 <translation id="6304076460080088478">Mbyll ose minimizo dritaret e fshehta për të kërkuar në ekranin tënd me "Lenten e Google"</translation>
 <translation id="6309219492973062892">Kliko ose trokit tek ikonat e raftit 1-8</translation>
 <translation id="6315170314923504164">Voice</translation>
@@ -2021,7 +2033,6 @@ Instalim i ri</translation>
 <translation id="6782919488259222803">Kërko në faqen aktuale</translation>
 <translation id="6783348167101855071">Është zgjedhur doreza e poshtme djathtas; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="6786750046913594791">Mbyll dosjen</translation>
-<translation id="6792262051831399889">Nuk ofrohet</translation>
 <translation id="6792351896138862473">Nuk mund të hapet aplikacioni i pambështetur "kioskë". Njofto administratorin tënd për këtë problem.</translation>
 <translation id="679368458793552943">Zmadho kur zmadhuesi është aktiv</translation>
 <translation id="6794287755901682422">Ky artikull ka: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2464,6 +2475,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>
 <translation id="8063363226185507157">Cilësimet e qasshmërisë u sinkronizuan</translation>
+<translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8079538659226626406">Ndarja e ekranit</translation>
 <translation id="8083540854303889870">Ruajtur për më vonë</translation>
@@ -2627,6 +2639,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8555757996376137129">Hiq tavolinën aktuale të punës</translation>
 <translation id="8558521694042102707">IA-ja gjeneruese mund të bëjë gabime, duke përfshirë edhe për njerëzit, prandaj kontrolloje përsëri.</translation>
 <translation id="8559845965695780508">Modifikuar nga <ph name="USER" /></translation>
+<translation id="8567946600191652875">Duhet të ketë të paktën 6 karaktere dhe të ketë të paktën një shkronjë ose simbol</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Menyja u zhvendos në këndin poshtë djathtas të ekranit.</translation>
 <translation id="8581946341807941670">Shtyp <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> dhe kliko një lidhje</translation>
@@ -2800,7 +2813,6 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9034924485347205037">Skedarët e Linux</translation>
 <translation id="9037818663270399707">Lidhja jote nuk është private për të gjithë trafikun e rrjetit</translation>
 <translation id="9047624247355796468">Hap cilësimet për <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Bluetooth-i nuk ofrohet</translation>
 <translation id="9050999376345823055">Shtyp "." për ta lëshuar</translation>
 <translation id="906458777597946297">Zmadho dritaren</translation>
 <translation id="9065203028668620118">Redakto</translation>

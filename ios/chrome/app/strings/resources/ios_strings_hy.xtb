@@ -361,6 +361,7 @@
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="201759455285471444">Ծավալել ներդիրների խումբը։</translation>
 <translation id="2022431790688770637">Կառավարել Gemini-ի առաջարկները</translation>
+<translation id="2023265063803387188">Gemini-ը հասանելի չէ ինկոգնիտո ռեժիմում</translation>
 <translation id="2031515492007104071">Մակարդակի բարձրացում</translation>
 <translation id="2044394949148788042">Բացեք ներդիրների ցանցը</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին հնարավոր է, որ տեսանելի լինել որոշ տեղեկություններ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -563,7 +564,6 @@
 <translation id="2664621323652615289">Կանգնեցնել</translation>
 <translation id="2666092431469916601">Վերին</translation>
 <translation id="2669454659051515572">Այս սարքն օգտագործող ցանկացած օգտատեր կարող է տեսնել ներբեռնված ֆայլերը</translation>
-<translation id="2671316366021598595">«<ph name="SITE_DOMAIN" />» կայքին արգելված է օգտագործել ձեր տեսախցիկը</translation>
 <translation id="2671423594960767771">Ուղարկել խումբը</translation>
 <translation id="2672512470874391563"><ph name="OWNER_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2673183423393669407">Տարաժամկետ վճարում</translation>
@@ -913,6 +913,7 @@
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="386224966259596343">Հաջորդ անգամ, երբ համապատասխան ձև լրացնեք, կկարողանաք պահել այս տեղեկությունները Wallet-ում։</translation>
 <translation id="3868495844258915202">Ցույց տալ ամբողջ URL-ը</translation>
+<translation id="3870931306085184145"><ph name="DOMAIN" /> տիրույթի համար պահված գաղտնաբառեր չկան</translation>
 <translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
 <translation id="3878657761594430423">Աղյուսակների արտահանիչ</translation>
 <translation id="3884810423191119660">Ապահով պահեք գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ</translation>
@@ -1311,7 +1312,6 @@
 <translation id="5061202435354361813">Ավելի արդյունավետ կերպով օգտագործեք դիտարկիչը</translation>
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
 <translation id="5067540696062462445">Ներբեռնումներ</translation>
-<translation id="5070314445039955096">Երբ դուրս գաք «<ph name="SITE_DOMAIN" />» կայքից, դրա բոլոր թույլտվությունները կանջատվեն</translation>
 <translation id="507187271399539513">{count,plural, =1{Վճարման {position} եղանակ՝ {count}-ից}one{Վճարման {position} եղանակ՝ {count}-ից}other{Վճարման {position} եղանակ՝ {count}-ից}}</translation>
 <translation id="5075939510584558547">Պահում առանց գաղտնագրման</translation>
 <translation id="5076534614343816664">Գների հետագծում</translation>
@@ -1410,7 +1410,6 @@
 <translation id="5351613737248079168">Level Up-ն օգտագործելու համար պետք է մուտք գործեք հաշիվ</translation>
 <translation id="5352128922772839949">Պահել ֆայլը</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
-<translation id="5355871759168485600">«<ph name="SITE_DOMAIN" />» կայքին թույլատրված է օգտագործել ձեր խոսափողը, երբ այցելում եք այս կայք</translation>
 <translation id="5359436665022446585">Հարմար անցում հղումներով</translation>
 <translation id="536067926684072644">Ցույց տալ էջանիշները</translation>
 <translation id="5364647308446127983">{count,plural, =1{Չհաջողվեց ներմուծել {count} մուտքի բանալի}one{Չհաջողվեց ներմուծել {count} մուտքի բանալի}other{Չհաջողվեց ներմուծել {count} մուտքի բանալի}}</translation>
@@ -1484,6 +1483,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5612225021788368236">Փակել կանխադրված դիտարկիչի պրոմոհուշումը</translation>
 <translation id="561269594905823128">Հպեք <ph name="BEGIN_BOLD" />Ընտրել ֆայլը<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Տեսակավորել ըստ թարմության</translation>
+<translation id="561349411957324076">Ավարտված է</translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
 <translation id="5617769621178348890">Բացել «Ֆայլեր» հավելվածում</translation>
 <translation id="5619871095170816857">Այս քարտում ցուցադրված է ներդիրը, որը դուք վերջին անգամ բացել եք ձեր բոլոր համաժամացված սարքերում վերջին 24 ժամվա ընթացքում։</translation>
@@ -2333,7 +2333,6 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> հաշիվ</translation>
 <translation id="8161614462829037225">Ապակողպել <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ի միջոցով</translation>
 <translation id="8173034266693057059">Երկարություն</translation>
-<translation id="8181328232274170248">«<ph name="SITE_DOMAIN" />» կայքին թույլատրվում է օգտագործել ձեր տեսախցիկը, երբ այցելում եք այս կայք</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} կայքի համար}=2{{website_1} և {website_2} կայքերի համար}=3{{website_1}, {website_2} ու ևս 1 կայքի համար}one{{website_1}, {website_2} ու ևս {more_count} կայքի համար}other{{website_1}, {website_2} ու ևս {more_count} կայքի համար}}</translation>
 <translation id="8184895727539791845">Որպեսզի Gemini-ին հասանելի դարձնեք ձեր տեսախցիկը, այն միացրեք iOS-ի կարգավորումներում</translation>
 <translation id="8185076488803799132">Ներմուծել</translation>
@@ -2504,7 +2503,6 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8674716540979958118">Դուք ունեք կոտրված գաղտնաբառեր։</translation>
 <translation id="8679900250380464358">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="8680787084697685621">Հաշվի մուտքի տվյալները հնացած են:</translation>
-<translation id="868648444055742370">«<ph name="SITE_DOMAIN" />» կայքին արգելված է օգտագործել ձեր խոսափողը</translation>
 <translation id="8690752723634292147">Հաստատեք ջնջումը</translation>
 <translation id="8692107307702113268">Գաղտնաբառը պարունակում է ավելի քան 1000 նիշ</translation>
 <translation id="8692689525339542358">Պաշտպանեք ձեզ վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից։</translation>

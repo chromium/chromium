@@ -726,7 +726,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="22081806969704220">Salv 3</translation>
 <translation id="2210794033760923560">Laadi aruanne üles</translation>
 <translation id="2212735316055980242">Reeglit ei leitud</translation>
-<translation id="2213606439339815911">Kirjete toomine ...</translation>
 <translation id="2213612003795704869">Leht prinditakse</translation>
 <translation id="2214086901479959524">Värskendage Chrome'i, et jätkata oma jagatud vahelehegruppide kasutamist</translation>
 <translation id="2214453882118345682">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat.</translation>
@@ -823,6 +822,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2356941001189392209">Piiratud loend külastatud lehtede URL-idest, kus toimuvad pärandtehnoloogia sündmused</translation>
 <translation id="2357312461142072202">{NUM_TABS,plural, =1{Jagatakse ühte vahelehte}other{Jagatakse {NUM_TABS} vahelehte}}</translation>
 <translation id="2357481397660644965">Teie seadet haldab <ph name="DEVICE_MANAGER" /> ja teie kontot haldab <ph name="ACCOUNT_MANAGER" />.</translation>
+<translation id="2358479643736965923">Vaadake oma Google'i AI otsingu vastust sellel vahelehel</translation>
 <translation id="2359629602545592467">Mitu</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="236000571258713023">Sõidukid</translation>
@@ -1141,6 +1141,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2925032407415783182">Sündmuse pileti salvestamine Walletisse</translation>
 <translation id="2925454999967523701">Nupp Loo dokument, aktiveerige nupp, et luua kiiresti uus Google'i dokument</translation>
 <translation id="2925673989565098301">Kohaletoimetamisviis</translation>
+<translation id="2927328994673424423">2 nädalat tagasi</translation>
 <translation id="2928426578619531300">Kasutaja on seotud</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930531075747147366">Vaheleht teie muust seadmest</translation>
@@ -1275,7 +1276,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3141337053413339205">Lülitage sellele vahelehele.</translation>
 <translation id="3144458715650412431">Testreeglid on rakendatud. Vaadake ja lähtestage neid lehel chrome://policy/test. Administraatori reegleid ei rakendata.</translation>
 <translation id="3145945101586104090">Vastuse dekodeerimine ebaõnnestus</translation>
-<translation id="3149865382039202168">Salvestage oma teave teenuses <ph name="GOOGLE_WALLET_TITLE" />, et Google’i teenustes kiiremini tegutseda, näiteks vorme täita. Seda, <ph name="HOW_INFO_IS_USED_LINK" />, saate hallata konto <ph name="ACCOUNT" /> privaatse pääsme seadetes. <ph name="PRIVACY_POLICY_LINK" /></translation>
 <translation id="3150653042067488994">Serveris ilmnes ajutine viga</translation>
 <translation id="3150889484970506196">Nupp Loo arvutustabel, aktiveerige nupp, et luua kiiresti uus Google'i arvutustabel</translation>
 <translation id="3154506275960390542">See leht sisaldab vormi, mille esitamine ei pruugi olla turvaline. Teised võivad andmete edastamisel neid vaadata või ründaja võib serverile saadetavaid andmeid muuta.</translation>
@@ -1521,7 +1521,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3558335486599406178">IBAN on salvestatud Google Walletisse.</translation>
 <translation id="3558573058928565255">Päev</translation>
 <translation id="3559897352860026926">Paluge oma administraatoril kinnitada teenuse <ph name="CLOUD_PROVIDER" /> konfiguratsiooniseaded.</translation>
-<translation id="3560824484345057728">Kuva seotud saidid</translation>
 <translation id="3566021033012934673">Teie ühendus ei ole privaatne</translation>
 <translation id="3566336457819493938">215 × 315 mm</translation>
 <translation id="3566681680543111735">Kopeeri variantide string</translation>
@@ -2164,7 +2163,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4603727370377253901">Lendude broneeringud</translation>
 <translation id="4607608436550361748">Vaadake Chrome'i nõuandeid</translation>
 <translation id="460848736049414407">Administraator on blokeerinud</translation>
-<translation id="4610279718074907952">See sait on omaniku <ph name="SET_OWNER" /> määratud grupis, mis näeb teie tegevusi</translation>
 <translation id="4612631413844865947">Teie tellimuse töötlemisel veebisaidil <ph name="MERCHANT_ORIGIN" /> makserakenduse <ph name="PAYMENT_APP_ORIGIN" /> kaudu ilmnes viga.</translation>
 <translation id="4612904677925722054">See sait võib sisaldada täiskasvanutele mõeldud sisu. Veebisaidi külastamiseks vajad vanema või eestkostja luba.</translation>
 <translation id="4613873770449493819">URL peab viitama teenuse <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> domeenile.</translation>
@@ -3711,7 +3709,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="7173338713290252554">Hinna ajalugu kogu veebis</translation>
 <translation id="7174545416324379297">Liidetud</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
-<translation id="7180611975245234373">Värskenda</translation>
 <translation id="7181261019481237103">Ava inkognito aken</translation>
 <translation id="7182878459783632708">Reegleid pole määratud</translation>
 <translation id="7186833457841277072">Ümbrik (tindiprinter)</translation>
@@ -4177,7 +4174,6 @@ Lisateave:
 <translation id="7932579305932748336">Kate</translation>
 <translation id="79338296614623784">Sisestage kehtiv telefoninumber</translation>
 <translation id="7934414805353235750"><ph name="URL" /> soovib esitada kaitstud sisu. Google kontrollib teie seadme identiteeti.</translation>
-<translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7935520077478121175">Liikumisandurid on lubatud</translation>
 <translation id="7937163678541954811">Selle kaardi CVC krüpteeritakse ja salvestatakse teie seadmesse, et saaksite kiiremini maksta</translation>
 <translation id="7937554595067888181">Aegub <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -4225,7 +4221,6 @@ Lisateave:
 <translation id="7999482381722829925">Loo prioriseeritud, ruumipõhine põhjaliku koristamise kontroll-leht, mis keskendub sageli vahele jäävatele kohtadele</translation>
 <translation id="8001912761979890298">See server ei suutnud tõestada, et tegemist on domeeniga <ph name="DOMAIN" />, kuna kasutab turbesertifikaati, mida Chromium või teie süsteemi veebiliikluse krüpteerimise seadistus ei usalda. Põhjuseks võib olla vale seadistus või teie ühendusele juurdepääsu saanud ründaja. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Kuva sertifikaat<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="800218591365569300">Sulgege muud vahelehed või programmid, et mälu vabastada.</translation>
-<translation id="8002230960325005199">Seotud saitide nägemine uuel vahelehel</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />”</translation>
 <translation id="8004582292198964060">Brauser</translation>
 <translation id="8009225694047762179">Halda paroole</translation>
@@ -4266,7 +4261,6 @@ Lisateave:
 <translation id="8079976827192572403">Ohtlik sait</translation>
 <translation id="8086971161893892807">Mustand</translation>
 <translation id="8087558780672230449">Rakenduse <ph name="APP_ORIGIN" /> laadimine, et hallata teie makset aadressil <ph name="MERCHANT_ORIGIN" />.</translation>
-<translation id="8088680233425245692">Artikli kuvamine ebaõnnestus.</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
 <translation id="8091372947890762290">Aktiveerimine on serveris ootel</translation>
 <translation id="8092254339843485299">6 × 8 tolli</translation>
@@ -4906,7 +4900,6 @@ Lisateave:
 <translation id="9199905725844810519">Printimine on blokeeritud</translation>
 <translation id="9204089334327209740">Üleslaadimise järel saate faile muuta teenuses <ph name="CLOUD_PROVIDER" />. Kohalikud failid, sh prügikastis olevad failid eemaldatakse automaatselt.</translation>
 <translation id="9205078245616868884">Teie andmed on krüpteeritud teie sünkroonimisparooliga. Sisestage see sünkroonimise alustamiseks.</translation>
-<translation id="9207861905230894330">Artikli lisamine ebaõnnestus.</translation>
 <translation id="9209339767782560829">Teie sisselogimise sertifikaadi kasutamisel tekkis probleem.</translation>
 <translation id="9210152531668884481">Sobib</translation>
 <translation id="9213433120051936369">Ilme kohandamine</translation>

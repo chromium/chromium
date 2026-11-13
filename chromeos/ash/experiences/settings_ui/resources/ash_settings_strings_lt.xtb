@@ -56,6 +56,7 @@
 <translation id="1148624853678088576">Viskas nustatyta!</translation>
 <translation id="1149483087970735785">Pagalbinės technologijos</translation>
 <translation id="1150490752229770117">Tai yra paskutinis automatinis programinės įrangos ir saugos naujinys, skirtas „<ph name="DEVICE_TYPE" />“. Kad gautumėte būsimus naujinius, įsigykite naujesnį modelį. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
+<translation id="1152920704813762236">Apie „ChromeOS“</translation>
 <translation id="1155816283571436363">Prisijungiama prie telefono</translation>
 <translation id="1160800016654917722">Langas perkeltas žemyn ir į kairę</translation>
 <translation id="1164015913575846413">„alt“ + paspaudimas</translation>
@@ -94,6 +95,7 @@
 <translation id="126768002343224824">16 k.</translation>
 <translation id="1275936815032730048">paleidimo priemonės klavišas + rodyklė dešinėn</translation>
 <translation id="1280332775949918163">Pritraukti langą</translation>
+<translation id="1285625592773741684">Dabartinis duomenų naudojimo nustatymas yra mobiliojo ryšio duomenys</translation>
 <translation id="1285815028662278915">Jūsų mobiliojo ryšio duomenys gali nepalaikyti viešosios interneto prieigos taško. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1288037062697528143">Nakties šviesa bus įjungta automatiškai saulei leidžiantis</translation>
 <translation id="1288300545283011870">Kalbos ypatybės</translation>
@@ -170,6 +172,7 @@
 <translation id="1536883206862903762">Taip išjungsite plėtinius ir iš naujo nustatysite saugius numatytuosius nustatymus. Skirtukai, failai ir slapukai bus išsaugoti. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Viso ekrano didintuvas</translation>
 <translation id="1539727654733007771">Nenustatyta jokių mobiliojo ryšio tinklų. Atsisiųskite naują <ph name="BEGIN_LINK" />profilį<ph name="END_LINK" />.</translation>
+<translation id="1547295885616600893">„Chrome“ OS pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1547808936554660006">Suprantu, kad įdiegti „eSIM“ kortelės profiliai nebus pašalinti naudojant funkciją „Powerwash“</translation>
 <translation id="1549275686094429035">Įgalinta ARC</translation>
 <translation id="1554640914375980459">Įjungti ekrano mirksėjimą gavus pranešimų. Naudokite mirksėjimo pranešimus apdairiai, jei esate jautrūs šviesai.</translation>
@@ -215,6 +218,7 @@
 <translation id="1648528859488547844">Naudoti „Wi‑Fi“ arba mobiliojo ryšio tinklus vietovei nustatyti</translation>
 <translation id="1650407365859096313">Atidaroma naujame skirtuke, leidimas yra „<ph name="PERMISSION_STATE" />“</translation>
 <translation id="1652326691684645429">Įjungti Bendrinimo netoliese funkciją</translation>
+<translation id="1662146548738125461">Apie „ChromeOS Flex“</translation>
 <translation id="1663698992894057019">Naujausios saugos funkcijos ir programinė įranga naujovinus į naują „Chromebook“ įrenginį</translation>
 <translation id="1665328953287874063">Naudokite slaptažodį arba PIN kodą „<ph name="DEVICE_TYPE" />“ atrakinti</translation>
 <translation id="1667842670298352129">Klausykitės garsiai skaitomo konkretaus teksto. Pirmiausia ekrano apačioje pasirinkite piktogramą „Teksto ištarimas“, tada paryškinkite tekstą. Taip pat galite naudoti sparčiuosius klavišus: paryškinkite tekstą, tada paspauskite paieškos klavišą + S.</translation>
@@ -234,6 +238,7 @@
 <translation id="1719312230114180055">Pastaba: piršto antspaudas gali būti ne toks saugus kaip sudėtingas slaptažodis ar PIN kodas.</translation>
 <translation id="1724801751621173132">Įvesties režimas</translation>
 <translation id="1741190788710022490">Prisitaikantis įkrovimas</translation>
+<translation id="1745732479023874451">Tvarkyti kontaktus</translation>
 <translation id="1751335846119670066">Pagalba skaitant</translation>
 <translation id="1755601632425835748">Teksto dydis</translation>
 <translation id="1761402971842586829">„<ph name="BUTTON_NAME" />“ iš naujo susietas su <ph name="REMAPPING_OPTION" />.</translation>
@@ -263,6 +268,7 @@
 <translation id="184183613002882946">Ne, palikti vieną jungiklį</translation>
 <translation id="1842681835432895345">Išskirti šį ekraną iš atvaizdavimo režimo</translation>
 <translation id="1848219224579402567">Atsijungti, kai dangtis uždarytas</translation>
+<translation id="185970820835152459">Galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Jūsų „Google“ paskyros naudojamos naršyklei „Chromium“, „Play“ parduotuvei, „Gmail“ ir kt. Jei norite kam nors pridėti paskyrą, pvz., šeimos grupės nariui, pridėkite naują asmenį prie „<ph name="DEVICE_TYPE" />“ įrenginio. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="1864400682872660285">Šaltesnio atspalvio</translation>
 <translation id="1866589962721094893">Suteikite „Android“ programoms USB įrenginių valdymo teisę šiame „Chromebook“. Leidimo užklausa bus pateikta kaskart prijungus USB įrenginį. Atskiros „Android“ programos prašys papildomų leidimų.</translation>
 <translation id="1877377290348678128">Etiketė (pasirenkama)</translation>
@@ -334,6 +340,7 @@
 <translation id="2091887806945687916">Garsas</translation>
 <translation id="2097950021134740304">Atšaukti prenumeratos pamiršimą</translation>
 <translation id="2104166991923847969">Automatiškai išjungti viešosios interneto prieigos tašką</translation>
+<translation id="2106831557840787829">„ChromeOS Flex“, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2114995631896158695">Neįdėta jokių SIM kortelių</translation>
 <translation id="2121825465123208577">Keisti dydį</translation>
 <translation id="2127372758936585790">Mažos galios įkroviklis</translation>
@@ -410,6 +417,7 @@
 <translation id="2357330829548294574">Pašalinti <ph name="USER_NAME" /></translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2363475280045770326">Išsaugant konfigūraciją įvyko klaida</translation>
+<translation id="236939127352773362">Kada įrenginiai bendrina netoliese</translation>
 <translation id="237336063998926520">Naudoti IP adresą vietai nustatyti</translation>
 <translation id="2373499590298659902">Naudokite 0, kad paspaustumėte pelės mygtuką ir palaikytumėte</translation>
 <translation id="2375406435414127095">Susieti su telefonu</translation>
@@ -704,6 +712,7 @@
 <translation id="338323348408199233">Blokuoti srautą, jei neprijungtas VPN</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
 <translation id="3385172418915595177">Vietovės nustatymo tikslumo funkcija programoms ir paslaugoms teikia tikslesnę vietovės informaciją. Kad galėtų tai daryti, „Google“ periodiškai apdoroja informaciją apie įrenginio jutiklius ir belaidžius signalus iš jūsų įrenginio, kad galėtų kaupti belaidžio signalo vietovių informaciją. Šie duomenys naudojami neidentifikuojant jūsų, kad būtų galima gerinti vietovės nustatymo tikslumą ir paslaugas pagal vietovę bei bendrai tobulinti, teikti ir prižiūrėti „Google“ paslaugas, pagrįstas „Google“ ir trečiųjų šalių teisėtu interesu tenkinti naudotojų poreikius.</translation>
+<translation id="3387527074123400161">„Chromium“ OS</translation>
 <translation id="3388094447051599208">Išvesties dėklas beveik pilnas</translation>
 <translation id="3390013585654699824">Išsami programos informacija</translation>
 <translation id="3390740059150071453">Žiūrėti į kairę</translation>
@@ -809,6 +818,7 @@
 <translation id="3699624789011381381">El. pašto adresas</translation>
 <translation id="3701028563242674350">Padidinti pelės žymeklį pakračius</translation>
 <translation id="3703699162703116302">Užklausa atnaujinta</translation>
+<translation id="3703994572283698466">„Chrome“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="370649949373421643">Įgalinti „Wi-Fi“</translation>
 <translation id="370665806235115550">Įkeliama...</translation>
 <translation id="3707163604290651814">Šiuo metu prisijungta kaip <ph name="NAME" /></translation>
@@ -816,6 +826,7 @@
 <translation id="3711945201266135623">Rasta spausdintuvų iš spausdinimo serverio: <ph name="NUM_PRINTERS" /></translation>
 <translation id="371370241367527062">Priekinis mikrofonas</translation>
 <translation id="37143699183660101">Žymeklio stabilumas</translation>
+<translation id="3716540481907974026">„ChromeOS Flex“ versija</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3727843212509629024">PIN kodas netinka. Bandykite dar kartą</translation>
 <translation id="3728681439294129328">Konfigūruoti tinklo adresą</translation>
@@ -837,6 +848,7 @@
 <translation id="3786834302860277193">Rodyti kuriamo teksto pabraukimą</translation>
 <translation id="3789841737615482174">Įdiegti</translation>
 <translation id="379509625511193653">Išjungta</translation>
+<translation id="3795971588916395511">„Google Chrome“ OS</translation>
 <translation id="3796215473395753611">„Alt“ + rodyklė aukštyn</translation>
 <translation id="3798670284305777884">Garsiakalbis (vidinis)</translation>
 <translation id="3799128412641261490">Prieigos jungikliu nustatymai</translation>
@@ -876,6 +888,7 @@
 <translation id="3903187154317825986">Įtaisytoji klaviatūra</translation>
 <translation id="3917644013202553949">Nepakanka saugyklos vietos, kad būtų galima sinchronizuoti failus. Pabandykite atlaisvinti vietos.</translation>
 <translation id="3919229493046408863">Išjungti pranešimus, kai įrenginiai yra netoliese</translation>
+<translation id="3923184630988645767">Duomenų naudojimas</translation>
 <translation id="3923494859158167397">Nenustatyta jokių mobiliojo ryšio tinklų</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3925926055063465902">Kiti šio įrenginio naudotojai taip pat gali naudoti šį tinklą</translation>
@@ -901,8 +914,10 @@
 <translation id="3984862166739904574">Sparčiųjų atsakymų apibrėžimas</translation>
 <translation id="3994075804072562819">Suteikite „<ph name="SPECIFIC_NAME" />“ USB įrenginių valdymo teisę.</translation>
 <translation id="3994530503403062649">Planšetinio kompiuterio klavišai</translation>
+<translation id="3997429360543082038">Apie „Chromium“ OS</translation>
 <translation id="4001540981461989979">Paryškinti pelės žymeklį, kai juda</translation>
 <translation id="4005817994523282006">Laiko juostos aptikimo metodas</translation>
+<translation id="4019629340646866719">„Chromium“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Kopijuoti išsamią versijos informaciją</translation>
 <translation id="4028467762035011525">Pridėti įvesties metodų</translation>
@@ -917,6 +932,7 @@
 <translation id="4050931325744810690">Jei norite perjungti į pastarąjį naudotą įvesties metodą, paspauskite <ph name="KEY_CODES" /></translation>
 <translation id="4051177682900543628">paieškos klavišas + rodyklė dešinėn</translation>
 <translation id="405181879009056822">„ChromeOS“ nustatymai</translation>
+<translation id="4054070260844648638">Matoma visiems</translation>
 <translation id="4058720513957747556">„AppSocket“ (TPC/IP)</translation>
 <translation id="4066207411788646768">Patikrinkite ryšį, kad galėtumėte peržiūrėti tinkle pasiekiamus spausdintuvus</translation>
 <translation id="4068776064906523561">Išsaugoti kontroliniai kodai</translation>
@@ -972,6 +988,7 @@
 <translation id="4243624244759495699"><ph name="LOCALE" />, <ph name="GRADE" /> klasė</translation>
 <translation id="4244238649050961491">Rasti daugiau rašiklio programų</translation>
 <translation id="4248401726442101648">Neprijungtas joks fotoaparatas</translation>
+<translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
 <translation id="4249116869350613769">Akumuliatoriaus tausojimo priemonė</translation>
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="425411422794688815">Kažkas nepavyko. Įsitikinkite, kad telefonas netoliese, atrakintas ir jame įjungtas „Bluetooth“ bei „Wi-Fi“ ryšys.</translation>
@@ -1001,6 +1018,7 @@
 <translation id="4312701113286993760">{COUNT,plural, =1{Viena „Google“ paskyra}one{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyra}few{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyros}many{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyros}other{<ph name="EXTRA_ACCOUNTS" /> „Google“ paskyrų}}</translation>
 <translation id="4314497418046265427">Produktyvesnis darbas susiejus telefoną su „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="4314561087119792062">Pridėti naują prieigos taško pavadinimą</translation>
+<translation id="4314815835985389558">Sinchronizavimo tvarkymas</translation>
 <translation id="4320177379694898372">Nėra interneto ryšio</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4325433082696797523">Saugykla ir energija</translation>
@@ -1087,6 +1105,7 @@
 <translation id="4600071396330666617">Pasiūlymų skaičius</translation>
 <translation id="4606933160360542263">Tinkintas klavišų derinys: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4611619000650855880">Kai pasirinktas kairysis pelės mygtukas, naudokite „/“, kad dukart spustelėtumėte</translation>
+<translation id="4613863813562375431">„Chromium“ OS versija</translation>
 <translation id="461661862154729886">Energijos šaltinis</translation>
 <translation id="4617880081511131945">Nepavyko užmegzti ryšio</translation>
 <translation id="4620757807254334872">pelė</translation>
@@ -1136,6 +1155,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4777943778632837590">Konfigūruoti tinklo pavadinimo serverius</translation>
 <translation id="4779083564647765204">Keisti mastelį</translation>
 <translation id="4779766576531456629">Pervardyti „eSIM“ kortelės mobiliojo ryšio tinklą</translation>
+<translation id="4789550509729954245">Rodyti pranešimą, kai įrenginiai bendrina netoliese</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Įgalinti „TrackPoint“ spartinimą</translation>
 <translation id="479664067938200069">Įdiegtos programos iš „<ph name="APP_NAME" />“</translation>
@@ -1196,6 +1216,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4964544790384916627">Įstatyti langą</translation>
 <translation id="4964673849688379040">Tikrinama...</translation>
 <translation id="4967571733817147990">Pelės mygtukų tinkinimas</translation>
+<translation id="4970880042055371251">„Chrome“ OS versija</translation>
 <translation id="4972129977812092092">Spausdintuvo informacijos redagavimas</translation>
 <translation id="4975771730019223894">Programos ženkleliai</translation>
 <translation id="4979263087381759787">Kūrėjo parinktys</translation>
@@ -1275,6 +1296,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5193978546360574373">Bus pašalinta prieiga prie „Google“ disko šiame „Chromebook“ įrenginyje, įskaitant prieigą prie failų, kurie buvo pasiekiami neprisijungus</translation>
 <translation id="5196790039230503600">Atlikite gestą, tada pasukite galvą, kad parodytumėte, kur norite nuleisti elementą. Dar kartą atlikite gestą, kad nuleistumėte jį.</translation>
 <translation id="5197255632782567636">Internetas</translation>
+<translation id="5205484256512407285">Niekada nenaudoti mobiliojo ryšio duomenų perkeliant</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="5208926629108082192">Įrenginio mobiliojo ryšio tinklo informacija</translation>
 <translation id="5208988882104884956">Vidutinio pločio</translation>
@@ -1307,6 +1329,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5331568967879689647">„Chrome“ OS sistemos programa</translation>
 <translation id="5334113802138581043">Prieiga prie mikrofono</translation>
 <translation id="5336689872433667741">Žymeklis ir jutiklinė dalis</translation>
+<translation id="5337926771328966926">Dabartinis įrenginio pavadinimas yra „<ph name="DEVICE_NAME" />“</translation>
 <translation id="5340900621595888432">Siųsti diagnostikos ir naudojimo duomenis</translation>
 <translation id="5369694795837229225">Nustatyti „Linux“ kūrimo aplinką</translation>
 <translation id="5377367976106153749">Įjungti prieigą prie vaizdo kameros?</translation>
@@ -1444,6 +1467,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5833726373896279253">Šiuos nustatymus gali keisti tik savininkas:</translation>
 <translation id="5833746798680181492"><ph name="ALREADY_ASSIGNED_MESSAGE" /> <ph name="CONFLICTING_GESTURES_MESSAGE" /></translation>
 <translation id="583756221537636748">Dėklas</translation>
+<translation id="5840680448799937675">Failai visada bus bendrinami neprisijungus</translation>
 <translation id="5841270259333717135">Eterneto konfigūravimas</translation>
 <translation id="5842497610951477805">„Bluetooth“ įgalinimas</translation>
 <translation id="5846200638699387931">Ryšio sintaksės klaida: <ph name="ERROR_LINE" /></translation>
@@ -1480,6 +1504,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5924438086390153180">Klausti prieš kopijuojant ar perkeliant „Microsoft“ failus į „Google“ diską</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="594048410531370124">Neatpažintas klavišas. Paspauskite bet kurį klavišą, kad atliktumėte veiksmą „<ph name="RESPONSE" />“.</translation>
+<translation id="5942779427914696408">Įrenginio matomumas</translation>
 <translation id="5945192511027649793">Išjungti jutiklinę dalį</translation>
 <translation id="5947651424015173580">Dukart spustelėti pelės klavišu</translation>
 <translation id="594993197557058302">Paspauskite vieną–keturis modifikavimo klavišus („Ctrl“, „Alt“, „Shift“, paieškos arba Paleidimo priemonės) ir dar vieną klavišą. Taip pat galite pasirinkti vieną klavišą.</translation>
@@ -1491,10 +1516,12 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5961545272769624207">Priskirti gestą</translation>
 <translation id="5968022600320704045">Nėra jokių paieškos rezultatų</translation>
 <translation id="5969728632630673489">Sparčiųjų klavišų pranešimo atsisakyta</translation>
+<translation id="5979353814339191480">Ši parinktis taikoma „Chromebook“ įrenginiams, turintiems duomenų planą arba mobiliojo ryšio tinklo USB modemą arba prijungtiems prie perkeliamo viešosios interneto prieigos taško, naudojant įrenginį kaip modemą</translation>
 <translation id="5985556342298151179">„Chrome“ programą įdiegė įrenginio administratorius.</translation>
 <translation id="5986442691296752186">Suteikite „Linux“ programoms USB įrenginių valdymo teisę.</translation>
 <translation id="598810097218913399">Pašalinti priskyrimą</translation>
 <translation id="5988563937187882754">Pažiūrėti į dešinę</translation>
+<translation id="5990266201903445068">Tik „Wi-Fi“</translation>
 <translation id="5992225669837656567">Visos pelės atjungtos</translation>
 <translation id="5999630716831179808">Balsai</translation>
 <translation id="6002458620803359783">Pageidaujami balsai</translation>
@@ -1509,6 +1536,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6045114302329202345">Pagrindinis „TrackPoint“ mygtukas</translation>
 <translation id="6048747414605857443">Pasirinkite ir tinkinkite „ChromeVox“ bei funkcijos „Teksto ištarimas“ teksto į kalbą balsus.</translation>
 <translation id="6050189528197190982">Pilkumo tonas</translation>
+<translation id="6054961935262556546">Keisti matomumą</translation>
 <translation id="6059276912018042191">Pastarieji „Chrome“ skirtukai</translation>
 <translation id="6059925163896151826">USB įrenginiai</translation>
 <translation id="6064764629679333574">Pagerinkite „Bluetooth“ mikrofono garso kokybę padidindami mažos skyros garsą į didelę.</translation>
@@ -1567,6 +1595,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6265159465845424232">Klausti prieš kopijuojant ar perkeliant „Microsoft“ failus į „Microsoft OneDrive“</translation>
 <translation id="6265687851677020761">Pašalinti prievadą</translation>
 <translation id="6266532094411434237">Prisijungiama prie „<ph name="DEVICE" />“</translation>
+<translation id="6268381023930128611">Atsijungti nuo „Chromium“?</translation>
 <translation id="6270309713620950855">Nutildyti priminimą</translation>
 <translation id="6274089201566806618">Jungiamasi prie „<ph name="HOST_DEVICE_NAME" />“</translation>
 <translation id="628352644014831790">4 sek.</translation>
@@ -1618,6 +1647,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6453921811609336127">Jei norite perjungti į kitą įvesties metodą, paspauskite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6463488491707167747">Ištrinti šį žodyną</translation>
 <translation id="6463596731306859179">Gaunate nepageidaujamų iššokančiųjų langų ar kitos netikėtos veiklos? Kartais įdiegtos programos ir plėtiniai gali pakeisti „ChromeOS“ nustatymus jums nežinant.</translation>
+<translation id="6465841119675156448">Be interneto</translation>
 <translation id="6467377768028664108">Jūsų „<ph name="DEVICE_TYPE" />“ tada gali:</translation>
 <translation id="6469557521904094793">Įjungti mobiliojo ryšio tinklą</translation>
 <translation id="6470120577693311302">Mirksėjimo pranešimai</translation>
@@ -1668,6 +1698,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6626581113916585374">Efekto režimas</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6630452975878488444">Pasirinkimo spartusis klavišas</translation>
+<translation id="6632473616050862500">„ChromeOS Flex“ pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6646476869708241165">Išjungti spartųjį susiejimą</translation>
 <translation id="6647690760956378579">Natūralaus balso peržiūra</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> norėtų patvirtinti, kad tai jūs</translation>
@@ -1711,6 +1742,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6775163072363532304">Pasiekiami įrenginiai bus rodomi čia.</translation>
 <translation id="6776729248872343918">Įjungti spartųjį susiejimą</translation>
 <translation id="6777845730143344223">Sužinokite daugiau apie „Passpoint“ prenumeratas</translation>
+<translation id="6779406956731413166">„Chromium“ OS pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6783036716881942511">Pamiršti šį įrenginį?</translation>
 <translation id="6783667414610055871">„Microsoft OneDrive“ nustatymai</translation>
 <translation id="6785915470941880363">Atvirkštinis slinkimas <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -1844,6 +1876,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="7280649757394340890">Teksto į kalbą balso nustatymai</translation>
 <translation id="7282547042039404307">Leidžiama sklandžiai</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7296210096911315575">Svarbi naudojimo ir saugos informacija</translation>
 <translation id="7303485269821975179">Nustatyti „<ph name="DEVICE_TYPE" />“ slaptažodį</translation>
 <translation id="7304030187361489308">Aukštas</translation>
 <translation id="7308643132139167865">Svetainių kalbos</translation>
@@ -1873,6 +1906,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="7409599290172516453">Naujausios nuotraukos</translation>
 <translation id="7414464185801331860">18 k.</translation>
 <translation id="7417435070053325657">Užblokuota programų: <ph name="BLOCKED_APPS_SIZE" /> iš <ph name="APPS_LIST_SIZE" /></translation>
+<translation id="7423425410216218516">Matomumas įjungtas <ph name="MINUTES" /> min.</translation>
 <translation id="7423513079490750513">Pašalinti <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7425037327577270384">Padėkite man rašyti</translation>
 <translation id="7429415133937917139">Imituojama atnaujinama Brailio rašmenų ekrano išvestis
@@ -1920,11 +1954,13 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="7578137152457315135">Kontrolinio kodo nustatymai</translation>
 <translation id="7578692661782707876">Įveskite patvirtinimo kodą.</translation>
 <translation id="7582582252461552277">Rinktis šį tinklą</translation>
+<translation id="7582844466922312471">Duomenys mobiliesiems</translation>
 <translation id="7587806318633605613">Pasiūlymų istorija</translation>
 <translation id="7590883480672980941">Įvesties nustatymai</translation>
 <translation id="7592060599656252486">Kai kurie</translation>
 <translation id="7602173054665172958">Spausdinimo valdymas</translation>
 <translation id="7605163396341021431">Suteikite „Android“ programoms USB įrenginių valdymo teisę šiame „Chromebook“</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7608810328871051088">„Android“ nuostatos</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612655942094160088">Susietų telefono funkcijų įgalinimas.</translation>
@@ -1935,12 +1971,14 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="7632437836497571618">Ieškoti svetainių naudojant saugius ryšius</translation>
 <translation id="7634337648687970851">Vietinių duomenų atkūrimas šiuo metu nepalaikomas.</translation>
 <translation id="7640256527901510478">Jūsų įrenginio IMEI yra <ph name="IMEI_NUMBER" />, o įrenginio serijos numeris – <ph name="SERIAL_NUMBER" />. Šiuos numerius galima naudoti suaktyvinant paslaugą.</translation>
+<translation id="7640308610547854367">Grąžinote ankstesnę „ChromeOS“ versiją. Jei norite gauti naujinių, palaukite, kol bus pasiekiama kita versija.</translation>
 <translation id="7641513591566880111">Naujas profilio pavadinimas</translation>
 <translation id="764178579712141045">Naudotojas (<ph name="USER_EMAIL" />) pridėtas</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (savininkas)</translation>
 <translation id="7648048654005891115">Klavišų susiejimo stilius</translation>
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{Nustatytas 1 kontrolinis kodas}one{Nustatytas {COUNT} kontrolinis kodas}few{Nustatyti {COUNT} kontroliniai kodai}many{Nustatyta {COUNT} kontrolinio kodo}other{Nustatyta {COUNT} kontrolinių kodų}}</translation>
+<translation id="7650677314924139716">Dabartinis duomenų naudojimo nustatymas yra „Tik „Wi-Fi“</translation>
 <translation id="7651400349472467012">Pasiekiamas spartusis viešosios interneto prieigos taškas</translation>
 <translation id="7651784568388208829">„Phone Hub“ užduoties tęsinys</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
@@ -2031,6 +2069,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7912974581251770345">Vertimas</translation>
 <translation id="7915457674565721553">Prisijunkite prie interneto, kad galėtumėte nustatyti tėvų kontrolę</translation>
+<translation id="7917876797003313048">Galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Jūsų „Google“ paskyros naudojamos naršyklei „Chrome“, „Play“ parduotuvei, „Gmail“ ir kt. Jei norite kam nors pridėti paskyrą, pvz., šeimos grupės nariui, pridėkite naują asmenį prie „<ph name="DEVICE_TYPE" />“ įrenginio. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek.</translation>
 <translation id="7920482456679570420">Pridėkite žodžių, kuriuos rašybos tikrinimo funkcija turėtų praleisti</translation>
 <translation id="7921347341284348270">Negalite peržiūrėti telefono pranešimų šioje valdomoje paskyroje. Bandykite dar kartą naudodami kitą paskyrą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -2195,6 +2234,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="8431977087510901105">Žymeklio nustatymai nustatyti iš naujo</translation>
 <translation id="8437209419043462667">JAV</translation>
 <translation id="8439506636278576865">Siūlyti versti puslapius šia kalba</translation>
+<translation id="8449347986464073209">Ištrinti ir atsijungti</translation>
 <translation id="8451512073679317615">Padėjėjas</translation>
 <translation id="8455775311562941553">Prisijungta prie „<ph name="HOST_DEVICE_NAME" />“</translation>
 <translation id="8473540203671727883">Įvesti sakomą tekstą ties pelės žymekliu</translation>
@@ -2320,6 +2360,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="8872774989979382243">Garsumas išjungtas. Įjunkite garsumą.</translation>
 <translation id="888256071122006425">Pelės ir jutiklinės dalies nustatymai</translation>
 <translation id="8885449336974696155">Padėkite tobulinti „ChromeOS“ pateikę ataskaitą apie <ph name="BEGIN_LINK" />dabartinius nustatymus<ph name="END_LINK" /></translation>
+<translation id="8890170499370378450">Gali būti taikomi mobiliojo ryšio duomenų mokesčiai</translation>
 <translation id="8890529496706615641">Nepavyko pervardyti profilio. Bandykite dar kartą arba susisiekite su operatoriumi dėl techninio palaikymo paslaugų.</translation>
 <translation id="8894761918470382415">Duomenų prieigos apsauga išoriniams įrenginiams</translation>
 <translation id="8896830132794747524">Greitesniais pelės judesiais perkelsite žymeklį toliau</translation>
@@ -2345,6 +2386,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="8978939272793553320">„<ph name="DEVICE_NAME" />“ atjungtas</translation>
 <translation id="8980345560318123814">Atsiliepimų ataskaitos</translation>
 <translation id="8981825781894055334">Mažai popieriaus</translation>
+<translation id="8984694057134206124">Būsite matomi visiems <ph name="MINUTES" /> min. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="8985561265504464578">Aptikimo slenkstis</translation>
 <translation id="8986362086234534611">Pamiršti</translation>
 <translation id="8991694323904646277">Nėra fotoaparato</translation>
@@ -2391,6 +2433,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="9098860402274800697">„Google Play“ ir „Android“ programų pašalinimas</translation>
 <translation id="910000385680858937">Leidžiama – <ph name="PERMISSION_DETAILS" />. Prijunkite mikrofoną prie įrenginio.</translation>
 <translation id="9100416672768993722">Jei norite perjungti į pastarąjį naudotą įvesties metodą, paspauskite <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
+<translation id="9108072915170399168">Dabartinis duomenų naudojimo nustatymas yra „Be interneto“</translation>
 <translation id="9108294543511800041">Dabar galite peržiūrėti naujausias telefono nuotraukas, mediją ir pranešimus</translation>
 <translation id="9109122242323516435">Kad atlaisvintumėte vietos, ištrinkite failus iš įrenginio saugyklos.</translation>
 <translation id="9111330022786356709">Pelės mygtukų pridėjimas arba radimas</translation>

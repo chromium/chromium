@@ -46,6 +46,7 @@
 <translation id="1122849163460178706">’n Paar dinge om te probeer</translation>
 <translation id="112308213915226829">Outoversteek rak</translation>
 <translation id="1129383337808748948">Herlaai <ph name="CONTENT_TITLE" /></translation>
+<translation id="1139368021151541038">Moet minstens een letter of simbool hê</translation>
 <translation id="1142002900084379065">Onlangse foto's</translation>
 <translation id="114221662579355151">Dit gee kameratoegang vir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en webwerwe met die kameratoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="1145593918056169051">Drukker het gestop</translation>
@@ -200,6 +201,7 @@
 <translation id="1526448108126799339">Maak nuwe oortjie in nuwe venster oop</translation>
 <translation id="1536604384701784949">Om <ph name="USER_EMAIL_ADDRESS" /> te gebruik, moet jy eers uit alle rekeninge afmeld. Om af te meld, moet jy Kanselleer kies om terug te gaan. Kies dan die tyd om die statusarea oop te maak en kies Meld af. Meld dan weer by <ph name="USER_EMAIL_ADDRESS_2" /> aan.</translation>
 <translation id="15373452373711364">Groot muismerker</translation>
+<translation id="1538808328818992871">Moet ten minste <ph name="MIN_LENGTH" /> karakters wees</translation>
 <translation id="1545331255323159851">Bekyk jou foon se onlangse foto’s, media en kennisgewings</translation>
 <translation id="1546492247443594934">Lessenaar 2</translation>
 <translation id="1546930421365146760">Vra jou administrateur om hierdie toestel in die Google Admin-konsole op te stel</translation>
@@ -208,6 +210,7 @@
 <translation id="1550523713251050646">Klik vir meer opsies</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="1557622599341396706">Wys lessenaarnaam</translation>
+<translation id="1568242747239041185">Moet twee van die volgende bevat: hoofletters, kleinletters, syfers of simbole</translation>
 <translation id="1569384531973824928">Dit gee toegang vir alle apps en webwerwe met die kamera- en mikrofoontoestemming. Jy sal die webblasy moet herlaai of die app moet herbegin.</translation>
 <translation id="1570235441606255261">Steam-installeerder</translation>
 <translation id="1571697193564730395">Wissel Moenie Steur Nie. <ph name="STATE_TEXT" /></translation>
@@ -409,6 +412,7 @@
 <translation id="2201687081523799384">Vou Google Take in</translation>
 <translation id="2208323208084708176">Verenigde werkskermmodus</translation>
 <translation id="2215920961700443347">Geen internet nie. Koppel aan die internet en probeer weer.</translation>
+<translation id="2220572644011485463">PIN of wagwoord</translation>
 <translation id="2222841058024245321">Lessenaar 7</translation>
 <translation id="2223384056430485343">In ’n verdeelde skerm</translation>
 <translation id="2224075387478458881">Skermopname word nie toegelaat wanneer beskermde inhoud sigbaar is nie</translation>
@@ -424,6 +428,7 @@
 <translation id="2266607665880926261">Muissleutels is onderbreek</translation>
 <translation id="2268731132310444948">Toerstap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Jy sal ’n verbeterde soekbalk kry sodra Launseerder geaktiveer is. Jy kan begin tik om na jou lêers, apps en meer te soek. Jy kan ook antwoorde op vrae oor jou <ph name="PRODUCT_NAME" /> kry.</translation>
 <translation id="2268813581635650749">Meld almal af</translation>
+<translation id="2273432041732361925">Moet nie herhaalde karakters of reekse van 4 of meer bevat nie</translation>
 <translation id="2276987123919776440">15 minute</translation>
 <translation id="2278668501808246459">Begin tans die houerbestuurder</translation>
 <translation id="2282073721614284166">Maak skakel in oortjie oop</translation>
@@ -1057,6 +1062,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4072805772816336153">Probeer later weer</translation>
 <translation id="4077623680826964850">Tel uit wanneer jy VM selflaai of aan dit herkoppel.</translation>
 <translation id="4086921558679520050">Skakel fisieke mikrofoonskakelaar op jou toestel aan</translation>
+<translation id="4093173301198419723">Moet hoofletters, kleinletters, syfers en simbole bevat</translation>
 <translation id="4099874310852108874">'n Netwerkfout het voorgekom.</translation>
 <translation id="4101772068965291327">Maak tuisblad oop</translation>
 <translation id="4102906002417106771">Herbegin om Powerwash uit te voer</translation>
@@ -1277,6 +1283,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4668936527507421457">PIN moet net syfers gebruik</translation>
 <translation id="4672539464599646374">Batterybespaarder is aangeskakel</translation>
 <translation id="4673427585974421255">Hou aan</translation>
+<translation id="467510802200863975">Wagwoorde is nie dieselfde nie</translation>
 <translation id="4677040906536311086">Google-sigblad</translation>
 <translation id="468019262817532242">Niemand kan met jou deel nie</translation>
 <translation id="468293128311738995">Apps op jou foon</translation>
@@ -1300,6 +1307,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4746798685375253449">{0,plural, =1{Dateer toestel binne ’n dag na vorige weergawe op}other{Dateer toestel binne # dae na vorige weergawe op}}</translation>
 <translation id="4747410141429390146">Ontsluit asseblief om kennisgewings te bekyk</translation>
 <translation id="4752784485658729358">Net 6 gestoorde lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een te stoor.</translation>
+<translation id="4753084533826742808">Moet ten minste 1 karakter wees</translation>
 <translation id="4759238208242260848">Aflaaie</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + oppyl</translation>
 <translation id="4762573482154983647">Versteek apps</translation>
@@ -1436,6 +1444,7 @@ Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name=
 <translation id="5144005092084035179">Wissel oudio-invoer?</translation>
 <translation id="5145464978649806571">Jou skerm sal outomaties sluit wanneer jy van jou skerm af wegbeweeg. Jou skerm sal langer wakker bly wanneer jy voor jou toestel is. Jou skerm sal slaap pleks van sluit as sluitskerm gedeaktiveer is.</translation>
 <translation id="5147567197700016471">Ontsluit</translation>
+<translation id="5148285448107770349">Wagwoord moet minstens 8 karakters hê</translation>
 <translation id="5150070631291639005">Privaatheidinstellings</translation>
 <translation id="5155897006997040331">Leesspoed</translation>
 <translation id="5158206172605340248">Aksentmerkkieslys is toegemaak.</translation>
@@ -1556,6 +1565,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai. Of laai oor 'n beperkte verbinding af (heffings kan geld).</translation>
 <translation id="547979256943495781">Rak aan regterkant</translation>
 <translation id="5482873136202102190">, +</translation>
+<translation id="5486261815000869482">Bevestig wagwoord</translation>
 <translation id="5491186829646618080">Fermwareopdaterings is beskikbaar</translation>
 <translation id="5503884284981862082">Maak Google Assistent oop/toe</translation>
 <translation id="550391772491508736">Hervat uitsending</translation>
@@ -1816,6 +1826,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6198252989419008588">Verander PIN</translation>
 <translation id="6199775032047436064">Herlaai huidige bladsy</translation>
 <translation id="6200515304866777730">Nie deur app gesteun nie</translation>
+<translation id="6209589022625766110">Moet minstens 8 karakters lank wees en minstens twee van die volgende bevat: hoofletters, kleinletters, syfers of simbole. Moet nie herhaalde karakters of reekse van 4 of meer bevat nie.</translation>
 <translation id="6210042900243040400">Koppel <ph name="NAME" /> wat vroeër in <ph name="EMAIL" /> gestoor is</translation>
 <translation id="6212580734499190393">Vir 10 min.</translation>
 <translation id="6213808132343683860">Neem gedeeltelike skermskoot of skermopname</translation>
@@ -1850,6 +1861,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6297986260307280218">Stuur gebruik- en diagnostiese data. Help om jou Android-ervaring beter te maak deur diagnostiese, toestel- en appgebruikdata outomaties na Google toe te stuur. Dit sal met stelsel- en appstabiliteit en ander verbeteringe help. Sekere aggregaatdata sal ook Google-apps en -vennote, soos Android-ontwikkelaars, help. Hierdie <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> word deur die eienaar afgedwing. Die eienaar kan kies om diagnostiese en gebruikdata vir hierdie toestel na Google toe te stuur. As jou bykomende Web- en Appaktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Meer inligting oor maatstawwe<ph name="BEGIN_LINK2_END" />Meer inligting<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Pasmaak hierdie toestel in app</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-programme te installeer</translation>
+<translation id="6300478323573969040">Moet minstens 12 karakters lank wees en hoofletters, kleinletters, syfers en simbole bevat. Moet nie herhaalde karakters of reekse van 4 of meer bevat nie.</translation>
 <translation id="6304076460080088478">Maak Incognito-vensters toe of minimeer dit om jou skerm met Google Lens te deursoek</translation>
 <translation id="6309219492973062892">Klik of tik op rakikone 1-8</translation>
 <translation id="6315170314923504164">Stem</translation>
@@ -2022,7 +2034,6 @@ Nuwe installasie</translation>
 <translation id="6782919488259222803">Deursoek huidige bladsy</translation>
 <translation id="6783348167101855071">Gekose onderregterhandvatsel, gebruik pylsleutels om te beweeg</translation>
 <translation id="6786750046913594791">Maak vouer toe</translation>
-<translation id="6792262051831399889">Onbeskikbaar</translation>
 <translation id="6792351896138862473">Kan nie ongesteunde kioskapp begin nie. Laat weet jou admin van hierdie kwessie.</translation>
 <translation id="679368458793552943">Zoem in wanneer vergrootglas aan is</translation>
 <translation id="6794287755901682422">Hierdie item het: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
@@ -2465,6 +2476,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8052898407431791827">Gekopieer na knipbord</translation>
 <translation id="8054466585765276473">Bereken tans batterytyd.</translation>
 <translation id="8063363226185507157">Gesinkroniseerde toeganklikheidsinstellings</translation>
+<translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8076492880354921740">Oortjies</translation>
 <translation id="8079538659226626406">Skermdeling</translation>
 <translation id="8083540854303889870">Gestoor vir later</translation>
@@ -2628,6 +2640,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8555757996376137129">Verwyder huidige lessenaar</translation>
 <translation id="8558521694042102707">Generatiewe KI kan foute maak, insluitend oor mense, so jy moet dit dubbelkontroleer.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> gewysig</translation>
+<translation id="8567946600191652875">Moet minstens 6 karakters lank wees en minstens een letter of simbool bevat</translation>
 <translation id="8569146227972631631">°F</translation>
 <translation id="857201607579416096">Kieslys is na die skerm se hoek regs onder geskuif.</translation>
 <translation id="8581946341807941670">Druk <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> en klik ’n skakel</translation>
@@ -2801,7 +2814,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9034924485347205037">Linux-lêers</translation>
 <translation id="9037818663270399707">Jou verbinding is nie vir alle netwerkverkeer privaat nie</translation>
 <translation id="9047624247355796468">Maak instellings oop vir <ph name="NETWORK_NAME" /></translation>
-<translation id="9050012935252397793">Bluetooth is onbeskikbaar</translation>
 <translation id="9050999376345823055">Druk “.” om te laat gaan</translation>
 <translation id="906458777597946297">Maak venster groot</translation>
 <translation id="9065203028668620118">Wysig</translation>
