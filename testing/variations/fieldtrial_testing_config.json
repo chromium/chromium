@@ -17555,7 +17555,6 @@
             "platforms": [
                 "android",
                 "android_desktop",
-                "chromeos",
                 "ios"
             ],
             "experiments": [
