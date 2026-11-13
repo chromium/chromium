@@ -125,7 +125,11 @@ class OtpCoordinator : public OtpSource::Observer {
   void OnOtpFilled(const OtpTarget& target, const std::string& filled_value);
 
   // Consumes any non-empty OTP field value on `form` across sources and
-  // deliveries for the field's origin, and drops the form's deliveries.
+  // deliveries for the field's origin. Keeps listening for `form`'s OTP fields
+  // because a submission does not imply that the OTP flow ended (e.g. a
+  // single-page app may reject the code and keep the form for a resent OTP);
+  // their deliveries are dropped once the form is removed, re-classified, or
+  // its frame becomes inactive.
   void OnOtpFormSubmitted(const FormData& form);
 
   // OtpSource::Observer:
