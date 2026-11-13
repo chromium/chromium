@@ -392,8 +392,12 @@ source_set("offer_notification_bubble_views") {
   ]
   deps = [
     ":payments_view_util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/common",
     "//components/autofill/core/browser",
+    "//components/autofill/core/common",
     "//components/strings:components_strings",
     "//net",
     "//ui/base/mojom:ui_base_types",

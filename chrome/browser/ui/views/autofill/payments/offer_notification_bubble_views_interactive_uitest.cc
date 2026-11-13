@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,6 +100,22 @@ class OfferNotificationBubbleViewsInteractiveUiTest
   }
 
   TestAutofillClockDeprecated test_clock_;
+};
+
+// Verifies the bubble's terms and conditions link, which is replaced by a
+// "Manage offers" link when the Offers and loyalty cards settings leaf is
+// enabled.
+class
+    OfferNotificationBubbleViewsWithoutOffersAndLoyaltyCardsSettingsInteractiveUiTest
+    : public OfferNotificationBubbleViewsInteractiveUiTest {
+ public:
+  OfferNotificationBubbleViewsWithoutOffersAndLoyaltyCardsSettingsInteractiveUiTest() {
+    offers_and_loyalty_cards_settings_feature_list_.InitAndDisableFeature(
+        features::kAutofillEnableOffersAndLoyaltyCardsSettings);
+  }
+
+ private:
+  base::test::ScopedFeatureList offers_and_loyalty_cards_settings_feature_list_;
 };
 
 // TODO(crbug.com/40285326): This fails with the field trial testing config.
@@ -266,8 +284,9 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
-                       ShowWalletDirectOfferBubble) {
+IN_PROC_BROWSER_TEST_F(
+    OfferNotificationBubbleViewsWithoutOffersAndLoyaltyCardsSettingsInteractiveUiTest,
+    ShowWalletDirectOfferBubble) {
   ShowBubbleForOfferAndVerify();
   ASSERT_TRUE(GetOfferNotificationBubbleViews());
   ASSERT_TRUE(IsIconVisible());
@@ -319,8 +338,9 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_TRUE(close_button->HasFocus());
 }
 
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
-                       ReshowOfferNotificationBubble_OfferDeletedBetweenShows) {
+IN_PROC_BROWSER_TEST_F(
+    OfferNotificationBubbleViewsWithoutOffersAndLoyaltyCardsSettingsInteractiveUiTest,
+    ReshowOfferNotificationBubble_OfferDeletedBetweenShows) {
   ShowBubbleForOfferAndVerify();
   ASSERT_TRUE(GetOfferNotificationBubbleViews());
   ASSERT_TRUE(IsIconVisible());
@@ -372,6 +392,41 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_EQ(GetOfferNotificationPageActionView()->GetTooltipText(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+}
+
+class
+    OfferNotificationBubbleViewsWithOffersAndLoyaltyCardsSettingsInteractiveUiTest
+    : public OfferNotificationBubbleViewsInteractiveUiTest {
+ public:
+  OfferNotificationBubbleViewsWithOffersAndLoyaltyCardsSettingsInteractiveUiTest() {
+    offers_and_loyalty_cards_settings_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableOffersAndLoyaltyCardsSettings);
+  }
+
+ private:
+  base::test::ScopedFeatureList offers_and_loyalty_cards_settings_feature_list_;
+};
+
+// With the Offers and loyalty cards settings leaf enabled, the bubble shows a
+// "Manage offers" link which opens that leaf.
+IN_PROC_BROWSER_TEST_F(
+    OfferNotificationBubbleViewsWithOffersAndLoyaltyCardsSettingsInteractiveUiTest,
+    ShowWalletDirectOfferBubble_ManageOffersLink) {
+  ShowBubbleForOfferAndVerify();
+  ASSERT_TRUE(GetOfferNotificationBubbleViews());
+
+  std::vector<size_t> offsets;
+  EXPECT_EQ(
+      GetOfferNotificationBubbleViews()->wallet_direct_offer_label_->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT_WITH_MANAGE_OFFERS_LINK,
+          std::u16string(), std::u16string(), &offsets));
+
+  // Simulate clicking on the "Manage offers" link.
+  GetOfferNotificationBubbleViews()->OnManageOffersLinkClicked();
+  EXPECT_EQ(
+      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
+      chrome::GetSettingsUrl(chrome::kOffersAndLoyaltyCardsSubPage));
 }
 
 }  // namespace autofill

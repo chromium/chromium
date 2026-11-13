@@ -4,13 +4,18 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -73,9 +78,17 @@ void OfferNotificationBubbleViews::Init() {
   CHECK(offer);
   CHECK(offer->GetOfferDetailsUrl().is_valid());
 
+  // With the Offers and loyalty cards settings leaf enabled, the link takes
+  // the user to that leaf to manage their offers. Otherwise, it opens the
+  // offer's terms and conditions.
+  const bool link_to_settings = base::FeatureList::IsEnabled(
+      features::kAutofillEnableOffersAndLoyaltyCardsSettings);
+
   std::vector<size_t> offsets;
   const std::u16string label_text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT,
+      link_to_settings
+          ? IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT_WITH_MANAGE_OFFERS_LINK
+          : IDS_AUTOFILL_WALLET_DIRECT_OFFER_REMINDER_BODY_TEXT,
       /*a=*/std::u16string(), /*b=*/std::u16string(), &offsets);
   CHECK_EQ(offsets.size(), 2u);
 
@@ -89,9 +102,14 @@ void OfferNotificationBubbleViews::Init() {
   wallet_direct_offer_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   wallet_direct_offer_label_->AddStyleRange(
       gfx::Range(offsets[0], offsets[1]),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &OfferNotificationBubbleViews::OnOfferDetailsLinkClicked,
-          base::Unretained(this))));
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          link_to_settings
+              ? base::BindRepeating(
+                    &OfferNotificationBubbleViews::OnManageOffersLinkClicked,
+                    base::Unretained(this))
+              : base::BindRepeating(
+                    &OfferNotificationBubbleViews::OnOfferDetailsLinkClicked,
+                    base::Unretained(this))));
 }
 
 void OfferNotificationBubbleViews::AddedToWidget() {
@@ -146,6 +164,12 @@ void OfferNotificationBubbleViews::OnOfferDetailsLinkClicked() {
           ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
+}
+
+void OfferNotificationBubbleViews::OnManageOffersLinkClicked() {
+  chrome::ShowSettingsSubPageForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+      chrome::kOffersAndLoyaltyCardsSubPage);
 }
 
 BEGIN_METADATA(OfferNotificationBubbleViews)

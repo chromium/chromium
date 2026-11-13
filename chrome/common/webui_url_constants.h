@@ -581,6 +581,7 @@ inline constexpr char kPaymentsSubPage[] = "payments";
 inline constexpr char kIdentityDocsSubPage[] = "identityDocs";
 inline constexpr char kTravelSubPage[] = "travel";
 inline constexpr char kShoppingSubPage[] = "shopping";
+inline constexpr char kOffersAndLoyaltyCardsSubPage[] = "offersAndLoyaltyCards";
 inline constexpr char kPeopleSubPage[] = "people";
 inline constexpr char kPerformanceSubPage[] = "performance";
 inline constexpr char kPrivacyGuideSubPage[] = "privacy/guide";
