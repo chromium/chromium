@@ -4,7 +4,9 @@
 
 import 'chrome://context-hub/memory_banks_palette/memory_banks_palette.js';
 
-import {browserProxyFactory, MemoryBanksShortcutStatus, PageHandlerRemote} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import {browserProxyFactory, EntryType, MemoryBanksShortcutStatus, PageHandlerRemote} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import type {MemoryBankEntry} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import {matchesMemoryBankEntry, parseSearchQuery} from 'chrome://context-hub/memory_banks/memory_banks_search.js';
 import type {MemoryBanksPaletteElement} from 'chrome://context-hub/memory_banks_palette/memory_banks_palette.js';
 import type {MemoryBanksPaletteSettingsElement} from 'chrome://context-hub/memory_banks_palette/memory_banks_palette_settings.js';
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
@@ -229,5 +231,30 @@ suite('MemoryBanksPalette', () => {
     assertNull(query('#useSuggestedShortcutButton'));
     assertEquals(
         'Set shortcut', query('#chooseShortcutButton')!.textContent.trim());
+  });
+
+  test('MatchesHashTermsAgainstTagsAndText', () => {
+    const parsed = parseSearchQuery('#recipes #sodas tag:dinner');
+    assertEquals('dinner', parsed.tag.join(','));
+    assertEquals('recipes,sodas', parsed.freeform.join(','));
+
+    const entry: MemoryBankEntry = {
+      id: 1n,
+      type: EntryType.kTextSelection,
+      timestamp: {internalValue: 0n},
+      url: '',
+      tabTitle: '',
+      selectedText: 'Refreshing #sodas and beverages',
+      imageUrl: null,
+      tags: ['recipes', 'dinner'],
+      note: null,
+      collection: null,
+    };
+
+    // Matches `#recipes` against `entry.tags`.
+    assertTrue(matchesMemoryBankEntry(entry, parseSearchQuery('#recipes')));
+    // Matches `#sodas` against `entry.selectedText`.
+    assertTrue(matchesMemoryBankEntry(entry, parseSearchQuery('#sodas')));
+    assertFalse(matchesMemoryBankEntry(entry, parseSearchQuery('#coffee')));
   });
 });

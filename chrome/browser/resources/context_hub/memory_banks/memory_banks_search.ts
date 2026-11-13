@@ -121,7 +121,8 @@ export function hasEnumerableValues(qualifier: string): boolean {
  *
  * Supports qualifiers (e.g. `tag:recipes`, `collection:"My Project"`,
  * `type:tab`, `type:selected_text`, `type:image`), quoted phrases, and freeform
- * terms.
+ * terms. A freeform term may start with '#' (e.g. `#recipes`), which is
+ * ignored when matching.
  *
  * @param rawQuery The raw query input string.
  * @return Structured filters split into specific qualifiers and freeform terms.
@@ -176,7 +177,13 @@ export function parseSearchQuery(rawQuery: string): ParsedSearchQuery {
       }
     }
 
-    result.freeform.push(token);
+    // A leading '#' (e.g. "#recipes") is dropped and the term is kept as a
+    // freeform term rather than a tag filter, so it matches tags (stored
+    // without '#') as well as the title, note, and other searchable fields.
+    const freeformTerm = token.startsWith('#') ? token.slice(1) : token;
+    if (freeformTerm) {
+      result.freeform.push(freeformTerm);
+    }
   }
 
   return result;

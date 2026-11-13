@@ -19,7 +19,6 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {MemoryBankEntry, MemoryBankEntryAnnotations, MemoryBankFileAttachment} from '../context_hub.mojom-webui.js';
 import {browserProxyFactory, CopyAttachmentsToClipboardStatus, MemoryBanksShortcutStatus} from '../context_hub.mojom-webui.js';
-import type {ParsedSearchQuery} from '../memory_banks/memory_banks_search.js';
 import {matchesMemoryBankEntry, parseSearchQuery} from '../memory_banks/memory_banks_search.js';
 import {convertMojoTimeToDate, formatEntriesAsMarkdown} from '../memory_banks/memory_banks_utils.js';
 
@@ -233,23 +232,6 @@ export class MemoryBanksPaletteElement extends CrLitElement {
     this.tags = tags || [];
   }
 
-  // TODO(crbug.com/574624499): Move #tag shorthand parsing into
-  // parseSearchQuery() in memory_banks_search.ts so it is unified across all
-  // search interfaces.
-  private parsePaletteSearchQuery(rawQuery: string): ParsedSearchQuery {
-    const parsed = parseSearchQuery(rawQuery);
-    const remainingFreeform: string[] = [];
-    for (const term of parsed.freeform) {
-      if (term.startsWith('#')) {
-        parsed.tag.push(term.slice(1));
-      } else {
-        remainingFreeform.push(term);
-      }
-    }
-    parsed.freeform = remainingFreeform;
-    return parsed;
-  }
-
   private formatRelativeTime(mojoTime?: {internalValue: bigint}|null): string {
     const date = convertMojoTimeToDate(mojoTime);
     if (!date) {
@@ -373,7 +355,7 @@ export class MemoryBanksPaletteElement extends CrLitElement {
 
     // 3. Individual Memories (recent date, newest first)
     if (this.filterType === 'all' || this.filterType === 'memories') {
-      const parsedQuery = this.parsePaletteSearchQuery(queryLower);
+      const parsedQuery = parseSearchQuery(queryLower);
       const entriesToRender = hasSearch ?
           this.sortedEntries.filter(
               e => matchesMemoryBankEntry(e, parsedQuery)) :
