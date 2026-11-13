@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/remote_actor_credential_bottom_sheet_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/check_op.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -118,6 +119,11 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   return configuration;
 }
 
+// Returns the display name of the remote actor.
+std::u16string GetActorName() {
+  return l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_GEMINI_NAME);
+}
+
 }  // namespace
 
 @interface RemoteActorCredentialBottomSheetViewController () <
@@ -141,6 +147,15 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 
   // URL opened when the link in the subtitle is tapped.
   GURL _learnMoreURL;
+
+  // Domain requesting the credentials.
+  NSString* _domain;
+
+  // Whether the sheet shows that there are no saved passwords for `_domain`.
+  BOOL _noPasswordsFound;
+
+  // Subtitle text view, kept to update the subtitle after the view has loaded.
+  __weak UITextView* _subtitleTextView;
 }
 
 - (instancetype)init {
@@ -157,6 +172,11 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  // There is nothing to share, so going back to the remote actor ends the flow.
+  if (_noPasswordsFound) {
+    [self.mutator didCancel];
+    return;
+  }
   [self.mutator didSelectCredentialAtIndex:[self selectedRow]];
 }
 
@@ -181,13 +201,25 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   self.titleTextStyle = UIFontTextStyleLargeTitle;
   self.subtitleTextStyle = UIFontTextStyleSubheadline;
 
-  StringWithTags subtitle = ParseStringWithLinks(l10n_util::GetNSStringF(
-      IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE, kBeginLinkTag, kEndLinkTag,
-      l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_GEMINI_NAME)));
-  self.subtitleString = subtitle.string;
-  _subtitleLinkRange = subtitle.ranges[0];
+  if (_noPasswordsFound) {
+    // Set the subtitle string if the empty state was triggered before load.
+    self.subtitleString = l10n_util::GetNSStringF(
+        IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_SUBTITLE, GetActorName());
+  } else {
+    StringWithTags subtitle = ParseStringWithLinks(
+        l10n_util::GetNSStringF(IDS_REMOTE_ACTOR_SHARING_DIALOG_SUBTITLE,
+                                kBeginLinkTag, kEndLinkTag, GetActorName()));
+    self.subtitleString = subtitle.string;
+    _subtitleLinkRange = subtitle.ranges[0];
+  }
 
   [super viewDidLoad];
+
+  // Styles the no saved passwords subtitle the same way as when the empty
+  // state is shown after the view loaded.
+  if (_noPasswordsFound) {
+    [self replaceLoadedSubtitleText];
+  }
 
   [self adjustTransactionsButtonHorizontalConstraints];
 }
@@ -195,10 +227,8 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 #pragma mark - RemoteActorCredentialBottomSheetConsumer
 
 - (void)setDomain:(NSString*)domain {
-  self.titleString = l10n_util::GetNSStringF(
-      IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE,
-      l10n_util::GetStringUTF16(IDS_REMOTE_ACTOR_GEMINI_NAME),
-      base::SysNSStringToUTF16(domain));
+  _domain = [domain copy];
+  [self updateTitle];
 }
 
 - (void)setSuggestions:(NSArray<FormSuggestion*>*)suggestions {
@@ -209,7 +239,7 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   }
 
   // The suggestions may arrive after the view has loaded.
-  if (self.isViewLoaded) {
+  if (self.viewLoaded) {
     [self reloadTableViewData];
   }
 }
@@ -228,9 +258,35 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
   }
 }
 
+- (void)showNoSavedPasswords {
+  _noPasswordsFound = YES;
+  [self updateTitle];
+
+  self.subtitleString = l10n_util::GetNSStringF(
+      IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_SUBTITLE, GetActorName());
+  [self replaceLoadedSubtitleText];
+
+  ButtonStackConfiguration* configuration = self.configuration;
+  configuration.primaryButtonStyle = ChromeButtonStylePrimary;
+  configuration.primaryActionString = l10n_util::GetNSStringF(
+      IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_BACK_BUTTON, GetActorName());
+  configuration.primaryActionEnabled = YES;
+  configuration.secondaryActionString = nil;
+  [self reloadConfiguration];
+
+  // VoiceOver would otherwise keep reading the previous content.
+  if (self.viewLoaded) {
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    self.titleLabel);
+  }
+}
+
 #pragma mark - ButtonStackConsumer
 
 - (void)setLoading:(BOOL)loading {
+  // Nothing can be shared without saved passwords, so there is no loading
+  // state.
+  CHECK(!_noPasswordsFound);
   self.configuration.primaryButtonStyle =
       loading ? ChromeButtonStylePrimary : ChromeButtonStyleTertiary;
   [super setLoading:loading];
@@ -296,6 +352,11 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 
 - (void)customizeSubtitle:(UITextView*)subtitle {
   [super customizeSubtitle:subtitle];
+  _subtitleTextView = subtitle;
+  // The no saved passwords subtitle has no link.
+  if (_noPasswordsFound) {
+    return;
+  }
   subtitle.delegate = self;
   subtitle.selectable = YES;
   NSMutableAttributedString* newSubtitle = [[NSMutableAttributedString alloc]
@@ -327,6 +388,42 @@ ButtonStackConfiguration* SetUpButtonConfiguration() {
 }
 
 #pragma mark - Private
+
+// Sets the title for `_domain` matching the current state, updating the title
+// label if the view has already loaded.
+- (void)updateTitle {
+  std::u16string domain = base::SysNSStringToUTF16(_domain);
+  self.titleString =
+      _noPasswordsFound
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_TITLE, domain)
+          : l10n_util::GetNSStringF(IDS_REMOTE_ACTOR_SHARING_DIALOG_TITLE,
+                                    GetActorName(), domain);
+  self.titleLabel.text = self.titleString;
+}
+
+// Replaces the loaded subtitle with `subtitleString`. The text is rebuilt with
+// explicit attributes so none of the link styling carries over.
+- (void)replaceLoadedSubtitleText {
+  if (!_subtitleTextView) {
+    return;
+  }
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.alignment = _subtitleTextView.textAlignment;
+  NSDictionary* attributes = @{
+    NSFontAttributeName : _subtitleTextView.font
+        ?: [UIFont preferredFontForTextStyle:self.subtitleTextStyle],
+    NSForegroundColorAttributeName : _subtitleTextView.textColor
+        ?: [UIColor colorNamed:kTextSecondaryColor],
+    NSParagraphStyleAttributeName : paragraphStyle,
+  };
+  _subtitleTextView.attributedText =
+      [[NSAttributedString alloc] initWithString:self.subtitleString
+                                      attributes:attributes];
+  _subtitleTextView.selectable = NO;
+  _subtitleTextView.delegate = nil;
+}
 
 // Opens `_learnMoreURL` in a new tab, closing the presented views first.
 - (void)openLearnMoreURL {
