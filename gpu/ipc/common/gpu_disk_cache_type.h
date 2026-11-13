@@ -34,10 +34,11 @@ enum class GpuDiskCacheType {
 GPU_IPC_COMMON_EXPORT std::ostream& operator<<(std::ostream& s,
                                                const GpuDiskCacheType& type);
 
-static constexpr std::array<GpuDiskCacheType, 3> kGpuDiskCacheTypes = {
+// Per-StoragePartition GPU disk cache types. Excludes kDawnGraphite, which
+// only uses the global reserved kGraphiteDawnGpuDiskCacheHandle.
+static constexpr std::array<GpuDiskCacheType, 2> kGpuDiskCacheTypes = {
     GpuDiskCacheType::kGlShaders,
     GpuDiskCacheType::kDawnWebGPU,
-    GpuDiskCacheType::kDawnGraphite,
 };
 GPU_IPC_COMMON_EXPORT base::FilePath::StringType GetGpuDiskCacheSubdir(
     GpuDiskCacheType type);
