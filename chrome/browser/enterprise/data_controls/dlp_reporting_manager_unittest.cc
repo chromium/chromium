@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,11 +31,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
-#include "components/user_manager/user_names.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::_;
@@ -84,20 +84,6 @@ class DlpReportingManagerTest : public testing::Test {
     EXPECT_EQ(events_[event_number].mode(), DlpPolicyEvent_Mode_BLOCK);
     EXPECT_EQ(events_[event_number].triggered_rule_name(), kRuleName);
     EXPECT_EQ(events_[event_number].triggered_rule_id(), kRuleId);
-  }
-
-  void ReportEventAndCheckUser(user_manager::UserManager* user_manager,
-                               const AccountId& account_id,
-                               const user_manager::User* user,
-                               DlpPolicyEvent_UserType DlpUserType,
-                               unsigned int event_number) {
-    user_manager->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-    manager_->ReportEvent(kCompanyUrl, Rule::Restriction::kPrinting,
-                          Rule::Level::kBlock, kRuleName, kRuleId);
-    ASSERT_EQ(events_.size(), event_number + 1);
-    EXPECT_EQ(events_[event_number].user_type(), DlpUserType);
-    user_manager->RemoveUserFromList(account_id);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -209,40 +195,79 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(DlpReportingManagerTest, UserType) {
-  auto* user_manager = new ash::FakeChromeUserManager();
-  user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
+class DlpReportingManagerUserTypeTest : public DlpReportingManagerTest {
+ protected:
+  void SetUp() override {
+    DlpReportingManagerTest::SetUp();
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+  }
 
-  AccountId regular_account_id = AccountId::FromUserEmail("user@example.com");
-  const auto* regular_user = user_manager->AddUser(regular_account_id);
-  AccountId mgs_account_id =
-      AccountId::FromUserEmail("managed-guest-session@example.com");
-  const auto* mgs_user = user_manager->AddPublicAccountUser(mgs_account_id);
-  AccountId kiosk_account_id = AccountId::FromUserEmail("kiosk@example.com");
-  const auto* kiosk_user =
-      user_manager->AddKioskChromeAppUser(kiosk_account_id);
-  AccountId web_kiosk_account_id =
-      AccountId::FromUserEmail("web-kiosk@example.com");
-  const auto* web_kiosk_user =
-      user_manager->AddKioskWebAppUser(web_kiosk_account_id);
-  AccountId guest_user_id = user_manager::GuestAccountId();
-  const auto* guest_user = user_manager->AddGuestUser();
-  AccountId child_user_id = AccountId::FromUserEmail("child@example.com");
-  const auto* child_user = user_manager->AddChildUser(child_user_id);
+  void TearDown() override {
+    user_session_test_environment_.reset();
+    DlpReportingManagerTest::TearDown();
+  }
 
-  ReportEventAndCheckUser(user_manager, regular_account_id, regular_user,
-                          DlpPolicyEvent_UserType_REGULAR, 0u);
-  ReportEventAndCheckUser(user_manager, mgs_account_id, mgs_user,
-                          DlpPolicyEvent_UserType_MANAGED_GUEST, 1u);
-  ReportEventAndCheckUser(user_manager, kiosk_account_id, kiosk_user,
-                          DlpPolicyEvent_UserType_KIOSK, 2u);
-  ReportEventAndCheckUser(user_manager, web_kiosk_account_id, web_kiosk_user,
-                          DlpPolicyEvent_UserType_KIOSK, 3u);
-  ReportEventAndCheckUser(user_manager, guest_user_id, guest_user,
-                          DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 4u);
-  ReportEventAndCheckUser(user_manager, child_user_id, child_user,
-                          DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 5u);
-  EXPECT_EQ(manager_->events_reported(), 6u);
+  // Logs in the `user`, reports an event, and checks the user type in
+  // the event.
+  void LogInAndCheckUserType(const user_manager::User* user,
+                             DlpPolicyEvent_UserType expected_user_type) {
+    CHECK(user);
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    manager_->ReportEvent(kCompanyUrl, Rule::Restriction::kPrinting,
+                          Rule::Level::kBlock, kRuleName, kRuleId);
+    ASSERT_EQ(events_.size(), 1u);
+    EXPECT_EQ(events_[0].user_type(), expected_user_type);
+    EXPECT_EQ(manager_->events_reported(), 1u);
+  }
+
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+};
+
+TEST_F(DlpReportingManagerUserTypeTest, Regular) {
+  LogInAndCheckUserType(user_session_test_environment_->AddRegularUser(
+                            AccountId::FromUserEmailGaiaId(
+                                "user@example.com", GaiaId("fake-gaia-id"))),
+                        DlpPolicyEvent_UserType_REGULAR);
+}
+
+TEST_F(DlpReportingManagerUserTypeTest, ManagedGuestSession) {
+  LogInAndCheckUserType(
+      user_session_test_environment_->AddPublicAccountUser(
+          policy::GenerateDeviceLocalAccountUserId(
+              "managed-guest-session",
+              policy::DeviceLocalAccountType::kPublicSession)),
+      DlpPolicyEvent_UserType_MANAGED_GUEST);
+}
+
+TEST_F(DlpReportingManagerUserTypeTest, KioskChromeApp) {
+  LogInAndCheckUserType(
+      user_session_test_environment_->AddKioskChromeAppUser(
+          policy::GenerateDeviceLocalAccountUserId(
+              "kiosk", policy::DeviceLocalAccountType::kKioskApp)),
+      DlpPolicyEvent_UserType_KIOSK);
+}
+
+TEST_F(DlpReportingManagerUserTypeTest, KioskWebApp) {
+  LogInAndCheckUserType(
+      user_session_test_environment_->AddKioskWebAppUser(
+          policy::GenerateDeviceLocalAccountUserId(
+              "web-kiosk", policy::DeviceLocalAccountType::kWebKioskApp)),
+      DlpPolicyEvent_UserType_KIOSK);
+}
+
+TEST_F(DlpReportingManagerUserTypeTest, Guest) {
+  LogInAndCheckUserType(user_session_test_environment_->AddGuestUser(),
+                        DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE);
+}
+
+TEST_F(DlpReportingManagerUserTypeTest, Child) {
+  LogInAndCheckUserType(user_session_test_environment_->AddChildUser(
+                            AccountId::FromUserEmailGaiaId(
+                                "child@example.com", GaiaId("fake-gaia-id"))),
+                        DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -163,6 +163,12 @@ source_set("unit_tests") {
       "//components/reporting/storage:test_support",
       "//components/user_manager",
     ]
+    if (is_chromeos) {
+      deps += [
+        "//chromeos/ash/components/policy/device_local_account",
+        "//components/session_manager/test:test_support",
+      ]
+    }
   }
 }
 
