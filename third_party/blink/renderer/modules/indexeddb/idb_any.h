@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -111,6 +112,7 @@ class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
                                std::unique_ptr<IDBRecordArray>,
                                int64_t>;
 
+  GC_PLUGIN_IGNORE("std::variant holding Member fields")
   Payload value_;
 };
 

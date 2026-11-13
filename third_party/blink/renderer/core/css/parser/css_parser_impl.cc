@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/types/optional_ref.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -2498,11 +2499,9 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
   if (in_nested_style_rule_) {
     return nullptr;
   }
-  auto func_clear_arena = [&](HeapVector<CSSSelector>* arena) {
-    arena->resize(0);  // See class comment on CSSSelectorParser.
+  absl::Cleanup scope_guard = [&] {
+    arena_.resize(0);  // See class comment on CSSSelectorParser.
   };
-  std::unique_ptr<HeapVector<CSSSelector>, decltype(func_clear_arena)>
-      scope_guard(&arena_, std::move(func_clear_arena));
 
   // Parse the prelude: a dashed ident with an optional parameter list.
   if (stream.Peek().GetType() != kIdentToken &&
@@ -3056,13 +3055,11 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
   if (!in_nested_style_rule_) {
     DCHECK_EQ(0u, arena_.size());
   }
-  auto func_clear_arena = [&](HeapVector<CSSSelector>* arena) {
+  absl::Cleanup scope_guard = [&] {
     if (!in_nested_style_rule_) {
-      arena->resize(0);  // See class comment on CSSSelectorParser.
+      arena_.resize(0);  // See class comment on CSSSelectorParser.
     }
   };
-  std::unique_ptr<HeapVector<CSSSelector>, decltype(func_clear_arena)>
-      scope_guard(&arena_, std::move(func_clear_arena));
 
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kStyle, stream.LookAheadOffset());

@@ -57,12 +57,6 @@ MessagePortDescriptor::~MessagePortDescriptor() {
   Reset();
 }
 
-MojoHandle MessagePortDescriptor::GetMojoHandleForTesting() const {
-  if (!handle_.get())
-    return MOJO_HANDLE_INVALID;
-  return handle_.get().value();
-}
-
 bool MessagePortDescriptor::IsValid() const {
   // |handle_| can be valid or invalid, depending on if we're entangled or
   // not. But everything else should be consistent.

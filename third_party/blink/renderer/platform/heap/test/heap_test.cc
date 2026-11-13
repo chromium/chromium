@@ -99,22 +99,23 @@ class IntWrapper : public GarbageCollected<IntWrapper> {
 };
 std::atomic_int IntWrapper::destructor_calls_{0};
 
-struct IntWrapperHashTraits : GenericHashTraits<IntWrapper> {
-  static uint32_t GetHash(const IntWrapper& key) {
-    return HashInt(static_cast<uint32_t>(key.Value()));
+struct IntWrapperHashTraits : GenericHashTraits<Member<IntWrapper>> {
+  static uint32_t GetHash(const Member<IntWrapper>& key) {
+    return HashInt(static_cast<uint32_t>(key->Value()));
   }
 };
 
 static_assert(IsTraceableV<IntWrapper>,
               "IsTraceable<> template failed to recognize trace method.");
-static_assert(IsTraceableV<HeapVector<IntWrapper>>,
-              "HeapVector<IntWrapper> must be traceable.");
-static_assert(IsTraceableV<HeapDeque<IntWrapper>>,
-              "HeapDeque<IntWrapper> must be traceable.");
-static_assert(IsTraceableV<HeapHashSet<IntWrapper, IntWrapperHashTraits>>,
-              "HeapHashSet<IntWrapper> must be traceable.");
+static_assert(IsTraceableV<HeapVector<Member<IntWrapper>>>,
+              "HeapVector<Member<IntWrapper>> must be traceable.");
+static_assert(IsTraceableV<HeapDeque<Member<IntWrapper>>>,
+              "HeapDeque<Member<IntWrapper>> must be traceable.");
+static_assert(
+    IsTraceableV<HeapHashSet<Member<IntWrapper>, IntWrapperHashTraits>>,
+    "HeapHashSet<Member<IntWrapper>> must be traceable.");
 static_assert(IsTraceableV<HeapHashMap<int, Member<IntWrapper>>>,
-              "HeapHashMap<int, IntWrapper> must be traceable.");
+              "HeapHashMap<int, Member<IntWrapper>> must be traceable.");
 
 }  // namespace
 

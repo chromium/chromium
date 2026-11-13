@@ -75,10 +75,6 @@ class BLINK_COMMON_EXPORT MessagePortDescriptor {
   const base::UnguessableToken& id() const { return id_; }
   uint64_t sequence_number() const { return sequence_number_; }
 
-  // Helper accessor for getting the underlying Mojo handle. Makes tests a
-  // little easier to write.
-  MojoHandle GetMojoHandleForTesting() const;
-
   // Returns true if this is a valid descriptor.
   bool IsValid() const;
 

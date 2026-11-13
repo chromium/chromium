@@ -27,8 +27,8 @@ class CounterStyleTest : public PageTestBase {
                 ->FindCounterStyleAcrossScopes(name_string);
   }
 
-  const CounterStyle AddCounterStyle(const char* name,
-                                     const String& descriptors) {
+  const CounterStyle& AddCounterStyle(const char* name,
+                                      const String& descriptors) {
     StringBuilder declaration;
     declaration.Append("@counter-style ");
     declaration.Append(name);
