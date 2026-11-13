@@ -240,7 +240,7 @@ bool CanvasRenderingContext2D::IsComposited() const {
     return false;
   }
 
-  if (!HasSharedImageBacking()) {
+  if (!HasSharedImagePool()) {
     return false;
   }
 
@@ -1074,7 +1074,7 @@ void CanvasRenderingContext2D::CreateBacking() {
   const bool use_gpu_raster = canvas()->ShouldTryToUseGpuRaster() &&
                               canvas()->ShouldAccelerate2dContext();
 
-  // If using GPU compositing, try to create a SharedImage-backed provider if
+  // If using GPU compositing, try to create a SharedImage pool if
   // either (a) using GPU raster or (b) using CPU raster and want to use
   // mappable SharedImage for Canvas2D.
   // The content=drawable check is so that html-in-canvas uses the shared image
@@ -1102,12 +1102,11 @@ void CanvasRenderingContext2D::CreateBacking() {
       }
     }
 
-    CreateSharedImageProvider(raster_mode, shared_image_usage_flags);
+    CreateSharedImagePool(raster_mode, shared_image_usage_flags);
   } else if (!is_gpu_compositing_enabled) {
-    // Create a CanvasResourceProvider that uses a SharedImage backed by a
-    // shared-memory buffer that can be written by canvas SW raster and read by
-    // the SW compositor.
-    CreateSharedImageProviderForSoftwareCompositor();
+    // Create a SharedImage pool backed by a shared-memory buffer that can be
+    // written by canvas SW raster and read by the SW compositor.
+    CreateSharedImagePoolForSoftwareCompositor();
   }
   if (!HasBacking()) {
     // The final fallback is to raster into a bitmap that will then either be

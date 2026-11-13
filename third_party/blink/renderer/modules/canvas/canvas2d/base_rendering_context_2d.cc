@@ -209,7 +209,7 @@ BaseRenderingContext2D::~BaseRenderingContext2D() {
     // Last chance for outstanding GPU timers to record metrics.
     CheckGpuTimers(RasterInterface());
   }
-  ResetSharedImageBacking();
+  ResetSharedImagePool();
   if (sw_image_provider_context_provider_wrapper_) {
     sw_image_provider_context_provider_wrapper_->RemoveObserver(this);
   }
@@ -219,7 +219,7 @@ const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
   return recorder_.get();
 }
 
-bool BaseRenderingContext2D::HasSharedImageBacking() const {
+bool BaseRenderingContext2D::HasSharedImagePool() const {
   return image_pool_ != nullptr;
 }
 
@@ -271,7 +271,7 @@ bool BaseRenderingContext2D::IsBackingAccelerated() const {
   return is_accelerated_;
 }
 
-void BaseRenderingContext2D::ResetSharedImageBacking() {
+void BaseRenderingContext2D::ResetSharedImagePool() {
   if (!image_pool_) {
     return;
   }
@@ -356,7 +356,7 @@ void BaseRenderingContext2D::ResetBacking() {
     CheckGpuTimers(RasterInterface());
   }
   ClearGpuTimers();
-  ResetSharedImageBacking();
+  ResetSharedImagePool();
   surface_.reset();
   canvas_image_provider_.reset();
   cached_snapshot_.reset();
@@ -403,7 +403,7 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
   return result;
 }
 
-void BaseRenderingContext2D::CreateSharedImageProvider(
+void BaseRenderingContext2D::CreateSharedImagePool(
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   CHECK(!HasBacking());
@@ -415,7 +415,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
       SharedGpuContext::ContextProviderWrapper();
 
   // If the context is lost we don't want to re-create it here, the resulting
-  // resource provider would be invalid anyway.
+  // SharedImage pool would be invalid anyway.
   if (!context_provider_wrapper ||
       !context_provider_wrapper->ContextProvider().RasterInterface() ||
       context_provider_wrapper->ContextProvider().IsContextLost()) {
@@ -578,19 +578,19 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
 
     // An error might have occurred while clearing.
     if (IsGpuContextLost()) {
-      ResetSharedImageBacking();
+      ResetSharedImagePool();
       canvas_image_provider_.reset();
       return;
     }
   } else if (!resource_) {
-    ResetSharedImageBacking();
+    ResetSharedImagePool();
     return;
   }
 
   if (raster_mode == RasterMode::kCPU) {
     CreateSoftwareSurface();
     if (!surface_) {
-      ResetSharedImageBacking();
+      ResetSharedImagePool();
       return;
     }
   } else {
@@ -604,7 +604,7 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
   }
 }
 
-void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
+void BaseRenderingContext2D::CreateSharedImagePoolForSoftwareCompositor() {
   CHECK(!HasBacking());
   CHECK(!SharedGpuContext::IsGpuCompositingEnabled());
 
@@ -631,7 +631,7 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
       kMaxRecycledCanvasResources);
   CreateSoftwareSurface();
   if (!surface_) {
-    ResetSharedImageBacking();
+    ResetSharedImagePool();
     return;
   }
 

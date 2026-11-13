@@ -395,12 +395,11 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  bool clear_frame,
                                  FlushReason reason) {}
 
-  bool HasSharedImageBacking() const;
+  bool HasSharedImagePool() const;
   void SetResourceRecyclingEnabled(bool value);
-  void CreateSharedImageProvider(
-      RasterMode raster_mode,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
-  void CreateSharedImageProviderForSoftwareCompositor();
+  void CreateSharedImagePool(RasterMode raster_mode,
+                             gpu::SharedImageUsageSet shared_image_usage_flags);
+  void CreateSharedImagePoolForSoftwareCompositor();
   void CreateSoftwareSurface();
   void RecordBackingHistograms();
   scoped_refptr<StaticBitmapImage> Snapshot();
@@ -455,7 +454,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
 
-  void ResetSharedImageBacking();
+  void ResetSharedImagePool();
   void ClearUnusedResources();
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
   gpu::raster::RasterInterface* RasterInterface() const;

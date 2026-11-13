@@ -223,7 +223,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     // IOSurface via ProduceVideo(). A standalone OffscreenCanvas has no
     // SCANOUT, so MACOS_VIDEO_TOOLBOX marks it as eligible. The usage must be
     // decided at allocation time, and it is not allocation-neutral:
-    // BaseRenderingContext2D::CreateSharedImageProvider() allocates BGRA_8888
+    // BaseRenderingContext2D::CreateSharedImagePool() allocates BGRA_8888
     // instead of RGBA_8888 when it is present, which ANGLE and
     // VTVideoEncodeAccelerator require for an IOSurface, and on
     // Graphite-Dawn-Vulkan it forces an IOSurface backing instead of
@@ -237,13 +237,12 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     }
 #endif
 
-    CreateSharedImageProvider(
-        use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
-        shared_image_usage_flags);
+    CreateSharedImagePool(use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
+                          shared_image_usage_flags);
   } else if (host->HasPlaceholderCanvas()) {
     // using the software compositor
     host->GetOrCreateResourceDispatcher();
-    CreateSharedImageProviderForSoftwareCompositor();
+    CreateSharedImagePoolForSoftwareCompositor();
   }
 
   if (!HasBacking()) {
@@ -251,7 +250,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     // path is normal for software-rendered OffscreenCanvases that have no
     // placeholder canvas. If there is a placeholder, its content will not be
     // visible on screen, but at least readbacks will work. Failure to create
-    // a SharedImage provider above is a sign that the graphics
+    // a SharedImage pool above is a sign that the graphics
     // pipeline is in a bad state (e.g. gpu process crashed, out of memory)
     CreateSoftwareSurface();
   }

@@ -136,7 +136,7 @@ class TestRenderingContext2D final
     return GetPaintCanvas();
   }
   using BaseRenderingContext2D::ConfigureRecorder;
-  using BaseRenderingContext2D::CreateSharedImageProvider;
+  using BaseRenderingContext2D::CreateSharedImagePool;
   using BaseRenderingContext2D::CreateSoftwareSurface;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::Snapshot;
@@ -431,7 +431,7 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
           gpu::SHARED_IMAGE_USAGE_SCANOUT) {
     auto* context = MakeGarbageCollected<TestRenderingContext2D>(
         scope, CanvasContextCreationAttributesCore(), kSize);
-    context->CreateSharedImageProvider(raster_mode, shared_image_usage_flags);
+    context->CreateSharedImagePool(raster_mode, shared_image_usage_flags);
     return context;
   }
 
