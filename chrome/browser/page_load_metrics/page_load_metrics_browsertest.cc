@@ -3251,6 +3251,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 class PageLoadMetricsBrowserTestTerminatedPage
     : public PageLoadMetricsBrowserTest {
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
+    // Disable in-process stack traces so intentional child process crashes
+    // (e.g. chrome://crash) do not time out symbolizing the stack trace.
+    command_line->AppendSwitch(switches::kDisableInProcessStackTraces);
+  }
+
   void SetUpOnMainThread() override {
     PageLoadMetricsBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
