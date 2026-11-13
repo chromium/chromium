@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -23,9 +24,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/features.h"
-#include "chrome/browser/ttc/core/lock_or_suspend_detector.h"
 #include "chrome/browser/ttc/core/pointer_input_observer.h"
 #include "chrome/browser/ttc/core/pointer_tracker.h"
+#include "chrome/browser/ttc/core/session_end_condition_detector.h"
 #include "chrome/browser/ttc/core/session_inactivity_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view.h"
@@ -70,6 +71,20 @@ PointerTracker::Config PointerTrackerConfigFromFeatureParams() {
   return config;
 }
 
+std::string_view SessionEndReasonToString(
+    SessionEndConditionDetector::Reason reason) {
+  switch (reason) {
+    case SessionEndConditionDetector::Reason::kSuspend:
+      return "suspend";
+    case SessionEndConditionDetector::Reason::kScreenLock:
+      return "screen_lock";
+#if BUILDFLAG(IS_CHROMEOS)
+    case SessionEndConditionDetector::Reason::kUserSwitch:
+      return "user_switch";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+}
+
 }  // namespace
 
 SessionControllerImpl::SessionControllerImpl(
@@ -108,9 +123,10 @@ SessionControllerImpl::SessionControllerImpl(
   inactivity_detector_ = std::make_unique<SessionInactivityDetector>(
       *this, base::BindRepeating(&SessionControllerImpl::OnInactivityTimeout,
                                  weak_ptr_factory_.GetWeakPtr()));
-  lock_or_suspend_detector_ = std::make_unique<LockOrSuspendDetector>(
-      base::BindRepeating(&SessionControllerImpl::OnLockedOrSuspended,
-                          weak_ptr_factory_.GetWeakPtr()));
+  session_end_condition_detector_ =
+      std::make_unique<SessionEndConditionDetector>(base::BindRepeating(
+          &SessionControllerImpl::OnSessionEndConditionDetected,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 SessionControllerImpl::~SessionControllerImpl() {
@@ -464,20 +480,17 @@ void SessionControllerImpl::OnInactivityTimeout() {
   OnError(ErrorCode::kInactivityTimeout);
 }
 
-void SessionControllerImpl::OnLockedOrSuspended(
-    LockOrSuspendDetector::Reason reason) {
+void SessionControllerImpl::OnSessionEndConditionDetected(
+    SessionEndConditionDetector::Reason reason) {
   if (session_lifecycle_ == SessionLifecycle::kFinished) {
     return;
   }
-  // The user locked the screen or suspended the device, so there is no error
-  // to report.
-  GetJournal().Log(
-      "TtcSessionLockedOrSuspended",
-      actor::JournalDetailsBuilder()
-          .Add("reason", reason == LockOrSuspendDetector::Reason::kSuspend
-                             ? "suspend"
-                             : "screen_lock")
-          .Build());
+  // The user locked the screen, suspended the device, or switched users, so
+  // there is no error to report.
+  GetJournal().Log("TtcSessionEndConditionDetected",
+                   actor::JournalDetailsBuilder()
+                       .Add("reason", SessionEndReasonToString(reason))
+                       .Build());
   EndSessionAsync();
 }
 

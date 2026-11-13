@@ -54,6 +54,15 @@
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_jni.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/run_until.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace ttc {
 
 class MockSessionControllerObserver : public SessionController::Observer {
@@ -274,6 +283,61 @@ TEST_F(TtcSessionControllerImplTest, SuspendEndsSessionWithoutError) {
   power_monitor_source_.GenerateSuspendEvent();
   EXPECT_FALSE(service_->is_session_active());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class TtcSessionControllerImplUserSwitchTest
+    : public TtcSessionControllerImplTest {
+ protected:
+  static constexpr AccountId::Literal kPrimaryAccountId =
+      AccountId::Literal::FromUserEmailGaiaId("primary@example.com",
+                                              GaiaId::Literal("primary-gaia"));
+  static constexpr AccountId::Literal kSecondaryAccountId =
+      AccountId::Literal::FromUserEmailGaiaId(
+          "secondary@example.com",
+          GaiaId::Literal("secondary-gaia"));
+
+  void SetUp() override {
+    TtcSessionControllerImplTest::SetUp();
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state());
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kPrimaryAccountId));
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kSecondaryAccountId));
+    user_session_test_environment_->LogIn(kPrimaryAccountId);
+    user_session_test_environment_->LogIn(kSecondaryAccountId);
+  }
+
+  void TearDown() override {
+    TtcSessionControllerImplTest::TearDown();
+    user_session_test_environment_.reset();
+  }
+
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+};
+
+TEST_F(TtcSessionControllerImplUserSwitchTest,
+       UserSwitchEndsSessionWithoutError) {
+  service_->StartSession();
+  ASSERT_TRUE(service_->is_session_active());
+
+  testing::NiceMock<MockSessionControllerObserver> observer;
+  EXPECT_CALL(observer, OnError).Times(0);
+  EXPECT_CALL(observer,
+              OnSessionLifecycleChanged(SessionLifecycle::kInitializing))
+      .Times(1);
+  EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
+      .Times(1);
+  service_->session_controller()->AddObserver(&observer);
+
+  session_manager::SessionManager::Get()->SwitchActiveSession(
+      kSecondaryAccountId);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !service_->is_session_active(); }));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(TtcSessionControllerImplTest, UserSpeechAudioResetsInactivityTimer) {
   service_->StartSession();

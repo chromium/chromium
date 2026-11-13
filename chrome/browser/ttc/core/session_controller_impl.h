@@ -18,8 +18,8 @@
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/public/audio_envelope.h"
 #include "chrome/browser/ttc/core/actor_task_holder.h"
-#include "chrome/browser/ttc/core/lock_or_suspend_detector.h"
 #include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/session_end_condition_detector.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -119,7 +119,8 @@ class SessionControllerImpl : public SessionController,
  private:
   void OnPageContextFetched(const PageContextResult& result);
   void OnInactivityTimeout();
-  void OnLockedOrSuspended(LockOrSuspendDetector::Reason reason);
+  void OnSessionEndConditionDetected(
+      SessionEndConditionDetector::Reason reason);
 
   // Notifies observers of the tool call completion and returns the response to
   // forward it to the chained callback.
@@ -171,7 +172,7 @@ class SessionControllerImpl : public SessionController,
   // `this` whose destructors call `RemoveObserver()`, accessing `observers_`.
   std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
   std::unique_ptr<SessionInactivityDetector> inactivity_detector_;
-  std::unique_ptr<LockOrSuspendDetector> lock_or_suspend_detector_;
+  std::unique_ptr<SessionEndConditionDetector> session_end_condition_detector_;
 
   base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };

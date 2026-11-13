@@ -107,8 +107,6 @@ source_set("impl") {
     "eval_audio_controller.h",
     "hotl/hotl_transcript_matcher.cc",
     "hotl/hotl_transcript_matcher.h",
-    "lock_or_suspend_detector.cc",
-    "lock_or_suspend_detector.h",
     "page_context.cc",
     "page_context_util.cc",
     "page_context_util.h",
@@ -124,6 +122,8 @@ source_set("impl") {
     "pointer_tracker.h",
     "session_controller_impl.cc",
     "session_controller_impl.h",
+    "session_end_condition_detector.cc",
+    "session_end_condition_detector.h",
     "session_inactivity_detector.cc",
     "session_inactivity_detector.h",
     "session_journal_impl.cc",
@@ -248,6 +248,9 @@ source_set("impl") {
         "//ash",
         "//ash/constants",
         "//chrome/app:generated_resources",
+        "//components/session_manager:base",
+        "//components/session_manager/core",
+        "//components/user_manager",
         "//ui/base",
       ]
     }
@@ -276,13 +279,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "hotl/hotl_transcript_matcher_unittest.cc",
-    "lock_or_suspend_detector_unittest.cc",
     "page_context_util_unittest.cc",
     "pointer_crop_geometry_unittest.cc",
     "pointer_hit_test_unittest.cc",
     "pointer_image_annotator_unittest.cc",
     "pointer_tracker_unittest.cc",
     "session_controller_impl_unittest.cc",
+    "session_end_condition_detector_unittest.cc",
     "session_journal_impl_unittest.cc",
     "session_view_unittest.cc",
     "transcript_tracker_unittest.cc",
@@ -319,6 +322,12 @@ source_set("unit_tests") {
     "//ui/gfx/codec",
     "//ui/gfx/geometry",
     "//url",
+
+    # Only ChromeOS tests use these, but `gn check` on every platform sees
+    # their includes regardless of `#if`.
+    "//chrome/test/base:testing_browser_process",
+    "//components/account_id:test_support",
+    "//google_apis",
   ]
   if (enable_speech_service) {
     sources += [ "hotl/soda_hotl_speech_recognizer_unittest.cc" ]
@@ -344,6 +353,13 @@ source_set("unit_tests") {
   } else {
     sources += [ "session_view_impl_unittest.cc" ]
     deps += [ "//chrome/browser/ui/toasts/api:toasts" ]
+    if (is_chromeos) {
+      deps += [
+        "//components/session_manager:base",
+        "//components/session_manager/core",
+        "//components/session_manager/test:test_support",
+      ]
+    }
   }
 }
 
