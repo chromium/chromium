@@ -1684,11 +1684,6 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        getStripLayoutHelper(tab.isIncognitoBranded()).willCloseTab(tab);
-                    }
-
-                    @Override
                     public void tabRemoved(Tab tab) {
                         getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab);
                         mTrailingButtonsCoordinator.updateTrailingButtons();
@@ -1730,12 +1725,6 @@ public class StripLayoutHelperManager
                     public void onFinishingTabClosure(
                             Tab tab, @TabClosingSource int closingSource) {
                         getStripLayoutHelper(tab.isIncognitoBranded()).tabClosed(tab);
-                        mTrailingButtonsCoordinator.updateTrailingButtons();
-                    }
-
-                    @Override
-                    public void willCloseAllTabs(boolean incognito) {
-                        getStripLayoutHelper(incognito).willCloseAllTabs();
                         mTrailingButtonsCoordinator.updateTrailingButtons();
                     }
 

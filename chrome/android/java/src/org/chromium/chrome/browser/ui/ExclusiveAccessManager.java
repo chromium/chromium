@@ -87,18 +87,6 @@ public class ExclusiveAccessManager
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        if (mExclusiveAccessManagerAndroidNativePointer == null) {
-                            return;
-                        }
-                        mLatestFullscreenOptions = null;
-                        ExclusiveAccessManagerJni.get()
-                                .onTabClosing(
-                                        mExclusiveAccessManagerAndroidNativePointer,
-                                        tab.getWebContents());
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         if (mExclusiveAccessManagerAndroidNativePointer == null) {

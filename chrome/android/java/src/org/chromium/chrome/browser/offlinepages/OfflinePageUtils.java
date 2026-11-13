@@ -750,16 +750,6 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void willCloseTab(Tab tab, boolean didCloseAlone) {
-            Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
-            OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
-            if (bridge == null) return;
-
-            WebContents webContents = tab.getWebContents();
-            if (webContents != null) bridge.willCloseTab(webContents);
-        }
-
-        @Override
         public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
             Profile profile = mTabModelSelector.getModel(tabs.get(0).isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);

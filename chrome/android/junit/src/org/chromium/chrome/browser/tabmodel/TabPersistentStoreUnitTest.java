@@ -882,35 +882,7 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @Feature("TabPersistentStore")
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testWillCloseAllTabs_CancelsTabLoading() {
-        mPersistentStore =
-                new TabPersistentStoreImpl(
-                        TabOrchestratorType.TABBED,
-                        mPersistencePolicy,
-                        mTabModelSelector,
-                        mTabCreatorManager,
-                        mTabWindowManager,
-                        mCipherFactory,
-                        /* isAuthoritative= */ true,
-                        /* recordLegacyTabCountMetrics= */ true);
-        mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
-        mPersistentStore.onNativeLibraryReady();
-        verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
-
-        mTabModelObserverCaptor.getValue().willCloseAllTabs(true);
-
-        TabRestoreDetails details =
-                new TabRestoreDetails(1, 0, TriState.TRUE, getOriginalNativeNtpUrl(), false);
-        mPersistentStore.restoreTab(details, null, true);
-
-        verifyNoMoreInteractions(mIncognitoTabCreator);
-    }
-
-    @Test
-    @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testWillCloseAllTabs_CancelsTabLoading_WillCloseTabs() {
         mPersistentStore =
                 new TabPersistentStoreImpl(
                         TabOrchestratorType.TABBED,

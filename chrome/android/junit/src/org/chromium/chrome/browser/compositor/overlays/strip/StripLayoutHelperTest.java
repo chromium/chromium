@@ -915,26 +915,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testAllTabsClosed() {
-        initializeTest(/* tabIndex= */ 0);
-        assertTrue(
-                mStripLayoutHelper.getStripLayoutTabsForTesting().length == TEST_TAB_TITLES.length);
-
-        // Close all tabs
-        mModel.getTabRemover()
-                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
-
-        // Notify strip of tab closure
-        mStripLayoutHelper.willCloseAllTabs();
-
-        // Verify strip has no tabs.
-        assertTrue(mStripLayoutHelper.getStripLayoutTabsForTesting().length == 0);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testAllTabsClosed_WillCloseTabs() {
         initializeTest(/* tabIndex= */ 0);
         assertTrue(
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length == TEST_TAB_TITLES.length);

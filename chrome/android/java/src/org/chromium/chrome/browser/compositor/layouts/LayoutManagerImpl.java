@@ -253,11 +253,6 @@ public class LayoutManagerImpl
         }
 
         @Override
-        public void willCloseAllTabs(boolean isIncognito) {
-            tabsAllClosing(isIncognito);
-        }
-
-        @Override
         public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
             if (!isAllTabs) return;
             assert !tabs.isEmpty();
@@ -273,7 +268,7 @@ public class LayoutManagerImpl
         @Override
         public void onTabClosePending(
                 List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
-            // Handled by willCloseAllTabs;
+            // Handled by willCloseTabs.
             if (isAllTabs) return;
 
             for (Tab tab : tabs) {

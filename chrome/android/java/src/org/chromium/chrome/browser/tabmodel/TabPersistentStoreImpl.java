@@ -339,11 +339,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
-                    public void willCloseAllTabs(boolean incognito) {
-                        cancelLoadingTabs(incognito);
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         if (!isAllTabs) return;

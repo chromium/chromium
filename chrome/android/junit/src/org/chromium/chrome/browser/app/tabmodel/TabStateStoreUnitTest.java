@@ -35,10 +35,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -794,40 +791,7 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testLoadAndRestore_WillCloseAllTabs_CancelsLoading() {
-        mTabStateStore.onNativeLibraryReady();
-        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
-        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
-
-        TabState tabState = new TabState();
-        tabState.contentsState = mock(WebContentsState.class);
-        LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
-        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
-
-        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
-
-        ArgumentCaptor<TabModelObserver> captor = ArgumentCaptor.forClass(TabModelObserver.class);
-        verify(mRegularTabModel).addObserver(captor.capture());
-        TabModelObserver observer = captor.getValue();
-
-        observer.willCloseAllTabs(false);
-
-        verify(mTabStateStorageService)
-                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
-
-        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
-
-        InOrder inOrder = inOrder(mModelTrackingOrchestrator, mObserver);
-        callbacks.get(0).onResult(mRegularData);
-
-        inOrder.verify(mModelTrackingOrchestrator).onRestoreCancelled();
-        inOrder.verify(mObserver).onStateLoaded();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testLoadAndRestore_WillCloseAllTabs_CancelsLoading_WillCloseTabs() {
         mTabStateStore.onNativeLibraryReady();
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
@@ -1230,7 +1194,6 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void
             testLoadAndRestore_WillCloseAllTabs_NonAuthoritative_CompletesCatchUpWhenAuthLoaded() {
         mTabStateStore =
@@ -1269,7 +1232,8 @@ public class TabStateStoreUnitTest {
         verify(mRegularTabModel).addObserver(captor.capture());
         TabModelObserver observer = captor.getValue();
 
-        observer.willCloseAllTabs(false);
+        Tab tab = createMockTabWithParentCollection(0, mProfile);
+        observer.willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
 
         verify(mTabStateStorageService)
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -1292,7 +1256,6 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testLoadAndRestore_WillCloseAllTabs_NonAuthoritative_AuthLoadedFirst() {
         mTabStateStore =
                 new TabStateStore(
@@ -1332,7 +1295,8 @@ public class TabStateStoreUnitTest {
         verify(mRegularTabModel).addObserver(captor.capture());
         TabModelObserver observer = captor.getValue();
 
-        observer.willCloseAllTabs(false);
+        Tab tab = createMockTabWithParentCollection(0, mProfile);
+        observer.willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
 
         verify(mTabStateStorageService)
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -1564,7 +1528,6 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testLoadAndRestore_WillCloseOnlyIncognito_Authoritative() {
         mTabStateStore.onNativeLibraryReady();
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
@@ -1582,7 +1545,10 @@ public class TabStateStoreUnitTest {
         verify(mIncognitoTabModel).addObserver(captor.capture());
         TabModelObserver observer = captor.getValue();
 
-        observer.willCloseAllTabs(/* incognito= */ true);
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        Tab tab = createMockTabWithParentCollection(1, incognitoProfile);
+        observer.willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -1601,7 +1567,6 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testLoadAndRestore_WillCloseOnlyIncognito_NonAuthoritative() {
         createNonAuthoritativeStore();
         mTabStateStore.onNativeLibraryReady();
@@ -1620,7 +1585,10 @@ public class TabStateStoreUnitTest {
         verify(mIncognitoTabModel).addObserver(captor.capture());
         TabModelObserver observer = captor.getValue();
 
-        observer.willCloseAllTabs(/* incognito= */ true);
+        Profile incognitoProfile = mock(Profile.class);
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+        Tab tab = createMockTabWithParentCollection(1, incognitoProfile);
+        observer.willCloseTabs(List.of(tab), /* isAllTabs= */ true, /* allowUndo= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());

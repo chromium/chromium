@@ -143,15 +143,6 @@ public class ActivityTabProvider implements Destroyable, Supplier<@Nullable Tab>
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        // If this is the last tab to close, make sure a signal is sent to the
-                        // observers.
-                        if (selector.getCurrentModel().getCount() <= 1) {
-                            triggerActivityTabChangeEvent(null);
-                        }
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         // If all remaining tabs are closing, make sure a signal is sent to the

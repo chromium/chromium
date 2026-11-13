@@ -13,19 +13,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** Fulfilled when a TabModel starts closing a tab (willCloseTab() or willCloseTabs()). */
+/** Fulfilled when a TabModel starts closing a tab (willCloseTabs()). */
 public class TabClosingCondition extends CallbackCondition implements TabModelObserver {
     private final Supplier<TabModel> mTabModelSupplier;
     private TabModel mTabModel;
 
     public TabClosingCondition(Supplier<TabModel> tabModelSupplier) {
-        super("willCloseTab(s)", /* numCallsExpected= */ 1);
+        super("willCloseTabs", /* numCallsExpected= */ 1);
         mTabModelSupplier = dependOnSupplier(tabModelSupplier, "TabModel");
-    }
-
-    @Override
-    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-        notifyCalled();
     }
 
     @Override
