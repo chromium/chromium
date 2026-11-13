@@ -81,9 +81,6 @@
 
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
-using ::content::RenderFrameHost;
-using ::content::WebContents;
-using ::content::WebContentsMediaCaptureId;
 using RequestSource = ::DesktopMediaPicker::Params::RequestSource;
 
 const DesktopMediaSourceViewStyle& GetGenericScreenStyle() {
@@ -112,14 +109,6 @@ enum class AudioToggleStatus {
   kAudioRequestedButUserDidNotApprove = 2,
   kAudioRequestedAndUserApproved = 3,
   kMaxValue = kAudioRequestedAndUserApproved
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SelectedTabDiscardStatus {
-  kNonDiscarded = 0,
-  kDiscarded = 1,
-  kMaxValue = kDiscarded
 };
 
 #if !BUILDFLAG(IS_CHROMEOS) && defined(USE_AURA)
@@ -1141,32 +1130,6 @@ void DesktopMediaPickerDialogView::RecordAudioToggleUma(
   }
 }
 
-void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
-    const DesktopMediaID& source) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-
-  if (source.type != DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
-    return;
-  }
-
-  const WebContentsMediaCaptureId& web_contents_id = source.web_contents_id;
-  RenderFrameHost* const rfh = RenderFrameHost::FromID(
-      web_contents_id.render_process_id, web_contents_id.main_render_frame_id);
-  WebContents* const wc = WebContents::FromRenderFrameHost(rfh);
-  if (!wc) {
-    return;
-  }
-
-  const SelectedTabDiscardStatus status =
-      wc->WasDiscarded() ? SelectedTabDiscardStatus::kDiscarded
-                         : SelectedTabDiscardStatus::kNonDiscarded;
-
-  // Note: For simplicty's sake, we count all invocations of the picker,
-  // regardless of whether getDisplayMedia() or extension-based.
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus", status);
-}
-
 #if BUILDFLAG(IS_MAC)
 void DesktopMediaPickerDialogView::RecordUserActionOnDeniedAudioPermissionUma(
     std::optional<content::DesktopMediaID> source) const {
@@ -1327,7 +1290,6 @@ bool DesktopMediaPickerDialogView::Accept() {
   }
   RecordSourceCountsUma();
   RecordAudioToggleUma(source);
-  RecordTabDiscardedStatusUma(source);
 #if BUILDFLAG(IS_MAC)
   RecordUserActionOnDeniedAudioPermissionUma(source);
 #endif

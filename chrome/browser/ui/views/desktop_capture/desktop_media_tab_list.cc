@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
@@ -14,9 +13,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -33,19 +30,8 @@
 #include "ui/views/view.h"
 
 using content::BrowserThread;
-using content::RenderFrameHost;
-using content::WebContents;
 
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class HighlightedTabDiscardStatus {
-  kNoTabsHighlighted = 0,
-  kAllHighlightedTabsNonDiscarded = 1,
-  kDiscardedTabHighlightedAtLeastOnce = 2,
-  kMaxValue = kDiscardedTabHighlightedAtLeastOnce
-};
 
 // Max stored length for the title of a previewed tab. The actual displayed
 // length is likely shorter than this, as the Label will elide it to fit the UI.
@@ -375,18 +361,6 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
 DesktopMediaTabList::~DesktopMediaTabList() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
-  const HighlightedTabDiscardStatus highlighted_tabs =
-      discarded_tab_highlighted_
-          ? HighlightedTabDiscardStatus::kDiscardedTabHighlightedAtLeastOnce
-      : non_discarded_tab_highlighted_
-          ? HighlightedTabDiscardStatus::kAllHighlightedTabsNonDiscarded
-          : HighlightedTabDiscardStatus::kNoTabsHighlighted;
-  // Note: For simplicty's sake, we count all invocations of the picker,
-  // regardless of whether getDisplayMedia() or extension-based.
-  base::UmaHistogramEnumeration(
-      "Media.Ui.GetDisplayMedia.BasicFlow.HighlightedTabDiscardStatus",
-      highlighted_tabs);
-
   table_->ClearModel();
   table_->set_observer(nullptr);
 }
@@ -467,8 +441,6 @@ void DesktopMediaTabList::OnSelectionChanged() {
   }
   const DesktopMediaList::Source& source = controller_->GetSource(row.value());
 
-  RecordSourceDiscardedStatus(source);
-
   // Trigger a preview update to either show a previous snapshot for this source
   // if we have one, or clear it if we don't.
   OnPreviewUpdated(row.value());
@@ -521,26 +493,6 @@ void DesktopMediaTabList::OnPreviewUpdated(size_t index) {
         kClearPreviewDelay);
   }
   preview_label_->SetText(source.name.substr(0, kMaxPreviewTitleLength));
-}
-
-void DesktopMediaTabList::RecordSourceDiscardedStatus(
-    const DesktopMediaList::Source& source) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
-  CHECK_EQ(source.id.type, content::DesktopMediaID::Type::TYPE_WEB_CONTENTS);
-
-  RenderFrameHost* const rfh =
-      RenderFrameHost::FromID(source.id.web_contents_id.render_process_id,
-                              source.id.web_contents_id.main_render_frame_id);
-  WebContents* const wc = WebContents::FromRenderFrameHost(rfh);
-  if (!wc) {
-    return;
-  }
-
-  if (wc->WasDiscarded()) {
-    discarded_tab_highlighted_ = true;
-  } else {
-    non_discarded_tab_highlighted_ = true;
-  }
 }
 
 BEGIN_METADATA(DesktopMediaTabList)

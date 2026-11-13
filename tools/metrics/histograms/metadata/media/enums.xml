@@ -1526,12 +1526,6 @@ chromium-metrics-reviews@google.com.
   <int value="32902" label="Intel"/>
 </enum>
 
-<enum name="HighlightedTabDiscardStatus">
-  <int value="0" label="NoTabsHighlighted"/>
-  <int value="1" label="AllHighlightedTabsNonDiscarded"/>
-  <int value="2" label="DiscardedTabHighlightedAtLeastOnce"/>
-</enum>
-
 <!-- LINT.IfChange(ImplementationClassification) -->
 
 <enum name="ImplementationClassification">
@@ -2594,11 +2588,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Window List Updated"/>
   <int value="2" label="Primary App Removed"/>
   <int value="3" label="Application Audio Requested"/>
-</enum>
-
-<enum name="SelectedTabDiscardStatus">
-  <int value="0" label="NonDiscarded"/>
-  <int value="1" label="Discarded"/>
 </enum>
 
 <!-- LINT.IfChange(SmoothVolatility) -->

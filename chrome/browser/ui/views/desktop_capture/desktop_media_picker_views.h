@@ -168,9 +168,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // distinguishes the reason for its absence.
   void RecordAudioToggleUma(const content::DesktopMediaID& source);
 
-  // Helper for UMA-tracking of how often a user shares a discarded tab.
-  void RecordTabDiscardedStatusUma(const content::DesktopMediaID& source);
-
   // Counts the number of sources of a given type.
   // * Returns nullopt if such sources are not offered to the user due to
   //   a configuration of the picker.
