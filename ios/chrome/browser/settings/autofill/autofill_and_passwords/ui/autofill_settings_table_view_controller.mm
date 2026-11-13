@@ -8,7 +8,6 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/utils/autofill_and_passwords_item_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -22,8 +21,7 @@
 namespace {
 
 enum class SectionIdentifier {
-  kBasicsSection = kSectionIdentifierEnumZero,
-  kSwitchesSection,
+  kSwitchesSection = kSectionIdentifierEnumZero,
   kWhenOnSection,
   kThingsToConsiderSection,
   kVerificationSwitchSection,
