@@ -1129,11 +1129,10 @@ TEST_F(AnnotationTextManagerViewportTest,
 }
 
 // Tests that `annotations.start` does not throw when
-// `document.documentElement` is null after root removal, and succeeds on a
-// subsequent call in the same isolated-world context once a document root is
-// restored.
+// `document.documentElement` is null after root removal, and starts on its
+// own once a document root is restored in the same isolated-world context.
 TEST_F(AnnotationTextManagerViewportTest,
-       StartWithNullDocumentElementAllowsSubsequentStart) {
+       StartWithNullDocumentElementStartsOnceRootIsRestored) {
   feature_.InitAndEnableFeature(features::kAssertOnJavaScriptErrors);
 
   auto* manager = AnnotationsTextManager::FromWebState(web_state());
@@ -1175,8 +1174,6 @@ TEST_F(AnnotationTextManagerViewportTest,
       web_state(), @"window.__annotationsContextMarker;", feature)
       isEqual:@"preserved"]);
 
-  feature->ExtractText(web_state(), kMaxAnnotationsTextLength, /*seq_id=*/2);
-
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForTextExtractionTimeout, ^{
     return observer()->seq_id() > initial_seq_id;
   }));
@@ -1193,10 +1190,10 @@ TEST_F(AnnotationTextManagerViewportTest,
 }
 
 // Tests that `annotations.start` does not throw while `document.open()` has
-// cleared `document.documentElement`, and succeeds once `document.write()`
-// populates a new document root.
+// cleared `document.documentElement`, and starts on its own once
+// `document.write()` populates a new document root.
 TEST_F(AnnotationTextManagerViewportTest,
-       StartDuringDocumentOpenAllowsSubsequentStart) {
+       StartDuringDocumentOpenStartsOnceRootIsWritten) {
   feature_.InitAndEnableFeature(features::kAssertOnJavaScriptErrors);
 
   auto* manager = AnnotationsTextManager::FromWebState(web_state());
@@ -1223,8 +1220,6 @@ TEST_F(AnnotationTextManagerViewportTest,
        "document.close();"
        "true;");
 
-  feature->ExtractText(web_state(), kMaxAnnotationsTextLength, /*seq_id=*/2);
-
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForTextExtractionTimeout, ^{
     return observer()->seq_id() > initial_seq_id;
   }));
@@ -1232,6 +1227,47 @@ TEST_F(AnnotationTextManagerViewportTest,
   const std::string* html_lang = observer()->metadata().FindString("htmlLang");
   ASSERT_TRUE(html_lang);
   EXPECT_EQ("fr", *html_lang);
+}
+
+// Tests that a deferred `annotations.start` respects a `nointentdetection` meta
+// tag written after the new document root, while the document is still being
+// parsed.
+TEST_F(AnnotationTextManagerViewportTest,
+       DeferredStartRespectsLateNoIntentDetection) {
+  feature_.InitAndEnableFeature(features::kAssertOnJavaScriptErrors);
+
+  auto* manager = AnnotationsTextManager::FromWebState(web_state());
+  manager->SetSupportedTypes(0);
+
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  ExecuteJavaScript(@"document.open(); true;");
+  ASSERT_TRUE(
+      [ExecuteJavaScript(@"document.documentElement === null;") isEqual:@YES]);
+
+  observer()->Reset();
+  const int initial_seq_id = observer()->seq_id();
+
+  auto* feature = AnnotationsJavaScriptFeature::GetInstance();
+  feature->ExtractText(web_state(), kMaxAnnotationsTextLength, /*seq_id=*/1);
+  web::test::ExecuteJavaScriptForFeature(web_state(), @"0;", feature);
+
+  // Insert the root in one task and the opt-out tag in a later one, flushing
+  // the isolated world in between so a pending root wait observes the root
+  // before the tag exists.
+  ExecuteJavaScript(@"document.write('<html><head>'); true;");
+  web::test::ExecuteJavaScriptForFeature(web_state(), @"0;", feature);
+  ExecuteJavaScript(
+      @"document.write('<meta name=\"chrome\" content=\"nointentdetection\">"
+       "</head><body><p>Castro Street, Mountain View, CA</p></body></html>');"
+       "document.close();"
+       "true;");
+
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
+    return observer()->seq_id() > initial_seq_id;
+  }));
+  EXPECT_EQ(0, observer()->text_extracted_calls());
 }
 
 }  // namespace web

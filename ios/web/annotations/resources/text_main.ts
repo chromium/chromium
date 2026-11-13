@@ -31,6 +31,9 @@ let styler: TextStyler|null;
 let decorator: TextDecorator|null;
 let extractor: TextExtractor|null;
 let click: TextClick|null;
+// Pending wait for a document root when `start` runs before one exists.
+// Aborting it disconnects its observer and listeners.
+let rootWait: AbortController|null = null;
 
 // Mark: Private API
 
@@ -116,20 +119,60 @@ function decorationNodeRemovedConsumer(node: NodeWithSymbolIndex): void {
   });
 }
 
+// Starts annotations once `document` gains a root element. The browser calls
+// `start` only once per page load, so pages that clear or replace their
+// document right after load would otherwise never be annotated.
+function startWhenRootIsAvailable(maxTextLength: number): void {
+  if (rootWait) {
+    return;
+  }
+  const wait = new AbortController();
+  rootWait = wait;
+  const tryStart = () => {
+    if (!document.documentElement) {
+      return;
+    }
+    // A document still being parsed may not contain its opt-out `<meta>` tags
+    // yet, so wait until parsing finishes, matching the browser-driven start
+    // that runs after page load.
+    if (document.readyState === 'loading') {
+      document.addEventListener(
+          'DOMContentLoaded', tryStart, {once: true, signal: wait.signal});
+      return;
+    }
+    stopWaitingForRoot();
+    start(maxTextLength);
+  };
+  const rootObserver = new MutationObserver(tryStart);
+  rootObserver.observe(document, {childList: true});
+  wait.signal.addEventListener('abort', () => rootObserver.disconnect());
+}
+
+function stopWaitingForRoot(): void {
+  rootWait?.abort();
+  rootWait = null;
+}
+
 // Mark: Public API
 
 // Starts the annotation observer.
 function start(maxTextLength: number): void {
-  // Check for already started or for a page request to not detect intent.
-  if (hasNoIntentDetection() || intersectionObserver) {
+  // Check for already started.
+  if (intersectionObserver) {
     return;
   }
   // `document.documentElement` is null when a document has no root element
-  // (e.g., during `document.open()` or after root removal). Return before
-  // initializing module state so a subsequent `start` call can succeed once
-  // a root element is present.
+  // (e.g., during `document.open()` or after root removal). Defer startup
+  // until a root element is inserted instead of initializing module state.
   const root: Element|null = document.documentElement;
   if (!root) {
+    startWhenRootIsAvailable(maxTextLength);
+    return;
+  }
+  stopWaitingForRoot();
+  // Check for a page request to not detect intent, which can only be declared
+  // by a `<meta>` tag under `root`.
+  if (hasNoIntentDetection()) {
     return;
   }
   idleTaskTracker = new IdleTaskTracker();
@@ -148,6 +191,7 @@ function start(maxTextLength: number): void {
 
 // Stops the annotation observer.
 function stop(): void {
+  stopWaitingForRoot();
   click?.stop();
   idleTaskTracker?.shutdown();
   mutationObserver?.stop();
