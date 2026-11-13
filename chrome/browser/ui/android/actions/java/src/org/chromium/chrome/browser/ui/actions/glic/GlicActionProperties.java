@@ -6,29 +6,15 @@ package org.chromium.chrome.browser.ui.actions.glic;
 
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Properties specific to the Glic action. */
 @NullMarked
 public class GlicActionProperties {
-    @IntDef({GlicState.DEFAULT, GlicState.WORKING, GlicState.NEEDS_REVIEW, GlicState.DONE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface GlicState {
-        int DEFAULT = 0;
-        int WORKING = 1;
-        int NEEDS_REVIEW = 2;
-        int DONE = 3;
-    }
-
     public static final WritableObjectPropertyKey<Drawable> GLIC_DRAWABLE =
             new WritableObjectPropertyKey<>(true);
 
