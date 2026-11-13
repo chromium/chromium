@@ -82,17 +82,6 @@ scoped_refptr<net::HttpResponseHeaders> GenerateHeaders(
 // static
 void BlobURLLoader::CreateAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-    const network::ResourceRequest& request,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-    std::unique_ptr<BlobDataHandle> blob_handle) {
-  (new BlobURLLoader(std::move(url_loader_receiver), std::move(client),
-                     std::move(blob_handle)))
-      ->Start(request.method, request.headers);
-}
-
-// static
-void BlobURLLoader::CreateAndStart(
-    mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
