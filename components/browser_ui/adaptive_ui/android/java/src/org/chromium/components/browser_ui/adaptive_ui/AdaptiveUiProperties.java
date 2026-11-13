@@ -12,6 +12,7 @@ import androidx.activity.OnBackPressedCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -36,6 +37,24 @@ public class AdaptiveUiProperties {
      */
     public static final ReadableObjectPropertyKey<@Nullable String> DIALOG_CONTENT_DESCRIPTION =
             new ReadableObjectPropertyKey<>();
+
+    /**
+     * Optional {@code @StringRes} string TalkBack announces when the bottom sheet opens (at half or
+     * full height), typically the name of your feature followed by 'opened'. Leaving this unset
+     * ({@code 0}) keeps the generic bottom sheet description. Ignored by dialogs (which use {@link
+     * #TITLE} or {@link #DIALOG_CONTENT_DESCRIPTION}).
+     */
+    public static final ReadableIntPropertyKey SHEET_OPENED_ACCESSIBILITY_STRING_ID =
+            new ReadableIntPropertyKey();
+
+    /**
+     * Optional {@code @StringRes} string TalkBack announces when the bottom sheet closes or hides,
+     * typically the name of your feature followed by 'closed'. Leaving this unset ({@code 0}) keeps
+     * the generic bottom sheet description. Ignored by dialogs (which use {@link #TITLE} or {@link
+     * #DIALOG_CONTENT_DESCRIPTION}).
+     */
+    public static final ReadableIntPropertyKey SHEET_CLOSED_ACCESSIBILITY_STRING_ID =
+            new ReadableIntPropertyKey();
 
     /** Body description text displayed below the title. */
     public static final WritableObjectPropertyKey<@Nullable CharSequence> DESCRIPTION =
@@ -109,6 +128,8 @@ public class AdaptiveUiProperties {
                 HEADER_ICON,
                 TITLE,
                 DIALOG_CONTENT_DESCRIPTION,
+                SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
                 DESCRIPTION,
                 SHOW_CLOSE_BUTTON,
                 FOOTER_MESSAGE,

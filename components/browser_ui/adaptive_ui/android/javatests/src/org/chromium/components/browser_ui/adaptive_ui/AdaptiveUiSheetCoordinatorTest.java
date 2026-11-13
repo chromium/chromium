@@ -139,6 +139,8 @@ public class AdaptiveUiSheetCoordinatorTest {
         Set<PropertyKey> expected =
                 Set.of(
                         AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
+                        AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                        AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                         AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,
@@ -861,6 +863,83 @@ public class AdaptiveUiSheetCoordinatorTest {
         assertNotNull(content.getContentView());
         assertNull(content.getToolbarView());
         assertTrue(content.swipeToDismissEnabled());
+    }
+
+    @Test
+    public void testAccessibilityStringIds_UnsetDefaults() {
+        AdaptiveUiSheetCoordinator content = createContent(newModelBuilder().build());
+
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetHalfHeightAccessibilityStringId());
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetFullHeightAccessibilityStringId());
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetClosedAccessibilityStringId());
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetHiddenAccessibilityStringId());
+    }
+
+    @Test
+    public void testAccessibilityStringIds_OpenedOnly() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                                android.R.string.ok)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+
+        assertEquals(android.R.string.ok, content.getSheetHalfHeightAccessibilityStringId());
+        assertEquals(android.R.string.ok, content.getSheetFullHeightAccessibilityStringId());
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetClosedAccessibilityStringId());
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetHiddenAccessibilityStringId());
+    }
+
+    @Test
+    public void testAccessibilityStringIds_ClosedOnly() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                                android.R.string.cancel)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetHalfHeightAccessibilityStringId());
+        assertEquals(
+                R.string.bottom_sheet_accessibility_description,
+                content.getSheetFullHeightAccessibilityStringId());
+        assertEquals(android.R.string.cancel, content.getSheetClosedAccessibilityStringId());
+        assertEquals(android.R.string.cancel, content.getSheetHiddenAccessibilityStringId());
+    }
+
+    @Test
+    public void testAccessibilityStringIds_BothSet() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                                android.R.string.ok)
+                        .with(
+                                AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                                android.R.string.cancel)
+                        .build();
+        AdaptiveUiSheetCoordinator content = createContent(model);
+
+        assertEquals(android.R.string.ok, content.getSheetHalfHeightAccessibilityStringId());
+        assertEquals(android.R.string.ok, content.getSheetFullHeightAccessibilityStringId());
+        assertEquals(android.R.string.cancel, content.getSheetClosedAccessibilityStringId());
+        assertEquals(android.R.string.cancel, content.getSheetHiddenAccessibilityStringId());
     }
 
     // ---------------------------------------------------------------------------------------

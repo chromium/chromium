@@ -24,23 +24,28 @@ import java.util.Set;
  * R.layout.adaptive_ui_sheet} view hierarchy via {@link
  * org.chromium.ui.modelutil.PropertyModelChangeProcessor}.
  *
- * <p>Event-time keys ({@link AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
+ * <p>Event-time and {@code BottomSheetContent} metadata keys ({@link
+ * AdaptiveUiProperties#SHEET_OPENED_ACCESSIBILITY_STRING_ID}, {@link
+ * AdaptiveUiProperties#SHEET_CLOSED_ACCESSIBILITY_STRING_ID}, {@link
+ * AdaptiveUiProperties#ON_PRIMARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#ON_SECONDARY_BUTTON_CLICKED}, {@link
  * AdaptiveUiProperties#PRIMARY_BUTTON_KEEPS_OPEN}, {@link
  * AdaptiveUiProperties#SECONDARY_BUTTON_KEEPS_OPEN}, and {@link
- * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are read on interaction by {@link
+ * AdaptiveUiProperties#BACK_PRESS_HANDLER}) are read directly by {@link
  * AdaptiveUiSheetCoordinator}, and {@link AdaptiveUiProperties#DIALOG_CONTENT_DESCRIPTION} applies
  * only to dialogs.
  */
 @NullMarked
 final class AdaptiveUiSheetViewBinder {
     /**
-     * Keys handled at interaction time by {@link AdaptiveUiSheetCoordinator} or used exclusively by
-     * dialogs.
+     * Keys read directly by {@link AdaptiveUiSheetCoordinator} (for interaction or {@code
+     * BottomSheetContent} accessibility metadata) or used exclusively by dialogs.
      */
     static final Set<PropertyKey> NON_VISUAL_SHEET_KEYS =
             Set.of(
                     AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
+                    AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                    AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
                     AdaptiveUiProperties.BACK_PRESS_HANDLER,
                     AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
                     AdaptiveUiProperties.ON_SECONDARY_BUTTON_CLICKED,

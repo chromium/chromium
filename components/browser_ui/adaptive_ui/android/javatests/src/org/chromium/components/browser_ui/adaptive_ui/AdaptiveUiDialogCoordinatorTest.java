@@ -129,6 +129,8 @@ public class AdaptiveUiDialogCoordinatorTest {
         Set<PropertyKey> expected =
                 Set.of(
                         AdaptiveUiProperties.DIALOG_CONTENT_DESCRIPTION,
+                        AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                        AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
                         AdaptiveUiProperties.CUSTOM_VIEW,
                         AdaptiveUiProperties.BACK_PRESS_HANDLER,
                         AdaptiveUiProperties.ON_PRIMARY_BUTTON_CLICKED,
@@ -202,6 +204,29 @@ public class AdaptiveUiDialogCoordinatorTest {
         assertEquals("Content desc", dialogModel.get(ModalDialogProperties.CONTENT_DESCRIPTION));
         assertTrue(dialogModel.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
         assertNotNull(dialogModel.get(ModalDialogProperties.TITLE_CLOSE_BUTTON_CLICK_LISTENER));
+    }
+
+    @Test
+    public void testSheetAccessibilityKeysAreIgnoredByDialog() {
+        PropertyModel model =
+                newModelBuilder()
+                        .with(
+                                AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID,
+                                R.string.ok)
+                        .with(
+                                AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID,
+                                R.string.cancel)
+                        .build();
+        PropertyModel dialogModel = createCoordinator(model).getDialogModel();
+
+        assertFalse(
+                dialogModel
+                        .getAllSetProperties()
+                        .contains(ModalDialogProperties.CONTENT_DESCRIPTION));
+        assertNull(dialogModel.get(ModalDialogProperties.CONTENT_DESCRIPTION));
+        ModalDialogView dialogView = bindToRealModalDialogView(dialogModel);
+        assertNotNull(dialogView);
+        assertNull(dialogView.getContentDescription());
     }
 
     @Test

@@ -28,6 +28,7 @@ import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -312,17 +313,23 @@ final class AdaptiveUiSheetCoordinator
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.bottom_sheet_accessibility_description;
+        return getAccessibilityStringId(AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID);
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        return R.string.bottom_sheet_accessibility_description;
+        return getAccessibilityStringId(AdaptiveUiProperties.SHEET_OPENED_ACCESSIBILITY_STRING_ID);
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        return R.string.bottom_sheet_accessibility_description;
+        return getAccessibilityStringId(AdaptiveUiProperties.SHEET_CLOSED_ACCESSIBILITY_STRING_ID);
+    }
+
+    /** Returns the string ID set for {@code key}, or the generic description if it's unset. */
+    private @StringRes int getAccessibilityStringId(ReadableIntPropertyKey key) {
+        int id = mModel.get(key);
+        return id != 0 ? id : R.string.bottom_sheet_accessibility_description;
     }
 
     private void onActionButtonClicked(
