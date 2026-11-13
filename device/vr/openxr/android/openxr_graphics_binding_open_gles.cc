@@ -31,6 +31,7 @@
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_egl_image.h"
 
 namespace device {
@@ -44,6 +45,12 @@ struct OpenGLESLayerData : public OpenXrCompositionLayer::GraphicsBindingData {
   OpenGLESLayerData() { type = kOpenGLES; }
   ~OpenGLESLayerData() override {
     if (back_buffer_fbo) {
+      GLint bound_fbo = 0;
+      glGetIntegerv(GL_FRAMEBUFFER_BINDING, &bound_fbo);
+      if (static_cast<GLuint>(bound_fbo) == back_buffer_fbo) {
+        // Ensure the data layer's framebuffer isn't bound before deleting it.
+        glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
+      }
       glDeleteFramebuffersEXT(1, &back_buffer_fbo);
     }
   }
@@ -445,7 +452,8 @@ bool OpenXrGraphicsBindingOpenGLES::RenderLayer(
   if (open_gles_layer_data.back_buffer_fbo == 0) {
     glGenFramebuffersEXT(1, &open_gles_layer_data.back_buffer_fbo);
   }
-  glBindFramebufferEXT(GL_FRAMEBUFFER, open_gles_layer_data.back_buffer_fbo);
+  gl::ScopedFramebufferBinder scoped_framebuffer_binder(
+      open_gles_layer_data.back_buffer_fbo);
 
   glDisable(GL_CULL_FACE);
   glDisable(GL_SCISSOR_TEST);
