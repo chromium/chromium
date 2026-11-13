@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/run_loop.h"
@@ -14,6 +16,9 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -48,6 +53,7 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_sharing/public/features.h"
@@ -67,6 +73,7 @@
 #include "ui/compositor/layer_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -282,6 +289,11 @@ class TabViewTestBase
 class TabViewTest : public TabViewTestBase,
                     public testing::WithParamInterface<TabStripOrientation> {
  public:
+  void SwapThemeSupplier(scoped_refptr<CustomThemeSupplier> theme_supplier) {
+    ThemeServiceFactory::GetForProfile(browser()->GetProfile())
+        ->SwapThemeSupplier(std::move(theme_supplier));
+  }
+
   void SetUpOnMainThread() override {
     TabViewTestBase::SetUpOnMainThread();
     if (GetParam() == TabStripOrientation::kHorizontal) {
@@ -2420,6 +2432,51 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HideContentsWhenVeryNarrow) {
     EXPECT_FALSE(tab_view->close_button_for_testing()->GetVisible());
     EXPECT_FALSE(tab_view->title_for_testing()->GetVisible());
   }
+}
+
+namespace {
+
+class TestCustomThemeSupplier : public CustomThemeSupplier {
+ public:
+  TestCustomThemeSupplier() : CustomThemeSupplier(ThemeType::kExtension) {}
+  std::string_view extension_id() const override { return "test_theme_id"; }
+  bool HasCustomImage(int id) const override {
+    return id == IDR_THEME_TOOLBAR || id == IDR_THEME_TAB_BACKGROUND;
+  }
+
+ protected:
+  ~TestCustomThemeSupplier() override = default;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(TabViewTest,
+                       ClosingHoveredTabWithCustomThemePaintsWithoutCrash) {
+  const gfx::AnimationTestApi::RenderModeResetter enable_rich_animations =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  SwapThemeSupplier(base::MakeRefCounted<TestCustomThemeSupplier>());
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+  TabView* closing_tab = GetTabView(1);
+  ASSERT_TRUE(closing_tab);
+  closing_tab->UpdateHovered(true);
+  if (GlowHoverController* hover_controller =
+          closing_tab->GetHoverControllerForTesting()) {
+    hover_controller->animation_for_testing()->End();
+  }
+  ASSERT_TRUE(closing_tab->IsHovering());
+  ASSERT_TRUE(closing_tab->IsHoverAnimationActive());
+  gfx::Canvas canvas(closing_tab->size(), 1.0f, false);
+
+  tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+  closing_tab->tab_styling()->PaintTab(&canvas);
+
+  EXPECT_TRUE(closing_tab->IsClosing());
+  EXPECT_EQ(closing_tab->tab_styling()->delegate()->GetBrowserWindowInterface(),
+            browser());
+  EXPECT_NE(closing_tab->tab_styling()->delegate()->GetBrowserFrameView(),
+            nullptr);
 }
 
 class HorizontalTabViewPinnedStylingEnabledTest : public HorizontalTabViewTest {

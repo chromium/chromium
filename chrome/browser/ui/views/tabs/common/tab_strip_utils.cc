@@ -41,13 +41,18 @@ gfx::Rect GetTabStripViewTargetBounds(const views::View* view) {
   return view_layout ? view_layout->bounds : view->bounds();
 }
 
-TabStripView* GetTabStripView(views::View* view) {
-  for (views::View* v = view->parent(); v; v = v->parent()) {
-    if (auto* tab_strip = views::AsViewClass<TabStripView>(v)) {
+const TabStripView* GetTabStripView(const views::View* view) {
+  for (const views::View* v = view->parent(); v; v = v->parent()) {
+    if (const auto* tab_strip = views::AsViewClass<TabStripView>(v)) {
       return tab_strip;
     }
   }
   return nullptr;
+}
+
+TabStripView* GetTabStripView(views::View* view) {
+  return const_cast<TabStripView*>(
+      GetTabStripView(static_cast<const views::View*>(view)));
 }
 
 bool CanScrollAlongAxis(const views::View* view,

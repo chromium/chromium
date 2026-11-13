@@ -310,6 +310,10 @@ TabStripView::~TabStripView() {
   }
 }
 
+const TabStripCollectionController* TabStripView::GetController() const {
+  return collection_node_ ? collection_node_->GetController() : nullptr;
+}
+
 void TabStripView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   UpdateScrollViewLayers();

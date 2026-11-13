@@ -26,6 +26,7 @@
 class BrowserAnimationController;
 class BrowserFrameView;
 class BrowserView;
+class BrowserWindowInterface;
 class ExpandOnHoverLock;
 class HorizontalTabClosingHelper;
 class RootTabCollectionNode;
@@ -121,6 +122,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   }
 
   BrowserView* GetBrowserView() const { return browser_view_; }
+  BrowserWindowInterface* GetBrowserWindowInterface() const;
   BrowserFrameView* GetBrowserFrameView() const;
   BrowserAnimationController* GetBrowserAnimationController() const;
   bool IsGlassFrame() const { return is_glass_frame_; }
