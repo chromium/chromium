@@ -8,10 +8,6 @@
 class AccountId;
 class Profile;
 
-namespace aura {
-class Window;
-}
-
 namespace multi_user_util {
 
 // Get the user id from a given profile.
@@ -24,13 +20,6 @@ Profile* GetProfileFromAccountId(const AccountId& account_id);
 // only Chrome OS has the concept of an active user, only Chrome OS can ever
 // return false.
 bool IsProfileFromActiveUser(Profile* profile);
-
-// Gets the current user. Note that this will return a valid AccountId for
-// ChromeOS only. All other operating systems will get an empty AccountId.
-const AccountId GetCurrentAccountId();
-
-// Move the window to the current user's desktop.
-void MoveWindowToCurrentDesktop(aura::Window* window);
 
 }  // namespace multi_user_util
 

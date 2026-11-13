@@ -217,6 +217,16 @@ void MultiUserWindowManager::ShowWindowForUser(aura::Window* window,
   Shell::Get()->session_controller()->SwitchActiveUser(account_id);
 }
 
+void MultiUserWindowManager::ShowWindowForCurrentUser(aura::Window* window) {
+  DCHECK(window);
+  if (!current_account_id_.has_value()) {
+    return;
+  }
+  if (!IsWindowOnDesktopOfUser(window, *current_account_id_)) {
+    ShowWindowForUser(window, *current_account_id_);
+  }
+}
+
 const AccountId& MultiUserWindowManager::GetWindowOwner(
     const aura::Window* window) const {
   WindowToEntryMap::const_iterator it =

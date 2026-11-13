@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_item_controller.h"
@@ -697,9 +696,10 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
 
   // If the window was created for the inactive user and it has been teleported
   // to the current user's desktop, register it to show an item on the shelf.
-  const AccountId current_account_id = multi_user_util::GetCurrentAccountId();
   auto* multi_user_window_manager =
       ash::Shell::Get()->multi_user_window_manager();
+  const AccountId current_account_id =
+      multi_user_window_manager->CurrentAccountId();
   aura::Window* other_window = nullptr;
   for (Profile* it : profile_list_) {
     apps::AppServiceProxy* proxy =
@@ -724,8 +724,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     }
   }
   if (other_window) {
-    multi_user_window_manager->ShowWindowForUser(
-        window, multi_user_util::GetCurrentAccountId());
+    multi_user_window_manager->ShowWindowForUser(window, current_account_id);
     RegisterWindow(window, shelf_id);
   }
 }

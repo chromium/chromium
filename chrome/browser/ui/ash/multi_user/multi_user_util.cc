@@ -37,22 +37,4 @@ bool IsProfileFromActiveUser(Profile* profile) {
   return GetAccountIdFromProfile(profile) == active_user->GetAccountId();
 }
 
-const AccountId GetCurrentAccountId() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  // In unit tests user login phase is usually skipped.
-  return user ? user->GetAccountId() : EmptyAccountId();
-}
-
-// Move the window to the current user's desktop.
-void MoveWindowToCurrentDesktop(aura::Window* window) {
-  auto* multi_user_window_manager =
-      ash::Shell::Get()->multi_user_window_manager();
-  auto current_account_id = GetCurrentAccountId();
-  if (!multi_user_window_manager->IsWindowOnDesktopOfUser(window,
-                                                          current_account_id)) {
-    multi_user_window_manager->ShowWindowForUser(window, current_account_id);
-  }
-}
-
 }  // namespace multi_user_util

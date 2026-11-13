@@ -8,8 +8,10 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/shell.h"
 #include "base/check_deref.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -23,7 +25,6 @@
 #include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
@@ -205,7 +206,8 @@ bool IsBrowserRepresentedInBrowserList(const ash::BrowserDelegate* browser,
 void ShowAndActivateBrowser(bool move_to_current_desktop,
                             ash::BrowserDelegate* browser) {
   if (move_to_current_desktop) {
-    multi_user_util::MoveWindowToCurrentDesktop(browser->GetNativeWindow());
+    ash::Shell::Get()->multi_user_window_manager()->ShowWindowForCurrentUser(
+        browser->GetNativeWindow());
   }
   browser->Show();
   browser->Activate();

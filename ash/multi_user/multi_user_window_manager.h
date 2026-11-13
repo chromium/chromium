@@ -95,6 +95,12 @@ class ASH_EXPORT MultiUserWindowManager : public SessionObserver,
   // Shows a previously registered window for the specified account.
   void ShowWindowForUser(aura::Window* window, const AccountId& account_id);
 
+  // Shows `window` in the currently active user session, teleporting it there
+  // if it is presented in another user session. No-op if there is no active
+  // user session yet, or if `window` is already shown in the currently active
+  // user session.
+  void ShowWindowForCurrentUser(aura::Window* window);
+
   const AccountId& GetWindowOwner(const aura::Window* window) const;
 
   // Returns true if at least one window's 'owner' account differs from its

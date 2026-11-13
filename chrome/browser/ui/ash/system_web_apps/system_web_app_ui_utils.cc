@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,7 +19,6 @@
 #include "chrome/browser/ash/profiles/user_profile_migration.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -262,7 +263,8 @@ BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
   // Here we move the newly created browser window (or the existing one on the
   // inactive desktop) to the current active (visible) desktop, so the user
   // always sees the launched app.
-  multi_user_util::MoveWindowToCurrentDesktop(browser->GetNativeWindow());
+  Shell::Get()->multi_user_window_manager()->ShowWindowForCurrentUser(
+      browser->GetNativeWindow());
 
   browser->Show();
   return browser;

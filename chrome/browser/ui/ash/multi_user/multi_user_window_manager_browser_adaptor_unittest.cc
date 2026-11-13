@@ -589,6 +589,55 @@ TEST_F(MultiUserWindowManagerBrowserAdaptorTest, CloseWindowTests) {
       multi_user_window_manager()->GetWindowOwner(to_be_deleted).is_valid());
 }
 
+// Tests that ShowWindowForCurrentUser() teleports a window to the current
+// user session only if needed, without switching the active user.
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest, ShowWindowForCurrentUser) {
+  AddLoggedInUsers({kAccountIdB, kAccountIdA});
+  SetUpForThisManyWindows(3);
+  ASSERT_EQ(kAccountIdA, multi_user_window_manager()->CurrentAccountId());
+
+  multi_user_window_manager()->SetWindowOwner(window(0), kAccountIdA);
+  multi_user_window_manager()->SetWindowOwner(window(1), kAccountIdB);
+  EXPECT_EQ("S[a], H[b], S[]", GetStatus());
+
+  // A window already shown in the current user session stays as is.
+  multi_user_window_manager()->ShowWindowForCurrentUser(window(0));
+  EXPECT_EQ("S[a], H[b], S[]", GetStatus());
+
+  // A window presented in another user session is teleported to the current
+  // user session, and the active user does not change.
+  multi_user_window_manager()->ShowWindowForCurrentUser(window(1));
+  EXPECT_EQ("S[a], S[b,a], S[]", GetStatus());
+  EXPECT_EQ(kAccountIdA, multi_user_window_manager()->CurrentAccountId());
+
+  // An unowned window is shown in every user session, so nothing changes.
+  multi_user_window_manager()->ShowWindowForCurrentUser(window(2));
+  EXPECT_EQ("S[a], S[b,a], S[]", GetStatus());
+
+  // After switching to B, the teleported window is hidden, and it can be
+  // brought back to B's session.
+  SwitchActiveUser(kAccountIdB);
+  EXPECT_EQ("H[a], H[b,a], S[]", GetStatus());
+  multi_user_window_manager()->ShowWindowForCurrentUser(window(1));
+  EXPECT_EQ("H[a], S[b], S[]", GetStatus());
+  EXPECT_EQ(kAccountIdB, multi_user_window_manager()->CurrentAccountId());
+}
+
+// Tests that ShowWindowForCurrentUser() is a no-op if there is no active user
+// yet.
+TEST_F(MultiUserWindowManagerBrowserAdaptorTest,
+       ShowWindowForCurrentUserWithoutActiveUser) {
+  std::unique_ptr<aura::Window> window = CreateTestWindowInShell({});
+  window->Show();
+  multi_user_window_manager()->SetWindowOwner(window.get(), kAccountIdA);
+  EXPECT_TRUE(window->IsVisible());
+
+  multi_user_window_manager()->ShowWindowForCurrentUser(window.get());
+  EXPECT_TRUE(window->IsVisible());
+  EXPECT_EQ(kAccountIdA,
+            multi_user_window_manager()->GetUserPresentingWindow(window.get()));
+}
+
 TEST_F(MultiUserWindowManagerBrowserAdaptorTest, SharedWindowTests) {
   AddLoggedInUsers({kAccountIdC, kAccountIdB, kAccountIdA});
 

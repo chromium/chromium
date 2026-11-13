@@ -8,6 +8,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/chrome_pref_names.h"
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/memory/ref_counted_memory.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -162,7 +163,8 @@ void OSFeedbackAppDelegate::OnScreenshotTaken(Profile* profile,
   // Here we move the newly created browser window (or the existing one on the
   // inactive desktop) to the current active (visible) desktop, so the user
   // always sees the launched app.
-  multi_user_util::MoveWindowToCurrentDesktop(browser->GetNativeWindow());
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForCurrentUser(
+      browser->GetNativeWindow());
 
   browser->Show();
 }

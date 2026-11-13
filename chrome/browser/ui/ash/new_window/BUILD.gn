@@ -18,6 +18,7 @@ static_library("new_window") {
 
   deps = [
     "//apps",
+    "//ash",
     "//ash/constants",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
@@ -37,7 +38,6 @@ static_library("new_window") {
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:scoped_tabbed_browser_displayer",
-    "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",

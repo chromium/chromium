@@ -13,10 +13,12 @@
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -39,7 +41,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/network/network_portal_signin_window.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
@@ -293,7 +294,7 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
 
   // The browser window might be on another user's desktop, and hence not
   // visible. Ensure the browser becomes visible on this user's desktop.
-  multi_user_util::MoveWindowToCurrentDesktop(
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForCurrentUser(
       CHECK_DEREF(ash::BrowserController::GetInstance()->GetBrowserForTab(tab))
           .GetNativeWindow());
 
