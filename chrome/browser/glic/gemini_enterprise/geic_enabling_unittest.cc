@@ -747,20 +747,27 @@ TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
         {{features::kGeic,
-           {{"enabled", "true"}, {"geic-guest-url", guest_url}}}},
+          {{"enabled", "true"}, {"geic-guest-url", guest_url}}}},
         {});
     TestingProfile profile;
     return GetGeicSkillsUrl(&profile);
   };
 
   // Extracts `configId` into `/home/cid/<configId>/r/skills`, strips
-  // `configId`, `location`, and `hl`, and preserves other query parameters.
+  // `configId`, `location`, `hl`, and `idp`, and preserves other query
+  // parameters.
   EXPECT_EQ(
       get_skills_url_for_guest_url(
           "https://business.gemini.google/side-panel?"
           "configId=abc123&location=global&hl=en&mods=widget_staging_api_mod"),
       GURL("https://business.gemini.google/home/cid/abc123/r/skills?"
            "mods=widget_staging_api_mod"));
+  EXPECT_EQ(
+      get_skills_url_for_guest_url(
+          "https://auth.cloud.google/signin/locations/global/workforcePools/"
+          "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
+          "vertexaisearch.cloud.google%2Fhome%2Fcid%2Fabc123"),
+      GURL("https://vertexaisearch.cloud.google/home/cid/abc123/r/skills"));
 
   // Falls back to `/r/skills` and clears the query string when `configId` is
   // absent and no other query parameters remain.
@@ -772,6 +779,83 @@ TEST_F(GeicEnablingTest, GetGeicSkillsUrl) {
   scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
       ::switches::kGlicGuestURL, "");
   EXPECT_TRUE(GetGeicSkillsUrl(profile()).is_empty());
+}
+
+TEST_F(GeicEnablingTest, UnwrapsAndCanonicalizesWorkforceAuthPortalUrls) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_EQ(
+      ResolvePolicyUrl(
+          "https://auth.cloud.google/signin/locations/global/workforcePools/"
+          "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
+          "vertexaisearch.cloud.google%2Fhome%2Fcid%2F12345"),
+      GURL("https://vertexaisearch.cloud.google/side-panel?configId=12345&"
+           "idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2Fproviders%2F"
+           "my-idp"));
+
+  EXPECT_EQ(
+      ResolvePolicyUrl(
+          "https://auth.cloud.google/signin/locations/global/workforcePools/"
+          "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
+          "vertexaisearch.cloud.google%2Fus%2Fhome%2Fcid%2F12345"),
+      GURL("https://vertexaisearch.cloud.google/side-panel?configId=12345&"
+           "location=us&idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2F"
+           "providers%2Fmy-idp"));
+
+  EXPECT_EQ(ResolvePolicyUrl(
+                "https://auth.cloud.google/signin/?continueUrl=https%3A%2F%2F"
+                "vertexaisearch.cloud.google%2Fhome%2Fcid%2F12345%3Fidp%3D"
+                "stale-idp"),
+            GURL("https://vertexaisearch.cloud.google/side-panel?"
+                 "configId=12345"));
+
+  EXPECT_EQ(
+      ResolvePolicyUrl(
+          "https://auth.business.gemini.google/signin/locations/global/"
+          "workforcePools/biz-pool/providers/biz-idp/?continueUrl=https%3A%2F"
+          "%2Fbusiness.gemini.google%2Fhome%2Fcid%2F12345"),
+      GURL("https://business.gemini.google/side-panel?configId=12345&"
+           "idp=locations%2Fglobal%2FworkforcePools%2Fbiz-pool%2Fproviders%2F"
+           "biz-idp"));
+
+  EXPECT_EQ(
+      ResolvePolicyUrl(
+          "https://auth.gemini-us.google/signin/locations/global/"
+          "workforcePools/il5-pool/providers/il5-idp?continueUrl=https%3A%2F%2F"
+          "vertexaisearch.gemini-us.google%2Fhome%2Fcid%2F12345"),
+      GURL("https://vertexaisearch.gemini-us.google/side-panel?configId=12345&"
+           "idp=locations%2Fglobal%2FworkforcePools%2Fil5-pool%2Fproviders%2F"
+           "il5-idp"));
+
+  EXPECT_EQ(
+      ResolvePolicyUrl(
+          "https://auth.cloud.google/signin/locations/global/workforcePools/"
+          "my-pool-1/providers/new-idp?continueUrl=https%3A%2F%2F"
+          "vertexaisearch.cloud.google%2Fside-panel%3FconfigId%3D123%26"
+          "idp%3Dold-idp"),
+      GURL("https://vertexaisearch.cloud.google/side-panel?configId=123&"
+           "idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2Fproviders%2F"
+           "new-idp"));
+}
+
+TEST_F(GeicEnablingTest, PreProductionWorkforceAuthPortalUrls) {
+  const std::string kPreProdWrapper =
+      "https://auth-autopush.corp.cloud.google/signin/locations/global/"
+      "workforcePools/my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
+      "ucs-app-autopush.corp.cloud.google%2Fhome%2Fcid%2F12345";
+  const GURL kExpectedResolved(
+      "https://ucs-app-autopush.corp.cloud.google/side-panel?configId=12345&"
+      "idp=locations%2Fglobal%2FworkforcePools%2Fmy-pool-1%2Fproviders%2F"
+      "my-idp");
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGeic, {{"geic-guest-url", kPreProdWrapper}});
+
+  EXPECT_EQ(ResolveGeicGuestUrl(profile()), kExpectedResolved);
+  EXPECT_TRUE(ResolvePolicyUrl(kPreProdWrapper).is_empty());
+  EXPECT_EQ(ResolveSwitchUrl(kPreProdWrapper), kExpectedResolved);
 }
 }  // namespace
 }  // namespace geic

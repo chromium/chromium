@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_fre_store_impl.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
@@ -74,12 +75,14 @@ namespace {
 // Appended by `GetLocalizedGuestURL()` from Chrome's UI locale.
 constexpr char kLocaleParam[] = "hl";
 
-// Returns `guest_url` without `hl`, so the key survives UI language changes.
-// Other params may identify the GE instance, so they are kept. Persisted; must
-// not change.
+// Returns `guest_url` without `hl` or `idp`, so the key survives UI language
+// changes and migrating between direct and BYOID-wrapped URLs. Other params may
+// identify the GE instance, so they are kept. Persisted; must not change.
 std::string GuestUrlToKey(const GURL& guest_url) {
   GURL key =
       net::AppendOrReplaceQueryParameter(guest_url, kLocaleParam, std::nullopt);
+  key = net::AppendOrReplaceQueryParameter(
+      key, geic::kWorkforceProviderQueryParam, std::nullopt);
   if (key.query().empty()) {
     // AppendOrReplaceQueryParameter() always sets a query, so drop the empty
     // "?" it leaves when no other params remain.

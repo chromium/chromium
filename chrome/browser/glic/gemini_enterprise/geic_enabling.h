@@ -67,10 +67,13 @@ bool CanSwitchBetweenGeminiProvidersInSettings(
 //
 // All sources must be valid HTTPS URLs without embedded credentials, and are
 // restricted to Gemini Enterprise hosts in tiers:
-// - Policy: production hosts only (`IsAllowedGeminiEnterpriseHost()`).
-// - Finch: policy hosts plus pre-production and internal corp hosts
-//   (`IsAllowedGeminiEnterprisePreProductionHost()`).
-// - `--geic-guest-url`: Finch hosts, or any HTTP or HTTPS URL with
+// - Policy: production hosts (`IsAllowedGeminiEnterpriseHost()`), or a
+//   production BYOID Auth Portal URL wrapping one
+//   (`ParseWorkforceAuthPortalUrl()`).
+// - Finch: policy URLs plus pre-production and internal corp hosts
+//   (`IsAllowedGeminiEnterprisePreProductionHost()`) and pre-production BYOID
+//   Auth Portal URLs (`ParsePreProductionWorkforceAuthPortalUrl()`).
+// - `--geic-guest-url`: Finch URLs, or any HTTP or HTTPS URL with
 //   `--geic-allow-any-guest-url`.
 // `--glic-dev` does not relax these checks.
 //

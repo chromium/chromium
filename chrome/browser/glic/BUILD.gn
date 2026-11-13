@@ -410,6 +410,7 @@ source_set("provider_spec_impl") {
     ":glic",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/glic/gemini_enterprise:url_allowlist",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/glic/public:provider",
     "//chrome/browser/glic/public:provider_features",

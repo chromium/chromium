@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_URL_ALLOWLIST_H_
 #define CHROME_BROWSER_GLIC_GEMINI_ENTERPRISE_GEIC_URL_ALLOWLIST_H_
 
-class GURL;
+#include <string>
+
+#include "base/types/expected.h"
+#include "url/gurl.h"
 
 namespace geic {
+
+// Query parameter carrying the Workforce Identity provider resource name on
+// the unwrapped side-panel URL.
+inline constexpr char kWorkforceProviderQueryParam[] = "idp";
 
 // Returns true if `url`'s host is one of the production hosts that may serve
 // the Gemini Enterprise web application. This is the only set accepted for the
@@ -25,6 +32,36 @@ bool IsAllowedGeminiEnterpriseHost(const GURL& url);
 // the host is checked; callers are responsible for scheme and other URL
 // requirements.
 bool IsAllowedGeminiEnterprisePreProductionHost(const GURL& url);
+
+struct WorkforceAuthPortalInfo {
+  GURL inner_url;
+  // Empty when `/signin` does not pin a single provider.
+  std::string workforce_provider;
+};
+
+enum class WorkforceAuthPortalUrlError {
+  kNotWorkforceAuthPortal,
+  kInvalidUrl,
+  kInnerUrlNotHttps,
+  kDisallowedInnerHost,
+};
+
+// Parses a production Workforce Identity (BYOID) Auth Portal sign-in URL
+// (`https://auth.<domain>.google/signin[/<provider>]?continueUrl=<inner>`)
+// whose `continueUrl` targets an allowed production Gemini Enterprise host on
+// the paired domain. Only a single Auth Portal redirect hop is unwrapped
+// (nested wrapper URLs are rejected). Safe to call before `base::FeatureList`
+// is initialized.
+base::expected<WorkforceAuthPortalInfo, WorkforceAuthPortalUrlError>
+ParseWorkforceAuthPortalUrl(const GURL& url);
+
+// Parses a pre-production Workforce Identity Auth Portal sign-in URL
+// (`https://auth-<label>.<domain>.google/signin[/<provider>]?continueUrl=<inner>`)
+// whose `continueUrl` targets an allowed pre-production Gemini Enterprise host
+// on the paired domain. Only a single Auth Portal redirect hop is unwrapped.
+// Accepted from Finch or `--geic-guest-url`, not policy.
+base::expected<WorkforceAuthPortalInfo, WorkforceAuthPortalUrlError>
+ParsePreProductionWorkforceAuthPortalUrl(const GURL& url);
 
 }  // namespace geic
 

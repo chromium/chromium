@@ -44,9 +44,14 @@ source_set("url_allowlist") {
     "geic_url_allowlist.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//url",
+  ]
+
+  deps = [
+    "//net",
+    "//third_party/re2",
   ]
 }
 

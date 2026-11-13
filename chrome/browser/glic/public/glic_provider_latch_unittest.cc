@@ -284,7 +284,7 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-// The GE guest URL key is the latched guest URL without `hl`.
+// The GE guest URL key is the latched guest URL without `hl` or `idp`.
 TEST_F(GlicProviderLatchTest, GeminiEnterpriseGuestUrlKey) {
   Profile* profile = helper_.regular_profile();
   EXPECT_EQ(GetGlicProviderSpec(profile).GetGuestUrlKey(), kGuestUrl);
@@ -303,12 +303,22 @@ TEST(GlicProviderSpecTest, GeminiEnterpriseGuestUrlKeyDropsLocale) {
   EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
                 "https://business.gemini.google/side-panel?hl=en&configId=abc"),
             "https://business.gemini.google/side-panel?configId=abc");
+  EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
+                "https://business.gemini.google/side-panel?"
+                "configId=abc&idp=locations%2Fglobal%2FworkforcePools%2Fp%2F"
+                "providers%2Fokta&hl=en"),
+            "https://business.gemini.google/side-panel?configId=abc");
 }
 
 TEST(GlicProviderSpecTest, GeminiEnterpriseGuestUrlKeyDropsEmptyQuery) {
   EXPECT_EQ(GetGeminiEnterpriseGuestUrlKey(
                 "https://business.gemini.google/side-panel?hl=en"),
             "https://business.gemini.google/side-panel");
+  EXPECT_EQ(
+      GetGeminiEnterpriseGuestUrlKey(
+          "https://business.gemini.google/side-panel?"
+          "idp=locations%2Fglobal%2FworkforcePools%2Fp%2Fproviders%2Fokta"),
+      "https://business.gemini.google/side-panel");
 }
 
 TEST(GlicProviderSpecTest, GeminiEnterpriseGuestUrlKeyKeepsOtherParams) {

@@ -40,6 +40,11 @@ namespace geic {
 
 namespace {
 
+struct UnwrappedGuestUrl {
+  GURL url;
+  std::string workforce_provider;
+};
+
 // Guest URLs must use HTTPS and must not contain embedded credentials.
 bool IsSecureGuestUrl(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme) &&
@@ -129,9 +134,8 @@ bool IsConsumerGeminiAllowedByPolicy(Profile* profile) {
       optimization_guide::prefs::kGeminiSettings);
   return !pref ||
          pref->GetValue()->GetIfInt() ==
-             std::to_underlying(
-                 optimization_guide::prefs::GeminiSettingsPolicyState::
-                     kEnabled);
+             std::to_underlying(optimization_guide::prefs::
+                                    GeminiSettingsPolicyState::kEnabled);
 }
 
 bool IsPersonalProfile(Profile* profile) {
@@ -160,24 +164,57 @@ enum class GuestUrlError {
   kInvalid,
 };
 
-// Classifies a guest URL source. Returns the URL if `is_valid` accepts it,
-// ready to be canonicalized, or why it can't be used.
-base::expected<GURL, GuestUrlError> ToGuestUrl(const std::string& spec,
-                                               bool (*is_valid)(const GURL&)) {
+std::optional<UnwrappedGuestUrl> ToUnwrappedGuestUrl(
+    base::expected<WorkforceAuthPortalInfo, WorkforceAuthPortalUrlError>
+        parsed) {
+  if (!parsed.has_value()) {
+    return std::nullopt;
+  }
+  return UnwrappedGuestUrl{
+      .url = std::move(parsed->inner_url),
+      .workforce_provider = std::move(parsed->workforce_provider),
+  };
+}
+
+// Policy guest URLs must use a production Gemini Enterprise host or a
+// production BYOID Auth Portal URL wrapping one.
+std::optional<UnwrappedGuestUrl> UnwrapPolicyGuestUrl(const GURL& url) {
+  if (IsValidPolicyGuestUrl(url)) {
+    return UnwrappedGuestUrl{.url = url};
+  }
+  return ToUnwrappedGuestUrl(ParseWorkforceAuthPortalUrl(url));
+}
+
+// Finch guest URLs may also use a pre-production Gemini Enterprise host or a
+// pre-production BYOID Auth Portal URL wrapping one.
+std::optional<UnwrappedGuestUrl> UnwrapFinchGuestUrl(const GURL& url) {
+  if (std::optional<UnwrappedGuestUrl> policy_url = UnwrapPolicyGuestUrl(url)) {
+    return policy_url;
+  }
+  if (IsValidFinchGuestUrl(url)) {
+    return UnwrappedGuestUrl{.url = url};
+  }
+  return ToUnwrappedGuestUrl(ParsePreProductionWorkforceAuthPortalUrl(url));
+}
+
+// Classifies a guest URL source. Returns the unwrapped URL if `unwrap` accepts
+// it, ready to be canonicalized, or why it can't be used.
+base::expected<UnwrappedGuestUrl, GuestUrlError> ToGuestUrl(
+    const std::string& spec,
+    std::optional<UnwrappedGuestUrl> (*unwrap)(const GURL&)) {
   if (spec.empty()) {
     return base::unexpected(GuestUrlError::kUnset);
   }
-  GURL url(spec);
-  if (!is_valid(url)) {
-    return base::unexpected(GuestUrlError::kInvalid);
+  if (std::optional<UnwrappedGuestUrl> unwrapped = unwrap(GURL(spec))) {
+    return std::move(*unwrapped);
   }
-  return url;
+  return base::unexpected(GuestUrlError::kInvalid);
 }
 
 // Command-line override (--geic-guest-url), which can also be set from
 // chrome://flags. Accepts the same URLs as Finch, or any HTTP or HTTPS URL with
 // `--geic-allow-any-guest-url` for local development and tests.
-base::expected<GURL, GuestUrlError> GetSwitchGuestUrl() {
+base::expected<UnwrappedGuestUrl, GuestUrlError> GetSwitchGuestUrl() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   std::string spec = command_line->GetSwitchValueASCII(kGeicGuestURLSwitch);
@@ -188,24 +225,27 @@ base::expected<GURL, GuestUrlError> GetSwitchGuestUrl() {
   if (!url.is_valid() || url.has_username() || url.has_password()) {
     return base::unexpected(GuestUrlError::kInvalid);
   }
-  return IsValidFinchGuestUrl(url) ||
-                 (command_line->HasSwitch(kGeicAllowAnyGuestURLSwitch) &&
-                  url.SchemeIsHTTPOrHTTPS())
-             ? base::expected<GURL, GuestUrlError>(url)
-             : base::unexpected(GuestUrlError::kInvalid);
+  if (std::optional<UnwrappedGuestUrl> unwrapped = UnwrapFinchGuestUrl(url)) {
+    return std::move(*unwrapped);
+  }
+  if (command_line->HasSwitch(kGeicAllowAnyGuestURLSwitch) &&
+      url.SchemeIsHTTPOrHTTPS()) {
+    return UnwrappedGuestUrl{.url = std::move(url)};
+  }
+  return base::unexpected(GuestUrlError::kInvalid);
 }
 
-base::expected<GURL, GuestUrlError> GetPolicyGuestUrl(
+base::expected<UnwrappedGuestUrl, GuestUrlError> GetPolicyGuestUrl(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return profile && profile->GetPrefs()
              ? ToGuestUrl(profile->GetPrefs()->GetString(
                               glic::prefs::kGlicGeminiEnterpriseUrl),
-                          &IsValidPolicyGuestUrl)
+                          &UnwrapPolicyGuestUrl)
              : base::unexpected(GuestUrlError::kUnset);
 }
 
-base::expected<GURL, GuestUrlError> GetFinchGuestUrl(
+base::expected<UnwrappedGuestUrl, GuestUrlError> GetFinchGuestUrl(
     content::BrowserContext* browser_context) {
   if (browser_context) {
     const GoogleGroupsManager* google_groups_manager =
@@ -215,7 +255,7 @@ base::expected<GURL, GuestUrlError> GetFinchGuestUrl(
       return base::unexpected(GuestUrlError::kUnset);
     }
   }
-  return ToGuestUrl(features::kGeicGuestURL.Get(), &IsValidFinchGuestUrl);
+  return ToGuestUrl(features::kGeicGuestURL.Get(), &UnwrapFinchGuestUrl);
 }
 
 std::optional<ResolvedGuestUrl> ResolveGuestUrlWithSource(
@@ -229,7 +269,8 @@ std::optional<ResolvedGuestUrl> ResolveGuestUrlWithSource(
   // Enterprise hosts, Finch also accepts pre-production and internal corp
   // hosts, and the switch also accepts any HTTP or HTTPS URL with
   // `--geic-allow-any-guest-url`.
-  const std::pair<GuestUrlSource, base::expected<GURL, GuestUrlError>>
+  const std::pair<GuestUrlSource,
+                  base::expected<UnwrappedGuestUrl, GuestUrlError>>
       candidates[] = {
           {GuestUrlSource::kSwitch, GetSwitchGuestUrl()},
           {GuestUrlSource::kPolicy, GetPolicyGuestUrl(browser_context)},
@@ -244,7 +285,13 @@ std::optional<ResolvedGuestUrl> ResolveGuestUrlWithSource(
   if (it == std::end(candidates) || !it->second.has_value()) {
     return std::nullopt;
   }
-  return ResolvedGuestUrl{CanonicalizeGuestUrl(it->second.value()), it->first};
+  GURL guest_url = CanonicalizeGuestUrl(it->second->url);
+  if (!it->second->workforce_provider.empty()) {
+    guest_url = net::AppendOrReplaceQueryParameter(
+        guest_url, kWorkforceProviderQueryParam,
+        it->second->workforce_provider);
+  }
+  return ResolvedGuestUrl{std::move(guest_url), it->first};
 }
 
 }  // namespace
@@ -305,11 +352,12 @@ GURL GetGeicSkillsUrl(Profile* profile) {
   url = net::AppendOrReplaceQueryParameter(url, "configId", std::nullopt);
   url = net::AppendOrReplaceQueryParameter(url, "location", std::nullopt);
   url = net::AppendOrReplaceQueryParameter(url, "hl", std::nullopt);
+  url = net::AppendOrReplaceQueryParameter(url, kWorkforceProviderQueryParam,
+                                           std::nullopt);
 
-  std::string path =
-      config_id.empty()
-          ? "/r/skills"
-          : base::StrCat({"/home/cid/", config_id, "/r/skills"});
+  std::string path = config_id.empty()
+                         ? "/r/skills"
+                         : base::StrCat({"/home/cid/", config_id, "/r/skills"});
   GURL::Replacements replacements;
   replacements.SetPathStr(path);
   if (url.query().empty()) {

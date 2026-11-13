@@ -316,11 +316,23 @@ TEST_F(GeicFreTest, GuestUrlOnlyAddsLocaleParam) {
   EXPECT_EQ(keys, (std::vector<std::string>{"configId", "hl"}));
 }
 
-TEST_F(GeicFreTest, KeyDropsOnlyLocaleParam) {
+TEST_F(GeicFreTest, KeyDropsLocaleAndIdpParams) {
   EXPECT_EQ(GetFreKeyForGuestUrl("https://business.gemini.google/side-panel?"
                                  "foo=bar&hl=de&configId=abc#frag"),
             "https://business.gemini.google/side-panel?foo=bar&configId=abc"
             "#frag");
+  EXPECT_EQ(
+      GetFreKeyForGuestUrl(
+          "https://auth.cloud.google/signin/locations/global/workforcePools/"
+          "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
+          "vertexaisearch.cloud.google%2Fhome%2Fcid%2Fabc"),
+      GetFreKeyForGuestUrl("https://vertexaisearch.cloud.google/home/cid/abc"));
+  EXPECT_EQ(
+      GetFreKeyForGuestUrl(
+          "https://auth.cloud.google/signin/locations/global/workforcePools/"
+          "my-pool-1/providers/my-idp?continueUrl=https%3A%2F%2F"
+          "enterprise.gemini.cloud.google%2Fside-panel"),
+      "https://enterprise.gemini.cloud.google/side-panel");
   EXPECT_EQ(GetFreKeyForGuestUrl(
                 "https://business.gemini.google/side-panel?configId="),
             "https://business.gemini.google/side-panel?configId=");

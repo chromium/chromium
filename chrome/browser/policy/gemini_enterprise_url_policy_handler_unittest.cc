@@ -182,4 +182,142 @@ TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, LocalhostNotAllowed) {
   ExpectSingleError(IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR);
 }
 
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, ValidWorkforceAuthPortalUrl) {
+  const std::string url =
+      "https://auth.cloud.google/signin/locations/global/workforcePools/"
+      "my-pool-1/providers/my-provider?continueUrl=https%3A%2F%2F"
+      "vertexaisearch.cloud.google%2Fhome%2Fcid%2F12345678";
+  SetPolicy(base::Value(url));
+
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_TRUE(errors_.empty());
+
+  ExpectAppliedPref(url);
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest,
+       ValidWorkforceAuthPortalUrlWithOuterParams) {
+  const std::string url =
+      "https://auth.cloud.google/signin/locations/global/workforcePools/"
+      "my-pool-1/providers/my-provider?continueUrl=https%3A%2F%2F"
+      "enterprise.gemini.cloud.google%2Fhome%2Fcid%2F12345678&hl=en_US";
+  SetPolicy(base::Value(url));
+
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_TRUE(errors_.empty());
+
+  ExpectAppliedPref(url);
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest,
+       ValidMultiProviderWorkforceAuthPortalUrl) {
+  const std::string url =
+      "https://auth.cloud.google/signin/?continueUrl=https%3A%2F%2F"
+      "vertexaisearch.cloud.google%2Fhome%2Fcid%2F12345678";
+  SetPolicy(base::Value(url));
+
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_TRUE(errors_.empty());
+
+  ExpectAppliedPref(url);
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest, ValidIl5WorkforceAuthPortalUrl) {
+  const std::string url =
+      "https://auth.gemini-us.google/signin/locations/global/workforcePools/"
+      "il5-pool/providers/il5-idp?continueUrl=https%3A%2F%2F"
+      "vertexaisearch.gemini-us.google%2Fhome%2Fcid%2F12345678";
+  SetPolicy(base::Value(url));
+
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_TRUE(errors_.empty());
+
+  ExpectAppliedPref(url);
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest,
+       PreProductionWorkforceAuthPortalRejectedByPolicy) {
+  SetPolicy(base::Value(
+      "https://auth-staging.cloud.google/signin/locations/global/"
+      "workforcePools/my-pool-1/providers/my-provider?continueUrl=https%3A%2F"
+      "%2Fvertexaisearch.cloud.google%2Fhome%2Fcid%2F12345678"));
+
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  ExpectSingleError(IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR);
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest,
+       InvalidWorkforceAuthPortalProviderFormat) {
+  SetPolicy(base::Value(
+      "https://auth.cloud.google/signin/invalid-provider-format?continueUrl="
+      "https%3A%2F%2Fvertexaisearch.cloud.google%2Fhome%2Fcid%2F12345"));
+
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  ExpectSingleError(IDS_POLICY_INVALID_URL_ERROR);
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest,
+       WorkforceAuthPortalNonHttpsContinueUrlRejected) {
+  SetPolicy(base::Value(
+      "https://auth.cloud.google/signin/locations/global/workforcePools/"
+      "my-pool-1/providers/my-provider?continueUrl=http%3A%2F%2F"
+      "vertexaisearch.cloud.google%2Fhome%2Fcid%2F12345"));
+
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  ExpectSingleError(IDS_POLICY_URL_NOT_HTTPS_ERROR);
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest,
+       DisallowedInnerHostInWorkforceAuthPortal) {
+  for (const char* url : {
+           "https://auth.cloud.google/signin/locations/global/workforcePools/"
+           "my-pool-1/providers/my-provider?continueUrl=https%3A%2F%2F"
+           "evil.com%2Fhome%2Fcid%2F12345",
+           "https://auth.cloud.google/signin/locations/global/workforcePools/"
+           "my-pool-1/providers/my-provider?continueUrl=https%3A%2F%2F"
+           "enterprise.gemini.google.com%2F",
+           "https://auth.cloud.google/signin/locations/global/workforcePools/"
+           "my-pool-1/providers/my-provider?continueUrl=https%3A%2F%2F"
+           "auth.cloud.google%2Fsignin",
+       }) {
+    SCOPED_TRACE(url);
+    PolicyErrorMap errors;
+    SetPolicy(base::Value(url));
+
+    EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors));
+    const std::vector<PolicyErrorMap::Data> entries =
+        errors.GetErrors(key::kGeminiEnterpriseUrl);
+    ASSERT_EQ(1u, entries.size());
+    EXPECT_NE(entries[0].message.find(l10n_util::GetStringUTF16(
+                  IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR)),
+              std::u16string::npos);
+  }
+}
+
+TEST_F(GeminiEnterpriseUrlPolicyHandlerTest,
+       WorkforceAuthPortalMalformedWrapperErrors) {
+  for (const char* url : {
+           "https://auth.cloud.google:8443/signin/locations/global/"
+           "workforcePools/my-pool-1/providers/my-provider?continueUrl="
+           "https%3A%2F%2Fvertexaisearch.cloud.google%2Fhome%2Fcid%2F12345",
+           "https://user:pass@auth.cloud.google/signin/locations/global/"
+           "workforcePools/my-pool-1/providers/my-provider?continueUrl="
+           "https%3A%2F%2Fvertexaisearch.cloud.google%2Fhome%2Fcid%2F12345",
+           "https://auth.cloud.google/signin/locations/global/workforcePools/"
+           "my-pool-1/providers/my-provider",
+       }) {
+    SCOPED_TRACE(url);
+    PolicyErrorMap errors;
+    SetPolicy(base::Value(url));
+
+    EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors));
+    const std::vector<PolicyErrorMap::Data> entries =
+        errors.GetErrors(key::kGeminiEnterpriseUrl);
+    ASSERT_EQ(1u, entries.size());
+    EXPECT_NE(entries[0].message.find(
+                  l10n_util::GetStringUTF16(IDS_POLICY_INVALID_URL_ERROR)),
+              std::u16string::npos);
+  }
+}
+
 }  // namespace policy

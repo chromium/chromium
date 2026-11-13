@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -43,13 +44,31 @@ bool GeminiEnterpriseUrlPolicyHandler::CheckUrl(const std::string& policy_name,
                      std::move(error_path));
     return false;
   }
-  if (!geic::IsAllowedGeminiEnterpriseHost(gurl)) {
-    errors->AddError(policy_name,
-                     IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR,
-                     std::move(error_path));
-    return false;
+  if (geic::IsAllowedGeminiEnterpriseHost(gurl)) {
+    return true;
   }
-  return true;
+  const base::expected<geic::WorkforceAuthPortalInfo,
+                       geic::WorkforceAuthPortalUrlError>
+      parsed_auth_url = geic::ParseWorkforceAuthPortalUrl(gurl);
+  if (parsed_auth_url.has_value()) {
+    return true;
+  }
+  switch (parsed_auth_url.error()) {
+    case geic::WorkforceAuthPortalUrlError::kInvalidUrl:
+      errors->AddError(policy_name, IDS_POLICY_INVALID_URL_ERROR,
+                       std::move(error_path));
+      return false;
+    case geic::WorkforceAuthPortalUrlError::kInnerUrlNotHttps:
+      errors->AddError(policy_name, IDS_POLICY_URL_NOT_HTTPS_ERROR,
+                       std::move(error_path));
+      return false;
+    case geic::WorkforceAuthPortalUrlError::kNotWorkforceAuthPortal:
+    case geic::WorkforceAuthPortalUrlError::kDisallowedInnerHost:
+      errors->AddError(policy_name,
+                       IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR,
+                       std::move(error_path));
+      return false;
+  }
 }
 
 bool GeminiEnterpriseUrlPolicyHandler::CheckPolicySettings(

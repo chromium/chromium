@@ -162,7 +162,7 @@ class GlicProviderSpec {
   virtual const GlicFreStore& GetFreStore() const = 0;
   // Key for prefs that are kept per guest URL, e.g. the web client's client
   // data storage. Gemini: the guest URL host, or `kGeminiGuestUrlKey` if it has
-  // none. Gemini Enterprise: the latched guest URL without `hl`.
+  // none. Gemini Enterprise: the latched guest URL without `hl` or `idp`.
   // Persisted; must not change.
   virtual std::string GetGuestUrlKey() const = 0;
   // Whether the web client's data in the webview partition's localStorage is
