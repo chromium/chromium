@@ -456,6 +456,13 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter;../../testing/buildbot/filters/android.emulator_17.base_unittests.filter",
                 ],
             ),
+            "cc_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/558813685): Remove once emulator is updated past 37.1.11
+                    # with the Gfxstream VK_EXT_host_image_copy fix.
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.cc_unittests.filter",
+                ],
+            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.content_browsertests.filter",
@@ -492,6 +499,13 @@ ci.builder(
                     # TODO(crbug.com/40201873): Fix ScopedDirTest.CloseOutOfScope.
                     # TODO(crbug.com/579554079): Fix PosixSharedMemoryTest.CreateAndMap.
                     "--gtest_filter=-ScopedDirTest.CloseOutOfScope:PosixSharedMemoryTest.CreateAndMap",
+                ],
+            ),
+            "viz_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/558813685): Remove once emulator is updated past 37.1.11
+                    # with the Gfxstream VK_EXT_host_image_copy fix.
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.viz_unittests.filter",
                 ],
             ),
         },

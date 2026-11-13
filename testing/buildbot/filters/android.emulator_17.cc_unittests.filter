@@ -1,0 +1,8 @@
+# TODO(crbug.com/558813685): Re-enable once emulator is updated past 37.1.11
+# with the Gfxstream VK_EXT_host_image_copy fix (vkCreateDevice fails with
+# VK_ERROR_FEATURE_NOT_PRESENT under -gpu lavapipe).
+-GpuRasterPixelTest.*
+-P/GpuRasterClearPixelTest.*
+-P/GpuRasterPathPixelTest.*
+-P/GpuRasterTextBlobPixelTest.*
+-TransferCacheTest.*
