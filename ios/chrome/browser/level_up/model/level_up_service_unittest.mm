@@ -281,6 +281,31 @@ TEST_F(LevelUpServiceTest, TestOptedOutDoesNotTrack) {
   EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
 }
 
+// Tests that when `kLevelUpOptIn` changes to false (e.g. via Sync), all tasks,
+// stats, and the current level are reset, and re-opting in starts at level 1.
+TEST_F(LevelUpServiceTest, OptOutPrefChangeResetsLevelAndTasks) {
+  service_->MarkTaskCompleted(TaskType::kTabGroups);
+  service_->MarkTaskCompleted(TaskType::kAutofill);
+  service_->MarkTaskCompleted(TaskType::kGemini);
+  service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered, 4);
+  ASSERT_EQ(2, service_->GetCurrentLevel());
+
+  PrefService* prefs = profile_->GetPrefs();
+  ASSERT_EQ(2, prefs->GetInteger(prefs::kLevelUpHighestLevel));
+
+  // Simulate synced opt-out.
+  prefs->SetBoolean(prefs::kLevelUpOptIn, false);
+  EXPECT_EQ(1, service_->GetCurrentLevel());
+  EXPECT_EQ(1, prefs->GetInteger(prefs::kLevelUpHighestLevel));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
+
+  // Opt in again and verify the level remains at 1.
+  prefs->SetBoolean(prefs::kLevelUpOptIn, true);
+  EXPECT_EQ(1, service_->GetCurrentLevel());
+  EXPECT_EQ(1, prefs->GetInteger(prefs::kLevelUpHighestLevel));
+}
+
 // Tests that GetRecommendedTasks returns 4 tasks matching default category
 // order (2 Productivity, 1 Safety, 1 Search) when no tasks are completed.
 TEST_F(LevelUpServiceTest, TestGetRecommendedTasksDefaultOrder) {

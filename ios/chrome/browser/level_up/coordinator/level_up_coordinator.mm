@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_coordinator.h"
 
+#import <memory>
+#import <string>
 #import <utility>
 
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
@@ -84,6 +88,7 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
                                   LevelUpAllTasksViewControllerDelegate,
                                   LevelUpMediatorDelegate,
                                   LevelUpViewControllerDelegate,
+                                  PrefObserverDelegate,
                                   PromoStyleViewControllerDelegate,
                                   UIAdaptivePresentationControllerDelegate>
 
@@ -98,6 +103,10 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   ConfirmationAlertViewController* _optOutConfirmationViewController;
   raw_ptr<PrefService> _prefService;
   raw_ptr<AuthenticationService> _authService;
+  // Registrar for Pref changes notifications from any window or device.
+  PrefChangeRegistrar _prefChangeRegistrar;
+  // Bridge to listen to PrefService changes.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
 }
 
 - (void)start {
@@ -113,6 +122,10 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
       promos_manager::Promo::LevelUp);
   _authService = AuthenticationServiceFactory::GetForProfile(profile);
   _prefService = profile->GetPrefs();
+  _prefChangeRegistrar.Init(_prefService);
+  _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+  _prefObserverBridge->ObserveChangesForPreference(prefs::kLevelUpOptIn,
+                                                   &_prefChangeRegistrar);
 
   if (!_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
     [self showLevelUpPromo];
@@ -122,6 +135,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 }
 
 - (void)stop {
+  _prefObserverBridge.reset();
+  _prefChangeRegistrar.Reset();
   if (_optOutConfirmationViewController) {
     [_optOutConfirmationViewController dismissViewControllerAnimated:NO
                                                           completion:nil];
@@ -308,11 +323,9 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   if (_authService->HasPrimaryIdentity()) {
     _prefService->SetBoolean(prefs::kLevelUpOptIn, true);
     RecordLevelUpOptInStateChanged(true);
+  } else {
+    [self transitionFromPromoToLevelUp];
   }
-  __weak __typeof(self) weakSelf = self;
-  [self stopLevelUpNavigationController:^{
-    [weakSelf showLevelUp];
-  }];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -327,7 +340,25 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   [handler dismissLevelUp];
 }
 
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName != prefs::kLevelUpOptIn ||
+      !_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+    return;
+  }
+  [self transitionFromPromoToLevelUp];
+}
+
 #pragma mark - Private
+
+// Dismisses the promo and displays the main Level Up screen.
+- (void)transitionFromPromoToLevelUp {
+  __weak __typeof(self) weakSelf = self;
+  [self stopLevelUpNavigationController:^{
+    [weakSelf showLevelUp];
+  }];
+}
 
 // Handles a task tap by closing the level up screen and preparing to navigate
 // to the beginning of the tapped task.

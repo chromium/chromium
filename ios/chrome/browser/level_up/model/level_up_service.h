@@ -129,8 +129,18 @@ class LevelUpService : public KeyedService {
   // Declared const since it does not modify any service state.
   int CalculateLevel(size_t completed_count) const;
 
+  // Called when the `kLevelUpOptIn` preference changes.
+  void OnOptInPrefChanged();
+
   // Called when the `kLevelUpUIEnabled` preference changes.
   void OnUIEnabledPrefChanged();
+
+  // Called when `kLevelUpCompletedTasks` or `kLevelUpHighestLevel` preferences
+  // changes.
+  void OnCompletedTasksAndHighestLevelPrefsChanged();
+
+  // Called when any Level Up stat preference changes.
+  void OnStatsPrefsChanged();
 
   raw_ptr<PrefService> pref_service_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;

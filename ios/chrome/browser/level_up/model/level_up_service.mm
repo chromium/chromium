@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 
 #import <algorithm>
+#import <array>
 #import <numeric>
 #import <optional>
 
@@ -265,8 +266,24 @@ LevelUpService::LevelUpService(
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
+        prefs::kLevelUpOptIn,
+        base::BindRepeating(&LevelUpService::OnOptInPrefChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_.Add(
         prefs::kLevelUpUIEnabled,
         base::BindRepeating(&LevelUpService::OnUIEnabledPrefChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_.AddMultiple(
+        {prefs::kLevelUpCompletedTasks, prefs::kLevelUpHighestLevel},
+        base::BindRepeating(
+            &LevelUpService::OnCompletedTasksAndHighestLevelPrefsChanged,
+            base::Unretained(this)));
+    pref_change_registrar_.AddMultiple(
+        {prefs::kLevelUpTabsDeclutteredStat,
+         prefs::kLevelUpPasswordsAutofilledStat,
+         prefs::kLevelUpPasswordsVerifiedStat,
+         prefs::kLevelUpPhotoSearchesPerformedStat},
+        base::BindRepeating(&LevelUpService::OnStatsPrefsChanged,
                             base::Unretained(this)));
   }
 
@@ -288,10 +305,25 @@ void LevelUpService::Shutdown() {
   }
 }
 
+void LevelUpService::OnOptInPrefChanged() {
+  if (!IsOptedIn()) {
+    ResetAllTasksStatus();
+  }
+}
+
 void LevelUpService::OnUIEnabledPrefChanged() {
   if (pref_service_) {
     is_ui_enabled_ = pref_service_->GetBoolean(prefs::kLevelUpUIEnabled);
   }
+}
+
+void LevelUpService::OnCompletedTasksAndHighestLevelPrefsChanged() {
+  LoadPrefs();
+  NotifyObserversOfTaskComplete();
+}
+
+void LevelUpService::OnStatsPrefsChanged() {
+  NotifyObserversOfStatUpdate();
 }
 
 bool LevelUpService::IsOptedIn() const {
@@ -353,7 +385,6 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
     UpdateLevelAndPref();
     pref_service_->SetInteger(
         prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
-    NotifyObserversOfTaskComplete();
   }
 }
 
@@ -528,7 +559,6 @@ void LevelUpService::IncrementStatValue(LevelUpTaskStatType stat_type,
   const char* pref_name = GetPrefNameForStatType(stat_type);
   int current = GetStatValue(stat_type);
   pref_service_->SetInteger(pref_name, current + delta);
-  NotifyObserversOfStatUpdate();
 }
 
 const std::map<TaskType, std::unique_ptr<TaskInfo>>& LevelUpService::GetTasks()
@@ -580,8 +610,7 @@ void LevelUpService::UpdateLevelAndPref() {
   int highest_level_pref =
       pref_service_->GetInteger(prefs::kLevelUpHighestLevel);
   int calculated_level = CalculateLevel(completed_tasks_.size());
-  current_level_ =
-      std::max({current_level_, highest_level_pref, calculated_level});
+  current_level_ = std::max(highest_level_pref, calculated_level);
 
   if (current_level_ > highest_level_pref) {
     pref_service_->SetInteger(prefs::kLevelUpHighestLevel, current_level_);
