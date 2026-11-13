@@ -6,10 +6,14 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOL_RESULT_H_
 
 #include <concepts>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/common/actor.mojom.h"
 
@@ -90,6 +94,44 @@ class ToolResult {
   std::unique_ptr<ToolResultData> data_;
   std::optional<ToolError> error_;
 };
+
+// The result of each action with latency information.
+// TODO(crbug.com/584876714): Replace `ToolResultWithLatencyInfo` and
+// `std::vector<ToolResultWithLatencyInfo>` with the new browser-side
+// `actor::ActionResult` and `actor::ActionsResult` types.
+struct ToolResultWithLatencyInfo {
+  base::TimeTicks start_time;
+  base::TimeTicks end_time;
+  ToolResult tool_result;
+
+  ToolResultWithLatencyInfo(base::TimeTicks start_time,
+                            base::TimeTicks end_time,
+                            ToolResult tool_result);
+  // TODO(crbug.com/574534362): Remove once all tools migrate off
+  // mojom::ActionResult.
+  ToolResultWithLatencyInfo(base::TimeTicks start_time,
+                            base::TimeTicks end_time,
+                            mojom::ActionResultPtr result);
+  ToolResultWithLatencyInfo(ToolResultWithLatencyInfo&&) noexcept;
+  ToolResultWithLatencyInfo& operator=(ToolResultWithLatencyInfo&&) noexcept;
+  ToolResultWithLatencyInfo(const ToolResultWithLatencyInfo&);
+  ToolResultWithLatencyInfo& operator=(const ToolResultWithLatencyInfo&) =
+      delete;
+  ~ToolResultWithLatencyInfo();
+};
+
+// Returns a singleton result vector using the given `tool_result`.
+// TODO(crbug.com/584876714): Remove once `ToolResultWithLatencyInfo` is
+// replaced with `actor::ActionResult` and `actor::ActionsResult`.
+std::vector<ToolResultWithLatencyInfo> MakeResultVector(ToolResult tool_result);
+
+// Assigns `error_code` and `index_of_failed_action` to the first member of
+// `results` with a non-Ok result, if any.
+// TODO(crbug.com/584876714): Remove once `ToolResultWithLatencyInfo` is
+// replaced with `actor::ActionResult` and `actor::ActionsResult`.
+void ExtractErrorResult(base::span<const ToolResultWithLatencyInfo> results,
+                        mojom::ActionResultCode& error_code,
+                        std::optional<size_t>& index_of_failed_action);
 
 }  // namespace actor
 

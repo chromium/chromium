@@ -7,8 +7,11 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/time/time.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
@@ -72,6 +75,57 @@ ToolResult ToolResult::Clone() const {
 
 bool ToolResult::Ok() const {
   return !error_.has_value();
+}
+
+ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(base::TimeTicks start_time,
+                                                     base::TimeTicks end_time,
+                                                     ToolResult tool_result)
+    : start_time(start_time),
+      end_time(end_time),
+      tool_result(std::move(tool_result)) {
+  CHECK(!start_time.is_null());
+  CHECK(!end_time.is_null());
+  CHECK_LE(start_time, end_time);
+}
+
+ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(
+    base::TimeTicks start_time,
+    base::TimeTicks end_time,
+    mojom::ActionResultPtr result)
+    : ToolResultWithLatencyInfo(
+          start_time,
+          end_time,
+          ToolResult::FromDeprecatedActionResult(std::move(result))) {}
+
+ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(
+    const ToolResultWithLatencyInfo& other)
+    : start_time(other.start_time),
+      end_time(other.end_time),
+      tool_result(other.tool_result.Clone()) {}
+ToolResultWithLatencyInfo::~ToolResultWithLatencyInfo() = default;
+ToolResultWithLatencyInfo::ToolResultWithLatencyInfo(
+    ToolResultWithLatencyInfo&&) noexcept = default;
+ToolResultWithLatencyInfo& ToolResultWithLatencyInfo::operator=(
+    ToolResultWithLatencyInfo&&) noexcept = default;
+
+std::vector<ToolResultWithLatencyInfo> MakeResultVector(
+    ToolResult tool_result) {
+  const auto now = base::TimeTicks::Now();
+  std::vector<ToolResultWithLatencyInfo> results;
+  results.emplace_back(now, now, std::move(tool_result));
+  return results;
+}
+
+void ExtractErrorResult(base::span<const ToolResultWithLatencyInfo> results,
+                        mojom::ActionResultCode& error_code,
+                        std::optional<size_t>& index_of_failed_action) {
+  for (size_t i = 0; i < results.size(); ++i) {
+    if (!results[i].tool_result.Ok()) {
+      error_code = results[i].tool_result.error()->code;
+      index_of_failed_action = i;
+      return;
+    }
+  }
 }
 
 }  // namespace actor

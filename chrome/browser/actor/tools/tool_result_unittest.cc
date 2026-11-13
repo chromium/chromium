@@ -8,8 +8,10 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/test/values_test_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom-shared.h"
@@ -163,6 +165,52 @@ TEST(ToolResultTest, ErrorWithoutMessage) {
   EXPECT_EQ(result.deprecated_action_result()->code,
             mojom::ActionResultCode::kUrlBlocked);
   EXPECT_EQ(result.deprecated_action_result()->message, "");
+}
+
+TEST(ToolResultTest, ToolResultWithLatencyInfoAndClone) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  const base::TimeTicks end_time = start_time + base::Milliseconds(25);
+
+  TestTabResult payload;
+  payload.tab_id = 7;
+  payload.title = "Active Tab";
+
+  ToolResultWithLatencyInfo info(start_time, end_time,
+                                 ToolResult::Success(std::move(payload)));
+  EXPECT_EQ(info.start_time, start_time);
+  EXPECT_EQ(info.end_time, end_time);
+  EXPECT_TRUE(info.tool_result.Ok());
+
+  ToolResultWithLatencyInfo copied(info);
+  EXPECT_EQ(copied.start_time, start_time);
+  EXPECT_EQ(copied.end_time, end_time);
+  EXPECT_TRUE(copied.tool_result.Ok());
+  ASSERT_NE(copied.tool_result.data(), nullptr);
+  const TestTabResult* typed = copied.tool_result.data()->As<TestTabResult>();
+  ASSERT_NE(typed, nullptr);
+  EXPECT_NE(typed, info.tool_result.data()->As<TestTabResult>());
+  EXPECT_EQ(typed->tab_id, 7);
+  EXPECT_EQ(typed->title, "Active Tab");
+}
+
+TEST(ToolResultTest, MakeResultVectorAndExtractErrorResult) {
+  std::vector<ToolResultWithLatencyInfo> ok_results =
+      MakeResultVector(ToolResult::Success());
+  ASSERT_EQ(ok_results.size(), 1u);
+  EXPECT_TRUE(ok_results[0].tool_result.Ok());
+
+  mojom::ActionResultCode error_code = mojom::ActionResultCode::kOk;
+  std::optional<size_t> failed_index;
+  ExtractErrorResult(ok_results, error_code, failed_index);
+  EXPECT_EQ(error_code, mojom::ActionResultCode::kOk);
+  EXPECT_EQ(failed_index, std::nullopt);
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+  ok_results.emplace_back(now, now,
+                          MakeResult(mojom::ActionResultCode::kTabWentAway));
+  ExtractErrorResult(ok_results, error_code, failed_index);
+  EXPECT_EQ(error_code, mojom::ActionResultCode::kTabWentAway);
+  EXPECT_EQ(failed_index, 1u);
 }
 
 }  // namespace
