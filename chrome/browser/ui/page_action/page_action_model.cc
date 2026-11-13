@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/page_action/page_action_model.h"
 
+#include "base/feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "ui/actions/actions.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -233,7 +235,17 @@ void PageActionModel::SetIsSuppressedByOmnibox(PageActionPassKey,
   if (is_suppressed_by_omnibox_ == is_suppressed) {
     return;
   }
+  const bool was_visible = GetVisible();
   is_suppressed_by_omnibox_ = is_suppressed;
+  // Omnibox suppression is flipped on every page action whenever focus enters
+  // or leaves the location bar. Observers only depend on the derived
+  // visibility, and the suppression state itself is queried on demand, so skip
+  // notifying when visibility is unchanged (e.g. for hidden actions).
+  if (was_visible == GetVisible() &&
+      base::FeatureList::IsEnabled(
+          features::kPageActionsFocusChangeOptimizations)) {
+    return;
+  }
   NotifyChange(Property::kIsSuppressedByOmnibox);
 }
 

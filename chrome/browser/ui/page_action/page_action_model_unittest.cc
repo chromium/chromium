@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/page_action/page_action_model.h"
 
 #include "base/memory/raw_ref.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_model_observer.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -271,6 +273,78 @@ TEST_F(PageActionModelTest, ShouldIgnoreOmniboxSuppression) {
   EXPECT_TRUE(model_.GetVisible());
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
+  EXPECT_TRUE(model_.GetVisible());
+}
+
+class PageActionModelFocusChangeOptimizationTest : public PageActionModelTest {
+ protected:
+  PageActionModelFocusChangeOptimizationTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kPageActionsFocusChangeOptimizations);
+  }
+
+  void MakeVisible() {
+    model_.SetShowRequested(PassKey(), true);
+    model_.SetActionItemProperties(
+        PassKey(),
+        ActionItem::Builder().SetEnabled(true).SetVisible(true).Build().get());
+    model_.SetTabActive(PassKey(), true);
+    ASSERT_TRUE(model_.GetVisible());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// A visible action still notifies when omnibox suppression hides/reshows it.
+TEST_F(PageActionModelFocusChangeOptimizationTest,
+       SuppressionNotifiesWhenVisibilityChanges) {
+  MakeVisible();
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
+  EXPECT_FALSE(model_.GetVisible());
+  EXPECT_TRUE(model_.IsAffectedByOmniboxSuppression());
+
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  EXPECT_TRUE(model_.GetVisible());
+  EXPECT_FALSE(model_.IsAffectedByOmniboxSuppression());
+}
+
+// A hidden action doesn't notify on suppression changes, but the suppression
+// state is still tracked and applied once the action is shown.
+TEST_F(PageActionModelFocusChangeOptimizationTest,
+       SuppressionDoesNotNotifyHiddenAction) {
+  ASSERT_FALSE(model_.GetVisible());
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
+  EXPECT_TRUE(model_.IsAffectedByOmniboxSuppression());
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Requesting show while suppressed keeps the action hidden.
+  model_.SetShowRequested(PassKey(), true);
+  model_.SetActionItemProperties(
+      PassKey(),
+      ActionItem::Builder().SetEnabled(true).SetVisible(true).Build().get());
+  model_.SetTabActive(PassKey(), true);
+  EXPECT_FALSE(model_.GetVisible());
+
+  // Lifting suppression shows it and notifies.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  EXPECT_TRUE(model_.GetVisible());
+}
+
+// An action exempt from suppression stays visible, so no notification.
+TEST_F(PageActionModelFocusChangeOptimizationTest,
+       SuppressionDoesNotNotifyExemptAction) {
+  MakeVisible();
+  model_.SetExemptFromOmniboxSuppression(PassKey(), true);
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
 
   model_.SetIsSuppressedByOmnibox(PassKey(), true);
   EXPECT_TRUE(model_.GetVisible());

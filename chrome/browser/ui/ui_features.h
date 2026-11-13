@@ -333,6 +333,10 @@ BASE_DECLARE_FEATURE(kPageActionAnchoredMessageActiveTabOnly);
 // latency.
 BASE_DECLARE_FEATURE(kAiModePageActionOptimization);
 
+// Gates skipping unchanged-visibility omnibox suppression notifications on
+// location bar focus changes, to reduce mouse pressed latency.
+BASE_DECLARE_FEATURE(kPageActionsFocusChangeOptimizations);
+
 // The following feature params indicate whether individual features should
 // have their page actions controlled using the new framework.
 

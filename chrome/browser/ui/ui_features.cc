@@ -417,6 +417,9 @@ BASE_FEATURE(kPageActionAnchoredMessageActiveTabOnly,
 
 BASE_FEATURE(kAiModePageActionOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageActionsFocusChangeOptimizations,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPageActionsPrioritySelector, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPageActionsPrioritySelectorProductMessagingController,
              base::FEATURE_DISABLED_BY_DEFAULT);
