@@ -18,6 +18,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/ui_base_features.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -59,8 +63,16 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
     : public SitePerProcessBrowserTest {
  public:
   SitePerProcessBrowserTestWithoutSadFrameTabReload() {
-    feature_list_.InitAndDisableFeature(
-        features::kReloadHiddenTabsWithCrashedSubframes);
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kReloadHiddenTabsWithCrashedSubframes};
+#if BUILDFLAG(IS_WIN)
+    // Native window occlusion is calculated asynchronously on Windows, so an
+    // occlusion update can arrive after a test calls
+    // UpdateWebContentsVisibility(Visibility::HIDDEN) and make the WebContents
+    // visible again.
+    disabled_features.push_back(features::kCalculateNativeWinOcclusion);
+#endif
+    feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled_features);
   }
 
  private:
@@ -226,10 +238,17 @@ class SitePerProcessBrowserTestWithSadFrameTabReload
     : public SitePerProcessBrowserTest {
  public:
   SitePerProcessBrowserTestWithSadFrameTabReload() {
-    // Disable the feature to mark hidden tabs with sad frames for reload, since
-    // it makes the scenario for which this test collects metrics impossible.
-    feature_list_.InitAndEnableFeature(
-        features::kReloadHiddenTabsWithCrashedSubframes);
+    std::vector<base::test::FeatureRef> disabled_features;
+#if BUILDFLAG(IS_WIN)
+    // Native window occlusion is calculated asynchronously on Windows, so an
+    // occlusion update can arrive after a test calls
+    // UpdateWebContentsVisibility(Visibility::HIDDEN) and make the WebContents
+    // visible again.
+    disabled_features.push_back(features::kCalculateNativeWinOcclusion);
+#endif
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kReloadHiddenTabsWithCrashedSubframes},
+        disabled_features);
   }
 
   void CrashProcess(FrameTreeNode* ftn) {
