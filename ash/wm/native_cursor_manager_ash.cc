@@ -4,8 +4,10 @@
 
 #include "ash/wm/native_cursor_manager_ash.h"
 
+#include <algorithm>
 #include <optional>
 
+#include "ash/constants/ash_constants.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
@@ -17,11 +19,14 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
 namespace ash {
 
 namespace {
+
+constexpr float kMinInternalCursorSizeInMm = 4.0f;
 
 void SetCursorOnAllRootWindows(gfx::NativeCursor cursor) {
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
@@ -73,6 +78,18 @@ void NativeCursorManagerAsh::SetNativeCursorEnabled(bool enabled) {
   SetCursor(cursor_manager->GetCursor(), cursor_manager);
 }
 
+// static
+float NativeCursorManagerAsh::GetCursorScale(const display::Display& display) {
+  const float scale = display.device_scale_factor();
+  if (!display.IsInternal()) {
+    return scale;
+  }
+  const float min_cursor_size_in_px = kMinInternalCursorSizeInMm *
+                                      display.GetPixelsPerInchX() /
+                                      display::kInchInMm;
+  return std::max(scale, min_cursor_size_in_px / kMinLargeCursorSize);
+}
+
 display::Display::Rotation NativeCursorManagerAsh::GetRotation() const {
   return cursor_loader_.rotation();
 }
@@ -80,17 +97,7 @@ display::Display::Rotation NativeCursorManagerAsh::GetRotation() const {
 void NativeCursorManagerAsh::SetDisplay(
     const display::Display& display,
     ::wm::NativeCursorManagerDelegate* delegate) {
-  if (cursor_loader_.SetDisplay(display)) {
-    SetCursor(delegate->GetCursor(), delegate);
-  }
-
-  Shell::Get()
-      ->window_tree_host_manager()
-      ->cursor_window_controller()
-      ->SetDisplay(display);
-
-  // Update cursor compositing based on the current display.
-  Shell::Get()->UpdateCursorCompositingEnabled();
+  UpdateCursor(display, custom_cursor_size_, delegate);
 }
 
 void NativeCursorManagerAsh::SetCursor(
@@ -113,18 +120,7 @@ void NativeCursorManagerAsh::SetCursor(
 void NativeCursorManagerAsh::SetCustomCursorSize(
     std::optional<int> custom_cursor_size,
     ::wm::NativeCursorManagerDelegate* delegate) {
-  cursor_loader_.SetCustomCursorSize(custom_cursor_size);
-  delegate->CommitCustomCursorSize(custom_cursor_size);
-
-  // Sets the cursor to reflect the size change immediately.
-  if (delegate->IsCursorVisible()) {
-    SetCursor(delegate->GetCursor(), delegate);
-  }
-
-  Shell::Get()
-      ->window_tree_host_manager()
-      ->cursor_window_controller()
-      ->SetCustomCursorSize(custom_cursor_size);
+  UpdateCursor(display_, custom_cursor_size, delegate);
 }
 
 void NativeCursorManagerAsh::SetVisibility(
@@ -172,6 +168,48 @@ void NativeCursorManagerAsh::SetCursorColor(
       ->window_tree_host_manager()
       ->cursor_window_controller()
       ->SetCursorColor(color);
+}
+
+void NativeCursorManagerAsh::UpdateCursor(
+    const display::Display& display,
+    std::optional<int> custom_cursor_size,
+    ::wm::NativeCursorManagerDelegate* delegate) {
+  const bool custom_size_changed = custom_cursor_size != custom_cursor_size_;
+  // If a custom cursor size is set, use it as is. Otherwise, use a scale that
+  // keeps the cursor at least 4mm tall on internal displays.
+  const float scale = custom_cursor_size ? display.device_scale_factor()
+                                         : GetCursorScale(display);
+  const bool loader_changed =
+      cursor_loader_.SetDisplay(display.panel_rotation(), scale);
+  const bool display_changed =
+      display != display_ ||
+      display.panel_rotation() != display_.panel_rotation() ||
+      display.GetPixelsPerInchX() != display_.GetPixelsPerInchX() ||
+      display.GetPixelsPerInchY() != display_.GetPixelsPerInchY() ||
+      (display.is_valid() && !custom_size_changed && loader_changed);
+  if (!display_changed && !custom_size_changed) {
+    return;
+  }
+  display_ = display;
+  custom_cursor_size_ = custom_cursor_size;
+
+  if (custom_size_changed) {
+    cursor_loader_.SetCustomCursorSize(custom_cursor_size_);
+    delegate->CommitCustomCursorSize(custom_cursor_size_);
+  }
+  if (loader_changed || (custom_size_changed && delegate->IsCursorVisible())) {
+    SetCursor(delegate->GetCursor(), delegate);
+  }
+
+  auto* cursor_window_controller =
+      Shell::Get()->window_tree_host_manager()->cursor_window_controller();
+  if (custom_size_changed) {
+    cursor_window_controller->SetCustomCursorSize(custom_cursor_size_);
+  }
+  if (display_changed && display_.is_valid()) {
+    cursor_window_controller->SetDisplay(display_);
+    Shell::Get()->UpdateCursorCompositingEnabled();
+  }
 }
 
 }  // namespace ash

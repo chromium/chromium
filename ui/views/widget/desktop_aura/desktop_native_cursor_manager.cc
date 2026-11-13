@@ -10,6 +10,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/display/display.h"
 #include "ui/wm/core/cursor_loader.h"
 
 namespace views {
@@ -33,7 +34,8 @@ void DesktopNativeCursorManager::RemoveHost(aura::WindowTreeHost* host) {
 void DesktopNativeCursorManager::SetDisplay(
     const display::Display& display,
     wm::NativeCursorManagerDelegate* delegate) {
-  if (cursor_loader_.SetDisplay(display)) {
+  if (cursor_loader_.SetDisplay(display.panel_rotation(),
+                                display.device_scale_factor())) {
     SetCursor(delegate->GetCursor(), delegate);
   }
 }

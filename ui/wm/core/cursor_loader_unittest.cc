@@ -47,7 +47,8 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
   for (const float scale : {0.8f, 1.0f, 1.25f, 1.5f, 2.0f, 3.0f}) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
     display.set_device_scale_factor(scale);
-    cursor_loader.SetDisplay(display);
+    cursor_loader.SetDisplay(display.panel_rotation(),
+                             display.device_scale_factor());
     for (const std::optional<int> custom_cursor_size :
          {std::optional<int>(), std::make_optional(kLargeCursorSize)}) {
       SCOPED_TRACE(testing::Message()
@@ -102,7 +103,8 @@ TEST(CursorLoaderTest, GetCursorDataForCustomCursors) {
   for (const float scale : {0.8f, 1.0f, 1.25f, 1.5f, 2.0f, 3.0f}) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
     display.set_device_scale_factor(scale);
-    cursor_loader.SetDisplay(display);
+    cursor_loader.SetDisplay(display.panel_rotation(),
+                             display.device_scale_factor());
     for (const std::optional<int> custom_cursor_size :
          {std::optional<int>(), std::make_optional(kCustomCursorSize)}) {
       SCOPED_TRACE(testing::Message()
@@ -163,7 +165,8 @@ TEST(CursorLoaderTest, GetCursorDataForCustomCursors) {
 TEST(CursorLoaderTest, ImageCursorCache) {
   display::Display display = display::Display::GetDefaultDisplay();
   CursorLoader cursor_loader(/*use_platform_cursors=*/false);
-  cursor_loader.SetDisplay(display);
+  cursor_loader.SetDisplay(display.panel_rotation(),
+                           display.device_scale_factor());
 
   ui::Cursor cursor(CursorType::kPointer);
   cursor_loader.SetPlatformCursor(&cursor);
@@ -175,7 +178,8 @@ TEST(CursorLoaderTest, ImageCursorCache) {
 
   // Invalidate the cursor cache by changing the rotation.
   display.set_panel_rotation(display::Display::ROTATE_90);
-  cursor_loader.SetDisplay(display);
+  cursor_loader.SetDisplay(display.panel_rotation(),
+                           display.device_scale_factor());
   EXPECT_TRUE(platform_cursor->HasOneRef());
 
   // Invalidate the cursor cache by changing the scale.
@@ -184,7 +188,8 @@ TEST(CursorLoaderTest, ImageCursorCache) {
   cursor.SetPlatformCursor(nullptr);
   EXPECT_FALSE(platform_cursor->HasOneRef());
   display.set_device_scale_factor(display.device_scale_factor() * 2);
-  cursor_loader.SetDisplay(display);
+  cursor_loader.SetDisplay(display.panel_rotation(),
+                           display.device_scale_factor());
   EXPECT_TRUE(platform_cursor->HasOneRef());
 }
 

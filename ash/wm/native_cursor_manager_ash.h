@@ -34,6 +34,10 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
   // the cursor.
   void SetNativeCursorEnabled(bool enabled);
 
+  // Returns the scale used to rasterize normal-size cursor assets on
+  // `display`, enforcing a minimum physical size on internal displays.
+  static float GetCursorScale(const display::Display& display);
+
   // Returns the rotation of the currently loaded cursor.
   display::Display::Rotation GetRotation() const;
 
@@ -56,12 +60,21 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
  private:
   friend class CursorManagerTestApi;
 
+  // Updates the cursor for `display` and `custom_cursor_size`. Does nothing if
+  // neither has changed.
+  void UpdateCursor(const display::Display& display,
+                    std::optional<int> custom_cursor_size,
+                    ::wm::NativeCursorManagerDelegate* delegate);
+
   // The cursor location where the cursor was disabled.
   gfx::Point disabled_cursor_location_;
 
   bool native_cursor_enabled_;
 
   wm::CursorLoader cursor_loader_{/*use_platform_cursors=*/false};
+
+  display::Display display_;
+  std::optional<int> custom_cursor_size_;
 };
 
 }  // namespace ash

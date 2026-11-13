@@ -2457,6 +2457,8 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
         << " is smaller than minimum " << min_dip_size.ToString()
         << ", display_info=" << display_info.ToString();
   }
+  new_display.set_pixels_per_inch(display_info.device_dpi(),
+                                  display_info.device_dpi());
   new_display.set_rotation(display_info.GetActiveRotation());
   new_display.set_panel_rotation(display_info.GetLogicalActiveRotation());
   new_display.set_touch_support(display_info.touch_support());

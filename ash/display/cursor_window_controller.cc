@@ -21,6 +21,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/native_cursor_manager_ash.h"
 #include "base/command_line.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -59,6 +60,7 @@ constexpr SkColor kFillColorForInvert = SK_ColorMAGENTA;
 std::vector<gfx::ImageSkia> GetCursorImages(
     ui::mojom::CursorType type,
     std::optional<int> custom_cursor_size,
+    float scale,
     float dsf,
     SkColor cursor_color,
     std::optional<SkColor> outline_color,
@@ -68,7 +70,7 @@ std::vector<gfx::ImageSkia> GetCursorImages(
   // or fast ink canvas (for fast ink based cursor), so don't do any
   // rotation here.
   std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
-      type, dsf,
+      type, scale,
       custom_cursor_size ? std::make_optional(*custom_cursor_size * dsf)
                          : std::nullopt,
       display::Display::ROTATE_0, cursor_color, outline_color);
@@ -798,9 +800,12 @@ void CursorWindowController::UpdateCursorImage() {
       outline_color = SK_ColorWHITE;
     }
 
-    images =
-        GetCursorImages(cursor_.type(), custom_cursor_size_, dsf, fill_color,
-                        outline_color, &hot_point_in_physical_pixels);
+    const float scale = custom_cursor_size_
+                            ? dsf
+                            : NativeCursorManagerAsh::GetCursorScale(display_);
+    images = GetCursorImages(cursor_.type(), custom_cursor_size_, scale, dsf,
+                             fill_color, outline_color,
+                             &hot_point_in_physical_pixels);
     if (images.empty()) {
       return;
     }

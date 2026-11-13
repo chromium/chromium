@@ -52,9 +52,8 @@ void CursorLoader::OnThemeLoaded() {
   UnloadCursors();
 }
 
-bool CursorLoader::SetDisplay(const display::Display& display) {
-  const display::Display::Rotation rotation = display.panel_rotation();
-  const float scale = display.device_scale_factor();
+bool CursorLoader::SetDisplay(display::Display::Rotation rotation,
+                              float scale) {
   if (rotation_ == rotation && scale_ == scale) {
     return false;
   }
