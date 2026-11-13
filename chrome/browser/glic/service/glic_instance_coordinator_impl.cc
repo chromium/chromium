@@ -366,7 +366,8 @@ GlicInstanceCoordinatorImpl::GetAllUnhibernatedWebContents() {
       result;
   for (const auto& entry : instances_) {
     if (entry.second && !entry.second->IsHibernated()) {
-      result.push_back({entry.second->host().webui_contents(),
+      auto* manager = entry.second->host().contents_manager();
+      result.push_back({manager ? manager->webui_contents() : nullptr,
                         entry.second->host().web_client_contents()});
     }
   }

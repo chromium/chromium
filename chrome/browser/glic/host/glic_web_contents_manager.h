@@ -70,6 +70,12 @@ class GlicWebContentsManager {
   // can synchronize `active_web_contents()` and guest mount state.
   virtual void OnHostNativeLoadingChanged(bool is_showing);
 
+  // Returns the WebUI WebContents owned by this manager (e.g. `chrome://glic`
+  // in `<webview>` mode, or `chrome://glic/overlay` while allocated in
+  // NoWebview mode), or nullptr if no WebUI WebContents currently exists.
+  // Unlike `active_web_contents()`, never returns the guest WebContents.
+  virtual content::WebContents* webui_contents() const = 0;
+
   // Returns the WebClient (guest) WebContents, or nullptr if none exists (e.g.
   // before the guest is attached in WebUI mode).
   virtual content::WebContents* guest_contents() const = 0;

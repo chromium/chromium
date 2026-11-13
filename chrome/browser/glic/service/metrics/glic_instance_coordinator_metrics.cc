@@ -165,29 +165,34 @@ void GlicInstanceCoordinatorMetrics::RecordMemoryFootprint(
   base::flat_set<content::RenderProcessHost*> unique_client_processes;
 
   for (const auto& item : web_contents_list) {
-    if (item.webui_contents) {
-      if (auto* process =
-              item.webui_contents->GetPrimaryMainFrame()->GetProcess()) {
+    if (item.webui_contents &&
+        item.webui_contents != item.web_client_contents) {
+      auto* process = item.webui_contents->GetPrimaryMainFrame()->GetProcess();
+      if (process && process->IsInitializedAndNotDead()) {
         unique_webui_processes.insert(process);
       }
     }
     if (item.web_client_contents) {
-      if (auto* process =
-              item.web_client_contents->GetPrimaryMainFrame()->GetProcess()) {
+      auto* process =
+          item.web_client_contents->GetPrimaryMainFrame()->GetProcess();
+      if (process && process->IsInitializedAndNotDead()) {
         unique_client_processes.insert(process);
       }
     }
   }
 
   for (auto* process : unique_webui_processes) {
-    total_webui_bytes += process->GetPrivateMemoryFootprint();
+    uint64_t bytes = process->GetPrivateMemoryFootprint();
+    total_webui_bytes += bytes;
+    absolute_total_bytes += bytes;
   }
   for (auto* process : unique_client_processes) {
-    total_client_bytes += process->GetPrivateMemoryFootprint();
+    uint64_t bytes = process->GetPrivateMemoryFootprint();
+    total_client_bytes += bytes;
+    if (!unique_webui_processes.contains(process)) {
+      absolute_total_bytes += bytes;
+    }
   }
-  // Assuming WebUI and Client processes are disjoint due to Site Isolation,
-  // we can sum them to get the total.
-  absolute_total_bytes = total_webui_bytes + total_client_bytes;
 
   int avg_webui_mb = BytesToMB(total_webui_bytes / instance_count);
   int avg_client_mb = BytesToMB(total_client_bytes / instance_count);

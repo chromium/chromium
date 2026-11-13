@@ -175,6 +175,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   bool IsShowingNativeLoading() const override;
   base::CallbackListSubscription RegisterNativeLoadingChangedCallback(
       NativeLoadingChangedCallback callback) override;
+  content::WebContents* webui_contents() const override;
   content::WebContents* guest_contents() const override;
   void OnActuatingChanged(bool actuating) override;
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override;

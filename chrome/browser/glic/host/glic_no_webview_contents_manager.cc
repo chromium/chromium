@@ -670,6 +670,10 @@ GlicNoWebviewContentsManager::~GlicNoWebviewContentsManager() {
 #endif
 }
 
+content::WebContents* GlicNoWebviewContentsManager::webui_contents() const {
+  return overlay_contents();
+}
+
 content::WebContents* GlicNoWebviewContentsManager::guest_contents() const {
   return privileged_guest_contents_ ? privileged_guest_contents_->web_contents()
                                     : nullptr;

@@ -29,6 +29,10 @@ content::WebContents* FakeWebContentsManager::active_web_contents() const {
   return web_contents_;
 }
 
+content::WebContents* FakeWebContentsManager::webui_contents() const {
+  return web_contents_;
+}
+
 content::WebContents* FakeWebContentsManager::guest_contents() const {
   return web_client_manager_.web_client_contents();
 }

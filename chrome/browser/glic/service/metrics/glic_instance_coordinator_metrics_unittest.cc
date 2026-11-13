@@ -4,9 +4,11 @@
 
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -17,6 +19,12 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -472,6 +480,190 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
   // At 10 minutes total, periodic instance count fires once.
   task_environment_.FastForwardBy(base::Minutes(5));
   histogram_tester_.ExpectUniqueSample("Glic.Instances.Count.Periodic", 2, 1);
+}
+
+class FootprintMockRenderProcessHost : public content::MockRenderProcessHost {
+ public:
+  explicit FootprintMockRenderProcessHost(
+      content::BrowserContext* browser_context)
+      : content::MockRenderProcessHost(browser_context) {}
+
+  uint64_t GetPrivateMemoryFootprint() override {
+    return private_memory_footprint_bytes_;
+  }
+
+  void set_private_memory_footprint_bytes(uint64_t bytes) {
+    private_memory_footprint_bytes_ = bytes;
+  }
+
+ private:
+  uint64_t private_memory_footprint_bytes_ = 0;
+};
+
+class FootprintMockRenderProcessHostFactory
+    : public content::MockRenderProcessHostFactory {
+ protected:
+  std::unique_ptr<content::MockRenderProcessHost> BuildRenderProcessHost(
+      content::BrowserContext* browser_context,
+      content::SiteInstance* site_instance) override {
+    return std::make_unique<FootprintMockRenderProcessHost>(browser_context);
+  }
+};
+
+class GlicInstanceCoordinatorMemoryMetricsTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    rph_factory_ = std::make_unique<FootprintMockRenderProcessHostFactory>();
+    SetRenderProcessHostFactory(rph_factory_.get());
+    ON_CALL(provider_, GetProfile()).WillByDefault(Return(profile()));
+    metrics_ = std::make_unique<GlicInstanceCoordinatorMetrics>(&provider_);
+  }
+
+  void TearDown() override {
+    metrics_.reset();
+    DeleteContents();
+    SetRenderProcessHostFactory(nullptr);
+    rph_factory_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  struct WebContentsOptions {
+    uint64_t footprint_bytes = 0;
+    bool initialized = true;
+    scoped_refptr<content::SiteInstance> site_instance;
+  };
+
+  static constexpr uint64_t MiB(uint64_t mb) { return mb * 1024 * 1024; }
+
+  std::unique_ptr<content::WebContents> CreateWebContentsWithFootprint(
+      uint64_t footprint_bytes) {
+    return CreateWebContentsWithFootprint({.footprint_bytes = footprint_bytes});
+  }
+
+  std::unique_ptr<content::WebContents> CreateWebContentsWithFootprint(
+      WebContentsOptions options) {
+    if (!options.site_instance) {
+      options.site_instance = content::SiteInstance::Create(profile());
+    }
+    auto wc = content::WebContentsTester::CreateTestWebContents(
+        profile(), std::move(options.site_instance));
+    auto* rph = static_cast<FootprintMockRenderProcessHost*>(
+        wc->GetPrimaryMainFrame()->GetProcess());
+    if (options.initialized) {
+      rph->Init();
+    }
+    rph->set_private_memory_footprint_bytes(options.footprint_bytes);
+    return wc;
+  }
+
+  base::HistogramTester histogram_tester_;
+  testing::NiceMock<MockDataProvider> provider_;
+  std::unique_ptr<GlicInstanceCoordinatorMetrics> metrics_;
+  std::unique_ptr<FootprintMockRenderProcessHostFactory> rph_factory_;
+};
+
+TEST_F(GlicInstanceCoordinatorMemoryMetricsTest,
+       SeparateWebUIAndClientProcesses) {
+  auto webui_wc = CreateWebContentsWithFootprint(MiB(30));
+  auto client_wc = CreateWebContentsWithFootprint(MiB(70));
+
+  EXPECT_CALL(provider_, GetAllUnhibernatedWebContents())
+      .WillOnce(Return(std::vector<GlicInstanceCoordinatorMetrics::
+                                       DataProvider::InstanceWebContents>{
+          {webui_wc.get(), client_wc.get()}}));
+
+  metrics_->RecordPeriodicMemoryMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgWebUIPrivateMemoryFootprint.Periodic", 30, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgClientPrivateMemoryFootprint.Periodic", 70, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgTotalPrivateMemoryFootprint.Periodic", 100, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.TotalPrivateMemoryFootprint.Periodic", 100, 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMemoryMetricsTest,
+       NoWebviewGuestNotCountedAsWebUIOrDoubleCounted) {
+  auto client_wc1 = CreateWebContentsWithFootprint(MiB(70));
+  auto client_wc2 = CreateWebContentsWithFootprint(MiB(90));
+
+  // Instance 1 has null webui_contents (NoWebview with no overlay).
+  // Instance 2 defensively tests webui_contents == web_client_contents.
+  EXPECT_CALL(provider_, GetAllUnhibernatedWebContents())
+      .WillOnce(Return(std::vector<GlicInstanceCoordinatorMetrics::
+                                       DataProvider::InstanceWebContents>{
+          {nullptr, client_wc1.get()},
+          {client_wc2.get(), client_wc2.get()},
+      }));
+
+  metrics_->RecordPeriodicMemoryMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgWebUIPrivateMemoryFootprint.Periodic", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgClientPrivateMemoryFootprint.Periodic", 80, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgTotalPrivateMemoryFootprint.Periodic", 80, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.TotalPrivateMemoryFootprint.Periodic", 160, 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMemoryMetricsTest,
+       SharedProcessAcrossWebUIAndClientCountedOnceInTotal) {
+  auto shared_site_instance = content::SiteInstance::Create(profile());
+  auto webui_wc = CreateWebContentsWithFootprint(
+      {.footprint_bytes = MiB(50), .site_instance = shared_site_instance});
+  auto client_wc = CreateWebContentsWithFootprint(
+      {.footprint_bytes = MiB(50), .site_instance = shared_site_instance});
+  ASSERT_EQ(webui_wc->GetPrimaryMainFrame()->GetProcess(),
+            client_wc->GetPrimaryMainFrame()->GetProcess());
+
+  EXPECT_CALL(provider_, GetAllUnhibernatedWebContents())
+      .WillOnce(Return(std::vector<GlicInstanceCoordinatorMetrics::
+                                       DataProvider::InstanceWebContents>{
+          {webui_wc.get(), client_wc.get()}}));
+
+  metrics_->RecordPeriodicMemoryMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgWebUIPrivateMemoryFootprint.Periodic", 50, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgClientPrivateMemoryFootprint.Periodic", 50, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgTotalPrivateMemoryFootprint.Periodic", 50, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.TotalPrivateMemoryFootprint.Periodic", 50, 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMemoryMetricsTest,
+       IgnoresUninitializedAndDeadProcesses) {
+  auto uninitialized_wc = CreateWebContentsWithFootprint(
+      {.footprint_bytes = MiB(40), .initialized = false});
+  auto dead_client_wc = CreateWebContentsWithFootprint(MiB(86));
+  static_cast<FootprintMockRenderProcessHost*>(
+      dead_client_wc->GetPrimaryMainFrame()->GetProcess())
+      ->SimulateCrash();
+
+  EXPECT_CALL(provider_, GetAllUnhibernatedWebContents())
+      .WillOnce(Return(std::vector<GlicInstanceCoordinatorMetrics::
+                                       DataProvider::InstanceWebContents>{
+          {uninitialized_wc.get(), dead_client_wc.get()}}));
+
+  metrics_->RecordPeriodicMemoryMetrics();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgWebUIPrivateMemoryFootprint.Periodic", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgClientPrivateMemoryFootprint.Periodic", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AvgTotalPrivateMemoryFootprint.Periodic", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.TotalPrivateMemoryFootprint.Periodic", 0, 1);
 }
 
 }  // namespace
