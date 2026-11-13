@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
-#include <set>
 #include <string>
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "build/build_config.h"
 
@@ -166,7 +166,7 @@ BASE_EXPORT bool UnescapeBinaryURLComponentSafe(std::string_view escaped_text,
 // contains "%25" or "%2F", but not if it just contains bare '%' or '/'
 // characters.
 BASE_EXPORT bool ContainsEncodedBytes(std::string_view escaped_text,
-                                      const std::set<unsigned char>& bytes);
+                                      span<const unsigned char> bytes);
 
 // Unescapes the following ampersand character codes from |text|:
 // &lt; &gt; &amp; &quot; &#39;

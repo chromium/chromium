@@ -4,8 +4,6 @@
 
 #include "net/base/filename_util.h"
 
-#include <set>
-
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -112,16 +110,20 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   // A valid URL may include "%00" (NULL) in its path (see
   // https://crbug.com/1400251), which is considered an illegal filename and
   // results in failure.
-  std::set<unsigned char> illegal_encoded_bytes{'/', '\0'};
-
+  static constexpr unsigned char kIllegalEncodedBytes[] = {
+      '/',
+      '\0',
 #if BUILDFLAG(IS_WIN)
-  // "%5C" ('\\') on Windows results in failure, for the same reason as '/'
-  // above. On POSIX, "%5C" simply decodes as '\\', a valid filename character.
-  illegal_encoded_bytes.insert('\\');
+      // "%5C" ('\\') on Windows results in failure, for the same reason as '/'
+      // above. On POSIX, "%5C" simply decodes as '\\', a valid filename
+      // character.
+      '\\',
 #endif
+  };
 
-  if (base::ContainsEncodedBytes(path, illegal_encoded_bytes))
+  if (base::ContainsEncodedBytes(path, kIllegalEncodedBytes)) {
     return false;
+  }
 
   // Unescape all percent-encoded sequences, including blocked-for-display
   // characters, control characters and invalid UTF-8 byte sequences.

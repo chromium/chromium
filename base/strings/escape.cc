@@ -4,6 +4,7 @@
 
 #include "base/strings/escape.h"
 
+#include <algorithm>
 #include <array>
 #include <ostream>
 #include <string_view>
@@ -594,13 +595,20 @@ bool UnescapeBinaryURLComponentSafe(std::string_view escaped_text,
                                     std::string* unescaped_text) {
   unescaped_text->clear();
 
-  std::set<unsigned char> illegal_encoded_bytes;
-  for (unsigned char c = '\x00'; c < '\x20'; ++c) {
-    illegal_encoded_bytes.insert(c);
-  }
-  if (fail_on_path_separators) {
-    illegal_encoded_bytes.insert('/');
-    illegal_encoded_bytes.insert('\\');
+  static constexpr auto kIllegalEncodedBytes = std::to_array<unsigned char>({
+      // clang-format off
+      '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x07', '\x08',
+      '\x09', '\x0a', '\x0b', '\x0c', '\x0d', '\x0e', '\x0f', '\x10', '\x11',
+      '\x12', '\x13', '\x14', '\x15', '\x16', '\x17', '\x18', '\x19', '\x1a',
+      '\x1b', '\x1c', '\x1d', '\x1e', '\x1f',
+      // The last two are only illegal if `fail_on_path_separators` is true.
+      '/', '\\',
+      // clang-format on
+  });
+  span<const unsigned char> illegal_encoded_bytes(kIllegalEncodedBytes);
+  if (!fail_on_path_separators) {
+    illegal_encoded_bytes =
+        illegal_encoded_bytes.first<std::size(kIllegalEncodedBytes) - 2>();
   }
   if (ContainsEncodedBytes(escaped_text, illegal_encoded_bytes)) {
     return false;
@@ -611,13 +619,13 @@ bool UnescapeBinaryURLComponentSafe(std::string_view escaped_text,
 }
 
 bool ContainsEncodedBytes(std::string_view escaped_text,
-                          const std::set<unsigned char>& bytes) {
+                          span<const unsigned char> bytes) {
   for (size_t i = 0, max = escaped_text.size(); i < max;) {
     unsigned char byte;
     // UnescapeUnsignedByteAtIndex does bounds checking, so this is always safe
     // to call.
     if (UnescapeUnsignedByteAtIndex(escaped_text, i, &byte)) {
-      if (bytes.find(byte) != bytes.end()) {
+      if (std::ranges::contains(bytes, byte)) {
         return true;
       }
 

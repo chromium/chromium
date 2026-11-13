@@ -534,6 +534,7 @@ TEST(EscapeTest, UnescapeBinaryURLComponentSafe) {
       {"foo%01", nullptr, false},
       {"foo%0A", nullptr, false},
       {"foo%0D", nullptr, false},
+      {"foo%1F", nullptr, false},
 
       // Path separators.
       {"foo%2F", "foo/", true},
