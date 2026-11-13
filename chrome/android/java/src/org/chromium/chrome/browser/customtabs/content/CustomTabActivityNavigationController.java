@@ -528,7 +528,7 @@ public class CustomTabActivityNavigationController
         if (ChromeFeatureList.sCctCloseLogging.isEnabled()) {
             Log.i(
                     TAG,
-                    "CCT #onStopWithNative (activity finishing: %d) at %d",
+                    "CCT #onStopWithNative (activity finishing: %s) at %d",
                     mActivity.isFinishing(),
                     TimeUtils.uptimeMillis());
         }
