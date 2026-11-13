@@ -830,15 +830,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.OpenDownloadsFromMenu.PerProfileType"
-    enum="BrowserProfileType" expires_after="2024-06-30">
-  <owner>sideyilmaz@chromium.org</owner>
-  <owner>chrome-incognito@google.com</owner>
-  <summary>
-    Records the profile type for opening the Downloads page from menu.
-  </summary>
-</histogram>
-
 <histogram name="Download.OpenMethod" enum="DownloadOpenMethod"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->

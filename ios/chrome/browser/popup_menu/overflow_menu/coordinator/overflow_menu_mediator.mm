@@ -3253,11 +3253,6 @@ void GetPresetNTPBackgroundPreview(
 // Dismisses the menu and opens downloads.
 - (void)openDownloads {
   [self dismissMenu];
-  profile_metrics::BrowserProfileType type =
-      self.incognito ? profile_metrics::BrowserProfileType::kIncognito
-                     : profile_metrics::BrowserProfileType::kRegular;
-  UmaHistogramEnumeration("Download.OpenDownloadsFromMenu.PerProfileType",
-                          type);
   [self.browserCoordinatorHandler showDownloadsFolder];
 }
 

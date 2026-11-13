@@ -4919,13 +4919,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
-                    chrome::ActionInvocationSource::kAppMenu) {
-                  base::UmaHistogramEnumeration(
-                      "Download.OpenDownloadsFromMenu.PerProfileType",
-                      profile_metrics::GetBrowserProfileType(
-                          bwi->GetProfile()));
-                }
                 chrome::ShowDownloads(webui::GetBrowserForOpeningWebUi(bwi));
               },
               bwi))

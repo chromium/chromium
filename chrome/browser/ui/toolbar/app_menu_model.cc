@@ -1746,9 +1746,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
                                       delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_DOWNLOADS);
-      base::UmaHistogramEnumeration(
-          "Download.OpenDownloadsFromMenu.PerProfileType",
-          profile_metrics::GetBrowserProfileType(browser_->GetProfile()));
       break;
     case IDC_OPTIONS:
       if (!uma_action_recorded_) {
