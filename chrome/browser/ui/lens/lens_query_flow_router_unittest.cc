@@ -13,10 +13,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -43,6 +46,7 @@
 #include "components/lens/lens_url_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
@@ -4420,6 +4424,120 @@ TEST_F(
 
   EXPECT_FALSE(test_contextualizer_ptr->has_on_uploads_started_callback);
   EXPECT_TRUE(test_contextualizer_ptr->has_complete_callback);
+}
+
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    RemoveContextualSearchContextIfNecessary_PreservesTokenReferencedByPendingSubmit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      omnibox::kContextManagementInComposebox);
+
+  EXPECT_CALL(*mock_lens_search_controller_, invocation_source())
+      .WillRepeatedly(Return(
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox));
+  EXPECT_CALL(*mock_lens_search_controller_, lens_overlay_query_controller())
+      .WillRepeatedly(Return(mock_query_controller_.get()));
+
+  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
+                                 mock_context_controller_.get(),
+                                 profile_.get());
+
+  base::UnguessableToken expected_token = base::UnguessableToken::Create();
+  EXPECT_CALL(*router.mock_session_handle(), CreateContextToken())
+      .WillRepeatedly(Return(expected_token));
+
+  SkBitmap screenshot;
+  screenshot.allocN32Pixels(10, 10);
+  router.StartQueryFlow(screenshot, screenshot, GURL("https://example.com"),
+                        "Title", {}, {}, lens::MimeType::kImage, std::nullopt,
+                        1.0f, base::TimeTicks::Now());
+  ASSERT_EQ(expected_token, router.overlay_tab_context_file_token());
+
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  testing::NiceMock<contextual_tasks::MockContextualTasksPanelController>
+      mock_panel_controller(mock_browser_window_interface_.get());
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(Return(panel_contents.get()));
+  ON_CALL(mock_panel_controller, GetPanelWebContentsList())
+      .WillByDefault(
+          Return(std::vector<content::WebContents*>{panel_contents.get()}));
+
+  auto panel_session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_panel_handle = panel_session_handle.get();
+  ON_CALL(*mock_panel_handle, search_session_id())
+      .WillByDefault(Return("panel_session"));
+
+  contextual_search::FileInfo overlay_file;
+  overlay_file.file_token = expected_token;
+  overlay_file.is_implicit_upload = true;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(42);
+  overlay_file.request_id = req_id;
+  overlay_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  overlay_file.input_data = std::make_unique<lens::ContextualInputData>();
+  overlay_file.input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
+  std::vector<contextual_search::FileInfo> uploaded_files = {overlay_file};
+  ON_CALL(*mock_panel_handle, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+  ON_CALL(*mock_context_controller_, GetFileInfo(expected_token))
+      .WillByDefault(Return(&uploaded_files[0]));
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      panel_contents.get())
+      ->SetTaskSession(std::nullopt, std::move(panel_session_handle), nullptr);
+  router.SetSidePanelSessionHandle(mock_panel_handle);
+  ON_CALL(*mock_panel_handle, GetController())
+      .WillByDefault(Return(mock_context_controller_.get()));
+
+  EXPECT_CALL(*mock_context_controller_, DeleteFile(expected_token))
+      .WillOnce(Return(true));
+  router.RemoveContextualSearchContextIfNecessary(false);
+  testing::Mock::VerifyAndClearExpectations(mock_context_controller_.get());
+  ON_CALL(*mock_context_controller_, GetFileInfo(expected_token))
+      .WillByDefault(Return(&uploaded_files[0]));
+
+  auto* user_data = contextual_tasks::ContextualTasksWebContentsUserData::
+      GetOrCreateForWebContents(panel_contents.get());
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnHandshakeComplete();
+  user_data->SetSearchMessageDispatcherForTesting(base::DoNothing());
+  user_data->OnLensThumbnailCreated("data:image/png;base64,crop");
+
+  base::UnguessableToken manual_token = base::UnguessableToken::Create();
+  user_data->OnTabContextUploadStarted(manual_token);
+  mock_panel_handle->GetUploadedContextTokensForTesting().push_back(
+      manual_token);
+  mock_panel_handle->AttachTabPendingUpload(
+      manual_token, 88, GURL("https://example.com/manual"), "Manual");
+
+  content::WebContentsTester::For(panel_contents.get())
+      ->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("query text");
+  ASSERT_EQ(expected_token, user_data->pending_submit_overlay_token());
+
+  EXPECT_CALL(*mock_context_controller_, DeleteFile(_)).Times(0);
+  router.RemoveContextualSearchContextIfNecessary(false);
+  testing::Mock::VerifyAndClearExpectations(mock_context_controller_.get());
+  ON_CALL(*mock_context_controller_, GetFileInfo(expected_token))
+      .WillByDefault(Return(&uploaded_files[0]));
+
+  user_data->OnContextUploadStatusChanged(
+      manual_token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_EQ(std::nullopt, user_data->pending_submit_overlay_token());
+
+  EXPECT_CALL(*mock_context_controller_, DeleteFile(_)).Times(0);
+  router.RemoveContextualSearchContextIfNecessary(false);
+
+  router.SetSidePanelSessionHandle(nullptr);
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
 }
 
 }  // namespace lens

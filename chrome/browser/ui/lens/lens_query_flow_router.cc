@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 
+#include <algorithm>
+
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -682,10 +685,42 @@ void LensQueryFlowRouter::RemoveContextualSearchContextIfNecessary(
 
   if (ShouldRouteToContextualTasks() &&
       overlay_tab_context_file_token_.has_value() && !has_region_selection) {
-    auto* session_handle = GetContextualSearchSessionHandle();
-    if (session_handle) {
-      session_handle->DeleteFile(overlay_tab_context_file_token_.value());
+    if (auto* panel_controller =
+            contextual_tasks::ContextualTasksPanelController::From(
+                browser_window_interface())) {
+      auto is_referenced_by_pending_submit =
+          [&](content::WebContents* contents) {
+            const auto* user_data =
+                contents
+                    ? contextual_tasks::ContextualTasksWebContentsUserData::
+                          FromWebContents(contents)
+                    : nullptr;
+            return user_data && user_data->pending_submit_overlay_token() ==
+                                    *overlay_tab_context_file_token_;
+          };
+      if (is_referenced_by_pending_submit(
+              panel_controller->GetActiveWebContents()) ||
+          std::ranges::any_of(panel_controller->GetPanelWebContentsList(),
+                              is_referenced_by_pending_submit)) {
+        return;
+      }
     }
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (!session_handle) {
+      return;
+    }
+    const base::UnguessableToken& overlay_token =
+        *overlay_tab_context_file_token_;
+    if (std::ranges::contains(session_handle->GetSubmittedContextTokens(),
+                              overlay_token) ||
+        std::ranges::any_of(session_handle->GetTabContextState().attached,
+                            [&](const contextual_search::TabInfo& tab) {
+                              return tab.submitted &&
+                                     tab.context_token == overlay_token;
+                            })) {
+      return;
+    }
+    session_handle->DeleteFile(overlay_token);
   }
 }
 
