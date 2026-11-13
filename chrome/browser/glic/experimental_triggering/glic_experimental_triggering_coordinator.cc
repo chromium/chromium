@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <memory>
@@ -15,7 +16,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -633,6 +633,11 @@ class ExperimentalTriggeringUpdatesHandler
           /*request_metadata=*/nullptr));
     }
 
+    // Evaluate sequence-number anomalies before IsDuplicateStart() so replayed
+    // start requests are counted under kDuplicateOrReplayedRequest while still
+    // being dropped without mutating last_seen_sequence_number_.
+    CheckAndRecordSequenceAnomalies(request);
+
     if (IsDuplicateStart(request)) {
       // Drop it before it changes any state, so that the running task keeps
       // its update callback and its last seen sequence number. A terminal
@@ -646,7 +651,11 @@ class ExperimentalTriggeringUpdatesHandler
     if (update_callback) {
       update_callback_ = std::move(update_callback);
     }
-    if (request.task_metadata->sender_sequence_number.has_value()) {
+    if (request.task_metadata->sender_sequence_number.has_value() &&
+        *request.task_metadata->sender_sequence_number >= 0 &&
+        (!last_seen_sequence_number_.has_value() ||
+         *request.task_metadata->sender_sequence_number >
+             *last_seen_sequence_number_)) {
       last_seen_sequence_number_ =
           *request.task_metadata->sender_sequence_number;
     }
@@ -838,6 +847,21 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
  private:
+  // Issues this handler's reply sequence numbers
+  // (`TaskMetadata.sender_sequence_number`), starting at 0. Used instead of
+  // `base::AtomicSequenceNumber` because the handler lives on a single
+  // sequence, the proto field is `int64`, and sequence-anomaly detection needs
+  // to read `issued_count()` without consuming a number.
+  class SequenceGenerator {
+   public:
+    int64_t GetNext() { return next_++; }
+    // Number of reply sequence numbers issued so far.
+    int64_t issued_count() const { return next_; }
+
+   private:
+    int64_t next_ = 0;
+  };
+
   GlicExperimentalTriggeringHandlerDestroyReason ComputeDestroyReason() const {
     using Reason = GlicExperimentalTriggeringHandlerDestroyReason;
     if (deletion_path_ == DeletionPath::kUnapproved) {
@@ -855,6 +879,70 @@ class ExperimentalTriggeringUpdatesHandler
     return !HasLiveWork() && (!is_actuation_started_ || terminal_update_sent_)
                ? Reason::kIdle
                : Reason::kUnexpectedLiveDestruction;
+  }
+
+  void RecordSequenceAnomaly(
+      GlicExperimentalTriggeringSequenceAnomaly anomaly) {
+    metric_reporter_.RecordEnumeration("ExperimentalTriggering.SequenceAnomaly",
+                                       anomaly);
+  }
+
+  // Evaluates incoming `TaskMetadata` sequence numbers against this handler's
+  // issued reply count and monotonic incoming sequence high-water mark,
+  // recording at most the single most specific anomaly per request:
+  // StreamRestarted > MissingHistory > LastSeenAheadOfSent >
+  // DuplicateOrReplayedRequest > RequestGap.
+  void CheckAndRecordSequenceAnomalies(
+      const ExperimentalTriggeringRequest& request) {
+    CHECK(request.task_metadata.has_value());
+    const TaskMetadata& metadata = *request.task_metadata;
+    const int64_t sent_reply_count = sequence_generator_.issued_count();
+    const std::optional<int64_t> prev_max_seen =
+        max_seen_request_sequence_number_;
+    const bool is_exempt_on_fresh_handler =
+        std::holds_alternative<StopActuationRequest>(request.payload) ||
+        std::holds_alternative<TaskMetadataUpdated>(request.payload);
+    const bool has_non_negative_last_seen =
+        metadata.last_seen_sequence_number.has_value() &&
+        *metadata.last_seen_sequence_number >= 0;
+    const bool has_non_negative_sender_seq =
+        metadata.sender_sequence_number.has_value() &&
+        *metadata.sender_sequence_number >= 0;
+
+    if (has_non_negative_sender_seq &&
+        (!max_seen_request_sequence_number_.has_value() ||
+         *metadata.sender_sequence_number >
+             *max_seen_request_sequence_number_)) {
+      max_seen_request_sequence_number_ = *metadata.sender_sequence_number;
+    }
+
+    using Anomaly = GlicExperimentalTriggeringSequenceAnomaly;
+    std::optional<Anomaly> anomaly;
+    if (has_non_negative_last_seen && sent_reply_count == 0 &&
+        (!is_exempt_on_fresh_handler || prev_max_seen.has_value())) {
+      anomaly = Anomaly::kStreamRestarted;
+    } else if (has_non_negative_sender_seq && !prev_max_seen.has_value() &&
+               *metadata.sender_sequence_number > 0 &&
+               !is_exempt_on_fresh_handler) {
+      anomaly = Anomaly::kMissingHistory;
+    } else if (has_non_negative_last_seen && sent_reply_count > 0 &&
+               *metadata.last_seen_sequence_number >= sent_reply_count) {
+      anomaly = Anomaly::kLastSeenAheadOfSent;
+    } else if (has_non_negative_sender_seq && prev_max_seen.has_value()) {
+      if (*metadata.sender_sequence_number <= *prev_max_seen) {
+        // TODO(b/580926994): Remove this exemption once Chrome Sync opt-in
+        // requests are numbered from the task counter rather than stamping 0.
+        if (!std::holds_alternative<DeviceOptInRequest>(request.payload)) {
+          anomaly = Anomaly::kDuplicateOrReplayedRequest;
+        }
+      } else if (*metadata.sender_sequence_number - 1 > *prev_max_seen) {
+        anomaly = Anomaly::kRequestGap;
+      }
+    }
+
+    if (anomaly.has_value()) {
+      RecordSequenceAnomaly(*anomaly);
+    }
   }
   bool IsWaitingForBackgroundOptIn() const {
 #if BUILDFLAG(IS_ANDROID)
@@ -2317,9 +2405,10 @@ class ExperimentalTriggeringUpdatesHandler
   std::unique_ptr<actor::ActorActionsRunner> actions_runner_;
   base::OneShotTimer actions_timeout_timer_;
   mojo::Receiver<mojom::ExperimentalTriggeringUpdatesHandler> receiver_;
-  base::AtomicSequenceNumber sequence_generator_;
+  SequenceGenerator sequence_generator_;
 
   std::optional<int64_t> last_seen_sequence_number_;
+  std::optional<int64_t> max_seen_request_sequence_number_;
   GlicExperimentalTriggeringUpdateCallback update_callback_;
   bool terminal_update_sent_ = false;
   bool is_actuation_started_ = false;

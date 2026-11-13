@@ -2243,6 +2243,27 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.ExperimentalTriggering.SequenceAnomaly"
+    enum="GlicExperimentalTriggeringSequenceAnomaly" expires_after="2027-08-01">
+  <owner>praneethsn@google.com</owner>
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the single most specific protocol sequence-number anomaly detected
+    when an incoming Glic experimental triggering request reaches an updates
+    handler, evaluated in precedence order: StreamRestarted, MissingHistory,
+    LastSeenAheadOfSent, DuplicateOrReplayedRequest, and RequestGap. Nothing is
+    recorded on well-ordered requests, so bucket counts divide cleanly against
+    Glic{GlicProvider}.ExperimentalTriggering.IncomingMessageResult.* as a
+    request denominator. Because the sender does not reuse sequence numbers
+    after a failed send, RequestGap and MissingHistory also reflect sender-side
+    send failures in addition to transport loss. DeviceOptInRequest is exempted
+    from DuplicateOrReplayedRequest while Chrome Sync opt-in retries stamp
+    sequence 0. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.ExperimentalTriggering.SidePanelOpened"
     enum="Boolean" expires_after="2027-08-01">
   <owner>qinmin@chromium.org</owner>

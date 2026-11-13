@@ -425,6 +425,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringIncomingMessageResult) -->
 
+<!-- LINT.IfChange(GlicExperimentalTriggeringSequenceAnomaly) -->
+
+<enum name="GlicExperimentalTriggeringSequenceAnomaly">
+  <int value="0" label="Stream Restarted">
+    Request carried last_seen_sequence_number &gt;= 0 while this handler had
+    issued 0 replies (StopActuationRequest and TaskMetadataUpdated on a fresh
+    handler are exempt).
+  </int>
+  <int value="1" label="Missing History">
+    First request observed by this handler carried sender_sequence_number &gt; 0
+    (StopActuationRequest and TaskMetadataUpdated are exempt).
+  </int>
+  <int value="2" label="Last Seen Ahead Of Sent">
+    Request carried last_seen_sequence_number &gt;= the number of replies issued
+    by this handler (with at least 1 reply issued).
+  </int>
+  <int value="3" label="Request Gap">
+    Request carried sender_sequence_number &gt; max_seen_request_sequence_number
+    + 1.
+  </int>
+  <int value="4" label="Duplicate Or Replayed Request">
+    Request carried sender_sequence_number &lt;=
+    max_seen_request_sequence_number (duplicate, replayed, or out-of-order late
+    request).
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringSequenceAnomaly) -->
+
 <!-- LINT.IfChange(GlicExperimentalTriggeringState) -->
 
 <enum name="GlicExperimentalTriggeringState">

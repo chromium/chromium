@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 
+#include <cstdint>
+#include <limits>
 #include <map>
 #include <memory>
 #include <optional>
@@ -352,6 +354,26 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
                    std::string(
                        ExperimentalTriggeringHandlerDestroyReasonToString(
                            reason)))}));
+    }
+  }
+
+  void ExpectSequenceAnomalyCount(
+      const base::HistogramTester& tester,
+      GlicExperimentalTriggeringSequenceAnomaly anomaly,
+      base::HistogramBase::Count32 count) {
+    for (const char* name :
+         {"Glic.ExperimentalTriggering.SequenceAnomaly",
+          "Glic.Consumer.ExperimentalTriggering.SequenceAnomaly"}) {
+      tester.ExpectBucketCount(name, anomaly, count);
+    }
+  }
+
+  void ExpectSequenceAnomalyTotalCount(const base::HistogramTester& tester,
+                                       base::HistogramBase::Count32 count) {
+    for (const char* name :
+         {"Glic.ExperimentalTriggering.SequenceAnomaly",
+          "Glic.Consumer.ExperimentalTriggering.SequenceAnomaly"}) {
+      tester.ExpectTotalCount(name, count);
     }
   }
 
@@ -6472,6 +6494,309 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   ExpectHandlerDestroyed(
       tester,
       GlicExperimentalTriggeringHandlerDestroyReason::kCoordinatorShutdown);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       SequenceAnomaly_NormalUnsetNegativeAndDroppedAdvanceRecordNothing) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Legacy/unset and negative sentinel sequence numbers record no anomalies.
+  ExperimentalTriggeringRequest unset_trigger =
+      CreateRequest(TriggerActuationRequest{.initial_prompt = "legacy"});
+  unset_trigger.context_id = "ctx_legacy";
+  unset_trigger.task_metadata = TaskMetadata{
+      .conversation_id = "conv_legacy",
+      .sender_sequence_number = -1,
+      .last_seen_sequence_number = -1,
+  };
+  ASSERT_TRUE(SendRequest(unset_trigger, /*prepared_tab=*/nullptr, "ctx_legacy")
+                  .has_value());
+
+  // 2. Well-ordered multi-turn sequence + dropped duplicate-start with
+  // advancing sequence number records no anomalies.
+  base::test::TestFuture<ExperimentalTriggeringResponse> updates;
+  ExperimentalTriggeringRequest trigger =
+      CreateRequest(TriggerActuationRequest{.initial_prompt = "turn 1"});
+  trigger.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 0,
+      .last_seen_sequence_number = std::nullopt,
+  };
+  auto start_resp =
+      SendRequestWithCallback(trigger, updates.GetRepeatingCallback());
+  ASSERT_TRUE(start_resp.has_value());
+  EXPECT_EQ(start_resp->task_metadata->sender_sequence_number, 0);
+
+  // Dropped duplicate Trigger with seq=1 advances the anomaly high-water mark
+  // to 1 without mutating the running session's last_seen_sequence_number_.
+  ExperimentalTriggeringRequest dup_trigger =
+      CreateRequest(TriggerActuationRequest{.initial_prompt = "dup"});
+  dup_trigger.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 1,
+      .last_seen_sequence_number = 0,
+  };
+  EXPECT_FALSE(SendRequest(dup_trigger).has_value());
+
+  auto yield_update = mojom::ExperimentalTriggeringUpdate::New();
+  yield_update->type = mojom::ExperimentalTriggeringUpdateType::kYieldToUser;
+  yield_update->data = "question";
+  test_triggering_manager_.SendUpdate(
+      std::move(yield_update), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+  auto yield_resp = updates.Take();
+  EXPECT_EQ(yield_resp.task_metadata->sender_sequence_number, 1);
+  // Running task kept its last_seen_sequence_number = 0 despite dropped seq=1.
+  EXPECT_EQ(yield_resp.task_metadata->last_seen_sequence_number, 0);
+
+  ExperimentalTriggeringRequest cont =
+      CreateRequest(ContinueActuationRequest{.continuation_prompt = "turn 2"});
+  cont.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 2,
+      .last_seen_sequence_number = 1,
+  };
+  ASSERT_TRUE(SendRequestWithCallback(cont, updates.GetRepeatingCallback())
+                  .has_value());
+
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 0);
+}
+
+TEST_F(
+    GlicExperimentalTriggeringCoordinatorWithTabTest,
+    SequenceAnomaly_RecreatedHandlerRecordsSingleMostSpecificStreamRestartedBucket) {
+  base::HistogramTester histogram_tester;
+
+  // Continuation arriving at a brand-new handler (sent_reply_count=0,
+  // prev_max_seen=none) with sender_sequence_number=1 and
+  // last_seen_sequence_number=0 matches both StreamRestarted and
+  // MissingHistory, but records only the single most specific bucket
+  // (kStreamRestarted) while still advancing max_seen_request_sequence_number_
+  // to 1.
+  ExperimentalTriggeringRequest cont =
+      CreateRequest(ContinueActuationRequest{.continuation_prompt = "resume"});
+  cont.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 1,
+      .last_seen_sequence_number = 0,
+  };
+  ASSERT_TRUE(SendRequest(cont).has_value());
+
+  ExpectSequenceAnomalyCount(
+      histogram_tester,
+      GlicExperimentalTriggeringSequenceAnomaly::kStreamRestarted, 1);
+  ExpectSequenceAnomalyCount(
+      histogram_tester,
+      GlicExperimentalTriggeringSequenceAnomaly::kMissingHistory, 0);
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 1);
+
+  // Follow-up in-order request with seq=2 and last_seen=0 (<
+  // sent_reply_count=1) confirms max_seen_request_sequence_number_ advanced to
+  // 1 on the first request (records 0 additional anomalies).
+  ExperimentalTriggeringRequest meta = CreateRequest(TaskMetadataUpdated{});
+  meta.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 2,
+      .last_seen_sequence_number = 0,
+  };
+  EXPECT_FALSE(SendRequest(meta).has_value());
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorOptInTest,
+       SequenceAnomaly_DeviceOptInRetryExemptFromDuplicateOrReplayedRequest) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> opt_in_future;
+
+  ExperimentalTriggeringRequest opt_in_req =
+      CreateRequest(DeviceOptInRequest{});
+  opt_in_req.task_metadata = TaskMetadata{
+      .conversation_id = "conv_opt_in",
+      .sender_sequence_number = 0,
+      .last_seen_sequence_number = std::nullopt,
+  };
+
+  // First Sync opt-in opens the pending dialog (`awaiting_opt_in_ == true`).
+  EXPECT_FALSE(
+      SendRequestWithCallback(opt_in_req, opt_in_future.GetRepeatingCallback())
+          .has_value());
+  ASSERT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // Resumed Sync opt-in retry stamps sender_sequence_number = 0 again while the
+  // dialog handler is still open; exempted from kDuplicateOrReplayedRequest.
+  EXPECT_FALSE(
+      SendRequestWithCallback(opt_in_req, opt_in_future.GetRepeatingCallback())
+          .has_value());
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 0);
+
+  ASSERT_TRUE(opt_in_future.Wait());
+  EXPECT_EQ(*opt_in_future.Take().device_opt_in_result,
+            DeviceOptInResult::kAccepted);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       SequenceAnomaly_StopAndTaskMetadataUpdatedExemptOnFreshHandler) {
+  base::HistogramTester histogram_tester;
+
+  ExperimentalTriggeringRequest metadata_req =
+      CreateRequest(TaskMetadataUpdated{});
+  metadata_req.context_id = "ctx_meta";
+  metadata_req.task_metadata = TaskMetadata{
+      .conversation_id = "conv_1",
+      .sender_sequence_number = 3,
+      .last_seen_sequence_number = 2,
+  };
+  EXPECT_FALSE(SendRequest(metadata_req, /*prepared_tab=*/nullptr, "ctx_meta")
+                   .has_value());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  ExperimentalTriggeringRequest stop_req =
+      CreateRequest(StopActuationRequest{.stop_reason = "cancel"});
+  stop_req.context_id = "ctx_stop";
+  stop_req.task_metadata = TaskMetadata{
+      .conversation_id = "conv_1",
+      .sender_sequence_number = 4,
+      .last_seen_sequence_number = 2,
+  };
+  EXPECT_TRUE(
+      SendRequest(stop_req, /*prepared_tab=*/nullptr, "ctx_stop").has_value());
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
+
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 0);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       SequenceAnomaly_OutOfOrderAndDuplicateReplayUseMonotonicHighWaterMark) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ExperimentalTriggeringResponse> updates;
+
+  // Initial trigger: seq=0, sends STARTING at reply seq=0 (sent_reply_count=1).
+  ExperimentalTriggeringRequest trigger =
+      CreateRequest(TriggerActuationRequest{.initial_prompt = "start"});
+  trigger.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 0,
+      .last_seen_sequence_number = std::nullopt,
+  };
+  ASSERT_TRUE(SendRequestWithCallback(trigger, updates.GetRepeatingCallback())
+                  .has_value());
+
+  // 1. Replayed TriggerActuationRequest with seq=0: evaluated before
+  // IsDuplicateStart(), records kDuplicateOrReplayedRequest while dropped.
+  EXPECT_FALSE(SendRequest(trigger).has_value());
+  ExpectSequenceAnomalyCount(
+      histogram_tester,
+      GlicExperimentalTriggeringSequenceAnomaly::kDuplicateOrReplayedRequest,
+      1);
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 1);
+
+  // 2. Non-start TaskMetadataUpdated with seq=2 and last_seen=1 (>= 1 sent):
+  // LastSeenAheadOfSent takes precedence over RequestGap (1 bucket per request)
+  // while still advancing max_seen to 2.
+  ExperimentalTriggeringRequest ahead_with_gap =
+      CreateRequest(TaskMetadataUpdated{});
+  ahead_with_gap.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 2,
+      .last_seen_sequence_number = 1,
+  };
+  EXPECT_FALSE(
+      SendRequestWithCallback(ahead_with_gap, updates.GetRepeatingCallback())
+          .has_value());
+
+  // 3. Out-of-order late non-start TaskMetadataUpdated with seq=1 (<
+  // max_seen=2): records kDuplicateOrReplayedRequest and MUST NOT regress
+  // max_seen or last_seen_sequence_number_ from 2 back to 1.
+  ExperimentalTriggeringRequest late_seq_1 =
+      CreateRequest(TaskMetadataUpdated{});
+  late_seq_1.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 1,
+      .last_seen_sequence_number = 0,
+  };
+  EXPECT_FALSE(
+      SendRequestWithCallback(late_seq_1, updates.GetRepeatingCallback())
+          .has_value());
+
+  // Verify outgoing async update still echoes last_seen_sequence_number = 2
+  // (not regressed to 1).
+  auto worklog = mojom::ExperimentalTriggeringUpdate::New();
+  worklog->type = mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  worklog->data = "step";
+  test_triggering_manager_.SendUpdate(
+      std::move(worklog), mojom::SubscriberObservationType::kUpdate);
+  test_triggering_manager_.FlushForTesting();
+  EXPECT_EQ(updates.Take().task_metadata->last_seen_sequence_number, 2);
+
+  // 4. Next in-order TaskMetadataUpdated with seq=3 and valid last_seen=1
+  // (< sent_reply_count=2): records ZERO anomalies (no spurious gap!).
+  ExperimentalTriggeringRequest in_order_3 =
+      CreateRequest(TaskMetadataUpdated{});
+  in_order_3.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 3,
+      .last_seen_sequence_number = 1,
+  };
+  EXPECT_FALSE(SendRequest(in_order_3).has_value());
+
+  // 5. TaskMetadataUpdated jumping from max_seen=3 to seq=5 with valid
+  // last_seen=1 (< sent_reply_count=2): records kRequestGap.
+  ExperimentalTriggeringRequest gap_to_5 = CreateRequest(TaskMetadataUpdated{});
+  gap_to_5.task_metadata = TaskMetadata{
+      .conversation_id = "conv_123",
+      .sender_sequence_number = 5,
+      .last_seen_sequence_number = 1,
+  };
+  EXPECT_FALSE(SendRequest(gap_to_5).has_value());
+
+  ExpectSequenceAnomalyCount(
+      histogram_tester,
+      GlicExperimentalTriggeringSequenceAnomaly::kDuplicateOrReplayedRequest,
+      2);
+  ExpectSequenceAnomalyCount(
+      histogram_tester,
+      GlicExperimentalTriggeringSequenceAnomaly::kLastSeenAheadOfSent, 1);
+  ExpectSequenceAnomalyCount(
+      histogram_tester, GlicExperimentalTriggeringSequenceAnomaly::kRequestGap,
+      1);
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 4);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       SequenceAnomaly_Int64MaxDoesNotOverflow) {
+  base::HistogramTester histogram_tester;
+  constexpr int64_t kMaxSeq = std::numeric_limits<int64_t>::max();
+
+  ExperimentalTriggeringRequest trigger =
+      CreateRequest(TriggerActuationRequest{.initial_prompt = "max"});
+  trigger.task_metadata = TaskMetadata{
+      .conversation_id = "conv_max",
+      .sender_sequence_number = kMaxSeq,
+      .last_seen_sequence_number = std::nullopt,
+  };
+  ASSERT_TRUE(SendRequest(trigger).has_value());
+  ExpectSequenceAnomalyCount(
+      histogram_tester,
+      GlicExperimentalTriggeringSequenceAnomaly::kMissingHistory, 1);
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 1);
+
+  // Duplicate INT64_MAX must classify as kDuplicateOrReplayedRequest without
+  // signed integer overflow on +1.
+  ExperimentalTriggeringRequest dup_max = CreateRequest(TaskMetadataUpdated{});
+  dup_max.task_metadata = TaskMetadata{
+      .conversation_id = "conv_max",
+      .sender_sequence_number = kMaxSeq,
+      .last_seen_sequence_number = 0,
+  };
+  EXPECT_FALSE(SendRequest(dup_max).has_value());
+  ExpectSequenceAnomalyCount(
+      histogram_tester,
+      GlicExperimentalTriggeringSequenceAnomaly::kDuplicateOrReplayedRequest,
+      1);
+  ExpectSequenceAnomalyCount(
+      histogram_tester, GlicExperimentalTriggeringSequenceAnomaly::kRequestGap,
+      0);
+  ExpectSequenceAnomalyTotalCount(histogram_tester, 2);
 }
 
 }  // namespace
