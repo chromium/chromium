@@ -1,7 +1,6 @@
-# Please send CLs to one of the "Primary" reviewers in /net/OWNERS.
-
-# ericorth@chromium.org is a knowledgeable reviewer for DNS matters so he can
-# provide reviews but he no longer works primarily on Chrome so he may be slow
-# to respond. He can also consult.
+# No longer working primarily on Chrome. Still somewhat active and often the
+# most knowledgeable reviewer for DNS matters, but may be slow, so see the
+# "Primary" reviewers in /net/OWNERS if needed for urgent code reviews.
+ericorth@chromium.org
 
 per-file stale_host_resolver.*=file://components/cronet/OWNERS
