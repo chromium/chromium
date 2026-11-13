@@ -6,11 +6,12 @@
 
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -59,6 +60,24 @@ TrustedVaultClientAndroid::OngoingAddTrustedRecoveryMethod::
 
 TrustedVaultClientAndroid::OngoingAddTrustedRecoveryMethod::
     ~OngoingAddTrustedRecoveryMethod() = default;
+
+TrustedVaultClientAndroid::OngoingCanEnroll::OngoingCanEnroll(
+    base::OnceCallback<void(bool)> callback)
+    : callback(std::move(callback)) {}
+
+TrustedVaultClientAndroid::OngoingCanEnroll::OngoingCanEnroll(
+    OngoingCanEnroll&&) noexcept = default;
+
+TrustedVaultClientAndroid::OngoingCanEnroll::~OngoingCanEnroll() = default;
+
+TrustedVaultClientAndroid::OngoingEnroll::OngoingEnroll(
+    base::OnceCallback<void(const std::vector<uint8_t>&, int)> callback)
+    : callback(std::move(callback)) {}
+
+TrustedVaultClientAndroid::OngoingEnroll::OngoingEnroll(
+    OngoingEnroll&&) noexcept = default;
+
+TrustedVaultClientAndroid::OngoingEnroll::~OngoingEnroll() = default;
 
 TrustedVaultClientAndroid::TrustedVaultClientAndroid(
     trusted_vault::SecurityDomainId security_domain_id,
@@ -132,6 +151,32 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
 
   std::move(std::get<OngoingAddTrustedRecoveryMethod>(ongoing_request).callback)
       .Run(!!succeeded);
+}
+
+void TrustedVaultClientAndroid::CanEnrollCompleted(JNIEnv* env,
+                                                   int32_t request_id,
+                                                   bool can_enroll) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
+
+  std::move(std::get<OngoingCanEnroll>(ongoing_request).callback)
+      .Run(!!can_enroll);
+}
+
+void TrustedVaultClientAndroid::EnrollCompleted(
+    JNIEnv* env,
+    int32_t request_id,
+    const base::android::JavaRef<jbyteArray>& key,
+    int32_t key_version) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
+
+  std::vector<uint8_t> converted_key;
+  base::android::JavaByteArrayToByteVector(env, key, &converted_key);
+  std::move(std::get<OngoingEnroll>(ongoing_request).callback)
+      .Run(converted_key, key_version);
 }
 
 void TrustedVaultClientAndroid::NotifyKeysChanged(
@@ -276,18 +321,32 @@ void TrustedVaultClientAndroid::ClearLocalDataForAccount(
 void TrustedVaultClientAndroid::CanEnroll(const CoreAccountInfo& account_info,
                                           base::OnceCallback<void(bool)> cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/579292011): Implement for Android.
-  NOTIMPLEMENTED();
-  std::move(cb).Run(false);
+  CHECK(cb);
+
+  // Store for later completion when Java invokes CanEnrollCompleted().
+  const RequestId request_id =
+      RegisterNewOngoingRequest(OngoingCanEnroll(std::move(cb)));
+
+  // The Java implementation will eventually call CanEnrollCompleted().
+  Java_TrustedVaultClient_canEnroll(
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      static_cast<int32_t>(security_domain_id_), request_id, account_info);
 }
 
 void TrustedVaultClientAndroid::Enroll(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<uint8_t>&, int)> cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/579292011): Implement for Android.
-  NOTIMPLEMENTED();
-  std::move(cb).Run(std::vector<uint8_t>(), -1);
+  CHECK(cb);
+
+  // Store for later completion when Java invokes EnrollCompleted().
+  const RequestId request_id =
+      RegisterNewOngoingRequest(OngoingEnroll(std::move(cb)));
+
+  // The Java implementation will eventually call EnrollCompleted().
+  Java_TrustedVaultClient_enroll(
+      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      static_cast<int32_t>(security_domain_id_), request_id, account_info);
 }
 
 TrustedVaultClientAndroid::RequestId

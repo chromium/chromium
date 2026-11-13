@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -134,6 +135,33 @@ public class TrustedVaultClient {
          * @return a promise for a PendingIntent object.
          */
         Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo);
+
+        /**
+         * Asynchronously checks whether {@code accountInfo} can be enrolled in the security domain
+         * without user interaction.
+         *
+         * @param accountInfo Account representing the user.
+         * @return a promise which indicates completion and represents whether the account can be
+         *     enrolled.
+         */
+        // TODO(crbug.com/579292011): Remove the default implementation once downstream
+        // GmsTrustedVaultClientBackend implements this method.
+        default Promise<Boolean> canEnroll(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(false);
+        }
+
+        /**
+         * Asynchronously enrolls {@code accountInfo} into the security domain.
+         *
+         * @param accountInfo Account representing the user.
+         * @return a promise with a pair of the new shared key and new key version, or rejected on
+         *     failure.
+         */
+        // TODO(crbug.com/579292011): Remove the default implementation once downstream
+        // GmsTrustedVaultClientBackend implements this method.
+        default Promise<Pair<byte[], Integer>> enroll(CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
     }
 
     /** Trivial backend implementation that is always empty. */
@@ -172,6 +200,16 @@ public class TrustedVaultClient {
 
         @Override
         public Promise<PendingIntent> createOptInIntent(CoreAccountInfo accountInfo) {
+            return Promise.rejected();
+        }
+
+        @Override
+        public Promise<Boolean> canEnroll(CoreAccountInfo accountInfo) {
+            return Promise.fulfilled(false);
+        }
+
+        @Override
+        public Promise<Pair<byte[], Integer>> enroll(CoreAccountInfo accountInfo) {
             return Promise.rejected();
         }
     }
@@ -545,6 +583,71 @@ public class TrustedVaultClient {
                         exception -> responseCallback.accept(false));
     }
 
+    /**
+     * Forwards calls to Backend.canEnroll() and upon completion invokes native method
+     * canEnrollCompleted().
+     */
+    @CalledByNative
+    private static void canEnroll(
+            long nativeTrustedVaultClientAndroid,
+            @SecurityDomainId int securityDomainId,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
+
+        Consumer<Boolean> responseCallback =
+                isEnrollmentPossible -> {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId)) {
+                        // Native already unregistered, no response needed.
+                        return;
+                    }
+                    TrustedVaultClientJni.get()
+                            .canEnrollCompleted(
+                                    nativeTrustedVaultClientAndroid,
+                                    requestId,
+                                    isEnrollmentPossible);
+                };
+
+        get(securityDomainId)
+                .mBackend
+                .canEnroll(accountInfo)
+                .then(responseCallback::accept, exception -> responseCallback.accept(false));
+    }
+
+    /**
+     * Forwards calls to Backend.enroll() and upon completion invokes native method
+     * enrollCompleted().
+     */
+    @CalledByNative
+    private static void enroll(
+            long nativeTrustedVaultClientAndroid,
+            @SecurityDomainId int securityDomainId,
+            int requestId,
+            @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
+
+        Consumer<Pair<byte[], Integer>> responseCallback =
+                result -> {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId)) {
+                        // Native already unregistered, no response needed.
+                        return;
+                    }
+                    TrustedVaultClientJni.get()
+                            .enrollCompleted(
+                                    nativeTrustedVaultClientAndroid,
+                                    requestId,
+                                    result.first,
+                                    result.second);
+                };
+
+        get(securityDomainId)
+                .mBackend
+                .enroll(accountInfo)
+                .then(
+                        responseCallback::accept,
+                        exception -> responseCallback.accept(new Pair<>(new byte[0], -1)));
+    }
+
     @NativeMethods
     interface Natives {
         void fetchKeysCompleted(
@@ -561,6 +664,12 @@ public class TrustedVaultClient {
 
         void addTrustedRecoveryMethodCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean succeeded);
+
+        void canEnrollCompleted(
+                long nativeTrustedVaultClientAndroid, int requestId, boolean canEnroll);
+
+        void enrollCompleted(
+                long nativeTrustedVaultClientAndroid, int requestId, byte[] key, int keyVersion);
 
         void notifyKeysChanged(
                 long nativeTrustedVaultClientAndroid,

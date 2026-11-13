@@ -68,6 +68,17 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
                                          int32_t request_id,
                                          bool succeeded);
 
+  // Called from Java to notify the completion of a `CanEnroll()` operation
+  // previously initiated from C++ and identified by `request_id`.
+  void CanEnrollCompleted(JNIEnv* env, int32_t request_id, bool can_enroll);
+
+  // Called from Java to notify the completion of an `Enroll()` operation
+  // previously initiated from C++ and identified by `request_id`.
+  void EnrollCompleted(JNIEnv* env,
+                       int32_t request_id,
+                       const base::android::JavaRef<jbyteArray>& key,
+                       int32_t key_version);
+
   // Called from Java to notify that the keys in the vault may have changed.
   void NotifyKeysChanged(JNIEnv* env, std::optional<int32_t> trigger);
 
@@ -150,11 +161,32 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
     base::OnceCallback<void(bool)> callback;
   };
 
+  // Struct representing an in-flight CanEnroll() invoked from C++.
+  struct OngoingCanEnroll {
+    explicit OngoingCanEnroll(base::OnceCallback<void(bool)> callback);
+    OngoingCanEnroll(OngoingCanEnroll&&) noexcept;
+    ~OngoingCanEnroll();
+
+    base::OnceCallback<void(bool)> callback;
+  };
+
+  // Struct representing an in-flight Enroll() invoked from C++.
+  struct OngoingEnroll {
+    explicit OngoingEnroll(
+        base::OnceCallback<void(const std::vector<uint8_t>&, int)> callback);
+    OngoingEnroll(OngoingEnroll&&) noexcept;
+    ~OngoingEnroll();
+
+    base::OnceCallback<void(const std::vector<uint8_t>&, int)> callback;
+  };
+
   using RequestId = int32_t;
   using OngoingRequest = std::variant<OngoingFetchKeys,
                                       OngoingMarkLocalKeysAsStale,
                                       OngoingGetIsRecoverabilityDegraded,
-                                      OngoingAddTrustedRecoveryMethod>;
+                                      OngoingAddTrustedRecoveryMethod,
+                                      OngoingCanEnroll,
+                                      OngoingEnroll>;
 
   RequestId RegisterNewOngoingRequest(OngoingRequest request);
   OngoingRequest GetAndUnregisterOngoingRequest(RequestId id);
