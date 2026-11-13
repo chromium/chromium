@@ -32,6 +32,23 @@ class OtpManager;
 std::vector<Suggestion> BuildOtpSuggestions(
     base::span<const one_time_tokens::OneTimeToken> one_time_tokens);
 
+// Returns the OTPs from `one_time_tokens` that are worth suggesting on
+// `trigger_field`, given the field's current value:
+// - OTPs equal to the field's value are dropped because filling them would not
+//   change the field.
+// - Unless the field is autofilled (in which case a different OTP, e.g. a
+//   resent one, may replace the filled value), OTPs are dropped if the field's
+//   value is not a prefix of them, e.g. because the user is manually typing a
+//   different code.
+// Values are compared case-insensitively for ASCII letters and ignore
+// whitespace and ASCII punctuation, such as separators or input mask
+// placeholders.
+// TODO(crbug.com/409962888): Make this an implementation detail of
+// `OtpSuggestionGenerator` once AutofillNewSuggestionGeneration is launched.
+std::vector<one_time_tokens::OneTimeToken> GetOtpsToSuggest(
+    std::vector<one_time_tokens::OneTimeToken> one_time_tokens,
+    const FormFieldData& trigger_field);
+
 // A `SuggestionGenerator` for `FillingProduct::kOneTimePassword`.
 class OtpSuggestionGenerator : public SuggestionGenerator {
  public:
@@ -49,6 +66,7 @@ class OtpSuggestionGenerator : public SuggestionGenerator {
  private:
   void OnOtpReturned(
       base::OnceCallback<void(ReturnedSuggestions)> callback,
+      const FormFieldData& trigger_field,
       std::vector<one_time_tokens::OneTimeToken> one_time_tokens);
 
   raw_ref<OtpManager> otp_manager_;

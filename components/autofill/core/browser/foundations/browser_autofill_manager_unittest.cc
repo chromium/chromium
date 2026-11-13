@@ -7537,6 +7537,59 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
   external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
+// Parameterized on whether `kAutofillNewSuggestionGeneration` is enabled.
+class BrowserAutofillManagerOtpTypedValueTest
+    : public BrowserAutofillManagerOtpSuggestionsTest,
+      public WithParamInterface<bool> {
+ public:
+  BrowserAutofillManagerOtpTypedValueTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillNewSuggestionGeneration, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that OTP suggestions are matched against the value that the user types
+// into the OTP field: An OTP that completes the typed value is offered, while
+// an OTP that contradicts it is not.
+TEST_P(BrowserAutofillManagerOtpTypedValueTest,
+       OtpSuggestionsAreMatchedAgainstTypedValue) {
+  FormData form = CreateAndSeeOtpForm();
+  ON_CALL(otp_manager(), GetOtpSuggestions)
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<2>(
+          std::vector<one_time_tokens::OneTimeToken>{
+              one_time_tokens::OneTimeToken(
+                  one_time_tokens::OneTimeTokenType::kSmsOtp, "083203",
+                  base::TimeTicks::Now())}));
+  ON_CALL(autocomplete_history_manager(), OnGetSingleFieldSuggestions)
+      .WillByDefault(
+          [](const FormData& form, const FormStructure* form_structure,
+             const FormFieldData& field, const AutofillField* autofill_field,
+             const AutofillClient& client,
+             SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                 on_suggestions_returned) {
+            std::move(on_suggestions_returned).Run(field.global_id(), {});
+          });
+
+  test_api(form).field(0).set_value(u"08");
+  OnAskForValuesToFill(form, form.fields()[0],
+                       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
+  EXPECT_THAT(external_delegate()->suggestions(),
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kOneTimePasswordEntry, u"083203")));
+
+  test_api(form).field(0).set_value(u"12");
+  OnAskForValuesToFill(form, form.fields()[0],
+                       AutofillSuggestionTriggerSource::kTextFieldValueChanged);
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowserAutofillManagerOtpTypedValueTest,
+                         testing::Bool());
+
 // Tests that triggering suggestions with `kGmailOneTimePasswordAvailable`
 // queries the `OtpManager` and returns OTP suggestions.
 TEST_F(BrowserAutofillManagerOtpSuggestionsTest,
