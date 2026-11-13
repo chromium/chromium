@@ -11,6 +11,7 @@
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -57,6 +58,19 @@ constexpr size_t kReducedSpaceTextLength = 500;
 
 void EnsurePageActionEnabled(BrowserWindowInterface* browser,
                              actions::ActionId action_id) {
+  if (action_id == kActionShowTranslate) {
+    // Prevent asynchronous language determination (e.g. from the initial
+    // about:blank load) from triggering TabStateChanged() and disabling
+    // kActionShowTranslate mid-test.
+    if (auto* web_contents =
+            browser->GetTabStripModel()->GetActiveWebContents()) {
+      if (auto* translate_client =
+              ChromeTranslateClient::FromWebContents(web_contents)) {
+        translate_client->translate_driver()->RemoveLanguageDetectionObserver(
+            translate_client);
+      }
+    }
+  }
   auto* action = actions::ActionManager::Get().FindAction(
       action_id, BrowserActions::From(browser)->root_action_item());
   CHECK(action);
