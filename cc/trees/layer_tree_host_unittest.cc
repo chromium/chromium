@@ -7508,6 +7508,39 @@ class LayerTreeHostTestBypassSchedulerPauseSoon : public LayerTreeHostTest {
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestBypassSchedulerPauseSoon);
 
+// Tests that calling SetNeedsUpdateLayers() during BeginMainFrame and
+// completing a blocking commit (SetInputResponsePending()) does not leave
+// needs_begin_main_frame_ set or prevent the main thread from receiving the
+// idle signal.
+class LayerTreeHostTestBypassSchedulerBlockingCommitAndUpdateLayers
+    : public LayerTreeHostTest {
+ public:
+  LayerTreeHostTestBypassSchedulerBlockingCommitAndUpdateLayers() = default;
+
+  void BeginTest() override {
+    layer_tree_host()->proxy()->SetInputResponsePending();
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {
+    layer_tree_host()->SetNeedsUpdateLayers();
+    layer_tree_host()->RequestBeginMainFrameNotExpected(true);
+  }
+
+  void DidCommitAndDrawFrame() override {
+    scoped_pause_rendering_ = layer_tree_host()->PauseRendering();
+    layer_tree_host()->SetVisible(false);
+  }
+
+  void BeginMainFrameNotExpectedSoon() override { EndTest(); }
+
+ protected:
+  std::unique_ptr<ScopedPauseRendering> scoped_pause_rendering_;
+};
+
+MULTI_THREAD_TEST_F(
+    LayerTreeHostTestBypassSchedulerBlockingCommitAndUpdateLayers);
+
 class LayerTreeHostTestPauseRenderingUntilVisibilityChangeTimeout
     : public LayerTreeHostTest {
  public:
