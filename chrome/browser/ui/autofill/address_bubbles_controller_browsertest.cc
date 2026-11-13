@@ -8,10 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
+#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -28,6 +32,7 @@
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -309,6 +314,37 @@ std::unique_ptr<KeyedService> BuildSignedOutTestSyncService(
   return sync_service;
 }
 
+class FakeBubbleController : public BubbleControllerBase {
+ public:
+  explicit FakeBubbleController(BubbleType bubble_type)
+      : bubble_type_(bubble_type) {}
+
+  FakeBubbleController(const FakeBubbleController&) = delete;
+  FakeBubbleController& operator=(const FakeBubbleController&) = delete;
+  ~FakeBubbleController() override = default;
+
+  // BubbleControllerBase:
+  void ShowBubble() override { is_showing_ = true; }
+  void HideBubble(bool /*initiated_by_bubble_manager*/) override {
+    is_showing_ = false;
+  }
+  void OnBubbleDiscarded() override {}
+  BubbleType GetBubbleType() const override { return bubble_type_; }
+  bool IsShowingBubble() const override { return is_showing_; }
+  bool IsMouseHovered() const override { return false; }
+  bool CanBeReshown() const override { return true; }
+  bool ShouldReshowOnTabVisible() const override { return false; }
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr()
+      override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  const BubbleType bubble_type_;
+  bool is_showing_ = false;
+  base::WeakPtrFactory<FakeBubbleController> weak_ptr_factory_{this};
+};
+
 }  // namespace
 
 class AddressBubblesControllerSignInPromoBrowserTest
@@ -388,6 +424,147 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(tab_controller()->IsShowingBubble());
   EXPECT_TRUE(tab_controller()->IsBubbleActive());
   EXPECT_EQ(tab_controller()->GetBubbleView(), second_save_bubble_view);
+}
+
+// Tests that transitioning from the save-address bubble to the sign-in promo
+// keeps lower-priority bubbles queued, hides the sign-in promo on tab switch,
+// and does not reshow the sign-in promo when returning to the tab.
+IN_PROC_BROWSER_TEST_F(
+    AddressBubblesControllerSignInPromoBrowserTest,
+    SignInPromoIsManagedByBubbleManagerAndHiddenOnTabSwitch) {
+  AutofillProfile profile = test::GetFullProfile();
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/false, base::DoNothing());
+  AddressBubblesController* const controller = tab_controller();
+  AutofillBubbleBase* const save_bubble_view = controller->GetBubbleView();
+  ASSERT_TRUE(save_bubble_view);
+  BubbleManager* const bubble_manager =
+      BubbleManager::GetForTab(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(bubble_manager);
+
+  // Queue a lower-priority bubble while the save-address bubble is open.
+  FakeBubbleController lower_priority_bubble(BubbleType::kWalletReminderNotice);
+  bubble_manager->RequestShowController(lower_priority_bubble,
+                                        /*force_show=*/false);
+  EXPECT_FALSE(lower_priority_bubble.IsShowingBubble());
+
+  // Accepting the save prompt transitions to the sign-in promo without
+  // prematurely advancing the `BubbleManager` queue.
+  controller->OnUserDecision(
+      AutofillClient::AddressPromptUserDecision::kAccepted, profile);
+  EXPECT_TRUE(controller->IsShowingBubble());
+  EXPECT_TRUE(controller->IsBubbleActive());
+  EXPECT_NE(controller->GetBubbleView(), save_bubble_view);
+  EXPECT_FALSE(lower_priority_bubble.IsShowingBubble());
+
+  // Switching away from the tab synchronously hides the sign-in promo.
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  EXPECT_FALSE(controller->IsShowingBubble());
+  EXPECT_FALSE(controller->IsBubbleActive());
+
+  // Returning to the tab does not reshow the sign-in promo and instead shows
+  // the queued lower-priority bubble.
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  EXPECT_FALSE(controller->IsShowingBubble());
+  EXPECT_FALSE(controller->IsBubbleActive());
+  EXPECT_TRUE(lower_priority_bubble.IsShowingBubble());
+
+  lower_priority_bubble.HideBubble(/*initiated_by_bubble_manager=*/false);
+  bubble_manager->OnBubbleHiddenByController(lower_priority_bubble,
+                                             /*show_next_bubble=*/false);
+}
+
+// Tests that preempting a visible sign-in promo with a higher-priority bubble
+// does not re-queue the sign-in promo.
+IN_PROC_BROWSER_TEST_F(AddressBubblesControllerSignInPromoBrowserTest,
+                       SignInPromoPreemptedByHigherPriorityBubbleIsNotReshown) {
+  AutofillProfile profile = test::GetFullProfile();
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/false, base::DoNothing());
+  AutofillBubbleBase* const save_bubble_view =
+      tab_controller()->GetBubbleView();
+  ASSERT_TRUE(save_bubble_view);
+
+  tab_controller()->OnUserDecision(
+      AutofillClient::AddressPromptUserDecision::kAccepted, profile);
+  ASSERT_TRUE(tab_controller()->IsShowingBubble());
+  ASSERT_NE(tab_controller()->GetBubbleView(), save_bubble_view);
+
+  BubbleManager* const bubble_manager =
+      BubbleManager::GetForTab(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(bubble_manager);
+
+  FakeBubbleController higher_priority_bubble(BubbleType::kPassword);
+  bubble_manager->RequestShowController(higher_priority_bubble,
+                                        /*force_show=*/false);
+  EXPECT_TRUE(higher_priority_bubble.IsShowingBubble());
+  EXPECT_FALSE(tab_controller()->IsShowingBubble());
+  EXPECT_FALSE(tab_controller()->IsBubbleActive());
+
+  higher_priority_bubble.HideBubble(/*initiated_by_bubble_manager=*/false);
+  bubble_manager->OnBubbleHiddenByController(higher_priority_bubble,
+                                             /*show_next_bubble=*/true);
+  EXPECT_FALSE(tab_controller()->IsShowingBubble());
+  EXPECT_FALSE(tab_controller()->IsBubbleActive());
+}
+
+// Tests that `MaybeShowSignInPromo()` neither preempts an active
+// higher-priority bubble (e.g., if one appeared while the edit dialog was
+// open), nor queues the sign-in promo in `BubbleManager`, nor emits
+// `Autofill.Bubble.RequestShow.ForceShow`.
+IN_PROC_BROWSER_TEST_F(
+    AddressBubblesControllerSignInPromoBrowserTest,
+    SignInPromoDoesNotPreemptHigherPriorityBubbleOrQueuePromo) {
+  base::HistogramTester histogram_tester;
+  AutofillProfile profile = test::GetFullProfile();
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/false, base::DoNothing());
+
+  // Simulate the save bubble being hidden while the modal edit dialog is open
+  // and a higher-priority bubble becoming active before edit acceptance.
+  tab_controller()->HideBubble(/*initiated_by_bubble_manager=*/false);
+  BubbleManager* const bubble_manager =
+      BubbleManager::GetForTab(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(bubble_manager);
+
+  FakeBubbleController higher_priority_bubble(BubbleType::kPassword);
+  bubble_manager->RequestShowController(higher_priority_bubble,
+                                        /*force_show=*/false);
+  ASSERT_TRUE(higher_priority_bubble.IsShowingBubble());
+
+  tab_controller()->OnUserDecision(
+      AutofillClient::AddressPromptUserDecision::kEditAccepted, profile);
+  EXPECT_TRUE(higher_priority_bubble.IsShowingBubble());
+  EXPECT_FALSE(tab_controller()->IsShowingBubble());
+  EXPECT_FALSE(tab_controller()->IsBubbleActive());
+  histogram_tester.ExpectTotalCount("Autofill.Bubble.RequestShow.ForceShow", 0);
+
+  // `OnIconClicked()` only reopens undecided save/update prompts and must not
+  // show a sign-in promo.
+  tab_controller()->OnIconClicked();
+  EXPECT_TRUE(higher_priority_bubble.IsShowingBubble());
+  EXPECT_FALSE(tab_controller()->IsShowingBubble());
+  histogram_tester.ExpectTotalCount("Autofill.Bubble.RequestShow.ForceShow", 0);
+
+  // Closing the higher-priority bubble does not reshow the skipped promo, and
+  // a subsequent save-address prompt is not auto-declined.
+  higher_priority_bubble.HideBubble(/*initiated_by_bubble_manager=*/false);
+  bubble_manager->OnBubbleHiddenByController(higher_priority_bubble,
+                                             /*show_next_bubble=*/true);
+  EXPECT_FALSE(tab_controller()->IsShowingBubble());
+
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      tab_web_contents(), profile, /*original_profile=*/nullptr,
+      AutofillClient::SaveAddressBubbleType::kSave,
+      /*user_has_any_profile_saved=*/false, base::DoNothing());
+  EXPECT_TRUE(tab_controller()->IsShowingBubble());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

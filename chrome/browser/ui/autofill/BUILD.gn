@@ -625,6 +625,7 @@ if (!is_android) {
       "//components/strings:components_strings",
       "//components/sync:test_support",
       "//components/sync/base:features",
+      "//components/tabs:public",
       "//components/user_manager",
       "//components/variations/service",
       "//content/public/browser",
