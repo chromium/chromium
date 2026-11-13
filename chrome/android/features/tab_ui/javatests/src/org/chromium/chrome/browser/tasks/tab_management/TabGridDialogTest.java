@@ -1229,7 +1229,8 @@ public class TabGridDialogTest {
     @Test
     @LargeTest
     @RequiresRestart("Group creation modal dialog is sometimes persistent when dismissing")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/394671175
+    // Desktop assumes a hardware keyboard, so the soft keyboard is never shown.
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
