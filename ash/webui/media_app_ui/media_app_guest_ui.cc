@@ -11,6 +11,7 @@
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -25,6 +26,7 @@
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -152,11 +154,15 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
 }  // namespace
 
 MediaAppGuestUI::MediaAppGuestUI(
+    variations::VariationsService* variations_service,
     content::WebUI* web_ui,
     std::unique_ptr<MediaAppGuestUIDelegate> delegate)
     : UntrustedWebUIController(web_ui),
       WebContentsObserver(web_ui->GetWebContents()),
       delegate_(std::move(delegate)) {
+  CHECK(variations_service);
+  variations_service_observation_.Observe(variations_service);
+
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -200,6 +206,10 @@ void MediaAppGuestUI::ReadyToCommitNavigation(
       &client);
   client->AddAutoplayFlags(url::Origin::Create(handle->GetURL()),
                            blink::mojom::kAutoplayFlagForceAllow);
+}
+
+void MediaAppGuestUI::OnVariationsServiceDestroyed() {
+  variations_service_observation_.Reset();
 }
 
 void MediaAppGuestUI::StartFontDataRequest(
@@ -269,9 +279,13 @@ void MediaAppGuestUI::OnMantisAvailableDone(IsMantisAvailableCallback callback,
 void MediaAppGuestUI::IsMantisAvailable(IsMantisAvailableCallback callback) {
   // Mantis does not live in //chrome, no need to use delegate.
   if (mantis_untrusted_service_manager_ == nullptr) {
+    variations::VariationsService* variations_service =
+        variations_service_observation_.GetSource();
+    CHECK(variations_service);
     mantis_untrusted_service_manager_ =
         std::make_unique<MantisUntrustedServiceManager>(
             delegate_->GetFeatureAccessChecker(
+                variations_service,
                 MantisUntrustedServiceManager::GetFeatureAccessConfig(),
                 web_ui()));
   }

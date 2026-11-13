@@ -43,6 +43,7 @@ static_library("media_app_ui") {
     "//chromeos/constants",
     "//chromeos/strings",
     "//components/prefs",
+    "//components/variations/service",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",

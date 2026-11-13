@@ -11,10 +11,12 @@
 
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/files/file_path.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/gfx/native_ui_types.h"
@@ -30,8 +32,10 @@ class MediaAppGuestUIDelegate {
   // Takes a WebUI and WebUIDataSource, and populates its load-time data.
   virtual void PopulateLoadTimeData(content::WebUI* web_ui,
                                     content::WebUIDataSource* source) = 0;
+  // `variations_service` must not be null.
   virtual std::unique_ptr<specialized_features::FeatureAccessChecker>
-  GetFeatureAccessChecker(specialized_features::FeatureAccessConfig config,
+  GetFeatureAccessChecker(variations::VariationsService* variations_service,
+                          specialized_features::FeatureAccessConfig config,
                           content::WebUI* web_ui) const = 0;
   virtual PrefService* GetPrefService(content::WebUI* web_ui) = 0;
   virtual void CreateAndBindOcrUntrustedService(
@@ -52,9 +56,12 @@ class MediaAppGuestUIDelegate {
 // The webui for chrome-untrusted://media-app.
 class MediaAppGuestUI : public ui::UntrustedWebUIController,
                         public content::WebContentsObserver,
-                        public media_app_ui::mojom::UntrustedServiceFactory {
+                        public media_app_ui::mojom::UntrustedServiceFactory,
+                        public variations::VariationsService::Observer {
  public:
-  MediaAppGuestUI(content::WebUI* web_ui,
+  // `variations_service` must not be null.
+  MediaAppGuestUI(variations::VariationsService* variations_service,
+                  content::WebUI* web_ui,
                   std::unique_ptr<MediaAppGuestUIDelegate> delegate);
   MediaAppGuestUI(const MediaAppGuestUI&) = delete;
   MediaAppGuestUI& operator=(const MediaAppGuestUI&) = delete;
@@ -62,6 +69,9 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
 
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
+
+  // variations::VariationsService::Observer:
+  void OnVariationsServiceDestroyed() override;
 
   // Binds UntrustedServiceFactory which is used to bind other interfaces
   // used to communicate between the untrusted MediaApp frame and the browser.
@@ -94,6 +104,10 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
       const base::FilePath& font_path,
       content::WebUIDataSource::GotDataCallback got_data_callback,
       bool path_exists);
+
+  base::ScopedObservation<variations::VariationsService,
+                          variations::VariationsService::Observer>
+      variations_service_observation_{this};
 
   // The background task runner on which file I/O is performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

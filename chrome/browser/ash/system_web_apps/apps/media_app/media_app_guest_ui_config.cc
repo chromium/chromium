@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/chrome_pref_names.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_service_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/channel/channel_info.h"
@@ -35,6 +35,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/variations/service/variations_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -169,6 +170,7 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
 
 std::unique_ptr<specialized_features::FeatureAccessChecker>
 ChromeMediaAppGuestUIDelegate::GetFeatureAccessChecker(
+    variations::VariationsService* variations_service,
     specialized_features::FeatureAccessConfig config,
     content::WebUI* web_ui) const {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -176,7 +178,7 @@ ChromeMediaAppGuestUIDelegate::GetFeatureAccessChecker(
   // guest sessions substitute their off-the-record profile here too, but the
   // AccountId is only annotated on the original profile.
   return std::make_unique<specialized_features::FeatureAccessChecker>(
-      g_browser_process->variations_service(), profile->GetPrefs(),
+      variations_service, profile->GetPrefs(),
       ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
           ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()))),
       std::move(config));
@@ -213,17 +215,32 @@ void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiUntrustedService(
 }
 
 MediaAppGuestUIConfig::MediaAppGuestUIConfig(
-    const ApplicationLocaleStorage* application_locale_storage)
+    const ApplicationLocaleStorage* application_locale_storage,
+    variations::VariationsService* variations_service)
     : WebUIConfig(content::kChromeUIUntrustedScheme,
                   ash::kChromeUIMediaAppHost),
-      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
+  CHECK(variations_service);
+  variations_service_observation_.Observe(variations_service);
+}
 
 MediaAppGuestUIConfig::~MediaAppGuestUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
 MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                              const GURL& url) {
+  variations::VariationsService* variations_service =
+      variations_service_observation_.GetSource();
+  CHECK(variations_service);
   auto delegate = std::make_unique<ChromeMediaAppGuestUIDelegate>(
       &application_locale_storage_.get());
-  return std::make_unique<ash::MediaAppGuestUI>(web_ui, std::move(delegate));
+  return std::make_unique<ash::MediaAppGuestUI>(variations_service, web_ui,
+                                                std::move(delegate));
+}
+
+void MediaAppGuestUIConfig::OnVariationsServiceDestroyed() {
+  // `VariationsService` is destroyed in `BrowserProcessImpl::StartTearDown()`,
+  // before `AshWebUIConfigManager` unregisters this config in
+  // `ChromeBrowserMainPartsAsh::PostMainMessageLoopRun()`.
+  variations_service_observation_.Reset();
 }

@@ -670,9 +670,10 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   AddUntrustedWebUIConfig(
       std::make_unique<eche_app::UntrustedEcheAppUIConfig>(),
       /*is_stateful=*/false);
-  AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>(
-                              &application_locale_storage_.get()),
-                          /*is_stateful=*/true);
+  AddUntrustedWebUIConfig(
+      std::make_unique<MediaAppGuestUIConfig>(
+          &application_locale_storage_.get(), variations_service_.get()),
+      /*is_stateful=*/true);
   AddUntrustedWebUIConfig(
       std::make_unique<HelpAppUntrustedUIConfig>(
           &application_locale_storage_.get(), variations_service_.get()),

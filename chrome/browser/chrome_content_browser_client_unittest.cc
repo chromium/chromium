@@ -9,6 +9,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -226,7 +227,11 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/variations/service/test_variations_service.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "google_apis/api_key_cache.h"
 #include "google_apis/default_api_keys.h"
@@ -1382,11 +1387,24 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGalleryURL) {
 }
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestGalleryURL) {
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider(
+      /*consent=*/false, /*enabled=*/false);
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
+      metrics::MetricsStateManager::Create(
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          &metrics_enabled_state_provider,
+          /*backup_registry_key=*/std::wstring(),
+          /*user_data_dir=*/base::FilePath(),
+          metrics::StartupVisibility::kUnknown);
+  variations::TestVariationsService variations_service(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      metrics_state_manager.get());
   content::ScopedWebUIConfigRegistration registration(
       std::make_unique<MediaAppGuestUIConfig>(
           TestingBrowserProcess::GetGlobal()
               ->GetFeatures()
-              ->application_locale_storage()));
+              ->application_locale_storage(),
+          &variations_service));
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL gallery_url(ash::kChromeUIMediaAppGuestURL);
   GURL dest_url = gallery_url;

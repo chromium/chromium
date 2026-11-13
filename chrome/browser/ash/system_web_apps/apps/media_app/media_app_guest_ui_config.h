@@ -10,9 +10,11 @@
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_service.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/webui_config.h"
 
 class ApplicationLocaleStorage;
@@ -40,7 +42,8 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
   void PopulateLoadTimeData(content::WebUI* web_ui,
                             content::WebUIDataSource* source) override;
   std::unique_ptr<specialized_features::FeatureAccessChecker>
-  GetFeatureAccessChecker(specialized_features::FeatureAccessConfig config,
+  GetFeatureAccessChecker(variations::VariationsService* variations_service,
+                          specialized_features::FeatureAccessConfig config,
                           content::WebUI* web_ui) const override;
   PrefService* GetPrefService(content::WebUI* web_ui) override;
   void CreateAndBindOcrUntrustedService(
@@ -63,21 +66,31 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
 };
 
 // A webui config for the chrome-untrusted:// part of media-app.
-class MediaAppGuestUIConfig : public content::WebUIConfig {
+class MediaAppGuestUIConfig : public content::WebUIConfig,
+                              public variations::VariationsService::Observer {
  public:
   // `application_locale_storage` must not be null and must outlive `this`.
-  explicit MediaAppGuestUIConfig(
-      const ApplicationLocaleStorage* application_locale_storage);
+  // `variations_service` must not be null.
+  MediaAppGuestUIConfig(
+      const ApplicationLocaleStorage* application_locale_storage,
+      variations::VariationsService* variations_service);
   MediaAppGuestUIConfig(const MediaAppGuestUIConfig& other) = delete;
   MediaAppGuestUIConfig& operator=(const MediaAppGuestUIConfig&) = delete;
   ~MediaAppGuestUIConfig() override;
 
+  // content::WebUIConfig:
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;
 
+  // variations::VariationsService::Observer:
+  void OnVariationsServiceDestroyed() override;
+
  private:
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  base::ScopedObservation<variations::VariationsService,
+                          variations::VariationsService::Observer>
+      variations_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_

@@ -5171,6 +5171,9 @@ source_set("core_unit_tests") {
       "//chrome/browser/policy:system_features_disable_list",
       "//chromeos/components/kiosk",
       "//chromeos/components/kiosk:test_support",
+      "//components/metrics",
+      "//components/metrics:test_support",
+      "//components/variations:test_support",
     ]
   }
 
