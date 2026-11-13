@@ -1307,7 +1307,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--js-flags=--allow_natives_syntax"
+      "--js-flags=--allow_natives_syntax --no-turbolev --no-maglev-as-top-tier"
     ],
     "expires": "Dec 30, 2026"
   },

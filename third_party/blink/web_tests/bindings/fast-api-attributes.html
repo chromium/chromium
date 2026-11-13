@@ -2,17 +2,242 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script>
+  // Matches v8::internal::OptimizationStatus::kOptimized in src/runtime/runtime.h.
+  const kOptimized = 1 << 3;
+
+  function optimizeWithWarmup(fn, warmupCalls) {
+    %PrepareFunctionForOptimization(fn);
+    for (const args of warmupCalls) {
+      fn(...args);
+    }
+    %OptimizeFunctionOnNextCall(fn);
+    fn(...warmupCalls[0]);
+    assert_true((%GetOptimizationStatus(fn) & kOptimized) !== 0,
+                "Expected function to be optimized before fast-path test");
+  }
+
+  function assertFastThrowsSameTypeErrorAsSlow(slowFn, fastFn, warmupCalls, badArgs) {
+    %NeverOptimizeFunction(slowFn);
+
+    let slowError = null;
+    try {
+      slowFn(...badArgs);
+    } catch (e) {
+      slowError = e;
+    }
+    assert_true(slowError instanceof TypeError,
+                `Expected TypeError on slow path for [${badArgs}]`);
+
+    optimizeWithWarmup(fastFn, warmupCalls);
+
+    let fastError = null;
+    try {
+      fastFn(...badArgs);
+    } catch (e) {
+      fastError = e;
+    }
+    assert_true(fastError instanceof TypeError,
+                `Expected TypeError on fast path for [${badArgs}]`);
+    assert_equals(fastError.message, slowError.message,
+                  `TypeError message mismatch for [${badArgs}]`);
+  }
+
   test(() => {
-    let nadcAttributeTest = internals.nadcAttributeTest();
-    function testAttributeSet(value) {
-      nadcAttributeTest.float64Value = value;
+    const nadc = internals.nadcAttributeTest();
+    const slowSet = (v) => { nadc.float64Value = v; };
+    const fastSet = (v) => { nadc.float64Value = v; };
+
+    optimizeWithWarmup(fastSet, [[10], [12.5]]);
+    fastSet(5.5);
+    assert_equals(nadc.float64Value, 5.5);
+    fastSet(-0.0);
+    assert_equals(Object.is(nadc.float64Value, -0.0), true);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+
+    for (const bad of [NaN, Infinity, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowSet, fastSet, [[10], [1.5]], [bad]);
+    }
+  }, "Restricted double attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const slowSet = (v) => { nadc.float32Value = v; };
+    const fastSet = (v) => { nadc.float32Value = v; };
+
+    optimizeWithWarmup(fastSet, [[2], [1.5]]);
+    fastSet(-3.25);
+    assert_equals(nadc.float32Value, -3.25);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+
+    for (const bad of [NaN, Infinity, -Infinity, 1e100, -1e100]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowSet, fastSet, [[2], [1.5]], [bad]);
+    }
+  }, "Restricted float attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const fastSet = (v) => { nadc.unrestrictedFloat64Value = v; };
+
+    optimizeWithWarmup(fastSet, [[1], [2.5]]);
+    fastSet(NaN);
+    assert_true(Number.isNaN(nadc.unrestrictedFloat64Value));
+    fastSet(Infinity);
+    assert_equals(nadc.unrestrictedFloat64Value, Infinity);
+    fastSet(-Infinity);
+    assert_equals(nadc.unrestrictedFloat64Value, -Infinity);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+  }, "Unrestricted double attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const slowSet = (v) => { nadc.enforceRangeOctetValue = v; };
+    const fastSet = (v) => { nadc.enforceRangeOctetValue = v; };
+
+    optimizeWithWarmup(fastSet, [[10], [20.5]]);
+    fastSet(-0.9);
+    assert_equals(nadc.enforceRangeOctetValue, 0);
+    fastSet(255.9);
+    assert_equals(nadc.enforceRangeOctetValue, 255);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+
+    for (const bad of [-1, 256, NaN, Infinity, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowSet, fastSet, [[10], [20.5]], [bad]);
+    }
+  }, "[EnforceRange] octet attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const slowSet = (v) => { nadc.enforceRangeLongValue = v; };
+    const fastSet = (v) => { nadc.enforceRangeLongValue = v; };
+
+    optimizeWithWarmup(fastSet, [[10], [-10.5]]);
+    fastSet(-2147483648.9);
+    assert_equals(nadc.enforceRangeLongValue, -2147483648);
+    fastSet(2147483647.9);
+    assert_equals(nadc.enforceRangeLongValue, 2147483647);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+
+    for (const bad of [-2147483649, 2147483648, NaN, Infinity, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowSet, fastSet, [[10], [-10.5]], [bad]);
+    }
+  }, "[EnforceRange] long attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const slowSet = (v) => { nadc.enforceRangeUnsignedLongValue = v; };
+    const fastSet = (v) => { nadc.enforceRangeUnsignedLongValue = v; };
+
+    optimizeWithWarmup(fastSet, [[10], [20.5]]);
+    fastSet(-0.9);
+    assert_equals(nadc.enforceRangeUnsignedLongValue, 0);
+    fastSet(4294967295.9);
+    assert_equals(nadc.enforceRangeUnsignedLongValue, 4294967295);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+
+    for (const bad of [-1, 4294967296, NaN, Infinity, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowSet, fastSet, [[10], [20.5]], [bad]);
+    }
+  }, "[EnforceRange] unsigned long attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const slowSet = (v) => { nadc.enforceRangeLongLongValue = v; };
+    const fastSet = (v) => { nadc.enforceRangeLongLongValue = v; };
+
+    optimizeWithWarmup(fastSet, [[10], [-10.5]]);
+    fastSet(Number.MIN_SAFE_INTEGER);
+    assert_equals(nadc.enforceRangeLongLongValue, Number.MIN_SAFE_INTEGER);
+    fastSet(Number.MAX_SAFE_INTEGER);
+    assert_equals(nadc.enforceRangeLongLongValue, Number.MAX_SAFE_INTEGER);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+
+    for (const bad of [-(2 ** 53), 2 ** 53, NaN, Infinity, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowSet, fastSet, [[10], [-10.5]], [bad]);
+    }
+  }, "[EnforceRange] long long attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const slowSet = (v) => { nadc.enforceRangeUnsignedLongLongValue = v; };
+    const fastSet = (v) => { nadc.enforceRangeUnsignedLongLongValue = v; };
+
+    optimizeWithWarmup(fastSet, [[10], [20.5]]);
+    fastSet(-0.9);
+    assert_equals(nadc.enforceRangeUnsignedLongLongValue, 0);
+    fastSet(Number.MAX_SAFE_INTEGER);
+    assert_equals(nadc.enforceRangeUnsignedLongLongValue, Number.MAX_SAFE_INTEGER);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+
+    for (const bad of [-1, 2 ** 53, 2 ** 64, NaN, Infinity, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowSet, fastSet, [[10], [20.5]], [bad]);
+    }
+  }, "[EnforceRange] unsigned long long attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const fastSet = (v) => { nadc.clampLongValue = v; };
+
+    optimizeWithWarmup(fastSet, [[10], [20.5]]);
+    fastSet(-2147483649);
+    assert_equals(nadc.clampLongValue, -2147483648);
+    fastSet(2147483648);
+    assert_equals(nadc.clampLongValue, 2147483647);
+    fastSet(-1e20);
+    assert_equals(nadc.clampLongValue, -2147483648);
+    fastSet(1e20);
+    assert_equals(nadc.clampLongValue, 2147483647);
+    fastSet(2.5);
+    assert_equals(nadc.clampLongValue, 2);
+    fastSet(3.5);
+    assert_equals(nadc.clampLongValue, 4);
+    assert_true((%GetOptimizationStatus(fastSet) & kOptimized) !== 0);
+  }, "[Clamp] long attribute setter with fast API");
+
+  test(() => {
+    const nadc = internals.nadcAttributeTest();
+    const slowPair = (a, b) => nadc.setEnforceRangeUnsignedLongPair(a, b);
+    const fastPair = (a, b) => nadc.setEnforceRangeUnsignedLongPair(a, b);
+
+    optimizeWithWarmup(fastPair, [[1, 2], [3.5, 4.5]]);
+    fastPair(-0.5, 4294967295.9);
+    assert_equals(nadc.enforceRangeUnsignedLongValue, 0);
+    assert_equals(nadc.enforceRangeUnsignedLongSecondValue, 4294967295);
+    assert_true((%GetOptimizationStatus(fastPair) & kOptimized) !== 0);
+
+    // Ensure failing on the 2nd argument does not mutate receiver state.
+    fastPair(111, 222);
+    assertFastThrowsSameTypeErrorAsSlow(
+        slowPair, fastPair, [[111, 222], [111.5, 222.5]], [999, -1]);
+    assert_equals(nadc.enforceRangeUnsignedLongValue, 111);
+    assert_equals(nadc.enforceRangeUnsignedLongSecondValue, 222);
+
+    const slowAdd = (a, b) => nadc.addEnforceRangeLong(a, b);
+    const fastAdd = (a, b) => nadc.addEnforceRangeLong(a, b);
+    optimizeWithWarmup(fastAdd, [[10, 20], [10.5, -20.5]]);
+    assert_equals(fastAdd(100.9, -50.9), 50);
+    assert_true((%GetOptimizationStatus(fastAdd) & kOptimized) !== 0);
+
+    for (const badArgs of [[-2147483649, 1], [1, 2147483648], [NaN, 1], [1, Infinity]]) {
+      assertFastThrowsSameTypeErrorAsSlow(
+          slowAdd, fastAdd, [[10, 20], [10.5, -20.5]], badArgs);
     }
 
-    %PrepareFunctionForOptimization(testAttributeSet);
-    testAttributeSet(12.5);
-    testAttributeSet(7.5);
-    %OptimizeFunctionOnNextCall(testAttributeSet);
-    testAttributeSet(5.5);
-    assert_equals(nadcAttributeTest.float64Value, 5.5);
-  }, "Test attribute setter with fast API");
+    const slowFloat = (v) => nadc.setRestrictedFloat(v);
+    const fastFloat = (v) => nadc.setRestrictedFloat(v);
+    for (const bad of [NaN, Infinity, -Infinity, 1e100]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowFloat, fastFloat, [[1], [1.5]], [bad]);
+    }
+
+    const slowDouble = (v) => nadc.setRestrictedDouble(v);
+    const fastDouble = (v) => nadc.setRestrictedDouble(v);
+    for (const bad of [NaN, Infinity, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowDouble, fastDouble, [[1], [1.5]], [bad]);
+    }
+
+    const slowU64 = (v) => nadc.setEnforceRangeUnsignedLongLong(v);
+    const fastU64 = (v) => nadc.setEnforceRangeUnsignedLongLong(v);
+    for (const bad of [-1, 2 ** 53, NaN, -Infinity]) {
+      assertFastThrowsSameTypeErrorAsSlow(slowU64, fastU64, [[7], [7.5]], [bad]);
+    }
+  }, "Operations with [EnforceRange] and restricted floating-point parameters in fast API");
 </script>

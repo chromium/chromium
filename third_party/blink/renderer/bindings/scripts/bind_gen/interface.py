@@ -2285,7 +2285,11 @@ def make_attribute_get_callback_def(cg_context, function_name):
 
 
 def nadc_parameter_v8_type_and_symbol_node(
-    cg_context, argument, v8_arg_name, blink_arg_name
+    cg_context,
+    argument,
+    v8_arg_name,
+    blink_arg_name,
+    error_exit_return_statement,
 ):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(v8_arg_name, str)
@@ -2293,6 +2297,7 @@ def nadc_parameter_v8_type_and_symbol_node(
     assert isinstance(argument, web_idl.Argument) or isinstance(
         argument, web_idl.Attribute
     )
+    assert isinstance(error_exit_return_statement, str)
 
     unwrapped_idl_type = argument.idl_type.unwrap()
     if (
@@ -2304,23 +2309,136 @@ def nadc_parameter_v8_type_and_symbol_node(
             "v8::Local<v8::Value>",
             make_v8_to_blink_value(
                 blink_arg_name,
-                "${{{}}}".format(v8_arg_name),
+                v8_arg_name,
                 argument.idl_type,
-                argument=argument,
-                error_exit_return_statement="return;",
+                argument=argument
+                if isinstance(argument, web_idl.Argument)
+                else None,
+                error_exit_return_statement=error_exit_return_statement,
                 cg_context=cg_context,
             ),
         )
-    else:
+
+    exception_context_type = (
+        "v8::ExceptionContext::kAttributeSet"
+        if cg_context.attribute_set
+        else "v8::ExceptionContext::kOperation"
+    )
+    class_name = cg_context.class_like.identifier
+    property_name = cg_context.property_.identifier
+
+    if (
+        not argument.idl_type.is_nullable
+        and unwrapped_idl_type.is_integer
+        and "EnforceRange" in argument.idl_type.effective_annotations
+    ):
+        blink_cpp_type = blink_type_info(argument.idl_type).value_t
+
+        def create_enforce_range_definition(symbol_node):
+            node = SymbolDefinitionNode(
+                symbol_node,
+                [
+                    FormatNode(
+                        "{blink_type} ${{{blink_arg_name}}};",
+                        blink_type=blink_cpp_type,
+                        blink_arg_name=blink_arg_name,
+                    ),
+                    CxxUnlikelyIfNode(
+                        cond=_format(
+                            "!EnforceRangeForNoAllocDirectCall("
+                            "${isolate}, {v8_arg_name}, "
+                            "{exception_context_type}, "
+                            "\"{class_name}\", "
+                            "\"{property_name}\", "
+                            "${{{blink_arg_name}}})",
+                            v8_arg_name=v8_arg_name,
+                            exception_context_type=exception_context_type,
+                            class_name=class_name,
+                            property_name=property_name,
+                            blink_arg_name=blink_arg_name,
+                        ),
+                        attribute="[[unlikely]]",
+                        body=TextNode(error_exit_return_statement),
+                    ),
+                ],
+            )
+            node.accumulate(
+                CodeGenAccumulator.require_include_headers(
+                    [
+                        "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h",
+                    ]
+                )
+            )
+            return node
+
         return (
-            "v8::Local<v8::Value>"
-            if unwrapped_idl_type.is_any
-            else blink_type_info(argument.idl_type).value_t,
+            "double",
             SymbolNode(
                 blink_arg_name,
-                "auto&& {} = {};".format(blink_arg_name, v8_arg_name),
+                definition_constructor=create_enforce_range_definition,
             ),
         )
+
+    if (
+        not argument.idl_type.is_nullable
+        and unwrapped_idl_type.is_floating_point_numeric
+        and not unwrapped_idl_type.keyword_typename.startswith("unrestricted ")
+    ):
+        blink_cpp_type = blink_type_info(argument.idl_type).value_t
+
+        def create_restricted_float_definition(symbol_node):
+            node = SymbolDefinitionNode(
+                symbol_node,
+                [
+                    CxxUnlikelyIfNode(
+                        cond=_format(
+                            "!CheckRestrictedFloatingPointForNoAllocDirectCall("
+                            "${isolate}, {v8_arg_name}, "
+                            "{exception_context_type}, "
+                            "\"{class_name}\", "
+                            "\"{property_name}\")",
+                            v8_arg_name=v8_arg_name,
+                            exception_context_type=exception_context_type,
+                            class_name=class_name,
+                            property_name=property_name,
+                        ),
+                        attribute="[[unlikely]]",
+                        body=TextNode(error_exit_return_statement),
+                    ),
+                    FormatNode(
+                        "{blink_type} ${{{blink_arg_name}}} = {v8_arg_name};",
+                        blink_type=blink_cpp_type,
+                        blink_arg_name=blink_arg_name,
+                        v8_arg_name=v8_arg_name,
+                    ),
+                ],
+            )
+            node.accumulate(
+                CodeGenAccumulator.require_include_headers(
+                    [
+                        "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h",
+                    ]
+                )
+            )
+            return node
+
+        return (
+            blink_cpp_type,
+            SymbolNode(
+                blink_arg_name,
+                definition_constructor=create_restricted_float_definition,
+            ),
+        )
+
+    return (
+        "v8::Local<v8::Value>"
+        if unwrapped_idl_type.is_any
+        else blink_type_info(argument.idl_type).value_t,
+        SymbolNode(
+            blink_arg_name,
+            "auto&& {} = {};".format(blink_arg_name, v8_arg_name),
+        ),
+    )
 
 
 def make_attribute_set_nadc_callback_def(cg_context):
@@ -2341,6 +2459,7 @@ def make_attribute_set_nadc_callback_def(cg_context):
         argument=cg_context.attribute,
         v8_arg_name="value",
         blink_arg_name="blink_value",
+        error_exit_return_statement="return;",
     )
 
     func_name = callback_function_name(cg_context)
@@ -2953,6 +3072,11 @@ def make_no_alloc_direct_call_callback_def(
             self.blink_arg_name = blink_arg_name
             self.symbol_node = symbol_node
 
+    is_return_type_void = function_like.return_type.is_undefined
+    error_exit_return_statement = (
+        "return;" if is_return_type_void else "return {};"
+    )
+
     arg_list = []
     for argument in function_like.arguments:
         if not (argument.index < argument_count):
@@ -2964,7 +3088,11 @@ def make_no_alloc_direct_call_callback_def(
             "v8_arg{}_{}", argument.index + 1, argument.identifier
         )
         v8_type, symbol_node = nadc_parameter_v8_type_and_symbol_node(
-            cg_context, argument, v8_arg_name, blink_arg_name
+            cg_context,
+            argument,
+            v8_arg_name,
+            blink_arg_name,
+            error_exit_return_statement=error_exit_return_statement,
         )
 
         arg_list.append(
@@ -2983,7 +3111,7 @@ def make_no_alloc_direct_call_callback_def(
     )
     return_type = (
         "void"
-        if function_like.return_type.is_undefined
+        if is_return_type_void
         else blink_type_info(function_like.return_type).value_t
     )
 
@@ -3105,7 +3233,7 @@ def make_no_alloc_direct_call_callback_def(
             CxxUnlikelyIfNode(
                 cond="${exception_state}.HadException()",
                 attribute="[[unlikely]]",
-                body=T("return;"),
+                body=T(error_exit_return_statement),
             )
         )
 
@@ -5609,12 +5737,16 @@ def _make_attribute_registration_table(table_name, attribute_entries):
             attr_set_nadc_callback_name = (
                 "k" + entry.attr_set_nadc_callback_name
             )
+            nadc_arg_flags = ""
+            if "Clamp" in entry.property_.idl_type.effective_annotations:
+                nadc_arg_flags = ".Arg<1, v8::CTypeInfo::Flags::kClampBit>()"
             attr_set_cfunctions.append(
                 FormatNode(
                     "static const v8::CFunction {array_name}[] = "
-                    "{{v8::CFunctionBuilder().Fn({function_name}).Build()}};",
+                    "{{v8::CFunctionBuilder().Fn({function_name}){arg_flags}.Build()}};",
                     function_name=entry.attr_set_nadc_callback_name,
                     array_name=attr_set_nadc_callback_name,
+                    arg_flags=nadc_arg_flags,
                 )
             )
 
@@ -5758,7 +5890,6 @@ def _make_operation_registration_table(table_name, operation_entries):
     no_alloc_direct_call_enabled = bool(no_alloc_direct_call_count)
 
     entry_nodes = []
-    entry_nodes_wo_nadc = []
     nadc_overload_nodes = ListNode()
     pattern = (
         "{{"
@@ -5773,13 +5904,11 @@ def _make_operation_registration_table(table_name, operation_entries):
         "{v8_side_effect}"
         "}}, "
     )
-    pattern_wo_nadc = pattern
     if no_alloc_direct_call_enabled:
         pattern = (
             "{{" + pattern + "{v8_cfunction_table}, "
             "std::size({v8_cfunction_table})}}, "
         )
-    has_no_alloc_direct_call_with_enforce_range = False
     for entry in operation_entries:
         if no_alloc_direct_call_enabled:
             nadc_overload_table_name = name_style.constant(
@@ -5791,29 +5920,9 @@ def _make_operation_registration_table(table_name, operation_entries):
                 for arg in nadc_entry.operation.arguments:
                     if arg.index >= nadc_entry.argument_count:
                         break
-                    nadc_v8_type_info_flags = []
                     if "Clamp" in arg.idl_type.effective_annotations:
-                        nadc_v8_type_info_flags.append(
-                            "v8::CTypeInfo::Flags::kClampBit"
-                        )
-                    if "EnforceRange" in arg.idl_type.effective_annotations:
-                        nadc_v8_type_info_flags.append(
-                            "v8::CTypeInfo::Flags::kEnforceRangeBit"
-                        )
-                        has_no_alloc_direct_call_with_enforce_range = True
-                    arg_type = arg.idl_type.unwrap()
-                    if arg_type.is_floating_point_numeric and (
-                        not arg_type.keyword_typename.startswith(
-                            "unrestricted "
-                        )
-                    ):
-                        nadc_v8_type_info_flags.append(
-                            "v8::CTypeInfo::Flags::kIsRestrictedBit"
-                        )
-                    if nadc_v8_type_info_flags:
-                        nadc_arg_flags += ".Arg<{index}, {flags}>()".format(
-                            index=arg.index + 1,
-                            flags=", ".join(nadc_v8_type_info_flags),
+                        nadc_arg_flags += ".Arg<{index}, v8::CTypeInfo::Flags::kClampBit>()".format(
+                            index=arg.index + 1
                         )
                 nadc_overloads.append(
                     F(
@@ -5838,34 +5947,26 @@ def _make_operation_registration_table(table_name, operation_entries):
         else:
             nadc_overload_table_name = None
 
-        def get_formatted_text(input_pattern):
-            return _format(
-                input_pattern,
-                property_name=entry.property_.identifier,
-                operation_callback=entry.op_callback_name,
-                function_length=entry.op_func_length,
-                v8_property_attribute=_make_property_entry_v8_property_attribute(
-                    entry.property_
-                ),
-                location=_make_property_entry_location(entry.property_),
-                world=_make_property_entry_world(entry.world),
-                receiver_check=_make_property_entry_receiver_check(
-                    entry.property_
-                ),
-                cross_origin_check=_make_property_entry_cross_origin_check(
-                    entry.property_
-                ),
-                v8_side_effect=_make_property_entry_v8_side_effect(
-                    entry.property_
-                ),
-                v8_cfunction_table=nadc_overload_table_name,
-            )
-
-        entry_nodes.append(T(get_formatted_text(pattern)))
-        entry_nodes_wo_nadc.append(T(get_formatted_text(pattern_wo_nadc)))
+        text = _format(
+            pattern,
+            property_name=entry.property_.identifier,
+            operation_callback=entry.op_callback_name,
+            function_length=entry.op_func_length,
+            v8_property_attribute=_make_property_entry_v8_property_attribute(
+                entry.property_
+            ),
+            location=_make_property_entry_location(entry.property_),
+            world=_make_property_entry_world(entry.world),
+            receiver_check=_make_property_entry_receiver_check(entry.property_),
+            cross_origin_check=_make_property_entry_cross_origin_check(
+                entry.property_
+            ),
+            v8_side_effect=_make_property_entry_v8_side_effect(entry.property_),
+            v8_cfunction_table=nadc_overload_table_name,
+        )
+        entry_nodes.append(T(text))
 
     table_decl_before_name = "static const IDLMemberInstaller::OperationConfig"
-    table_decl_before_name_wo_nadc = table_decl_before_name
     if no_alloc_direct_call_enabled:
         table_decl_before_name = (
             "static const IDLMemberInstaller::NoAllocDirectCallOperationConfig"
@@ -5885,32 +5986,6 @@ def _make_operation_registration_table(table_name, operation_entries):
             T("};"),
         ]
     )
-
-    # Disable [NoAllocDirectCall] on x86 due to https://crbug.com/1433212
-    if has_no_alloc_direct_call_with_enforce_range:
-        node = ListNode(
-            [
-                T(
-                    "// Disable [NoAllocDirectCall] on x86 due to "
-                    "https://crbug.com/1433212"
-                ),
-                T("#if defined(ARCH_CPU_X86)"),
-                T(table_decl_before_name_wo_nadc + " " + table_name + "[] = {"),
-                ListNode(entry_nodes_wo_nadc),
-                T("};"),
-                T("// Disable compiler warnings for unused functions."),
-                ListNode(
-                    [
-                        F("std::ignore = {};", nadc_entry.callback_name)
-                        for entry in operation_entries
-                        for nadc_entry in entry.no_alloc_direct_call_callbacks
-                    ]
-                ),
-                T("#else   // defined(ARCH_CPU_X86)"),
-                node,
-                T("#endif  // defined(ARCH_CPU_X86)"),
-            ]
-        )
     return node
 
 

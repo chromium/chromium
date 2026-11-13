@@ -32,6 +32,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 
+#include <cmath>
+#include <concepts>
+#include <cstdint>
+#include <limits>
 #include <optional>
 
 #include "base/check_op.h"
@@ -277,6 +281,142 @@ inline float ToFloat(v8::Isolate* isolate,
 CORE_EXPORT float ToRestrictedFloat(v8::Isolate*,
                                     v8::Local<v8::Value>,
                                     ExceptionState&);
+
+namespace bindings {
+
+template <typename T>
+struct EnforceRangeTraits;
+
+template <typename T>
+  requires(std::integral<T> && sizeof(T) <= sizeof(uint32_t))
+struct SmallEnforceRangeBounds {
+  static constexpr double kExclusiveLowerBound =
+      std::numeric_limits<T>::min() - 1.0;
+  static constexpr double kExclusiveUpperBound =
+      std::numeric_limits<T>::max() + 1.0;
+};
+
+template <>
+struct EnforceRangeTraits<int8_t> : SmallEnforceRangeBounds<int8_t> {
+  static constexpr const char* kTypeName = "byte";
+};
+
+template <>
+struct EnforceRangeTraits<uint8_t> : SmallEnforceRangeBounds<uint8_t> {
+  static constexpr const char* kTypeName = "octet";
+};
+
+template <>
+struct EnforceRangeTraits<int16_t> : SmallEnforceRangeBounds<int16_t> {
+  static constexpr const char* kTypeName = "short";
+};
+
+template <>
+struct EnforceRangeTraits<uint16_t> : SmallEnforceRangeBounds<uint16_t> {
+  static constexpr const char* kTypeName = "unsigned short";
+};
+
+template <>
+struct EnforceRangeTraits<int32_t> : SmallEnforceRangeBounds<int32_t> {
+  static constexpr const char* kTypeName = "long";
+};
+
+template <>
+struct EnforceRangeTraits<uint32_t> : SmallEnforceRangeBounds<uint32_t> {
+  static constexpr const char* kTypeName = "unsigned long";
+};
+
+// For 64-bit integers, WebIDL [EnforceRange] restricts values to
+// [-(2^53 - 1), 2^53 - 1] (or [0, 2^53 - 1] for unsigned). At [2^52, 2^53],
+// IEEE-754 double ULP is 1.0, so 2^53 is the exact exclusive upper bound and
+// -(2^53) is the exact exclusive lower bound.
+template <>
+struct EnforceRangeTraits<int64_t> {
+  static constexpr const char* kTypeName = "long long";
+  static constexpr double kExclusiveLowerBound =
+      -static_cast<double>(int64_t{1} << 53);
+  static constexpr double kExclusiveUpperBound =
+      static_cast<double>(int64_t{1} << 53);
+};
+
+template <>
+struct EnforceRangeTraits<uint64_t> {
+  static constexpr const char* kTypeName = "unsigned long long";
+  static constexpr double kExclusiveLowerBound = -1.0;
+  static constexpr double kExclusiveUpperBound =
+      static_cast<double>(uint64_t{1} << 53);
+};
+
+}  // namespace bindings
+
+// Truncates `x` toward zero and checks whether the truncated integer lies
+// within the WebIDL [EnforceRange] bounds for `T`, without calling `trunc()`.
+// Returns false on NaN, +/-Infinity, or out-of-range values.
+template <typename T>
+inline bool TryEnforceRange(double x, T& out) {
+  using Traits = bindings::EnforceRangeTraits<T>;
+  if (!(x > Traits::kExclusiveLowerBound && x < Traits::kExclusiveUpperBound))
+      [[unlikely]] {
+    return false;
+  }
+  if constexpr (std::same_as<T, uint64_t>) {
+    // Valid WebIDL [EnforceRange] unsigned long long values are <= 2^53 - 1,
+    // which fits in int64_t. Converting via int64_t avoids x86-64's
+    // [2^63, 2^64) fallback sequence in double-to-uint64_t lowering.
+    out = static_cast<uint64_t>(static_cast<int64_t>(x));
+  } else {
+    out = static_cast<T>(x);
+  }
+  return true;
+}
+
+NOINLINE CORE_EXPORT void ThrowEnforceRangeForNoAllocDirectCall(
+    v8::Isolate* isolate,
+    double x,
+    const char* type_name,
+    v8::ExceptionContext context_type,
+    const char* class_name,
+    const char* property_name);
+
+template <typename T>
+inline bool EnforceRangeForNoAllocDirectCall(v8::Isolate* isolate,
+                                             double x,
+                                             v8::ExceptionContext context_type,
+                                             const char* class_name,
+                                             const char* property_name,
+                                             T& out) {
+  if (TryEnforceRange<T>(x, out)) [[likely]] {
+    return true;
+  }
+  ThrowEnforceRangeForNoAllocDirectCall(
+      isolate, x, bindings::EnforceRangeTraits<T>::kTypeName, context_type,
+      class_name, property_name);
+  return false;
+}
+
+NOINLINE CORE_EXPORT void ThrowNonFiniteFloatingPointForNoAllocDirectCall(
+    v8::Isolate* isolate,
+    const char* type_name,
+    v8::ExceptionContext context_type,
+    const char* class_name,
+    const char* property_name);
+
+template <typename T>
+  requires std::floating_point<T>
+inline bool CheckRestrictedFloatingPointForNoAllocDirectCall(
+    v8::Isolate* isolate,
+    T x,
+    v8::ExceptionContext context_type,
+    const char* class_name,
+    const char* property_name) {
+  if (std::isfinite(x)) [[likely]] {
+    return true;
+  }
+  ThrowNonFiniteFloatingPointForNoAllocDirectCall(
+      isolate, std::same_as<T, float> ? "float" : "double", context_type,
+      class_name, property_name);
+  return false;
+}
 
 inline std::optional<base::Time> ToCoreNullableDate(
     const ScriptObject& script_object,

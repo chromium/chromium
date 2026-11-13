@@ -59,16 +59,19 @@
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -105,31 +108,56 @@ void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
           .V8Object());
 }
 
-const int32_t kMaxInt32 = 0x7fffffff;
-const int32_t kMinInt32 = -kMaxInt32 - 1;
-const uint32_t kMaxUInt32 = 0xffffffff;
 const int64_t kJSMaxInteger =
     0x20000000000000LL -
     1;  // 2^53 - 1, maximum uniquely representable integer in ECMAScript.
 
-static double EnforceRange(double x,
-                           double minimum,
-                           double maximum,
-                           const char* type_name,
-                           ExceptionState& exception_state) {
+static String FormatEnforceRangeTypeErrorMessage(double x,
+                                                 const char* type_name) {
   if (!std::isfinite(x)) {
-    exception_state.ThrowTypeError(
-        StrCat({"Value is", std::isinf(x) ? " infinite and" : "",
-                " not of type '", type_name, "'."}));
-    return 0;
+    return StrCat({"Value is", std::isinf(x) ? " infinite and" : "",
+                   " not of type '", type_name, "'."});
   }
-  x = trunc(x);
-  if (x < minimum || x > maximum) {
-    exception_state.ThrowTypeError(
-        StrCat({"Value is outside the '", type_name, "' value range."}));
-    return 0;
+  return StrCat({"Value is outside the '", type_name, "' value range."});
+}
+
+template <typename T>
+static T EnforceRange(double x, ExceptionState& exception_state) {
+  T result;
+  if (TryEnforceRange<T>(x, result)) [[likely]] {
+    return result;
   }
-  return x;
+  exception_state.ThrowTypeError(FormatEnforceRangeTypeErrorMessage(
+      x, bindings::EnforceRangeTraits<T>::kTypeName));
+  return 0;
+}
+
+NOINLINE void ThrowEnforceRangeForNoAllocDirectCall(
+    v8::Isolate* isolate,
+    double x,
+    const char* type_name,
+    v8::ExceptionContext context_type,
+    const char* class_name,
+    const char* property_name) {
+  v8::HandleScope handle_scope(isolate);
+  V8ThrowException::ThrowTypeError(
+      isolate, ExceptionMessages::AddContextToMessage(
+                   context_type, class_name, property_name,
+                   FormatEnforceRangeTypeErrorMessage(x, type_name)));
+}
+
+NOINLINE void ThrowNonFiniteFloatingPointForNoAllocDirectCall(
+    v8::Isolate* isolate,
+    const char* type_name,
+    v8::ExceptionContext context_type,
+    const char* class_name,
+    const char* property_name) {
+  v8::HandleScope handle_scope(isolate);
+  V8ThrowException::ThrowTypeError(
+      isolate,
+      ExceptionMessages::AddContextToMessage(
+          context_type, class_name, property_name,
+          StrCat({"The provided ", type_name, " value is non-finite."})));
 }
 
 template <typename T>
@@ -211,8 +239,7 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
   DCHECK(!number_object.IsEmpty());
 
   if (configuration == kEnforceRange) {
-    return EnforceRange(number_object->Value(), LimitsTrait::kMinValue,
-                        LimitsTrait::kMaxValue, type_name, exception_state);
+    return EnforceRange<T>(number_object->Value(), exception_state);
   }
 
   double number_value = number_object->Value();
@@ -276,8 +303,7 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
   DCHECK(!number_object.IsEmpty());
 
   if (configuration == kEnforceRange) {
-    return EnforceRange(number_object->Value(), 0, LimitsTrait::kMaxValue,
-                        type_name, exception_state);
+    return EnforceRange<T>(number_object->Value(), exception_state);
   }
 
   double number_value = number_object->Value();
@@ -349,8 +375,7 @@ int32_t ToInt32Slow(v8::Isolate* isolate,
 
   double number_value = number_object->Value();
   if (configuration == kEnforceRange) {
-    return EnforceRange(number_value, kMinInt32, kMaxInt32, "long",
-                        exception_state);
+    return EnforceRange<int32_t>(number_value, exception_state);
   }
 
   if (std::isnan(number_value))
@@ -397,8 +422,7 @@ uint32_t ToUInt32Slow(v8::Isolate* isolate,
   DCHECK(!number_object.IsEmpty());
 
   if (configuration == kEnforceRange) {
-    return EnforceRange(number_object->Value(), 0, kMaxUInt32, "unsigned long",
-                        exception_state);
+    return EnforceRange<uint32_t>(number_object->Value(), exception_state);
   }
 
   double number_value = number_object->Value();
@@ -436,8 +460,7 @@ int64_t ToInt64Slow(v8::Isolate* isolate,
   double number_value = number_object->Value();
 
   if (configuration == kEnforceRange) {
-    return EnforceRange(number_value, -kJSMaxInteger, kJSMaxInteger,
-                        "long long", exception_state);
+    return EnforceRange<int64_t>(number_value, exception_state);
   }
   if (std::isnan(number_value)) {
     return 0;
@@ -481,8 +504,7 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
   double number_value = number_object->Value();
 
   if (configuration == kEnforceRange) {
-    return EnforceRange(number_value, 0, kJSMaxInteger, "unsigned long long",
-                        exception_state);
+    return EnforceRange<uint64_t>(number_value, exception_state);
   }
 
   if (std::isnan(number_value))

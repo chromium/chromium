@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 
+#include <cmath>
+#include <cstdint>
+#include <limits>
 #include <numeric>
 #include <utility>
 
@@ -867,6 +870,264 @@ TEST(NativeValueTraitsImplTest, TypedPassAsSpanDetach) {
 
     EvaluateScriptForObject(scope, "self.arr2.buffer.transfer(0)");
     EXPECT_THAT(converted.as_span(), testing::IsEmpty());
+  }
+}
+
+template <typename T>
+void CheckTryEnforceRangeBoundaries(T expected_min, T expected_max) {
+  using Traits = bindings::EnforceRangeTraits<T>;
+  constexpr double kInf = std::numeric_limits<double>::infinity();
+  constexpr double kNan = std::numeric_limits<double>::quiet_NaN();
+
+  T out = T{42};
+  EXPECT_TRUE(TryEnforceRange<T>(0.0, out));
+  EXPECT_EQ(out, T{0});
+  EXPECT_TRUE(TryEnforceRange<T>(-0.0, out));
+  EXPECT_EQ(out, T{0});
+
+  // Values arbitrarily close to the open-interval endpoints must succeed and
+  // truncate toward zero to [expected_min, expected_max].
+  EXPECT_TRUE(TryEnforceRange<T>(
+      std::nextafter(Traits::kExclusiveLowerBound, 0.0), out));
+  EXPECT_EQ(out, expected_min);
+  EXPECT_TRUE(TryEnforceRange<T>(
+      std::nextafter(Traits::kExclusiveUpperBound, 0.0), out));
+  EXPECT_EQ(out, expected_max);
+
+  // Open-interval endpoints, values beyond them, and non-finite values must
+  // fail.
+  EXPECT_FALSE(TryEnforceRange<T>(Traits::kExclusiveLowerBound, out));
+  EXPECT_FALSE(TryEnforceRange<T>(Traits::kExclusiveUpperBound, out));
+  EXPECT_FALSE(TryEnforceRange<T>(Traits::kExclusiveLowerBound - 1024.0, out));
+  EXPECT_FALSE(TryEnforceRange<T>(Traits::kExclusiveUpperBound + 1024.0, out));
+  EXPECT_FALSE(TryEnforceRange<T>(kNan, out));
+  EXPECT_FALSE(TryEnforceRange<T>(kInf, out));
+  EXPECT_FALSE(TryEnforceRange<T>(-kInf, out));
+}
+
+TEST(NativeValueTraitsImplTest, TryEnforceRangeBoundaries) {
+  CheckTryEnforceRangeBoundaries<int8_t>(std::numeric_limits<int8_t>::min(),
+                                         std::numeric_limits<int8_t>::max());
+  CheckTryEnforceRangeBoundaries<uint8_t>(0,
+                                          std::numeric_limits<uint8_t>::max());
+  CheckTryEnforceRangeBoundaries<int16_t>(std::numeric_limits<int16_t>::min(),
+                                          std::numeric_limits<int16_t>::max());
+  CheckTryEnforceRangeBoundaries<uint16_t>(
+      0, std::numeric_limits<uint16_t>::max());
+  CheckTryEnforceRangeBoundaries<int32_t>(std::numeric_limits<int32_t>::min(),
+                                          std::numeric_limits<int32_t>::max());
+  CheckTryEnforceRangeBoundaries<uint32_t>(
+      0, std::numeric_limits<uint32_t>::max());
+  CheckTryEnforceRangeBoundaries<int64_t>(-(int64_t{1} << 53) + 1,
+                                          (int64_t{1} << 53) - 1);
+  CheckTryEnforceRangeBoundaries<uint64_t>(0, (uint64_t{1} << 53) - 1);
+}
+
+template <typename IDLType, typename T>
+void CheckIDLIntegerEnforceRange(V8TestingScope& scope,
+                                 T expected_min,
+                                 T expected_max,
+                                 const char* type_name) {
+  using Traits = bindings::EnforceRangeTraits<T>;
+  v8::Isolate* isolate = scope.GetIsolate();
+  constexpr double kInf = std::numeric_limits<double>::infinity();
+  constexpr double kNan = std::numeric_limits<double>::quiet_NaN();
+
+  {
+    NonThrowableExceptionState exception_state;
+    EXPECT_EQ(
+        expected_min,
+        NativeValueTraits<IDLType>::NativeValue(
+            isolate,
+            v8::Number::New(isolate,
+                            std::nextafter(Traits::kExclusiveLowerBound, 0.0)),
+            exception_state));
+    EXPECT_EQ(
+        expected_max,
+        NativeValueTraits<IDLType>::NativeValue(
+            isolate,
+            v8::Number::New(isolate,
+                            std::nextafter(Traits::kExclusiveUpperBound, 0.0)),
+            exception_state));
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_EQ(T{0}, NativeValueTraits<IDLType>::NativeValue(
+                        isolate,
+                        v8::Number::New(isolate, Traits::kExclusiveLowerBound),
+                        exception_state));
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(String("Value is outside the '") + type_name + "' value range.",
+              exception_state.Message());
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_EQ(T{0}, NativeValueTraits<IDLType>::NativeValue(
+                        isolate,
+                        v8::Number::New(isolate, Traits::kExclusiveUpperBound),
+                        exception_state));
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(String("Value is outside the '") + type_name + "' value range.",
+              exception_state.Message());
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_EQ(T{0},
+              NativeValueTraits<IDLType>::NativeValue(
+                  isolate, v8::Number::New(isolate, kNan), exception_state));
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(String("Value is not of type '") + type_name + "'.",
+              exception_state.Message());
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_EQ(T{0},
+              NativeValueTraits<IDLType>::NativeValue(
+                  isolate, v8::Number::New(isolate, kInf), exception_state));
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(String("Value is infinite and not of type '") + type_name + "'.",
+              exception_state.Message());
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    EXPECT_EQ(T{0},
+              NativeValueTraits<IDLType>::NativeValue(
+                  isolate, v8::Number::New(isolate, -kInf), exception_state));
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(String("Value is infinite and not of type '") + type_name + "'.",
+              exception_state.Message());
+  }
+}
+
+TEST(NativeValueTraitsImplTest, IDLIntegerEnforceRange) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+
+  CheckIDLIntegerEnforceRange<IDLByteEnforceRange, int8_t>(
+      scope, std::numeric_limits<int8_t>::min(),
+      std::numeric_limits<int8_t>::max(), "byte");
+  CheckIDLIntegerEnforceRange<IDLOctetEnforceRange, uint8_t>(
+      scope, 0, std::numeric_limits<uint8_t>::max(), "octet");
+  CheckIDLIntegerEnforceRange<IDLShortEnforceRange, int16_t>(
+      scope, std::numeric_limits<int16_t>::min(),
+      std::numeric_limits<int16_t>::max(), "short");
+  CheckIDLIntegerEnforceRange<IDLUnsignedShortEnforceRange, uint16_t>(
+      scope, 0, std::numeric_limits<uint16_t>::max(), "unsigned short");
+  CheckIDLIntegerEnforceRange<IDLLongEnforceRange, int32_t>(
+      scope, std::numeric_limits<int32_t>::min(),
+      std::numeric_limits<int32_t>::max(), "long");
+  CheckIDLIntegerEnforceRange<IDLUnsignedLongEnforceRange, uint32_t>(
+      scope, 0, std::numeric_limits<uint32_t>::max(), "unsigned long");
+  CheckIDLIntegerEnforceRange<IDLLongLongEnforceRange, int64_t>(
+      scope, -(int64_t{1} << 53) + 1, (int64_t{1} << 53) - 1, "long long");
+  CheckIDLIntegerEnforceRange<IDLUnsignedLongLongEnforceRange, uint64_t>(
+      scope, 0, (uint64_t{1} << 53) - 1, "unsigned long long");
+}
+
+String ExtractCaughtExceptionMessage(V8TestingScope& scope,
+                                     v8::TryCatch& try_catch) {
+  EXPECT_TRUE(try_catch.HasCaught());
+  v8::Local<v8::Value> exception = try_catch.Exception();
+  EXPECT_FALSE(exception.IsEmpty());
+  EXPECT_TRUE(exception->IsNativeError());
+  v8::Local<v8::Value> message_val =
+      exception.As<v8::Object>()
+          ->Get(scope.GetContext(), V8String(scope.GetIsolate(), "message"))
+          .ToLocalChecked();
+  EXPECT_TRUE(message_val->IsString());
+  return ToCoreString(scope.GetIsolate(), message_val.As<v8::String>());
+}
+
+TEST(NativeValueTraitsImplTest,
+     NoAllocDirectCallRangeAndRestrictedFloatChecks) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  constexpr double kInf = std::numeric_limits<double>::infinity();
+  constexpr double kNan = std::numeric_limits<double>::quiet_NaN();
+
+  {
+    v8::TryCatch try_catch(isolate);
+    uint32_t out = 123;
+    EXPECT_TRUE(EnforceRangeForNoAllocDirectCall(
+        isolate, -0.75, v8::ExceptionContext::kOperation, "TestInterface",
+        "testOp", out));
+    EXPECT_EQ(out, 0u);
+    EXPECT_FALSE(try_catch.HasCaught());
+  }
+  {
+    v8::TryCatch try_catch(isolate);
+    uint32_t out = 0;
+    EXPECT_FALSE(EnforceRangeForNoAllocDirectCall(
+        isolate, -1.0, v8::ExceptionContext::kOperation, "TestInterface",
+        "testOp", out));
+    EXPECT_EQ(
+        "Failed to execute 'testOp' on 'TestInterface': Value is outside the "
+        "'unsigned long' value range.",
+        ExtractCaughtExceptionMessage(scope, try_catch));
+  }
+  {
+    v8::TryCatch try_catch(isolate);
+    int32_t out = 0;
+    EXPECT_FALSE(EnforceRangeForNoAllocDirectCall(
+        isolate, kNan, v8::ExceptionContext::kOperation, "TestInterface",
+        "testOp", out));
+    EXPECT_EQ(
+        "Failed to execute 'testOp' on 'TestInterface': Value is not of type "
+        "'long'.",
+        ExtractCaughtExceptionMessage(scope, try_catch));
+  }
+  {
+    v8::TryCatch try_catch(isolate);
+    uint64_t out = 0;
+    EXPECT_FALSE(EnforceRangeForNoAllocDirectCall(
+        isolate, kInf, v8::ExceptionContext::kOperation, "TestInterface",
+        "testOp", out));
+    EXPECT_EQ(
+        "Failed to execute 'testOp' on 'TestInterface': Value is infinite and "
+        "not of type 'unsigned long long'.",
+        ExtractCaughtExceptionMessage(scope, try_catch));
+  }
+  {
+    v8::TryCatch try_catch(isolate);
+    uint8_t out = 0;
+    EXPECT_FALSE(EnforceRangeForNoAllocDirectCall(
+        isolate, 256.0, v8::ExceptionContext::kAttributeSet, "TestInterface",
+        "testProp", out));
+    EXPECT_EQ(
+        "Failed to set the 'testProp' property on 'TestInterface': Value is "
+        "outside the 'octet' value range.",
+        ExtractCaughtExceptionMessage(scope, try_catch));
+  }
+  {
+    v8::TryCatch try_catch(isolate);
+    EXPECT_TRUE(CheckRestrictedFloatingPointForNoAllocDirectCall(
+        isolate, 1.5f, v8::ExceptionContext::kOperation, "TestInterface",
+        "testOp"));
+    EXPECT_TRUE(CheckRestrictedFloatingPointForNoAllocDirectCall(
+        isolate, -0.0, v8::ExceptionContext::kAttributeSet, "TestInterface",
+        "testProp"));
+    EXPECT_FALSE(try_catch.HasCaught());
+  }
+  {
+    v8::TryCatch try_catch(isolate);
+    EXPECT_FALSE(CheckRestrictedFloatingPointForNoAllocDirectCall(
+        isolate, std::numeric_limits<float>::infinity(),
+        v8::ExceptionContext::kOperation, "TestInterface", "testOp"));
+    EXPECT_EQ(
+        "Failed to execute 'testOp' on 'TestInterface': The provided float "
+        "value is non-finite.",
+        ExtractCaughtExceptionMessage(scope, try_catch));
+  }
+  {
+    v8::TryCatch try_catch(isolate);
+    EXPECT_FALSE(CheckRestrictedFloatingPointForNoAllocDirectCall(
+        isolate, kNan, v8::ExceptionContext::kAttributeSet, "TestInterface",
+        "testProp"));
+    EXPECT_EQ(
+        "Failed to set the 'testProp' property on 'TestInterface': The "
+        "provided double value is non-finite.",
+        ExtractCaughtExceptionMessage(scope, try_catch));
   }
 }
 

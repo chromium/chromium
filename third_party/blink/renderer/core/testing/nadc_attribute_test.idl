@@ -2,8 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// NADCAttributeTest provides functionality to test attributes with the
-// IDL extended attribute `NoAllocDirectCall`.
+// NADCAttributeTest provides functionality to test attributes and operations
+// with the IDL extended attribute `NoAllocDirectCall`.
 interface NADCAttributeTest {
     [NoAllocDirectCall=Setter] attribute double float64Value;
+    [NoAllocDirectCall=Setter] attribute float float32Value;
+    [NoAllocDirectCall=Setter] attribute unrestricted double unrestrictedFloat64Value;
+    [NoAllocDirectCall=Setter] attribute [EnforceRange] octet enforceRangeOctetValue;
+    [NoAllocDirectCall=Setter] attribute [EnforceRange] long enforceRangeLongValue;
+    [NoAllocDirectCall=Setter] attribute [EnforceRange] unsigned long enforceRangeUnsignedLongValue;
+    readonly attribute unsigned long enforceRangeUnsignedLongSecondValue;
+    [NoAllocDirectCall=Setter] attribute [EnforceRange] long long enforceRangeLongLongValue;
+    [NoAllocDirectCall=Setter] attribute [EnforceRange] unsigned long long enforceRangeUnsignedLongLongValue;
+    [NoAllocDirectCall=Setter] attribute [Clamp] long clampLongValue;
+
+    [NoAllocDirectCall] undefined setEnforceRangeLong([EnforceRange] long value);
+    [NoAllocDirectCall] undefined setEnforceRangeUnsignedLongPair([EnforceRange] unsigned long first, [EnforceRange] unsigned long second);
+    [NoAllocDirectCall] undefined setEnforceRangeLongLong([EnforceRange] long long value);
+    [NoAllocDirectCall] undefined setEnforceRangeUnsignedLongLong([EnforceRange] unsigned long long value);
+    [NoAllocDirectCall] undefined setRestrictedFloat(float value);
+    [NoAllocDirectCall] undefined setRestrictedDouble(double value);
+    [NoAllocDirectCall] long addEnforceRangeLong([EnforceRange] long a, [EnforceRange] long b);
 };
