@@ -23,8 +23,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class TimedCallbackDelayerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public final EnsureAsyncPostingRule mPostingRule = new EnsureAsyncPostingRule();
-
     /** Check that the callback is eventually called. */
     @Test
     public void testCallbackCalled() {

@@ -22,8 +22,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class SingleThreadBarrierClosureTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public final EnsureAsyncPostingRule mPostingRule = new EnsureAsyncPostingRule();
-
     /** Check that the callback is posted after as many signals as specified. */
     @Test
     public void testCallbackPosted() {

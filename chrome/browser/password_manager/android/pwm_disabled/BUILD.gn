@@ -62,7 +62,6 @@ robolectric_library("junit") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/pwm_disabled/DialogManagerTest.java",
-    "java/src/org/chromium/chrome/browser/pwm_disabled/EnsureAsyncPostingRule.java",
     "java/src/org/chromium/chrome/browser/pwm_disabled/ManualCallbackDelayer.java",
     "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadDialogTest.java",
     "java/src/org/chromium/chrome/browser/pwm_disabled/PasswordCsvDownloadFlowControllerTest.java",
