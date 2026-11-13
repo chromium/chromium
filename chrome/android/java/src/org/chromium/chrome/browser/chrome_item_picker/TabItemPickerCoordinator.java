@@ -59,6 +59,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.FlatTabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -94,11 +97,13 @@ public class TabItemPickerCoordinator {
     private final boolean mIncludePdfTabs;
     private final boolean mShouldShowSelectTabsIph;
     private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
+    private final Set<Integer> mEligibleTabIds = new HashSet<>();
     private @Nullable Callback<Boolean> mSuccessCallback;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
     private @Nullable IncognitoTabModelObserver mIncognitoTabModelObserver;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
+    private @Nullable TabListDataProvider mDataProvider;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
     private @Nullable TabContentManager mTabContentManager;
 
@@ -286,13 +291,16 @@ public class TabItemPickerCoordinator {
         // activity and thus cannot be loaded.
         boolean allowBackgroundTabContextCapture =
                 tabModel.getTabModelType() == TabModelType.STANDARD;
+        mEligibleTabIds.clear();
         for (Tab tab : tabModel) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
             boolean isActive = FuseboxTabUtils.isTabActive(tab);
-            boolean isCached = mCachedTabIdsSet.contains(tab.getId());
+            int tabId = tab.getId();
+            boolean isCached = mCachedTabIdsSet.contains(tabId);
             if (isTabEligibleForPicker(tab)
                     && (allowBackgroundTabContextCapture || isActive || isCached)) {
                 tabsToShow.add(tab);
+                mEligibleTabIds.add(tabId);
                 if (isActive) activeTabCount++;
                 if (isCached) cachedTabCount++;
                 if (!isActive && !isCached) backgroundTabCount++;
@@ -830,6 +838,10 @@ public class TabItemPickerCoordinator {
                     .removeObserver(mBackPressEnabledObserver);
             mTabListEditorCoordinator.destroy();
         }
+        if (mDataProvider != null) {
+            mDataProvider.destroy();
+            mDataProvider = null;
+        }
         if (mTabContentManager != null) {
             mTabContentManager.destroy();
             mTabContentManager = null;
@@ -845,6 +857,20 @@ public class TabItemPickerCoordinator {
         runSuccessCallback(false);
         mBackPressCallback.remove();
         mCallbackController.destroy();
+    }
+
+    /**
+     * Creates a provider that shows only the tabs the picker found eligible, or null when the flag
+     * is off. The eligible set is filled before the editor is shown.
+     */
+    @VisibleForTesting
+    @Nullable TabListDataProvider createDataProvider(
+            NullableObservableSupplier<TabModel> tabModelSupplier) {
+        if (!TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(TabListLayoutType.FLAT)) {
+            return null;
+        }
+        return new FlatTabListDataProvider(
+                tabModelSupplier, tab -> mEligibleTabIds.contains(tab.getId()));
     }
 
     /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
@@ -870,6 +896,8 @@ public class TabItemPickerCoordinator {
                         mInitialSelectedTabIds,
                         this::cancelPicker);
 
+        mDataProvider = createDataProvider(tabModelSupplier);
+
         TabListEditorCoordinator coordinator =
                 new TabListEditorCoordinator(
                         mActivity,
@@ -891,7 +919,8 @@ public class TabItemPickerCoordinator {
                         mNavigationProvider,
                         /* undoBarExplicitTrigger= */ null,
                         TabComponentId.TAB_LIST_EDITOR,
-                        mAllowedSelectionCount);
+                        mAllowedSelectionCount,
+                        mDataProvider);
 
         controllerSupplier.set(coordinator.getController());
         coordinator.getController().setNavigationProvider(mNavigationProvider);

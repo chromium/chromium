@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorOpenMetricGroups;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.GroupedTabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -59,6 +61,7 @@ public class TabListEditorManager {
     private final Supplier<@Nullable TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
+    private @Nullable TabListDataProvider mDataProvider;
     private @Nullable List<TabListEditorAction> mTabListEditorActions;
 
     /**
@@ -111,6 +114,11 @@ public class TabListEditorManager {
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
         }
+        // Destroyed after the editor, which stops observing it in destroy().
+        if (mDataProvider != null) {
+            mDataProvider.destroy();
+            mDataProvider = null;
+        }
     }
 
     /** Initializes the tab list editor. */
@@ -118,6 +126,14 @@ public class TabListEditorManager {
         // TODO(crbug.com/40945154): Permit a method of switching between selectable and closable
         // modes (or create separate instances).
         if (mTabListEditorCoordinator == null) {
+            // Lists the same tabs as the tab switcher grid. Can't share the grid's provider
+            // because the editor stops it on hide.
+            mDataProvider =
+                    TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(
+                                    TabListLayoutType.GROUPED)
+                            ? new GroupedTabListDataProvider(
+                                    mCurrentTabModelSupplier, /* supportsGroupExpansion= */ false)
+                            : null;
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
@@ -139,7 +155,8 @@ public class TabListEditorManager {
                             /* itemPickerSelectionHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
                             /* componentId= */ null,
-                            TabListEditorCoordinator.UNLIMITED_SELECTION);
+                            TabListEditorCoordinator.UNLIMITED_SELECTION,
+                            mDataProvider);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }

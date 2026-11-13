@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.chrome_item_picker;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -36,11 +37,15 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,6 +59,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabItem;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -313,6 +321,68 @@ public class TabItemPickerCoordinatorUnitTest {
         assertTrue("Should contain active tab", shownTabs.contains(tabActive));
         assertTrue("Should contain cached tab", shownTabs.contains(tabCached));
         assertTrue("Should contain background tab", shownTabs.contains(tabBackground));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_UI_DATA_VIRTUALIZATION)
+    public void testCreateDataProvider_ShowsOnlyEligibleTabs() {
+        when(TabWindowManagerSingleton.getInstance()
+                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
+                .thenReturn(mTabModelSelector);
+        mProfileSupplierImpl.set(mProfile);
+
+        // Tab 2 shares tab 1's group but has a non-http URL, so it isn't eligible.
+        Token groupId = new Token(1L, 2L);
+        Tab eligibleInGroup = mockTabActiveState(1, true);
+        Tab ineligibleInGroup = mockTabActiveState(2, true);
+        Tab eligibleStandalone = mockTabActiveState(3, true);
+        when(eligibleInGroup.getTabGroupId()).thenReturn(groupId);
+        when(ineligibleInGroup.getTabGroupId()).thenReturn(groupId);
+        when(ineligibleInGroup.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+
+        List<Tab> allTabs = Arrays.asList(eligibleInGroup, ineligibleInGroup, eligibleStandalone);
+        when(mRegularTabModel.getCount()).thenReturn(allTabs.size());
+        for (int i = 0; i < allTabs.size(); i++) {
+            when(mRegularTabModel.getTabAt(i)).thenReturn(allTabs.get(i));
+        }
+        // The picker and the provider each iterate the model.
+        when(mRegularTabModel.iterator()).thenAnswer(invocation -> allTabs.iterator());
+        when(mRegularTabModel.isTabStateInitialized()).thenReturn(true);
+        doAnswer(
+                        invocation -> {
+                            Callback<long[]> callback = invocation.getArgument(0);
+                            callback.onResult(new long[0]);
+                            return null;
+                        })
+                .when(mPageContentExtractionService)
+                .getAllCachedTabIds(any());
+
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        SettableNullableObservableSupplier<TabModel> tabModelSupplier =
+                ObservableSuppliers.createNullable();
+        tabModelSupplier.set(mRegularTabModel);
+        TabListDataProvider provider = mItemPickerCoordinator.createDataProvider(tabModelSupplier);
+        assertNotNull(provider);
+        TabListDataObserver observer = Mockito.mock(TabListDataObserver.class);
+        provider.addObserver(observer);
+        provider.requestDataReset();
+
+        verify(observer)
+                .onDataReset(
+                        List.of(
+                                new TabItem(
+                                        1,
+                                        /* isSelected= */ true,
+                                        /* isPinned= */ false,
+                                        /* isMultiSelected= */ false),
+                                new TabItem(
+                                        3,
+                                        /* isSelected= */ false,
+                                        /* isPinned= */ false,
+                                        /* isMultiSelected= */ false)));
+        provider.destroy();
     }
 
     private Tab mockNativePageTab(int tabId, GURL url, boolean isPdf, boolean isIncognito) {

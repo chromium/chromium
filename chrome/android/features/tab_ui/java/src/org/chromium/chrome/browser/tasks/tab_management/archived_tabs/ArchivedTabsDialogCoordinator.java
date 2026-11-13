@@ -1034,7 +1034,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         /* itemPickerSelectionHandler= */ null,
                         mUndoBarController,
                         TabComponentId.ARCHIVED_TABS_DIALOG,
-                        TabListEditorCoordinator.UNLIMITED_SELECTION);
+                        TabListEditorCoordinator.UNLIMITED_SELECTION,
+                        // Saved tab groups aren't supported on the data provider path yet.
+                        /* dataProvider= */ null);
     }
 
     @VisibleForTesting

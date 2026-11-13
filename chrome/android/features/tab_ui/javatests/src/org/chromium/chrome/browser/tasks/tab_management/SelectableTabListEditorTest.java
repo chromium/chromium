@@ -85,6 +85,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Show
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.GroupedTabListDataProvider;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -149,6 +151,7 @@ public class SelectableTabListEditorTest {
     private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
     private TabListEditorLayout mTabListEditorLayout;
     private TabListEditorCoordinator mTabListEditorCoordinator;
+    private TabListDataProvider mDataProvider;
     private WeakReference<TabListEditorLayout> mRef;
     private ViewGroup mParentView;
     private SnackbarManager mSnackbarManager;
@@ -193,6 +196,13 @@ public class SelectableTabListEditorTest {
                                             .getRootUiCoordinatorForTesting()
                                             .getDesktopWindowStateManager();
                     mEdgeToEdgeSupplier = ObservableSuppliers.createMonotonic();
+                    mDataProvider =
+                            TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(
+                                            TabListLayoutType.GROUPED)
+                                    ? new GroupedTabListDataProvider(
+                                            currentTabModelSupplier,
+                                            /* supportsGroupExpansion= */ false)
+                                    : null;
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(
                                     cta,
@@ -214,7 +224,8 @@ public class SelectableTabListEditorTest {
                                     /* itemPickerSelectionHandler= */ null,
                                     /* undoBarExplicitTrigger= */ null,
                                     /* componentId= */ null,
-                                    TabListEditorCoordinator.UNLIMITED_SELECTION);
+                                    TabListEditorCoordinator.UNLIMITED_SELECTION,
+                                    mDataProvider);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =
@@ -241,6 +252,8 @@ public class SelectableTabListEditorTest {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // After the editor, which may already be destroyed by the test.
+                    if (mDataProvider != null) mDataProvider.destroy();
                     if (mSnackbarManager == null) return;
                     mSnackbarManager.destroy();
                 });

@@ -117,6 +117,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final Callback<@Nullable View> mAttachViewCallback;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
+    private @Nullable TabListDataProvider mTabListEditorDataProvider;
     private @Nullable TabGroupColorPickerCoordinator mTabGroupColorPickerCoordinator;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
@@ -234,17 +235,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             tabBookmarkerSupplier,
                             shareDelegateSupplier);
 
-            // The provider calls this filter on each tab in the current TabModel and shows only
-            // the tabs in the group the dialog has open. It reads mCurrentTabGroupId on each call.
-            mDataProvider =
-                    TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(TabListLayoutType.FLAT)
-                            ? new FlatTabListDataProvider(
-                                    currentTabModelSupplier,
-                                    tab -> {
-                                        Token id = mCurrentTabGroupId.get();
-                                        return id != null && id.equals(tab.getTabGroupId());
-                                    })
-                            : null;
+            mDataProvider = createDataProvider();
 
             // TODO(crbug.com/40662311) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
@@ -368,6 +359,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             + " finishing.";
 
             ViewGroup container = mDialogView.findViewById(R.id.dialog_container_view);
+            // A separate instance from the dialog's, since the editor stops it on hide.
+            mTabListEditorDataProvider = createDataProvider();
             mTabListEditorCoordinator =
                     new TabListEditorCoordinator(
                             mActivity,
@@ -390,10 +383,27 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* itemPickerSelectionHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
                             /* componentId= */ null,
-                            TabListEditorCoordinator.UNLIMITED_SELECTION);
+                            TabListEditorCoordinator.UNLIMITED_SELECTION,
+                            mTabListEditorDataProvider);
         }
 
         return mTabListEditorCoordinator.getController();
+    }
+
+    /**
+     * Creates a provider that shows only the tabs in the group the dialog has open, or null when
+     * the flag is off. The filter reads mCurrentTabGroupId on each call.
+     */
+    private @Nullable TabListDataProvider createDataProvider() {
+        if (!TabUiFeatureUtilities.isTabUiDataVirtualizationEnabled(TabListLayoutType.FLAT)) {
+            return null;
+        }
+        return new FlatTabListDataProvider(
+                mCurrentTabModelSupplier,
+                tab -> {
+                    Token id = mCurrentTabGroupId.get();
+                    return id != null && id.equals(tab.getTabGroupId());
+                });
     }
 
     private View.OnClickListener getColorIconClickListener() {
@@ -480,6 +490,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         mModelChangeProcessor.destroy();
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
+        }
+        if (mTabListEditorDataProvider != null) {
+            mTabListEditorDataProvider.destroy();
         }
 
         if (mColorIconPopupWindow != null) {
