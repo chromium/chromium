@@ -216,7 +216,7 @@ void GoogleApiTranslationDispatcher::OnURLLoadComplete(
         kTranslationDispatcherLoadResultHistogram,
         TranslationDispatcherLoadResult::kEmptyResponse);
     EmitError(std::move(callback),
-              "Error parsing response: Translation dispatcher recieved a 2XX "
+              "Error parsing response: Translation dispatcher received a 2XX "
               "response, but the body was empty");
     return;
   }
