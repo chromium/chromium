@@ -8,9 +8,23 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace ash {
+
+namespace {
+
+// The profile of `account_id`, or null until it has been created.
+Profile* FindProfile(const AccountId& account_id) {
+  return Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
+}
+
+}  // namespace
 
 const HatsConfig& GetHatsConfig(CrasAudioHandler::SurveyType type) {
   switch (type) {
@@ -37,23 +51,27 @@ class AudioSurveyHandlerDelegate : public AudioSurveyHandler::Delegate {
     CrasAudioHandler::Get()->RemoveAudioObserver(observer);
   }
 
-  bool ShouldShowSurvey(CrasAudioHandler::SurveyType type) const override {
-    return !hats_notification_controllers_.contains(type) &&
+  bool ShouldShowSurvey(CrasAudioHandler::SurveyType type,
+                        const AccountId& account_id) const override {
+    Profile* const profile = FindProfile(account_id);
+    return profile && !hats_notification_controllers_.contains(type) &&
            HatsNotificationController::ShouldShowSurveyToProfile(
-               ProfileManager::GetActiveUserProfile(), GetHatsConfig(type));
+               profile, GetHatsConfig(type));
   }
 
   void ShowSurvey(CrasAudioHandler::SurveyType type,
-                  const CrasAudioHandler::AudioSurveyData& data) override {
+                  const CrasAudioHandler::AudioSurveyData& data,
+                  const AccountId& account_id) override {
     base::SysInfo::GetHardwareInfo(
         base::BindOnce(&AudioSurveyHandlerDelegate::OnHardwareInfoFetched,
-                       weak_ptr_factory_.GetWeakPtr(), type, data));
+                       weak_ptr_factory_.GetWeakPtr(), type, data, account_id));
   }
 
  private:
   void OnHardwareInfoFetched(
       CrasAudioHandler::SurveyType type,
       const CrasAudioHandler::AudioSurveyData& audio_specific_data,
+      const AccountId& account_id,
       base::SysInfo::HardwareInfo hardware_info);
 
   base::flat_map<CrasAudioHandler::SurveyType,
@@ -80,19 +98,32 @@ AudioSurveyHandler::~AudioSurveyHandler() = default;
 
 void AudioSurveyHandler::OnSurveyTriggered(
     const CrasAudioHandler::AudioSurvey& survey) {
-  auto type = survey.type();
-  if (!delegate_->ShouldShowSurvey(type)) {
+  // The audio server decides when to trigger, so this is the first point that
+  // can say who the survey is for. There is nobody to ask before log in.
+  const session_manager::Session* const session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
     return;
   }
 
-  delegate_->ShowSurvey(type, survey.data());
+  auto type = survey.type();
+  if (!delegate_->ShouldShowSurvey(type, session->account_id())) {
+    return;
+  }
+
+  delegate_->ShowSurvey(type, survey.data(), session->account_id());
 }
 
 void AudioSurveyHandlerDelegate::OnHardwareInfoFetched(
     CrasAudioHandler::SurveyType type,
     const CrasAudioHandler::AudioSurveyData& audio_specific_data,
+    const AccountId& account_id,
     base::SysInfo::HardwareInfo hardware_info) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* const profile = FindProfile(account_id);
+  if (!profile) {
+    return;
+  }
+
   base::flat_map<std::string, std::string> survey_data = {
       {"Board", base::SysInfo::GetLsbReleaseBoard()},
       {"Model", hardware_info.model}};

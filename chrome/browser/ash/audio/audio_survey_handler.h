@@ -11,6 +11,8 @@
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
+class AccountId;
+
 namespace ash {
 
 // Used to show a Happiness Tracking Survey when the audio server sends a
@@ -29,13 +31,16 @@ class AudioSurveyHandler : public CrasAudioHandler::AudioObserver {
     virtual void RemoveAudioObserver(
         CrasAudioHandler::AudioObserver* observer) = 0;
 
-    // Checks whether the device met all conditions to participate the survey.
-    virtual bool ShouldShowSurvey(CrasAudioHandler::SurveyType type) const = 0;
+    // Checks whether `account_id` met all conditions to participate the
+    // survey.
+    virtual bool ShouldShowSurvey(CrasAudioHandler::SurveyType type,
+                                  const AccountId& account_id) const = 0;
 
     // Triggers the survey invitation notification, in which when open will
-    // show the audio survey.
+    // show the audio survey to `account_id`.
     virtual void ShowSurvey(CrasAudioHandler::SurveyType type,
-                            const CrasAudioHandler::AudioSurveyData& data) = 0;
+                            const CrasAudioHandler::AudioSurveyData& data,
+                            const AccountId& account_id) = 0;
   };
 
   AudioSurveyHandler();
