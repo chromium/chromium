@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 53 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Bluetooth interface: attribute onavailabilitychanged
   assert_true: The prototype object must have a property "onavailabilitychanged" expected true got false
 [FAIL] Bluetooth interface: attribute referringDevice
@@ -86,6 +86,10 @@ Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] BluetoothAdvertisingEvent interface: event must inherit property "serviceData" with the proper type
   assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] BluetoothRemoteGATTServer interface: existence and properties of interface object
+  assert_equals: prototype of self's property "BluetoothRemoteGATTServer" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
+[FAIL] BluetoothRemoteGATTServer interface: existence and properties of interface prototype object
+  assert_equals: prototype of BluetoothRemoteGATTServer.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
 [FAIL] BluetoothRemoteGATTService interface: existence and properties of interface object
   assert_equals: prototype of BluetoothRemoteGATTService is not EventTarget expected function "function EventTarget() { [native code] }" but got function "function () { [native code] }"
 [FAIL] BluetoothRemoteGATTService interface: existence and properties of interface prototype object

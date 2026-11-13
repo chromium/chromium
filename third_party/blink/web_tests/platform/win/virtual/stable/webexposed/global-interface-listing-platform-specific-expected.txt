@@ -53,7 +53,7 @@ interface BluetoothRemoteGATTDescriptor
     method constructor
     method readValue
     method writeValue
-interface BluetoothRemoteGATTServer
+interface BluetoothRemoteGATTServer : EventTarget
     attribute @@toStringTag
     getter connected
     getter device

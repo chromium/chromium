@@ -14,6 +14,7 @@
     "Bluetooth",
     "BluetoothDevice",
     "BluetoothRemoteGATTCharacteristic",
+    "BluetoothRemoteGATTServer",
     "CaptureController",
     "CookieStore",
     "CreateMonitor",

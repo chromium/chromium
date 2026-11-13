@@ -39,6 +39,14 @@ void BluetoothRemoteGATTServer::GATTServerDisconnected() {
   DispatchDisconnected();
 }
 
+const AtomicString& BluetoothRemoteGATTServer::InterfaceName() const {
+  return event_target_names::kBluetoothRemoteGATTServer;
+}
+
+ExecutionContext* BluetoothRemoteGATTServer::GetExecutionContext() const {
+  return device_->GetExecutionContext();
+}
+
 void BluetoothRemoteGATTServer::AddToActiveAlgorithms(
     ScriptPromiseResolverBase* resolver) {
   auto result = active_algorithms_.insert(resolver);
@@ -79,7 +87,7 @@ void BluetoothRemoteGATTServer::Trace(Visitor* visitor) const {
   visitor->Trace(client_receivers_);
   visitor->Trace(active_algorithms_);
   visitor->Trace(device_);
-  ScriptWrappable::Trace(visitor);
+  EventTarget::Trace(visitor);
 }
 
 void BluetoothRemoteGATTServer::ConnectCallback(

@@ -10,7 +10,7 @@
     Exposed=Window,
     RuntimeEnabled=WebBluetooth,
     SecureContext
-] interface BluetoothRemoteGATTServer
+] interface BluetoothRemoteGATTServer : EventTarget
 {
     [SameObject] readonly attribute BluetoothDevice device;
     readonly attribute boolean connected;

@@ -10,9 +10,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver_set.h"
@@ -25,12 +24,13 @@ namespace blink {
 class BluetoothDevice;
 class BluetoothRemoteGATTService;
 class ExceptionState;
+class ExecutionContext;
 class ScriptState;
 
 // BluetoothRemoteGATTServer provides a way to interact with a connected
 // bluetooth peripheral.
 class BluetoothRemoteGATTServer
-    : public ScriptWrappable,
+    : public EventTarget,
       public mojom::blink::WebBluetoothServerClient {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -63,6 +63,10 @@ class BluetoothRemoteGATTServer
   void CleanupDisconnectedDeviceAndFireEvent();
 
   void DispatchDisconnected();
+
+  // EventTarget:
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
 
   // Interface required by Garbage Collectoin:
   void Trace(Visitor*) const override;
