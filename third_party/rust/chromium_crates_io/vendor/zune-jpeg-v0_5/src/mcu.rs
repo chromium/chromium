@@ -413,8 +413,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 .max()
                 .unwrap_or(0)
             * 8;
-        upsampler_scratch_space.clear();
-        upsampler_scratch_space.resize(upsampler_scratch_size, 0);
+        if upsampler_scratch_space.len() != upsampler_scratch_size {
+            upsampler_scratch_space.resize(upsampler_scratch_size, 0);
+        }
 
         // Every scan walks the whole image, so bound the number of scans as the
         // progressive decoder does (jpeg_get_max_scans).
@@ -1288,11 +1289,13 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
             .sum();
 
         // How much of the head of `tmp` was written by the last MCU decoding? We only check for
-        // two different cases and not all possible outcomes as this is only used to optimize the
+        // three different cases and not all possible outcomes as this is only used to optimize the
         // bytes written in `fill`. Since the clobber happens in UNZIGZAG order we'd be straddling
         // most cache lines anyways even if we did a partial write with the exact length of the
         // coefficient data which was written into `tmp`.
-        let mut clobber_more_than_4x4 = true;
+        let mut prev_len: u16 = 64;
+        #[cfg(all(feature = "x86", any(target_arch = "x86", target_arch = "x86_64")))]
+        let use_avx2 = self.options.use_avx2();
 
         // A one-component scan consists of individual data units, regardless
         // of whether full-image buffering (PROGRESSIVE) is required.
@@ -1356,16 +1359,6 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                         let block_offset =
                             (block_y * (component.width_stride / 8) + block_x) * 64;
                         let result = if component_samples_needed {
-                            // Fill the array with zeroes, decode_mcu_block expects
-                            // a zero based array. Clobber is in zig-zag order though.
-                            // Writing consecutive entries is basically free in terms
-                            // of memory throughput so we opt for a larger power of
-                            // two which lets the compiler turn this into a repeated
-                            // write of a zeroed vector register, which does not have
-                            // any branches, instead of a more difficult pattern where
-                            // we attempt to overwrite exactly one coefficient.
-                            let clobber_len = if clobber_more_than_4x4 { 64 } else { 32 };
-
                             if PROGRESSIVE {
                                 // Sequential decoders do not clear coefficients
                                 // between repeated component scans. EOB leaves
@@ -1375,8 +1368,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                                         "Invalid baseline block geometry"
                                     ))?;
                                 tmp.copy_from_slice(previous);
+                            } else if prev_len <= 1 {
+                                tmp[0] = 0;
+                            } else if prev_len <= 10 {
+                                tmp[..32].fill(0);
                             } else {
-                                tmp[..clobber_len].fill(0);
+                                tmp.fill(0);
                             }
 
                             stream.decode_mcu_block(
@@ -1441,7 +1438,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 
                         if component_samples_needed {
                             // tmp was only written partially, note that len is in ZigZag order.
-                            clobber_more_than_4x4 = len > 10;
+                            prev_len = len;
 
                             if PROGRESSIVE {
                                 progressive[k][block_offset..][..64].copy_from_slice(tmp);
@@ -1467,14 +1464,44 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                             };
 
                             let idct_pos = component.raw_coeff.get_mut(idct_position..).unwrap();
+                            let stride = component.width_stride;
 
                             if len <= 1 {
-                                (self.idct_1x1_func)(tmp, idct_pos, component.width_stride);
+                                let coeff = ((tmp[0].wrapping_add(1028)) >> 3).clamp(0, 255) as i16;
+                                let row_val = [coeff; 8];
+                                assert!(stride >= 8 && stride <= idct_pos.len().saturating_sub(8) / 7);
+                                for row in 0..8 {
+                                    let offset = row * stride;
+                                    idct_pos[offset..offset + 8].copy_from_slice(&row_val);
+                                }
                             } else if len <= 10 {
-                                (self.idct_4x4_func)(tmp, idct_pos, component.width_stride);
+                                #[cfg(all(
+                                    feature = "x86",
+                                    any(target_arch = "x86", target_arch = "x86_64")
+                                ))]
+                                if use_avx2 {
+                                    // SAFETY: use_avx2 checks CPU support above.
+                                    unsafe {
+                                        crate::idct::avx2::idct_avx2_4x4(tmp, idct_pos, stride);
+                                    }
+                                    continue;
+                                }
+                                (self.idct_4x4_func)(tmp, idct_pos, stride);
                             } else {
+                                #[cfg(all(
+                                    feature = "x86",
+                                    any(target_arch = "x86", target_arch = "x86_64")
+                                ))]
+                                if use_avx2 {
+                                    // SAFETY: use_avx2 checks CPU support above.
+                                    unsafe {
+                                        // ZRL can advance len without setting any AC coefficient.
+                                        crate::idct::avx2::idct_avx2(tmp, idct_pos, stride);
+                                    }
+                                    continue;
+                                }
                                 //  call idct.
-                                (self.idct_func)(tmp, idct_pos, component.width_stride);
+                                (self.idct_func)(tmp, idct_pos, stride);
                             }
                         }
                     }

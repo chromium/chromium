@@ -26,17 +26,28 @@ Local Modifications:
   https://github.com/etemesi254/zune-image/pull/508
   https://github.com/etemesi254/zune-image/pull/505
   https://github.com/etemesi254/zune-image/pull/507
+  https://github.com/etemesi254/zune-image/pull/525
+  https://github.com/etemesi254/zune-image/pull/526
   Each patch records its published PR head and source-stage provenance.
   PR498 includes its eighth-step extension; subsequent patches are rebased
   onto that revision rather than carrying a second patch for the same PR.
-- The effective Rust source is byte-identical to the validated combination
-  of these published PRs; there are no additional Chromium-only decoder
-  implementation changes. Keep coded/raw geometry, strict errors, growing
+- The source through patch 0010 is byte-identical to the validated combination
+  of PR487 through PR507. Keep coded/raw geometry, strict errors, growing
   input and full-frame recovery separate from buffered publication bounds.
   Reduced output supports every n/8 ratio for n from 1 through 7 and is
   frame-buffered. Include PR498's eighth-step extension at
   50e283a32a465cdeaa0d235e0187791b227f6e21; the cumulative source matches
   8f3ad58e9a7dc6bca100cf276ecc11324e339cef.
+- Patch 0011 backports PR525 at
+  5dbe923c726ded1405960ecf5ed924034b8412cf, including configured row dispatch.
+  Patch 0012 backports PR526 at
+  b5ad1d9cffac891868e9c86b6fe1aa0a56afbcc9 on top of it.
+  Both are rebased onto the existing stack rather than replacing it.
+  Preserve PR505's single-rounding chroma filter in fused AVX2 upsampling,
+  i32 sequential coefficient storage and native recovery behavior. Adapt
+  dispatch and marker-state tests to the existing types and state.
+  Leave zune-core unchanged. Dispatch tests follow its effective SIMD policy;
+  explicit scalar references and no-SIMD builds cover scalar output separately.
 - Track upstream acceptance and release availability in:
   https://github.com/etemesi254/zune-image/issues/503
   Remove maintained patches only after verifying their complete behavior is

@@ -16,13 +16,6 @@ use core::arch::x86::*;
 use core::arch::x86_64::*;
 use core::ops::{Add, AddAssign, Mul, MulAssign, Sub};
 
-/// A copy of `_MM_SHUFFLE()` that doesn't require
-/// a nightly compiler
-#[inline]
-const fn shuffle(z: i32, y: i32, x: i32, w: i32) -> i32 {
-    (z << 6) | (y << 4) | (x << 2) | w
-}
-
 /// An abstraction of an AVX ymm register that
 ///allows some things to not look ugly
 #[derive(Clone, Copy)]
@@ -161,63 +154,30 @@ pub unsafe fn transpose(
     v0: &mut Reg, v1: &mut Reg, v2: &mut Reg, v3: &mut Reg, v4: &mut Reg, v5: &mut Reg,
     v6: &mut Reg, v7: &mut Reg
 ) {
-    macro_rules! merge_epi32 {
-        ($v0:tt,$v1:tt,$v2:tt,$v3:tt) => {
-            let va = _mm256_permute4x64_epi64($v0, shuffle(3, 1, 2, 0));
+    let t0 = _mm256_unpacklo_epi32(v0.mm256, v1.mm256);
+    let t1 = _mm256_unpackhi_epi32(v0.mm256, v1.mm256);
+    let t2 = _mm256_unpacklo_epi32(v2.mm256, v3.mm256);
+    let t3 = _mm256_unpackhi_epi32(v2.mm256, v3.mm256);
+    let t4 = _mm256_unpacklo_epi32(v4.mm256, v5.mm256);
+    let t5 = _mm256_unpackhi_epi32(v4.mm256, v5.mm256);
+    let t6 = _mm256_unpacklo_epi32(v6.mm256, v7.mm256);
+    let t7 = _mm256_unpackhi_epi32(v6.mm256, v7.mm256);
 
-            let vb = _mm256_permute4x64_epi64($v1, shuffle(3, 1, 2, 0));
+    let x0 = _mm256_unpacklo_epi64(t0, t2);
+    let x1 = _mm256_unpackhi_epi64(t0, t2);
+    let x2 = _mm256_unpacklo_epi64(t1, t3);
+    let x3 = _mm256_unpackhi_epi64(t1, t3);
+    let x4 = _mm256_unpacklo_epi64(t4, t6);
+    let x5 = _mm256_unpackhi_epi64(t4, t6);
+    let x6 = _mm256_unpacklo_epi64(t5, t7);
+    let x7 = _mm256_unpackhi_epi64(t5, t7);
 
-            $v2 = _mm256_unpacklo_epi32(va, vb);
-
-            $v3 = _mm256_unpackhi_epi32(va, vb);
-        };
-    }
-
-    macro_rules! merge_epi64 {
-        ($v0:tt,$v1:tt,$v2:tt,$v3:tt) => {
-            let va = _mm256_permute4x64_epi64($v0, shuffle(3, 1, 2, 0));
-
-            let vb = _mm256_permute4x64_epi64($v1, shuffle(3, 1, 2, 0));
-
-            $v2 = _mm256_unpacklo_epi64(va, vb);
-
-            $v3 = _mm256_unpackhi_epi64(va, vb);
-        };
-    }
-
-    macro_rules! merge_si128 {
-        ($v0:tt,$v1:tt,$v2:tt,$v3:tt) => {
-            $v2 = _mm256_permute2x128_si256($v0, $v1, shuffle(0, 2, 0, 0));
-
-            $v3 = _mm256_permute2x128_si256($v0, $v1, shuffle(0, 3, 0, 1));
-        };
-    }
-
-    let (w0, w1, w2, w3, w4, w5, w6, w7);
-
-    merge_epi32!((v0.mm256), (v1.mm256), w0, w1);
-
-    merge_epi32!((v2.mm256), (v3.mm256), w2, w3);
-
-    merge_epi32!((v4.mm256), (v5.mm256), w4, w5);
-
-    merge_epi32!((v6.mm256), (v7.mm256), w6, w7);
-
-    let (x0, x1, x2, x3, x4, x5, x6, x7);
-
-    merge_epi64!(w0, w2, x0, x1);
-
-    merge_epi64!(w1, w3, x2, x3);
-
-    merge_epi64!(w4, w6, x4, x5);
-
-    merge_epi64!(w5, w7, x6, x7);
-
-    merge_si128!(x0, x4, (v0.mm256), (v1.mm256));
-
-    merge_si128!(x1, x5, (v2.mm256), (v3.mm256));
-
-    merge_si128!(x2, x6, (v4.mm256), (v5.mm256));
-
-    merge_si128!(x3, x7, (v6.mm256), (v7.mm256));
+    v0.mm256 = _mm256_permute2x128_si256::<0x20>(x0, x4);
+    v1.mm256 = _mm256_permute2x128_si256::<0x20>(x1, x5);
+    v2.mm256 = _mm256_permute2x128_si256::<0x20>(x2, x6);
+    v3.mm256 = _mm256_permute2x128_si256::<0x20>(x3, x7);
+    v4.mm256 = _mm256_permute2x128_si256::<0x31>(x0, x4);
+    v5.mm256 = _mm256_permute2x128_si256::<0x31>(x1, x5);
+    v6.mm256 = _mm256_permute2x128_si256::<0x31>(x2, x6);
+    v7.mm256 = _mm256_permute2x128_si256::<0x31>(x3, x7);
 }

@@ -940,20 +940,22 @@ impl BitStream for BitStreamHuffman {
         block[0] = dc_prediction.wrapping_mul(qt_table[0]);
 
         while pos < 64 {
-            self.refill(reader)?;
+            if self.bits_left < 32 {
+                self.refill(reader)?;
+            }
             symbol = self.peek_bits::<HUFF_LOOKAHEAD>();
             fast_ac = ac_lookup[symbol as usize];
-            symbol = ac_table.lookup[symbol as usize];
 
             if fast_ac != 0 {
                 //  FAST AC path
                 pos += ((fast_ac >> 4) & 15) as usize; // run
                 let t_pos = UN_ZIGZAG[self.ac_position(pos)?] & 63;
 
-                block[t_pos] = i32::from(fast_ac >> 8).wrapping_mul (qt_table[t_pos]); // Value
+                block[t_pos] = i32::from(fast_ac >> 8).wrapping_mul(qt_table[t_pos]); // Value
                 self.drop_bits((fast_ac & 15) as u8);
                 pos += 1;
             } else {
+                symbol = ac_table.lookup[symbol as usize];
                 decode_huff!(self, symbol, ac_table);
 
                 r = symbol >> 4;
@@ -1336,6 +1338,94 @@ const fn has_byte(b: u32, val: u8) -> bool {
     // Retrieved from Stanford bithacks
     // @ https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
     has_zero(b ^ ((!0_u32 / 255) * (val as u32)))
+}
+
+#[cfg(test)]
+mod marker_padding_tests {
+    use alloc::vec::Vec;
+
+    use zune_core::bytestream::{ZCursor, ZReader};
+
+    use super::{BitStream, BitStreamHuffman};
+    use crate::huffman::HuffmanTable;
+
+    #[test]
+    fn fast_ac_matches_slow_lookup_across_refill_threshold() {
+        let mut dc_codes = [0; 17];
+        dc_codes[1] = 1;
+        let mut ac_codes = dc_codes;
+        ac_codes[2] = 1;
+        let mut ac_values = [0; 256];
+        ac_values[0] = 0x01;
+        // DC=0, AC=(run=0,size=1), then EOB. Exercise both receive signs.
+        for prefix in [0b00110_u64, 0b00010_u64] {
+            for bits_left in [5, 31, 32, 33, 63] {
+                let mut results = Vec::new();
+                for fast in [true, false] {
+                    let mut dc = HuffmanTable::new(&dc_codes, [0; 256], true, false).unwrap();
+                    let mut ac = HuffmanTable::new(&ac_codes, ac_values, false, false).unwrap();
+                    if !fast {
+                        ac.ac_lookup.as_mut().unwrap().fill(0);
+                    }
+                    let bytes = [0xFF, 0x00, 0xFF, 0xD9];
+                    let mut reader = ZReader::new(ZCursor::new(&bytes));
+                    let mut stream = BitStreamHuffman::new();
+                    stream.bits_left = bits_left;
+                    stream.buffer = (prefix << (bits_left - 5)) | ((1_u64 << (bits_left - 5)) - 1);
+                    stream.aligned_buffer = stream.buffer << (64 - bits_left);
+                    let mut block = [0; 64];
+                    let length = stream
+                        .decode_mcu_block(
+                            &mut reader,
+                            &mut dc,
+                            &mut ac,
+                            &[7; 64],
+                            &mut block,
+                            &mut 11,
+                            &mut 0
+                        )
+                        .unwrap();
+                    assert_eq!(length, 2);
+                    assert_eq!(block[0], 77);
+                    assert_eq!(block[1], if prefix == 0b00110 { 7 } else { -7 });
+                    assert!(block[2..].iter().all(|&coefficient| coefficient == 0));
+                    results.push((
+                        block,
+                        stream.bits_left,
+                        stream.aligned_buffer >> (64 - stream.bits_left),
+                        stream.marker,
+                        stream.marker_bits,
+                        stream.insufficient_data,
+                        stream.overread_by,
+                        reader.position().unwrap()
+                    ));
+                }
+                assert_eq!(results[0], results[1]);
+            }
+        }
+    }
+
+    #[test]
+    fn marker_prefetch_and_consumption_survive_checkpoint_restore() {
+        let bytes = [0x00, 0xFF, 0xD9];
+        let mut reader = ZReader::new(ZCursor::new(&bytes));
+        let mut stream = BitStreamHuffman::new_progressive(0, 0, 0);
+        stream.refill(&mut reader).unwrap();
+        assert!(!stream.insufficient_data);
+        let checkpoint = stream.save_state();
+        stream.drop_bits(8);
+        assert!(!stream.insufficient_data);
+        stream.get_bits(1);
+        assert!(stream.insufficient_data);
+        stream.restore_state(checkpoint);
+        assert!(!stream.insufficient_data);
+        stream.get_bits(8);
+        assert!(!stream.insufficient_data);
+        stream.get_bits(1);
+        assert!(stream.insufficient_data);
+        stream.reset();
+        assert!(!stream.insufficient_data);
+    }
 }
 
 // mod tests {

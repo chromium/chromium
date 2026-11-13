@@ -1,0 +1,1618 @@
+From d841e93159d216d4d7f996685286926d84294266 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Thu, 12 Nov 2026 00:46:37 +0000
+Subject: [PATCH] [rust jpeg] Backport AVX2 row conversion and fused upsampling
+ (PR525)
+
+Backport https://github.com/etemesi254/zune-image/pull/525 at published
+head 5dbe923c726ded1405960ecf5ed924034b8412cf, including explicit configured
+row dispatch and safe-only build guards.
+
+Rebase onto the existing Chromium ten-patch decoder stack. Preserve
+PR505 native rounding in the fused filter. Test dispatch against the
+pinned zune-core effective SIMD policy, and select scalar references
+explicitly instead of depending on a separate zune-core option fix.
+Exercise row and block-only paths; no-SIMD feature builds test scalar
+behavior. Adapt cached-dispatch tests without function-address identity.
+
+Bug: 584016785
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+---
+ .../zune-jpeg-v0_5/src/color_convert.rs       | 119 ++++--
+ .../zune-jpeg-v0_5/src/color_convert/avx.rs   | 279 +++++++++---
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs      | 134 ++++--
+ .../zune-jpeg-v0_5/src/upsampler/avx2.rs      | 404 ++++++++++++++----
+ .../vendor/zune-jpeg-v0_5/src/worker.rs       | 248 +++++++++--
+ 5 files changed, 932 insertions(+), 252 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs
+index f90dd757bd69a..5c5342358c8bc 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert.rs
+@@ -57,7 +57,8 @@ use zune_core::options::DecoderOptions;
+ #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+ #[cfg(feature = "x86")]
+ pub use crate::color_convert::avx::{
+-    ycbcr_to_bgr_avx2, ycbcr_to_bgra_avx2, ycbcr_to_rgb_avx2, ycbcr_to_rgba_avx2
++    ycbcr_to_bgr_avx2, ycbcr_to_bgra_avx2, ycbcr_to_rgb_avx2, ycbcr_to_rgb_row_avx2,
++    ycbcr_to_rgba_avx2, ycbcr_to_rgba_row_avx2
+ };
+ use crate::decoder::ColorConvert16Ptr;
+ 
+@@ -65,10 +66,37 @@ mod avx;
+ mod neon64;
+ mod scalar;
+ 
++pub(crate) type ColorConvertRowPtr = unsafe fn(&[i16], &[i16], &[i16], &mut [u8], usize);
++
++#[derive(Clone, Copy)]
++pub(crate) struct ColorConvert16 {
++    pub(crate) block: ColorConvert16Ptr,
++    // Selected under the same CPU/options policy as block, never inferred from its address.
++    pub(crate) row:   Option<ColorConvertRowPtr>
++}
++
++impl ColorConvert16 {
++    pub(crate) fn block_only(block: ColorConvert16Ptr) -> Self {
++        Self { block, row: None }
++    }
++
++    #[cfg(test)]
++    pub(crate) fn scalar_for_test(colorspace: ColorSpace) -> Self {
++        let block: ColorConvert16Ptr = match colorspace {
++            ColorSpace::RGB => scalar::ycbcr_to_rgb_inner_16_scalar::<false>,
++            ColorSpace::RGBA => scalar::ycbcr_to_rgba_inner_16_scalar::<false>,
++            ColorSpace::BGR => scalar::ycbcr_to_rgb_inner_16_scalar::<true>,
++            ColorSpace::BGRA => scalar::ycbcr_to_rgba_inner_16_scalar::<true>,
++            _ => unreachable!()
++        };
++        Self::block_only(block)
++    }
++}
++
+ #[allow(unused_variables)]
+-pub fn choose_ycbcr_to_rgb_convert_func(
++pub(crate) fn choose_ycbcr_to_rgb_convert_func(
+     type_need: ColorSpace, options: &DecoderOptions
+-) -> Option<ColorConvert16Ptr> {
++) -> Option<ColorConvert16> {
+     #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+     #[cfg(feature = "x86")]
+     {
+@@ -76,15 +104,14 @@ pub fn choose_ycbcr_to_rgb_convert_func(
+         if options.use_avx2() {
+             debug!("Using AVX optimised color conversion functions");
+ 
+-            // I believe avx2 means sse4 is also available
+-            // match colorspace
+-            match type_need {
+-                ColorSpace::RGB => return Some(ycbcr_to_rgb_avx2),
+-                ColorSpace::RGBA => return Some(ycbcr_to_rgba_avx2),
+-                ColorSpace::BGR => return Some(ycbcr_to_bgr_avx2),
+-                ColorSpace::BGRA => return Some(ycbcr_to_bgra_avx2),
+-                _ => () // fall through to scalar, which has more types
++            let (block, row): (ColorConvert16Ptr, ColorConvertRowPtr) = match type_need {
++                ColorSpace::RGB => (ycbcr_to_rgb_avx2, ycbcr_to_rgb_row_avx2::<false>),
++                ColorSpace::RGBA => (ycbcr_to_rgba_avx2, ycbcr_to_rgba_row_avx2::<false>),
++                ColorSpace::BGR => (ycbcr_to_bgr_avx2, ycbcr_to_rgb_row_avx2::<true>),
++                ColorSpace::BGRA => (ycbcr_to_bgra_avx2, ycbcr_to_rgba_row_avx2::<true>),
++                _ => return None
+             };
++            return Some(ColorConvert16 { block, row: Some(row) });
+         }
+     }
+     #[cfg(all(feature = "neon", target_arch = "aarch64"))]
+@@ -94,20 +121,20 @@ pub fn choose_ycbcr_to_rgb_convert_func(
+                 ycbcr_to_bgr_neon, ycbcr_to_bgra_neon, ycbcr_to_rgb_neon, ycbcr_to_rgba_neon
+             };
+             match type_need {
+-                ColorSpace::RGB => return Some(ycbcr_to_rgb_neon),
+-                ColorSpace::RGBA => return Some(ycbcr_to_rgba_neon),
+-                ColorSpace::BGR => return Some(ycbcr_to_bgr_neon),
+-                ColorSpace::BGRA => return Some(ycbcr_to_bgra_neon),
++                ColorSpace::RGB => return Some(ColorConvert16::block_only(ycbcr_to_rgb_neon)),
++                ColorSpace::RGBA => return Some(ColorConvert16::block_only(ycbcr_to_rgba_neon)),
++                ColorSpace::BGR => return Some(ColorConvert16::block_only(ycbcr_to_bgr_neon)),
++                ColorSpace::BGRA => return Some(ColorConvert16::block_only(ycbcr_to_bgra_neon)),
+                 _ => () // fall through to scalar, which has more types
+             }
+         }
+     }
+     // when there is no x86 or we haven't returned by here, resort to scalar
+     return match type_need {
+-        ColorSpace::RGB => Some(scalar::ycbcr_to_rgb_inner_16_scalar::<false>),
+-        ColorSpace::RGBA => Some(scalar::ycbcr_to_rgba_inner_16_scalar::<false>),
+-        ColorSpace::BGRA => Some(scalar::ycbcr_to_rgba_inner_16_scalar::<true>),
+-        ColorSpace::BGR => Some(scalar::ycbcr_to_rgb_inner_16_scalar::<true>),
++        ColorSpace::RGB => Some(ColorConvert16::block_only(scalar::ycbcr_to_rgb_inner_16_scalar::<false>)),
++        ColorSpace::RGBA => Some(ColorConvert16::block_only(scalar::ycbcr_to_rgba_inner_16_scalar::<false>)),
++        ColorSpace::BGRA => Some(ColorConvert16::block_only(scalar::ycbcr_to_rgba_inner_16_scalar::<true>)),
++        ColorSpace::BGR => Some(ColorConvert16::block_only(scalar::ycbcr_to_rgb_inner_16_scalar::<true>)),
+         _ => None
+     };
+ }
+@@ -138,7 +165,7 @@ mod tests {
+                 _ => unreachable!()
+             };
+             let channels = format.num_components();
+-            let dispatched = choose_ycbcr_to_rgb_convert_func(format, &options).unwrap();
++            let dispatched = choose_ycbcr_to_rgb_convert_func(format, &options).unwrap().block;
+             for convert in [scalar, dispatched] {
+                 assert_converter_matches_scalar(convert, scalar, channels * 16, channels == 4);
+                 for cb in 0_i16..=255 {
+@@ -181,7 +208,7 @@ mod tests {
+                 core::array::from_fn(|index| (index * 17) as i16),
+                 core::array::from_fn(|index| (255 - index * 13) as i16),
+                 core::array::from_fn(|index| (index * 11) as i16)
+-            )
++            ),
+         ];
+         let mut state = 0xC0FF_EE12_u32;
+         for _ in 0..256 {
+@@ -199,8 +226,7 @@ mod tests {
+     }
+ 
+     fn assert_converter_matches_scalar(
+-        vector: ColorConvert16Ptr, scalar: ColorConvert16Ptr, output_size: usize,
+-        has_alpha: bool
++        vector: ColorConvert16Ptr, scalar: ColorConvert16Ptr, output_size: usize, has_alpha: bool
+     ) {
+         const OFFSET: usize = 7;
+         const GUARD: usize = 11;
+@@ -267,13 +293,13 @@ mod tests {
+         let options = DecoderOptions::default();
+         assert!(options.use_avx2());
+         assert_converter_matches_scalar(
+-            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGR, &options).unwrap(),
++            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGR, &options).unwrap().block,
+             ycbcr_to_rgb_inner_16_scalar::<true>,
+             48,
+             false
+         );
+         assert_converter_matches_scalar(
+-            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGRA, &options).unwrap(),
++            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGRA, &options).unwrap().block,
+             ycbcr_to_rgba_inner_16_scalar::<true>,
+             64,
+             true
+@@ -301,13 +327,13 @@ mod tests {
+         let options = DecoderOptions::default();
+         assert!(options.use_neon());
+         assert_converter_matches_scalar(
+-            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGR, &options).unwrap(),
++            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGR, &options).unwrap().block,
+             ycbcr_to_rgb_inner_16_scalar::<true>,
+             48,
+             false
+         );
+         assert_converter_matches_scalar(
+-            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGRA, &options).unwrap(),
++            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGRA, &options).unwrap().block,
+             ycbcr_to_rgba_inner_16_scalar::<true>,
+             64,
+             true
+@@ -321,13 +347,36 @@ mod tests {
+     )))]
+     fn no_simd_build_dispatches_bgr_and_bgra_to_scalar() {
+         let options = DecoderOptions::default();
+-        assert_eq!(
+-            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGR, &options).unwrap() as usize,
+-            ycbcr_to_rgb_inner_16_scalar::<true> as usize
+-        );
+-        assert_eq!(
+-            choose_ycbcr_to_rgb_convert_func(ColorSpace::BGRA, &options).unwrap() as usize,
+-            ycbcr_to_rgba_inner_16_scalar::<true> as usize
+-        );
++        for format in [ColorSpace::BGR, ColorSpace::BGRA] {
++            assert!(choose_ycbcr_to_rgb_convert_func(format, &options)
++                .unwrap()
++                .row
++                .is_none());
++        }
++    }
++
++    #[test]
++    fn row_selection_matches_effective_simd_policy() {
++        for format in [
++            ColorSpace::RGB,
++            ColorSpace::RGBA,
++            ColorSpace::BGR,
++            ColorSpace::BGRA
++        ] {
++            for use_unsafe in [false, true] {
++                let options = DecoderOptions::default().set_use_unsafe(use_unsafe);
++                let expected = cfg!(all(
++                    feature = "x86",
++                    any(target_arch = "x86", target_arch = "x86_64")
++                )) && options.use_avx2();
++                assert_eq!(
++                    choose_ycbcr_to_rgb_convert_func(format, &options)
++                        .unwrap()
++                        .row
++                        .is_some(),
++                    expected
++                );
++            }
++        }
+     }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs
+index d3953f8bc736c..9acc3c6569401 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/color_convert/avx.rs
+@@ -44,7 +44,7 @@ use core::arch::x86::*;
+ #[cfg(target_arch = "x86_64")]
+ use core::arch::x86_64::*;
+ 
+-use crate::color_convert::scalar::{CB_FRAC, CR_FRAC, C_G_CB_FRAC, C_G_CR_FRAC, YUV_RND};
++use crate::color_convert::scalar::{CB_FRAC, C_G_CB_FRAC, C_G_CR_FRAC, YUV_RND};
+ 
+ pub union YmmRegister {
+     // both are 32 when using std::mem::size_of
+@@ -53,10 +53,6 @@ pub union YmmRegister {
+     array: [i16; 16]
+ }
+ 
+-const R_AVX_COEF: i32 =
+-    i32::from_ne_bytes([CR_FRAC.to_ne_bytes()[0], CR_FRAC.to_ne_bytes()[1], 0, 0]);
+-const B_AVX_COEF: i32 =
+-    i32::from_ne_bytes([0, 0, CB_FRAC.to_ne_bytes()[0], CB_FRAC.to_ne_bytes()[1]]);
+ const G_COEF_AVX_COEF: i32 = i32::from_ne_bytes([
+     C_G_CR_FRAC.to_ne_bytes()[0],
+     C_G_CR_FRAC.to_ne_bytes()[1],
+@@ -84,7 +80,6 @@ const G_COEF_AVX_COEF: i32 = i32::from_ne_bytes([
+ /// - `y`,`cb`,`cr`: A reference of 8 i32's
+ /// - `out`: The output  array where we store our converted items
+ /// - `offset`: The position from 0 where we write these RGB values
+-#[inline(always)]
+ pub fn ycbcr_to_rgb_avx2(
+     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+ ) {
+@@ -97,7 +92,6 @@ pub fn ycbcr_to_rgb_avx2(
+     }
+ }
+ 
+-#[inline(always)]
+ pub fn ycbcr_to_bgr_avx2(
+     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+ ) {
+@@ -114,8 +108,21 @@ unsafe fn ycbcr_to_rgb_avx2_1<const BGR: bool>(
+     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+ ) {
+     // check if we have enough space to write.
+-    let out: &mut [u8; 48] = out.get_mut(*offset..*offset + 48).expect("Slice to small cannot write").try_into().unwrap();
++    let out: &mut [u8; 48] = out
++        .get_mut(*offset..*offset + 48)
++        .expect("Slice to small cannot write")
++        .try_into()
++        .unwrap();
+ 
++    ycbcr_to_rgb_block::<BGR>(y.as_ptr(), cb.as_ptr(), cr.as_ptr(), out.as_mut_ptr());
++    *offset += 48;
++}
++
++#[inline]
++#[target_feature(enable = "avx2")]
++unsafe fn ycbcr_to_rgb_block<const BGR: bool>(
++    y: *const i16, cb: *const i16, cr: *const i16, out: *mut u8
++) {
+     let (mut r, mut g, mut b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
+ 
+     r = _mm256_packus_epi16(r, _mm256_setzero_si256());
+@@ -163,10 +170,8 @@ unsafe fn ycbcr_to_rgb_avx2_1<const BGR: bool>(
+     let rgb0 = _mm256_permute2x128_si256::<32>(p0, p1);
+     let rgb1 = _mm256_permute2x128_si256::<48>(p2, p0);
+ 
+-    _mm256_storeu_si256(out.as_mut_ptr().cast(), rgb0);
+-    _mm_storeu_si128(out[32..].as_mut_ptr().cast(), _mm256_castsi256_si128(rgb1));
+-
+-    *offset += 48;
++    _mm256_storeu_si256(out.cast(), rgb0);
++    _mm_storeu_si128(out.add(32).cast(), _mm256_castsi256_si128(rgb1));
+ }
+ 
+ // Enabled avx2 automatically enables avx.
+@@ -178,52 +183,42 @@ unsafe fn ycbcr_to_rgb_avx2_1<const BGR: bool>(
+ /// This is used by the `ycbcr_to_rgba_avx` and `ycbcr_to_rgbx` conversion
+ /// routines
+ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
+-    y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16]
++    y: *const i16, cb: *const i16, cr: *const i16
+ ) -> (__m256i, __m256i, __m256i) {
+     // Load values into a register
+     //
+-    let y_c = _mm256_loadu_si256(y.as_ptr().cast());
+-    let cb_c = _mm256_loadu_si256(cb.as_ptr().cast());
+-    let cr_c = _mm256_loadu_si256(cr.as_ptr().cast());
++    let y_c = _mm256_loadu_si256(y.cast());
++    let cb_c = _mm256_loadu_si256(cb.cast());
++    let cr_c = _mm256_loadu_si256(cr.cast());
+ 
+-    // Here we want to use _mm256_madd_epi16 to perform 2 multiplications
+-    // and one addition per instruction.
+-
+-    // At first, we have to pack i16 U and V that stores u8 into one u8 [U,V]
+-    // then zero extend, and keep in mind that lanes is already been permuted.
+-
+-    let cr_coeff = _mm256_set1_epi32(R_AVX_COEF);
+-    let cb_coeff = _mm256_set1_epi32(B_AVX_COEF);
+     let cg_coeff = _mm256_set1_epi32(G_COEF_AVX_COEF);
+     let v_rnd = _mm256_set1_epi32(YUV_RND);
+     let uv_bias = _mm256_set1_epi16(128);
+ 
+-    // UV in memory because x86/x86_64 is always little endian
+-    let v_0 = _mm256_slli_epi16::<8>(cb_c);
+-    let u_v_8 = _mm256_or_si256(v_0, cr_c);
+-
+-    let u_v_lo = _mm256_sub_epi16(_mm256_unpacklo_epi8(u_v_8, _mm256_setzero_si256()), uv_bias);
+-    let u_v_hi = _mm256_sub_epi16(_mm256_unpackhi_epi8(u_v_8, _mm256_setzero_si256()), uv_bias);
+-    // Split whole chroma contributions from the 16-bit fractions so every
+-    // coefficient still fits the signed 16-bit multiply-add lanes.
+-    let fraction = |coefficients| {
+-        let low = _mm256_add_epi32(_mm256_madd_epi16(u_v_lo, coefficients), v_rnd);
+-        let high = _mm256_add_epi32(_mm256_madd_epi16(u_v_hi, coefficients), v_rnd);
+-        _mm256_packs_epi32(_mm256_srai_epi32::<16>(low), _mm256_srai_epi32::<16>(high))
+-    };
+     let cb = _mm256_sub_epi16(cb_c, uv_bias);
+     let cr = _mm256_sub_epi16(cr_c, uv_bias);
+-    let r = _mm256_add_epi16(_mm256_add_epi16(y_c, cr), fraction(cr_coeff));
+-    let g = _mm256_add_epi16(_mm256_sub_epi16(y_c, cr), fraction(cg_coeff));
+-    let b = _mm256_add_epi16(
+-        _mm256_add_epi16(y_c, _mm256_slli_epi16::<1>(cb)),
+-        fraction(cb_coeff)
++    let u_v_lo = _mm256_unpacklo_epi16(cr, cb);
++    let u_v_hi = _mm256_unpackhi_epi16(cr, cb);
++
++    // 2 * 13_172 = 26_344 matches (26_345 * cr + 32768) >> 16 for all cr in [-256, 255],
++    // and 2 * -7_471 = -14_942 == CB_FRAC for all cb.
++    let frac_r = _mm256_mulhrs_epi16(cr, _mm256_set1_epi16(13_172));
++    let frac_b = _mm256_mulhrs_epi16(cb, _mm256_set1_epi16(CB_FRAC / 2));
++
++    let low_g = _mm256_add_epi32(_mm256_madd_epi16(u_v_lo, cg_coeff), v_rnd);
++    let high_g = _mm256_add_epi32(_mm256_madd_epi16(u_v_hi, cg_coeff), v_rnd);
++    let frac_g = _mm256_packs_epi32(
++        _mm256_srai_epi32::<16>(low_g),
++        _mm256_srai_epi32::<16>(high_g)
+     );
+ 
++    let r = _mm256_add_epi16(_mm256_add_epi16(y_c, cr), frac_r);
++    let g = _mm256_add_epi16(_mm256_sub_epi16(y_c, cr), frac_g);
++    let b = _mm256_add_epi16(_mm256_add_epi16(y_c, _mm256_slli_epi16::<1>(cb)), frac_b);
++
+     return (r, g, b);
+ }
+ 
+-#[inline(always)]
+ pub fn ycbcr_to_rgba_avx2(
+     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+ ) {
+@@ -234,7 +229,6 @@ pub fn ycbcr_to_rgba_avx2(
+     }
+ }
+ 
+-#[inline(always)]
+ pub fn ycbcr_to_bgra_avx2(
+     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+ ) {
+@@ -257,6 +251,15 @@ unsafe fn ycbcr_to_rgba_unsafe<const BGRA: bool>(
+     // check if we have enough space to write.
+     let tmp:& mut [u8; 64] = out.get_mut(*offset..*offset + 64).expect("Slice to small cannot write").try_into().unwrap();
+ 
++    ycbcr_to_rgba_block::<BGRA>(y.as_ptr(), cb.as_ptr(), cr.as_ptr(), tmp.as_mut_ptr());
++    *offset += 64;
++}
++
++#[inline]
++#[target_feature(enable = "avx2")]
++unsafe fn ycbcr_to_rgba_block<const BGRA: bool>(
++    y: *const i16, cb: *const i16, cr: *const i16, out: *mut u8
++) {
+     let (mut r, g, mut b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
+ 
+     if BGRA {
+@@ -270,33 +273,103 @@ unsafe fn ycbcr_to_rgba_unsafe<const BGRA: bool>(
+     // Pack the integers into u8's using unsigned saturation.
+     let c = _mm256_packus_epi16(r, g); //aaaaa_bbbbb_aaaaa_bbbbbb
+     let d = _mm256_packus_epi16(b, _mm256_set1_epi16(255)); // cccccc_dddddd_ccccccc_ddddd
+-    // transpose_u16 and interleave channels
++                                                            // transpose_u16 and interleave channels
+     let e = _mm256_unpacklo_epi8(c, d); //ab_ab_ab_ab_ab_ab_ab_ab
+     let f = _mm256_unpackhi_epi8(c, d); //cd_cd_cd_cd_cd_cd_cd_cd
+-    // final transpose_u16
++                                        // final transpose_u16
+     let g = _mm256_unpacklo_epi8(e, f); //abcd_abcd_abcd_abcd_abcd
+     let h = _mm256_unpackhi_epi8(e, f);
+-    
++
+     // undo packus shuffling...
+-    let i = _mm256_permute2x128_si256::<{ shuffle(3, 2, 1, 0) }>(g, h);
+-    
+-    let j = _mm256_permute2x128_si256::<{ shuffle(1, 2, 3, 0) }>(g, h);
+-    
+-    let k = _mm256_permute2x128_si256::<{ shuffle(3, 2, 0, 1) }>(g, h);
+-    
+-    let l = _mm256_permute2x128_si256::<{ shuffle(0, 3, 2, 1) }>(g, h);
+-    
+-    let m = _mm256_blend_epi32::<0b1111_0000>(i, j);
+-    
+-    let n = _mm256_blend_epi32::<0b1111_0000>(k, l);
+-    
++    let m = _mm256_permute2x128_si256::<0x20>(g, h);
++    let n = _mm256_permute2x128_si256::<0x31>(g, h);
++
+     // Store
+     // Use streaming instructions to prevent polluting the cache?
+-    _mm256_storeu_si256(tmp.as_mut_ptr().cast(), m);
+-    
+-    _mm256_storeu_si256(tmp[32..].as_mut_ptr().cast(), n);
++    _mm256_storeu_si256(out.cast(), m);
+ 
+-    *offset += 64;
++    _mm256_storeu_si256(out.add(32).cast(), n);
++}
++
++/// Convert a row of at least 16 pixels, overlapping the final vector for a partial tail.
++///
++/// # Safety
++/// The caller must ensure AVX2 is available, and samples must be in `0..=255`.
++#[target_feature(enable = "avx2")]
++pub unsafe fn ycbcr_to_rgba_row_avx2<const BGRA: bool>(
++    y_row: &[i16], cb_row: &[i16], cr_row: &[i16], out_row: &mut [u8], width: usize
++) {
++    assert!(
++        width >= 16
++            && y_row.len() >= width
++            && cb_row.len() >= width
++            && cr_row.len() >= width
++            && out_row.len() / 4 >= width
++    );
++    let y_ptr = y_row.as_ptr();
++    let cb_ptr = cb_row.as_ptr();
++    let cr_ptr = cr_row.as_ptr();
++    let out_ptr = out_row.as_mut_ptr();
++
++    let mut x = 0usize;
++    while x + 16 <= width {
++        ycbcr_to_rgba_block::<BGRA>(
++            y_ptr.add(x),
++            cb_ptr.add(x),
++            cr_ptr.add(x),
++            out_ptr.add(x * 4)
++        );
++        x += 16;
++    }
++    if x < width {
++        let last = width - 16;
++        ycbcr_to_rgba_block::<BGRA>(
++            y_ptr.add(last),
++            cb_ptr.add(last),
++            cr_ptr.add(last),
++            out_ptr.add(last * 4)
++        );
++    }
++}
++
++/// Convert a row of at least 16 pixels, overlapping the final vector for a partial tail.
++///
++/// # Safety
++/// The caller must ensure AVX2 is available, and samples must be in `0..=255`.
++#[target_feature(enable = "avx2")]
++pub unsafe fn ycbcr_to_rgb_row_avx2<const BGR: bool>(
++    y_row: &[i16], cb_row: &[i16], cr_row: &[i16], out_row: &mut [u8], width: usize
++) {
++    assert!(
++        width >= 16
++            && y_row.len() >= width
++            && cb_row.len() >= width
++            && cr_row.len() >= width
++            && out_row.len() / 3 >= width
++    );
++    let y_ptr = y_row.as_ptr();
++    let cb_ptr = cb_row.as_ptr();
++    let cr_ptr = cr_row.as_ptr();
++    let out_ptr = out_row.as_mut_ptr();
++    let mut x = 0usize;
++    while x + 16 <= width {
++        ycbcr_to_rgb_block::<BGR>(
++            y_ptr.add(x),
++            cb_ptr.add(x),
++            cr_ptr.add(x),
++            out_ptr.add(x * 3)
++        );
++        x += 16;
++    }
++    if x < width {
++        let last = width - 16;
++        ycbcr_to_rgb_block::<BGR>(
++            y_ptr.add(last),
++            cb_ptr.add(last),
++            cr_ptr.add(last),
++            out_ptr.add(last * 3)
++        );
++    }
+ }
+ 
+ #[inline]
+@@ -308,6 +381,85 @@ const fn shuffle(z: i32, y: i32, x: i32, w: i32) -> i32 {
+ mod safety_tests {
+     use super::*;
+ 
++    #[test]
++    fn fractional_multiply_matches_native_rounding() {
++        for sample in -256_i32..=255 {
++            let mulhrs = |coefficient| (sample * coefficient + 16_384) >> 15;
++            assert_eq!(mulhrs(13_172), (sample * 26_345 + 32_768) >> 16);
++            assert_eq!(mulhrs(-7_471), (sample * i32::from(CB_FRAC) + 32_768) >> 16);
++        }
++    }
++
++    #[test]
++    fn row_converters_match_scalar_with_tails_and_guards() {
++        if !is_x86_feature_detected!("avx2") {
++            return;
++        }
++        for width in 16..=129 {
++            let y: Vec<i16> = (0..width).map(|x| ((x * 17) % 256) as i16).collect();
++            let cb: Vec<i16> = (0..width).map(|x| ((x * 79 + 13) % 256) as i16).collect();
++            let cr: Vec<i16> = (0..width).map(|x| ((x * 53 + 191) % 256) as i16).collect();
++            for channels in [3, 4] {
++                for reversed in [false, true] {
++                    let mut actual = vec![0xa5; width * channels + 19];
++                    let out = &mut actual[7..7 + width * channels];
++                    unsafe {
++                        match (channels, reversed) {
++                            (3, false) => ycbcr_to_rgb_row_avx2::<false>(&y, &cb, &cr, out, width),
++                            (3, true) => ycbcr_to_rgb_row_avx2::<true>(&y, &cb, &cr, out, width),
++                            (4, false) => ycbcr_to_rgba_row_avx2::<false>(&y, &cb, &cr, out, width),
++                            (4, true) => ycbcr_to_rgba_row_avx2::<true>(&y, &cb, &cr, out, width),
++                            _ => unreachable!()
++                        }
++                    }
++                    let mut expected = vec![0xa5; actual.len()];
++                    for x in 0..width {
++                        let yy = i32::from(y[x]);
++                        let cb = i32::from(cb[x]) - 128;
++                        let cr = i32::from(cr[x]) - 128;
++                        let r = (yy + ((91_881 * cr + 32_768) >> 16)).clamp(0, 255) as u8;
++                        let g = (yy + ((-46_802 * cr - 22_554 * cb + 32_768) >> 16)).clamp(0, 255)
++                            as u8;
++                        let b = (yy + ((116_130 * cb + 32_768) >> 16)).clamp(0, 255) as u8;
++                        let pixel = if reversed { [b, g, r, 255] } else { [r, g, b, 255] };
++                        expected[7 + x * channels..7 + (x + 1) * channels]
++                            .copy_from_slice(&pixel[..channels]);
++                    }
++                    assert_eq!(
++                        actual, expected,
++                        "width {width}, channels {channels}, reversed {reversed}"
++                    );
++                }
++            }
++        }
++    }
++
++    #[test]
++    fn row_converters_reject_short_slices_before_writing() {
++        if !is_x86_feature_detected!("avx2") {
++            return;
++        }
++        for channels in [3, 4] {
++            for short in 0..4 {
++                let samples = [128; 32];
++                let mut out = [0xa5; 128];
++                let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| unsafe {
++                    let y = &samples[..if short == 0 { 31 } else { 32 }];
++                    let cb = &samples[..if short == 1 { 31 } else { 32 }];
++                    let cr = &samples[..if short == 2 { 31 } else { 32 }];
++                    let output = &mut out[..32 * channels - usize::from(short == 3)];
++                    if channels == 3 {
++                        ycbcr_to_rgb_row_avx2::<false>(y, cb, cr, output, 32);
++                    } else {
++                        ycbcr_to_rgba_row_avx2::<false>(y, cb, cr, output, 32);
++                    }
++                }));
++                assert!(result.is_err());
++                assert_eq!(out, [0xa5; 128]);
++            }
++        }
++    }
++
+     /// The safe wrapper must reject an undersized destination before any SIMD store.
+     #[test]
+     #[should_panic]
+@@ -342,5 +494,4 @@ mod safety_tests {
+             "function did NOT write at offset=50 as the API implies"
+         );
+     }
+-
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+index e9d184dafdc4d..e91f5574e6dd9 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+@@ -27,7 +27,7 @@ use crate::bitstream::{BitStreamHuffman, BitstreamStateSnapshot};
+ #[cfg(feature = "arith")]
+ use crate::bitstream_arith::{ArithACTables, ArithDCTables, BitStreamArithmetic};
+ use crate::cancel::{CancelCheck, Debounced, CANCEL_POLL_INTERVAL_MCUS};
+-use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
++use crate::color_convert::{choose_ycbcr_to_rgb_convert_func, ColorConvert16};
+ use crate::components::{Components, SampleRatios};
+ use crate::errors::{DecodeErrors, UnsupportedSchemes};
+ #[cfg(feature = "arith")]
+@@ -358,7 +358,7 @@ pub struct JpegDecoder<T> {
+     pub(crate) idct_4x4_func:    IDCTPtr,
+     pub(crate) idct_1x1_func:    IDCTPtr,
+     // Color convert function which acts on 16 YCbCr values
+-    pub(crate) color_convert_16: ColorConvert16Ptr,
++    pub(crate) color_convert_16: ColorConvert16,
+     pub(crate) z_order:          [usize; MAX_COMPONENTS],
+     /// restart markers
+     pub(crate) restart_interval: usize,
+@@ -2096,19 +2096,19 @@ where
+         }
+     }
+ 
+-    // Refresh the conversion function selected by the configured output colorspace.
++    // Refresh block and row conversion together, including the RGB intermediate used by YCCK.
+     fn set_color_convert_from_options(&mut self) {
+         let out_colorspace = self.options.jpeg_get_out_colorspace();
+-        if matches!(
++        let converter_colorspace = if matches!(
+             out_colorspace,
+             ColorSpace::BGR | ColorSpace::BGRA | ColorSpace::RGB | ColorSpace::RGBA
+         ) {
+-            self.color_convert_16 = choose_ycbcr_to_rgb_convert_func(
+-                self.options.jpeg_get_out_colorspace(),
+-                &self.options
+-            )
+-            .unwrap();
+-        }
++            out_colorspace
++        } else {
++            ColorSpace::RGB
++        };
++        self.color_convert_16 =
++            choose_ycbcr_to_rgb_convert_func(converter_colorspace, &self.options).unwrap();
+     }
+ 
+     #[allow(clippy::redundant_field_names)]
+@@ -4413,24 +4413,34 @@ mod planar_layout_helpers {
+ 
+     #[test]
+     fn set_options_refreshes_cached_dispatch() {
++        fn stale_idct(_: &mut [i32; 64], _: &mut [i16], _: usize) {
++            panic!("set_options did not replace the IDCT");
++        }
++        fn stale_color(_: &[i16; 16], _: &[i16; 16], _: &[i16; 16], _: &mut [u8], _: &mut usize) {
++            panic!("set_options did not replace the color converter");
++        }
+         for (initial, replacement) in [
+             (DecoderOptions::new_fast(), DecoderOptions::new_safe()),
+             (DecoderOptions::new_safe(), DecoderOptions::new_fast())
+         ] {
+             let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&[]), initial);
++            decoder.idct_func = stale_idct;
++            decoder.idct_4x4_func = stale_idct;
++            decoder.idct_1x1_func = stale_idct;
+             decoder.set_options(replacement);
+-            assert_eq!(
+-                decoder.idct_func as usize,
+-                choose_idct_func(&replacement) as usize
+-            );
+-            assert_eq!(
+-                decoder.idct_4x4_func as usize,
+-                choose_idct_4x4_func(&replacement) as usize
+-            );
+-            assert_eq!(
+-                decoder.idct_1x1_func as usize,
+-                choose_idct_1x1_func(&replacement) as usize
+-            );
++            for (cached, configured) in [
++                (decoder.idct_func, choose_idct_func(&replacement)),
++                (decoder.idct_4x4_func, choose_idct_4x4_func(&replacement)),
++                (decoder.idct_1x1_func, choose_idct_1x1_func(&replacement))
++            ] {
++                let mut coefficients = [0; 64];
++                coefficients[0] = 123;
++                let mut actual = [0; 64];
++                let mut expected = [0; 64];
++                cached(&mut coefficients.clone(), &mut actual, 8);
++                configured(&mut coefficients, &mut expected, 8);
++                assert_eq!(actual, expected);
++            }
+         }
+ 
+         for colorspace in [
+@@ -4441,11 +4451,85 @@ mod planar_layout_helpers {
+         ] {
+             let replacement = DecoderOptions::default().jpeg_set_out_colorspace(colorspace);
+             let mut decoder = JpegDecoder::new(ZCursor::new(&[]));
++            decoder.color_convert_16.block = stale_color;
+             decoder.set_options(replacement);
+-            assert_eq!(
+-                decoder.color_convert_16 as usize,
+-                choose_ycbcr_to_rgb_convert_func(colorspace, &replacement).unwrap() as usize
++            let configured = choose_ycbcr_to_rgb_convert_func(colorspace, &replacement).unwrap();
++            assert_eq!(decoder.color_convert_16.row.is_some(), configured.row.is_some());
++            let mut actual = [0; 64];
++            let mut expected = [0; 64];
++            (decoder.color_convert_16.block)(&[123; 16], &[81; 16], &[179; 16], &mut actual, &mut 0);
++            (configured.block)(&[123; 16], &[81; 16], &[179; 16], &mut expected, &mut 0);
++            assert_eq!(actual, expected);
++        }
++    }
++
++    #[test]
++    fn row_dispatch_refreshes_after_headers() {
++        let data = include_bytes!("../../../test-images/jpeg/non_interleaved_422_65x65.jpg");
++        for colorspace in [
++            ColorSpace::RGB,
++            ColorSpace::BGR,
++            ColorSpace::RGBA,
++            ColorSpace::BGRA
++        ] {
++            for use_simd in [false, true] {
++                let initial = DecoderOptions::default()
++                    .jpeg_set_out_colorspace(ColorSpace::RGB)
++                    .set_use_unsafe(!use_simd);
++                let replacement = initial
++                    .jpeg_set_out_colorspace(colorspace)
++                    .set_use_unsafe(use_simd);
++                let mut reference = JpegDecoder::new_with_options(ZCursor::new(data), replacement);
++                let expected = reference.decode().unwrap();
++                for scanline in [false, true] {
++                    let mut actual = JpegDecoder::new_with_options(ZCursor::new(data), initial);
++                    actual.decode_headers().unwrap();
++                    actual.set_options(replacement);
++                    let expected_row = crate::color_convert::choose_ycbcr_to_rgb_convert_func(
++                        colorspace,
++                        &replacement
++                    )
++                    .unwrap()
++                    .row
++                    .is_some();
++                    assert_eq!(actual.color_convert_16.row.is_some(), expected_row);
++                    if !scanline {
++                        assert_eq!(actual.decode().unwrap(), expected);
++                        continue;
++                    }
++                    let row_bytes = 65 * colorspace.num_components();
++                    let stride = row_bytes + 7;
++                    let mut row = vec![0xa5; stride];
++                    let mut sink = actual.scanline_output();
++                    for reference in expected.chunks_exact(row_bytes) {
++                        assert_eq!(
++                            sink.read_scanlines(&mut row, stride).unwrap(),
++                            ScanlineReadStatus::RowsProcessed { rows: 1 }
++                        );
++                        assert_eq!(&row[..row_bytes], reference);
++                        assert!(row[row_bytes..].iter().all(|&byte| byte == 0xa5));
++                    }
++                    assert_eq!(sink.finish().unwrap(), ScanlineStatus::Complete);
++                }
++            }
++        }
++    }
++
++    #[test]
++    fn row_dispatch_resets_for_cmyk_reconfiguration() {
++        let data = include_bytes!("../../../test-images/jpeg/four_components.jpg");
++        for use_simd in [false, true] {
++            let options = DecoderOptions::default().set_use_unsafe(use_simd);
++            let replacement = options.jpeg_set_out_colorspace(ColorSpace::CMYK);
++            let mut reference = JpegDecoder::new_with_options(ZCursor::new(data), replacement);
++            let expected = reference.decode().unwrap();
++            let mut actual = JpegDecoder::new_with_options(
++                ZCursor::new(data),
++                options.jpeg_set_out_colorspace(ColorSpace::RGBA)
+             );
++            actual.decode_headers().unwrap();
++            actual.set_options(replacement);
++            assert_eq!(actual.decode().unwrap(), expected);
+         }
+     }
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
+index 2c1ec2eed74dc..f47368c78f629 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/upsampler/avx2.rs
+@@ -41,18 +41,18 @@ unsafe fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const
+     let v_even_bias = _mm256_set1_epi16(EVEN);
+     let v_odd_bias = _mm256_set1_epi16(ODD);
+ 
+-    let upsample16 = |input: &[i16; 18], output: &mut [i16; 32]| {
+-        let in_ptr = input.as_ptr();
+-        let out_ptr = output.as_mut_ptr();
+-
+-        // SAFETY: The input is 18 * 16 bit long, so the loads are safe.
+-        let (v_prev, v_curr, v_next) = unsafe {
+-            (
+-                _mm256_loadu_si256(in_ptr.add(0) as *const __m256i),
+-                _mm256_loadu_si256(in_ptr.add(1) as *const __m256i),
+-                _mm256_loadu_si256(in_ptr.add(2) as *const __m256i),
+-            )
+-        };
++    let in_ptr = input.as_ptr();
++    let out_ptr = unsafe { output.as_mut_ptr().add(2) };
++    let mut v_prev_vec = unsafe { _mm256_loadu_si256(in_ptr.cast()) };
++    let mut pos = 0usize;
++
++    while pos + 32 <= len {
++        let v_next_vec = unsafe { _mm256_loadu_si256(in_ptr.add(pos + 16).cast()) };
++        let v_mid = _mm256_permute2x128_si256::<0x21>(v_prev_vec, v_next_vec);
++        let v_prev = v_prev_vec;
++        let v_curr = _mm256_alignr_epi8::<2>(v_mid, v_prev_vec);
++        let v_next = _mm256_alignr_epi8::<4>(v_mid, v_prev_vec);
++        v_prev_vec = v_next_vec;
+ 
+         let v_common = _mm256_mullo_epi16(v_curr, v_three);
+         let v_even = _mm256_srai_epi16::<SHIFT>(
+@@ -66,28 +66,40 @@ unsafe fn upsample_horizontal_filtered<const SHIFT: i32, const EVEN: i16, const
+         let v_final_1 = _mm256_permute2x128_si256(v_res_1, v_res_2, 0x20);
+         let v_final_2 = _mm256_permute2x128_si256(v_res_1, v_res_2, 0x31);
+ 
+-        // SAFETY: The output is 32 * 16 bit long, so the stores are safe.
+         unsafe {
+-            _mm256_storeu_si256(out_ptr as *mut __m256i, v_final_1);
+-            _mm256_storeu_si256(out_ptr.add(16) as *mut __m256i, v_final_2);
++            _mm256_storeu_si256(out_ptr.add(pos * 2).cast(), v_final_1);
++            _mm256_storeu_si256(out_ptr.add(pos * 2 + 16).cast(), v_final_2);
+         }
+-    };
+-
+-    for (input, output) in input
+-        .windows(18)
+-        .step_by(16)
+-        .zip(output[2..].chunks_exact_mut(32))
+-    {
+-        upsample16(input.try_into().unwrap(), output.try_into().unwrap());
++        pos += 16;
+     }
+ 
+-    // Upsample the remainder. This may have some overlap, but that's fine.
+-    if let Some(rest_input) = input.last_chunk::<18>() {
+-        let end = output.len() - 2;
+-        if let Some(rest_output) = output[..end].last_chunk_mut::<32>() {
+-            upsample16(rest_input, rest_output);
++    let upsample_tail = |last_pos: usize| {
++        let v_prev = unsafe { _mm256_loadu_si256(in_ptr.add(last_pos).cast()) };
++        let v_curr = unsafe { _mm256_loadu_si256(in_ptr.add(last_pos + 1).cast()) };
++        let v_next = unsafe { _mm256_loadu_si256(in_ptr.add(last_pos + 2).cast()) };
++
++        let v_common = _mm256_mullo_epi16(v_curr, v_three);
++        let v_even = _mm256_srai_epi16::<SHIFT>(
++            _mm256_add_epi16(_mm256_add_epi16(v_common, v_prev), v_even_bias));
++        let v_odd = _mm256_srai_epi16::<SHIFT>(
++            _mm256_add_epi16(_mm256_add_epi16(v_common, v_next), v_odd_bias));
++
++        let v_res_1 = _mm256_unpacklo_epi16(v_even, v_odd);
++        let v_res_2 = _mm256_unpackhi_epi16(v_even, v_odd);
++
++        let v_final_1 = _mm256_permute2x128_si256(v_res_1, v_res_2, 0x20);
++        let v_final_2 = _mm256_permute2x128_si256(v_res_1, v_res_2, 0x31);
++
++        unsafe {
++            _mm256_storeu_si256(out_ptr.add(last_pos * 2).cast(), v_final_1);
++            _mm256_storeu_si256(out_ptr.add(last_pos * 2 + 16).cast(), v_final_2);
+         }
++    };
++    let last_pos = len - 18;
++    if pos < last_pos {
++        upsample_tail(pos);
+     }
++    upsample_tail(last_pos);
+ 
+     // Last two pixels.
+     output[output.len() - 2] = (3 * input[len - 1] + input[len - 2] + EVEN) >> SHIFT;
+@@ -124,19 +136,17 @@ unsafe fn upsample_vertical_filtered<const ROUND: bool>(
+     let v_one = _mm256_set1_epi16(1);
+     let v_two = _mm256_set1_epi16(2);
+ 
+-    let upsample16 = |input: &[i16; 16],
+-                      in_near: &[i16; 16],
+-                      in_far: &[i16; 16],
+-                      out_top: &mut [i16; 16],
+-                      out_bottom: &mut [i16; 16]| {
+-        // SAFETY: Inputs are all 16 * 16 bit long, so the loads are safe.
+-        let (v_in, v_near, v_far) = unsafe {
+-            (
+-                _mm256_loadu_si256(input.as_ptr() as *const __m256i),
+-                _mm256_loadu_si256(in_near.as_ptr() as *const __m256i),
+-                _mm256_loadu_si256(in_far.as_ptr() as *const __m256i),
+-            )
+-        };
++    let in_ptr = input.as_ptr();
++    let near_ptr = in_near.as_ptr();
++    let far_ptr = in_far.as_ptr();
++    let top_ptr = out_top.as_mut_ptr();
++    let bot_ptr = out_bottom.as_mut_ptr();
++
++    let mut pos = 0usize;
++    while pos + 16 <= len {
++        let v_in = unsafe { _mm256_loadu_si256(in_ptr.add(pos).cast()) };
++        let v_near = unsafe { _mm256_loadu_si256(near_ptr.add(pos).cast()) };
++        let v_far = unsafe { _mm256_loadu_si256(far_ptr.add(pos).cast()) };
+ 
+         let v_common = _mm256_mullo_epi16(v_in, v_three);
+         let top = _mm256_add_epi16(v_common, v_near);
+@@ -148,41 +158,32 @@ unsafe fn upsample_vertical_filtered<const ROUND: bool>(
+             _mm256_srai_epi16::<2>(_mm256_add_epi16(bottom, v_two))
+         } else { bottom };
+ 
+-        // SAFETY: Outputs are 16 * 16 bit long, so the stores are safe.
+         unsafe {
+-            _mm256_storeu_si256(out_top.as_mut_ptr() as *mut __m256i, v_out_top);
+-            _mm256_storeu_si256(out_bottom.as_mut_ptr() as *mut __m256i, v_out_bottom);
++            _mm256_storeu_si256(top_ptr.add(pos).cast(), v_out_top);
++            _mm256_storeu_si256(bot_ptr.add(pos).cast(), v_out_bottom);
+         }
+-    };
+-
+-    let chunks = input
+-        .chunks_exact(16)
+-        .zip(in_near.chunks_exact(16))
+-        .zip(in_far.chunks_exact(16))
+-        .zip(out_top.chunks_exact_mut(16))
+-        .zip(out_bottom.chunks_exact_mut(16));
+-
+-    for ((((input, in_near), in_far), out_top), out_bottom) in chunks {
+-        upsample16(
+-            input.try_into().unwrap(),
+-            in_near.try_into().unwrap(),
+-            in_far.try_into().unwrap(),
+-            out_top.try_into().unwrap(),
+-            out_bottom.try_into().unwrap(),
+-        );
++        pos += 16;
+     }
+ 
+-    // Upsample the remainder. This may have some overlap, but that's fine.
+-    // Edition upgrade will fix this nested awfulness.
+-    if let Some(rest) = input.last_chunk::<16>() {
+-        if let Some(rest_near) = in_near.last_chunk::<16>() {
+-            if let Some(rest_far) = in_far.last_chunk::<16>() {
+-                if let Some(mut rest_top) = out_top.last_chunk_mut::<16>() {
+-                    if let Some(mut rest_bottom) = out_bottom.last_chunk_mut::<16>() {
+-                        upsample16(rest, rest_near, rest_far, &mut rest_top, &mut rest_bottom);
+-                    }
+-                }
+-            }
++    if pos < len {
++        let last = len - 16;
++        let v_in = unsafe { _mm256_loadu_si256(in_ptr.add(last).cast()) };
++        let v_near = unsafe { _mm256_loadu_si256(near_ptr.add(last).cast()) };
++        let v_far = unsafe { _mm256_loadu_si256(far_ptr.add(last).cast()) };
++
++        let v_common = _mm256_mullo_epi16(v_in, v_three);
++        let top = _mm256_add_epi16(v_common, v_near);
++        let bottom = _mm256_add_epi16(v_common, v_far);
++        let v_out_top = if ROUND {
++            _mm256_srai_epi16::<2>(_mm256_add_epi16(top, v_one))
++        } else { top };
++        let v_out_bottom = if ROUND {
++            _mm256_srai_epi16::<2>(_mm256_add_epi16(bottom, v_two))
++        } else { bottom };
++
++        unsafe {
++            _mm256_storeu_si256(top_ptr.add(last).cast(), v_out_top);
++            _mm256_storeu_si256(bot_ptr.add(last).cast(), v_out_bottom);
+         }
+     }
+ }
+@@ -193,19 +194,258 @@ pub unsafe fn upsample_hv_avx2(
+     input: &[i16], in_near: &[i16], in_far: &[i16], scratch_space: &mut [i16], output: &mut [i16]
+ ) {
+     assert_eq!(input.len() * 4, output.len());
+-    assert!(input.len() * 2 <= scratch_space.len());
+-    let scratch_space = &mut scratch_space[..input.len() * 2];
++    assert_eq!(in_near.len(), input.len());
++    assert_eq!(in_far.len(), input.len());
+ 
+-    unsafe { upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space) };
++    let len = input.len();
++    if len < 32 {
++        assert!(len * 2 <= scratch_space.len());
++        let scratch_space = &mut scratch_space[..len * 2];
++        upsample_vertical_filtered::<false>(input, in_near, in_far, scratch_space);
++        let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(len);
++        let (out_top, out_bottom) = output.split_at_mut(len * 2);
++        upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
++        upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
++        return;
++    }
+ 
+-    let scratch_half = scratch_space.len() / 2;
+-    let output_half = output.len() / 2;
++    let (out_top, out_bottom) = output.split_at_mut(len * 2);
++    let top0 = input[0] * 3 + in_near[0];
++    let top1 = input[1] * 3 + in_near[1];
++    out_top[0] = (top0 * 4 + 8) >> 4;
++    out_top[1] = (top0 * 3 + top1 + 7) >> 4;
+ 
+-    let (scratch_top, scratch_bottom) = scratch_space.split_at_mut(scratch_half);
+-    let (out_top, out_bottom) = output.split_at_mut(output_half);
++    let bot0 = input[0] * 3 + in_far[0];
++    let bot1 = input[1] * 3 + in_far[1];
++    out_bottom[0] = (bot0 * 4 + 8) >> 4;
++    out_bottom[1] = (bot0 * 3 + bot1 + 7) >> 4;
+ 
+-    unsafe {
+-        upsample_horizontal_filtered::<4, 8, 7>(scratch_top, out_top);
+-        upsample_horizontal_filtered::<4, 8, 7>(scratch_bottom, out_bottom);
++    let v_three = _mm256_set1_epi16(3);
++    // Preserve the existing combined filter's single final rounding step.
++    let v_even_bias = _mm256_set1_epi16(8);
++    let v_odd_bias = _mm256_set1_epi16(7);
++
++    let in_ptr = input.as_ptr();
++    let near_ptr = in_near.as_ptr();
++    let far_ptr = in_far.as_ptr();
++    let top_out_ptr = unsafe { out_top.as_mut_ptr().add(2) };
++    let bot_out_ptr = unsafe { out_bottom.as_mut_ptr().add(2) };
++
++    let v_in0 = unsafe { _mm256_loadu_si256(in_ptr.cast()) };
++    let v_near0 = unsafe { _mm256_loadu_si256(near_ptr.cast()) };
++    let v_far0 = unsafe { _mm256_loadu_si256(far_ptr.cast()) };
++    let v_com0 = _mm256_mullo_epi16(v_in0, v_three);
++    let mut prev_top = _mm256_add_epi16(v_com0, v_near0);
++    let mut prev_bot = _mm256_add_epi16(v_com0, v_far0);
++
++    let mut pos = 0usize;
++    while pos + 32 <= len {
++        let v_in1 = unsafe { _mm256_loadu_si256(in_ptr.add(pos + 16).cast()) };
++        let v_near1 = unsafe { _mm256_loadu_si256(near_ptr.add(pos + 16).cast()) };
++        let v_far1 = unsafe { _mm256_loadu_si256(far_ptr.add(pos + 16).cast()) };
++        let v_com1 = _mm256_mullo_epi16(v_in1, v_three);
++        let next_top = _mm256_add_epi16(v_com1, v_near1);
++        let next_bot = _mm256_add_epi16(v_com1, v_far1);
++
++        let mid_top = _mm256_permute2x128_si256::<0x21>(prev_top, next_top);
++        let curr_top = _mm256_alignr_epi8::<2>(mid_top, prev_top);
++        let nxt_top = _mm256_alignr_epi8::<4>(mid_top, prev_top);
++        let com_top = _mm256_mullo_epi16(curr_top, v_three);
++        let even_top = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_top, prev_top), v_even_bias));
++        let odd_top = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_top, nxt_top), v_odd_bias));
++        let res1_top = _mm256_unpacklo_epi16(even_top, odd_top);
++        let res2_top = _mm256_unpackhi_epi16(even_top, odd_top);
++        unsafe {
++            _mm256_storeu_si256(
++                top_out_ptr.add(pos * 2).cast(),
++                _mm256_permute2x128_si256(res1_top, res2_top, 0x20)
++            );
++            _mm256_storeu_si256(
++                top_out_ptr.add(pos * 2 + 16).cast(),
++                _mm256_permute2x128_si256(res1_top, res2_top, 0x31)
++            );
++        }
++
++        let mid_bot = _mm256_permute2x128_si256::<0x21>(prev_bot, next_bot);
++        let curr_bot = _mm256_alignr_epi8::<2>(mid_bot, prev_bot);
++        let nxt_bot = _mm256_alignr_epi8::<4>(mid_bot, prev_bot);
++        let com_bot = _mm256_mullo_epi16(curr_bot, v_three);
++        let even_bot = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_bot, prev_bot), v_even_bias));
++        let odd_bot = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_bot, nxt_bot), v_odd_bias));
++        let res1_bot = _mm256_unpacklo_epi16(even_bot, odd_bot);
++        let res2_bot = _mm256_unpackhi_epi16(even_bot, odd_bot);
++        unsafe {
++            _mm256_storeu_si256(
++                bot_out_ptr.add(pos * 2).cast(),
++                _mm256_permute2x128_si256(res1_bot, res2_bot, 0x20)
++            );
++            _mm256_storeu_si256(
++                bot_out_ptr.add(pos * 2 + 16).cast(),
++                _mm256_permute2x128_si256(res1_bot, res2_bot, 0x31)
++            );
++        }
++
++        prev_top = next_top;
++        prev_bot = next_bot;
++        pos += 16;
++    }
++
++    let upsample_tail = |last_pos: usize| {
++        let vp_in = unsafe { _mm256_loadu_si256(in_ptr.add(last_pos).cast()) };
++        let vp_near = unsafe { _mm256_loadu_si256(near_ptr.add(last_pos).cast()) };
++        let vp_far = unsafe { _mm256_loadu_si256(far_ptr.add(last_pos).cast()) };
++        let vp_com = _mm256_mullo_epi16(vp_in, v_three);
++        let vp_top = _mm256_add_epi16(vp_com, vp_near);
++        let vp_bot = _mm256_add_epi16(vp_com, vp_far);
++
++        let vc_in = unsafe { _mm256_loadu_si256(in_ptr.add(last_pos + 1).cast()) };
++        let vc_near = unsafe { _mm256_loadu_si256(near_ptr.add(last_pos + 1).cast()) };
++        let vc_far = unsafe { _mm256_loadu_si256(far_ptr.add(last_pos + 1).cast()) };
++        let vc_com = _mm256_mullo_epi16(vc_in, v_three);
++        let vc_top = _mm256_add_epi16(vc_com, vc_near);
++        let vc_bot = _mm256_add_epi16(vc_com, vc_far);
++
++        let vn_in = unsafe { _mm256_loadu_si256(in_ptr.add(last_pos + 2).cast()) };
++        let vn_near = unsafe { _mm256_loadu_si256(near_ptr.add(last_pos + 2).cast()) };
++        let vn_far = unsafe { _mm256_loadu_si256(far_ptr.add(last_pos + 2).cast()) };
++        let vn_com = _mm256_mullo_epi16(vn_in, v_three);
++        let vn_top = _mm256_add_epi16(vn_com, vn_near);
++        let vn_bot = _mm256_add_epi16(vn_com, vn_far);
++
++        let com_top = _mm256_mullo_epi16(vc_top, v_three);
++        let even_top = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_top, vp_top), v_even_bias));
++        let odd_top = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_top, vn_top), v_odd_bias));
++        let res1_top = _mm256_unpacklo_epi16(even_top, odd_top);
++        let res2_top = _mm256_unpackhi_epi16(even_top, odd_top);
++        unsafe {
++            _mm256_storeu_si256(
++                top_out_ptr.add(last_pos * 2).cast(),
++                _mm256_permute2x128_si256(res1_top, res2_top, 0x20)
++            );
++            _mm256_storeu_si256(
++                top_out_ptr.add(last_pos * 2 + 16).cast(),
++                _mm256_permute2x128_si256(res1_top, res2_top, 0x31)
++            );
++        }
++
++        let com_bot = _mm256_mullo_epi16(vc_bot, v_three);
++        let even_bot = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_bot, vp_bot), v_even_bias));
++        let odd_bot = _mm256_srai_epi16::<4>(
++            _mm256_add_epi16(_mm256_add_epi16(com_bot, vn_bot), v_odd_bias));
++        let res1_bot = _mm256_unpacklo_epi16(even_bot, odd_bot);
++        let res2_bot = _mm256_unpackhi_epi16(even_bot, odd_bot);
++        unsafe {
++            _mm256_storeu_si256(
++                bot_out_ptr.add(last_pos * 2).cast(),
++                _mm256_permute2x128_si256(res1_bot, res2_bot, 0x20)
++            );
++            _mm256_storeu_si256(
++                bot_out_ptr.add(last_pos * 2 + 16).cast(),
++                _mm256_permute2x128_si256(res1_bot, res2_bot, 0x31)
++            );
++        }
++    };
++    let last_pos = len - 18;
++    // A non-aligned width can leave one full window between the sliding loop and the tail.
++    if pos < last_pos {
++        upsample_tail(pos);
++    }
++    upsample_tail(last_pos);
++
++    let top_last = input[len - 1] * 3 + in_near[len - 1];
++    let top_prev = input[len - 2] * 3 + in_near[len - 2];
++    out_top[len * 2 - 2] = (3 * top_last + top_prev + 8) >> 4;
++    out_top[len * 2 - 1] = (4 * top_last + 7) >> 4;
++
++    let bot_last = input[len - 1] * 3 + in_far[len - 1];
++    let bot_prev = input[len - 2] * 3 + in_far[len - 2];
++    out_bottom[len * 2 - 2] = (3 * bot_last + bot_prev + 8) >> 4;
++    out_bottom[len * 2 - 1] = (4 * bot_last + 7) >> 4;
++}
++
++#[cfg(all(test, feature = "std"))]
++mod tests {
++    use super::*;
++    use crate::upsampler::scalar;
++
++    #[test]
++    fn sliding_windows_and_fused_hv_match_scalar() {
++        if !is_x86_feature_detected!("avx2") {
++            return;
++        }
++        for len in (3..=160).chain([256, 1280]) {
++            for pattern in 0..4 {
++                let row = |seed| -> Vec<i16> {
++                    (0..len)
++                        .map(|x| match pattern {
++                            0 => 0,
++                            1 => 255,
++                            2 => {
++                                if (x + seed) % 2 == 0 {
++                                    0
++                                } else {
++                                    255
++                                }
++                            }
++                            _ => ((x * 79 + seed * 53) % 256) as i16
++                        })
++                        .collect()
++                };
++                let input = row(0);
++                let near = row(1);
++                let far = row(2);
++                for kind in 0..3 {
++                    let output_len = len * if kind == 2 { 4 } else { 2 };
++                    let mut actual = vec![-1234; output_len + 17];
++                    let mut expected = actual.clone();
++                    let mut scratch = vec![0; len * 2];
++                    let out = &mut actual[5..5 + output_len];
++                    let reference = &mut expected[5..5 + output_len];
++                    unsafe {
++                        match kind {
++                            0 => {
++                                scalar::upsample_horizontal(
++                                    &input,
++                                    &near,
++                                    &far,
++                                    &mut scratch,
++                                    reference
++                                );
++                                upsample_horizontal_avx2(&input, &near, &far, &mut [], out);
++                            }
++                            1 => {
++                                scalar::upsample_vertical(
++                                    &input,
++                                    &near,
++                                    &far,
++                                    &mut scratch,
++                                    reference
++                                );
++                                upsample_vertical_avx2(&input, &near, &far, &mut [], out);
++                            }
++                            _ => {
++                                scalar::upsample_hv(&input, &near, &far, &mut scratch, reference);
++                                if len >= 32 {
++                                    upsample_hv_avx2(&input, &near, &far, &mut [], out);
++                                } else {
++                                    upsample_hv_avx2(&input, &near, &far, &mut scratch, out);
++                                }
++                            }
++                        }
++                    }
++                    assert_eq!(
++                        actual, expected,
++                        "len {len}, pattern {pattern}, kind {kind}"
++                    );
++                }
++            }
++        }
+     }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/worker.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/worker.rs
+index c4cb9d3311c0c..41bfdecf8231c 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/worker.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/worker.rs
+@@ -5,16 +5,20 @@
+  *
+  * You can redistribute it or modify it under terms of the MIT, Apache License or Zlib license
+  */
+-#![allow(clippy::cast_sign_loss,clippy::cast_possible_wrap,clippy::cast_possible_truncation)]
++#![allow(
++    clippy::cast_sign_loss,
++    clippy::cast_possible_wrap,
++    clippy::cast_possible_truncation
++)]
+ use alloc::{format, vec};
+-use core::convert::TryInto;
+ use core::cmp::min;
++use core::convert::TryInto;
+ 
+ use zune_core::colorspace::ColorSpace;
+ 
+-use crate::color_convert::ycbcr_to_grayscale;
++use crate::color_convert::{ycbcr_to_grayscale, ColorConvert16};
+ use crate::components::{Components, SampleRatios};
+-use crate::decoder::{ColorConvert16Ptr, MAX_COMPONENTS};
++use crate::decoder::MAX_COMPONENTS;
+ use crate::errors::DecodeErrors;
+ 
+ /// fast 0..255 * 0..255 => 0..255 rounded multiplication
+@@ -29,7 +33,7 @@ fn blinn_8x8(in_val: u8, y: u8) -> u8 {
+ 
+ #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
+ pub(crate) fn color_convert(
+-    unprocessed: &[&[i16]; MAX_COMPONENTS], color_convert_16: ColorConvert16Ptr,
++    unprocessed: &[&[i16]; MAX_COMPONENTS], color_convert_16: ColorConvert16,
+     input_colorspace: ColorSpace, output_colorspace: ColorSpace, output: &mut [u8], width: usize,
+     padded_width: usize
+ ) -> Result<(), DecodeErrors> {
+@@ -82,13 +86,7 @@ pub(crate) fn color_convert(
+             );
+         }
+         (ColorSpace::YCCK, ColorSpace::CMYK) => {
+-            color_convert_ycck_to_cmyk(
+-                unprocessed,
+-                width,
+-                padded_width,
+-                color_convert_16,
+-                output
+-            );
++            color_convert_ycck_to_cmyk(unprocessed, width, padded_width, color_convert_16, output);
+         }
+         (ColorSpace::CMYK, ColorSpace::RGB) => {
+             color_convert_cymk_to_rgb::<3>(unprocessed, width, padded_width, output);
+@@ -240,7 +238,7 @@ fn copy_removing_padding_generic(
+ #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+ fn color_convert_ycck_to_rgb<const NUM_COMPONENTS: usize>(
+     mcu_block: &[&[i16]; MAX_COMPONENTS], width: usize, padded_width: usize,
+-    output_colorspace: ColorSpace, color_convert_16: ColorConvert16Ptr, output: &mut [u8]
++    output_colorspace: ColorSpace, color_convert_16: ColorConvert16, output: &mut [u8]
+ ) {
+     color_convert_ycbcr(
+         mcu_block,
+@@ -277,7 +275,7 @@ fn color_convert_ycck_to_rgb<const NUM_COMPONENTS: usize>(
+ #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+ fn color_convert_ycck_to_cmyk(
+     mcu_block: &[&[i16]; MAX_COMPONENTS], width: usize, padded_width: usize,
+-    color_convert_16: ColorConvert16Ptr, output: &mut [u8]
++    color_convert_16: ColorConvert16, output: &mut [u8]
+ ) {
+     let mut rgb = vec![0_u8; width * 3 * (output.len() / (width * 4))];
+     color_convert_ycbcr(
+@@ -293,7 +291,11 @@ fn color_convert_ycck_to_cmyk(
+         .zip(rgb.chunks_exact(width * 3))
+         .zip(mcu_block[3].chunks_exact(padded_width))
+     {
+-        for ((pix, src), k) in pix_w.chunks_exact_mut(4).zip(rgb_w.chunks_exact(3)).zip(k_w) {
++        for ((pix, src), k) in pix_w
++            .chunks_exact_mut(4)
++            .zip(rgb_w.chunks_exact(3))
++            .zip(k_w)
++        {
+             pix[0] = 255 - src[0];
+             pix[1] = 255 - src[1];
+             pix[2] = 255 - src[2];
+@@ -344,7 +346,7 @@ fn color_convert_cymk_to_rgb<const NUM_COMPONENTS: usize>(
+ )]
+ fn color_convert_ycbcr(
+     mcu_block: &[&[i16]; MAX_COMPONENTS], width: usize, padded_width: usize,
+-    output_colorspace: ColorSpace, color_convert_16: ColorConvert16Ptr, output: &mut [u8]
++    output_colorspace: ColorSpace, color_convert_16: ColorConvert16, output: &mut [u8]
+ ) {
+     let num_components = output_colorspace.num_components();
+ 
+@@ -374,13 +376,22 @@ fn color_convert_ycbcr(
+             // we handle widths less than 16 a bit differently, allocating a temporary
+             // buffer and writing to that and then flushing to the out buffer
+             // because of the optimizations applied below,
+-            (color_convert_16)(&y_out, &cb_out, &cr_out, &mut temp, &mut 0);
++            (color_convert_16.block)(&y_out, &cb_out, &cr_out, &mut temp, &mut 0);
+             // copy to stride
+             out[0..width * num_components].copy_from_slice(&temp[0..width * num_components]);
+             // next
+             continue;
+         }
+ 
++        #[cfg(all(feature = "x86", any(target_arch = "x86", target_arch = "x86_64")))]
++        if let Some(convert_row) = color_convert_16.row {
++            // SAFETY: Configured together with the block converter after the AVX2 policy check.
++            unsafe {
++                convert_row(y_width, cb_width, cr_width, out, width);
++            }
++            continue;
++        }
++
+         // Chunk in outputs of 16 to pass to color_convert as an array of 16 i16's.
+         for (((y, cb), cr), out_c) in y_width
+             .chunks_exact(16)
+@@ -388,7 +399,7 @@ fn color_convert_ycbcr(
+             .zip(cr_width.chunks_exact(16))
+             .zip(out.chunks_exact_mut(16 * num_components))
+         {
+-            (color_convert_16)(
++            (color_convert_16.block)(
+                 y.try_into().unwrap(),
+                 cb.try_into().unwrap(),
+                 cr.try_into().unwrap(),
+@@ -396,33 +407,177 @@ fn color_convert_ycbcr(
+                 &mut 0
+             );
+         }
+-        //we have more pixels in the end that can't be handled by the main loop.
+-        //move pointer back a little bit to get last 16 bytes,
+-        //color convert, and overwrite
+-        //This means some values will be color converted twice.
+-        for ((y, cb), cr) in y_width[width - 16..]
+-            .chunks_exact(16)
+-            .zip(cb_width[width - 16..].chunks_exact(16))
+-            .zip(cr_width[width - 16..].chunks_exact(16))
+-            .take(1)
+-        {
+-            (color_convert_16)(
+-                y.try_into().unwrap(),
+-                cb.try_into().unwrap(),
+-                cr.try_into().unwrap(),
+-                &mut temp,
+-                &mut 0
+-            );
++        if width % 16 != 0 {
++            //we have more pixels in the end that can't be handled by the main loop.
++            //move pointer back a little bit to get last 16 bytes,
++            //color convert, and overwrite
++            //This means some values will be color converted twice.
++            for ((y, cb), cr) in y_width[width - 16..]
++                .chunks_exact(16)
++                .zip(cb_width[width - 16..].chunks_exact(16))
++                .zip(cr_width[width - 16..].chunks_exact(16))
++                .take(1)
++            {
++                (color_convert_16.block)(
++                    y.try_into().unwrap(),
++                    cb.try_into().unwrap(),
++                    cr.try_into().unwrap(),
++                    &mut temp,
++                    &mut 0
++                );
++            }
++
++            let rem = out[(width - 16) * num_components..]
++                .chunks_exact_mut(16 * num_components)
++                .next()
++                .unwrap();
++
++            rem.copy_from_slice(&temp[0..rem.len()]);
++        }
++    }
++}
++#[cfg(test)]
++mod color_row_tests {
++    use zune_core::options::DecoderOptions;
++
++    use super::*;
++    use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
++
++    #[cfg(all(
++        feature = "std",
++        feature = "x86",
++        any(target_arch = "x86", target_arch = "x86_64")
++    ))]
++    #[test]
++    fn configured_row_dispatch_executes_for_eligible_widths() {
++        use core::cell::Cell;
++
++        use crate::color_convert::ColorConvertRowPtr;
++
++        std::thread_local! {
++            static SELECTED: Cell<Option<ColorConvertRowPtr>> = Cell::new(None);
++            static CALLS: Cell<usize> = Cell::new(0);
+         }
++        unsafe fn observed(y: &[i16], cb: &[i16], cr: &[i16], out: &mut [u8], width: usize) {
++            CALLS.with(|count| count.set(count.get() + 1));
++            SELECTED.with(|selected| unsafe {
++                selected.get().unwrap()(y, cb, cr, out, width);
++            });
++        }
++        for width in [1, 15, 16, 17, 31, 32, 33, 64] {
++            for format in [
++                ColorSpace::RGB,
++                ColorSpace::BGR,
++                ColorSpace::RGBA,
++                ColorSpace::BGRA
++            ] {
++                for use_unsafe in [false, true] {
++                    let options = DecoderOptions::default().set_use_unsafe(use_unsafe);
++                    for block_only in [false, true] {
++                        let mut converter =
++                            choose_ycbcr_to_rgb_convert_func(format, &options).unwrap();
++                        assert_eq!(converter.row.is_some(), options.use_avx2());
++                        if block_only {
++                            converter.row = None;
++                        }
++                        let has_row = converter.row.is_some();
++                        SELECTED.with(|selected| selected.set(converter.row));
++                        CALLS.with(|count| count.set(0));
++                        if has_row {
++                            converter.row = Some(observed);
++                        }
++                        let padded = (width + 15) & !15;
++                        let y = vec![171; padded * 3];
++                        let cb = vec![31; padded * 3];
++                        let cr = vec![225; padded * 3];
++                        let planes = [&y[..], &cb[..], &cr[..], &[]];
++                        let mut actual = vec![0xa5; width * format.num_components() * 3 + 11];
++                        let mut expected = actual.clone();
++                        color_convert_ycbcr(&planes, width, padded, format, converter, &mut actual);
++                        color_convert_ycbcr(
++                            &planes, width, padded, format, ColorConvert16::scalar_for_test(format),
++                            &mut expected
++                        );
++                        CALLS.with(|count| {
++                            assert_eq!(count.get(), if has_row && width >= 16 { 3 } else { 0 })
++                        });
++                        assert_eq!(actual, expected);
++                        assert_eq!(&actual[actual.len() - 11..], &[0xa5; 11]);
++                    }
++                }
++            }
++        }
++    }
+ 
+-        let rem = out[(width - 16) * num_components..]
+-            .chunks_exact_mut(16 * num_components)
+-            .next()
+-            .unwrap();
++    #[test]
++    fn dispatched_rows_match_scalar_at_width_boundaries() {
++        for width in 1..=129 {
++            let padded_width = (width + 7) & !7;
++            let y = vec![171; padded_width * 3];
++            let cb = vec![31; padded_width * 3];
++            let cr = vec![225; padded_width * 3];
++            let planes = [&y[..], &cb[..], &cr[..], &[]];
++            for format in [
++                ColorSpace::RGB,
++                ColorSpace::BGR,
++                ColorSpace::RGBA,
++                ColorSpace::BGRA
++            ] {
++                let mut actual = vec![0xa5; width * format.num_components() * 3 + 11];
++                let mut expected = actual.clone();
++                for (converter, out) in [
++                    (
++                        choose_ycbcr_to_rgb_convert_func(format, &DecoderOptions::default()).unwrap(),
++                        &mut actual
++                    ),
++                    (ColorConvert16::scalar_for_test(format), &mut expected)
++                ] {
++                    color_convert_ycbcr(
++                        &planes,
++                        width,
++                        padded_width,
++                        format,
++                        converter,
++                        out
++                    );
++                }
++                assert_eq!(actual, expected, "width {width}, format {format:?}");
++                assert_eq!(&actual[actual.len() - 11..], &[0xa5; 11]);
++            }
++        }
++    }
+ 
+-        rem.copy_from_slice(&temp[0..rem.len()]);
++    #[test]
++    fn aligned_rows_do_not_reconvert_the_tail() {
++        use core::sync::atomic::{AtomicUsize, Ordering};
++        static CALLS: AtomicUsize = AtomicUsize::new(0);
++        fn converter(
++            _: &[i16; 16], _: &[i16; 16], _: &[i16; 16], out: &mut [u8], offset: &mut usize
++        ) {
++            CALLS.fetch_add(1, Ordering::Relaxed);
++            out[*offset..*offset + 48].fill(42);
++            *offset += 48;
++        }
++        for width in [1, 15, 16, 17, 31, 32, 33, 48, 64] {
++            CALLS.store(0, Ordering::Relaxed);
++            let padded_width = (width + 15) & !15;
++            let samples = vec![128; padded_width];
++            let planes = [&samples[..], &samples[..], &samples[..], &[]];
++            let mut out = vec![0; width * 3];
++            color_convert_ycbcr(
++                &planes,
++                width,
++                padded_width,
++                ColorSpace::RGB,
++                ColorConvert16::block_only(converter),
++                &mut out
++            );
++            assert_eq!(CALLS.load(Ordering::Relaxed), (width + 15) / 16);
++            assert!(out.iter().all(|&byte| byte == 42));
++        }
+     }
+ }
++
+ pub(crate) fn upsample(
+     component: &mut Components, mcu_height: usize, i: usize, upsampler_scratch_space: &mut [i16],
+     has_vertical_sample: bool
+@@ -611,12 +766,13 @@ pub(crate) fn upsample(
+ 
+             if has_vertical_sample {
+                 let length = component.first_row_upsample_dest.len();
+-                let start = dest_coeff
+-                    .len()
+-                    .checked_sub(length)
+-                    .ok_or(DecodeErrors::FormatStatic(
+-                        "Generic upsample destination is too small",
+-                    ))?;
++                let start =
++                    dest_coeff
++                        .len()
++                        .checked_sub(length)
++                        .ok_or(DecodeErrors::FormatStatic(
++                            "Generic upsample destination is too small"
++                        ))?;
+                 component
+                     .first_row_upsample_dest
+                     .copy_from_slice(&dest_coeff[start..]);
+-- 
+2.56.1
+

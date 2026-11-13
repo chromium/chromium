@@ -44,7 +44,7 @@ use core::arch::x86::*;
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::*;
 
-use crate::color_convert::scalar::{CB_FRAC, CR_FRAC, C_G_CB_FRAC, C_G_CR_FRAC, YUV_RND};
+use crate::color_convert::scalar::{CB_FRAC, C_G_CB_FRAC, C_G_CR_FRAC, YUV_RND};
 
 pub union YmmRegister {
     // both are 32 when using std::mem::size_of
@@ -53,10 +53,6 @@ pub union YmmRegister {
     array: [i16; 16]
 }
 
-const R_AVX_COEF: i32 =
-    i32::from_ne_bytes([CR_FRAC.to_ne_bytes()[0], CR_FRAC.to_ne_bytes()[1], 0, 0]);
-const B_AVX_COEF: i32 =
-    i32::from_ne_bytes([0, 0, CB_FRAC.to_ne_bytes()[0], CB_FRAC.to_ne_bytes()[1]]);
 const G_COEF_AVX_COEF: i32 = i32::from_ne_bytes([
     C_G_CR_FRAC.to_ne_bytes()[0],
     C_G_CR_FRAC.to_ne_bytes()[1],
@@ -84,7 +80,6 @@ const G_COEF_AVX_COEF: i32 = i32::from_ne_bytes([
 /// - `y`,`cb`,`cr`: A reference of 8 i32's
 /// - `out`: The output  array where we store our converted items
 /// - `offset`: The position from 0 where we write these RGB values
-#[inline(always)]
 pub fn ycbcr_to_rgb_avx2(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
@@ -97,7 +92,6 @@ pub fn ycbcr_to_rgb_avx2(
     }
 }
 
-#[inline(always)]
 pub fn ycbcr_to_bgr_avx2(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
@@ -114,8 +108,21 @@ unsafe fn ycbcr_to_rgb_avx2_1<const BGR: bool>(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
     // check if we have enough space to write.
-    let out: &mut [u8; 48] = out.get_mut(*offset..*offset + 48).expect("Slice to small cannot write").try_into().unwrap();
+    let out: &mut [u8; 48] = out
+        .get_mut(*offset..*offset + 48)
+        .expect("Slice to small cannot write")
+        .try_into()
+        .unwrap();
 
+    ycbcr_to_rgb_block::<BGR>(y.as_ptr(), cb.as_ptr(), cr.as_ptr(), out.as_mut_ptr());
+    *offset += 48;
+}
+
+#[inline]
+#[target_feature(enable = "avx2")]
+unsafe fn ycbcr_to_rgb_block<const BGR: bool>(
+    y: *const i16, cb: *const i16, cr: *const i16, out: *mut u8
+) {
     let (mut r, mut g, mut b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
 
     r = _mm256_packus_epi16(r, _mm256_setzero_si256());
@@ -163,10 +170,8 @@ unsafe fn ycbcr_to_rgb_avx2_1<const BGR: bool>(
     let rgb0 = _mm256_permute2x128_si256::<32>(p0, p1);
     let rgb1 = _mm256_permute2x128_si256::<48>(p2, p0);
 
-    _mm256_storeu_si256(out.as_mut_ptr().cast(), rgb0);
-    _mm_storeu_si128(out[32..].as_mut_ptr().cast(), _mm256_castsi256_si128(rgb1));
-
-    *offset += 48;
+    _mm256_storeu_si256(out.cast(), rgb0);
+    _mm_storeu_si128(out.add(32).cast(), _mm256_castsi256_si128(rgb1));
 }
 
 // Enabled avx2 automatically enables avx.
@@ -178,52 +183,42 @@ unsafe fn ycbcr_to_rgb_avx2_1<const BGR: bool>(
 /// This is used by the `ycbcr_to_rgba_avx` and `ycbcr_to_rgbx` conversion
 /// routines
 unsafe fn ycbcr_to_rgb_baseline_no_clamp(
-    y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16]
+    y: *const i16, cb: *const i16, cr: *const i16
 ) -> (__m256i, __m256i, __m256i) {
     // Load values into a register
     //
-    let y_c = _mm256_loadu_si256(y.as_ptr().cast());
-    let cb_c = _mm256_loadu_si256(cb.as_ptr().cast());
-    let cr_c = _mm256_loadu_si256(cr.as_ptr().cast());
+    let y_c = _mm256_loadu_si256(y.cast());
+    let cb_c = _mm256_loadu_si256(cb.cast());
+    let cr_c = _mm256_loadu_si256(cr.cast());
 
-    // Here we want to use _mm256_madd_epi16 to perform 2 multiplications
-    // and one addition per instruction.
-
-    // At first, we have to pack i16 U and V that stores u8 into one u8 [U,V]
-    // then zero extend, and keep in mind that lanes is already been permuted.
-
-    let cr_coeff = _mm256_set1_epi32(R_AVX_COEF);
-    let cb_coeff = _mm256_set1_epi32(B_AVX_COEF);
     let cg_coeff = _mm256_set1_epi32(G_COEF_AVX_COEF);
     let v_rnd = _mm256_set1_epi32(YUV_RND);
     let uv_bias = _mm256_set1_epi16(128);
 
-    // UV in memory because x86/x86_64 is always little endian
-    let v_0 = _mm256_slli_epi16::<8>(cb_c);
-    let u_v_8 = _mm256_or_si256(v_0, cr_c);
-
-    let u_v_lo = _mm256_sub_epi16(_mm256_unpacklo_epi8(u_v_8, _mm256_setzero_si256()), uv_bias);
-    let u_v_hi = _mm256_sub_epi16(_mm256_unpackhi_epi8(u_v_8, _mm256_setzero_si256()), uv_bias);
-    // Split whole chroma contributions from the 16-bit fractions so every
-    // coefficient still fits the signed 16-bit multiply-add lanes.
-    let fraction = |coefficients| {
-        let low = _mm256_add_epi32(_mm256_madd_epi16(u_v_lo, coefficients), v_rnd);
-        let high = _mm256_add_epi32(_mm256_madd_epi16(u_v_hi, coefficients), v_rnd);
-        _mm256_packs_epi32(_mm256_srai_epi32::<16>(low), _mm256_srai_epi32::<16>(high))
-    };
     let cb = _mm256_sub_epi16(cb_c, uv_bias);
     let cr = _mm256_sub_epi16(cr_c, uv_bias);
-    let r = _mm256_add_epi16(_mm256_add_epi16(y_c, cr), fraction(cr_coeff));
-    let g = _mm256_add_epi16(_mm256_sub_epi16(y_c, cr), fraction(cg_coeff));
-    let b = _mm256_add_epi16(
-        _mm256_add_epi16(y_c, _mm256_slli_epi16::<1>(cb)),
-        fraction(cb_coeff)
+    let u_v_lo = _mm256_unpacklo_epi16(cr, cb);
+    let u_v_hi = _mm256_unpackhi_epi16(cr, cb);
+
+    // 2 * 13_172 = 26_344 matches (26_345 * cr + 32768) >> 16 for all cr in [-256, 255],
+    // and 2 * -7_471 = -14_942 == CB_FRAC for all cb.
+    let frac_r = _mm256_mulhrs_epi16(cr, _mm256_set1_epi16(13_172));
+    let frac_b = _mm256_mulhrs_epi16(cb, _mm256_set1_epi16(CB_FRAC / 2));
+
+    let low_g = _mm256_add_epi32(_mm256_madd_epi16(u_v_lo, cg_coeff), v_rnd);
+    let high_g = _mm256_add_epi32(_mm256_madd_epi16(u_v_hi, cg_coeff), v_rnd);
+    let frac_g = _mm256_packs_epi32(
+        _mm256_srai_epi32::<16>(low_g),
+        _mm256_srai_epi32::<16>(high_g)
     );
+
+    let r = _mm256_add_epi16(_mm256_add_epi16(y_c, cr), frac_r);
+    let g = _mm256_add_epi16(_mm256_sub_epi16(y_c, cr), frac_g);
+    let b = _mm256_add_epi16(_mm256_add_epi16(y_c, _mm256_slli_epi16::<1>(cb)), frac_b);
 
     return (r, g, b);
 }
 
-#[inline(always)]
 pub fn ycbcr_to_rgba_avx2(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
@@ -234,7 +229,6 @@ pub fn ycbcr_to_rgba_avx2(
     }
 }
 
-#[inline(always)]
 pub fn ycbcr_to_bgra_avx2(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
@@ -257,6 +251,15 @@ unsafe fn ycbcr_to_rgba_unsafe<const BGRA: bool>(
     // check if we have enough space to write.
     let tmp:& mut [u8; 64] = out.get_mut(*offset..*offset + 64).expect("Slice to small cannot write").try_into().unwrap();
 
+    ycbcr_to_rgba_block::<BGRA>(y.as_ptr(), cb.as_ptr(), cr.as_ptr(), tmp.as_mut_ptr());
+    *offset += 64;
+}
+
+#[inline]
+#[target_feature(enable = "avx2")]
+unsafe fn ycbcr_to_rgba_block<const BGRA: bool>(
+    y: *const i16, cb: *const i16, cr: *const i16, out: *mut u8
+) {
     let (mut r, g, mut b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
 
     if BGRA {
@@ -270,33 +273,103 @@ unsafe fn ycbcr_to_rgba_unsafe<const BGRA: bool>(
     // Pack the integers into u8's using unsigned saturation.
     let c = _mm256_packus_epi16(r, g); //aaaaa_bbbbb_aaaaa_bbbbbb
     let d = _mm256_packus_epi16(b, _mm256_set1_epi16(255)); // cccccc_dddddd_ccccccc_ddddd
-    // transpose_u16 and interleave channels
+                                                            // transpose_u16 and interleave channels
     let e = _mm256_unpacklo_epi8(c, d); //ab_ab_ab_ab_ab_ab_ab_ab
     let f = _mm256_unpackhi_epi8(c, d); //cd_cd_cd_cd_cd_cd_cd_cd
-    // final transpose_u16
+                                        // final transpose_u16
     let g = _mm256_unpacklo_epi8(e, f); //abcd_abcd_abcd_abcd_abcd
     let h = _mm256_unpackhi_epi8(e, f);
-    
+
     // undo packus shuffling...
-    let i = _mm256_permute2x128_si256::<{ shuffle(3, 2, 1, 0) }>(g, h);
-    
-    let j = _mm256_permute2x128_si256::<{ shuffle(1, 2, 3, 0) }>(g, h);
-    
-    let k = _mm256_permute2x128_si256::<{ shuffle(3, 2, 0, 1) }>(g, h);
-    
-    let l = _mm256_permute2x128_si256::<{ shuffle(0, 3, 2, 1) }>(g, h);
-    
-    let m = _mm256_blend_epi32::<0b1111_0000>(i, j);
-    
-    let n = _mm256_blend_epi32::<0b1111_0000>(k, l);
-    
+    let m = _mm256_permute2x128_si256::<0x20>(g, h);
+    let n = _mm256_permute2x128_si256::<0x31>(g, h);
+
     // Store
     // Use streaming instructions to prevent polluting the cache?
-    _mm256_storeu_si256(tmp.as_mut_ptr().cast(), m);
-    
-    _mm256_storeu_si256(tmp[32..].as_mut_ptr().cast(), n);
+    _mm256_storeu_si256(out.cast(), m);
 
-    *offset += 64;
+    _mm256_storeu_si256(out.add(32).cast(), n);
+}
+
+/// Convert a row of at least 16 pixels, overlapping the final vector for a partial tail.
+///
+/// # Safety
+/// The caller must ensure AVX2 is available, and samples must be in `0..=255`.
+#[target_feature(enable = "avx2")]
+pub unsafe fn ycbcr_to_rgba_row_avx2<const BGRA: bool>(
+    y_row: &[i16], cb_row: &[i16], cr_row: &[i16], out_row: &mut [u8], width: usize
+) {
+    assert!(
+        width >= 16
+            && y_row.len() >= width
+            && cb_row.len() >= width
+            && cr_row.len() >= width
+            && out_row.len() / 4 >= width
+    );
+    let y_ptr = y_row.as_ptr();
+    let cb_ptr = cb_row.as_ptr();
+    let cr_ptr = cr_row.as_ptr();
+    let out_ptr = out_row.as_mut_ptr();
+
+    let mut x = 0usize;
+    while x + 16 <= width {
+        ycbcr_to_rgba_block::<BGRA>(
+            y_ptr.add(x),
+            cb_ptr.add(x),
+            cr_ptr.add(x),
+            out_ptr.add(x * 4)
+        );
+        x += 16;
+    }
+    if x < width {
+        let last = width - 16;
+        ycbcr_to_rgba_block::<BGRA>(
+            y_ptr.add(last),
+            cb_ptr.add(last),
+            cr_ptr.add(last),
+            out_ptr.add(last * 4)
+        );
+    }
+}
+
+/// Convert a row of at least 16 pixels, overlapping the final vector for a partial tail.
+///
+/// # Safety
+/// The caller must ensure AVX2 is available, and samples must be in `0..=255`.
+#[target_feature(enable = "avx2")]
+pub unsafe fn ycbcr_to_rgb_row_avx2<const BGR: bool>(
+    y_row: &[i16], cb_row: &[i16], cr_row: &[i16], out_row: &mut [u8], width: usize
+) {
+    assert!(
+        width >= 16
+            && y_row.len() >= width
+            && cb_row.len() >= width
+            && cr_row.len() >= width
+            && out_row.len() / 3 >= width
+    );
+    let y_ptr = y_row.as_ptr();
+    let cb_ptr = cb_row.as_ptr();
+    let cr_ptr = cr_row.as_ptr();
+    let out_ptr = out_row.as_mut_ptr();
+    let mut x = 0usize;
+    while x + 16 <= width {
+        ycbcr_to_rgb_block::<BGR>(
+            y_ptr.add(x),
+            cb_ptr.add(x),
+            cr_ptr.add(x),
+            out_ptr.add(x * 3)
+        );
+        x += 16;
+    }
+    if x < width {
+        let last = width - 16;
+        ycbcr_to_rgb_block::<BGR>(
+            y_ptr.add(last),
+            cb_ptr.add(last),
+            cr_ptr.add(last),
+            out_ptr.add(last * 3)
+        );
+    }
 }
 
 #[inline]
@@ -307,6 +380,85 @@ const fn shuffle(z: i32, y: i32, x: i32, w: i32) -> i32 {
 #[cfg(all(test, feature = "std"))]
 mod safety_tests {
     use super::*;
+
+    #[test]
+    fn fractional_multiply_matches_native_rounding() {
+        for sample in -256_i32..=255 {
+            let mulhrs = |coefficient| (sample * coefficient + 16_384) >> 15;
+            assert_eq!(mulhrs(13_172), (sample * 26_345 + 32_768) >> 16);
+            assert_eq!(mulhrs(-7_471), (sample * i32::from(CB_FRAC) + 32_768) >> 16);
+        }
+    }
+
+    #[test]
+    fn row_converters_match_scalar_with_tails_and_guards() {
+        if !is_x86_feature_detected!("avx2") {
+            return;
+        }
+        for width in 16..=129 {
+            let y: Vec<i16> = (0..width).map(|x| ((x * 17) % 256) as i16).collect();
+            let cb: Vec<i16> = (0..width).map(|x| ((x * 79 + 13) % 256) as i16).collect();
+            let cr: Vec<i16> = (0..width).map(|x| ((x * 53 + 191) % 256) as i16).collect();
+            for channels in [3, 4] {
+                for reversed in [false, true] {
+                    let mut actual = vec![0xa5; width * channels + 19];
+                    let out = &mut actual[7..7 + width * channels];
+                    unsafe {
+                        match (channels, reversed) {
+                            (3, false) => ycbcr_to_rgb_row_avx2::<false>(&y, &cb, &cr, out, width),
+                            (3, true) => ycbcr_to_rgb_row_avx2::<true>(&y, &cb, &cr, out, width),
+                            (4, false) => ycbcr_to_rgba_row_avx2::<false>(&y, &cb, &cr, out, width),
+                            (4, true) => ycbcr_to_rgba_row_avx2::<true>(&y, &cb, &cr, out, width),
+                            _ => unreachable!()
+                        }
+                    }
+                    let mut expected = vec![0xa5; actual.len()];
+                    for x in 0..width {
+                        let yy = i32::from(y[x]);
+                        let cb = i32::from(cb[x]) - 128;
+                        let cr = i32::from(cr[x]) - 128;
+                        let r = (yy + ((91_881 * cr + 32_768) >> 16)).clamp(0, 255) as u8;
+                        let g = (yy + ((-46_802 * cr - 22_554 * cb + 32_768) >> 16)).clamp(0, 255)
+                            as u8;
+                        let b = (yy + ((116_130 * cb + 32_768) >> 16)).clamp(0, 255) as u8;
+                        let pixel = if reversed { [b, g, r, 255] } else { [r, g, b, 255] };
+                        expected[7 + x * channels..7 + (x + 1) * channels]
+                            .copy_from_slice(&pixel[..channels]);
+                    }
+                    assert_eq!(
+                        actual, expected,
+                        "width {width}, channels {channels}, reversed {reversed}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn row_converters_reject_short_slices_before_writing() {
+        if !is_x86_feature_detected!("avx2") {
+            return;
+        }
+        for channels in [3, 4] {
+            for short in 0..4 {
+                let samples = [128; 32];
+                let mut out = [0xa5; 128];
+                let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| unsafe {
+                    let y = &samples[..if short == 0 { 31 } else { 32 }];
+                    let cb = &samples[..if short == 1 { 31 } else { 32 }];
+                    let cr = &samples[..if short == 2 { 31 } else { 32 }];
+                    let output = &mut out[..32 * channels - usize::from(short == 3)];
+                    if channels == 3 {
+                        ycbcr_to_rgb_row_avx2::<false>(y, cb, cr, output, 32);
+                    } else {
+                        ycbcr_to_rgba_row_avx2::<false>(y, cb, cr, output, 32);
+                    }
+                }));
+                assert!(result.is_err());
+                assert_eq!(out, [0xa5; 128]);
+            }
+        }
+    }
 
     /// The safe wrapper must reject an undersized destination before any SIMD store.
     #[test]
@@ -342,5 +494,4 @@ mod safety_tests {
             "function did NOT write at offset=50 as the API implies"
         );
     }
-
 }

@@ -39,40 +39,97 @@ use core::arch::x86_64::*;
 use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
 use crate::unsafe_utils::{transpose, YmmRegister};
 
-// Pack i32 to i16's,
-// clamp them to be between 0-255
-// Undo shuffling
-// Store back to array
-macro_rules! permute_store {
-    ($x:tt,$y:tt,$index:tt,$out:tt,$stride:tt) => {
-        let a = _mm256_packs_epi32($x, $y);
+const fn pair_i16(lo: i16, hi: i16) -> i32 {
+    let lo = lo.to_le_bytes();
+    let hi = hi.to_le_bytes();
+    i32::from_le_bytes([lo[0], lo[1], hi[0], hi[1]])
+}
 
-        // Clamp the values after packing, we can clamp more values at once
-        let b = clamp_avx(a);
-        // /Undo shuffling
-        let c = _mm256_permute4x64_epi64(b, shuffle(3, 1, 2, 0));
+const C_EVEN_T2: i32 = pair_i16(4433, -10704);
+const C_EVEN_T3: i32 = pair_i16(10703, 4433);
+const C_T0_13: i32 = pair_i16(2260, -6436);
+const C_T0_57: i32 = pair_i16(9633, -11363);
+const C_T1_13: i32 = pair_i16(6437, -11362);
+const C_T1_57: i32 = pair_i16(2261, 9633);
+const C_T2_13: i32 = pair_i16(9633, -2259);
+const C_T2_57: i32 = pair_i16(-11362, -6436);
+const C_T3_13: i32 = pair_i16(11363, 9633);
+const C_T3_57: i32 = pair_i16(6437, 2260);
 
-        // store first vector
-        _mm_storeu_si128(
-            ($out)
-                .get_mut($index..$index + 8)
-                .unwrap()
-                .as_mut_ptr()
-                .cast(),
-            _mm256_extractf128_si256::<0>(c),
-        );
-        $index += $stride;
-        // second vector
-        _mm_storeu_si128(
-            ($out)
-                .get_mut($index..$index + 8)
-                .unwrap()
-                .as_mut_ptr()
-                .cast(),
-            _mm256_extractf128_si256::<1>(c),
-        );
-        $index += $stride;
-    };
+macro_rules! rows_fit_i16 {
+    ($($row:expr),+ $(,)?) => {{
+        let bias = _mm256_set1_epi32(0x8000);
+        let mut outside = _mm256_setzero_si256();
+        $(
+            outside = _mm256_or_si256(outside, _mm256_add_epi32($row, bias));
+        )+
+        _mm256_testz_si256(outside, _mm256_set1_epi32(-65536)) == 1
+    }};
+}
+
+#[inline]
+#[target_feature(enable = "avx2")]
+#[allow(clippy::too_many_arguments)]
+unsafe fn transpose_and_store(
+    v0: __m256i, v1: __m256i, v2: __m256i, v3: __m256i, v4: __m256i, v5: __m256i, v6: __m256i,
+    v7: __m256i, out_ptr: *mut i16, stride: usize
+) {
+    let t0 = _mm256_unpacklo_epi32(v0, v1);
+    let t1 = _mm256_unpackhi_epi32(v0, v1);
+    let t2 = _mm256_unpacklo_epi32(v2, v3);
+    let t3 = _mm256_unpackhi_epi32(v2, v3);
+    let t4 = _mm256_unpacklo_epi32(v4, v5);
+    let t5 = _mm256_unpackhi_epi32(v4, v5);
+    let t6 = _mm256_unpacklo_epi32(v6, v7);
+    let t7 = _mm256_unpackhi_epi32(v6, v7);
+
+    let x0 = _mm256_unpacklo_epi64(t0, t2);
+    let x1 = _mm256_unpackhi_epi64(t0, t2);
+    let x2 = _mm256_unpacklo_epi64(t1, t3);
+    let x3 = _mm256_unpackhi_epi64(t1, t3);
+    let x4 = _mm256_unpacklo_epi64(t4, t6);
+    let x5 = _mm256_unpackhi_epi64(t4, t6);
+    let x6 = _mm256_unpacklo_epi64(t5, t7);
+    let x7 = _mm256_unpackhi_epi64(t5, t7);
+
+    let p04 = clamp_avx(_mm256_packs_epi32(x0, x4));
+    let p15 = clamp_avx(_mm256_packs_epi32(x1, x5));
+    let p26 = clamp_avx(_mm256_packs_epi32(x2, x6));
+    let p37 = clamp_avx(_mm256_packs_epi32(x3, x7));
+
+    _mm_storeu_si128(out_ptr.cast(), _mm256_castsi256_si128(p04));
+    _mm_storeu_si128(out_ptr.add(stride).cast(), _mm256_castsi256_si128(p15));
+    _mm_storeu_si128(out_ptr.add(2 * stride).cast(), _mm256_castsi256_si128(p26));
+    _mm_storeu_si128(out_ptr.add(3 * stride).cast(), _mm256_castsi256_si128(p37));
+    _mm_storeu_si128(
+        out_ptr.add(4 * stride).cast(),
+        _mm256_extracti128_si256::<1>(p04)
+    );
+    _mm_storeu_si128(
+        out_ptr.add(5 * stride).cast(),
+        _mm256_extracti128_si256::<1>(p15)
+    );
+    _mm_storeu_si128(
+        out_ptr.add(6 * stride).cast(),
+        _mm256_extracti128_si256::<1>(p26)
+    );
+    _mm_storeu_si128(
+        out_ptr.add(7 * stride).cast(),
+        _mm256_extracti128_si256::<1>(p37)
+    );
+}
+
+#[target_feature(enable = "avx2")]
+pub unsafe fn idct_avx2_1x1(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
+    assert!(stride >= 8 && stride <= out_vector.len().saturating_sub(8) / 7);
+    let coeff = ((in_vector[0].wrapping_add(1028)) >> 3).clamp(0, 255) as i16;
+    let idct_value = _mm_set1_epi16(coeff);
+    let out_ptr = out_vector.as_mut_ptr();
+    let mut pos = 0;
+    for _ in 0..8 {
+        _mm_storeu_si128(out_ptr.add(pos).cast(), idct_value);
+        pos += stride;
+    }
 }
 
 #[target_feature(enable = "avx2")]
@@ -85,12 +142,9 @@ macro_rules! permute_store {
     clippy::zero_prefixed_literal
 )]
 pub unsafe fn idct_avx2(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
+    assert!(stride >= 8 && stride <= out_vector.len().saturating_sub(8) / 7);
+    let out_ptr = out_vector.as_mut_ptr();
     let mut pos = 0;
-
-    // load into registers
-    //
-    // We sign extend i16's to i32's and calculate them with extended precision and
-    // later reduce them to i16's when we are done carrying out IDCT
 
     let rw0 = _mm256_loadu_si256(in_vector[00..].as_ptr().cast());
     let rw1 = _mm256_loadu_si256(in_vector[08..].as_ptr().cast());
@@ -101,19 +155,7 @@ pub unsafe fn idct_avx2(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
     let rw6 = _mm256_loadu_si256(in_vector[48..].as_ptr().cast());
     let rw7 = _mm256_loadu_si256(in_vector[56..].as_ptr().cast());
 
-    // Forward DCT and quantization may cause all the AC terms to be zero, for such
-    // cases we can try to accelerate it
-
-    // Basically the poop is that whenever the array has 63 zeroes, its idct is
-    // (arr[0]>>3)or (arr[0]/8) propagated to all the elements.
-    // We first test to see if the array contains zero elements and if it does, we go the
-    // short way.
-    //
-    // This reduces IDCT overhead from about 39% to 18 %, almost half
-
-    // Do another load for the first row, we don't want to check DC value, because
-    // we only care about AC terms
-    let rw8 = _mm256_loadu_si256(in_vector[1..].as_ptr().cast());
+    let rw8 = _mm256_blend_epi32::<0xFE>(_mm256_setzero_si256(), rw0);
 
     let mut bitmap = _mm256_or_si256(rw1, rw2);
     bitmap = _mm256_or_si256(bitmap, rw3);
@@ -124,39 +166,40 @@ pub unsafe fn idct_avx2(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
     bitmap = _mm256_or_si256(bitmap, rw8);
 
     if _mm256_testz_si256(bitmap, bitmap) == 1 {
-        // AC terms all zero, idct of the block is ( coeff[0] * qt[0] )/8 + 128 (bias)
-        // (and clamped to 255)
-        // Round by adding 0.5 * (1 << 3) and offset by adding (128 << 3) before scaling
-        let coeff = ((in_vector[0] + 4 + 1024) >> 3).clamp(0, 255) as i16;
+        let coeff = ((in_vector[0].wrapping_add(1028)) >> 3).clamp(0, 255) as i16;
         let idct_value = _mm_set1_epi16(coeff);
-
-        macro_rules! store {
-            ($pos:tt,$value:tt) => {
-                // store
-                _mm_storeu_si128(
-                    out_vector
-                        .get_mut($pos..$pos + 8)
-                        .unwrap()
-                        .as_mut_ptr()
-                        .cast(),
-                    $value,
-                );
-                $pos += stride;
-            };
+        for _ in 0..8 {
+            _mm_storeu_si128(out_ptr.add(pos).cast(), idct_value);
+            pos += stride;
         }
-        store!(pos, idct_value);
-        store!(pos, idct_value);
-        store!(pos, idct_value);
-        store!(pos, idct_value);
-
-        store!(pos, idct_value);
-        store!(pos, idct_value);
-        store!(pos, idct_value);
-        store!(pos, idct_value);
-
         return;
     }
 
+    idct_avx2_core(rw0, rw1, rw2, rw3, rw4, rw5, rw6, rw7, out_ptr, stride);
+}
+
+#[target_feature(enable = "avx2")]
+pub unsafe fn idct_avx2_nonzero(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
+    assert!(stride >= 8 && stride <= out_vector.len().saturating_sub(8) / 7);
+    let out_ptr = out_vector.as_mut_ptr();
+    let rw0 = _mm256_loadu_si256(in_vector.as_ptr().cast());
+    let rw1 = _mm256_loadu_si256(in_vector[8..].as_ptr().cast());
+    let rw2 = _mm256_loadu_si256(in_vector[16..].as_ptr().cast());
+    let rw3 = _mm256_loadu_si256(in_vector[24..].as_ptr().cast());
+    let rw4 = _mm256_loadu_si256(in_vector[32..].as_ptr().cast());
+    let rw5 = _mm256_loadu_si256(in_vector[40..].as_ptr().cast());
+    let rw6 = _mm256_loadu_si256(in_vector[48..].as_ptr().cast());
+    let rw7 = _mm256_loadu_si256(in_vector[56..].as_ptr().cast());
+    idct_avx2_core(rw0, rw1, rw2, rw3, rw4, rw5, rw6, rw7, out_ptr, stride);
+}
+
+#[inline]
+#[target_feature(enable = "avx2")]
+#[allow(clippy::too_many_arguments, clippy::too_many_lines)]
+unsafe fn idct_avx2_core(
+    rw0: __m256i, rw1: __m256i, rw2: __m256i, rw3: __m256i, rw4: __m256i, rw5: __m256i,
+    rw6: __m256i, rw7: __m256i, out_ptr: *mut i16, stride: usize
+) {
     let mut row0 = YmmRegister { mm256: rw0 };
     let mut row1 = YmmRegister { mm256: rw1 };
     let mut row2 = YmmRegister { mm256: rw2 };
@@ -167,80 +210,114 @@ pub unsafe fn idct_avx2(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
     let mut row6 = YmmRegister { mm256: rw6 };
     let mut row7 = YmmRegister { mm256: rw7 };
 
-    macro_rules! dct_pass {
+    macro_rules! dct_pass_madd {
         ($SCALE_BITS:tt,$scale:tt) => {
-            // There are a lot of ways to do this
-            // but to keep it simple(and beautiful), ill make a direct translation of the
-            // scalar code to also make this code fully transparent(this version and the non
-            // avx one should produce identical code.)
+            let r26 = _mm256_blend_epi16::<0xAA>(row2.mm256, _mm256_slli_epi32::<16>(row6.mm256));
+            let even_t2 = _mm256_madd_epi16(r26, _mm256_set1_epi32(C_EVEN_T2));
+            let even_t3 = _mm256_madd_epi16(r26, _mm256_set1_epi32(C_EVEN_T3));
 
-            // even part
-            let p1 = (row2 + row6) * 4433;
+            let sum04 = _mm256_slli_epi32(_mm256_add_epi32(row0.mm256, row4.mm256), CONST_BITS);
+            let dif04 = _mm256_slli_epi32(_mm256_sub_epi32(row0.mm256, row4.mm256), CONST_BITS);
+            let round = _mm256_set1_epi32($SCALE_BITS);
+            let t0_r = _mm256_add_epi32(sum04, round);
+            let t1_r = _mm256_add_epi32(dif04, round);
 
-            let mut t2 = p1 + row6 * -15137;
-            let mut t3 = p1 + row2 * 6270;
+            let x0 = _mm256_add_epi32(t0_r, even_t3);
+            let x3 = _mm256_sub_epi32(t0_r, even_t3);
+            let x1 = _mm256_add_epi32(t1_r, even_t2);
+            let x2 = _mm256_sub_epi32(t1_r, even_t2);
 
-            let mut t0 = YmmRegister {
-                mm256: _mm256_slli_epi32((row0 + row4).mm256, CONST_BITS),
-            };
-            let mut t1 = YmmRegister {
-                mm256: _mm256_slli_epi32((row0 - row4).mm256, CONST_BITS),
-            };
+            let r13 = _mm256_blend_epi16::<0xAA>(row1.mm256, _mm256_slli_epi32::<16>(row3.mm256));
+            let r57 = _mm256_blend_epi16::<0xAA>(row5.mm256, _mm256_slli_epi32::<16>(row7.mm256));
 
-            let x0 = t0 + t3 + $SCALE_BITS;
-            let x3 = t0 - t3 + $SCALE_BITS;
-            let x1 = t1 + t2 + $SCALE_BITS;
-            let x2 = t1 - t2 + $SCALE_BITS;
+            let t0 = _mm256_add_epi32(
+                _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T0_13)),
+                _mm256_madd_epi16(r57, _mm256_set1_epi32(C_T0_57)),
+            );
+            let t1 = _mm256_add_epi32(
+                _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T1_13)),
+                _mm256_madd_epi16(r57, _mm256_set1_epi32(C_T1_57)),
+            );
+            let t2 = _mm256_add_epi32(
+                _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T2_13)),
+                _mm256_madd_epi16(r57, _mm256_set1_epi32(C_T2_57)),
+            );
+            let t3 = _mm256_add_epi32(
+                _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T3_13)),
+                _mm256_madd_epi16(r57, _mm256_set1_epi32(C_T3_57)),
+            );
 
-            let p3 = row7 + row3;
-            let p4 = row5 + row1;
-            let p1 = row7 + row1;
-            let p2 = row5 + row3;
-            let p5 = (p3 + p4) * 9633;
+            row0.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x0, t3), $scale);
+            row1.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x1, t2), $scale);
+            row2.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x2, t1), $scale);
+            row3.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x3, t0), $scale);
 
-            t0 = row7 * 2446;
-            t1 = row5 * 16819;
-            t2 = row3 * 25172;
-            t3 = row1 * 12299;
-
-            let p1 = p5 + p1 * -7373;
-            let p2 = p5 + (p2 * -20995);
-            let p3 = p3 * -16069;
-            let p4 = p4 * -3196;
-
-            t3 += p1 + p4;
-            t2 += p2 + p3;
-            t1 += p2 + p4;
-            t0 += p1 + p3;
-
-            row0.mm256 = _mm256_srai_epi32((x0 + t3).mm256, $scale);
-            row1.mm256 = _mm256_srai_epi32((x1 + t2).mm256, $scale);
-            row2.mm256 = _mm256_srai_epi32((x2 + t1).mm256, $scale);
-            row3.mm256 = _mm256_srai_epi32((x3 + t0).mm256, $scale);
-
-            row4.mm256 = _mm256_srai_epi32((x3 - t0).mm256, $scale);
-            row5.mm256 = _mm256_srai_epi32((x2 - t1).mm256, $scale);
-            row6.mm256 = _mm256_srai_epi32((x1 - t2).mm256, $scale);
-            row7.mm256 = _mm256_srai_epi32((x0 - t3).mm256, $scale);
+            row4.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x3, t0), $scale);
+            row5.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x2, t1), $scale);
+            row6.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x1, t2), $scale);
+            row7.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x0, t3), $scale);
         };
     }
 
-    // Process rows
-    dct_pass!(PASS1_ROUND, PASS1_SHIFT);
+    macro_rules! dct_pass_i32 {
+        ($SCALE_BITS:tt,$scale:tt) => {
+            let p1 = (row2 + row6) * 4433;
+            let tmp2 = p1 + row6 * -15137;
+            let tmp3 = p1 + row2 * 6270;
+
+            let tmp0 = YmmRegister { mm256: _mm256_slli_epi32((row0 + row4).mm256, CONST_BITS) } + $SCALE_BITS;
+            let tmp1 = YmmRegister { mm256: _mm256_slli_epi32((row0 - row4).mm256, CONST_BITS) } + $SCALE_BITS;
+
+            let x0 = tmp0 + tmp3;
+            let x3 = tmp0 - tmp3;
+            let x1 = tmp1 + tmp2;
+            let x2 = tmp1 - tmp2;
+
+            let p1 = row7 + row1;
+            let p2 = row5 + row3;
+            let p3 = row7 + row3;
+            let p4 = row5 + row1;
+            let p5 = (p3 + p4) * 9633;
+
+            let tmp0 = row7 * 2446 + p1 * -7373 + (p3 * -16069 + p5);
+            let tmp1 = row5 * 16819 + p2 * -20995 + (p4 * -3196 + p5);
+            let tmp2 = row3 * 25172 + p2 * -20995 + (p3 * -16069 + p5);
+            let tmp3 = row1 * 12299 + p1 * -7373 + (p4 * -3196 + p5);
+
+            row0.mm256 = _mm256_srai_epi32((x0 + tmp3).mm256, $scale);
+            row7.mm256 = _mm256_srai_epi32((x0 - tmp3).mm256, $scale);
+            row1.mm256 = _mm256_srai_epi32((x1 + tmp2).mm256, $scale);
+            row6.mm256 = _mm256_srai_epi32((x1 - tmp2).mm256, $scale);
+            row2.mm256 = _mm256_srai_epi32((x2 + tmp1).mm256, $scale);
+            row5.mm256 = _mm256_srai_epi32((x2 - tmp1).mm256, $scale);
+            row3.mm256 = _mm256_srai_epi32((x3 + tmp0).mm256, $scale);
+            row4.mm256 = _mm256_srai_epi32((x3 - tmp0).mm256, $scale);
+        };
+    }
+
+    // Dequantized coefficients are i32, including for baseline JPEGs with large tables.
+    // Narrow only when every lane fits; otherwise retain wrapping i32 arithmetic.
+    if rows_fit_i16!(rw0, rw1, rw2, rw3, rw4, rw5, rw6, rw7,) {
+        dct_pass_madd!(PASS1_ROUND, PASS1_SHIFT);
+    } else {
+        dct_pass_i32!(PASS1_ROUND, PASS1_SHIFT);
+    }
     transpose(
         &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
     );
 
-    // process columns
-    dct_pass!(SCALE_BITS, OUTPUT_SHIFT);
-    transpose(
-        &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
+    if rows_fit_i16!(
+        row0.mm256, row1.mm256, row2.mm256, row3.mm256, row4.mm256, row5.mm256, row6.mm256,
+        row7.mm256,
+    ) {
+        dct_pass_madd!(SCALE_BITS, OUTPUT_SHIFT);
+    } else {
+        dct_pass_i32!(SCALE_BITS, OUTPUT_SHIFT);
+    }
+    transpose_and_store(
+        row0.mm256, row1.mm256, row2.mm256, row3.mm256, row4.mm256, row5.mm256, row6.mm256,
+        row7.mm256, out_ptr, stride
     );
-    // Pack and write the values back to the array
-    permute_store!((row0.mm256), (row1.mm256), pos, out_vector, stride);
-    permute_store!((row2.mm256), (row3.mm256), pos, out_vector, stride);
-    permute_store!((row4.mm256), (row5.mm256), pos, out_vector, stride);
-    permute_store!((row6.mm256), (row7.mm256), pos, out_vector, stride);
 }
 
 
@@ -254,10 +331,16 @@ pub unsafe fn idct_avx2(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
     clippy::zero_prefixed_literal
 )]
 pub unsafe fn idct_avx2_4x4(in_vector: &mut [i32; 64], out_vector: &mut [i16], stride: usize) {
+    assert!(stride >= 8 && stride <= out_vector.len().saturating_sub(8) / 7);
+    let out_ptr = out_vector.as_mut_ptr();
     let rw0 = _mm256_loadu_si256(in_vector[00..].as_ptr().cast());
     let rw1 = _mm256_loadu_si256(in_vector[08..].as_ptr().cast());
     let rw2 = _mm256_loadu_si256(in_vector[16..].as_ptr().cast());
     let rw3 = _mm256_loadu_si256(in_vector[24..].as_ptr().cast());
+
+    if !rows_fit_i16!(rw0, rw1, rw2, rw3) {
+        return idct_avx2_nonzero(in_vector, out_vector, stride);
+    }
 
     let mut row0 = YmmRegister { mm256: rw0 };
     let mut row1 = YmmRegister { mm256: rw1 };
@@ -269,81 +352,87 @@ pub unsafe fn idct_avx2_4x4(in_vector: &mut [i32; 64], out_vector: &mut [i16], s
     let mut row6 = YmmRegister { mm256: rw0 };
     let mut row7 = YmmRegister { mm256: rw0 };
 
-    {
-        row0.mm256 = _mm256_slli_epi32(row0.mm256, CONST_BITS);
-        row0 += PASS1_ROUND;
+    macro_rules! dct_pass_4x4 {
+        ($SCALE_BITS:tt, $scale:tt) => {
+            let t0_r = _mm256_add_epi32(
+                _mm256_slli_epi32(row0.mm256, CONST_BITS),
+                _mm256_set1_epi32($SCALE_BITS),
+            );
+            let r2_low = _mm256_and_si256(row2.mm256, _mm256_set1_epi32(0xFFFF));
+            let p1 = _mm256_madd_epi16(r2_low, _mm256_set1_epi32(pair_i16(4433, 0)));
+            let p3 = _mm256_madd_epi16(r2_low, _mm256_set1_epi32(pair_i16(10703, 0)));
 
-        let i2 = row2;
+            let x0 = _mm256_add_epi32(t0_r, p3);
+            let x1 = _mm256_add_epi32(t0_r, p1);
+            let x2 = _mm256_sub_epi32(t0_r, p1);
+            let x3 = _mm256_sub_epi32(t0_r, p3);
 
-        let p1 = i2 * 4433;
-        let p3 = i2 * 10703;
+            let r13 = _mm256_blend_epi16::<0xAA>(row1.mm256, _mm256_slli_epi32::<16>(row3.mm256));
+            let t0 = _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T0_13));
+            let t1 = _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T1_13));
+            let t2 = _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T2_13));
+            let t3 = _mm256_madd_epi16(r13, _mm256_set1_epi32(C_T3_13));
 
-        let x0 = row0 + p3;
-        let x1 = row0 + p1;
-        let x2 = row0 - p1;
-        let x3 = row0 - p3;
-
-        // odd part
-        let i4 = row3;
-        let i3 = row1;
-
-        let p5 = (i4 + i3) * 9633;
-
-        let p1 = p5 + i3 * -7373;
-        let p2 = p5 + i4 * -20995;
-
-        let t3 = p5 + i3 * 1730;
-        let t2 = p5 + i4 * -11892;
-
-        let t1 = p2 + i3 * -3196;
-        let t0 = p1 + i4 * -16069;
-
-        row0.mm256 = _mm256_srai_epi32((x0 + t3).mm256, PASS1_SHIFT);
-        row1.mm256 = _mm256_srai_epi32((x1 + t2).mm256, PASS1_SHIFT);
-        row2.mm256 = _mm256_srai_epi32((x2 + t1).mm256, PASS1_SHIFT);
-        row3.mm256 = _mm256_srai_epi32((x3 + t0).mm256, PASS1_SHIFT);
-
-        row4.mm256 = _mm256_srai_epi32((x3 - t0).mm256, PASS1_SHIFT);
-        row5.mm256 = _mm256_srai_epi32((x2 - t1).mm256, PASS1_SHIFT);
-        row6.mm256 = _mm256_srai_epi32((x1 - t2).mm256, PASS1_SHIFT);
-        row7.mm256 = _mm256_srai_epi32((x0 - t3).mm256, PASS1_SHIFT);
+            row0.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x0, t3), $scale);
+            row1.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x1, t2), $scale);
+            row2.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x2, t1), $scale);
+            row3.mm256 = _mm256_srai_epi32(_mm256_add_epi32(x3, t0), $scale);
+            row4.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x3, t0), $scale);
+            row5.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x2, t1), $scale);
+            row6.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x1, t2), $scale);
+            row7.mm256 = _mm256_srai_epi32(_mm256_sub_epi32(x0, t3), $scale);
+        };
     }
 
-    transpose(
-        &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
-    );
+    dct_pass_4x4!(PASS1_ROUND, PASS1_SHIFT);
 
     {
+        let t0 = _mm256_unpacklo_epi32(row0.mm256, row1.mm256);
+        let t1 = _mm256_unpackhi_epi32(row0.mm256, row1.mm256);
+        let t2 = _mm256_unpacklo_epi32(row2.mm256, row3.mm256);
+        let t3 = _mm256_unpackhi_epi32(row2.mm256, row3.mm256);
+        let t4 = _mm256_unpacklo_epi32(row4.mm256, row5.mm256);
+        let t5 = _mm256_unpackhi_epi32(row4.mm256, row5.mm256);
+        let t6 = _mm256_unpacklo_epi32(row6.mm256, row7.mm256);
+        let t7 = _mm256_unpackhi_epi32(row6.mm256, row7.mm256);
+
+        let x0 = _mm256_unpacklo_epi64(t0, t2);
+        let x1 = _mm256_unpackhi_epi64(t0, t2);
+        let x2 = _mm256_unpacklo_epi64(t1, t3);
+        let x3 = _mm256_unpackhi_epi64(t1, t3);
+        let x4 = _mm256_unpacklo_epi64(t4, t6);
+        let x5 = _mm256_unpackhi_epi64(t4, t6);
+        let x6 = _mm256_unpacklo_epi64(t5, t7);
+        let x7 = _mm256_unpackhi_epi64(t5, t7);
+
+        row0.mm256 = _mm256_permute2x128_si256::<0x20>(x0, x4);
+        row1.mm256 = _mm256_permute2x128_si256::<0x20>(x1, x5);
+        row2.mm256 = _mm256_permute2x128_si256::<0x20>(x2, x6);
+        row3.mm256 = _mm256_permute2x128_si256::<0x20>(x3, x7);
+    }
+
+    if rows_fit_i16!(row0.mm256, row1.mm256, row2.mm256, row3.mm256) {
+        dct_pass_4x4!(SCALE_BITS, OUTPUT_SHIFT);
+    } else {
         let i2 = row2;
         let i0 = row0;
-
         row0.mm256 = _mm256_slli_epi32(i0.mm256, CONST_BITS);
         let t0 = row0 + SCALE_BITS;
-
         let t2 = i2 * 4433;
         let t3 = i2 * 10703;
-
-        // SCALE_BITS rounds the final pass and level-shifts the samples.
         let x0 = t0 + t3;
         let x3 = t0 - t3;
         let x1 = t0 + t2;
         let x2 = t0 - t2;
-
-        // odd part
-        let i3 = row3;
-        let i1 = row1;
-
-        let p5 = (i3 + i1) * 9633;
-
-        let p1 = p5 + i1 * -7373;
-        let p2 = p5 + i3 * -20995;
-
-        let t3 = p5 + i1 * 1730;
-        let t2 = p5 + i3 * -11892;
-
-        let t1 = p2 + i1 * -3196;
-        let t0 = p1 + i3 * -16069;
-
+        let i4 = row3;
+        let i3 = row1;
+        let p5 = (i4 + i3) * 9633;
+        let p1 = p5 + i3 * -7373;
+        let p2 = p5 + i4 * -20995;
+        let t3 = p5 + i3 * 1730;
+        let t2 = p5 + i4 * -11892;
+        let t1 = p2 + i3 * -3196;
+        let t0 = p1 + i4 * -16069;
         row0.mm256 = _mm256_srai_epi32((x0 + t3).mm256, OUTPUT_SHIFT);
         row1.mm256 = _mm256_srai_epi32((x1 + t2).mm256, OUTPUT_SHIFT);
         row2.mm256 = _mm256_srai_epi32((x2 + t1).mm256, OUTPUT_SHIFT);
@@ -353,18 +442,10 @@ pub unsafe fn idct_avx2_4x4(in_vector: &mut [i32; 64], out_vector: &mut [i16], s
         row6.mm256 = _mm256_srai_epi32((x1 - t2).mm256, OUTPUT_SHIFT);
         row7.mm256 = _mm256_srai_epi32((x0 - t3).mm256, OUTPUT_SHIFT);
     }
-
-    transpose(
-        &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
+    transpose_and_store(
+        row0.mm256, row1.mm256, row2.mm256, row3.mm256, row4.mm256, row5.mm256, row6.mm256,
+        row7.mm256, out_ptr, stride
     );
-
-    let mut pos = 0;
-
-    // Pack and write the values back to the array
-    permute_store!((row0.mm256), (row1.mm256), pos, out_vector, stride);
-    permute_store!((row2.mm256), (row3.mm256), pos, out_vector, stride);
-    permute_store!((row4.mm256), (row5.mm256), pos, out_vector, stride);
-    permute_store!((row6.mm256), (row7.mm256), pos, out_vector, stride);
 }
 
 #[inline]

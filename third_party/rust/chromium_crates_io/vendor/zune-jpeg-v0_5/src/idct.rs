@@ -107,8 +107,18 @@ pub fn choose_idct_4x4_func(_options: &DecoderOptions) -> IDCTPtr {
     scalar::idct4x4
 }
 
-pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
-    // These are simple stores, no alternative implementation for now
+#[allow(unused_variables)]
+pub fn choose_idct_1x1_func(options: &DecoderOptions) -> IDCTPtr {
+    #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+    #[cfg(feature = "x86")]
+    {
+        if options.use_avx2() {
+            return |a: &mut [i32; 64], b: &mut [i16], c: usize| {
+                // SAFETY: `options.use_avx2()` only returns true if avx2 is supported.
+                unsafe { avx2::idct_avx2_1x1(a, b, c) }
+            };
+        }
+    }
     idct_int_1x1
 }
 
@@ -116,6 +126,9 @@ pub fn choose_idct_1x1_func(_: &DecoderOptions) -> IDCTPtr {
 #[allow(unreachable_code)]
 #[allow(dead_code)]
 mod tests {
+    use alloc::vec;
+    use alloc::vec::Vec;
+
     use super::*;
 
     fn check_scaled_idct(input: [i32; 64], half: [i16; 16], quarter: [i16; 4], eighth: i16) {
@@ -225,6 +238,18 @@ mod tests {
         }
         if input[1..].iter().all(|&coefficient| coefficient == 0) {
             functions.push(("DC only", idct_int_1x1));
+            functions.push((
+                "native DC only",
+                choose_idct_1x1_func(&DecoderOptions::new_fast())
+            ));
+        } else {
+            #[cfg(all(feature = "x86", any(target_arch = "x86", target_arch = "x86_64")))]
+            if DecoderOptions::new_fast().use_avx2() {
+                functions.push(("AVX2 nonzero", |a, b, c| {
+                    // SAFETY: AVX2 support was checked above.
+                    unsafe { avx2::idct_avx2_nonzero(a, b, c) }
+                }));
+            }
         }
         for (name, function) in functions {
             let mut coefficients = input;
@@ -333,6 +358,16 @@ mod tests {
     }
 
     #[test]
+    fn wide_dc_zero_ac_matches_scalar() {
+        for dc in [-76500_i32, -65536, -32769, 32768, 65535, 65536, 76500] {
+            let mut coefficients = [0; 64];
+            coefficients[0] = dc;
+            let sample = (dc.wrapping_add(1028) >> 3).clamp(0, 255) as i16;
+            check_idct(coefficients, [sample; 64], false);
+        }
+    }
+
+    #[test]
     fn scalar_simd_consistency() {
         let mut state = 0x12345678_u32;
         for reduced in [false, true] {
@@ -348,6 +383,62 @@ mod tests {
                 let mut reference_coefficients = coefficients;
                 idct_int(&mut reference_coefficients, &mut expected, 8);
                 check_idct(coefficients, expected, reduced);
+            }
+        }
+    }
+
+    #[test]
+    fn dequantized_i32_simd_consistency() {
+        let mut state = 0x87654321_u32;
+        for reduced in [false, true] {
+            for mask in [255, 32767, 65535, i32::MAX as u32, u32::MAX] {
+                for _ in 0..32 {
+                    let mut coefficients = [0; 64];
+                    for (index, coefficient) in coefficients.iter_mut().enumerate() {
+                        state = state.wrapping_mul(1664525).wrapping_add(1013904223);
+                        if !reduced || (index / 8 < 4 && index % 8 < 4) {
+                            *coefficient = (state & mask) as i32;
+                            if state & 1 != 0 {
+                                *coefficient = coefficient.wrapping_neg();
+                            }
+                        }
+                    }
+                    let mut expected = [0; 64];
+                    let mut reference_coefficients = coefficients;
+                    idct_int(&mut reference_coefficients, &mut expected, 8);
+                    check_idct(coefficients, expected, reduced);
+                }
+            }
+        }
+    }
+
+    #[cfg(all(
+        feature = "std",
+        feature = "x86",
+        any(target_arch = "x86", target_arch = "x86_64")
+    ))]
+    #[test]
+    fn avx2_output_bounds_are_checked_before_raw_stores() {
+        if !DecoderOptions::new_fast().use_avx2() {
+            return;
+        }
+        let functions: [IDCTPtr; 4] = [
+            |a, b, c| unsafe { avx2::idct_avx2(a, b, c) },
+            |a, b, c| unsafe { avx2::idct_avx2_nonzero(a, b, c) },
+            |a, b, c| unsafe { avx2::idct_avx2_4x4(a, b, c) },
+            |a, b, c| unsafe { avx2::idct_avx2_1x1(a, b, c) }
+        ];
+        for function in functions {
+            for (length, stride) in [(63, 8), (64, 7), (64, usize::MAX / 7 + 1)] {
+                assert!(std::panic::catch_unwind(|| {
+                    function(&mut [0; 64], &mut [0; 64][..length], stride);
+                })
+                .is_err());
+            }
+            let mut output = [-1; 8 + 7 * 13];
+            function(&mut [0; 64], &mut output, 13);
+            for row in 0..8 {
+                assert_eq!(&output[row * 13..row * 13 + 8], &[128; 8]);
             }
         }
     }

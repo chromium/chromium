@@ -27,7 +27,7 @@ use crate::bitstream::{BitStreamHuffman, BitstreamStateSnapshot};
 #[cfg(feature = "arith")]
 use crate::bitstream_arith::{ArithACTables, ArithDCTables, BitStreamArithmetic};
 use crate::cancel::{CancelCheck, Debounced, CANCEL_POLL_INTERVAL_MCUS};
-use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
+use crate::color_convert::{choose_ycbcr_to_rgb_convert_func, ColorConvert16};
 use crate::components::{Components, SampleRatios};
 use crate::errors::{DecodeErrors, UnsupportedSchemes};
 #[cfg(feature = "arith")]
@@ -358,7 +358,7 @@ pub struct JpegDecoder<T> {
     pub(crate) idct_4x4_func:    IDCTPtr,
     pub(crate) idct_1x1_func:    IDCTPtr,
     // Color convert function which acts on 16 YCbCr values
-    pub(crate) color_convert_16: ColorConvert16Ptr,
+    pub(crate) color_convert_16: ColorConvert16,
     pub(crate) z_order:          [usize; MAX_COMPONENTS],
     /// restart markers
     pub(crate) restart_interval: usize,
@@ -2096,19 +2096,19 @@ where
         }
     }
 
-    // Refresh the conversion function selected by the configured output colorspace.
+    // Refresh block and row conversion together, including the RGB intermediate used by YCCK.
     fn set_color_convert_from_options(&mut self) {
         let out_colorspace = self.options.jpeg_get_out_colorspace();
-        if matches!(
+        let converter_colorspace = if matches!(
             out_colorspace,
             ColorSpace::BGR | ColorSpace::BGRA | ColorSpace::RGB | ColorSpace::RGBA
         ) {
-            self.color_convert_16 = choose_ycbcr_to_rgb_convert_func(
-                self.options.jpeg_get_out_colorspace(),
-                &self.options
-            )
-            .unwrap();
-        }
+            out_colorspace
+        } else {
+            ColorSpace::RGB
+        };
+        self.color_convert_16 =
+            choose_ycbcr_to_rgb_convert_func(converter_colorspace, &self.options).unwrap();
     }
 
     #[allow(clippy::redundant_field_names)]
@@ -3451,7 +3451,8 @@ where
             scan_start_expects_dnl: bool,
             outer_append_snapshot:  HeaderAppendStateSnapshot,
             outer_sos_snapshot:     SosParamsSnapshot,
-            outer_header_snapshot:  ScanHeaderStateSnapshot,
+            outer_qt_tables:        [Option<[i32; 64]>; MAX_COMPONENTS],
+            outer_header_snapshot:  Option<ScanHeaderStateSnapshot>,
             /// Snapshots taken from the checkpoint (if any) so the seek and
             /// SOS-restore steps below do not need to touch `scan_state`.
             checkpoint_view:        Option<CheckpointView>,
@@ -3485,43 +3486,51 @@ where
             todo:            usize,
             dc_predictions:  [(i32, i32); MAX_COMPONENTS]
         }
-        let scan_plan = self.scan_state.as_deref().map(|state| ScanPlan {
-            scan_start_position:   state.scan_start_position,
-            scan_start_height:     state.scan_start_height,
-            scan_start_expects_dnl: state.scan_start_expects_dnl,
-            outer_append_snapshot: state.append_snapshot,
-            outer_sos_snapshot:    state.sos_snapshot,
-            outer_header_snapshot: state.header_snapshot.clone(),
-            checkpoint_view:       state.scan_checkpoint.as_deref().map(|checkpoint| {
-                CheckpointView {
-                    append_snapshot: checkpoint.append_snapshot,
-                    sos_snapshot:    checkpoint.sos_snapshot,
-                    stream_position: checkpoint.stream_position,
-                    todo:            checkpoint.todo,
-                    pixels_written:  checkpoint.pixels_written,
-                    dc_predictions:  checkpoint.dc_predictions
-                }
-            }),
-            progressive_view:      state.progressive_checkpoint.as_deref().map(|checkpoint| {
-                ProgressiveCheckpointView {
-                    append_snapshot: checkpoint.append_snapshot,
-                    sos_snapshot:    checkpoint.sos_snapshot,
-                    header_snapshot: checkpoint.header_snapshot.clone(),
-                    stream_position: checkpoint.stream_position,
-                    completed_scans: checkpoint.completed_scans
-                }
-            }),
-            progressive_fine_view: state.progressive_fine_checkpoint.as_deref().map(|checkpoint| {
-                ProgressiveFineCheckpointView {
-                    append_snapshot: checkpoint.append_snapshot,
-                    sos_snapshot:    checkpoint.sos_snapshot,
-                    stream_position: checkpoint.stream_position,
-                    completed_scans: checkpoint.completed_scans,
-                    displayed_scans: checkpoint.displayed_scans,
-                    todo:            checkpoint.todo,
-                    dc_predictions:  checkpoint.dc_predictions
-                }
-            })
+        let scan_plan = self.scan_state.as_deref().map(|state| {
+            // Sequential stripe resumes retain the entropy tables. Copy only the
+            // quantization tables instead of cloning all eight Huffman tables.
+            let needs_outer_header = state.scan_checkpoint.is_none()
+                || state.progressive_checkpoint.is_some()
+                || state.progressive_fine_checkpoint.is_some();
+            ScanPlan {
+                scan_start_position:    state.scan_start_position,
+                scan_start_height:      state.scan_start_height,
+                scan_start_expects_dnl: state.scan_start_expects_dnl,
+                outer_append_snapshot:  state.append_snapshot,
+                outer_sos_snapshot:     state.sos_snapshot,
+                outer_qt_tables:        state.header_snapshot.qt_tables,
+                outer_header_snapshot:  needs_outer_header.then(|| state.header_snapshot.clone()),
+                checkpoint_view:        state.scan_checkpoint.as_deref().map(|checkpoint| {
+                    CheckpointView {
+                        append_snapshot: checkpoint.append_snapshot,
+                        sos_snapshot:    checkpoint.sos_snapshot,
+                        stream_position: checkpoint.stream_position,
+                        todo:            checkpoint.todo,
+                        pixels_written:  checkpoint.pixels_written,
+                        dc_predictions:  checkpoint.dc_predictions
+                    }
+                }),
+                progressive_view:       state.progressive_checkpoint.as_deref().map(|checkpoint| {
+                    ProgressiveCheckpointView {
+                        append_snapshot: checkpoint.append_snapshot,
+                        sos_snapshot:    checkpoint.sos_snapshot,
+                        header_snapshot: checkpoint.header_snapshot.clone(),
+                        stream_position: checkpoint.stream_position,
+                        completed_scans: checkpoint.completed_scans
+                    }
+                }),
+                progressive_fine_view:  state.progressive_fine_checkpoint.as_deref().map(
+                    |checkpoint| ProgressiveFineCheckpointView {
+                        append_snapshot: checkpoint.append_snapshot,
+                        sos_snapshot:    checkpoint.sos_snapshot,
+                        stream_position: checkpoint.stream_position,
+                        completed_scans: checkpoint.completed_scans,
+                        displayed_scans: checkpoint.displayed_scans,
+                        todo:            checkpoint.todo,
+                        dc_predictions:  checkpoint.dc_predictions
+                    }
+                )
+            }
         });
         if let Some(plan) = scan_plan {
             let ScanPlan {
@@ -3530,6 +3539,7 @@ where
                 scan_start_expects_dnl,
                 outer_append_snapshot,
                 outer_sos_snapshot,
+                outer_qt_tables,
                 outer_header_snapshot,
                 checkpoint_view,
                 progressive_view,
@@ -3585,7 +3595,7 @@ where
             if let Some(view) = progressive_fine_view {
                 let header_snapshot = progressive_view
                     .as_ref()
-                    .map_or(&outer_header_snapshot, |view| &view.header_snapshot);
+                    .map_or_else(|| outer_header_snapshot.as_ref().unwrap(), |view| &view.header_snapshot);
                 self.restore_scan_header_state(header_snapshot);
                 self.stream.set_position(view.stream_position)?;
                 self.progressive_completed_scans = view.completed_scans;
@@ -3620,7 +3630,7 @@ where
                     comp.dc_diff = dc_diff;
                 }
             } else {
-                self.restore_scan_header_state(&outer_header_snapshot);
+                self.restore_scan_header_state(outer_header_snapshot.as_ref().unwrap());
                 self.stream.set_position(scan_start_position)?;
                 self.pixels_decoded = 0;
                 if self.is_progressive {
@@ -3642,7 +3652,7 @@ where
             // Components take their quantization tables once, from the tables in
             // effect at the first SOS (`setup_component_params`). A DQT between
             // later scans must not change them when resuming from a later checkpoint.
-            self.qt_tables = outer_header_snapshot.qt_tables;
+            self.qt_tables = outer_qt_tables;
             if checkpoint_view.is_none() && !had_progressive_view {
                 // First-SOS replay restarts progressive coefficient assembly;
                 // scan-boundary retries restore `todo` in `parse_entropy_coded_data`.
@@ -4177,6 +4187,8 @@ impl ImageInfo {
 
 #[cfg(test)]
 mod extended_xmp_tests {
+    use alloc::vec;
+
     use zune_core::bytestream::ZCursor;
 
     use super::{ExtendedXmpSegment, HeaderAppendStateSnapshot, JpegDecoder};
@@ -4274,6 +4286,9 @@ mod extended_xmp_tests {
 
 #[cfg(test)]
 mod planar_layout_helpers {
+    use alloc::vec;
+    use alloc::vec::Vec;
+
     use zune_core::bytestream::ZCursor;
     use zune_core::colorspace::ColorSpace;
     use zune_core::options::DecoderOptions;
@@ -4413,24 +4428,34 @@ mod planar_layout_helpers {
 
     #[test]
     fn set_options_refreshes_cached_dispatch() {
+        fn stale_idct(_: &mut [i32; 64], _: &mut [i16], _: usize) {
+            panic!("set_options did not replace the IDCT");
+        }
+        fn stale_color(_: &[i16; 16], _: &[i16; 16], _: &[i16; 16], _: &mut [u8], _: &mut usize) {
+            panic!("set_options did not replace the color converter");
+        }
         for (initial, replacement) in [
             (DecoderOptions::new_fast(), DecoderOptions::new_safe()),
             (DecoderOptions::new_safe(), DecoderOptions::new_fast())
         ] {
             let mut decoder = JpegDecoder::new_with_options(ZCursor::new(&[]), initial);
+            decoder.idct_func = stale_idct;
+            decoder.idct_4x4_func = stale_idct;
+            decoder.idct_1x1_func = stale_idct;
             decoder.set_options(replacement);
-            assert_eq!(
-                decoder.idct_func as usize,
-                choose_idct_func(&replacement) as usize
-            );
-            assert_eq!(
-                decoder.idct_4x4_func as usize,
-                choose_idct_4x4_func(&replacement) as usize
-            );
-            assert_eq!(
-                decoder.idct_1x1_func as usize,
-                choose_idct_1x1_func(&replacement) as usize
-            );
+            for (cached, configured) in [
+                (decoder.idct_func, choose_idct_func(&replacement)),
+                (decoder.idct_4x4_func, choose_idct_4x4_func(&replacement)),
+                (decoder.idct_1x1_func, choose_idct_1x1_func(&replacement))
+            ] {
+                let mut coefficients = [0; 64];
+                coefficients[0] = 123;
+                let mut actual = [0; 64];
+                let mut expected = [0; 64];
+                cached(&mut coefficients.clone(), &mut actual, 8);
+                configured(&mut coefficients, &mut expected, 8);
+                assert_eq!(actual, expected);
+            }
         }
 
         for colorspace in [
@@ -4441,11 +4466,85 @@ mod planar_layout_helpers {
         ] {
             let replacement = DecoderOptions::default().jpeg_set_out_colorspace(colorspace);
             let mut decoder = JpegDecoder::new(ZCursor::new(&[]));
+            decoder.color_convert_16.block = stale_color;
             decoder.set_options(replacement);
-            assert_eq!(
-                decoder.color_convert_16 as usize,
-                choose_ycbcr_to_rgb_convert_func(colorspace, &replacement).unwrap() as usize
+            let configured = choose_ycbcr_to_rgb_convert_func(colorspace, &replacement).unwrap();
+            assert_eq!(decoder.color_convert_16.row.is_some(), configured.row.is_some());
+            let mut actual = [0; 64];
+            let mut expected = [0; 64];
+            (decoder.color_convert_16.block)(&[123; 16], &[81; 16], &[179; 16], &mut actual, &mut 0);
+            (configured.block)(&[123; 16], &[81; 16], &[179; 16], &mut expected, &mut 0);
+            assert_eq!(actual, expected);
+        }
+    }
+
+    #[test]
+    fn row_dispatch_refreshes_after_headers() {
+        let data = include_bytes!("../../../test-images/jpeg/non_interleaved_422_65x65.jpg");
+        for colorspace in [
+            ColorSpace::RGB,
+            ColorSpace::BGR,
+            ColorSpace::RGBA,
+            ColorSpace::BGRA
+        ] {
+            for use_simd in [false, true] {
+                let initial = DecoderOptions::default()
+                    .jpeg_set_out_colorspace(ColorSpace::RGB)
+                    .set_use_unsafe(!use_simd);
+                let replacement = initial
+                    .jpeg_set_out_colorspace(colorspace)
+                    .set_use_unsafe(use_simd);
+                let mut reference = JpegDecoder::new_with_options(ZCursor::new(data), replacement);
+                let expected = reference.decode().unwrap();
+                for scanline in [false, true] {
+                    let mut actual = JpegDecoder::new_with_options(ZCursor::new(data), initial);
+                    actual.decode_headers().unwrap();
+                    actual.set_options(replacement);
+                    let expected_row = crate::color_convert::choose_ycbcr_to_rgb_convert_func(
+                        colorspace,
+                        &replacement
+                    )
+                    .unwrap()
+                    .row
+                    .is_some();
+                    assert_eq!(actual.color_convert_16.row.is_some(), expected_row);
+                    if !scanline {
+                        assert_eq!(actual.decode().unwrap(), expected);
+                        continue;
+                    }
+                    let row_bytes = 65 * colorspace.num_components();
+                    let stride = row_bytes + 7;
+                    let mut row = vec![0xa5; stride];
+                    let mut sink = actual.scanline_output();
+                    for reference in expected.chunks_exact(row_bytes) {
+                        assert_eq!(
+                            sink.read_scanlines(&mut row, stride).unwrap(),
+                            ScanlineReadStatus::RowsProcessed { rows: 1 }
+                        );
+                        assert_eq!(&row[..row_bytes], reference);
+                        assert!(row[row_bytes..].iter().all(|&byte| byte == 0xa5));
+                    }
+                    assert_eq!(sink.finish().unwrap(), ScanlineStatus::Complete);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn row_dispatch_resets_for_cmyk_reconfiguration() {
+        let data = include_bytes!("../../../test-images/jpeg/four_components.jpg");
+        for use_simd in [false, true] {
+            let options = DecoderOptions::default().set_use_unsafe(use_simd);
+            let replacement = options.jpeg_set_out_colorspace(ColorSpace::CMYK);
+            let mut reference = JpegDecoder::new_with_options(ZCursor::new(data), replacement);
+            let expected = reference.decode().unwrap();
+            let mut actual = JpegDecoder::new_with_options(
+                ZCursor::new(data),
+                options.jpeg_set_out_colorspace(ColorSpace::RGBA)
             );
+            actual.decode_headers().unwrap();
+            actual.set_options(replacement);
+            assert_eq!(actual.decode().unwrap(), expected);
         }
     }
 
@@ -4478,6 +4577,124 @@ mod planar_layout_helpers {
                 "component {index} exceeded one-iMCU-row scratch bound"
             );
             assert!(stripe_buffers[index] < layout[index].byte_size);
+        }
+    }
+
+    #[test]
+    fn zrl_zero_ac_blocks_match_scalar() {
+        fn jpeg_with_zero_ac(dc: i16, zero_runs: usize) -> Vec<u8> {
+            let mut jpeg = vec![0xff, 0xd8, 0xff, 0xdb, 0, 67, 0];
+            jpeg.extend_from_slice(&[255; 64]);
+            jpeg.extend_from_slice(&[
+                0xff, 0xc0, 0, 11, 8, 0, 8, 0, 8, 1, 1, 0x11, 0, 0xff, 0xc4, 0, 39, 0, 1
+            ]);
+            jpeg.extend_from_slice(&[0; 15]);
+            jpeg.extend_from_slice(&[9, 0x10, 1, 1]);
+            jpeg.extend_from_slice(&[0; 14]);
+            jpeg.extend_from_slice(&[0xf0, 0, 0xff, 0xda, 0, 8, 1, 1, 0, 0, 63, 0]);
+
+            // DC category 9 has code 0; ZRL has code 0 and EOB has code 10.
+            let amplitude = if dc > 0 { dc } else { 511 + dc } as u16;
+            let mut bits = vec![0_u8];
+            bits.extend((0..9).rev().map(|shift| ((amplitude >> shift) & 1) as u8));
+            bits.extend(core::iter::repeat(0).take(zero_runs));
+            bits.extend_from_slice(&[1, 0]);
+            while bits.len() % 8 != 0 {
+                bits.push(1);
+            }
+            for byte in bits.chunks_exact(8) {
+                let byte = byte.iter().fold(0, |value, bit| (value << 1) | bit);
+                jpeg.push(byte);
+                if byte == 0xff {
+                    jpeg.push(0);
+                }
+            }
+            jpeg.extend_from_slice(&[0xff, 0xd9]);
+            jpeg
+        }
+
+        for dc in [-300, 300] {
+            for zero_runs in 0..=3 {
+                let data = jpeg_with_zero_ac(dc, zero_runs);
+                for colorspace in [ColorSpace::Luma, ColorSpace::RGB, ColorSpace::RGBA] {
+                    let channels = colorspace.num_components();
+                    let sample = if dc > 0 { 255 } else { 0 };
+                    let mut expected = vec![sample; 64 * channels];
+                    if channels == 4 {
+                        for pixel in expected.chunks_exact_mut(4) {
+                            pixel[3] = 255;
+                        }
+                    }
+                    for use_simd in [false, true] {
+                        let options = DecoderOptions::default()
+                            .set_use_unsafe(use_simd)
+                            .jpeg_set_out_colorspace(colorspace);
+                        let mut decoder =
+                            JpegDecoder::new_with_options(ZCursor::new(&data), options);
+                        assert_eq!(
+                            decoder.decode().unwrap(),
+                            expected,
+                            "DC {dc}, ZRL count {zero_runs}, {colorspace:?}, SIMD {use_simd}"
+                        );
+
+                        let mut decoder =
+                            JpegDecoder::new_with_options(ZCursor::new(&data), options);
+                        let mut scanlines = decoder.scanline_output();
+                        assert_eq!(scanlines.start().unwrap(), ScanlineStatus::Ready);
+                        let row_bytes = 8 * channels;
+                        let mut row = vec![0xa5; row_bytes + 7];
+                        for reference in expected.chunks_exact(row_bytes) {
+                            assert_eq!(
+                                scanlines.read_scanlines(&mut row, row_bytes + 7).unwrap(),
+                                ScanlineReadStatus::RowsProcessed { rows: 1 }
+                            );
+                            assert_eq!(&row[..row_bytes], reference);
+                            assert!(row[row_bytes..].iter().all(|&value| value == 0xa5));
+                        }
+                        assert_eq!(scanlines.finish().unwrap(), ScanlineStatus::Complete);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn stripe_resume_matches_whole_image_for_configured_options() {
+        let fixtures: [&[u8]; 4] = [
+            include_bytes!("../../../test-images/jpeg/2029.jpg"),
+            include_bytes!("../../../test-images/jpeg/restart_cross_row_128x128.jpg"),
+            include_bytes!("../../../test-images/jpeg/non_interleaved_420_64x64.jpg"),
+            include_bytes!("../../../test-images/jpeg/progressive_420_webcodecs.jpg")
+        ];
+        for data in fixtures {
+            let mut reference = JpegDecoder::new_with_options(
+                ZCursor::new(data),
+                DecoderOptions::default().set_use_unsafe(false)
+            );
+            let expected = reference.decode().unwrap();
+            for use_simd in [false, true] {
+                let mut decoder = JpegDecoder::new_with_options(
+                    ZCursor::new(data),
+                    DecoderOptions::default().set_use_unsafe(use_simd)
+                );
+                let mut scanlines = decoder.scanline_output();
+                assert_eq!(scanlines.start().unwrap(), ScanlineStatus::Ready);
+                let row_bytes = scanlines.output_row_bytes().unwrap();
+                let height = scanlines.output_height().unwrap();
+                let stride = row_bytes + 7;
+                let mut row = vec![0xA5; stride];
+                let mut actual = Vec::with_capacity(expected.len());
+                for _ in 0..height {
+                    assert_eq!(
+                        scanlines.read_scanlines(&mut row, stride).unwrap(),
+                        ScanlineReadStatus::RowsProcessed { rows: 1 }
+                    );
+                    actual.extend_from_slice(&row[..row_bytes]);
+                    assert!(row[row_bytes..].iter().all(|&value| value == 0xA5));
+                }
+                assert_eq!(scanlines.finish().unwrap(), ScanlineStatus::Complete);
+                assert_eq!(actual, expected, "SIMD enabled: {use_simd}");
+            }
         }
     }
 

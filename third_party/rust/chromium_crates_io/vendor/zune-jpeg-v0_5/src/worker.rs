@@ -5,16 +5,20 @@
  *
  * You can redistribute it or modify it under terms of the MIT, Apache License or Zlib license
  */
-#![allow(clippy::cast_sign_loss,clippy::cast_possible_wrap,clippy::cast_possible_truncation)]
+#![allow(
+    clippy::cast_sign_loss,
+    clippy::cast_possible_wrap,
+    clippy::cast_possible_truncation
+)]
 use alloc::{format, vec};
-use core::convert::TryInto;
 use core::cmp::min;
+use core::convert::TryInto;
 
 use zune_core::colorspace::ColorSpace;
 
-use crate::color_convert::ycbcr_to_grayscale;
+use crate::color_convert::{ycbcr_to_grayscale, ColorConvert16};
 use crate::components::{Components, SampleRatios};
-use crate::decoder::{ColorConvert16Ptr, MAX_COMPONENTS};
+use crate::decoder::MAX_COMPONENTS;
 use crate::errors::DecodeErrors;
 
 /// fast 0..255 * 0..255 => 0..255 rounded multiplication
@@ -29,7 +33,7 @@ fn blinn_8x8(in_val: u8, y: u8) -> u8 {
 
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 pub(crate) fn color_convert(
-    unprocessed: &[&[i16]; MAX_COMPONENTS], color_convert_16: ColorConvert16Ptr,
+    unprocessed: &[&[i16]; MAX_COMPONENTS], color_convert_16: ColorConvert16,
     input_colorspace: ColorSpace, output_colorspace: ColorSpace, output: &mut [u8], width: usize,
     padded_width: usize
 ) -> Result<(), DecodeErrors> {
@@ -82,13 +86,7 @@ pub(crate) fn color_convert(
             );
         }
         (ColorSpace::YCCK, ColorSpace::CMYK) => {
-            color_convert_ycck_to_cmyk(
-                unprocessed,
-                width,
-                padded_width,
-                color_convert_16,
-                output
-            );
+            color_convert_ycck_to_cmyk(unprocessed, width, padded_width, color_convert_16, output);
         }
         (ColorSpace::CMYK, ColorSpace::RGB) => {
             color_convert_cymk_to_rgb::<3>(unprocessed, width, padded_width, output);
@@ -240,7 +238,7 @@ fn copy_removing_padding_generic(
 #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 fn color_convert_ycck_to_rgb<const NUM_COMPONENTS: usize>(
     mcu_block: &[&[i16]; MAX_COMPONENTS], width: usize, padded_width: usize,
-    output_colorspace: ColorSpace, color_convert_16: ColorConvert16Ptr, output: &mut [u8]
+    output_colorspace: ColorSpace, color_convert_16: ColorConvert16, output: &mut [u8]
 ) {
     color_convert_ycbcr(
         mcu_block,
@@ -277,7 +275,7 @@ fn color_convert_ycck_to_rgb<const NUM_COMPONENTS: usize>(
 #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 fn color_convert_ycck_to_cmyk(
     mcu_block: &[&[i16]; MAX_COMPONENTS], width: usize, padded_width: usize,
-    color_convert_16: ColorConvert16Ptr, output: &mut [u8]
+    color_convert_16: ColorConvert16, output: &mut [u8]
 ) {
     let mut rgb = vec![0_u8; width * 3 * (output.len() / (width * 4))];
     color_convert_ycbcr(
@@ -293,7 +291,11 @@ fn color_convert_ycck_to_cmyk(
         .zip(rgb.chunks_exact(width * 3))
         .zip(mcu_block[3].chunks_exact(padded_width))
     {
-        for ((pix, src), k) in pix_w.chunks_exact_mut(4).zip(rgb_w.chunks_exact(3)).zip(k_w) {
+        for ((pix, src), k) in pix_w
+            .chunks_exact_mut(4)
+            .zip(rgb_w.chunks_exact(3))
+            .zip(k_w)
+        {
             pix[0] = 255 - src[0];
             pix[1] = 255 - src[1];
             pix[2] = 255 - src[2];
@@ -344,7 +346,7 @@ fn color_convert_cymk_to_rgb<const NUM_COMPONENTS: usize>(
 )]
 fn color_convert_ycbcr(
     mcu_block: &[&[i16]; MAX_COMPONENTS], width: usize, padded_width: usize,
-    output_colorspace: ColorSpace, color_convert_16: ColorConvert16Ptr, output: &mut [u8]
+    output_colorspace: ColorSpace, color_convert_16: ColorConvert16, output: &mut [u8]
 ) {
     let num_components = output_colorspace.num_components();
 
@@ -374,10 +376,19 @@ fn color_convert_ycbcr(
             // we handle widths less than 16 a bit differently, allocating a temporary
             // buffer and writing to that and then flushing to the out buffer
             // because of the optimizations applied below,
-            (color_convert_16)(&y_out, &cb_out, &cr_out, &mut temp, &mut 0);
+            (color_convert_16.block)(&y_out, &cb_out, &cr_out, &mut temp, &mut 0);
             // copy to stride
             out[0..width * num_components].copy_from_slice(&temp[0..width * num_components]);
             // next
+            continue;
+        }
+
+        #[cfg(all(feature = "x86", any(target_arch = "x86", target_arch = "x86_64")))]
+        if let Some(convert_row) = color_convert_16.row {
+            // SAFETY: Configured together with the block converter after the AVX2 policy check.
+            unsafe {
+                convert_row(y_width, cb_width, cr_width, out, width);
+            }
             continue;
         }
 
@@ -388,7 +399,7 @@ fn color_convert_ycbcr(
             .zip(cr_width.chunks_exact(16))
             .zip(out.chunks_exact_mut(16 * num_components))
         {
-            (color_convert_16)(
+            (color_convert_16.block)(
                 y.try_into().unwrap(),
                 cb.try_into().unwrap(),
                 cr.try_into().unwrap(),
@@ -396,33 +407,177 @@ fn color_convert_ycbcr(
                 &mut 0
             );
         }
-        //we have more pixels in the end that can't be handled by the main loop.
-        //move pointer back a little bit to get last 16 bytes,
-        //color convert, and overwrite
-        //This means some values will be color converted twice.
-        for ((y, cb), cr) in y_width[width - 16..]
-            .chunks_exact(16)
-            .zip(cb_width[width - 16..].chunks_exact(16))
-            .zip(cr_width[width - 16..].chunks_exact(16))
-            .take(1)
-        {
-            (color_convert_16)(
-                y.try_into().unwrap(),
-                cb.try_into().unwrap(),
-                cr.try_into().unwrap(),
-                &mut temp,
-                &mut 0
-            );
+        if width % 16 != 0 {
+            //we have more pixels in the end that can't be handled by the main loop.
+            //move pointer back a little bit to get last 16 bytes,
+            //color convert, and overwrite
+            //This means some values will be color converted twice.
+            for ((y, cb), cr) in y_width[width - 16..]
+                .chunks_exact(16)
+                .zip(cb_width[width - 16..].chunks_exact(16))
+                .zip(cr_width[width - 16..].chunks_exact(16))
+                .take(1)
+            {
+                (color_convert_16.block)(
+                    y.try_into().unwrap(),
+                    cb.try_into().unwrap(),
+                    cr.try_into().unwrap(),
+                    &mut temp,
+                    &mut 0
+                );
+            }
+
+            let rem = out[(width - 16) * num_components..]
+                .chunks_exact_mut(16 * num_components)
+                .next()
+                .unwrap();
+
+            rem.copy_from_slice(&temp[0..rem.len()]);
         }
-
-        let rem = out[(width - 16) * num_components..]
-            .chunks_exact_mut(16 * num_components)
-            .next()
-            .unwrap();
-
-        rem.copy_from_slice(&temp[0..rem.len()]);
     }
 }
+#[cfg(test)]
+mod color_row_tests {
+    use zune_core::options::DecoderOptions;
+
+    use super::*;
+    use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
+
+    #[cfg(all(
+        feature = "std",
+        feature = "x86",
+        any(target_arch = "x86", target_arch = "x86_64")
+    ))]
+    #[test]
+    fn configured_row_dispatch_executes_for_eligible_widths() {
+        use core::cell::Cell;
+
+        use crate::color_convert::ColorConvertRowPtr;
+
+        std::thread_local! {
+            static SELECTED: Cell<Option<ColorConvertRowPtr>> = Cell::new(None);
+            static CALLS: Cell<usize> = Cell::new(0);
+        }
+        unsafe fn observed(y: &[i16], cb: &[i16], cr: &[i16], out: &mut [u8], width: usize) {
+            CALLS.with(|count| count.set(count.get() + 1));
+            SELECTED.with(|selected| unsafe {
+                selected.get().unwrap()(y, cb, cr, out, width);
+            });
+        }
+        for width in [1, 15, 16, 17, 31, 32, 33, 64] {
+            for format in [
+                ColorSpace::RGB,
+                ColorSpace::BGR,
+                ColorSpace::RGBA,
+                ColorSpace::BGRA
+            ] {
+                for use_unsafe in [false, true] {
+                    let options = DecoderOptions::default().set_use_unsafe(use_unsafe);
+                    for block_only in [false, true] {
+                        let mut converter =
+                            choose_ycbcr_to_rgb_convert_func(format, &options).unwrap();
+                        assert_eq!(converter.row.is_some(), options.use_avx2());
+                        if block_only {
+                            converter.row = None;
+                        }
+                        let has_row = converter.row.is_some();
+                        SELECTED.with(|selected| selected.set(converter.row));
+                        CALLS.with(|count| count.set(0));
+                        if has_row {
+                            converter.row = Some(observed);
+                        }
+                        let padded = (width + 15) & !15;
+                        let y = vec![171; padded * 3];
+                        let cb = vec![31; padded * 3];
+                        let cr = vec![225; padded * 3];
+                        let planes = [&y[..], &cb[..], &cr[..], &[]];
+                        let mut actual = vec![0xa5; width * format.num_components() * 3 + 11];
+                        let mut expected = actual.clone();
+                        color_convert_ycbcr(&planes, width, padded, format, converter, &mut actual);
+                        color_convert_ycbcr(
+                            &planes, width, padded, format, ColorConvert16::scalar_for_test(format),
+                            &mut expected
+                        );
+                        CALLS.with(|count| {
+                            assert_eq!(count.get(), if has_row && width >= 16 { 3 } else { 0 })
+                        });
+                        assert_eq!(actual, expected);
+                        assert_eq!(&actual[actual.len() - 11..], &[0xa5; 11]);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn dispatched_rows_match_scalar_at_width_boundaries() {
+        for width in 1..=129 {
+            let padded_width = (width + 7) & !7;
+            let y = vec![171; padded_width * 3];
+            let cb = vec![31; padded_width * 3];
+            let cr = vec![225; padded_width * 3];
+            let planes = [&y[..], &cb[..], &cr[..], &[]];
+            for format in [
+                ColorSpace::RGB,
+                ColorSpace::BGR,
+                ColorSpace::RGBA,
+                ColorSpace::BGRA
+            ] {
+                let mut actual = vec![0xa5; width * format.num_components() * 3 + 11];
+                let mut expected = actual.clone();
+                for (converter, out) in [
+                    (
+                        choose_ycbcr_to_rgb_convert_func(format, &DecoderOptions::default()).unwrap(),
+                        &mut actual
+                    ),
+                    (ColorConvert16::scalar_for_test(format), &mut expected)
+                ] {
+                    color_convert_ycbcr(
+                        &planes,
+                        width,
+                        padded_width,
+                        format,
+                        converter,
+                        out
+                    );
+                }
+                assert_eq!(actual, expected, "width {width}, format {format:?}");
+                assert_eq!(&actual[actual.len() - 11..], &[0xa5; 11]);
+            }
+        }
+    }
+
+    #[test]
+    fn aligned_rows_do_not_reconvert_the_tail() {
+        use core::sync::atomic::{AtomicUsize, Ordering};
+        static CALLS: AtomicUsize = AtomicUsize::new(0);
+        fn converter(
+            _: &[i16; 16], _: &[i16; 16], _: &[i16; 16], out: &mut [u8], offset: &mut usize
+        ) {
+            CALLS.fetch_add(1, Ordering::Relaxed);
+            out[*offset..*offset + 48].fill(42);
+            *offset += 48;
+        }
+        for width in [1, 15, 16, 17, 31, 32, 33, 48, 64] {
+            CALLS.store(0, Ordering::Relaxed);
+            let padded_width = (width + 15) & !15;
+            let samples = vec![128; padded_width];
+            let planes = [&samples[..], &samples[..], &samples[..], &[]];
+            let mut out = vec![0; width * 3];
+            color_convert_ycbcr(
+                &planes,
+                width,
+                padded_width,
+                ColorSpace::RGB,
+                ColorConvert16::block_only(converter),
+                &mut out
+            );
+            assert_eq!(CALLS.load(Ordering::Relaxed), (width + 15) / 16);
+            assert!(out.iter().all(|&byte| byte == 42));
+        }
+    }
+}
+
 pub(crate) fn upsample(
     component: &mut Components, mcu_height: usize, i: usize, upsampler_scratch_space: &mut [i16],
     has_vertical_sample: bool
@@ -611,12 +766,13 @@ pub(crate) fn upsample(
 
             if has_vertical_sample {
                 let length = component.first_row_upsample_dest.len();
-                let start = dest_coeff
-                    .len()
-                    .checked_sub(length)
-                    .ok_or(DecodeErrors::FormatStatic(
-                        "Generic upsample destination is too small",
-                    ))?;
+                let start =
+                    dest_coeff
+                        .len()
+                        .checked_sub(length)
+                        .ok_or(DecodeErrors::FormatStatic(
+                            "Generic upsample destination is too small"
+                        ))?;
                 component
                     .first_row_upsample_dest
                     .copy_from_slice(&dest_coeff[start..]);
