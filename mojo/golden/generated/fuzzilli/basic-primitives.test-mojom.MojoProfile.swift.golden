@@ -329,9 +329,22 @@ let mojoPrimaryProfile = Profile(
         // async functions run to completion (including code after `await`)
         // before the primary remote is closed. The leading `;` stops this from
         // being parsed as a call on the program's last line.
+        //
+        // Errors thrown in async functions do not fail the program on their
+        // own. Without rethrowing them here, Fuzzilli would keep programs,
+        // accepting mutations and minimizations on them. Mojo/API errors are
+        // not rethrown. These errors result from states that, with additional
+        // mutation, may uncover bugs.
         ;(async () => {
-            await Promise.allSettled(mojoAsyncFunctionPromises);
+            const results = await Promise.allSettled(mojoAsyncFunctionPromises);
             if (globalRemote) {globalRemote.$.close()}
+            for (const result of results) {
+                const error = result.reason
+                if (result.status === 'rejected' &&
+                    (error instanceof TypeError || error instanceof ReferenceError)) {
+                    throw result.reason;
+                }
+            }
         })();
         // --- End program suffix ---
         """,
