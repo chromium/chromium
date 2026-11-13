@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/strcat.h"
@@ -702,21 +703,25 @@ TEST_F(TtcMesClientTest, ToolCallBatchIsPassedOnTogether) {
   EXPECT_EQ(debug_sink_.tool_events.back(), "response:call-a");
 }
 
-// A call in a batch with unparsable arguments is answered with an error and
-// left out; the rest of the batch is still passed on.
-TEST_F(TtcMesClientTest, ToolCallBatchAnswersInvalidJsonCall) {
+// A call in a batch with unparsable arguments fails the batch: it and the
+// calls after it are answered with errors without being passed on.
+TEST_F(TtcMesClientTest, ToolCallBatchInvalidJsonAbortsLaterCalls) {
   client().HandleServerFrame(MakeToolCallBatchFrame(
       {{"call-a", "{}"}, {"call-b", "{not json"}, {"call-c", "{}"}}));
 
   EXPECT_THAT(observer_.tool_call_batches(),
-              testing::ElementsAre(testing::ElementsAre("call-a", "call-c")));
-  EXPECT_THAT(
-      debug_sink_.tool_events,
-      testing::ElementsAre("received:call-a:navigate:{}",
-                           "received:call-b:navigate:{not json",
-                           "received:call-c:navigate:{}", "response:call-b"));
-  EXPECT_THAT(debug_sink_.last_response_json,
-              testing::HasSubstr("Invalid JSON"));
+              testing::ElementsAre(testing::ElementsAre("call-a")));
+  EXPECT_THAT(debug_sink_.tool_events,
+              testing::ElementsAre("received:call-a:navigate:{}",
+                                   "received:call-b:navigate:{not json",
+                                   "received:call-c:navigate:{}",
+                                   "response:call-b", "response:call-c"));
+  std::optional<base::DictValue> last_response = base::JSONReader::ReadDict(
+      debug_sink_.last_response_json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(last_response);
+  EXPECT_EQ(
+      last_response->FindIntByDottedPath("error.code"),
+      static_cast<int>(actor::mojom::ActionResultCode::kActionsCancelled));
 }
 
 TEST_F(TtcMesClientTest, DebugSinkGetsServerErrorDetails) {

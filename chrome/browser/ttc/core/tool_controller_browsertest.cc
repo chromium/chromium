@@ -1214,13 +1214,9 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
     return tool_request;
   };
 
-  // Issue all calls before any has finished, including one that fails
-  // validation, and check that they all run and finish in order.
+  // Issue all calls before any has finished, and check that they all run and
+  // finish in order.
   std::vector<int> completion_order;
-  base::test::TestFuture<ToolResponse> first_future;
-  base::test::TestFuture<ToolResponse> second_future;
-  base::test::TestFuture<ToolResponse> third_future;
-  base::test::TestFuture<ToolResponse> fourth_future;
   auto record = [&](int index, ToolResponseCallback callback) {
     return base::BindOnce(
         [](std::vector<int>* order, int index, ToolResponseCallback callback,
@@ -1231,27 +1227,94 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
         &completion_order, index, std::move(callback));
   };
 
-  ToolRequest unsupported_request;
-  unsupported_request.name = "unsupported_tool";
-
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> second_future;
+  base::test::TestFuture<ToolResponse> third_future;
   session_controller->ProcessToolCall(make_click_request(),
                                       record(1, first_future.GetCallback()));
-  session_controller->ProcessToolCall(std::move(unsupported_request),
+  session_controller->ProcessToolCall(make_click_request(),
                                       record(2, second_future.GetCallback()));
   session_controller->ProcessToolCall(make_click_request(),
                                       record(3, third_future.GetCallback()));
-  session_controller->ProcessToolCall(make_click_request(),
-                                      record(4, fourth_future.GetCallback()));
 
   EXPECT_TRUE(first_future.Take().Ok());
-  ToolResponse second_response = second_future.Take();
-  EXPECT_TOOL_ERROR(second_response,
-                    actor::mojom::ActionResultCode::kToolUnknown);
+  EXPECT_TRUE(second_future.Take().Ok());
   EXPECT_TRUE(third_future.Take().Ok());
-  EXPECT_TRUE(fourth_future.Take().Ok());
-  EXPECT_EQ(completion_order, (std::vector<int>{1, 2, 3, 4}));
+  EXPECT_EQ(completion_order, (std::vector<int>{1, 2, 3}));
   // Every queued click actually ran.
   EXPECT_EQ(3, content::EvalJs(web_contents(), "window.click_count"));
+}
+
+// Once a tool call fails, the calls queued behind it are answered with an error
+// without being run, since they may depend on it. Calls received afterwards
+// run as usual.
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       FailedToolCallDropsQueuedCalls) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL(
+          "example.com", "/actor/page_with_clickable_element.html")));
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"js(
+    window.click_count = 0;
+    document.getElementById('clickable').addEventListener(
+        'click', () => ++window.click_count);
+  )js"));
+
+  std::optional<int> button_id = content::GetDOMNodeId(
+      *web_contents()->GetPrimaryMainFrame(), "button#clickable");
+  ASSERT_TRUE(button_id);
+  std::string document_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(web_contents()->GetPrimaryMainFrame())
+              ->serialized_token();
+
+  auto make_click_request = [&]() {
+    ToolRequest tool_request;
+    tool_request.name = "click_element";
+    tool_request.arguments.Set("node_id", base::DictValue()
+                                              .Set("document_id", document_id)
+                                              .Set("dom_node_id", *button_id));
+    return tool_request;
+  };
+
+  ToolRequest unsupported_request;
+  unsupported_request.name = "unsupported_tool";
+
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> failing_future;
+  base::test::TestFuture<ToolResponse> third_future;
+  base::test::TestFuture<ToolResponse> fourth_future;
+  session_controller->ProcessToolCall(make_click_request(),
+                                      first_future.GetCallback());
+  session_controller->ProcessToolCall(std::move(unsupported_request),
+                                      failing_future.GetCallback());
+  session_controller->ProcessToolCall(make_click_request(),
+                                      third_future.GetCallback());
+  session_controller->ProcessToolCall(make_click_request(),
+                                      fourth_future.GetCallback());
+
+  EXPECT_TRUE(first_future.Take().Ok());
+  ToolResponse failing_response = failing_future.Take();
+  EXPECT_TOOL_ERROR(failing_response,
+                    actor::mojom::ActionResultCode::kToolUnknown);
+  for (auto* future : {&third_future, &fourth_future}) {
+    ToolResponse response = future->Take();
+    EXPECT_TOOL_ERROR(response,
+                      actor::mojom::ActionResultCode::kActionsCancelled);
+  }
+  // Only the click before the failure ran.
+  EXPECT_EQ(1, content::EvalJs(web_contents(), "window.click_count"));
+
+  // A call received after the failure runs.
+  base::test::TestFuture<ToolResponse> later_future;
+  session_controller->ProcessToolCall(make_click_request(),
+                                      later_future.GetCallback());
+  EXPECT_TRUE(later_future.Take().Ok());
+  EXPECT_EQ(2, content::EvalJs(web_contents(), "window.click_count"));
 }
 
 class ToolControllerBatchBrowserTest : public ToolControllerBrowserTest {
@@ -1303,9 +1366,40 @@ class ToolControllerBatchBrowserTest : public ToolControllerBrowserTest {
   std::string document_id_;
 };
 
-// The calls in a batch run in order, even if one of them fails, followed by
-// calls received after the batch.
+// The calls in a batch all run, in order.
 IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest, BatchRunsInOrder) {
+  std::vector<int> completion_order;
+  auto record = [&](int index, ToolResponseCallback callback) {
+    return base::BindOnce(
+        [](std::vector<int>* order, int index, ToolResponseCallback callback,
+           ToolResponse response) {
+          order->push_back(index);
+          std::move(callback).Run(std::move(response));
+        },
+        &completion_order, index, std::move(callback));
+  };
+
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> second_future;
+  base::test::TestFuture<ToolResponse> third_future;
+  std::vector<PendingToolCall> batch;
+  batch.emplace_back(MakeClickRequest(), record(1, first_future.GetCallback()));
+  batch.emplace_back(MakeClickRequest(),
+                     record(2, second_future.GetCallback()));
+  batch.emplace_back(MakeClickRequest(), record(3, third_future.GetCallback()));
+  session_controller()->ProcessToolCallBatch(std::move(batch));
+
+  EXPECT_TRUE(first_future.Take().Ok());
+  EXPECT_TRUE(second_future.Take().Ok());
+  EXPECT_TRUE(third_future.Take().Ok());
+  EXPECT_EQ(completion_order, (std::vector<int>{1, 2, 3}));
+  EXPECT_EQ(3, GetClickCount());
+}
+
+// The calls in a batch run in order until one fails; the rest are answered with
+// an error without being run.
+IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest,
+                       FailedCallAbortsRestOfBatch) {
   std::vector<int> completion_order;
   auto record = [&](int index, ToolResponseCallback callback) {
     return base::BindOnce(
@@ -1329,18 +1423,46 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest, BatchRunsInOrder) {
   batch.emplace_back(std::move(unsupported_request),
                      record(2, second_future.GetCallback()));
   batch.emplace_back(MakeClickRequest(), record(3, third_future.GetCallback()));
+  batch.emplace_back(MakeClickRequest(),
+                     record(4, fourth_future.GetCallback()));
   session_controller()->ProcessToolCallBatch(std::move(batch));
-  session_controller()->ProcessToolCall(MakeClickRequest(),
-                                        record(4, fourth_future.GetCallback()));
 
   EXPECT_TRUE(first_future.Take().Ok());
   ToolResponse second_response = second_future.Take();
   EXPECT_TOOL_ERROR(second_response,
                     actor::mojom::ActionResultCode::kToolUnknown);
-  EXPECT_TRUE(third_future.Take().Ok());
-  EXPECT_TRUE(fourth_future.Take().Ok());
+  for (auto* future : {&third_future, &fourth_future}) {
+    ToolResponse response = future->Take();
+    EXPECT_TOOL_ERROR(response,
+                      actor::mojom::ActionResultCode::kActionsCancelled);
+  }
   EXPECT_EQ(completion_order, (std::vector<int>{1, 2, 3, 4}));
-  EXPECT_EQ(3, GetClickCount());
+  // The aborted clicks didn't run.
+  EXPECT_EQ(1, GetClickCount());
+}
+
+// Aborting a batch finishes it, so the next batch is accepted.
+IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest,
+                       BatchAcceptedAfterEarlierBatchAborts) {
+  ToolRequest unsupported_request;
+  unsupported_request.name = "unsupported_tool";
+
+  base::test::TestFuture<ToolResponse> first_future;
+  base::test::TestFuture<ToolResponse> second_future;
+  std::vector<PendingToolCall> first_batch;
+  first_batch.emplace_back(std::move(unsupported_request),
+                           first_future.GetCallback());
+  first_batch.emplace_back(MakeClickRequest(), second_future.GetCallback());
+  session_controller()->ProcessToolCallBatch(std::move(first_batch));
+  EXPECT_FALSE(first_future.Take().Ok());
+  EXPECT_FALSE(second_future.Take().Ok());
+
+  base::test::TestFuture<ToolResponse> third_future;
+  std::vector<PendingToolCall> second_batch;
+  second_batch.emplace_back(MakeClickRequest(), third_future.GetCallback());
+  session_controller()->ProcessToolCallBatch(std::move(second_batch));
+  EXPECT_TRUE(third_future.Take().Ok());
+  EXPECT_EQ(1, GetClickCount());
 }
 
 // A batch received while an earlier batch is unfinished is rejected without
@@ -1394,10 +1516,10 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBatchBrowserTest,
   EXPECT_EQ(1, GetClickCount());
 }
 
-// A queued tool call runs in a new actor task if the session's task was stopped
-// while the call was waiting.
+// Stopping the session's task fails the running call, which drops the calls
+// queued behind it. The next tool call runs in a new actor task.
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
-                       QueuedToolCallReplacesStoppedTask) {
+                       ToolCallAfterStoppedTaskRunsInNewTask) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
@@ -1434,11 +1556,17 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   actor_service->StopTask(first_task_id,
                           actor::ActorTask::StoppedReason::kStoppedByUser);
 
-  // The task is stopped while the first call is acting, which fails it.
+  // The task is stopped while the first call is acting, which fails it and
+  // drops the second.
   ToolResponse first_response = first_future.Take();
   EXPECT_TOOL_ERROR(first_response,
                     actor::mojom::ActionResultCode::kTaskWentAway);
-  EXPECT_TRUE(second_future.Take().Ok());
+  EXPECT_FALSE(second_future.Take().Ok());
+
+  base::test::TestFuture<ToolResponse> third_future;
+  session_controller->ProcessToolCall(make_open_url_request(second_url),
+                                      third_future.GetCallback());
+  EXPECT_TRUE(third_future.Take().Ok());
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), second_url);
 
   const std::map<actor::TaskId, const actor::ActorTask*> new_tasks =

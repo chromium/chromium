@@ -96,7 +96,8 @@ class SessionController {
                                ToolResponseCallback tool_response_callback) = 0;
 
   // Runs the tools in `tool_calls` in order, calling each call's callback with
-  // its result (or an error). The whole batch is rejected with errors if any
+  // its result (or an error). Once a call fails, the later ones aren't run and
+  // are answered with errors. The whole batch is rejected with errors if any
   // earlier tool call hasn't finished yet. `tool_calls` must not be empty.
   virtual void ProcessToolCallBatch(
       std::vector<PendingToolCall> tool_calls) = 0;

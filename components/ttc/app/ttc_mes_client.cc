@@ -491,13 +491,24 @@ void TtcMesClient::HandleToolCallBatch(
   if (!observer_) {
     return;
   }
+  // A call that can't be converted fails the batch like any other failure:
+  // the calls after it aren't passed on, but are answered with an error.
   std::vector<PendingToolCall> tool_calls;
+  bool aborted = false;
   for (const auto& tool_call : batch.tool_calls()) {
+    if (aborted) {
+      OnToolExecutionComplete(
+          tool_call.call_id(), tool_call.name(),
+          ToolResponse::Error(
+              actor::mojom::ActionResultCode::kActionsCancelled));
+      continue;
+    }
     base::expected<ToolRequest, ToolResponse> tool_request =
         ToToolRequest(tool_call);
     if (!tool_request.has_value()) {
       OnToolExecutionComplete(tool_call.call_id(), tool_call.name(),
                               std::move(tool_request).error());
+      aborted = true;
       continue;
     }
     tool_calls.emplace_back(std::move(tool_request).value(),
