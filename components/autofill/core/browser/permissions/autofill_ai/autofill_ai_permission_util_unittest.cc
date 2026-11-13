@@ -1203,6 +1203,66 @@ TEST_F(
                                           EntityType(kRedressNumber)));
 }
 
+// Tests that equally weighted buttons are not shown when
+// `kAutofillRegionalizedPrivatePassesUxRefine` is disabled.
+TEST_F(AutofillAiPermissionUtilsTest,
+       MustShowEquallyWeightedButtonsForPrivatePasses_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillRegionalizedPrivatePassesUxRefine);
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
+      true);
+  EXPECT_FALSE(MustShowEquallyWeightedButtonsForPrivatePasses(
+      client().GetIdentityManager()));
+}
+
+// Tests that equally weighted buttons are shown when the account capability is
+// true or unknown, and not shown when it is false or when `IdentityManager` is
+// `nullptr`.
+TEST_F(AutofillAiPermissionUtilsTest,
+       MustShowEquallyWeightedButtonsForPrivatePasses_CapabilityValues) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+  EXPECT_FALSE(MustShowEquallyWeightedButtonsForPrivatePasses(nullptr));
+
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
+      false);
+  EXPECT_FALSE(MustShowEquallyWeightedButtonsForPrivatePasses(
+      client().GetIdentityManager()));
+
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
+      true);
+  EXPECT_TRUE(MustShowEquallyWeightedButtonsForPrivatePasses(
+      client().GetIdentityManager()));
+
+  client().ResetAccountCapabilities();
+  EXPECT_TRUE(MustShowEquallyWeightedButtonsForPrivatePasses(
+      client().GetIdentityManager()));
+}
+
+// Tests that `MustShowEquallyWeightedButtons()` returns true only for
+// private passes when `MustShowEquallyWeightedButtonsForPrivatePasses()` is
+// true.
+TEST_F(AutofillAiPermissionUtilsTest,
+       MustShowEquallyWeightedButtons_EntityTypes) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRegionalizedPrivatePassesUxRefine};
+
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
+      true);
+  EXPECT_TRUE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),
+                                             EntityType(kPassport)));
+  EXPECT_FALSE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),
+                                              EntityType(kVehicle)));
+
+  client().SetMustShowEquallyWeightedButtonsForPrivatePassesInChromeAutofill(
+      false);
+  EXPECT_FALSE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),
+                                              EntityType(kPassport)));
+  EXPECT_FALSE(MustShowEquallyWeightedButtons(client().GetIdentityManager(),
+                                              EntityType(kVehicle)));
+}
+
 }  // namespace
 
 }  // namespace autofill

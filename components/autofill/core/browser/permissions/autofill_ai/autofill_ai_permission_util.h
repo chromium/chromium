@@ -211,6 +211,17 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
 // parameters for Ambient Autofill.
 DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes();
 
+// Returns whether equally weighted buttons must be shown. Returns `false` if
+// `identity_manager` is `nullptr`.
+[[nodiscard]] bool MustShowEquallyWeightedButtons(
+    const signin::IdentityManager* identity_manager,
+    EntityType entity_type);
+
+// Same as `MustShowEquallyWeightedButtons()`, but assumes the entity is a
+// private pass.
+[[nodiscard]] bool MustShowEquallyWeightedButtonsForPrivatePasses(
+    const signin::IdentityManager* identity_manager);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_AI_AUTOFILL_AI_PERMISSION_UTIL_H_

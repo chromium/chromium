@@ -989,4 +989,30 @@ DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {
   return supported_types;
 }
 
+bool MustShowEquallyWeightedButtons(
+    const signin::IdentityManager* identity_manager,
+    EntityType entity_type) {
+  return GetWalletPassType(entity_type,
+                           EntityInstance::RecordType::kServerWallet) ==
+             EntityInstance::WalletPassType::kPrivate &&
+         MustShowEquallyWeightedButtonsForPrivatePasses(identity_manager);
+}
+
+bool MustShowEquallyWeightedButtonsForPrivatePasses(
+    const signin::IdentityManager* identity_manager) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillRegionalizedPrivatePassesUxRefine)) {
+    return false;
+  }
+  if (!identity_manager) {
+    return false;
+  }
+  const AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  const signin::Tribool must_show_equally_weighted_buttons =
+      account_info.GetAccountCapabilities()
+          .must_show_equally_weighted_buttons_for_private_passes_in_chrome_autofill();
+  return must_show_equally_weighted_buttons != signin::Tribool::kFalse;
+}
+
 }  // namespace autofill
