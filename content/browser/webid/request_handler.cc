@@ -2066,7 +2066,12 @@ base::WeakPtr<RequestHandler> RequestHandler::GetWeakPtr() {
 
 void RequestHandler::OnClose() {
   CHECK(request_service_->GetDialogController());
-  request_service_->GetDialogController()->CloseModalDialog();
+  if (!ShowDialog([&]() {
+        request_service_->GetDialogController()->CloseModalDialog();
+        return true;
+      })) {
+    return;
+  }
 
   // If we have not gotten a signin status change, abort the flow.
   // The same goes if we did get a status change but the accounts fetch
@@ -2109,7 +2114,12 @@ bool RequestHandler::OnResolve(GURL idp_config_url,
     return false;
   }
 
-  controller->CloseModalDialog();
+  if (!ShowDialog([&]() {
+        controller->CloseModalDialog();
+        return true;
+      })) {
+    return false;
+  }
 
   MarkUserAsSignedIn(idp_config_url, account_id.value_or(account_id_));
 
@@ -2271,7 +2281,12 @@ void RequestHandler::OnNativeAppResult(
 }
 
 void RequestHandler::OnNativeAppLoginFinished(const GURL& idp_config_url) {
-  GetDialogController()->CloseModalDialog();
+  if (!ShowDialog([&]() {
+        GetDialogController()->CloseModalDialog();
+        return true;
+      })) {
+    return;
+  }
   permission_delegate()->RemoveIdpSigninStatusObserver(this);
   permission_delegate()->SetIdpSigninStatus(
       url::Origin::Create(idp_config_url), /*is_signed_in=*/true, std::nullopt);

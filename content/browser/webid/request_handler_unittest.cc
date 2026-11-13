@@ -6801,6 +6801,103 @@ TEST_F(RequestHandlerTest, FrameDetachDuringShowAccountsDialog) {
   EXPECT_FALSE(request_handler_);
 }
 
+// Tests that the `RequestHandler` isn't used after closing the popup destroys
+// it, e.g. if closing the popup activates another tab. Regression tests for
+// crbug.com/574762567.
+class RequestHandlerDestroyedDuringCloseModalDialogTest
+    : public RequestHandlerTest {
+ protected:
+  // Sets a dialog controller whose `CloseModalDialog()` synchronously destroys
+  // the active `RequestHandler`. Returns the dialog controller so that tests
+  // can set more expectations on it.
+  base::WeakPtr<TestDialogController> SetDialogControllerThatDestroysHandler(
+      const MockConfiguration& config) {
+    auto dialog_controller = std::make_unique<TestDialogController>(config);
+    base::WeakPtr<TestDialogController> weak_dialog_controller =
+        dialog_controller->AsWeakPtr();
+    SetDialogController(std::move(dialog_controller));
+    EXPECT_CALL(*weak_dialog_controller, CloseModalDialog).WillOnce([this]() {
+      RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+          ->DestroyActiveRequestHandlerForTesting();
+    });
+    return weak_dialog_controller;
+  }
+};
+
+// Tests the continuation popup calling `close()`.
+TEST_F(RequestHandlerDestroyedDuringCloseModalDialogTest, OnClose) {
+  MockConfiguration config = kConfigurationValid;
+  config.continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
+  base::WeakPtr<TestDialogController> dialog_controller =
+      SetDialogControllerThatDestroysHandler(config);
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*dialog_controller, ShowModalDialog)
+      .WillOnce(Return(modal.get()));
+
+  RunDontWaitForCallback(kDefaultRequestParameters, config);
+  ASSERT_TRUE(request_handler_);
+  request_handler_->OnClose();
+  EXPECT_FALSE(request_handler_);
+  // `OnClose()` returned early, before recording the pop-up result.
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.ContinueOn.PopupWindowResult",
+                                     0);
+}
+
+// Tests the continuation popup calling `resolve()`.
+TEST_F(RequestHandlerDestroyedDuringCloseModalDialogTest, OnResolve) {
+  MockConfiguration config = kConfigurationValid;
+  config.continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
+  base::WeakPtr<TestDialogController> dialog_controller =
+      SetDialogControllerThatDestroysHandler(config);
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*dialog_controller, ShowModalDialog)
+      .WillOnce(Return(modal.get()));
+
+  RunDontWaitForCallback(kDefaultRequestParameters, config);
+  ASSERT_TRUE(request_handler_);
+  EXPECT_FALSE(request_handler_->OnResolve(
+      GURL(kProviderUrlFull), /*account_id=*/std::nullopt,
+      blink::mojom::ResolveTokenParams::NewToken(
+          base::Value("an-access-token"))));
+  EXPECT_FALSE(request_handler_);
+  // `OnResolve()` returned early, before recording the pop-up result.
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.ContinueOn.PopupWindowResult",
+                                     0);
+}
+
+// Tests the login popup being completed by a native app login response.
+TEST_F(RequestHandlerDestroyedDuringCloseModalDialogTest,
+       NativeAppLoginFinished) {
+  MockConfiguration config = kConfigurationValid;
+  config.accounts_dialog_action = AccountsDialogAction::kAddAccount;
+  base::WeakPtr<TestDialogController> dialog_controller =
+      SetDialogControllerThatDestroysHandler(config);
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  IdentityRequestDialogController::NativeAppResultCallback
+      native_result_callback;
+  EXPECT_CALL(*dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<4>(
+          [&native_result_callback,
+           &modal](IdentityRequestDialogController::NativeAppResultCallback
+                       callback) {
+            native_result_callback = std::move(callback);
+            return modal.get();
+          }));
+
+  RunDontWaitForCallback(kDefaultRequestParameters, config);
+  ASSERT_TRUE(request_handler_);
+  ASSERT_TRUE(native_result_callback);
+  // `OnNativeAppLoginFinished()` should return early, before setting the IdP
+  // sign-in status.
+  EXPECT_CALL(*test_permission_delegate_, SetIdpSigninStatus).Times(0);
+  std::move(native_result_callback)
+      .Run(IdentityRequestDialogController::NativeAppResult{
+          IdentityRequestDialogController::NativeAppResult::Type::
+              kLoginFinished,
+          ""});
+  EXPECT_FALSE(request_handler_);
+}
+
 // Test the continuation popup calling close().
 TEST_F(RequestHandlerTest, ContinuationPopupCallingClose) {
   RequestParameters parameters = kDefaultRequestParameters;

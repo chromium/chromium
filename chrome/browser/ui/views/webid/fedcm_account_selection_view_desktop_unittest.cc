@@ -2549,6 +2549,20 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   controller->CloseModalDialog();
 }
 
+// Tests that closing the pop-up window does not use the view if that destroys
+// it, e.g. if closing the pop-up activates another tab. Regression test for
+// crbug.com/574762567.
+TEST_F(FedCmAccountSelectionViewDesktopTest, ClosePopupWindowDestroysView) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+  CreateAndShowPopupWindow(*controller);
+  EXPECT_CALL(*controller->GetPopupWindow(), ClosePopupWindow)
+      .WillOnce([&controller]() { controller.reset(); });
+
+  // This should not crash.
+  controller->CloseModalDialog();
+}
+
 // Tests that opening a popup after a verifying sheet, then closing the popup,
 // notifies the observer.
 TEST_F(FedCmAccountSelectionViewDesktopTest,

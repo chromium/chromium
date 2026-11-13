@@ -1078,7 +1078,12 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // This ensures that OnPopupWindowDestroyed is only called when the user
     // closes the popup.
     popup_window_->ResetObserver();
-    popup_window_->ClosePopupWindow();
+
+    // Closing the pop-up can synchronously destroy `this`, e.g. if it activates
+    // another tab.
+    if (!NotifyDelegate([&]() { popup_window_->ClosePopupWindow(); })) {
+      return;
+    }
     popup_window_.reset();
 
     UpdateDialogVisibilityAndPosition();
