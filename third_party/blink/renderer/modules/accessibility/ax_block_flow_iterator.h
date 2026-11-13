@@ -30,7 +30,8 @@ class PhysicalBoxFragment;
 
 // This class collects and organizes data to facilitate construction of
 // AXInlineTextBoxes for text fragments.
-class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
+class MODULES_EXPORT AXBlockFlowData
+    : public GarbageCollected<AXBlockFlowData> {
  public:
   // Inline formatted content is expressed as fragments for block flow layout.
   // See third_party/blink/renderer/core/layout/inline/fragment_item.h for

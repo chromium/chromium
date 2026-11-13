@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
@@ -777,6 +778,44 @@ TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_Ruby2) {
   next_on_line = it.NextOnLine();
   ASSERT_FALSE(next_on_line.has_value());
   ASSERT_FALSE(it.Next());
+}
+
+TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_GetLine) {
+  SetBodyInnerHTML(
+      "<div id='text' style='white-space: pre'>first\n"
+      "<ruby>base<rt>annotation</rt></ruby>\n"
+      "last</div>");
+
+  const AXObject* ax_div = GetAXObjectByElementId("text");
+  ASSERT_NE(nullptr, ax_div);
+  const AXObject* ax_static_text = ax_div->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_static_text);
+  const AXBlockFlowData* data =
+      GetAXObjectCache().GetBlockFlowData(ax_static_text);
+  ASSERT_NE(nullptr, data);
+
+  // One line per row. The ruby annotation forms a nested line inside the
+  // second row, which is not recorded separately.
+  const HeapVector<AXBlockFlowData::Line>& lines = data->GetLines();
+  ASSERT_EQ(3u, lines.size());
+  bool found_nested_line = false;
+  for (const AXBlockFlowData::Line& line : lines) {
+    for (wtf_size_t index = line.start_index;
+         index < line.start_index + line.length; ++index) {
+      if (index != line.start_index &&
+          data->ItemAt(index)->Type() == FragmentItem::kLine) {
+        found_nested_line = true;
+      }
+      // Every fragment, including those on the nested line, belongs to the
+      // outermost line.
+      std::optional<AXBlockFlowData::Line> found = data->GetLine(index);
+      ASSERT_TRUE(found.has_value()) << index;
+      EXPECT_EQ(line.start_index, found->start_index) << index;
+      EXPECT_EQ(line.length, found->length) << index;
+    }
+  }
+  EXPECT_TRUE(found_nested_line);
+  EXPECT_FALSE(data->GetLine(data->Size()).has_value());
 }
 
 TEST_F(AXInlineTextBoxTest, AXBlockFlowIteratorAPI_CharacterOffsets) {

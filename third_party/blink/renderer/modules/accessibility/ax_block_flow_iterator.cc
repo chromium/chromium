@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 
+#include <algorithm>
+#include <iterator>
 #include <numeric>
 #include <optional>
 #include <utility>
@@ -152,10 +154,16 @@ String AXBlockFlowData::GetText(wtf_size_t item_index) const {
 
 std::optional<AXBlockFlowData::Line> AXBlockFlowData::GetLine(
     wtf_size_t index) const {
-  for (const Line& line : lines_) {
-    if (index >= line.start_index && index < line.start_index + line.length) {
-      return line;
-    }
+  // Binary search for the line that contains the fragment at `index`. This
+  // works because `lines_` only holds outermost lines in fragment order, so
+  // they are sorted and never overlap.
+  auto it = std::ranges::upper_bound(lines_, index, {}, &Line::start_index);
+  if (it == lines_.begin()) {
+    return std::nullopt;
+  }
+  const Line& line = *std::prev(it);
+  if (index < line.start_index + line.length) {
+    return line;
   }
   return std::nullopt;
 }
@@ -293,6 +301,10 @@ void AXBlockFlowData::ProcessBoxFragment(const PhysicalBoxFragment* fragment,
     if (it->Type() == FragmentItem::kLine) {
       if (!on_current_line) {
         // We are moving to a new line that is not nested in the previous line.
+        // GetLine() relies on `lines_` staying sorted and non-overlapping.
+        DCHECK(lines_.empty() ||
+               lines_.back().start_index + lines_.back().length <=
+                   fragment_index);
         wtf_size_t length = it->DescendantsCount();
         const InlineBreakToken* break_token = it->GetInlineBreakToken();
         bool forced_break = break_token && break_token->IsForcedBreak();
