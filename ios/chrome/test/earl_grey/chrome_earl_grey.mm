@@ -1444,18 +1444,25 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   // transitions to the background (`sceneDidEnterBackground:`). Also wait for
   // the extra scene and session to fully disconnect (`sceneDidDisconnect:`).
   bool extraWindowsClosed = WaitForAppInterfaceCondition(
-      kWaitForUIElementTimeout,
+      kWaitForActionTimeout,
       [ChromeEarlGreyAppInterface prepareConditionForWindowCount:1]);
-  EG_TEST_HELPER_ASSERT_TRUE(extraWindowsClosed,
-                             @"Failed waiting for extra windows to disconnect");
+  if (!extraWindowsClosed) {
+    NSString* errorString = [NSString
+        stringWithFormat:@"Failed waiting for extra windows to disconnect (%@)",
+                         [ChromeEarlGreyAppInterface
+                             windowStateDebugDescription]];
+    EG_TEST_HELPER_ASSERT_TRUE(extraWindowsClosed, errorString);
+  }
 }
 
 - (void)waitForForegroundWindowCount:(NSUInteger)count {
   // Allow the UI to become idle, in case any tabs are being opened or closed.
   GREYWaitForAppToIdle(@"App failed to idle");
 
+  // Scene creation and destruction on iPad devices can take longer than the 4s
+  // UI element timeout.
   bool windowCountEqual = WaitForAppInterfaceCondition(
-      kWaitForUIElementTimeout,
+      kWaitForActionTimeout,
       [ChromeEarlGreyAppInterface
           prepareConditionForForegroundWindowCount:count]);
 
@@ -1463,9 +1470,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
     NSUInteger actualCount = [ChromeEarlGreyAppInterface foregroundWindowCount];
     NSString* errorString = [NSString
         stringWithFormat:
-            @"Failed waiting for window count to become %lu; actual count: %lu",
+            @"Failed waiting for window count to become %lu; actual count: %lu "
+            @"(%@)",
             static_cast<unsigned long>(count),
-            static_cast<unsigned long>(actualCount)];
+            static_cast<unsigned long>(actualCount),
+            [ChromeEarlGreyAppInterface windowStateDebugDescription]];
     EG_TEST_HELPER_ASSERT_TRUE(windowCountEqual, errorString);
   }
 }

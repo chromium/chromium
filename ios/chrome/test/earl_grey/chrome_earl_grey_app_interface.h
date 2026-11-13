@@ -324,6 +324,9 @@ enum class TipsNotificationType;
 // Returns the number of foreground (visible on screen) windows.
 + (NSUInteger)foregroundWindowCount [[nodiscard]];
 
+// Returns a diagnostic summary of `connectedScenes` and `openSessions`.
++ (NSString*)windowStateDebugDescription;
+
 // Closes all but one window, including all non-foreground windows.
 + (void)closeAllExtraWindows;
 
