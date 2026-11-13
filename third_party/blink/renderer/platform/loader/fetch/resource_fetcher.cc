@@ -2303,12 +2303,16 @@ bool ResourceFetcher::ShouldDeferImageLoad(const KURL& url) const {
 }
 
 void ResourceFetcher::ReloadImagesIfNotDeferred() {
-  for (Resource* resource : not_loaded_image_resources_) {
+  // Copy to a vector so that the iteration stays valid even if `StartLoad()`
+  // re-entrantly modifies `not_loaded_image_resources_`.
+  HeapVector<Member<Resource>> not_loaded_snapshot(not_loaded_image_resources_);
+  for (Resource* resource : not_loaded_snapshot) {
     DCHECK_EQ(resource->GetType(), ResourceType::kImage);
     if (resource->StillNeedsLoad() && !ShouldDeferImageLoad(resource->Url())) {
       StartLoad(resource);
     }
   }
+  not_loaded_snapshot.clear();
 }
 
 void ResourceFetcher::PopulateResourceRequestPermissionsPolicy(
@@ -2930,9 +2934,15 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
                "UpdateImagePrioritiesAndSpeculativeDecodes");
 
   // Update ResourcePriority for all resources.
-  for (Resource* resource : speculative_decode_candidate_images_) {
+  // Copy to a vector since UpdateResourceInfoFromObservers() may trigger
+  // additional resource loads and modify
+  // `speculative_decode_candidate_images_`.
+  HeapVector<Member<Resource>> candidate_snapshot(
+      speculative_decode_candidate_images_);
+  for (Resource* resource : candidate_snapshot) {
     resource->UpdateResourceInfoFromObservers();
   }
+  candidate_snapshot.clear();
   speculative_decode_candidate_images_.erase_if(
       [](const WeakMember<Resource>& resource) -> bool {
         return resource->PriorityFromObservers()
@@ -2941,10 +2951,12 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
       });
   StartSpeculativeImageDecodes();
 
-  HeapVector<Member<Resource>> to_be_removed;
-  for (Resource* resource : not_loaded_image_resources_) {
+  // Copy to a vector since UpdateResourceInfoFromObservers() may trigger
+  // additional resource loads and modify `not_loaded_image_resources_`.
+  HeapVector<Member<Resource>> not_loaded_snapshot(not_loaded_image_resources_);
+  for (Resource* resource : not_loaded_snapshot) {
     if (resource->IsLoaded()) {
-      to_be_removed.push_back(resource);
+      not_loaded_image_resources_.erase(resource);
       continue;
     }
 
@@ -2984,10 +2996,9 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
         resource_priority.intra_priority_value);
   }
 
-  not_loaded_image_resources_.RemoveAll(to_be_removed);
   // Explicitly free the backing store to not regress memory.
   // TODO(bikineev): Revisit when young generation is done.
-  to_be_removed.clear();
+  not_loaded_snapshot.clear();
 }
 
 String ResourceFetcher::GetCacheIdentifier(const KURL& url,
