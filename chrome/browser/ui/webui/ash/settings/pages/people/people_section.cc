@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/people_handler.h"
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
-#include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -482,6 +481,17 @@ void AddGraduationStrings(content::WebUIDataSource* html_source,
                           features::IsGraduationEnabled());
 }
 
+void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"passwordPromptTitle", IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE},
+      {"passwordPromptInvalidPassword",
+       IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD},
+      {"passwordPromptPasswordLabel",
+       IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   // Currently, we only support `kGaia` account type. Should a new type be added
@@ -593,7 +603,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                             ShouldShowParentalControlSettings(profile()));
   AddGraduationStrings(html_source, profile());
 
-  ::settings::AddPasswordPromptDialogStrings(html_source);
+  AddPasswordPromptDialogStrings(html_source);
 }
 
 void PeopleSection::AddHandlers(content::WebUI* web_ui) {

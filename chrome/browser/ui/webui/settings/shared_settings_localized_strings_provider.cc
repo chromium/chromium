@@ -177,19 +177,6 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("enableLiveTranslate", liveTranslateEnabled);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"passwordPromptTitle", IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE},
-      {"passwordPromptInvalidPassword",
-       IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD},
-      {"passwordPromptPasswordLabel",
-       IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"syncDisabledByAdministrator",

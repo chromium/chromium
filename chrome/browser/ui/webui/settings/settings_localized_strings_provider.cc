@@ -2648,9 +2648,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   AddSignOutDialogStrings(html_source, profile);
   AddSyncControlsStrings(html_source);
   AddSyncAccountControlStrings(html_source);
-#if BUILDFLAG(IS_CHROMEOS)
-  AddPasswordPromptDialogStrings(html_source);
-#endif
   AddBrowserSyncPageStrings(html_source);
   AddSharedSyncPageStrings(html_source);
 }

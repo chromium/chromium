@@ -22,11 +22,6 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-live-caption> element.
 void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source);
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Adds strings used by the <settings-password-prompt-dialog> element.
-void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
-#endif
-
 // Adds strings used by both <settings-sync-page> and <os-settings-sync-subpage>
 // elements.
 void AddSharedSyncPageStrings(content::WebUIDataSource* html_source);

@@ -7485,6 +7485,17 @@ Press an assigned switch or key to remove assignment.
         </else>
       </if>
 
+      <!-- Password Prompt Dialog -->
+      <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE" desc="Title of the password prompt dialog popup.">
+        Confirm your password
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_PASSWORD_LABEL" desc="An input box label that tells the user to enter their password in that input box.">
+        Password
+      </message>
+      <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_INVALID_PASSWORD" desc="Text on a password field that tells the user the password is incorrect.">
+        Invalid password
+      </message>
+
       <part file="ash_settings_search_tag_strings.grdp" />
     </messages>
   </release>
