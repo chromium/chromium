@@ -53,6 +53,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private requestCredentialsDetailsResponse_:
       chrome.passwordsPrivate.PasswordUiEntry[]|null = null;
 
+  private getUrlCollectionResponse_: chrome.passwordsPrivate.UrlCollection|
+      null = null;
+
   private switchBiometricAuthBeforeFillingStateResult_: boolean = false;
 
   private importResults_: ImportResults = {
@@ -328,15 +331,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   getUrlCollection(url: string) {
     this.methodCalled('getUrlCollection', url);
-    if (url.includes('www')) {
-      return Promise.resolve({
-        signonRealm: `https://${url}/login`,
-        shown: url,
-        link: `https://${url}/login`,
-      });
-    } else {
-      return Promise.reject();
-    }
+    return Promise.resolve(this.getUrlCollectionResponse_);
+  }
+
+  setGetUrlCollectionResponse(
+      response: chrome.passwordsPrivate.UrlCollection|null) {
+    this.getUrlCollectionResponse_ = response;
   }
 
   addPasswordManagerAuthTimeoutListener(

@@ -246,3 +246,12 @@ export function createAffiliatedDomain(domain: string):
     signonRealm: `https://${domain}/login`,
   };
 }
+
+export function createUrlCollection(domain: string):
+    chrome.passwordsPrivate.UrlCollection {
+  return {
+    signonRealm: `https://${domain}/login`,
+    shown: domain,
+    link: `https://${domain}/login`,
+  };
+}
