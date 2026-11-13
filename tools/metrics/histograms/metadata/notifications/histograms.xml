@@ -589,16 +589,6 @@ chromium-metrics-reviews@google.com.
   <token key="NotificationAction" variants="NotificationAction"/>
 </histogram>
 
-<histogram name="Notifications.Database.DeleteAllForOriginsResult"
-    enum="NotificationDatabaseStatus" expires_after="M98">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the result status codes of deleting all notification data for given
-    origins. This happens when notification permissions are revoked for a site.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Database.DeleteBeforeWriteResult"
     enum="NotificationDatabaseStatus" expires_after="2027-02-13">
   <owner>knollr@chromium.org</owner>
