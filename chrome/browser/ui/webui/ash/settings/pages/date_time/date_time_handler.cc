@@ -16,8 +16,6 @@
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -67,8 +65,11 @@ bool IsTimezoneAutomaticDetectionUserEditable(const PrefService& local_state) {
 
 }  // namespace
 
-DateTimeHandler::DateTimeHandler(PrefService* local_state)
-    : local_state_(CHECK_DEREF(local_state)) {}
+DateTimeHandler::DateTimeHandler(
+    PrefService* local_state,
+    system::TimeZoneResolverManager* timezone_resolver_manager)
+    : local_state_(CHECK_DEREF(local_state)),
+      timezone_resolver_manager_(CHECK_DEREF(timezone_resolver_manager)) {}
 
 DateTimeHandler::~DateTimeHandler() = default;
 
@@ -171,10 +172,8 @@ void DateTimeHandler::OnParentAccessValidation(bool success) {
 
 void DateTimeHandler::NotifyTimezoneAutomaticDetectionPolicy() {
   bool managed = !IsTimezoneAutomaticDetectionUserEditable(local_state_.get());
-  // TODO(crbug.com/489930598): Avoid using g_browser_process.
-  bool force_enabled = managed && g_browser_process->platform_part()
-                                      ->GetTimezoneResolverManager()
-                                      ->ShouldApplyResolvedTimezone();
+  bool force_enabled =
+      managed && timezone_resolver_manager_->ShouldApplyResolvedTimezone();
 
   FireWebUIListener("time-zone-auto-detect-policy", base::Value(managed),
                     base::Value(force_enabled));

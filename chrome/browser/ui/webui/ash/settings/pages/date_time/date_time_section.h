@@ -16,6 +16,10 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+namespace ash::system {
+class TimeZoneResolverManager;
+}  // namespace ash::system
+
 namespace ash::settings {
 
 class SearchTagRegistry;
@@ -23,10 +27,11 @@ class SearchTagRegistry;
 // Provides UI strings and search tags for Date and Time settings.
 class DateTimeSection : public OsSettingsSection {
  public:
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage`, and
+  // `timezone_resolver_manager` must be non-null and must outlive `this`.
   DateTimeSection(PrefService* local_state,
                   const ApplicationLocaleStorage* application_locale_storage,
+                  system::TimeZoneResolverManager* timezone_resolver_manager,
                   Profile* profile,
                   SearchTagRegistry* search_tag_registry);
   ~DateTimeSection() override;
@@ -45,6 +50,7 @@ class DateTimeSection : public OsSettingsSection {
  private:
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<system::TimeZoneResolverManager> timezone_resolver_manager_;
 };
 
 }  // namespace ash::settings

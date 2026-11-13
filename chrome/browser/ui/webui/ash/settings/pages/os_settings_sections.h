@@ -48,18 +48,24 @@ namespace phonehub {
 class PhoneHubManager;
 }
 
+namespace system {
+class TimeZoneResolverManager;
+}  // namespace system
+
 namespace settings {
 
 // Collection of all OsSettingsSection implementations.
 class OsSettingsSections {
  public:
-  // `local_state`, `application_locale_storage`, and
-  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `local_state`, `application_locale_storage`,
+  // `browser_policy_connector_ash`, and `timezone_resolver_manager` must be
+  // non-null and must outlive `this`.
   // `url_loader_factory` must be non-null.
   OsSettingsSections(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      system::TimeZoneResolverManager* timezone_resolver_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       Profile* profile,
       SearchTagRegistry* search_tag_registry,

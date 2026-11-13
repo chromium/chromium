@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 
+#include <memory>
 #include <optional>
 
 #include "ash/constants/ash_features.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -33,6 +35,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/ash/components/local_search_service/search_metrics_reporter.h"
@@ -43,6 +46,7 @@
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -91,6 +95,17 @@ class OsSettingsManagerTest : public testing::Test {
             browser_process->local_state(),
             std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
                 browser_process));
+
+    // TODO(crbug.com/489930598): Define a TestLocationProvider and pass it
+    // here instead of nullptr.
+    SystemLocationProvider::Initialize(nullptr);
+    timezone_resolver_manager_ =
+        std::make_unique<system::TimeZoneResolverManager>(
+            browser_process->local_state(),
+            browser_process->shared_url_loader_factory(),
+            SystemLocationProvider::GetInstance(),
+            session_manager::SessionManager::Get());
+
     ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
     user_session_test_environment_->LogIn(kAccountId);
     Profile* profile = Profile::FromBrowserContext(
@@ -122,6 +137,7 @@ class OsSettingsManagerTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->browser_policy_connector_ash(),
+        timezone_resolver_manager_.get(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         profile, local_search_service_proxy_.get(),
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
@@ -138,6 +154,11 @@ class OsSettingsManagerTest : public testing::Test {
   void TearDown() override {
     manager_.reset();
     graduation_manager_.reset();
+    // `timezone_resolver_manager_` observes the SessionManager owned by
+    // `user_session_test_environment_` and the global SystemLocationProvider,
+    // so it must be destroyed before both.
+    timezone_resolver_manager_.reset();
+    SystemLocationProvider::DestroyForTesting();
     user_session_test_environment_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
   }
@@ -152,6 +173,7 @@ class OsSettingsManagerTest : public testing::Test {
       input_method_manager_;
   std::unique_ptr<test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  std::unique_ptr<system::TimeZoneResolverManager> timezone_resolver_manager_;
   std::unique_ptr<local_search_service::LocalSearchServiceProxy>
       local_search_service_proxy_ =
           std::make_unique<local_search_service::LocalSearchServiceProxy>(

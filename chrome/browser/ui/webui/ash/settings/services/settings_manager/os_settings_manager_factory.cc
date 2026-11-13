@@ -73,6 +73,7 @@ OsSettingsManagerFactory::BuildServiceInstanceForBrowserContext(
       g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage(),
       g_browser_process->platform_part()->browser_policy_connector_ash(),
+      g_browser_process->platform_part()->GetTimezoneResolverManager(),
       g_browser_process->shared_url_loader_factory(), profile,
       local_search_service::LocalSearchServiceProxyFactory::
           GetForBrowserContext(context),

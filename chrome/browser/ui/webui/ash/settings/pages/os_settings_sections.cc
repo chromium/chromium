@@ -38,6 +38,7 @@ OsSettingsSections::OsSettingsSections(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    system::TimeZoneResolverManager* timezone_resolver_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
@@ -106,10 +107,11 @@ OsSettingsSections::OsSettingsSections(
                                                search_tag_registry,
                                                kerberos_credentials_manager));
 
-  AddSection(mojom::Section::kSystemPreferences,
-             std::make_unique<SystemPreferencesSection>(
-                 local_state, application_locale_storage, profile,
-                 search_tag_registry, prefs));
+  AddSection(
+      mojom::Section::kSystemPreferences,
+      std::make_unique<SystemPreferencesSection>(
+          local_state, application_locale_storage, timezone_resolver_manager,
+          profile, search_tag_registry, prefs));
 }
 
 OsSettingsSections::OsSettingsSections() = default;

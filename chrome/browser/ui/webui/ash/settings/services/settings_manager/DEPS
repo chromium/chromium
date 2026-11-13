@@ -41,6 +41,7 @@ specific_include_rules = {
   ],
   "os_settings_manager_unittest\\.cc": [
     "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+    "+chrome/browser/ash/system/timezone_resolver_manager.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
   ],

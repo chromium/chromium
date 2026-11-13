@@ -93,11 +93,13 @@ bool IsFineGrainedTimeZoneEnabled() {
 DateTimeSection::DateTimeSection(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    system::TimeZoneResolverManager* timezone_resolver_manager,
     Profile* profile,
     SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry),
       local_state_(CHECK_DEREF(local_state)),
-      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      timezone_resolver_manager_(CHECK_DEREF(timezone_resolver_manager)) {
   CHECK(profile);
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
@@ -166,8 +168,8 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void DateTimeSection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(
-      std::make_unique<DateTimeHandler>(&local_state_.get()));
+  web_ui->AddMessageHandler(std::make_unique<DateTimeHandler>(
+      &local_state_.get(), &timezone_resolver_manager_.get()));
 }
 
 int DateTimeSection::GetSectionNameMessageId() const {

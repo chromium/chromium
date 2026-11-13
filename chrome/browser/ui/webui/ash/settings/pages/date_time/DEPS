@@ -15,10 +15,3 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/profiles/profile.h",
 ]
-
-specific_include_rules = {
-  "date_time_handler\\.cc": [
-    "+chrome/browser/browser_process.h",
-    "+chrome/browser/browser_process_platform_part.h",
-  ],
-}

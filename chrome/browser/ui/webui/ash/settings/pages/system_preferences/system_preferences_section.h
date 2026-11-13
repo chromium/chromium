@@ -24,6 +24,10 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+namespace ash::system {
+class TimeZoneResolverManager;
+}  // namespace ash::system
+
 namespace ash::settings {
 
 class SearchTagRegistry;
@@ -33,11 +37,12 @@ class SearchTagRegistry;
 // and Storage sections.
 class SystemPreferencesSection : public OsSettingsSection {
  public:
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage`, and
+  // `timezone_resolver_manager` must be non-null and must outlive `this`.
   SystemPreferencesSection(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
+      system::TimeZoneResolverManager* timezone_resolver_manager,
       Profile* profile,
       SearchTagRegistry* search_tag_registry,
       PrefService* pref_service);

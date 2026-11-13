@@ -15,14 +15,20 @@
 
 class PrefService;
 
+namespace ash::system {
+class TimeZoneResolverManager;
+}  // namespace ash::system
+
 namespace ash::settings {
 
 // Chrome OS date and time settings page UI handler.
 class DateTimeHandler : public content::WebUIMessageHandler,
                         public SystemClockClient::Observer {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  explicit DateTimeHandler(PrefService* local_state);
+  // `local_state` and `timezone_resolver_manager` must be non-null and must
+  // outlive `this`.
+  DateTimeHandler(PrefService* local_state,
+                  system::TimeZoneResolverManager* timezone_resolver_manager);
 
   DateTimeHandler(const DateTimeHandler&) = delete;
   DateTimeHandler& operator=(const DateTimeHandler&) = delete;
@@ -60,6 +66,7 @@ class DateTimeHandler : public content::WebUIMessageHandler,
   void NotifyTimezoneAutomaticDetectionPolicy();
 
   const raw_ref<PrefService> local_state_;
+  const raw_ref<system::TimeZoneResolverManager> timezone_resolver_manager_;
 
   base::CallbackListSubscription system_timezone_policy_subscription_;
 

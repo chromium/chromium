@@ -46,12 +46,14 @@ base::span<const SearchConcept> GetSystemPreferencesSearchConcepts() {
 SystemPreferencesSection::SystemPreferencesSection(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    system::TimeZoneResolverManager* timezone_resolver_manager,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
       date_time_subsection_(local_state,
                             application_locale_storage,
+                            timezone_resolver_manager,
                             profile,
                             search_tag_registry),
       files_subsection_(profile, search_tag_registry),
