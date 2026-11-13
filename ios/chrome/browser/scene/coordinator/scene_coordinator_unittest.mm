@@ -17,6 +17,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/undo_signout/coordinator/undo_signout_coordinator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/proto/remote_actor_password_upload_request.pb.h"
 #import "ios/chrome/browser/passwords/model/remote_actor/remote_actor_constants.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -38,6 +40,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -759,6 +763,46 @@ TEST_F(SceneCoordinatorTest, ClosePresentedViewsStopsRemoteActorSheet) {
 
   [partial_scene_coordinator stopMocking];
   [mock_application stopMocking];
+}
+
+// Tests that `showUndoSignoutFromSnackbarForIdentity:` starts the undo sign-out
+// flow on the regular browser even when the incognito browser is current, as
+// sign-in must never be performed on an incognito browser.
+TEST_F(SceneCoordinatorTest,
+       ShowUndoSignoutUsesRegularBrowserWhenIncognitoIsCurrent) {
+  id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity(identity);
+
+  Browser* regular_browser = scene_state_.browserProviderInterface.mainBrowser;
+  Browser* incognito_browser =
+      scene_state_.browserProviderInterface.incognitoBrowser;
+  [scene_state_ setCurrentBrowser:incognito_browser];
+  ASSERT_EQ(coordinator_.currentBrowser, incognito_browser);
+
+  id partial_scene_coordinator = OCMPartialMock(coordinator_);
+  OCMStub([partial_scene_coordinator activeViewController])
+      .andReturn(base_view_controller_);
+
+  // Swizzles `start` so that no real `AuthenticationFlow` is created.
+  __block UndoSignoutCoordinator* started_coordinator = nil;
+  auto start_swizzler = std::make_unique<ScopedBlockSwizzler>(
+      [UndoSignoutCoordinator class], @selector(start),
+      ^(UndoSignoutCoordinator* self_coordinator) {
+        started_coordinator = self_coordinator;
+      });
+
+  [(id<SceneCommands>)coordinator_
+      showUndoSignoutFromSnackbarForIdentity:identity];
+
+  ASSERT_NE(started_coordinator, nil);
+  EXPECT_EQ([coordinator_ valueForKey:@"_undoSignoutCoordinator"],
+            started_coordinator);
+  EXPECT_EQ(started_coordinator.browser, regular_browser);
+  EXPECT_EQ(started_coordinator.browser->type(), Browser::Type::kRegular);
+
+  [partial_scene_coordinator stopMocking];
 }
 
 }  // namespace

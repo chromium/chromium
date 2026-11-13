@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/undo_signout/coordinator/undo_signout_coordinator.h"
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/functional/callback.h"
+#import "base/not_fatal_until.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
@@ -25,6 +27,8 @@
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
        presentingViewController:(UIViewController*)presentingViewController {
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M163);
   if ((self = [super initWithBaseViewController:presentingViewController
                                         browser:browser])) {
     _identity = identity;
