@@ -936,6 +936,13 @@ BASE_FEATURE(kAutofillMoveSmallFormLogicToClient,
 BASE_FEATURE(kAutofillNewSuggestionGeneration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `SuggestionType::kAddressEntryOnTyping` suggestions are offered
+// even if `FormFieldData::should_autocomplete()` is false
+// (`autocomplete="off"`), matching regular address suggestions.
+// TODO(crbug.com/585485879): Remove when launched.
+BASE_FEATURE(kAutofillOnTypingIgnoresAutocompleteOff,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, only single-field forms can be considered search forms (in
 // addition to matching `kUrlSearchActionRe` on the form's action URL).
 // TODO(crbug.com/566051797): Clean up when launched.

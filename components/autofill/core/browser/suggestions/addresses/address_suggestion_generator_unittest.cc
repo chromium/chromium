@@ -237,6 +237,40 @@ TEST_F(AddressSuggestionGeneratorTest,
                   EqualsSuggestion(SuggestionType::kManageAddress)));
 }
 
+// Tests that `SuggestionType::kAddressEntryOnTyping` suggestions are offered
+// when `should_autocomplete` is false (`autocomplete="off"`) only if
+// `kAutofillOnTypingIgnoresAutocompleteOff` is enabled.
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsOnTypingForProfile_AutocompleteOff) {
+  AddProfileWithValues({{NAME_FULL, u"Sundar pichai"}}, /*use_count=*/1);
+
+  FormFieldData field;
+  field.set_value(u"Sund");
+  field.set_should_autocomplete(false);
+  FormData form;
+  test_api(form).Append(field);
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kAutofillOnTypingIgnoresAutocompleteOff);
+    EXPECT_THAT(
+        GetSuggestionsOnTypingForProfile(*autofill_client(), form, field),
+        IsEmpty());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list{
+        features::kAutofillOnTypingIgnoresAutocompleteOff};
+    EXPECT_THAT(
+        GetSuggestionsOnTypingForProfile(*autofill_client(), form, field),
+        ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                     u"Sundar pichai"),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageAddress)));
+  }
+}
+
 // Tests that when `kAutofillAddressSuggestionsOnTypingLimitPerFieldType` is
 // enabled, profiles missing a value for a given `FieldType` do not consume one
 // of the 3 per-type candidate slots.

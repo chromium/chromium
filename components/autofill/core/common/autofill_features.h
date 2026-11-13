@@ -360,6 +360,8 @@ BASE_DECLARE_FEATURE(kAutofillMoveSmallFormLogicToClient);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillNewSuggestionGeneration);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillOnTypingIgnoresAutocompleteOff);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillOnlyConsiderSingleFieldFormsAsSearchForms);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillOptimizeIsNormalizedNameVariantOf);

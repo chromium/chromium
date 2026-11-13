@@ -1817,11 +1817,7 @@ void BrowserAutofillManager::OnGeneratedSingleFieldFillSuggestions(
     return;
   }
 
-  // Note the check below is the same done for regular autocomplete suggestions.
-  // TODO(crbug.com/381994105): Consider adding
-  // `should_offer_autofill_on_typing()` to `FormFieldData`.
-  if (field.should_autocomplete() &&
-      base::FeatureList::IsEnabled(
+  if (base::FeatureList::IsEnabled(
           features::kAutofillAddressSuggestionsOnTyping)) {
     // Try to build `Suggestion::kAddressEntryOnTyping` suggestions.
     // Note that these suggestions are always displayed on their own.

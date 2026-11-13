@@ -651,7 +651,9 @@ MaybeFetchAddressOnTypingSuggestionData(
   if constexpr (BUILDFLAG(IS_IOS)) {
     return {};
   }
-  if (!trigger_field.should_autocomplete() ||
+  if ((!trigger_field.should_autocomplete() &&
+       !base::FeatureList::IsEnabled(
+           features::kAutofillOnTypingIgnoresAutocompleteOff)) ||
       !base::FeatureList::IsEnabled(
           features::kAutofillAddressSuggestionsOnTyping)) {
     return {};
