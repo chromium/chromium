@@ -158,6 +158,11 @@ bool ChromePluginServiceFilter::CanLoadPlugin(int render_process_id,
 void ChromePluginServiceFilter::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
+  RenderProcessHostDestroyed(host);
+}
+
+void ChromePluginServiceFilter::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   base::AutoLock auto_lock(lock_);
   plugin_details_.erase(host->GetDeprecatedID());
