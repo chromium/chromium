@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
-import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
@@ -131,7 +130,6 @@ import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.glic.settings.GlicNavigationUtils;
-import org.chromium.chrome.browser.glic.ui.GlicPromoCoordinator;
 import org.chromium.chrome.browser.glic.ui.GlicUiCoordinator;
 import org.chromium.chrome.browser.history.HistoryFeatures;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
@@ -241,8 +239,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator;
-import org.chromium.chrome.browser.tips.TipsOptInCoordinator;
-import org.chromium.chrome.browser.tips.TipsUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -419,13 +415,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
     private final KeyboardFocusRowManager mKeyboardFocusRowManager;
     private CharSequence mApplicationLabel;
-    private @Nullable TipsOptInCoordinator mTipsOptInCoordinator;
-    private @Nullable GlicPromoCoordinator mGlicPromoCoordinator;
+    private @Nullable ForegroundPromoController mForegroundPromoController;
     private @Nullable StartupEnterpriseSignalsDisclaimerController
             mEnterpriseSignalsDisclaimerController;
-    private boolean mPromosEvaluatedForCurrentForeground;
     private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
-    private final InactivityObserver mInactivityObserver;
     private @Nullable CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private @Nullable SideUiCoordinator mSideUiCoordinator;
     private @Nullable WebContentHairlineCoordinator mWebContentHairlineCoordinator;
@@ -872,23 +865,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         urlBarVisibleSupplier,
                         () -> mVerticalTabsSideUiCoordinator);
 
-        mInactivityObserver =
-                new InactivityObserver() {
-                    @Override
-                    public void onForegrounded(long timeSinceLastBackgroundedMs) {
-                        // Reset the evaluation flag when the app is foregrounded, indicating a
-                        // new foreground session has started and promos should be re-evaluated.
-                        mPromosEvaluatedForCurrentForeground = false;
-                        maybeShowPromosOnForeground();
-                    }
-                };
-
-        mInactivityTrackerSupplier.onAvailable(
-                (inactivityTracker) -> {
-                    inactivityTracker.addObserver(mInactivityObserver);
-                });
-
-        maybeShowPromosOnForeground();
+        mForegroundPromoController =
+                new ForegroundPromoController(
+                        mActivity,
+                        mProfileSupplier,
+                        mInactivityTrackerSupplier,
+                        mTrackerInitializedOneshotSupplier,
+                        getBottomSheetControllerSupplier(),
+                        mSnackbarManagerSupplier);
 
         new OneShotCallback<>(mProfileSupplier, this::waitForTrackerInit);
 
@@ -1059,19 +1043,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarIphController = null;
         }
 
-        if (mTipsOptInCoordinator != null) {
-            mTipsOptInCoordinator.destroy();
+        if (mForegroundPromoController != null) {
+            mForegroundPromoController.destroy();
+            mForegroundPromoController = null;
         }
-        if (mGlicPromoCoordinator != null) {
-            mGlicPromoCoordinator.destroy();
-        }
+
         if (mEnterpriseSignalsDisclaimerController != null) {
             mEnterpriseSignalsDisclaimerController.destroy();
             mEnterpriseSignalsDisclaimerController = null;
-        }
-
-        if (mInactivityTrackerSupplier.get() != null) {
-            mInactivityTrackerSupplier.get().removeObserver(mInactivityObserver);
         }
 
         if (mTabBottomSheetReadAloudControllerCallback != null) {
@@ -1977,60 +1956,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mModalDialogManagerSupplier.get(),
                             mActivityLifecycleDispatcher);
         }
-    }
-
-    // TODO(crbug.com/515566274): Move foreground promos coordination logic to its own class to
-    // facilitate testing and reduce TabbedRootUiCoordinator's complexity.
-    private void maybeShowPromosOnForeground() {
-        mTrackerInitializedOneshotSupplier.onAvailable(
-                mCallbackController.makeCancelable(
-                        (initialized) -> {
-                            if (!initialized) {
-                                return;
-                            }
-                            if (mInactivityTrackerSupplier.get() == null) {
-                                return;
-                            }
-                            if (mPromosEvaluatedForCurrentForeground) {
-                                return;
-                            }
-                            mPromosEvaluatedForCurrentForeground = true;
-
-                            if (maybeShowGlicPromo()) {
-                                return;
-                            }
-
-                            long timeSinceLastBackgroundedMs =
-                                    mInactivityTrackerSupplier
-                                            .get()
-                                            .getTimeSinceLastBackgroundedMs();
-                            maybeShowTipsOptInPromo(timeSinceLastBackgroundedMs);
-                        }));
-    }
-
-    private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
-        var bottomSheetController = getBottomSheetController();
-        assert bottomSheetController != null;
-        TipsUtils.maybeShowTipsOptInPromo(
-                mActivity,
-                mProfileSupplier.get(),
-                bottomSheetController,
-                mSnackbarManagerSupplier.asNonNull().get(),
-                ChromeSharedPreferences.getInstance(),
-                timeSinceLastBackgroundedMs,
-                (coordinator) -> mTipsOptInCoordinator = coordinator);
-    }
-
-    @VisibleForTesting
-    boolean maybeShowGlicPromo() {
-        var bottomSheetController = getBottomSheetController();
-        if (bottomSheetController == null) {
-            return false;
-        }
-        mGlicPromoCoordinator =
-                GlicPromoCoordinator.maybeShowPromo(
-                        mActivity, mProfileSupplier.get(), bottomSheetController);
-        return mGlicPromoCoordinator != null;
     }
 
     private void updateTopControlsHeight() {
@@ -3641,10 +3566,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mVerticalTabsSideUiCoordinator != null
                         && mVerticalTabsSideUiCoordinator.canActivateTabLayoutToggleMenu()
                         && !VerticalTabUtils.isTabLayoutSwitchingInProgress();
-    }
-
-    @Nullable GlicPromoCoordinator getGlicPromoCoordinatorForTesting() {
-        return mGlicPromoCoordinator;
     }
 
     /** Returns the {@link TabSearchOverlayCoordinator} for testing. */
