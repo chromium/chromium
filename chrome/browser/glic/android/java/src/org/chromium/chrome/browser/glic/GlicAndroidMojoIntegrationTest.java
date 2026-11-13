@@ -203,8 +203,7 @@ public class GlicAndroidMojoIntegrationTest {
                     Assert.assertNotNull(model);
                     View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
                     Assert.assertNotNull(customView);
-                    View closeButton =
-                            customView.findViewById(R.id.glic_experimental_opt_in_close_button);
+                    View closeButton = customView.findViewById(R.id.glic_modal_close_button);
                     Assert.assertNotNull(closeButton);
                     closeButton.performClick();
                 });

@@ -36,6 +36,16 @@ source_set("modal") {
       "//ui/views/controls/webview",
       "//ui/web_dialogs",
     ]
+  } else {
+    sources += [
+      "glic_modal_android.cc",
+      "glic_modal_android.h",
+    ]
+    deps += [
+      "//chrome/browser/glic/android:jni_headers",
+      "//third_party/jni_zero",
+      "//ui/android",
+    ]
   }
 }
 

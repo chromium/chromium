@@ -63,7 +63,9 @@ class GlicModal {
     // loading in the background. When provided, the underlying WebView is kept
     // hidden (alpha=0f on Android, covered in a FillLayout on Desktop) so Blink
     // layout and auto-resize still run, and revealed when `ShowContent()` is
-    // called. When null/empty, the WebView is shown immediately.
+    // called. Note that on Android the modal dialog window background is
+    // transparent, so `loading_view` must draw an opaque background. When
+    // null/empty, the WebView is shown immediately.
 #if !BUILDFLAG(IS_ANDROID)
     std::unique_ptr<views::View> loading_view;
 #else

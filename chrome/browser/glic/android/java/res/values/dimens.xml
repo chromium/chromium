@@ -51,13 +51,15 @@ found in the LICENSE file.
     <dimen name="glic_mic_dialog_illustration_margin_bottom">16dp</dimen>
     <dimen name="glic_mic_dialog_message_margin_top">16dp</dimen>
 
+    <!-- Glic modal close button margin -->
+    <dimen name="glic_modal_close_button_margin">8dp</dimen>
+
     <!-- Glic experimental opt-in dialog dimensions. The non-scrollable max
          height is used while GlicExperimentalOptInDialogNonScrollable is
          enabled. -->
     <dimen name="glic_experimental_opt_in_dialog_max_width">380dp</dimen>
     <dimen name="glic_experimental_opt_in_dialog_max_height">567dp</dimen>
     <dimen name="glic_experimental_opt_in_dialog_non_scrollable_max_height">710dp</dimen>
-    <dimen name="glic_experimental_opt_in_close_button_margin">8dp</dimen>
 
     <!-- Glic native loading placeholder dimensions -->
     <dimen name="glic_loading_placeholder_close_button_margin_end">8dp</dimen>

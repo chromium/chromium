@@ -253,12 +253,8 @@ public class GlicExperimentalOptInUiCoordinator {
         // title row would collapse to just the close button, aligning it to the start and
         // exposing a strip of the dialog's window background above the web contents.
         LayoutInflater.from(mActivity)
-                .inflate(
-                        R.layout.glic_experimental_opt_in_close_button,
-                        cardContainer,
-                        /* attachToRoot= */ true);
-        ChromeImageButton closeButton =
-                cardContainer.findViewById(R.id.glic_experimental_opt_in_close_button);
+                .inflate(R.layout.glic_modal_close_button, cardContainer, /* attachToRoot= */ true);
+        ChromeImageButton closeButton = cardContainer.findViewById(R.id.glic_modal_close_button);
         closeButton.setOnClickListener(v -> dismiss());
         mCloseButton = closeButton;
 

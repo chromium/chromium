@@ -17,14 +17,4 @@ GlicModal::Params::Params(Params&&) = default;
 GlicModal::Params& GlicModal::Params::operator=(Params&&) = default;
 GlicModal::Params::~Params() = default;
 
-#if BUILDFLAG(IS_ANDROID)
-// TODO(b/477622144): Temporary stub until GlicModalAndroid lands in the
-// follow-up CL.
-// static
-std::unique_ptr<GlicModal> GlicModal::Show(tabs::TabInterface& tab,
-                                           Params params) {
-  return nullptr;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace glic
