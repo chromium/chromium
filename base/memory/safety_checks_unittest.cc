@@ -16,6 +16,10 @@
 #include "partition_alloc/tagging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "partition_alloc/address_pool_manager_bitmap.h"
+#endif
+
 namespace {
 using base::internal::is_memory_safety_checked;
 using base::internal::MemorySafetyCheck;
