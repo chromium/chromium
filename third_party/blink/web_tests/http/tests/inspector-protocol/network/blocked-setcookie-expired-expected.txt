@@ -1,0 +1,27 @@
+Verifies that blocked response cookies with non-positive Max-Age can be reported.
+Max-Age=60:
+Blocked cookie count: 1
+Blocked reasons: [
+    [0] : SchemefulSameSiteStrict
+]
+Cookie name: expiry_probe
+Session: false
+Positive finite expiry: true
+Max-Age=0:
+Blocked cookie count: 1
+Blocked reasons: [
+    [0] : SchemefulSameSiteStrict
+]
+Cookie name: expiry_probe
+Session: false
+Expiry is null: true
+Max-Age=-1:
+Blocked cookie count: 1
+Blocked reasons: [
+    [0] : SchemefulSameSiteStrict
+]
+Cookie name: expiry_probe
+Session: false
+Expiry is null: true
+Stored test cookie count: 0
+
