@@ -185,17 +185,16 @@ void CrostiniExportImport::OpenFileDialog(ExportImportType type,
       title = IDS_SETTINGS_CROSTINI_EXPORT;
       default_path = GetDefaultBackupPath();
       break;
-    case ExportImportType::IMPORT:
-      file_selector_mode = ui::SelectFileDialog::SELECT_OPEN_FILE;
-      title = IDS_SETTINGS_CROSTINI_IMPORT;
-      default_path = file_manager::util::GetMyFilesFolderForProfile(profile_);
-      break;
     case ExportImportType::EXPORT_DISK_IMAGE:
       file_selector_mode = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
       title = IDS_SETTINGS_CROSTINI_EXPORT;
       default_path = GetDefaultImageBackupPath();
       break;
+    case ExportImportType::IMPORT:
     case ExportImportType::IMPORT_DISK_IMAGE:
+      // ImportContainer() passes IMPORT for either kind of import, since the
+      // kind is only known once FileSelected() sees the chosen file. So both
+      // must be handled the same here.
       file_selector_mode = ui::SelectFileDialog::SELECT_OPEN_FILE;
       title = IDS_SETTINGS_CROSTINI_IMPORT;
       default_path = file_manager::util::GetMyFilesFolderForProfile(profile_);
