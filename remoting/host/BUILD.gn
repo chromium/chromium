@@ -86,7 +86,6 @@ source_set("host") {
 source_set("host_main_headers") {
   visibility = [
     ":*",
-    "//remoting/host/crash:crash_uploader_main_headers",
     "//remoting/host/it2me:main_headers",
     "//remoting/host/linux:login_session_reporter_main_headers",
     "//remoting/host/linux:remote_session_info_main_headers",
@@ -830,7 +829,6 @@ static_library("common") {
     deps += [
       "//mojo/core/embedder",
       "//remoting/base/crash",
-      "//remoting/host/crash:crash_uploader",
       "//remoting/host/win",
       "//remoting/host/win:messages",
       "//remoting/host/win:remoting_lib_idl",
@@ -1463,10 +1461,7 @@ if (enable_me2me_host) {
       deps += [ "//remoting/host/remote_open_url:main" ]
     }
     if (is_win) {
-      deps += [
-        "//remoting/host/crash:crash_uploader_main",
-        "//remoting/host/security_key:main",
-      ]
+      deps += [ "//remoting/host/security_key:main" ]
     }
   }
 
