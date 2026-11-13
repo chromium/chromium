@@ -1502,16 +1502,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Navigation.IsSameBrowsingInstance"
-    enum="NavigationIsSameBrowsingInstance" expires_after="2025-05-04">
-  <owner>arthursonzogni@chromium.org</owner>
-  <owner>clamy@chromium.org</owner>
-  <owner>nasko@chromium.org</owner>
-  <summary>
-    Whether a main frame navigation led to a change of BrowsingInstance or not.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.IsSameSiteInstance{NavigationFrameType}"
     enum="NavigationIsSameSiteInstance" expires_after="2027-01-24">
   <owner>arthursonzogni@chromium.org</owner>

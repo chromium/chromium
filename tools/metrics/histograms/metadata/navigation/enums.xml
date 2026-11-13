@@ -360,11 +360,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Process is locked to origin"/>
 </enum>
 
-<enum name="NavigationIsSameBrowsingInstance">
-  <int value="0" label="Cross BrowsingInstance navigation"/>
-  <int value="1" label="Same BrowsingInstance navigation"/>
-</enum>
-
 <enum name="NavigationIsSameSiteInstance">
   <int value="0" label="Cross SiteInstance navigation"/>
   <int value="1" label="Same SiteInstance navigation"/>

@@ -604,16 +604,6 @@ void RecordReadyToCommitMetrics(
   bool is_same_process = old_rfh->GetProcess()->GetDeprecatedID() ==
                          new_rfh->GetProcess()->GetDeprecatedID();
 
-  // Navigation.IsSameBrowsingInstance
-  if (is_main_frame) {
-    bool is_same_browsing_instance =
-        old_rfh->GetSiteInstance()->IsRelatedSiteInstance(
-            new_rfh->GetSiteInstance());
-
-    UMA_HISTOGRAM_BOOLEAN("Navigation.IsSameBrowsingInstance",
-                          is_same_browsing_instance);
-  }
-
   // Navigation.IsSameSiteInstance
   {
     bool is_same_site_instance =
