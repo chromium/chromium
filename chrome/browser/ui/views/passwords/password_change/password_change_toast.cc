@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -167,32 +169,11 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
 PasswordChangeToast::~PasswordChangeToast() = default;
 
 void PasswordChangeToast::UpdateLayout(ToastOptions configuration) {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  icon_view_->SetVisible(configuration.icon.has_value());
-  if (configuration.icon.has_value()) {
-    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        *configuration.icon.value(), ui::kColorToastForeground,
-        layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
-  }
-  throbber_->SetVisible(!configuration.icon.has_value());
-
-  label_->SetText(configuration.text);
-
-  if (configuration.action_button_text.has_value()) {
-    action_button_->SetText(configuration.action_button_text.value());
-
-    // Only set kAlert a11y role when text is not empty, otherwise it triggers
-    // a DCHECK in views::RunAccessibilityPaintChecks().
-    action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
-    action_button_->SetVisible(true);
-  } else {
-    action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
-    action_button_->SetVisible(false);
-  }
-
-  layout_manager_->SetInteriorMargin(CalculateInteriorMargin());
-  GetViewAccessibility().AnnounceText(configuration.text);
-
+  // Store callbacks and update the auto-dismiss timer before mutating child
+  // views. Child view updates and `AnnounceText()` below fire synchronous
+  // accessibility events; an assistive technology handling them (e.g. via the
+  // Windows UIA STA message pump) can re-entrantly close the hosting tab,
+  // destroying the toast widget and `this`.
   action_button_closure_ = std::move(configuration.action_button_closure);
   close_callback_ = std::move(configuration.close_callback);
   auto_dismiss_closure_ = std::move(configuration.auto_dismiss_closure);
@@ -205,6 +186,51 @@ void PasswordChangeToast::UpdateLayout(ToastOptions configuration) {
                        weak_ptr_factory_.GetWeakPtr()),
         kAutoDismissDelay);
   }
+  base::WeakPtr<PasswordChangeToast> weak_this = weak_ptr_factory_.GetWeakPtr();
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  icon_view_->SetVisible(configuration.icon.has_value());
+  if (configuration.icon.has_value()) {
+    icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        *configuration.icon.value(), ui::kColorToastForeground,
+        layout_provider->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
+  }
+  throbber_->SetVisible(!configuration.icon.has_value());
+
+  // `Label::SetText()` updates the accessible name and synchronously fires
+  // `ax::mojom::Event::kTextChanged` (`::UiaRaiseAutomationEvent()`), which can
+  // pump the Windows UIA STA and close the tab, destroying `this`.
+  label_->SetText(configuration.text);
+  if (!weak_this) {
+    return;
+  }
+
+  if (configuration.action_button_text.has_value()) {
+    // `LabelButton::SetText()` synchronously fires `kTextChanged` via
+    // `ViewAccessibility::SetName()`, which can re-entrantly destroy `this`.
+    action_button_->SetText(configuration.action_button_text.value());
+    if (!weak_this) {
+      return;
+    }
+
+    // Only set kAlert a11y role when text is not empty, otherwise it triggers
+    // a DCHECK in views::RunAccessibilityPaintChecks().
+    action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+    action_button_->SetVisible(true);
+  } else {
+    action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    // Hiding `action_button_` while focused calls `AdvanceFocusIfNecessary()`,
+    // synchronously firing `ax::mojom::Event::kFocus` via UIA.
+    action_button_->SetVisible(false);
+    if (!weak_this) {
+      return;
+    }
+  }
+
+  layout_manager_->SetInteriorMargin(CalculateInteriorMargin());
+  // Fires an un-queued `ax::mojom::Event::kAlert` (`UIA_SystemAlertEventId`),
+  // which may re-entrantly destroy `this`; nothing below may touch members.
+  GetViewAccessibility().AnnounceText(configuration.text);
 }
 
 gfx::Insets PasswordChangeToast::CalculateInteriorMargin() {

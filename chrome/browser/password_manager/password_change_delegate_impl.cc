@@ -316,6 +316,12 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   }
 
   UpdateState(State::kWaitingForChangePasswordForm);
+  // `UpdateState()` shows the toast and fires synchronous UIA events.
+  // Re-entrant tab closure runs `OnTabWillDetach()`, which clears `originator_`
+  // immediately while scheduling `this` for async `DeleteSoon()` via `Stop()`.
+  if (!originator_) {
+    return;
+  }
   login_state_checker_ = std::make_unique<LoginStateChecker>(
       originator_.get(),
       ChromePasswordManagerClient::FromWebContents(originator_),
@@ -538,7 +544,9 @@ PasswordChangeDelegateImpl::GetNewPassword(
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {
-  if (new_state == current_state_) {
+  // `OnTabWillDetach()` resets `ui_controller_` synchronously while `this`
+  // stays alive until `DeleteSoon()` runs.
+  if (new_state == current_state_ || !ui_controller_) {
     return;
   }
   current_state_ = new_state;

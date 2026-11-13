@@ -8,6 +8,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_delegate_mock.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_toast.h"
@@ -63,12 +65,20 @@ class TestPasswordChangeUIController : public PasswordChangeUIController {
     return *last_toast_options_;
   }
 
+  void set_on_show_toast(base::OnceClosure on_show_toast) {
+    on_show_toast_ = std::move(on_show_toast);
+  }
+
  private:
   void ShowToast(PasswordChangeToast::ToastOptions options) override {
     last_toast_options_.emplace(std::move(options));
+    if (on_show_toast_) {
+      std::move(on_show_toast_).Run();
+    }
   }
 
   std::optional<PasswordChangeToast::ToastOptions> last_toast_options_;
+  base::OnceClosure on_show_toast_;
 };
 
 class PasswordChangeUIControllerTest : public ChromeRenderViewHostTestHarness {
@@ -180,6 +190,19 @@ TEST_F(PasswordChangeUIControllerTest,
                   CreateLeakedPasswordDetails(HasChangePasswordUrl(false))));
   controller_->OnLoginCheckFailedWithServerError(
       CreateLeakedPasswordDetails(HasChangePasswordUrl(true)));
+}
+
+TEST_F(PasswordChangeUIControllerTest,
+       UpdateStateSurvivesSynchronousDestruction) {
+  controller_->set_on_show_toast(base::BindOnce(
+      [](std::unique_ptr<TestPasswordChangeUIController>* controller) {
+        controller->reset();
+      },
+      base::Unretained(&controller_)));
+
+  controller_->UpdateState(
+      PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
+  EXPECT_EQ(controller_, nullptr);
 }
 
 }  // namespace

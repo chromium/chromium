@@ -940,5 +940,33 @@ TEST_P(PasswordChangeDelegateImplTest,
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeUIDelegate::State::kWaitingForAgreement);
 }
+TEST_P(PasswordChangeDelegateImplTest,
+       StartPasswordChangeFlow_ReentrantTabDetachDuringUpdateState) {
+  if (IsPrivateInferenceLoginCheckEnabled()) {
+    GTEST_SKIP() << "StartPasswordChangeFlow() only updates UI state directly "
+                    "when PasswordChangeWithPrivateInferenceLoginCheck is "
+                    "disabled.";
+  }
+  CreateDelegate();
+
+  EXPECT_CALL(completion_callback(), Run());
+  EXPECT_CALL(
+      *mock_ui_controller(),
+      UpdateState(
+          PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm))
+      .WillOnce([this] {
+        SimulateTabWillDetach(tabs::TabInterface::DetachReason::kDelete);
+      });
+
+  delegate()->StartPasswordChangeFlow();
+  EXPECT_FALSE(delegate()->ui_controller());
+  EXPECT_FALSE(delegate()->login_checker());
+
+  // A subsequent state transition while `this` awaits `DeleteSoon()` should
+  // safely no-op when `ui_controller_` is null.
+  delegate()->CancelPasswordChangeFlow();
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeUIDelegate::State::kWaitingForChangePasswordForm);
+}
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PasswordChangeDelegateImplTest);

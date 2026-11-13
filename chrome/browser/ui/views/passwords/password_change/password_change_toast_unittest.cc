@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +23,42 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
+
+#if !BUILDFLAG(IS_MAC)
+#include "base/scoped_observation.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
+#include "ui/views/view_tracker.h"
+
+namespace {
+
+// Observes `views::AXUpdateNotifier` and invokes `on_alert` once when an
+// `ax::mojom::Event::kAlert` accessibility event is dispatched.
+class ScopedAlertDestructionObserver : public views::AXUpdateObserver {
+ public:
+  explicit ScopedAlertDestructionObserver(base::OnceClosure on_alert)
+      : on_alert_(std::move(on_alert)) {
+    observation_.Observe(views::AXUpdateNotifier::Get());
+  }
+  ~ScopedAlertDestructionObserver() override = default;
+
+  // views::AXUpdateObserver:
+  void OnViewEvent(views::View* view, ax::mojom::Event event_type) override {
+    if (event_type == ax::mojom::Event::kAlert && on_alert_) {
+      observation_.Reset();
+      std::move(on_alert_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_alert_;
+  base::ScopedObservation<views::AXUpdateNotifier, views::AXUpdateObserver>
+      observation_{this};
+};
+
+}  // namespace
+#endif  // !BUILDFLAG(IS_MAC)
 
 class PasswordChangeToastTest : public ChromeViewsTestBase {
  public:
@@ -43,6 +81,12 @@ class PasswordChangeToastTest : public ChromeViewsTestBase {
   }
 
   void DestroyToastWidget() { anchor_widget_.reset(); }
+
+#if !BUILDFLAG(IS_MAC)
+  void DestroyToastView(PasswordChangeToast* toast_view) {
+    anchor_widget_->GetRootView()->RemoveChildViewT(toast_view);
+  }
+#endif  // !BUILDFLAG(IS_MAC)
 
  private:
   std::unique_ptr<views::Widget> anchor_widget_;
@@ -121,3 +165,33 @@ TEST_F(PasswordChangeToastTest, DestroyingToastCancelsAutoDismiss) {
   DestroyToastWidget();
   task_environment()->FastForwardBy(PasswordChangeToast::kAutoDismissDelay);
 }
+
+#if !BUILDFLAG(IS_MAC)
+// On macOS, `RootView::AnnounceTextAs()` dispatches through
+// `AXPlatformNode::AnnounceTextAs()` directly rather than firing `kAlert` via
+// `AnnounceTextView` and `AXUpdateNotifier`.
+TEST_F(PasswordChangeToastTest, UpdateLayoutSurvivesReentrantDestruction) {
+  PasswordChangeToast::ToastOptions initial_options(u"Checking sign in...",
+                                                    base::DoNothing());
+  PasswordChangeToast* toast_view = ShowToast(std::move(initial_options));
+  views::ViewTracker toast_tracker(toast_view);
+
+  base::MockOnceClosure auto_dismiss_callback;
+  EXPECT_CALL(auto_dismiss_callback, Run).Times(0);
+
+  ScopedAlertDestructionObserver alert_observer(
+      base::BindOnce(&PasswordChangeToastTest::DestroyToastView,
+                     base::Unretained(this), base::Unretained(toast_view)));
+
+  PasswordChangeToast::ToastOptions new_options(
+      u"Password changed",
+      features::IsRoundedIconsEnabled() ? vector_icons::kPasswordManagerIcon
+                                        : vector_icons::kPasswordManagerOldIcon,
+      base::DoNothing(), u"Details", base::DoNothing(),
+      auto_dismiss_callback.Get());
+  toast_view->UpdateLayout(std::move(new_options));
+
+  EXPECT_EQ(toast_tracker.view(), nullptr);
+  task_environment()->FastForwardBy(PasswordChangeToast::kAutoDismissDelay);
+}
+#endif  // !BUILDFLAG(IS_MAC)

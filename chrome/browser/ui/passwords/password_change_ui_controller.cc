@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -472,26 +474,51 @@ void PasswordChangeUIController::UpdateState(
   std::variant<ToastOptions, std::unique_ptr<views::BubbleDialogModelHost>>
       configuration = GetDialogOrToastConfiguration(state);
 
+  // Showing, closing, or updating the toast/dialog can fire synchronous
+  // accessibility events; an assistive technology may re-entrantly close the
+  // hosting tab, destroying the widget and `this` via
+  // `PasswordChangeDelegateImpl::OnTabWillDetach()`, or trigger an inner
+  // `UpdateState()` transition.
+  base::WeakPtr<PasswordChangeUIController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   if (std::holds_alternative<ToastOptions>(configuration)) {
     // Close the existing dialog before showing toast. This is needed in
-    // PasswordChangeToastBrowserTest.InvokeUi_Toast.
+    // PasswordChangeToastBrowserTest.InvokeUi_Toast. Closing a focused dialog
+    // tears down its native widget and restores focus to the browser window,
+    // synchronously firing `ax::mojom::Event::kFocus`.
     CloseDialogWidget(views::Widget::ClosedReason::kUnspecified);
+    if (!weak_this || state_ != state) {
+      return;
+    }
     if (toast_view_) {
-      // If already showing a toast, update its layout.
+      // `UpdateLayout()` fires synchronous `kTextChanged`/`kFocus`/`kAlert` UIA
+      // events that can re-entrantly close the tab and destroy `this`.
       toast_view_->UpdateLayout(
           std::move(std::get<ToastOptions>(configuration)));
+      if (!weak_this || state_ != state) {
+        return;
+      }
       // Manually trigger a bounds update since the widget is not auto-sized.
       tabs::TabDialogManager::From(tab_interface_)->UpdateModalDialogBounds();
     } else {
-      // If not showing a toast, show a new one.
+      // Showing a new `Role::kAlert` desktop widget synchronously dispatches
+      // native window show/activation/focus accessibility events.
       ShowToast(std::move(std::get<ToastOptions>(configuration)));
+      if (!weak_this || state_ != state) {
+        return;
+      }
     }
-    LogToastEvent(state_, PasswordChangeToastEvent::kShown);
+    LogToastEvent(state, PasswordChangeToastEvent::kShown);
     return;
   }
 
-  // Close the toast before attempting to open any dialog.
+  // Close the toast before attempting to open any dialog. Destroying a focused
+  // toast widget restores focus to the host window, synchronously firing
+  // `ax::mojom::Event::kFocus`.
   CloseToastWidget(views::Widget::ClosedReason::kUnspecified);
+  if (!weak_this || state_ != state) {
+    return;
+  }
   ShowDialog(std::move(
       std::get<std::unique_ptr<views::BubbleDialogModelHost>>(configuration)));
 }
@@ -677,12 +704,16 @@ void PasswordChangeUIController::ShowToast(ToastOptions options) {
   tab_dialog_params->disable_input = false;
   tab_dialog_params->animated = true;
 
-  tab_dialog_manager->ShowDialog(widget.get(), std::move(tab_dialog_params));
-
+  // Populate `toast_widget_` before `ShowDialog()` (`Widget::Show()`), so a
+  // re-entrant `~PasswordChangeUIController()` destroys `toast_widget_` before
+  // `toast_delegate_` rather than leaving a dangling delegate pointer in a
+  // stack-local `Widget`.
   toast_widget_ = std::move(widget);
   toast_widget_->MakeCloseSynchronous(
       base::BindOnce(&PasswordChangeUIController::CloseToastWidget,
                      weak_ptr_factory_.GetWeakPtr()));
+  tab_dialog_manager->ShowDialog(toast_widget_.get(),
+                                 std::move(tab_dialog_params));
 }
 
 void PasswordChangeUIController::ShowDialog(
@@ -699,12 +730,27 @@ void PasswordChangeUIController::ShowDialog(
   auto tab_dialog_params = std::make_unique<tabs::TabDialogManager::Params>();
   tab_dialog_params->close_on_navigate = false;
   views::BubbleDialogModelHost* model_host_ptr = model_host.get();
-  dialog_widget_ = tabs::TabDialogManager::From(tab_interface_)
-                       ->CreateAndShowDialog(model_host.release(),
-                                             std::move(tab_dialog_params));
+  tabs::TabDialogManager* tab_dialog_manager =
+      tabs::TabDialogManager::From(tab_interface_);
+  // Populate `dialog_widget_` and register `MakeCloseSynchronous()` before
+  // `ShowDialog()` (`Widget::Show()`), which synchronously fires an un-queued
+  // `ax::mojom::Event::kAlert` via
+  // `BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged()`. Guard both
+  // `this` and the specific `Widget` instance afterwards in case the event
+  // handler closes the tab or accepts/cancels/replaces the dialog.
+  dialog_widget_ =
+      tab_dialog_manager->CreateTabScopedDialog(model_host.release());
   dialog_widget_->MakeCloseSynchronous(
       base::BindOnce(&PasswordChangeUIController::CloseDialogWidget,
                      weak_ptr_factory_.GetWeakPtr()));
+  base::WeakPtr<PasswordChangeUIController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<views::Widget> dialog_widget = dialog_widget_->GetWeakPtr();
+  tab_dialog_manager->ShowDialog(dialog_widget_.get(),
+                                 std::move(tab_dialog_params));
+  if (!weak_this || !dialog_widget) {
+    return;
+  }
 
   views::View* focused_view = model_host_ptr->GetInitiallyFocusedView();
   if (focused_view) {
