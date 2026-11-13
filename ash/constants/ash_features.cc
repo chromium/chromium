@@ -1553,6 +1553,10 @@ BASE_FEATURE(kUseAndroidStagingSmds, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseDirectXkbLayoutForThaiKedmaneeInputMethod,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use direct XKB layout for Thai TIS 820-2531 input method.
+BASE_FEATURE(kUseDirectXkbLayoutForThaiTisInputMethod,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use the AnnotatedAccountId for mapping between User and BrowserContext
 // (a.k.a. browser's Profile).
 BASE_FEATURE(kUseAnnotatedAccountId, base::FEATURE_DISABLED_BY_DEFAULT);

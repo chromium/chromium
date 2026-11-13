@@ -8044,6 +8044,12 @@ inline constexpr char
         "Use direct XKB layout for ChromeOS Thai Kedmanee input method, "
         "instead of character remaps via m17n rule-based IME.";
 
+inline constexpr char kUseDirectXkbLayoutForThaiTisInputMethodName[] =
+    "Use direct XKB layout for Thai TIS 820-2531 input method";
+inline constexpr char kUseDirectXkbLayoutForThaiTisInputMethodDescription[] =
+    "Use direct XKB layout for ChromeOS Thai TIS 820-2531 input method, "
+    "instead of character remaps via m17n rule-based IME.";
+
 inline constexpr char kUseFakeDeviceForMediaStreamName[] =
     "Use fake video capture device";
 inline constexpr char kUseFakeDeviceForMediaStreamDescription[] =

@@ -8573,6 +8573,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kUseDirectXkbLayoutForThaiKedmaneeInputMethod)},
+    {"use-direct-xkb-layout-for-thai-tis-input-method",
+     flag_descriptions::kUseDirectXkbLayoutForThaiTisInputMethodName,
+     flag_descriptions::kUseDirectXkbLayoutForThaiTisInputMethodDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kUseDirectXkbLayoutForThaiTisInputMethod)},
     {"use-stork-smds-server-address",
      flag_descriptions::kUseStorkSmdsServerAddressName,
      flag_descriptions::kUseStorkSmdsServerAddressDescription, kOsCrOS,

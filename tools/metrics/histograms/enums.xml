@@ -13344,6 +13344,8 @@ from previous Chrome versions.
   <int value="-514807488" label="TabStripDensityChangeAndroid:disabled"/>
   <int value="-514672474"
       label="PolicyProvidedTrustAnchorsAllowedAtLockScreen:enabled"/>
+  <int value="-514233111"
+      label="UseDirectXkbLayoutForThaiTisInputMethod:enabled"/>
   <int value="-514076866" label="MovablePartialScreenshot:disabled"/>
   <int value="-513967943" label="CryptAuthV2Enrollment:disabled"/>
   <int value="-513459348"
@@ -20819,6 +20821,8 @@ from previous Chrome versions.
       label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>
   <int value="1703206814" label="CloseAllTabsModalDialog:disabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
+  <int value="1704490504"
+      label="UseDirectXkbLayoutForThaiTisInputMethod:disabled"/>
   <int value="1704683975" label="AccessibilityExtendedSelection:disabled"/>
   <int value="1704750774"
       label="ContextualSearchContextualCuesHandleEdu:enabled"/>
