@@ -216,8 +216,12 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   // Maps the ID of each extension whose `kInstall` or `kUpdate`
   // `runtime.onExtensionLoaded` event is queued but not yet dispatched to its
   // version from before the install or update (invalid for a fresh install).
-  // `OnExtensionEnabled()` checks it so that it doesn't dispatch `kEnable` when
-  // an extension that was installed or updated while disabled is enabled.
+  // `kInstall` and `kUpdate` take precedence over other reasons, so these
+  // methods check it to skip a reason with lower precedence:
+  // - `OnExtensionEnabled()` doesn't dispatch `kEnable` when an extension that
+  //   was installed or updated while disabled is enabled.
+  // - `OnExtensionReloaded()` doesn't dispatch `kReload` when an extension is
+  //   reloaded through the install path, as an unpacked extension is.
   std::map<ExtensionId, base::Version> pending_install_load_versions_;
 
   bool did_read_delayed_restart_preferences_;

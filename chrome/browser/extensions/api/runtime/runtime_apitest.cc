@@ -2861,6 +2861,138 @@ IN_PROC_BROWSER_TEST_F(RuntimeReloadLifecycleEventsApiTest,
   EXPECT_FALSE(loaded_enable_failure_listener.was_satisfied());
 }
 
+// Test that when a terminated packed extension is reloaded:
+// - `chrome.runtime.onExtensionLoaded` is fired with reason `"reload"` (not
+//   with reason `"enable"`, since `"reload"` takes precedence).
+// - Neither `chrome.runtime.onInstalled` nor `chrome.runtime.onEnabled` is
+//   fired.
+// An extension is terminated when its process crashes or is killed, and the
+// user can reload it from the crash notification or chrome://extensions.
+// Regression test for crbug.com/579017501.
+IN_PROC_BROWSER_TEST_F(RuntimeReloadLifecycleEventsApiTest,
+                       OnExtensionLoadedOnPackedTerminatedReload) {
+  TestExtensionDir dir;
+  WriteReloadTestExtension(dir);
+
+  // Install the extension as packed and wait for the initial install events.
+  // `ExtensionBrowserTest::InstallExtension()` packs `dir` into a `.crx` file
+  // before installing it.
+  ExtensionTestMessageListener install_listener("installed");
+  ExtensionTestMessageListener initial_loaded_listener("loaded:install");
+  const Extension* extension =
+      InstallExtension(dir.UnpackedPath(), /*expected_change=*/1);
+  ASSERT_TRUE(extension);
+  ASSERT_FALSE(Manifest::IsUnpackedLocation(extension->location()));
+  {
+    SCOPED_TRACE("Waiting for install event message");
+    ASSERT_TRUE(install_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for initial extension loaded event message");
+    ASSERT_TRUE(initial_loaded_listener.WaitUntilSatisfied());
+  }
+  const ExtensionId extension_id = extension->id();
+
+  // Terminate the extension, as if its process crashed, and wait for its
+  // service worker to be unregistered. A user reloads a crashed extension well
+  // after it terminated. Reloading while the unregistration is still pending
+  // can abort the new worker registration, which drops the queued event.
+  service_worker_test_utils::TestServiceWorkerTaskQueueObserver worker_observer;
+  extension_registrar()->TerminateExtension(extension_id);
+  ASSERT_TRUE(
+      extension_registry()->terminated_extensions().Contains(extension_id));
+  {
+    SCOPED_TRACE("Waiting for the service worker to be unregistered");
+    worker_observer.WaitForWorkerUnregistered(extension_id);
+  }
+
+  // Reload the terminated extension and verify that `onExtensionLoaded` is
+  // fired with `"loaded:reload"`.
+  ExtensionTestMessageListener reloaded_listener("loaded:reload");
+  reloaded_listener.set_failure_message("installed");
+  ExtensionTestMessageListener enabled_failure_listener("enabled");
+  ExtensionTestMessageListener loaded_enable_failure_listener("loaded:enable");
+  extension_registrar()->ReloadExtension(extension_id);
+  {
+    SCOPED_TRACE("Waiting for reloaded event message");
+    ASSERT_TRUE(reloaded_listener.WaitUntilSatisfied());
+  }
+
+  // Round-trip a script through the service worker so that a late `"enabled"`
+  // or `"loaded:enable"` message would have arrived, then verify that neither
+  // did.
+  ASSERT_EQ("done", ExecuteScriptInBackgroundPage(
+                        extension_id, "chrome.test.sendScriptResult('done');"));
+  EXPECT_FALSE(enabled_failure_listener.was_satisfied());
+  EXPECT_FALSE(loaded_enable_failure_listener.was_satisfied());
+}
+
+// Test that when a terminated unpacked extension is reloaded:
+// - `chrome.runtime.onInstalled` and `chrome.runtime.onExtensionLoaded` are
+//   fired with reason `"update"`, because unpacked reloads go through the
+//   install path.
+// - `chrome.runtime.onExtensionLoaded` is not also fired with reason
+//   `"reload"` or `"enable"`, since `"update"` takes precedence.
+// - `chrome.runtime.onEnabled` is not fired.
+IN_PROC_BROWSER_TEST_F(RuntimeReloadLifecycleEventsApiTest,
+                       OnExtensionLoadedOnUnpackedTerminatedReload) {
+  TestExtensionDir dir;
+  WriteReloadTestExtension(dir);
+
+  // Load the extension as unpacked and wait for the initial install events.
+  ExtensionTestMessageListener install_listener("installed");
+  ExtensionTestMessageListener initial_loaded_listener("loaded:install");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(Manifest::IsUnpackedLocation(extension->location()));
+  {
+    SCOPED_TRACE("Waiting for install event message");
+    ASSERT_TRUE(install_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for initial extension loaded event message");
+    ASSERT_TRUE(initial_loaded_listener.WaitUntilSatisfied());
+  }
+  const ExtensionId extension_id = extension->id();
+
+  // Terminate the extension, as if its process crashed, and wait for its
+  // service worker to be unregistered, as a user would reload it only later.
+  service_worker_test_utils::TestServiceWorkerTaskQueueObserver worker_observer;
+  extension_registrar()->TerminateExtension(extension_id);
+  ASSERT_TRUE(
+      extension_registry()->terminated_extensions().Contains(extension_id));
+  {
+    SCOPED_TRACE("Waiting for the service worker to be unregistered");
+    worker_observer.WaitForWorkerUnregistered(extension_id);
+  }
+
+  // Reload the terminated extension and verify that `onInstalled` and
+  // `onExtensionLoaded` are fired with reason `"update"`.
+  ExtensionTestMessageListener update_install_listener("installed");
+  ExtensionTestMessageListener update_loaded_listener("loaded:update");
+  ExtensionTestMessageListener loaded_reload_failure_listener("loaded:reload");
+  ExtensionTestMessageListener enabled_failure_listener("enabled");
+  ExtensionTestMessageListener loaded_enable_failure_listener("loaded:enable");
+  extension_registrar()->ReloadExtension(extension_id);
+  {
+    SCOPED_TRACE("Waiting for update install event message");
+    ASSERT_TRUE(update_install_listener.WaitUntilSatisfied());
+  }
+  {
+    SCOPED_TRACE("Waiting for update extension loaded event message");
+    ASSERT_TRUE(update_loaded_listener.WaitUntilSatisfied());
+  }
+
+  // Round-trip a script through the service worker so that a late
+  // `"loaded:reload"`, `"enabled"` or `"loaded:enable"` message would have
+  // arrived, then verify that none did.
+  ASSERT_EQ("done", ExecuteScriptInBackgroundPage(
+                        extension_id, "chrome.test.sendScriptResult('done');"));
+  EXPECT_FALSE(loaded_reload_failure_listener.was_satisfied());
+  EXPECT_FALSE(enabled_failure_listener.was_satisfied());
+  EXPECT_FALSE(loaded_enable_failure_listener.was_satisfied());
+}
+
 // Test fixture for startup lifecycle events. Listens for worker messages early
 // in `CreatedBrowserMainParts` before profile and extension initialization.
 class RuntimeStartupLifecycleEventsApiTest

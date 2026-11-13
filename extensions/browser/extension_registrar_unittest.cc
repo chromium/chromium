@@ -10,12 +10,14 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_command_line.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -36,6 +38,34 @@ namespace {
 
 using testing::Return;
 using testing::_;
+
+// Counts the `ExtensionRegistryObserver::OnExtensionReloaded()` notifications
+// that the `ExtensionRegistry` for a browser context sends.
+class ReloadedNotificationCounter : public ExtensionRegistryObserver {
+ public:
+  explicit ReloadedNotificationCounter(content::BrowserContext* context) {
+    observation_.Observe(ExtensionRegistry::Get(context));
+  }
+
+  ReloadedNotificationCounter(const ReloadedNotificationCounter&) = delete;
+  ReloadedNotificationCounter& operator=(const ReloadedNotificationCounter&) =
+      delete;
+
+  ~ReloadedNotificationCounter() override = default;
+
+  int count() const { return count_; }
+
+  // ExtensionRegistryObserver:
+  void OnExtensionReloaded(content::BrowserContext* browser_context,
+                           const Extension* extension) override {
+    ++count_;
+  }
+
+ private:
+  int count_ = 0;
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      observation_{this};
+};
 
 // Supplies dependencies needed by the tests. Specifically,
 // ExtensionRegistrar::CanBlockExtension() depends on ManagementPolicy.
@@ -550,6 +580,71 @@ TEST_F(ExtensionRegistrarTest, ReloadTerminatedExtension) {
   // enabled once re-added to the registrar, since ExtensionPrefs shouldn't say
   // it's disabled.
   AddEnabledExtension();
+}
+
+// Verifies that once the reload of a terminated extension completes,
+// `ExtensionRegistry` notifies observers once that the extension was reloaded.
+// Regression test for crbug.com/579017501.
+TEST_F(ExtensionRegistrarTest, ReloadTerminatedExtensionNotifiesReloaded) {
+  ReloadedNotificationCounter counter(browser_context());
+  AddEnabledExtension();
+  TerminateExtension();
+
+  // Reload the terminated extension. Nothing is notified until the reload
+  // completes.
+  ReloadTerminatedExtension();
+  ASSERT_EQ(0, counter.count());
+
+  // Complete the reload by adding the extension, and verify that observers
+  // were notified once that it was reloaded.
+  AddEnabledExtension();
+  EXPECT_EQ(1, counter.count());
+}
+
+// Verifies that if a terminated extension is removed while it's reloading, a
+// later add of the extension isn't treated as the completion of that reload,
+// so observers aren't notified that it was reloaded.
+TEST_F(ExtensionRegistrarTest,
+       RemoveReloadingTerminatedExtensionDoesNotNotifyReloaded) {
+  ReloadedNotificationCounter counter(browser_context());
+  AddEnabledExtension();
+  TerminateExtension();
+  ReloadTerminatedExtension();
+
+  // Remove the extension before the reload completes, e.g. because it was
+  // uninstalled.
+  registrar()->RemoveExtension(extension()->id(),
+                               UnloadedExtensionReason::UNINSTALL);
+  ExpectInSet(ExtensionRegistry::NONE);
+
+  // Add the extension again and verify that observers weren't notified that it
+  // was reloaded.
+  AddEnabledExtension();
+  EXPECT_EQ(0, counter.count());
+}
+
+// Verifies that if a terminated extension is disabled while it's reloading, a
+// later add of the extension after it's enabled again isn't treated as the
+// completion of that reload, so observers aren't notified that it was reloaded.
+TEST_F(ExtensionRegistrarTest,
+       DisableReloadingTerminatedExtensionDoesNotNotifyReloaded) {
+  ReloadedNotificationCounter counter(browser_context());
+  AddEnabledExtension();
+  TerminateExtension();
+  ReloadTerminatedExtension();
+
+  // Disable the extension before the reload completes, then enable it again.
+  DisableTerminatedExtension();
+  EnableExtension();
+
+  // Add the extension again. Since it's enabled, this replaces the old copy
+  // in place, which deactivates it before activating the new copy. Verify that
+  // observers weren't notified that it was reloaded.
+  EXPECT_CALL(*delegate(), PostDeactivateExtension(extension()));
+  EXPECT_CALL(*delegate(), PostActivateExtension(extension()));
+  registrar()->AddExtension(extension());
+  ExpectInSet(ExtensionRegistry::ENABLED);
+  EXPECT_EQ(0, counter.count());
 }
 
 TEST_F(ExtensionRegistrarTest, AddDisableFlagExemptedExtension) {

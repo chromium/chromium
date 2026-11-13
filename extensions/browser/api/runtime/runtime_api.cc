@@ -445,6 +445,14 @@ void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
 
 void RuntimeAPI::OnExtensionReloaded(content::BrowserContext* browser_context,
                                      const Extension* extension) {
+  // An unpacked extension is reloaded through the install path, which already
+  // ran `OnExtensionInstalledAndLoaded()` and queued a `kUpdate`
+  // `runtime.onExtensionLoaded` event. `kUpdate` takes precedence over
+  // `kReload`, so don't dispatch `kReload` too.
+  if (pending_install_load_versions_.contains(extension->id())) {
+    return;
+  }
+
   // Dispatch `runtime.onExtensionLoaded` with reason `kReload` when the
   // extension is reloaded.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

@@ -499,6 +499,12 @@ class ExtensionRegistrar : public KeyedService,
   // which were disabled for a reload.
   ExtensionIdSet reloading_extensions_;
 
+  // Store the ids of terminated extensions that are being reloaded. Unlike
+  // `reloading_extensions_`, these extensions aren't disabled for the reload,
+  // so this is how `AddExtension()` knows to notify observers that the
+  // extension was reloaded.
+  ExtensionIdSet reloading_terminated_extensions_;
+
   // Store the paths of extensions that failed to reload. We use this to retry
   // reload.
   std::set<base::FilePath> failed_to_reload_unpacked_extensions_;

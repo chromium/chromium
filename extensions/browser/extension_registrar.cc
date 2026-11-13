@@ -200,6 +200,10 @@ void ExtensionRegistrar::AddExtension(
 
   // If the extension was disabled for a reload, we will enable it.
   bool was_reloading = reloading_extensions_.erase(extension->id()) > 0;
+  // If the extension was terminated and is being reloaded, notify observers
+  // below once it's enabled again.
+  bool was_reloading_terminated =
+      reloading_terminated_extensions_.erase(extension->id()) > 0;
 
   // The extension is now loaded; remove its data from unloaded extension map.
   unloaded_extension_paths_.erase(extension->id());
@@ -223,6 +227,10 @@ void ExtensionRegistrar::AddExtension(
       UnregisterServiceWorkerWithRootScope(extension.get());
     }
     AddNewExtension(extension);
+    if (was_reloading_terminated &&
+        registry_->enabled_extensions().Contains(extension->id())) {
+      registry_->TriggerOnReloaded(extension.get());
+    }
   }
 
   if (registry_->disabled_extensions().Contains(extension->id())) {
@@ -310,6 +318,10 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
   if (!extension) {
     return;
   }
+
+  // Stop tracking whether a terminated extension was being reloaded. Do this
+  // before the early return below, which handles terminated extensions.
+  reloading_terminated_extensions_.erase(extension_id);
 
   if (registry_->terminated_extensions().Contains(extension_id)) {
     // The extension was already deactivated from the call to
@@ -469,6 +481,10 @@ void ExtensionRegistrar::DisableExtensionWithRawReasons(
     // notifications for it being disabled.
     bool removed = registry_->RemoveTerminated(extension->id());
     DCHECK(removed);
+    // The extension is no longer terminated, so stop tracking whether it was
+    // being reloaded. Otherwise a later add of the extension, after it's
+    // enabled again, would notify observers that it was reloaded.
+    reloading_terminated_extensions_.erase(extension_id);
   }
 }
 
@@ -1240,6 +1256,9 @@ void ExtensionRegistrar::DoReloadExtension(
       return;
     }
     path = unloaded_extension_paths_[extension_id];
+    if (registry_->terminated_extensions().Contains(extension_id)) {
+      reloading_terminated_extensions_.insert(extension_id);
+    }
   }
 
   if (delayed_install_manager_->Contains(extension_id) &&
