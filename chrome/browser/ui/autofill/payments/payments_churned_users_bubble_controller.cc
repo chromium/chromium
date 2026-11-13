@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -62,7 +63,7 @@ void PaymentsChurnedUsersBubbleController::Show(
 }
 
 void PaymentsChurnedUsersBubbleController::ReshowBubble() {
-  if (bubble_view()) {
+  if (bubble_view() || !CanBeReshown()) {
     return;
   }
   is_reshow_ = true;
@@ -132,19 +133,13 @@ void PaymentsChurnedUsersBubbleController::OnAcceptButton() {
 }
 
 void PaymentsChurnedUsersBubbleController::ShowConfirmationBubbleView() {
-  HideBubble(/*initiated_by_bubble_manager=*/false);
-#if !BUILDFLAG(IS_ANDROID)
-  AutofillBubbleHandler* const handler = GetAutofillBubbleHandler();
-  if (!handler) {
+  if (state_ != BubbleState::kPendingConfirmation) {
     return;
   }
-  if (AutofillBubbleBase* const bubble_view =
-          handler->ShowPaymentsChurnedUsersConfirmationBubble(web_contents(),
-                                                              this)) {
-    state_ = BubbleState::kConfirmation;
-    SetBubbleView(*bubble_view);
-  }
-#endif
+  DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
+  state_ = BubbleState::kConfirmation;
+  QueueOrShowBubble();
 }
 
 SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
@@ -177,7 +172,16 @@ void PaymentsChurnedUsersBubbleController::PrimaryPageChanged(
 }
 
 bool PaymentsChurnedUsersBubbleController::CanBeReshown() const {
-  return true;
+  switch (state_) {
+    case BubbleState::kInactive:
+    case BubbleState::kPendingConfirmation:
+      return false;
+    case BubbleState::kPrompt:
+      return true;
+    case BubbleState::kConfirmation:
+      return !IsShowingBubble();
+  }
+  NOTREACHED();
 }
 
 BubbleType PaymentsChurnedUsersBubbleController::GetBubbleType() const {
@@ -200,12 +204,26 @@ void PaymentsChurnedUsersBubbleController::DoShowBubble() {
   if (!handler) {
     return;
   }
-  if (AutofillBubbleBase* const created_bubble =
-          handler->ShowPaymentsChurnedUsersBubble(web_contents(), this,
-                                                  is_reshow_)) {
-    SetBubbleView(*created_bubble);
-    autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
-        autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
+  switch (state_) {
+    case BubbleState::kInactive:
+    case BubbleState::kPendingConfirmation:
+      NOTREACHED();
+    case BubbleState::kPrompt:
+      if (AutofillBubbleBase* const created_bubble =
+              handler->ShowPaymentsChurnedUsersBubble(web_contents(), this,
+                                                      is_reshow_)) {
+        SetBubbleView(*created_bubble);
+        autofill_metrics::LogPaymentsChurnedUsersUiShowResult(
+            autofill_metrics::PaymentsChurnedUsersUiShowResult::kShown);
+      }
+      return;
+    case BubbleState::kConfirmation:
+      if (AutofillBubbleBase* const created_bubble =
+              handler->ShowPaymentsChurnedUsersConfirmationBubble(
+                  web_contents(), this)) {
+        SetBubbleView(*created_bubble);
+      }
+      return;
   }
 #endif
 }

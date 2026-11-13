@@ -12,6 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/autofill/bubble_controller_base.h"
+#include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -40,6 +42,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -430,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
 }
 
 // Tests that showing and closing the bubble syncs
-// ActionItem::GetIsShowingBubble() across prompt and confirmation views.
+// `ActionItem::GetIsShowingBubble()` across prompt and confirmation views.
 IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        SyncsActionItemIsShowingBubble) {
   actions::ActionItem* const action_item =
@@ -462,6 +465,89 @@ IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
   destroyed_waiter.Wait();
 
   EXPECT_FALSE(action_item->GetIsShowingBubble());
+}
+
+// Tests that the confirmation bubble is queued via `BubbleManager` if the tab
+// becomes inactive during the loading delay, shown when reactivated, and hidden
+// on subsequent tab deactivation.
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       ConfirmationBubbleQueuedWhileTabInactive) {
+  actions::ActionItem* const action_item =
+      actions::ActionManager::Get().FindAction(
+          kActionShowPaymentsChurnedUsersBubble,
+          BrowserActions::From(browser())->root_action_item());
+  ASSERT_TRUE(action_item);
+
+  ShowBubble();
+  tabs::TabInterface* const first_tab =
+      browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(first_tab);
+  PaymentsChurnedUsersBubbleController* const controller =
+      PaymentsChurnedUsersBubbleController::From(*first_tab);
+  ASSERT_TRUE(controller);
+  BubbleManager* const bubble_manager = BubbleManager::GetForTab(first_tab);
+  ASSERT_TRUE(bubble_manager);
+
+  PaymentsChurnedUsersBubbleView* const prompt_view = GetBubbleView();
+  ASSERT_TRUE(prompt_view);
+  prompt_view->AcceptDialog();
+
+  // Switch to a new foreground tab before the confirmation delay completes.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  EXPECT_FALSE(controller->IsShowingBubble());
+  EXPECT_FALSE(action_item->GetIsShowingBubble());
+
+  // Wait for the delayed `ShowConfirmationBubbleView()` call to queue in
+  // `BubbleManager` without showing on the inactive tab.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return bubble_manager->HasPendingBubbleOfSameType(
+        BubbleType::kPaymentsChurnedUsers);
+  }));
+  EXPECT_FALSE(controller->IsShowingBubble());
+
+  // Reactivating the first tab shows the queued confirmation bubble.
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  ASSERT_TRUE(controller->IsShowingBubble());
+  EXPECT_TRUE(action_item->GetIsShowingBubble());
+  EXPECT_EQ(
+      static_cast<AutofillLocationBarBubble*>(
+          controller->GetBubbleViewForTesting())
+          ->GetID(),
+      DialogViewId::
+          SAVE_PAYMENT_METHOD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUBBLE_VIEWS);
+
+  // Deactivating the tab again hides the confirmation bubble via
+  // `BubbleManager` and resets `ActionItem::GetIsShowingBubble()`.
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  EXPECT_FALSE(controller->IsShowingBubble());
+  EXPECT_FALSE(action_item->GetIsShowingBubble());
+}
+
+// Tests that a delayed `ShowConfirmationBubbleView()` call after navigation is
+// a no-op and does not show the confirmation bubble or page action icon.
+IN_PROC_BROWSER_TEST_P(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       ShowConfirmationAfterNavigationIsNoOp) {
+  ShowBubble();
+  tabs::TabInterface* const active_tab =
+      browser()->GetTabStripModel()->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+  PaymentsChurnedUsersBubbleController* const controller =
+      PaymentsChurnedUsersBubbleController::From(*active_tab);
+  ASSERT_TRUE(controller);
+
+  PaymentsChurnedUsersBubbleView* const prompt_view = GetBubbleView();
+  ASSERT_TRUE(prompt_view);
+  prompt_view->AcceptDialog();
+
+  // Navigate away during the loading delay.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  EXPECT_FALSE(controller->IsShowingBubble());
+  EXPECT_FALSE(IsIconVisible());
+
+  // A delayed `ShowConfirmationBubbleView()` call must be a no-op.
+  controller->ShowConfirmationBubbleView();
+  EXPECT_FALSE(controller->IsShowingBubble());
+  EXPECT_FALSE(IsIconVisible());
 }
 
 }  // namespace autofill
