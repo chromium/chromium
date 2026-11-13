@@ -1542,6 +1542,8 @@ targets.mixin(
 
 targets.mixin(
     name = "linux_nvidia_gtx_1660_stable",
+    # TODO(b/585548073): Re-enable on CQ once the Linux GTX 1660 bots recover.
+    ci_only = True,
     swarming = targets.swarming(
         dimensions = {
             "display_server": "x11",

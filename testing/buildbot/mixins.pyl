@@ -630,6 +630,7 @@
   },
   'linux_nvidia_gtx_1660_stable': {
     'fail_if_unused': False,
+    'ci_only': True,
     'swarming': {
       'dimensions': {
         'display_server': 'x11',
