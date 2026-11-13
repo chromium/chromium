@@ -1544,6 +1544,12 @@ public class TabGridDialogTest {
         verifyTabSwitcherCardCount(cta, 1);
 
         // Verify the initial group card content description.
+        // Grouping replaces the first card, so lay it out before reading its view.
+        onView(
+                        allOf(
+                                isDescendantOfA(withId(getTabSwitcherAncestorId(cta))),
+                                withId(R.id.tab_list_recycler_view)))
+                .perform(RecyclerViewActions.scrollToPosition(0));
         RecyclerView recyclerView = getRecyclerView(cta);
         assertNotNull(recyclerView);
         View firstItem = recyclerView.findViewHolderForAdapterPosition(0).itemView;

@@ -320,44 +320,40 @@ public class TabUiTestHelper {
                                 isDescendantOfA(withId(getTabSwitcherAncestorId(context))),
                                 withId(R.id.tab_list_recycler_view)))
                 .perform(
-                        new ViewAction() {
-                            @Override
-                            public Matcher<View> getConstraints() {
-                                return isDisplayed();
-                            }
+                        RecyclerViewActions.actionOnItemAtPosition(
+                                index,
+                                new ViewAction() {
+                                    @Override
+                                    public Matcher<View> getConstraints() {
+                                        return isDisplayed();
+                                    }
 
-                            @Override
-                            public String getDescription() {
-                                return "close tab with index " + index;
-                            }
+                                    @Override
+                                    public String getDescription() {
+                                        return "close tab with index " + index;
+                                    }
 
-                            @Override
-                            public void perform(UiController uiController, View view) {
-                                RecyclerView recyclerView = (RecyclerView) view;
-                                RecyclerView.ViewHolder viewHolder =
-                                        recyclerView.findViewHolderForAdapterPosition(index);
-                                assert viewHolder != null;
+                                    @Override
+                                    public void perform(UiController uiController, View view) {
+                                        View actionButton = view.findViewById(R.id.action_button);
+                                        if (!performMouseClick) {
+                                            actionButton.performClick();
+                                            return;
+                                        }
 
-                                View actionButton =
-                                        viewHolder.itemView.findViewById(R.id.action_button);
-                                if (!performMouseClick) {
-                                    actionButton.performClick();
-                                    return;
-                                }
-
-                                long motionDownTime = SystemClock.uptimeMillis();
-                                actionButton.dispatchTouchEvent(
-                                        MotionEventTestUtils.createMouseMotionEvent(
-                                                motionDownTime,
-                                                /* eventTime= */ motionDownTime,
-                                                MotionEvent.ACTION_DOWN));
-                                actionButton.dispatchTouchEvent(
-                                        MotionEventTestUtils.createMouseMotionEvent(
-                                                motionDownTime,
-                                                /* eventTime= */ motionDownTime + 200,
-                                                MotionEvent.ACTION_UP));
-                            }
-                        });
+                                        long motionDownTime = SystemClock.uptimeMillis();
+                                        actionButton.dispatchTouchEvent(
+                                                MotionEventTestUtils.createMouseMotionEvent(
+                                                        motionDownTime,
+                                                        /* eventTime= */ motionDownTime,
+                                                        MotionEvent.ACTION_DOWN));
+                                        actionButton.dispatchTouchEvent(
+                                                MotionEventTestUtils.createMouseMotionEvent(
+                                                        motionDownTime,
+                                                        /* eventTime= */ motionDownTime + 200,
+                                                        MotionEvent.ACTION_UP));
+                                    }
+                                }));
     }
 
     /**
