@@ -4,9 +4,9 @@
 
 import './help_bubble_mixin_test_container.js';
 
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
-import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_interface.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {HelpBubbleMixinInterface} from '//resources/cr_components/help_bubble/help_bubble_mixin_interface.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {HelpBubbleMixin} from 'chrome-untrusted://lens-overlay/help_bubble_mixin.js';
 
 export const HelpBubbleMixinTestElementBase =
     HelpBubbleMixin(PolymerElement) as {

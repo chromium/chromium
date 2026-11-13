@@ -14,7 +14,6 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/icons.html.js';
 
-import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -28,6 +27,7 @@ import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loa
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {CursorTooltipData, CursorTooltipElement} from './cursor_tooltip.js';
 import {CursorTooltipType} from './cursor_tooltip.js';
+import {HelpBubbleMixin} from './help_bubble_mixin.js';
 import type {InitialGradientElement} from './initial_gradient.js';
 import type {BrowserProxy} from './lens.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';

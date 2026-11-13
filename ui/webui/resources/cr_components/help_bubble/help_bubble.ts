@@ -129,8 +129,6 @@ export class HelpBubbleElement extends CrLitElement {
   fixed: boolean = false;
   focusAnchor: boolean = false;
 
-  private buttonListObserver_: MutationObserver|null = null;
-
   /**
    * HTMLElement corresponding to |this.nativeId|.
    */
@@ -141,13 +139,6 @@ export class HelpBubbleElement extends CrLitElement {
    * The elements are placeholders only.
    */
   protected accessor progressData_: boolean[] = [];
-
-  /**
-   * Watches the offsetParent for resize events, allowing the bubble to be
-   * repositioned in response. Useful for when the content around a help bubble
-   * target can be filtered/expanded/repositioned.
-   */
-  private resizeObserver_: ResizeObserver|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

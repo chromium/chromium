@@ -13,7 +13,11 @@ const replacements = new Map([
 
   // URLs
   [
-    '//resources/cr_components/help_bubble/help_bubble_mixin.js',
+    '../help_bubble_mixin.js',
+    '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js',
+  ],
+  [
+    './help_bubble_mixin.js',
     '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js',
   ],
   [

@@ -269,4 +269,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, MAYBE_TranslateButton) {
   RunOverlayTest("lens/overlay/translate_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayWebUIBrowserTest, HelpBubbleMixin) {
+  RunTest("lens/overlay/help_bubble_mixin_test.js", "mocha.run()");
+}
+
 }  // namespace
