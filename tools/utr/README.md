@@ -122,13 +122,25 @@ for compile-specific flags) to see all options:
   and `compile-and-test`, the UTR waits for all Swarming shards to finish and
   prints the final results URL before exiting.
 - `-B <bucket>` / `-b <builder>` / `-t <test_suite>`: Target bucket (`try` or
-  `ci`), builder name, and test suite (pass `-t` multiple times for multiple
-  suites).
+  `ci`), builder name (if omitted, inferred from `--build-dir`'s `args.gn`), and
+  test suite or source test file path (pass `-t` multiple times for multiple
+  suites, or pass a source file path like
+  `components/viz/service/frame_sinks/frame_sink_throttler_unittest.cc` to
+  automatically resolve its owning test target).
 - `-n <N>`: Runs the build/test invocation `N` times without cleaning the build
   dir and exits on the first failure (useful for reproducing flakes across
   separate runs, unlike `--gtest_repeat=N` which repeats inside a single task).
 - `--build-dir <dir>` (`-o <dir>`): Custom output directory (defaults to
   `out/UTR<builder_name>`).
+- `--reuse-task <task_id>`: Reuses the pre-compiled CAS digest of an existing
+  Swarming task, skipping local compilation (`test` action only; must be placed
+  **before** `test`).
+- `--dimension <key=value>` (`-d <key=value>`): Overrides Swarming bot
+  dimensions for test runs (e.g. `-d gpu=8086:9bc5`); pass `<key>=` with an
+  empty value to remove a default dimension.
+- `--shards <N>`: Overrides the Swarming shard count for test runs.
+- `--omit-default-test-args`: Strips the builder's default test arguments (often
+  combined with custom arguments after `--`).
 - `--keep-gn-args` / `--overwrite-gn-args`, `--skip-config-validation`,
   `--force` (`-f`): Pre-answers config-mismatch prompts (e.g. when local
   `args.gn` differs or when cross-compiling in non-interactive environments).
@@ -179,6 +191,19 @@ with additional test cmd-line flags:
 
 ```
 vpython3 run.py -B try -b linux-chromeos-rel -t interactive_ui_tests test -- --gtest_filter=TestClass.TestCase --gtest_repeat=100
+```
+
+Reusing a failed Swarming task's pre-compiled CAS build to stress-test a flaky
+test without recompiling locally:
+
+```
+vpython3 run.py -B try -b win-rel -t interactive_ui_tests --reuse-task <swarming_task_id> test -- --gtest_filter=TestClass.TestCase --gtest_repeat=100
+```
+
+Reproducing a shard-ordering failure on a specific shard index:
+
+```
+vpython3 run.py -B try -b linux-rel -t unit_tests test -- --total-shards=10 --shard-index=3
 ```
 
 ## Custom builder configs
@@ -308,6 +333,15 @@ introduced the regression:
   ```sh
   vpython3 tools/utr/run.py -B try -b linux-rel -t base_unittests compile-and-test --no-rbe
   ```
+
+- **Separate build directories (`out/UTR<builder_name>`):** By default, the UTR
+  compiles in `out/UTR<builder_name>` and ignores local edits in
+  `out/Default/args.gn` unless you pass `-o out/Default --keep-gn-args`.
+
+- **Missing runtime files on Swarming (`data` / `.isolate` deps):** Tests
+  executed remotely on Swarming only have access to files declared in the
+  target's GN `data` / `data_deps` lists. Reading undeclared local checkout
+  files will pass locally but fail on Swarming.
 
 ## Questions/feedback
 
