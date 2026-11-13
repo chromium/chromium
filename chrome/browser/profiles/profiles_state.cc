@@ -37,7 +37,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/shared_preferences/shared_preferences_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 #else
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
@@ -138,7 +140,33 @@ void SetLastUsedProfile(const base::FilePath& profile_dir) {
   PrefService* local_state = g_browser_process->local_state();
   CHECK(local_state, base::NotFatalUntil::M162);
   local_state->SetFilePath(prefs::kProfileLastUsed, profile_dir);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Without AndroidMultiprofileStartupData, Chrome always starts with the
+  // initial profile, whose base name StartupData writes at startup.
+  if (IsAndroidMultiprofileStartupDataEnabled()) {
+    // Record the profile that Chrome will start with, which falls back to the
+    // initial profile if `profile_dir` isn't a known profile.
+    WriteLastUsedProfileBaseName(GetLastUsedProfileBaseName(*local_state));
+  }
+#endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void WriteLastUsedProfileBaseName(const base::FilePath& base_name) {
+  // See ProfileManager#getLastUsedProfileBaseName() for how Java uses it.
+  base::android::SharedPreferencesManager shared_prefs =
+      android::shared_preferences::GetChromeSharedPreferences();
+  // Avoid a write at every startup when the base name is already up to date.
+  if (shared_prefs.ReadString(kLastUsedProfileBaseNameSharedPreferenceKey,
+                              std::string()) == base_name.value()) {
+    return;
+  }
+
+  shared_prefs.WriteString(kLastUsedProfileBaseNameSharedPreferenceKey,
+                           base_name.value());
+}
+#endif
 
 bool IsRegularUserProfile(Profile* profile) {
   ProfileSelections selections =

@@ -30,7 +30,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/shared_preferences/shared_preferences_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 #include "chrome/browser/startup_data.h"
 #endif
 
@@ -297,6 +299,65 @@ void GetLastUsedProfileBaseNameTest::TestProfileBaseNameForStartupImpl(
   EXPECT_EQ(base::FilePath::FromASCII(
                 startup_data_enabled ? kProfile1 : chrome::kInitialProfile),
             StartupData::GetProfileBaseNameForStartup(local_state_));
+}
+
+class LastUsedProfileBaseNameTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    GetSharedPrefs().RemoveKey(
+        profiles::kLastUsedProfileBaseNameSharedPreferenceKey);
+  }
+
+  void TearDown() override {
+    GetSharedPrefs().RemoveKey(
+        profiles::kLastUsedProfileBaseNameSharedPreferenceKey);
+  }
+
+  // Returns a new instance each time, since it holds a local JNI reference.
+  base::android::SharedPreferencesManager GetSharedPrefs() {
+    return android::shared_preferences::GetChromeSharedPreferences();
+  }
+
+  void TestSetLastUsedProfileWritesBaseNameImpl(bool profile_exists);
+};
+
+TEST_F(LastUsedProfileBaseNameTest, OverwritesStaleBaseName) {
+  GetSharedPrefs().WriteString(
+      profiles::kLastUsedProfileBaseNameSharedPreferenceKey, "Profile 2");
+
+  profiles::WriteLastUsedProfileBaseName(base::FilePath::FromASCII(kProfile1));
+
+  EXPECT_EQ(kProfile1,
+            GetSharedPrefs().ReadString(
+                profiles::kLastUsedProfileBaseNameSharedPreferenceKey,
+                std::string()));
+}
+
+TEST_F(LastUsedProfileBaseNameTest, SetLastUsedProfileWritesBaseName) {
+  TestSetLastUsedProfileWritesBaseNameImpl(/*profile_exists=*/true);
+}
+
+TEST_F(LastUsedProfileBaseNameTest,
+       SetLastUsedProfileWritesInitialProfileForUnknownProfile) {
+  TestSetLastUsedProfileWritesBaseNameImpl(/*profile_exists=*/false);
+}
+
+void LastUsedProfileBaseNameTest::TestSetLastUsedProfileWritesBaseNameImpl(
+    bool profile_exists) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidMultiprofileStartupData);
+  if (profile_exists) {
+    ScopedDictPrefUpdate(TestingBrowserProcess::GetGlobal()->local_state(),
+                         prefs::kProfileAttributes)
+        ->Set(kProfile1, base::DictValue());
+  }
+
+  profiles::SetLastUsedProfile(base::FilePath::FromASCII(kProfile1));
+
+  EXPECT_EQ(profile_exists ? kProfile1 : chrome::kInitialProfile,
+            GetSharedPrefs().ReadString(
+                profiles::kLastUsedProfileBaseNameSharedPreferenceKey,
+                std::string()));
 }
 #else
 TEST_F(GetLastUsedProfileBaseNameTest, ReturnsUnknownLastUsedProfile) {

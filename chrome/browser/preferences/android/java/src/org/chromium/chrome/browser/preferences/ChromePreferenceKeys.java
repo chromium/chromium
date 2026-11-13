@@ -818,6 +818,14 @@ public final class ChromePreferenceKeys {
             "com.google.android.apps.chrome.ChromeMobileApplication.BOOT_TIMESTAMP";
 
     /**
+     * The base name of the profile that Chrome is expected to start with, written by native so that
+     * it can be read before native is initialized. It is only a hint, see
+     * ProfileManager#getLastUsedProfileBaseName().
+     */
+    public static final String PROFILES_LAST_USED_PROFILE_BASE_NAME =
+            "Chrome.Profiles.LastUsedProfileBaseName";
+
+    /**
      * Key prefix for base promo component. Used in {@link
      * org.chromium.components.browser_ui.widget.promo.PromoCardCoordinator} to store related state
      * or statistics.
@@ -1338,6 +1346,7 @@ public final class ChromePreferenceKeys {
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
                 PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE,
+                PROFILES_LAST_USED_PROFILE_BASE_NAME,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 PWA_RESTORE_APPS_AVAILABLE,

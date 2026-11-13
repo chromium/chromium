@@ -15,6 +15,8 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.List;
 
@@ -103,6 +105,22 @@ public class ProfileManager {
             return sLastUsedProfileForTesting;
         }
         return (Profile) ProfileManagerJni.get().getLastUsedRegularProfile();
+    }
+
+    /**
+     * Returns the base name of the profile that Chrome is expected to start with, as last recorded
+     * by native, so that it can be used before native is initialized. Returns null if native hasn't
+     * recorded one yet.
+     *
+     * <p>Native records the profile it starts with, and, with AndroidMultiprofileStartupData, the
+     * profile it will start with whenever the last used profile changes, e.g. when a profile is
+     * activated. This is only a hint for the profile that native will start with: until native
+     * starts, it may be stale, e.g. after a crash or a flag change. Callers must check it against
+     * the profile native starts with.
+     */
+    public static @Nullable String getLastUsedProfileBaseName() {
+        return ChromeSharedPreferences.getInstance()
+                .readString(ChromePreferenceKeys.PROFILES_LAST_USED_PROFILE_BASE_NAME, null);
     }
 
     /** Return the fully loaded and initialized Profiles (excluding off the record Profiles). */

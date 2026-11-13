@@ -152,6 +152,11 @@ void StartupData::InitProfileKey() {
   profile_path_ =
       user_data_dir.Append(GetProfileBaseNameForStartup(*local_state));
   key_ = std::make_unique<ProfileKey>(profile_path_);
+  // Record the profile that Chrome starts with, for Java code that runs before
+  // native next time. This also covers reduced mode, which never sets the last
+  // used profile, and fixes a stale base name, e.g. after a crash or a flag
+  // change.
+  profiles::WriteLastUsedProfileBaseName(profile_path_.BaseName());
   PreProfilePrefServiceInit();
 
   ProfileKeyStartupAccessor::GetInstance()->SetProfileKey(key_.get());

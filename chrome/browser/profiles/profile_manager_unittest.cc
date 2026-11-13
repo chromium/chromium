@@ -73,7 +73,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/shared_preferences/shared_preferences_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 #include "chrome/browser/startup_data.h"
 #else
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -201,6 +203,13 @@ class ProfileManagerTestBase : public testing::Test {
   void SetUp() override {
     // Create a new temporary directory, and store the path
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+#if BUILDFLAG(IS_ANDROID)
+    // SharedPreferences outlive a test, unlike Local State. With
+    // AndroidMultiprofileStartupData, profiles::SetLastUsedProfile() writes to
+    // them.
+    GetSharedPrefs().RemoveKey(
+        profiles::kLastUsedProfileBaseNameSharedPreferenceKey);
+#endif
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         CreateProfileManagerForTest());
 
@@ -229,6 +238,10 @@ class ProfileManagerTestBase : public testing::Test {
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
     content::RunAllTasksUntilIdle();
+#if BUILDFLAG(IS_ANDROID)
+    GetSharedPrefs().RemoveKey(
+        profiles::kLastUsedProfileBaseNameSharedPreferenceKey);
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     session_type_.reset();
     wallpaper_controller_client_.reset();
@@ -239,6 +252,13 @@ class ProfileManagerTestBase : public testing::Test {
   virtual std::unique_ptr<ProfileManager> CreateProfileManagerForTest() {
     return std::make_unique<FakeProfileManager>(temp_dir_.GetPath());
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a new instance each time, since it holds a local JNI reference.
+  base::android::SharedPreferencesManager GetSharedPrefs() {
+    return android::shared_preferences::GetChromeSharedPreferences();
+  }
+#endif
 
   // Helper function to create a profile at `path` for a profile `manager`.
   void CreateProfileAsync(ProfileManager* manager,
@@ -1489,6 +1509,63 @@ TEST_F(ProfileManagerTest, SetProfileAsLastUsedOverwritesStaleLastUsedProfile) {
 
   EXPECT_EQ(chrome::kInitialProfile,
             local_state->GetString(prefs::kProfileLastUsed));
+}
+
+class ProfileManagerAndroidSetProfileAsLastUsedTest
+    : public ProfileManagerTest {
+ protected:
+  void TestWritesBaseNameImpl(bool startup_data_enabled);
+};
+
+TEST_F(ProfileManagerAndroidSetProfileAsLastUsedTest, WritesBaseName) {
+  TestWritesBaseNameImpl(/*startup_data_enabled=*/true);
+}
+
+TEST_F(ProfileManagerAndroidSetProfileAsLastUsedTest,
+       KeepsBaseNameWhenDisabled) {
+  TestWritesBaseNameImpl(/*startup_data_enabled=*/false);
+}
+
+TEST_F(ProfileManagerAndroidSetProfileAsLastUsedTest,
+       OffTheRecordProfileWritesOriginalProfileBaseName) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAndroidMultiprofileStartupData);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile =
+      profile_manager->GetProfile(temp_dir_.GetPath().AppendASCII("Profile 1"));
+  ASSERT_TRUE(profile);
+
+  profile_manager->SetProfileAsLastUsed(
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+
+  EXPECT_EQ("Profile 1",
+            GetSharedPrefs().ReadString(
+                profiles::kLastUsedProfileBaseNameSharedPreferenceKey,
+                std::string()));
+}
+
+void ProfileManagerAndroidSetProfileAsLastUsedTest::TestWritesBaseNameImpl(
+    bool startup_data_enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kAndroidMultiprofileStartupData,
+                                    startup_data_enabled);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Not the initial profile, which is also the fallback for unknown profiles.
+  Profile* profile =
+      profile_manager->GetProfile(temp_dir_.GetPath().AppendASCII("Profile 1"));
+  ASSERT_TRUE(profile);
+  const std::string stale_base_name = "Profile 2";
+  GetSharedPrefs().WriteString(
+      profiles::kLastUsedProfileBaseNameSharedPreferenceKey, stale_base_name);
+
+  profile_manager->SetProfileAsLastUsed(profile);
+
+  // Without the flag, StartupData writes the initial profile's base name at
+  // startup instead.
+  EXPECT_EQ(startup_data_enabled ? "Profile 1" : stale_base_name,
+            GetSharedPrefs().ReadString(
+                profiles::kLastUsedProfileBaseNameSharedPreferenceKey,
+                std::string()));
 }
 
 class ProfileManagerAndroidStartupDataTest : public ProfileManagerTest {
