@@ -429,38 +429,6 @@ void SignInInternalsHandler::AddAccountCapabilitiesOverridesInfo(
     return;
   }
 
-  base::ListValue* account_capabilities =
-      signin_status.FindList("accountCapabilities");
-  if (account_capabilities) {
-    for (base::Value& item : *account_capabilities) {
-      if (!item.is_dict()) {
-        continue;
-      }
-      base::DictValue& account_dict = item.GetDict();
-      const std::string* account_id_str = account_dict.FindString("accountId");
-      if (!account_id_str) {
-        continue;
-      }
-      CoreAccountId account_id = CoreAccountId::FromString(*account_id_str);
-      base::ListValue* capabilities_list =
-          account_dict.FindList("capabilities");
-      if (!capabilities_list) {
-        continue;
-      }
-      for (base::Value& cap_item : *capabilities_list) {
-        if (!cap_item.is_dict()) {
-          continue;
-        }
-        base::DictValue& cap_dict = cap_item.GetDict();
-        const std::string* cap_name = cap_dict.FindString("name");
-        if (!cap_name) {
-          continue;
-        }
-        bool can_override =
-            about_signin_internals->CanOverrideAccountCapability(
-                account_id, *cap_name, chrome::GetChannel());
-        cap_dict.Set("can_override", can_override);
-      }
-    }
-  }
+  about_signin_internals->AddAccountCapabilitiesOverridesInfo(
+      signin_status, chrome::GetChannel());
 }

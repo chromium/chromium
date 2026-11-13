@@ -35,6 +35,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
 #include "components/version_info/channel.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/base/backoff_entry.h"
 
@@ -456,6 +457,45 @@ bool AboutSigninInternals::CanOverrideAccountCapability(
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   return account_info.GetAccountCapabilities().can_override_account_info() ==
          signin::Tribool::kTrue;
+}
+
+void AboutSigninInternals::AddAccountCapabilitiesOverridesInfo(
+    base::DictValue& signin_status,
+    version_info::Channel channel) const {
+  base::ListValue* account_capabilities =
+      signin_status.FindList("accountCapabilities");
+  if (!account_capabilities) {
+    return;
+  }
+
+  for (base::Value& item : *account_capabilities) {
+    if (!item.is_dict()) {
+      continue;
+    }
+    base::DictValue& account_dict = item.GetDict();
+    const std::string* account_id_str = account_dict.FindString("accountId");
+    if (!account_id_str) {
+      continue;
+    }
+    CoreAccountId account_id = CoreAccountId::FromString(*account_id_str);
+    base::ListValue* capabilities_list = account_dict.FindList("capabilities");
+    if (!capabilities_list) {
+      continue;
+    }
+    for (base::Value& cap_item : *capabilities_list) {
+      if (!cap_item.is_dict()) {
+        continue;
+      }
+      base::DictValue& cap_dict = cap_item.GetDict();
+      const std::string* cap_name = cap_dict.FindString("name");
+      if (!cap_name) {
+        continue;
+      }
+      bool can_override =
+          CanOverrideAccountCapability(account_id, *cap_name, channel);
+      cap_dict.Set("can_override", can_override);
+    }
+  }
 }
 
 void AboutSigninInternals::OnAccessTokenRequested(

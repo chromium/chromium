@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
@@ -35,6 +36,7 @@ class SignInInternalsHandlerIOS : public web::WebUIIOSMessageHandler,
   void RegisterMessages() override;
 
   void HandleGetSignInInfo(const base::ListValue& args);
+  void HandleOverrideCapability(const base::ListValue& args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
   void OnSigninStateChanged(const base::DictValue& info) override;
@@ -43,8 +45,10 @@ class SignInInternalsHandlerIOS : public web::WebUIIOSMessageHandler,
   void OnCookieAccountsFetched(const base::DictValue& info) override;
 
  private:
+  void AddAccountCapabilitiesOverridesInfo(base::DictValue& signin_status);
+
   base::ScopedObservation<AboutSigninInternals, AboutSigninInternals::Observer>
-      about_signin_internals_observeration_{this};
+      about_signin_internals_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_UI_BUNDLED_SIGNIN_INTERNALS_UI_IOS_H_

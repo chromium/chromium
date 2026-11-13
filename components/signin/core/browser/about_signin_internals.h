@@ -118,6 +118,12 @@ class AboutSigninInternals
                                     std::string_view capability_name,
                                     version_info::Channel channel) const;
 
+  // Annotates the "accountCapabilities" entries in `signin_status` with a
+  // "can_override" boolean indicating whether the capability can be overridden
+  // on `channel`.
+  void AddAccountCapabilitiesOverridesInfo(base::DictValue& signin_status,
+                                           version_info::Channel channel) const;
+
   // signin::IdentityManager::Observer implementations.
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,

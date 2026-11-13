@@ -141,6 +141,36 @@ TEST_F(AboutSigninInternalsTest,
   }
 }
 
+TEST_F(AboutSigninInternalsTest, AddAccountCapabilitiesOverridesInfo) {
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable(kTestEmail);
+  base::DictValue status = about_signin_internals_->GetSigninStatus();
+
+  about_signin_internals_->AddAccountCapabilitiesOverridesInfo(
+      status, version_info::Channel::UNKNOWN);
+
+  base::ListValue* account_capabilities =
+      status.FindList("accountCapabilities");
+  ASSERT_TRUE(account_capabilities);
+  ASSERT_FALSE(account_capabilities->empty());
+  base::DictValue& account_dict = (*account_capabilities)[0].GetDict();
+  base::ListValue* capabilities_list = account_dict.FindList("capabilities");
+  ASSERT_TRUE(capabilities_list);
+
+  for (const base::Value& cap_item : *capabilities_list) {
+    const base::DictValue& cap_dict = cap_item.GetDict();
+    const std::string* name = cap_dict.FindString("name");
+    ASSERT_TRUE(name);
+    std::optional<bool> can_override = cap_dict.FindBool("can_override");
+    ASSERT_TRUE(can_override.has_value());
+    if (*name == kCanOverrideAccountInfoCapabilityName) {
+      EXPECT_FALSE(*can_override);
+    } else {
+      EXPECT_TRUE(*can_override);
+    }
+  }
+}
+
 TEST_F(AboutSigninInternalsTest,
        GetSigninStatus_NullSigninErrorControllerAndAccountReconcilor) {
   identity_test_env_.MakePrimaryAccountAvailable(
