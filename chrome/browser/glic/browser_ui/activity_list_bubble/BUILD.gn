@@ -145,4 +145,36 @@ if (!is_android) {
       "//ui/events:test_support",
     ]
   }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "glic_activity_list_bubble_browsertest.cc" ]
+    deps = [
+      ":controller",
+      ":ui_impl",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:impl",
+      "//chrome/browser/glic/test_support",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/common:chrome_features",
+      "//components/tabs:public",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/events",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+      "//ui/views:test_support",
+      "//url",
+    ]
+  }
 }

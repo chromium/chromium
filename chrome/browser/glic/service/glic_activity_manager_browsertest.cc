@@ -8,11 +8,17 @@
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -20,6 +26,9 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/chrome_features.h"
+#include "components/actor/core/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -37,7 +46,10 @@ class GlicActivityManagerBrowserTest : public GlicBrowserTest {
  public:
   GlicActivityManagerBrowserTest() {
     SetGlicPagePath("/glic/test_client/index.html");
-    feature_list_.InitAndEnableFeature(features::kGlicActivityHub);
+    feature_list_.InitWithFeatures(
+        {features::kGlicActor, features::kGlicActorPolicyControlExemption,
+         features::kGlicActivityHub},
+        {});
   }
 
  protected:
@@ -305,6 +317,172 @@ IN_PROC_BROWSER_TEST_F(GlicActivityManagerBrowserTest,
   EXPECT_TRUE(activity_manager().activities().empty());
   EXPECT_EQ(activity_manager().GetNumUnseenActivities(), 0u);
 }
+
+IN_PROC_BROWSER_TEST_F(GlicActivityManagerBrowserTest,
+                       TracksIdleConversationAcrossTabsEvenWhenPanelClosed) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance1, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance1));
+  ASSERT_TRUE(
+      RegisterConversationInClient(instance1, "conv_bg", "Background Chat"));
+  ASSERT_TRUE(NotifyUserInputSubmittedInClient(instance1));
+
+  const GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_bg"};
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return activity_manager().activities().contains(key); }, true));
+
+  tabs::TabInterface* tab2 = CreateBackgroundTab(GURL("about:blank"));
+
+  // While open on tab1, conv_bg is filtered out for tab1 and included for tab2.
+  EXPECT_TRUE(activity_manager().GetSortedActivities(tab1).empty());
+  std::vector<const GlicActivityItem*> tab2_items =
+      activity_manager().GetSortedActivities(tab2);
+  ASSERT_EQ(tab2_items.size(), 1u);
+  EXPECT_EQ(tab2_items[0]->key.id, "conv_bg");
+  EXPECT_EQ(tab2_items[0]->state, GlicActivityState::kIdle);
+  EXPECT_EQ(tab2_items[0]->title, u"Background Chat");
+
+  // Closing the panel on tab1 means conv_bg is no longer showing on tab1, so it
+  // is included for both tab1 and tab2.
+  ToggleGlicForActiveTab();
+  ASSERT_OK(WaitForGlicClose(instance1));
+
+  std::vector<const GlicActivityItem*> tab1_items =
+      activity_manager().GetSortedActivities(tab1);
+  ASSERT_EQ(tab1_items.size(), 1u);
+  EXPECT_EQ(tab1_items[0]->key.id, "conv_bg");
+  tab2_items = activity_manager().GetSortedActivities(tab2);
+  ASSERT_EQ(tab2_items.size(), 1u);
+  EXPECT_EQ(tab2_items[0]->key.id, "conv_bg");
+
+  // Closing tab1 destroys the instance and clears the conversation for tab2.
+  base::WeakPtr<GlicInstanceImpl> weak_instance = instance1->GetWeakPtr();
+  ActivateTab(tab2);
+  GetTabListInterface()->CloseTab(tab1->GetHandle());
+  ASSERT_OK(WaitForInstanceDeletion(weak_instance));
+
+  EXPECT_TRUE(activity_manager().activities().empty());
+  EXPECT_TRUE(activity_manager().GetSortedActivities(tab2).empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicActivityManagerBrowserTest,
+    TracksMixedActorTaskAndBackgroundConversationsAcrossTabs) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance1, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance1));
+  ASSERT_TRUE(
+      RegisterConversationInClient(instance1, "conv_1", "Flight Search"));
+  ASSERT_TRUE(NotifyUserInputSubmittedInClient(instance1));
+  ToggleGlicForActiveTab();
+  ASSERT_OK(WaitForGlicClose(instance1));
+
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance2, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance2));
+  ASSERT_TRUE(
+      RegisterConversationInClient(instance2, "conv_2", "Hotel Options"));
+  ASSERT_TRUE(NotifyUserInputSubmittedInClient(instance2));
+
+  auto task_options = actor::webui::mojom::TaskOptions::New();
+  task_options->title = "Book Hotel";
+  task_options->duration = actor::webui::mojom::TaskDuration::kDefault;
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  actor::TaskId task_id = actor_service->CreateTaskWithOptions(
+      actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
+      std::move(task_options), nullptr,
+      actor::ui::ActorUiStateManager::Get(GetProfile()));
+  actor::AddTabToTask(*tab1, *actor_service->GetTask(task_id));
+  actor_service->GetTask(task_id)->Pause(/*from_actor=*/true);
+
+  const std::string task_id_str = base::NumberToString(task_id.value());
+  const GlicActivityKey task_key{GlicActivityType::kActorTask, task_id_str};
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return activity_manager().activities().contains(task_key); },
+      true));
+
+  // While instance2 is open on tab2, conv_2 is filtered out for tab2 while the
+  // attention-needing Actor task sorts ahead of idle conv_1.
+  std::vector<const GlicActivityItem*> tab2_items =
+      activity_manager().GetSortedActivities(tab2);
+  ASSERT_EQ(tab2_items.size(), 2u);
+  EXPECT_EQ(tab2_items[0]->type(), GlicActivityType::kActorTask);
+  EXPECT_EQ(tab2_items[0]->key.id, task_id_str);
+  EXPECT_EQ(tab2_items[0]->state, GlicActivityState::kNeedsAttention);
+  EXPECT_EQ(tab2_items[0]->title, u"Book Hotel");
+  EXPECT_EQ(tab2_items[1]->key.id, "conv_1");
+  EXPECT_EQ(tab2_items[1]->state, GlicActivityState::kIdle);
+
+  // Start a background response on conv_1 and close instance2 on tab2 so all
+  // three activities are visible and ordered by priority.
+  ASSERT_TRUE(NotifyResponseStartedInClient(instance1));
+  const GlicActivityKey conv1_key{GlicActivityType::kConversationResponse,
+                                  "conv_1"};
+  ASSERT_OK(RunUntilEqual(
+      [&]() {
+        auto it = activity_manager().activities().find(conv1_key);
+        return it != activity_manager().activities().end() &&
+               it->second.state == GlicActivityState::kInProgress;
+      },
+      true));
+
+  ToggleGlicForActiveTab();
+  ASSERT_OK(WaitForGlicClose(instance2));
+
+  for (tabs::TabInterface* tab : {tab1, tab2}) {
+    std::vector<const GlicActivityItem*> items =
+        activity_manager().GetSortedActivities(tab);
+    ASSERT_EQ(items.size(), 3u);
+    EXPECT_EQ(items[0]->key.id, task_id_str);
+    EXPECT_EQ(items[0]->state, GlicActivityState::kNeedsAttention);
+    EXPECT_EQ(items[1]->key.id, "conv_1");
+    EXPECT_EQ(items[1]->state, GlicActivityState::kInProgress);
+    EXPECT_EQ(items[2]->key.id, "conv_2");
+    EXPECT_EQ(items[2]->state, GlicActivityState::kIdle);
+  }
+}
+
+// Glic floaty is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicActivityManagerBrowserTest,
+                       ExcludesDetachedFloatyConversationAcrossAllTabs) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
+                       OpenGlicForActiveTabAndDetach());
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_TRUE(
+      RegisterConversationInClient(instance, "conv_floaty", "Floating Chat"));
+  ASSERT_TRUE(NotifyUserInputSubmittedInClient(instance));
+
+  const GlicActivityKey key{GlicActivityType::kConversationResponse,
+                            "conv_floaty"};
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return activity_manager().activities().contains(key); }, true));
+
+  tabs::TabInterface* unbound_tab = CreateAndActivateTab(GURL("about:blank"));
+
+  // Because conv_floaty is open in a floaty, it is excluded regardless of which
+  // tab is active.
+  EXPECT_TRUE(activity_manager().GetSortedActivities(tab1).empty());
+  EXPECT_TRUE(activity_manager().GetSortedActivities(unbound_tab).empty());
+  EXPECT_TRUE(activity_manager().GetSortedActivities(nullptr).empty());
+
+  // Once the floaty is closed, conv_floaty is included across all tabs.
+  instance->CloseAllEmbedders();
+  ASSERT_OK(WaitForGlicClose(instance));
+
+  std::vector<const GlicActivityItem*> tab1_items =
+      activity_manager().GetSortedActivities(tab1);
+  ASSERT_EQ(tab1_items.size(), 1u);
+  EXPECT_EQ(tab1_items[0]->key.id, "conv_floaty");
+
+  std::vector<const GlicActivityItem*> unbound_items =
+      activity_manager().GetSortedActivities(unbound_tab);
+  ASSERT_EQ(unbound_items.size(), 1u);
+  EXPECT_EQ(unbound_items[0]->key.id, "conv_floaty");
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace glic

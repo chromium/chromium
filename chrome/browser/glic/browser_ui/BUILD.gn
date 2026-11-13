@@ -383,6 +383,7 @@ if (!is_android) {
       ":modal",
       "//base",
       "//chrome/app:generated_resources",
+      "//chrome/browser/glic/browser_ui/activity_list_bubble:browser_tests",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:browser_element_identifiers",
