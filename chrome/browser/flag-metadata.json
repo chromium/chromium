@@ -2807,7 +2807,7 @@
   {
     "name": "data-sharing",
     "owners": [ "haileywang@google.com", "chrome-tab-group-eng@google.com"],
-    "expiry_milestone": 160
+    "expiry_milestone": 170
   },
   {
     "name": "data-sharing-debug-logs",
