@@ -5,7 +5,6 @@
 #include "components/sharing_message/sharing_channel_sender.h"
 
 #include "base/check_is_test.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -24,15 +23,6 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
-
-namespace {
-
-// When enabled, sharing messages sent using sync may be postponed until sync
-// is active.
-BASE_FEATURE(kSharingPostponeFcmMessageSending,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 SharingChannelSender::SharingChannelSender(
     SharingMessageBridge* sharing_message_bridge,
@@ -276,21 +266,15 @@ void SharingChannelSender::SendMessageViaSync(
     std::string message_id,
     std::string payload,
     SendMessageCallback callback) {
-  // Double check that SHARING_MESSAGE is syncing.
+  // Postpone sending the message if SHARING_MESSAGE is not active yet.
   if (!sync_service_->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE)) {
-    if (base::FeatureList::IsEnabled(kSharingPostponeFcmMessageSending)) {
-      pending_messages_.emplace_back(std::move(channel_configuration),
-                                     channel_type, std::move(message_id),
-                                     std::move(payload), std::move(callback));
-      if (start_sync_flare_) {
-        start_sync_flare_.Run(syncer::SHARING_MESSAGE);
-        start_sync_flare_.Reset();
-      }
-      return;
+    pending_messages_.emplace_back(std::move(channel_configuration),
+                                   channel_type, std::move(message_id),
+                                   std::move(payload), std::move(callback));
+    if (start_sync_flare_) {
+      start_sync_flare_.Run(syncer::SHARING_MESSAGE);
+      start_sync_flare_.Reset();
     }
-
-    std::move(callback).Run(SharingSendMessageResult::kInternalError,
-                            /*message_id=*/std::nullopt, channel_type);
     return;
   }
 
