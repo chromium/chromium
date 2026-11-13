@@ -881,7 +881,6 @@ public abstract class ChromeFeatureList {
             "TabBottomSheetSmoothKeyboardResize";
     public static final String TAB_CLOSURE_COMMITTED_METHOD_REFACTOR =
             "TabClosureCommittedMethodRefactor";
-    public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_GROUP_ACTIONS_SUBMENUS = "TabGroupActionsSubmenus";
     public static final String TAB_GROUP_CONTEXT_MENU_LIVE_TITLE_UPDATE =
             "TabGroupContextMenuLiveTitleUpdate";
@@ -1454,8 +1453,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SYNC_RESTORE_ON_STARTUP_PREF, /* defaultValue= */ true);
     public static final CachedFlag sTabClosureCommittedMethodRefactor =
             newCachedFlag(TAB_CLOSURE_COMMITTED_METHOD_REFACTOR, false);
-    public static final CachedFlag sTabClosureMethodRefactor =
-            newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, true);
     public static final CachedFlag sTabGroupActionsSubmenus =
             newCachedFlag(TAB_GROUP_ACTIONS_SUBMENUS, false);
     public static final CachedFlag sTabSharingToolbarAndroid =
@@ -1729,7 +1726,6 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTime,
                     sSyncRestoreOnStartupPref,
                     sTabClosureCommittedMethodRefactor,
-                    sTabClosureMethodRefactor,
                     sTabGroupActionsSubmenus,
                     sTabSharingToolbarAndroid,
                     sTabStorageSqlitePrototype,

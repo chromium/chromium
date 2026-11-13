@@ -46,8 +46,6 @@ class TabModelObserverJniBridge {
                      bool is_all_tabs,
                      bool allow_undo);
 
-  void WillCloseTab(TabAndroid* tab);
-
   void DidRemoveTabForClosure(TabAndroid* tab);
 
   void OnFinishingTabClosure(TabAndroid* tab, int source);
@@ -76,8 +74,6 @@ class TabModelObserverJniBridge {
   void TabClosureCommitted(TabAndroid* tab);
 
   void AllTabsClosureCommitted();
-
-  void AllTabsAreClosing();
 
   void TabRemoved(TabAndroid* tab);
 

@@ -119,7 +119,6 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoSingleTabClose_SelectedTab_ReSelectsTab() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
@@ -127,25 +126,6 @@ public class UndoRefocusHelperTest {
 
         // Act: Close fourth tab (selected) and undo closed tab.
         Tab tab = getMockedTab(3);
-        tabModelObserver.willCloseTab(tab, true);
-        // When the fourth tab is closed, the third one should be selected.
-        mTabModel.setIndex(2);
-        // Undo 4th tab closure.
-        tabModelObserver.tabClosureUndone(tab);
-
-        // Assert: Fourth tab is selected after undo.
-        assertEquals(3, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoSingleTabClose_SelectedTab_ReSelectsTab_WillCloseTabs() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close fourth tab (selected) and undo closed tab.
-        Tab tab = getMockedTab(3);
         tabModelObserver.willCloseTabs(List.of(tab), /* isAllTabs= */ false, /* allowUndo= */ true);
         // When the fourth tab is closed, the third one should be selected.
         mTabModel.setIndex(2);
@@ -157,7 +137,6 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoSingleTabClose_UnSelectedTab_DoesNotSelectTab() {
         // Arrange: Initialize tabs with third tab selected.
         initializeTabModel(2);
@@ -165,25 +144,6 @@ public class UndoRefocusHelperTest {
 
         // Act: Close fourth tab (not selected) and undo closed tab.
         Tab tab = getMockedTab(3);
-        tabModelObserver.willCloseTab(tab, true);
-        // When the fourth tab is closed, the third one should be selected.
-        mTabModel.setIndex(2);
-        // Undo 4th tab closure.
-        tabModelObserver.tabClosureUndone(tab);
-
-        // Assert: Fourth tab is not selected after undo.
-        assertNotEquals(3, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoSingleTabClose_UnSelectedTab_DoesNotSelectTab_WillCloseTabs() {
-        // Arrange: Initialize tabs with third tab selected.
-        initializeTabModel(2);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close fourth tab (not selected) and undo closed tab.
-        Tab tab = getMockedTab(3);
         tabModelObserver.willCloseTabs(List.of(tab), /* isAllTabs= */ false, /* allowUndo= */ true);
         // When the fourth tab is closed, the third one should be selected.
         mTabModel.setIndex(2);
@@ -195,30 +155,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoMultipleSingleTabsClosed_ThenUndoSingleTabClose_ReSelectsTab() {
-        // Arrange: Start with fourth tab as selected index.
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close multiple tabs one after the other including selected tab and undo closure
-        // once.
-        tabModelObserver.willCloseTab(mTab3, true);
-        // tab2 is selected after tab3 is closed.
-        mTabModel.setIndex(2);
-        tabModelObserver.willCloseTab(mTab2, true);
-
-        // Last closure (mTab3) is undone
-        tabModelObserver.tabClosureUndone(mTab2);
-
-        // Assert: mTab3 tab is selected after undo.
-        assertEquals(mTab2.getId(), mTabModel.getTabAt(mTabModel.index()).getId());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void
-            testUndoMultipleSingleTabsClosed_ThenUndoSingleTabClose_ReSelectsTab_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index.
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -240,35 +177,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoSingleTabClose_ThenUndoMultipleTabsClosed_ReSelectsTab() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-        Tab tab = getMockedTab(3);
-
-        // Act 1: Close just the fourth tab and undo.
-        tabModelObserver.willCloseTab(tab, true);
-        // After fourth tab is closed, the third one should be selected.
-        mTabModel.setIndex(2);
-        // Undo tab closure.
-        tabModelObserver.tabClosureUndone(tab);
-
-        // Assert: Fourth tab is selected after undo.
-        assertEquals(3, mTabModel.index());
-
-        // Act 2: Close multiple tabs and undo closure
-        List<Tab> multipleTabs = Arrays.asList(mTab2, mTab3);
-        tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
-        cancelTabsClosure(tabModelObserver, multipleTabs);
-
-        // Assert: Fourth tab is selected after undo.
-        assertEquals(3, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoSingleTabClose_ThenUndoMultipleTabsClosed_ReSelectsTab_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -294,32 +203,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoSingleTabClose_AfterManualTabReselection_DoesNotReselectTab() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-        Tab tab = getMockedTab(3);
-        Tab secondTab = getMockedTab(1);
-
-        // Act 1: Close just the fourth tab and undo.
-        tabModelObserver.willCloseTab(tab, true);
-        // After fourth tab is closed, the third one should be selected.
-        mTabModel.setIndex(2);
-
-        // User manually selects the second tab before undoing the tab closure.
-        mockClickTab(secondTab, tabModelObserver, tab.getId());
-        // Undo tab closure.
-        tabModelObserver.tabClosureUndone(tab);
-
-        // Assert: Second tab is still selected after undo.
-        assertEquals(1, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void
-            testUndoSingleTabClose_AfterManualTabReselection_DoesNotReselectTab_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -341,36 +225,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoSingleTabClose_AfterClosingSelectedTabs_ReselectsMostRecentlyClosedTab() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act 1: Close the fourth tab.
-        Tab fourthTab = getMockedTab(3);
-        tabModelObserver.willCloseTab(fourthTab, true);
-        // After fourth tab is closed, the third one should be selected.
-        mTabModel.setIndex(2);
-
-        // Act 2: Close the third tab after it is selected.
-        Tab thirdTab = getMockedTab(2);
-        tabModelObserver.willCloseTab(thirdTab, true);
-        // After third tab is closed, the second one should be selected.
-        mTabModel.setIndex(1);
-
-        // Undo tab closures.
-        tabModelObserver.tabClosureUndone(thirdTab);
-        tabModelObserver.tabClosureUndone(fourthTab);
-
-        // Assert: Third tab is still selected after undo instead of the fourth tab.
-        assertEquals(2, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void
-            testUndoSingleTabClose_AfterClosingSelectedTabs_ReselectsMostRecentlyClosedTab_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -398,24 +253,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoTabClose_TabStrip_RecordsUserAction() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-        Tab tab = getMockedTab(3);
-
-        // Act: Close tab and undo closed tab.
-        tabModelObserver.willCloseTab(tab, true);
-        tabModelObserver.tabClosureUndone(tab);
-
-        // Assert: User action is recorded.
-        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoTabClose_TabStrip_RecordsUserAction_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -430,7 +268,6 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoTabClose_TabSwitcher_DoesNotRecordUserAction() {
         // Arrange: Start with fourth tab as selected index and tab switcher showing.
         initializeTabModel(3);
@@ -439,23 +276,6 @@ public class UndoRefocusHelperTest {
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.HUB);
 
         // Act: Close tab and undo closed tab.
-        tabModelObserver.willCloseTab(tab, true);
-        tabModelObserver.tabClosureUndone(tab);
-
-        // Assert: User action is not recorded.
-        assertEquals(0, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoTabClose_TabSwitcher_DoesNotRecordUserAction_WillCloseTabs() {
-        // Arrange: Start with fourth tab as selected index and tab switcher showing.
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-        Tab tab = getMockedTab(3);
-        mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.HUB);
-
-        // Act: Close tab and undo closed tab.
         tabModelObserver.willCloseTabs(List.of(tab), /* isAllTabs= */ false, /* allowUndo= */ true);
         tabModelObserver.tabClosureUndone(tab);
 
@@ -464,31 +284,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoTabClose_TabSwitcherAndTabStrip_RecordsUserAction() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-        Tab tab = getMockedTab(3);
-        Tab secondTab = getMockedTab(3);
-
-        // Act: Close 2 tabs and undo, one with tab switcher open.
-        LayoutStateObserver layoutStateObserver = mLayoutStateObserverCaptor.getValue();
-        layoutStateObserver.onFinishedShowing(LayoutType.HUB);
-        tabModelObserver.willCloseTab(tab, true);
-        layoutStateObserver.onFinishedHiding(LayoutType.HUB);
-        tabModelObserver.willCloseTab(secondTab, true);
-
-        tabModelObserver.tabClosureUndone(secondTab);
-        tabModelObserver.tabClosureUndone(tab);
-
-        // Assert: User action is recorded exactly once.
-        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoTabClose_TabSwitcherAndTabStrip_RecordsUserAction_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -511,24 +307,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoMultipleTabsClosedTogether_ReSelectsSelectedTab() {
-        // Arrange: Start with fourth tab as selected index.
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close multiple tabs including selected tab and undo closure.
-        List<Tab> tabsToClose = Arrays.asList(mTab2, mTab3);
-        tabModelObserver.willCloseMultipleTabs(true, tabsToClose);
-        cancelTabsClosure(tabModelObserver, tabsToClose);
-
-        // Assert: Fourth tab is selected after undo.
-        assertEquals(3, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoMultipleTabsClosedTogether_ReSelectsSelectedTab_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index.
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -543,7 +322,6 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoManyMultipleTabsClosedTogether_ReSelectsSelectedTab() {
         // Arrange: Start with fourth tab as selected index.
         initializeTabModel(3);
@@ -551,29 +329,6 @@ public class UndoRefocusHelperTest {
 
         // Act: Close first set multiple tabs including selected tabs.
         List<Tab> tabsToClose1 = Arrays.asList(mTab2, mTab3);
-        tabModelObserver.willCloseMultipleTabs(true, tabsToClose1);
-        // Set mTab1 as newly selected tab.
-        mTabModel.setIndex(1);
-        // Act: Close second set multiple tabs including selected tabs.
-        List<Tab> tabsToClose2 = Arrays.asList(mTab0, mTab1);
-        tabModelObserver.willCloseMultipleTabs(true, tabsToClose2);
-
-        cancelTabsClosure(tabModelObserver, tabsToClose2);
-        cancelTabsClosure(tabModelObserver, tabsToClose1);
-
-        // Assert: mTab1 tab is selected after undo.
-        assertEquals(1, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoManyMultipleTabsClosedTogether_ReSelectsSelectedTab_WillCloseTabs() {
-        // Arrange: Start with fourth tab as selected index.
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close first set multiple tabs including selected tabs.
-        List<Tab> tabsToClose1 = Arrays.asList(mTab2, mTab3);
         tabModelObserver.willCloseTabs(tabsToClose1, /* isAllTabs= */ false, /* allowUndo= */ true);
         // Set mTab1 as newly selected tab.
         mTabModel.setIndex(1);
@@ -589,7 +344,6 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testCommittedMultipleTabs_ThenUndoAnotherMultipleTabs_ReSelectsSelectedTab() {
         // Arrange: Start with fourth tab as selected index.
         initializeTabModel(3);
@@ -597,33 +351,6 @@ public class UndoRefocusHelperTest {
 
         // Act: Close first set multiple tabs including selected tabs.
         List<Tab> tabsToClose1 = Arrays.asList(mTab2, mTab3);
-        tabModelObserver.willCloseMultipleTabs(true, tabsToClose1);
-        // Set mTab1 as newly selected tab.
-        mTabModel.setIndex(1);
-
-        // Act: Close second set multiple tabs including selected tabs.
-        List<Tab> tabsToClose2 = Arrays.asList(mTab0, mTab1);
-        tabModelObserver.willCloseMultipleTabs(true, tabsToClose2);
-        // Set mTab5 as newly selected tab.
-        mTabModel.setIndex(4);
-
-        commitTabsClosure(tabModelObserver, tabsToClose1);
-        cancelTabsClosure(tabModelObserver, tabsToClose2);
-
-        // Assert: mTab1 tab is selected after undo.
-        assertEquals(1, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void
-            testCommittedMultipleTabs_ThenUndoAnotherMultipleTabs_ReSelectsSelectedTab_WillCloseTabs() {
-        // Arrange: Start with fourth tab as selected index.
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close first set multiple tabs including selected tabs.
-        List<Tab> tabsToClose1 = Arrays.asList(mTab2, mTab3);
         tabModelObserver.willCloseTabs(tabsToClose1, /* isAllTabs= */ false, /* allowUndo= */ true);
         // Set mTab1 as newly selected tab.
         mTabModel.setIndex(1);
@@ -642,41 +369,8 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void
             testUndoCloseSingleTab_InterleavedWithUndoMultipleTabsClosedTogether_ReSelectsSelectedTabOnce() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act 1: Close just the fourth tab.
-        tabModelObserver.willCloseTab(mTab3, true);
-        // After fourth tab is closed, the third one should be selected.
-        mTabModel.setIndex(2);
-
-        // Act 2: Close multiple tabs.
-        List<Tab> multipleTabs = Arrays.asList(mTab1, mTab2);
-        tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
-        // After second and third tab is closed, the first one should be selected.
-        mTabModel.setIndex(0);
-
-        // Undo multiple tab closure.
-        cancelTabsClosure(tabModelObserver, multipleTabs);
-
-        // Assert: Third tab is selected after undo.
-        assertEquals(2, mTabModel.index());
-
-        // Undo single tab closure.
-        tabModelObserver.tabClosureUndone(mTab3);
-
-        // Assert: Doesn't reselect the single undone tab.
-        assertEquals(2, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void
-            testUndoCloseSingleTab_InterleavedWithUndoMultipleTabsClosedTogether_ReSelectsSelectedTabOnce_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -707,41 +401,8 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void
             testUndoMultipleTabsClosedTogether_InterleavedWithUndoCloseSingleTab_ReSelectsSelectedTabOnce() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act 1: Close multiple tabs.
-        List<Tab> multipleTabs = Arrays.asList(mTab2, mTab3);
-        tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
-        // After third and fourth tab is closed, the second should be selected.
-        mTabModel.setIndex(1);
-
-        // Act 1: Close just the second tab.
-        tabModelObserver.willCloseTab(mTab1, true);
-        // After second tab is closed, the first one should be selected.
-        mTabModel.setIndex(0);
-
-        // Undo single tab closure.
-        tabModelObserver.tabClosureUndone(mTab1);
-
-        // Assert: first tab is selected after undo.
-        assertEquals(1, mTabModel.index());
-
-        // Undo multiple tab closure.
-        cancelTabsClosure(tabModelObserver, multipleTabs);
-
-        // Assert: Doesn't reselect the single undone tab.
-        assertEquals(1, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void
-            testUndoMultipleTabsClosedTogether_InterleavedWithUndoCloseSingleTab_ReSelectsSelectedTabOnce_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -772,23 +433,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoMultipleTabClose_RecordsUserAction() {
-        // Arrange: Start with fourth tab as selected index
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-        // Act: Close multiple tabs and undo.
-        List<Tab> multipleTabs = Arrays.asList(mTab2, mTab3);
-        tabModelObserver.willCloseMultipleTabs(true, multipleTabs);
-        cancelTabsClosure(tabModelObserver, multipleTabs);
-
-        // Assert: User action is recorded exactly once.
-        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoMultipleTabClose_RecordsUserAction_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -802,23 +447,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoAllTabsClosedTogether_ReSelectsSelectedTab() {
-        // Arrange: Start with fourth tab as selected index.
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close all tabs and undo closure.
-        tabModelObserver.willCloseAllTabs(false);
-        cancelTabsClosure(tabModelObserver, Arrays.asList(mTab0, mTab1, mTab2, mTab3));
-
-        // Assert: Fourth tab is selected after undo.
-        assertEquals(3, mTabModel.index());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoAllTabsClosedTogether_ReSelectsSelectedTab_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index.
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
@@ -835,27 +464,7 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testUndoAllTabsClosedTogether_RecordUserAction() {
-        // Arrange: Start with fourth tab as selected index.
-        initializeTabModel(3);
-        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
-
-        // Act: Close all tabs and undo closure.
-        List<Tab> allTabs = Arrays.asList(mTab0, mTab1, mTab2, mTab3);
-        for (Tab tab : allTabs) {
-            tabModelObserver.willCloseTab(tab, false);
-        }
-        tabModelObserver.willCloseAllTabs(false);
-        cancelTabsClosure(tabModelObserver, Arrays.asList(mTab0, mTab1, mTab2, mTab3));
-
-        // Assert: User action is recorded exactly once.
-        assertEquals(1, mUserActionTester.getActionCount(UNDO_CLOSE_TAB_USER_ACTION));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testUndoAllTabsClosedTogether_RecordUserAction_WillCloseTabs() {
         // Arrange: Start with fourth tab as selected index.
         initializeTabModel(3);
         TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();

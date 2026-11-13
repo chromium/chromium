@@ -9388,11 +9388,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "tab-closure-method-refactor",
-    "owners": [ "madhavpruthi@google.org", "ckitagawa@chromium.org" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "tab-favicon-chips-to-coins",
     "owners": [ "ananyaseelam@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160

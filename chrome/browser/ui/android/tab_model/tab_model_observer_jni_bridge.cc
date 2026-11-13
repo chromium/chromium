@@ -63,13 +63,6 @@ void TabModelObserverJniBridge::WillCloseTabs(
   }
 }
 
-void TabModelObserverJniBridge::WillCloseTab(TabAndroid* tab) {
-  CHECK(tab);
-  for (auto& observer : model_observers_) {
-    observer.WillCloseTab(tab);
-  }
-}
-
 void TabModelObserverJniBridge::DidRemoveTabForClosure(TabAndroid* tab) {
   CHECK(tab);
   for (auto& observer : model_observers_) {
@@ -197,15 +190,6 @@ void TabModelObserverJniBridge::TabClosureCommitted(TabAndroid* tab) {
 void TabModelObserverJniBridge::AllTabsClosureCommitted() {
   for (auto& observer : model_observers_) {
     observer.AllTabsClosureCommitted();
-  }
-}
-
-void TabModelObserverJniBridge::AllTabsAreClosing() {
-  for (auto& observer : model_observers_) {
-    observer.AllTabsAreClosing();
-  }
-  for (auto& observer : interface_observers_) {
-    observer.OnAllTabsAreClosing(*tab_model_);
   }
 }
 

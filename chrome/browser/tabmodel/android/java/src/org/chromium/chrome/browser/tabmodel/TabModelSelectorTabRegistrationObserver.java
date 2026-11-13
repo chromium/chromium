@@ -64,11 +64,6 @@ public final class TabModelSelectorTabRegistrationObserver {
                     }
 
                     @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        mTabsToClose.put(tab.getId(), tab);
-                    }
-
-                    @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                         for (Tab tab : tabs) {

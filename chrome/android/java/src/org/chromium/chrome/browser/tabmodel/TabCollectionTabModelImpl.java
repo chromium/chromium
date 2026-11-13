@@ -1928,37 +1928,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
         boolean isClosingAllTabs = tabsToClose.size() == getCount();
 
-        if (ChromeFeatureList.sTabClosureMethodRefactor.isEnabled()) {
-            observers.rewind();
-            while (observers.hasNext()) {
-                observers.next().willCloseTabs(tabsToClose, isClosingAllTabs, allowUndo);
-            }
-        } else {
-            observers.rewind();
-            if (params.tabCloseType == TabCloseType.MULTIPLE) {
-                while (observers.hasNext()) {
-                    observers.next().willCloseMultipleTabs(allowUndo, tabsToClose);
-                }
-            } else if (params.tabCloseType == TabCloseType.ALL) {
-                while (observers.hasNext()) {
-                    observers.next().willCloseAllTabs(isIncognito());
-                }
-            }
-
-            boolean didCloseAlone = params.tabCloseType == TabCloseType.SINGLE;
-            for (Tab tab : tabsToClose) {
-                observers.rewind();
-                while (observers.hasNext()) {
-                    observers.next().willCloseTab(tab, didCloseAlone);
-                }
-            }
-
-            if (isClosingAllTabs) {
-                observers.rewind();
-                while (observers.hasNext()) {
-                    observers.next().allTabsAreClosing();
-                }
-            }
+        observers.rewind();
+        while (observers.hasNext()) {
+            observers.next().willCloseTabs(tabsToClose, isClosingAllTabs, allowUndo);
         }
 
         if (!isPendingClosure) {

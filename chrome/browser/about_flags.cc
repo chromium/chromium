@@ -6266,11 +6266,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabClosureCommittedMethodRefactor)},
 
-    {"tab-closure-method-refactor",
-     flag_descriptions::kTabClosureMethodRefactorName,
-     flag_descriptions::kTabClosureMethodRefactorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabClosureMethodRefactor)},
-
     {"undoable-tab-closure-rework",
      flag_descriptions::kUndoableTabClosureReworkName,
      flag_descriptions::kUndoableTabClosureReworkDescription, kOsAndroid,

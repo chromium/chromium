@@ -1061,7 +1061,7 @@ public class TabCollectionTabModelImplUnitTest {
         assertFalse(mTabModel.isTabMultiSelected(1));
         verify(mTabCollectionTabModelImplJni).removeTabRecursive(any(), eq(tab));
         verify(mTabModelObserver, never()).tabRemoved(any());
-        verify(mTabModelObserver, never()).willCloseTab(any(), anyBoolean());
+        verify(mTabModelObserver, never()).willCloseTabs(any(), anyBoolean(), anyBoolean());
 
         // Restore the tab into the recreated Activity's model, remove its AsyncTabParams, and run
         // OldActivity.onDestroy(). The tab in newTabModel must remain live (not destroyed).

@@ -38,12 +38,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -350,100 +348,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testCloseTab_Single() throws Exception {
-        Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
-        Tab tab2 = createTab();
-        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mCollectionModel.setIndex(1, TabSelectionType.FROM_USER));
-        assertEquals(tab1, getCurrentTab());
-
-        CallbackHelper willCloseTabHelper = new CallbackHelper();
-        CallbackHelper didRemoveTabForClosureHelper = new CallbackHelper();
-        CallbackHelper onFinishingMultipleTabClosureHelper = new CallbackHelper();
-        CallbackHelper onFinishingTabClosureHelper = new CallbackHelper();
-        CallbackHelper didSelectTabHelper = new CallbackHelper();
-
-        AtomicReference<Tab> tabInWillClose = new AtomicReference<>();
-        AtomicReference<Boolean> isSingleInWillClose = new AtomicReference<>();
-        AtomicReference<Tab> tabInDidRemove = new AtomicReference<>();
-        AtomicReference<List<Tab>> tabsInFinishingMultiple = new AtomicReference<>();
-        AtomicReference<Tab> tabInFinishing = new AtomicReference<>();
-        AtomicReference<Tab> tabInDidSelect = new AtomicReference<>();
-
-        TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void willCloseTab(Tab tab, boolean isSingle) {
-                        tabInWillClose.set(tab);
-                        isSingleInWillClose.set(isSingle);
-                        willCloseTabHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didRemoveTabForClosure(Tab tab) {
-                        tabInDidRemove.set(tab);
-                        didRemoveTabForClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void onFinishingMultipleTabClosure(
-                            List<Tab> tabs, boolean saveToTabRestoreService) {
-                        tabsInFinishingMultiple.set(tabs);
-                        onFinishingMultipleTabClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void onFinishingTabClosure(Tab tab, @TabClosingSource int source) {
-                        tabInFinishing.set(tab);
-                        onFinishingTabClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        tabInDidSelect.set(tab);
-                        assertEquals(TabSelectionType.FROM_CLOSE, type);
-                        assertEquals(tab1.getId(), lastId);
-                        didSelectTabHelper.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(
-                            TabClosureParams.closeTab(tab1).allowUndo(false).build());
-                });
-
-        willCloseTabHelper.waitForOnly();
-        didRemoveTabForClosureHelper.waitForOnly();
-        onFinishingMultipleTabClosureHelper.waitForOnly();
-        onFinishingTabClosureHelper.waitForOnly();
-        didSelectTabHelper.waitForOnly();
-
-        assertEquals("Incorrect tab in willCloseTab.", tab1, tabInWillClose.get());
-        assertTrue("isSingle should be true.", isSingleInWillClose.get());
-        assertEquals("Incorrect tab in didRemoveTabForClosure.", tab1, tabInDidRemove.get());
-        assertEquals(
-                "Incorrect tabs in onFinishingMultipleTabClosure.",
-                List.of(tab1),
-                tabsInFinishingMultiple.get());
-        assertEquals("Incorrect tab in onFinishingTabClosure.", tab1, tabInFinishing.get());
-        assertEquals("Incorrect tab selected.", tab2, tabInDidSelect.get());
-
-        assertEquals("Tab count is wrong.", 2, getCount());
-        assertTabsInOrderAre(List.of(tab0, tab2));
-        assertEquals("Incorrect tab is selected after removal.", tab2, getCurrentTab());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testCloseTab_Single_WithRefactor() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
         Tab tab2 = createTab();
@@ -538,121 +443,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testCloseTabs_Multiple() throws Exception {
-        Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
-        Tab tab2 = createTab();
-        Tab tab3 = createTab();
-        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mCollectionModel.setIndex(2, TabSelectionType.FROM_USER));
-        assertEquals(tab2, getCurrentTab());
-
-        CallbackHelper willCloseMultipleTabsHelper = new CallbackHelper();
-        CallbackHelper willCloseTabHelper = new CallbackHelper();
-        CallbackHelper didRemoveTabForClosureHelper = new CallbackHelper();
-        CallbackHelper onFinishingMultipleTabClosureHelper = new CallbackHelper();
-        CallbackHelper onFinishingTabClosureHelper = new CallbackHelper();
-        CallbackHelper didSelectTabHelper = new CallbackHelper();
-
-        List<Tab> tabsToClose = List.of(tab1, tab2);
-        AtomicReference<List<Tab>> tabsInWillCloseMultiple = new AtomicReference<>();
-        List<Tab> tabsInWillCloseTab = Collections.synchronizedList(new ArrayList<>());
-        List<Tab> tabsInDidRemove = Collections.synchronizedList(new ArrayList<>());
-        AtomicReference<List<Tab>> tabsInFinishingMultiple = new AtomicReference<>();
-        List<Tab> tabsInFinishing = Collections.synchronizedList(new ArrayList<>());
-        AtomicReference<Tab> tabInDidSelect = new AtomicReference<>();
-
-        TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                        tabsInWillCloseMultiple.set(tabs);
-                        willCloseMultipleTabsHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void willCloseTab(Tab tab, boolean isSingle) {
-                        tabsInWillCloseTab.add(tab);
-                        assertFalse("isSingle should be false.", isSingle);
-                        willCloseTabHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didRemoveTabForClosure(Tab tab) {
-                        tabsInDidRemove.add(tab);
-                        didRemoveTabForClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void onFinishingMultipleTabClosure(
-                            List<Tab> tabs, boolean saveToTabRestoreService) {
-                        tabsInFinishingMultiple.set(tabs);
-                        onFinishingMultipleTabClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void onFinishingTabClosure(Tab tab, @TabClosingSource int source) {
-                        tabsInFinishing.add(tab);
-                        onFinishingTabClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        tabInDidSelect.set(tab);
-                        assertEquals(TabSelectionType.FROM_CLOSE, type);
-                        assertEquals(tab2.getId(), lastId);
-                        didSelectTabHelper.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(
-                            TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
-                });
-
-        willCloseMultipleTabsHelper.waitForOnly();
-        willCloseTabHelper.waitForCallback(0, 2);
-        didRemoveTabForClosureHelper.waitForCallback(0, 2);
-        onFinishingMultipleTabClosureHelper.waitForOnly();
-        onFinishingTabClosureHelper.waitForCallback(0, 2);
-        didSelectTabHelper.waitForOnly();
-
-        assertEquals(
-                "Incorrect tabs in willCloseMultipleTabs.",
-                tabsToClose,
-                tabsInWillCloseMultiple.get());
-        assertEquals("Incorrect number of willCloseTab calls.", 2, tabsInWillCloseTab.size());
-        assertTrue("Incorrect tabs in willCloseTab.", tabsInWillCloseTab.containsAll(tabsToClose));
-        assertEquals(
-                "Incorrect number of didRemoveTabForClosure calls.", 2, tabsInDidRemove.size());
-        assertTrue(
-                "Incorrect tabs in didRemoveTabForClosure.",
-                tabsInDidRemove.containsAll(tabsToClose));
-        assertEquals(
-                "Incorrect tabs in onFinishingMultipleTabClosure.",
-                tabsToClose,
-                tabsInFinishingMultiple.get());
-        assertEquals("Incorrect number of onFinishingTabClosure calls.", 2, tabsInFinishing.size());
-        assertTrue(
-                "Incorrect tabs in onFinishingTabClosure.",
-                tabsInFinishing.containsAll(tabsToClose));
-        assertEquals("Incorrect tab selected.", tab3, tabInDidSelect.get());
-
-        assertEquals("Tab count is wrong.", 2, getCount());
-        assertTabsInOrderAre(List.of(tab0, tab3));
-        assertEquals("Incorrect tab is selected after removal.", tab3, getCurrentTab());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testCloseTabs_Multiple_WithRefactor() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
         Tab tab2 = createTab();
@@ -756,118 +547,8 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
     public void testCloseTabs_All() throws Exception {
-        Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
-        Tab tab2 = createTab();
-        List<Tab> allTabs = List.of(tab0, tab1, tab2);
-        assertTabsInOrderAre(allTabs);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mCollectionModel.setIndex(1, TabSelectionType.FROM_USER));
-        assertEquals(tab1, getCurrentTab());
-
-        CallbackHelper willCloseAllTabsHelper = new CallbackHelper();
-        CallbackHelper allTabsAreClosingHelper = new CallbackHelper();
-        CallbackHelper willCloseTabHelper = new CallbackHelper();
-        CallbackHelper didRemoveTabForClosureHelper = new CallbackHelper();
-        CallbackHelper onFinishingMultipleTabClosureHelper = new CallbackHelper();
-        CallbackHelper onFinishingTabClosureHelper = new CallbackHelper();
-
-        List<Tab> tabsInWillCloseTab = Collections.synchronizedList(new ArrayList<>());
-        List<Tab> tabsInDidRemove = Collections.synchronizedList(new ArrayList<>());
-        AtomicReference<List<Tab>> tabsInFinishingMultiple = new AtomicReference<>();
-        List<Tab> tabsInFinishing = Collections.synchronizedList(new ArrayList<>());
-
-        TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void willCloseAllTabs(boolean isIncognito) {
-                        willCloseAllTabsHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void allTabsAreClosing() {
-                        allTabsAreClosingHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void willCloseTab(Tab tab, boolean isSingle) {
-                        tabsInWillCloseTab.add(tab);
-                        assertFalse("isSingle should be false.", isSingle);
-                        willCloseTabHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didRemoveTabForClosure(Tab tab) {
-                        tabsInDidRemove.add(tab);
-                        didRemoveTabForClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                        fail("should not be called for close all tabs operation");
-                    }
-
-                    @Override
-                    public void onFinishingMultipleTabClosure(
-                            List<Tab> tabs, boolean saveToTabRestoreService) {
-                        tabsInFinishingMultiple.set(tabs);
-                        onFinishingMultipleTabClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void onFinishingTabClosure(Tab tab, @TabClosingSource int source) {
-                        tabsInFinishing.add(tab);
-                        onFinishingTabClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                        fail("didSelectTab should not be called when closing all tabs.");
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(
-                            TabClosureParams.closeAllTabs().allowUndo(false).build());
-                });
-
-        willCloseAllTabsHelper.waitForOnly();
-        allTabsAreClosingHelper.waitForOnly();
-        willCloseTabHelper.waitForCallback(0, 3);
-        didRemoveTabForClosureHelper.waitForCallback(0, 3);
-        onFinishingMultipleTabClosureHelper.waitForOnly();
-        onFinishingTabClosureHelper.waitForCallback(0, 3);
-
-        assertEquals("Incorrect number of willCloseTab calls.", 3, tabsInWillCloseTab.size());
-        assertTrue("Incorrect tabs in willCloseTab.", tabsInWillCloseTab.containsAll(allTabs));
-        assertEquals(
-                "Incorrect number of didRemoveTabForClosure calls.", 3, tabsInDidRemove.size());
-        assertTrue(
-                "Incorrect tabs in didRemoveTabForClosure.", tabsInDidRemove.containsAll(allTabs));
-        assertEquals(
-                "Incorrect tabs in onFinishingMultipleTabClosure.",
-                allTabs,
-                tabsInFinishingMultiple.get());
-        assertEquals("Incorrect number of onFinishingTabClosure calls.", 3, tabsInFinishing.size());
-        assertTrue(
-                "Incorrect tabs in onFinishingTabClosure.", tabsInFinishing.containsAll(allTabs));
-
-        assertEquals("Tab count should be 0.", 0, getCount());
-        assertNull("Current tab should be null.", getCurrentTab());
-
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
-    public void testCloseTabs_All_WithRefactor() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
         Tab tab2 = createTab();
@@ -904,11 +585,6 @@ public class TabCollectionTabModelImplTest {
                     public void didRemoveTabForClosure(Tab tab) {
                         tabsInDidRemove.add(tab);
                         didRemoveTabForClosureHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                        fail("should not be called for close all tabs operation");
                     }
 
                     @Override
@@ -3682,7 +3358,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testCloseTab_Undo() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -3857,7 +3532,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
     public void testCloseTab_UndoLastTab() throws Exception {
         assertEquals(1, getCount());
@@ -4052,7 +3726,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testCloseTabs_UndoMultiple() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -4184,7 +3857,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     @RequiresRestart("Removing the last tab has divergent behavior on tablet and phone.")
     public void testCloseAllTabs_Undo() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -4196,19 +3868,18 @@ public class TabCollectionTabModelImplTest {
         assertTabsInOrderAre(allTabs);
         assertEquals(3, getCount());
 
-        CallbackHelper willCloseAllTabsHelper = new CallbackHelper();
+        CallbackHelper willCloseTabsHelper = new CallbackHelper();
         CallbackHelper willUndoTabClosure = new CallbackHelper();
         CallbackHelper tabClosureUndoneHelper = new CallbackHelper();
         TabModelObserver observer =
                 new TabModelObserver() {
                     @Override
-                    public void willCloseAllTabs(boolean isIncognito) {
-                        willCloseAllTabsHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                        fail("should not be called for close all tabs operation");
+                    public void willCloseTabs(
+                            List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                        assertEquals(allTabs, tabs);
+                        assertTrue(isAllTabs);
+                        assertTrue(allowUndo);
+                        willCloseTabsHelper.notifyCalled();
                     }
 
                     @Override
@@ -4241,7 +3912,7 @@ public class TabCollectionTabModelImplTest {
                                     .build());
                 });
 
-        willCloseAllTabsHelper.waitForOnly();
+        willCloseTabsHelper.waitForOnly();
 
         assertEquals(0, getCount());
         assertNull(getCurrentTab());
@@ -4781,44 +4452,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testIsClosingAllTabs() throws Exception {
-        createTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertFalse(mCollectionModel.isClosingAllTabs());
-                });
-
-        CallbackHelper allTabsAreClosingHelper = new CallbackHelper();
-        TabModelObserver allTabsObserver =
-                new TabModelObserver() {
-                    @Override
-                    public void allTabsAreClosing() {
-                        assertTrue(mCollectionModel.isClosingAllTabs());
-                        allTabsAreClosingHelper.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addObserver(allTabsObserver);
-                    mCollectionModel.closeTabs(
-                            TabClosureParams.closeAllTabs().allowUndo(false).build());
-                });
-
-        allTabsAreClosingHelper.waitForOnly();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertTrue(mCollectionModel.isClosingAllTabs());
-                    mCollectionModel.removeObserver(allTabsObserver);
-                });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testIsClosingAllTabs_WithRefactor() throws Exception {
         createTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -4855,45 +4489,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testIsClosingAllTabsIsFalse() throws Exception {
-        Tab tab0 = getTabAt(0);
-        createTab();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertFalse(mCollectionModel.isClosingAllTabs());
-                });
-
-        CallbackHelper willCloseTabHelper = new CallbackHelper();
-        TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void willCloseTab(Tab tab, boolean isSingle) {
-                        assertFalse(mCollectionModel.isClosingAllTabs());
-                        willCloseTabHelper.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(
-                            TabClosureParams.closeTab(tab0).allowUndo(false).build());
-                });
-
-        willCloseTabHelper.waitForOnly();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertFalse(mCollectionModel.isClosingAllTabs());
-                    mCollectionModel.removeObserver(observer);
-                });
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
-    public void testIsClosingAllTabsIsFalse_WithRefactor() throws Exception {
         Tab tab0 = getTabAt(0);
         createTab();
         ThreadUtils.runOnUiThreadBlocking(

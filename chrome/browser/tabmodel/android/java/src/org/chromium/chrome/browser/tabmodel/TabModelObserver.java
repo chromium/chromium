@@ -116,58 +116,8 @@ public interface TabModelObserver {
     // Tab Closure
 
     /**
-     * Called when a tab starts closing.
-     *
-     * @param tab The tab to close.
-     * @param didCloseAlone indicates whether tab will close by itself VS as part of multiple/all
-     *     tab closures.
-     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
-     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
-     *     boolean, boolean)}.
-     */
-    @Deprecated
-    default void willCloseTab(Tab tab, boolean didCloseAlone) {}
-
-    /**
-     * Called when multiple tabs closure will happen. If "all tabs" are closed at once, @{@link
-     * TabModelObserver#willCloseAllTabs(boolean)} is invoked.
-     *
-     * @param allowUndo If undo is allowed on the tab closure.
-     * @param tabs being closed.
-     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
-     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
-     *     boolean, boolean)}.
-     */
-    @Deprecated
-    default void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {}
-
-    /**
-     * Called when an "all tabs" closure will happen. If multiple tabs are closed, {@link
-     * #willCloseMultipleTabs(boolean, List)} is invoked.
-     *
-     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
-     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
-     *     boolean, boolean)}.
-     */
-    @Deprecated
-    default void willCloseAllTabs(boolean incognito) {}
-
-    /**
-     * Called when tabs are being closed, and none will be left in the {@link TabModel}.
-     *
-     * @deprecated Use {@link #willCloseTabs(List, boolean, boolean)} instead. During the migration
-     *     phase, continue implementing this method but also implement {@link #willCloseTabs(List,
-     *     boolean, boolean)}.
-     */
-    @Deprecated
-    default void allTabsAreClosing() {}
-
-    /**
-     * Called before one or more tabs are removed from the {@link TabModel} for closure.
-     *
-     * <p>TODO(crbug.com/381471263): Method in development. This replaces {@link #willCloseTab},
-     * {@link #willCloseMultipleTabs}, {@link #willCloseAllTabs}, and {@link #allTabsAreClosing}.
-     * It is called once per closure operation while the tabs are still present in the tab model.
+     * Called before one or more tabs are removed from the {@link TabModel} for closure. It is
+     * called once per closure operation while the tabs are still present in the tab model.
      *
      * @param tabs The list of {@link Tab}s about to be closed.
      * @param isAllTabs Whether this closure operation will leave 0 tabs in the model.
@@ -179,11 +129,6 @@ public interface TabModelObserver {
      * Called after the tab has been removed from the tab model for tab closure. This is called
      * regardless of whether the tab closure is undoable or not and will always be called before a
      * tab closure is finalized.
-     *
-     * <p>There is a subtle timing difference between the the tab collection and legacy
-     * implementation. In the legacy implementation {@link willCloseTab()} was call after a tab had
-     * been removed from its tab group, but before closing. With tab collections the tab is still in
-     * its group when {@link willCloseTab()} is invoked.
      *
      * <p>Note the tab will also be removed from its tab group at this point, but will still have
      * the correct tab group id.

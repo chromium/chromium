@@ -6618,12 +6618,6 @@ inline constexpr char kTabClosureCommittedMethodRefactorDescription[] =
     "and onFinishingMultipleTabClosure) into the unified onTabCloseCommitted "
     "method.";
 
-inline constexpr char kTabClosureMethodRefactorName[] =
-    "Tab closure method refactor";
-inline constexpr char kTabClosureMethodRefactorDescription[] =
-    "Enables the refactored changes for tab closure methods where existing "
-    "methods usages are switched off and newly introduced are made active.";
-
 inline constexpr char kTabGroupActionsSubmenusName[] =
     "Tab Group Actions Submenus";
 inline constexpr char kTabGroupActionsSubmenusDescription[] =

@@ -18,8 +18,6 @@ void TabModelObserver::WillCloseTabs(const std::vector<TabAndroid*>& tabs,
                                      bool is_all_tabs,
                                      bool allow_undo) {}
 
-void TabModelObserver::WillCloseTab(TabAndroid* tab) {}
-
 void TabModelObserver::DidRemoveTabForClosure(TabAndroid* tab) {}
 
 void TabModelObserver::OnFinishingTabClosure(
@@ -53,8 +51,6 @@ void TabModelObserver::OnTabCloseUndone(const std::vector<TabAndroid*>& tabs) {}
 void TabModelObserver::TabClosureCommitted(TabAndroid* tab) {}
 
 void TabModelObserver::AllTabsClosureCommitted() {}
-
-void TabModelObserver::AllTabsAreClosing() {}
 
 void TabModelObserver::TabRemoved(TabAndroid* tab) {}
 

@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -88,58 +87,6 @@ public class UndoRefocusHelper {
     private void observeTabModel() {
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(mModelSelector) {
-                    @Override
-                    public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        if (tab.isIncognito()) return;
-
-                        mPendingClosureTabIds.add(tab.getId());
-                        // Tabs not closed alone are handled in #willCloseMultipleTabs and
-                        // #willCloseAllTabs
-                        if (!didCloseAlone) return;
-
-                        int tabId = tab.getId();
-                        if (!mTabSwitcherActive && mIsTablet) {
-                            mTabsClosedFromTabStrip.add(tabId);
-                        }
-
-                        maybeSetSelectedTabId(tab);
-                    }
-
-                    @Override
-                    public void willCloseMultipleTabs(boolean allowUndo, List<Tab> tabs) {
-                        if (!allowUndo || tabs.isEmpty()) return;
-
-                        // Record metric only once for the set.
-                        // Use the first id to track the set.
-                        if (!mTabSwitcherActive && mIsTablet) {
-                            mTabsClosedFromTabStrip.add(tabs.get(0).getId());
-                        }
-                        for (Tab tab : tabs) {
-                            if (maybeSetSelectedTabId(tab)) {
-                                break;
-                            }
-                        }
-                        mTabsClosedTogether.add(new ArraySet<>(tabs));
-                    }
-
-                    @Override
-                    public void willCloseAllTabs(boolean incognito) {
-                        if (incognito) return;
-                        int selectedTabIdx = mModelSelector.getModel(false).index();
-                        // Selected tab will be invalid when there are already no tabs in a window
-                        // when this method is invoked.
-                        if (selectedTabIdx == TabList.INVALID_TAB_INDEX) return;
-
-                        Tab selectedTab = mModelSelector.getModel(false).getTabAt(selectedTabIdx);
-                        assertNonNull(selectedTab);
-                        maybeSetSelectedTabId(selectedTab);
-                        // Record metric only once for the set.
-                        // Use the selected id to track the set.
-                        if (!mTabSwitcherActive && mIsTablet) {
-                            mTabsClosedFromTabStrip.add(selectedTab.getId());
-                        }
-                    }
-
                     @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {

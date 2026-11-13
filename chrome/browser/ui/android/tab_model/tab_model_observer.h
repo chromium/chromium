@@ -36,9 +36,6 @@ class TabModelObserver {
                              bool is_all_tabs,
                              bool allow_undo);
 
-  // Called when a |tab| starts closing.
-  virtual void WillCloseTab(TabAndroid* tab);
-
   // Called after a tab has been removed due to closure. At this point the tab
   // is no longer in the TabModel.
   virtual void DidRemoveTabForClosure(TabAndroid* tab);
@@ -85,9 +82,6 @@ class TabModelObserver {
   // Called when an all tabs closure has been committed and can't be undone
   // anymore.
   virtual void AllTabsClosureCommitted();
-
-  // Called when tabs are being closed and there are no more tabs left.
-  virtual void AllTabsAreClosing();
 
   // Called after a tab has been removed. At this point the tab is no longer in
   // the TabModel.

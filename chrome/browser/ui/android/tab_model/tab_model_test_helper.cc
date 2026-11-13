@@ -16,7 +16,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -24,7 +23,6 @@
 #include "base/sequence_checker.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -490,18 +488,8 @@ void OwningTestTabModel::CloseTabsAt(const std::vector<int>& indices) {
 
   bool is_all_tabs = (tabs_to_close.size() == owned_tabs_.size());
 
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kTabClosureMethodRefactor)) {
-    observer_list_.Notify(&TabModelObserver::WillCloseTabs, tabs_to_close,
-                          is_all_tabs, /*allow_undo=*/false);
-  } else {
-    for (auto* tab : tabs_to_close) {
-      observer_list_.Notify(&TabModelObserver::WillCloseTab, tab);
-    }
-    if (is_all_tabs) {
-      observer_list_.Notify(&TabModelObserver::AllTabsAreClosing);
-    }
-  }
+  observer_list_.Notify(&TabModelObserver::WillCloseTabs, tabs_to_close,
+                        is_all_tabs, /*allow_undo=*/false);
 
   int active_index = GetActiveIndex();
   bool active_tab_is_closing =

@@ -66,13 +66,6 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
     }
 
     @Override
-    public final void willCloseTab(Tab tab, boolean didCloseAlone) {
-        assert mNativeTabModelObserverJniBridge != null;
-        assert tab.isInitialized();
-        TabModelObserverJniBridgeJni.get().willCloseTab(mNativeTabModelObserverJniBridge, tab);
-    }
-
-    @Override
     public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
         assert mNativeTabModelObserverJniBridge != null;
         TabModelObserverJniBridgeJni.get()
@@ -218,12 +211,6 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
     }
 
     @Override
-    public final void allTabsAreClosing() {
-        assert mNativeTabModelObserverJniBridge != null;
-        TabModelObserverJniBridgeJni.get().allTabsAreClosing(mNativeTabModelObserverJniBridge);
-    }
-
-    @Override
     public final void tabRemoved(Tab tab) {
         assert mNativeTabModelObserverJniBridge != null;
         assert tab.isInitialized();
@@ -309,9 +296,6 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
                 boolean isAllTabs,
                 boolean allowUndo);
 
-        void willCloseTab(
-                JniPtr<NativeTabModelObserverJniBridge> self, @JniType("TabAndroid*") Tab tab);
-
         void didRemoveTabForClosure(
                 JniPtr<NativeTabModelObserverJniBridge> self, @JniType("TabAndroid*") Tab tab);
 
@@ -364,8 +348,6 @@ class TabModelObserverJniBridge implements TabModelObserver, TabGroupObserver {
                 @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
 
         void allTabsClosureCommitted(JniPtr<NativeTabModelObserverJniBridge> self);
-
-        void allTabsAreClosing(JniPtr<NativeTabModelObserverJniBridge> self);
 
         void tabRemoved(
                 JniPtr<NativeTabModelObserverJniBridge> self, @JniType("TabAndroid*") Tab tab);
