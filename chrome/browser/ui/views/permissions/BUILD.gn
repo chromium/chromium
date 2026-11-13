@@ -279,11 +279,15 @@ if (toolkit_views) {
         "//chrome/browser/ui/views/infobars",
         "//chrome/browser/ui/views/page_info",
         "//chrome/browser/ui/views/permissions/chip",
+        "//chrome/browser/ui/views/toolbar",
+        "//chrome/common:chrome_features",
         "//chrome/test:test_support",
         "//chrome/test/base:test_switches",
         "//chrome/test/permissions",
         "//components/infobars/content",
+        "//content/public/common",
         "//ui/base:ozone_buildflags",
+        "//ui/views/controls/webview",
       ]
 
       if (use_ozone) {

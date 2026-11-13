@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -15,15 +18,21 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -248,4 +257,139 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
 #if BUILDFLAG(IS_MAC)
   TestSwitchingTabsWithCurlyBraces();
 #endif
+}
+
+namespace {
+
+// Evaluates to the focused element of the WebUI toolbar, inside shadow roots.
+constexpr char kDeepActiveElement[] = R"((() => {
+  let active = document.activeElement;
+  while (active?.shadowRoot?.activeElement) {
+    active = active.shadowRoot.activeElement;
+  }
+  return active;
+})())";
+
+constexpr char kLocationBar[] =
+    "document.querySelector('toolbar-app').shadowRoot"
+    ".querySelector('#location-bar')";
+
+constexpr char kRequestChipButtonInLocationBar[] =
+    ".shadowRoot.querySelector('permission-dashboard')"
+    ".shadowRoot.querySelector('#request-chip')"
+    ".shadowRoot.querySelector('#chip')";
+
+}  // namespace
+
+// With the WebUI location bar, the permission chip that the prompt bubble is
+// anchored to is a DOM element. The bubble should still come right after the
+// chip in the sequential focus order, like it does with the Views location
+// bar. See crbug.com/580537070.
+class PermissionBubbleWebUILocationBarInteractiveUITest
+    : public PermissionBubbleInteractiveUITest {
+ public:
+  PermissionBubbleWebUILocationBarInteractiveUITest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUILocationBar,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2},
+        {});
+  }
+
+ protected:
+  content::WebContents* GetToolbarWebContents() {
+    WebUIToolbarWebView* const toolbar =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->GetWebUIToolbarViewForTesting();
+    CHECK(toolbar);
+    return toolbar->GetWebViewForTesting()->GetWebContents();
+  }
+
+  // Waits until `script` evaluates to true in the WebUI toolbar.
+  [[nodiscard]] bool WaitForToolbarCondition(const std::string& script) {
+    return base::test::RunUntil([&] {
+      return content::EvalJs(GetToolbarWebContents(), script) == true;
+    });
+  }
+
+  // Activates the browser window, which leaves the prompt bubble open but
+  // inactive, and focuses the omnibox.
+  void FocusOmnibox() {
+    browser()->GetWindow()->Activate();
+    EnsureWindowActive(browser()->GetWindow(), "activate the browser window");
+    ASSERT_TRUE(test_api_->GetPromptWindow());
+
+    chrome::FocusLocationBar(browser());
+    // Tab is handled by the omnibox while its popup is open.
+    ASSERT_TRUE(WaitForToolbarCondition(
+        base::StrCat({kDeepActiveElement,
+                      "?.getAttribute('part') === 'searchbox-input' && !",
+                      kLocationBar, ".isPopupOpen"})));
+  }
+
+  void SendTab(bool shift) {
+    // Wait for "key press" rather than "key release", since the latter goes
+    // to the prompt bubble once it is activated.
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        browser(), ui::VKEY_TAB, /*control=*/false, shift, /*alt=*/false,
+        /*command=*/false, ui_controls::KeyEventType::kKeyPress));
+  }
+
+  // Waits until the prompt bubble is active, and checks that its first
+  // focusable view (or its last one, if `reverse` is true) has focus.
+  void ExpectFocusInPromptBubble(bool reverse, const char* message) {
+    views::Widget* const prompt = test_api_->GetPromptWindow();
+    ASSERT_TRUE(prompt);
+    EnsureWindowActive(prompt, message);
+    views::FocusManager* const focus_manager = prompt->GetFocusManager();
+    views::View* const expected = focus_manager->GetNextFocusableView(
+        /*starting_view=*/nullptr, prompt, reverse, /*dont_loop=*/true);
+    ASSERT_TRUE(expected);
+    EXPECT_EQ(expected, focus_manager->GetFocusedView()) << message;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionBubbleWebUILocationBarInteractiveUITest,
+                       TabFromChipFocusesBubble) {
+  FocusOmnibox();
+  const std::string chip_button =
+      base::StrCat({kLocationBar, kRequestChipButtonInLocationBar});
+  ASSERT_TRUE(content::ExecJs(GetToolbarWebContents(),
+                              base::StrCat({chip_button, ".focus();"})));
+  ASSERT_TRUE(WaitForToolbarCondition(
+      base::StrCat({kDeepActiveElement, " === ", chip_button})));
+
+  SendTab(/*shift=*/false);
+  ExpectFocusInPromptBubble(/*reverse=*/false, "Tab from the chip");
+}
+
+// The omnibox comes right after the chip, so Shift+Tab from it enters the
+// bubble from the end.
+IN_PROC_BROWSER_TEST_F(PermissionBubbleWebUILocationBarInteractiveUITest,
+                       ShiftTabFromOmniboxFocusesBubble) {
+  FocusOmnibox();
+
+  SendTab(/*shift=*/true);
+  ExpectFocusInPromptBubble(/*reverse=*/true, "Shift+Tab from the omnibox");
+}
+
+// Closing the bubble gives focus back to the omnibox, which is where it was
+// before it moved into the bubble.
+IN_PROC_BROWSER_TEST_F(PermissionBubbleWebUILocationBarInteractiveUITest,
+                       ClosingBubbleReturnsFocusToOmnibox) {
+  FocusOmnibox();
+
+  SendTab(/*shift=*/true);
+  ExpectFocusInPromptBubble(/*reverse=*/true, "Shift+Tab from the omnibox");
+
+  test_api_->GetPromptWindow()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  EnsureWindowActive(browser()->GetWindow(), "close the prompt bubble");
+  EXPECT_TRUE(WaitForToolbarCondition(
+      base::StrCat({"document.hasFocus() && ", kDeepActiveElement,
+                    "?.getAttribute('part') === 'searchbox-input'"})));
 }
