@@ -4857,26 +4857,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType"
-    enum="HistoryClusterKeywordType" expires_after="2024-03-17">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <summary>
-    Logs the type of the matched cluster keyword of &quot;Resume Journey&quot;
-    omnibox actions actually selected by the user.
-
-    This can be combined with Omnibox.ResumeJourneyShown.ClusterKeywordType to
-    compute the precision (or CTR) of the &quot;Resume Journey&quot; omnibox
-    action on a keyword type basis.
-
-    It's safe to compare the total count of this metric to the total count of
-    Omnibox.ResumeJourneyShown.ClusterKeywordType because within a single popup,
-    only zero or one &quot;Resume Journey&quot; can be shown. If multiple
-    actions start being shown in the popup, comparing to the total count becomes
-    misleading to interpret as a CTR.
-  </summary>
-</histogram>
-
 <histogram
     name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.{ClusterKeywordTypeLabel}.CTR"
     enum="BooleanSelected" expires_after="2023-12-10">

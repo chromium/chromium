@@ -43,11 +43,6 @@ void RecordShownUsedEnumAndCtrMetrics(std::string_view metric_name,
                                       bool executed) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Omnibox.ResumeJourneyShown.", metric_name}), val);
-  if (executed) {
-    base::UmaHistogramEnumeration(
-        base::StrCat({"Omnibox.SuggestionUsed.ResumeJourney.", metric_name}),
-        val);
-  }
 
   // Record the CTR metric.
   std::string ctr_metric_name =
