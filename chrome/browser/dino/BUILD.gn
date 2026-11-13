@@ -10,3 +10,14 @@ source_set("dino") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "dino_metrics_unittest.cc" ]
+  deps = [
+    ":dino",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
