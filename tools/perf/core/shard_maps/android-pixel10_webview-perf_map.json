@@ -83,7 +83,7 @@
             "embedder.crossbench": {
                 "crossbench_name": "embedder",
                 "arguments": [
-                    "--wpr=crossbench_android_embedder_000.wprgo",
+                    "--wpr=crossbench_android_embedder_002.wprgo",
                     "--skip-wpr-script-injection",
                     "--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk",
                     "--splashscreen=skip",
