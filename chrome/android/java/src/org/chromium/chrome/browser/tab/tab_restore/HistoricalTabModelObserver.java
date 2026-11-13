@@ -120,29 +120,44 @@ public class HistoricalTabModelObserver implements TabModelObserver {
 
         @TabRestoreEntryId int entryId = saveToTabRestoreService(tabs);
         if (!isUndoable
-                || entryId == HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID
                 || mUndoClosureCallback == null
                 || !ChromeFeatureList.sUndoableTabClosureRework.isEnabled()
                 || mTabModel.isIncognitoBranded()) {
+            return;
+        }
+        if (entryId == HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID
+                && !hasHidingTabGroup(tabs)) {
             return;
         }
 
         // For closures finalized at close time (isUndoable == true),
         // TabCollectionTabModelImpl#closeTabsInternal invokes onFinishingMultipleTabClosure
         // before removeTabsAndSelectNext removes the closing tabs or closes detached tab groups,
-        // so the tabs, selection state, and group metadata are still live in mTabModel.
+        // so the tabs, selection state, and group metadata are still live in mTabModel. Capturing
+        // savedTabGroupSyncId via TabGroupSyncService#getGroup(LocalTabGroupId) also relies on
+        // HistoricalTabModelObserver running before
+        // TabGroupSyncLocalObserver#onFinishingMultipleTabClosure() calls
+        // removeLocalTabGroupMapping() in the same observer pass.
         Profile profile = mTabModel.getProfile();
-        boolean isTabGroupSyncEnabled =
-                profile != null && TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+        assert profile != null;
+        boolean isTabGroupSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(profile);
+        @Nullable TabGroupSyncService tabGroupSyncService =
+                isTabGroupSyncEnabled ? TabGroupSyncServiceFactory.getForProfile(profile) : null;
+
         UndoClosureSnapshot snapshot =
                 UndoClosureSnapshotFactory.captureFromTabModel(
                         mTabModel,
                         tabs,
                         isAllTabs,
                         isTabGroupSyncEnabled,
+                        tabGroupSyncService,
                         closingSource,
                         entryId,
                         undoRunnable);
+        if (entryId == HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID
+                && !snapshot.hasReopenableHiddenGroups()) {
+            return;
+        }
         mUndoClosureCallback.onResult(snapshot);
     }
 
@@ -290,5 +305,15 @@ public class HistoricalTabModelObserver implements TabModelObserver {
         if (savedTabGroup == null) return false;
 
         return !TextUtils.isEmpty(savedTabGroup.collaborationId);
+    }
+
+    private boolean hasHidingTabGroup(List<Tab> tabs) {
+        for (Tab tab : tabs) {
+            @Nullable Token groupId = tab.getTabGroupId();
+            if (groupId != null && mTabModel.isTabGroupHiding(groupId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

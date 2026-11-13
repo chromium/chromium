@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -60,7 +61,8 @@ public class UndoClosureSnapshotUnitTest {
                                         /* color= */ 2,
                                         /* collapsed= */ true,
                                         /* isHiding= */ true,
-                                        /* survivesInModel= */ false)),
+                                        /* survivesInModel= */ false,
+                                        /* savedTabGroupSyncId= */ "sync-1")),
                         /* isTabGroupSyncEnabled= */ true,
                         /* isAllTabs= */ false,
                         /* entryId= */ 42,
@@ -83,6 +85,8 @@ public class UndoClosureSnapshotUnitTest {
         assertTrue(groupData.collapsed);
         assertTrue(groupData.isHiding);
         assertFalse(groupData.survivesInModel);
+        assertEquals("sync-1", groupData.savedTabGroupSyncId);
+        assertTrue(snapshot.hasReopenableHiddenGroups());
 
         assertEquals(42, snapshot.entryId);
         assertEquals(TabClosingSource.TABLET_TAB_STRIP, snapshot.closingSource);
@@ -139,7 +143,8 @@ public class UndoClosureSnapshotUnitTest {
                         /* color= */ 0,
                         /* collapsed= */ false,
                         /* isHiding= */ false,
-                        /* survivesInModel= */ true));
+                        /* survivesInModel= */ true,
+                        /* savedTabGroupSyncId= */ null));
 
         UndoClosureSnapshot snapshot =
                 forTabModel(
@@ -162,5 +167,47 @@ public class UndoClosureSnapshotUnitTest {
         // Verify snapshot collections are unmodifiable.
         assertThrows(UnsupportedOperationException.class, () -> snapshot.tabs.clear());
         assertThrows(UnsupportedOperationException.class, () -> snapshot.groups.clear());
+    }
+
+    @Test
+    public void testHasReopenableHiddenGroups() {
+        assertFalse(
+                createGroupSnapshot(
+                                /* isHiding= */ false,
+                                /* survivesInModel= */ false,
+                                /* savedTabGroupSyncId= */ "sync-1")
+                        .hasReopenableHiddenGroups());
+        assertFalse(
+                createGroupSnapshot(
+                                /* isHiding= */ true,
+                                /* survivesInModel= */ true,
+                                /* savedTabGroupSyncId= */ "sync-1")
+                        .hasReopenableHiddenGroups());
+        assertFalse(
+                createGroupSnapshot(
+                                /* isHiding= */ true,
+                                /* survivesInModel= */ false,
+                                /* savedTabGroupSyncId= */ null)
+                        .hasReopenableHiddenGroups());
+    }
+
+    private static UndoClosureSnapshot createGroupSnapshot(
+            boolean isHiding, boolean survivesInModel, @Nullable String savedTabGroupSyncId) {
+        return forTabModel(
+                /* tabs= */ List.of(),
+                Map.of(
+                        GROUP_1,
+                        new GroupData(
+                                "Group 1",
+                                /* color= */ 0,
+                                /* collapsed= */ false,
+                                isHiding,
+                                survivesInModel,
+                                savedTabGroupSyncId)),
+                /* isTabGroupSyncEnabled= */ true,
+                /* isAllTabs= */ false,
+                /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                /* closingSource= */ TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null);
     }
 }

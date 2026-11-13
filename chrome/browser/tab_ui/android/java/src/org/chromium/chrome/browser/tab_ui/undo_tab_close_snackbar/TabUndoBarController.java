@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshotFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +52,7 @@ import java.util.function.Supplier;
 public class TabUndoBarController extends UndoBarController {
     private final TabModelObserver mTabModelObserver;
     private final @Nullable Supplier<Boolean> mDialogVisibilitySupplier;
+    private final Supplier<@Nullable TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private @Nullable UndoClosureSnapshot mReselectableSnapshot;
 
     /**
@@ -61,14 +63,18 @@ public class TabUndoBarController extends UndoBarController {
      *     closures.
      * @param snackbarManageable The holder class to get the manager that helps to show up snackbar.
      * @param dialogVisibilitySupplier The {@link Supplier} to get the visibility of TabGridDialog.
+     * @param tabGroupUiActionHandlerSupplier The {@link Supplier} of the {@link
+     *     TabGroupUiActionHandler} used to reopen hidden synced tab groups during undo.
      */
     public TabUndoBarController(
             Context context,
             TabModelSelector selector,
             SnackbarManageable snackbarManageable,
-            @Nullable Supplier<Boolean> dialogVisibilitySupplier) {
+            @Nullable Supplier<Boolean> dialogVisibilitySupplier,
+            Supplier<@Nullable TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier) {
         super(context, selector, snackbarManageable);
         mDialogVisibilitySupplier = dialogVisibilitySupplier;
+        mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -138,6 +144,7 @@ public class TabUndoBarController extends UndoBarController {
                                         tabs,
                                         isAllTabs,
                                         tabGroupSyncEnabled,
+                                        /* tabGroupSyncService= */ null,
                                         closingSource,
                                         /* entryId= */ TabRestoreEntryId
                                                 .INVALID_TAB_RESTORE_ENTRY_ID,
@@ -214,7 +221,12 @@ public class TabUndoBarController extends UndoBarController {
         mReselectableSnapshot = null;
         TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
         UndoClosureRestorer.restoreClosure(
-                tabModel, snapshot, reselect, mContext, mSnackbarManageable.getSnackbarManager());
+                tabModel,
+                snapshot,
+                reselect,
+                mContext,
+                mSnackbarManageable.getSnackbarManager(),
+                mTabGroupUiActionHandlerSupplier.get());
     }
 
     /**

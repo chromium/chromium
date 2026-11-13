@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 /** Shared helper that executes tab-closure undo against a {@link TabModel}. */
 @NullMarked
@@ -32,6 +33,8 @@ public final class UndoClosureRestorer {
      * @param reselect Whether to reselect a tab that was selected prior to closure.
      * @param context The {@link Context} used to resolve snackbar strings.
      * @param snackbarManager Optional {@link SnackbarManager} used to show a failure notification.
+     * @param tabGroupUiActionHandler Optional {@link TabGroupUiActionHandler} used to reopen hidden
+     *     synced tab groups during undo.
      * @return {@code true} if at least one tab was restored, {@code false} otherwise.
      */
     public static boolean restoreClosure(
@@ -39,8 +42,10 @@ public final class UndoClosureRestorer {
             UndoClosureSnapshot snapshot,
             boolean reselect,
             Context context,
-            @Nullable SnackbarManager snackbarManager) {
-        int[] restoredTabIds = tabModel.restoreClosedTabsForUndo(snapshot, reselect);
+            @Nullable SnackbarManager snackbarManager,
+            @Nullable TabGroupUiActionHandler tabGroupUiActionHandler) {
+        int[] restoredTabIds =
+                tabModel.restoreClosedTabsForUndo(snapshot, reselect, tabGroupUiActionHandler);
         boolean anyRestored = false;
         for (int tabId : restoredTabIds) {
             if (tabId != Tab.INVALID_TAB_ID) {

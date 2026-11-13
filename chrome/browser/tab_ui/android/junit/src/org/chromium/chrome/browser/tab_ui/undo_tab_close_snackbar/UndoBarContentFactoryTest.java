@@ -618,7 +618,8 @@ public class UndoBarContentFactoryTest {
                             /* color= */ 0,
                             /* collapsed= */ false,
                             hidingGroupIds.contains(gid),
-                            survivingGroupIds.contains(gid)));
+                            survivingGroupIds.contains(gid),
+                            /* savedTabGroupSyncId= */ null));
         }
         return forTabModel(
                 tabs,

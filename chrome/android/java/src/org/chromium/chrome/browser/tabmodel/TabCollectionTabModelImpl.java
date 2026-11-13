@@ -64,12 +64,15 @@ import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.DetachReason;
 import org.chromium.components.tabs.TabStripCollection;
@@ -593,10 +596,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     /**
-     * Restores the whole Recent Tabs entry referenced by {@code snapshot.entryId}; the entry is
-     * consumed even if some of its tabs could not be restored. Handling a partial undo is the
-     * caller's responsibility. Snapshots of saved tab groups or without a valid entry id are not
-     * restored.
+     * Reopens whole hiding synced tab groups via {@link UndoGroupRestorer#reopenHiddenGroups} and
+     * restores the Recent Tabs entry referenced by {@code snapshot.entryId} (if valid); the entry
+     * is consumed even if some of its tabs could not be restored. Handling a partial undo is the
+     * caller's responsibility. Snapshots of {@link ClosureKind#SAVED_GROUPS}, or lacking both a
+     * valid {@code entryId} and reopenable hidden groups, are not restored.
      *
      * <p>{@code snapshot}'s tabs must not be pending closure. Tabs in the entry that cannot be
      * matched to an element of {@code snapshot.tabs} are still restored (appended) but are not
@@ -607,29 +611,56 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
      * UndoGroupRestorer}.
      */
     @Override
-    public int[] restoreClosedTabsForUndo(UndoClosureSnapshot snapshot, boolean reselect) {
+    public int[] restoreClosedTabsForUndo(
+            UndoClosureSnapshot snapshot,
+            boolean reselect,
+            @Nullable TabGroupUiActionHandler tabGroupUiActionHandler) {
         assertOnUiThread();
         int tabCount = snapshot.tabs.size();
         // Snapshots of saved tab groups or without a valid entry id are not restored.
         if (mNativeTabCollectionTabModelImplPtr == null
                 || snapshot.kind == ClosureKind.SAVED_GROUPS
-                || snapshot.entryId == TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID) {
+                || (snapshot.entryId == TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID
+                        && !snapshot.hasReopenableHiddenGroups())) {
             return createInvalidTabIds(tabCount);
         }
 
+        @Nullable TabGroupSyncService syncService = getTabGroupSyncServiceForUndo(snapshot);
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             // TODO(crbug.com/437141942): addTab() commits all pending closures, which also
             // dismisses other undo snackbars.
             int[] restoredIds =
-                    mModelDelegate.restoreForUndo(
-                            /* tabModel= */ this, snapshot.entryId, snapshot.tabs);
-            if (restoredIds.length != tabCount) {
-                restoredIds = createInvalidTabIds(tabCount);
+                    UndoGroupRestorer.reopenHiddenGroups(
+                            /* tabModel= */ this, syncService, tabGroupUiActionHandler, snapshot);
+            if (snapshot.entryId != TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID) {
+                int[] tabRestoreServiceIds =
+                        mModelDelegate.restoreForUndo(
+                                /* tabModel= */ this, snapshot.entryId, snapshot.tabs);
+                if (tabRestoreServiceIds.length == tabCount) {
+                    for (int i = 0; i < tabCount; i++) {
+                        if (tabRestoreServiceIds[i] != Tab.INVALID_TAB_ID) {
+                            restoredIds[i] = tabRestoreServiceIds[i];
+                        }
+                    }
+                }
             }
-            UndoGroupRestorer.apply(/* tabModel= */ this, restoredIds, snapshot);
+            UndoGroupRestorer.apply(
+                    /* tabModel= */ this,
+                    syncService,
+                    tabGroupUiActionHandler,
+                    restoredIds,
+                    snapshot);
             applyUndoSelection(restoredIds, snapshot, reselect);
             return restoredIds;
         }
+    }
+
+    private @Nullable TabGroupSyncService getTabGroupSyncServiceForUndo(
+            UndoClosureSnapshot snapshot) {
+        if (!snapshot.isTabGroupSyncEnabled || snapshot.groups.isEmpty() || isOffTheRecord()) {
+            return null;
+        }
+        return TabGroupSyncServiceFactory.getForProfile(getProfile());
     }
 
     @Override

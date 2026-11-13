@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -33,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,6 +44,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
@@ -59,10 +62,16 @@ import org.chromium.chrome.browser.tab.TabRestoreEntryId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionCause;
 import org.chromium.content_public.browser.WebContents;
@@ -73,6 +82,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -85,6 +95,9 @@ public class TabCollectionTabModelImplUnitTest {
     private static final long TAB_MODEL_JNI_BRIDGE_PTR = 875943L;
     private static final long TAB_COLLECTION_TAB_MODEL_IMPL_PTR = 378492L;
     private static final @TabRestoreEntryId int ENTRY_ID = 42;
+    private static final Token HIDDEN_GROUP_ID = new Token(1L, 2L);
+    private static final Token REOPENED_GROUP_ID = new Token(3L, 4L);
+    private static final String HIDDEN_GROUP_SYNC_ID = "sync-hidden-1";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -105,6 +118,8 @@ public class TabCollectionTabModelImplUnitTest {
     @Mock private ScopedStorageBatch mScopedStorageBatch;
     @Mock private TabModelObserver mTabModelObserver;
     @Mock private PendingTabClosureManager mPendingTabClosureManager;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
 
     private TabCollectionTabModelImpl mTabModel;
     private List<Tab> mTabs;
@@ -1176,7 +1191,10 @@ public class TabCollectionTabModelImplUnitTest {
                         /* savedGroupTabCount= */ 0);
         assertArrayEquals(
                 new int[] {Tab.INVALID_TAB_ID},
-                mTabModel.restoreClosedTabsForUndo(savedGroupsSnapshot, /* reselect= */ true));
+                mTabModel.restoreClosedTabsForUndo(
+                        savedGroupsSnapshot,
+                        /* reselect= */ true,
+                        /* tabGroupUiActionHandler= */ null));
 
         UndoClosureSnapshot invalidEntryIdSnapshot =
                 createSnapshot(
@@ -1185,7 +1203,10 @@ public class TabCollectionTabModelImplUnitTest {
                         createClosedTab(/* id= */ 6, /* wasSelected= */ true));
         assertArrayEquals(
                 new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID},
-                mTabModel.restoreClosedTabsForUndo(invalidEntryIdSnapshot, /* reselect= */ true));
+                mTabModel.restoreClosedTabsForUndo(
+                        invalidEntryIdSnapshot,
+                        /* reselect= */ true,
+                        /* tabGroupUiActionHandler= */ null));
 
         UndoClosureSnapshot validSnapshot =
                 createSnapshot(ENTRY_ID, createClosedTab(/* id= */ 5, /* wasSelected= */ true));
@@ -1193,7 +1214,8 @@ public class TabCollectionTabModelImplUnitTest {
         mExpectNoJniCalls = true;
         assertArrayEquals(
                 new int[] {Tab.INVALID_TAB_ID},
-                mTabModel.restoreClosedTabsForUndo(validSnapshot, /* reselect= */ true));
+                mTabModel.restoreClosedTabsForUndo(
+                        validSnapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null));
 
         verify(mTabModelDelegate, never()).restoreForUndo(any(), anyInt(), any());
         verify(mScopedStorageBatch, never()).close();
@@ -1225,7 +1247,9 @@ public class TabCollectionTabModelImplUnitTest {
                             return new int[] {105, 106};
                         });
 
-        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false);
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null);
 
         assertArrayEquals(new int[] {105, 106}, restoredIds);
         assertEquals(restoredTab1, mTabModel.getTabById(105));
@@ -1250,7 +1274,9 @@ public class TabCollectionTabModelImplUnitTest {
         MockTab restoredTab2 = createMockTab(/* tabId= */ 106, mProfile);
         stubRestoreForUndo(snapshot, restoredTab1, restoredTab2);
 
-        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null);
 
         assertArrayEquals(new int[] {105, 106}, restoredIds);
         assertEquals(restoredTab2, mTabModel.getCurrentTabSupplier().get());
@@ -1270,7 +1296,9 @@ public class TabCollectionTabModelImplUnitTest {
                         createClosedTab(/* id= */ 6, /* wasSelected= */ true));
         stubRestoreForUndo(snapshot, createMockTab(/* tabId= */ 105, mProfile), null);
 
-        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null);
 
         assertArrayEquals(new int[] {105, Tab.INVALID_TAB_ID}, restoredIds);
         assertEquals(selectedTab, mTabModel.getCurrentTabSupplier().get());
@@ -1291,7 +1319,9 @@ public class TabCollectionTabModelImplUnitTest {
         stubRestoreForUndo(snapshot, null, restoredTab2, createMockTab(/* tabId= */ 107, mProfile));
         assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
 
-        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null);
 
         assertArrayEquals(new int[] {Tab.INVALID_TAB_ID, 106, 107}, restoredIds);
         assertEquals(restoredTab2, mTabModel.getCurrentTabSupplier().get());
@@ -1308,7 +1338,9 @@ public class TabCollectionTabModelImplUnitTest {
         MockTab restoredTab = createMockTab(/* tabId= */ 105, mProfile);
         stubRestoreForUndo(snapshot, restoredTab);
 
-        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null);
 
         assertArrayEquals(new int[] {105}, restoredIds);
         assertEquals(restoredTab, mTabModel.getCurrentTabSupplier().get());
@@ -1327,7 +1359,9 @@ public class TabCollectionTabModelImplUnitTest {
         when(mTabModelDelegate.restoreForUndo(mTabModel, ENTRY_ID, snapshot.tabs))
                 .thenReturn(new int[] {105});
 
-        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null);
 
         assertArrayEquals(new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID}, restoredIds);
         verify(mTabModelObserver, never())
@@ -1360,7 +1394,9 @@ public class TabCollectionTabModelImplUnitTest {
                 .didSelectTab(
                         restoredTab, TabSelectionType.FROM_UNDO, /* lastId= */ Tab.INVALID_TAB_ID);
 
-        int[] restoredIds = mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null);
 
         assertArrayEquals(new int[] {105}, restoredIds);
         assertEquals(groupId, restoredTab.getTabGroupId());
@@ -1371,6 +1407,227 @@ public class TabCollectionTabModelImplUnitTest {
                 .didSelectTab(
                         restoredTab, TabSelectionType.FROM_UNDO, /* lastId= */ Tab.INVALID_TAB_ID);
         verify(mScopedStorageBatch, atLeastOnce()).close();
+    }
+
+    @Test
+    public void testRestoreClosedTabsForUndo_hiddenGroupOnlySnapshotReopensAndReselects() {
+        MockTab reopenedTab1 = createMockTab(/* tabId= */ 201, mProfile);
+        MockTab reopenedTab2 = createMockTab(/* tabId= */ 202, mProfile);
+        setUpHiddenGroupRestore(reopenedTab1, reopenedTab2);
+        Tab existingTab1 = mTabs.get(0);
+        Tab existingTab2 = mTabs.get(1);
+        UndoClosureSnapshot snapshot =
+                createHidingGroupSnapshot(
+                        /* collapsed= */ true,
+                        TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
+                        createClosedTab(
+                                /* id= */ 10,
+                                HIDDEN_GROUP_ID,
+                                /* indexInGroup= */ 0,
+                                /* modelIndex= */ 1,
+                                /* wasSelected= */ false),
+                        createClosedTab(
+                                /* id= */ 11,
+                                HIDDEN_GROUP_ID,
+                                /* indexInGroup= */ 1,
+                                /* modelIndex= */ 2,
+                                /* wasSelected= */ true));
+
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, mTabGroupUiActionHandler);
+
+        assertArrayEquals(new int[] {201, 202}, restoredIds);
+        assertEquals(List.of(existingTab1, reopenedTab1, reopenedTab2, existingTab2), mTabs);
+        verify(mTabModelDelegate, never()).restoreForUndo(any(), anyInt(), any());
+        verify(mTabGroupUiActionHandler).openTabGroup(HIDDEN_GROUP_SYNC_ID);
+        verify(mTabCollectionTabModelImplJni).moveTabGroupTo(any(), eq(REOPENED_GROUP_ID), eq(1));
+        assertEquals(reopenedTab2, mTabModel.getCurrentTabSupplier().get());
+        verify(mTabModelObserver)
+                .didSelectTab(
+                        reopenedTab2,
+                        TabSelectionType.FROM_UNDO,
+                        /* lastId= */ existingTab1.getId());
+        verify(mScopedStorageBatch, atLeastOnce()).close();
+    }
+
+    @Test
+    public void
+            testRestoreClosedTabsForUndo_mixedHiddenGroupAndTabRestoreServiceRestoresHiddenGroupFirst() {
+        MockTab reopenedGroupTab = createMockTab(/* tabId= */ 201, mProfile);
+        MockTab tabRestoreServiceTab0 = createMockTab(/* tabId= */ 300, mProfile);
+        MockTab tabRestoreServiceTab1 = createMockTab(/* tabId= */ 301, mProfile);
+        setUpHiddenGroupRestore(reopenedGroupTab);
+        Tab existingTab1 = mTabs.get(0);
+        Tab existingTab2 = mTabs.get(1);
+        UndoClosureSnapshot snapshot = createMixedHiddenGroupAndTabRestoreServiceSnapshot();
+
+        when(mTabModelDelegate.restoreForUndo(mTabModel, ENTRY_ID, snapshot.tabs))
+                .thenAnswer(
+                        inv -> {
+                            mTabModel.addTab(
+                                    tabRestoreServiceTab0,
+                                    /* index= */ 0,
+                                    TabLaunchType.FROM_UNDO_CLOSURE,
+                                    TabCreationState.LIVE_IN_BACKGROUND);
+                            mTabModel.addTab(
+                                    tabRestoreServiceTab1,
+                                    /* index= */ 2,
+                                    TabLaunchType.FROM_UNDO_CLOSURE,
+                                    TabCreationState.LIVE_IN_BACKGROUND);
+                            return new int[] {300, Tab.INVALID_TAB_ID, 301};
+                        });
+
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, mTabGroupUiActionHandler);
+
+        assertArrayEquals(new int[] {300, 201, 301}, restoredIds);
+        assertEquals(
+                List.of(
+                        tabRestoreServiceTab0,
+                        reopenedGroupTab,
+                        tabRestoreServiceTab1,
+                        existingTab1,
+                        existingTab2),
+                mTabs);
+        InOrder inOrder = inOrder(mTabGroupUiActionHandler, mTabModelDelegate);
+        inOrder.verify(mTabGroupUiActionHandler).openTabGroup(HIDDEN_GROUP_SYNC_ID);
+        inOrder.verify(mTabModelDelegate).restoreForUndo(mTabModel, ENTRY_ID, snapshot.tabs);
+        assertEquals(tabRestoreServiceTab1, mTabModel.getCurrentTabSupplier().get());
+    }
+
+    @Test
+    public void
+            testRestoreClosedTabsForUndo_mixedHiddenGroupAndTabRestoreServicePartialFailureAdjustsIndex() {
+        MockTab reopenedGroupTab = createMockTab(/* tabId= */ 201, mProfile);
+        MockTab tabRestoreServiceTab1 = createMockTab(/* tabId= */ 301, mProfile);
+        setUpHiddenGroupRestore(reopenedGroupTab);
+        Tab existingTab1 = mTabs.get(0);
+        Tab existingTab2 = mTabs.get(1);
+        UndoClosureSnapshot snapshot = createMixedHiddenGroupAndTabRestoreServiceSnapshot();
+
+        when(mTabModelDelegate.restoreForUndo(mTabModel, ENTRY_ID, snapshot.tabs))
+                .thenAnswer(
+                        inv -> {
+                            // T0 failed to restore, so T1 is inserted at index 1 (after G1 at 0).
+                            mTabModel.addTab(
+                                    tabRestoreServiceTab1,
+                                    /* index= */ 1,
+                                    TabLaunchType.FROM_UNDO_CLOSURE,
+                                    TabCreationState.LIVE_IN_BACKGROUND);
+                            return new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID, 301};
+                        });
+
+        int[] restoredIds =
+                mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, mTabGroupUiActionHandler);
+
+        assertArrayEquals(new int[] {Tab.INVALID_TAB_ID, 201, 301}, restoredIds);
+        assertEquals(
+                List.of(reopenedGroupTab, tabRestoreServiceTab1, existingTab1, existingTab2),
+                mTabs);
+    }
+
+    private void setUpHiddenGroupRestore(MockTab... reopenedTabs) {
+        mTabModel.setActive(/* active= */ true);
+        when(mTabCollectionTabModelImplJni.getAllTabs(any()))
+                .thenAnswer(inv -> new ArrayList<>(mTabs));
+        when(mOrderController.determineInsertionIndex(anyInt(), anyInt(), any()))
+                .thenAnswer(inv -> inv.getArgument(1));
+        addSelectedTab(/* tabId= */ 1);
+        MockTab existingTab2 = createMockTab(/* tabId= */ 2, mProfile);
+        mTabModel.addTab(
+                existingTab2,
+                /* index= */ 1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_BACKGROUND);
+        verifyBatchedAndReset();
+
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = HIDDEN_GROUP_SYNC_ID;
+        when(mTabGroupSyncService.getGroup(HIDDEN_GROUP_SYNC_ID)).thenReturn(savedGroup);
+
+        doAnswer(
+                        inv -> {
+                            when(mTabCollectionTabModelImplJni.tabGroupExists(
+                                            any(), eq(REOPENED_GROUP_ID)))
+                                    .thenReturn(true);
+                            for (MockTab reopenedTab : reopenedTabs) {
+                                reopenedTab.setTabGroupId(REOPENED_GROUP_ID);
+                                mTabModel.addTab(
+                                        reopenedTab,
+                                        mTabs.size(),
+                                        TabLaunchType.FROM_SYNC_BACKGROUND,
+                                        TabCreationState.LIVE_IN_BACKGROUND);
+                            }
+                            savedGroup.localId = new LocalTabGroupId(REOPENED_GROUP_ID);
+                            return null;
+                        })
+                .when(mTabGroupUiActionHandler)
+                .openTabGroup(HIDDEN_GROUP_SYNC_ID);
+    }
+
+    private static UndoClosureSnapshot createMixedHiddenGroupAndTabRestoreServiceSnapshot() {
+        // Close T0(0), G1(1), T1(2) ahead of surviving existingTab1(3) and existingTab2(4).
+        return createHidingGroupSnapshot(
+                /* collapsed= */ false,
+                ENTRY_ID,
+                createClosedTab(
+                        /* id= */ 10,
+                        /* groupId= */ null,
+                        TabList.INVALID_TAB_INDEX,
+                        /* modelIndex= */ 0,
+                        /* wasSelected= */ false),
+                createClosedTab(
+                        /* id= */ 20,
+                        HIDDEN_GROUP_ID,
+                        /* indexInGroup= */ 0,
+                        /* modelIndex= */ 1,
+                        /* wasSelected= */ false),
+                createClosedTab(
+                        /* id= */ 30,
+                        /* groupId= */ null,
+                        TabList.INVALID_TAB_INDEX,
+                        /* modelIndex= */ 2,
+                        /* wasSelected= */ true));
+    }
+
+    private static UndoClosureSnapshot createHidingGroupSnapshot(
+            boolean collapsed, @TabRestoreEntryId int entryId, ClosedTab... tabs) {
+        GroupData groupData =
+                new GroupData(
+                        "Group",
+                        /* color= */ 1,
+                        collapsed,
+                        /* isHiding= */ true,
+                        /* survivesInModel= */ false,
+                        HIDDEN_GROUP_SYNC_ID);
+        return UndoClosureSnapshot.forTabModel(
+                List.of(tabs),
+                Map.of(HIDDEN_GROUP_ID, groupData),
+                /* isTabGroupSyncEnabled= */ true,
+                /* isAllTabs= */ false,
+                entryId,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null);
+    }
+
+    private static ClosedTab createClosedTab(
+            @TabId int id,
+            @Nullable Token groupId,
+            int indexInGroup,
+            int modelIndex,
+            boolean wasSelected) {
+        return new ClosedTab(
+                id,
+                /* title= */ "Tab " + id,
+                groupId,
+                indexInGroup,
+                modelIndex,
+                /* pinned= */ false,
+                wasSelected);
     }
 
     private void addTabsAndResetObserver(int count) {

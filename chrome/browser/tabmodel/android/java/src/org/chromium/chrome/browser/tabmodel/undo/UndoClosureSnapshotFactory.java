@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -42,6 +43,8 @@ public final class UndoClosureSnapshotFactory {
      * @param tabs The tabs being closed.
      * @param isAllTabs Whether all tabs in the model are being closed.
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled for the model's profile.
+     * @param tabGroupSyncService The service used to look up saved tab group sync IDs, or null if
+     *     unavailable.
      * @param closingSource The UI surface from which the tab closure originated.
      * @param entryId The TabRestoreService session ID for the saved closure, or {@link
      *     TabRestoreEntryId#INVALID_TAB_RESTORE_ENTRY_ID} if none.
@@ -53,6 +56,7 @@ public final class UndoClosureSnapshotFactory {
             List<Tab> tabs,
             boolean isAllTabs,
             boolean isTabGroupSyncEnabled,
+            @Nullable TabGroupSyncService tabGroupSyncService,
             @TabClosingSource int closingSource,
             @TabRestoreEntryId int entryId,
             @Nullable Runnable undoRunnable) {
@@ -96,6 +100,12 @@ public final class UndoClosureSnapshotFactory {
                     survivesInModel = lazySet.contains(groupId);
                 }
 
+                SavedTabGroup savedGroup =
+                        tabGroupSyncService != null
+                                ? tabGroupSyncService.getGroup(new LocalTabGroupId(groupId))
+                                : null;
+                String savedTabGroupSyncId = savedGroup != null ? savedGroup.syncId : null;
+
                 groups.put(
                         groupId,
                         new GroupData(
@@ -103,7 +113,8 @@ public final class UndoClosureSnapshotFactory {
                                 groupColor,
                                 groupCollapsed,
                                 groupIsHiding,
-                                survivesInModel));
+                                survivesInModel,
+                                savedTabGroupSyncId));
             }
         }
 

@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -77,6 +78,7 @@ public class TabUndoBarControllerUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private SnackbarManageable mSnackbarManageable;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private Tab mTab;
     @Mock private Tab mOtherTab;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -117,7 +119,11 @@ public class TabUndoBarControllerUnitTest {
 
         mController =
                 new TabUndoBarController(
-                        mContext, mTabModelSelector, mSnackbarManageable, () -> mIsDialogVisible);
+                        mContext,
+                        mTabModelSelector,
+                        mSnackbarManageable,
+                        () -> mIsDialogVisible,
+                        () -> mTabGroupUiActionHandler);
         mController.initialize();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
         mObserver = mTabModelObserverCaptor.getValue();
@@ -149,7 +155,7 @@ public class TabUndoBarControllerUnitTest {
 
         watcher.assertExpected();
         verify(mTabModel).cancelTabClosure(TAB_ID);
-        verify(mTabModel, never()).restoreClosedTabsForUndo(any(), anyBoolean());
+        verify(mTabModel, never()).restoreClosedTabsForUndo(any(), anyBoolean(), any());
     }
 
     @Test
@@ -172,7 +178,8 @@ public class TabUndoBarControllerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
     public void testFlagOn_OnAction_RestoresWithReselectTrueByDefault() {
-        when(mTabModel.restoreClosedTabsForUndo(any(), eq(true))).thenReturn(new int[] {101});
+        when(mTabModel.restoreClosedTabsForUndo(any(), eq(true), eq(mTabGroupUiActionHandler)))
+                .thenReturn(new int[] {101});
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Tab.CloseUndoBar.Undone", Snackbar.UMA_TAB_CLOSE_UNDO);
@@ -189,7 +196,9 @@ public class TabUndoBarControllerUnitTest {
         mController.onAction(mShownSnackbars.get(0).getActionData());
 
         watcher.assertExpected();
-        verify(mTabModel).restoreClosedTabsForUndo(mSnapshotCaptor.capture(), eq(true));
+        verify(mTabModel)
+                .restoreClosedTabsForUndo(
+                        mSnapshotCaptor.capture(), eq(true), eq(mTabGroupUiActionHandler));
         assertEquals(TabClosingSource.TABLET_TAB_STRIP, mSnapshotCaptor.getValue().closingSource);
         assertEquals(1, mUserActionTester.getActionCount("TabletTabStrip.UndoCloseTab"));
         verify(mTabModel, never()).cancelTabClosure(anyInt());
@@ -198,7 +207,8 @@ public class TabUndoBarControllerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
     public void testFlagOn_ManualTabSelectDisarmsReselect_AndNextCloseResets() {
-        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean())).thenReturn(new int[] {101});
+        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean(), any()))
+                .thenReturn(new int[] {101});
 
         // 1. User manually selects a tab after close -> reselect is false.
         mController.onUndoableClosure(
@@ -241,7 +251,9 @@ public class TabUndoBarControllerUnitTest {
         assertEquals(6, mShownSnackbars.size());
         mController.onAction(mShownSnackbars.get(5).getActionData());
 
-        verify(mTabModel, times(6)).restoreClosedTabsForUndo(any(), mReselectCaptor.capture());
+        verify(mTabModel, times(6))
+                .restoreClosedTabsForUndo(
+                        any(), mReselectCaptor.capture(), eq(mTabGroupUiActionHandler));
         assertEquals(
                 List.of(false, true, false, false, false, false), mReselectCaptor.getAllValues());
     }
@@ -249,7 +261,8 @@ public class TabUndoBarControllerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
     public void testFlagOn_StackedClosures_OnlyMostRecentUndoReselects() {
-        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean())).thenReturn(new int[] {101});
+        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean(), any()))
+                .thenReturn(new int[] {101});
 
         // 1. Two stacked closures undone in LIFO order -> only the newer closure reselects.
         mController.onUndoableClosure(
@@ -304,7 +317,10 @@ public class TabUndoBarControllerUnitTest {
         mController.onAction(bar7.getActionData());
 
         verify(mTabModel, times(5))
-                .restoreClosedTabsForUndo(mSnapshotCaptor.capture(), mReselectCaptor.capture());
+                .restoreClosedTabsForUndo(
+                        mSnapshotCaptor.capture(),
+                        mReselectCaptor.capture(),
+                        eq(mTabGroupUiActionHandler));
         assertEquals(List.of(true, false, false, true, false), mReselectCaptor.getAllValues());
         assertEquals(OTHER_TAB_ID, mSnapshotCaptor.getAllValues().get(0).tabs.get(0).id);
         assertEquals(TAB_ID, mSnapshotCaptor.getAllValues().get(1).tabs.get(0).id);
@@ -316,7 +332,8 @@ public class TabUndoBarControllerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
     public void testFlagOn_ManualSelectThenSecondCloseDismissed_OlderClosureDoesNotReselect() {
-        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean())).thenReturn(new int[] {101});
+        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean(), any()))
+                .thenReturn(new int[] {101});
 
         mController.onUndoableClosure(
                 createSnapshot(TAB_ID, "Tab 1", /* wasSelected= */ true, TabClosingSource.UNKNOWN));
@@ -332,14 +349,17 @@ public class TabUndoBarControllerUnitTest {
         mController.onDismissNoAction(bar2.getActionData());
         mController.onAction(bar1.getActionData());
 
-        verify(mTabModel).restoreClosedTabsForUndo(mSnapshotCaptor.capture(), eq(false));
+        verify(mTabModel)
+                .restoreClosedTabsForUndo(
+                        mSnapshotCaptor.capture(), eq(false), eq(mTabGroupUiActionHandler));
         assertEquals(TAB_ID, mSnapshotCaptor.getValue().tabs.get(0).id);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
     public void testFlagOn_ModelDeactivatedOrIncognitoSelected_DisarmsReselect() {
-        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean())).thenReturn(new int[] {101});
+        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean(), any()))
+                .thenReturn(new int[] {101});
 
         // 1. Model deactivated after close -> reselect is false.
         mController.onUndoableClosure(
@@ -369,7 +389,9 @@ public class TabUndoBarControllerUnitTest {
         assertEquals(4, mShownSnackbars.size());
         mController.onAction(mShownSnackbars.get(3).getActionData());
 
-        verify(mTabModel, times(4)).restoreClosedTabsForUndo(any(), mReselectCaptor.capture());
+        verify(mTabModel, times(4))
+                .restoreClosedTabsForUndo(
+                        any(), mReselectCaptor.capture(), eq(mTabGroupUiActionHandler));
         assertEquals(List.of(false, false, false, true), mReselectCaptor.getAllValues());
     }
 
@@ -393,7 +415,7 @@ public class TabUndoBarControllerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
     public void testFlagOn_OnAction_RestoreFailureShowsFailureSnackbar() {
-        when(mTabModel.restoreClosedTabsForUndo(any(), eq(true)))
+        when(mTabModel.restoreClosedTabsForUndo(any(), eq(true), eq(mTabGroupUiActionHandler)))
                 .thenReturn(new int[] {Tab.INVALID_TAB_ID});
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -419,7 +441,8 @@ public class TabUndoBarControllerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
     public void testFlagOn_AllTabsClosureCommitted_DismissesSnackbarsAndDisarmsReselect() {
-        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean())).thenReturn(new int[] {101});
+        when(mTabModel.restoreClosedTabsForUndo(any(), anyBoolean(), any()))
+                .thenReturn(new int[] {101});
 
         mController.onUndoableClosure(
                 createSnapshot(TAB_ID, "Tab 1", /* wasSelected= */ true, TabClosingSource.UNKNOWN));
@@ -429,7 +452,9 @@ public class TabUndoBarControllerUnitTest {
         verify(mSnackbarManager).dismissSnackbars(mController);
 
         mController.onAction(mShownSnackbars.get(0).getActionData());
-        verify(mTabModel).restoreClosedTabsForUndo(mSnapshotCaptor.capture(), eq(false));
+        verify(mTabModel)
+                .restoreClosedTabsForUndo(
+                        mSnapshotCaptor.capture(), eq(false), eq(mTabGroupUiActionHandler));
         assertEquals(TAB_ID, mSnapshotCaptor.getValue().tabs.get(0).id);
     }
 
@@ -510,7 +535,8 @@ public class TabUndoBarControllerUnitTest {
                                 TabGroupColorId.GREY,
                                 /* collapsed= */ false,
                                 /* isHiding= */ false,
-                                survivesInModel)),
+                                survivesInModel,
+                                /* savedTabGroupSyncId= */ null)),
                 /* isTabGroupSyncEnabled= */ false,
                 /* isAllTabs= */ false,
                 /* entryId= */ 1,

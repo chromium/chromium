@@ -1352,7 +1352,12 @@ public class TabGridDialogMediator
             boolean reselect = !model.isIncognitoBranded() && snapshot == mReselectableSnapshot;
             mReselectableSnapshot = null;
             UndoClosureRestorer.restoreClosure(
-                    model, snapshot, reselect, mActivity, mSnackbarManager);
+                    model,
+                    snapshot,
+                    reselect,
+                    mActivity,
+                    mSnackbarManager,
+                    mDataSharingTabManager.getTabGroupUiActionHandler());
             return;
         }
         if (actionData instanceof Integer tabId) {

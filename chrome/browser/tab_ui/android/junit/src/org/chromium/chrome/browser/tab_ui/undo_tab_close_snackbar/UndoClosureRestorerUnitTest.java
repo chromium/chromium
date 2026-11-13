@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +60,7 @@ public class UndoClosureRestorerUnitTest {
 
     @Mock private TabModel mTabModel;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private Runnable mUndoRunnable;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
 
@@ -83,12 +85,18 @@ public class UndoClosureRestorerUnitTest {
                         List.of(createClosedTab(10, "Tab 1")),
                         TabClosingSource.TABLET_TAB_STRIP,
                         mUndoRunnable);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true))
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, mTabGroupUiActionHandler))
                 .thenReturn(new int[] {101});
 
         assertTrue(
                 UndoClosureRestorer.restoreClosure(
-                        mTabModel, snapshot, /* reselect= */ true, mContext, mSnackbarManager));
+                        mTabModel,
+                        snapshot,
+                        /* reselect= */ true,
+                        mContext,
+                        mSnackbarManager,
+                        mTabGroupUiActionHandler));
 
         assertEquals(1, mUserActionTester.getActionCount(TABLET_UNDO_USER_ACTION));
         verify(mUndoRunnable).run();
@@ -102,12 +110,18 @@ public class UndoClosureRestorerUnitTest {
                         List.of(createClosedTab(10, "Tab 1"), createClosedTab(20, "Tab 2")),
                         TabClosingSource.UNKNOWN,
                         /* undoRunnable= */ null);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null))
                 .thenReturn(new int[] {Tab.INVALID_TAB_ID, 0});
 
         assertTrue(
                 UndoClosureRestorer.restoreClosure(
-                        mTabModel, snapshot, /* reselect= */ false, mContext, mSnackbarManager));
+                        mTabModel,
+                        snapshot,
+                        /* reselect= */ false,
+                        mContext,
+                        mSnackbarManager,
+                        /* tabGroupUiActionHandler= */ null));
 
         assertEquals(0, mUserActionTester.getActionCount(TABLET_UNDO_USER_ACTION));
         verify(mSnackbarManager, never()).showSnackbar(any());
@@ -120,12 +134,18 @@ public class UndoClosureRestorerUnitTest {
                         List.of(createClosedTab(10, "Tab 1"), createClosedTab(20, "Tab 2")),
                         TabClosingSource.TABLET_TAB_STRIP,
                         mUndoRunnable);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true))
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, /* tabGroupUiActionHandler= */ null))
                 .thenReturn(new int[] {Tab.INVALID_TAB_ID, Tab.INVALID_TAB_ID});
 
         assertFalse(
                 UndoClosureRestorer.restoreClosure(
-                        mTabModel, snapshot, /* reselect= */ true, mContext, mSnackbarManager));
+                        mTabModel,
+                        snapshot,
+                        /* reselect= */ true,
+                        mContext,
+                        mSnackbarManager,
+                        /* tabGroupUiActionHandler= */ null));
 
         assertEquals(0, mUserActionTester.getActionCount(TABLET_UNDO_USER_ACTION));
         verify(mUndoRunnable, never()).run();
@@ -153,7 +173,8 @@ public class UndoClosureRestorerUnitTest {
                         List.of(createClosedTab(10, "Tab 1")),
                         TabClosingSource.UNKNOWN,
                         /* undoRunnable= */ null);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null))
                 .thenReturn(new int[] {Tab.INVALID_TAB_ID});
 
         assertFalse(
@@ -162,7 +183,8 @@ public class UndoClosureRestorerUnitTest {
                         snapshot,
                         /* reselect= */ false,
                         mContext,
-                        /* snackbarManager= */ null));
+                        /* snackbarManager= */ null,
+                        /* tabGroupUiActionHandler= */ null));
     }
 
     private static ClosedTab createClosedTab(@TabId int id, String title) {

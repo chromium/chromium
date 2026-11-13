@@ -154,6 +154,7 @@ import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -211,6 +212,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private DataSharingService mDataSharingService;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private CollaborationService mCollaborationService;
@@ -1778,12 +1780,16 @@ public class TabGridDialogMediatorUnitTest {
     public void testSnackbarController_onAction_undoClosureSnapshot_restoresWithReselect() {
         UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
         mMediator.setReselectableSnapshotForTesting(snapshot);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ true))
+        when(mDataSharingTabManager.getTabGroupUiActionHandler())
+                .thenReturn(mTabGroupUiActionHandler);
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ true, mTabGroupUiActionHandler))
                 .thenReturn(new int[] {TAB1_ID});
 
         mMediator.onAction(snapshot);
 
-        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ true);
+        verify(mTabModel)
+                .restoreClosedTabsForUndo(snapshot, /* reselect= */ true, mTabGroupUiActionHandler);
         verify(mTabModel, never()).cancelTabClosure(anyInt());
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }
@@ -1792,13 +1798,16 @@ public class TabGridDialogMediatorUnitTest {
     public void testSnackbarController_onAction_undoClosureSnapshot_afterDidSelectTab() {
         UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
         mMediator.setReselectableSnapshotForTesting(snapshot);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null))
                 .thenReturn(new int[] {TAB1_ID});
 
         mTabModelObserverCaptor.getValue().didSelectTab(mTab1, TabSelectionType.FROM_USER, TAB2_ID);
         mMediator.onAction(snapshot);
 
-        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ false);
+        verify(mTabModel)
+                .restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null);
         verify(mTabModel, never()).cancelTabClosure(anyInt());
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }
@@ -1808,12 +1817,15 @@ public class TabGridDialogMediatorUnitTest {
         UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
         mMediator.setReselectableSnapshotForTesting(snapshot);
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null))
                 .thenReturn(new int[] {TAB1_ID});
 
         mMediator.onAction(snapshot);
 
-        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ false);
+        verify(mTabModel)
+                .restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null);
         verify(mTabModel, never()).cancelTabClosure(anyInt());
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }
@@ -1822,16 +1834,19 @@ public class TabGridDialogMediatorUnitTest {
     public void testSnackbarController_onDismissNoAction_undoClosureSnapshot_isNoOp() {
         UndoClosureSnapshot snapshot = createUndoClosureSnapshot();
         mMediator.setReselectableSnapshotForTesting(snapshot);
-        when(mTabModel.restoreClosedTabsForUndo(snapshot, /* reselect= */ false))
+        when(mTabModel.restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null))
                 .thenReturn(new int[] {TAB1_ID});
 
         mMediator.onDismissNoAction(snapshot);
 
         verify(mTabModel, never()).commitTabClosure(anyInt());
-        verify(mTabModel, never()).restoreClosedTabsForUndo(any(), anyBoolean());
+        verify(mTabModel, never()).restoreClosedTabsForUndo(any(), anyBoolean(), any());
 
         mMediator.onAction(snapshot);
-        verify(mTabModel).restoreClosedTabsForUndo(snapshot, /* reselect= */ false);
+        verify(mTabModel)
+                .restoreClosedTabsForUndo(
+                        snapshot, /* reselect= */ false, /* tabGroupUiActionHandler= */ null);
     }
 
     @Test

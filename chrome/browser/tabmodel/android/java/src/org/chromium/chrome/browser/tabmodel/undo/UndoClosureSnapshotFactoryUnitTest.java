@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosureKind;
 import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.GroupData;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -76,6 +77,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         List.of(tab),
                         /* isAllTabs= */ false,
                         /* isTabGroupSyncEnabled= */ true,
+                        /* tabGroupSyncService= */ null,
                         TabClosingSource.TABLET_TAB_STRIP,
                         /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
                         /* undoRunnable= */ null);
@@ -86,6 +88,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
         assertFalse(groupData.survivesInModel);
         assertEquals(3, groupData.color);
         assertFalse(groupData.collapsed);
+        assertNull(groupData.savedTabGroupSyncId);
         assertTrue(snapshot.tabs.get(0).pinned);
         assertEquals(TabClosingSource.TABLET_TAB_STRIP, snapshot.closingSource);
         assertNull(snapshot.undoRunnable);
@@ -154,6 +157,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         List.of(tab),
                         /* isAllTabs= */ false,
                         /* isTabGroupSyncEnabled= */ true,
+                        /* tabGroupSyncService= */ null,
                         /* closingSource= */ TabClosingSource.UNKNOWN,
                         /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
                         /* undoRunnable= */ null);
@@ -184,6 +188,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         List.of(tab1, tab2),
                         /* isAllTabs= */ false,
                         /* isTabGroupSyncEnabled= */ true,
+                        /* tabGroupSyncService= */ null,
                         /* closingSource= */ TabClosingSource.UNKNOWN,
                         /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
                         /* undoRunnable= */ null);
@@ -217,12 +222,19 @@ public class UndoClosureSnapshotFactoryUnitTest {
         when(mLazySupplier.get()).thenReturn(Collections.emptySet());
         when(tabModel.getLazyAllTabGroupIds(any(), eq(true))).thenReturn(mLazySupplier);
 
+        SavedTabGroup savedGroup1 = new SavedTabGroup();
+        savedGroup1.syncId = "sync-group-1";
+        TabGroupSyncService syncService = mock(TabGroupSyncService.class);
+        when(syncService.getGroup(new LocalTabGroupId(GROUP_1))).thenReturn(savedGroup1);
+        when(syncService.getGroup(new LocalTabGroupId(GROUP_2))).thenReturn(null);
+
         UndoClosureSnapshot snapshot =
                 UndoClosureSnapshotFactory.captureFromTabModel(
                         tabModel,
                         List.of(tab1, tab2),
                         /* isAllTabs= */ false,
                         /* isTabGroupSyncEnabled= */ true,
+                        syncService,
                         /* closingSource= */ TabClosingSource.UNKNOWN,
                         /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
                         /* undoRunnable= */ null);
@@ -236,10 +248,13 @@ public class UndoClosureSnapshotFactoryUnitTest {
         assertTrue(group1.isHiding);
         assertEquals("Group 1", group1.title);
         assertFalse(group1.survivesInModel);
+        assertEquals("sync-group-1", group1.savedTabGroupSyncId);
+        assertTrue(snapshot.hasReopenableHiddenGroups());
 
         assertFalse(group2.isHiding);
         assertNull(group2.title);
         assertFalse(group2.survivesInModel);
+        assertNull(group2.savedTabGroupSyncId);
     }
 
     @Test
@@ -290,6 +305,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         List.of(tab1, tab2),
                         /* isAllTabs= */ true,
                         /* isTabGroupSyncEnabled= */ true,
+                        /* tabGroupSyncService= */ null,
                         TabClosingSource.TABLET_TAB_STRIP,
                         /* entryId= */ 42,
                         undoRunnable);
@@ -349,6 +365,7 @@ public class UndoClosureSnapshotFactoryUnitTest {
                         List.of(tab),
                         /* isAllTabs= */ false,
                         /* isTabGroupSyncEnabled= */ false,
+                        /* tabGroupSyncService= */ null,
                         TabClosingSource.UNKNOWN,
                         /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
                         /* undoRunnable= */ null);

@@ -117,6 +117,12 @@ public final class UndoClosureSnapshot {
         public final boolean survivesInModel;
 
         /**
+         * The sync identifier of the group in {@code TabGroupSyncService} if synced, or {@code
+         * null} for local-only groups.
+         */
+        public final @Nullable String savedTabGroupSyncId;
+
+        /**
          * Constructs a closed tab group representation.
          *
          * @param title The title of the closed tab group.
@@ -124,18 +130,30 @@ public final class UndoClosureSnapshot {
          * @param collapsed Whether the closed tab group was collapsed.
          * @param isHiding Whether the closed tab group was hiding.
          * @param survivesInModel Whether the closed tab group survives in the comprehensive model.
+         * @param savedTabGroupSyncId The sync identifier of the group if synced, or {@code null}
+         *     for local-only groups.
          */
         public GroupData(
                 @Nullable String title,
                 int color,
                 boolean collapsed,
                 boolean isHiding,
-                boolean survivesInModel) {
+                boolean survivesInModel,
+                @Nullable String savedTabGroupSyncId) {
             this.title = title;
             this.color = color;
             this.collapsed = collapsed;
             this.isHiding = isHiding;
             this.survivesInModel = survivesInModel;
+            this.savedTabGroupSyncId = savedTabGroupSyncId;
+        }
+
+        /**
+         * Returns whether this group represents a whole hiding synced tab group that can be
+         * reopened from {@code TabGroupSyncService} on undo.
+         */
+        public boolean isReopenableHiddenGroup() {
+            return isHiding && !survivesInModel && savedTabGroupSyncId != null;
         }
     }
 
@@ -172,7 +190,7 @@ public final class UndoClosureSnapshot {
 
     /**
      * The TabRestoreService entry id, or {@link TabRestoreEntryId#INVALID_TAB_RESTORE_ENTRY_ID}
-     * when not populated by a pre-removal capture.
+     * when no TabRestoreService entry was saved or when not populated by a pre-removal capture.
      */
     public final @TabRestoreEntryId int entryId;
 
@@ -285,5 +303,18 @@ public final class UndoClosureSnapshot {
                 /* entryId= */ TabRestoreEntryId.INVALID_TAB_RESTORE_ENTRY_ID,
                 /* closingSource= */ TabClosingSource.UNKNOWN,
                 /* undoRunnable= */ null);
+    }
+
+    /**
+     * Returns whether this snapshot contains at least one whole hiding synced tab group that can be
+     * reopened on undo.
+     */
+    public boolean hasReopenableHiddenGroups() {
+        for (GroupData groupData : groups.values()) {
+            if (groupData.isReopenableHiddenGroup()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

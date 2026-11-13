@@ -96,6 +96,8 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
+        when(mHistoricalTabSaver.createHistoricalBulkClosure(Collections.emptyList()))
+                .thenReturn(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID);
 
         mObserver = new HistoricalTabModelObserver(mTabModel, mHistoricalTabSaver);
         mObserver.setUndoClosureCallback(mUndoClosureCallback);
@@ -683,6 +685,63 @@ public class HistoricalTabModelObserverUnitTest {
 
         verify(mHistoricalTabSaver).createHistoricalTab(mockTab);
         verify(mUndoClosureCallback, never()).onResult(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testUndoableHiddenGroupOnlyClosure_InvokesCallbackWithSyncId() {
+        Token tabGroupId = new Token(3L, 4L);
+        closeSyncedGroup(
+                tabGroupId,
+                /* syncId= */ "sync-hidden-1",
+                /* collaborationId= */ null,
+                /* isHiding= */ true);
+
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(Collections.emptyList());
+        verify(mUndoClosureCallback).onResult(mSnapshotCaptor.capture());
+        UndoClosureSnapshot snapshot = mSnapshotCaptor.getValue();
+        assertEquals(HistoricalTabSaver.INVALID_TAB_RESTORE_ENTRY_ID, snapshot.entryId);
+        assertTrue(snapshot.hasReopenableHiddenGroups());
+        UndoClosureSnapshot.GroupData groupData = snapshot.groups.get(tabGroupId);
+        assertNotNull(groupData);
+        assertTrue(groupData.isHiding);
+        assertFalse(groupData.survivesInModel);
+        assertEquals("sync-hidden-1", groupData.savedTabGroupSyncId);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNDOABLE_TAB_CLOSURE_REWORK)
+    public void testUndoableCollaborationGroupOnlyClosure_SkipsCallbackWhenNotHiding() {
+        closeSyncedGroup(
+                new Token(3L, 4L),
+                /* syncId= */ "sync-collab-1",
+                COLLABORATION_ID,
+                /* isHiding= */ false);
+
+        verify(mHistoricalTabSaver).createHistoricalBulkClosure(Collections.emptyList());
+        verify(mUndoClosureCallback, never()).onResult(any());
+    }
+
+    private void closeSyncedGroup(
+            Token tabGroupId, String syncId, @Nullable String collaborationId, boolean isHiding) {
+        MockTab mockTab0 = createMockTab(10);
+        createGroup(tabGroupId, "Group", TabGroupColorId.BLUE, new MockTab[] {mockTab0});
+        when(mTabModel.isTabGroupHiding(tabGroupId)).thenReturn(isHiding);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        mSavedTabGroup.syncId = syncId;
+        mSavedTabGroup.collaborationId = collaborationId;
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId)))
+                .thenReturn(mSavedTabGroup);
+        when(mTabModel.getLazyAllTabGroupIds(any(), eq(true)))
+                .thenReturn(LazyOneshotSupplier.fromValue(Collections.emptySet()));
+
+        mObserver.onFinishingMultipleTabClosure(
+                List.of(mockTab0),
+                /* canRestore= */ true,
+                TabClosingSource.UNKNOWN,
+                /* undoRunnable= */ null,
+                /* isAllTabs= */ false,
+                /* isUndoable= */ true);
     }
 
     private MockTab createMockTab(int id) {

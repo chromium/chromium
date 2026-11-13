@@ -3675,7 +3675,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 };
 
         mUndoBarPopupController =
-                new TabUndoBarController(this, mTabModelSelector, this, dialogVisibilitySupplier);
+                new TabUndoBarController(
+                        this,
+                        mTabModelSelector,
+                        this,
+                        dialogVisibilitySupplier,
+                        this::getTabGroupUiActionHandler);
 
         mInactivityTrackerSupplier.set(
                 new ChromeInactivityTracker(
