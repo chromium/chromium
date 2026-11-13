@@ -793,7 +793,7 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   getUrlCollection(url: string) {
-    return chrome.passwordsPrivate.getUrlCollection(url);
+    return chrome.passwordsPrivate.getUrlCollection(url).catch(() => null);
   }
 
   addPasswordManagerAuthTimeoutListener(

@@ -275,8 +275,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
           this.urlCollection_ = urlCollection;
           this.websiteErrorMessage_ =
               !urlCollection ? this.i18n('notValidWebsite') : null;
-        })
-        .catch(() => this.websiteErrorMessage_ = this.i18n('notValidWebsite'));
+        });
   }
 
   protected onWebsiteInputBlur_() {
