@@ -293,13 +293,7 @@ TEST_F(VideoSenderTest, BuiltInEncoder) {
   RunUntilQuit();
 }
 
-// TODO(crbug.com/500613219): Enable the test.
-#if defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#define MAYBE_MockEncoderGoldenCase DISABLED_MockEncoderGoldenCase
-#else
-#define MAYBE_MockEncoderGoldenCase MockEncoderGoldenCase
-#endif
-TEST_F(VideoSenderTest, MAYBE_MockEncoderGoldenCase) {
+TEST_F(VideoSenderTest, MockEncoderGoldenCase) {
   CreateSender(EncoderType::kMock);
 
   VideoEncoder::FrameEncodedCallback callback;
@@ -328,7 +322,7 @@ TEST_F(VideoSenderTest, MAYBE_MockEncoderGoldenCase) {
   encoded_frame->referenced_frame_id = FrameId::first();
   encoded_frame->rtp_timestamp = RtpTimeTicks(12345);
   encoded_frame->reference_time = NowTicks();
-  encoded_frame->data = base::HeapArray<uint8_t>::Uninit(1920 * 1080);
+  encoded_frame->data = base::HeapArray<uint8_t>::WithSize(1920 * 1080);
 
   std::move(callback).Run(std::move(encoded_frame));
   RunUntilQuit();
