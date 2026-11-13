@@ -205,7 +205,11 @@ source_set("browser_tests") {
       "//components/history_clusters/core",
       "//services/network/public/mojom:url_loader_base",
       "//ui/webui",
+      "//ui/webui:buildflags",
     ]
+    if (enable_webui_ntp) {
+      deps += [ "//chrome/browser/ui/webui/cr_components/most_visited" ]
+    }
   }
 
   if (enable_dice_support || is_chromeos) {
@@ -558,11 +562,18 @@ source_set("interactive_ui_tests") {
     deps += [
       "//chrome/browser/contextual_tasks:test_support",
       "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui_features",
+      "//chrome/test/base:web_ui_test_support",
       "//components/contextual_tasks/public",
       "//components/history_clusters/core",
       "//components/password_manager/content/common",
+      "//ui/webui",
+      "//ui/webui:buildflags",
     ]
+    if (enable_webui_ntp) {
+      deps += [ "//chrome/browser/ui/webui/cr_components/most_visited" ]
+    }
   }
 
   if (enable_compose) {

@@ -315,24 +315,8 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
   }
   dict.Set("expandedLhsUrl", expanded_lhs_url.spec());
 
-  dict.Set("preconnectStartTimeThreshold",
-           features::kNewTabPagePreconnectStartDelayOnMouseHoverByMilliSeconds
-               .Get());
-  dict.Set(
-      "prefetchStartTimeThreshold",
-      features::kNewTabPagePrefetchStartDelayOnMouseHoverByMilliSeconds.Get());
-  dict.Set(
-      "prefetchTriggerEnabled",
-      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrefetch));
-  dict.Set(
-      "prerenderOnPressEnabled",
-      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
-  dict.Set("mostVisitedHighDpiFaviconsEnabled",
-           base::FeatureList::IsEnabled(
-               ntp_features::kNtpMostVisitedHighDpiFavicons));
   dict.Set("ntpShortcutsReorderEnabled",
            base::FeatureList::IsEnabled(ntp_features::kNtpShortcutsReorder));
-
   dict.Set("maxTilesInCollapsedState",
            ntp_features::GetMaxTilesInCollapsedState());
   dict.Set("maxShortcutsInExpandedState",
@@ -437,37 +421,6 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
       {"actionChipsUndoDisablementToastMessage",
        IDS_NTP_ACTION_CHIPS_UNDO_DISABLEMENT_TOAST_MESSAGE},
 
-      // Custom Links.
-      {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},
-      {"editLinkTitle", IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT},
-      {"viewLinkTitle", IDS_NTP_CUSTOM_LINKS_SHORTCUT_DETAILS_TITLE},
-      {"invalidUrl", IDS_NTP_CUSTOM_LINKS_INVALID_URL},
-      {"linkAddedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_ADDED},
-      {"linkCancel", IDS_NTP_CUSTOM_LINKS_CANCEL},
-      {"linkCantCreate", IDS_NTP_CUSTOM_LINKS_CANT_CREATE},
-      {"linkCantEdit", IDS_NTP_CUSTOM_LINKS_CANT_EDIT},
-      {"viewLink", IDS_NTP_CUSTOM_LINKS_DETAILS},
-      {"linkDone", IDS_NTP_CUSTOM_LINKS_DONE},
-      {"linkEditedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_EDITED},
-      {"linkRemove", IDS_NTP_CUSTOM_LINKS_REMOVE},
-      {"shortcutReorder", IDS_NTP_CUSTOM_LINKS_REORDER},
-      {"shortcutReorderA11y", IDS_NTP_SHORTCUT_REORDER_A11Y},
-      {"shortcutMovedA11y", IDS_NTP_SHORTCUT_MOVED_A11Y},
-      {"linkRemoveA11y", IDS_NTP_MOST_VISITED_SITES_REMOVE},
-      {"linkRemovedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED},
-      {"shortcutMoreActions", IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS},
-      {"enterpriseShortcutSubtitle", IDS_NTP_ENTERPRISE_SHORTCUT_SUBTITLE},
-      {"nameField", IDS_NTP_CUSTOM_LINKS_NAME},
-      {"restoreDefaultLinks", IDS_NTP_CONFIRM_MSG_RESTORE_DEFAULTS},
-      {"restoreDefaultEnterpriseShortcuts",
-       IDS_NTP_CONFIRM_MSG_RESTORE_ENTERPRISE_DEFAULTS},
-      {"restoreThumbnailsShort", IDS_NEW_TAB_RESTORE_THUMBNAILS_SHORT_LINK},
-      {"shortcutAlreadyExists", IDS_NTP_CUSTOM_LINKS_ALREADY_EXISTS},
-      {"urlField", IDS_NTP_CUSTOM_LINKS_URL},
-      {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
-      {"showLess", IDS_NTP_SHOW_LESS_BUTTON_LABEL},
-      {"shortcutsInactivityRemovalMsg",
-       IDS_NTP_MOST_VISITED_SHORTCUTS_INACTIVITY_REMOVAL},
       {"moduleInactivityRemovalMsg", IDS_NTP_MODULE_INACTIVITY_REMOVAL},
       {"modulesInactivityRemovalMsg", IDS_NTP_MODULES_INACTIVITY_REMOVAL},
 
@@ -897,6 +850,7 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
   dict.Set("dynamicAimFulfillmentEnabled",
            omnibox::IsDynamicAimFulfillmentEnabledForRealbox());
 
+  dict.Merge(MostVisitedHandler::GetWebUIDataSourceDict());
   dict.Merge(SearchboxHandler::GetWebUIDataSourceDict(
       profile, {.enable_voice_search = true,
                 .enable_lens_search = profile->GetPrefs()->GetBoolean(

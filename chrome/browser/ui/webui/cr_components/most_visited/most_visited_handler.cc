@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/history/core/browser/features.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -35,11 +37,15 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/constants.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -99,6 +105,71 @@ MostVisitedHandler::MostVisitedHandler(
 }
 
 MostVisitedHandler::~MostVisitedHandler() = default;
+
+// static
+base::DictValue MostVisitedHandler::GetWebUIDataSourceDict() {
+  base::DictValue dict;
+
+  static constexpr webui::LocalizedString kStrings[] = {
+      {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},
+      {"editLinkTitle", IDS_NTP_CUSTOM_LINKS_EDIT_SHORTCUT},
+      {"viewLinkTitle", IDS_NTP_CUSTOM_LINKS_SHORTCUT_DETAILS_TITLE},
+      {"invalidUrl", IDS_NTP_CUSTOM_LINKS_INVALID_URL},
+      {"linkAddedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_ADDED},
+      {"linkCancel", IDS_NTP_CUSTOM_LINKS_CANCEL},
+      {"linkCantCreate", IDS_NTP_CUSTOM_LINKS_CANT_CREATE},
+      {"linkCantEdit", IDS_NTP_CUSTOM_LINKS_CANT_EDIT},
+      {"viewLink", IDS_NTP_CUSTOM_LINKS_DETAILS},
+      {"linkDone", IDS_NTP_CUSTOM_LINKS_DONE},
+      {"linkEditedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_EDITED},
+      {"linkRemove", IDS_NTP_CUSTOM_LINKS_REMOVE},
+      {"shortcutReorder", IDS_NTP_CUSTOM_LINKS_REORDER},
+      {"shortcutReorderA11y", IDS_NTP_SHORTCUT_REORDER_A11Y},
+      {"shortcutMovedA11y", IDS_NTP_SHORTCUT_MOVED_A11Y},
+      {"linkRemoveA11y", IDS_NTP_MOST_VISITED_SITES_REMOVE},
+      {"linkRemovedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED},
+      {"shortcutMoreActions", IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS},
+      {"enterpriseShortcutSubtitle", IDS_NTP_ENTERPRISE_SHORTCUT_SUBTITLE},
+      {"nameField", IDS_NTP_CUSTOM_LINKS_NAME},
+      {"restoreDefaultLinks", IDS_NTP_CONFIRM_MSG_RESTORE_DEFAULTS},
+      {"restoreDefaultEnterpriseShortcuts",
+       IDS_NTP_CONFIRM_MSG_RESTORE_ENTERPRISE_DEFAULTS},
+      {"restoreThumbnailsShort", IDS_NEW_TAB_RESTORE_THUMBNAILS_SHORT_LINK},
+      {"shortcutAlreadyExists", IDS_NTP_CUSTOM_LINKS_ALREADY_EXISTS},
+      {"urlField", IDS_NTP_CUSTOM_LINKS_URL},
+      {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
+      {"showLess", IDS_NTP_SHOW_LESS_BUTTON_LABEL},
+      {"shortcutsInactivityRemovalMsg",
+       IDS_NTP_MOST_VISITED_SHORTCUTS_INACTIVITY_REMOVAL},
+      {"undo", IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE},
+  };
+  for (const auto& entry : kStrings) {
+    dict.Set(entry.name, l10n_util::GetStringUTF16(entry.id));
+  }
+
+  ui::Accelerator undo_accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
+  dict.Set("undoDescription",
+           l10n_util::GetStringFUTF16(IDS_UNDO_DESCRIPTION,
+                                      undo_accelerator.GetShortcutText()));
+
+  dict.Set("preconnectStartTimeThreshold",
+           features::kNewTabPagePreconnectStartDelayOnMouseHoverByMilliSeconds
+               .Get());
+  dict.Set(
+      "prefetchStartTimeThreshold",
+      features::kNewTabPagePrefetchStartDelayOnMouseHoverByMilliSeconds.Get());
+  dict.Set(
+      "prefetchTriggerEnabled",
+      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrefetch));
+  dict.Set(
+      "prerenderOnPressEnabled",
+      base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrerender2));
+  dict.Set("mostVisitedHighDpiFaviconsEnabled",
+           base::FeatureList::IsEnabled(
+               ntp_features::kNtpMostVisitedHighDpiFavicons));
+
+  return dict;
+}
 
 void MostVisitedHandler::EnableTileTypes(
     const ntp_tiles::MostVisitedSites::EnableTileTypesOptions& options) {
