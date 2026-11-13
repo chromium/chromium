@@ -9489,6 +9489,80 @@ TEST_F(RequestTest, DismissIgnoredDuringRedirectTo) {
       static_cast<int>(RequestIdTokenStatus::kSuccessUsingRedirectTo), 1);
 }
 
+// Tests that the `Request` isn't used after the `RedirectTo()` navigation
+// destroys it, e.g. if the navigation synchronously replaces the RP frame.
+// Regression test for crbug.com/576991116.
+TEST_F(RequestTest, DestroyedDuringRedirectToNavigation) {
+  MockConfiguration config = kConfigurationValid;
+  config.delay_token_response = true;
+
+  RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+      ->SetForceAllowRedirectToForTesting(true);
+
+  RunDontWaitForCallback(kDefaultRequestParameters, config);
+  ASSERT_TRUE(request_);
+
+  NiceMock<MockWebContentsObserver> observer(web_contents());
+  EXPECT_CALL(observer, DidStartNavigation(_))
+      .WillOnce([this](NavigationHandle* handle) {
+        RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+            ->DestroyActiveRequestForTesting();
+      });
+
+  CallRedirectTo(GURL(kProviderUrlFull),
+                 blink::mojom::RedirectParams::Tag::kGet,
+                 GURL("https://rp.example/redirect"), "");
+  EXPECT_FALSE(request_);
+
+  WaitForCurrentRequest(/*should_fast_forward=*/true);
+  // `RedirectTo()` returned early after the navigation, so the request was
+  // completed with an error by the destroyed `Request` instead.
+  EXPECT_EQ(request_helper_->status(), RequestTokenStatus::kError);
+  histogram_tester_.ExpectBucketCount(
+      "Blink.FedCm.Status.RequestIdToken",
+      static_cast<int>(RequestIdTokenStatus::kSuccessUsingRedirectTo), 0);
+}
+
+// Same as above, but `RedirectTo()` is called because the continuation pop-up
+// resolved with a redirect.
+TEST_F(RequestTest, DestroyedDuringRedirectToNavigationFromResolve) {
+  MockConfiguration config = kConfigurationValid;
+  config.continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
+
+  RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+      ->SetForceAllowRedirectToForTesting(true);
+
+  auto dialog_controller = std::make_unique<TestDialogController>(config);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+  std::unique_ptr<WebContents> modal(CreateTestWebContents());
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(Return(modal.get()));
+
+  RunDontWaitForCallback(kDefaultRequestParameters, config);
+  ASSERT_TRUE(request_);
+  ASSERT_EQ(request_->GetDialogType(), Request::DialogType::kContinueOnPopup);
+
+  NiceMock<MockWebContentsObserver> observer(web_contents());
+  EXPECT_CALL(observer, DidStartNavigation(_))
+      .WillOnce([this](NavigationHandle* handle) {
+        RequestService::GetOrCreateForCurrentDocument(main_test_rfh())
+            ->DestroyActiveRequestForTesting();
+      });
+
+  auto get_params = blink::mojom::RedirectGetParams::New();
+  get_params->url = GURL("https://rp.example/redirect");
+  EXPECT_TRUE(request_->OnResolve(
+      GURL(kProviderUrlFull), /*account_id=*/std::nullopt,
+      blink::mojom::ResolveTokenParams::NewRedirectTo(
+          blink::mojom::RedirectParams::NewGet(std::move(get_params)))));
+  EXPECT_FALSE(request_);
+  histogram_tester_.ExpectBucketCount(
+      "Blink.FedCm.Status.RequestIdToken",
+      static_cast<int>(RequestIdTokenStatus::kSuccessUsingRedirectTo), 0);
+}
+
 TEST_F(RequestTest, DisconnectViaFederatedRequestService) {
   mojo::Remote<FederatedRequestService> federated_request_service;
   RequestService* service =
