@@ -191,7 +191,6 @@
 #include "components/sync_preferences/features.h"
 #include "components/tab_groups/features.h"
 #include "components/themes/cross_device/features.h"
-#include "components/thin_webview/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
 #include "components/touch_to_search/core/browser/public.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -12775,13 +12774,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsProtocolMonitorName,
      flag_descriptions::kDevToolsProtocolMonitorDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsProtocolMonitor)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"use-surface-view-for-thin-webview",
-     flag_descriptions::kUseSurfaceViewForThinWebViewName,
-     flag_descriptions::kUseSurfaceViewForThinWebViewDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(thin_webview::android::kUseSurfaceViewForThinWebView)},
-#endif
 
     {"bundled-security-settings-secure-dns-v2",
      flag_descriptions::kBundledSecuritySettingsSecureDnsV2Name,

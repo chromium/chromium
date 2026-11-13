@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "components/thin_webview/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -37,11 +36,6 @@ static jni_zero::JniUniquePtr<CompositorViewImpl> JNI_CompositorViewImpl_Init(
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   return jni_zero::MakeUnique<CompositorViewImpl>(env, obj, window_android,
                                                   java_background_color);
-}
-
-static bool JNI_CompositorViewImpl_ShouldUseSurfaceView(JNIEnv* env) {
-  return base::FeatureList::IsEnabled(
-      thin_webview::android::kUseSurfaceViewForThinWebView);
 }
 
 // static

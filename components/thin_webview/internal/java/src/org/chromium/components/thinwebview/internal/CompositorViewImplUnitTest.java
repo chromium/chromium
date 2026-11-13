@@ -85,7 +85,6 @@ public class CompositorViewImplUnitTest {
     public void testTextureView_creationAndCallbacks() {
         mConstraints.supportsOpacity = true;
         mConstraints.backgroundColor = Color.GREEN;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(false);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
@@ -142,7 +141,6 @@ public class CompositorViewImplUnitTest {
     @Test
     public void testTextureView_callbacksIgnoredAfterDestroy() {
         mConstraints.supportsOpacity = true;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(false);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
@@ -170,7 +168,6 @@ public class CompositorViewImplUnitTest {
     public void testSurfaceView_creationAndCallbacks() {
         mConstraints.supportsOpacity = false;
         mConstraints.backgroundColor = Color.BLUE;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(true);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
@@ -206,7 +203,6 @@ public class CompositorViewImplUnitTest {
     @Test
     public void testSurfaceView_callbacksIgnoredAfterDestroy() {
         mConstraints.supportsOpacity = false;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(true);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
@@ -300,7 +296,6 @@ public class CompositorViewImplUnitTest {
     @Test
     public void testDestroy_normalAndIdempotent() {
         mConstraints.supportsOpacity = true;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(false);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
@@ -314,7 +309,6 @@ public class CompositorViewImplUnitTest {
     @Test
     public void testDestroy_windowAndroidDestroyedThrows() {
         mConstraints.supportsOpacity = true;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(false);
         when(mWindowAndroid.getDestroyStack()).thenReturn(new RuntimeException("Window destroyed"));
 
         CompositorViewImpl compositorView =
@@ -329,7 +323,6 @@ public class CompositorViewImplUnitTest {
     @Test
     public void testRequestRender() {
         mConstraints.supportsOpacity = true;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(false);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
@@ -345,7 +338,6 @@ public class CompositorViewImplUnitTest {
     @Test
     public void testRunOnNextFrame() {
         mConstraints.supportsOpacity = true;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(false);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);
@@ -362,7 +354,6 @@ public class CompositorViewImplUnitTest {
     @Test
     public void testSetAlpha() {
         mConstraints.supportsOpacity = true;
-        when(mMockJni.shouldUseSurfaceView()).thenReturn(false);
 
         CompositorViewImpl compositorView =
                 new CompositorViewImpl(mContext, mWindowAndroid, mConstraints);

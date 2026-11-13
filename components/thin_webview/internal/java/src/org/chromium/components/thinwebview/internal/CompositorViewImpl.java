@@ -63,7 +63,7 @@ public class CompositorViewImpl implements CompositorView {
         mViewConstraints = constraints.clone();
         mNativeCompositorViewImpl =
                 CompositorViewImplJni.get().init(this, windowAndroid, constraints.backgroundColor);
-        mView = useSurfaceView() ? createSurfaceView() : createTextureView();
+        mView = mViewConstraints.supportsOpacity ? createTextureView() : createSurfaceView();
         mWindowAndroid = windowAndroid;
     }
 
@@ -283,14 +283,6 @@ public class CompositorViewImpl implements CompositorView {
         // TODO(shaktisahu): May be detach and reattach the surface view from the hierarchy.
     }
 
-    private boolean useSurfaceView() {
-        if (mViewConstraints.supportsOpacity) return false;
-
-        // TODO(crbug.com/40110537): Temporary check during feature rollout. Once verified,
-        // SurfaceView should be used by default.
-        return CompositorViewImplJni.get().shouldUseSurfaceView();
-    }
-
     @NativeMethods
     interface Natives {
         JniUniquePtr<NativeCompositorViewImpl> init(
@@ -309,8 +301,6 @@ public class CompositorViewImpl implements CompositorView {
                 Surface surface);
 
         void setNeedsComposite(JniPtr<NativeCompositorViewImpl> self);
-
-        boolean shouldUseSurfaceView();
 
         void runOnNextFrame(
                 JniPtr<NativeCompositorViewImpl> self,
