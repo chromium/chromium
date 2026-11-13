@@ -70,8 +70,8 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsi
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -125,7 +125,7 @@ public class SafetyCheckMediatorTest {
     @Mock private PasswordManagerHelper.Natives mPasswordManagerHelperNativeMock;
     @Mock LoadingModalDialogCoordinator mLoadingModalDialogCoordinator;
     private FakePasswordCheckControllerFactory mPasswordCheckControllerFactory;
-    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
 
     private SafetyCheckMediator mMediator;
 
@@ -204,7 +204,7 @@ public class SafetyCheckMediatorTest {
                 mPasswordCheckControllerFactory,
                 PasswordManagerHelper.getForProfile(mProfile),
                 mModalDialogManagerSupplier,
-                mSettingsCustomTabLauncher);
+                mCustomTabLauncher);
     }
 
     private Preference.OnPreferenceClickListener getPasswordsClickListener(

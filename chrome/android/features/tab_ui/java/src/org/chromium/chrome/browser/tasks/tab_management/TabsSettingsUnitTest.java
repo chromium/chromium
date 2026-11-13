@@ -58,9 +58,9 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -84,7 +84,7 @@ public class TabsSettingsUnitTest {
     @Mock private PrefService mPrefServiceMock;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private AuxiliarySearchHooks mAuxiliarySearchHooksMock;
 

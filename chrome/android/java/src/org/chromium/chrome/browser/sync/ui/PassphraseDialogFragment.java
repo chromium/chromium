@@ -29,8 +29,8 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.components.sync.SyncService;
@@ -165,7 +165,7 @@ public class PassphraseDialogFragment extends DialogFragment {
                             @Override
                             public void onClick(View view) {
                                 SyncSettingsUtils.openSyncDashboard(
-                                        getContext(), new SettingsCustomTabLauncherImpl());
+                                        getContext(), new CustomTabLauncherImpl());
                             }
                         }));
     }

@@ -15,6 +15,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/util/ChromeItemPickerUtils.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/ConversionUtils.java",
+    "java/src/org/chromium/components/browser_ui/util/CustomTabLauncher.java",
     "java/src/org/chromium/components/browser_ui/util/DimensionCompat.java",
     "java/src/org/chromium/components/browser_ui/util/DownloadUtils.java",
     "java/src/org/chromium/components/browser_ui/util/DrawableUtils.java",

@@ -24,8 +24,8 @@ import com.airbnb.lottie.LottieAnimationView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.glic.R;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -39,7 +39,7 @@ class GlicBottomSheetFreCoordinator {
     private final Context mContext;
     private final Runnable mOnAccept;
     private final Runnable mOnDecline;
-    private final SettingsCustomTabLauncher mCustomTabLauncher;
+    private final CustomTabLauncher mCustomTabLauncher;
     private final View mRootView;
     private final ViewGroup mContentContainer;
     private final ViewGroup mSkeletonContainer;
@@ -58,7 +58,7 @@ class GlicBottomSheetFreCoordinator {
             ViewGroup parent,
             boolean isEnterpriseAccount,
             @ColorInt int backgroundColor,
-            SettingsCustomTabLauncher customTabLauncher,
+            CustomTabLauncher customTabLauncher,
             Runnable onAccept,
             Runnable onDecline) {
         mContext = context;

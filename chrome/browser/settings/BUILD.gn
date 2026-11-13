@@ -106,6 +106,7 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:managed_prefs_java_resources",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",

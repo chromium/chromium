@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 
 /**
  * Base class for settings in Chrome.
@@ -35,11 +35,11 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompat
         implements EmbeddableSettingsPage,
                 ProfileDependentSetting,
-                SettingsCustomTabLauncher.SettingsCustomTabLauncherClient,
+                CustomTabLauncher.CustomTabLauncherClient,
                 CustomDividerFragment,
                 PreferenceUpdateObserver.Provider {
     private Profile mProfile;
-    private SettingsCustomTabLauncher mCustomTabLauncher;
+    private CustomTabLauncher mCustomTabLauncher;
     private @Nullable PreferenceUpdateObserver mPreferenceUpdateObserver;
     private @Nullable Context mThemedContext;
 
@@ -84,7 +84,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
 
     @Initializer
     @Override
-    public void setCustomTabLauncher(SettingsCustomTabLauncher customTabLauncher) {
+    public void setCustomTabLauncher(CustomTabLauncher customTabLauncher) {
         mCustomTabLauncher = customTabLauncher;
     }
 
@@ -116,7 +116,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
     }
 
     /** Returns the launcher for CCT. */
-    public SettingsCustomTabLauncher getCustomTabLauncher() {
+    public CustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
     }
 

@@ -9,9 +9,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.ui.base.WindowAndroid;
@@ -38,7 +38,7 @@ public class PasswordCheckupLauncher {
                 passwordCheckReferrer,
                 () -> assertNonNull(windowAndroid.getModalDialogManager()),
                 accountEmail.isEmpty() ? null : accountEmail,
-                new SettingsCustomTabLauncherImpl());
+                new CustomTabLauncherImpl());
     }
 
     @CalledByNative

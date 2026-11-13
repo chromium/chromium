@@ -19,7 +19,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -34,7 +34,7 @@ class PasswordCsvDownloadDialogController {
     private final View mDialogView;
     private final boolean mIsGooglePlayServicesAvailable;
 
-    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private final CustomTabLauncher mCustomTabLauncher;
     private final Callback<Uri> mOnDestinationDocumentCreated;
 
     private PasswordCsvDownloadDialogFragment mFragment;
@@ -44,11 +44,11 @@ class PasswordCsvDownloadDialogController {
             boolean isGooglePlayServicesAvailable,
             Runnable onExportClicked,
             Runnable onCancel,
-            SettingsCustomTabLauncher settingsCustomTabLauncher,
+            CustomTabLauncher customTabLauncher,
             Callback<Uri> onDestinationDocumentCreated) {
         mActivity = activity;
         mIsGooglePlayServicesAvailable = isGooglePlayServicesAvailable;
-        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
+        mCustomTabLauncher = customTabLauncher;
         mOnDestinationDocumentCreated = onDestinationDocumentCreated;
         mDialogView =
                 LayoutInflater.from(mActivity)
@@ -129,6 +129,6 @@ class PasswordCsvDownloadDialogController {
     }
 
     private void helpLinkClicked(View unusedView) {
-        mSettingsCustomTabLauncher.openUrlInCct(mActivity, HELP_ARTICLE_LINK);
+        mCustomTabLauncher.openUrlInCct(mActivity, HELP_ARTICLE_LINK);
     }
 }

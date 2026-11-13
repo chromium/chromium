@@ -55,8 +55,8 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -75,7 +75,7 @@ public class UniversalOptOutSettingsFragmentTest {
 
     private UserActionTester mActionTester;
     @Mock private SettingsIndexData mSearchIndexDataMock;
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncherMock;
+    @Mock private CustomTabLauncher mCustomTabLauncherMock;
     @Mock private PrivacyPreferencesManagerImpl.Natives mPrivacyPreferencesManagerJniMock;
 
     @Before

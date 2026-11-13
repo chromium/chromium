@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.glic.R;
 import org.chromium.chrome.browser.glic.settings.GlicNavigationUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +56,7 @@ public class GlicBottomSheetComponentProviderUnitTest {
     @Mock private Profile mProfile;
     @Mock private GlicBottomSheetComponentProvider.Natives mNativesMock;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
 
     private JniRawPtr<GlicBottomSheetComponentProvider.NativeGlicCoBrowseViews>
             mNativeCoBrowseViews;

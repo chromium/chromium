@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonCoordi
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 import java.util.Arrays;
@@ -83,7 +83,7 @@ public class GlicBottomSheetContentUnitTest {
     @Mock private ActorKeyedServiceFactory.Natives mActorKeyedServiceFactoryJni;
     @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private TabSelectionDelegate mTabSelectionDelegate;
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
 
     private Context mContext;

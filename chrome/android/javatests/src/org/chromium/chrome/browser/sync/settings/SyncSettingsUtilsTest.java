@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
@@ -47,7 +47,7 @@ public class SyncSettingsUtilsTest {
 
     @Mock private SyncService mSyncService;
 
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
 
     @Before
     public void setUp() {

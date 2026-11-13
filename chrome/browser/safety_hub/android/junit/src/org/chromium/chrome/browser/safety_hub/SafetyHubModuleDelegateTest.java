@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityResultTracker;
@@ -72,7 +72,7 @@ public class SafetyHubModuleDelegateTest {
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     @Mock private Intent mSigninIntent;
     @Mock private Context mContext;
-    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
 
     private Activity mActivity;
     private SafetyHubModuleDelegate mSafetyHubModuleDelegate;
@@ -126,7 +126,7 @@ public class SafetyHubModuleDelegateTest {
                         bottomSheetControllerSupplier,
                         () -> mModalDialogManager,
                         mSigninLauncher,
-                        mSettingsCustomTabLauncher);
+                        mCustomTabLauncher);
 
         ShadowLooper.idleMainLooper();
     }

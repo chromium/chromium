@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControlle
 import org.chromium.chrome.browser.pwm_disabled.PasswordManagerUnavailableDialogCoordinator;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -123,8 +123,8 @@ public class PasswordManagerHelper {
      *     attempt to launch the credential manager even without syncing enabled.
      * @param account the account for which to open the UI. An empty or null account signals that
      *     the UI should be opened for the local storage.
-     * @param settingsCustomTabLauncher launcher that can be used to open a custom tab with a help
-     *     center article.
+     * @param customTabLauncher launcher that can be used to open a custom tab with a help center
+     *     article.
      */
     public void showPasswordSettings(
             Context context,
@@ -132,7 +132,7 @@ public class PasswordManagerHelper {
             ModalDialogManager modalDialogManager,
             boolean managePasskeys,
             @Nullable String account,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.ManagePasswordsReferrer",
                 referrer,
@@ -140,7 +140,7 @@ public class PasswordManagerHelper {
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
 
         if (!showPwmUnavailableOrDownloadCsvDialog(
-                context, modalDialogManager, settingsCustomTabLauncher)) {
+                context, modalDialogManager, customTabLauncher)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManager, context);
             launchTheCredentialManager(
@@ -152,31 +152,30 @@ public class PasswordManagerHelper {
      * Starts the flow allowing the user to download unmigrated password manager passwords as a CSV.
      *
      * @param context instance of a FragmentActivity which will host the entire UI flow
-     * @param settingsCustomTabLauncher used to open a help articcle in a CCT
+     * @param customTabLauncher used to open a help articcle in a CCT
      */
     public void launchDownloadPasswordsCsvFlow(
-            Context context, SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            Context context, CustomTabLauncher customTabLauncher) {
         FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
         assert activity != null : "Context is expected to be a fragment activity";
-        assert settingsCustomTabLauncher != null
-                : "The CSV download dialog requires a SettingsCustomTabLauncher";
+        assert customTabLauncher != null : "The CSV download dialog requires a CustomTabLauncher";
         PasswordCsvDownloadFlowControllerFactory.getOrCreateController()
                 .showDialogAndStartFlow(
                         activity,
                         mProfile,
                         PasswordManagerUtilBridge.isGooglePlayServicesUpdatable(),
                         PasswordManagerUtilBridge.isPasswordManagerAvailable(),
-                        settingsCustomTabLauncher);
+                        customTabLauncher);
     }
 
     private boolean showPwmUnavailableOrDownloadCsvDialog(
             Context context,
             ModalDialogManager modalDialogManager,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         // Automotive doesn't support the export flow.
         if (!DeviceInfo.isAutomotive()
                 && LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile)) {
-            showDownloadCsvDialog(context, settingsCustomTabLauncher);
+            showDownloadCsvDialog(context, customTabLauncher);
             return true;
         }
 
@@ -193,10 +192,9 @@ public class PasswordManagerHelper {
         return false;
     }
 
-    private void showDownloadCsvDialog(
-            Context context, SettingsCustomTabLauncher settingsCustomTabLauncher) {
+    private void showDownloadCsvDialog(Context context, CustomTabLauncher customTabLauncher) {
         if (context instanceof FragmentActivity) {
-            launchDownloadPasswordsCsvFlow(context, settingsCustomTabLauncher);
+            launchDownloadPasswordsCsvFlow(context, customTabLauncher);
         } else {
             PasswordExportLauncher.showMainSettingsAndStartExport(context);
         }
@@ -212,15 +210,15 @@ public class PasswordManagerHelper {
      *     for local will show. The purpose of this is to enable showing the checkup for local
      *     storage if the password checkup is launched from the leak detection dialog and the leaked
      *     credential is only saved in the local password storage.
-     * @param settingsCustomTabLauncher launcher that can be used to open a custom tab with a help
-     *     center article.
+     * @param customTabLauncher launcher that can be used to open a custom tab with a help center
+     *     article.
      */
     public void showPasswordCheckup(
             Context context,
             @PasswordCheckReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String accountEmail,
-            @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            @Nullable CustomTabLauncher customTabLauncher) {
         assert accountEmail == null || !accountEmail.isEmpty();
         LoadingModalDialogCoordinator loadingDialogCoordinator =
                 LoadingModalDialogCoordinator.create(modalDialogManagerSupplier.get(), context);
@@ -231,7 +229,7 @@ public class PasswordManagerHelper {
                 loadingDialogCoordinator,
                 modalDialogManagerSupplier.get(),
                 context,
-                settingsCustomTabLauncher);
+                customTabLauncher);
     }
 
     /**
@@ -450,14 +448,13 @@ public class PasswordManagerHelper {
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             ModalDialogManager modalDialogManager,
             Context context,
-            @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            @Nullable CustomTabLauncher customTabLauncher) {
         PasswordCheckupClientHelper checkupClient;
         try {
             checkupClient = getPasswordCheckupClientHelper();
         } catch (PasswordManagerUnavailableException exception) {
-            assert settingsCustomTabLauncher != null;
-            showPwmUnavailableOrDownloadCsvDialog(
-                    context, modalDialogManager, settingsCustomTabLauncher);
+            assert customTabLauncher != null;
+            showPwmUnavailableOrDownloadCsvDialog(context, modalDialogManager, customTabLauncher);
             return;
         }
 

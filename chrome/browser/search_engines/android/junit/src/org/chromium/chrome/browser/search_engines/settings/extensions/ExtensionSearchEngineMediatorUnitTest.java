@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.search_engines.ExtensionControlHandler;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -59,7 +59,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private ModelList mModelList;
-    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
     @Mock private ExtensionControlHandler mMockExtensionControlHandler;
 
     private Context mContext;
@@ -89,11 +89,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
 
         mMediator =
                 new ExtensionSearchEngineMediator(
-                        mContext,
-                        mModelList,
-                        mProfile,
-                        mSettingsDataProvider,
-                        mSettingsCustomTabLauncher);
+                        mContext, mModelList, mProfile, mSettingsDataProvider, mCustomTabLauncher);
 
         Mockito.clearInvocations(mModelList, mTemplateUrlService, mSettingsDataProvider);
     }
@@ -158,8 +154,7 @@ public class ExtensionSearchEngineMediatorUnitTest {
     public void testOnMenuItemClicked_Manage() {
         when(mTemplateUrl.getProvidingExtensionId()).thenReturn("extension_id");
         mMediator.onMenuItemClicked(R.string.site_search_extensions_menu_manage, mTemplateUrl);
-        verify(mSettingsCustomTabLauncher)
-                .openUrlInCct(mContext, "chrome://extensions/?id=extension_id");
+        verify(mCustomTabLauncher).openUrlInCct(mContext, "chrome://extensions/?id=extension_id");
     }
 
     @Test

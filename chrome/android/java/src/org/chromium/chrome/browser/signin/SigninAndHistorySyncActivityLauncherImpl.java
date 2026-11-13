@@ -15,8 +15,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -151,6 +151,6 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     @MainThread
     @Override
     public void openManageGoogleAccount(Context context) {
-        new SettingsCustomTabLauncherImpl().openUrlInCct(context, MY_ACCOUNT_URL);
+        new CustomTabLauncherImpl().openUrlInCct(context, MY_ACCOUNT_URL);
     }
 }

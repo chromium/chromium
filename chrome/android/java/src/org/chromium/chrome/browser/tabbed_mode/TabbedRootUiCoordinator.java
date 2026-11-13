@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridgeRegistrar;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
@@ -189,7 +190,6 @@ import org.chromium.chrome.browser.reader_mode.ReaderModeIphController;
 import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionCoordinator;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIphController;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfOmniboxIphController;
@@ -1493,7 +1493,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         boolean isGlicEnabledByFlags = GlicEnabling.isEnabledByFlags();
         if (isGlicEnabledByFlags) {
             GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
-            GlicNavigationUtils.setCustomTabLauncher(SettingsCustomTabLauncherImpl::new);
+            GlicNavigationUtils.setCustomTabLauncher(CustomTabLauncherImpl::new);
         }
 
         initializeTabBottomSheetManagers();

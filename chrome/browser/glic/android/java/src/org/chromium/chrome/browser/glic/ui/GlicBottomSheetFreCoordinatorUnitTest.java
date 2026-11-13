@@ -47,7 +47,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.glic.R;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
@@ -67,7 +67,7 @@ public class GlicBottomSheetFreCoordinatorUnitTest {
 
     @Mock private Runnable mOnAccept;
     @Mock private Runnable mOnDecline;
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
 
     private Activity mActivity;
     private FrameLayout mParentContainer;

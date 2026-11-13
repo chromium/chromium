@@ -21,7 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckControllerFactory;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -52,8 +52,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      * @param passwordStoreBridge Provides access to stored passwords.
      * @param passwordManagerHelper An instance of {@link PasswordManagerHelper} that provides
      *     access to password management capabilities.
-     * @param settingsCustomTabLauncher Used by password manager to open a help center article in a
-     *     custom tab.
+     * @param customTabLauncher Used by password manager to open a help center article in a custom
+     *     tab.
      */
     public static void create(
             SafetyCheckSettingsFragment settingsFragment,
@@ -63,7 +63,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             @Nullable SyncService syncService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         new SafetyCheckCoordinator(
                 settingsFragment,
                 updatesClient,
@@ -72,7 +72,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 syncService,
                 passwordStoreBridge,
                 passwordManagerHelper,
-                settingsCustomTabLauncher);
+                customTabLauncher);
     }
 
     private SafetyCheckCoordinator(
@@ -83,7 +83,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             @Nullable SyncService syncService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
         mSyncService = syncService;
@@ -129,7 +129,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     new PasswordCheckControllerFactory(),
                                                     passwordManagerHelper,
                                                     modalDialogManagerSupplier,
-                                                    settingsCustomTabLauncher);
+                                                    customTabLauncher);
                                 }
                             }
                         });

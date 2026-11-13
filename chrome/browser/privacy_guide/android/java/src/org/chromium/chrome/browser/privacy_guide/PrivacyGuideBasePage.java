@@ -10,15 +10,14 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 
 /** Handles common dependencies for pages of the Privacy Guide. */
 @NullMarked
 public abstract class PrivacyGuideBasePage extends Fragment
-        implements ProfileDependentSetting,
-                SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
+        implements ProfileDependentSetting, CustomTabLauncher.CustomTabLauncherClient {
     private Profile mProfile;
-    private SettingsCustomTabLauncher mCustomTabLauncher;
+    private CustomTabLauncher mCustomTabLauncher;
 
     /** Return the profile associated with this page. */
     public Profile getProfile() {
@@ -27,7 +26,7 @@ public abstract class PrivacyGuideBasePage extends Fragment
 
     @Initializer
     @Override
-    public void setCustomTabLauncher(SettingsCustomTabLauncher customTabLauncher) {
+    public void setCustomTabLauncher(CustomTabLauncher customTabLauncher) {
         mCustomTabLauncher = customTabLauncher;
     }
 
@@ -40,7 +39,7 @@ public abstract class PrivacyGuideBasePage extends Fragment
     /**
      * @return The launcher for CCT.
      */
-    public SettingsCustomTabLauncher getCustomTabLauncher() {
+    public CustomTabLauncher getCustomTabLauncher() {
         return mCustomTabLauncher;
     }
 }

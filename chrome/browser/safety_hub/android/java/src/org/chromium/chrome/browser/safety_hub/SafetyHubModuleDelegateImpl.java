@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -51,7 +51,7 @@ public class SafetyHubModuleDelegateImpl
     private final Profile mProfile;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private final CustomTabLauncher mCustomTabLauncher;
     private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     /**
@@ -68,8 +68,8 @@ public class SafetyHubModuleDelegateImpl
      * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} that will be used
      *     to launch the password check UI.
      * @param signinLauncher Launcher for the sign-in flow.
-     * @param settingsCustomTabLauncher Used by the password manager dialogs to open a help center
-     *     article in a CCT.
+     * @param customTabLauncher Used by the password manager dialogs to open a help center article
+     *     in a CCT.
      */
     public SafetyHubModuleDelegateImpl(
             Supplier<@Nullable WindowAndroid> windowAndroidSupplier,
@@ -81,11 +81,11 @@ public class SafetyHubModuleDelegateImpl
             Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SigninAndHistorySyncActivityLauncher signinLauncher,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSigninLauncher = signinLauncher;
-        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
+        mCustomTabLauncher = customTabLauncher;
 
         if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
             SupplierUtils.waitForAll(
@@ -119,7 +119,7 @@ public class SafetyHubModuleDelegateImpl
                 context,
                 mProfile,
                 SupplierUtils.asNonNull(mModalDialogManagerSupplier),
-                mSettingsCustomTabLauncher);
+                mCustomTabLauncher);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class SafetyHubModuleDelegateImpl
                 context,
                 mProfile,
                 SupplierUtils.asNonNull(mModalDialogManagerSupplier),
-                mSettingsCustomTabLauncher);
+                mCustomTabLauncher);
     }
 
     @Override

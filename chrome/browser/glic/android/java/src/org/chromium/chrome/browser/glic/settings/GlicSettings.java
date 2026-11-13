@@ -56,11 +56,11 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarActionEligibility;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -196,7 +196,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         SettingsUtils.addPreferencesFromResource(this, R.xml.glic_settings);
         mPageTitle.set(getString(R.string.glic_setting_label));
 
-        SettingsCustomTabLauncher customTabLauncher = getCustomTabLauncher();
+        CustomTabLauncher customTabLauncher = getCustomTabLauncher();
 
         PrefService prefService = UserPrefs.get(getProfile());
         mPrefChangeRegistrar = new PrefChangeRegistrar(prefService);
@@ -895,7 +895,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
 
     private SpanApplier.SpanInfo createSpanInfo(
             String openTag, String url, ChromeExpandableSwitchPreference pref) {
-        SettingsCustomTabLauncher customTabLauncher = getCustomTabLauncher();
+        CustomTabLauncher customTabLauncher = getCustomTabLauncher();
         int color;
         if (GlicEnabling.isDisabledByPolicy(getProfile())) {
             color = pref.getDisabledColor();

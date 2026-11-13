@@ -35,8 +35,8 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -54,7 +54,7 @@ public class PasswordCsvDownloadDialogTest {
 
     private FragmentActivity mActivity;
 
-    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    @Mock private CustomTabLauncher mCustomTabLauncher;
 
     @Before
     public void setUp() {
@@ -72,12 +72,7 @@ public class PasswordCsvDownloadDialogTest {
     public void testDialogContentsWithGms() {
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity,
-                        true,
-                        () -> {},
-                        () -> {},
-                        mSettingsCustomTabLauncher,
-                        (Uri uri) -> {});
+                        mActivity, true, () -> {}, () -> {}, mCustomTabLauncher, (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -113,12 +108,7 @@ public class PasswordCsvDownloadDialogTest {
     public void testDialogContentsNoGms() {
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity,
-                        false,
-                        () -> {},
-                        () -> {},
-                        mSettingsCustomTabLauncher,
-                        (Uri uri) -> {});
+                        mActivity, false, () -> {}, () -> {}, mCustomTabLauncher, (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -151,7 +141,7 @@ public class PasswordCsvDownloadDialogTest {
                         false,
                         positiveButtonCalback,
                         () -> {},
-                        mSettingsCustomTabLauncher,
+                        mCustomTabLauncher,
                         (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
@@ -170,7 +160,7 @@ public class PasswordCsvDownloadDialogTest {
                         false,
                         () -> {},
                         negativeButtonCalback,
-                        mSettingsCustomTabLauncher,
+                        mCustomTabLauncher,
                         (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
@@ -184,12 +174,7 @@ public class PasswordCsvDownloadDialogTest {
     public void testHelpLinkClick() {
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity,
-                        true,
-                        () -> {},
-                        () -> {},
-                        mSettingsCustomTabLauncher,
-                        (Uri uri) -> {});
+                        mActivity, true, () -> {}, () -> {}, mCustomTabLauncher, (Uri uri) -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -198,7 +183,7 @@ public class PasswordCsvDownloadDialogTest {
         ClickableSpan[] clickableSpans = textView.getClickableSpans();
         assertEquals(1, clickableSpans.length);
         clickableSpans[0].onClick(textView);
-        verify(mSettingsCustomTabLauncher).openUrlInCct(any(), any());
+        verify(mCustomTabLauncher).openUrlInCct(any(), any());
     }
 
     @Test
@@ -210,7 +195,7 @@ public class PasswordCsvDownloadDialogTest {
                         false,
                         () -> {},
                         () -> {},
-                        mSettingsCustomTabLauncher,
+                        mCustomTabLauncher,
                         (destinationUri) -> {
                             uri.set(destinationUri);
                         });

@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,17 +36,13 @@ public class ExtensionSearchEngineCoordinatorImpl implements ExtensionSearchEngi
             Context context,
             Profile profile,
             SearchEngineListPreference pref,
-            SettingsCustomTabLauncher settingsCustomTabLauncher,
+            CustomTabLauncher customTabLauncher,
             SearchEngineSettingsDataProvider settingsDataProvider) {
         mModelList = new ModelList();
         mAdapter = new ExtensionSearchEngineAdapter(context, mModelList);
         mMediator =
                 new ExtensionSearchEngineMediator(
-                        context,
-                        mModelList,
-                        profile,
-                        settingsDataProvider,
-                        settingsCustomTabLauncher);
+                        context, mModelList, profile, settingsDataProvider, customTabLauncher);
 
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)

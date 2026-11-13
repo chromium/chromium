@@ -119,10 +119,10 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -159,7 +159,7 @@ public class ClearBrowsingDataFragmentTest {
 
     @Mock private SettingsIndexData mSearchIndexDataMock;
 
-    @Mock private SettingsCustomTabLauncher mCustomTabLauncherMock;
+    @Mock private CustomTabLauncher mCustomTabLauncherMock;
 
     @Mock private TemplateUrlService mTemplateUrlServiceMock;
 

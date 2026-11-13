@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvDialogType;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvFlowStep;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.ui.widget.Toast;
 
 import java.io.File;
@@ -59,7 +59,7 @@ public class PasswordCsvDownloadFlowController {
             Profile profile,
             boolean isGooglePlayServicesAvailable,
             boolean isPasswordManagerAvailable,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         mProfile = profile;
         mFragmentActivity = activity;
         mCsvDownloadDialogController =
@@ -71,7 +71,7 @@ public class PasswordCsvDownloadFlowController {
                             dismissDownloadDialog();
                             endFlow();
                         },
-                        settingsCustomTabLauncher,
+                        customTabLauncher,
                         this::onDownloadLocationSet);
         mCsvDownloadDialogController.showDialog();
         mLastFlowStep = DownloadCsvFlowStep.DISMISSED_DIALOG;

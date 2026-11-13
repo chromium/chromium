@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.ExtensionControlHandler;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.BaseSiteSearchMediator;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
@@ -30,7 +30,7 @@ import java.util.List;
 @NullMarked
 public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
     private static final String EXTENSION_MANAGE_URL_PREFIX = "chrome://extensions/?id=";
-    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private final CustomTabLauncher mCustomTabLauncher;
     private final ExtensionControlHandler mExtensionControlHandler;
 
     public ExtensionSearchEngineMediator(
@@ -38,9 +38,9 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
             ModelList modelList,
             Profile profile,
             SearchEngineSettingsDataProvider settingsDataProvider,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         super(context, modelList, profile, settingsDataProvider);
-        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
+        mCustomTabLauncher = customTabLauncher;
         mExtensionControlHandler = ExtensionControlHandler.createForProfile(profile);
 
         initializeTemplateUrlService();
@@ -87,8 +87,7 @@ public class ExtensionSearchEngineMediator extends BaseSiteSearchMediator {
         if (extensionId == null) return;
 
         if (R.string.site_search_extensions_menu_manage == textId) {
-            mSettingsCustomTabLauncher.openUrlInCct(
-                    mContext, EXTENSION_MANAGE_URL_PREFIX + extensionId);
+            mCustomTabLauncher.openUrlInCct(mContext, EXTENSION_MANAGE_URL_PREFIX + extensionId);
         } else if (R.string.site_search_extensions_menu_disable == textId) {
             mExtensionControlHandler.disableExtension(extensionId);
         }

@@ -22,7 +22,7 @@ import androidx.fragment.app.DialogFragment;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.ui.text.SpanApplier;
@@ -104,7 +104,7 @@ public class PassphraseTypeDialogFragment extends DialogFragment
                             @Override
                             public void onClick(View view) {
                                 SyncSettingsUtils.openSyncDashboard(
-                                        getContext(), new SettingsCustomTabLauncherImpl());
+                                        getContext(), new CustomTabLauncherImpl());
                             }
                         }));
     }

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsCoor
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextCoordinator;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
@@ -55,9 +56,9 @@ import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -207,8 +208,8 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                             : SettingsNavigationFactory.createSettingsNavigation(mActivity);
             fragmentSettingsNavigation.setSettingsNavigation(settingsNavigation);
         }
-        if (fragment instanceof SettingsCustomTabLauncher.SettingsCustomTabLauncherClient client) {
-            client.setCustomTabLauncher(new SettingsCustomTabLauncherImpl());
+        if (fragment instanceof CustomTabLauncher.CustomTabLauncherClient client) {
+            client.setCustomTabLauncher(new CustomTabLauncherImpl());
         }
 
         if (!mShownInTab) {
@@ -248,7 +249,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     SyncServiceFactory.getForProfile(mProfile),
                     new PasswordStoreBridge(mProfile),
                     PasswordManagerHelper.getForProfile(mProfile),
-                    new SettingsCustomTabLauncherImpl());
+                    new CustomTabLauncherImpl());
         }
         if (fragment instanceof SearchEngineSettings settings) {
             settings.setDisableAutoSwitchRunnable(
@@ -305,7 +306,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                             mBottomSheetControllerSupplier,
                             mModalDialogManagerSupplier,
                             SigninAndHistorySyncActivityLauncherImpl.get(),
-                            new SettingsCustomTabLauncherImpl()));
+                            new CustomTabLauncherImpl()));
         }
         if (fragment instanceof AccountManagementFragment accountManagementFragment) {
             accountManagementFragment.setSnackbarManagerSupplier(mSnackbarManagerSupplier);

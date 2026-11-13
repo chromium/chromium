@@ -26,7 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
@@ -114,7 +114,7 @@ public class SyncSettingsUtils {
      * @param url The url link to open in the custom tab.
      */
     private static void openCustomTabWithURL(
-            Context context, SettingsCustomTabLauncher customTabLauncher, String url) {
+            Context context, CustomTabLauncher customTabLauncher, String url) {
         customTabLauncher.openUrlInCct(context, url);
     }
 
@@ -124,8 +124,7 @@ public class SyncSettingsUtils {
      * @param context The context to use for starting the intent.
      * @param customTabLauncher The launcher to use for opening the custom tab.
      */
-    public static void openSyncDashboard(
-            Context context, SettingsCustomTabLauncher customTabLauncher) {
+    public static void openSyncDashboard(Context context, CustomTabLauncher customTabLauncher) {
         openCustomTabWithURL(context, customTabLauncher, SYNC_DASHBOARD_URL);
     }
 
@@ -137,8 +136,7 @@ public class SyncSettingsUtils {
      * @param context The context to use for starting the intent.
      * @param customTabLauncher The launcher to use for opening the custom tab.
      */
-    public static void openGoogleMyAccount(
-            Context context, SettingsCustomTabLauncher customTabLauncher) {
+    public static void openGoogleMyAccount(Context context, CustomTabLauncher customTabLauncher) {
         RecordUserAction.record("SyncPreferences_ManageGoogleAccountClicked");
         openCustomTabWithURL(context, customTabLauncher, MY_ACCOUNT_URL);
     }
@@ -159,7 +157,7 @@ public class SyncSettingsUtils {
             Context context,
             SyncService syncService,
             @BookmarksLimitExceededHelpClickedSource int source,
-            SettingsCustomTabLauncher customTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         assert syncService != null;
         syncService.acknowledgeBookmarksLimitExceededError(source);
         openCustomTabWithURL(context, customTabLauncher, BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL);

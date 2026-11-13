@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonCoordinator;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /**
@@ -165,7 +165,7 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
 
     private void mountNativeFreOnActiveContent() {
         if (mActiveContent == null) return;
-        SettingsCustomTabLauncher customTabLauncher = GlicNavigationUtils.getCustomTabLauncher();
+        CustomTabLauncher customTabLauncher = GlicNavigationUtils.getCustomTabLauncher();
         assert customTabLauncher != null;
         if (customTabLauncher == null) return;
         mActiveContent.mountNativeFre(customTabLauncher, this::notifyNativeFreAccepted);

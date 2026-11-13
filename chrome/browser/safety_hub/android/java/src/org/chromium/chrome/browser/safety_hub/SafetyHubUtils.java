@@ -17,8 +17,8 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -39,7 +39,7 @@ class SafetyHubUtils {
             Context context,
             Profile profile,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            @Nullable CustomTabLauncher customTabLauncher) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         String account = getAccountEmail(profile);
         assert account != null
@@ -49,7 +49,7 @@ class SafetyHubUtils {
                 PasswordCheckReferrer.SAFETY_CHECK,
                 modalDialogManagerSupplier,
                 account,
-                settingsCustomTabLauncher);
+                customTabLauncher);
     }
 
     /**
@@ -61,14 +61,14 @@ class SafetyHubUtils {
             Context context,
             Profile profile,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            CustomTabLauncher customTabLauncher) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         passwordManagerHelper.showPasswordCheckup(
                 context,
                 PasswordCheckReferrer.SAFETY_CHECK,
                 modalDialogManagerSupplier,
                 /* accountEmail= */ null,
-                settingsCustomTabLauncher);
+                customTabLauncher);
     }
 
     /**

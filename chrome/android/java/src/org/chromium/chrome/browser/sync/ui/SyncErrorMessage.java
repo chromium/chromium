@@ -26,9 +26,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -353,7 +353,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
                 mActivity,
                 mSyncService,
                 BookmarksLimitExceededHelpClickedSource.SYNC_ERROR_MESSAGE,
-                new SettingsCustomTabLauncherImpl());
+                new CustomTabLauncherImpl());
     }
 
     private void openTrustedVaultKeyRetrievalActivity() {

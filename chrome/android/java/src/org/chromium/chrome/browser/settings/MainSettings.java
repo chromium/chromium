@@ -74,9 +74,9 @@ import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 import org.chromium.components.browser_ui.widget.containment.SectionIdProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -108,7 +108,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 SigninManager.SignInStateObserver,
                 HomepageManager.HomepageStateListener,
                 SectionIdProvider,
-                SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
+                CustomTabLauncher.CustomTabLauncherClient {
     private final CallbackController mCallbackController = new CallbackController();
     public static final String PREF_SEARCH_HEADER = "settings_search_header";
     public static final String PREF_SETTINGS_PROMO_CARD = "settings_promo_card";
@@ -158,7 +158,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private boolean mShouldShowSnackbar;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
-    private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
+    private CustomTabLauncher mCustomTabLauncher;
 
     private @Nullable MultiColumnSettings mMultiColumnSettings;
     private @Nullable SelectionDecoration mSelectionDecoration;
@@ -381,8 +381,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void setCustomTabLauncher(SettingsCustomTabLauncher customTabLauncher) {
-        mSettingsCustomTabLauncher = customTabLauncher;
+    public void setCustomTabLauncher(CustomTabLauncher customTabLauncher) {
+        mCustomTabLauncher = customTabLauncher;
     }
 
     @Initializer
@@ -792,11 +792,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         && getArguments().containsKey(PasswordExportLauncher.START_PASSWORDS_EXPORT)
                         && getArguments().getBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT);
         if (startPasswordsExportFlow) {
-            assert mSettingsCustomTabLauncher != null
-                    : "The CSV download flow dialog requires a non-null"
-                            + " SettingsCustomTabLauncher.";
+            assert mCustomTabLauncher != null
+                    : "The CSV download flow dialog requires a non-null CustomTabLauncher.";
             PasswordManagerHelper.getForProfile(getProfile())
-                    .launchDownloadPasswordsCsvFlow(getContext(), mSettingsCustomTabLauncher);
+                    .launchDownloadPasswordsCsvFlow(getContext(), mCustomTabLauncher);
             getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
         }
     }

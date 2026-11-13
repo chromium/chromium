@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.settings;
+package org.chromium.chrome.browser.customtabs;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,10 +14,10 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 
 @NullMarked
-public class SettingsCustomTabLauncherImpl implements SettingsCustomTabLauncher {
+public class CustomTabLauncherImpl implements CustomTabLauncher {
     @Override
     public void openUrlInCct(Context context, String url) {
         CustomTabsIntent customTabIntent =

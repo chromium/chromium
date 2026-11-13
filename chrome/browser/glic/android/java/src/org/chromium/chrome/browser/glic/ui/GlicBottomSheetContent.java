@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
+import org.chromium.components.browser_ui.util.CustomTabLauncher;
 
 import java.util.List;
 
@@ -79,7 +79,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
         mDestroyCallback = destroyCallback;
     }
 
-    void mountNativeFre(SettingsCustomTabLauncher customTabLauncher, Runnable onNativeFreAccepted) {
+    void mountNativeFre(CustomTabLauncher customTabLauncher, Runnable onNativeFreAccepted) {
         if (mFreCoordinator != null) return;
 
         ViewGroup expanded = TabBottomSheetUtils.getExpandedContentGroup(getContentView());

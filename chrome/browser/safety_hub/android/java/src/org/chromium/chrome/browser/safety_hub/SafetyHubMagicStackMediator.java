@@ -234,7 +234,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
         mModel.set(
                 SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
                 (view) -> {
-                    // The settingsCustomTabLauncher is only needed by dialogs shown when
+                    // The customTabLauncher is only needed by dialogs shown when
                     // password manager is not available. Since the SafetyHub magic stack
                     // card is only shown if the password manager is accessible, it's fine
                     // to pass null instead.
@@ -242,7 +242,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                             mContext,
                             mProfile,
                             mModalDialogManagerSupplier,
-                            /* settingsCustomTabLauncher= */ null);
+                            /* customTabLauncher= */ null);
                     recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);
                     mMagicStackBridge.dismissCompromisedPasswordsModule();
                     dismissModule();

@@ -13,8 +13,8 @@ import android.content.Context;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.customtabs.CustomTabLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
@@ -56,7 +56,7 @@ public class PasswordManagerLauncher {
                         modalDialogManager,
                         managePasskeys,
                         account,
-                        new SettingsCustomTabLauncherImpl());
+                        new CustomTabLauncherImpl());
     }
 
     @CalledByNative

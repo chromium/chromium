@@ -187,6 +187,7 @@ robolectric_library("junit") {
     "//components/browser_ui/notifications/android:test_support_java",
     "//components/browser_ui/notifications/android:utils_java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/content_settings/core/common:content_settings_types_java",
     "//components/prefs/android:java",
     "//components/signin/public/android:signin_java_test_support",
