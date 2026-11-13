@@ -365,48 +365,8 @@ void MaybeRecordBoostImagePriorityReason(const bool is_first_n,
   }
 }
 
-constexpr char kLCPPDeferUnusedPreloadHistogramPrefix[] =
-    "Blink.LCPP.DeferUnusedPreload.";
-
 std::string_view LinkPreloadStrForHistogram(bool link_preload) {
   return link_preload ? "LinkPreload" : "NoLinkPreload";
-}
-
-void RecordDeferUnusedPreloadHistograms(const Resource* resource) {
-  base::UmaHistogramEnumeration(
-      base::StrCat(
-          {kLCPPDeferUnusedPreloadHistogramPrefix, "DeferredResource"}),
-      resource->GetType());
-  base::UmaHistogramEnumeration(
-      base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix, "DeferredResource.",
-                    LinkPreloadStrForHistogram(resource->IsLinkPreload())}),
-      resource->GetType());
-
-  // When `resource` still not need load, that means the resource load is not
-  // started yet because there are no subsequent resource requests or vice
-  // versa.
-  base::UmaHistogramBoolean(
-      base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix,
-                    "UnusedAtDeferredLoadTiming"}),
-      resource->StillNeedsLoad());
-  base::UmaHistogramBoolean(
-      base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix,
-                    "UnusedAtDeferredLoadTiming.",
-                    LinkPreloadStrForHistogram(resource->IsLinkPreload())}),
-      resource->StillNeedsLoad());
-  if (!resource->StillNeedsLoad()) {
-    // If the resource load is not needed anymore, that's a false positive case
-    // of the LCPP based deferring unused preloads.
-    base::UmaHistogramEnumeration(
-        base::StrCat(
-            {kLCPPDeferUnusedPreloadHistogramPrefix, "PredictionFailed"}),
-        resource->GetType());
-    base::UmaHistogramEnumeration(
-        base::StrCat({kLCPPDeferUnusedPreloadHistogramPrefix,
-                      "PredictionFailed.",
-                      LinkPreloadStrForHistogram(resource->IsLinkPreload())}),
-        resource->GetType());
-  }
 }
 
 }  // namespace
@@ -2564,11 +2524,6 @@ void ResourceFetcher::WarnUnusedPreloads(
   }
   base::UmaHistogramCounts100("Renderer.Preload.UnusedResourceCount",
                               unused_resource_count);
-  // Record the total count of deferred preloads based on the LCPP signal.
-  base::UmaHistogramCounts100(
-      base::StrCat(
-          {kLCPPDeferUnusedPreloadHistogramPrefix, "DeferredResourceCount"}),
-      deferred_preloads_.size());
 
   for (auto& pair : unused_early_hints_preloaded_resources_) {
     if (pair.value.state == EarlyHintsPreloadEntry::State::kWarnedUnused) {
@@ -2917,10 +2872,6 @@ void ResourceFetcher::StartLoadAndFinishIfFailed(
     bool is_potentially_unused_preload) {
   if (!resource) {
     return;
-  }
-
-  if (is_potentially_unused_preload) {
-    RecordDeferUnusedPreloadHistograms(resource);
   }
 
   if (!resource->StillNeedsLoad()) {
