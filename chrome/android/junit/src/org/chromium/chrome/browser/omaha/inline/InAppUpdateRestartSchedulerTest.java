@@ -168,6 +168,11 @@ public class InAppUpdateRestartSchedulerTest {
                         InAppUpdatePolicy.DEFAULT_BACKGROUND_RESTART_DELAY_MINUTES
                                 + InAppUpdatePolicy.DEFAULT_BACKGROUND_RESTART_WINDOW_MINUTES),
                 oneOffInfo.getWindowEndTimeMs());
+        assertEquals(
+                0,
+                captor.getValue()
+                        .getExtras()
+                        .getInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT, -1));
         watcher.assertExpected();
     }
 
@@ -447,6 +452,77 @@ public class InAppUpdateRestartSchedulerTest {
 
         mScheduler.onApplicationStateChange(ApplicationState.HAS_RUNNING_ACTIVITIES);
         verify(mMockScheduler, never()).cancel(any(), anyInt());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testScheduleForegroundServiceRetry_skipsWhenPreconditionsNotMet() {
+        setActivityState(ActivityState.RESUMED);
+        InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(0);
+        assertNothingScheduled();
+        setActivityState(ActivityState.STOPPED);
+
+        InAppUpdatePolicy.setUpdateDownloaded(false);
+        InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(0);
+        assertNothingScheduled();
+        InAppUpdatePolicy.setUpdateDownloaded(true);
+
+        IncognitoTabHost host = mock(IncognitoTabHost.class);
+        when(host.hasIncognitoTabs()).thenReturn(true);
+        IncognitoTabHostRegistry.getInstance().register(host);
+        InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(0);
+        assertNothingScheduled();
+        IncognitoTabHostRegistry.getInstance().unregister(host);
+
+        // When a task is already marked scheduled in memory, retry does not double-schedule.
+        scheduleTask();
+        InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(0);
+        verify(mMockScheduler, times(1)).schedule(any(), any());
+    }
+
+    @Test
+    public void testScheduleForegroundServiceRetry_exponentialBackoffCapAndResetOnStop() {
+        var watcher =
+                expectEvents(
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED,
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED,
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED,
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED,
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED,
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED,
+                        InAppUpdateBackgroundRestartEvent.SCHEDULED);
+        int[] expectedDelaysMinutes = {15, 30, 60, 120, 240, 240};
+        for (int i = 0; i < expectedDelaysMinutes.length; i++) {
+            InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(i);
+            InAppUpdateRestartScheduler.onTaskStarted();
+        }
+
+        // At cap: retry must not schedule.
+        InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(expectedDelaysMinutes.length);
+
+        // Leaving Chrome again schedules a fresh cycle with retry count reset to 0.
+        stop();
+
+        ArgumentCaptor<TaskInfo> captor = ArgumentCaptor.forClass(TaskInfo.class);
+        verify(mMockScheduler, times(expectedDelaysMinutes.length + 1))
+                .schedule(eq(mContext), captor.capture());
+        for (int i = 0; i < expectedDelaysMinutes.length; i++) {
+            TaskInfo info = captor.getAllValues().get(i);
+            long expectedStartMs = TimeUnit.MINUTES.toMillis(expectedDelaysMinutes[i]);
+            assertEquals(expectedStartMs, info.getOneOffInfo().getWindowStartTimeMs());
+            assertEquals(
+                    expectedStartMs
+                            + TimeUnit.MINUTES.toMillis(
+                                    InAppUpdateRestartScheduler
+                                            .FOREGROUND_SERVICE_RETRY_WINDOW_MINUTES),
+                    info.getOneOffInfo().getWindowEndTimeMs());
+            assertEquals(
+                    i + 1, info.getExtras().getInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT));
+        }
+
+        TaskInfo freshSchedule = captor.getAllValues().get(expectedDelaysMinutes.length);
+        assertEquals(
+                0, freshSchedule.getExtras().getInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT));
         watcher.assertExpected();
     }
 }

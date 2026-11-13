@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.app.ActivityManager;
 import android.content.Context;
 
 import org.junit.After;
@@ -402,5 +403,16 @@ public class InAppUpdatePolicyTest {
                 InAppUpdatePolicy.PARAM_BACKGROUND_RESTART_WINDOW_MINUTES,
                 "0");
         assertEquals(1, InAppUpdatePolicy.getBackgroundRestartWindowMinutes());
+    }
+
+    @Test
+    public void testIsForegroundServiceActive_importanceThreshold() {
+        InAppUpdatePolicy.setProcessImportanceForTesting(
+                ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE);
+        assertTrue(InAppUpdatePolicy.isForegroundServiceActive());
+
+        InAppUpdatePolicy.setProcessImportanceForTesting(
+                ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE);
+        assertFalse(InAppUpdatePolicy.isForegroundServiceActive());
     }
 }

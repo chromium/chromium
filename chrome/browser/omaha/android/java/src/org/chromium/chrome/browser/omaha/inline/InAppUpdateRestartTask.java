@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omaha.inline;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.Task;
@@ -17,6 +18,7 @@ import com.google.android.play.core.install.model.InstallStatus;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,10 +27,15 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Background task that checks whether an in-app update is still downloaded and Chrome has no
- * visible activities or incognito tabs, then invokes {@link AppUpdateManager#completeUpdate()} to
- * silently install the staged update while Chrome is in the background.
+ * visible activities, incognito tabs, or active foreground services, then invokes {@link
+ * AppUpdateManager#completeUpdate()} to silently install the staged update while Chrome is in the
+ * background. An active foreground service is the only non-terminal skip: the task finishes and
+ * reschedules itself with capped exponential backoff.
  *
  * <p>Note: This task runs in a cold background JobScheduler process without native libraries
  * loaded. Never call native-backed {@code ChromeFeatureList} methods (such as {@code isEnabled()}
@@ -47,6 +54,18 @@ public class InAppUpdateRestartTask implements BackgroundTask {
 
     // Same tag as the rest of the in-app update flow so one logcat filter covers it.
     private static final String TAG = "InAppUpdateFlow";
+
+    @IntDef({
+        PreconditionResult.OK,
+        PreconditionResult.SKIPPED_TERMINAL,
+        PreconditionResult.SKIPPED_FOREGROUND_SERVICE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PreconditionResult {
+        int OK = 0;
+        int SKIPPED_TERMINAL = 1;
+        int SKIPPED_FOREGROUND_SERVICE = 2;
+    }
 
     private static @Nullable AppUpdateManager sAppUpdateManagerForTesting;
 
@@ -72,14 +91,27 @@ public class InAppUpdateRestartTask implements BackgroundTask {
         InAppUpdateRestartScheduler.onTaskStarted();
         Log.i(TAG, "InAppUpdateRestartTask.onStartTask");
 
-        if (!checkPreconditions()) {
+        int retryCount =
+                taskParameters.getExtras().getInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT, 0);
+
+        @PreconditionResult int preconditions = checkPreconditions();
+        if (preconditions != PreconditionResult.OK) {
+            if (preconditions == PreconditionResult.SKIPPED_FOREGROUND_SERVICE) {
+                // Post after returning false so BackgroundTaskJobService finishes tearing down the
+                // current job before the same job ID is rescheduled.
+                ThreadUtils.postOnUiThread(
+                        () ->
+                                InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(
+                                        retryCount));
+            }
             return false;
         }
 
         AppUpdateManager manager = getAppUpdateManager(context);
         try {
             manager.getAppUpdateInfo()
-                    .addOnCompleteListener(task -> onAppUpdateInfoResult(manager, task, callback));
+                    .addOnCompleteListener(
+                            task -> onAppUpdateInfoResult(manager, task, callback, retryCount));
         } catch (RuntimeException e) {
             Log.w(TAG, "InAppUpdateRestartTask: Failed to request AppUpdateInfo", e);
             recordEvent(InAppUpdateBackgroundRestartEvent.GET_APP_UPDATE_INFO_FAILED);
@@ -97,7 +129,10 @@ public class InAppUpdateRestartTask implements BackgroundTask {
     }
 
     private void onAppUpdateInfoResult(
-            AppUpdateManager manager, Task<AppUpdateInfo> task, TaskFinishedCallback callback) {
+            AppUpdateManager manager,
+            Task<AppUpdateInfo> task,
+            TaskFinishedCallback callback,
+            int retryCount) {
         if (mStopped) {
             return;
         }
@@ -128,9 +163,14 @@ public class InAppUpdateRestartTask implements BackgroundTask {
         }
 
         // Re-check preconditions immediately before invoking completeUpdate() to prevent TOCTOU
-        // races (e.g. an Activity becoming visible while getAppUpdateInfo() was in flight).
-        if (!checkPreconditions()) {
+        // races (e.g. an Activity becoming visible or a foreground service starting while
+        // getAppUpdateInfo() was in flight).
+        @PreconditionResult int preconditions = checkPreconditions();
+        if (preconditions != PreconditionResult.OK) {
             callback.taskFinished(false);
+            if (preconditions == PreconditionResult.SKIPPED_FOREGROUND_SERVICE) {
+                InAppUpdateRestartScheduler.scheduleForegroundServiceRetry(retryCount);
+            }
             return;
         }
 
@@ -171,17 +211,17 @@ public class InAppUpdateRestartTask implements BackgroundTask {
         callback.taskFinished(false);
     }
 
-    private static boolean checkPreconditions() {
+    private static @PreconditionResult int checkPreconditions() {
         if (!InAppUpdatePolicy.isUpdateDownloaded()) {
             Log.i(TAG, "InAppUpdateRestartTask: Update not downloaded.");
             recordEvent(InAppUpdateBackgroundRestartEvent.SKIPPED_NOT_DOWNLOADED);
-            return false;
+            return PreconditionResult.SKIPPED_TERMINAL;
         }
 
         @RestartMode int mode = InAppUpdatePolicy.getRestartMode();
         if (mode == RestartMode.SNACKBAR) {
             Log.i(TAG, "InAppUpdateRestartTask: Mode is snackbar, skipping.");
-            return false;
+            return PreconditionResult.SKIPPED_TERMINAL;
         }
 
         // The browser process initializes ApplicationStatus in Application.onCreate, so this is
@@ -189,16 +229,22 @@ public class InAppUpdateRestartTask implements BackgroundTask {
         if (ApplicationStatus.isInitialized() && ApplicationStatus.hasVisibleActivities()) {
             Log.i(TAG, "InAppUpdateRestartTask: Activity visible, skipping.");
             recordEvent(InAppUpdateBackgroundRestartEvent.SKIPPED_VISIBLE_AT_RUN);
-            return false;
+            return PreconditionResult.SKIPPED_TERMINAL;
         }
 
         if (IncognitoTabHostUtils.doIncognitoTabsExist()) {
             Log.i(TAG, "InAppUpdateRestartTask: Incognito tabs open, skipping.");
             recordEvent(InAppUpdateBackgroundRestartEvent.SKIPPED_INCOGNITO);
-            return false;
+            return PreconditionResult.SKIPPED_TERMINAL;
         }
 
-        return true;
+        if (InAppUpdatePolicy.isForegroundServiceActive()) {
+            Log.i(TAG, "InAppUpdateRestartTask: Foreground service active, skipping.");
+            recordEvent(InAppUpdateBackgroundRestartEvent.SKIPPED_FOREGROUND_SERVICE);
+            return PreconditionResult.SKIPPED_FOREGROUND_SERVICE;
+        }
+
+        return PreconditionResult.OK;
     }
 
     /** Records to {@link #HISTOGRAM_EVENT}; shared with {@link InAppUpdateRestartScheduler}. */

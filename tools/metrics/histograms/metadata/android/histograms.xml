@@ -2874,14 +2874,17 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records lifecycle events for background installation of a downloaded in-app
-    update on Chrome for Android: scheduled on stop, cancelled on return to
-    foreground, skipped by a guard (screen locked, incognito tabs open, activity
-    visible at run time, update not downloaded), completeUpdate invoked,
-    completeUpdate failed, getAppUpdateInfo failed. There is no success bucket
-    because Play replaces the package and kills the process before a success
-    listener can run; for the same reason CompleteUpdateCalled undercounts when
-    the task runs in a cold Java-only process, and the install outcome should be
-    measured at the next launch.
+    update on Chrome for Android: initial schedule on stop, retry scheduled with
+    backoff after an active foreground-service skip (recorded separately from
+    the initial schedule), cancelled on return to foreground, skipped by a guard
+    (screen locked, incognito tabs open, activity visible at run time, active
+    foreground service, update not downloaded), completeUpdate invoked,
+    completeUpdate failed, getAppUpdateInfo failed. Query failures in
+    ActivityManager.getMyMemoryState() fail safe into the active foreground
+    service bucket. There is no success bucket because Play replaces the package
+    and kills the process before a success listener can run; for the same reason
+    CompleteUpdateCalled undercounts when the task runs in a cold Java-only
+    process, and the install outcome should be measured at the next launch.
   </summary>
 </histogram>
 

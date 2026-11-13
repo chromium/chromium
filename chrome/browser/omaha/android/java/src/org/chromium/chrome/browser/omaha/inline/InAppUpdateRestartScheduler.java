@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omaha.inline;
 
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.os.PersistableBundle;
 import android.os.PowerManager;
 
 import androidx.annotation.VisibleForTesting;
@@ -36,6 +37,13 @@ import java.util.concurrent.TimeUnit;
  */
 @NullMarked
 public class InAppUpdateRestartScheduler {
+    static final String EXTRA_RETRY_COUNT = "foreground_service_retry_count";
+
+    @VisibleForTesting static final int FOREGROUND_SERVICE_RETRY_INITIAL_DELAY_MINUTES = 15;
+    private static final int FOREGROUND_SERVICE_RETRY_MAX_DELAY_MINUTES = 240;
+    @VisibleForTesting static final int FOREGROUND_SERVICE_RETRY_WINDOW_MINUTES = 5;
+    @VisibleForTesting static final int MAX_FOREGROUND_SERVICE_RETRIES = 6;
+
     private static @Nullable InAppUpdateRestartScheduler sInstance;
 
     private boolean mIsListenerRegistered;
@@ -84,8 +92,7 @@ public class InAppUpdateRestartScheduler {
      */
     public void start() {
         ThreadUtils.assertOnUiThread();
-        if (InAppUpdatePolicy.getRestartMode() != RestartMode.BACKGROUND
-                || !InAppUpdatePolicy.isUpdateDownloaded()) {
+        if (!isBackgroundRestartEnabledAndDownloaded()) {
             if (mIsTaskScheduled || InAppUpdatePolicy.isRestartTaskScheduled()) {
                 cancelTask();
             }
@@ -175,8 +182,68 @@ public class InAppUpdateRestartScheduler {
         }
         int delayMinutes = InAppUpdatePolicy.getBackgroundRestartDelayMinutes();
         int windowMinutes = InAppUpdatePolicy.getBackgroundRestartWindowMinutes();
+        if (scheduleTask(context, delayMinutes, windowMinutes, /* retryCount= */ 0)) {
+            mIsTaskScheduled = true;
+        }
+    }
+
+    private static boolean isBackgroundRestartEnabledAndDownloaded() {
+        return InAppUpdatePolicy.getRestartMode() == RestartMode.BACKGROUND
+                && InAppUpdatePolicy.isUpdateDownloaded();
+    }
+
+    /**
+     * Schedules a bounded delayed retry after {@link InAppUpdateRestartTask} skips due to an active
+     * foreground service (e.g. media playback or downloads). Must be called on the UI thread after
+     * the current job execution has finished.
+     */
+    static void scheduleForegroundServiceRetry(int currentRetryCount) {
+        ThreadUtils.assertOnUiThread();
+        if (!isBackgroundRestartEnabledAndDownloaded()) {
+            return;
+        }
+        if (ApplicationStatus.isInitialized() && ApplicationStatus.hasVisibleActivities()) {
+            return;
+        }
+        if (IncognitoTabHostUtils.doIncognitoTabsExist()) {
+            return;
+        }
+        // isScreenInteractiveAndUnlocked() is intentionally not re-checked here: the initial
+        // schedule already required an interactive unlocked screen, and any visible Chrome activity
+        // since then has canceled the chain, so Chrome cannot be the locked top task on retry.
+        if (sInstance != null && sInstance.mIsTaskScheduled) {
+            return;
+        }
+        int retryCount = Math.max(0, currentRetryCount);
+        if (retryCount >= MAX_FOREGROUND_SERVICE_RETRIES) {
+            Log.i(
+                    InAppUpdateController.TAG,
+                    "InAppUpdateRestartScheduler: Foreground service retry cap reached, not"
+                            + " rescheduling.");
+            return;
+        }
+        int delayMinutes = getForegroundServiceRetryDelayMinutes(retryCount);
+        Context context = ContextUtils.getApplicationContext();
+        if (scheduleTask(
+                context, delayMinutes, FOREGROUND_SERVICE_RETRY_WINDOW_MINUTES, retryCount + 1)) {
+            if (sInstance != null) {
+                sInstance.mIsTaskScheduled = true;
+            }
+        }
+    }
+
+    private static int getForegroundServiceRetryDelayMinutes(int retryCount) {
+        return Math.min(
+                FOREGROUND_SERVICE_RETRY_INITIAL_DELAY_MINUTES << retryCount,
+                FOREGROUND_SERVICE_RETRY_MAX_DELAY_MINUTES);
+    }
+
+    private static boolean scheduleTask(
+            Context context, int delayMinutes, int windowMinutes, int retryCount) {
         long delayMs = TimeUnit.MINUTES.toMillis(delayMinutes);
         long windowEndMs = delayMs + TimeUnit.MINUTES.toMillis(windowMinutes);
+        PersistableBundle extras = new PersistableBundle();
+        extras.putInt(EXTRA_RETRY_COUNT, retryCount);
         TaskInfo taskInfo =
                 TaskInfo.createTask(
                                 TaskIds.IN_APP_UPDATE_RESTART_JOB_ID,
@@ -184,25 +251,30 @@ public class InAppUpdateRestartScheduler {
                                         .setWindowStartTimeMs(delayMs)
                                         .setWindowEndTimeMs(windowEndMs)
                                         .build())
+                        .setExtras(extras)
                         .setUpdateCurrent(true)
                         .setIsPersisted(false)
                         .build();
         boolean scheduled =
                 BackgroundTaskSchedulerFactory.getScheduler().schedule(context, taskInfo);
         if (scheduled) {
-            mIsTaskScheduled = true;
             InAppUpdatePolicy.setRestartTaskScheduled(true);
             Log.i(
                     InAppUpdateController.TAG,
                     "InAppUpdateRestartScheduler: Scheduled background restart task with delay"
-                            + " %d min.",
-                    delayMinutes);
-            InAppUpdateRestartTask.recordEvent(InAppUpdateBackgroundRestartEvent.SCHEDULED);
+                            + " %d min (retry %d).",
+                    delayMinutes,
+                    retryCount);
+            InAppUpdateRestartTask.recordEvent(
+                    retryCount == 0
+                            ? InAppUpdateBackgroundRestartEvent.SCHEDULED
+                            : InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED);
         } else {
             Log.w(
                     InAppUpdateController.TAG,
                     "InAppUpdateRestartScheduler: Failed to schedule background restart task.");
         }
+        return scheduled;
     }
 
     private static void cancelPendingJob() {

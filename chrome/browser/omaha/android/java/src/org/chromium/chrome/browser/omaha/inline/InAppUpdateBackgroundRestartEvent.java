@@ -29,7 +29,9 @@ import java.lang.annotation.RetentionPolicy;
     InAppUpdateBackgroundRestartEvent.SKIPPED_NOT_DOWNLOADED,
     InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_CALLED,
     InAppUpdateBackgroundRestartEvent.COMPLETE_UPDATE_FAILED,
-    InAppUpdateBackgroundRestartEvent.GET_APP_UPDATE_INFO_FAILED
+    InAppUpdateBackgroundRestartEvent.GET_APP_UPDATE_INFO_FAILED,
+    InAppUpdateBackgroundRestartEvent.SKIPPED_FOREGROUND_SERVICE,
+    InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface InAppUpdateBackgroundRestartEvent {
@@ -42,6 +44,8 @@ public @interface InAppUpdateBackgroundRestartEvent {
     int COMPLETE_UPDATE_CALLED = 6;
     int COMPLETE_UPDATE_FAILED = 7;
     int GET_APP_UPDATE_INFO_FAILED = 8;
-    int COUNT = 9;
+    int SKIPPED_FOREGROUND_SERVICE = 9;
+    int RETRY_SCHEDULED = 10;
+    int COUNT = 11;
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:InAppUpdateBackgroundRestartEvent)

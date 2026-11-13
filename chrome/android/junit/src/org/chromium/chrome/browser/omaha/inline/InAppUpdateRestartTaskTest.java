@@ -4,16 +4,22 @@
 
 package org.chromium.chrome.browser.omaha.inline;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
+import android.os.PersistableBundle;
 
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.android.gms.tasks.Tasks;
@@ -26,6 +32,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -46,7 +54,13 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
+import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
+import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
+
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link InAppUpdateRestartTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,11 +71,12 @@ public class InAppUpdateRestartTaskTest {
 
     @Mock private AppUpdateManager mMockAppUpdateManager;
     @Mock private AppUpdateInfo mMockAppUpdateInfo;
+    @Mock private BackgroundTaskScheduler mMockScheduler;
     @Mock private TaskFinishedCallback mMockCallback;
-    @Mock private TaskParameters mMockTaskParameters;
 
     private Context mContext;
     private InAppUpdateRestartTask mTask;
+    private TaskParameters mTaskParameters;
     private @Nullable Activity mVisibleActivity;
 
     @Before
@@ -70,6 +85,11 @@ public class InAppUpdateRestartTaskTest {
         ChromeFeatureList.sInAppUpdateRestartMode.setForTesting("background");
         IncognitoTabHostRegistry.getInstance().clearForTesting();
         mContext = ContextUtils.getApplicationContext();
+        // Robolectric defaults process importance to foreground; simulate a real JobScheduler
+        // task running without an active foreground service unless a test overrides it.
+        InAppUpdatePolicy.setProcessImportanceForTesting(
+                ActivityManager.RunningAppProcessInfo.IMPORTANCE_PERCEPTIBLE);
+        BackgroundTaskSchedulerFactory.setSchedulerForTesting(mMockScheduler);
         InAppUpdateRestartTask.setAppUpdateManagerForTesting(mMockAppUpdateManager);
 
         when(mMockAppUpdateManager.getAppUpdateInfo())
@@ -77,6 +97,7 @@ public class InAppUpdateRestartTaskTest {
         when(mMockAppUpdateManager.completeUpdate()).thenReturn(Tasks.forResult(null));
 
         mTask = new InAppUpdateRestartTask();
+        mTaskParameters = TaskParameters.create(TaskIds.IN_APP_UPDATE_RESTART_JOB_ID).build();
     }
 
     @After
@@ -89,7 +110,17 @@ public class InAppUpdateRestartTaskTest {
     }
 
     private boolean startTask() {
-        return mTask.onStartTask(mContext, mMockTaskParameters, mMockCallback);
+        return mTask.onStartTask(mContext, mTaskParameters, mMockCallback);
+    }
+
+    private boolean startTask(int retryCount) {
+        PersistableBundle extras = new PersistableBundle();
+        extras.putInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT, retryCount);
+        TaskParameters params =
+                TaskParameters.create(TaskIds.IN_APP_UPDATE_RESTART_JOB_ID)
+                        .addExtras(extras)
+                        .build();
+        return mTask.onStartTask(mContext, params, mMockCallback);
     }
 
     private void showActivity() {
@@ -101,6 +132,24 @@ public class InAppUpdateRestartTaskTest {
         verify(mMockAppUpdateManager, never()).getAppUpdateInfo();
         verify(mMockAppUpdateManager, never()).completeUpdate();
         verify(mMockCallback, never()).taskFinished(anyBoolean());
+    }
+
+    private static void assertScheduledRetry(
+            TaskInfo taskInfo, int expectedDelayMinutes, int expectedRetryCount) {
+        assertEquals(TaskIds.IN_APP_UPDATE_RESTART_JOB_ID, taskInfo.getTaskId());
+        TaskInfo.OneOffInfo oneOffInfo = taskInfo.getOneOffInfo();
+        assertEquals(
+                TimeUnit.MINUTES.toMillis(expectedDelayMinutes), oneOffInfo.getWindowStartTimeMs());
+        assertEquals(
+                TimeUnit.MINUTES.toMillis(
+                        expectedDelayMinutes
+                                + InAppUpdateRestartScheduler
+                                        .FOREGROUND_SERVICE_RETRY_WINDOW_MINUTES),
+                oneOffInfo.getWindowEndTimeMs());
+        assertTrue(InAppUpdatePolicy.isRestartTaskScheduled());
+        assertEquals(
+                expectedRetryCount,
+                taskInfo.getExtras().getInt(InAppUpdateRestartScheduler.EXTRA_RETRY_COUNT, -1));
     }
 
     private static HistogramWatcher expectEvents(@InAppUpdateBackgroundRestartEvent int... events) {
@@ -284,7 +333,7 @@ public class InAppUpdateRestartTaskTest {
         assertTrue(startTask());
 
         // Task is stopped while getAppUpdateInfo is in flight.
-        mTask.onStopTask(mContext, mMockTaskParameters);
+        mTask.onStopTask(mContext, mTaskParameters);
 
         // Complete the async getAppUpdateInfo task.
         tcs.setResult(mMockAppUpdateInfo);
@@ -296,7 +345,7 @@ public class InAppUpdateRestartTaskTest {
 
     @Test
     public void testOnStopTask_returnsFalse() {
-        assertFalse(mTask.onStopTask(mContext, mMockTaskParameters));
+        assertFalse(mTask.onStopTask(mContext, mTaskParameters));
     }
 
     @Test
@@ -319,13 +368,72 @@ public class InAppUpdateRestartTaskTest {
     public void testOnStopTask_duringCompleteUpdate_stillRestoresFlagOnFailure() {
         TaskCompletionSource<Void> source = startTaskWithPendingCompleteUpdate();
 
-        mTask.onStopTask(mContext, mMockTaskParameters);
+        mTask.onStopTask(mContext, mTaskParameters);
         source.setException(new RuntimeException("Install failure"));
         ShadowLooper.idleMainLooper();
 
         // Flag restored even though the task was stopped; taskFinished() must not be called.
         assertTrue(InAppUpdatePolicy.isUpdateDownloaded());
         verify(mMockCallback, never()).taskFinished(anyBoolean());
+    }
+
+    @Test
+    public void testOnStartTask_foregroundServiceActive_skipsAndSchedulesBoundedRetry() {
+        InAppUpdatePolicy.setUpdateDownloaded(true);
+        InAppUpdatePolicy.setProcessImportanceForTesting(
+                ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE);
+        when(mMockScheduler.schedule(any(), any())).thenReturn(true);
+
+        var watcher =
+                expectEvents(
+                        InAppUpdateBackgroundRestartEvent.SKIPPED_FOREGROUND_SERVICE,
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED);
+
+        assertFalse(startTask());
+        // Retry must be posted after onStartTask() returns false so BackgroundTaskJobService
+        // finishes cleaning up before the same job ID is rescheduled.
+        verify(mMockScheduler, never()).schedule(any(), any());
+
+        ShadowLooper.idleMainLooper();
+
+        assertSkippedWithoutCallingPlay();
+        ArgumentCaptor<TaskInfo> captor = ArgumentCaptor.forClass(TaskInfo.class);
+        verify(mMockScheduler).schedule(eq(mContext), captor.capture());
+        assertScheduledRetry(
+                captor.getValue(),
+                InAppUpdateRestartScheduler.FOREGROUND_SERVICE_RETRY_INITIAL_DELAY_MINUTES,
+                1);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnStartTask_foregroundServiceStartsDuringAsyncCheck_finishesBeforeRetry() {
+        InAppUpdatePolicy.setUpdateDownloaded(true);
+        when(mMockAppUpdateInfo.installStatus()).thenReturn(InstallStatus.DOWNLOADED);
+        when(mMockScheduler.schedule(any(), any())).thenReturn(true);
+
+        TaskCompletionSource<AppUpdateInfo> tcs = new TaskCompletionSource<>();
+        when(mMockAppUpdateManager.getAppUpdateInfo()).thenReturn(tcs.getTask());
+
+        var watcher =
+                expectEvents(
+                        InAppUpdateBackgroundRestartEvent.SKIPPED_FOREGROUND_SERVICE,
+                        InAppUpdateBackgroundRestartEvent.RETRY_SCHEDULED);
+
+        assertTrue(startTask(2));
+
+        InAppUpdatePolicy.setProcessImportanceForTesting(
+                ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE);
+        tcs.setResult(mMockAppUpdateInfo);
+        ShadowLooper.idleMainLooper();
+
+        verify(mMockAppUpdateManager, never()).completeUpdate();
+        ArgumentCaptor<TaskInfo> captor = ArgumentCaptor.forClass(TaskInfo.class);
+        InOrder order = inOrder(mMockCallback, mMockScheduler);
+        order.verify(mMockCallback).taskFinished(false);
+        order.verify(mMockScheduler).schedule(eq(mContext), captor.capture());
+        assertScheduledRetry(captor.getValue(), 60, 3);
+        watcher.assertExpected();
     }
 
     /**

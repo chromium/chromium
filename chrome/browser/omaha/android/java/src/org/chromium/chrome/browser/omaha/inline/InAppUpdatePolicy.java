@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omaha.inline;
 
+import android.app.ActivityManager;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -140,6 +141,7 @@ public final class InAppUpdatePolicy {
     @VisibleForTesting static final int DEFAULT_DISCOVERY_MIN_STALENESS_DAYS = 0;
 
     private static @Nullable Boolean sIsOfficialBuildForTesting;
+    private static @Nullable Integer sProcessImportanceForTesting;
 
     private InAppUpdatePolicy() {}
 
@@ -147,6 +149,12 @@ public final class InAppUpdatePolicy {
     public static void setIsOfficialBuildForTesting(boolean isOfficial) {
         sIsOfficialBuildForTesting = isOfficial;
         ResettersForTesting.register(() -> sIsOfficialBuildForTesting = null);
+    }
+
+    /** Overrides the process memory importance reported to {@link #isForegroundServiceActive()}. */
+    static void setProcessImportanceForTesting(int importance) {
+        sProcessImportanceForTesting = importance;
+        ResettersForTesting.register(() -> sProcessImportanceForTesting = null);
     }
 
     /**
@@ -358,6 +366,33 @@ public final class InAppUpdatePolicy {
     static void setRestartTaskScheduled(boolean scheduled) {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(PREF_KEY_RESTART_TASK_SCHEDULED, scheduled);
+    }
+
+    /**
+     * Returns whether Chrome currently holds an active foreground service (or higher process
+     * importance such as a foreground activity).
+     *
+     * <p>Unlike {@link org.chromium.base.SysUtils#isProcessInBackground()}, which checks {@code >=
+     * IMPORTANCE_CACHED} and is therefore false while a {@code JobScheduler} task runs ({@code
+     * IMPORTANCE_PERCEPTIBLE}), this checks {@code <= IMPORTANCE_FOREGROUND_SERVICE}. Fails safe
+     * (returns {@code true}) if querying {@link ActivityManager} throws.
+     */
+    static boolean isForegroundServiceActive() {
+        int importance;
+        if (sProcessImportanceForTesting != null) {
+            importance = sProcessImportanceForTesting;
+        } else {
+            ActivityManager.RunningAppProcessInfo info =
+                    new ActivityManager.RunningAppProcessInfo();
+            try {
+                ActivityManager.getMyMemoryState(info);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Failed to query process memory state", e);
+                return true;
+            }
+            importance = info.importance;
+        }
+        return importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND_SERVICE;
     }
 
     static void resetForTesting() {
