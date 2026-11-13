@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -24,6 +25,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/quic/quic_http_utils.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_frame_builder.h"
@@ -35,6 +37,13 @@
 #include "url/scheme_host_port.h"
 
 namespace net {
+
+namespace {
+
+BASE_FEATURE(kQuicIsConnectionReusedBeforeStreamCreation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 QuicHttpStream::QuicHttpStream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
@@ -257,7 +266,34 @@ bool QuicHttpStream::IsResponseBodyComplete() const {
 }
 
 bool QuicHttpStream::IsConnectionReused() const {
-  return stream_ && !stream_->IsFirstStream();
+  if (stream_ && !stream_->IsFirstStream()) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          kQuicIsConnectionReusedBeforeStreamCreation)) {
+    return false;
+  }
+
+  // Treat all streams on a preconnected session as reused, similar to
+  // `kUnusedIdle` sockets for HTTP/1.1 and `SpdySession::IsReused()` for
+  // HTTP/2. This includes the first stream (and requests that attached to the
+  // preconnect before its handshake completed), since the server may have
+  // closed the session before the request was sent.
+  if (quic_session()->session_creation_initiator() ==
+      MultiplexedSessionCreationInitiator::kPreconnect) {
+    return true;
+  }
+
+  if (stream_) {
+    return false;
+  }
+
+  // `stream_` may be null if the session closed before the stream was created
+  // (e.g. in `InitializeStream()`). In that case, fall back to whether the
+  // session was ever used to create streams so that `HttpNetworkTransaction`
+  // can retry requests that failed on a reused session.
+  return quic_session()->WasEverUsedToCreateStreams();
 }
 
 base::ByteSize QuicHttpStream::GetTotalReceivedBytes() const {

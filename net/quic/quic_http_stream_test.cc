@@ -52,6 +52,7 @@
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
+#include "net/quic/quic_chromium_client_session_peer.h"
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/quic/quic_chromium_packet_reader.h"
 #include "net/quic/quic_chromium_packet_writer.h"
@@ -69,6 +70,7 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/cert_test_util.h"
@@ -94,6 +96,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_connection_peer.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_spdy_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -437,7 +440,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         /*enable_origin_frame=*/true, /*allow_server_preferred_address=*/true,
-        MultiplexedSessionCreationInitiator::kUnknown,
+        session_creation_initiator_,
         NetLogWithSource::Make(NetLogSourceType::NONE),
         QuicConnectionReuseDetails());
     session_->Initialize();
@@ -467,6 +470,11 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
 
   void SetResolutionDetails(ResolutionDetails resolution_details) {
     resolution_details_ = resolution_details;
+  }
+
+  void SetSessionCreationInitiator(
+      MultiplexedSessionCreationInitiator session_creation_initiator) {
+    session_creation_initiator_ = session_creation_initiator;
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructClientDataPacket(
@@ -684,6 +692,8 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
 
   std::optional<ResolutionDetails> resolution_details_;
+  MultiplexedSessionCreationInitiator session_creation_initiator_ =
+      MultiplexedSessionCreationInitiator::kUnknown;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
@@ -736,6 +746,185 @@ TEST_P(QuicHttpStreamTest, IsConnectionReused) {
                                    callback2.callback()));
 
   // Subsequent streams on the same connection should be considered reused.
+  EXPECT_TRUE(stream2.IsConnectionReused());
+}
+
+// A session that was never used to create a stream is not considered reused
+// if it closes before `InitializeStream()` creates a stream.
+TEST_P(QuicHttpStreamTest, IsConnectionReusedFreshSessionClosedBeforeStream) {
+  Initialize();
+  EXPECT_FALSE(stream_->IsConnectionReused());
+
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "test", quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  stream_->RegisterRequest(&request_);
+  EXPECT_THAT(
+      stream_->InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,
+                                callback_.callback()),
+      IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_FALSE(stream_->IsConnectionReused());
+}
+
+// If a session that was already used to create a stream closes before
+// `InitializeStream()` creates a stream for another request, that request's
+// connection is considered reused so that `HttpNetworkTransaction` retries it.
+TEST_P(QuicHttpStreamTest, IsConnectionReusedSessionClosedBeforeStream) {
+  Initialize();
+
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+  EXPECT_FALSE(stream_->IsConnectionReused());
+
+  QuicHttpStream stream2(session_->CreateHandle(url::SchemeHostPort(
+                             url::kHttpsScheme, "www.example.org", 443)),
+                         /*dns_aliases=*/{});
+  // The session has been used to create a stream, so `stream2` is considered
+  // reused even before it creates its own stream.
+  EXPECT_TRUE(stream2.IsConnectionReused());
+
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "test", quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  // The reuse state must survive the session closing.
+  EXPECT_TRUE(stream2.IsConnectionReused());
+  stream2.RegisterRequest(&request_);
+  TestCompletionCallback callback2;
+  EXPECT_THAT(
+      stream2.InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,
+                               callback2.callback()),
+      IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_TRUE(stream2.IsConnectionReused());
+
+  // The first stream on the session is still not considered reused.
+  EXPECT_FALSE(stream_->IsConnectionReused());
+
+  // A handle created after the session started going away is also considered
+  // reused.
+  QuicHttpStream stream3(session_->CreateHandle(url::SchemeHostPort(
+                             url::kHttpsScheme, "www.example.org", 443)),
+                         /*dns_aliases=*/{});
+  EXPECT_TRUE(stream3.IsConnectionReused());
+}
+
+// Streams on a preconnected session are always considered reused, including
+// the first stream and streams that fail before a stream is created.
+TEST_P(QuicHttpStreamTest, IsConnectionReusedPreconnectedSession) {
+  SetSessionCreationInitiator(MultiplexedSessionCreationInitiator::kPreconnect);
+  Initialize();
+  EXPECT_TRUE(stream_->IsConnectionReused());
+
+  QuicHttpStream stream2(session_->CreateHandle(url::SchemeHostPort(
+                             url::kHttpsScheme, "www.example.org", 443)),
+                         /*dns_aliases=*/{});
+
+  stream_->RegisterRequest(&request_);
+  EXPECT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+  // The first stream on a preconnected session is considered reused.
+  EXPECT_TRUE(stream_->IsConnectionReused());
+
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "test", quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  EXPECT_TRUE(stream_->IsConnectionReused());
+  EXPECT_TRUE(stream2.IsConnectionReused());
+}
+
+// A preconnected session that closes before any stream is created is
+// considered reused.
+TEST_P(QuicHttpStreamTest,
+       IsConnectionReusedPreconnectedSessionClosedBeforeStream) {
+  SetSessionCreationInitiator(MultiplexedSessionCreationInitiator::kPreconnect);
+  Initialize();
+
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "test", quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  stream_->RegisterRequest(&request_);
+  EXPECT_THAT(
+      stream_->InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,
+                                callback_.callback()),
+      IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_TRUE(stream_->IsConnectionReused());
+}
+
+// If a session closes while `InitializeStream()` is `ERR_IO_PENDING` (queued in
+// `stream_requests_` due to `MAX_STREAMS`), `CloseAllHandles()` +
+// `CancelAllRequests()` fails `DoRequestStreamComplete()` with
+// `ERR_CONNECTION_CLOSED`, and the connection is still considered reused.
+TEST_P(QuicHttpStreamTest,
+       IsConnectionReusedSessionClosedWhileWaitingForStream) {
+  constexpr size_t kMaxStreams = 50;
+  int packet_number = 1;
+  AddWrite(ConstructInitialSettingsPacket(packet_number++));
+  AddWrite(client_maker_.Packet(packet_number++)
+               .AddStreamsBlockedFrame(/*control_frame_id=*/1,
+                                       /*stream_count=*/kMaxStreams,
+                                       /*unidirectional=*/false)
+               .Build());
+  Initialize();
+  ASSERT_EQ(quic::test::QuicSessionPeer::ietf_streamid_manager(session_.get())
+                ->max_outgoing_bidirectional_streams(),
+            kMaxStreams);
+  for (size_t i = 0; i < kMaxStreams; ++i) {
+    ASSERT_TRUE(
+        QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get()));
+  }
+
+  QuicHttpStream stream2(session_->CreateHandle(url::SchemeHostPort(
+                             url::kHttpsScheme, "www.example.org", 443)),
+                         /*dns_aliases=*/{});
+  stream2.RegisterRequest(&request_);
+  TestCompletionCallback callback2;
+  ASSERT_THAT(
+      stream2.InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,
+                               callback2.callback()),
+      IsError(ERR_IO_PENDING));
+
+  session_->connection()->CloseConnection(
+      quic::QUIC_NO_ERROR, "test", quic::ConnectionCloseBehavior::SILENT_CLOSE);
+
+  EXPECT_THAT(callback2.WaitForResult(), IsError(ERR_CONNECTION_CLOSED));
+  EXPECT_TRUE(stream2.IsConnectionReused());
+  EXPECT_TRUE(AtEof());
+}
+
+// Disabling `QuicIsConnectionReusedBeforeStreamCreation` reverts to only
+// reporting reuse when `stream_` is non-null and not the first stream.
+TEST_P(QuicHttpStreamTest, IsConnectionReusedKillSwitchDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      /*enable_features=*/"",
+      /*disable_features=*/"QuicIsConnectionReusedBeforeStreamCreation");
+
+  SetSessionCreationInitiator(MultiplexedSessionCreationInitiator::kPreconnect);
+  Initialize();
+  EXPECT_FALSE(stream_->IsConnectionReused());
+
+  stream_->RegisterRequest(&request_);
+  ASSERT_EQ(OK, stream_->InitializeStream(true, DEFAULT_PRIORITY,
+                                          net_log_with_source_,
+                                          callback_.callback()));
+  EXPECT_FALSE(stream_->IsConnectionReused());
+
+  // A stream without `stream_` created yet is not considered reused when the
+  // kill-switch is disabled, even after a prior stream was created.
+  QuicHttpStream stream2(session_->CreateHandle(url::SchemeHostPort(
+                             url::kHttpsScheme, "www.example.org", 443)),
+                         /*dns_aliases=*/{});
+  EXPECT_FALSE(stream2.IsConnectionReused());
+
+  // Once `stream2` actually creates a second stream, it is still considered
+  // reused.
+  stream2.RegisterRequest(&request_);
+  TestCompletionCallback callback2;
+  ASSERT_EQ(
+      OK, stream2.InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,
+                                   callback2.callback()));
   EXPECT_TRUE(stream2.IsConnectionReused());
 }
 

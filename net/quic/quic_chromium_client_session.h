@@ -294,10 +294,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     }
 
     MultiplexedSessionCreationInitiator session_creation_initiator() const {
-      return session_ ? session_->session_creation_initiator()
-                      : MultiplexedSessionCreationInitiator::kUnknown;
+      return session_creation_initiator_;
     }
     bool WasEverUsed() const;
+
+    // Returns true if the underlying session was ever used to create a stream.
+    // Remains valid after the session is closed.
+    bool WasEverUsedToCreateStreams() const;
 
     // Retrieves any DNS aliases for the given session key from the map stored
     // in `session_pool_`. Includes all known aliases, e.g. from A, AAAA, or
@@ -356,6 +359,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                          bool quic_connection_migration_successful,
                          LoadTimingInfo::ConnectTiming connect_timing,
                          bool was_ever_used,
+                         bool was_ever_used_to_create_streams,
                          const ConnectionMigrationInformation& migration_info);
 
     // Called by |request| to create a stream.
@@ -401,7 +405,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // The last known set of migration information
     ConnectionMigrationInformation last_migration_information_;
 
+    // How the underlying session was created. Saved at construction so that it
+    // remains available after the session is closed.
+    const MultiplexedSessionCreationInitiator session_creation_initiator_;
+
     bool was_ever_used_ = false;
+    bool was_ever_used_to_create_streams_ = false;
   };
 
   // A helper class used to manage a request to create a stream.

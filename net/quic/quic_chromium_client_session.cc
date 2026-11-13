@@ -554,7 +554,8 @@ QuicChromiumClientSession::Handle::Handle(
       server_id_(session_->server_id()),
       quic_version_(session->connection()->version()),
       initial_migration_information_(session->migration_info()),
-      last_migration_information_(session->migration_info()) {
+      last_migration_information_(session->migration_info()),
+      session_creation_initiator_(session->session_creation_initiator()) {
   DCHECK(session_);
   session_->AddHandle(this);
 }
@@ -579,6 +580,7 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
     bool quic_connection_migration_successful,
     LoadTimingInfo::ConnectTiming connect_timing,
     bool was_ever_used,
+    bool was_ever_used_to_create_streams,
     const ConnectionMigrationInformation& migration_info) {
   session_ = nullptr;
   port_migration_detected_ = port_migration_detected;
@@ -590,6 +592,7 @@ void QuicChromiumClientSession::Handle::OnSessionClosed(
   quic_version_ = quic_version;
   connect_timing_ = connect_timing;
   was_ever_used_ = was_ever_used;
+  was_ever_used_to_create_streams_ = was_ever_used_to_create_streams;
   last_migration_information_ = migration_info;
 }
 
@@ -735,6 +738,14 @@ bool QuicChromiumClientSession::Handle::WasEverUsed() const {
   }
 
   return session_->WasConnectionEverUsed();
+}
+
+bool QuicChromiumClientSession::Handle::WasEverUsedToCreateStreams() const {
+  if (!session_) {
+    return was_ever_used_to_create_streams_;
+  }
+
+  return session_->was_ever_used_to_create_streams();
 }
 
 const base::flat_set<std::string>&
@@ -1365,11 +1376,12 @@ void QuicChromiumClientSession::OnOriginFrame(const quic::OriginFrame& frame) {
 
 void QuicChromiumClientSession::AddHandle(Handle* handle) {
   if (going_away_) {
-    handle->OnSessionClosed(
-        connection()->version(), ERR_UNEXPECTED, error(), source_,
-        port_migration_detected_, quic_connection_migration_attempted_,
-        quic_connection_migration_successful_, GetConnectTiming(),
-        WasConnectionEverUsed(), migration_info_);
+    handle->OnSessionClosed(connection()->version(), ERR_UNEXPECTED, error(),
+                            source_, port_migration_detected_,
+                            quic_connection_migration_attempted_,
+                            quic_connection_migration_successful_,
+                            GetConnectTiming(), WasConnectionEverUsed(),
+                            was_ever_used_to_create_streams(), migration_info_);
     return;
   }
 
@@ -3387,11 +3399,12 @@ void QuicChromiumClientSession::CloseAllHandles(int net_error) {
   while (!handles_.empty()) {
     Handle* handle = *handles_.begin();
     handles_.erase(handle);
-    handle->OnSessionClosed(
-        connection()->version(), net_error, error(), source_,
-        port_migration_detected_, quic_connection_migration_attempted_,
-        quic_connection_migration_successful_, GetConnectTiming(),
-        WasConnectionEverUsed(), migration_info_);
+    handle->OnSessionClosed(connection()->version(), net_error, error(),
+                            source_, port_migration_detected_,
+                            quic_connection_migration_attempted_,
+                            quic_connection_migration_successful_,
+                            GetConnectTiming(), WasConnectionEverUsed(),
+                            was_ever_used_to_create_streams(), migration_info_);
   }
 }
 
