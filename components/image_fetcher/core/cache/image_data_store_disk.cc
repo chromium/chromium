@@ -79,7 +79,7 @@ bool IsValidKey(const std::string& key) {
 
 void SaveImageImpl(FilePath storage_path,
                    const std::string& key,
-                   std::string data,
+                   ImageData data,
                    bool needs_transcoding) {
   if (IsStoragePathLink(storage_path) || !IsValidKey(key)) {
     ImageFetcherMetricsReporter::ReportCacheResult(
@@ -95,7 +95,7 @@ void SaveImageImpl(FilePath storage_path,
   File file(file_path,
             File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE | File::FLAG_NO_FOLLOW);
   const bool write_succeeded =
-      file.IsValid() && file.WriteAndCheck(0, base::as_byte_span(data));
+      file.IsValid() && file.WriteAndCheck(0, base::span(*data));
   ImageFetcherMetricsReporter::ReportCacheResult(
       write_succeeded ? ImageFetcherCacheResult::kDataStoreWriteSucceeded
                       : ImageFetcherCacheResult::kDataStoreWriteFailed);
@@ -245,7 +245,7 @@ bool ImageDataStoreDisk::IsInitialized() {
 }
 
 void ImageDataStoreDisk::SaveImage(const std::string& key,
-                                   std::string image_data,
+                                   ImageData image_data,
                                    bool needs_transcoding) {
   if (!IsInitialized()) {
     return;

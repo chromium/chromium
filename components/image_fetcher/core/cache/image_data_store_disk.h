@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/image_fetcher/core/cache/image_data_store.h"
 #include "components/image_fetcher/core/cache/image_store_types.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -35,7 +36,7 @@ class ImageDataStoreDisk : public ImageDataStore {
   void Initialize(base::OnceClosure callback) override;
   bool IsInitialized() override;
   void SaveImage(const std::string& key,
-                 std::string data,
+                 ImageData data,
                  bool needs_transcoding) override;
   void LoadImage(const std::string& key,
                  bool needs_transcoding,

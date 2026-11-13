@@ -8,12 +8,14 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -90,7 +92,9 @@ class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
   }
 
   void SaveData(const std::string& key, bool needs_transcoding) {
-    data_store()->SaveImage(key, kImageData, needs_transcoding);
+    data_store()->SaveImage(
+        key, base::MakeRefCounted<base::RefCountedString>(kImageData),
+        needs_transcoding);
     RunUntilIdle();
   }
 
@@ -120,6 +124,39 @@ class CachedImageFetcherImageDataStoreDiskTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 };
+
+TEST_F(CachedImageFetcherImageDataStoreDiskTest, RetainsSharedDataUntilWrite) {
+  for (bool needs_transcoding : {false, true}) {
+    for (const std::string& bytes :
+         {std::string(), std::string("a\0b\xff", 4)}) {
+      SCOPED_TRACE(needs_transcoding);
+      SCOPED_TRACE(bytes.size());
+      CreateDataStore();
+      base::test::TestFuture<void> initialized;
+      data_store()->Initialize(initialized.GetCallback());
+      ASSERT_TRUE(initialized.Wait());
+
+      auto data = base::MakeRefCounted<base::RefCountedBytes>(
+          base::as_byte_span(bytes));
+      ASSERT_TRUE(data->HasOneRef());
+      data_store()->SaveImage(kImageKey, data, needs_transcoding);
+      // The posted write retains this allocation, rather than copying bytes.
+      EXPECT_FALSE(data->HasOneRef());
+      data.reset();
+      // A queued write must also survive destruction of its originating store.
+      CreateDataStore();
+      base::test::TestFuture<void> reopened;
+      data_store()->Initialize(reopened.GetCallback());
+      ASSERT_TRUE(reopened.Wait());
+      base::test::TestFuture<bool, std::string> loaded;
+      data_store()->LoadImage(kImageKey, needs_transcoding,
+                              loaded.GetCallback());
+      ASSERT_TRUE(loaded.Wait());
+      EXPECT_EQ(loaded.Get<0>(), needs_transcoding);
+      EXPECT_EQ(loaded.Get<1>(), bytes);
+    }
+  }
+}
 
 TEST_F(CachedImageFetcherImageDataStoreDiskTest, SanityTest) {
   CreateDataStore();

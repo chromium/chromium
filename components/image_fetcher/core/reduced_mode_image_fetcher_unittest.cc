@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -95,9 +96,11 @@ class ReducedModeImageFetcherTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault());
 
     // Use an initial request to start the cache up.
-    image_cache_->SaveImage(kImageUrl.spec(), kImageData,
-                            /* needs_transcoding */ false,
-                            /* expiration_interval */ std::nullopt);
+    image_cache_->SaveImage(
+        kImageUrl.spec(),
+        base::MakeRefCounted<base::RefCountedString>(kImageData),
+        /* needs_transcoding */ false,
+        /* expiration_interval */ std::nullopt);
     RunUntilIdle();
     db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
     image_cache_->DeleteImage(kImageUrl.spec());
@@ -186,17 +189,21 @@ class ReducedModeImageFetcherTest : public testing::Test {
 
 TEST_F(ReducedModeImageFetcherTest, FetchNeedsTranscodingImageFromCache) {
   // Save the image that needs transcoding in the database.
-  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
-                           /* needs_transcoding */ true,
-                           /* expiration_interval */ std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl.spec(),
+      base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /* needs_transcoding */ true,
+      /* expiration_interval */ std::nullopt);
   VerifyCacheHit();
 }
 
 TEST_F(ReducedModeImageFetcherTest, FetchImageFromCache) {
   // Save the image that doesn't need transcoding in the database.
-  image_cache()->SaveImage(kImageUrl.spec(), kImageData,
-                           /* needs_transcoding */ false,
-                           /* expiration_interval */ std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl.spec(),
+      base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /* needs_transcoding */ false,
+      /* expiration_interval */ std::nullopt);
   VerifyCacheHit();
 }
 

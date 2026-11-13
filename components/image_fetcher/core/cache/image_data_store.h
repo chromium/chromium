@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/image_fetcher/core/cache/image_store_types.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
 
 namespace image_fetcher {
 
@@ -26,9 +27,10 @@ class ImageDataStore {
   // While this is false, initialization may have already started.
   virtual bool IsInitialized() = 0;
 
-  // Adds or updates the image data for the `key`.
+  // Adds or updates the image data for the `key`. `image_data` must be
+  // non-null. Implementations retain the buffer until the write completes.
   virtual void SaveImage(const std::string& key,
-                         std::string image_data,
+                         ImageData image_data,
                          bool needs_transcoding) = 0;
 
   // Loads the image data for the `key` and passes it to `callback`. If the

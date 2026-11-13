@@ -20,7 +20,6 @@ static_library("core") {
     "image_fetcher_impl.h",
     "image_fetcher_service.cc",
     "image_fetcher_service.h",
-    "image_fetcher_types.h",
     "reduced_mode_image_fetcher.cc",
     "reduced_mode_image_fetcher.h",
     "request_metadata.cc",
@@ -31,6 +30,7 @@ static_library("core") {
     "//services/network/public/mojom",
   ]
   public_deps = [
+    ":types",
     "cache",
     "//base",
     "//components/keyed_service/core",
@@ -40,6 +40,12 @@ static_library("core") {
     "//ui/gfx/geometry",
     "//url",
   ]
+}
+
+# Shared data and callback types used by both the fetcher and its cache.
+source_set("types") {
+  sources = [ "image_fetcher_types.h" ]
+  public_deps = [ "//base" ]
 }
 
 static_library("metrics") {

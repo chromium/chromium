@@ -97,7 +97,7 @@ class CachedImageFetcher : public ImageFetcher {
   void StoreData(bool cache_result_needs_transcoding,
                  bool is_image_data_transcoded,
                  CachedImageFetcherRequest request,
-                 std::string image_data);
+                 ImageData image_data);
 
   // Owned by ImageFetcherService.
   raw_ptr<ImageFetcher, DanglingUntriaged> image_fetcher_;

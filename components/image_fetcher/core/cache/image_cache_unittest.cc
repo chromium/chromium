@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -86,8 +87,9 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
     CreateImageCache();
     InitializeImageCache();
 
-    image_cache()->SaveImage(kImageUrl, kImageData, needs_transcoding,
-                             std::nullopt /* expiration_interval */);
+    image_cache()->SaveImage(
+        kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+        needs_transcoding, std::nullopt /* expiration_interval */);
     RunUntilIdle();
 
     ASSERT_TRUE(IsMetadataPresent(kImageUrlHashed));
@@ -167,7 +169,9 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
   }
 
   void InjectData(std::string key, std::string data, bool needs_transcoding) {
-    data_store_->SaveImage(key, data, needs_transcoding);
+    data_store_->SaveImage(key,
+                           base::MakeRefCounted<base::RefCountedString>(data),
+                           needs_transcoding);
     RunUntilIdle();
   }
 
@@ -231,9 +235,10 @@ TEST_F(CachedImageFetcherImageCacheTest, SanityTest) {
       kImageFetcherEventHistogramName,
       ImageFetcherEvent::kCacheMetadataStoreInitializationFailed, 0);
 
-  image_cache()->SaveImage(kImageUrl, kImageData,
-                           /* needs_transcoding */ false,
-                           /* expiration_interval */ std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /* needs_transcoding */ false,
+      /* expiration_interval */ std::nullopt);
   RunUntilIdle();
 
   LoadImage(kImageUrl, kImageData);
@@ -249,13 +254,40 @@ TEST_F(CachedImageFetcherImageCacheTest, SanityTest) {
   RunUntilIdle();
 }
 
+TEST_F(CachedImageFetcherImageCacheTest, RetainsSharedDataWhileInitializing) {
+  CreateImageCache();
+  const std::string bytes("a\0b\xff", 4);
+  auto data = base::MakeRefCounted<base::RefCountedString>(bytes);
+  ASSERT_TRUE(data->HasOneRef());
+  image_cache()->SaveImage(kImageUrl, data, /*needs_transcoding=*/true,
+                           std::nullopt);
+  // The queued save must retain this buffer after the caller releases it,
+  // until initialization finishes and the data can be written.
+  EXPECT_FALSE(data->HasOneRef());
+  data.reset();
+  EXPECT_FALSE(IsCacheInitialized());
+
+  db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  ASSERT_TRUE(WaitForDataStoreTasks());
+  ASSERT_TRUE(IsCacheInitialized());
+  base::test::TestFuture<bool, std::string> loaded;
+  image_cache()->LoadImage(/*read_only=*/true, kImageUrl, loaded.GetCallback());
+  db()->LoadCallback(true);
+  ASSERT_TRUE(loaded.Wait());
+  EXPECT_TRUE(loaded.Get<0>());
+  EXPECT_EQ(loaded.Get<1>(), bytes);
+  EXPECT_EQ(GetMetadata(kImageUrlHashed).data_size(),
+            static_cast<int64_t>(bytes.size()));
+}
+
 TEST_F(CachedImageFetcherImageCacheTest, SaveCallsInitialization) {
   CreateImageCache();
 
   ASSERT_FALSE(IsCacheInitialized());
-  image_cache()->SaveImage(kImageUrl, kImageData,
-                           /* needs_transcoding */ false,
-                           /* expiration_interval */ std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /* needs_transcoding */ false,
+      /* expiration_interval */ std::nullopt);
   db()->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   RunUntilIdle();
 
@@ -307,8 +339,9 @@ TEST_P(ImageCacheInitializationFailureTest, FailedDiskDoesNotBlockRequests) {
 
   base::test::TestFuture<bool, std::string> first_result;
   base::test::TestFuture<bool, std::string> second_result;
-  image_cache()->SaveImage(kImageUrl, kImageData, /*needs_transcoding=*/false,
-                           std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /*needs_transcoding=*/false, std::nullopt);
   image_cache()->LoadImage(/*read_only=*/false, kImageUrl,
                            first_result.GetCallback());
   image_cache()->LoadImage(/*read_only=*/true, kOtherImageUrl,
@@ -327,8 +360,9 @@ TEST_P(ImageCacheInitializationFailureTest, FailedDiskDoesNotBlockRequests) {
   EXPECT_FALSE(IsMetadataPresent(kImageUrlHashed));
 
   base::test::TestFuture<bool, std::string> later_result;
-  image_cache()->SaveImage(kImageUrl, kImageData, /*needs_transcoding=*/false,
-                           std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /*needs_transcoding=*/false, std::nullopt);
   image_cache()->DeleteImage(kImageUrl);
   image_cache()->LoadImage(/*read_only=*/false, kImageUrl,
                            later_result.GetCallback());
@@ -350,8 +384,9 @@ TEST_P(ImageCacheInitializationFailureTest,
        FailedMetadataDoesNotBlockRequests) {
   CreateImageCache();
   base::test::TestFuture<bool, std::string> result;
-  image_cache()->SaveImage(kImageUrl, kImageData, /*needs_transcoding=*/false,
-                           std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /*needs_transcoding=*/false, std::nullopt);
   image_cache()->LoadImage(/*read_only=*/false, kImageUrl,
                            result.GetCallback());
   image_cache()->DeleteImage(kImageUrl);
@@ -394,8 +429,9 @@ TEST_P(ImageCacheInitializationFailureTest, BothStoreFailuresAreReportedOnce) {
   ASSERT_TRUE(result.IsReady());
   EXPECT_TRUE(result.Get<1>().empty());
   EXPECT_FALSE(IsCacheInitialized());
-  image_cache()->SaveImage(kImageUrl, kImageData, /*needs_transcoding=*/false,
-                           std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /*needs_transcoding=*/false, std::nullopt);
   image_cache()->DeleteImage(kImageUrl);
   base::test::TestFuture<bool, std::string> later_result;
   image_cache()->LoadImage(/*read_only=*/true, kImageUrl,
@@ -451,9 +487,10 @@ TEST_F(CachedImageFetcherImageCacheTest, Save) {
   CreateImageCache();
   InitializeImageCache();
 
-  image_cache()->SaveImage(kImageUrl, kImageData,
-                           /* needs_transcoding */ false,
-                           /* expiration_interval */ std::nullopt);
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>(kImageData),
+      /* needs_transcoding */ false,
+      /* expiration_interval */ std::nullopt);
   LoadImage(kImageUrl, kImageData);
 }
 
@@ -513,10 +550,14 @@ TEST_F(CachedImageFetcherImageCacheTest, EvictionHoldUtilExpires) {
   PrepareImageCache(false);
   clock()->SetNow(clock()->Now() + base::Days(2));
 
-  image_cache()->SaveImage(kImageUrl, "image_data", false, base::Days(10));
+  image_cache()->SaveImage(
+      kImageUrl, base::MakeRefCounted<base::RefCountedString>("image_data"),
+      false, base::Days(10));
 
-  image_cache()->SaveImage(kOtherImageUrl, "other_image_data", false,
-                           base::Hours(1));
+  image_cache()->SaveImage(
+      kOtherImageUrl,
+      base::MakeRefCounted<base::RefCountedString>("other_image_data"), false,
+      base::Hours(1));
   RunUntilIdle();
 
   // Forward the clock to make image with `kOtherImageUrl` expired.

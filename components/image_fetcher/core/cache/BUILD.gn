@@ -24,6 +24,7 @@ static_library("cache") {
   public_deps = [
     ":types",
     "//base",
+    "//components/image_fetcher/core:types",
   ]
 }
 

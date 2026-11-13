@@ -74,11 +74,11 @@ ImageCache::ImageCache(std::unique_ptr<ImageDataStore> data_store,
 ImageCache::~ImageCache() = default;
 
 void ImageCache::SaveImage(std::string url,
-                           std::string image_data,
+                           ImageData image_data,
                            bool needs_transcoding,
                            ExpirationInterval expiration_interval) {
   // If the image data is larger than the cache's max size, bail out.
-  if (image_data.length() > kCacheMaxSize) {
+  if (image_data->size() > kCacheMaxSize) {
     return;
   }
 
@@ -172,7 +172,7 @@ void ImageCache::OnDependenciesInitialized() {
 }
 
 void ImageCache::SaveImageImpl(const std::string& url,
-                               std::string image_data,
+                               ImageData image_data,
                                bool needs_transcoding,
                                ExpirationInterval expiration_interval) {
   if (!cache_available_) {
@@ -183,7 +183,7 @@ void ImageCache::SaveImageImpl(const std::string& url,
   // If the cache is full, evict some stuff.
   RunEvictionWhenFull();
 
-  size_t length = image_data.length();
+  size_t length = image_data->size();
   data_store_->SaveImage(key, std::move(image_data), needs_transcoding);
   metadata_store_->SaveImageMetadata(key, length, needs_transcoding,
                                      std::move(expiration_interval));
