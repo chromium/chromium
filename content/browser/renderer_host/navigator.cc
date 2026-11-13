@@ -220,20 +220,6 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
         .Record(ukm::UkmRecorder::Get());
   }
 
-  // Record whether <iframe> with the credentialless attribute contains
-  // sandboxed document or not. Please note:
-  // - This is recorded once for every new document in the iframe.
-  // - It excludes nested document that are credentialless only by inheritance.
-  // - It would have been better to take a snapshot of the frame.credentialless
-  //   attribute at the beginning of the navigation, as opposed to when the
-  //   new document has been created, because it might have changed. Still, it
-  //   is good enough, a priori.
-  if (rfh->frame_tree_node()->Credentialless()) {
-    base::UmaHistogramBoolean(
-        "Navigation.AnonymousIframeIsSandboxed",
-        rfh->active_sandbox_flags() != network::mojom::WebSandboxFlags::kNone);
-  }
-
   // Check if the navigation resulted in having same-origin documents in pages
   // with different COOP status inside the browsing context group.
   RenderFrameHostImpl* top_level_document =

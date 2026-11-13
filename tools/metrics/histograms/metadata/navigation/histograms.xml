@@ -724,16 +724,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation.AnonymousIframeIsSandboxed" enum="Boolean"
-    expires_after="2023-10-01">
-  <owner>arthursonzogni@chromium.org</owner>
-  <owner>chrome-security-owp-team@google.com</owner>
-  <summary>
-    Record whether iframe with the anonymous attribute contains sandboxed
-    document or not.
-  </summary>
-</histogram>
-
 <histogram
     name="Navigation.BackForward.TimeFromOpenBackNavigationMenuToActivateItem"
     units="ms" expires_after="2025-01-05">
