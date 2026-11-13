@@ -1008,7 +1008,12 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     // TODO(crbug.com/324052630): Support add account with multi IDP API. An add
     // account pop-up of a different IDP might be open, so this might need to
     // load the new IDP's login URL.
-    popup_window_->ResizeAndFocusPopupWindow();
+    //
+    // Resizing and focusing the pop-up can synchronously destroy `this`.
+    if (!NotifyDelegate(
+            [&]() { popup_window_->ResizeAndFocusPopupWindow(); })) {
+      return nullptr;
+    }
   } else {
     popup_window_ = CreatePopupWindow();
   }
