@@ -215,7 +215,10 @@ SortedDocumentMarkerListEditor::MarkersIntersectingRange(const MarkerList& list,
                        });
 
   HeapVector<Member<DocumentMarker>> results;
-  std::copy(start_it, end_it, std::back_inserter(results));
+  // Collapsed markers can reverse the iterators for a collapsed query.
+  if (start_it < end_it) {
+    std::copy(start_it, end_it, std::back_inserter(results));
+  }
   return results;
 }
 
