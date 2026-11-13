@@ -39,6 +39,10 @@ extern const base::FeatureParam<bool> kShowPartials;
 // If true, uses the Web Speech API backend instead of the cloud backend.
 extern const base::FeatureParam<bool> kWebSpeechApiBackend;
 
+// If non-empty, instructs the component extension to route the transcription
+// request to the given experimental config.
+extern const base::FeatureParam<std::string> kSecondaryRoutingKey;
+
 // The delay before ending a session after a stream ends.
 extern const base::FeatureParam<base::TimeDelta> kAutoSessionEndDelay;
 

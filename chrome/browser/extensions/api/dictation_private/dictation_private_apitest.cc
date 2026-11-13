@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -10,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
@@ -36,6 +38,16 @@
 namespace extensions {
 
 namespace {
+
+std::optional<std::string> GetSecondaryRoutingKey() {
+  std::string secondary_routing_key;
+  base::TrimWhitespaceASCII(dictation::kSecondaryRoutingKey.Get(),
+                            base::TRIM_ALL, &secondary_routing_key);
+  if (secondary_routing_key.empty()) {
+    return std::nullopt;
+  }
+  return secondary_routing_key;
+}
 
 // TODO(b/538580887): Update these tests to use a session like a real stream
 // provider would.
@@ -67,6 +79,7 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
     api::dictation_private::StartStreamFlags flags;
     flags.eval_mode = dictation::kDictationEvalMode.Get();
     flags.web_speech_api_backend = dictation::kWebSpeechApiBackend.Get();
+    flags.secondary_routing_key = GetSecondaryRoutingKey();
     details.flags = std::move(flags);
 
     auto event_args = base::MakeRefCounted<EventArgs>(
@@ -227,16 +240,22 @@ IN_PROC_BROWSER_TEST_F(DictationPrivateApiTest, BlockedCannotAccessApi) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+struct StartStreamFlagsTestParam {
+  std::string param_name;
+  std::string param_value;
+  dictation::DictationMultiplexer::StreamId stream_id;
+};
+
 // Tests for start stream flags bound to a base::FeatureParam
 class DictationPrivateApiStartStreamFlagsTest
     : public DictationPrivateApiTest,
-      public testing::WithParamInterface<
-          std::pair<std::string, dictation::DictationMultiplexer::StreamId>> {
+      public testing::WithParamInterface<StartStreamFlagsTestParam> {
  public:
   DictationPrivateApiStartStreamFlagsTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         dictation::kDictation,
-        {{"use_component_extension", "false"}, {GetParam().first, "true"}});
+        {{"use_component_extension", "false"},
+         {GetParam().param_name, GetParam().param_value}});
   }
   ~DictationPrivateApiStartStreamFlagsTest() override = default;
 
@@ -247,7 +266,7 @@ class DictationPrivateApiStartStreamFlagsTest
 IN_PROC_BROWSER_TEST_P(DictationPrivateApiStartStreamFlagsTest,
                        StartStreamFlags) {
   const dictation::DictationMultiplexer::StreamId test_stream_id =
-      GetParam().second;
+      GetParam().stream_id;
 
   ResultCatcher catcher;
   ExtensionTestMessageListener ready_listener("ready");
@@ -285,13 +304,18 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DictationPrivateApiStartStreamFlagsTest,
     testing::Values(
-        std::make_pair("eval_mode",
-                       dictation::DictationMultiplexer::StreamId(1001)),
-        std::make_pair("web_speech_api_backend",
-                       dictation::DictationMultiplexer::StreamId(1002))),
+        StartStreamFlagsTestParam{
+            "eval_mode", "true",
+            dictation::DictationMultiplexer::StreamId(1001)},
+        StartStreamFlagsTestParam{
+            "web_speech_api_backend", "true",
+            dictation::DictationMultiplexer::StreamId(1002)},
+        StartStreamFlagsTestParam{
+            "secondary_routing_key", "test_routing_key",
+            dictation::DictationMultiplexer::StreamId(1003)}),
     [](const testing::TestParamInfo<
         DictationPrivateApiStartStreamFlagsTest::ParamType>& info) {
-      return info.param.first;
+      return info.param.param_name;
     });
 
 }  // namespace extensions

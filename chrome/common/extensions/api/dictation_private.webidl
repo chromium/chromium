@@ -30,6 +30,9 @@ dictionary StartStreamFlags {
   required boolean evalMode;
   // If true, uses the Web Speech API backend instead of the cloud backend.
   required boolean webSpeechApiBackend;
+  // If present, instructs the component extension to route the transcription
+  // request to the given experimental config. Always non-empty when present.
+  DOMString secondaryRoutingKey;
 };
 
 dictionary StartStreamDetails {

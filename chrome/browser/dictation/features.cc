@@ -28,6 +28,9 @@ const base::FeatureParam<bool> kShowPartials{&kDictation, "show_partials",
 const base::FeatureParam<bool> kWebSpeechApiBackend{
     &kDictation, "web_speech_api_backend", false};
 
+const base::FeatureParam<std::string> kSecondaryRoutingKey{
+    &kDictation, "secondary_routing_key", ""};
+
 const base::FeatureParam<base::TimeDelta> kAutoSessionEndDelay{
     &kDictation, "auto_session_end_delay", base::Milliseconds(300)};
 

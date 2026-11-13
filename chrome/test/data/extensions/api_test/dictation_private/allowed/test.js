@@ -6,18 +6,26 @@
 // DictationPrivateApiStartStreamFlagsTest parameterized test instantiation.
 const STREAM_ID_EXPECTING_EVAL_MODE = 1001;
 const STREAM_ID_EXPECTING_WEB_SPEECH_API_BACKEND = 1002;
+const STREAM_ID_EXPECTING_SECONDARY_ROUTING_KEY = 1003;
 
 function testFlags(streamId, flags) {
   chrome.test.assertTrue(flags !== undefined);
   if (streamId === STREAM_ID_EXPECTING_EVAL_MODE) {
     chrome.test.assertEq(true, flags.evalMode);
     chrome.test.assertEq(false, flags.webSpeechApiBackend);
+    chrome.test.assertFalse('secondaryRoutingKey' in flags);
   } else if (streamId === STREAM_ID_EXPECTING_WEB_SPEECH_API_BACKEND) {
     chrome.test.assertEq(false, flags.evalMode);
     chrome.test.assertEq(true, flags.webSpeechApiBackend);
+    chrome.test.assertFalse('secondaryRoutingKey' in flags);
+  } else if (streamId === STREAM_ID_EXPECTING_SECONDARY_ROUTING_KEY) {
+    chrome.test.assertEq(false, flags.evalMode);
+    chrome.test.assertEq(false, flags.webSpeechApiBackend);
+    chrome.test.assertEq('test_routing_key', flags.secondaryRoutingKey);
   } else {
     chrome.test.assertEq(false, flags.evalMode);
     chrome.test.assertEq(false, flags.webSpeechApiBackend);
+    chrome.test.assertFalse('secondaryRoutingKey' in flags);
   }
 }
 
@@ -88,7 +96,8 @@ if (chrome.dictationPrivate === undefined) {
     }
 
     if (streamId !== STREAM_ID_EXPECTING_EVAL_MODE &&
-        streamId !== STREAM_ID_EXPECTING_WEB_SPEECH_API_BACKEND) {
+        streamId !== STREAM_ID_EXPECTING_WEB_SPEECH_API_BACKEND &&
+        streamId !== STREAM_ID_EXPECTING_SECONDARY_ROUTING_KEY) {
       chrome.test.assertTrue(browserLogReceived);
     }
     chrome.test.succeed();

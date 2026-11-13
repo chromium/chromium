@@ -4,13 +4,16 @@
 
 #include "chrome/browser/dictation/listener_stream_provider.h"
 
+#include <optional>
 #include <ostream>
+#include <string>
 
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/dictation/dictation_context_fetcher.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
@@ -44,6 +47,16 @@ extensions::api::dictation_private::DictationContext ConvertToApiContext(
   api_context.inner_text = std::move(result.inner_text);
   api_context.editable_content = std::move(result.editable_content);
   return api_context;
+}
+
+std::optional<std::string> GetSecondaryRoutingKey() {
+  std::string secondary_routing_key;
+  base::TrimWhitespaceASCII(kSecondaryRoutingKey.Get(), base::TRIM_ALL,
+                            &secondary_routing_key);
+  if (secondary_routing_key.empty()) {
+    return std::nullopt;
+  }
+  return secondary_routing_key;
 }
 
 const char* ToString(StreamProvider::StreamState state) {
@@ -140,6 +153,7 @@ void ListenerStreamProvider::StartStream(
   extensions::api::dictation_private::StartStreamFlags flags;
   flags.eval_mode = kDictationEvalMode.Get();
   flags.web_speech_api_backend = kWebSpeechApiBackend.Get();
+  flags.secondary_routing_key = GetSecondaryRoutingKey();
   details.flags = std::move(flags);
 
   auto event_args = base::MakeRefCounted<extensions::EventArgs>(
