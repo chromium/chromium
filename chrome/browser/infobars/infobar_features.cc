@@ -106,7 +106,7 @@ BASE_FEATURE_PARAM(bool, kMigratedPdf, &kCentralizedInfoBarFramework, true);
 BASE_FEATURE_PARAM(bool,
                    kMigratedObsoleteSystem,
                    &kCentralizedInfoBarFramework,
-                   false);
+                   true);
 
 BASE_FEATURE_PARAM(bool,
                    kMigratedOSCryptAsyncAvailability,
