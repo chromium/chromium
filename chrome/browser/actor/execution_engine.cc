@@ -50,6 +50,7 @@
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
@@ -1666,9 +1667,12 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
                                           GetActionSequenceWeakPtr()));
 }
 
-void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
+void ExecutionEngine::FinishedToolInvoke(ToolResult tool_result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedToolInvoke");
   CHECK_EQ(state_, State::kToolInvoke, base::NotFatalUntil::M161);
+  // TODO(crbug.com/574534362): Remove once all tools migrate off
+  // mojom::ActionResult.
+  CHECK(tool_result.deprecated_action_result());
 
   if (tool_invoke_complete_callback_for_testing_) {
     std::move(tool_invoke_complete_callback_for_testing_).Run();
@@ -1682,7 +1686,7 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
     CHECK(deferred_finish_tool_invoke_.is_null());
     deferred_finish_tool_invoke_ =
         base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
-                       base::Unretained(this), std::move(result));
+                       base::Unretained(this), std::move(tool_result));
     return;
   }
 
@@ -1695,7 +1699,8 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
-  if (!IsOk(*result)) {
+  mojom::ActionResultPtr& result = tool_result.deprecated_action_result();
+  if (!tool_result.Ok()) {
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
   }

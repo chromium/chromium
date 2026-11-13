@@ -15,7 +15,9 @@
 
 namespace actor {
 
-// Result of a tool execution.
+// Result of a `Tool::Invoke` execution.
+// TODO(crbug.com/574534362): Work in progress to replace
+// `mojom::ActionResultPtr` as the return type of `Tool::Invoke`.
 class ToolResult {
  public:
   // Creates a successful result with no data.
@@ -25,6 +27,12 @@ class ToolResult {
   // TODO(crbug.com/574534362): Remove once all tools migrate off
   // mojom::ActionResult.
   static ToolResult Success(mojom::ActionResultPtr action_result);
+
+  // Creates a result from an ActionResult.
+  // TODO(crbug.com/574534362): Remove once all tools migrate off
+  // mojom::ActionResult.
+  static ToolResult FromDeprecatedActionResult(
+      mojom::ActionResultPtr action_result);
 
   // Creates a successful result with data.
   template <typename T>
@@ -58,13 +66,18 @@ class ToolResult {
   // Returns the ActionResult.
   // TODO(crbug.com/574534362): Remove once all tools migrate off
   // mojom::ActionResult.
-  const mojom::ActionResultPtr& action_result() const { return action_result_; }
+  const mojom::ActionResultPtr& deprecated_action_result() const {
+    return deprecated_action_result_;
+  }
+  mojom::ActionResultPtr& deprecated_action_result() {
+    return deprecated_action_result_;
+  }
 
   // Sets the ActionResult.
   // TODO(crbug.com/574534362): Remove once all tools migrate off
   // mojom::ActionResult.
-  void set_action_result(mojom::ActionResultPtr action_result) {
-    action_result_ = std::move(action_result);
+  void set_deprecated_action_result(mojom::ActionResultPtr action_result) {
+    deprecated_action_result_ = std::move(action_result);
   }
 
  private:
@@ -73,7 +86,7 @@ class ToolResult {
   explicit ToolResult(std::unique_ptr<ToolResultData> data);
   explicit ToolResult(ToolError error);
 
-  mojom::ActionResultPtr action_result_;
+  mojom::ActionResultPtr deprecated_action_result_;
   std::unique_ptr<ToolResultData> data_;
   std::optional<ToolError> error_;
 };

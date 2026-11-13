@@ -44,8 +44,8 @@ class LoadAndExtractContentTool : public Tool {
   void Invoke(ToolCallback callback) override;
   void Cancel() override;
   void UpdateTaskAfterInvoke(ActorTask& task,
-                             mojom::ActionResultPtr result,
-                             ToolCallback callback) const override;
+                             ToolResult result,
+                             ToolResultCallback callback) const override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;

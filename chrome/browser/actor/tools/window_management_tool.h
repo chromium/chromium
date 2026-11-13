@@ -55,8 +55,8 @@ class WindowManagementTool : public Tool, public BrowserCollectionObserver {
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
-                             mojom::ActionResultPtr result,
-                             ToolCallback callback) const override;
+                             ToolResult result,
+                             ToolResultCallback callback) const override;
 
   // BrowserCollectionObserver:
   void OnBrowserActivated(BrowserWindowInterface* browser) override;

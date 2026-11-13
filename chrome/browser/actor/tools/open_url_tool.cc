@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tools/tab_management_tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/validate_url_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
@@ -87,8 +88,8 @@ void OpenUrlTool::Invoke(ToolCallback callback) {
 }
 
 void OpenUrlTool::UpdateTaskAfterInvoke(ActorTask& task,
-                                        mojom::ActionResultPtr result,
-                                        ToolCallback callback) const {
+                                        ToolResult result,
+                                        ToolResultCallback callback) const {
   if (!open_in_new_tab_) {
     std::move(callback).Run(std::move(result));
     return;
@@ -96,7 +97,8 @@ void OpenUrlTool::UpdateTaskAfterInvoke(ActorTask& task,
   CHECK(!new_tab_surface_.is_null());
   // Note: This runs before the follow-up navigation action starts.
   task.AddActorSurface(new_tab_surface_, /*stop_task_on_detach=*/true,
-                       std::move(callback));
+                       base::BindOnce(&ToolResult::FromDeprecatedActionResult)
+                           .Then(std::move(callback)));
 }
 
 void OpenUrlTool::OnTabCreated(ToolCallback callback,

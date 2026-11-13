@@ -52,8 +52,8 @@ class TabManagementTool : public Tool, public TabListInterfaceObserver {
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               ToolCallback callback) const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
-                             mojom::ActionResultPtr result,
-                             ToolCallback callback) const override;
+                             ToolResult result,
+                             ToolResultCallback callback) const override;
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
   // TabListInterfaceObserver:

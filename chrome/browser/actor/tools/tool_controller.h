@@ -23,6 +23,7 @@ class ActorTask;
 class AggregatedJournal;
 class Tool;
 class ToolRequest;
+class ToolResult;
 
 // Entry point into actor tool usage. ToolController is a profile-scoped,
 // ExecutionEngine-owned object. This class routes a tool use request to the
@@ -30,7 +31,8 @@ class ToolRequest;
 // page-level tools.
 class ToolController {
  public:
-  using ResultCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+  using ValidateCallback = base::OnceCallback<void(mojom::ActionResultPtr)>;
+  using ToolResultCallback = base::OnceCallback<void(ToolResult)>;
 
   enum class State {
     kInit = 0,
@@ -50,10 +52,9 @@ class ToolController {
   ToolController& operator=(const ToolController&) = delete;
 
   // Invokes a tool action.
-  void CreateToolAndValidate(
-      const ToolRequest& request,
-      ResultCallback callback);
-  void Invoke(ResultCallback result_callback);
+  void CreateToolAndValidate(const ToolRequest& request,
+                             ValidateCallback callback);
+  void Invoke(ToolResultCallback result_callback);
   void Pause();
   void Cancel();
 
@@ -63,18 +64,18 @@ class ToolController {
   void SetState(State state);
 
   // Called when the tool itself finishes its invocation.
-  void DidFinishToolInvoke(mojom::ActionResultPtr result);
+  void DidFinishToolInvoke(ToolResult tool_result);
 
-  // Call to clear the current tool invocation and return the given result to
-  // the initiator. Must only be called when a tool invocation is in-progress.
-  void CompleteToolRequest(mojom::ActionResultPtr result);
+  // Clears the current tool invocation and returns the given result to the
+  // initiator. Must only be called when a tool invocation is in-progress.
+  void CompleteToolRequest(ToolResult tool_result);
 
   void PostValidate(mojom::ActionResultPtr result);
   void PostUpdateTask(mojom::ActionResultPtr result);
-  void PostInvokeTool(mojom::ActionResultPtr result);
-  void WaitForObservation(mojom::ActionResultPtr action_result);
+  void PostInvokeTool(ToolResult tool_result);
+  void WaitForObservation(ToolResult tool_result);
   void ObservationDelayComplete(
-      mojom::ActionResultPtr action_result,
+      ToolResult tool_result,
       ObservationDelayController::Result observation_result);
 
   // Validates the target surface of `tool`. Returns OK if the tool has no
@@ -90,19 +91,20 @@ class ToolController {
   struct ActiveState {
     ActiveState(
         std::unique_ptr<Tool> tool,
-        ResultCallback completion_callback,
+        ValidateCallback validate_callback,
         std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry);
     ~ActiveState();
     ActiveState(const ActiveState&) = delete;
     ActiveState& operator=(const ActiveState&) = delete;
 
-    // Both `tool` and `completion_callback` are guaranteed to be non-null while
-    // active_state_ is set.
-    // `completion_callback` holds two different callbacks over its lifetime:
-    // a callback for when CreateToolAndValidate is finished and, next, a
-    // callback for when Invoke is finished.
+    // Guaranteed to be non-null while `active_state_` is set.
     std::unique_ptr<Tool> tool;
-    ResultCallback completion_callback;
+
+    // Completion callback for `CreateToolAndValidate`.
+    ValidateCallback validate_callback;
+
+    // Completion callback for `Invoke`.
+    ToolResultCallback invoke_callback;
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry;
   };
   std::optional<ActiveState> active_state_;

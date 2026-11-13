@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/actor/tools/tab_management_tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/validate_url_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
@@ -128,16 +130,17 @@ void NavigateTool::Invoke(ToolCallback callback) {
 }
 
 void NavigateTool::UpdateTaskAfterInvoke(ActorTask& task,
-                                         mojom::ActionResultPtr result,
-                                         ToolCallback callback) const {
-  if (!window_id_.has_value() || !IsOk(*result)) {
+                                         ToolResult result,
+                                         ToolResultCallback callback) const {
+  if (!window_id_.has_value() || !result.Ok()) {
     Tool::UpdateTaskAfterInvoke(task, std::move(result), std::move(callback));
     return;
   }
   CHECK(!actor_surface_handle_.is_null());
   // Note: This runs before the follow-up navigation action starts.
   task.AddActorSurface(actor_surface_handle_, /*stop_task_on_detach=*/true,
-                       std::move(callback));
+                       base::BindOnce(&ToolResult::FromDeprecatedActionResult)
+                           .Then(std::move(callback)));
 }
 
 void NavigateTool::OnTabCreated(ToolCallback callback,

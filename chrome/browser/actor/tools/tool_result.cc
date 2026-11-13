@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
@@ -23,22 +24,36 @@ ToolResult ToolResult::Success(mojom::ActionResultPtr action_result) {
 }
 
 // static
+ToolResult ToolResult::FromDeprecatedActionResult(
+    mojom::ActionResultPtr action_result) {
+  CHECK(action_result);
+  if (IsOk(*action_result)) {
+    return ToolResult::Success(std::move(action_result));
+  }
+  ToolResult tool_result(std::move(action_result));
+  tool_result.error_.emplace(tool_result.deprecated_action_result_->code,
+                             tool_result.deprecated_action_result_->message);
+  return tool_result;
+}
+
+// static
 ToolResult ToolResult::Error(ToolError error) {
   return ToolResult(std::move(error));
 }
 
-ToolResult::ToolResult() : action_result_(MakeOkResult()) {}
+ToolResult::ToolResult() : deprecated_action_result_(MakeOkResult()) {}
 
 ToolResult::ToolResult(mojom::ActionResultPtr action_result)
-    : action_result_(std::move(action_result)) {}
+    : deprecated_action_result_(std::move(action_result)) {}
 
 ToolResult::ToolResult(std::unique_ptr<ToolResultData> data)
-    : action_result_(MakeOkResult()), data_(std::move(data)) {}
+    : deprecated_action_result_(MakeOkResult()), data_(std::move(data)) {}
 
 ToolResult::ToolResult(ToolError error)
-    : action_result_(MakeResult(error.code,
-                                /*requires_page_stabilization=*/false,
-                                error.message.value_or(std::string()))),
+    : deprecated_action_result_(
+          MakeResult(error.code,
+                     /*requires_page_stabilization=*/false,
+                     error.message.value_or(std::string()))),
       error_(std::move(error)) {}
 
 ToolResult::ToolResult(ToolResult&&) noexcept = default;
@@ -46,7 +61,8 @@ ToolResult& ToolResult::operator=(ToolResult&&) noexcept = default;
 ToolResult::~ToolResult() = default;
 
 ToolResult ToolResult::Clone() const {
-  ToolResult cloned(action_result_ ? action_result_->Clone() : nullptr);
+  ToolResult cloned(
+      deprecated_action_result_ ? deprecated_action_result_->Clone() : nullptr);
   if (data_) {
     cloned.data_ = data_->Clone();
   }

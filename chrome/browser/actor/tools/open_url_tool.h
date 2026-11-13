@@ -57,8 +57,8 @@ class OpenUrlTool : public Tool {
       override;
   void Invoke(ToolCallback callback) override;
   void UpdateTaskAfterInvoke(ActorTask& task,
-                             mojom::ActionResultPtr result,
-                             ToolCallback callback) const override;
+                             ToolResult result,
+                             ToolResultCallback callback) const override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(

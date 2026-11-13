@@ -47,7 +47,7 @@ class Tool {
   // invoked by the tool when validation is completed. If the result given to
   // the callback indicates success, the framework will call Invoke. Otherwise,
   // the tool will be destroyed.
-  virtual void Validate(ToolCallback callback) = 0;
+  virtual void Validate(DeprecatedToolCallback callback) = 0;
 
   // Perform any synchronous time-of-use checks just before invoking the tool.
   // These are typically TOCTOU (time-of-check/time-of-use) validations that the
@@ -59,8 +59,17 @@ class Tool {
       const optimization_guide::proto::AnnotatedPageContent* last_observation);
 
   // Perform the action of the tool. The given callback must be invoked when the
+  // tool has finished its actions. Has a default `NOTREACHED()` implementation
+  // so subclasses can migrate to overriding `Invoke(ToolResultCallback)` one at
+  // a time.
+  // TODO(crbug.com/574534362): Remove once all tools migrate to
+  // `Invoke(ToolResultCallback)`, and make `Invoke(ToolResultCallback)` pure
+  // virtual.
+  virtual void Invoke(DeprecatedToolCallback callback);
+
+  // Perform the action of the tool. The given callback must be invoked when the
   // tool has finished its actions.
-  virtual void Invoke(ToolCallback callback) = 0;
+  virtual void Invoke(ToolResultCallback callback);
 
   // Cancels execution of the tool.
   //
@@ -100,13 +109,13 @@ class Tool {
   // Gives the tool an opportunity to update the task's state before being
   // invoked.
   virtual void UpdateTaskBeforeInvoke(ActorTask& task,
-                                      ToolCallback callback) const;
+                                      DeprecatedToolCallback callback) const;
 
   // Gives the tool an opportunity to update the task's state after being
   // invoked.
   virtual void UpdateTaskAfterInvoke(ActorTask& task,
-                                     mojom::ActionResultPtr result,
-                                     ToolCallback callback) const;
+                                     ToolResult result,
+                                     ToolResultCallback callback) const;
 
   // Returns the handle of the surface that this tool targets, or a null handle
   // if the tool doesn't target a surface. Tools should store the handle of the

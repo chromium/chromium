@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/validate_url_util.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -659,8 +660,8 @@ void LoadAndExtractContentTool::OnAllUrlsCompleted() {
 
 void LoadAndExtractContentTool::UpdateTaskAfterInvoke(
     ActorTask& task,
-    mojom::ActionResultPtr result,
-    ToolCallback callback) const {
+    ToolResult result,
+    ToolResultCallback callback) const {
   std::vector<TabObservation> tab_observations;
   for (const auto& per_tab_state : per_tab_state_) {
     if (per_tab_state.tab_observation.has_value()) {

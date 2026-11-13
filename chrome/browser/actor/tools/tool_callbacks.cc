@@ -8,15 +8,24 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/common/actor.mojom.h"
 
 namespace actor {
 
-void PostResponseTask(ToolCallback task,
+void PostResponseTask(DeprecatedToolCallback task,
                       mojom::ActionResultPtr result,
                       base::TimeDelta delay) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(task), std::move(result)), delay);
+}
+
+void PostResponseTask(ToolResultCallback task,
+                      ToolResult tool_result,
+                      base::TimeDelta delay) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(task), std::move(tool_result)),
+      delay);
 }
 
 void PostFinishedTask(base::OnceClosure task, base::TimeDelta delay) {

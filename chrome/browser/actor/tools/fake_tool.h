@@ -13,16 +13,24 @@ namespace actor {
 // Fake tool that allows test to control the timing of callback.
 class FakeTool : public Tool {
  public:
+  // Transitional constructor for tests still using `DeprecatedToolCallback`.
+  // New code should use the `ToolResultCallback` constructor below.
+  // TODO(crbug.com/574534362): Remove once all tests migrate to `ToolResult`.
   FakeTool(TaskId task_id,
            ToolDelegate& tool_delegate,
-           base::OnceCallback<void(ToolCallback)> on_invoke,
+           base::OnceCallback<void(DeprecatedToolCallback)> on_invoke,
+           base::OnceClosure on_destroy);
+  FakeTool(TaskId task_id,
+           ToolDelegate& tool_delegate,
+           base::OnceCallback<void(ToolResultCallback)> on_invoke_result,
            base::OnceClosure on_destroy);
 
   ~FakeTool() override;
 
-  void Validate(ToolCallback callback) override;
+  void Validate(DeprecatedToolCallback callback) override;
 
-  void Invoke(ToolCallback callback) override;
+  void Invoke(DeprecatedToolCallback callback) override;
+  void Invoke(ToolResultCallback callback) override;
 
   std::string DebugString() const override;
   std::string JournalEvent() const override;
@@ -31,9 +39,9 @@ class FakeTool : public Tool {
       ObservationDelayController::PageStabilityConfig page_stability_config)
       override;
 
-
  private:
-  base::OnceCallback<void(ToolCallback)> on_invoke_;
+  base::OnceCallback<void(DeprecatedToolCallback)> on_invoke_;
+  base::OnceCallback<void(ToolResultCallback)> on_invoke_result_;
   base::OnceClosure on_destroy_;
 };
 

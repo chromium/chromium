@@ -82,6 +82,7 @@ class ActorSurface;
 class ActorTask;
 class AutofillSelectionDialogEventHandler;
 class ToolRequest;
+class ToolResult;
 namespace ui {
 class UiEventDispatcher;
 }
@@ -390,7 +391,7 @@ class ExecutionEngine : public ToolDelegate,
   // Called each time an action finishes.
   void PostToolCreate(mojom::ActionResultPtr result);
   void FinishedUiPreInvoke(mojom::ActionResultPtr result);
-  void FinishedToolInvoke(mojom::ActionResultPtr result);
+  void FinishedToolInvoke(ToolResult tool_result);
   void FinishedUiPostInvoke(mojom::ActionResultPtr result);
 
   void CompleteActions(mojom::ActionResultPtr result,

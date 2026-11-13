@@ -4,9 +4,11 @@
 
 #include "chrome/browser/actor/tools/tab_management_tool.h"
 
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
@@ -161,12 +163,14 @@ void TabManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
   std::move(callback).Run(MakeOkResult());
 }
 
-void TabManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
-                                              mojom::ActionResultPtr result,
-                                              ToolCallback callback) const {
+void TabManagementTool::UpdateTaskAfterInvoke(
+    ActorTask& task,
+    ToolResult result,
+    ToolResultCallback callback) const {
   if (action_ == kCreate && target_tab_) {
     task.AddTab(*target_tab_, /*stop_task_on_detach=*/true,
-                std::move(callback));
+                base::BindOnce(&ToolResult::FromDeprecatedActionResult)
+                    .Then(std::move(callback)));
   } else {
     std::move(callback).Run(std::move(result));
   }

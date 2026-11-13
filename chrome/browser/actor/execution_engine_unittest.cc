@@ -31,6 +31,7 @@
 #include "chrome/browser/actor/tools/fake_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
@@ -1302,6 +1303,51 @@ TEST_F(ExecutionEngineTest,
   EXPECT_EQ(received_requests[0].requested_data,
             autofill::ActorFormFillingRequestedData::kAddress);
   EXPECT_EQ(received_handler.get(), &event_handler);
+}
+
+struct TestToolData : public ToolResultData {
+  explicit TestToolData(int value) : value(value) {}
+  ~TestToolData() override = default;
+
+  base::DictValue ToDict() const override {
+    return base::DictValue().Set("value", value);
+  }
+
+  std::unique_ptr<ToolResultData> Clone() const override {
+    return std::make_unique<TestToolData>(*this);
+  }
+
+  int value = 0;
+};
+
+TEST_F(ExecutionEngineTest, ToolResultSuccessWithData) {
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<FakeToolRequest>(ToolResult::Success(TestToolData(42)));
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  ASSERT_TRUE(result.Wait());
+  const auto& action_results = result.Get();
+  ASSERT_EQ(action_results.size(), 1u);
+  EXPECT_TRUE(IsOk(*action_results[0].result));
+}
+
+TEST_F(ExecutionEngineTest, ToolResultError) {
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<FakeToolRequest>(ToolResult::Error(
+          ToolError(mojom::ActionResultCode::kTabWentAway, "No matching tab")));
+
+  ActResultFuture result;
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  ASSERT_TRUE(result.Wait());
+  const auto& action_results = result.Get();
+  ASSERT_EQ(action_results.size(), 1u);
+  EXPECT_FALSE(IsOk(*action_results[0].result));
+  EXPECT_EQ(action_results[0].result->code,
+            mojom::ActionResultCode::kTabWentAway);
+  EXPECT_EQ(action_results[0].result->message, "No matching tab");
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -4,16 +4,28 @@
 
 #include "chrome/browser/actor/tools/fake_tool.h"
 
+#include <utility>
+
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
 FakeTool::FakeTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
-                   base::OnceCallback<void(ToolCallback)> on_invoke,
+                   base::OnceCallback<void(DeprecatedToolCallback)> on_invoke,
                    base::OnceClosure on_destroy)
     : Tool(task_id, tool_delegate),
       on_invoke_(std::move(on_invoke)),
+      on_destroy_(std::move(on_destroy)) {}
+
+FakeTool::FakeTool(
+    TaskId task_id,
+    ToolDelegate& tool_delegate,
+    base::OnceCallback<void(ToolResultCallback)> on_invoke_result,
+    base::OnceClosure on_destroy)
+    : Tool(task_id, tool_delegate),
+      on_invoke_result_(std::move(on_invoke_result)),
       on_destroy_(std::move(on_destroy)) {}
 
 FakeTool::~FakeTool() {
@@ -22,14 +34,22 @@ FakeTool::~FakeTool() {
   }
 }
 
-void FakeTool::Validate(ToolCallback callback) {
+void FakeTool::Validate(DeprecatedToolCallback callback) {
   std::move(callback).Run(MakeOkResult());
 }
 
-void FakeTool::Invoke(ToolCallback callback) {
+void FakeTool::Invoke(DeprecatedToolCallback callback) {
   if (on_invoke_) {
     std::move(on_invoke_).Run(std::move(callback));
   }
+}
+
+void FakeTool::Invoke(ToolResultCallback callback) {
+  if (on_invoke_result_) {
+    std::move(on_invoke_result_).Run(std::move(callback));
+    return;
+  }
+  Tool::Invoke(std::move(callback));
 }
 
 std::string FakeTool::DebugString() const {

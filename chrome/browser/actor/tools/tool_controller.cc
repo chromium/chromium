@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/tools/tool_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -33,13 +34,13 @@ using ::optimization_guide::proto::AnnotatedPageContent;
 
 ToolController::ActiveState::ActiveState(
     std::unique_ptr<Tool> tool,
-    ResultCallback completion_callback,
+    ValidateCallback validate_callback,
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry)
     : tool(std::move(tool)),
-      completion_callback(std::move(completion_callback)),
+      validate_callback(std::move(validate_callback)),
       journal_entry(std::move(journal_entry)) {
   CHECK(this->tool);
-  CHECK(!this->completion_callback.is_null());
+  CHECK(!this->validate_callback.is_null());
 }
 ToolController::ActiveState::~ActiveState() = default;
 
@@ -102,9 +103,8 @@ std::ostream& operator<<(std::ostream& o, const ToolController::State& s) {
   return o << ToolController::StateToString(s);
 }
 
-void ToolController::CreateToolAndValidate(
-    const ToolRequest& request,
-    ResultCallback result_callback) {
+void ToolController::CreateToolAndValidate(const ToolRequest& request,
+                                           ValidateCallback result_callback) {
   SetState(State::kCreating);
   ToolRequest::CreateToolResult create_result =
       request.CreateTool(task_->id(), *tool_delegate_);
@@ -165,7 +165,8 @@ void ToolController::PostValidate(mojom::ActionResultPtr result) {
                         return;
                       }
                       tool_controller_this->CompleteToolRequest(
-                          std::move(validate_result));
+                          ToolResult::FromDeprecatedActionResult(
+                              std::move(validate_result)));
                     },
                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
     return;
@@ -180,17 +181,17 @@ void ToolController::PostUpdateTask(mojom::ActionResultPtr result) {
   CHECK(active_state_);
 
   if (!IsOk(*result)) {
-    CompleteToolRequest(std::move(result));
+    CompleteToolRequest(
+        ToolResult::FromDeprecatedActionResult(std::move(result)));
     return;
   }
   SetState(State::kInvokable);
-  PostResponseTask(std::move(active_state_->completion_callback),
-                   MakeOkResult());
+  PostResponseTask(std::move(active_state_->validate_callback), MakeOkResult());
 }
 
-void ToolController::Invoke(ResultCallback result_callback) {
+void ToolController::Invoke(ToolResultCallback result_callback) {
   SetState(State::kPreInvoke);
-  active_state_->completion_callback = std::move(result_callback);
+  active_state_->invoke_callback = std::move(result_callback);
 
   Tool& tool = *active_state_->tool;
 
@@ -201,7 +202,8 @@ void ToolController::Invoke(ResultCallback result_callback) {
                   JournalDetailsBuilder()
                       .AddError(ToDebugString(*target_result))
                       .Build());
-    CompleteToolRequest(std::move(target_result));
+    CompleteToolRequest(
+        ToolResult::FromDeprecatedActionResult(std::move(target_result)));
     return;
   }
 
@@ -221,7 +223,8 @@ void ToolController::Invoke(ResultCallback result_callback) {
                   JournalDetailsBuilder()
                       .AddError(ToDebugString(*toctou_result))
                       .Build());
-    CompleteToolRequest(std::move(toctou_result));
+    CompleteToolRequest(
+        ToolResult::FromDeprecatedActionResult(std::move(toctou_result)));
     return;
   }
 
@@ -259,29 +262,34 @@ void ToolController::Cancel() {
   }
 }
 
-void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
+void ToolController::DidFinishToolInvoke(ToolResult tool_result) {
   CHECK(active_state_);
+  // TODO(crbug.com/574534362): Remove once all tools migrate off
+  // mojom::ActionResult.
+  CHECK(tool_result.deprecated_action_result());
 
   // Renderers will mark end of execution time.
-  if (!result->execution_end_time) {
-    result->execution_end_time = base::TimeTicks::Now();
+  if (!tool_result.deprecated_action_result()->execution_end_time) {
+    tool_result.deprecated_action_result()->execution_end_time =
+        base::TimeTicks::Now();
   }
 
-  if (!RequiresPageStabilization(*result) || !observation_delayer_) {
-    PostInvokeTool(std::move(result));
+  if (!RequiresPageStabilization(*tool_result.deprecated_action_result()) ||
+      !observation_delayer_) {
+    PostInvokeTool(std::move(tool_result));
     return;
   }
 
-  WaitForObservation(std::move(result));
+  WaitForObservation(std::move(tool_result));
 }
 
-void ToolController::WaitForObservation(mojom::ActionResultPtr result) {
+void ToolController::WaitForObservation(ToolResult tool_result) {
   if (ActorSurface* target_actor_surface =
           active_state_->tool->GetTargetActorSurface().Get()) {
     observation_delayer_->Wait(
         *target_actor_surface,
         base::BindOnce(&ToolController::ObservationDelayComplete,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(tool_result)));
   } else {
     journal().Log(
         active_state_->tool->JournalURL(), task_->id(),
@@ -289,16 +297,16 @@ void ToolController::WaitForObservation(mojom::ActionResultPtr result) {
         JournalDetailsBuilder()
             .AddError("Surface is gone when tool finishes successfully")
             .Build());
-    PostInvokeTool(std::move(result));
+    PostInvokeTool(std::move(tool_result));
   }
 }
 
 void ToolController::ObservationDelayComplete(
-    mojom::ActionResultPtr action_result,
+    ToolResult tool_result,
     ObservationDelayController::Result observation_result) {
   switch (observation_result) {
     case ObservationDelayController::Result::kOk:
-      PostInvokeTool(std::move(action_result));
+      PostInvokeTool(std::move(tool_result));
       break;
     case ObservationDelayController::Result::kPageNavigated: {
       if (ActorSurface* actor_surface =
@@ -311,42 +319,53 @@ void ToolController::ObservationDelayComplete(
             *actor_surface->GetWebContents()->GetPrimaryMainFrame(),
             task_->id(), journal(), observation_page_stability_config_);
         observation_delayer_->SetNavigationCount(last_navigation_count + 1);
-        WaitForObservation(std::move(action_result));
+        WaitForObservation(std::move(tool_result));
       } else {
-        PostInvokeTool(std::move(action_result));
+        PostInvokeTool(std::move(tool_result));
       }
       break;
     }
   }
 }
 
-void ToolController::PostInvokeTool(mojom::ActionResultPtr result) {
-  if (!IsOk(*result)) {
-    CompleteToolRequest(std::move(result));
+void ToolController::PostInvokeTool(ToolResult tool_result) {
+  if (!tool_result.Ok()) {
+    CompleteToolRequest(std::move(tool_result));
     return;
   }
 
   SetState(State::kPostInvoke);
   active_state_->tool->UpdateTaskAfterInvoke(
-      *task_, std::move(result),
+      *task_, std::move(tool_result),
       base::BindOnce(&ToolController::CompleteToolRequest,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
+void ToolController::CompleteToolRequest(ToolResult tool_result) {
   CHECK(active_state_);
+  // TODO(crbug.com/574534362): Remove once all tools migrate off
+  // mojom::ActionResult.
+  CHECK(tool_result.deprecated_action_result());
 
   SetState(State::kReady);
   observation_delayer_.reset();
-  if (IsOk(*result)) {
+  if (tool_result.Ok()) {
     active_state_->journal_entry->EndEntry(
         JournalDetailsBuilder().Add("result", "success").Build());
   } else {
     active_state_->journal_entry->EndEntry(
-        JournalDetailsBuilder().AddError(ToDebugString(*result)).Build());
+        JournalDetailsBuilder()
+            .AddError(ToDebugString(*tool_result.deprecated_action_result()))
+            .Build());
   }
-  PostResponseTask(std::move(active_state_->completion_callback),
-                   std::move(result));
+  if (active_state_->invoke_callback) {
+    PostResponseTask(std::move(active_state_->invoke_callback),
+                     std::move(tool_result));
+  } else {
+    CHECK(active_state_->validate_callback);
+    PostResponseTask(std::move(active_state_->validate_callback),
+                     std::move(tool_result.deprecated_action_result()));
+  }
   active_state_.reset();
 }
 
