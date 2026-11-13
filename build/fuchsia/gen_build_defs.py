@@ -139,19 +139,38 @@ def ConvertCommonFields(json):
 
     # FIDL bindings dependencies are relative to the "fidl" sub-directory.
     if 'fidl_binding_deps' in json:
+        deps_by_binding_type = {}
+        public_deps = converted.setdefault('public_deps', [])
         for entry in json['fidl_binding_deps']:
-            converted['public_deps'] += MetaRootRelativePaths(
+            binding_type = entry['binding_type']
+            deps = entry['deps']
+            deps_by_binding_type.setdefault(binding_type, set()).update(deps)
+            public_deps += MetaRootRelativePaths(
                 [
                     'fidl/'
                     + dep
                     + ':'
                     + os.path.basename(dep)
                     + '_'
-                    + entry['binding_type']
-                    for dep in entry['deps']
+                    + binding_type
+                    for dep in deps
                 ],
                 meta_root,
             )
+
+        # Fuchsia's IDK buckets *_cpp_hlcpp_conversion deps under 'cpp' and does
+        # not emit a dedicated binding_type for them, so add the conversion
+        # target whenever both 'cpp' and 'hlcpp' bindings are depended upon.
+        public_deps += MetaRootRelativePaths(
+            [
+                f'fidl/{dep}:{os.path.basename(dep)}_cpp_hlcpp_conversion'
+                for dep in sorted(
+                    deps_by_binding_type.get('cpp', set())
+                    & deps_by_binding_type.get('hlcpp', set())
+                )
+            ],
+            meta_root,
+        )
 
     return converted
 

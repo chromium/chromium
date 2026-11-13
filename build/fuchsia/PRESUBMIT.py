@@ -25,6 +25,9 @@ def CommonChecks(input_api, output_api):
         J('update_product_bundles_test.py'),
         J('update_sdk_test.py'),
     ]
+    # gen_build_defs.py assumes POSIX paths.
+    if not input_api.is_windows:
+        unit_tests.append(J('gen_build_defs_test.py'))
 
     tests.extend(
         input_api.canned_checks.GetUnitTests(
