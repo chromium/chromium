@@ -27,6 +27,7 @@ import {SearchboxSelectionMixin} from '//resources/cr_components/searchbox/searc
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +48,11 @@ import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 // fade).
 const DEFAULT_PLACEHOLDER_CHANGE_INTERVAL_MS = 4000;
 const DEFAULT_PLACEHOLDER_FADE_DURATION_MS = 250;
+
+const GOOGLE_G_CR23_ICON =
+    '//resources/cr_components/searchbox/icons/google_g_cr23.svg';
+const GOOGLE_G_GRADIENT_ICON =
+    '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
 
 export interface OmniboxEverywhereOmniboxElement {
   $: {
@@ -235,6 +241,9 @@ export class OmniboxEverywhereOmniboxElement extends
   private currentCyclerInputEl_: HTMLInputElement|HTMLTextAreaElement|null =
       null;
   private isPlaceholderCycling_: boolean = false;
+  private darkModeMediaQuery_: MediaQueryList =
+      window.matchMedia('(prefers-color-scheme: dark)');
+  private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
     super();
@@ -270,6 +279,9 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+    this.updateSearchboxIcon_();
+    this.eventTracker_.add(
+        this.darkModeMediaQuery_, 'change', () => this.updateSearchboxIcon_());
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
             this.onAutocompleteResultChanged.bind(this));
@@ -295,6 +307,7 @@ export class OmniboxEverywhereOmniboxElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.eventTracker_.removeAll();
     if (this.autocompleteResultChangedListenerId_ !== null) {
       this.callbackRouter_.removeListener(
           this.autocompleteResultChangedListenerId_);
@@ -518,6 +531,12 @@ export class OmniboxEverywhereOmniboxElement extends
 
   protected showLensSearchButton_(): boolean {
     return this.isFuseboxEnabled && this.searchboxLensSearchEnabled_;
+  }
+
+  private updateSearchboxIcon_() {
+    this.searchboxIcon_ = this.darkModeMediaQuery_.matches ?
+        GOOGLE_G_CR23_ICON :
+        GOOGLE_G_GRADIENT_ICON;
   }
 
   protected computePlaceholderText_(): string {

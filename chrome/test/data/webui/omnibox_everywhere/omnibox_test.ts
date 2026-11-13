@@ -1543,6 +1543,48 @@ suite('OmniboxEverywhereOmniboxTest', () => {
             nonFuseboxInput.placeholder);
       });
 
+  test('switches searchboxIcon between light and dark mode', async () => {
+    const originalMatchMedia = window.matchMedia;
+    const fakeMediaQuery = Object.assign(new EventTarget(), {
+      matches: false,
+      media: '(prefers-color-scheme: dark)',
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+    }) as unknown as MediaQueryList & {matches: boolean};
+    window.matchMedia = (query: string) =>
+        query === '(prefers-color-scheme: dark)' ?
+        fakeMediaQuery :
+        originalMatchMedia.call(window, query);
+
+    try {
+      const themedOmnibox =
+          document.createElement('omnibox-everywhere-omnibox');
+      document.body.appendChild(themedOmnibox);
+      await microtasksFinished();
+
+      assertEquals(
+          '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+          themedOmnibox.$.input.searchboxIcon);
+
+      fakeMediaQuery.matches = true;
+      fakeMediaQuery.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+      assertEquals(
+          '//resources/cr_components/searchbox/icons/google_g_cr23.svg',
+          themedOmnibox.$.input.searchboxIcon);
+
+      fakeMediaQuery.matches = false;
+      fakeMediaQuery.dispatchEvent(new Event('change'));
+      await microtasksFinished();
+      assertEquals(
+          '//resources/cr_components/searchbox/icons/google_g_gradient.svg',
+          themedOmnibox.$.input.searchboxIcon);
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
+  });
+
   suite('OverflowMenu', () => {
     test('renders after Lens button with menu ARIA semantics', () => {
       const buttons = omnibox.shadowRoot.querySelectorAll<HTMLElement>(
