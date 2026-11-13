@@ -30,9 +30,12 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -40,6 +43,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
 
@@ -81,6 +85,10 @@ class ImeMenuTrayTest : public AshTestBase {
 
   // Returns the label text of the tray.
   std::u16string_view GetTrayText() { return GetTray()->label_->GetText(); }
+
+  views::Label* GetTrayLabel() { return GetTray()->label_; }
+
+  views::ImageView* GetTrayImageView() { return GetTray()->image_view_; }
 
   // Returns true if the background color of the tray is active.
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }
@@ -195,6 +203,59 @@ TEST_F(ImeMenuTrayTest, TrayLabelTest) {
   // Changes the input method to a third-party IME extension.
   SetCurrentIme("ime2", {info1, info2});
   EXPECT_EQ(u"UK*", GetTrayText());
+}
+
+TEST_F(ImeMenuTrayTest, SwitchBetweenArcImeAndLabel) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  ASSERT_TRUE(IsVisible());
+
+  ImeInfo info1;
+  info1.id = "ime1";
+  info1.name = u"English";
+  info1.short_name = u"US";
+  info1.third_party = false;
+
+  ImeInfo arc_ime;
+  arc_ime.id = extension_ime_util::GetArcInputMethodID(
+      "egfdjlfmgnehecnclamagfafdccgfndp", "arc_ime");
+  arc_ime.name = u"ARC IME";
+  arc_ime.short_name = u"ARC";
+  arc_ime.third_party = false;
+
+  SetCurrentIme(info1.id, {info1, arc_ime});
+  views::Label* label = GetTrayLabel();
+  ASSERT_TRUE(label);
+  EXPECT_TRUE(label->GetVisible());
+  EXPECT_FALSE(GetTrayImageView());
+  EXPECT_EQ(u"US", GetTrayText());
+  ASSERT_TRUE(label->layer());
+  EXPECT_EQ(ui::LAYER_TEXTURED, label->layer()->type());
+
+  // Switch to an ARC IME, which hides `label_` and shows `image_view_`.
+  SetCurrentIme(arc_ime.id, {info1, arc_ime});
+  ASSERT_EQ(label, GetTrayLabel());
+  EXPECT_FALSE(label->GetVisible());
+  views::ImageView* image_view = GetTrayImageView();
+  ASSERT_TRUE(image_view);
+  EXPECT_TRUE(image_view->GetVisible());
+  ASSERT_TRUE(image_view->layer());
+  EXPECT_EQ(ui::LAYER_TEXTURED, image_view->layer()->type());
+
+  // Switch back to a non-ARC IME, which shows `label_` and hides `image_view_`.
+  SetCurrentIme(info1.id, {info1, arc_ime});
+  ASSERT_EQ(label, GetTrayLabel());
+  EXPECT_TRUE(label->GetVisible());
+  ASSERT_EQ(image_view, GetTrayImageView());
+  EXPECT_FALSE(image_view->GetVisible());
+  EXPECT_EQ(u"US", GetTrayText());
+
+  // Switch to the ARC IME a second time to verify showing an existing hidden
+  // `image_view_`.
+  SetCurrentIme(arc_ime.id, {info1, arc_ime});
+  ASSERT_EQ(label, GetTrayLabel());
+  EXPECT_FALSE(label->GetVisible());
+  ASSERT_EQ(image_view, GetTrayImageView());
+  EXPECT_TRUE(image_view->GetVisible());
 }
 
 TEST_F(ImeMenuTrayTest, TrayLabelExludesDictation) {
