@@ -58,7 +58,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
-#include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
@@ -181,10 +180,6 @@ class TestAutofillClientTemplate : public T {
 
   EntityDataManager* GetEntityDataManager() override {
     return entity_data_manager_.get();
-  }
-
-  WalletPassAccessManager* GetWalletPassAccessManager() override {
-    return wallet_pass_access_manager_.get();
   }
 
   MockAutofillOptimizationGuideDecider* GetAutofillOptimizationGuideDecider()
@@ -713,11 +708,6 @@ class TestAutofillClientTemplate : public T {
     entity_data_manager_ = std::move(entity_data_manager);
   }
 
-  void set_wallet_pass_access_manager(
-      std::unique_ptr<WalletPassAccessManager> wallet_pass_access_manager) {
-    wallet_pass_access_manager_ = std::move(wallet_pass_access_manager);
-  }
-
   void set_payments_autofill_client(
       std::unique_ptr<payments::TestPaymentsAutofillClient> payments_client) {
     payments_autofill_client_ = std::move(payments_client);
@@ -958,7 +948,6 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<payments::TestPaymentsAutofillClient>(this);
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-  std::unique_ptr<WalletPassAccessManager> wallet_pass_access_manager_;
   // Must be destroyed before `prefs_` because `AtMemoryPersistedStateManager`
   // observes and references `prefs_`.
   std::unique_ptr<AtMemoryManager> at_memory_manager_;

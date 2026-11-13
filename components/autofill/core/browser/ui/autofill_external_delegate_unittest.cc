@@ -332,6 +332,9 @@ class MockAutofillClient : public TestAutofillClient {
               GetIdentityCredentialDelegate,
               (),
               (override));
+  MockWalletPassAccessManager* GetWalletPassAccessManager() override {
+    return &wallet_pass_access_manager_;
+  }
   MOCK_METHOD(void,
               ShowAutofillAiFetchEntityFailureNotification,
               (),
@@ -393,6 +396,7 @@ class MockAutofillClient : public TestAutofillClient {
 #endif
   std::unique_ptr<PersonalContextEntityMetadataManager>
       entity_metadata_manager_;
+  NiceMock<MockWalletPassAccessManager> wallet_pass_access_manager_;
 };
 
 class TestCreditCardAccessManager : public CreditCardAccessManager {
@@ -3430,15 +3434,12 @@ class AutofillExternalDelegateWithWalletPrivatePassesTest
 
   void SetUp() override {
     AutofillExternalDelegateTest::SetUp();
-    autofill_client().set_wallet_pass_access_manager(
-        std::make_unique<MockWalletPassAccessManager>());
     prefs::SetAutofillAiReauthBeforeFillingEnabled(autofill_client().GetPrefs(),
                                                    false);
   }
 
   MockWalletPassAccessManager& wallet_manager() {
-    return static_cast<MockWalletPassAccessManager&>(
-        *autofill_client().GetWalletPassAccessManager());
+    return *autofill_client().GetWalletPassAccessManager();
   }
 
  private:

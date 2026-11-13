@@ -42,6 +42,7 @@
 #include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -181,6 +182,12 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, CloseEntityImportBubble, (), (override));
   MOCK_METHOD(void, ShowAutofillAiLocalSaveNotification, (), (override));
   MOCK_METHOD(void, ShowAutofillAiPreFetchFailureNotification, (), (override));
+  MockWalletPassAccessManager* GetWalletPassAccessManager() override {
+    return &wallet_pass_access_manager_;
+  }
+
+ private:
+  NiceMock<MockWalletPassAccessManager> wallet_pass_access_manager_;
 };
 
 class MockWalletReminderNoticeManager
@@ -559,11 +566,7 @@ TEST_F(AutofillAiManagerTest,
 
 class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
  public:
-  AutofillAiManagerImportFormTest() {
-    autofill_client().set_wallet_pass_access_manager(
-        std::make_unique<NiceMock<MockWalletPassAccessManager>>());
-    edm().SetReauthAvailability(true);
-  }
+  AutofillAiManagerImportFormTest() { edm().SetReauthAvailability(true); }
 
   static constexpr char kDefaultUrl[] = "https://example.com";
   static constexpr char16_t kDefaultVehicleOwner[] = u"Jane Doe";
@@ -630,8 +633,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
   }
 
   MockWalletPassAccessManager& wallet_manager() {
-    return static_cast<MockWalletPassAccessManager&>(
-        *autofill_client().GetWalletPassAccessManager());
+    return *autofill_client().GetWalletPassAccessManager();
   }
 
   consent_auditor::FakeConsentAuditor& consent_auditor() {

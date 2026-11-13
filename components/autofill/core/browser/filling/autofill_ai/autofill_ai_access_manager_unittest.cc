@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
@@ -78,10 +79,14 @@ class TestAutofillClientForAccessManager : public TestAutofillClient {
               GetDeviceAuthAvailabilityChecker,
               (),
               (const, override));
+  MockWalletPassAccessManager* GetWalletPassAccessManager() override {
+    return &wallet_pass_access_manager_;
+  }
 
  private:
   raw_ptr<std::unique_ptr<device_reauth::MockDeviceAuthenticator>>
       authenticator_;
+  NiceMock<MockWalletPassAccessManager> wallet_pass_access_manager_;
 };
 
 class AutofillAiAccessManagerTest : public testing::Test {
@@ -107,8 +112,6 @@ class AutofillAiAccessManagerTest : public testing::Test {
         /*strike_database=*/nullptr,
         /*variation_country_code=*/GeoIpCountryCode("US")));
     client_.SetUpPrefsAndIdentityForAutofillAi();
-    client_.set_wallet_pass_access_manager(
-        std::make_unique<NiceMock<MockWalletPassAccessManager>>());
 
     driver_ = std::make_unique<TestAutofillDriver>(&client_);
     manager_ = std::make_unique<TestBrowserAutofillManager>(driver_.get());
@@ -138,8 +141,7 @@ class AutofillAiAccessManagerTest : public testing::Test {
   TestAutofillClientForAccessManager& client() { return client_; }
   EntityDataManager& edm() { return *client_.GetEntityDataManager(); }
   MockWalletPassAccessManager& wallet_manager() {
-    return static_cast<MockWalletPassAccessManager&>(
-        *client_.GetWalletPassAccessManager());
+    return *client_.GetWalletPassAccessManager();
   }
   MockAutofillAiPersonalContextAccessManager& personal_context_manager() {
     return *personal_context_manager_;
