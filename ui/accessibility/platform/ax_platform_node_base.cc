@@ -1957,8 +1957,9 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
     int hypertext_offset) const {
   CHECK_GE(hypertext_offset, 0, base::NotFatalUntil::M163);
   // The offset can be equal to the length when it is past the end.
-  CHECK_LE(hypertext_offset, static_cast<int>(GetHypertext().size()),
-           base::NotFatalUntil::M163);
+  // TODO(crbug.com/584816032): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK_LE(hypertext_offset, static_cast<int>(GetHypertext().size()));
 
   if (IsLeaf()) {
     if (IsText()) {
