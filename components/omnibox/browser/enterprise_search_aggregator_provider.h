@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -208,10 +208,11 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   //  - `match.image_url` = `icon_url` from EnterpriseSearchAggregatorSettings
   //  policy,
   //  - `match.relevance` = 1001.
-  RequestParsed ParseResultList(std::set<std::u16string> input_words,
-                                const base::ListValue* results,
-                                SuggestionType suggestion_type,
-                                bool is_navigation);
+  RequestParsed ParseResultList(
+      const base::flat_set<std::u16string>& input_words,
+      const base::ListValue* results,
+      SuggestionType suggestion_type,
+      bool is_navigation);
 
   // Helper method to get `destination_url` based on `suggestion_type` for
   // `CreateMatch()`.
@@ -247,7 +248,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
       SuggestionType suggestion_type,
       const std::string& contents,
       const std::string& description,
-      const std::vector<std::u16string> email_usernames) const;
+      const std::vector<std::u16string>& email_usernames) const;
   std::vector<std::string> GetWeakScoringFields(
       const base::DictValue& result,
       SuggestionType suggestion_type) const;

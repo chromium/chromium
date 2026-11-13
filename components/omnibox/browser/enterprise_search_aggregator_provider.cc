@@ -12,13 +12,13 @@
 #include <memory>
 #include <optional>
 #include <ranges>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -288,18 +288,21 @@ EnterpriseSearchAggregatorProvider::RelevanceData GetServerRelevanceData(
 }
 
 // Helpers to convert vector of strings to sets of words.
-std::set<std::u16string> GetWords(std::vector<std::u16string> strings) {
-  std::set<std::u16string> words = {};
+base::flat_set<std::u16string> GetWords(
+    const std::vector<std::u16string>& strings) {
+  std::vector<std::u16string> words;
   for (const auto& string : strings) {
     auto string_words = String16VectorFromString16(
         omnibox::CleanUpTitleForMatching(string), nullptr);
-    std::move(string_words.begin(), string_words.end(),
-              std::inserter(words, words.begin()));
+    words.insert(words.end(), std::make_move_iterator(string_words.begin()),
+                 std::make_move_iterator(string_words.end()));
   }
-  return words;
+  return base::flat_set<std::u16string>(std::move(words));
 }
-std::set<std::u16string> GetWords(std::vector<std::string> strings) {
+base::flat_set<std::u16string> GetWords(
+    const std::vector<std::string>& strings) {
   std::vector<std::u16string> u16strings;
+  u16strings.reserve(strings.size());
   std::ranges::transform(
       strings, std::back_inserter(u16strings),
       [](const auto& string) { return base::UTF8ToUTF16(string); });
@@ -308,14 +311,14 @@ std::set<std::u16string> GetWords(std::vector<std::string> strings) {
 
 // Helper for getting a list of lowercase email usernames from the result
 // dictionary.
-const std::vector<std::u16string> GetEmailUsernames(
-    const base::DictValue& result) {
+std::vector<std::u16string> GetEmailUsernames(const base::DictValue& result) {
   std::vector<std::u16string> usernames;
   const base::ListValue* emails =
       result.FindListByDottedPath("document.derivedStructData.emails");
   if (!emails) {
     return usernames;
   }
+  usernames.reserve(emails->size());
   for (const auto& email : *emails) {
     const std::string* email_value = email.GetDict().FindString("value");
     if (!email_value) {
@@ -336,8 +339,9 @@ enum class WordMatchType {
   kPrefix,  // E.g. 'goo' prefixes 'goo' and 'google'.
   kExact,   // E.g. 'goo' exactly matches 'goo' but not 'google'.
 };
-WordMatchType GetWordMatchType(std::u16string word,
-                               std::set<std::u16string> potential_match_words) {
+WordMatchType GetWordMatchType(
+    std::u16string_view word,
+    const base::flat_set<std::u16string>& potential_match_words) {
   auto it = potential_match_words.lower_bound(word);
   if (it == potential_match_words.end()) {
     return WordMatchType::kNone;
@@ -353,23 +357,21 @@ WordMatchType GetWordMatchType(std::u16string word,
 
 // Returns 0 if the match should be filtered out.
 EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
-    std::set<std::u16string> input_words,
+    const base::flat_set<std::u16string>& input_words,
     bool in_keyword_mode,
     AutocompleteMatch::EnterpriseSearchAggregatorType suggestion_type,
-    const std::vector<std::string> strong_scoring_fields,
-    const std::vector<std::string> weak_scoring_fields,
-    const std::vector<std::u16string> email_usernames) {
+    const std::vector<std::string>& strong_scoring_fields,
+    const std::vector<std::string>& weak_scoring_fields,
+    const std::vector<std::u16string>& email_usernames) {
   // Split match fields into words.
-  std::set<std::u16string> strong_scoring_words =
+  base::flat_set<std::u16string> strong_scoring_words =
       GetWords(strong_scoring_fields);
-  std::set<std::u16string> weak_scoring_words = GetWords(weak_scoring_fields);
+  base::flat_set<std::u16string> weak_scoring_words =
+      GetWords(weak_scoring_fields);
   // Do not use `GetWords()` for email usernames as it may split the username by
   // special symbols leading to false positives in "exact" matching.
-  std::set<std::u16string> email_usernames_words;
-  std::ranges::transform(
-      email_usernames,
-      std::inserter(email_usernames_words, email_usernames_words.end()),
-      [](const std::u16string& email_username) { return email_username; });
+  base::flat_set<std::u16string> email_usernames_words(email_usernames.begin(),
+                                                       email_usernames.end());
 
   // Compute text similarity of the input and match fields. See comment for
   // `kMinCharForStrongTextMatch`.
@@ -481,6 +483,7 @@ EnterpriseSearchAggregatorProvider::RequestParsed::operator=(
 
 void EnterpriseSearchAggregatorProvider::RequestParsed::Append(
     RequestParsed parsed) {
+  matches.reserve(matches.size() + parsed.matches.size());
   std::ranges::move(parsed.matches, std::back_inserter(matches));
   result_count += parsed.result_count;
 }
@@ -543,7 +546,8 @@ EnterpriseSearchAggregatorProvider::Request::Types() const {
 
 std::vector<int>
 EnterpriseSearchAggregatorProvider::Request::BackendSuggestionTypes() const {
-  std::vector<int> backend_types = {};
+  std::vector<int> backend_types;
+  backend_types.reserve(types_.size() + 1);
   for (SuggestionType type : types_) {
     switch (type) {
       case SuggestionType::NONE:
@@ -796,8 +800,10 @@ bool EnterpriseSearchAggregatorProvider::IsProviderAllowed(
 }
 
 void EnterpriseSearchAggregatorProvider::Run() {
-  std::vector<int> request_indexes = {};
-  std::vector<std::vector<int>> backend_suggestion_types = {};
+  std::vector<int> request_indexes;
+  request_indexes.reserve(requests_.size());
+  std::vector<std::vector<int>> backend_suggestion_types;
+  backend_suggestion_types.reserve(requests_.size());
   for (size_t i = 0; i < requests_.size(); ++i) {
     bool allowed = requests_[i].Allowed(adjusted_input_.in_keyword_mode());
     requests_[i].Reset(!allowed);
@@ -868,7 +874,8 @@ EnterpriseSearchAggregatorProvider::
         const std::vector<SuggestionType>& suggestion_types,
         const base::DictValue& root_val) {
   // Break the input into words to avoid redoing this for every match.
-  std::set<std::u16string> input_words = GetWords({adjusted_input_.text()});
+  base::flat_set<std::u16string> input_words =
+      GetWords({adjusted_input_.text()});
 
   // Parse the results.
   const base::ListValue* queryResults = root_val.FindList("querySuggestions");
@@ -896,7 +903,7 @@ EnterpriseSearchAggregatorProvider::
 
 EnterpriseSearchAggregatorProvider::RequestParsed
 EnterpriseSearchAggregatorProvider::ParseResultList(
-    std::set<std::u16string> input_words,
+    const base::flat_set<std::u16string>& input_words,
     const base::ListValue* results,
     SuggestionType suggestion_type,
     bool is_navigation) {
@@ -908,6 +915,7 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
   size_t num_results = std::min(results->size(), kMaxMatchesCreatedPerType());
 
   ACMatches matches;
+  matches.reserve(num_results);
   for (size_t i = 0; i < num_results; i++) {
     const base::Value& result_value = (*results)[i];
     if (!result_value.is_dict()) {
@@ -1124,17 +1132,19 @@ EnterpriseSearchAggregatorProvider::GetStrongScoringFields(
     SuggestionType suggestion_type,
     const std::string& contents,
     const std::string& description,
-    const std::vector<std::u16string> email_usernames) const {
+    const std::vector<std::u16string>& email_usernames) const {
   std::vector<std::string> strong_scoring_fields;
   // Should not return any fields already included in `GetMatchDescription()` &
   // `GetMatchContents()`.
   if (suggestion_type == SuggestionType::PEOPLE) {
+    strong_scoring_fields.reserve(email_usernames.size() + 1);
     std::ranges::transform(
         email_usernames, std::back_inserter(strong_scoring_fields),
         [](const auto& u16string) { return base::UTF16ToUTF8(u16string); });
   } else {
     // Contents field for people suggestions is always "{NAME} People" and is
     // not a good field to use to score relevancy.
+    strong_scoring_fields.reserve(2);
     strong_scoring_fields.push_back(contents);
   }
   strong_scoring_fields.push_back(description);
