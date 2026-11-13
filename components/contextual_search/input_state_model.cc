@@ -493,6 +493,7 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
       GetPendingTabContextCount(*session_handle, uploaded_files.size());
   input_types.reserve(uploaded_files.size() + num_pending_tabs);
   for (const auto& file_info : uploaded_files) {
+    // LINT.IfChange(GetCurrentInputTypes)
     if (file_info.tab_url) {
       input_types.push_back(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
       continue;
@@ -512,6 +513,7 @@ std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
         input_types.push_back(omnibox::InputType::INPUT_TYPE_UNSPECIFIED);
         break;
     }
+    // LINT.ThenChange(//components/contextual_search/input_state_model_routing.cc:CountAttachments)
   }
   input_types.insert(input_types.end(), num_pending_tabs,
                      omnibox::InputType::INPUT_TYPE_BROWSER_TAB);

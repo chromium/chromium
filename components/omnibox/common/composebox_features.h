@@ -68,7 +68,9 @@ BASE_DECLARE_FEATURE(kDynamicAimFulfillmentOmnibox);
 // composebox query routes to AIM as before.
 BASE_DECLARE_FEATURE(kDynamicAimFulfillment);
 // Which attached inputs may go to the Search results page: "none",
-// "single_image", "multi_image" or "any_combination".
+// "single_image", "multi_image", "any_combination_images_files",
+// "any_combination_images_files_tabs", "any_combination_images_files_drive" or
+// "any_combination_all_types".
 extern const base::FeatureParam<std::string> kDynamicAimFulfillmentSrpInputMode;
 // Whether to use the mode sent by the server, when present, instead of
 // `srp_input_mode`.

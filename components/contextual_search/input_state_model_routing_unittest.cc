@@ -73,8 +73,14 @@ TEST(InputStateModelRoutingTest, ParseSrpInputMode) {
   EXPECT_EQ(ParseSrpInputMode("none"), SrpInputMode::kNone);
   EXPECT_EQ(ParseSrpInputMode("single_image"), SrpInputMode::kSingleImage);
   EXPECT_EQ(ParseSrpInputMode("multi_image"), SrpInputMode::kMultiImage);
-  EXPECT_EQ(ParseSrpInputMode("any_combination"),
-            SrpInputMode::kAnyCombination);
+  EXPECT_EQ(ParseSrpInputMode("any_combination_images_files"),
+            SrpInputMode::kAnyCombinationImagesFiles);
+  EXPECT_EQ(ParseSrpInputMode("any_combination_images_files_tabs"),
+            SrpInputMode::kAnyCombinationImagesFilesTabs);
+  EXPECT_EQ(ParseSrpInputMode("any_combination_images_files_drive"),
+            SrpInputMode::kAnyCombinationImagesFilesDrive);
+  EXPECT_EQ(ParseSrpInputMode("any_combination_all_types"),
+            SrpInputMode::kAnyCombinationAllTypes);
   EXPECT_FALSE(ParseSrpInputMode("everything").has_value());
 }
 
@@ -89,25 +95,41 @@ TEST(InputStateModelRoutingTest, SrpInputModeFromFeatureParams) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kDynamicAimFulfillment,
-        {{"srp_input_mode", "any_combination"}});
-    EXPECT_EQ(SrpInputModeFromFeatureParams(), SrpInputMode::kAnyCombination);
+        {{"srp_input_mode", "any_combination_images_files"}});
+    EXPECT_EQ(SrpInputModeFromFeatureParams(),
+              SrpInputMode::kAnyCombinationImagesFiles);
   }
 }
 
-// Which attachments can go to SRP in each mode.
+// Which attachments can go to SRP in each mode. A mix goes to SRP only if the
+// mode covers every kind in it.
 TEST(InputStateModelRoutingTest, AttachmentsCanGoToSrpPerMode) {
   struct Row {
     AttachmentCounts counts;
-    bool none, single, multi, any;
+    bool none, single, multi, images_files, images_files_tabs,
+        images_files_drive, all_types;
   };
   const Row rows[] = {
-      {Counts(0, 0), true, true, true, true},            // No attachments.
-      {Counts(1, 0), false, true, true, true},           // 1 image.
-      {Counts(3, 0), false, false, true, true},          // 2+ images.
-      {Counts(0, 2), false, false, false, true},         // Files.
-      {Counts(3, 2), false, false, false, true},         // Images + files.
-      {Counts(0, 0, 1), false, false, false, false},     // Tab.
-      {Counts(1, 0, 0, 1), false, false, false, false},  // Image + Drive.
+      // No attachments.
+      {Counts(0, 0), true, true, true, true, true, true, true},
+      // 1 image.
+      {Counts(1, 0), false, true, true, true, true, true, true},
+      // 2+ images.
+      {Counts(3, 0), false, false, true, true, true, true, true},
+      // Files.
+      {Counts(0, 2), false, false, false, true, true, true, true},
+      // Images + files.
+      {Counts(3, 2), false, false, false, true, true, true, true},
+      // Tab.
+      {Counts(0, 0, 1), false, false, false, false, true, false, true},
+      // Drive.
+      {Counts(0, 0, 0, 1), false, false, false, false, false, true, true},
+      // Tab + image.
+      {Counts(1, 0, 1), false, false, false, false, true, false, true},
+      // Drive + file.
+      {Counts(0, 1, 0, 1), false, false, false, false, false, true, true},
+      // Tab + Drive.
+      {Counts(0, 0, 1, 1), false, false, false, false, false, false, true},
   };
   for (const Row& row : rows) {
     SCOPED_TRACE(testing::Message()
@@ -121,7 +143,13 @@ TEST(InputStateModelRoutingTest, AttachmentsCanGoToSrpPerMode) {
     EXPECT_EQ(can_go(SrpInputMode::kNone), row.none);
     EXPECT_EQ(can_go(SrpInputMode::kSingleImage), row.single);
     EXPECT_EQ(can_go(SrpInputMode::kMultiImage), row.multi);
-    EXPECT_EQ(can_go(SrpInputMode::kAnyCombination), row.any);
+    EXPECT_EQ(can_go(SrpInputMode::kAnyCombinationImagesFiles),
+              row.images_files);
+    EXPECT_EQ(can_go(SrpInputMode::kAnyCombinationImagesFilesTabs),
+              row.images_files_tabs);
+    EXPECT_EQ(can_go(SrpInputMode::kAnyCombinationImagesFilesDrive),
+              row.images_files_drive);
+    EXPECT_EQ(can_go(SrpInputMode::kAnyCombinationAllTypes), row.all_types);
   }
 }
 
@@ -227,10 +255,10 @@ TEST(InputStateModelRoutingTest, ToolWithAttachmentsRoutesToAim) {
   EXPECT_TRUE(result.will_fulfill_in_aim);
   EXPECT_EQ(result.url_params, UrlParams({{"imgn", "1"}, {"udm", "50"}}));
   // Not controlled by the mode.
-  EXPECT_TRUE(ComputeFulfillment(
-                  state, /*aim_mode_active=*/false, one_image,
-                  EligibleAttachmentsForMode(SrpInputMode::kAnyCombination),
-                  /*has_valid_config=*/true)
+  EXPECT_TRUE(ComputeFulfillment(state, /*aim_mode_active=*/false, one_image,
+                                 EligibleAttachmentsForMode(
+                                     SrpInputMode::kAnyCombinationImagesFiles),
+                                 /*has_valid_config=*/true)
                   .will_fulfill_in_aim);
 }
 
