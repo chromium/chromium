@@ -759,7 +759,7 @@ TEST_F(CookieHelperTest, CannedGetCookieCount) {
                       {{*cookie5}}});
   EXPECT_EQ(4U, helper->GetCookieCount());
 
-  // Host-only and domain cookies are treated as seperate items. This means that
+  // Host-only and domain cookies are treated as separate items. This means that
   // the following two cookie-strings are stored as two separate cookies, even
   // though they have the same name and are send with the same request:
   //   "A=1;
