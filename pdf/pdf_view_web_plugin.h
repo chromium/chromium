@@ -643,7 +643,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleGetSelectedTextMessage(const base::DictValue& message);
   void HandleGetSuggestedFileName(const base::DictValue& message);
   void HandleGetThumbnailMessage(const base::DictValue& message);
-  void HandleHighlightSearchTermsMessage(const base::DictValue& message);
   void HandleHighlightTextFragmentsMessage(const base::DictValue& message);
   void HandlePrintMessage(const base::DictValue& /*message*/);
   void HandleReleaseSaveInBlockBuffers(const base::DictValue& /*message*/);

@@ -9,13 +9,11 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <functional>
 #include <limits>
 #include <memory>
 #include <set>
 #include <sstream>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -981,28 +979,6 @@ void CheckBitmapProperties(const SkBitmap& sk_bitmap, FPDF_BITMAP fpdf_bitmap) {
   }
 }
 
-// Sorts `page_results` by character index and merges overlapping ranges on the
-// same page.
-std::vector<PDFiumRange> MergePageRanges(
-    std::vector<PDFiumRange> page_results) {
-  std::ranges::sort(page_results, {}, &PDFiumRange::char_index);
-
-  std::vector<PDFiumRange> merged;
-  for (PDFiumRange& range : page_results) {
-    if (merged.empty() ||
-        range.char_index() >=
-            merged.back().char_index() + merged.back().char_count()) {
-      merged.push_back(std::move(range));
-    } else {
-      const int start = merged.back().char_index();
-      const int end = std::max(start + merged.back().char_count(),
-                               range.char_index() + range.char_count());
-      merged.back().SetCharCount(end - start);
-    }
-  }
-  return merged;
-}
-
 }  // namespace
 
 void InitializeSDK(bool enable_v8,
@@ -1102,7 +1078,6 @@ PDFiumEngine::~PDFiumEngine() {
   // Clear all the containers that can prevent unloading.
   find_results_.clear();
   selection_.clear();
-  text_fragment_highlights_.clear();
 #if BUILDFLAG(ENABLE_PDF_INK2)
   ink_stroke_data_.clear();
   ink_text_data_.clear();
@@ -1688,66 +1663,6 @@ void PDFiumEngine::SearchForFragment(
                  char_to_start_searching_from, /*last_char_index_to_search=*/-1,
                  page_to_search, page_to_search,
                  std::move(add_result_callback));
-}
-
-bool PDFiumEngine::FindAndHighlightSearchTerms(
-    base::span<const std::string_view> search_terms) {
-  CHECK(!search_terms.empty());
-
-  HighlightChangeInvalidator invalidator(this);
-  client_->OnNewTextFragmentsSearchStarted();
-  text_fragment_highlights_.clear();
-
-  if (pages_.empty()) {
-    return false;
-  }
-
-  std::vector<std::u16string> utf16_terms;
-  utf16_terms.reserve(search_terms.size());
-  for (std::string_view term : search_terms) {
-    CHECK(!term.empty());
-    utf16_terms.push_back(base::UTF8ToUTF16(term));
-  }
-
-  // Search each available page for all terms, then sort and merge overlapping
-  // matches into `text_fragment_highlights_` so scrolling visits them in order.
-  ForEachPage([&](PDFiumPage* page) {
-    if (!page->available()) {
-      return;
-    }
-
-    std::vector<PDFiumRange> page_results;
-    AddSearchResultCallback add_result = base::BindRepeating(
-        [](std::vector<PDFiumRange>& results, PDFiumRange result) {
-          results.push_back(std::move(result));
-        },
-        std::ref(page_results));
-    for (const std::u16string& term : utf16_terms) {
-      SearchForFragment(term, /*char_to_start_searching_from=*/0, page->index(),
-                        add_result);
-    }
-
-    base::Extend(text_fragment_highlights_,
-                 MergePageRanges(std::move(page_results)));
-
-    // Unload non-visible pages to avoid holding parsed resources in memory.
-    if (!IsPageVisible(page->index())) {
-      page->Unload();
-    }
-  });
-
-  return !text_fragment_highlights_.empty();
-}
-
-void PDFiumEngine::ScrollToFirstSearchResult(uint32_t start_page_index) {
-  CHECK(!text_fragment_highlights_.empty());
-  auto it =
-      std::ranges::lower_bound(text_fragment_highlights_, start_page_index, {},
-                               &PDFiumRange::page_index);
-  const PDFiumRange& target = it != text_fragment_highlights_.end()
-                                  ? *it
-                                  : text_fragment_highlights_[0];
-  ScrollToBoundingRects(target, /*force_smooth_scroll=*/false);
 }
 
 void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {

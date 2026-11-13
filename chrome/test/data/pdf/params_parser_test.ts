@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType, OpenPdfParamsParser, PluginController, ViewMode} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-
-import {createMockPdfPluginForTest} from './test_util.js';
+import {FittingType, OpenPdfParamsParser, ViewMode} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 const URL = 'http://xyz.pdf';
 
@@ -527,151 +525,62 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
-  async function testParamsTextFragments() {
+  function testParamsGetTextFragments() {
     const paramsParser = getParamsParser();
 
-    async function assertTextFragments(fragment: string, expected?: string[]) {
-      const params =
-          await paramsParser.getViewportFromUrlParams(`${URL}${fragment}`);
-      chrome.test.assertEq(expected, params.textFragments);
-    }
-
     // Checking single text fragment.
-    await assertTextFragments('#:~:text=apples', ['apples']);
+    let fragments = paramsParser.getTextFragments(`${URL}#:~:text=apples`);
+    chrome.test.assertEq(fragments.length, 1);
+    chrome.test.assertEq(fragments[0], 'apples');
 
     // Checking multiple text fragments.
-    await assertTextFragments(
-        '#:~:text=apples&text=oranges&text=hello-,world,there,-world',
-        ['apples', 'oranges', 'hello-,world,there,-world']);
+    fragments = paramsParser.getTextFragments(
+        `${URL}#:~:text=apples&text=oranges&text=hello-,world,there,-world`);
+    chrome.test.assertEq(fragments.length, 3);
+    chrome.test.assertEq(fragments[0], 'apples');
+    chrome.test.assertEq(fragments[1], 'oranges');
+    chrome.test.assertEq(fragments[2], 'hello-,world,there,-world');
 
     // Checking case where no text fragments are present.
-    await assertTextFragments('#page=3', undefined);
+    fragments = paramsParser.getTextFragments(`${URL}#page=3`);
+    chrome.test.assertEq(fragments.length, 0);
 
     // Check case where only delimiter is present.
-    await assertTextFragments('#:~:', undefined);
+    fragments = paramsParser.getTextFragments(`${URL}#:~:`);
+    chrome.test.assertEq(fragments.length, 0);
 
     // Check case where there are other viewport parameters before the text
     // fragments.
-    await assertTextFragments(
-        '#page=3&view=FitBV:~:text=foo&text=bar', ['foo', 'bar']);
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=foo&text=bar`);
+    chrome.test.assertEq(fragments.length, 2);
+    chrome.test.assertEq(fragments[0], 'foo');
+    chrome.test.assertEq(fragments[1], 'bar');
 
     // Check case where text fragment could have percent-encoded values that
     // are used as part of the prefix / suffix like `,` and `-`.
-    await assertTextFragments(
-        '#page=3&view=FitBV:~:text=foo%2C-,apples,-bar%2D&text=bar%2D',
-        ['foo%2C-,apples,-bar%2D', 'bar%2D']);
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=foo%2C-,apples,-bar%2D&text=bar%2D`);
+    chrome.test.assertEq(fragments.length, 2);
+    chrome.test.assertEq(fragments[0], 'foo%2C-,apples,-bar%2D');
+    chrome.test.assertEq(fragments[1], 'bar%2D');
 
     // Check case where text fragments are empty.
-    await assertTextFragments(
-        '#page=3&view=FitBV:~:text=&text=&text=', undefined);
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=&text=&text=`);
+    chrome.test.assertEq(fragments.length, 0);
 
     // Check case where some text fragments are empty.
-    await assertTextFragments(
-        '#page=3&view=FitBV:~:text=&text=foo%2C-,apples,-bar%2D&text=',
-        ['foo%2C-,apples,-bar%2D']);
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV:~:text=&text=foo%2C-,apples,-bar%2D&text=`);
+    chrome.test.assertEq(fragments.length, 1);
+    chrome.test.assertEq(fragments[0], 'foo%2C-,apples,-bar%2D');
 
     // Check case where URL fragment is invalid and contains multiple
     // octothorpes.
-    await assertTextFragments(
-        '#page=3&view=FitBV#:~:text=&text=foo%2C-,apples,-bar%2D&text=',
-        undefined);
-
-    chrome.test.succeed();
-  },
-  async function testParamsSearch() {
-    const paramsParser = getParamsParser();
-    paramsParser.setPageCount(100);
-
-    async function assertSearch(fragment: string, expected?: string[]) {
-      const params =
-          await paramsParser.getViewportFromUrlParams(`${URL}#${fragment}`);
-      chrome.test.assertEq(expected, params.searchTerms);
-      return params;
-    }
-
-    await assertSearch('search="apple"', ['apple']);
-    await assertSearch(
-        'search="apple banana cherry"', ['apple', 'banana', 'cherry']);
-    await assertSearch('search=apple+banana', ['apple', 'banana']);
-    await assertSearch('search="apple   banana"&phrase=TRUE', ['apple banana']);
-    await assertSearch(
-        'search="apple banana"&phrase=false', ['apple', 'banana']);
-    await assertSearch(
-        'search="apple banana"&phrase=invalid', ['apple', 'banana']);
-    await assertSearch('search=', undefined);
-    await assertSearch('search="   "', undefined);
-    const emptyNamedDest = await assertSearch('RU=', undefined);
-    chrome.test.assertEq(undefined, emptyNamedDest.pageIndex);
-    const withDirective =
-        await assertSearch('search="apple":~:text=oranges', undefined);
-    chrome.test.assertEq(['oranges'], withDirective.textFragments);
-    await assertSearch('search="apple":~:text=', ['apple']);
-
-    const combined =
-        await assertSearch('page=3&zoom=200&search="apple"', ['apple']);
-    chrome.test.assertEq(2, combined.pageIndex);
-    chrome.test.assertEq(2, combined.zoom);
-
-    chrome.test.succeed();
-  },
-  async function testHandleUrlParams() {
-    const viewer = document.body.querySelector('pdf-viewer')!;
-    const mockPlugin = createMockPdfPluginForTest();
-    PluginController.getInstance().setPluginForTesting(mockPlugin);
-
-    const paramsParser = getParamsParser();
-    paramsParser.setPageCount(10);
-
-    // #search with phrase=true highlights exact phrase from page 0.
-    viewer.handleUrlParams(await paramsParser.getViewportFromUrlParams(
-        `${URL}#search="Second%20Section"&phrase=true`));
-    chrome.test.assertEq(
-        {
-          type: 'highlightSearchTerms',
-          searchTerms: ['Second Section'],
-          startPageIndex: 0,
-        },
-        mockPlugin.findMessage('highlightSearchTerms'));
-    chrome.test.assertEq(
-        undefined, mockPlugin.findMessage('highlightTextFragments'));
-
-    // #page=3 sets the search start page index to 2.
-    mockPlugin.clearMessages();
-    viewer.handleUrlParams(await paramsParser.getViewportFromUrlParams(
-        `${URL}#page=3&search="Subsection"`));
-    chrome.test.assertEq(
-        {
-          type: 'highlightSearchTerms',
-          searchTerms: ['Subsection'],
-          startPageIndex: 2,
-        },
-        mockPlugin.findMessage('highlightSearchTerms'));
-
-    // #:~:text= takes priority over #search=.
-    mockPlugin.clearMessages();
-    viewer.handleUrlParams(await paramsParser.getViewportFromUrlParams(
-        `${URL}#search="Subsection":~:text=Second%20Section`));
-    chrome.test.assertEq(
-        {type: 'highlightTextFragments', textFragments: ['Second%20Section']},
-        mockPlugin.findMessage('highlightTextFragments'));
-    chrome.test.assertEq(
-        undefined, mockPlugin.findMessage('highlightSearchTerms'));
-
-    // Navigating without #search= or #:~:text= clears prior highlights once.
-    mockPlugin.clearMessages();
-    viewer.handleUrlParams(
-        await paramsParser.getViewportFromUrlParams(`${URL}#page=1`));
-    chrome.test.assertEq(
-        {type: 'highlightTextFragments', textFragments: []},
-        mockPlugin.findMessage('highlightTextFragments'));
-
-    mockPlugin.clearMessages();
-    viewer.handleUrlParams(
-        await paramsParser.getViewportFromUrlParams(`${URL}#page=1`));
-    chrome.test.assertEq(
-        undefined, mockPlugin.findMessage('highlightTextFragments'));
-    chrome.test.assertEq(
-        undefined, mockPlugin.findMessage('highlightSearchTerms'));
+    fragments = paramsParser.getTextFragments(
+        `${URL}#page=3&view=FitBV#:~:text=&text=foo%2C-,apples,-bar%2D&text=`);
+    chrome.test.assertEq(fragments.length, 0);
 
     chrome.test.succeed();
   },

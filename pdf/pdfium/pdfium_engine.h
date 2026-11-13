@@ -676,17 +676,6 @@ class PDFiumEngine : public DocumentLoader::Client,
                          int page_to_search,
                          AddSearchResultCallback add_result_callback);
 
-  // Highlights case-insensitive matches of non-empty `search_terms`, replacing
-  // any prior highlights. `search_terms` must be non-empty. Returns true if any
-  // match was found.
-  virtual bool FindAndHighlightSearchTerms(
-      base::span<const std::string_view> search_terms);
-
-  // Scrolls to the first search highlight at or after `start_page_index`,
-  // wrapping around if needed. `text_fragment_highlights_` must be non-empty
-  // and sorted by page index.
-  virtual void ScrollToFirstSearchResult(uint32_t start_page_index);
-
   // Sets whether caret browsing is enabled or not. Initializes `caret_` if it
   // is the first time enabling caret browsing mode. If the caret was disabled
   // and is now enabled, then moves the caret to the start of the first visible
@@ -700,10 +689,6 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   base::span<const PDFiumRange> find_results_for_testing() const {
     return find_results_;
-  }
-
-  base::span<const PDFiumRange> text_fragment_highlights_for_testing() const {
-    return text_fragment_highlights_;
   }
 
  private:
@@ -1504,7 +1489,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // state, such as its position, blink interval, etc.
   std::unique_ptr<PdfCaret> caret_;
 
-  // Text fragments or URL `#search=` matches to highlight on the PDF.
+  // The list of text fragments to highlight on the PDF.
   std::vector<PDFiumRange> text_fragment_highlights_;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)

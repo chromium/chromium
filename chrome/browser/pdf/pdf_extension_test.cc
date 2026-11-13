@@ -171,9 +171,6 @@ const int kDefaultKeyModifier = blink::WebInputEvent::kControlKey;
 constexpr char kNestedWindowFramesUndefinedCheck[] =
     "window.frames[0][0] === undefined";
 
-constexpr char kGetMostVisiblePageScript[] =
-    "window.viewer.viewport.getMostVisiblePage()";
-
 struct PDFExtensionLoadTestPassToString {
   std::string operator()(const ::testing::TestParamInfo<int>& i) const {
     return base::NumberToString(i.param);
@@ -4575,10 +4572,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   ASSERT_TRUE(target_extension_host);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
-  ASSERT_EQ(
-      0, content::EvalJs(target_extension_host, kGetMostVisiblePageScript));
-  ASSERT_EQ(0,
-            content::EvalJs(other_extension_host, kGetMostVisiblePageScript));
+  static constexpr char kGetPageScript[] =
+      "window.viewer.viewport.getMostVisiblePage()";
+  ASSERT_EQ(0, content::EvalJs(target_extension_host, kGetPageScript));
+  ASSERT_EQ(0, content::EvalJs(other_extension_host, kGetPageScript));
 
   // Ask the viewer in the active (target) tab to go to the third page.
   pdf_extension_util::DispatchShouldUpdateViewportEvent(
@@ -4586,23 +4583,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
       GURL(url.spec() + "#page=3"));
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(target_extension_host, kGetMostVisiblePageScript)
+    return content::EvalJs(target_extension_host, kGetPageScript)
                .ExtractInt() == 2;
   }));
-  EXPECT_EQ(0,
-            content::EvalJs(other_extension_host, kGetMostVisiblePageScript));
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SearchOpenParam) {
-  const GURL url = embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf");
-  // Opening with #search="Subsection" scrolls to page index 1.
-  content::RenderFrameHost* extension_host =
-      LoadPdfGetExtensionHost(GURL(url.spec() + "#search=\"Subsection\""));
-  ASSERT_TRUE(extension_host);
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(extension_host, kGetMostVisiblePageScript)
-               .ExtractInt() == 1;
-  }));
+  EXPECT_EQ(0, content::EvalJs(other_extension_host, kGetPageScript));
 }
 
 // Test class that enables the RendererSideContentDecoding feature.

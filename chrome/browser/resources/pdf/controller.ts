@@ -134,12 +134,6 @@ export interface SelectAllMessage {
   type: 'selectAll';
 }
 
-export interface HighlightSearchTermsMessage {
-  type: 'highlightSearchTerms';
-  searchTerms: string[];
-  startPageIndex: number;
-}
-
 export interface HighlightTextFragmentsMessage {
   type: 'highlightTextFragments';
   textFragments: string[];
@@ -286,8 +280,7 @@ export type PluginMessageWithReply =
 export type PluginMessageWithoutReply = StopScrollingMessage|ViewportMessage|
     RotateClockwiseMessage|RotateCounterclockwiseMessage|
     DisplayAnnotationsMessage|SetTwoUpViewMessage|PrintMessage|SelectAllMessage|
-    HighlightSearchTermsMessage|HighlightTextFragmentsMessage|
-    ResetPrintPreviewModeMessage|
+    HighlightTextFragmentsMessage|ResetPrintPreviewModeMessage|
     SetBackgroundColorMessage|LoadPreviewPageMessage|GetPasswordCompleteMessage|
     SetPresentationModeMessage|SaveMessage|GetSaveDataBlockMessage|
     ReleaseSaveInBlockBuffersMessage|FocusMessage
@@ -665,14 +658,6 @@ export class PluginController implements ContentController {
 
   selectAll() {
     this.postMessage_({type: 'selectAll'});
-  }
-
-  highlightSearchTerms(searchTerms: string[], startPageIndex: number) {
-    this.postMessage_({
-      type: 'highlightSearchTerms',
-      searchTerms,
-      startPageIndex,
-    });
   }
 
   highlightTextFragments(textFragments: string[]) {
