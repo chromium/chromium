@@ -718,6 +718,25 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   test_helper()->CheckSafetyTipUkmCount(1);
 }
 
+// Regression test for crbug.com/581401481: A non-top-bucket IDN skeleton match
+// (Safety Tip) on the eTLD+1 must not shadow a target-embedding match
+// (interstitial) on the full hostname.
+IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
+                       Idn_TopDomain_Not500_TargetEmbedding_Interstitial) {
+  const GURL kNavigatedUrl = GetURL("youtube.com.googlé.sk");
+  const GURL kExpectedSuggestedUrl = GetURLWithoutPath("youtube.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  base::HistogramTester histograms;
+  TestMetricsRecordedAndInterstitialShown(
+      browser(), histograms, kNavigatedUrl, kExpectedSuggestedUrl,
+      NavigationSuggestionEvent::kMatchTargetEmbedding);
+
+  CheckInterstitialUkm({kNavigatedUrl}, "MatchType",
+                       LookalikeUrlMatchType::kTargetEmbedding);
+  test_helper()->CheckSafetyTipUkmCount(0);
+}
+
 // Same as Idn_TopDomain_Match, but this time the domain contains characters
 // from different scripts, failing the checks in IDN spoof checker before
 // reaching the top domain check. In this case, the end result is the same, but

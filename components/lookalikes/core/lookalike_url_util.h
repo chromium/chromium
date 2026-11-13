@@ -233,10 +233,11 @@ void RecordUMAFromMatchType(LookalikeUrlMatchType match_type,
 using LookalikeTargetAllowlistChecker =
     base::RepeatingCallback<bool(const std::string&)>;
 
-// Returns true if a domain is visually similar to the hostname of |url|. The
-// matching domain can be a top domain or an engaged site. Similarity
-// check is made using both visual skeleton and edit distance comparison.  If
-// this returns true, match details will be written into |matched_domain|.
+// Returns true if `navigated_domain` matches a lookalike heuristic against a
+// top domain or an engaged site (via IDN skeleton matching, edit distance,
+// character swap, target embedding, or combo squatting), selecting the
+// highest-severity match across non-rollout-gated heuristics. If this returns
+// true, match details are written into `matched_domain` and `match_type`.
 // Pointer arguments can't be nullptr.
 bool GetMatchingDomain(
     const DomainInfo& navigated_domain,
@@ -318,7 +319,8 @@ ComboSquattingType GetComboSquattingType(
 // lookalike checks, such as government sites.
 bool IsSafeTLD(const std::string& hostname);
 
-// The action to take for a given lookalike match.
+// The action to take for a given lookalike match, ordered by increasing
+// severity.
 enum class LookalikeActionType {
   // No action.
   kNone,
@@ -328,6 +330,9 @@ enum class LookalikeActionType {
   kShowSafetyTip,
   // Show an interstitial.
   kShowInterstitial,
+
+  // Keep values ordered by increasing severity; `GetMatchingDomain()` compares
+  // `LookalikeActionType` values directly to prioritize more severe matches.
 };
 
 // Returns the action to take for the given `etld_plus_one` and lookalike

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_test-inc.cc"
@@ -494,6 +495,89 @@ TEST_F(LookalikeUrlUtilTest, TargetEmbeddingIgnoresComponentWordlist) {
       "commonword.com.evil.com", kEngagedSites,
       base::BindRepeating(&IsGoogleScholar), config_proto, &safe_hostname);
   EXPECT_EQ(embedding_type, TargetEmbeddingType::kNone);
+}
+
+TEST_F(LookalikeUrlUtilTest, GetMatchingDomainPrioritizesMoreSevereMatches) {
+  const std::vector<DomainInfo> kEngagedSites = {
+      GetDomainInfo(GURL("https://site1.com")),
+      GetDomainInfo(GURL("https://test-site.com")),
+      GetDomainInfo(GURL("https://abcde-site1.com")),
+  };
+  lookalikes::InitializeBlankLookalikeAllowlistForTesting();
+  const auto* config_proto = lookalikes::GetSafetyTipsRemoteConfigProto();
+  const auto in_target_allowlist = base::BindRepeating(&IsGoogleScholar);
+
+  const struct TestCase {
+    const char* url;
+    const char* expected_matched_domain;
+    LookalikeUrlMatchType expected_match_type;
+  } kTestCases[] = {
+      // Non-top-bucket IDN match without target embedding returns the Top 5k
+      // skeleton match (Safety Tip).
+      {"https://googlé.sk", "google.sk",
+       LookalikeUrlMatchType::kSkeletonMatchTop5k},
+
+  // Regression test for crbug.com/581401481: Non-top-bucket IDN skeleton
+  // match (Safety Tip) on the eTLD+1 must not shadow a target-embedding
+  // match (interstitial on non-iOS) on the full hostname.
+#if BUILDFLAG(IS_IOS)
+      {"https://youtube.com.googlé.sk", "google.sk",
+       LookalikeUrlMatchType::kSkeletonMatchTop5k},
+#else
+      {"https://youtube.com.googlé.sk", "youtube.com",
+       LookalikeUrlMatchType::kTargetEmbedding},
+#endif
+
+      // An allowlisted target embedding must not clobber the earlier Top 5k
+      // skeleton match on the eTLD+1.
+      {"https://scholar.google.com.googlé.sk", "google.sk",
+       LookalikeUrlMatchType::kSkeletonMatchTop5k},
+
+      // When an earlier heuristic already triggers an interstitial, its match
+      // is kept over a later interstitial match.
+      {"https://youtube.com.googlé.com", "google.com",
+       LookalikeUrlMatchType::kSkeletonMatchTop500},
+      {"https://youtube.com.sité1.com", "site1.com",
+       LookalikeUrlMatchType::kSkeletonMatchSiteEngagement},
+
+      // When two heuristics have equal non-interstitial severity (both
+      // `kShowSafetyTip`: engaged edit distance against `abcde-site1.com` and
+      // tail target embedding against `site1.com`), the earlier heuristic match
+      // is preserved.
+      {"https://abxde-site1.com", "abcde-site1.com",
+       LookalikeUrlMatchType::kEditDistanceSiteEngagement},
+
+  // Edit-distance and character-swap matches on the eTLD+1 (metrics-only or
+  // Safety Tip) also must not shadow target-embedding interstitials.
+#if BUILDFLAG(IS_IOS)
+      {"https://youtube.com.goooglé.com", "google.com",
+       LookalikeUrlMatchType::kEditDistance},
+      {"https://youtube.com.goolge.com", "google.com",
+       LookalikeUrlMatchType::kCharacterSwapTop500},
+      {"https://youtube.com.best-sité.com", "test-site.com",
+       LookalikeUrlMatchType::kEditDistanceSiteEngagement},
+#else
+      {"https://youtube.com.goooglé.com", "youtube.com",
+       LookalikeUrlMatchType::kTargetEmbedding},
+      {"https://youtube.com.goolge.com", "youtube.com",
+       LookalikeUrlMatchType::kTargetEmbedding},
+      {"https://youtube.com.best-sité.com", "youtube.com",
+       LookalikeUrlMatchType::kTargetEmbedding},
+#endif
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    std::string matched_domain;
+    LookalikeUrlMatchType match_type = LookalikeUrlMatchType::kNone;
+    EXPECT_TRUE(GetMatchingDomain(GetDomainInfo(GURL(test_case.url)),
+                                  kEngagedSites, in_target_allowlist,
+                                  config_proto, &matched_domain, &match_type))
+        << "for " << test_case.url;
+    EXPECT_EQ(test_case.expected_matched_domain, matched_domain)
+        << "for " << test_case.url;
+    EXPECT_EQ(test_case.expected_match_type, match_type)
+        << "for " << test_case.url;
+  }
 }
 
 TEST_F(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {

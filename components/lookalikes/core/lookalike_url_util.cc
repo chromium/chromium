@@ -1012,6 +1012,31 @@ bool GetMatchingDomain(
   DCHECK(matched_domain);
   DCHECK(match_type);
 
+  // Track the highest-severity match found so far so that a weaker match (such
+  // as a Safety Tip or metrics-only match on the eTLD+1) cannot shadow a
+  // stronger match (such as a target-embedding interstitial on the full
+  // hostname). Ties keep the first match in heuristic order.
+  LookalikeActionType best_action = LookalikeActionType::kNone;
+  std::string best_matched_domain;
+  LookalikeUrlMatchType best_match_type = LookalikeUrlMatchType::kNone;
+
+  auto record_candidate = [&](std::string candidate_domain,
+                              LookalikeUrlMatchType candidate_type) {
+    // None of the heuristics prior to Combo Squatting depend on channel or
+    // config rollout, so their action type is fixed.
+    DCHECK_NE(candidate_type, LookalikeUrlMatchType::kComboSquatting);
+    DCHECK_NE(candidate_type,
+              LookalikeUrlMatchType::kComboSquattingSiteEngagement);
+    LookalikeActionType action = GetActionForMatchType(
+        /*config=*/nullptr, version_info::Channel::UNKNOWN,
+        /*etld_plus_one=*/std::string(), candidate_type);
+    if (action > best_action) {
+      best_action = action;
+      best_matched_domain = std::move(candidate_domain);
+      best_match_type = candidate_type;
+    }
+  };
+
   if (navigated_domain.idn_result.has_idn_component) {
     // If the navigated domain is IDN, check its skeleton against engaged sites
     // and top domains.
@@ -1032,44 +1057,59 @@ bool GetMatchingDomain(
       // At this point, navigated domain should not be a top domain.
       DCHECK_NE(navigated_domain.domain_and_registry,
                 navigated_domain.idn_result.matching_top_domain.domain);
-      *matched_domain = navigated_domain.idn_result.matching_top_domain.domain;
-      *match_type =
-          navigated_domain.idn_result.matching_top_domain.is_top_bucket
-              ? LookalikeUrlMatchType::kSkeletonMatchTop500
-              : LookalikeUrlMatchType::kSkeletonMatchTop5k;
-      return true;
+      if (navigated_domain.idn_result.matching_top_domain.is_top_bucket) {
+        *matched_domain =
+            navigated_domain.idn_result.matching_top_domain.domain;
+        *match_type = LookalikeUrlMatchType::kSkeletonMatchTop500;
+        return true;
+      }
+      record_candidate(navigated_domain.idn_result.matching_top_domain.domain,
+                       LookalikeUrlMatchType::kSkeletonMatchTop5k);
     }
   }
 
-  if (url_formatter::top_domains::IsEditDistanceCandidate(
+  if (best_action < LookalikeActionType::kShowSafetyTip &&
+      url_formatter::top_domains::IsEditDistanceCandidate(
           navigated_domain.domain_and_registry)) {
     // If we can't find an exact top domain or an engaged site, try to find an
     // engaged domain within an edit distance of one or a single character swap.
+    std::string similar_domain;
+    LookalikeUrlMatchType similar_match_type = LookalikeUrlMatchType::kNone;
     if (GetSimilarDomainFromEngagedSites(navigated_domain, engaged_sites,
-                                         in_target_allowlist, matched_domain,
-                                         match_type)) {
-      DCHECK_NE(navigated_domain.domain_and_registry, *matched_domain);
-      return true;
-    }
-
-    // Finally, try to find a top domain within an edit distance or character
-    // swap of one.
-    if (GetSimilarDomainFromTopBucket(navigated_domain, in_target_allowlist,
-                                      matched_domain, match_type)) {
-      DCHECK_NE(navigated_domain.domain_and_registry, *matched_domain);
-      DCHECK(!matched_domain->empty());
-      return true;
+                                         in_target_allowlist, &similar_domain,
+                                         &similar_match_type)) {
+      DCHECK_NE(navigated_domain.domain_and_registry, similar_domain);
+      record_candidate(std::move(similar_domain), similar_match_type);
+    } else if (GetSimilarDomainFromTopBucket(
+                   navigated_domain, in_target_allowlist, &similar_domain,
+                   &similar_match_type)) {
+      // Finally, try to find a top domain within an edit distance or character
+      // swap of one.
+      DCHECK_NE(navigated_domain.domain_and_registry, similar_domain);
+      DCHECK(!similar_domain.empty());
+      record_candidate(std::move(similar_domain), similar_match_type);
     }
   }
 
-  TargetEmbeddingType embedding_type =
-      GetTargetEmbeddingType(navigated_domain.hostname, engaged_sites,
-                             in_target_allowlist, config_proto, matched_domain);
+  std::string target_embedding_domain;
+  TargetEmbeddingType embedding_type = GetTargetEmbeddingType(
+      navigated_domain.hostname, engaged_sites, in_target_allowlist,
+      config_proto, &target_embedding_domain);
   if (embedding_type == TargetEmbeddingType::kSafetyTip) {
-    *match_type = LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips;
-    return true;
+    record_candidate(std::move(target_embedding_domain),
+                     LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips);
   } else if (embedding_type == TargetEmbeddingType::kInterstitial) {
-    *match_type = LookalikeUrlMatchType::kTargetEmbedding;
+    record_candidate(std::move(target_embedding_domain),
+                     LookalikeUrlMatchType::kTargetEmbedding);
+  }
+
+  // Combo Squatting's action depends on channel rollout (not available here)
+  // and can at most show a Safety Tip. Only check it if none of the previous
+  // heuristics matched, preserving precedence for earlier matches (including
+  // metrics-only ones).
+  if (best_action != LookalikeActionType::kNone) {
+    *matched_domain = std::move(best_matched_domain);
+    *match_type = best_match_type;
     return true;
   }
 
@@ -1484,6 +1524,10 @@ LookalikeActionType GetActionForMatchType(
     version_info::Channel channel,
     const std::string& etld_plus_one,
     LookalikeUrlMatchType match_type) {
+  // Note: `GetMatchingDomain()` calls this with `config=nullptr`,
+  // `channel=UNKNOWN`, and an empty `etld_plus_one` to rank pre-Combo-Squatting
+  // matches by severity. Any heuristic gated on `IsHeuristicEnabledForHostname`
+  // must be accounted for in `GetMatchingDomain()`.
   switch (match_type) {
     case LookalikeUrlMatchType::kEditDistance:
       // Edit distance is too noisy, just record metrics.
