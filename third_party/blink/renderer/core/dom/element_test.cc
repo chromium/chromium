@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/id_target_observer.h"
+#include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -2314,6 +2317,108 @@ TEST_F(ElementTest,
   owner->SetFreezeHoverForOpenPopup(true);
   owner->SetFreezeHoverForOpenPopup(false);
   EXPECT_TRUE(owner->IsHovered());
+}
+
+namespace {
+
+// Helper observer used in unit tests to simulate re-entrant script execution
+// that mutates another element's attributes while an attribute update is
+// in-flight (simulating what can happen when pausing at a DOM breakpoint in the
+// DevTools debugger).
+class AttributeReallocatingIdObserver final : public IdTargetObserver {
+ public:
+  AttributeReallocatingIdObserver(IdTargetObserverRegistry& registry,
+                                  const AtomicString& id,
+                                  Element* element)
+      : IdTargetObserver(registry, id), element_(element) {}
+
+  void IdTargetChanged() override {
+    for (unsigned i = 0; i < 8; ++i) {
+      element_->setAttribute(
+          QualifiedName(g_null_atom, AtomicString(String::Number(i) + "pad"),
+                        g_null_atom),
+          AtomicString("1"));
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(element_);
+    IdTargetObserver::Trace(visitor);
+  }
+
+ private:
+  Member<Element> element_;
+};
+
+}  // namespace
+
+TEST_F(ElementTest, AppendAttributeInternalWithAliasedAttributeValue) {
+  SetBodyContent(
+      "<div class=init a=1 b=2 c=3 d=4></div>"
+      "<img name=named-img>");
+  auto* source = To<Element>(GetDocument().body()->firstChild());
+  auto* target = To<Element>(source->nextSibling());
+  ASSERT_NE(source, nullptr);
+  ASSERT_NE(target, nullptr);
+
+  // Appending an attribute from another element's FastGetAttribute() without
+  // reallocation preserves the attribute value.
+  target->setAttribute(html_names::kTitleAttr,
+                       source->FastGetAttribute(html_names::kClassAttr));
+  EXPECT_EQ(AtomicString("init"), target->getAttribute(html_names::kTitleAttr));
+
+  // 1. Self-aliased inline-to-heap reallocation (4 -> 8) and heap-to-heap
+  // reallocation (8 -> 16) during `Attributes().Append()`.
+  Element* element = GetDocument().CreateElementForBinding(AtomicString("div"));
+  GetDocument().body()->AppendChild(element);
+  element->setAttribute(html_names::kTitleAttr, AtomicString("sample-id"));
+  for (const char* name : {"data-a0", "data-a1", "data-a2"}) {
+    element->setAttribute(
+        QualifiedName(g_null_atom, AtomicString(name), g_null_atom),
+        AtomicString("0"));
+  }
+  ASSERT_EQ(4u, element->AttributesWithoutUpdate().size());
+
+  // Appending `id` from `element->FastGetAttribute(kTitleAttr)` reallocates the
+  // 4-element inline buffer to an 8-element heap buffer before
+  // `DidAddAttribute()` runs.
+  element->setAttribute(html_names::kIdAttr,
+                        element->FastGetAttribute(html_names::kTitleAttr));
+  EXPECT_EQ(AtomicString("sample-id"), element->GetIdAttribute());
+  EXPECT_EQ(AtomicString("sample-id"), element->IdForStyleResolution());
+  EXPECT_EQ(element, GetDocument().getElementById(AtomicString("sample-id")));
+
+  for (const char* name : {"data-a3", "data-a4", "data-a5"}) {
+    element->setAttribute(
+        QualifiedName(g_null_atom, AtomicString(name), g_null_atom),
+        AtomicString("1"));
+  }
+  ASSERT_EQ(8u, element->AttributesWithoutUpdate().size());
+
+  // Appending `class` from `element->FastGetAttribute(kTitleAttr)` reallocates
+  // and frees the 8-element heap buffer before `DidAddAttribute()` runs.
+  element->setAttribute(html_names::kClassAttr,
+                        element->FastGetAttribute(html_names::kTitleAttr));
+  EXPECT_EQ(AtomicString("sample-id"),
+            element->getAttribute(html_names::kClassAttr));
+  EXPECT_TRUE(element->ClassNames().Contains(AtomicString("sample-id")));
+
+  // 2. Cross-element aliased value when an IdTargetObserver reallocates
+  // `source`'s heap-allocated UniqueElementData (size == capacity == 5) during
+  // `DidAddAttribute()` before named item registration completes.
+  // This simulates an in-flight mutation of `source`'s attributes (as can occur
+  // when pausing in the DevTools debugger) without requiring a DevTools
+  // session.
+  MakeGarbageCollected<AttributeReallocatingIdObserver>(
+      GetDocument().EnsureIdTargetObserverRegistry(),
+      AtomicString("observed-id"), source);
+  source->setAttribute(html_names::kClassAttr, AtomicString("observed-id"));
+  target->setAttribute(html_names::kIdAttr,
+                       source->FastGetAttribute(html_names::kClassAttr));
+  EXPECT_EQ(AtomicString("observed-id"), target->GetIdAttribute());
+  EXPECT_EQ(target, GetDocument().getElementById(AtomicString("observed-id")));
+  EXPECT_TRUE(To<HTMLDocument>(GetDocument())
+                  .HasNamedItem(AtomicString("observed-id")));
 }
 
 }  // namespace blink

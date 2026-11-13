@@ -1,0 +1,5 @@
+Tests mutating element attribute vector while paused on an attribute-modified DOM breakpoint during attribute append.
+new-attr-grow: val-grow
+new-attr-reentrant: outer-val
+new-attr-shrink: val-shrink
+
