@@ -126,7 +126,10 @@ uint32_t MediaPermissionDispatcher::RegisterCallback(
 
   uint32_t request_id = next_request_id_++;
   DCHECK(!requests_.contains(request_id));
-  requests_[request_id] = std::move(permission_status_cb);
+  // Ensure callbacks never run synchronously on a caller stack, because this
+  // can be re-entrant with destruction.
+  requests_[request_id] =
+      base::BindPostTask(task_runner_, std::move(permission_status_cb));
 
   return request_id;
 }
